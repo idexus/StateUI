@@ -627,6 +627,30 @@ final class CatalogTests: XCTestCase {
         XCTAssertNil(plain[0].title)
     }
 
+    /// A code listing owns only horizontal overflow. The sample page owns its
+    /// vertical viewport, including a wheel gesture made above the listing.
+    func testACodeBlockScrollsOnlyAcrossThePage() {
+        let block = CodeBlock("let value = aVeryLongExpression()").body.built
+        var scrollers: [Node] = []
+
+        func walk(_ node: Node) {
+            let node = node.built
+            if node.type == "ScrollView" { scrollers.append(node) }
+            node.children.forEach(walk)
+        }
+
+        walk(block)
+
+        XCTAssertEqual(scrollers.count, 1)
+        XCTAssertEqual(
+            scrollers.first?.props["orientation"],
+            .enumeration(ScrollOrientation.horizontal.rawValue))
+        XCTAssertEqual(
+            scrollers.first?.props["verticalScrollBarVisibility"],
+            .enumeration(ScrollBarVisibility.never.rawValue))
+        XCTAssertNil(scrollers.first?.props["horizontalScrollBarVisibility"])
+    }
+
     /// A sample with no summary or no code is half-written, and looks finished.
     func testEverySampleSaysWhatItIsAndHowItIsWritten() {
         for group in catalog().groups {

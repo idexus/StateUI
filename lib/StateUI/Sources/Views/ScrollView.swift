@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: ScrollView.
-
 /// ScrollView's own properties - the half a `Style<ScrollView>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
@@ -10,8 +8,7 @@
 public protocol ScrollViewProperties: PropertyContainer {}
 
 extension ScrollViewProperties {
-    /// Which way it scrolls, if not down. MAUI: ScrollView.Orientation, whose
-    /// default is `.vertical`.
+    /// Which way it scrolls, if not down. The default is `.vertical`.
     ///
     /// `.horizontal` is the row of cards; `.both` is the drawing canvas; and
     /// `.neither` is for a scroller with NOTHING to scroll - an emptied list.
@@ -24,37 +21,34 @@ extension ScrollViewProperties {
     }
 
     /// Whether the bar down the side is drawn.
-    /// MAUI: ScrollView.VerticalScrollBarVisibility.
     ///
     /// `.never` is what a scroller inside a page of cards usually wants - the
-    /// bar says the same thing the content already does. MAUI declares this on
-    /// ScrollView and again on ItemsView, which is why an items control
-    /// carries its own.
+    /// bar says the same thing the content already does.
     public func verticalScrollBarVisibility(_ value: ScrollBarVisibility) -> Modified {
         setValue(.verticalScrollBarVisibility, value.propValue)
     }
 
     /// The same, along the bottom.
-    /// MAUI: ScrollView.HorizontalScrollBarVisibility.
     public func horizontalScrollBarVisibility(_ value: ScrollBarVisibility) -> Modified {
         setValue(.horizontalScrollBarVisibility, value.propValue)
     }
 }
 
-/// A scrollable container. MAUI: ScrollView.
+/// A scrollable container.
 ///
 ///     ScrollView {
 ///         VStack { … }
 ///     }
 ///     .verticalScrollBarVisibility(.never)
 ///
-/// MAUI's ScrollView holds a single view in its Content. Several children are
-/// wrapped in a `VStack` by the renderer rather than all but the
-/// first being dropped.
-///
 /// `.padding` is inside the scroller and moves with the content; `.margin` is
 /// outside it and stays put. A ScrollView describes every child it holds,
 /// whether or not any of them can be seen.
+///
+/// When a one-axis scroller is nested in another, it owns gestures along its
+/// axis and passes a dominant gesture on the disabled axis to the enclosing
+/// scroller. A horizontal code listing can therefore live inside a vertical
+/// page without interrupting the page's movement.
 public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// The node this control describes.
     public var node: Node

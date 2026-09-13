@@ -232,20 +232,21 @@ larger renderer surface.
 
 ## Collections
 
-The shared collection surface is semantic, not named after a platform class.
-StateUI owns logical item order, stable identities, changes, and the subtree for
-an identity. The toolkit owns the viewport, cell reuse, input, keyboard
-navigation, and accessibility.
+`ItemsView` is the reserved public name for the shared native collection
+surface. It presents identified items without constraining their arrangement
+to a list or grid. StateUI owns logical item order, stable identities, changes,
+and the subtree for an identity. The toolkit owns the viewport, cell reuse,
+input, keyboard navigation, and accessibility.
 
 The native adapters are expected to use `NSCollectionView` or `NSTableView`,
 `UICollectionView`, Android `RecyclerView`, WinUI `ItemsView`, and GTK 4
 `GtkListView` or `GtkGridView`. The collection payload enters `HostPatch` only
 when those hosts can consume the same complete contract.
 
-Until that payload and its selection, activation, reuse, accessibility, and
-programmatic-scroll semantics are settled, the base contract exposes no
-partial collection control. Richer arrangements remain StateUI compositions
-over the smallest accepted primitives.
+Until that payload and its layout, selection, activation, reuse, accessibility,
+and programmatic-scroll semantics are settled, `ItemsView` remains planned and
+the base contract exposes no partial collection control. Richer arrangements
+remain StateUI compositions over the smallest accepted primitives.
 
 ## Wire encoding
 

@@ -4,17 +4,8 @@ import StateUI
 
 /// The code that produced the example above it.
 ///
-/// Written by hand beside each sample rather than extracted from the file: there
-/// is no source to read on a device, and a snippet says what matters where the
-/// whole file would not. It can drift from the code it describes, which is the
-/// price - keep it short enough that a reader spots the difference.
-///
-/// Coloured with `Label.formattedText`, which is the only way to: a MAUI Label
-/// has ONE TextColor, so six colours are six Spans. `CodeHighlight` says which
-/// run is which colour.
-///
-/// No monospaced font: MAUI would need one shipped as a MauiFont, and the names
-/// differ per platform. Roadmap.
+/// A block scrolls only horizontally. Its page keeps ownership of vertical
+/// scrolling when the pointer is over the listing.
 struct CodeBlock: ContentView {
     private let code: String
 
@@ -68,18 +59,11 @@ struct CodeBlock: ContentView {
             }
 
             Border {
-                // ON LINUX THE SNIPPET IS NOT IN A SCROLLER of its own. A
-                // scroller inside the page's own takes the drag there, so the
-                // wrong one moves under the reader; the lines wrap instead,
-                // which the smaller size below is chosen for.
-                if onLinux {
+                ScrollView {
                     snippet
-                } else {
-                    ScrollView {
-                        snippet
-                    }
-                    .orientation(.horizontal)
                 }
+                .orientation(.horizontal)
+                .verticalScrollBarVisibility(.never)
             }
             .stroke(Palette.outline)
             .strokeThickness(1)
@@ -88,25 +72,8 @@ struct CodeBlock: ContentView {
         .spacing(8)
     }
 
-    /// Whether this is the platform whose pages hold the code themselves.
-    ///
-    /// Answered where the module is COMPILED rather than asked of the host:
-    /// an application's Swift is built once per platform, so the branch above
-    /// is decided there and costs a render nothing.
-    private var onLinux: Bool {
-        #if os(Linux)
-            true
-        #else
-            false
-        #endif
-    }
-
     /// How large the code is drawn, in points.
-    ///
-    /// A quarter smaller where the lines WRAP rather than scroll: a wrapped
-    /// snippet is as tall as it is long, and the smaller size is what keeps a
-    /// listing readable at a glance without a scroller under it.
-    private var size: Double { onLinux ? 10 : 13 }
+    private let size: Double = 13
 
     /// The code itself, coloured run by run.
     ///

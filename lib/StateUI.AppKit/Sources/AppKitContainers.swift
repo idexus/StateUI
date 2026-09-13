@@ -1286,14 +1286,14 @@ final class AppKitGridView: AppKitHitTestView {
 }
 
 /// A native scroll surface whose document geometry and settling rules are
-/// shared by ordinary scrollers, lazy lists and arithmetic scroll readers.
+/// shared by ordinary scrollers and arithmetic scroll readers.
 @MainActor
 final class AppKitScrollView: NSScrollView {
     var onOffsetChanged: ((NSPoint, NSPoint) -> Void)?
     var onSnapItemChanged: ((Int) -> Void)?
     var onScrollStopped: (() -> Void)?
 
-    private(set) var orientation: Int32 = 1
+    private(set) var orientation = ScrollOrientation.vertical
     private(set) var padding = NSEdgeInsets()
     private var verticalBarVisibility: Int32 = 0
     private var horizontalBarVisibility: Int32 = 0
@@ -1381,7 +1381,7 @@ final class AppKitScrollView: NSScrollView {
         momentum: Double,
         snapsAtMost: Int
     ) {
-        let normalizedOrientation: Int32 = (0...3).contains(orientation) ? orientation : 1
+        let normalizedOrientation = ScrollOrientation(rawValue: orientation) ?? .vertical
         if self.orientation != normalizedOrientation
             || self.snapInterval != max(0, CGFloat(snapInterval))
             || self.snapFrom != CGFloat(snapFrom.isFinite ? snapFrom : 0) {
@@ -1398,13 +1398,13 @@ final class AppKitScrollView: NSScrollView {
         documentSurface.padding = padding
         documentSurface.orientation = self.orientation
 
-        let allowsHorizontal = self.orientation == 0 || self.orientation == 2
-        let allowsVertical = self.orientation == 1 || self.orientation == 2
+        let allowsHorizontal = self.orientation == .horizontal || self.orientation == .both
+        let allowsVertical = self.orientation == .vertical || self.orientation == .both
         hasHorizontalScroller = allowsHorizontal && horizontalBarVisibility != 2
         hasVerticalScroller = allowsVertical && verticalBarVisibility != 2
         autohidesScrollers = verticalBarVisibility != 1 && horizontalBarVisibility != 1
 
-        if self.orientation == 3 {
+        if self.orientation == .neither {
             pendingOffset = .zero
         } else if let offset, offset.x.isFinite, offset.y.isFinite {
             pendingOffset = offset
@@ -1442,6 +1442,13 @@ final class AppKitScrollView: NSScrollView {
     }
 
     override func scrollWheel(with event: NSEvent) {
+        if handsWheelToEnclosingScroller(event),
+            let enclosingScroller = enclosingScrollView {
+            discreteWheelMovement = false
+            enclosingScroller.scrollWheel(with: event)
+            return
+        }
+
         guard !event.hasPreciseScrollingDeltas, snapInterval > 0 else {
             discreteWheelMovement = false
             super.scrollWheel(with: event)
@@ -1451,14 +1458,34 @@ final class AppKitScrollView: NSScrollView {
         let horizontal = -event.scrollingDeltaX
         let vertical = -event.scrollingDeltaY
         let delta: CGFloat = switch orientation {
-        case 0: abs(horizontal) > 0.000_001 ? horizontal : vertical
-        case 1: vertical
-        case 2: abs(horizontal) >= abs(vertical) ? horizontal : vertical
-        default: 0
+        case .horizontal: abs(horizontal) > 0.000_001 ? horizontal : vertical
+        case .vertical: vertical
+        case .both: abs(horizontal) >= abs(vertical) ? horizontal : vertical
+        case .neither: 0
         }
 
         if !stepDiscreteWheel(by: delta) {
             super.scrollWheel(with: event)
+        }
+    }
+
+    /// A one-axis viewport owns gestures along that axis. A dominant gesture
+    /// along its disabled axis belongs to the nearest enclosing viewport, so a
+    /// horizontal strip does not interrupt its vertical page.
+    private func handsWheelToEnclosingScroller(_ event: NSEvent) -> Bool {
+        let horizontal = abs(event.scrollingDeltaX)
+        let vertical = abs(event.scrollingDeltaY)
+        guard max(horizontal, vertical) > 0.000_001 else { return false }
+
+        return switch orientation {
+        case .horizontal:
+            !event.modifierFlags.contains(.shift) && vertical > horizontal
+        case .vertical:
+            horizontal > vertical
+        case .both:
+            false
+        case .neither:
+            true
         }
     }
 
@@ -1495,13 +1522,13 @@ final class AppKitScrollView: NSScrollView {
     /// is smaller than half the interval. Precise devices remain entirely in
     /// AppKit's native scrolling path.
     private func stepDiscreteWheel(by direction: CGFloat) -> Bool {
-        guard snapInterval > 0, orientation != 3,
+        guard snapInterval > 0, orientation != .neither,
               direction.isFinite, abs(direction) > 0.000_001 else {
             return false
         }
 
         let current = offset
-        let horizontal = orientation != 1
+        let horizontal = orientation != .vertical
         let standing = horizontal ? current.x : current.y
         let destination = CGFloat(HostScrollMath.steppedGridDestination(
             from: Double(standing),
@@ -1562,7 +1589,7 @@ final class AppKitScrollView: NSScrollView {
 
         let current = offset
         var target = current
-        let horizontal = orientation != 1
+        let horizontal = orientation != .vertical
         let start = horizontal ? movementStart.x : movementStart.y
         let present = horizontal ? current.x : current.y
         var destination = CGFloat(HostScrollMath.projectedDestination(
@@ -1616,7 +1643,7 @@ final class AppKitScrollView: NSScrollView {
 
     private func reportSnapItem(at point: NSPoint) {
         guard snapInterval > 0 else { return }
-        let value = orientation == 1 ? point.y : point.x
+        let value = orientation == .vertical ? point.y : point.x
         let item = HostScrollMath.nearestItem(
             Double(value), interval: Double(snapInterval), from: Double(snapFrom))
         guard item != lastSnapItem else { return }
@@ -1626,10 +1653,10 @@ final class AppKitScrollView: NSScrollView {
 
     private func normalized(_ point: NSPoint) -> NSPoint {
         switch orientation {
-        case 0: return NSPoint(x: point.x, y: 0)
-        case 1: return NSPoint(x: 0, y: point.y)
-        case 2: return point
-        default: return .zero
+        case .horizontal: return NSPoint(x: point.x, y: 0)
+        case .vertical: return NSPoint(x: 0, y: point.y)
+        case .both: return point
+        case .neither: return .zero
         }
     }
 
@@ -1669,7 +1696,7 @@ private final class AppKitScrollDocumentView: NSView {
         didSet { replaceSubviews(with: item.map { [$0.view] } ?? []) }
     }
     var padding = NSEdgeInsets()
-    var orientation: Int32 = 1
+    var orientation = ScrollOrientation.vertical
 
     override var isFlipped: Bool { true }
 
@@ -1678,7 +1705,7 @@ private final class AppKitScrollDocumentView: NSView {
 
         let horizontalInsets = padding.left + padding.right + item.margin.left + item.margin.right
         let verticalInsets = padding.top + padding.bottom + item.margin.top + item.margin.bottom
-        let constrainedWidth: CGFloat? = orientation == 1 || orientation == 3
+        let constrainedWidth: CGFloat? = orientation == .vertical || orientation == .neither
             ? availableWidth.map { max(0, $0 - horizontalInsets) }
             : nil
         let natural = item.fittingSize(width: constrainedWidth)
@@ -1699,17 +1726,17 @@ private final class AppKitScrollDocumentView: NSView {
 
         let horizontalInsets = padding.left + padding.right + item.margin.left + item.margin.right
         let verticalInsets = padding.top + padding.bottom + item.margin.top + item.margin.bottom
-        let constrainedWidth: CGFloat? = orientation == 1 || orientation == 3
+        let constrainedWidth: CGFloat? = orientation == .vertical || orientation == .neither
             ? max(0, viewport.width - horizontalInsets)
             : nil
         let natural = item.fittingSize(width: constrainedWidth)
         let documentWidth: CGFloat = switch orientation {
-        case 0, 2: max(viewport.width, natural.width + horizontalInsets)
-        default: viewport.width
+        case .horizontal, .both: max(viewport.width, natural.width + horizontalInsets)
+        case .vertical, .neither: viewport.width
         }
         let documentHeight: CGFloat = switch orientation {
-        case 1, 2: max(viewport.height, natural.height + verticalInsets)
-        default: viewport.height
+        case .vertical, .both: max(viewport.height, natural.height + verticalInsets)
+        case .horizontal, .neither: viewport.height
         }
         frame = NSRect(origin: .zero, size: NSSize(width: documentWidth, height: documentHeight))
 

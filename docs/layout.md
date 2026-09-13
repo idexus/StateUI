@@ -215,6 +215,12 @@ it to the full content length leaves nothing to scroll. Avoid nesting two
 scrollers in the same direction unless the inner viewport independently owns
 that gesture and size.
 
+Orthogonal nesting has one deterministic gesture rule: a one-axis scroller
+handles movement along its enabled axis and passes a dominant movement on its
+disabled axis to the nearest enclosing scroller. A horizontally overflowing
+code listing inside a vertical page therefore keeps horizontal input while the
+page continues moving under vertical input.
+
 `ScrollView` is eager. It is not a virtualized data collection.
 
 ### ScrollReader

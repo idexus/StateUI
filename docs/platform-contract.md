@@ -93,16 +93,21 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `SwipeItems` / `SwipeItem` | structure | — | — | — | — | — | — |
 | `WebView` | native primitive | — | — | — | — | — | — |
 | `Map` / `Pin` | optional provider | — | — | — | — | — | — |
-| native virtualized collection | native primitive | — | — | — | — | — | — |
+| `ItemsView` (planned) | native primitive | — | — | — | — | — | — |
 | `Content`, `LeadingContent`, `TrailingContent`, `NavigationPageTitleView` | structure | — | — | — | — | — | — |
 | `Setters`, `VisualState`, `Composed` | structure resolved by StateUI | — | — | — | — | — | — |
 
-The AppKit flyout uses `NSSplitViewController`. A future native collection maps
-to `NSCollectionView` or `NSTableView`, `UICollectionView`, `GtkListView` or
-`GtkGridView`, `RecyclerView`, `ItemsView`, and a semantic DOM list/grid. The
-collection API is not admitted until item identity, reuse, selection,
-activation, accessibility, and programmatic scrolling form one complete
-contract.
+The AppKit flyout uses `NSSplitViewController`.
+
+`ItemsView` is the reserved public name for the native virtualized collection.
+It presents identified items without constraining them to a list or grid. Its
+host adapters map to `NSCollectionView` or a strict one-column `NSTableView`,
+`UICollectionView`, `GtkListView` or `GtkGridView`, `RecyclerView`, WinUI
+`ItemsView`, and a semantic DOM list/grid. The control remains planned rather
+than part of the active host vocabulary until stable identity, native reuse,
+list/grid layout, selection, activation, accessibility, and programmatic
+scrolling form one complete contract. A platform receives ✅ only after that
+entire surface works through its native items control.
 
 `ForEach`, `FrameReader`, `ScrollReader`, `PlacedLayout`, and `GalleryView` are
 StateUI compositions or readers rather than additional platform controls. The
@@ -282,6 +287,11 @@ token in parentheses.
 | `Map` / `Pin` | provider properties | `region`, `mapType`, `isScrollEnabled`, `isZoomEnabled`, `isTrafficEnabled`, `isShowingUser`, pin `label`, `address`, `location`, `type` | — | — | — | — | — | — |
 | `Map` / `Pin` | provider handlers | `mapClicked`, `markerClicked`, `infoWindowClicked` | — | — | — | — | — | — |
 | host metadata | structural/adaptive | `content`, `group`, `mode`, `name`, `style`, `isOpaque`, `scrollStep`, `textType`, `visualStateChanged` | — | — | — | — | — | — |
+
+A one-axis `ScrollView` owns input along its enabled axis. When it is nested,
+a dominant input on its disabled axis passes to the nearest enclosing scroller.
+This behavior is part of the shared contract and must be proved before a host's
+`ScrollView` rows receive ✅.
 
 ## Complete host vocabulary
 

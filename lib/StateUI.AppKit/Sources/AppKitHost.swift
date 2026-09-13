@@ -2146,7 +2146,7 @@ final class MountedNode: NSObject {
                 }
                 : nil
             scroll.apply(
-                orientation: enumeration(.orientation) ?? 1,
+                orientation: enumeration(.orientation) ?? ScrollOrientation.vertical.rawValue,
                 padding: insets(.padding),
                 verticalBarVisibility: enumeration(.verticalScrollBarVisibility) ?? 0,
                 horizontalBarVisibility: enumeration(.horizontalScrollBarVisibility) ?? 0,

@@ -14,7 +14,7 @@ final class AppKitScrollViewTests: XCTestCase {
         scroll.setItems([AppKitLayoutItem(
             view: FixedScrollTestView(width: 500, height: 36))])
         scroll.apply(
-            orientation: 0,
+            orientation: ScrollOrientation.horizontal.rawValue,
             padding: NSEdgeInsets(top: 3, left: 5, bottom: 7, right: 11),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 2,
@@ -58,7 +58,7 @@ final class AppKitScrollViewTests: XCTestCase {
         scroll.onOffsetChanged = { changes.append(($0, $1)) }
 
         scroll.apply(
-            orientation: 1,
+            orientation: ScrollOrientation.vertical.rawValue,
             padding: NSEdgeInsets(),
             verticalBarVisibility: 0,
             horizontalBarVisibility: 0,
@@ -88,7 +88,7 @@ final class AppKitScrollViewTests: XCTestCase {
             view: FixedScrollTestView(width: 80, height: 500))])
 
         scroll.apply(
-            orientation: 1,
+            orientation: ScrollOrientation.vertical.rawValue,
             padding: NSEdgeInsets(),
             verticalBarVisibility: 0,
             horizontalBarVisibility: 0,
@@ -106,7 +106,7 @@ final class AppKitScrollViewTests: XCTestCase {
     func testOrientationAndBarVisibilityMapToNativeScrolling() {
         let scroll = AppKitScrollView()
         scroll.apply(
-            orientation: 0,
+            orientation: ScrollOrientation.horizontal.rawValue,
             padding: NSEdgeInsets(top: 2, left: 3, bottom: 4, right: 5),
             verticalBarVisibility: 1,
             horizontalBarVisibility: 2,
@@ -120,7 +120,66 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertFalse(scroll.hasHorizontalScroller)
         XCTAssertFalse(scroll.autohidesScrollers)
         XCTAssertEqual(scroll.padding.left, 3)
-        XCTAssertEqual(scroll.orientation, 0)
+        XCTAssertEqual(scroll.orientation, .horizontal)
+    }
+
+    @MainActor
+    func testHostUsesThePublicScrollOrientationValuesDirectly() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+        var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
+        scroll.properties = [
+            .orientation: .enumeration(ScrollOrientation.horizontal.rawValue),
+        ]
+        renderer.applyForTesting(tree(scroll))
+
+        let native = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
+
+        XCTAssertEqual(native.orientation, .horizontal)
+        XCTAssertTrue(native.hasHorizontalScroller)
+        XCTAssertFalse(native.hasVerticalScroller)
+    }
+
+    @MainActor
+    func testHorizontalScrollerHandsAVerticalWheelToItsEnclosingScroller() throws {
+        let outer = ScrollWheelSpyView()
+        outer.frame = NSRect(x: 0, y: 0, width: 200, height: 120)
+        let page = NSView(frame: NSRect(x: 0, y: 0, width: 200, height: 600))
+        outer.documentView = page
+
+        let inner = AppKitScrollView()
+        inner.frame = NSRect(x: 0, y: 0, width: 200, height: 40)
+        inner.setItems([AppKitLayoutItem(
+            view: FixedScrollTestView(width: 500, height: 36))])
+        inner.apply(
+            orientation: ScrollOrientation.horizontal.rawValue,
+            padding: NSEdgeInsets(),
+            verticalBarVisibility: 2,
+            horizontalBarVisibility: 0,
+            offset: nil,
+            snapInterval: 0,
+            snapFrom: 0,
+            momentum: 1,
+            snapsAtMost: 0)
+        page.addSubview(inner)
+
+        let wheel = try XCTUnwrap(CGEvent(
+            scrollWheelEvent2Source: nil,
+            units: .pixel,
+            wheelCount: 2,
+            wheel1: -24,
+            wheel2: 0,
+            wheel3: 0))
+        let event = try XCTUnwrap(NSEvent(cgEvent: wheel))
+        XCTAssertGreaterThan(abs(event.scrollingDeltaY), abs(event.scrollingDeltaX))
+
+        inner.scrollWheel(with: event)
+
+        XCTAssertEqual(outer.receivedWheelEvents, 1)
     }
 
     @MainActor
@@ -130,7 +189,7 @@ final class AppKitScrollViewTests: XCTestCase {
         scroll.setItems([AppKitLayoutItem(
             view: FixedScrollTestView(width: 1_000, height: 40))])
         scroll.apply(
-            orientation: 0,
+            orientation: ScrollOrientation.horizontal.rawValue,
             padding: NSEdgeInsets(),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 0,
@@ -158,7 +217,7 @@ final class AppKitScrollViewTests: XCTestCase {
         scroll.setItems([AppKitLayoutItem(
             view: FixedScrollTestView(width: 1_000, height: 40))])
         scroll.apply(
-            orientation: 0,
+            orientation: ScrollOrientation.horizontal.rawValue,
             padding: NSEdgeInsets(),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 0,
@@ -245,6 +304,15 @@ private final class FixedScrollTestView: NSView {
     }
 
     override var intrinsicContentSize: NSSize { size }
+}
+
+@MainActor
+private final class ScrollWheelSpyView: NSScrollView {
+    private(set) var receivedWheelEvents = 0
+
+    override func scrollWheel(with event: NSEvent) {
+        receivedWheelEvents += 1
+    }
 }
 
 #endif
