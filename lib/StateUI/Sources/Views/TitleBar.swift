@@ -1,38 +1,32 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: TitleBar.
-
-/// TitleBar's own properties - the half a `Style<TitleBar>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// Properties shared by a `TitleBar` and `Style<TitleBar>`.
 public protocol TitleBarProperties: PropertyContainer {}
 
 extension TitleBarProperties {
-    /// A second line beside the title, drawn dimmer - where a window says which
-    /// document or section it is showing. MAUI: TitleBar.Subtitle.
+    /// Adds a second line that identifies the current document or section.
     public func subtitle(_ value: String) -> Modified {
         setValue(.subtitle, .string(value))
     }
 
-    /// A small image before the title - a file in the app's Resources/Images,
-    /// by the name MAUI gives it once built. MAUI: TitleBar.Icon.
+    /// Places a small image beside the authored title.
     public func icon(_ value: ImageSource) -> Modified {
         setValue(.icon, value.propValue)
     }
 
-    /// The colour the title and subtitle are drawn in. MAUI:
-    /// TitleBar.ForegroundColor - the bar behind them is `.backgroundColor`,
-    /// which every view already has.
+    /// Sets the color of the authored title and subtitle.
+    ///
+    /// Use `backgroundColor(_:)` for the title area's background.
     public func foregroundColor(_ value: Color) -> Modified {
         setValue(.foregroundColor, value.propValue)
     }
 }
 
-/// The window's own strip of chrome, in place of the system title bar -
-/// desktop only. MAUI: TitleBar, set as `Window.TitleBar` - written here into
-/// the window's session:
+/// An authored title area attached to a window through `WindowSession`.
+///
+/// Hosts with native window chrome place this content according to their own
+/// title-area conventions. Hosts without an authored title area may ignore it.
 ///
 ///     struct HomePage: ContentPage {
 ///         @Environment private var window: WindowSession
@@ -49,25 +43,10 @@ extension TitleBarProperties {
 ///         }
 ///     }
 ///
-/// Written once, its slots running as it is written - so what must follow
-/// state stands in a slot as a view of its own: a `ContentView` there is
-/// built where the bar is shown, and reads its state as it builds.
-///
-/// Where it draws at all: `WindowHandler.MapTitleBar` has a body on Mac
-/// Catalyst and Windows and nowhere else, so a phone and a tablet ignore the
-/// whole thing - in MAUI as here. `@Environment var device: DeviceInfo` is how
-/// an application asks which kind of device it is on while the tree is being
-/// built.
-///
-/// Three slots take views: `leadingContent`, `content` and `trailingContent`.
-/// A view in a slot is there to be USED, so the renderer registers each as one
-/// of MAUI's passthrough elements - it takes the click, and the rest of the
-/// bar goes on dragging the window.
-///
-/// Each slot is written the way every other nested content in this library is,
-/// so an `if` and a `ForEach` work inside one and are IDENTIFIED there - which
-/// branch was taken is part of the path the differ matches on, exactly as it is
-/// inside a `VStack`. A slot whose closure produces nothing is EMPTIED:
+/// `leadingContent`, `content`, and `trailingContent` are identified child
+/// subtrees. A composed view inside a slot reads and follows its own state even
+/// when the surrounding `TitleBar` value is written only once. Returning no
+/// child removes the slot:
 ///
 ///     TitleBar("Notes")
 ///         .trailingContent {
@@ -76,9 +55,8 @@ extension TitleBarProperties {
 ///             }
 ///         }
 ///
-/// MAUI's slot holds ONE view, so a closure that produces several fills it with
-/// the first - put a layout in for more, the way a `Border`'s content is
-/// written.
+/// Each slot presents one root view. Put several controls in a layout and use
+/// that layout as the root.
 public struct TitleBar: View, TitleBarProperties {
     /// The node this control describes.
     public var node: Node
@@ -88,16 +66,14 @@ public struct TitleBar: View, TitleBarProperties {
         node = Node(type: .titleBar)
     }
 
-    /// A bar reading `title` - usually the application's name. MAUI:
-    /// TitleBar.Title.
+    /// Creates a title area reading `title`.
     public init(_ title: String) {
         node = Node(type: .titleBar, props: [.title: .string(title)])
     }
 
     // MARK: The slots
 
-    /// A view before the title - a back button, a sidebar toggle.
-    /// MAUI: TitleBar.LeadingContent.
+    /// Places one root view before the title, such as a sidebar toggle.
     ///
     ///     TitleBar("Notes")
     ///         .leadingContent {
@@ -110,8 +86,7 @@ public struct TitleBar: View, TitleBarProperties {
         slot(.leadingContent, content())
     }
 
-    /// A view in the middle of the bar, where an application-wide search box
-    /// goes. MAUI: TitleBar.Content.
+    /// Places one root view in the central title-area position.
     ///
     ///     TitleBar("Notes")
     ///         .content {
@@ -123,31 +98,21 @@ public struct TitleBar: View, TitleBarProperties {
         slot(.content, content())
     }
 
-    /// A view at the far end - an account button, a settings gear.
-    /// MAUI: TitleBar.TrailingContent.
+    /// Places one root view at the far end of the title area.
     ///
     /// A closure producing nothing empties the slot.
     public func trailingContent(@ViewBuilder _ content: () -> [Element]) -> Self {
         slot(.trailingContent, content())
     }
 
-    /// Puts a view into a named slot, replacing what was there. The slot a
-    /// `.contextFlyout` appended stays LAST, the rule every slot-carrying
-    /// list follows.
-    ///
-    /// Nothing to put means NO WRAPPER NODE, which is how the slot is emptied:
-    /// the host reads a slot's leaving as its wrapper's absence from an
-    /// arranged list, and a wrapper that arrived with no children is a PATCH
-    /// about a slot whose view did not change. The two would be one message
-    /// otherwise, and the reading that keeps a patch working is the one that
-    /// leaves a toggled-off button in the chrome.
+    /// Replaces one named slot while keeping structural children last.
     private func slot(_ type: NodeType, _ views: [Element]) -> Self {
         var copy = self
         copy.node.children.removeAll { $0.type == type }
         let slots = copy.node.children.filter { $0.type == .contextFlyout }
         copy.node.children.removeAll { $0.type == .contextFlyout }
 
-        let filled = views.isEmpty ? [] : [Node(type: type, children: views.map { $0.body })]
+        let filled = views.first.map { [Node(type: type, children: [$0.body])] } ?? []
 
         copy.node.children += filled + slots
         return copy

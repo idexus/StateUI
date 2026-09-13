@@ -12,6 +12,8 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertTrue(AppKitTransitionSurface.presents(.padding, on: .contentPage))
         XCTAssertTrue(AppKitTransitionSurface.presents(.renderTransform, on: .line))
         XCTAssertTrue(AppKitTransitionSurface.presents(.x, on: .window))
+        XCTAssertTrue(AppKitTransitionSurface.presents(.backgroundColor, on: .titleBar))
+        XCTAssertTrue(AppKitTransitionSurface.presents(.foregroundColor, on: .titleBar))
 
         XCTAssertFalse(AppKitTransitionSurface.presents(.rotationX, on: .label))
         XCTAssertFalse(AppKitTransitionSurface.presents(.value, on: .stepper))

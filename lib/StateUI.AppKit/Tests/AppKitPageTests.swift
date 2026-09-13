@@ -121,7 +121,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(window.titleVisibility, .hidden)
         XCTAssertEqual(content.frame.height, window.frame.height)
         XCTAssertGreaterThan(content.safeAreaInsets.top, 0)
-        XCTAssertEqual(navigation.frame, content.bounds)
+        XCTAssertEqual(navigation.frame, content.safeAreaRect)
         XCTAssertTrue(navigation.hasSolidBarBackgroundForTesting)
         XCTAssertTrue(navigation.navigationBarIsFrontmostForTesting)
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor(

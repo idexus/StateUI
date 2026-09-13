@@ -222,7 +222,6 @@ host. Their presence in the Swift module is not a support claim:
 | `RefreshView` | one scrollable child; a pull writes `true` before `onRefreshing`; application work clears the two-way refreshing state |
 | `SwipeView` | one content view; directional action collections; reveal or execute behavior; started, changing, and ended reports |
 | `IndicatorView` | display-only count and current position with native indicator appearance |
-| `TitleBar` | window-session chrome with title and leading, central, and trailing interactive slots |
 
 `Map` is provider-owned because credentials, map engines, permissions, and
 feature sets are not one base-platform primitive. The other candidates enter

@@ -317,6 +317,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private(set) var closingFromTree = false
     private var presentedPage: MountedNode?
     private var modals: [AppKitModalWindowController] = []
+    private var titleBarController: AppKitTitleBarController?
     private let content = AppKitWindowContentView()
 
     var pageMenuItems: [NSMenuItem] {
@@ -548,27 +549,53 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private func refreshVisiblePageChrome() {
         guard let node, let window else { return }
         let visible = modals.last?.node.visibleContentPage ?? node.visibleContentPage
-        window.title = node.string(.title) ?? visible?.string(.title) ?? "StateUI"
+        let fallbackTitle = node.string(.title) ?? visible?.string(.title) ?? "StateUI"
+        let authoredTitleBar = node.children.first { $0.type == .titleBar }
+        window.title = authoredTitleBar?.string(.title) ?? fallbackTitle
+        window.subtitle = authoredTitleBar?.string(.subtitle) ?? ""
         let navigation = modals.last?.node.visibleNavigationPage ?? node.visibleNavigationPage
         let barColor = navigation?.showsVisibleNavigationBar == true
             ? navigation?.color(.barBackgroundColor)
             : nil
-        synchronizeTitleBar(window, color: barColor)
+        synchronizeTitleBar(window, node: authoredTitleBar, navigationColor: barColor)
         host?.pageMenusChanged(in: self)
     }
 
-    /// Continues an authored navigation bar through AppKit's title-bar area.
-    /// The content view then extends under the transparent native chrome and
-    /// the navigation view reserves the window's safe-area inset before laying
-    /// out its own controls.
-    private func synchronizeTitleBar(_ window: NSWindow, color: NSColor?) {
-        if let color {
+    /// Applies authored window chrome, or continues a visible navigation bar
+    /// through AppKit's ordinary title area when no `TitleBar` is present.
+    private func synchronizeTitleBar(
+        _ window: NSWindow,
+        node: MountedNode?,
+        navigationColor: NSColor?
+    ) {
+        if let node {
+            let controller = titleBarController ?? AppKitTitleBarController(
+                windowIdentifier: record.windowIdentifier)
+            titleBarController = controller
+            controller.synchronize(node)
+            if window.toolbar !== controller.toolbar { window.toolbar = controller.toolbar }
+
             window.styleMask.insert(.fullSizeContentView)
             window.titlebarAppearsTransparent = true
             window.titleVisibility = .hidden
             window.titlebarSeparatorStyle = .none
-            window.backgroundColor = color
+            window.toolbarStyle = .unifiedCompact
+            window.backgroundColor = node.color(.backgroundColor)
+                ?? navigationColor
+                ?? .windowBackgroundColor
+        } else if let navigationColor {
+            if window.toolbar === titleBarController?.toolbar { window.toolbar = nil }
+            titleBarController = nil
+            window.toolbarStyle = .automatic
+            window.styleMask.insert(.fullSizeContentView)
+            window.titlebarAppearsTransparent = true
+            window.titleVisibility = .hidden
+            window.titlebarSeparatorStyle = .none
+            window.backgroundColor = navigationColor
         } else {
+            if window.toolbar === titleBarController?.toolbar { window.toolbar = nil }
+            titleBarController = nil
+            window.toolbarStyle = .automatic
             window.styleMask.remove(.fullSizeContentView)
             window.titlebarAppearsTransparent = false
             window.titleVisibility = .visible

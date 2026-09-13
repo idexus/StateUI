@@ -382,10 +382,8 @@ final class ControlTests: XCTestCase {
                     .onNavigated { _ in }
                     .onProcessTerminated {}),
 
-            // The window's own chrome, desktop only. Its three slots are
-            // wrapper nodes read by TYPE, the way a page's TitleView is; the
-            // C# check also reads the passthrough registration, which is what
-            // makes the button in a slot press rather than drag the window.
+            // The window's authored title area. Its three slots are structural
+            // children whose root views retain ordinary identity and events.
             ControlCase("TitleBar", source: "TitleBar.swift",
                 TitleBar("StateUI Gallery")
                     .subtitle("Fundamentals")

@@ -58,7 +58,7 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `FlyoutPage` | adaptive shell | ✅ | — | — | — | — | — |
 | `ModalStack` | structure | ✅ | — | — | — | — | — |
 | `Overlay` | structure | ✅ | — | — | — | — | — |
-| `TitleBar` | adaptive shell | — | — | — | — | — | — |
+| `TitleBar` | adaptive shell | ✅ | — | — | — | — | — |
 | `ContextFlyout`, `MenuBarItems`, `MenuBarItem`, `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem` | structure | ✅ | — | — | — | — | — |
 | `ToolbarItems` / `ToolbarItem` | structure | ✅ | — | — | — | — | — |
 | `AbsoluteLayout` | native primitive | ✅ | — | — | — | — | — |
@@ -218,7 +218,7 @@ token in parentheses.
 | `ModalStack` | state/events | bound modal stack (`modalPopped`) | ✅ | — | — | — | — | — |
 | menus / toolbar | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled`, `order`, `priority` | — | — | — | — | — | — |
 | menus / toolbar | handlers | `onClicked` (`clicked`) | ✅ | — | — | — | — | — |
-| `TitleBar` | properties/slots | `title`, `subtitle`, `icon`, `foregroundColor`, leading/content/trailing slots | — | — | — | — | — | — |
+| `TitleBar` | properties/slots | `title`, `subtitle`, `icon`, `foregroundColor`, `backgroundColor`, leading/content/trailing slots | ✅ | — | — | — | — | — |
 | stack layouts | properties | `padding`, `spacing` | ✅ | — | — | — | — | — |
 | `Grid` | properties | `rowDefinitions`, `columnDefinitions`, `rowSpacing`, `columnSpacing`, child `gridRow`, `gridColumn`, `gridRowSpan`, `gridColumnSpan` | — | — | — | — | — | — |
 | `AbsoluteLayout` | properties | child `absoluteLayoutBounds`, `absoluteLayoutFlags` | — | — | — | — | — | — |

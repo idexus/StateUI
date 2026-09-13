@@ -389,6 +389,11 @@ closures are identified child subtrees, so controls in them keep ordinary
 state, events, and identity. Returning no child removes that slot; use a
 layout inside a slot when it contains several controls.
 
+The AppKit host maps one title area to the window's native `NSToolbar`. AppKit
+owns placement, window dragging, and overflow while the slot items retain the
+same StateUI-created native views across updates. Title-area background and
+foreground color transitions run through the StateUI host motion engine.
+
 Set the title bar through the window session. A platform without an authored
 native title area may ignore it; the
 [TitleBar matrix row](platform-contract.md#control-properties-and-handlers)

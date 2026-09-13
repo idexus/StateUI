@@ -133,6 +133,23 @@ final class WindowTests: XCTestCase {
         XCTAssertEqual(bar(showing: false).children.map(\.type), [])
     }
 
+    /// A title-area slot has one semantic root. Authors compose several
+    /// controls in a layout rather than leaving invisible sibling roots in the
+    /// host tree.
+    func testATitleBarSlotKeepsOnlyItsFirstRoot() throws {
+        let bar = TitleBar("StateUI")
+            .trailingContent {
+                Button("Account")
+                Button("Settings")
+            }
+            .body
+            .built
+
+        let slot = try XCTUnwrap(bar.children.first)
+        XCTAssertEqual(slot.children.count, 1)
+        XCTAssertEqual(slot.children.first?.props["text"], .string("Account"))
+    }
+
     /// The other half of that promise is the PATCH: when the slot's `if` flips
     /// off, the wrapper's leaving rides the wire as an arranged children list
     /// that no longer carries it - an absent field means unchanged, so only

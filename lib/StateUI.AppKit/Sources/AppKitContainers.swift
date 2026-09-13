@@ -402,9 +402,11 @@ class AppKitSingleChildView: AppKitHitTestView {
     }
 }
 
-/// The stable native root of one StateUI window. A window overlay is a slot,
-/// not a second page: it is composed above the page and transparent to input
-/// wherever its child has no hit target.
+/// The stable native root of one StateUI window. Pages and overlays occupy
+/// AppKit's safe content rectangle, leaving native title and toolbar areas to
+/// the window. A window overlay is a slot, not a second page: it is composed
+/// above the page and transparent to input wherever its child has no hit
+/// target.
 @MainActor
 final class AppKitWindowContentView: NSView {
     private weak var page: NSView?
@@ -439,8 +441,8 @@ final class AppKitWindowContentView: NSView {
 
     override func layout() {
         super.layout()
-        page?.frame = bounds
-        overlaySurface.frame = bounds
+        page?.frame = safeAreaRect
+        overlaySurface.frame = safeAreaRect
         overlaySurface.layoutSubtreeIfNeeded()
     }
 }
@@ -910,6 +912,8 @@ final class AppKitFlyoutView: AppKitHitTestView {
         splitController.addSplitViewItem(detailItem)
         splitController.splitView.isVertical = true
         splitController.splitView.dividerStyle = .thin
+        splitController.splitView.translatesAutoresizingMaskIntoConstraints = true
+        splitController.splitView.autoresizingMask = [.width, .height]
         splitController.view.translatesAutoresizingMaskIntoConstraints = true
         addSubview(splitController.view)
 
@@ -976,6 +980,14 @@ final class AppKitFlyoutView: AppKitHitTestView {
             forcesSidebarVisible || requestedPresentation,
             reporting: true)
         splitController.view.layoutSubtreeIfNeeded()
+
+        // A detached NSSplitViewController has no parent view controller to
+        // constrain its split view. AppKit otherwise keeps the panes at their
+        // fitting height, allowing a tall document to escape above this host
+        // surface. The native split view owns pane layout within these bounds.
+        splitController.splitView.frame = splitController.view.bounds
+        splitController.splitView.needsLayout = true
+        splitController.splitView.layoutSubtreeIfNeeded()
 
         if !sidebarItem.isCollapsed, splitController.splitView.subviews.count > 1 {
             let width = min(max(260, bounds.width * 0.28), 340)

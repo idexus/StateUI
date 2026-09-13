@@ -1848,8 +1848,8 @@ final class MountedNode: NSObject {
             page.translatesAutoresizingMaskIntoConstraints = true
             return page
 
-        case .modalStack, .navigationPageTitleView, .toolbarItems, .menuBarItems,
-             .contextFlyout,
+        case .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
+             .navigationPageTitleView, .toolbarItems, .menuBarItems, .contextFlyout,
              .menuBarItem, .menuFlyoutItem, .menuFlyoutSubItem,
              .menuFlyoutSeparator, .formattedString, .span:
             return nil
@@ -2588,6 +2588,16 @@ final class MountedNode: NSObject {
     private var presentableViews: [NSView] {
         if let view { return [view] }
         return children.flatMap(\.presentableViews)
+    }
+
+    /// The first native view authored into one structural child slot.
+    func firstView(in slot: NodeType) -> NSView? {
+        self.slot(slot)?.presentableViews.first
+    }
+
+    /// Resolves an image-valued property through the host's resource policy.
+    func image(_ property: Prop) -> NSImage? {
+        string(property).flatMap { image(named: $0) }
     }
 
     private func slot(_ type: NodeType) -> MountedNode? {

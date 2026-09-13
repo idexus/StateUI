@@ -486,18 +486,24 @@ private func elision(in line: String) -> String? {
 
 final class CatalogTests: XCTestCase {
     /// A catalog the way the application makes one, over a test's own boxes.
-    private func catalog(_ nav: Navigation = Place().nav) -> Catalog {
-        Catalog(nav: nav, style: SessionStyle(), bar: TitleBarState(), log: WindowLog())
+    private func catalog(
+        _ nav: Navigation = Place().nav,
+        bar: TitleBarState = TitleBarState()
+    ) -> Catalog {
+        Catalog(nav: nav, style: SessionStyle(), bar: bar, log: WindowLog())
     }
 
     /// The gallery's window over a given place - which is where the arrangement
     /// is declared, so this is what a test asks for a detail page.
-    private func window(_ nav: Navigation) -> MainWindow {
-        MainWindow(catalog: catalog(nav),
+    private func window(
+        _ nav: Navigation,
+        bar: TitleBarState = TitleBarState()
+    ) -> MainWindow {
+        MainWindow(catalog: catalog(nav, bar: bar),
                    nav: nav,
                    style: SessionStyle(),
                    log: WindowLog(),
-                   bar: TitleBarState())
+                   bar: bar)
     }
 
     /// A window as the host is first told about it: registered as an
@@ -941,16 +947,11 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(detail.children.count, 1, "the stack opens on its root alone")
     }
 
-    /// The menu button STANDS in the title bar's leading slot whether it is seen
-    /// or not, and the path decides its opacity alone.
-    ///
-    /// A slot that empties is a slot with nothing to measure, and the strip is
-    /// as tall as what stands in it - so the chrome changed height at every push
-    /// and every pop (measured on Catalyst: 76 points against 84). A view at
-    /// zero opacity is measured like any other, which is what holds it still.
+    /// The menu button remains in the leading slot while the path changes only
+    /// its presentation and input behavior.
     func testTheTitleBarsMenuButtonStandsInItsSlotWhetherItIsSeenOrNot() throws {
         StandardEnvironment.device.idiom = .desktop
-        StandardEnvironment.device.platform = "MacCatalyst"
+        StandardEnvironment.device.platform = "macOS"
 
         defer {
             StandardEnvironment.device.idiom = .unknown
@@ -976,6 +977,29 @@ final class CatalogTests: XCTestCase {
             XCTAssertEqual(prop(button, .inputTransparent), .bool(opacity == 0),
                            "an invisible button that can still be pressed")
         }
+    }
+
+    /// The live window exercises the complete authored title-area value group
+    /// and retains interactive content as identified slot children.
+    func testTheWindowCarriesTheCompleteTitleBarContract() throws {
+        StandardEnvironment.device.idiom = .desktop
+        defer { StandardEnvironment.device.idiom = .unknown }
+
+        let state = TitleBarState()
+        state.subtitle = "Shared"
+        state.showsSurprise = true
+        let shown = firstPatch(window(Place().nav, bar: state))
+        let bar = try XCTUnwrap(shown.children.first { $0.type == "TitleBar" })
+
+        XCTAssertEqual(prop(bar, .title), .string("StateUI"))
+        XCTAssertEqual(prop(bar, .subtitle), .string("Shared"))
+        XCTAssertEqual(prop(bar, .icon), .string("stateui_mark.png"))
+        XCTAssertNotNil(prop(bar, .foregroundColor))
+        XCTAssertNotNil(prop(bar, .backgroundColor))
+        XCTAssertNotNil(bar.children.first { $0.type == "LeadingContent" })
+        let trailing = try XCTUnwrap(
+            bar.children.first { $0.type == "TrailingContent" })
+        XCTAssertEqual(buttons(in: trailing).count, 1)
     }
 
     /// And a SECOND list beside the page: what is presented over all of it,

@@ -78,6 +78,9 @@ enum AppKitTransitionSurface {
         case .tabbedPage:
             return property == .barBackgroundColor
 
+        case .titleBar:
+            return titleBarProperties.contains(property)
+
         case .rectangle:
             return rectangleProperties.contains(property)
 
@@ -166,6 +169,10 @@ enum AppKitTransitionSurface {
 
     private static let navigationProperties: Set<Prop> = [
         .barBackgroundColor, .barTextColor,
+    ]
+
+    private static let titleBarProperties: Set<Prop> = [
+        .backgroundColor, .foregroundColor,
     ]
 
     private static let shapeProperties: Set<Prop> = [
