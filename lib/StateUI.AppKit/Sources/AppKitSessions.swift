@@ -172,6 +172,7 @@ final class AppKitSceneController {
     private(set) var sessionIdentifier: String?
     private var kept: [String: HostValue] = [:]
     private var lastPhase: Event?
+    private var isActive = false
 
     private var restoredMain: AppKitRestoredWindow?
 
@@ -244,6 +245,7 @@ final class AppKitSceneController {
                 windows[windowNode.id] = controller
             }
 
+            controller.setSceneActive(isActive)
             controller.synchronize(windowNode, cascade: cascadeFrom + index)
         }
 
@@ -278,6 +280,7 @@ final class AppKitSceneController {
     var restoredWindowHandler: Int32? { node?.handler(.windowRestored) }
 
     func setActive(_ active: Bool) {
+        isActive = active
         for window in orderedWindows where !window.isMain {
             window.setSceneActive(active)
         }
@@ -323,12 +326,14 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private let nativeContentMaxSize: NSSize
     private let nativeAllowsZoom: Bool
     private let nativeAllowsMinimizing: Bool
+    private var sceneIsActive = false
 
     var pageMenuItems: [NSMenuItem] {
         modals.last?.node.pageMenuItems ?? node?.pageMenuItems ?? []
     }
     var pageMenuItemsForTesting: [NSMenuItem] { pageMenuItems }
     var modalCountForTesting: Int { modals.count }
+    var hiddenBySceneForTesting: Bool { hiddenByScene }
 
     init(
         stateUIID: ElementId,
@@ -499,6 +504,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         window.isExcludedFromWindowsMenu = !isMain
         window.level = node.bool(.floatsOnTop) == true ? .floating : .normal
         window.hidesOnDeactivate = node.bool(.floatsOnTop) == true
+        synchronizeSceneVisibility()
 
         refreshVisiblePageChrome()
 
@@ -515,7 +521,13 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         }
 
         presented = true
-        if presentsWindow { window.makeKeyAndOrderFront(nil) }
+        if presentsWindow {
+            if node.bool(.autoHide) == true, !sceneIsActive {
+                hiddenByScene = true
+            } else {
+                window.makeKeyAndOrderFront(nil)
+            }
+        }
     }
 
     private func extent(_ value: Double?) -> CGFloat? {
@@ -655,13 +667,19 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     }
 
     func setSceneActive(_ active: Bool) {
-        guard node?.bool(.autoHide) == true, let window else { return }
+        sceneIsActive = active
+        synchronizeSceneVisibility()
+    }
 
-        if active, hiddenByScene {
+    private func synchronizeSceneVisibility() {
+        guard let node, let window else { return }
+        let shouldHide = node.bool(.autoHide) == true && !sceneIsActive
+
+        if !shouldHide, hiddenByScene {
             hiddenByScene = false
             if presentsWindow { window.orderFront(nil) }
-            reportWindow(.resumed)
-        } else if !active, !hiddenByScene, window.isVisible {
+            if !stoppedByApplication { reportWindow(.resumed) }
+        } else if shouldHide, !hiddenByScene, window.isVisible {
             hiddenByScene = true
             window.orderOut(nil)
             reportWindow(.stopped)
@@ -677,7 +695,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     func applicationWasUnhidden() {
         guard stoppedByApplication else { return }
         stoppedByApplication = false
-        reportWindow(.resumed)
+        if !hiddenByScene { reportWindow(.resumed) }
     }
 
     func keepSceneValues(_ values: [String: HostValue]) {

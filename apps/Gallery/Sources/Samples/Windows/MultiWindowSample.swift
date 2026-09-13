@@ -19,11 +19,9 @@ struct MultiWindowSample: SampleContent {
 
     static let id = "multi-window"
     static let title = "More than one window"
-    static let summary = "A gallery is a scene: its window, the windows it opens beside it, "
-        + "and another gallery beside that."
+    static let summary = "Open tools, valued windows, and another independent scene."
 
-    /// iPad, Mac and Windows. A phone has one window, and opening another
-    /// there is refused.
+    /// Devices whose host can present independent windows.
     static let idioms: Set<DeviceIdiom> = [.tablet, .desktop]
 
     static let code = """
@@ -191,12 +189,14 @@ struct MultiWindowSample: SampleContent {
                 .cornerRadius(8)
                 .padding(20, 10)
                 .horizontalOptions(.center)
+                .automationId("scene.open")
                 .onClicked { await openAnother() }
 
             Button("Close this gallery")
                 .fontSize(13)
                 .padding(14, 6)
                 .horizontalOptions(.center)
+                .automationId("scene.close")
                 .onClicked { await closeThis() }
         }
         .spacing(12)
@@ -220,6 +220,7 @@ struct MultiWindowSample: SampleContent {
             .textColor(.white)
             .cornerRadius(8)
             .padding(20, 8)
+            .automationId(handle("window.open", caption))
             .onClicked { await open(type, caption) }
     }
 
@@ -228,6 +229,7 @@ struct MultiWindowSample: SampleContent {
         Button(caption)
             .fontSize(13)
             .padding(14, 6)
+            .automationId(handle("window.close", caption))
             .onClicked { await close(type, caption) }
     }
 
@@ -272,6 +274,7 @@ struct MultiWindowSample: SampleContent {
             .textColor(.white)
             .cornerRadius(8)
             .padding(16, 8)
+            .automationId("window.open.swatch.\(number)")
             .onClicked { await openSwatch(number) }
     }
 
@@ -308,64 +311,4 @@ struct MultiWindowSample: SampleContent {
         }
     }
 
-    var notes: Element? {
-        VStack {
-            Label("Each gallery is a scene: a main window, the windows it opens beside it, "
-                + "and the state they share. File ▸ New Window on a Mac opens another gallery, "
-                + "and so does the button above - each with its own place, its own samples "
-                + "and its own look. Close this gallery ends the scene: its window and every "
-                + "window it opened close together, the same as closing its main window. "
-                + "Closing the last gallery closes the application's last window - a Mac "
-                + "keeps the application running, and its Dock icon opens a gallery again.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The Fonts and Colours windows belong to the gallery that opened them - "
-                + "its SceneSession opens and closes them: they change that gallery's "
-                + "preview and bars and no other's, they close with it, and with the switch "
-                + "on they step aside while another gallery is in front. With Keep them on top "
-                + "they float above the gallery's main window instead of going under it "
-                + "when the reader clicks there - and the Window menu and the Dock list the "
-                + "galleries alone, never their tool windows. Each closes itself "
-                + "with Done, through its own WindowSession. Opening one that is open is "
-                + "refused with WindowError.alreadyOpen, which the buttons print; closing "
-                + "one that is not open is WindowError.notOpen.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("A swatch is a window FOR A VALUE: WindowGroup(.swatch, for: Int.self) "
-                + "opens one per number and hands each its number as a binding - Next "
-                + "writes it, and the same window is then about another swatch. Opening a "
-                + "number that is open is refused with WindowError.alreadyOpen, and the "
-                + "system restores each swatch window for the number it was left on.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("What is open is state like any other: the application's scenes are "
-                + "application.scenes and this gallery's windows scene.windows, each a list of "
-                + "sessions, main window first - so the lines above follow every gallery and "
-                + "every window that opens or closes.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("AFTER A RESTART")
-
-            Label("Quit and keep the windows, then open the gallery again: every gallery comes "
-                + "back with the windows it had open, in the font and the colour it was "
-                + "left in - `@State(sceneKey:)` keeps them, one gallery at a time.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("WHERE A SECOND WINDOW EXISTS")
-
-            Label("iPad, Mac Catalyst and Windows. A phone has one window, and opening another "
-                + "there throws WindowError.unsupported. On iOS and Mac Catalyst the app also "
-                + "declares scenes - the full scene manifest in its Info.plist, a "
-                + "SceneDelegate of its own and all four iPad orientations - and a piece "
-                + "left out fails silently.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-        }
-        .spacing(12)
-    }
 }

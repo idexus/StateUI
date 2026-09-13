@@ -243,6 +243,81 @@ final class AppKitSessionTests: XCTestCase {
     }
 
     @MainActor
+    func testOwnedWindowMapsAndClearsItsCompleteNativeMetadataGroup() throws {
+        var reported: [Int32] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { id, _ in reported.append(id) })
+        defer { renderer.closeForTesting() }
+
+        var tool = window("tool", kind: "notes.inspector", eventBase: 300)
+        tool.properties[.windowValue] = .string("selection-7")
+        tool.properties[.autoHide] = .bool(true)
+        tool.properties[.floatsOnTop] = .bool(true)
+        renderer.applyForTesting(tree(
+            scene("1", windows: [window("main"), tool]),
+            scene("2", windows: [window("main")])
+        ))
+
+        let controller = try XCTUnwrap(renderer.windowsForTesting.dropFirst().first)
+        let native = try XCTUnwrap(controller.window)
+
+        XCTAssertFalse(controller.isMain)
+        XCTAssertEqual(controller.restorationRecordForTesting.ownerIdentifier,
+                       renderer.windowsForTesting.first?.restorationRecordForTesting.windowIdentifier)
+        XCTAssertEqual(controller.restorationRecordForTesting.kind, "notes.inspector")
+        XCTAssertEqual(controller.restorationRecordForTesting.value, "selection-7")
+        XCTAssertTrue(native.isExcludedFromWindowsMenu)
+        XCTAssertEqual(native.level, .floating)
+        XCTAssertTrue(native.hidesOnDeactivate)
+
+        reported.removeAll()
+        native.orderFront(nil)
+        controller.setSceneActive(false)
+        XCTAssertTrue(controller.hiddenBySceneForTesting)
+        XCTAssertFalse(native.isVisible)
+        XCTAssertEqual(reported, [303])
+
+        var cleared = HostPatch(id: .manual("tool"), type: .window)
+        cleared.clearedProperties = [.windowValue, .autoHide, .floatsOnTop]
+        renderer.applyForTesting(tree(
+            scene("1", windows: [window("main"), cleared]),
+            scene("2", windows: [window("main")])
+        ))
+
+        XCTAssertEqual(controller.restorationRecordForTesting.kind, "notes.inspector")
+        XCTAssertNil(controller.restorationRecordForTesting.value)
+        XCTAssertFalse(controller.hiddenBySceneForTesting)
+        XCTAssertEqual(native.level, .normal)
+        XCTAssertFalse(native.hidesOnDeactivate)
+        XCTAssertEqual(reported, [303, 304])
+
+        native.orderFront(nil)
+        var hiddenAgain = HostPatch(id: .manual("tool"), type: .window)
+        hiddenAgain.properties[.autoHide] = .bool(true)
+        renderer.applyForTesting(tree(
+            scene("1", windows: [window("main"), hiddenAgain]),
+            scene("2", windows: [window("main")])
+        ))
+
+        XCTAssertTrue(controller.hiddenBySceneForTesting)
+        XCTAssertFalse(native.isVisible)
+        XCTAssertEqual(reported, [303, 304, 303])
+
+        controller.applicationWasHidden()
+        renderer.applyForTesting(tree(
+            scene("1", windows: [window("main"), cleared]),
+            scene("2", windows: [window("main")])
+        ))
+        XCTAssertFalse(controller.hiddenBySceneForTesting)
+        XCTAssertEqual(reported, [303, 304, 303])
+
+        controller.applicationWasUnhidden()
+        XCTAssertEqual(reported, [303, 304, 303, 304])
+    }
+
+    @MainActor
     func testASceneKeySaveUpdatesTheMainWindowsRestorationRecord() throws {
         let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }

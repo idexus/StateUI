@@ -190,15 +190,14 @@ public struct Windows {
 ///
 /// A window of a group belongs to its scene: it closes with the scene, it
 /// may hide while another scene is in front (`autoHide`) or float above the
-/// application's windows (`floatsOnTop`), the Window menu on Mac Catalyst
-/// never lists it - that lists the scenes, by their main windows - and it is
-/// never what *File ▸ New Window* makes, which opens a scene. When the system restores the
-/// application's windows, it comes back to its scene for the same value, which
-/// is why the value is `Codable`: it is written down while the application is
-/// not running.
+/// application's windows (`floatsOnTop`). A host's scene-listing surfaces
+/// enumerate main windows rather than these owned helpers. Opening another
+/// application scene remains a separate operation. When the platform restores
+/// an owned window, it returns to its scene for the same value, which is why
+/// the value is `Codable`.
 ///
-/// **Mac Catalyst, iPad and Windows** open a window for each; a phone has one
-/// window, and a session's `openWindow` there throws `WindowError.unsupported`.
+/// A host without independent native windows refuses `openWindow` with
+/// `WindowError.unsupported`.
 public struct WindowGroup {
     /// The kind of window.
     let type: WindowType
@@ -272,7 +271,7 @@ public struct WindowGroup {
 
     /// Whether the group's windows hide while another scene of the
     /// application is the one in front - and come back when their own is.
-    /// Mac Catalyst's; elsewhere they stay where they are.
+    /// A host without that native policy leaves the windows visible.
     ///
     ///     WindowGroup(.fonts) { FontsWindow() }
     ///         .autoHide(true)
@@ -286,7 +285,7 @@ public struct WindowGroup {
     /// windows - a tool that stays in sight over the main window it serves
     /// rather than going under it as soon as the reader clicks there. They
     /// float while the application is in front and go while another one is.
-    /// Mac Catalyst's; elsewhere they stand where the platform puts them.
+    /// A host without native window levels leaves their order to the platform.
     ///
     ///     WindowGroup(.fonts) { FontsWindow() }
     ///         .floatsOnTop(true)

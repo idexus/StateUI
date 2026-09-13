@@ -112,6 +112,13 @@ allowed to open:
 `WindowType` names are durable application vocabulary. Use stable,
 application-qualified names because restoration records them.
 
+Every owned window carries the same four host metadata values. `windowType`
+is the group's open and restoration identity; `windowValue` is the encoded
+per-value identity when the group has one. `autoHide` and `floatsOnTop` are
+always explicit booleans, so changing either policy updates an existing native
+window without replacing it. The main window carries none of this group
+metadata.
+
 ### Auxiliary-window policy
 
 `autoHide` and `floatsOnTop` describe auxiliary windows, not new scenes:
@@ -133,6 +140,12 @@ Both default to `false` and are independent.
 - Auxiliary windows belong to their scene and close with it. System surfaces
   that enumerate application documents or main windows should enumerate scene
   main windows, not these helpers.
+
+Changing either policy updates windows that are already open. In particular,
+turning `autoHide` off while a window is hidden by its scene makes that window
+visible again. Window lifecycle reports follow effective visibility: overlapping
+scene and application hiding produces one `stopped`, and `resumed` arrives only
+after neither cause keeps the window hidden.
 
 Both policies are adaptive: a host implements them with its native window
 relationships when that platform exposes the capability. A declaration is not
