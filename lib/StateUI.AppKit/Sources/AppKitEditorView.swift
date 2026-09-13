@@ -129,7 +129,7 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
 
         updatePlaceholder()
         applySelection()
-        invalidateIntrinsicContentSize()
+        invalidateMeasurements()
     }
 
     func setText(_ text: String) {
@@ -139,7 +139,7 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
         writing = false
         updatePlaceholder()
         applySelection()
-        invalidateIntrinsicContentSize()
+        invalidateMeasurements()
     }
 
     func textDidChange(_ notification: Notification) {
@@ -154,7 +154,7 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
         }
 
         updatePlaceholder()
-        invalidateIntrinsicContentSize()
+        invalidateMeasurements()
         onTextChanged?(typed)
     }
 

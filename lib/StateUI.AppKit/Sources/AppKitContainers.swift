@@ -15,6 +15,60 @@ protocol AppKitWidthConstrainedMeasuring: AnyObject {
     func fittingContentSize(width: CGFloat?) -> NSSize
 }
 
+/// The sizes one native view measured, by the width its parent offered.
+///
+/// A size is kept until something that can change it happens: the view's own
+/// content or arrangement, or a descendant's. `invalidateMeasurements()` is the
+/// one road by which such a change forgets it, from the changed view up to its
+/// window, so an unchanged subtree beside the change is never measured again.
+@MainActor
+final class AppKitMeasurementCache {
+    private var sizes: [(width: CGFloat?, size: NSSize)] = []
+
+    /// The size measured for `width`, measuring only when none is kept.
+    func size(offering width: CGFloat?, measure: () -> NSSize) -> NSSize {
+        if let kept = sizes.first(where: { $0.width == width }) { return kept.size }
+
+        let measured = measure()
+        if sizes.count == Self.capacity { sizes.removeFirst() }
+        sizes.append((width, measured))
+        return measured
+    }
+
+    /// Forgets every kept size.
+    func invalidate() {
+        sizes.removeAll(keepingCapacity: true)
+    }
+
+    /// A parent offers a view one or two widths in a pass: its natural width
+    /// and the width it then lays the view out in.
+    private static let capacity = 4
+}
+
+/// A StateUI container or text surface that keeps its own measurements.
+@MainActor
+protocol AppKitMeasurementCaching: AnyObject {
+    var measurements: AppKitMeasurementCache { get }
+}
+
+@MainActor
+extension NSView {
+    /// Forgets the measurement of this view and of every ancestor up to the
+    /// window's content view, and asks each of them to lay out again. A change
+    /// that cannot alter a size never calls this, so nothing beside it moves.
+    func invalidateMeasurements() {
+        var current: NSView? = self
+
+        while let view = current {
+            (view as? AppKitMeasurementCaching)?.measurements.invalidate()
+            view.invalidateIntrinsicContentSize()
+            view.needsLayout = true
+            if view === view.window?.contentView { break }
+            current = view.superview
+        }
+    }
+}
+
 /// Layout information owned by the StateUI child rather than its AppKit view.
 @MainActor
 struct AppKitLayoutItem {
@@ -71,6 +125,44 @@ struct AppKitLayoutItem {
             maximum: maximumHeight,
             available: available)
     }
+
+    /// Whether a parent would place this item exactly as it places `other`:
+    /// the same native view with the same layout values.
+    func arranges(like other: AppKitLayoutItem) -> Bool {
+        view === other.view
+            && NSEdgeInsetsEqual(margin, other.margin)
+            && horizontal == other.horizontal
+            && vertical == other.vertical
+            && width == other.width
+            && height == other.height
+            && minimumWidth == other.minimumWidth
+            && minimumHeight == other.minimumHeight
+            && maximumWidth == other.maximumWidth
+            && maximumHeight == other.maximumHeight
+            && row == other.row
+            && column == other.column
+            && rowSpan == other.rowSpan
+            && columnSpan == other.columnSpan
+            && absoluteBounds == other.absoluteBounds
+            && absoluteFlags == other.absoluteFlags
+    }
+
+    /// Whether two complete arrangements place the same views the same way.
+    static func sameArrangement(
+        _ left: [AppKitLayoutItem],
+        _ right: [AppKitLayoutItem]
+    ) -> Bool {
+        left.count == right.count && zip(left, right).allSatisfy { $0.arranges(like: $1) }
+    }
+
+    /// Whether two optional single-child arrangements are the same.
+    static func sameArrangement(_ left: AppKitLayoutItem?, _ right: AppKitLayoutItem?) -> Bool {
+        switch (left, right) {
+        case (nil, nil): true
+        case let (left?, right?): left.arranges(like: right)
+        default: false
+        }
+    }
 }
 
 /// A StateUI-owned AppKit surface with the library's hit-testing semantics.
@@ -108,6 +200,7 @@ final class AppKitAbsoluteLayoutView: AppKitHitTestView {
         didSet { needsLayout = true }
     }
     private var items: [AppKitLayoutItem] = []
+    private var retainedViews: [ObjectIdentifier] = []
     private var drawingOrder: [ObjectIdentifier] = []
 
     override var isFlipped: Bool { true }
@@ -117,6 +210,12 @@ final class AppKitAbsoluteLayoutView: AppKitHitTestView {
         retaining retained: [AppKitLayoutItem] = [],
         preservesSubviewOrder: Bool = false
     ) {
+        let retainedViews = retained.map { ObjectIdentifier($0.view) }
+        guard !AppKitLayoutItem.sameArrangement(self.items, items)
+            || retainedViews != self.retainedViews
+        else { return }
+
+        self.retainedViews = retainedViews
         let all = items + retained
 
         if preservesSubviewOrder {
@@ -134,8 +233,7 @@ final class AppKitAbsoluteLayoutView: AppKitHitTestView {
 
         self.items = items
         drawingOrder = []
-        invalidateIntrinsicContentSize()
-        needsLayout = true
+        invalidateMeasurements()
     }
 
     override var intrinsicContentSize: NSSize {
@@ -230,18 +328,20 @@ final class AppKitAbsoluteLayoutView: AppKitHitTestView {
 
 /// A deterministic frame-based stack shared by horizontal and vertical stacks.
 @MainActor
-final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring {
+final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
+    AppKitMeasurementCaching {
     enum Axis {
         case horizontal
         case vertical
     }
 
     let axis: Axis
+    let measurements = AppKitMeasurementCache()
     var spacing: CGFloat = 0 {
-        didSet { invalidateIntrinsicContentSize(); needsLayout = true }
+        didSet { if spacing != oldValue { invalidateMeasurements() } }
     }
     var padding = NSEdgeInsets() {
-        didSet { invalidateIntrinsicContentSize(); needsLayout = true }
+        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
     }
     private(set) var items: [AppKitLayoutItem] = []
     private(set) var arrangementCountForTesting = 0
@@ -260,10 +360,11 @@ final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring 
 
     func setItems(_ items: [AppKitLayoutItem]) {
         arrangementCountForTesting += 1
+        guard !AppKitLayoutItem.sameArrangement(self.items, items) else { return }
+
         replaceSubviews(with: items.map(\.view))
         self.items = items
-        invalidateIntrinsicContentSize()
-        needsLayout = true
+        invalidateMeasurements()
     }
 
     override var intrinsicContentSize: NSSize {
@@ -271,35 +372,41 @@ final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring 
     }
 
     func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
+        measurements.size(offering: availableWidth) {
+            measuredContentSize(width: availableWidth)
+        }
+    }
+
+    /// Measures each visible child once for the width this stack offers it.
+    private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
         let visible = items.filter { !$0.view.isHidden }
         let gaps = spacing * CGFloat(max(visible.count - 1, 0))
+        var along: CGFloat = 0
+        var across: CGFloat = 0
 
         switch axis {
         case .vertical:
             let childWidth = availableWidth.map {
                 max(0, $0 - padding.left - padding.right)
             }
+            for item in visible {
+                let size = item.fittingSize(width: childWidth)
+                along += size.height + item.margin.top + item.margin.bottom
+                across = max(across, size.width + item.margin.left + item.margin.right)
+            }
             return NSSize(
-                width: padding.left + padding.right
-                    + (visible.map {
-                        $0.fittingSize(width: childWidth).width + $0.margin.left + $0.margin.right
-                    }
-                        .max() ?? 0),
-                height: padding.top + padding.bottom + gaps
-                    + visible.reduce(0) {
-                        $0 + $1.fittingSize(width: childWidth).height
-                            + $1.margin.top + $1.margin.bottom
-                    })
+                width: padding.left + padding.right + across,
+                height: padding.top + padding.bottom + gaps + along)
 
         case .horizontal:
+            for item in visible {
+                let size = item.fittingSize()
+                along += size.width + item.margin.left + item.margin.right
+                across = max(across, size.height + item.margin.top + item.margin.bottom)
+            }
             return NSSize(
-                width: padding.left + padding.right + gaps
-                    + visible.reduce(0) {
-                        $0 + $1.fittingSize().width + $1.margin.left + $1.margin.right
-                    },
-                height: padding.top + padding.bottom
-                    + (visible.map { $0.fittingSize().height + $0.margin.top + $0.margin.bottom }
-                        .max() ?? 0))
+                width: padding.left + padding.right + gaps + along,
+                height: padding.top + padding.bottom + across)
         }
     }
 
@@ -354,19 +461,22 @@ final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring 
 
 /// A one-child native container used by pages and content-bearing controls.
 @MainActor
-class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring {
+class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
+    AppKitMeasurementCaching {
+    let measurements = AppKitMeasurementCache()
     var padding = NSEdgeInsets() {
-        didSet { invalidateIntrinsicContentSize(); needsLayout = true }
+        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
     }
     private(set) var item: AppKitLayoutItem?
 
     override var isFlipped: Bool { true }
 
     func setItem(_ item: AppKitLayoutItem?) {
+        guard !AppKitLayoutItem.sameArrangement(self.item, item) else { return }
+
         replaceSubviews(with: item.map { [$0.view] } ?? [])
         self.item = item
-        invalidateIntrinsicContentSize()
-        needsLayout = true
+        invalidateMeasurements()
     }
 
     override var intrinsicContentSize: NSSize {
@@ -374,6 +484,12 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring 
     }
 
     func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
+        measurements.size(offering: availableWidth) {
+            measuredContentSize(width: availableWidth)
+        }
+    }
+
+    private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
         guard let item, !item.view.isHidden else {
             return NSSize(width: padding.left + padding.right, height: padding.top + padding.bottom)
         }
@@ -1107,7 +1223,7 @@ final class AppKitFlyoutView: AppKitHitTestView {
 }
 
 /// One parsed row or column definition in a StateUI grid.
-struct AppKitGridLength {
+struct AppKitGridLength: Equatable {
     enum Kind {
         case absolute
         case star
@@ -1142,20 +1258,31 @@ struct AppKitGridLength {
 /// AppKit's deterministic implementation of StateUI's row-and-column layout.
 @MainActor
 final class AppKitGridView: AppKitHitTestView {
-    var rows: [AppKitGridLength] = [] { didSet { invalidateIntrinsicContentSize(); needsLayout = true } }
-    var columns: [AppKitGridLength] = [] { didSet { invalidateIntrinsicContentSize(); needsLayout = true } }
-    var rowSpacing: CGFloat = 0 { didSet { invalidateIntrinsicContentSize(); needsLayout = true } }
-    var columnSpacing: CGFloat = 0 { didSet { invalidateIntrinsicContentSize(); needsLayout = true } }
-    var padding = NSEdgeInsets() { didSet { invalidateIntrinsicContentSize(); needsLayout = true } }
+    var rows: [AppKitGridLength] = [] {
+        didSet { if rows != oldValue { invalidateMeasurements() } }
+    }
+    var columns: [AppKitGridLength] = [] {
+        didSet { if columns != oldValue { invalidateMeasurements() } }
+    }
+    var rowSpacing: CGFloat = 0 {
+        didSet { if rowSpacing != oldValue { invalidateMeasurements() } }
+    }
+    var columnSpacing: CGFloat = 0 {
+        didSet { if columnSpacing != oldValue { invalidateMeasurements() } }
+    }
+    var padding = NSEdgeInsets() {
+        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
+    }
     private var items: [AppKitLayoutItem] = []
 
     override var isFlipped: Bool { true }
 
     func setItems(_ items: [AppKitLayoutItem]) {
+        guard !AppKitLayoutItem.sameArrangement(self.items, items) else { return }
+
         replaceSubviews(with: items.map(\.view))
         self.items = items
-        invalidateIntrinsicContentSize()
-        needsLayout = true
+        invalidateMeasurements()
     }
 
     /// Applies a placed layout's shade to its guaranteed second child.
@@ -1406,8 +1533,6 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         } else {
             documentSurface.item = items.first
         }
-        invalidateIntrinsicContentSize()
-        needsLayout = true
     }
 
     func apply(
@@ -1453,8 +1578,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
                 pendingOffset = nil
             }
         }
-        invalidateIntrinsicContentSize()
-        needsLayout = true
+        if pendingOffset != nil { needsLayout = true }
     }
 
     override var intrinsicContentSize: NSSize {
@@ -1731,16 +1855,31 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
 }
 
 @MainActor
-private final class AppKitScrollDocumentView: NSView {
+private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
+    let measurements = AppKitMeasurementCache()
     var item: AppKitLayoutItem? {
-        didSet { replaceSubviews(with: item.map { [$0.view] } ?? []) }
+        didSet {
+            guard !AppKitLayoutItem.sameArrangement(oldValue, item) else { return }
+            replaceSubviews(with: item.map { [$0.view] } ?? [])
+            invalidateMeasurements()
+        }
     }
-    var padding = NSEdgeInsets()
-    var orientation = ScrollOrientation.vertical
+    var padding = NSEdgeInsets() {
+        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
+    }
+    var orientation = ScrollOrientation.vertical {
+        didSet { if orientation != oldValue { invalidateMeasurements() } }
+    }
 
     override var isFlipped: Bool { true }
 
     func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
+        measurements.size(offering: availableWidth) {
+            measuredContentSize(width: availableWidth)
+        }
+    }
+
+    private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
         guard let item else { return .zero }
 
         let horizontalInsets = padding.left + padding.right + item.margin.left + item.margin.right

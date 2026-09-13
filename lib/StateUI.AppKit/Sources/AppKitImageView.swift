@@ -40,7 +40,7 @@ final class AppKitImageView: NSView {
         imageView.animates = animationPlaying
         self.aspect = aspect
 
-        if imageChanged { invalidateIntrinsicContentSize() }
+        if imageChanged { invalidateMeasurements() }
         needsLayout = true
     }
 

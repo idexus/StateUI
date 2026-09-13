@@ -13,8 +13,9 @@ enum AppKitVerticalTextAlignment: Int32, Equatable {
 /// A native read-only text surface with StateUI-owned padding and vertical
 /// placement. AppKit still owns glyph shaping, wrapping and drawing.
 @MainActor
-final class AppKitLabelView: NSView, AppKitWidthConstrainedMeasuring {
+final class AppKitLabelView: NSView, AppKitWidthConstrainedMeasuring, AppKitMeasurementCaching {
     private let textField = NSTextField(labelWithString: "")
+    let measurements = AppKitMeasurementCache()
 
     private(set) var padding = NSEdgeInsets()
     private(set) var horizontalTextAlignment: NSTextAlignment = .left
@@ -26,6 +27,7 @@ final class AppKitLabelView: NSView, AppKitWidthConstrainedMeasuring {
     var stringValue: String { textField.stringValue }
     var textFrame: NSRect { textField.frame }
     var nativeTextSizeForTesting: NSSize { textField.cell?.cellSize ?? .zero }
+    private(set) var nativeMeasurementCountForTesting = 0
 
     override var isFlipped: Bool { true }
 
@@ -56,6 +58,14 @@ final class AppKitLabelView: NSView, AppKitWidthConstrainedMeasuring {
         lineBreakMode: NSLineBreakMode,
         maximumNumberOfLines: Int
     ) {
+        let unchanged = textField.attributedStringValue.isEqual(to: attributedText)
+            && horizontalTextAlignment == horizontalAlignment
+            && verticalTextAlignment == verticalAlignment
+            && self.lineBreakMode == lineBreakMode
+            && self.maximumNumberOfLines == max(0, maximumNumberOfLines)
+            && NSEdgeInsetsEqual(self.padding, padding)
+        guard !unchanged else { return }
+
         textField.attributedStringValue = attributedText
         textField.alignment = horizontalAlignment
         textField.maximumNumberOfLines = max(0, maximumNumberOfLines)
@@ -69,8 +79,7 @@ final class AppKitLabelView: NSView, AppKitWidthConstrainedMeasuring {
         verticalTextAlignment = verticalAlignment
         self.lineBreakMode = lineBreakMode
         self.maximumNumberOfLines = max(0, maximumNumberOfLines)
-        invalidateIntrinsicContentSize()
-        needsLayout = true
+        invalidateMeasurements()
     }
 
     override var intrinsicContentSize: NSSize {
@@ -78,6 +87,11 @@ final class AppKitLabelView: NSView, AppKitWidthConstrainedMeasuring {
     }
 
     func fittingContentSize(width: CGFloat?) -> NSSize {
+        measurements.size(offering: width) { measuredContentSize(width: width) }
+    }
+
+    /// Asks the native cell for the text's size inside `width`.
+    private func measuredContentSize(width: CGFloat?) -> NSSize {
         let horizontalInsets = padding.left + padding.right
         let verticalInsets = padding.top + padding.bottom
         let contentWidth = width.map { max(0, $0 - horizontalInsets) }
@@ -86,6 +100,7 @@ final class AppKitLabelView: NSView, AppKitWidthConstrainedMeasuring {
             y: 0,
             width: contentWidth ?? .greatestFiniteMagnitude,
             height: .greatestFiniteMagnitude)
+        nativeMeasurementCountForTesting += 1
         let measured = textField.cell?.cellSize(forBounds: bounds)
             ?? attributedStringValue.boundingRect(
                 with: bounds.size,

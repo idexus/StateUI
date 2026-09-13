@@ -101,7 +101,7 @@ final class AppKitEntryView: NSView, NSTextFieldDelegate {
 
         applyEditorPreferences()
         applySelection()
-        invalidateIntrinsicContentSize()
+        invalidateMeasurements()
     }
 
     /// Writes text from StateUI without turning that write into a user report.
@@ -117,7 +117,7 @@ final class AppKitEntryView: NSView, NSTextFieldDelegate {
 
         writing = false
         applySelection()
-        invalidateIntrinsicContentSize()
+        invalidateMeasurements()
     }
 
     func controlTextDidBeginEditing(_ notification: Notification) {

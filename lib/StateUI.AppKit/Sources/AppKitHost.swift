@@ -140,6 +140,9 @@ struct AppKitPresentationImpact: OptionSet {
 
     static let content = AppKitPresentationImpact(rawValue: 1 << 0)
     static let windowShell = AppKitPresentationImpact(rawValue: 1 << 1)
+
+    /// The element's own layout item changed, so its parent arranges again.
+    static let arrangement = AppKitPresentationImpact(rawValue: 1 << 2)
 }
 
 @MainActor
@@ -1391,22 +1394,45 @@ final class MountedNode: NSObject {
     func applyPropertyMotion(
         _ propertiesByMount: [UInt64: Set<Prop>]
     ) -> AppKitPresentationImpact {
-        var impact: AppKitPresentationImpact = []
-
-        if let properties = propertiesByMount[mount] {
-            applyProperties(changed: properties)
-            impact.insert(.content)
-            if needsWindowSynchronization(for: properties) {
-                impact.insert(.windowShell)
-            }
-        }
+        let own = propertiesByMount[mount].map { presentFrame($0) } ?? []
+        var descendants: AppKitPresentationImpact = []
 
         for child in children {
-            impact.formUnion(child.applyPropertyMotion(propertiesByMount))
+            descendants.formUnion(child.applyPropertyMotion(propertiesByMount))
         }
 
-        if !impact.isEmpty { arrangeChildren() }
+        return settleFrame(own, descendants: descendants)
+    }
+
+    /// Presents one display frame of this element's own changed properties.
+    private func presentFrame(_ properties: Set<Prop>) -> AppKitPresentationImpact {
+        applyProperties(changed: properties)
+
+        var impact: AppKitPresentationImpact = .content
+        if !properties.isDisjoint(with: Self.arrangedProperties) {
+            impact.insert(.arrangement)
+        }
+        if needsWindowSynchronization(for: properties) {
+            impact.insert(.windowShell)
+        }
         return impact
+    }
+
+    /// Arranges this element once its descendants have their frame, and says
+    /// what the frame asks of its parent.
+    ///
+    /// A child's layout item is its parent's business alone. The ancestors
+    /// above learn of a changed size through the measurements the change
+    /// forgot, so a frame that moves presentation only arranges nothing, and a
+    /// frame that moves a size arranges the one parent that places it.
+    private func settleFrame(
+        _ own: AppKitPresentationImpact,
+        descendants: AppKitPresentationImpact
+    ) -> AppKitPresentationImpact {
+        if own.contains(.content) || descendants.contains(.arrangement) {
+            arrangeChildren()
+        }
+        return own.union(descendants.subtracting(.arrangement))
     }
 
     var pageView: NSView? {
@@ -1615,21 +1641,46 @@ final class MountedNode: NSObject {
             return property
         })
 
-        if !changed.isEmpty {
-            applyProperties(changed: changed)
-        }
+        let own: AppKitPresentationImpact = changed.isEmpty ? [] : presentFrame(changed)
+        var descendants: AppKitPresentationImpact = []
 
-        var impact: AppKitPresentationImpact = changed.isEmpty ? [] : [.content]
-        if needsWindowSynchronization(for: changed) {
-            impact.insert(.windowShell)
-        }
         for child in children {
-            impact.formUnion(child.applyStates(valuesByState))
+            descendants.formUnion(child.applyStates(valuesByState))
         }
 
-        if !impact.isEmpty { arrangeChildren() }
-        return impact
+        return settleFrame(own, descendants: descendants)
     }
+
+    /// Properties a parent reads into its child's layout item. A frame that
+    /// moves one of them makes the parent arrange again; no other frame
+    /// arranges an ancestor.
+    private static let arrangedProperties: Set<Prop> = [
+        .margin, .horizontalOptions, .verticalOptions,
+        .widthRequest, .heightRequest,
+        .minimumWidthRequest, .minimumHeightRequest,
+        .maximumWidthRequest, .maximumHeightRequest,
+        .gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan,
+        .absoluteLayoutBounds, .absoluteLayoutFlags,
+    ]
+
+    /// Properties whose change is drawn without changing any native
+    /// measurement. Applying any other property may change a view's size, so
+    /// it forgets the measurements from that view up to its window.
+    private static let unmeasuredProperties: Set<Prop> = [
+        .opacity, .translationX, .translationY,
+        .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY,
+        .anchorX, .anchorY,
+        .backgroundColor, .background, .color, .textColor, .placeholderColor,
+        .titleColor, .borderColor, .stroke, .fill, .strokeThickness,
+        .strokeDashArray, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
+        .strokeMiterLimit, .strokeShape, .cornerRadius, .renderTransform,
+        .minimumTrackColor, .maximumTrackColor, .thumbColor, .onColor, .offColor,
+        .progressColor, .barBackgroundColor, .barTextColor, .foregroundColor,
+        .drawable, .value, .progress, .scroll, .isToggled, .isChecked, .isEnabled,
+        .inputTransparent, .cascadeInputTransparent,
+        .automationId, .automationIsInAccessibleTree, .automationExcludedWithChildren,
+        .semanticDescription, .semanticHint, .semanticHeadingLevel,
+    ]
 
     /// Only properties whose native presentation lives outside the mounted
     /// content view need the scene/window reconciliation path. Ordinary view
@@ -2095,6 +2146,10 @@ final class MountedNode: NSObject {
 
     private func applyProperties(changed: Set<Prop>) {
         guard let view else { return }
+
+        if !changed.isSubset(of: Self.unmeasuredProperties) {
+            view.invalidateMeasurements()
+        }
 
         view.isHidden = value(.isVisible)?.bool == false
         view.alphaValue = value(.opacity)?.number ?? 1
