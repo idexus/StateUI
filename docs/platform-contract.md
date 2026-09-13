@@ -120,6 +120,94 @@ StateUI compositions or readers rather than additional platform controls. The
 core implements them once; their platform behavior depends only on the
 primitive rows they use.
 
+## Native control mapping
+
+The table names the native class or API that each host adapts for a StateUI
+surface. It records no implementation status; the ✅ tables keep that. Where the
+AppKit host already creates a node, its column names the class it uses.
+`composed by StateUI` marks a surface StateUI derives from other rows,
+`structure` a node that creates no native object, `—` a toolkit without an
+honest native counterpart, and `(?)` a mapping that is not yet confirmed. A host
+may still choose another class that preserves the same contract.
+
+| StateUI surface | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
+| --- | --- | --- | --- | --- | --- | --- |
+| `Application` / `Scene` | `NSApplication` / structure | `UIApplication` / `UIWindowScene` | `GtkApplication` / structure | `Application` / structure | `Application` / structure | `document` / structure |
+| `Window` | `NSWindow` | `UIWindow` | `GtkApplicationWindow` | `Activity` | `Window` | browser `window` |
+| `ContentPage` | custom `NSView` | `UIViewController` | custom `GtkWidget` | custom `ViewGroup` | `Page` | `<section>` |
+| `NavigationPage` | custom `NSView` stack with an `NSVisualEffectView` bar | `UINavigationController` | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` | custom `ViewGroup` stack + `Toolbar` | `Frame` | History API |
+| `TabbedPage` | `NSSegmentedControl` over a custom `NSView` | `UITabBarController` | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` | Material Components `BottomNavigationView` (?) | `NavigationView` with a top pane | ARIA `tablist` |
+| `FlyoutPage` | `NSSplitViewController` | `UISplitViewController` | `GtkPaned`; libadwaita `AdwOverlaySplitView` | AndroidX `DrawerLayout` | `SplitView` | `<aside>` |
+| `ModalStack` | sheet `NSWindow` | `present(_:animated:)` | modal `GtkWindow`; libadwaita `AdwDialog` | full-screen `Dialog` (?) | `ContentDialog` (?) | `<dialog>` with `showModal()` |
+| `Overlay` | pass-through `NSView` above the page | pass-through `UIView` above the page | `GtkOverlay` | top child of a `FrameLayout` | top layer of a root `Grid` | positioned element above the page |
+| `TitleBar` | `NSToolbar` | — | `GtkHeaderBar` | — | `TitleBar` | — |
+| `ContextFlyout`, `MenuBarItems`, `MenuBarItem`, `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction` | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | `PopupMenu` / `MenuItem`; no menu bar | `MenuFlyout` / `MenuBar` | ARIA `menu` / `menubar` (?) |
+| `ToolbarItems` / `ToolbarItem` | inline `NSButton`; `NSPopUpButton` overflow | `UIBarButtonItem` | `GtkButton` in `GtkHeaderBar` | `Toolbar` `MenuItem` | `CommandBar` `AppBarButton` | `<button>` in an ARIA `toolbar` |
+| `AbsoluteLayout` | custom `NSView` | custom `UIView` | `GtkFixed` | custom `ViewGroup` | `Canvas` | `position: absolute` |
+| `VStack` / `HStack` | custom `NSView` | custom `UIView` | `GtkBox` | custom `ViewGroup` | `StackPanel` | flexbox |
+| `Grid` | custom `NSView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
+| `ScrollView` | `NSScrollView` | `UIScrollView` | `GtkScrolledWindow` | `ScrollView` / `HorizontalScrollView` | `ScrollViewer` | `overflow: auto` |
+| `Border` | custom `NSView` drawing `NSBezierPath` | `UIView` + `CAShapeLayer` | custom `GtkWidget` snapshot | `FrameLayout` + `GradientDrawable` | `Border` | `<div>` + CSS `border` |
+| `Label` / `FormattedString` / `Span` | `NSTextField` label; `NSAttributedString` runs | `UILabel`; `NSAttributedString` runs | `GtkLabel`; `PangoAttrList` runs | `TextView`; `SpannableString` spans | `TextBlock`; `Run` inlines | text element; `<span>` runs |
+| `Button` | `NSButton` | `UIButton` | `GtkButton` | `Button` | `Button` | `<button>` |
+| `ImageButton` | `NSButton` with an image | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
+| `Image` | `NSImageView` | `UIImageView` | `GtkPicture` | `ImageView` | `Image` | `<img>` |
+| `BoxView` | custom `NSView` drawing | `UIView` + `CALayer` | custom `GtkWidget` snapshot | `View` + `GradientDrawable` | `Border` | `<div>` |
+| `Entry` | `NSTextField` / `NSSecureTextField` | `UITextField` | `GtkEntry` / `GtkPasswordEntry` | `EditText` | `TextBox` / `PasswordBox` | `<input>` |
+| `Editor` | `NSTextView` in an `NSScrollView` | `UITextView` | `GtkTextView` | multi-line `EditText` | multi-line `TextBox` | `<textarea>` |
+| `SearchBar` | `NSSearchField` | `UISearchBar` | `GtkSearchEntry` | `SearchView` | `AutoSuggestBox` | `<input type=search>` |
+| `Picker` | `NSPopUpButton` | pop-up `UIButton` menu | `GtkDropDown` | `Spinner` | `ComboBox` | `<select>` |
+| `DatePicker` | `NSDatePicker` | `UIDatePicker` | `GtkCalendar` in a `GtkPopover` | `DatePickerDialog` | `CalendarDatePicker` | `<input type=date>` |
+| `TimePicker` | `NSDatePicker` in time mode | `UIDatePicker` in time mode | — | `TimePickerDialog` | `TimePicker` | `<input type=time>` |
+| `Switch` | `NSSwitch` | `UISwitch` | `GtkSwitch` | `Switch` | `ToggleSwitch` | checkbox `<input>` with `role=switch` |
+| `CheckBox` | `NSButton` checkbox | composed by StateUI | `GtkCheckButton` | `CheckBox` | `CheckBox` | `<input type=checkbox>` |
+| `RadioButton` | `NSButton` radio | composed by StateUI | grouped `GtkCheckButton` | `RadioButton` | `RadioButton` | `<input type=radio>` |
+| `Slider` | `NSSlider` | `UISlider` | `GtkScale` | `SeekBar` | `Slider` | `<input type=range>` |
+| `Stepper` | `NSStepper` | `UIStepper` | `GtkSpinButton` | custom `NumberPicker`-based view | `NumberBox` | `<input type=number>` |
+| `ProgressBar` | `NSProgressIndicator` bar | `UIProgressView` | `GtkProgressBar` | horizontal `ProgressBar` | `ProgressBar` | `<progress>` |
+| `ActivityIndicator` | spinning `NSProgressIndicator` | `UIActivityIndicatorView` | `GtkSpinner` | indeterminate `ProgressBar` | `ProgressRing` | indeterminate `<progress>` |
+| `GraphicsView` | custom `NSView` drawing | `UIView` `draw(_:)` | `GtkDrawingArea` | `View` `onDraw(Canvas)` | Win2D `CanvasControl` (?) | `<canvas>` |
+| `Rectangle` / `RoundRectangle` / `Ellipse` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `GskPath` in a snapshot | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | inline SVG |
+| `Line` / `Path` / `Polygon` / `Polyline` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `GskPath` in a snapshot | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | inline SVG |
+| `IndicatorView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
+| `RefreshView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
+| `SwipeView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
+| `SwipeItems` / `SwipeItem` | structure | structure | structure | structure | structure | structure |
+| `WebView` | `WKWebView` | `WKWebView` | WebKitGTK `WebKitWebView` | `WebView` | `WebView2` | `<iframe>` (?) |
+| `Map` / `Pin` | `MKMapView` / `MKAnnotation` | `MKMapView` / `MKAnnotation` | libshumate `ShumateMap` / `ShumateMarker` | Google Play services `MapView` / `Marker` (?) | `MapControl` (?) | — |
+| `ItemsView` (planned) | `NSCollectionView` / `NSTableView` | `UICollectionView` | `GtkListView` / `GtkGridView` | AndroidX `RecyclerView` | `ItemsView` | semantic list or grid |
+| `Content`, `LeadingContent`, `TrailingContent`, `NavigationPageTitleView` | structure | structure | structure | structure | structure | structure |
+| `Setters`, `VisualState`, `Composed` | structure | structure | structure | structure | structure | structure |
+
+### Completeness
+
+Every `NodeType` in `HostContract.controls` appears exactly once in the first
+column: its 67 built-in node types occupy 45 rows, and the planned `ItemsView`
+adds one row without a host token.
+
+These surfaces lack an honest native counterpart on at least one target:
+
+- `NavigationPage`: Android Views and GTK 4 without libadwaita have no page-stack control.
+- `TabbedPage`: Android Views has no framework tab bar; Web has no tab element.
+- `FlyoutPage`: Android Views depends on AndroidX `DrawerLayout`; Web has no native pane.
+- `ModalStack`: Android Views has no modal page presentation; WinUI 3 shows one `ContentDialog` at a time.
+- `TitleBar`: UIKit, Android Views, and Web have no window title bar.
+- Menus: Android Views has no menu bar; Web has no native menu element.
+- `Grid`: AppKit, UIKit, and GTK 4 have no container with star and auto tracks.
+- `CheckBox` and `RadioButton`: UIKit has neither control.
+- `Stepper`: Android Views has no stepper; `NumberPicker` is an integer wheel.
+- `DatePicker`: GTK 4 has `GtkCalendar` but no date field.
+- `TimePicker`: GTK 4 has no time picker.
+- `Switch`: Web has no switch element.
+- `ActivityIndicator`: Web has no spinner; an indeterminate `<progress>` draws a bar.
+- `GraphicsView`: WinUI 3 has no immediate-mode canvas without Win2D.
+- `IndicatorView`: AppKit, Android Views, and Web have no page indicator.
+- `RefreshView`: AppKit, GTK 4, and Web have no pull-to-refresh control.
+- `SwipeView`: AppKit, UIKit, GTK 4, Android Views, and Web have no standalone swipe-action container.
+- `WebView`: GTK 4 depends on WebKitGTK; Web cannot observe navigation or set a user agent in a cross-origin `<iframe>`.
+- `Map` / `Pin`: Web has no map element; GTK 4, Android Views, and WinUI 3 depend on libshumate, Google Play services, and a map service.
+- `ItemsView`: Android Views depends on AndroidX `RecyclerView`; Web has no native virtualized list.
+
 ## Shared state, patch, and motion capabilities
 
 | Capability | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
