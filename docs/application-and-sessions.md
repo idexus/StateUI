@@ -259,8 +259,20 @@ window.isMinimizable = true
 reapply a stale value for another axis. `nil` leaves that axis under native
 window ownership, including reader resizing and platform restoration. Minimum
 and maximum values constrain resizing; equal minimum and maximum values express
-a fixed dimension. Full-screen hosts may retain geometry requests without
-presenting movable or resizable window chrome.
+a fixed dimension. A minimum wins over a smaller maximum on the same axis.
+Clearing a constraint or operation preference restores the native value the
+host found when it adopted the window. Full-screen hosts may retain geometry
+requests without presenting movable or resizable window chrome.
+
+`title` remains the system name of the window even when `titleBar` supplies an
+authored visual title area. Native window menus, restoration surfaces, and
+accessibility continue to identify the window by `title`; the title area's
+own title and interactive slots describe only that visible area.
+
+`isMaximizable` and `isMinimizable` govern the native operations, not merely
+the appearance of one button. A host blocks equivalent native commands while
+the corresponding value is `false`. `nil` preserves the platform's existing
+capability.
 
 The host reports `WindowPhase` through the same session:
 

@@ -49,7 +49,7 @@ final class AppKitTitleBarTests: XCTestCase {
             eventSink: { _, _ in })
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(tree(titleBar()))
+        renderer.applyForTesting(tree(titleBar(), windowTitle: "Workspace"))
 
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let toolbar = try XCTUnwrap(window.toolbar)
@@ -62,8 +62,9 @@ final class AppKitTitleBarTests: XCTestCase {
             blue: 255.0 / 255.0,
             alpha: 1)
 
-        XCTAssertEqual(window.title, "Notes")
+        XCTAssertEqual(window.title, "Workspace")
         XCTAssertEqual(window.subtitle, "Personal")
+        XCTAssertNotNil(labels.first { $0.stringValue == "Notes" })
         XCTAssertEqual(labels.first { $0.stringValue == "Notes" }?.textColor, foreground)
         XCTAssertEqual(labels.first { $0.stringValue == "Personal" }?.textColor, foreground)
         XCTAssertNotNil(icon?.image)
@@ -128,7 +129,7 @@ final class AppKitTitleBarTests: XCTestCase {
 
         XCTAssertTrue(window.toolbar === toolbar)
         XCTAssertTrue(renderer.viewForTesting(id: .manual("title-trailing")) === trailing)
-        XCTAssertEqual(window.title, "Archive")
+        XCTAssertEqual(window.title, "Page")
         XCTAssertEqual(window.subtitle, "Shared")
         assertColor(window.backgroundColor, equals: (0, 0, 0))
 
@@ -231,7 +232,7 @@ final class AppKitTitleBarTests: XCTestCase {
 }
 
 private extension AppKitTitleBarTests {
-    func tree(_ bar: HostPatch?) -> HostPatch {
+    func tree(_ bar: HostPatch?, windowTitle: String? = nil) -> HostPatch {
         var label = HostPatch(id: .manual("page-label"), type: .label)
         label.properties[.text] = .string("Page")
 
@@ -243,6 +244,7 @@ private extension AppKitTitleBarTests {
         if let bar { children.append(bar) }
 
         var window = HostPatch(id: .manual("window"), type: .window)
+        if let windowTitle { window.properties[.title] = .string(windowTitle) }
         window.children = .arranged(children)
 
         var scene = HostPatch(id: .manual("scene"), type: .scene)

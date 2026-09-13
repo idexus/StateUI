@@ -84,6 +84,8 @@ struct MainWindow: Window {
             window.height = 800
             window.minimumWidth = 700
             window.minimumHeight = 500
+            window.maximumWidth = 1600
+            window.maximumHeight = 1200
             window.isMaximizable = true
             window.isMinimizable = true
 

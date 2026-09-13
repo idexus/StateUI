@@ -111,11 +111,21 @@ final class AppKitSessionTests: XCTestCase {
         restored.setFrame(
             NSRect(x: 137, y: 211, width: 733, height: 577),
             display: false)
+        restored.contentMinSize = NSSize(width: 320, height: 240)
+        restored.contentMaxSize = NSSize(width: 1_200, height: 900)
+        restored.standardWindowButton(.zoomButton)?.isEnabled = false
+        restored.styleMask.remove(.miniaturizable)
         let standing = restored.frame
 
         renderer.applyForTesting(tree(scene("1", windows: [window("main")])))
 
         XCTAssertEqual(restored.frame, standing)
+        XCTAssertEqual(restored.contentMinSize, NSSize(width: 320, height: 240))
+        XCTAssertEqual(restored.contentMaxSize, NSSize(width: 1_200, height: 900))
+        XCTAssertFalse(restored.standardWindowButton(.zoomButton)?.isEnabled ?? true)
+        XCTAssertFalse(restored.styleMask.contains(.miniaturizable))
+        XCTAssertFalse(
+            restored.delegate?.windowShouldZoom?(restored, toFrame: restored.frame) ?? true)
     }
 
     @MainActor
@@ -158,6 +168,78 @@ final class AppKitSessionTests: XCTestCase {
 
         XCTAssertEqual(native.frame.minX, x, accuracy: 0.001)
         XCTAssertEqual(native.frame.maxY, screen.visibleFrame.maxY - 73, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testWindowMapsAndClearsItsCompleteNativePropertyGroup() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var authored = window("main")
+        authored.properties.merge([
+            .title: .string("Workspace"),
+            .x: .number(137),
+            .y: .number(73),
+            .width: .number(640),
+            .height: .number(480),
+            .minimumWidth: .number(320),
+            .minimumHeight: .number(240),
+            .maximumWidth: .number(1_200),
+            .maximumHeight: .number(900),
+            .isMaximizable: .bool(false),
+            .isMinimizable: .bool(false),
+        ]) { _, authored in authored }
+        renderer.applyForTesting(tree(scene("1", windows: [authored])))
+
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let native = try XCTUnwrap(controller.window)
+        let screen = try XCTUnwrap(native.screen ?? NSScreen.main)
+        let contentSize = native.contentRect(forFrameRect: native.frame).size
+
+        XCTAssertEqual(native.title, "Workspace")
+        XCTAssertEqual(contentSize.width, 640, accuracy: 0.001)
+        XCTAssertEqual(contentSize.height, 480, accuracy: 0.001)
+        XCTAssertEqual(native.frame.minX, 137, accuracy: 0.001)
+        XCTAssertEqual(native.frame.maxY, screen.visibleFrame.maxY - 73, accuracy: 0.001)
+        XCTAssertEqual(native.contentMinSize, NSSize(width: 320, height: 240))
+        XCTAssertEqual(native.contentMaxSize, NSSize(width: 1_200, height: 900))
+        XCTAssertFalse(try XCTUnwrap(native.standardWindowButton(.zoomButton)).isEnabled)
+        XCTAssertFalse(native.styleMask.contains(.miniaturizable))
+        XCTAssertFalse(
+            native.delegate?.windowShouldZoom?(native, toFrame: native.frame) ?? true)
+
+        let standingFrame = native.frame
+        var cleared = HostPatch(id: .manual("main"), type: .window)
+        cleared.clearedProperties = [
+            .title, .x, .y, .width, .height,
+            .minimumWidth, .minimumHeight, .maximumWidth, .maximumHeight,
+            .isMaximizable, .isMinimizable,
+        ]
+        renderer.applyForTesting(tree(scene("1", windows: [cleared])))
+
+        XCTAssertEqual(native.title, "StateUI")
+        XCTAssertEqual(native.frame, standingFrame)
+        XCTAssertEqual(native.contentMinSize, .zero)
+        let unbounded = CGFloat(Float.greatestFiniteMagnitude)
+        XCTAssertEqual(native.contentMaxSize, NSSize(width: unbounded, height: unbounded))
+        XCTAssertTrue(try XCTUnwrap(native.standardWindowButton(.zoomButton)).isEnabled)
+        XCTAssertTrue(native.styleMask.contains(.miniaturizable))
+        XCTAssertTrue(native.delegate?.windowShouldZoom?(native, toFrame: native.frame) ?? true)
+    }
+
+    @MainActor
+    func testWindowMinimumWinsAContradictoryMaximum() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var authored = window("main")
+        authored.properties[.minimumWidth] = .number(640)
+        authored.properties[.maximumWidth] = .number(320)
+        renderer.applyForTesting(tree(scene("1", windows: [authored])))
+
+        let native = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        XCTAssertEqual(native.contentMinSize.width, 640)
+        XCTAssertEqual(native.contentMaxSize.width, 640)
     }
 
     @MainActor

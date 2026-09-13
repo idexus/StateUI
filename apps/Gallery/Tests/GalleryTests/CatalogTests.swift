@@ -947,6 +947,24 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(detail.children.count, 1, "the stack opens on its root alone")
     }
 
+    /// The gallery's own window exercises the complete native size and
+    /// operation policy while leaving placement to the platform.
+    func testTheMainWindowCarriesItsNativePropertyPolicy() {
+        let shown = firstPatch(window(Place().nav))
+
+        XCTAssertEqual(prop(shown, .title), .string("StateUI Gallery"))
+        XCTAssertEqual(prop(shown, .width), .number(1_100))
+        XCTAssertEqual(prop(shown, .height), .number(800))
+        XCTAssertEqual(prop(shown, .minimumWidth), .number(700))
+        XCTAssertEqual(prop(shown, .minimumHeight), .number(500))
+        XCTAssertEqual(prop(shown, .maximumWidth), .number(1_600))
+        XCTAssertEqual(prop(shown, .maximumHeight), .number(1_200))
+        XCTAssertEqual(prop(shown, .isMaximizable), .bool(true))
+        XCTAssertEqual(prop(shown, .isMinimizable), .bool(true))
+        XCTAssertNil(prop(shown, .x))
+        XCTAssertNil(prop(shown, .y))
+    }
+
     /// The menu button remains in the leading slot while the path changes only
     /// its presentation and input behavior.
     func testTheTitleBarsMenuButtonStandsInItsSlotWhetherItIsSeenOrNot() throws {

@@ -319,6 +319,10 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private var modals: [AppKitModalWindowController] = []
     private var titleBarController: AppKitTitleBarController?
     private let content = AppKitWindowContentView()
+    private let nativeContentMinSize: NSSize
+    private let nativeContentMaxSize: NSSize
+    private let nativeAllowsZoom: Bool
+    private let nativeAllowsMinimizing: Bool
 
     var pageMenuItems: [NSMenuItem] {
         modals.last?.node.pageMenuItems ?? node?.pageMenuItems ?? []
@@ -344,6 +348,10 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         presented = nativeWindow != nil
 
         let window = nativeWindow ?? Self.makeWindow()
+        nativeContentMinSize = window.contentMinSize
+        nativeContentMaxSize = window.contentMaxSize
+        nativeAllowsZoom = window.standardWindowButton(.zoomButton)?.isEnabled ?? true
+        nativeAllowsMinimizing = window.styleMask.contains(.miniaturizable)
         window.isReleasedWhenClosed = false
         super.init(window: window)
 
@@ -467,14 +475,27 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
             nextVisible?.setPagePresented(true, reason: reason)
         }
 
-        window.contentMinSize = NSSize(
-            width: node.number(.minimumWidth) ?? 0,
-            height: node.number(.minimumHeight) ?? 0)
-        window.contentMaxSize = NSSize(
-            width: node.number(.maximumWidth) ?? .greatestFiniteMagnitude,
-            height: node.number(.maximumHeight) ?? .greatestFiniteMagnitude)
-        window.standardWindowButton(.zoomButton)?.isEnabled = node.bool(.isMaximizable) ?? true
-        window.standardWindowButton(.miniaturizeButton)?.isEnabled = node.bool(.isMinimizable) ?? true
+        let minimumWidth = extent(node.number(.minimumWidth)) ?? nativeContentMinSize.width
+        let minimumHeight = extent(node.number(.minimumHeight)) ?? nativeContentMinSize.height
+        let maximumWidth = max(
+            minimumWidth,
+            extent(node.number(.maximumWidth)) ?? nativeContentMaxSize.width)
+        let maximumHeight = max(
+            minimumHeight,
+            extent(node.number(.maximumHeight)) ?? nativeContentMaxSize.height)
+        window.contentMinSize = NSSize(width: minimumWidth, height: minimumHeight)
+        window.contentMaxSize = NSSize(width: maximumWidth, height: maximumHeight)
+
+        let allowsZoom = node.bool(.isMaximizable) ?? nativeAllowsZoom
+        window.standardWindowButton(.zoomButton)?.isEnabled = allowsZoom
+
+        let allowsMinimizing = node.bool(.isMinimizable) ?? nativeAllowsMinimizing
+        if allowsMinimizing {
+            window.styleMask.insert(.miniaturizable)
+        } else {
+            window.styleMask.remove(.miniaturizable)
+        }
+        window.standardWindowButton(.miniaturizeButton)?.isEnabled = allowsMinimizing
         window.isExcludedFromWindowsMenu = !isMain
         window.level = node.bool(.floatsOnTop) == true ? .floating : .normal
         window.hidesOnDeactivate = node.bool(.floatsOnTop) == true
@@ -551,7 +572,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         let visible = modals.last?.node.visibleContentPage ?? node.visibleContentPage
         let fallbackTitle = node.string(.title) ?? visible?.string(.title) ?? "StateUI"
         let authoredTitleBar = node.children.first { $0.type == .titleBar }
-        window.title = authoredTitleBar?.string(.title) ?? fallbackTitle
+        window.title = fallbackTitle
         window.subtitle = authoredTitleBar?.string(.subtitle) ?? ""
         let navigation = modals.last?.node.visibleNavigationPage ?? node.visibleNavigationPage
         let barColor = navigation?.showsVisibleNavigationBar == true
@@ -677,6 +698,10 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
     func windowDidResignKey(_ notification: Notification) {
         host?.windowResignedKey(self)
+    }
+
+    func windowShouldZoom(_ window: NSWindow, toFrame newFrame: NSRect) -> Bool {
+        node?.bool(.isMaximizable) ?? nativeAllowsZoom
     }
 
     func windowWillClose(_ notification: Notification) {

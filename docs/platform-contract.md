@@ -199,7 +199,7 @@ token in parentheses.
 | Surface | Kind | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | `Application` / `Scene` / `Window` | sessions | multiple scenes, owned windows, restoration, focus, close | ✅ | — | — | — | — | — |
-| `Window` | properties | `title`, `x`, `y`, `width`, `height`, `minimumWidth`, `minimumHeight`, `maximumWidth`, `maximumHeight`, `isMaximizable`, `isMinimizable` | — | — | — | — | — | — |
+| `Window` | properties | `title`, `x`, `y`, `width`, `height`, `minimumWidth`, `minimumHeight`, `maximumWidth`, `maximumHeight`, `isMaximizable`, `isMinimizable` | ✅ | — | — | — | — | — |
 | `WindowGroup` / `Window` | session metadata | `windowType`, `windowValue`, `autoHide`, `floatsOnTop` | — | — | — | — | — | — |
 | `Window` | handlers | `created`, `activated`, `deactivated`, `stopped`, `resumed`, `destroying` | ✅ | — | — | — | — | — |
 | `Scene` | handlers | `activated`, `deactivated`, `stopped`, `destroying`, `windowClosed`, `windowRestored` | — | — | — | — | — | — |

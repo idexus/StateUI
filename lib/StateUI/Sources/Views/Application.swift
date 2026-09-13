@@ -69,15 +69,9 @@ public protocol Application {
     /// built - the first time, and again when a state it read changes - so a
     /// scene sees state changes without anything being invalidated by hand.
     ///
-    /// **iPad, Mac Catalyst and Windows** open more than one; a phone shows
-    /// one. On iOS and Mac Catalyst the app has to be set up for SCENES as
-    /// well, and every piece of that fails silently:
-    /// `UIApplicationSupportsMultipleScenes` and the full scene manifest in
-    /// Info.plist, the app's own registered `SceneDelegate :
-    /// MauiUISceneDelegate`, and all four iPad orientations. Miss one and the
-    /// first window opens BLANK or the second is refused, with nothing said
-    /// either way. Windows never asks for one: a second launch there is a
-    /// second PROCESS, and a new session is `application.openScene()`.
+    /// A host maps those sessions onto the independent scene or window
+    /// identities its native application model provides. On a single-window
+    /// device it may refuse another session with `WindowError.unsupported`.
     var scene: any Scene { get }
 }
 
@@ -225,7 +219,7 @@ extension Node {
     }
 }
 
-/// A screenful of interface. MAUI: Page.
+/// A screenful of interface.
 ///
 /// What a window shows, what a navigation stack holds, what a tab is - and it
 /// asks nothing else, which is the whole of this protocol.
@@ -242,7 +236,7 @@ extension Node {
 /// every CONSTRUCTED page would wear without being able to answer it.
 public protocol Page: Element {}
 
-/// A page showing a single view. MAUI: ContentPage.
+/// A page showing a single view.
 ///
 /// What a page SHOWS is its one requirement. What it IS - what it is called,
 /// its buttons, how it is presented, where it stands in its life - is its
@@ -260,8 +254,8 @@ public protocol Page: Element {}
 ///
 /// What `.onCreated` writes is in the message that brings the page, so the
 /// page arrives with its title and its buttons. A page also says what it asks
-/// of the CONTAINER showing it - MAUI's attached properties, written on the
-/// page itself - through the same session:
+/// of the CONTAINER showing it, written on the page itself through the same
+/// session:
 /// `page.navigationPageHasNavigationBar = false`. What the BAR looks like is
 /// not a page's at all: it belongs to the arrangement drawing it - see
 /// `barBackgroundColor` on `NavigationPage` and `TabbedPage`.
@@ -313,7 +307,7 @@ extension ContentPage {
     }
 }
 
-/// Names the application to the host. MAUI: `builder.UseMauiApp<App>()`.
+/// Names the application to the host.
 ///
 /// The one line an app writes outside its own interface, and it goes in the
 /// function the host calls by name at startup:

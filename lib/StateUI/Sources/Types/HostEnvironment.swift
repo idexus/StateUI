@@ -737,16 +737,19 @@ public final class WindowSession {
     @State public var minimumHeight: Double? = nil
 
     /// The maximum width of the window's content area.
+    /// A smaller value than `minimumWidth` is treated as `minimumWidth`.
     @State public var maximumWidth: Double? = nil
 
     /// The maximum height of the window's content area.
+    /// A smaller value than `minimumHeight` is treated as `minimumHeight`.
     @State public var maximumHeight: Double? = nil
 
-    /// Whether the host permits the reader to maximize the window.
-    /// A host may disable or hide the corresponding native affordance.
+    /// Whether the host permits the reader to maximize the window through any
+    /// native affordance for that operation.
     @State public var isMaximizable: Bool? = nil
 
-    /// Whether the host permits the reader to minimize the window.
+    /// Whether the host permits the reader to minimize the window through any
+    /// native affordance for that operation.
     @State public var isMinimizable: Bool? = nil
 
     /// Authored window chrome presented by hosts that support a custom title
