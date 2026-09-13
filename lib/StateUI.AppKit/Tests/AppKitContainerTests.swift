@@ -37,8 +37,8 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertEqual(stack.subviews.count, 2)
         XCTAssertTrue(stack.subviews[0] === first)
         XCTAssertTrue(stack.subviews[1] === second)
-        XCTAssertEqual(first.frame, NSRect(x: 0, y: 0, width: 100, height: 10))
-        XCTAssertEqual(second.frame, NSRect(x: 0, y: 15, width: 100, height: 20))
+        XCTAssertEqual(first.frame, NSRect(x: 35, y: 0, width: 30, height: 10))
+        XCTAssertEqual(second.frame, NSRect(x: 30, y: 15, width: 40, height: 20))
     }
 
     @MainActor
@@ -241,6 +241,37 @@ final class AppKitContainerTests: XCTestCase {
         nativeStack.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(nativeLabel.frame.width, 80)
+    }
+
+    /// An explicit size wins over a filling alignment in every StateUI
+    /// layout: the child keeps its size and stands in the middle of its slot.
+    @MainActor
+    func testAnExplicitSizeWinsOverFillAndStandsInTheMiddleOfItsSlot() throws {
+        let expected: [(NodeType, NSPoint)] = [
+            (.vStack, NSPoint(x: 128, y: 0)),
+            (.hStack, NSPoint(x: 0, y: 40)),
+            (.border, NSPoint(x: 128, y: 40)),
+            (.grid, NSPoint(x: 128, y: 40)),
+            (.scrollView, NSPoint(x: 128, y: 40)),
+        ]
+
+        for (container, origin) in expected {
+            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            defer { renderer.closeForTesting() }
+            var box = HostPatch(id: .manual("box"), type: .boxView)
+            box.properties = [.widthRequest: .number(44), .heightRequest: .number(20)]
+            var layout = HostPatch(id: .manual("layout"), type: container)
+            layout.children = .arranged([box])
+            renderer.applyForTesting(tree(layout))
+
+            let nativeLayout = try XCTUnwrap(renderer.viewForTesting(id: .manual("layout")))
+            let nativeBox = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
+            nativeLayout.frame = NSRect(x: 0, y: 0, width: 300, height: 100)
+            nativeLayout.layoutSubtreeIfNeeded()
+
+            XCTAssertEqual(nativeBox.frame.size, NSSize(width: 44, height: 20), container.name)
+            XCTAssertEqual(nativeBox.frame.origin, origin, container.name)
+        }
     }
 
     @MainActor

@@ -35,6 +35,12 @@ vertical values, or four edges. `horizontalOptions` and `verticalOptions`
 express start, center, end, or fill behavior in the slot assigned by the
 parent.
 
+An explicit size wins over `.fill`: a view with a `widthRequest` keeps that
+width, bounded only by its own minimum and maximum, even in a slot that would
+stretch it. A filling view that stops short of its slot, because of an
+explicit size or a maximum, stands in the middle of the slot. Without either,
+`.fill` takes the whole slot.
+
 `flowDirection` changes semantic leading and trailing direction. `zIndex`
 orders overlapping siblings without changing their layout positions.
 

@@ -439,7 +439,8 @@ final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
                 offset += item.margin.top
                 let width = extent(
                     option: item.horizontal,
-                    requested: item.width ?? natural.width,
+                    explicit: item.width,
+                    natural: natural.width,
                     available: max(0, content.width - item.margin.left - item.margin.right),
                     minimum: item.minimumWidth,
                     maximum: item.maximumWidth)
@@ -456,7 +457,8 @@ final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
                 offset += item.margin.left
                 let height = extent(
                     option: item.vertical,
-                    requested: item.height ?? natural.height,
+                    explicit: item.height,
+                    natural: natural.height,
                     available: max(0, content.height - item.margin.top - item.margin.bottom),
                     minimum: item.minimumHeight,
                     maximum: item.maximumHeight)
@@ -527,13 +529,15 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         let natural = item.fittingSize(width: availableWidth)
         let width = extent(
             option: item.horizontal,
-            requested: item.width ?? natural.width,
+            explicit: item.width,
+            natural: natural.width,
             available: availableWidth,
             minimum: item.minimumWidth,
             maximum: item.maximumWidth)
         let height = extent(
             option: item.vertical,
-            requested: item.height ?? natural.height,
+            explicit: item.height,
+            natural: natural.height,
             available: availableHeight,
             minimum: item.minimumHeight,
             maximum: item.maximumHeight)
@@ -1365,13 +1369,15 @@ final class AppKitGridView: AppKitHitTestView {
             let natural = item.fittingSize(width: availableWidth)
             let width = extent(
                 option: item.horizontal,
-                requested: item.width ?? natural.width,
+                explicit: item.width,
+                natural: natural.width,
                 available: availableWidth,
                 minimum: item.minimumWidth,
                 maximum: item.maximumWidth)
             let height = extent(
                 option: item.vertical,
-                requested: item.height ?? natural.height,
+                explicit: item.height,
+                natural: natural.height,
                 available: availableHeight,
                 minimum: item.minimumHeight,
                 maximum: item.maximumHeight)
@@ -1924,7 +1930,7 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
             ? availableWidth.map { max(0, $0 - horizontalInsets) }
             : nil
         let natural = item.fittingSize(width: constrainedWidth)
-        let contentWidth = item.horizontal == 3
+        let contentWidth = item.horizontal == 3 && item.width == nil
             ? (constrainedWidth ?? natural.width)
             : natural.width
 
@@ -1960,23 +1966,25 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
             y: padding.top + item.margin.top,
             width: max(0, documentWidth - horizontalInsets),
             height: max(0, documentHeight - verticalInsets))
-        let width = item.boundedWidth(
-            item.width ?? (item.horizontal == 3 ? room.width : natural.width),
-            available: room.width)
-        let height = item.boundedHeight(
-            item.height ?? (item.vertical == 3 ? room.height : natural.height),
-            available: room.height)
-        let x: CGFloat = switch item.horizontal {
-        case 1: room.midX - width / 2
-        case 2: room.maxX - width
-        default: room.minX
-        }
-        let y: CGFloat = switch item.vertical {
-        case 1: room.midY - height / 2
-        case 2: room.maxY - height
-        default: room.minY
-        }
-        item.view.frame = NSRect(x: x, y: y, width: max(0, width), height: max(0, height))
+        let width = extent(
+            option: item.horizontal,
+            explicit: item.width,
+            natural: natural.width,
+            available: room.width,
+            minimum: item.minimumWidth,
+            maximum: item.maximumWidth)
+        let height = extent(
+            option: item.vertical,
+            explicit: item.height,
+            natural: natural.height,
+            available: room.height,
+            minimum: item.minimumHeight,
+            maximum: item.maximumHeight)
+        item.view.frame = NSRect(
+            x: position(option: item.horizontal, extent: width, start: room.minX, available: room.width),
+            y: position(option: item.vertical, extent: height, start: room.minY, available: room.height),
+            width: max(0, width),
+            height: max(0, height))
         item.view.needsLayout = true
     }
 }
@@ -2173,23 +2181,30 @@ func appKitBoundedExtent(
     return result
 }
 
+/// A child's extent along one axis of its slot. An explicit size wins over
+/// every alignment and is bounded only by its own minimum and maximum;
+/// without one, a filling child takes the slot and any other its natural size.
 private func extent(
     option: Int32,
-    requested: CGFloat,
+    explicit: CGFloat?,
+    natural: CGFloat,
     available: CGFloat,
     minimum: CGFloat? = nil,
     maximum: CGFloat? = nil
 ) -> CGFloat {
     appKitBoundedExtent(
-        option == 3 ? available : requested,
+        explicit ?? (option == 3 ? available : natural),
         minimum: minimum,
         maximum: maximum,
         available: available)
 }
 
+/// Where a child of the given extent starts in its slot. A filling child
+/// that stops short of the slot - an explicit size, or a maximum - stands in
+/// the middle of it.
 private func position(option: Int32, extent: CGFloat, start: CGFloat, available: CGFloat) -> CGFloat {
     switch option {
-    case 1: return start + max(0, available - extent) / 2
+    case 1, 3: return start + max(0, available - extent) / 2
     case 2: return start + max(0, available - extent)
     default: return start
     }
