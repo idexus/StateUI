@@ -6,6 +6,15 @@ import AppKit
 import QuartzCore
 @_spi(Host) import StateUI
 
+/// Native StateUI containers measure their descendants against the width the
+/// parent actually offers. AppKit's unconstrained `fittingSize` cannot carry
+/// that proposal through frame-based containers, so wrapped native text would
+/// otherwise grow only after its ancestors had already chosen their heights.
+@MainActor
+protocol AppKitWidthConstrainedMeasuring: AnyObject {
+    func fittingContentSize(width: CGFloat?) -> NSSize
+}
+
 /// Layout information owned by the StateUI child rather than its AppKit view.
 @MainActor
 struct AppKitLayoutItem {
@@ -27,15 +36,11 @@ struct AppKitLayoutItem {
     var absoluteFlags: Int32 = 0
 
     func fittingSize(width availableWidth: CGFloat? = nil) -> NSSize {
-        if let scroll = view as? AppKitScrollView {
-            return scroll.fittingContentSize(width: availableWidth)
-        }
-
-        if let label = view as? AppKitLabelView {
+        if let measurable = view as? AppKitWidthConstrainedMeasuring {
             let available = availableWidth.map {
                 max(0, $0 - margin.left - margin.right)
             }
-            let measured = label.fittingContentSize(width: available)
+            let measured = measurable.fittingContentSize(width: available)
             return NSSize(
                 width: boundedWidth(width ?? measured.width),
                 height: boundedHeight(height ?? measured.height))
@@ -225,7 +230,7 @@ final class AppKitAbsoluteLayoutView: AppKitHitTestView {
 
 /// A deterministic frame-based stack shared by horizontal and vertical stacks.
 @MainActor
-final class AppKitStackView: AppKitHitTestView {
+final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring {
     enum Axis {
         case horizontal
         case vertical
@@ -262,18 +267,28 @@ final class AppKitStackView: AppKitHitTestView {
     }
 
     override var intrinsicContentSize: NSSize {
+        fittingContentSize(width: nil)
+    }
+
+    func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
         let visible = items.filter { !$0.view.isHidden }
         let gaps = spacing * CGFloat(max(visible.count - 1, 0))
 
         switch axis {
         case .vertical:
+            let childWidth = availableWidth.map {
+                max(0, $0 - padding.left - padding.right)
+            }
             return NSSize(
                 width: padding.left + padding.right
-                    + (visible.map { $0.fittingSize().width + $0.margin.left + $0.margin.right }
+                    + (visible.map {
+                        $0.fittingSize(width: childWidth).width + $0.margin.left + $0.margin.right
+                    }
                         .max() ?? 0),
                 height: padding.top + padding.bottom + gaps
                     + visible.reduce(0) {
-                        $0 + $1.fittingSize().height + $1.margin.top + $1.margin.bottom
+                        $0 + $1.fittingSize(width: childWidth).height
+                            + $1.margin.top + $1.margin.bottom
                     })
 
         case .horizontal:
@@ -339,7 +354,7 @@ final class AppKitStackView: AppKitHitTestView {
 
 /// A one-child native container used by pages and content-bearing controls.
 @MainActor
-class AppKitSingleChildView: AppKitHitTestView {
+class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring {
     var padding = NSEdgeInsets() {
         didSet { invalidateIntrinsicContentSize(); needsLayout = true }
     }
@@ -355,11 +370,18 @@ class AppKitSingleChildView: AppKitHitTestView {
     }
 
     override var intrinsicContentSize: NSSize {
+        fittingContentSize(width: nil)
+    }
+
+    func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
         guard let item, !item.view.isHidden else {
             return NSSize(width: padding.left + padding.right, height: padding.top + padding.bottom)
         }
 
-        let size = item.fittingSize()
+        let contentWidth = availableWidth.map {
+            max(0, $0 - padding.left - padding.right)
+        }
+        let size = item.fittingSize(width: contentWidth)
         return NSSize(
             width: padding.left + padding.right + item.margin.left + item.margin.right + size.width,
             height: padding.top + padding.bottom + item.margin.top + item.margin.bottom + size.height)
@@ -1288,7 +1310,7 @@ final class AppKitGridView: AppKitHitTestView {
 /// A native scroll surface whose document geometry and settling rules are
 /// shared by ordinary scrollers and arithmetic scroll readers.
 @MainActor
-final class AppKitScrollView: NSScrollView {
+final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     var onOffsetChanged: ((NSPoint, NSPoint) -> Void)?
     var onSnapItemChanged: ((Int) -> Void)?
     var onScrollStopped: (() -> Void)?

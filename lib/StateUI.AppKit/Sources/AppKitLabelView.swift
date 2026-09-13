@@ -13,7 +13,7 @@ enum AppKitVerticalTextAlignment: Int32, Equatable {
 /// A native read-only text surface with StateUI-owned padding and vertical
 /// placement. AppKit still owns glyph shaping, wrapping and drawing.
 @MainActor
-final class AppKitLabelView: NSView {
+final class AppKitLabelView: NSView, AppKitWidthConstrainedMeasuring {
     private let textField = NSTextField(labelWithString: "")
 
     private(set) var padding = NSEdgeInsets()

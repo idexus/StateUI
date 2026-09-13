@@ -171,6 +171,11 @@ On a native display frame the host:
 4. publishes the complete value and changed-lane mask for every changed state;
 5. requests another display frame only while motion or an engine continues.
 
+All journey values emitted by one clock tick are applied in one post-order tree
+walk, so a shared ancestor is rearranged once for that frame. A native host
+updates ordinary content views in place; it reconciles scene and window chrome
+only when the changed property is presented by that outer shell.
+
 Native input is committed to the matching channel before its event handler is
 dispatched. Program writes never dispatch user events. Motion completion lands
 on the exact destination once, and an interrupted awaited journey answers that

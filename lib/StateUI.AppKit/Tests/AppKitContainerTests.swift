@@ -87,6 +87,72 @@ final class AppKitContainerTests: XCTestCase {
     }
 
     @MainActor
+    func testAWidthConstrainedNestedStackKeepsWrappedTextInsideItsBorder() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var label = HostPatch(id: .manual("label"), type: .label)
+        label.properties = [
+            .text: .string(String(repeating: "A line that must wrap inside its card. ", count: 8)),
+            .fontSize: .number(13),
+        ]
+        var innerStack = HostPatch(id: .manual("inner"), type: .vStack)
+        innerStack.properties[.padding] = .numbers([16, 16, 16, 16])
+        innerStack.children = .arranged([label])
+        var border = HostPatch(id: .manual("border"), type: .border)
+        border.children = .arranged([innerStack])
+        var outerStack = HostPatch(id: .manual("outer"), type: .vStack)
+        outerStack.children = .arranged([border])
+        var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
+        scroll.properties[.orientation] = .enumeration(ScrollOrientation.vertical.rawValue)
+        scroll.children = .arranged([outerStack])
+        renderer.applyForTesting(scroll)
+
+        let nativeScroll = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
+        let nativeBorder = try XCTUnwrap(renderer.viewForTesting(id: .manual("border")))
+        let nativeLabel = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
+        nativeScroll.frame = NSRect(x: 0, y: 0, width: 300, height: 120)
+        nativeScroll.layoutSubtreeIfNeeded()
+
+        let labelFrame = nativeBorder.convert(nativeLabel.bounds, from: nativeLabel)
+        XCTAssertLessThanOrEqual(labelFrame.maxY, nativeBorder.bounds.maxY + 0.001)
+    }
+
+    @MainActor
+    func testAHostDrivenChildHeightRefreshesItsAncestorLayoutItem() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        let binding = HostStateBinding(state: 71, mode: .inOut, kind: .property)
+
+        var border = HostPatch(id: .manual("border"), type: .border)
+        border.properties[.heightRequest] = .number(90)
+        border.driven = .replace([.heightRequest: binding])
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([border])
+        renderer.applyForTesting(stack)
+
+        let nativeStack = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("stack")) as? AppKitStackView)
+        let nativeBorder = try XCTUnwrap(renderer.viewForTesting(id: .manual("border")))
+        nativeStack.frame = NSRect(x: 0, y: 0, width: 300, height: 300)
+        nativeStack.layoutSubtreeIfNeeded()
+        XCTAssertEqual(nativeBorder.frame.height, 90, accuracy: 0.001)
+
+        let arrived = HostJourney(
+            value: [160],
+            destination: [160],
+            velocity: [0],
+            motion: .none,
+            completion: nil,
+            stopped: 0)
+        renderer.applyStateForTesting(71, value: StateUIHost.value(of: arrived))
+        nativeStack.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(nativeBorder.frame.height, 160, accuracy: 0.001)
+    }
+
+    @MainActor
     func testACompleteChildReplacementRemovesTheOldNativeView() {
         let first = NSView()
         let second = NSView()

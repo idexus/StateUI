@@ -140,30 +140,13 @@ struct MotionSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Press a button and watch the panels. The top one TRAVELS "
-                + "to its new width, height, corner and colour; the second is "
-                + "simply there. Neither of them says a word about animation - the "
-                + "example writes `wide.toggle()` and nothing else.")
+            Label("Press Size or Colour. The first panel travels, the second "
+                + "arrives immediately, and the third holds only its size still.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("The third button cycles the LAW the top panel travels under. "
-                + "A length is a movement that takes as long as it is told; a "
-                + "spring answers as fast as its response says and settles when "
-                + "it is done; none is a value that simply arrives. `.motion` is "
-                + "written on a view, `application.motion` sets a whole app, and "
-                + "`$state.journey.snap(to:)` holds one write still.")
-                .fontSize(13)
-                .textColor(Palette.subtle)
-
-            Label("The THIRD panel says `.motion(.none, .size)` under its law: "
-                + "a motion can name WHICH values it is about, and the last "
-                + "rule that names one answers for it. Press Size and watch it "
-                + "take its new width, height and corner at once, while Colour "
-                + "still crosses it exactly like the first panel. The names "
-                + "are groups - opacity, colour, size, width, height, place, "
-                + "transform, spacing, text - and each one says which MAUI "
-                + "properties it covers.")
+            Label("Change the law to compare eased, spring, slow and immediate "
+                + "motion. StateUI sends destinations; the host supplies the frames.")
                 .fontSize(13)
                 .textColor(Palette.subtle)
         }

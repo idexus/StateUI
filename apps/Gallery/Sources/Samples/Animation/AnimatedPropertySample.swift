@@ -146,39 +146,13 @@ struct AnimatedPropertySample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Five values, five DRIVEN states, and no render carries any of them. "
-                + "Writing a property from a driven state - `.backgroundColor($panelColor)` "
-                + "- registers it once and nothing mentions it again: "
-                + "`$panelColor.journey.move(to: …)` sends the state and the host reads the "
-                + "property off it every frame, while `$panelColor.journey.value = …` "
-                + "snaps it.")
+            Label("Each button moves a bound property on host frames. The build "
+                + "counter stays still while colour, size, padding and text move.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The state holds both readings at once. On the line after Size starts, "
-                + "`panelHeight` reads 160 while `$panelHeight.journey.value` is still "
-                + "passing through 120 - where it is GOING and where it HAS GOT TO, in "
-                + "one place. Nothing has to be put back, either: Padding goes out to 48 "
-                + "and home to 16 because both are places the padding is meant to be.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("THE COLOURS HERE ARE SINGLE ONES, not `Color(light:dark:)`. A driven "
-                + "colour is written by the host on its own frames, and only a render "
-                + "resolves a theme - so a themed colour driven this way would wear its "
-                + "light half whatever the screen is. A colour that has to follow the "
-                + "theme is described instead, the way the page around this one is.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("There is no handle here and no property name to spell. What can be "
-                + "moved is what has a modifier taking a driven state - background "
-                + "colour, padding, height, font size, text colour among them - and the "
-                + "state's TYPE says what a target may be: `$panelColor` carries a "
-                + "`Color` and takes a colour, `$captionSize` a number. A property with "
-                + "no driven form has no such modifier, so it is the compiler that says "
-                + "so and not at run time. A movement also starts from wherever the "
-                + "value stands, which is why the height is 90 from the first frame.")
+            Label("Size moves the panel between 90 and 160 points. Back restores "
+                + "the values that remain after their journeys.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

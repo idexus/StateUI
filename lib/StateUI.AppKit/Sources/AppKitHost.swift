@@ -135,6 +135,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 /// The unchecked promise is narrow: every mutation and every AppKit call is in
 /// a `@MainActor` method. The only cross-thread capture posts `pump()` onto the
 /// main queue after the blocking doorbell returns.
+struct AppKitPresentationImpact: OptionSet {
+    let rawValue: UInt8
+
+    static let content = AppKitPresentationImpact(rawValue: 1 << 0)
+    static let windowShell = AppKitPresentationImpact(rawValue: 1 << 1)
+}
+
 @MainActor
 final class AppKitRenderer: @unchecked Sendable {
     private struct QueuedEvent {
@@ -175,6 +182,7 @@ final class AppKitRenderer: @unchecked Sendable {
     private var offeredRestorations = Set<String>()
     private var abandonmentScheduled = false
     private var pageMenuInsertions: [(menu: NSMenu, item: NSMenuItem)] = []
+    private(set) var windowSynchronizationCountForTesting = 0
 
     init(
         resourceDirectory: URL?,
@@ -479,6 +487,7 @@ final class AppKitRenderer: @unchecked Sendable {
 
     private func synchronizeWindows() {
         guard let root, root.type == .application else { return }
+        windowSynchronizationCountForTesting += 1
 
         synchronizingWindows = true
         defer { synchronizingWindows = false }
@@ -877,6 +886,18 @@ final class AppKitRenderer: @unchecked Sendable {
         refreshDisplayLink()
     }
 
+    func applyStateForTesting(_ state: Int32, value: HostStateValue) {
+        let impact = root?.applyState(state, value: value) ?? []
+        if impact.contains(.windowShell) { synchronizeWindows() }
+    }
+
+    func applyStatesForTesting(_ valuesByState: [Int32: HostStateValue]) {
+        let impact = valuesByState.isEmpty
+            ? []
+            : (root?.applyStates(valuesByState) ?? [])
+        if impact.contains(.windowShell) { synchronizeWindows() }
+    }
+
     func closeForTesting() {
         for scene in orderedScenes.reversed() { scene.closeFromTree() }
         scenes.removeAll()
@@ -987,9 +1008,12 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     private func applyMotionOutputs() {
-        for output in motion.takeOutputs() {
+        let outputs = motion.takeOutputs()
+        var valuesByState: [Int32: HostStateValue] = [:]
+
+        for output in outputs {
             let carried = StateUIHost.value(of: output.journey)
-            root?.applyState(output.state, value: carried)
+            valuesByState[output.state] = carried
 
             if let report = output.report {
                 _ = StateUIHost.report(
@@ -998,6 +1022,11 @@ final class AppKitRenderer: @unchecked Sendable {
                     through: output.binding)
             }
         }
+
+        let impact: AppKitPresentationImpact = valuesByState.isEmpty
+            ? []
+            : (root?.applyStates(valuesByState) ?? [])
+        if impact.contains(.windowShell) { synchronizeWindows() }
 
         for completion in motion.takeCompletions() {
             _ = StateUIHost.complete(completion.id, succeeded: completion.succeeded)
@@ -1011,7 +1040,8 @@ final class AppKitRenderer: @unchecked Sendable {
         }
 
         guard !propertiesByMount.isEmpty else { return }
-        if root?.applyPropertyMotion(propertiesByMount) == true {
+        let impact = root?.applyPropertyMotion(propertiesByMount) ?? []
+        if impact.contains(.windowShell) {
             synchronizeWindows()
         }
     }
@@ -1055,7 +1085,14 @@ final class MountedNode: NSObject {
     private var recycles = false
     private var shape: UInt64 = 0
     private var created = false
-    private var sizeConstraints: [NSLayoutConstraint] = []
+    private var widthConstraint: NSLayoutConstraint?
+    private var heightConstraint: NSLayoutConstraint?
+    private var minimumWidthConstraint: NSLayoutConstraint?
+    private var minimumHeightConstraint: NSLayoutConstraint?
+    private var maximumWidthConstraint: NSLayoutConstraint?
+    private var maximumHeightConstraint: NSLayoutConstraint?
+    private var buttonWidthConstraint: NSLayoutConstraint?
+    private var buttonHeightConstraint: NSLayoutConstraint?
     private var observesFrame = false
     private var frameObservedViews: [NSView] = []
     private var frameQueued = false
@@ -1351,20 +1388,25 @@ final class MountedNode: NSObject {
     }
 
     @discardableResult
-    func applyPropertyMotion(_ propertiesByMount: [UInt64: Set<Prop>]) -> Bool {
-        var changed = false
+    func applyPropertyMotion(
+        _ propertiesByMount: [UInt64: Set<Prop>]
+    ) -> AppKitPresentationImpact {
+        var impact: AppKitPresentationImpact = []
 
         if let properties = propertiesByMount[mount] {
             applyProperties(changed: properties)
-            changed = true
+            impact.insert(.content)
+            if needsWindowSynchronization(for: properties) {
+                impact.insert(.windowShell)
+            }
         }
 
-        for child in children where child.applyPropertyMotion(propertiesByMount) {
-            changed = true
+        for child in children {
+            impact.formUnion(child.applyPropertyMotion(propertiesByMount))
         }
 
-        if changed { arrangeChildren() }
-        return changed
+        if !impact.isEmpty { arrangeChildren() }
+        return impact
     }
 
     var pageView: NSView? {
@@ -1557,21 +1599,46 @@ final class MountedNode: NSObject {
         events[event]
     }
 
-    func applyState(_ state: Int32, value: HostStateValue) {
+    @discardableResult
+    func applyState(_ state: Int32, value: HostStateValue) -> AppKitPresentationImpact {
+        applyStates([state: value])
+    }
+
+    @discardableResult
+    func applyStates(
+        _ valuesByState: [Int32: HostStateValue]
+    ) -> AppKitPresentationImpact {
         let changed = Set<Prop>(driven.compactMap { property, binding in
-            guard binding.state == state, binding.mode != .in else { return nil }
+            guard binding.mode != .in, let value = valuesByState[binding.state] else {
+                return nil
+            }
             drivenValues[property] = value
             return property
         })
 
         if !changed.isEmpty {
             applyProperties(changed: changed)
-            arrangeChildren()
         }
 
-        for child in children {
-            child.applyState(state, value: value)
+        var impact: AppKitPresentationImpact = changed.isEmpty ? [] : [.content]
+        if needsWindowSynchronization(for: changed) {
+            impact.insert(.windowShell)
         }
+        for child in children {
+            impact.formUnion(child.applyStates(valuesByState))
+        }
+
+        if !impact.isEmpty { arrangeChildren() }
+        return impact
+    }
+
+    /// Only properties whose native presentation lives outside the mounted
+    /// content view need the scene/window reconciliation path. Ordinary view
+    /// frames are already applied in place and AppKit lays them out before the
+    /// display link's frame is drawn.
+    private func needsWindowSynchronization(for properties: Set<Prop>) -> Bool {
+        guard !properties.isEmpty else { return false }
+        return type == .window || type == .titleBar || type == .navigationPage
     }
 
     @objc private func clicked(_ sender: Any?) {
@@ -2377,48 +2444,66 @@ final class MountedNode: NSObject {
             canvas.apply(value(.drawable))
         }
 
-        sizeConstraints.forEach { $0.isActive = false }
-        sizeConstraints.removeAll(keepingCapacity: true)
-
         let minimumWidth = requested(.minimumWidthRequest)
         let minimumHeight = requested(.minimumHeightRequest)
         let maximumWidth = requested(.maximumWidthRequest).map { max($0, minimumWidth ?? 0) }
         let maximumHeight = requested(.maximumHeightRequest).map { max($0, minimumHeight ?? 0) }
-        if let width = requested(.widthRequest) {
-            sizeConstraints.append(view.widthAnchor.constraint(equalToConstant: appKitBoundedExtent(
-                width, minimum: minimumWidth, maximum: maximumWidth)))
-        }
-        if let height = requested(.heightRequest) {
-            sizeConstraints.append(view.heightAnchor.constraint(equalToConstant: appKitBoundedExtent(
-                height, minimum: minimumHeight, maximum: maximumHeight)))
-        }
-        if let minimumWidth {
-            sizeConstraints.append(view.widthAnchor.constraint(greaterThanOrEqualToConstant: minimumWidth))
-        }
-        if let minimumHeight {
-            sizeConstraints.append(view.heightAnchor.constraint(greaterThanOrEqualToConstant: minimumHeight))
-        }
-        if let maximumWidth {
-            sizeConstraints.append(view.widthAnchor.constraint(lessThanOrEqualToConstant: maximumWidth))
-        }
-        if let maximumHeight {
-            sizeConstraints.append(view.heightAnchor.constraint(lessThanOrEqualToConstant: maximumHeight))
-        }
+        widthConstraint = reconciledConstraint(
+            widthConstraint,
+            value: requested(.widthRequest).map {
+                appKitBoundedExtent($0, minimum: minimumWidth, maximum: maximumWidth)
+            },
+            make: { view.widthAnchor.constraint(equalToConstant: $0) })
+        heightConstraint = reconciledConstraint(
+            heightConstraint,
+            value: requested(.heightRequest).map {
+                appKitBoundedExtent($0, minimum: minimumHeight, maximum: maximumHeight)
+            },
+            make: { view.heightAnchor.constraint(equalToConstant: $0) })
+        minimumWidthConstraint = reconciledConstraint(
+            minimumWidthConstraint,
+            value: minimumWidth,
+            make: { view.widthAnchor.constraint(greaterThanOrEqualToConstant: $0) })
+        minimumHeightConstraint = reconciledConstraint(
+            minimumHeightConstraint,
+            value: minimumHeight,
+            make: { view.heightAnchor.constraint(greaterThanOrEqualToConstant: $0) })
+        maximumWidthConstraint = reconciledConstraint(
+            maximumWidthConstraint,
+            value: maximumWidth,
+            make: { view.widthAnchor.constraint(lessThanOrEqualToConstant: $0) })
+        maximumHeightConstraint = reconciledConstraint(
+            maximumHeightConstraint,
+            value: maximumHeight,
+            make: { view.heightAnchor.constraint(lessThanOrEqualToConstant: $0) })
 
         if let button = view as? NSButton,
            let padding = value(.padding)?.numbers, padding.count >= 4 {
             let intrinsic = button.intrinsicContentSize
-            let width = button.widthAnchor.constraint(
-                greaterThanOrEqualToConstant: intrinsic.width + padding[0] + padding[2])
-            let height = button.heightAnchor.constraint(
-                greaterThanOrEqualToConstant: intrinsic.height + padding[1] + padding[3])
-            width.priority = .defaultHigh
-            height.priority = .defaultHigh
-            sizeConstraints.append(width)
-            sizeConstraints.append(height)
+            buttonWidthConstraint = reconciledConstraint(
+                buttonWidthConstraint,
+                value: intrinsic.width + padding[0] + padding[2],
+                make: {
+                    let constraint = button.widthAnchor.constraint(
+                        greaterThanOrEqualToConstant: $0)
+                    constraint.priority = .defaultHigh
+                    return constraint
+                })
+            buttonHeightConstraint = reconciledConstraint(
+                buttonHeightConstraint,
+                value: intrinsic.height + padding[1] + padding[3],
+                make: {
+                    let constraint = button.heightAnchor.constraint(
+                        greaterThanOrEqualToConstant: $0)
+                    constraint.priority = .defaultHigh
+                    return constraint
+                })
+        } else {
+            buttonWidthConstraint?.isActive = false
+            buttonWidthConstraint = nil
+            buttonHeightConstraint?.isActive = false
+            buttonHeightConstraint = nil
         }
-
-        NSLayoutConstraint.activate(sizeConstraints)
 
         let scale = value(.scale)?.number ?? 1
         let scaleX = value(.scaleX)?.number ?? scale
@@ -2432,6 +2517,29 @@ final class MountedNode: NSObject {
         transform = transform.scaledBy(x: scaleX, y: scaleY)
         view.wantsLayer = true
         view.layer?.setAffineTransform(transform)
+    }
+
+    /// Keeps the native constraint identity stable while a host channel moves
+    /// its constant. Creating and tearing down the Auto Layout graph on every
+    /// display frame is both unnecessary work and visible as uneven motion.
+    private func reconciledConstraint(
+        _ existing: NSLayoutConstraint?,
+        value: CGFloat?,
+        make: (CGFloat) -> NSLayoutConstraint
+    ) -> NSLayoutConstraint? {
+        guard let value else {
+            existing?.isActive = false
+            return nil
+        }
+
+        if let existing {
+            existing.constant = value
+            return existing
+        }
+
+        let constraint = make(value)
+        constraint.isActive = true
+        return constraint
     }
 
     private func arrangeChildren() {

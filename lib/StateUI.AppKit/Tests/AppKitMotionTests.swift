@@ -206,6 +206,123 @@ final class AppKitMotionTests: XCTestCase {
     }
 
     @MainActor
+    func testAnOrdinaryViewMotionFrameDoesNotResynchronizeTheWindowShell() {
+        var now = 0.0
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.closeForTesting() }
+
+        func tree(children: HostChildrenUpdate) -> HostPatch {
+            var stack = HostPatch(id: .manual("stack"), type: .vStack)
+            stack.children = children
+            var page = HostPatch(id: .manual("page"), type: .contentPage)
+            page.children = .arranged([stack])
+            var window = HostPatch(id: .manual("window"), type: .window)
+            window.children = .arranged([page])
+            return windowTree(window)
+        }
+
+        var initialBox = HostPatch(id: .manual("box"), type: .boxView)
+        initialBox.properties[.widthRequest] = .number(120)
+        renderer.applyForTesting(tree(children: .arranged([initialBox])))
+
+        var changedBox = HostPatch(id: .manual("box"), type: .boxView)
+        changedBox.properties[.widthRequest] = .number(300)
+        changedBox.transitions[.widthRequest] = HostTransition(
+            motion: .eased(200, .linear))
+        renderer.applyForTesting(tree(children: .changed([changedBox])))
+        let synchronizationsBeforeFrame = renderer.windowSynchronizationCountForTesting
+
+        now = 100
+        renderer.advanceMotionsForTesting()
+
+        XCTAssertEqual(
+            renderer.windowSynchronizationCountForTesting,
+            synchronizationsBeforeFrame)
+    }
+
+    @MainActor
+    func testAPropertySizeMotionReusesItsNativeConstraintAcrossFrames() throws {
+        var now = 0.0
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.closeForTesting() }
+
+        var initial = HostPatch(id: .manual("box"), type: .boxView)
+        initial.properties[.widthRequest] = .number(120)
+        renderer.applyForTesting(initial)
+
+        var changed = HostPatch(id: .manual("box"), type: .boxView)
+        changed.properties[.widthRequest] = .number(300)
+        changed.transitions[.widthRequest] = HostTransition(
+            motion: .eased(200, .linear))
+        renderer.applyForTesting(changed)
+
+        let box = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
+        let standing = try XCTUnwrap(box.constraints.first {
+            $0.firstAttribute == .width && $0.relation == .equal
+        })
+        XCTAssertEqual(standing.constant, 120, accuracy: 0.001)
+
+        now = 100
+        renderer.advanceMotionsForTesting()
+
+        let moving = try XCTUnwrap(box.constraints.first {
+            $0.firstAttribute == .width && $0.relation == .equal
+        })
+        XCTAssertTrue(moving === standing)
+        XCTAssertEqual(moving.constant, 210, accuracy: 0.001)
+    }
+
+    @MainActor
+    func testDrivenStatesFromOneFrameArrangeTheirCommonAncestorOnce() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        func child(_ id: String, state: Int32) -> HostPatch {
+            var child = HostPatch(id: .manual(id), type: .boxView)
+            child.properties[.heightRequest] = .number(40)
+            child.driven = .replace([
+                .heightRequest: HostStateBinding(
+                    state: state, mode: .inOut, kind: .property),
+            ])
+            return child
+        }
+
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([
+            child("first", state: 81),
+            child("second", state: 82),
+        ])
+        renderer.applyForTesting(stack)
+
+        let nativeStack = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("stack")) as? AppKitStackView)
+        let arrangementsBeforeFrame = nativeStack.arrangementCountForTesting
+        func landed(_ value: Double) -> HostStateValue {
+            StateUIHost.value(of: HostJourney(
+                value: [value],
+                destination: [value],
+                velocity: [0],
+                motion: .none,
+                completion: nil,
+                stopped: 0))
+        }
+
+        renderer.applyStatesForTesting([81: landed(70), 82: landed(90)])
+
+        XCTAssertEqual(
+            nativeStack.arrangementCountForTesting - arrangementsBeforeFrame,
+            1)
+    }
+
+    @MainActor
     func testAnUnrelatedSparsePropertyLeavesMotionRunning() throws {
         var now = 0.0
         let renderer = AppKitRenderer(
