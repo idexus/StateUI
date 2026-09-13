@@ -33,16 +33,19 @@ final class AppKitTitleBarTests: XCTestCase {
         XCTAssertTrue(itemViews.contains { $0 === center })
         XCTAssertTrue(itemViews.contains { $0 === trailing })
         XCTAssertTrue(window.styleMask.contains(.fullSizeContentView))
-        XCTAssertTrue(window.titlebarAppearsTransparent)
-        XCTAssertEqual(window.titleVisibility, .hidden)
-        XCTAssertEqual(window.toolbarStyle, .unifiedCompact)
+        XCTAssertFalse(window.titlebarAppearsTransparent)
+        XCTAssertEqual(window.titleVisibility, .visible)
+        XCTAssertEqual(window.toolbarStyle, .unified)
 
         trailing.clickForTesting()
         XCTAssertEqual(reported.map(\.0), [91])
     }
 
+    /// The title bar's own title is text at the trailing edge of the
+    /// window's title bar, in the system's colours rather than a toolbar
+    /// control's glass, while the visible page names the window.
     @MainActor
-    func testTitleBarPresentsItsTitleSubtitleIconAndColors() throws {
+    func testTitleBarTitleStandsAtTheTrailingEdgeInSystemColours() throws {
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
@@ -51,32 +54,25 @@ final class AppKitTitleBarTests: XCTestCase {
 
         renderer.applyForTesting(tree(titleBar(), windowTitle: "Workspace"))
 
-        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
-        let toolbar = try XCTUnwrap(window.toolbar)
-        let descendants = toolbar.items.compactMap(\.view).flatMap { [$0] + $0.descendants }
-        let labels = descendants.compactMap { $0 as? NSTextField }
-        let icon = descendants.compactMap { $0 as? NSImageView }.first
-        let foreground = NSColor(
-            srgbRed: 246.0 / 255.0,
-            green: 244.0 / 255.0,
-            blue: 255.0 / 255.0,
-            alpha: 1)
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let window = try XCTUnwrap(controller.window)
+        let accessory = try XCTUnwrap(controller.titleAccessoryForTesting)
+        let cluster = controller.titleClusterForTesting
 
-        XCTAssertEqual(window.title, "Workspace")
-        XCTAssertEqual(window.subtitle, "Personal")
-        XCTAssertNotNil(labels.first { $0.stringValue == "Notes" })
-        XCTAssertEqual(labels.first { $0.stringValue == "Notes" }?.textColor, foreground)
-        XCTAssertEqual(labels.first { $0.stringValue == "Personal" }?.textColor, foreground)
-        XCTAssertNotNil(icon?.image)
-        XCTAssertTrue(window.backgroundColor.isEqual(NSColor(
-            srgbRed: 54.0 / 255.0,
-            green: 42.0 / 255.0,
-            blue: 86.0 / 255.0,
-            alpha: 1)))
+        XCTAssertEqual(window.title, "Page")
+        XCTAssertEqual(accessory.layoutAttribute, .trailing)
+        XCTAssertTrue(accessory.view === cluster)
+        XCTAssertTrue(window.titlebarAccessoryViewControllers.contains(accessory))
+        XCTAssertFalse(controller.toolbarForTesting.toolbar.items.contains { $0.view === cluster })
+        XCTAssertEqual(cluster.titleForTesting, "Notes")
+        XCTAssertEqual(cluster.subtitleForTesting, "Personal")
+        XCTAssertEqual(cluster.titleColorForTesting, .labelColor)
+        XCTAssertNotNil(cluster.imageForTesting)
+        XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
     }
 
     @MainActor
-    func testRemovingTitleBarRestoresUnadornedNativeWindowChrome() throws {
+    func testRemovingTitleBarLeavesThePlainNativeWindowChrome() throws {
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
@@ -86,69 +82,41 @@ final class AppKitTitleBarTests: XCTestCase {
         renderer.applyForTesting(tree(titleBar()))
         renderer.applyForTesting(tree(nil))
 
-        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
-        XCTAssertNil(window.toolbar)
-        XCTAssertFalse(window.styleMask.contains(.fullSizeContentView))
-        XCTAssertFalse(window.titlebarAppearsTransparent)
-        XCTAssertEqual(window.titleVisibility, .visible)
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let window = try XCTUnwrap(controller.window)
+        XCTAssertTrue(window.toolbar === controller.toolbarForTesting.toolbar)
+        XCTAssertFalse(controller.toolbarForTesting.toolbar.items.contains { $0.view != nil })
+        XCTAssertNil(controller.titleAccessoryForTesting)
+        XCTAssertTrue(window.titlebarAccessoryViewControllers.isEmpty)
         XCTAssertEqual(window.title, "Page")
         XCTAssertEqual(window.subtitle, "")
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
     }
 
     @MainActor
-    func testTitleBarUpdatesInPlaceAndMovesItsPresentedColors() throws {
-        var now = 0.0
+    func testTitleBarUpdatesInPlace() throws {
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
-            eventSink: { _, _ in },
-            clock: { now },
-            reducesMotion: { false })
+            eventSink: { _, _ in })
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(tree(titleBar(
-            title: "Notes",
-            subtitle: "Personal",
-            background: (0, 0, 0),
-            foreground: (0, 0, 0))))
+        renderer.applyForTesting(tree(titleBar(title: "Notes", subtitle: "Personal")))
 
-        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let window = try XCTUnwrap(controller.window)
         let toolbar = try XCTUnwrap(window.toolbar)
         let trailing = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("title-trailing")) as? AppKitButtonView)
 
-        var changed = titleBar(
-            title: "Archive",
-            subtitle: "Shared",
-            background: (200, 100, 50),
-            foreground: (100, 200, 50))
-        changed.transitions[.backgroundColor] = HostTransition(motion: .eased(200, .linear))
-        changed.transitions[.foregroundColor] = HostTransition(motion: .eased(200, .linear))
-        renderer.applyForTesting(tree(changed))
+        renderer.applyForTesting(tree(titleBar(title: "Archive", subtitle: "Shared")))
 
         XCTAssertTrue(window.toolbar === toolbar)
         XCTAssertTrue(renderer.viewForTesting(id: .manual("title-trailing")) === trailing)
+        XCTAssertTrue(toolbar.items.contains { $0.view === trailing })
         XCTAssertEqual(window.title, "Page")
-        XCTAssertEqual(window.subtitle, "Shared")
-        assertColor(window.backgroundColor, equals: (0, 0, 0))
-
-        now = 100
-        renderer.advanceMotionsForTesting()
-
-        XCTAssertTrue(window.toolbar === toolbar)
-        assertColor(window.backgroundColor, equals: (100, 50, 25))
-        let labels = toolbar.items.compactMap(\.view)
-            .flatMap { [$0] + $0.descendants }
-            .compactMap { $0 as? NSTextField }
-        assertColor(
-            try XCTUnwrap(labels.first { $0.stringValue == "Archive" }?.textColor),
-            equals: (50, 100, 25))
-
-        now = 200
-        renderer.advanceMotionsForTesting()
-        assertColor(window.backgroundColor, equals: (200, 100, 50))
-        XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
+        XCTAssertEqual(controller.titleClusterForTesting.titleForTesting, "Archive")
+        XCTAssertEqual(controller.titleClusterForTesting.subtitleForTesting, "Shared")
     }
 
     @MainActor
@@ -185,7 +153,8 @@ final class AppKitTitleBarTests: XCTestCase {
         let navigation = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("navigation")) as? AppKitNavigationView)
         content.layoutSubtreeIfNeeded()
-        XCTAssertEqual(navigation.frame, content.bounds)
+        XCTAssertGreaterThan(content.safeAreaInsets.top, 0)
+        XCTAssertEqual(navigation.frame, content.safeAreaRect)
 
         renderer.applyForTesting(navigationTree(titleBar()))
         content.layoutSubtreeIfNeeded()
@@ -212,8 +181,8 @@ final class AppKitTitleBarTests: XCTestCase {
             renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
         content.layoutSubtreeIfNeeded()
 
-        XCTAssertEqual(flyout.frame, content.safeAreaRect)
-        XCTAssertEqual(flyout.splitControllerForTesting.view.frame, flyout.bounds)
+        XCTAssertEqual(flyout.frame, content.bounds)
+        XCTAssertEqual(flyout.splitController.view.frame, flyout.bounds)
         let scrollFrame = content.convert(scroll.bounds, from: scroll)
         let hierarchy = sequence(first: scroll as NSView?) { $0?.superview }
             .prefix(8)
@@ -343,26 +312,6 @@ private extension AppKitTitleBarTests {
         var application = HostPatch(id: .manual("application"), type: .application)
         application.children = .arranged([scene])
         return application
-    }
-
-    func assertColor(
-        _ color: NSColor,
-        equals expected: (UInt8, UInt8, UInt8),
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) {
-        XCTAssertEqual(color.redComponent * 255, CGFloat(expected.0), accuracy: 0.6,
-                       file: file, line: line)
-        XCTAssertEqual(color.greenComponent * 255, CGFloat(expected.1), accuracy: 0.6,
-                       file: file, line: line)
-        XCTAssertEqual(color.blueComponent * 255, CGFloat(expected.2), accuracy: 0.6,
-                       file: file, line: line)
-    }
-}
-
-private extension NSView {
-    var descendants: [NSView] {
-        subviews + subviews.flatMap(\.descendants)
     }
 }
 

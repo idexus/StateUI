@@ -483,6 +483,12 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     var padding = NSEdgeInsets() {
         didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
     }
+
+    /// Whether the child keeps out of the part of this view that the window's
+    /// title bar and toolbar cover.
+    var insetsBySafeArea = false {
+        didSet { if insetsBySafeArea != oldValue { needsLayout = true } }
+    }
     private(set) var item: AppKitLayoutItem?
 
     override var isFlipped: Bool { true }
@@ -523,7 +529,7 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         super.layout()
         guard let item, !item.view.isHidden else { return }
 
-        let content = bounds.inset(by: padding)
+        let content = (insetsBySafeArea ? safeAreaRect : bounds).inset(by: padding)
         let availableWidth = max(0, content.width - item.margin.left - item.margin.right)
         let availableHeight = max(0, content.height - item.margin.top - item.margin.bottom)
         let natural = item.fittingSize(width: availableWidth)
@@ -560,17 +566,23 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
 
 /// The stable native root of one StateUI window. Pages and overlays occupy
 /// AppKit's safe content rectangle, leaving native title and toolbar areas to
-/// the window. A window overlay is a slot, not a second page: it is composed
-/// above the page and transparent to input wherever its child has no hit
-/// target.
+/// the window; a split page spans the whole window, under them, and keeps its
+/// panes' pages out of them itself. A window overlay is a slot, not a second
+/// page: it is composed above the page and transparent to input wherever its
+/// child has no hit target.
 @MainActor
 final class AppKitWindowContentView: NSView {
     private weak var page: NSView?
+    private var pageSpansTitleBar = false
     private let overlaySurface = AppKitOverlaySurfaceView()
 
     override var isFlipped: Bool { true }
 
-    func set(page: NSView?, overlay: AppKitLayoutItem?) {
+    func set(page: NSView?, overlay: AppKitLayoutItem?, spansTitleBar: Bool = false) {
+        if pageSpansTitleBar != spansTitleBar {
+            pageSpansTitleBar = spansTitleBar
+            needsLayout = true
+        }
         if self.page !== page {
             self.page?.removeFromSuperview()
             self.page = page
@@ -597,7 +609,7 @@ final class AppKitWindowContentView: NSView {
 
     override func layout() {
         super.layout()
-        page?.frame = safeAreaRect
+        page?.frame = pageSpansTitleBar ? bounds : safeAreaRect
         overlaySurface.frame = safeAreaRect
         overlaySurface.layoutSubtreeIfNeeded()
     }
@@ -613,320 +625,56 @@ private final class AppKitOverlaySurfaceView: AppKitSingleChildView {
     }
 }
 
-/// The visible chrome and content of one page in a navigation stack.
-@MainActor
-struct AppKitNavigationItem {
-    let layout: AppKitLayoutItem
-    let title: String?
-    let backTitle: String?
-    let showsNavigationBar: Bool
-    let showsBackButton: Bool
-    let titleView: NSView?
-    let toolbarItems: [AppKitToolbarItem]
-}
-
-/// One page action and the placement policy authored for it.
-@MainActor
-struct AppKitToolbarItem {
-    let view: NSView
-    let order: Int32
-    let priority: Int
-    let isDestructive: Bool
-}
-
-/// Native navigation-bar surface that uses AppKit's header material until the
-/// application authors an exact color. A solid color bypasses vibrancy so the
-/// part beneath the transparent title bar and the part below it draw alike.
-@MainActor
-private final class AppKitNavigationBarView: NSView {
-    private let material = NSVisualEffectView()
-    private var controls: [NSView] = []
-
-    override init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
-        material.material = .headerView
-        material.blendingMode = .withinWindow
-        material.state = .active
-        addSubview(material)
-    }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("AppKitNavigationBarView is created in code")
-    }
-
-    func applyBackground(_ color: NSColor?) {
-        wantsLayer = color != nil
-        layer?.backgroundColor = color?.cgColor
-        material.isHidden = color != nil
-    }
-
-    func setControls(_ controls: [NSView]) {
-        self.controls = controls
-        replaceSubviews(with: [material] + controls)
-        needsLayout = true
-    }
-
-    override func layout() {
-        super.layout()
-        material.frame = bounds
-    }
-
-    var hasSolidBackgroundForTesting: Bool { material.isHidden }
-}
-
-/// AppKit's native presentation of the stack whose identity stays in Swift.
+/// AppKit's presentation of the stack whose identity stays in Swift.
 ///
-/// Every page view remains owned by its `MountedNode`; this view adopts only
-/// the top one. The arrangement therefore preserves page state without giving
-/// AppKit a second navigation model to reconcile with StateUI's path.
+/// Every page view remains owned by its `MountedNode`; this view shows only
+/// the top one, across its whole frame. The stack's furniture - the top
+/// page's title, the way back and the page's actions - is the window's
+/// toolbar, which the window controller composes from the visible
+/// arrangement, so AppKit is given no second navigation model to reconcile
+/// with StateUI's path.
 @MainActor
 final class AppKitNavigationView: AppKitHitTestView {
-    var onBack: (() -> Void)?
-
-    private let bar = AppKitNavigationBarView()
-    private let backButton = NSButton()
-    private let flyoutButton = NSButton()
-    private let titleLabel = NSTextField(labelWithString: "")
-    private let overflow = NSPopUpButton(frame: .zero, pullsDown: true)
-    private var items: [AppKitNavigationItem] = []
-    private var flyoutAction: (() -> Void)?
-    private var barBackgroundColor: NSColor?
-    private var barTextColor: NSColor = .labelColor
-    private let barHeight: CGFloat = 44
-
-    override init(frame frameRect: NSRect) {
-        super.init(frame: frameRect)
-
-        backButton.bezelStyle = .inline
-        backButton.font = .systemFont(ofSize: NSFont.systemFontSize)
-        backButton.target = self
-        backButton.action = #selector(goBack(_:))
-
-        flyoutButton.title = "☰"
-        flyoutButton.bezelStyle = .inline
-        flyoutButton.target = self
-        flyoutButton.action = #selector(openFlyout(_:))
-
-        titleLabel.alignment = .center
-        titleLabel.font = .systemFont(ofSize: NSFont.systemFontSize, weight: .semibold)
-        titleLabel.lineBreakMode = .byTruncatingTail
-        overflow.bezelStyle = .inline
-        addSubview(bar)
-    }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("AppKitNavigationView is created in code")
-    }
+    private var items: [AppKitLayoutItem] = []
 
     override var isFlipped: Bool { true }
 
-    func setItems(_ items: [AppKitNavigationItem]) {
-        let previous = self.items.last?.layout.view
-        let next = items.last?.layout.view
+    func setItems(_ items: [AppKitLayoutItem]) {
+        guard !AppKitLayoutItem.sameArrangement(self.items, items) else { return }
+
+        let previous = self.items.last?.view
+        let next = items.last?.view
         self.items = items
 
         if previous !== next {
             previous?.removeFromSuperview()
-            if let next {
-                addSubview(next, positioned: .below, relativeTo: bar)
-            }
+            if let next { addSubview(next) }
         }
 
-        // A page may be a layer-backed native scroller. Reassert the chrome's
-        // ordering after either page reuse or replacement so AppKit never
-        // composites that scroller over the fixed navigation surface.
-        addSubview(bar, positioned: .above, relativeTo: next)
-
-        updateChrome()
-        invalidateIntrinsicContentSize()
-        needsLayout = true
-    }
-
-    func applyBar(backgroundColor: NSColor?, textColor: NSColor?) {
-        barBackgroundColor = backgroundColor
-        barTextColor = textColor ?? .labelColor
-        bar.applyBackground(backgroundColor)
-        updateChrome()
+        invalidateMeasurements()
     }
 
     override var intrinsicContentSize: NSSize {
-        guard let item = items.last else { return NSSize(width: 0, height: barHeight) }
-        let size = item.layout.fittingSize()
+        guard let item = items.last else { return .zero }
+        let size = item.fittingSize()
         return NSSize(
-            width: size.width + item.layout.margin.left + item.layout.margin.right,
-            height: size.height + item.layout.margin.top + item.layout.margin.bottom
-                + (item.showsNavigationBar ? effectiveBarHeight : 0))
+            width: size.width + item.margin.left + item.margin.right,
+            height: size.height + item.margin.top + item.margin.bottom)
     }
 
     override func layout() {
         super.layout()
-        guard let item = items.last else {
-            bar.isHidden = true
-            return
-        }
+        guard let item = items.last else { return }
 
-        bar.isHidden = !item.showsNavigationBar
-        let top = item.showsNavigationBar ? effectiveBarHeight : 0
-        if item.showsNavigationBar {
-            bar.frame = NSRect(x: 0, y: 0, width: bounds.width, height: effectiveBarHeight)
-            let leading = backButton.isHidden ? flyoutButton : backButton
-            let leadingWidth = leading.isHidden ? 0 : min(max(leading.fittingSize.width, 36), 160)
-            leading.frame = NSRect(
-                x: 10, y: safeAreaInsets.top + 7,
-                width: leadingWidth, height: 30)
-            var toolbarX = bounds.width - 10
-            for control in visibleToolbarViews(for: item).reversed() {
-                let width = min(max(control.fittingSize.width, 36), 140)
-                toolbarX -= width
-                control.frame = NSRect(
-                    x: toolbarX, y: safeAreaInsets.top + 7,
-                    width: width, height: 30)
-                toolbarX -= 6
-            }
-
-            let title = item.titleView ?? titleLabel
-            title.frame = NSRect(
-                x: max(16, leadingWidth + 18),
-                y: safeAreaInsets.top + 7,
-                width: max(0, toolbarX - max(16, leadingWidth + 18)),
-                height: 30)
-        }
-
-        let margin = item.layout.margin
-        item.layout.view.frame = NSRect(
+        let margin = item.margin
+        item.view.frame = NSRect(
             x: margin.left,
-            y: top + margin.top,
+            y: margin.top,
             width: max(0, bounds.width - margin.left - margin.right),
-            height: max(0, bounds.height - top - margin.top - margin.bottom))
+            height: max(0, bounds.height - margin.top - margin.bottom))
     }
 
-    private func updateChrome() {
-        guard let top = items.last else {
-            bar.isHidden = true
-            return
-        }
-
-        titleLabel.stringValue = top.title ?? ""
-        titleLabel.textColor = barTextColor
-
-        let canGoBack = items.count > 1 && top.showsBackButton
-        backButton.isHidden = !canGoBack
-        flyoutButton.isHidden = canGoBack || flyoutAction == nil
-        backButton.title = canGoBack ? "‹ \(items.dropLast().last?.backTitle ?? "Back")" : ""
-        backButton.contentTintColor = barTextColor
-        flyoutButton.contentTintColor = barTextColor
-        overflow.contentTintColor = barTextColor
-        for item in top.toolbarItems { applyBarForeground(to: item) }
-        bar.isHidden = !top.showsNavigationBar
-        rebuildOverflow(for: top)
-        bar.setControls(
-            [backButton, flyoutButton, top.titleView ?? titleLabel]
-                + visibleToolbarViews(for: top))
-    }
-
-    private func visibleToolbarViews(for item: AppKitNavigationItem) -> [NSView] {
-        let primary = primaryToolbarViews(for: item)
-        return item.toolbarItems.contains(where: { $0.order == 2 })
-            ? primary + [overflow]
-            : primary
-    }
-
-    private func primaryToolbarViews(for item: AppKitNavigationItem) -> [NSView] {
-        item.toolbarItems.enumerated()
-            .filter { $0.element.order != 2 }
-            .sorted {
-                $0.element.priority == $1.element.priority
-                    ? $0.offset < $1.offset
-                    : $0.element.priority < $1.element.priority
-            }
-            .map(\.element.view)
-    }
-
-    private var effectiveBarHeight: CGFloat {
-        barHeight + safeAreaInsets.top
-    }
-
-    private func rebuildOverflow(for item: AppKitNavigationItem) {
-        overflow.removeAllItems()
-        overflow.addItem(withTitle: "•••")
-
-        for toolbarItem in item.toolbarItems where toolbarItem.order == 2 {
-            guard let button = toolbarItem.view as? NSButton else { continue }
-            let menuItem = NSMenuItem(
-                title: button.title,
-                action: #selector(NSButton.performClick(_:)),
-                keyEquivalent: "")
-            menuItem.target = button
-            menuItem.image = button.image
-            menuItem.isEnabled = button.isEnabled
-            overflow.menu?.addItem(menuItem)
-        }
-    }
-
-    private func applyBarForeground(to item: AppKitToolbarItem) {
-        guard let button = item.view as? NSButton else { return }
-        let color = item.isDestructive ? NSColor.systemRed : barTextColor
-        button.contentTintColor = color
-        button.attributedTitle = NSAttributedString(
-            string: button.title,
-            attributes: [
-                .font: button.font
-                    ?? NSFont.systemFont(ofSize: NSFont.systemFontSize),
-                .foregroundColor: color,
-            ])
-    }
-
-    @objc private func goBack(_ sender: Any?) {
-        guard items.count > 1, items.last?.showsBackButton == true else { return }
-        onBack?()
-    }
-
-    @objc private func openFlyout(_ sender: Any?) {
-        flyoutAction?()
-    }
-
-    func setFlyoutAction(_ action: (() -> Void)?) {
-        flyoutAction = action
-        updateChrome()
-        needsLayout = true
-    }
-
-    func goBackForTesting() { goBack(nil) }
-    var titleForTesting: String { titleLabel.stringValue }
-    var backTitleForTesting: String { items.dropLast().last?.backTitle ?? "Back" }
-    var showsBackButtonForTesting: Bool { !backButton.isHidden }
-    var showsFlyoutButtonForTesting: Bool { !flyoutButton.isHidden }
-    var titleTextColorForTesting: NSColor? { titleLabel.textColor }
-    var backButtonTintForTesting: NSColor? { backButton.contentTintColor }
-    var hasSolidBarBackgroundForTesting: Bool { bar.hasSolidBackgroundForTesting }
-    var navigationBarIsFrontmostForTesting: Bool {
-        !bar.isHidden && subviews.last === bar
-    }
-    var titleViewForTesting: NSView? { items.last?.titleView }
-    var toolbarItemCountForTesting: Int { items.last?.toolbarItems.count ?? 0 }
-    var visibleToolbarTitlesForTesting: [String] {
-        guard let item = items.last else { return [] }
-        return primaryToolbarViews(for: item).compactMap { ($0 as? NSButton)?.title }
-    }
-    var overflowToolbarTitlesForTesting: [String] {
-        Array(overflow.itemTitles.dropFirst())
-    }
-
-    func toolbarButtonForTesting(_ index: Int) -> NSButton? {
-        guard let toolbarItems = items.last?.toolbarItems,
-              toolbarItems.indices.contains(index)
-        else { return nil }
-        return toolbarItems[index].view as? NSButton
-    }
-
-    func clickToolbarItemForTesting(_ index: Int) {
-        guard let toolbarItems = items.last?.toolbarItems,
-              toolbarItems.indices.contains(index)
-        else { return }
-        (toolbarItems[index].view as? NSButton)?.performClick(nil)
-    }
+    var topViewForTesting: NSView? { items.last?.view }
 }
 
 /// One page offered by a native AppKit tab bar.
@@ -1066,17 +814,26 @@ final class AppKitTabbedView: AppKitHitTestView {
     }
 }
 
-/// A StateUI flyout presented by AppKit's native split-view controller.
+/// AppKit's split presentation of a flyout: the flyout page in a native
+/// sidebar, the detail page beside it.
 ///
-/// Swift remains the owner of the two page identities and of the presented
-/// value. The controller owns the platform's sidebar, divider, resizing, and
-/// collapse behavior; the stable pane views merely adopt the native views
-/// mounted by the renderer.
+/// The split view spans the whole window, under the title bar and toolbar, so
+/// the sidebar runs the window's full height as a Mac sidebar does; each pane
+/// keeps its page out of the part the title bar covers. The window's toolbar
+/// carries the system sidebar toggle and a separator that tracks the divider.
+/// Whether the sidebar shows is StateUI's binding. The host's one adaptation
+/// is that a window wide enough for both panes opens with it shown; after
+/// that, the reader and the application decide.
 @MainActor
 final class AppKitFlyoutView: AppKitHitTestView {
     var onPresentationChanged: ((Bool) -> Void)?
 
-    private let splitController = NSSplitViewController()
+    /// The native split view controller the window's toolbar toggles.
+    let splitController = NSSplitViewController()
+
+    /// The width at which a window opens with both panes shown.
+    private static let sidebarRoom: CGFloat = 720
+
     private let sidebarController = NSViewController()
     private let detailController = NSViewController()
     private let sidebarSurface = AppKitSingleChildView()
@@ -1088,13 +845,17 @@ final class AppKitFlyoutView: AppKitHitTestView {
     private var requestedPresentation = false
     private var applyingPresentation = false
     private var lastEffectivePresentation = false
+    private var adapted = false
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
 
+        sidebarSurface.insetsBySafeArea = true
+        detailSurface.insetsBySafeArea = true
         sidebarController.view = sidebarSurface
         detailController.view = detailSurface
         sidebarItem.canCollapse = true
+        sidebarItem.allowsFullHeightLayout = true
         sidebarItem.minimumThickness = 260
         sidebarItem.maximumThickness = 340
         splitController.addSplitViewItem(sidebarItem)
@@ -1124,30 +885,16 @@ final class AppKitFlyoutView: AppKitHitTestView {
     override var isFlipped: Bool { true }
 
     func setItems(_ items: [AppKitLayoutItem]) {
-        let nextDetail = items.count > 1 ? items[1] : nil
-        let previousDetail = detailSurface.item?.view
-
-        if previousDetail !== nextDetail?.view {
-            (previousDetail as? AppKitNavigationView)?.setFlyoutAction(nil)
-        }
-
         sidebarSurface.setItem(items.first)
-        detailSurface.setItem(nextDetail)
-        updateFlyoutAction()
+        detailSurface.setItem(items.count > 1 ? items[1] : nil)
         invalidateIntrinsicContentSize()
         needsLayout = true
     }
 
-    /// Applies Swift's value without echoing it. A behavior that requires a
-    /// visible sidebar may settle on `true`; that native answer is returned to
-    /// the binding.
-    func apply(presented: Bool) -> Bool? {
+    /// Applies Swift's value without echoing it back as a reader's change.
+    func apply(presented: Bool) {
         requestedPresentation = presented
-
-        let effective = forcesSidebarVisible || requestedPresentation
-        setSidebarPresented(effective, reporting: false)
-        updateFlyoutAction()
-        return effective == presented ? nil : effective
+        setSidebarPresented(presented, reporting: false)
     }
 
     override var intrinsicContentSize: NSSize {
@@ -1162,10 +909,7 @@ final class AppKitFlyoutView: AppKitHitTestView {
     override func layout() {
         super.layout()
         splitController.view.frame = bounds
-        updateFlyoutAction()
-        setSidebarPresented(
-            forcesSidebarVisible || requestedPresentation,
-            reporting: true)
+        adaptToFirstRoom()
         splitController.view.layoutSubtreeIfNeeded()
 
         // A detached NSSplitViewController has no parent view controller to
@@ -1175,22 +919,17 @@ final class AppKitFlyoutView: AppKitHitTestView {
         splitController.splitView.frame = splitController.view.bounds
         splitController.splitView.needsLayout = true
         splitController.splitView.layoutSubtreeIfNeeded()
-
-        if !sidebarItem.isCollapsed, splitController.splitView.subviews.count > 1 {
-            let width = min(max(260, bounds.width * 0.28), 340)
-            splitController.splitView.setPosition(width, ofDividerAt: 0)
-        }
     }
 
-    private var forcesSidebarVisible: Bool {
-        bounds.width >= 720
-    }
+    /// The host's one adaptation: a window wide enough for both panes opens
+    /// with its sidebar shown, and reports it to the binding.
+    private func adaptToFirstRoom() {
+        guard !adapted, bounds.width > 0 else { return }
+        adapted = true
+        guard !requestedPresentation, bounds.width >= Self.sidebarRoom else { return }
 
-    private func updateFlyoutAction() {
-        guard let navigation = detailSurface.item?.view as? AppKitNavigationView else { return }
-        navigation.setFlyoutAction(forcesSidebarVisible ? nil : { [weak self] in
-            self?.settlePresentation(true)
-        })
+        requestedPresentation = true
+        setSidebarPresented(true, reporting: true)
     }
 
     private func setSidebarPresented(_ presented: Bool, reporting: Bool) {
@@ -1210,33 +949,25 @@ final class AppKitFlyoutView: AppKitHitTestView {
         }
     }
 
-    private func settlePresentation(_ presented: Bool) {
-        guard !forcesSidebarVisible, requestedPresentation != presented else { return }
-        requestedPresentation = presented
-        setSidebarPresented(presented, reporting: true)
-    }
-
     @objc private func splitViewResized(_ notification: Notification) {
         guard !applyingPresentation else { return }
         let presented = !sidebarItem.isCollapsed
-
-        if forcesSidebarVisible, !presented {
-            setSidebarPresented(true, reporting: true)
-            return
-        }
-
         guard presented != lastEffectivePresentation else { return }
+
         requestedPresentation = presented
         lastEffectivePresentation = presented
         onPresentationChanged?(presented)
     }
 
     var isEffectivelyPresented: Bool { !sidebarItem.isCollapsed }
-    func toggleForTesting() { settlePresentation(!isEffectivelyPresented) }
     var isEffectivelyPresentedForTesting: Bool { isEffectivelyPresented }
-    var splitControllerForTesting: NSSplitViewController { splitController }
     var sidebarWidthForTesting: CGFloat {
         splitController.splitView.subviews.first?.frame.width ?? 0
+    }
+
+    /// What the reader's sidebar toggle leaves behind, without its animation.
+    func toggleForTesting() {
+        sidebarItem.isCollapsed.toggle()
     }
 }
 

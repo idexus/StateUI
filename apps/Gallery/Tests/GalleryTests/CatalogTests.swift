@@ -987,38 +987,6 @@ final class CatalogTests: XCTestCase {
         XCTAssertNil(prop(shown, .y))
     }
 
-    /// The menu button remains in the leading slot while the path changes only
-    /// its presentation and input behavior.
-    func testTheTitleBarsMenuButtonStandsInItsSlotWhetherItIsSeenOrNot() throws {
-        StandardEnvironment.device.idiom = .desktop
-        StandardEnvironment.device.platform = "macOS"
-
-        defer {
-            StandardEnvironment.device.idiom = .unknown
-            StandardEnvironment.device.platform = ""
-        }
-
-        for (path, opacity) in [([Route](), 0.0), ([Route.sample("stacks")], 1.0)] {
-            let place = Place()
-            place.path.wrappedValue = path
-
-            // The bar is the window's SESSION's, written as the window comes
-            // in - so it is read off the message that brings the window.
-            let shown = firstPatch(window(place.nav))
-            let bar = try XCTUnwrap(shown.children.first { $0.type == "TitleBar" },
-                                    "a desktop window with no chrome")
-            let slot = try XCTUnwrap(bar.children.first { $0.type == "LeadingContent" },
-                                     "the slot is empty with a path of \(path.count)")
-            let button = try XCTUnwrap(slot.children.first)
-
-            XCTAssertEqual(button.type, "ImageButton")
-            XCTAssertEqual(prop(button, .opacity), .number(opacity),
-                           "the button is hidden by something other than its opacity")
-            XCTAssertEqual(prop(button, .inputTransparent), .bool(opacity == 0),
-                           "an invisible button that can still be pressed")
-        }
-    }
-
     /// The live window exercises the complete authored title-area value group
     /// and retains interactive content as identified slot children.
     func testTheWindowCarriesTheCompleteTitleBarContract() throws {
@@ -1036,7 +1004,9 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(prop(bar, .icon), .string("stateui_mark.png"))
         XCTAssertNotNil(prop(bar, .foregroundColor))
         XCTAssertNotNil(prop(bar, .backgroundColor))
-        XCTAssertNotNil(bar.children.first { $0.type == "LeadingContent" })
+        XCTAssertNil(
+            bar.children.first { $0.type == "LeadingContent" },
+            "the flyout's own native toggle opens the menu; the bar authors no second one")
         let trailing = try XCTUnwrap(
             bar.children.first { $0.type == "TrailingContent" })
         XCTAssertEqual(buttons(in: trailing).count, 1)

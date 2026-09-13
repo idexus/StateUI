@@ -100,7 +100,10 @@ the state presents or dismisses it.
 
 The host adapts presentation to the available space. The state contract stays
 the same whether the two pages are temporarily overlaid or persistently side
-by side.
+by side. On AppKit the flyout is a sidebar running the window's full height
+beside the detail, shown and hidden by the system sidebar button in the
+window's toolbar; a window wide enough for both panes opens with the sidebar
+shown, and after that the reader and the binding decide.
 
 ## Modal pages
 
@@ -190,11 +193,17 @@ Within either group, lower `priority` appears first and equal values retain
 source order. The host chooses the native placement appropriate to the window
 and available space. Give stable identities to items whose list can change.
 
+On AppKit a page's furniture is its window's toolbar: the top page's title
+names the window, the way back is the system's back item, primary actions are
+toolbar items, and secondary ones sit in the toolbar's overflow menu.
+
 Page arrangements accept a flat `barBackgroundColor`. A `NavigationPage` also
 accepts `barTextColor` for its title and native action affordances. Native tab
 selectors retain their selected and unselected state appearance. Leaving the
-background unwritten preserves the platform's material. Gradients remain
-ordinary view composition where the application owns the surface.
+background unwritten preserves the platform's material, and a platform whose
+bar is a system material, as the AppKit toolbar is, keeps that material and
+draws its items in the system's colours. Gradients remain ordinary view
+composition where the application owns the surface.
 
 ## Menu bars and context menus
 

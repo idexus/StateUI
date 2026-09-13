@@ -126,6 +126,11 @@ final class Navigation {
     /// Whether the menu is showing. Native presentation changes write back.
     @State var menuOpen = false
 
+    /// Whether the menu lies over the page, as it does on a phone, and so
+    /// closes once the reader has chosen. Beside the page on a desktop it
+    /// stays open, the way a sidebar does.
+    var menuOverlays = true
+
     /// Whether the menu lists the row that is hidden by default - see
     /// `FlyoutSample`, which is where the switch that writes it lives.
     @State var listsHiddenRow = false
@@ -163,7 +168,7 @@ final class Navigation {
     func open(_ wanted: Section) {
         section = wanted
         path = []
-        menuOpen = false
+        if menuOverlays { menuOpen = false }
     }
 
     /// Goes to a group of samples, ON TOP OF HOME.
@@ -177,7 +182,7 @@ final class Navigation {
     func openGroup(_ route: String) {
         section = .home
         path = [.group(route)]
-        menuOpen = false
+        if menuOverlays { menuOpen = false }
     }
 
     /// Pushes a page on top of whatever is showing.
@@ -331,7 +336,7 @@ extension Navigation {
             .randomElement()
         else { return }
 
-        menuOpen = false
+        if menuOverlays { menuOpen = false }
         push(.sample(sample.id))
     }
 }

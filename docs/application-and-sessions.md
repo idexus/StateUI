@@ -281,8 +281,11 @@ window.isMaximizable = true
 window.isMinimizable = true
 ```
 
-`width` and `height` describe the content area. Changing one axis must not
-reapply a stale value for another axis. `nil` leaves that axis under native
+`width` and `height` describe the content area: what the window's title bar
+and toolbar leave uncovered. A host whose content reaches under them, as
+AppKit's does, sizes the window so that this area has the requested size, and
+bounds it the same way. Changing one axis must not reapply a stale value for
+another axis. `nil` leaves that axis under native
 window ownership, including reader resizing and platform restoration. Minimum
 and maximum values constrain resizing; equal minimum and maximum values express
 a fixed dimension. A minimum wins over a smaller maximum on the same axis.
@@ -290,10 +293,13 @@ Clearing a constraint or operation preference restores the native value the
 host found when it adopted the window. Full-screen hosts may retain geometry
 requests without presenting movable or resizable window chrome.
 
-`title` remains the system name of the window even when `titleBar` supplies an
-authored visual title area. Native window menus, restoration surfaces, and
-accessibility continue to identify the window by `title`; the title area's
-own title and interactive slots describe only that visible area.
+`title` names the window where the page on show does not. A host whose window
+chrome carries the visible page - AppKit's toolbar shows the visible page's
+title, the way a Mac window is named after what it shows - names the window
+after that page while it has a title, and after `title` otherwise; native
+window menus, restoration surfaces, and accessibility follow the same name. A
+`titleBar`'s own title never names the window: it and the interactive slots
+describe only that visible area.
 
 `isMaximizable` and `isMinimizable` govern the native operations, not merely
 the appearance of one button. A host blocks equivalent native commands while
@@ -426,10 +432,13 @@ closures are identified child subtrees, so controls in them keep ordinary
 state, events, and identity. Returning no child removes that slot; use a
 layout inside a slot when it contains several controls.
 
-The AppKit host maps one title area to the window's native `NSToolbar`. AppKit
-owns placement, window dragging, and overflow while the slot items retain the
-same StateUI-created native views across updates. Title-area background and
-foreground color transitions run through the StateUI host motion engine.
+The AppKit host puts the slots in the window's one native `NSToolbar`, beside
+the visible page's own furniture: the leading and trailing content as toolbar
+items and the content in the centre. The title, subtitle and icon stand as
+text at the trailing edge of the title bar. AppKit owns placement, window
+dragging, overflow and the toolbar's material, so the title area's colours are
+the system's; the slot items keep the same StateUI-created native views across
+updates.
 
 Set the title bar through the window session. A platform without an authored
 native title area may ignore it; the

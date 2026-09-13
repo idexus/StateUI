@@ -357,7 +357,9 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private(set) var closingFromTree = false
     private var presentedPage: MountedNode?
     private var modals: [AppKitModalWindowController] = []
-    private var titleBarController: AppKitTitleBarController?
+    private lazy var toolbar = AppKitWindowToolbar(windowIdentifier: record.windowIdentifier)
+    private var titleAccessory: NSTitlebarAccessoryViewController?
+    private let titleCluster = AppKitTitleBarTitleView()
     private let content = AppKitWindowContentView()
     private let nativeContentMinSize: NSSize
     private let nativeContentMaxSize: NSSize
@@ -371,6 +373,9 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     var pageMenuItemsForTesting: [NSMenuItem] { pageMenuItems }
     var modalCountForTesting: Int { modals.count }
     var hiddenBySceneForTesting: Bool { stopCauses.contains(.sceneHidden) }
+    var toolbarForTesting: AppKitWindowToolbar { toolbar }
+    var titleAccessoryForTesting: NSTitlebarAccessoryViewController? { titleAccessory }
+    var titleClusterForTesting: AppKitTitleBarTitleView { titleCluster }
 
     init(
         stateUIID: ElementId,
@@ -398,6 +403,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         super.init(window: window)
 
         window.delegate = self
+        configureChrome(window)
         if nativeWindow == nil {
             window.identifier = NSUserInterfaceItemIdentifier(record.windowIdentifier)
             window.isRestorable = true
@@ -406,10 +412,31 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         }
     }
 
+    /// Every StateUI window wears the system's chrome from the start: full
+    /// size content under a unified toolbar that this controller fills. It
+    /// is set before any geometry and keeps the frame the window stands at:
+    /// AppKit would otherwise keep an adopted window's content view size and
+    /// take the title bar's height off a restored frame.
+    private func configureChrome(_ window: NSWindow) {
+        let standing = window.frame
+        window.styleMask.insert(.fullSizeContentView)
+        window.titleVisibility = .visible
+        window.titlebarAppearsTransparent = false
+        window.toolbarStyle = .unified
+        window.toolbar = toolbar.toolbar
+        if window.frame != standing { window.setFrame(standing, display: false) }
+    }
+
+    /// The height the title bar and toolbar take from the top of the window:
+    /// what separates StateUI's content area from AppKit's content view.
+    private func chromeHeight(of window: NSWindow) -> CGFloat {
+        max(0, window.frame.height - window.contentLayoutRect.height)
+    }
+
     static func makeWindow() -> NSWindow {
         NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 560, height: 440),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable],
+            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
             backing: .buffered,
             defer: false)
     }
@@ -427,9 +454,9 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
         switch property {
         case .width:
-            return .number(Double(window.contentRect(forFrameRect: window.frame).width))
+            return .number(Double(window.contentLayoutRect.width))
         case .height:
-            return .number(Double(window.contentRect(forFrameRect: window.frame).height))
+            return .number(Double(window.contentLayoutRect.height))
         case .x:
             return .number(Double(window.frame.minX))
         case .y:
@@ -460,11 +487,15 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         lastWidthRequest = width
         lastHeightRequest = height
 
+        // A requested size is the content area the title bar and toolbar do
+        // not cover; the window keeps its top edge where it stands.
         if (widthChanged && width != nil) || (heightChanged && height != nil) {
-            var size = window.contentRect(forFrameRect: window.frame).size
-            if widthChanged, let width { size.width = width }
-            if heightChanged, let height { size.height = height }
-            window.setContentSize(size)
+            var frame = window.frame
+            let top = frame.maxY
+            if widthChanged, let width { frame.size.width = width }
+            if heightChanged, let height { frame.size.height = height + chromeHeight(of: window) }
+            frame.origin.y = top - frame.size.height
+            window.setFrame(frame, display: presented)
         }
 
         let x = coordinate(node.number(.x))
@@ -498,7 +529,10 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
             }
         }
 
-        content.set(page: node.pageView, overlay: node.overlayItem)
+        content.set(
+            page: node.pageView,
+            overlay: node.overlayItem,
+            spansTitleBar: node.pageNode?.type == .flyoutPage)
         if window.contentView !== content {
             content.frame = NSRect(origin: .zero, size: window.contentLayoutRect.size)
             content.autoresizingMask = [.width, .height]
@@ -517,14 +551,19 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
             nextVisible?.setPagePresented(true, reason: reason)
         }
 
+        // A requested bound is on the content area too; AppKit bounds the
+        // whole content view, which reaches under the title bar and toolbar.
+        let chrome = chromeHeight(of: window)
         let minimumWidth = extent(node.number(.minimumWidth)) ?? nativeContentMinSize.width
-        let minimumHeight = extent(node.number(.minimumHeight)) ?? nativeContentMinSize.height
+        let minimumHeight = extent(node.number(.minimumHeight)).map { $0 + chrome }
+            ?? nativeContentMinSize.height
         let maximumWidth = max(
             minimumWidth,
             extent(node.number(.maximumWidth)) ?? nativeContentMaxSize.width)
         let maximumHeight = max(
             minimumHeight,
-            extent(node.number(.maximumHeight)) ?? nativeContentMaxSize.height)
+            extent(node.number(.maximumHeight)).map { $0 + chrome }
+                ?? nativeContentMaxSize.height)
         window.contentMinSize = NSSize(width: minimumWidth, height: minimumHeight)
         window.contentMaxSize = NSSize(width: maximumWidth, height: maximumHeight)
 
@@ -612,61 +651,64 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         host?.commit(node?.handler(.modalPopped), payload: [.number(Double(modals.count))])
     }
 
+    /// Composes the window's one native chrome from the visible arrangement:
+    /// the top page names the window, the stack's way back and the page's
+    /// actions are toolbar items, a split page adds the sidebar toggle, and
+    /// an authored title bar adds its slots and its own title.
     private func refreshVisiblePageChrome() {
         guard let node, let window else { return }
-        let visible = modals.last?.node.visibleContentPage ?? node.visibleContentPage
-        let fallbackTitle = node.string(.title) ?? visible?.string(.title) ?? "StateUI"
-        let authoredTitleBar = node.children.first { $0.type == .titleBar }
-        window.title = fallbackTitle
-        window.subtitle = authoredTitleBar?.string(.subtitle) ?? ""
-        let navigation = modals.last?.node.visibleNavigationPage ?? node.visibleNavigationPage
-        let barColor = navigation?.showsVisibleNavigationBar == true
-            ? navigation?.color(.barBackgroundColor)
-            : nil
-        synchronizeTitleBar(window, node: authoredTitleBar, navigationColor: barColor)
+        let titleBar = node.children.first { $0.type == .titleBar }
+        let page = node.visibleContentPage
+        let titleView = node.visibleTitleView
+        window.title = page?.string(.title) ?? node.string(.title) ?? "StateUI"
+        window.subtitle = ""
+        // A page's title view stands in for its title: the window keeps its
+        // name for the system and shows the view instead.
+        window.titleVisibility = titleView == nil ? .visible : .hidden
+
+        let actions = node.visibleToolbarActions
+        toolbar.apply(AppKitWindowChrome(
+            sidebar: node.pageNode?.sidebarController,
+            back: node.visibleBackAction,
+            leading: titleBar?.firstView(in: .leadingContent),
+            center: titleBar?.firstView(in: .content) ?? titleView,
+            actions: actions.primary,
+            overflow: actions.overflow,
+            trailing: titleBar?.firstView(in: .trailingContent)))
+        synchronizeTitleAccessory(window, titleBar: titleBar)
         host?.pageMenusChanged(in: self)
     }
 
-    /// Applies authored window chrome, or continues a visible navigation bar
-    /// through AppKit's ordinary title area when no `TitleBar` is present.
-    private func synchronizeTitleBar(
-        _ window: NSWindow,
-        node: MountedNode?,
-        navigationColor: NSColor?
-    ) {
-        if let node {
-            let controller = titleBarController ?? AppKitTitleBarController(
-                windowIdentifier: record.windowIdentifier)
-            titleBarController = controller
-            controller.synchronize(node)
-            if window.toolbar !== controller.toolbar { window.toolbar = controller.toolbar }
+    /// An authored title bar's own title stands at the trailing edge of the
+    /// window's title bar, where it is text rather than a toolbar control.
+    private func synchronizeTitleAccessory(_ window: NSWindow, titleBar: MountedNode?) {
+        let title = titleBar?.string(.title)
+        let subtitle = titleBar?.string(.subtitle)
+        let icon = titleBar?.image(.icon)
+        guard title != nil || subtitle != nil || icon != nil else {
+            if let accessory = titleAccessory,
+               let index = window.titlebarAccessoryViewControllers.firstIndex(of: accessory) {
+                window.removeTitlebarAccessoryViewController(at: index)
+            }
+            titleAccessory = nil
+            return
+        }
 
-            window.styleMask.insert(.fullSizeContentView)
-            window.titlebarAppearsTransparent = true
-            window.titleVisibility = .hidden
-            window.titlebarSeparatorStyle = .none
-            window.toolbarStyle = .unifiedCompact
-            window.backgroundColor = node.color(.backgroundColor)
-                ?? navigationColor
-                ?? .windowBackgroundColor
-        } else if let navigationColor {
-            if window.toolbar === titleBarController?.toolbar { window.toolbar = nil }
-            titleBarController = nil
-            window.toolbarStyle = .automatic
-            window.styleMask.insert(.fullSizeContentView)
-            window.titlebarAppearsTransparent = true
-            window.titleVisibility = .hidden
-            window.titlebarSeparatorStyle = .none
-            window.backgroundColor = navigationColor
+        titleCluster.apply(title: title ?? "", subtitle: subtitle ?? "", image: icon)
+        // AppKit gives a trailing accessory the toolbar row's height and
+        // centres it there; only the width is the cluster's own.
+        let fitting = titleCluster.fittingSize
+        if titleAccessory != nil {
+            if titleCluster.frame.width != fitting.width {
+                titleCluster.frame.size.width = fitting.width
+            }
         } else {
-            if window.toolbar === titleBarController?.toolbar { window.toolbar = nil }
-            titleBarController = nil
-            window.toolbarStyle = .automatic
-            window.styleMask.remove(.fullSizeContentView)
-            window.titlebarAppearsTransparent = false
-            window.titleVisibility = .visible
-            window.titlebarSeparatorStyle = .automatic
-            window.backgroundColor = .windowBackgroundColor
+            titleCluster.frame.size = fitting
+            let accessory = NSTitlebarAccessoryViewController()
+            accessory.layoutAttribute = .trailing
+            accessory.view = titleCluster
+            window.addTitlebarAccessoryViewController(accessory)
+            titleAccessory = accessory
         }
     }
 

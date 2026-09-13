@@ -194,15 +194,19 @@ final class AppKitSessionTests: XCTestCase {
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let native = try XCTUnwrap(controller.window)
         let screen = try XCTUnwrap(native.screen ?? NSScreen.main)
-        let contentSize = native.contentRect(forFrameRect: native.frame).size
+        // The content area is what the title bar and toolbar leave; AppKit's
+        // content view reaches under them by this much.
+        let contentSize = native.contentLayoutRect.size
+        let chrome = native.frame.height - native.contentLayoutRect.height
 
         XCTAssertEqual(native.title, "Workspace")
+        XCTAssertGreaterThan(chrome, 0)
         XCTAssertEqual(contentSize.width, 640, accuracy: 0.001)
         XCTAssertEqual(contentSize.height, 480, accuracy: 0.001)
         XCTAssertEqual(native.frame.minX, 137, accuracy: 0.001)
         XCTAssertEqual(native.frame.maxY, screen.visibleFrame.maxY - 73, accuracy: 0.001)
-        XCTAssertEqual(native.contentMinSize, NSSize(width: 320, height: 240))
-        XCTAssertEqual(native.contentMaxSize, NSSize(width: 1_200, height: 900))
+        XCTAssertEqual(native.contentMinSize, NSSize(width: 320, height: 240 + chrome))
+        XCTAssertEqual(native.contentMaxSize, NSSize(width: 1_200, height: 900 + chrome))
         XCTAssertFalse(try XCTUnwrap(native.standardWindowButton(.zoomButton)).isEnabled)
         XCTAssertFalse(native.styleMask.contains(.miniaturizable))
         XCTAssertFalse(

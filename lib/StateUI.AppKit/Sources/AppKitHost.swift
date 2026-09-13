@@ -1145,7 +1145,6 @@ final class MountedNode: NSObject {
     private var panFromY: Double = 0
     private var pagePresented = false
     private var pendingTabFallback: Int?
-    private var pendingFlyoutFallback: Bool?
     private var platformMenuItem: NSMenuItem?
 
     init(
@@ -1226,7 +1225,6 @@ final class MountedNode: NSObject {
             lastScrollYBucket = nil
             pagePresented = false
             pendingTabFallback = nil
-            pendingFlyoutFallback = nil
             recycledChildren.removeAll(keepingCapacity: true)
         } else {
             for property in patch.clearedProperties {
@@ -1516,9 +1514,61 @@ final class MountedNode: NSObject {
         }
     }
 
-    var showsVisibleNavigationBar: Bool {
-        guard type == .navigationPage else { return false }
-        return children.last?.bool(.navigationPageHasNavigationBar) ?? true
+    /// The native split view controller of a split page.
+    var sidebarController: NSSplitViewController? {
+        (view as? AppKitFlyoutView)?.splitController
+    }
+
+    /// The way back the visible navigation stack offers, while its top page
+    /// can go back.
+    var visibleBackAction: AppKitToolbarAction? {
+        guard let navigation = visibleNavigationPage,
+              navigation.children.count > 1,
+              let top = navigation.children.last,
+              top.bool(.navigationPageHasNavigationBar) ?? true,
+              top.bool(.navigationPageHasBackButton) ?? true
+        else { return nil }
+
+        let previous = navigation.children[navigation.children.count - 2]
+        let title = previous.string(.navigationPageBackButtonTitle) ?? "Back"
+        return AppKitToolbarAction(
+            identifier: AppKitWindowToolbar.back,
+            title: title,
+            image: AppKitWindowToolbar.backImage,
+            isEnabled: true,
+            perform: { [weak navigation] in navigation?.popNavigation() })
+    }
+
+    /// The visible page's actions: the primary ones, then those behind
+    /// native overflow, each group by priority and then source order. A page
+    /// that hides its navigation furniture puts none of them in the toolbar.
+    var visibleToolbarActions: (primary: [AppKitToolbarAction], overflow: [AppKitToolbarAction]) {
+        guard let page = visibleContentPage,
+              page.bool(.navigationPageHasNavigationBar) ?? true,
+              let items = page.slot(.toolbarItems)?.children
+        else { return ([], []) }
+
+        let ordered = items.enumerated().sorted {
+            let left = $0.element.whole(.priority) ?? 0
+            let right = $1.element.whole(.priority) ?? 0
+            return left == right ? $0.offset < $1.offset : left < right
+        }.map(\.element)
+        let actions = ordered.map { item in
+            (overflows: item.enumeration(.order) == 2, action: AppKitToolbarAction(
+                identifier: NSToolbarItem.Identifier("StateUI.action.\(item.mount)"),
+                title: item.string(.text) ?? "",
+                image: item.image(.iconImageSource),
+                isEnabled: item.bool(.isEnabled) ?? true,
+                perform: { [weak item] in item?.clicked(nil) }))
+        }
+        return (
+            actions.filter { !$0.overflows }.map(\.action),
+            actions.filter(\.overflows).map(\.action))
+    }
+
+    /// The view the visible page shows in place of its title.
+    var visibleTitleView: NSView? {
+        visibleContentPage?.slot(.navigationPageTitleView)?.presentableViews.first
     }
 
     var pageMenuItems: [NSMenuItem] {
@@ -1612,12 +1662,6 @@ final class MountedNode: NSObject {
         if pagePresented, previous != current {
             children.first?.setPagePresented(current, reason: .appearance)
         }
-
-        if let fallback = pendingFlyoutFallback,
-           let handler = events[.isPresentedChanged] {
-            host?.enqueue(handler, payload: [.bool(fallback)])
-        }
-        pendingFlyoutFallback = nil
     }
 
     func takeCreatedHandlers() -> [Int32] {
@@ -2050,9 +2094,8 @@ final class MountedNode: NSObject {
             return button
 
         case .toolbarItem:
-            let button = NSButton(title: "", target: self, action: #selector(clicked(_:)))
-            button.bezelStyle = .inline
-            return button
+            // The window's toolbar makes the native item; see visibleToolbarActions.
+            return nil
 
         case .entry:
             let entry = AppKitEntryView()
@@ -2251,12 +2294,6 @@ final class MountedNode: NSObject {
             page.padding = insets(.padding)
         }
 
-        if let navigation = view as? AppKitNavigationView {
-            navigation.applyBar(
-                backgroundColor: color(.barBackgroundColor),
-                textColor: color(.barTextColor))
-        }
-
         if let tabs = view as? AppKitTabbedView {
             tabs.applyBar(backgroundColor: color(.barBackgroundColor))
         }
@@ -2265,8 +2302,7 @@ final class MountedNode: NSObject {
             flyout.onPresentationChanged = { [weak self] presented in
                 self?.changeFlyoutPresentation(to: presented)
             }
-            pendingFlyoutFallback = flyout.apply(
-                presented: value(.isPresented)?.bool ?? false)
+            flyout.apply(presented: value(.isPresented)?.bool ?? false)
         }
 
         if let grid = view as? AppKitGridView {
@@ -2660,27 +2696,7 @@ final class MountedNode: NSObject {
         }
 
         if let navigation = view as? AppKitNavigationView {
-            let pageItems = children.compactMap { child -> AppKitNavigationItem? in
-                guard let layout = child.layoutItem else { return nil }
-                return AppKitNavigationItem(
-                    layout: layout,
-                    title: child.string(.title),
-                    backTitle: child.string(.navigationPageBackButtonTitle),
-                    showsNavigationBar: child.bool(.navigationPageHasNavigationBar) ?? true,
-                    showsBackButton: child.bool(.navigationPageHasBackButton) ?? true,
-                    titleView: child.slot(.navigationPageTitleView)?.presentableViews.first,
-                    toolbarItems: child.slot(.toolbarItems)?.children
-                        .compactMap { item -> AppKitToolbarItem? in
-                            guard let view = item.layoutItem?.view else { return nil }
-                            return AppKitToolbarItem(
-                                view: view,
-                                order: item.enumeration(.order) ?? 0,
-                                priority: item.whole(.priority) ?? 0,
-                                isDestructive: item.bool(.isDestructive) ?? false)
-                        } ?? [])
-            }
-            navigation.onBack = { [weak self] in self?.popNavigation() }
-            navigation.setItems(pageItems)
+            navigation.setItems(items)
             return
         }
 

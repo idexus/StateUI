@@ -67,17 +67,18 @@ final class AppKitPageTests: XCTestCase {
         ], popped: 9)))
         reported.removeAll()
 
-        let navigation = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("navigation")) as? AppKitNavigationView)
-        navigation.goBackForTesting()
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        controller.toolbarForTesting.performForTesting(AppKitWindowToolbar.back)
 
         XCTAssertEqual(reported.count, 1)
         XCTAssertEqual(reported[0].0, 9)
         XCTAssertEqual(reported[0].1, [.number(1)])
     }
 
+    /// The top page names the window, and the way back is the system's
+    /// navigational toolbar item, labelled by the page it returns to.
     @MainActor
-    func testNavigationBarReadsTheTopAndPreviousPages() throws {
+    func testTheWindowToolbarCarriesTheTopPageAndTheWayBack() throws {
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
@@ -91,15 +92,26 @@ final class AppKitPageTests: XCTestCase {
             page("details", title: "Details"),
         ])))
 
-        let navigation = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("navigation")) as? AppKitNavigationView)
-        XCTAssertEqual(navigation.titleForTesting, "Details")
-        XCTAssertEqual(navigation.backTitleForTesting, "Start")
-        XCTAssertTrue(navigation.showsBackButtonForTesting)
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let back = try XCTUnwrap(
+            controller.toolbarForTesting.itemForTesting(AppKitWindowToolbar.back))
+        XCTAssertEqual(controller.window?.title, "Details")
+        XCTAssertEqual(back.label, "Start")
+        XCTAssertTrue(back.isNavigational)
+        XCTAssertTrue(back.image === AppKitWindowToolbar.backImage)
+
+        renderer.applyForTesting(tree(navigation([home])))
+
+        XCTAssertEqual(controller.window?.title, "Home")
+        XCTAssertNil(controller.toolbarForTesting.itemForTesting(AppKitWindowToolbar.back))
     }
 
+    /// The window's chrome is the system's: a unified toolbar over full-size
+    /// content, the page in the safe area under it, and the native window
+    /// background. A bar colour is the platform's to adapt, and AppKit keeps
+    /// its toolbar's own material.
     @MainActor
-    func testNavigationBarColorContinuesThroughTheNativeWindowTitleBar() throws {
+    func testANavigationStackStandsUnderTheWindowsNativeToolbar() throws {
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
@@ -111,24 +123,21 @@ final class AppKitPageTests: XCTestCase {
             red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(stack))
 
-        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let window = try XCTUnwrap(controller.window)
         let content = try XCTUnwrap(window.contentView)
         let navigation = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("navigation")) as? AppKitNavigationView)
         content.layoutSubtreeIfNeeded()
+        XCTAssertTrue(window.toolbar === controller.toolbarForTesting.toolbar)
         XCTAssertTrue(window.styleMask.contains(.fullSizeContentView))
-        XCTAssertTrue(window.titlebarAppearsTransparent)
-        XCTAssertEqual(window.titleVisibility, .hidden)
-        XCTAssertEqual(content.frame.height, window.frame.height)
+        XCTAssertEqual(window.toolbarStyle, .unified)
+        XCTAssertEqual(window.titleVisibility, .visible)
+        XCTAssertFalse(window.titlebarAppearsTransparent)
         XCTAssertGreaterThan(content.safeAreaInsets.top, 0)
         XCTAssertEqual(navigation.frame, content.safeAreaRect)
-        XCTAssertTrue(navigation.hasSolidBarBackgroundForTesting)
-        XCTAssertTrue(navigation.navigationBarIsFrontmostForTesting)
-        XCTAssertTrue(window.backgroundColor.isEqual(NSColor(
-            srgbRed: 54.0 / 255.0,
-            green: 42.0 / 255.0,
-            blue: 86.0 / 255.0,
-            alpha: 1)))
+        XCTAssertTrue(navigation.topViewForTesting === renderer.viewForTesting(id: .manual("home")))
+        XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
     }
 
     @MainActor
@@ -311,15 +320,56 @@ final class AppKitPageTests: XCTestCase {
             menu: page("menu", events: 100),
             detail: page("detail", events: 200)), width: 600))
 
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let content = try XCTUnwrap(controller.window?.contentView)
         let flyout = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitFlyoutView)
-        let split = flyout.splitControllerForTesting
+        let split = flyout.splitController
+        let toolbar = controller.toolbarForTesting
+        content.layoutSubtreeIfNeeded()
 
         XCTAssertTrue(split.view.superview === flyout)
         XCTAssertEqual(split.splitViewItems.count, 2)
+        XCTAssertEqual(split.splitViewItems[0].behavior, .sidebar)
+        XCTAssertTrue(split.splitViewItems[0].allowsFullHeightLayout)
         XCTAssertTrue(split.splitViewItems[0].canCollapse)
         XCTAssertTrue(split.splitViewItems[0].isCollapsed)
         XCTAssertFalse(split.splitViewItems[1].isCollapsed)
+        XCTAssertEqual(flyout.frame, content.bounds)
+        XCTAssertTrue(toolbar.sidebarForTesting === split)
+        XCTAssertEqual(
+            Array(toolbar.identifiersForTesting.prefix(2)),
+            [.toggleSidebar, .sidebarTrackingSeparator])
+    }
+
+    /// The system toggle hides a sidebar the host showed for a wide window,
+    /// and the reader's answer stands: nothing forces it back.
+    @MainActor
+    func testTheReaderMayHideTheSidebarOfAWideWindow() throws {
+        var reported: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reported.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(flyout(
+            presented: false,
+            menu: page("menu", events: 100),
+            detail: page("detail", events: 200),
+            changed: 9), width: 900))
+        let flyout = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitFlyoutView)
+        renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
+        XCTAssertTrue(flyout.isEffectivelyPresentedForTesting)
+        reported.removeAll()
+
+        flyout.toggleForTesting()
+        flyout.needsLayout = true
+        flyout.layoutSubtreeIfNeeded()
+
+        XCTAssertFalse(flyout.isEffectivelyPresentedForTesting)
+        XCTAssertEqual(reported.filter { $0.0 == 9 }.map(\.1), [[.bool(false)]])
     }
 
     @MainActor
@@ -339,13 +389,10 @@ final class AppKitPageTests: XCTestCase {
 
         let flyout = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitFlyoutView)
-        let navigation = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("navigation")) as? AppKitNavigationView)
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
 
         XCTAssertTrue(flyout.isEffectivelyPresentedForTesting)
         XCTAssertGreaterThanOrEqual(flyout.sidebarWidthForTesting, 260)
-        XCTAssertFalse(navigation.showsFlyoutButtonForTesting)
         XCTAssertTrue(reported.contains { $0.0 == 9 && $0.1 == [.bool(true)] })
     }
 
@@ -380,28 +427,30 @@ final class AppKitPageTests: XCTestCase {
         ])))
         reported.removeAll()
 
-        let navigation = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("navigation")) as? AppKitNavigationView)
-        let customTitle = try XCTUnwrap(navigation.titleViewForTesting as? AppKitLabelView)
+        let chrome = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
+        let customTitle = try XCTUnwrap(
+            chrome.itemForTesting(AppKitWindowToolbar.center)?.view as? AppKitLabelView)
         XCTAssertEqual(customTitle.stringValue, "Search title")
-        XCTAssertEqual(navigation.toolbarItemCountForTesting, 1)
+        XCTAssertEqual(chrome.actionTitlesForTesting, ["Save"])
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        XCTAssertEqual(window.title, "Ignored", "the title still names the window")
+        XCTAssertEqual(window.titleVisibility, .hidden, "the title view stands in for it")
 
-        navigation.clickToolbarItemForTesting(0)
+        let saveItem = try XCTUnwrap(chrome.itemForTesting(titled: "Save"))
+        chrome.performForTesting(saveItem.itemIdentifier)
         XCTAssertEqual(reported.map(\.0), [50])
     }
 
+    /// The page's actions are native toolbar items: the primary ones by
+    /// priority, then source order, and the secondary ones behind the
+    /// toolbar's own overflow menu.
     @MainActor
-    func testNavigationBarAppliesItsForegroundAndCompleteToolbarPolicy() throws {
+    func testThePagesActionsFollowTheirOrderAndPriorityInTheToolbar() throws {
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
         defer { renderer.closeForTesting() }
-        let foreground = NSColor(
-            srgbRed: 51.0 / 255.0,
-            green: 179.0 / 255.0,
-            blue: 230.0 / 255.0,
-            alpha: 1)
 
         func toolbarItem(
             _ id: String,
@@ -444,26 +493,19 @@ final class AppKitPageTests: XCTestCase {
             red: 51, green: 179, blue: 230, alpha: 255)
         renderer.applyForTesting(tree(stack))
 
-        let navigation = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("navigation")) as? AppKitNavigationView)
-        let save = try XCTUnwrap(navigation.toolbarButtonForTesting(0))
-        let remove = try XCTUnwrap(navigation.toolbarButtonForTesting(2))
+        let chrome = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
+        let save = try XCTUnwrap(chrome.itemForTesting(titled: "Save"))
+        let earlier = try XCTUnwrap(chrome.itemForTesting(titled: "Earlier"))
 
-        XCTAssertTrue(navigation.titleTextColorForTesting?.isEqual(foreground) == true)
-        XCTAssertTrue(navigation.backButtonTintForTesting?.isEqual(foreground) == true)
-        XCTAssertEqual(navigation.visibleToolbarTitlesForTesting, ["Earlier", "Save"])
-        XCTAssertEqual(navigation.overflowToolbarTitlesForTesting, ["Delete"])
-        XCTAssertEqual(save.title, "Save")
+        XCTAssertEqual(chrome.actionTitlesForTesting, ["Earlier", "Save"])
+        XCTAssertEqual(chrome.overflowTitlesForTesting, ["Delete"])
+        XCTAssertNil(chrome.itemForTesting(titled: "Delete"))
+        XCTAssertNotNil(chrome.itemForTesting(AppKitWindowToolbar.overflow))
         XCTAssertFalse(save.isEnabled)
         XCTAssertNotNil(save.image)
-        XCTAssertTrue(
-            (save.attributedTitle.attribute(
-                .foregroundColor, at: 0, effectiveRange: nil) as? NSColor)?
-                .isEqual(foreground) == true)
-        XCTAssertTrue(
-            (remove.attributedTitle.attribute(
-                .foregroundColor, at: 0, effectiveRange: nil) as? NSColor)?
-                .isEqual(NSColor.systemRed) == true)
+        XCTAssertTrue(save.isBordered)
+        XCTAssertEqual(earlier.title, "Earlier")
+        XCTAssertTrue(earlier.isBordered)
     }
 
     @MainActor

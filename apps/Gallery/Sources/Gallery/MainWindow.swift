@@ -82,9 +82,11 @@ struct MainWindow: Window {
             window.isMaximizable = true
             window.isMinimizable = true
 
-            // Authored window chrome is meaningful on a desktop host.
+            // Authored window chrome is meaningful on a desktop host, and
+            // there the menu is a sidebar beside the page.
             if device.idiom == .desktop {
                 window.titleBar = chrome
+                nav.menuOverlays = false
             }
 
             // What is over all of it: a second arranged list on the window,
@@ -236,34 +238,9 @@ struct MainWindow: Window {
             .icon("stateui_mark.png")
             .backgroundColor(style.accent.color)
             .foregroundColor(Palette.onBrand)
-            .leadingContent {
-                if device.idiom == .desktop {
-                    ChromeMenu(nav: nav)
-                }
-            }
             .trailingContent {
                 ChromeEnd(bar: bar, nav: nav, catalog: catalog)
             }
-    }
-}
-
-/// The leading title-area control follows the navigation state it reads.
-private struct ChromeMenu: ContentView {
-    /// Where the gallery is - the path the button follows, and the menu it
-    /// opens.
-    let nav: Navigation
-
-    var content: any View {
-        ImageButton("nav_menu_dark.png")
-            .automationId("chrome.menu")
-            .semanticDescription("Menu")
-            .semanticHint("Opens the list of sample groups")
-            .padding(10)
-            .margin(20, 0)
-            .verticalOptions(.center)
-            .opacity(nav.path.count > 0 ? 1 : 0)
-            .inputTransparent(nav.path.count == 0)
-            .onClicked { nav.menuOpen.toggle() }
     }
 }
 

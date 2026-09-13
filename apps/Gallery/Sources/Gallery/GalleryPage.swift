@@ -3,9 +3,9 @@
 import StateUI
 
 extension PageSession {
-    /// Dresses a page the way every page of the gallery is dressed: its title
-    /// in the gallery's own hand on the bar, the inspector and the way home in
-    /// the corner, and the tinted ground behind the content.
+    /// Dresses a page the way every page of the gallery is dressed: its title,
+    /// the inspector and the way home in the corner, and the tinted ground
+    /// behind the content.
     ///
     ///     VStack { … }
     ///         .onCreated { page.gallery("Level 2", scene: scene, nav: nav) }
@@ -17,9 +17,9 @@ extension PageSession {
     /// properties - whether there is a bar at all, whether there is a way back,
     /// what the back button reads - and `LevelPage` shows those.
     ///
-    /// The title view replaces the standard title, so `MenuTitle` owns the
-    /// gallery's size and weight in one place. A page with actions of its own
-    /// puts them before these from its `.onCreated`; see `ToolbarSample`.
+    /// The title is the page's own, drawn by each platform's bar in its own
+    /// type. A page with actions of its own puts them before these from its
+    /// `.onCreated`; see `ToolbarSample`.
     ///
     /// - Parameters:
     ///   - title: what the page is called.
@@ -29,7 +29,6 @@ extension PageSession {
     ///     home page, which is where it goes.
     func gallery(_ title: String, scene: SceneSession, nav: Navigation?) {
         self.title = title
-        navigationPageTitleView = MenuTitle(title)
         // Icons give both actions a stable native footprint. Their captions
         // remain available to accessibility and to platforms that show text.
         toolbarItems = [
