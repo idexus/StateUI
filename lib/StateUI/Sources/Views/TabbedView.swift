@@ -49,7 +49,7 @@
 ///     struct MainWindow: Window {
 ///         @State private var tab: Tab = .today
 ///
-///         var page: any View {
+///         var page: any Page {
 ///             TabbedView(Tab.allCases) { tab in
 ///                 switch tab {
 ///                 case .today:    TodayPage()
@@ -126,7 +126,7 @@
 ///   thing - which is what passing an array and a closure already is.
 /// - `CurrentPage` as a readable property. The bound selection answers it on
 ///   this side, before the host has drawn anything.
-public struct TabbedView: View, BarElement, PageElement, PageArrangement {
+public struct TabbedView: Page, BindableObject, BarElement, PageElement, PageArrangement {
     /// The node this page describes.
     public var node: Node
 
@@ -154,7 +154,7 @@ public struct TabbedView: View, BarElement, PageElement, PageArrangement {
     /// - Parameter destination: the page for one tab.
     public init<Tabs: RandomAccessCollection>(
         _ tabs: Tabs,
-        destination: (Tabs.Element) -> any View
+        destination: (Tabs.Element) -> any Page
     ) where Tabs.Element: Hashable {
         let ordered = Array(tabs)
         self.tabs = ordered.map { AnyHashable($0) }

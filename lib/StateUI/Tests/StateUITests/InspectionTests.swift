@@ -48,7 +48,7 @@ private struct Blank: ContentView {
 
 /// A scene's main window.
 private struct First: Window {
-    var page: any View { Blank() }
+    var page: any Page { Blank() }
 }
 
 /// What an inspector holds, for the test that writes it - a model at file
@@ -65,7 +65,7 @@ private struct Showing: ContentView {
 }
 
 private struct ShowingWindow: Window {
-    var page: any View { Showing() }
+    var page: any Page { Showing() }
 }
 
 private struct ShowingApplication: Application {

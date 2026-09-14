@@ -16,7 +16,7 @@ import XCTest
 /// A window as an author declares one: a page, and nothing else - what it is
 /// told, a title bar included, being its session's.
 private struct PlainWindow: Window {
-    var page: any View { Home() }
+    var page: any Page { Home() }
 }
 
 private struct Home: ContentView {

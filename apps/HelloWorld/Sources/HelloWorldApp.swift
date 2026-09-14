@@ -30,7 +30,7 @@ struct HelloWorldApp: Application {
 /// this window owns. The sample app in the StateUI repository is written that
 /// way throughout.
 struct MainWindow: Window {
-    var page: any View { MainPage() }
+    var page: any Page { MainPage() }
 }
 
 /// The one thing this module exports - the line that names this application to

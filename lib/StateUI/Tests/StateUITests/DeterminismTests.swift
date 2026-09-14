@@ -107,7 +107,7 @@ private struct DeterminismWindow: Window {
     let path: Binding<[Route]>
     let count: Binding<Int>
 
-    var page: any View {
+    var page: any Page {
         TabbedView([Tab.home, .settings]) { which in
             switch which {
             case .home:

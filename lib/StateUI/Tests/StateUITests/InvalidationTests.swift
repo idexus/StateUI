@@ -980,7 +980,7 @@ private struct WritingBody: ContentView {
 }
 
 private struct WritingWindow: Window {
-    var page: any View { WritingBody() }
+    var page: any Page { WritingBody() }
 }
 
 private struct WritingApp: Application {
@@ -1010,7 +1010,7 @@ private struct AsideBody: ContentView {
 }
 
 private struct AsideWindow: Window {
-    var page: any View { AsideBody() }
+    var page: any Page { AsideBody() }
 }
 
 private struct AsideApp: Application {
@@ -1035,7 +1035,7 @@ private struct ChosenPage: ContentView {
 }
 
 private struct ChosenWindow: Window {
-    var page: any View {
+    var page: any Page {
         ChosenPage(
             text: Chosen.shared.byFirst
                 ? Chosen.shared.first.wrappedValue

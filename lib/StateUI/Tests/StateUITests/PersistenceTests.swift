@@ -38,7 +38,7 @@ private struct Preferences {
 }
 
 private struct KeepingWindow: Window {
-    var page: any View { KeepingPage() }
+    var page: any Page { KeepingPage() }
 }
 
 private struct KeepingPage: ContentView {

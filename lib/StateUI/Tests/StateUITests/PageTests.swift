@@ -82,7 +82,7 @@ private struct EveryPropertyPage: ContentView {
 
 /// A window whose session says everything a window can be told.
 private struct EveryPropertyWindow: Window {
-    var page: any View { EveryPropertyPage() }
+    var page: any Page { EveryPropertyPage() }
 
     static var node: Node {
         let session = WindowSession()

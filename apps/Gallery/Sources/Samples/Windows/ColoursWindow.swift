@@ -4,7 +4,7 @@ import StateUI
 /// opened it, painting that gallery's bars and no other's. See
 /// `MultiWindowSample`.
 struct ColoursWindow: Window {
-    var page: any View { ColoursPage() }
+    var page: any Page { ColoursPage() }
 }
 
 /// The accents on offer, each drawn in itself.

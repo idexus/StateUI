@@ -71,7 +71,7 @@ private struct TestWindow: Window {
     /// under the sheets. Nil is the plain home page.
     var path: Binding<[Int]>?
 
-    var page: any View {
+    var page: any Page {
         guard let path else { return HomePage(sheets: sheets) }
 
         return NavigationStack(path) {

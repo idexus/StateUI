@@ -44,7 +44,7 @@
 ///     struct MainWindow: Window {
 ///         @State private var path: [Route] = []
 ///
-///         var page: any View {
+///         var page: any Page {
 ///             NavigationStack($path) {
 ///                 HomePage(path: $path)
 ///             } destination: { route in
@@ -100,7 +100,7 @@
 ///     struct RoutedWindow: Window {
 ///         let router: Router
 ///
-///         var page: any View {
+///         var page: any Page {
 ///             NavigationStack(router.$path) {
 ///                 RoutedHomePage()
 ///             } destination: { … }
@@ -144,15 +144,16 @@
 /// - Parallel push and pop notifications. The path is the one channel: a view
 ///   holding it uses `.onChanged(path) { … }` and observes every committed
 ///   arrival and departure as state.
-/// - The page's own look - a padding, a safe-area inset. A NavigationStack
-///   draws nothing but its bar and whatever page is on top, so the page on
-///   top carries all of that.
+/// - The page's own look - a padding, a background, a safe-area inset. A
+///   NavigationStack draws nothing but its bar and whatever page is on top, so
+///   the page on top carries all of that.
 ///
-/// What IS on it: what every view carries; the bar's flat background and
-/// foreground tint; and `PageElement`'s `.title` and `.iconImageSource`, which
-/// name the whole stack where another container presents it. The title on the
-/// bar belongs to the top page.
-public struct NavigationStack: View, BarElement, PageElement, PageArrangement {
+/// What IS on it: the bar's flat background and foreground tint;
+/// `PageElement`'s `.title` and `.iconImageSource`, which name the whole stack
+/// where another container presents it; and `.onCreated`, `.onDestroying` and
+/// `.onChanged`, as on anything bindable. The title on the bar belongs to the
+/// top page.
+public struct NavigationStack: Page, BindableObject, BarElement, PageElement, PageArrangement {
     /// The node this page describes.
     public var node: Node
 
@@ -167,8 +168,8 @@ public struct NavigationStack: View, BarElement, PageElement, PageArrangement {
     /// - Parameter destination: the page for one route, asked in path order.
     public init<Route: Hashable>(
         _ path: Binding<[Route]>,
-        root: () -> any View,
-        destination: (Route) -> any View
+        root: () -> any Page,
+        destination: (Route) -> any Page
     ) {
         var children: [Node] = [Self.identified(Node.page(root()), as: Self.rootIdentity)]
 

@@ -90,7 +90,7 @@ public struct ModalStack {
     /// - Parameter destination: the page for one element, asked in stack order.
     public init<Sheet: Hashable>(
         _ stack: Binding<[Sheet]>,
-        destination: @escaping (Sheet) -> any View
+        destination: @escaping (Sheet) -> any Page
     ) {
         build = {
             Node(

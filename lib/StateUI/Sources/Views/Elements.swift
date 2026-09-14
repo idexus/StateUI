@@ -1055,7 +1055,7 @@ public protocol ViewProperties: VisualElementProperties {}
 /// A VisualElement a layout positions. MAUI: View. What this tier ADDS to the
 /// property half is what only a control can carry: the gestures, the two pan
 /// feeds, the frame report, and the context menu.
-public protocol View: VisualElement, ViewProperties {}
+public protocol View: VisualElement, ViewProperties, Page {}
 
 extension ViewProperties {
     /// The space kept OUTSIDE the view, between it and its neighbours.

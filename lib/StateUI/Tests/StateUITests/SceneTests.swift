@@ -56,7 +56,7 @@ private struct Home: ContentView {
 private struct MainWindow: Window {
     @Binding var shade: String
 
-    var page: any View { Home(shade: $shade) }
+    var page: any Page { Home(shade: $shade) }
 }
 
 /// A page showing the session's accent.
@@ -66,7 +66,7 @@ private struct Showing: ContentView {
 
 /// The one fonts window a session may open.
 private struct FontsWindow: Window {
-    var page: any View { Showing() }
+    var page: any Page { Showing() }
 }
 
 /// A page that says which document its window is for, and makes the window
@@ -86,7 +86,7 @@ private struct Retargeting: ContentView {
 private struct DocumentWindow: Window {
     @Binding var number: Int
 
-    var page: any View { Retargeting(number: $number) }
+    var page: any Page { Retargeting(number: $number) }
 }
 
 /// A session: its own palette, a value it keeps, a group of one and a group
@@ -119,7 +119,7 @@ private struct Blank: ContentView {
 
 /// A window and nothing else.
 private struct PlainWindow: Window {
-    var page: any View { Blank() }
+    var page: any Page { Blank() }
 }
 
 /// An application whose scene is a window alone.
@@ -138,7 +138,7 @@ private struct Waiting: ContentView {
 private struct LoadingWindow: Window {
     @Binding var loading: Bool
 
-    var page: any View { Waiting(loading: $loading) }
+    var page: any Page { Waiting(loading: $loading) }
 }
 
 /// A session whose main window is one thing and then another.
@@ -177,7 +177,7 @@ private struct Counting: ContentView {
 private struct CountingWindow: Window {
     @State private var opened = 0
 
-    var page: any View { Counting(opened: $opened) }
+    var page: any Page { Counting(opened: $opened) }
 }
 
 private struct CountingApp: Application {
@@ -201,7 +201,7 @@ private struct Naming: ContentView {
 }
 
 private struct NamingWindow: Window {
-    var page: any View { Naming() }
+    var page: any Page { Naming() }
 }
 
 private struct NamingApp: Application {
@@ -222,7 +222,7 @@ private struct Listing: ContentView {
 }
 
 private struct ListingWindow: Window {
-    var page: any View { Listing() }
+    var page: any Page { Listing() }
 }
 
 /// A scene whose page counts, with a group of one beside it.

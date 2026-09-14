@@ -5,16 +5,16 @@
 //
 //     Application  ──scene──▶  Scene  ──windows──▶  Window  ──page──▶  Page  ──view──▶  the view tree
 //
-// An Application declares its scene, a Scene its windows, a Window the view it
-// shows as its page - and that is ALL any of them declares. Each is a type,
-// declared rather than constructed:
+// An Application declares its scene, a Scene its windows, a Window its page -
+// and that is ALL any of them declares. Each is a type, declared rather than
+// constructed:
 //
 //     struct GalleryApp: Application {
 //         var scene: any Scene { MainWindow() }
 //     }
 //
 //     struct MainWindow: Window {
-//         var page: any View { MainPage() }
+//         var page: any Page { MainPage() }
 //     }
 //
 //     struct MainPage: ContentView {
@@ -78,7 +78,7 @@ public protocol Application {
 /// A window onto a page.
 ///
 ///     struct MainWindow: Window {
-///         var page: any View { MainPage() }
+///         var page: any Page { MainPage() }
 ///     }
 ///
 /// Written the way a view of the application's own is: a type you DECLARE,
@@ -124,7 +124,7 @@ public protocol Window: Element, Scene {
     /// The only thing a window must say - read as the window is built, and
     /// again when what it was built with or a state it read changes; otherwise
     /// the window is carried whole.
-    var page: any View { get }
+    var page: any Page { get }
 }
 
 extension Window {
@@ -220,14 +220,19 @@ extension Node {
     }
 }
 
-/// What a container shows as a screen - a role a view takes, not a type an
-/// author picks.
+/// What a container shows as a screen: a window's `page`, a navigation
+/// stack's root and destinations, a tab, either half of a split view, a
+/// sheet.
 ///
-/// Any view can be shown as a page: a window's `page`, a navigation stack's
-/// root and destinations, a tab, either half of a split view, a sheet. The
-/// container puts what it shows on a page, which carries what a screen IS -
-/// its title, its buttons, its menus, where it stands in its life - as the
-/// `PageSession` in the environment of the view and of everything in it:
+/// Nobody conforms to it by hand. Every view is a page - usually a
+/// `ContentView` of the application's own - and so is each ARRANGEMENT: a
+/// `NavigationStack`, a `TabbedView`, a `SplitView`. An arrangement is not a
+/// view, so it stands only where a page stands: a stack written inside a
+/// `VStack` does not compile.
+///
+/// The container puts a view it shows on a page, which carries what a screen
+/// IS - its title, its buttons, its menus, where it stands in its life - as
+/// the `PageSession` in the environment of the view and of everything in it:
 ///
 ///     struct MainPage: ContentView {
 ///         @Environment private var page: PageSession
@@ -245,10 +250,12 @@ extension Node {
 /// all: it belongs to the arrangement drawing it - see `barBackgroundColor` on
 /// `NavigationStack` and `TabbedView`.
 ///
-/// An ARRANGEMENT - a `NavigationStack`, a `TabbedView`, a `SplitView` - is a
-/// page already and is shown as it is. It is told what it is by modifier,
-/// `.title("Stack")`, from `PageElement`.
-protocol PageArrangement {}
+/// An arrangement is a page already and is shown as it is. It is told what it
+/// is by modifier, `.title("Stack")`, from `PageElement`.
+public protocol Page: Element {}
+
+/// An arrangement: a page this library declares, shown as it is.
+protocol PageArrangement: Page {}
 
 extension Node {
     /// A view shown as a screen: an arrangement as it is, any other view on a
@@ -260,10 +267,10 @@ extension Node {
     /// element it is, with its state, its inputs and whatever was written on
     /// it, one level down - so a write to the session builds the page again
     /// and carries the view whole.
-    static func page(_ view: any View) -> Node {
-        if view is any PageArrangement { return view.body }
+    static func page(_ shown: any Page) -> Node {
+        if shown is any PageArrangement { return shown.body }
 
-        let content = view.body
+        let content = shown.body
         let kind = (content.stateful?.viewType ?? content.type.name) + (content.id.map { "#\($0)" } ?? "")
         let request = ElementSession(PageSession.self) { PageSession() }
 

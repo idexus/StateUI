@@ -55,7 +55,7 @@ struct MainWindow: Window {
 
     /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
     /// pages, a stack holding an array, a set of tabs holding a selection.
-    var page: any View {
+    var page: any Page {
         SplitView(nav.$menuOpen) {
             MenuPage(
                 catalog: catalog,
@@ -124,7 +124,7 @@ struct MainWindow: Window {
     /// `TabbedView` is a page like any other, so a section may simply be one -
     /// and a stack may sit inside a tab, because pages nest without a rule
     /// about which may hold which.
-    func detail() -> any View {
+    func detail() -> any Page {
         if case .tabs = nav.section {
             return tabs()
         }
@@ -170,7 +170,7 @@ struct MainWindow: Window {
     /// - Parameter route: which page the stack asked for.
     /// - Parameter path: the stack this page is ON, so a page that pushes or
     ///   pops writes the array it is a member of - the main one, or the tab's.
-    func page(for route: Route, path: Binding<[Route]>) -> any View {
+    func page(for route: Route, path: Binding<[Route]>) -> any Page {
         switch route {
         case .group(let route):
             guard let group = catalog.groups.first(where: { $0.route == route }) else {
@@ -199,7 +199,7 @@ struct MainWindow: Window {
     ///
     /// Its own flat bar background. The native selector owns the distinction
     /// between selected and unselected tabs.
-    func tabs() -> any View {
+    func tabs() -> any Page {
         TabbedView(nav.tabs) { which in
             switch which {
             case .stack:

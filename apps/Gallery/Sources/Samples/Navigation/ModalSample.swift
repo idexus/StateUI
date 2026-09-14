@@ -16,7 +16,7 @@ struct ModalSample: SampleContent {
         struct MainWindow: Window {
             @State private var sheets: [Sheet] = []
 
-            var page: any View {
+            var page: any Page {
                 HomePage(sheets: $sheets)
             }
         }

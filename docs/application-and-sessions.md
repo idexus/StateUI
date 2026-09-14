@@ -9,7 +9,7 @@ declaration         runtime state
 Application         ApplicationSession
 Scene               SceneSession
 Window              WindowSession
-page (any view)     PageSession
+Page                PageSession
 ```
 
 A declaration answers what it is composed of. Its session answers what the
@@ -28,7 +28,7 @@ struct SingleWindowApp: Application {
 }
 
 struct MainWindow: Window {
-    var page: any View { HomePage() }
+    var page: any Page { HomePage() }
 }
 
 struct HomePage: ContentView {
@@ -331,15 +331,17 @@ and therefore triggers no extra reaction.
 
 ## Page session
 
-A page is a role, not a type. Whatever a container shows as a screen - a
-window's `page`, a navigation stack's root and destinations, a tab, either
-half of a split view, a sheet - goes on a page, usually a `ContentView` of the
-application's own. The page owns one `PageSession` for as long as the same
-view stands on it: the same view type under the same explicit id. Another view
-in that place starts a session of its own. A write to the session builds the
-page again and carries the view on it whole. An arrangement -
+Whatever a container shows as a screen - a window's `page`, a navigation
+stack's root and destinations, a tab, either half of a split view, a sheet -
+is a `Page`. Nobody declares one by hand: every view is a page, usually a
+`ContentView` of the application's own, and so is each arrangement. The
+container puts a view on a page that owns one `PageSession` for as long as
+the same view stands on it: the same view type under the same explicit id.
+Another view in that place starts a session of its own. A write to the session
+builds the page again and carries the view on it whole. An arrangement -
 `NavigationStack`, `TabbedView`, `SplitView` - is a page already and is shown
-as it is; it is told what it is by modifier.
+as it is; it is not a view, so it stands only where a page stands, and it is
+told what it is by modifier.
 
 | Member | Meaning |
 | --- | --- |

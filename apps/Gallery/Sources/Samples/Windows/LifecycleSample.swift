@@ -27,7 +27,7 @@ struct LifecycleSample: SampleContent {
             @State private var menuOpen = false
             let log: WindowLog
 
-            var page: any View {
+            var page: any Page {
                 SplitView($menuOpen) { MenuPage() } detail: { HomePage() }
                     .onCreated { log.note("created") }
                     .onChanged(window.phase) { log.note("\\(window.phase)") }

@@ -49,7 +49,7 @@ struct NotesApp: Application {
 }
 
 struct NotesWindow: Window {
-    var page: any View { NotesPage() }
+    var page: any Page { NotesPage() }
 }
 
 struct NotesPage: ContentView {
@@ -97,7 +97,7 @@ struct RegisteredApp: Application {
 }
 
 struct RegisteredWindow: Window {
-    var page: any View { RegisteredPage() }
+    var page: any Page { RegisteredPage() }
 }
 
 struct RegisteredPage: ContentView {

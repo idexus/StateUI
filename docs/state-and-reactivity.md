@@ -309,7 +309,7 @@ struct NotesApp: Application {
 }
 
 struct NotesWindow: Window {
-    var page: any View { SettingsPage() }
+    var page: any Page { SettingsPage() }
 }
 
 struct SettingsPage: ContentView {

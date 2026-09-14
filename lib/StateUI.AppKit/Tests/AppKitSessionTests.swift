@@ -708,11 +708,11 @@ private struct AppKitSessionPage: ContentView {
 }
 
 private struct AppKitSessionMainWindow: Window {
-    var page: any View { AppKitSessionPage(caption: "Main") }
+    var page: any Page { AppKitSessionPage(caption: "Main") }
 }
 
 private struct AppKitSessionToolWindow: Window {
-    var page: any View { AppKitSessionPage(caption: "Tool") }
+    var page: any Page { AppKitSessionPage(caption: "Tool") }
 }
 
 private struct AppKitSessionScene: Scene {

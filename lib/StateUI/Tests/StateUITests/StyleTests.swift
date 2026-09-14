@@ -16,7 +16,7 @@ import XCTest
 
 /// The window under every styled application here.
 private struct HomeWindow: Window {
-    var page: any View { Home() }
+    var page: any Page { Home() }
 }
 
 /// An application with styles, which is where MAUI keeps them too - written

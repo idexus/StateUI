@@ -157,10 +157,11 @@ final class HostContractTests: XCTestCase {
         }
     }
 
-    /// A page is a role any view takes, not a type an author picks: nothing
-    /// declares a page protocol again, and the host vocabulary names the page
-    /// once, as `Page`.
-    func testAPageIsARoleAnyViewTakes() throws {
+    /// A page is what a container shows: every view is one and so is each
+    /// arrangement, and nobody declares one by hand. An arrangement is not a
+    /// view, so it stands only where a page stands. `ContentPage` does not
+    /// return, as a protocol or as a node type.
+    func testAPageIsWhatAContainerShows() throws {
         let tokenSource = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
             encoding: .utf8)
@@ -169,12 +170,24 @@ final class HostContractTests: XCTestCase {
         XCTAssertTrue(controls.contains("Page"))
         XCTAssertFalse(controls.contains("ContentPage"), "the page is named twice on the host boundary")
 
+        let path = State<[Int]>([])
+        let sidebar = State(false)
+        let arrangements: [any Page] = [
+            NavigationStack(path.projectedValue) { Label("root") } destination: { _ in Label("page") },
+            TabbedView([0, 1]) { _ in Label("tab") },
+            SplitView(sidebar.projectedValue) { Label("sidebar") } detail: { Label("detail") },
+        ]
+
+        for arrangement in arrangements {
+            XCTAssertFalse(
+                arrangement is any View,
+                "\(type(of: arrangement)) is a view, so it could stand inside content")
+        }
+
         for (path, text) in try Fixtures.allSources() {
-            for former in ["protocol Page", "protocol ContentPage"] {
-                XCTAssertNil(
-                    text.range(of: "\\b\(former)\\b", options: .regularExpression),
-                    "\(former) is declared again in \(path)")
-            }
+            XCTAssertNil(
+                text.range(of: "\\bprotocol ContentPage\\b", options: .regularExpression),
+                "ContentPage is declared again in \(path)")
         }
     }
 

@@ -4,7 +4,7 @@ import StateUI
 /// opened it: it closes with that gallery, may step aside for another, and
 /// changes what this gallery shows and no other. See `MultiWindowSample`.
 struct FontsWindow: Window {
-    var page: any View { FontsPage() }
+    var page: any Page { FontsPage() }
 }
 
 /// The families on offer, each set in itself.

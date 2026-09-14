@@ -255,7 +255,7 @@ private struct Titling: Application {
 
 /// The window the page names.
 private struct TitlingWindow: Window {
-    var page: any View { TitlingPage() }
+    var page: any Page { TitlingPage() }
 }
 
 /// A page that names the window it is in as it comes into the tree.
@@ -274,7 +274,7 @@ private struct Chaining: Application {
 
 /// The window the counting page is in.
 private struct ChainingWindow: Window {
-    var page: any View { ChainingPage() }
+    var page: any Page { ChainingPage() }
 }
 
 /// A page whose count moves every time it is seen to have moved.

@@ -19,7 +19,7 @@ enum Route: Hashable {
 struct MainWindow: Window {
     @State private var path: [Route] = []
 
-    var page: any View {
+    var page: any Page {
         NavigationStack($path) {
             HomePage(path: $path)
         } destination: { route in
