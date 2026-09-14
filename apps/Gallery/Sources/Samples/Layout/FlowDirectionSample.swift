@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: VisualElement.FlowDirection.
+/// One row laid out left to right, right to left, and as the view above says.
 struct FlowDirectionSample: SampleContent, ExampleContent {
     static let id = "flowDirection"
     static let title = "Flow direction"

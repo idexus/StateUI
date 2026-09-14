@@ -1,8 +1,7 @@
 import StateUI
 
-/// The other half of the doctrine: an author holds a CONTROL as well as
-/// values, and declares it with `@Aim`. On a value you write; on a control you
-/// call - and which member is which was decided by MAUI, not here.
+/// An author holds a CONTROL as well as values, and declares it with `@Aim`:
+/// on a value you write, on a control you call.
 struct AimSample: SampleContent, ExampleContent {
     @State private var text = ""
 
@@ -27,8 +26,8 @@ struct AimSample: SampleContent, ExampleContent {
         // A VALUE: the modifier shows it, and writing it changes the control.
         @State private var text = ""
 
-        // A CONTROL: .aim puts this view's identity in the aim, and the acts
-        // MAUI declares as METHODS are what it offers.
+        // A CONTROL: .aim puts this view's identity in the aim, and the
+        // control's methods are called on the aim.
         @Aim(Entry.self) private var field
         @Aim(Entry.self) private var note
         @State private var says = "Press a button, and it says which view it reached."
@@ -134,19 +133,18 @@ struct AimSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("What an author holds is declared, one way for each kind. A VALUE is "
+            Label("What an author holds is declared, one way for each kind. A value is "
                 + "@State, which the modifier that shows it also animates through its $ "
-                + "binding. A CONTROL is @Aim: `.aim(field)` puts the view's address into "
-                + "the aim, and on the aim you CALL what MAUI made a method - `focus()`, "
+                + "binding. A control is @Aim: `.aim(field)` puts the view's address into "
+                + "the aim, and on the aim you call the control's methods - `focus()`, "
                 + "`unfocus()`, a WebView's `goBack()`, a Map's `moveToRegion(_:)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("What MAUI made a settable property is a MODIFIER here instead - opacity, "
-                + "rotation, a Border's background - with a binding and an animation of that "
-                + "binding. Nothing is both, so the one you want is the one MAUI declares - "
-                + "with one exception: a scroller's offset is state here, "
-                + "`.scroll($offset)`, where MAUI has a method.")
+            Label("A property is a modifier - opacity, rotation, a Border's background - "
+                + "which takes a binding and animates along that binding's journey. Nothing "
+                + "is both a modifier and a method, and a scroller's offset is state as "
+                + "well: `.scroll($offset)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -158,7 +156,7 @@ struct AimSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Read an aim from a HANDLER, not from a body: it is filled while the view "
+            Label("Read an aim from a handler, not from a body: it is filled while the view "
                 + "is drawn, so a body sees what the last render left, and `nowhere` on the "
                 + "very first.")
                 .fontSize(12)

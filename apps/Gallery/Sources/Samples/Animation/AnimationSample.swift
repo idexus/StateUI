@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: VisualElement.Opacity, TranslationX, Scale and Rotation, driven.
+/// A card's opacity, sideways translation, scale and rotation, each driven by a state.
 struct AnimationSample: SampleContent, ExampleContent {
     @State private var curve = 0
 
@@ -93,7 +93,7 @@ struct AnimationSample: SampleContent, ExampleContent {
             }
         }
 
-        /// The curve the picker is on. MAUI's names, camelCased.
+        /// The curve the picker is on.
         private var easing: Easing {
             switch curve {
             case 1: return .cubicInOut
@@ -224,7 +224,7 @@ struct AnimationSample: SampleContent, ExampleContent {
             .onClicked(act)
     }
 
-    /// The curve the picker is on. MAUI's names, camelCased.
+    /// The curve the picker is on.
     private var easing: Easing {
         switch curve {
         case 1: return .cubicInOut

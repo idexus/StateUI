@@ -23,12 +23,12 @@
 // Gallery/Catalog.swift. Nothing else changes - the menu, the home page and the
 // route that opens it are all built from that list.
 //
-// Nothing lists these files: every build - Apple, Android, Windows - discovers
-// them by globbing this directory, subdirectories and all.
+// Nothing lists these files: the build discovers them by globbing this
+// directory, subdirectories and all.
 
 import StateUI
 
-/// The gallery. MAUI: Application.
+/// The gallery application.
 ///
 /// An application is what every gallery SHARES - its styles, and the settings
 /// it keeps between launches. Each gallery is a scene of its own, and there are
@@ -45,8 +45,8 @@ struct GalleryApp: Application {
 
     /// What every gallery shares, written as the application is made.
     init() {
-        // The styles every control in the gallery is given - the .NET MAUI
-        // template's own, in Swift. The idiom goes in because one style reads
+        // The styles every control in the gallery is given. The idiom goes in
+        // because one style reads
         // it: the SearchBar's touch floor is a touch screen's, not the
         // desktop's - and the host says the device before the application is
         // made. A colour in a style follows the theme by itself. See
@@ -69,11 +69,10 @@ struct GalleryApp: Application {
 
 /// The one thing this module exports.
 ///
-/// The library cannot declare it: on Android and Windows it is a separate native
-/// library, and the dependency runs app -> library, so the library has no way to
-/// name an application that did not exist when it was compiled. So the app says
-/// which one it is, exactly as a MAUI app does with
-/// `builder.UseMauiApp<App>()`.
+/// The library cannot declare it: the dependency runs app -> library, so the
+/// library has no way to name an application that did not exist when it was
+/// compiled. So the app says which one it is, and a host that loads the app as
+/// a separate native library finds it by this name.
 ///
 /// The name is fixed by convention (`stateui_app_register`) so the host can
 /// find it whatever the module is called.

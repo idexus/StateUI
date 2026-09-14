@@ -83,11 +83,20 @@ struct OnChangedSample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("`.onChanged` compares against what THIS view carried last "
-            + "render, on the Swift side alone - nothing about it crosses to "
-            + "MAUI. The two-argument form is handed the old value and the "
-            + "new one; the short form takes no arguments at all.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
+        VStack {
+            Label("`.onChanged` compares against what this view carried last render, on "
+                + "the Swift side alone - nothing about it crosses to the host. The "
+                + "two-argument form is handed the old value and the new one; the short "
+                + "form takes no arguments at all.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("It watches rounded degrees here, so dragging fires once per whole "
+                + "degree rather than once per pixel. It does not fire when the page "
+                + "appears: a view arriving is not a value changing.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
     }
 }

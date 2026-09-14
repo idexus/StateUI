@@ -35,8 +35,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
 
     static let id = "boundProperties"
     static let title = "Every property by binding"
-    static let summary = "A size, a colour, a flag, a placeholder, a choice, a toggle - "
-        + "each handed on as `$x`, each carried by the host, none of them a reason to rebuild."
+    static let summary = "A size, a colour, a flag and more, each handed on as `$x` and carried by the host."
 
     static let code = """
         @State private var size = 18.0            // a number: the host walks it
@@ -181,7 +180,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
                 side = side == .start ? .center : side == .center ? .end : .start
             }
 
-            row("7 · a toggle, both ways - and a label that READS it") {
+            row("7 · a toggle, both ways - and a label that reads it") {
                 Switch($on)
                     .automationId("boundProperties.on")
                     .semanticDescription("On")

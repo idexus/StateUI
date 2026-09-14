@@ -117,10 +117,20 @@ struct IdentitySample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("Type in a field, then insert a row above it: the text stays where it "
-            + "is, because the control did.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
+        VStack {
+            Label("Type in a field, then insert a row above it: the text stays where it "
+                + "is, because the control did.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A row is identified by its item, which is `ForEach`'s rule. Known by "
+                + "position, an inserted row would rewrite every row into the one below "
+                + "it, which is why a plain `for` does not compile here. A row may still "
+                + "write an `.id()` of its own, and the author's wins.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
     }
 }
 

@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: SearchBar.
+/// A search box on the page, narrowing a list as the reader types.
 struct SearchBarSample: SampleContent, ExampleContent {
     @State private var query = ""
     @State private var searched = ""
@@ -29,7 +29,9 @@ struct SearchBarSample: SampleContent, ExampleContent {
                 }
             }
 
-            Label(searched.isEmpty ? "nothing searched yet" : "Searched for: \\(searched)")
+            Label(searched.isEmpty
+                ? "Type to narrow the list, then press the keyboard's search key."
+                : "Searched for: \\(searched)")
 
             // The same query again, with the platform's two icons tinted -
             // the magnifier at the front and the button that empties the
@@ -71,18 +73,12 @@ struct SearchBarSample: SampleContent, ExampleContent {
             .spacing(4)
 
             Label(searched.isEmpty
-                ? "The list narrows as you type. Press the keyboard's search key as well."
+                ? "Type to narrow the list, then press the keyboard's search key."
                 : "Searched for: \(searched)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Two events, both MAUI's: `textChanged` on every edit - which runs after "
-                + "the binding has landed the words on `query` - and `searchButtonPressed` "
-                + "when the reader says they mean it.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("THE MAGNIFIER AND THE CLEAR BUTTON")
+            SectionTitle("The magnifier and the clear button")
 
             SearchBar($query)
                 .automationId("searchBar.query.styled")
@@ -96,16 +92,22 @@ struct SearchBarSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The same query, drawn twice: the field above is left as the platform "
-                + "draws it, and this one tints the two icons the platform puts in every "
+            Label("Two events: `.onTextChanged` on every edit - which runs after the binding "
+                + "has landed the words on `query` - and `.onSearchButtonPressed` when the "
+                + "reader says they mean it.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The same query, drawn twice: the first field is left as the platform "
+                + "draws it, and the second tints the two icons the platform puts in every "
                 + "search box. Type something to bring the clear button out - it only "
                 + "appears once there is text to clear.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Those two colours are the whole of what MAUI offers over the artwork: "
-                + "the icons themselves are the platform's, and there is no picture to "
-                + "put in their place.")
+            Label("Those two colours are all a `SearchBar` offers over the artwork: the "
+                + "icons themselves are the platform's, and there is no picture to put in "
+                + "their place.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

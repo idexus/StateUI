@@ -1,12 +1,13 @@
 import StateUI
 
-/// MAUI: VisualElement.InputTransparent and Layout.CascadeInputTransparent.
+/// A view touches pass through to the one below, with or without its children.
 struct TouchThroughSample: SampleContent, ExampleContent {
     static let id = "touchThrough"
     static let title = "Touch through"
     static let summary = "A view that is not touched at all, and whether that reaches its children."
 
-    /// A gesture sample: the page holds the example still and scrolls the code.
+    /// A gesture sample: a scroller would claim a drag before the example heard
+    /// about it, so the page holds the example still.
     static let scrolls = false
 
     @State private var below = 0
@@ -114,15 +115,14 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Label("`cascadeInputTransparent` says whether a layout's transparency reaches "
-                + "its children. True - MAUI's default - lets everything through, the "
-                + "children included. False keeps the children touchable while "
-                + "the layout around them stops taking taps. The switch flips it.")
+                + "its children. True lets everything through, the children included. "
+                + "False keeps the children touchable while the layout around them stops "
+                + "taking taps. The switch flips it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Both halves answer the same way on all five platforms - a tap in the "
-                + "transparent area reaches the box below, and the cascade decides whether "
-                + "the child hears one.")
+            Label("A tap in the transparent area reaches the box below either way; the "
+                + "cascade decides whether the child hears one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -5,7 +5,8 @@ import StateUI
 ///
 /// Nothing distinguishes it from the two the demonstration opens with: a tab is
 /// a page in a list, so a page built from a number is as much a tab as one
-/// written out by hand.
+/// written out by hand. Adding one is `tabs.append`, and this page is what the
+/// `TabbedView`'s closure answers for the value.
 struct TabsExtraPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
@@ -24,16 +25,13 @@ struct TabsExtraPage: ContentView {
     var content: any View {
         ScrollView {
             VStack {
-                SectionTitle("A TAB THE READER ADDED")
+                SectionTitle("A tab the reader added")
 
                 Label("Extra \(number)")
                     .fontSize(26)
                     .fontAttributes(.bold)
 
-                Label("`DemoTab.extra(\(number))` is an ordinary value in an ordinary "
-                    + "array, and the page you are reading is what the TabbedView's "
-                    + "closure answered for it. Adding a tab is `tabs.append`; there is "
-                    + "no tab type, no template and nothing to register.")
+                Label("This tab is `.extra(\(number))`, one value in the tabs array.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
 

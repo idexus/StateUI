@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: DragGestureRecognizer and DropGestureRecognizer.
+/// Text dragged from one view and dropped on another.
 struct DragAndDropSample: SampleContent, ExampleContent {
     @State private var items = ["Alpha", "Beta", "Gamma"]
     @State private var basket: [String] = []
@@ -11,9 +11,9 @@ struct DragAndDropSample: SampleContent, ExampleContent {
     static let title = "Drag and drop"
     static let summary = "Carrying something from one view to another."
 
-    // A gesture sample is not put in a scroller: the scroller would claim the
-    // drag before the example heard about it. The code below it scrolls
-    // instead - see SampleContent.scrolls.
+    // A gesture sample is not put in a scroller: a scroller would claim the
+    // drag before the example heard about it, so the page holds the example
+    // still - see SampleContent.scrolls.
     static let scrolls = false
 
     static let code = """
@@ -35,8 +35,8 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                     }
                     .stroke(Palette.accent)
                     .strokeShape(.roundRectangle(8))
-                    // What travels is decided before the drag starts: MAUI
-                    // wants the data package filled the moment it begins.
+                    // What travels is decided before the drag starts: a
+                    // native drag session needs its payload at once.
                     .draggable(text: item)
                     // The view that was DRAGGED hears when its own drag ends,
                     // wherever it ended.
@@ -83,7 +83,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            SectionTitle("DRAG FROM HERE")
+            SectionTitle("Drag from here")
 
             HStack {
                 ForEach(items) { item in
@@ -109,7 +109,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
-            SectionTitle("DROP HERE")
+            SectionTitle("Drop here")
 
             Border {
                 VStack {
@@ -155,15 +155,15 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("What travels is a STRING, decided before the drag starts. MAUI wants "
-                + "the data package filled the moment the drag begins, and this side "
-                + "could not be asked in time - so `draggable(text:)` says it up front.")
+            Label("What travels is a STRING, decided before the drag starts: a native "
+                + "drag session needs its payload at once, so `draggable(text:)` says it "
+                + "up front.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("Reading what was dropped is asynchronous - it may be coming from "
-                + "another application - so the await happens on the C# side, and the "
-                + "handler here runs when there is something to say.")
+                + "another application - so the host reads it, and `onDrop` runs with the "
+                + "text when there is something to say.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

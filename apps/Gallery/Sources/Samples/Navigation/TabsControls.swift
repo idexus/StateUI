@@ -17,7 +17,7 @@ struct TabsControls: ContentView {
 
     var content: any View {
         VStack {
-            SectionTitle("THE TAB BAR, AS SWIFT DESCRIBES IT")
+            SectionTitle("The tab bar, as Swift describes it")
 
             VStack {
                 ForEach(Array(nav.tabs.enumerated()), id: \.offset) { pair in
@@ -47,7 +47,7 @@ struct TabsControls: ContentView {
                 .spacing(6)
             }
 
-            SectionTitle("CHANGE THE LIST WHILE IT IS SHOWING")
+            SectionTitle("Change the list while it is showing")
 
             move("Add a tab at the end") { nav.addTab(showing: thisTab) }
 
@@ -109,8 +109,9 @@ struct TabsControls: ContentView {
             .onClicked(act)
     }
 
-    /// What `TabbedView.selection` writes for this selection - the same line the
-    /// library runs, repeated here so that the number is on screen.
+    /// The index `TabbedView.selection` puts on the wire for this selection -
+    /// the same line the library runs, repeated here so that the number is on
+    /// screen.
     ///
     /// A property is sent only when its VALUE changed, so a move that leaves
     /// this number alone sends nothing at all and the tab bar is rebuilt

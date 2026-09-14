@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Stepper.
+/// A number stepped one at a time, and the same number stepped by five.
 struct StepperSample: SampleContent, ExampleContent {
     @State private var servings = 4.0
 
@@ -48,13 +48,7 @@ struct StepperSample: SampleContent, ExampleContent {
                 .increment(1)
                 .horizontalOptions(.center)
 
-            Label("A Slider for a value with few enough steps to name. This one goes from "
-                + "1 to 12 and never lands between two servings - which is what a stepper "
-                + "is for.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("A BIGGER STEP")
+            SectionTitle("A bigger step")
 
             Stepper(servings)
                 .automationId("stepper.servings.bigStep")
@@ -69,9 +63,18 @@ struct StepperSample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("The same value, stepped by five - `increment` is how far one tap goes, "
-            + "and MAUI keeps the value inside the range as it moves.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
+        VStack {
+            Label("A `Stepper` is a `Slider` for a value with few enough steps to name. This "
+                + "one goes from 1 to 12 and never lands between two servings - which is "
+                + "what a stepper is for.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The second holds the same value, stepped by five: `increment` is how far "
+                + "one tap goes, and `minimum` and `maximum` are where the buttons stop.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(12)
     }
 }

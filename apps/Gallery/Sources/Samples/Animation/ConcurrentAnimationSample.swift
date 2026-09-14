@@ -216,15 +216,12 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
         VStack {
             Label("One press, and three things move at once for as long as it runs: "
                 + "the wash across the stage, the caption breathing, and the bars "
-                + "hopping one after another inside both.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("Every one of them is a DRIVEN state: the host reads the value off "
-                + "the state on its own frames, so a beat of 1200ms costs no renders "
-                + "at all however many things are moving inside it. `async let` starts "
-                + "a movement without waiting for it, which is why the wash, the breath "
-                + "and the hop of the moment are three in the air together.")
+                + "hopping one after another inside both. Every one of them is a DRIVEN "
+                + "state: the host reads the value off the state on its own frames, so "
+                + "a beat of 1200ms costs no renders at all however many things are "
+                + "moving inside it. `async let` starts a movement without waiting for "
+                + "it, which is why the wash, the breath and the hop of the moment are "
+                + "three in the air together.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

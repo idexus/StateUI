@@ -26,6 +26,27 @@ struct SectionTitle: ContentView {
     }
 }
 
+/// The heading over one example among several - "Example 2" - and over the
+/// notes and code that belong to it: larger than a section's heading and in
+/// the accent colour, so each example's group reads as one.
+struct ExampleTitle: ContentView {
+    private let text: String
+
+    /// - Parameter text: What the heading says.
+    init(_ text: String) {
+        self.text = text
+    }
+
+    var content: any View {
+        Label(text)
+            .semanticHeadingLevel(.level2)
+            .fontSize(17)
+            .fontAttributes(.bold)
+            .textColor(Palette.accent)
+            .verticalOptions(.center)
+    }
+}
+
 /// The warning triangle on its own, at the size a line of text wants.
 ///
 /// One view rather than an `Image` written out wherever a warning is needed:

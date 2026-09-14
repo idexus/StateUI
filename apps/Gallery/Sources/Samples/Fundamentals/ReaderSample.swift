@@ -14,8 +14,7 @@ struct ReaderSample: SampleContent, ExampleContent {
 
     static let id = "reader"
     static let title = "Who is the reader"
-    static let summary = "One state, seven places it is used, and a build count on each: "
-        + "a get makes a reader, a binding makes none."
+    static let summary = "One state used in seven places: a get makes a reader, a binding makes none."
 
     static let code = """
         @State private var value = 0.3          // the one value
@@ -131,13 +130,13 @@ struct ReaderSample: SampleContent, ExampleContent {
             .spacing(8)
             .horizontalOptions(.center)
 
-            row("1 · a get in this row's braces - the row is the reader") {
+            row("1 · a get in this row's braces") {
                 Label("value · \(percent(value))")
                     .fontSize(15)
                 DebugInfoLabel()
             }
 
-            row("2 · a binding alone - the host moves both thumbs, nothing is rebuilt") {
+            row("2 · a binding alone") {
                 Slider($value)
                     .automationId("reader.value.bound")
                     .semanticDescription("Value, handed on as a binding")
@@ -147,14 +146,14 @@ struct ReaderSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
             }
 
-            row("3 · a converted text - shown without being read") {
+            row("3 · a converted text") {
                 Label()
                     .text($value.convert { percent($0) })
                     .fontSize(15)
                 DebugInfoLabel()
             }
 
-            row("4 · a get in a NESTED container - the inner one is the reader") {
+            row("4 · a get in a nested container") {
                 Label("outside the braces: " + BuildCount.of(debugInfo()))
                     .fontSize(12)
                     .textColor(Palette.accent)
@@ -184,20 +183,24 @@ struct ReaderSample: SampleContent, ExampleContent {
         VStack {
             Label("One state, `value`, written by the slider at the top and by +10%. "
                 + "Every row is a closure of its own and takes its own reading, so "
-                + "what a write costs is on the screen: the rows that READ the value - "
-                + "a get in their braces - are built again on every write, and the rows "
-                + "that are only handed `$value` are not. `DebugInfoLabel` is this "
+                + "what a write costs is on the screen. `DebugInfoLabel` is this "
                 + "gallery's one-liner over the library's own `debugInfo()`, and where "
                 + "it is written is what it measures.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("THAT IS THE WHOLE RULE. A get makes the closure it sits in a reader, "
-                + "and a write builds exactly that closure again - the inner stack in "
-                + "row 4, and not the row around it. A binding makes no reader: handed "
-                + "to a control, a child or an engine, the host carries the value on its "
-                + "own frames and renders nobody for it. A handler is not a reader "
-                + "either: it reads when it fires, not at build.")
+            Label("A get makes the closure it sits in a reader, and a write builds exactly "
+                + "that closure again: row 1, the inner stack in row 4 and not the row "
+                + "around it, and the child in row 5, which reads the value it borrowed. "
+                + "A handler is not a reader: it reads when it fires, not at build.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A binding makes no reader. Handed to a control, a child or an engine, "
+                + "the host carries the value on its own frames and renders nobody for it. "
+                + "Row 2 is a second slider on `$value`, and the host moves both thumbs; "
+                + "row 3 shows the value through a conversion without reading it; the "
+                + "child in row 6 only hands the binding on. None of them is built again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -254,7 +257,7 @@ private struct Reading: ContentView {
     var content: any View {
         Border {
             VStack {
-                Label("5 · a child that reads the value it borrowed - the child is the reader")
+                Label("5 · a child that reads the value it borrowed")
                     .fontSize(11)
                     .textColor(Palette.subtle)
                 Label("value · \(percent(value))")
@@ -280,7 +283,7 @@ private struct Holding: ContentView {
     var content: any View {
         Border {
             VStack {
-                Label("6 · a child that only hands the binding on - never built again")
+                Label("6 · a child that only hands the binding on")
                     .fontSize(11)
                     .textColor(Palette.subtle)
                 Slider($value)
@@ -309,7 +312,7 @@ private struct Pulsed: ContentView {
     var content: any View {
         Border {
             VStack {
-                Label("7 · a state by binding - the engine follows it, and nobody renders")
+                Label("7 · a state by binding")
                     .fontSize(11)
                     .textColor(Palette.subtle)
                 Label()

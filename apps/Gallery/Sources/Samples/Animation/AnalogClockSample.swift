@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: VisualElement.Rotation, sprung to real time by a plain Swift loop.
+/// A driven rotation, sprung to real time by a plain Swift loop.
 struct AnalogClockSample: SampleContent, ExampleContent {
     @State private var ticking = false
 
@@ -301,14 +301,11 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The time comes from the platform - ClockTime.now() - and the wait is "
-                + "plain Task.sleep, which resumes on time on every platform.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("Every tick sleeps to the NEXT whole second rather than for a "
-                + "fixed while - the reading carries milliseconds, so the spring "
-                + "lands just past each boundary instead of drifting across one.")
+            Label("The time comes from the platform - `ClockTime.now()` - and the wait is "
+                + "plain `Task.sleep`, which resumes on time on every platform. Every tick "
+                + "sleeps to the NEXT whole second rather than for a fixed while - the "
+                + "reading carries milliseconds, so the spring lands just past each "
+                + "boundary instead of drifting across one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

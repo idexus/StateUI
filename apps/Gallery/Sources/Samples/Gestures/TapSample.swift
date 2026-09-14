@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: TapGestureRecognizer.
+/// A tap and a double tap on a whole view.
 struct TapSample: SampleContent, ExampleContent {
     @State private var taps = 0
 
@@ -8,9 +8,9 @@ struct TapSample: SampleContent, ExampleContent {
     static let title = "Tap"
     static let summary = "The whole view answers, not a button inside it."
 
-    // A gesture sample is not put in a scroller: the scroller would claim the
-    // drag before the example heard about it. The code below it scrolls
-    // instead - see SampleContent.scrolls.
+    // A gesture sample is not put in a scroller: a scroller would claim the
+    // drag before the example heard about it, so the page holds the example
+    // still - see SampleContent.scrolls.
     static let scrolls = false
 
     static let code = """
@@ -74,8 +74,8 @@ struct TapSample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("This is what a list row is in MAUI: a view with a "
-            + "TapGestureRecognizer on it. Every card on a group's page is one.")
+        Label("Any view answers a tap: every card on a group's page is a view with "
+            + "`.onTapped` on it.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

@@ -7,7 +7,7 @@ import StateUI
 struct PlacedSample: SampleContent, ExampleContent {
     static let id = "placed"
     static let title = "PlacedLayout"
-    static let summary = "PlacedLayout puts each view where an engine of yours says - where it goes, how it is turned, how opaque it is - here a RING the cards stand on. Swipe or take hold of them to turn it, with nothing described as it moves."
+    static let summary = "PlacedLayout puts each view where an engine of yours says - here, cards on a ring."
 
     /// The cards: what each picture is called and which file it is.
     static let cards: [Card] = [
@@ -618,63 +618,41 @@ struct PlacedSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("`PlacedLayout` builds one view per card from its closure; an "
-                + "engine of yours works out a `Placement` for each - where the "
-                + "card goes, and how it is turned, scaled, faded and stacked - "
-                + "and writes them as a `PlacedRun` on the state `.placement(_:)` "
-                + "names, in the room `.frame(_:)` reports. That is the whole "
-                + "layout - this one is a ring, in six lines of arithmetic.")
-                .fontSize(13)
+            Label("`PlacedLayout` builds one view per card from its closure; an engine of "
+                + "yours works out a `Placement` for each - where the card goes, and how it "
+                + "is turned, scaled, faded and stacked - and writes them as a `PlacedRun` on "
+                + "the state `.placement(_:)` names, in the room `.frame(_:)` reports. That is "
+                + "the whole layout: this ring is six lines of arithmetic. `GalleryView`, "
+                + "under Cards & actions, is the same layout with the arithmetic for a wheel, "
+                + "a fan and a row already written.")
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Swipe left or right to turn the ring. It settles on the "
-                + "card it is nearest, and `Back` and `Next` do the same thing "
-                + "without the hand. Turn the switch on and the cards are "
-                + "TAKEN HOLD OF instead: drag them and the ring follows the "
-                + "finger, with no scroller over them at all.")
-                .fontSize(13)
+            Label("Swipe left or right to turn the ring; it settles on the card it is "
+                + "nearest, and `Back` and `Next` do the same without the hand. With `Turn by "
+                + "panning` on, the cards are taken hold of instead and follow the finger, "
+                + "with no scroller over them. Otherwise a `ScrollReader` lays an empty "
+                + "scroller over them and writes its offset into the value, so a finger "
+                + "drag, a two-finger trackpad swipe and a mouse wheel all turn the ring.")
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Every value that turns the ring is a `@State` and NOT ONE OF THEM "
-                + "IS READ IN A BODY - the two numbers, the room and where each card "
-                + "goes are all handed on with `$`, so writing them describes nothing, "
-                + "and `.engine(following:)` says which of them moving asks for the "
-                + "arithmetic once more. It runs on the display's own frames "
-                + "and writes a run of placements the host wears straight onto "
-                + "the cards, so the whole ring turns with no view built. The dots "
-                + "below the board are a second layout and a second engine, over "
-                + "the same two numbers.")
-                .fontSize(13)
+            Label("Every value that turns the ring is a `@State` no body reads. The two "
+                + "numbers, the room and where each card goes are handed on with `$`, so "
+                + "writing them describes nothing, and `.engine(following:)` says which of "
+                + "them moving runs the arithmetic again. It runs on the display's own "
+                + "frames and writes placements the host wears straight onto the cards, so "
+                + "the ring turns with no view built. The dots under the cards are a second "
+                + "layout and a second engine over the same two numbers.")
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("What lays the scroller over the cards is a `ScrollReader`: "
-                + "an empty scroller as long as the room plus how far the run "
-                + "goes beyond it, writing its offset into the value. A finger "
-                + "drag, a two-finger trackpad swipe and a mouse wheel are one "
-                + "thing to a scroller and three different things to anything "
-                + "else, so all three turn the ring.")
-                .fontSize(13)
-                .textColor(Palette.subtle)
-
-            Label("The ring keeps its card through a change of geometry: turn "
-                + "the phone, resize the window, and the same card is back at "
-                + "the front once the room settles.")
-                .fontSize(13)
-                .textColor(Palette.subtle)
-
-            Label("Moving a driven state asks for no render where no body reads "
-                + "it, and none here does - a label written from one would be "
-                + "built again every time it moved. What follows one is "
-                + "the PLACEMENT - where a card goes, how it is turned, how "
-                + "opaque it is - which is why the cards shrink as they go "
-                + "round the back and no view here is rebuilt to do it.")
-                .fontSize(13)
-                .textColor(Palette.subtle)
-
-            Label("A run of cards in the shapes a reader expects - a wheel, a "
-                + "fan, a row - is `GalleryView` under Lists & cards, which is "
-                + "this same layout with the arithmetic already written.")
-                .fontSize(13)
+            Label("The trap is a label written from a driven value: it is built again every "
+                + "time the value moves. A placement is not, which is why the cards shrink "
+                + "as they go round the back with no view rebuilt. The ring keeps its card "
+                + "through a change of geometry - turn the phone or resize the window, and "
+                + "the same card is back at the front once the room settles.")
+                .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(8)

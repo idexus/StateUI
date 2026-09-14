@@ -1,11 +1,8 @@
 import StateUI
 
-/// MAUI: AppInfo.RequestedTheme - the theme as a VALUE, for logic that
-/// branches on it. Colours do not need this: `Color(light:dark:)` reads this
-/// very property as the view wearing it is built, so a view using one already
-/// follows the theme.
+/// The theme as a value a view can branch on.
 struct AppThemeSample: SampleContent, ExampleContent {
-    /// Where the theme lives: on the app's provider, MAUI's own placement.
+    /// The application's information, where the theme is read.
     @Environment var app: AppInfo
 
     static let id = "appTheme"
@@ -23,14 +20,14 @@ struct AppThemeSample: SampleContent, ExampleContent {
                     // closure.
                     DebugInfoLabel()
 
-                    Label("the system asks for · \\(app.requestedTheme)")
+                    Label("\\(app.requestedTheme)")
 
                     // LOGIC on the theme - a different WORD, not a colour.
                     // A colour that differs by theme is Color(light:dark:),
                     // which follows by itself.
                     Label(app.requestedTheme == .dark
-                        ? "lights off - showing the calm artwork"
-                        : "lights on - showing the vivid artwork")
+                        ? "lights off - a view can choose calmer artwork"
+                        : "lights on - a view can choose vivid artwork")
                 }
             }
         }
@@ -61,13 +58,13 @@ struct AppThemeSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Use this for LOGIC - a different picture, a different "
-                + "word. A colour should not need it: a Color(light:dark:) "
-                + "follows the theme by itself - a theme change builds exactly "
+            Label("Use this for LOGIC - a different picture, a different word. A "
+                + "colour should not need it: a `Color(light:dark:)` reads the theme "
+                + "as the view wearing it is built, so a theme change builds exactly "
                 + "the views wearing one again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(10)
+        .spacing(8)
     }
 }

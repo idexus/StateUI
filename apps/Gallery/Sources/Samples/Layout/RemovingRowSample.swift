@@ -4,7 +4,7 @@ import StateUI
 struct RemovingRowSample: SampleContent, ExampleContent {
     static let id = "removingRow"
     static let title = "Removing a row"
-    static let summary = "A row fades where it stands and the stack closes over it - a plain VStack, and the switch chooses whether the row itself takes its time."
+    static let summary = "A row fades where it stands, and the stack closes over it."
 
     /// The rows, and which of them have gone.
     static let rows = ["Milk", "Bread", "Coffee", "Apples", "Butter", "Rice"]
@@ -123,20 +123,20 @@ struct RemovingRowSample: SampleContent, ExampleContent {
                 + "then close over the gap - a plain `VStack`, and not a line in "
                 + "the example ASKING for animation: the row is hidden, and the "
                 + "ones below it are given new places.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("`The row fades first` chooses how the row itself leaves. "
                 + "Turned off, the row is told `.motion(.none)` and goes at "
                 + "once - the stack still closes over it, because where a "
                 + "child sits is always somewhere it travels to.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("`Bring them back` is the same thing the other way round: the "
                 + "rows appear at nothing and come up while everything below "
                 + "them moves down to make room.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(8)

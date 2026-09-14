@@ -1,5 +1,6 @@
 import StateUI
 
+/// Seven outlines, filled and stroked - with dashes, joins and a fill rule.
 struct ShapesSample: SampleContent, ExampleContent {
     @State private var rule = FillRule.evenOdd
 
@@ -154,7 +155,7 @@ struct ShapesSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            SectionTitle("FILLED")
+            SectionTitle("Filled")
 
             HStack {
                 Rectangle()
@@ -183,12 +184,7 @@ struct ShapesSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalOptions(.center)
 
-            Label("A Rectangle rounds its corners with radiusX and radiusY, the same on all "
-                + "four. A RoundRectangle is the one that names them separately.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("STROKED")
+            SectionTitle("Stroked")
 
             HStack {
                 Line()
@@ -234,18 +230,7 @@ struct ShapesSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalOptions(.center)
 
-            Label("A shape with no stroke thickness draws no outline, and one with no fill "
-                + "has no inside. A Line has only the first: there is nothing to fill.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("A Path is whatever you can write down: M moves the pen, L draws a line "
-                + "to a point, Z closes the figure back to where it started. It is the "
-                + "same SVG path vocabulary on every StateUI host.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("WHERE THE DASHES START")
+            SectionTitle("Where the dashes start")
 
             VStack {
                 Line()
@@ -257,7 +242,7 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .strokeDashOffset(0)
                     .widthRequest(200)
                     .heightRequest(8)
-                    
+
                 Line()
                     .x1(0).y1(4)
                     .x2(200).y2(4)
@@ -271,14 +256,7 @@ struct ShapesSample: SampleContent, ExampleContent {
             .spacing(10)
             .horizontalOptions(.center)
 
-            Label("The same dashes on both lines. The offset is counted in stroke "
-                + "thicknesses, as the pattern is: [3, 2] at thickness 4 repeats every 20 "
-                + "points, so the lower line's offset of 2.5 shifts it half a pattern - "
-                + "its dashes stand under the upper line's gaps.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("HOW FAR A SHARP CORNER REACHES")
+            SectionTitle("How far a sharp corner reaches")
 
             HStack {
                 Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
@@ -300,15 +278,7 @@ struct ShapesSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalOptions(.center)
 
-            Label("Both Vs are the same three points and the same 8-point stroke. A miter "
-                + "join carries the two outer edges on until they cross, and the limit is "
-                + "how long that join may be, measured in stroke thicknesses. A corner this "
-                + "sharp asks for about 2.6: the left V is allowed 10 and keeps its point, "
-                + "the right one is allowed 1, so the point is cut off flat - a bevel.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("AN OUTLINE THAT CROSSES ITSELF")
+            SectionTitle("An outline that crosses itself")
 
             Polygon(Self.star)
                 .fill(Palette.accent)
@@ -322,30 +292,46 @@ struct ShapesSample: SampleContent, ExampleContent {
                 .padding(16, 6)
                 .horizontalOptions(.center)
                 .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
-
-            Label("Five points, each joined to the one two along, so the outline crosses "
-                + "itself and the middle is enclosed twice. Press the button: .evenOdd "
-                + "counts that middle as outside and empties it, .nonzero counts it as "
-                + "inside and fills it.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
         .spacing(12)
     }
 
     var notes: Element? {
         VStack {
-            Label("A Polygon closes the figure for you and a Polyline leaves it open, and "
-                + "both take a fillRule, which only says anything where an outline crosses "
-                + "itself. Everywhere else the two rules agree.")
+            Label("Fill, stroke and everything about the stroke form one `Shape` protocol, "
+                + "shared by all seven outlines and every native host. A shape with no "
+                + "stroke thickness draws no outline and one with no fill has no inside - a "
+                + "`Line` has only the first, as there is nothing to fill. A `Rectangle` "
+                + "rounds its corners with `radiusX` and `radiusY`, the same on all four; a "
+                + "`RoundRectangle` names each corner separately.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Fill, stroke and everything about the stroke form one StateUI Shape "
-                + "protocol shared by all seven outlines and every native backend.")
+            Label("A `Path` is whatever you can write down: `M` moves the pen, `L` draws a "
+                + "line to a point, `Z` closes the figure back to where it started - the "
+                + "same SVG path vocabulary on every StateUI host. A `Polygon` closes its "
+                + "figure for you and a `Polyline` leaves it open.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Dashes and their offset are counted in stroke thicknesses: `[3, 2]` at "
+                + "thickness 4 repeats every 20 points, so the lower line's offset of 2.5 "
+                + "shifts it half a pattern and its dashes stand under the upper line's gaps. "
+                + "A miter join carries the two outer edges on until they cross, and the "
+                + "miter limit is how long that join may be, in the same units. The Vs' "
+                + "corner asks for about 2.6: the left V is allowed 10 and keeps its point, "
+                + "the right one is allowed 1 and is cut off flat - a bevel.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The star is five points, each joined to the one two along, so its outline "
+                + "crosses itself and the middle is enclosed twice. A `fillRule` only says "
+                + "anything there: `.evenOdd` counts that middle as outside and empties it, "
+                + "`.nonzero` counts it as inside and fills it. Everywhere else the two "
+                + "rules agree.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

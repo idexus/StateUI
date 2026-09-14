@@ -147,22 +147,7 @@ struct StateClassSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalOptions(.center)
 
-            Label("The basket is a CLASS, held in @State. The view's box holds a reference "
-                + "to it, so `basket.items.append(…)` never writes through that box - the "
-                + "write lands on the PROPERTY's own @State, and that is what asks for the "
-                + "render. Both are needed: @State on the properties makes the writes "
-                + "visible, @State on the view keeps the instance across the rebuild.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
             NoteRow(basket: $basket)
-
-            Label("The note is written by a child row the basket was LENT to - @Binding, "
-                + "the same wrapper an Int is borrowed with. `basket.$note` is the note's "
-                + "own state, handed to the field whole, and it works the same off the "
-                + "view's own @State. No handler either way.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
 
             Button("Tap a plain property (\(basket.plainTaps))")
                 .borderColor(Palette.outline)
@@ -179,10 +164,25 @@ struct StateClassSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("That last count really is going up - press Add afterwards and it jumps "
-                + "to where it got to. A plain `var` is stored and nothing more: a cache, a "
-                + "scratch value, anything the interface does not draw - and writing it "
-                + "asks for nothing.")
+            Label("The basket is a class, held in @State. The view's box holds a reference "
+                + "to it, so `basket.items.append(…)` never writes through that box - the "
+                + "write lands on the property's own @State, and that is what asks for the "
+                + "render. Both are needed: @State on the properties makes the writes "
+                + "visible, @State on the view keeps the instance across the rebuild.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The note is written by a child row the basket was lent to - @Binding, "
+                + "the same wrapper an Int is borrowed with. `basket.$note` is the note's "
+                + "own state, handed to the field whole, and it works the same off the "
+                + "view's own @State. No handler either way.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The plain property's count really is going up - press Add afterwards "
+                + "and it jumps to where it got to. A plain `var` is stored and nothing "
+                + "more: a cache, a scratch value, anything the interface does not draw - "
+                + "and writing it asks for nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

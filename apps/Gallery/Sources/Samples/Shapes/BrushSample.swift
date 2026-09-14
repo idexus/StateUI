@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Brush, SolidColorBrush, LinearGradientBrush, RadialGradientBrush.
+/// Gradients along a line and out from a point, on a fill, a stroke and a background.
 struct BrushSample: SampleContent, ExampleContent {
     @State private var end = 0
 
@@ -56,8 +56,8 @@ struct BrushSample: SampleContent, ExampleContent {
             .strokeShape(.roundRectangle(10))
             .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
 
-            // Not a shape at all: VisualElement.Background takes a brush, so any
-            // view can carry one.
+            // Not a shape at all: `.background` takes a brush, so any view can
+            // carry one.
             VStack {
                 Label("A whole stack, behind a gradient")
                     .textColor(Palette.onAccent)
@@ -83,7 +83,7 @@ struct BrushSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            SectionTitle("ALONG A LINE")
+            SectionTitle("Along a line")
 
             RoundRectangle()
                 .cornerRadius(12)
@@ -100,15 +100,7 @@ struct BrushSample: SampleContent, ExampleContent {
                 .horizontalOptions(.center)
                 .onClicked { end = (end + 1) % Self.ends.count }
 
-            Label("The points are fractions of the thing being painted, not device units: "
-                + "Point(0, 0) is its top left corner and Point(1, 1) its bottom right. "
-                + "So the axis follows the box's own corners rather than a fixed angle - "
-                + "and on a bar this wide, corner to corner is only a few degrees off "
-                + "the one straight across.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("OUT FROM A POINT")
+            SectionTitle("Out from a point")
 
             Ellipse()
                 .fill(.radialGradient(
@@ -119,7 +111,7 @@ struct BrushSample: SampleContent, ExampleContent {
                 .heightRequest(96)
                 .horizontalOptions(.center)
 
-            SectionTitle("WHEREVER MAUI TAKES A BRUSH")
+            SectionTitle("On a stroke and a background")
 
             Border {
                 Label("A stroke is a brush too")
@@ -138,24 +130,31 @@ struct BrushSample: SampleContent, ExampleContent {
             }
             .padding(16)
             .background(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 1)))
-
         }
         .spacing(12)
     }
 
     var notes: Element? {
         VStack {
-            Label("`.backgroundColor` is one colour and `.background` is a brush - both are "
-                + "MAUI's, and a view given both draws the brush.")
+            Label("A gradient's points are fractions of the thing being painted, not device "
+                + "units: `Point(0, 0)` is its top left corner and `Point(1, 1)` its bottom "
+                + "right. So the axis follows the box's own corners rather than a fixed "
+                + "angle - and on a bar this wide, corner to corner is only a few degrees "
+                + "off straight across.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A stop's colour may be written Color(light:dark:), and it picks its half "
+            Label("`.backgroundColor` is one colour and `.background` is a brush; a view "
+                + "given both draws the brush.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A stop's colour may be written `Color(light:dark:)`, and it picks its half "
                 + "as the view wearing the gradient is built - the first stop above is "
                 + "the gallery's accent, which is a lighter orange in the dark.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

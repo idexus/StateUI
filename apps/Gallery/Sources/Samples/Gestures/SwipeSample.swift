@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: SwipeGestureRecognizer.
+/// Which way a finger swiped, heard every way or narrowed to two.
 struct SwipeSample: SampleContent, ExampleContent {
     @State private var swipe = ""
 
@@ -10,9 +10,9 @@ struct SwipeSample: SampleContent, ExampleContent {
     static let title = "Swipe"
     static let summary = "Which way a finger went, and which ways a view listens for."
 
-    // A gesture sample is not put in a scroller: the scroller would claim the
-    // drag before the example heard about it. The code below it scrolls
-    // instead - see SampleContent.scrolls.
+    // A gesture sample is not put in a scroller: a scroller would claim the
+    // drag before the example heard about it, so the page holds the example
+    // still - see SampleContent.scrolls.
     static let scrolls = false
 
     static let code = """

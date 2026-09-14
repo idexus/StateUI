@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: PinchGestureRecognizer.
+/// Two fingers scaling a view, and every report the pinch sends as it arrives.
 struct PinchSample: SampleContent, ExampleContent {
     @State private var pinch = 1.0
     @State private var reports = 0
@@ -10,9 +10,9 @@ struct PinchSample: SampleContent, ExampleContent {
     static let title = "Pinch"
     static let summary = "Two fingers moving apart, reported as a change rather than a total."
 
-    // A gesture sample is not put in a scroller: the scroller would claim the
-    // drag before the example heard about it. The code below it scrolls
-    // instead - see SampleContent.scrolls.
+    // A gesture sample is not put in a scroller: a scroller would claim the
+    // drag before the example heard about it, so the page holds the example
+    // still - see SampleContent.scrolls.
     static let scrolls = false
 
     static let code = """
@@ -42,14 +42,14 @@ struct PinchSample: SampleContent, ExampleContent {
 
                 // Scale is what changed since the LAST report, so a view being
                 // pinched MULTIPLIES rather than assigns - and nothing here
-                // waits for .started, which Mac Catalyst never sends.
+                // waits for .started, which a platform need not send.
                 if update.status == .running {
                     pinch = max(0.5, min(3, pinch * update.scale))
                 }
             }
             // Beside the typed handler, not instead of it: what the host
             // actually sent, before anything reads it - typed values, one per
-            // property of the MAUI event.
+            // field of the report.
             .onEvent(.pinchUpdated) { payload in
                 let line = payload.map { "\\($0)" }.joined(separator: "  ")
                 log = (log + [line]).suffix(6).map { $0 }
@@ -95,19 +95,17 @@ struct PinchSample: SampleContent, ExampleContent {
             .onPinchUpdated { update in
                 reports += 1
 
-                // MAUI's own sample writes `scale += (e.Scale - 1) * startScale`
-                // and captures startScale on .started. Multiplying is that same
-                // formula with the start taken as the scale RIGHT NOW - and that
-                // is the version to write, because .started is not guaranteed:
-                // Mac Catalyst's trackpad magnification sends .running and
-                // .completed and nothing else.
+                // Multiplying needs no scale captured at the start, and that
+                // is what makes it the version to write: .started is not
+                // guaranteed, and a trackpad magnification may send .running
+                // and .completed and nothing else.
                 if update.status == .running {
                     pinch = max(0.5, min(3, pinch * update.scale))
                 }
             }
             // Beside the typed handler, not instead of it: what the host
             // actually sent, before anything reads it - typed values, one per
-            // property of the MAUI event. A gesture that stops reporting and a
+            // field of the report. A gesture that stops reporting and a
             // payload this side cannot read look identical from the outside,
             // and this is what tells them apart.
             .onEvent(.pinchUpdated) { payload in
@@ -152,18 +150,22 @@ struct PinchSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("MAUI's Scale is RELATIVE - how much has changed since the LAST "
-                + "report - so a view being pinched multiplies rather than assigns. "
-                + "ScaleOrigin says where the pinch is centred, as a fraction of the "
-                + "view.")
+            Label("`scale` is RELATIVE - how much has changed since the LAST report - so "
+                + "a view being pinched multiplies rather than assigns. `scaleOrigin` says "
+                + "where the pinch is centred, as a fraction of the view.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The four statuses are not a promise. On Mac Catalyst a trackpad "
-                + "magnification arrives as .running then .completed - each step of the "
-                + "gesture is its own short cycle, and .started never comes at all. A "
-                + "pinch that only works when it has seen .started works on a phone and "
+            Label("The four statuses are not a promise. A trackpad magnification may "
+                + "arrive as .running then .completed, and .started never comes at all. "
+                + "A pinch that only works when it has seen .started works on a phone and "
                 + "not on a laptop.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The pinch is heard on the Border, and the BoxView inside it is what "
+                + "scales: a view that transforms itself while a gesture runs can cancel "
+                + "its own recognizer, and the pinch stops after its first report.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

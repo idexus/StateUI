@@ -153,9 +153,9 @@ struct PollSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Label("The work runs on a task of its own and the restart comes back from "
-                + "there, off the thread MAUI draws on. Ticker keeps its state behind a "
-                + "lock for exactly this: start, stop and reset are safe from any "
-                + "thread.")
+                + "there, off the thread the host draws on. `Ticker` keeps its state "
+                + "behind a lock for exactly this: `start`, `stop` and `reset` are safe "
+                + "from any thread.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

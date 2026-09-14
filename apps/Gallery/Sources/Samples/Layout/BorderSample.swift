@@ -1,10 +1,10 @@
 import StateUI
 
-/// MAUI: Border.
+/// One view with a stroke around it: rounded, square and elliptical.
 struct BorderSample: SampleContent, ExampleContent {
     static let id = "border"
     static let title = "Border"
-    static let summary = "One view with a stroke around it, in the shape XAML writes."
+    static let summary = "One view with a stroke around it, in the shape you give it."
 
     static let code = """
         VStack {
@@ -65,13 +65,12 @@ struct BorderSample: SampleContent, ExampleContent {
             .stroke(Palette.accent)
             .strokeThickness(1)
             .strokeShape(.ellipse)
-
         }
         .spacing(12)
     }
 
     var notes: Element? {
-        Label("The shape is .rectangle, .roundRectangle(radius) or .ellipse, and the "
+        Label("The shape is `.rectangle`, `.roundRectangle(radius)` or `.ellipse`, and the "
             + "border's own background is painted to it.")
             .fontSize(12)
             .textColor(Palette.subtle)

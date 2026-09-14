@@ -16,7 +16,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
     static let id = "hostTime"
     static let title = "Host time"
     static let summary = "The clock, the zone and the offset - asked of the host, "
-        + "the same answer on four platforms."
+        + "the same answer on every platform."
 
     static let code = """
         @State private var zone = ""
@@ -125,11 +125,11 @@ struct HostTimeSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Every line above crossed the boundary as an act - DateTime.Now, "
-                + "TimeZoneInfo.Local, TimeZoneInfo.GetUtcOffset - and came back as a "
-                + "ClockTime and a Duration, both of which this side owns. No Foundation "
-                + "is involved, which is why the answers are the same on iOS, Android, "
-                + "macOS and Windows.")
+            Label("Every line above crossed the boundary as an act - `ClockTime.now()`, "
+                + "`TimeZoneInfo.local()`, `TimeZoneInfo.getUtcOffset` - and came back as "
+                + "a `ClockTime` and a `Duration`, both of which this side owns. No "
+                + "Foundation is involved, which is why the answers are the same on every "
+                + "platform.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

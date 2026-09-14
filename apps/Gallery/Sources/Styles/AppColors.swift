@@ -1,9 +1,5 @@
-// The gallery's raw colours: the StateUI ramp.
-//
-// NOT the .NET MAUI template's Colors.xaml. That template is what every MAUI
-// app looks like out of the box, and a gallery for this library should look
-// like this library rather than like the template - so the palette says what
-// the library IS: Swift's orange meeting .NET's violet.
+// The gallery's raw colours: the StateUI ramp - Swift's orange against a deep
+// violet, so the gallery looks like this library rather than like a template.
 //
 // Two decisions carry the whole look, and neither is decoration:
 //
@@ -13,8 +9,7 @@
 //     ramp, and it is the difference between the two.
 //   - THE ACCENT IS SWIFT'S ORANGE, against a violet ground. Near-complementary,
 //     so anything accented separates from what is around it without being made
-//     bigger or bolder - and it is the one pairing that says both halves of what
-//     this library is.
+//     bigger or bolder.
 //
 // The interactive orange is DEEPER than Swift's own in the light theme and
 // LIGHTER in the dark: white on #F05138 is 3.5:1, which fails WCAG AA for text,
@@ -61,9 +56,9 @@ enum AppColors {
     /// a size with.
     static let amber = Color.fromArgb("#FF9E4F")
 
-    // MARK: .NET
+    // MARK: Violet
 
-    /// .NET's violet, exactly - what MAUI's own templates use.
+    /// The brand violet - the bars, and the ground the accent stands on.
     static let violet = Color.fromArgb("#512BD4")
 
     /// The cool end of the identity gradient.

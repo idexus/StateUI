@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: AbsoluteLayout.
+/// Children placed at bounds of their own, in device units or as fractions.
 struct AbsoluteLayoutSample: SampleContent, ExampleContent {
     @State private var proportional = true
 
@@ -39,7 +39,7 @@ struct AbsoluteLayoutSample: SampleContent, ExampleContent {
             SwitchRow("Position: proportional", $proportional)
         }
 
-        /// The size is left to the child either way - that is what AutoSize is.
+        /// The size is left to the child either way - that is what autoSize means.
         private func bounds(x: Double, y: Double) -> Rect {
             Rect(
                 x: proportional ? x : x * 140,
@@ -107,16 +107,16 @@ struct AbsoluteLayoutSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A size of AbsoluteLayout.autoSize is MAUI's AutoSize: the child measures "
-                + "itself, and only its position is dictated.")
+            Label("A size of `AbsoluteLayout.autoSize` leaves the size to the child: it "
+                + "measures itself, and only its position is dictated.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 
     /// The bounds for one marker, in whichever way the switch is set. The size
-    /// is left to the child either way - which is what AutoSize means.
+    /// is left to the child either way - which is what `autoSize` means.
     private func bounds(x: Double, y: Double) -> Rect {
         Rect(
             x: proportional ? x : x * 140,

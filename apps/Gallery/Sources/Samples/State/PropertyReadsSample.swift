@@ -16,7 +16,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
 
     static let id = "propertyReads"
     static let title = "One write, one property"
-    static let summary = "Two properties of one model are two pieces of state: a write reaches the closures that read THAT property."
+    static let summary = "Two properties of one model are two states: a write reaches only that property's readers."
 
     static let code = """
         final class Profile {

@@ -1,6 +1,6 @@
 // The few colours the gallery says for itself.
 //
-// A colour written as a pair is MAUI's `{AppThemeBinding Light=…, Dark=…}`: the
+// A colour written as a pair - `Color(light:dark:)` - follows the theme: the
 // half the system is asking for is picked as the view wearing it is built, and
 // a change of theme builds exactly the views wearing one again. So nothing here
 // has to know which theme is on, and neither does anything using it - which is

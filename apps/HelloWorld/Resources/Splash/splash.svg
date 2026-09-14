@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="456" height="456" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-<!-- The launch screen: the StateUI mark, in white, on the brand violet the
-     csproj names. The same two plates and the same opening as
+<!-- The launch screen: the StateUI mark, in white, on the brand violet.
+     The same two plates and the same opening as
      Resources/Images/stateui_mark.svg and Resources/AppIcon/stateui_mark.svg
      - one mark, drawn once per place that needs it. Change one, change all.
 

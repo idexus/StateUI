@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Switch.
+/// A switch bound to a flag, reporting each flip as the value it now has.
 struct SwitchSample: SampleContent, ExampleContent {
     @State private var soundOn = true
     @State private var said = "not thrown yet"
@@ -64,8 +64,9 @@ struct SwitchSample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("The event carries MAUI's ToggledEventArgs.Value, so the binding is "
-            + "written with what the switch now is - not with what this side guessed.")
+        Label("`.onToggled` carries the value the switch now has, and runs after the "
+            + "binding has written it - so both hold what the switch is, not what this "
+            + "side guessed.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

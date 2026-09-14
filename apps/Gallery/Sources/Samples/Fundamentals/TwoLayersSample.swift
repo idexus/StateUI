@@ -10,8 +10,7 @@ import StateUI
 struct TwoLayersSample: SampleContent {
     static let id = "two-layers"
     static let title = "Two layers of reactivity"
-    static let summary = "A value read rebuilds the closure that read it; the same value "
-        + "handed on as a channel rebuilds nothing."
+    static let summary = "A value read rebuilds its reader; the same value handed on as a channel rebuilds nothing."
 
     var examples: [Example] {
         [Example(LayerRows()), Example(LayerCost())]

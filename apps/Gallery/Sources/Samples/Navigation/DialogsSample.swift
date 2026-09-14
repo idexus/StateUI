@@ -109,7 +109,6 @@ struct DialogsSample: SampleContent, ExampleContent {
                 .fontSize(14)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
-
         }
         .spacing(12)
     }
@@ -127,6 +126,6 @@ struct DialogsSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

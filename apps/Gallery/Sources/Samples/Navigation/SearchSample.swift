@@ -1,11 +1,6 @@
 import StateUI
 
-/// **Why a view on the bar.** A search box belongs where the reader looks for
-/// it, which is the navigation bar, and a bar can hold a VIEW in place of its
-/// title - so the box is an ordinary `SearchBar` put there, and the suggestions
-/// under it are ordinary rows this page draws. Nothing about either is special
-/// to searching, which is the point: the app decides what a suggestion looks
-/// like and what choosing one does.
+/// A `SearchBar` on the navigation bar in place of the title, and the rows it filters.
 struct SearchSample: SampleContent, ExampleContent {
     /// Where the gallery is: choosing a suggestion pushes a page.
     let nav: Navigation
@@ -41,7 +36,7 @@ struct SearchSample: SampleContent, ExampleContent {
                     MenuRow(item) { nav.push(.item(item)) }
                 }
 
-                Button("Clear")
+                Button("Clear the box")
                     .isEnabled(!query.isEmpty)
                     .onClicked { query = "" }
             }
@@ -68,15 +63,13 @@ struct SearchSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("The box is on the navigation bar, where the page's title would be. "
-                + "Type, and these rows follow it.")
+            Label("Type in the box on the navigation bar; these rows follow it.")
                 .fontSize(14)
 
             VStack {
                 ForEach(matches, id: \.self) { item in
                     // A row that opens a page: the chosen item rides as a VALUE
-                    // of the route - `.item("Alpha")` - so nothing about it is
-                    // a string in a dictionary.
+                    // of the route - `.item("Alpha")`.
                     MenuRow(item) { nav.push(.item(item)) }
                 }
             }
@@ -93,7 +86,6 @@ struct SearchSample: SampleContent, ExampleContent {
                 .padding(20, 10)
                 .horizontalOptions(.center)
                 .onClicked { query = "" }
-
         }
         .spacing(12)
         // The box goes in the page's title slot. It is an ordinary view in the
@@ -113,11 +105,10 @@ struct SearchSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The box is a `SearchBar` handed to `NavigationStack.TitleView`, which "
-                + "is the bar's title slot - so it sits where this page's title would; the "
-                + "page a match pushes wears its own. The suggestions are rows this page "
-                + "draws from its own state, which is why they can look like the app and "
-                + "do whatever choosing one should do.")
+            Label("The box is a `SearchBar` written into `page.titleView`, the bar's title "
+                + "slot, so it sits where this page's title would; the page a match pushes "
+                + "wears its own. The rows under it are drawn by this page from its own "
+                + "state, so they look like the app and do whatever choosing one should do.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -132,12 +123,12 @@ struct SearchSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 
-    /// What the query matches - everything when there is no query, which is the
-    /// difference from a suggestion dropdown: these rows are the page's content,
-    /// and an empty page under an empty box would read as a mistake.
+    /// What the query matches - everything when there is no query: these rows
+    /// are the page's content, and an empty page under an empty box would read
+    /// as a mistake.
     ///
     /// `hasPrefix` rather than `contains`, which is a choice about the RESULT
     /// and not about what compiles: matching from the start makes a short list

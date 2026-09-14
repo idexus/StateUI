@@ -67,9 +67,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
             Label("entered \\(entered) · pressed \\(presses) times")
 
             // A RadioButton has two states of its own, and it RESTS in
-            // Unchecked rather than Normal - MAUI enters its own pair before
-            // the ordinary Normal, so a Normal beside them would end every
-            // transition and neither would ever be seen.
+            // .unchecked rather than .normal.
             RadioButton("Ready")
                 .isChecked($ready)
                 .visualState(.checked) { $0.backgroundColor(Palette.selected) }
@@ -84,16 +82,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("Which states a control enters is the control's own business, so the list "
-                + "after the dot is exactly those. A Button has .pressed, a Switch has .on and "
-                + ".off, a CheckBox has .isChecked, a RadioButton has .checked and .unchecked - "
-                + "and every view has .normal, .disabled, .focused, .unfocused, .pointerOver "
-                + "and .selected. Writing a state a control never enters does not compile, "
-                + "which is the point: it would have been a style that silently did nothing.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("ON THE CONTROL, NOT IN A STYLE")
+            SectionTitle("On the control, not in a style")
 
             // TWO OF THEM, SIDE BY SIDE, because the difference is the point:
             // hold each one down and the left crosses to its pressed colour
@@ -146,29 +135,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
-            Label("The colour is a SETTER, and it CROSSES: a visual state is carried by "
-                + "the engine at the control's own motion. The size takes 90ms and is "
-                + "awaited, which is the reason to hear a state rather than only set it. "
-                + "What moves is `press`, a DRIVEN state the button's scale is read off - "
-                + "so the whole 90ms costs no render, and the state stands at 0.94 from "
-                + "the first millisecond while the button is still on its way there.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("A control reports the states it DECLARES and nothing else. Naming "
-                + "states in .onVisualStateChanged(...) declares them without changing "
-                + "how they look; this button had written both already.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The gallery's Style<Button> already says what a disabled button looks "
-                + "like. This one says it for itself, and the two are MERGED: the control's "
-                + "setters are written over the style's, one property at a time, the rule "
-                + "every other value here follows.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("STATES ONLY A RADIOBUTTON HAS")
+            SectionTitle("States only a RadioButton has")
 
             RadioButton("Ready")
                 .isChecked($ready)
@@ -183,31 +150,43 @@ struct VisualStateSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("A RadioButton RESTS in Unchecked rather than Normal, and that is MAUI's "
-                + "doing: RadioButton.ChangeVisualState enters Checked or Unchecked first and "
-                + "the ordinary Normal after it, so a Normal declared beside the pair would "
-                + "end every transition and neither state would ever be seen. So the state a "
-                + "group is given when it named none is the TARGET's, not always Normal.")
+            Label("Which states a control enters is the control's own business, so the "
+                + "list after the dot is exactly those. A Button has .pressed, a Switch has "
+                + ".on and .off, a CheckBox has .isChecked, a RadioButton has .checked and "
+                + ".unchecked - and every view has .normal, .disabled, .focused, "
+                + ".unfocused, .pointerOver and .selected. Writing a state a control never "
+                + "enters does not compile: it would be a style that silently does nothing. "
+                + "And .pointerOver is a desktop's: nothing on a touch-only device enters it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The wash is the state, not the caption: a RadioButton's textColor does "
-                + "not reach its caption on Mac Catalyst, so a state that coloured the words "
-                + "would do nothing there. Its backgroundColor does.")
+            Label("The colour is a SETTER, and it CROSSES: a visual state is carried by "
+                + "the engine at the control's own motion. `Hold me too` wears "
+                + "`.motion(.none)`, so held side by side the first crosses to its pressed "
+                + "colour while the second arrives at it. The size takes 90ms and is "
+                + "awaited, which is the reason to hear a state rather than only set it. "
+                + "What moves is `press`, a DRIVEN state the button's scale is read off - "
+                + "so the whole 90ms costs no render, and the state stands at 0.94 from "
+                + "the first millisecond while the button is still on its way there.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A control reports the states it DECLARES and nothing else. Naming "
+                + "states in .onVisualStateChanged declares them without changing how they "
+                + "look; the first button writes both already. The gallery's "
+                + "`Style<Button>` also says what a disabled button looks like, and the two "
+                + "are MERGED: the control's setters are written over the style's, one "
+                + "property at a time.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("A resting state need not be written: a group that names none is given "
-                + "an empty one, so a control that enters Disabled comes back to its own "
-                + "look when it is enabled again.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("And .pointerOver is a desktop's: nothing on a touch-only device ever "
-                + "enters it.")
+                + "an empty one, so a control that enters .disabled comes back to its own "
+                + "look when it is enabled again. That resting state is .normal for every "
+                + "control but a RadioButton, which RESTS in .unchecked.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

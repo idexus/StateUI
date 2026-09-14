@@ -141,57 +141,42 @@ struct DrivenSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("A value the HOST holds is worn by a property the way a plain "
-                + "value is: `.translationX($offset)`, `.color($tint)`. Send it "
-                + "somewhere from a handler - `offset = 240`, under "
-                + "`$offset.journey.motion` - and the HOST carries the property there on "
-                + "the display's own frames. Nothing is described on the way.")
+            Label("The reading at the top says how many times this closure has been "
+                + "described and which value for. Press the buttons and watch the marker "
+                + "cross, the colour change and the percentage count up: the count does "
+                + "not move. Throw the switch, which changes one caption, and it goes up "
+                + "by one and says `for slowly`. The percentage is written off a driven "
+                + "value by a conversion; the caption under it is described from "
+                + "`slowly`, which is ordinary `@State`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A JOURNEY IS A PART OF EVERY `@State` THE HOST CAN WALK. What closes "
-                + "the gap between where a value is and where it is going is the HOST "
-                + "walking it, on its own frames - the tree has none to walk one on. So "
-                + "the two values here are ordinary `@State`s, and what makes that "
-                + "affordable is that nothing reads either of them in a body: they are "
-                + "handed on with `$`, and the run costs no render at all.")
+            Label("A value the host holds is worn by a property the way a plain value is: "
+                + "`.translationX($offset)`, `.color($tint)`. Send it somewhere from a "
+                + "handler - `offset = 240`, under `$offset.journey.motion` - and the host "
+                + "walks the property there on the display's own frames, which the tree "
+                + "does not have. A journey is part of every `@State` the host can walk, "
+                + "so both values here are ordinary `@State`; nothing reads either in a "
+                + "body, and the run costs no render at all.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`$offset.journey.convert { … }` is what writes the percentage: a "
-                + "second state the host works out from where the marker HAS GOT TO, "
-                + "on the same frames the marker moves on, so the words follow it the "
-                + "whole way across for no render at all. A rewriting of one value into "
-                + "another is what a conversion is for; an engine is for arithmetic that "
-                + "keeps state of its own between frames, which Engine shows.")
+            Label("`$offset.journey` holds three things at once: `offset` itself is where "
+                + "the value is going, `$offset.journey.value` where it is, and "
+                + "`$offset.journey.velocity` how fast. Writing the state asks the host for "
+                + "a journey; writing `$offset.journey.value` puts it there at once, which "
+                + "is what arithmetic worked out per frame does. `$offset.journey.convert "
+                + "{ … }` writes the percentage from where the marker has got to, and a "
+                + "converted text is written only when its letters change, so a reading "
+                + "that rounds to the same number costs nothing.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("THE TWO READINGS ARE THE POINT. The percentage is written off a "
-                + "driven value by a conversion; the line under it is described from "
-                + "`slowly`, which is ordinary `@State`. The reading at the top says "
-                + "how many times this closure has been described and WHICH value for. "
-                + "Press the buttons and watch the marker cross, the colour change and "
-                + "the percentage count up: the count does not move. Throw the switch, "
-                + "which changes one caption, and it goes up by one and says "
-                + "`for slowly`.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("`$offset.journey` holds three things at once: `offset` itself is "
-                + "where the value is GOING, `$offset.journey.value` is where it IS, and "
-                + "`$offset.journey.velocity` how fast. Writing the state asks the host "
-                + "for a journey; writing `$offset.journey.value` puts it there at once, "
-                + "which is what arithmetic worked out per frame does. A "
-                + "converted text is written only when the letters actually change, so "
-                + "a reading that rounds to the same number costs nothing.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The marker MOVES rather than resizing: a translation is a drawing "
-                + "field and costs nothing, while a width written per frame measures "
-                + "the layout again every time. It is the same rule wherever a value "
-                + "moves quickly - reach for the transform.")
+            Label("A conversion rewrites one value as another; an engine is for arithmetic "
+                + "that keeps state of its own between frames, which Engine shows. The "
+                + "marker moves rather than resizing: a translation is a drawing field and "
+                + "costs nothing, while a width written per frame measures the layout again "
+                + "every time. Wherever a value moves quickly, reach for the transform.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

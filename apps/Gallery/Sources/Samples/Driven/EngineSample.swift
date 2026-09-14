@@ -32,7 +32,7 @@ struct EngineSample: SampleContent, ExampleContent {
 
     static let id = "engine"
     static let title = "Engine"
-    static let summary = "Arithmetic on the host's own frames, remembering where it got to in a state nobody reads - which is what a converter cannot do."
+    static let summary = "An engine: arithmetic on the host's frames that remembers where it got to."
 
     static let code = """
         @State private var lap = "-"
@@ -152,50 +152,42 @@ struct EngineSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("AN ENGINE IS FOR ARITHMETIC THAT REMEMBERS. Rewriting one value as "
-                + "another - a number into words, two numbers into one - is a "
-                + "CONVERSION: `$x.convert { … }` - or `$x.journey.convert { … }` where "
-                + "the words must follow the walk - an engine the differ writes for "
-                + "you. This clock cannot be one: what it shows is worked out from how "
-                + "long it has been RUNNING, which is not a function of any state on "
-                + "the page. That is what a state of the engine's own holds, and what "
-                + "makes this an engine written by hand.")
+            Label("An engine is for arithmetic that remembers. Rewriting one value as "
+                + "another - a number into words, two numbers into one - is a conversion: "
+                + "`$x.convert { … }`, or `$x.journey.convert { … }` where the words must "
+                + "follow the walk, is an engine the differ writes for you. This clock "
+                + "cannot be one: what it shows is worked out from how long it has been "
+                + "running, which is not a function of any state on the page. A state of "
+                + "the engine's own holds that, which makes this an engine written by hand.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Label($reading)` reads its words off a driven state, and the words "
-                + "are written by the engine on the display's own frame. The letters "
-                + "are what count: driven text is written onto the control only when "
-                + "the bytes CHANGE, so a reading that lands on the same tenth writes "
-                + "nothing at all - which matters because setting a label's text "
-                + "measures it again.")
+            Label("The two readings are the same reading. The clock is driven; Lap puts "
+                + "that very reading into ordinary `@State`. The reading at the top says "
+                + "how many times this closure has been described and which value for. "
+                + "Start the clock and let it run for a minute: the count does not move. "
+                + "Press Lap once, and it goes up by one and says `for lap`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("THE TWO READINGS ARE THE SAME READING. The clock is driven; Lap "
-                + "puts that very reading into ordinary `@State`. The reading at the "
-                + "top says how many times this closure has been described and "
-                + "WHICH value for. Start the clock and let it run for a minute: the "
-                + "count does not move. Press Lap once, and it goes up by one and "
-                + "says `for lap`.")
+            Label("`Label($reading)` reads its words off a driven state the engine writes "
+                + "on the display's own frame, and the button's caption is driven the same "
+                + "way by the handler that toggles the clock: one tap starts the clock and "
+                + "renames the button, and neither is a render. Driven text is written onto "
+                + "the control only when its bytes change, so a reading that lands on the "
+                + "same tenth writes nothing - which matters because setting a label's "
+                + "text measures it again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`running` and `elapsed` are ordinary `@State` that no view reads, "
-                + "so writing them renders nothing - a step, a running total, "
-                + "whatever the sum needs, kept across renders like any state. The "
-                + "engine names `$running` in `following:`, which is why tapping Start "
-                + "- a handler writing it - wakes the engine that switches on it; the "
-                + "engine's own writes wake nothing. And answering `.again` is what "
-                + "holds the frame clock: a clock is moved by TIME rather than by "
-                + "anything being written, so `.wait` is what lets the display go back "
-                + "to sleep until Start is tapped again.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("A button's own caption is driven the same way, written by the "
-                + "handler that toggles the clock - so the one tap that starts the "
-                + "clock also renames the button, and neither is a render.")
+            Label("`running` and `elapsed` are ordinary `@State` that no view reads, so "
+                + "writing them renders nothing - a step, a running total, whatever the sum "
+                + "needs, kept across renders like any state. The engine names `$running` "
+                + "in `following:`, which is why tapping Start - a handler writing it - "
+                + "wakes the engine; the engine's own writes wake nothing. Answering "
+                + "`.again` holds the frame clock, because a clock is moved by time rather "
+                + "than by anything being written; `.wait` lets the display go back to "
+                + "sleep until Start is tapped again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

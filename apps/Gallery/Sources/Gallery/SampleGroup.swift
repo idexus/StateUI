@@ -25,12 +25,13 @@ struct SampleGroup {
     /// One line about what the group is for.
     let summary: String
 
-    /// A file in Resources/Images, by the name MAUI gives it once built.
+    /// A file in Resources/Images, by its `.png` name - the host draws the
+    /// `.svg` of that name where there is no PNG.
     let icon: ImageSource
 
     /// The group's CARD - the picture the home page's gallery turns through,
     /// one per group and each in its own colour. A file in Resources/Images,
-    /// by the name MAUI gives it once built.
+    /// by its `.png` name.
     let card: ImageSource
 
     let samples: [Sample]

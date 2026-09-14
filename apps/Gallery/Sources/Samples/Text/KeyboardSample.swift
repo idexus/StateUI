@@ -14,24 +14,47 @@ struct KeyboardSample: SampleContent, ExampleContent {
 
     static let code = """
         @State private var name = ""
-        @Aim(Entry.self) private var nameField
+        @State private var note = ""
+        @State private var said = ""
+        @Aim(Entry.self) private var first
 
-        DebugInfoLabel()
+        VStack {
+            // `said` is read here, so the answer below builds this closure.
+            DebugInfoLabel()
 
-        Entry($name)
-            .aim(nameField)
+            Entry($name)
+                .placeholder("Name")
+                .aim(first)
 
-        Button("Focus")
-            .onClicked { try await nameField.focus() }
+            Entry($note)
+                .placeholder("Note")
 
-        Button("Unfocus")
-            .onClicked { try await nameField.unfocus() }
+            HStack {
+                Button("Focus first")
+                    .onClicked { try await first.focus() }
 
-        Button("Close keyboard")
-            .onClicked { try await SoftInput.hide() }
+                Button("Unfocus first")
+                    .onClicked { try await first.unfocus() }
+            }
+
+            Button("Close keyboard")
+                .onClicked {
+                    said = try await SoftInput.hide()
+                        ? "Focus released"
+                        : "Nothing was focused"
+                }
+
+            Label(said.isEmpty ? "Nothing said yet." : said)
+        }
         """
 
-    var notes: Element? { nil }
+    var notes: Element? {
+        Label("`focus()` and `unfocus()` are acts aimed at one field with `@Aim`. "
+            + "`SoftInput.hide()` releases whichever input holds the focus, and answers "
+            + "whether anything did.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
 
     var content: any View {
         VStack {

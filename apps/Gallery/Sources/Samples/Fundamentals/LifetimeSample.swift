@@ -18,8 +18,7 @@ struct LifetimeSample: SampleContent, ExampleContent {
 
     static let id = "lifetime"
     static let title = "Element lifetime"
-    static let summary = "What runs as a view comes into the tree and as it leaves - "
-        + "once each, with its state still there to read."
+    static let summary = "What runs as a view comes into the tree and as it leaves - once each."
 
     static let code = """
         @State private var shown = true

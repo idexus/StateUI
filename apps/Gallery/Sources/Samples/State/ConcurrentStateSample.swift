@@ -142,15 +142,13 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Which is the one move that IS forbidden: never send yourself "
-                + "to `@MainActor` or `DispatchQueue.main` to \"reach the UI "
-                + "thread\". Nothing drains those in a MAUI app on Android or "
-                + "Windows - the main thread is busy with the platform's own loop "
-                + "- so a handler that awaits `MainActor.run { … }` suspends "
-                + "at that line and never wakes, silently, on Android and "
-                + "Windows. A handler already runs on the library's own "
-                + "@MainThread; you do not move yourself there, and you do not "
-                + "need to.")
+            Label("Which is the one move that is forbidden: never send yourself to "
+                + "`@MainActor` or `DispatchQueue.main` to \"reach the UI thread\". "
+                + "Nothing drains those on Android or Windows - the main thread turns "
+                + "Android's Looper or the WinUI message pump instead - so a handler "
+                + "that awaits `MainActor.run { … }` suspends at that line and never "
+                + "wakes, silently. A handler already runs on the library's own "
+                + "@MainThread; you do not move yourself there, and you do not need to.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -51,7 +51,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
 
     var content: any View {
         VStack {
-            SectionTitle("VERTICAL")
+            SectionTitle("Vertical")
 
             VStack {
                 StackCell(text: "One")
@@ -60,7 +60,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            SectionTitle("HORIZONTAL")
+            SectionTitle("Horizontal")
 
             HStack {
                 StackCell(text: "One")
@@ -69,7 +69,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            SectionTitle("LAYOUT OPTIONS")
+            SectionTitle("Layout options")
 
             VStack {
                 StackCell(text: "start")
@@ -85,7 +85,6 @@ struct StackLayoutSample: SampleContent, ExampleContent {
                     .horizontalOptions(.fill)
             }
             .spacing(8)
-
         }
         .spacing(12)
     }

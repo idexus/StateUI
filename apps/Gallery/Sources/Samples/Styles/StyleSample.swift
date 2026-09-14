@@ -20,8 +20,7 @@ struct StyleSample: SampleContent, ExampleContent {
             static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
         }
 
-        // Into the application's session as it is made - where MAUI keeps
-        // them:
+        // Into the application's session as it is made:
         application.styles = StyleSheet {
             Style<Button>()
                 .textColor(Palette.onAccent)
@@ -90,10 +89,6 @@ struct StyleSample: SampleContent, ExampleContent {
             // Neither of these says anything about its own appearance. The
             // orange, the corners, the padding and the 44pt minimum all come
             // from Style<Button> in Styles/AppStyles.swift.
-            Label("Nothing below sets a colour, a size or a corner")
-                .fontSize(13)
-                .textColor(Palette.subtle)
-
             HStack {
                 Button("Save")
                 Button("Cancel")
@@ -101,10 +96,10 @@ struct StyleSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalOptions(.center)
 
-            // A style can say what a control looks like in a STATE, which is
-            // MAUI's VisualStateManager - the platform enters the state, and
-            // hearing that is what .onVisualStateChanged is for, next door in
-            // the Visual states sample.
+            // A style can say what a control looks like in a STATE: the
+            // platform enters the state, and hearing that is what
+            // .onVisualStateChanged is for, next door in the Visual states
+            // sample.
             Button(enabled ? "Enabled" : "Disabled")
                 .isEnabled(enabled)
                 .horizontalOptions(.center)
@@ -122,7 +117,7 @@ struct StyleSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalOptions(.center)
 
-            SectionTitle("A STYLE ASKED FOR BY NAME")
+            SectionTitle("A style asked for by name")
 
             // The others are implicit - they have no key, so every control of
             // the type gets them. This one has one, and is asked for; a keyed
@@ -130,7 +125,7 @@ struct StyleSample: SampleContent, ExampleContent {
             Label("Headline")
                 .style("Headline")
 
-            SectionTitle("A STYLE WRITTEN FROM ANOTHER")
+            SectionTitle("A style written from another")
 
             // The same words twice. "Quote" states the shape; "QuoteLoud" is
             // `.basedOn("Quote")` plus one colour - so everything that matches
@@ -147,7 +142,18 @@ struct StyleSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Both are italic, both are 17 point, both are centred, both "
+            Label("Nothing in the example sets a colour, a size or a corner: every "
+                + "button takes all of it from the gallery's one `Style<Button>`.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A style with no key is implicit: every control of its type wears it. "
+                + "`Headline` has a key and is asked for by name, and a keyed style "
+                + "REPLACES the implicit one, so it says everything it needs.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Both quotes are italic, both are 17 point, both are centred, both "
                 + "carry the same letter spacing - and only one of them says so. "
                 + "`QuoteLoud` is `.basedOn(\"Quote\")` and a text colour, which "
                 + "is the whole of its declaration. A property the child states "
@@ -155,13 +161,13 @@ struct StyleSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Every colour above is written twice, once per theme - "
-                + "Color(light:dark:). None of this crosses the boundary: the "
-                + "styles are resolved in Swift, into the controls, so what the "
-                + "host receives is a button with its colours already on it.")
+            Label("Every colour the styles use is one `Color(light:dark:)`, a value "
+                + "for each theme. None of this crosses the boundary: the styles are "
+                + "resolved in Swift, into the controls, so what the host receives is "
+                + "a button with its colours already on it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(14)
+        .spacing(8)
     }
 }

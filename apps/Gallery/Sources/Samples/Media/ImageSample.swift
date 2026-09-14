@@ -1,10 +1,10 @@
 import StateUI
 
-/// MAUI: Image.
+/// Pictures from the app's resources: fitted, filled, and one per theme.
 struct ImageSample: SampleContent, ExampleContent {
     static let id = "image"
     static let title = "Image"
-    static let summary = "A picture from the app's resources, asked for by the name MAUI gives it."
+    static let summary = "A picture from the app's resources, asked for by name."
 
     static let code = """
         VStack {
@@ -49,8 +49,8 @@ struct ImageSample: SampleContent, ExampleContent {
                 }
             }
 
-            // The same shape drawn black, and drawn once per theme. MAUI has
-            // no tint on an Image, so what changes is the SOURCE.
+            // The same shape drawn black, and drawn once per theme. An Image
+            // has no tint, so what changes is the SOURCE.
             HStack {
                 Image("nav_gestures.png")
                     .widthRequest(32)
@@ -93,18 +93,7 @@ struct ImageSample: SampleContent, ExampleContent {
             .spacing(16)
             .horizontalOptions(.center)
 
-            Label("These are the sidebar's own icons: SVGs in Resources/Images, declared "
-                + "once with <MauiImage Include=\"Resources/Images/*.svg\" />.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The build rasterizes each vector into the densities the platform wants, "
-                + "so nav_home.svg is asked for as nav_home.png - exactly as it would be "
-                + "in XAML.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("FIT OR FILL")
+            SectionTitle("Fit or fill")
 
             // The same square picture in the same wide box, so the only thing
             // between the two is the aspect.
@@ -140,12 +129,12 @@ struct ImageSample: SampleContent, ExampleContent {
             .spacing(16)
             .horizontalOptions(.center)
 
-            SectionTitle("ONE PER THEME")
+            SectionTitle("One per theme")
 
-            // The same shape drawn black and white. MAUI has no tint on an
-            // Image, so what changes is the SOURCE - and the half in force is
-            // picked as the view is built, so switching the system theme
-            // builds this view again with the other file.
+            // The same shape drawn black and white. An Image has no tint, so
+            // what changes is the SOURCE - and the half in force is picked as
+            // the view is built, so switching the system theme builds this
+            // view again with the other file.
             HStack {
                 Image("nav_gestures.png")
                     .widthRequest(32)
@@ -173,16 +162,22 @@ struct ImageSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
+            Label("The first row is the sidebar's own icons: SVGs in `Resources/Images`, "
+                + "each asked for by its `.png` name. Where no PNG of that name exists, the "
+                + "AppKit host loads the SVG of the same name instead.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("`.aspect` is the choice between showing all of the picture and filling "
                 + "every corner: `.aspectFit` keeps the whole picture and leaves room on "
                 + "two sides, `.aspectFill` covers the box and crops what will not fit.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("MAUI has no tint on an Image, so a picture that has to read on both "
-                + "themes is two pictures. ImageSource(light:dark:) is the same idea as "
-                + "Color(light:dark:), and is picked the same way - as the view is built, "
-                + "so a change of theme builds the views wearing one again.")
+            Label("An `Image` has no tint, so a picture that has to read on both themes is "
+                + "two pictures. `ImageSource(light:dark:)` is picked the way "
+                + "`Color(light:dark:)` is - as the view is built - so a change of theme "
+                + "builds the views wearing one again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -194,6 +189,6 @@ struct ImageSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

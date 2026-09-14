@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Picker.
+/// One choice out of a list, opened by the reader or by a button.
 struct PickerSample: SampleContent, ExampleContent {
     @State private var size = 1
     @State private var changes = 0
@@ -30,9 +30,9 @@ struct PickerSample: SampleContent, ExampleContent {
                 .onSelectedIndexChanged { _ in changes += 1 }
                 .selectedIndex($size)
                 .title("Size")
-                // Settable, so a button elsewhere can open the list - and
-                // the two events answer whoever opened it, reader or
-                // platform.
+                // Settable, so a button elsewhere can open the list. The two
+                // events answer the reader and the platform - never this
+                // side's own write.
                 .isOpen(showing)
                 .onOpened { opened += 1; showing = true }
                 .onClosed { showing = false }
@@ -43,7 +43,7 @@ struct PickerSample: SampleContent, ExampleContent {
             Label("Changed \\(changes)x, opened \\(opened)x")
         }
 
-        /// -1 is MAUI's "nothing chosen", so it is worth saying out loud.
+        /// -1 means nothing is chosen, so it is worth saying out loud.
         private var chosen: String {
             size >= 0 && size < Self.sizes.count
                 ? "Chosen: \\(Self.sizes[size])"
@@ -82,8 +82,8 @@ struct PickerSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The items are a list of strings and the choice is an index, which is "
-                + "what MAUI's Picker holds. -1 means nothing is chosen.")
+            Label("The items are a list of strings and the choice is an index into it; "
+                + "-1 means nothing is chosen.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

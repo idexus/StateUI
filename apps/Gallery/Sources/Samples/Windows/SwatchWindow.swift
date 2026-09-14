@@ -59,7 +59,8 @@ struct SwatchPage: ContentView {
             window.minimumWidth = 240
             window.minimumHeight = 280
         }
-        // The same window, now about another swatch - so its name follows.
+        // A written number makes the same window about another swatch, so its
+        // name follows.
         .onChanged(number) { window.title = "Swatch \(number)" }
     }
 

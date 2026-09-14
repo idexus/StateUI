@@ -1,31 +1,25 @@
 // The gallery's styles: what every control of a type looks like.
 //
-// The shape is the .NET MAUI template's Styles.xaml - the same target types, the
-// same properties, the same visual states - and the VALUES are the StateUI
-// ramp rather than the template's. A style with no key applies to every control
-// of its type, so most of the gallery's appearance is decided here rather than
-// in the views.
+// A style with no key applies to every control of its type, so most of the
+// gallery's appearance is decided here rather than in the views, in the values
+// of the StateUI ramp.
 //
 // Every colour comes through `Palette`, one name per job. That is what makes the
 // look changeable in one file, and what makes it coherent: nothing here picks a
 // colour, it says what the thing is FOR and the palette answers.
 //
-// TWO DELIBERATE DIFFERENCES from the template:
+// WHAT IS NOT HERE:
 //
-//   - No FontFamily. The template ships OpenSansRegular as a MauiFont; this app
-//     ships no fonts, and naming a family that is not registered is a way to get
-//     a different font on every platform.
-//   - Only what a Style can NAME. The template also styles Shadow (not a
-//     control - `.shadow` is a property of the view that casts it), SwipeItem
-//     (not a StyleTarget), Page (a protocol you declare, whose appearance is
-//     its `PageSession`'s), and NavigationStack and TabbedView, whose bar is
-//     written on the arrangement itself - see MainWindow.detail. TitleBar is
-//     commented out in the template itself.
+//   - No font family. The gallery ships no fonts, and naming a family that is
+//     not installed is a way to get a different font on every platform.
+//   - Nothing a Style cannot NAME: a shadow is a property of the view that
+//     casts it, a SwipeItem is not a style target, a page's appearance is its
+//     `PageSession`'s, and the bars of NavigationStack and TabbedView are
+//     written on the arrangement itself - see MainWindow.detail.
 
 import StateUI
 
 /// The application's styles, as the sheet the differ resolves against.
-/// MAUI: App.xaml's ResourceDictionary.
 enum AppStyles {
     /// Built once, as the application is made, and never sent: the differ
     /// merges each style into the controls it applies to, so what crosses is a
@@ -131,9 +125,7 @@ enum AppStyles {
             // minimum size INCONSISTENTLY: with one in the row, the cell
             // takes that height on some measure passes and the content's own
             // on others, so the rows draw at two heights and gaps open
-            // between them - measured on Mac Catalyst, and
-            // reproduced with a hand-written C# row and a bare MAUI template
-            // both, so it is the platform's cell measurement rather than
+            // between them - the platform's cell measurement rather than
             // anything this library does. Dropping the floor draws every row
             // the same height, and a button in a list row is a target beside
             // its text rather than a thumb target of its own.
@@ -222,18 +214,11 @@ enum AppStyles {
                     .textColor(Palette.disabled)
                 }
 
-            // NO backgroundColor, and that is measured, not an omission: on
-            // iOS a solid one becomes the bar's BarTintColor, rendered
-            // through a translucent material that lands visibly OFF the card
-            // - and .transparent is worse, a CLEAR tint dropping UISearchBar
-            // into a legacy look that is WHITE in both themes, dark mode's
-            // light text vanishing into it. The bar behind the field is
-            // removed on the HOST instead: MauiProgram appends
-            // SearchBarStyle.Minimal to the handler, UIKit's own way to put
-            // a search field on a coloured surface. And the 44-point floor is
-            // a TOUCH screen's: UIKit pins the field to the TOP of the bar, so
-            // on a desktop the touch floor shows as a dead band under the
-            // field - a mouse is not a thumb, the ChromeChip rule.
+            // NO backgroundColor: a search field keeps the platform's own
+            // look on a coloured surface, and that look is the host's. The
+            // 44-point floor is a TOUCH screen's: on a desktop it shows as a
+            // dead band under the field - a mouse is not a thumb, the
+            // ChromeChip rule.
             Style<SearchBar>()
                 .textColor(Palette.text)
                 .placeholderColor(Palette.subtle)
@@ -338,17 +323,15 @@ enum AppStyles {
             // both themes and on every platform. A shadow would need a colour
             // that works on both, and there is no such colour.
             //
-            // backgroundColor, NOT background. MAUI paints the Background BRUSH
-            // whenever one is set and ignores BackgroundColor entirely - so a
-            // brush here, in a style every Border gets, cannot be overridden by
-            // a view setting its own colour: the two are different properties,
-            // and a local value only beats a style setter of the SAME one.
-            // Measured - it hid the panel in both animation samples, and with
-            // it the whole point of the one that animates a background.
+            // backgroundColor, NOT background. Where both are set the host
+            // fills with the brush, and a view's own value beats a style
+            // setter of the SAME property only - so a brush here, in a style
+            // every Border gets, would hide the colour of every panel that
+            // sets its own, the animated one included.
             //
-            // A view that wants a GRADIENT still says `.background(…)` and wins,
-            // because a brush beats a colour. That is what the home page's
-            // panel does.
+            // A view that wants a GRADIENT still says `.background(…)` and
+            // wins, because the brush is what the host fills with. That is
+            // what the home page's panel does.
             Style<Border>()
                 .backgroundColor(Palette.raised)
                 .stroke(Palette.outline)

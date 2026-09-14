@@ -4,10 +4,7 @@ import StateUI
 struct PacedStateSample: SampleContent, ExampleContent {
     static let id = "paced"
     static let title = "A state on a cadence"
-    static let summary =
-        "One value the host is walking, shown three ways - by a converter, by "
-        + "a read of its journey, and by a reading taken ten times a second. "
-        + "Watch the three build counts."
+    static let summary = "One walked value shown three ways - converted, read, and sampled ten times a second."
 
     /// What the host walks. A write puts the DESTINATION on it at once, and
     /// the host walks the control there on its own frames.
@@ -143,38 +140,33 @@ struct PacedStateSample: SampleContent, ExampleContent {
                 + "whole two seconds, the second counts up once a frame, the third about "
                 + "ten times a second. One value, three ways of showing it, and the "
                 + "difference between them is the whole of what this page is about.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("A state is at its value the moment it is written. `move(to:)` puts "
-                + "the DESTINATION on the state at once and the host walks the control "
+                + "the destination on the state at once and the host walks the control "
                 + "there - which is what lets the box travel without a single render. "
                 + "`fade` is that destination; `$fade.journey.value` is where the box "
                 + "has got to.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A READ OF THE JOURNEY IS A BUILD PER FRAME. The host writes where "
-                + "the value is on every frame it moves, and a closure that printed it "
-                + "asked to see every one of them. A closure that prints `fade` alone is "
-                + "built once per write, the destination never moving in between. That "
-                + "is the honest cost of a moving number, and why the first column is a "
-                + "converter.")
-                .fontSize(13)
+            Label("A read of the journey is a build per frame. The host writes where the "
+                + "value is on every frame it moves, and a closure that prints it asks to "
+                + "see every one of them. A closure that prints `fade` alone is built once "
+                + "per write, the destination never moving in between. That is the honest "
+                + "cost of a moving number, and why the first block is a converter.")
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("A reading is the middle road: where the value had got to when the "
-                + "sample was taken, copied into an ordinary state. It stops by itself - "
-                + "a reading writes only what changed, and the host stops sending the "
-                + "moment the value lands.")
-                .fontSize(13)
-                .textColor(Palette.subtle)
-
-            Label("Which to reach for: a converter where the value is only SHOWN, since "
-                + "it costs no render at all; a reading where it decides WHICH VIEWS "
-                + "THERE ARE while it travels; the journey itself where every frame "
-                + "matters and the closure is small.")
-                .fontSize(13)
+                + "sample was taken, copied into an ordinary state. It stops by itself, "
+                + "because a reading writes only what changed and the host stops sending "
+                + "the moment the value lands. Reach for a converter where the value is "
+                + "only shown, since it costs no render at all; a reading where it decides "
+                + "which views there are while it travels; the journey itself where every "
+                + "frame matters and the closure is small.")
+                .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(8)

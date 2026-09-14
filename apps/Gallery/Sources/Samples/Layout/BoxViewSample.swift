@@ -1,10 +1,10 @@
 import StateUI
 
-/// MAUI: BoxView.
+/// Rectangles of colour - square, rounded, round and faded - and a divider.
 struct BoxViewSample: SampleContent, ExampleContent {
     static let id = "boxView"
     static let title = "BoxView"
-    static let summary = "A rectangle of colour - the simplest thing MAUI draws."
+    static let summary = "A rectangle of colour - the simplest thing a host draws."
 
     static let code = """
         VStack {
@@ -69,8 +69,9 @@ struct BoxViewSample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("Color, not BackgroundColor: a BoxView has both, and Color is the one "
-            + "it draws with. A one-pixel BoxView is also the usual divider.")
+        Label("A BoxView draws the colour its initializer takes, which is its `.color`. "
+            + "`.backgroundColor` is a second surface behind it that the corner radius "
+            + "does not round. A one-pixel BoxView is also the usual divider.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

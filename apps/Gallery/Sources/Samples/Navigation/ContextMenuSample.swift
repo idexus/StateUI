@@ -138,6 +138,6 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

@@ -83,12 +83,6 @@ struct BuilderSample: SampleContent, ExampleContent {
                 .semanticDescription("Note")
                 .placeholder("Type here, then flip the switch")
 
-            Label("What you typed is still here: an `if` above a view does not "
-                + "move it, so the Entry keeps its control - and with it the text, "
-                + "the caret and the focus.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
             if editing {
                 Entry("name")
                     .automationId("builder.name")
@@ -103,12 +97,6 @@ struct BuilderSample: SampleContent, ExampleContent {
 
             SwitchRow("Editing", $editing)
                 .horizontalOptions(.start)
-
-            Label("Both branches build an Entry, and they are still two different "
-                + "elements: swapping replaces the control rather than editing it, "
-                + "which is what the two branches say.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
 
             ForEach(0..<5) { turn in
                 if turn == chosen {
@@ -129,10 +117,25 @@ struct BuilderSample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("Five rows out of one ForEach, each choosing what to build. Moving "
-            + "the choice sends two changes, not five: a row is identified by its "
-            + "ITEM, whatever the rows around it decide.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
+        VStack {
+            Label("An `if` above a view does not move it: type in the field, flip the "
+                + "switch, and the Entry keeps its control - and with it the text, the "
+                + "caret and the focus.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Both branches of the `if/else` build an Entry, and they are still two "
+                + "different elements: swapping replaces the control rather than editing "
+                + "it, which is what the two branches say.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Five rows out of one `ForEach`, each choosing what to build. Moving "
+                + "the choice sends two changes, not five: a row is identified by its "
+                + "item, whatever the rows around it decide.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
     }
 }

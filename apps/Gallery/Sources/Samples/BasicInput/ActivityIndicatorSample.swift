@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: ActivityIndicator.
+/// A spinner started and stopped by one flag.
 struct ActivityIndicatorSample: SampleContent, ExampleContent {
     @State private var loading = true
 
@@ -55,13 +55,13 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Still is also INVISIBLE on most platforms, which is why "
+            Label("A still spinner is also an INVISIBLE one on most platforms, which is why "
                 + "`ActivityIndicator(loading)` is usually the whole of it - there is "
                 + "nothing to hide by hand.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A spinner says \"wait\"; a ProgressBar says \"how much longer\". Use the "
+            Label("A spinner says \"wait\"; a `ProgressBar` says \"how much longer\". Use the "
                 + "bar wherever the work can be counted.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

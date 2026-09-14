@@ -8,9 +8,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
 
     static let id = "inputs"
     static let title = "Same inputs"
-    static let summary =
-        "A view built with the same inputs is not built again, however often the "
-        + "view around it is - and what counts as the same."
+    static let summary = "A view built with the same inputs is not built again, however often its parent is."
 
     static let code = """
         @State private var counter = 0
@@ -91,23 +89,17 @@ struct SameInputsSample: SampleContent, ExampleContent {
                 .horizontalOptions(.center)
                 .onClicked { counter += 1 }
 
-            Label("Three views under one button. Press it and read the three counts: "
-                + "the first stands still, the other two move - each for a reason of its own.")
-                .fontSize(13)
-                .textColor(Palette.subtle)
-                .horizontalTextAlignment(.center)
-
             // CARRIED: built with a constant, reading nothing.
-            Block(caption: "A CONSTANT", value: "fixed", tint: Palette.accent)
+            Block(caption: "a constant", value: "fixed", tint: Palette.accent)
 
             // BUILT AGAIN: the count is what it was built with.
-            Block(caption: "THE COUNT", value: "\(counter)", tint: Palette.brand)
+            Block(caption: "the count", value: "\(counter)", tint: Palette.brand)
 
             // BUILT AGAIN TOO, for the other reason: lent the same state every
             // time, and reading it.
             Reads(count: $counter, tint: Palette.brand)
 
-            Label("Rows built with their item - the button builds none of them")
+            Label("Rows built with their item")
                 .fontSize(13)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -125,6 +117,13 @@ struct SameInputsSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
+            Label("Press the button and read the three counts: the first block stands "
+                + "still and the other two move, each for a reason of its own. The rows "
+                + "under them are built with their item alone, so the button builds none "
+                + "of them.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("A composed view - a ContentView of your own - is built again in two "
                 + "cases and no other: when what it was built with changed, or when a "
                 + "state it read changed. Otherwise it is carried whole, with its state, "
@@ -162,7 +161,7 @@ private struct Block: ContentView {
 
     var content: any View {
         VStack {
-            Label("BUILT WITH \(caption)")
+            Label("Built with \(caption)")
                 .fontSize(12)
                 .fontAttributes(.bold)
                 .textColor(tint)
@@ -185,7 +184,7 @@ private struct Reads: ContentView {
 
     var content: any View {
         VStack {
-            Label("READS THE COUNT")
+            Label("Reads the count")
                 .fontSize(12)
                 .fontAttributes(.bold)
                 .textColor(tint)

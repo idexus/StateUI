@@ -5,7 +5,7 @@ import StateUI
 struct MotionSample: SampleContent, ExampleContent {
     static let id = "motion"
     static let title = "Motion"
-    static let summary = "A value that changes travels to it. Assign the state and the control goes there - at a length, on a spring, or not at all."
+    static let summary = "Assign the state and the control travels there - at a length, on a spring, or not at all."
 
     static let laws = ["Eased 200ms", "Spring", "Long and slow", "None"]
 
@@ -84,21 +84,21 @@ struct MotionSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("A CHANGE THAT TRAVELS")
+            Label("A change that travels")
                 .fontSize(11)
                 .characterSpacing(1)
                 .textColor(Palette.subtle)
 
             panel(travels: true)
 
-            Label("THE SAME, TOLD TO STAY STILL")
+            Label("The same, told to stay still")
                 .fontSize(11)
                 .characterSpacing(1)
                 .textColor(Palette.subtle)
 
             panel(travels: false)
 
-            Label("AND THE SAME, HOLDING ONLY ITS SIZE STILL")
+            Label("The same, holding only its size still")
                 .fontSize(11)
                 .characterSpacing(1)
                 .textColor(Palette.subtle)
@@ -142,12 +142,12 @@ struct MotionSample: SampleContent, ExampleContent {
         VStack {
             Label("Press Size or Colour. The first panel travels, the second "
                 + "arrives immediately, and the third holds only its size still.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("Change the law to compare eased, spring, slow and immediate "
                 + "motion. StateUI sends destinations; the host supplies the frames.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(8)

@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: TimePicker.
+/// A time of day in a picker - bound, and one-way with the write back by hand.
 struct TimePickerSample: SampleContent, ExampleContent {
     @State private var alarm = ClockTime(hour: 7, minute: 30)
     @State private var picks = 0
@@ -48,8 +48,6 @@ struct TimePickerSample: SampleContent, ExampleContent {
                 ? "onTimeSelected has not fired"
                 : "onTimeSelected: \\(alarm.text), \\(picks) so far")
         }
-
-        // ClockTime(hour: 7, minute: 30) crosses to C# as 7, 30, 0
         """
 
     var content: any View {
@@ -84,20 +82,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
             .spacing(10)
             .horizontalOptions(.center)
 
-            Label("A ClockTime rather than a Foundation value, for the reason a "
-                + "CalendarDate is not a Date: formatting one needs ICU, and ICU is the "
-                + "dependency this library cannot take. It crosses to C# as three "
-                + "numbers - hour, minute, second - and becomes the TimeSpan MAUI "
-                + "wants there, a length since midnight.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("Whether the reader sees 21:05 or 9:05 PM is the FORMAT, applied on the "
-                + "C# side where a locale costs nothing.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("ONE-WAY, WRITTEN BACK BY HAND")
+            SectionTitle("One-way, written back by hand")
 
             TimePicker()
                 .automationId("timePicker.alarm.oneWay")
@@ -120,6 +105,14 @@ struct TimePickerSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
+            Label("A `ClockTime` rather than a Foundation value, for the reason a "
+                + "`CalendarDate` is not a `Date`: formatting one needs ICU, and ICU is "
+                + "the dependency this library cannot take. It is three numbers - hour, "
+                + "minute, second - and whether the reader sees 21:05 or 9:05 PM is the "
+                + "host's to decide, from the reader's locale and the `.format`.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("`TimePicker()` says nothing about a time, so `.time` is what puts one "
                 + "in the field - the form a `Style<TimePicker>` or a picker built "
                 + "elsewhere has to use. Nothing comes back on its own either: the "

@@ -2,9 +2,10 @@ import StateUI
 
 /// The first tab of the tabs demonstration - the one holding a stack of its own.
 ///
-/// It is the ROOT of a `NavigationStack` that lives inside a `TabbedView`. All
-/// three of those are pages, and pages nest - so a tab holding a stack needs no
-/// permission from anything, and the stack it holds is its own array.
+/// It is the ROOT of a `NavigationStack` that lives inside a `TabbedView`, and
+/// that `TabbedView` is the detail of the same split view every other section
+/// is shown in. All three are pages, and pages nest - so a tab may hold a
+/// stack, and the stack it holds is its own array.
 struct TabsPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
@@ -21,22 +22,13 @@ struct TabsPage: ContentView {
     var content: any View {
         ScrollView {
             VStack {
-                SectionTitle("A SECTION ARRANGED AS TABS")
+                SectionTitle("A section arranged as tabs")
 
                 Label("A TabbedView of two")
                     .fontSize(26)
                     .fontAttributes(.bold)
 
-                Label("The row of tabs is a TabbedView, and it is the DETAIL of the same "
-                    + "split view every other section is shown in. Nothing about this page "
-                    + "says so: what arranges it is which section `nav.section` holds - "
-                    + "`.tabs`, which the Tabs sample's button sets.")
-                    .fontSize(13)
-                    .textColor(Palette.subtle)
-
-                Label("This tab holds a NavigationStack over a path of its own. Push a page, "
-                    + "change tabs, come back - it is still on top, because the two stacks "
-                    + "are two arrays and nothing in the library decides that.")
+                Label("Push a page, change tabs, come back: it is still on top.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
 
@@ -56,16 +48,13 @@ struct TabsPage: ContentView {
 
                 TabsControls(nav: nav, thisTab: .stack)
 
+                // One move, landing where it says: the section becomes home
+                // and the group is pushed onto it, so the back button leads
+                // home from there.
                 Button("Back to the Navigation samples")
                     .padding(20, 10)
                     .horizontalOptions(.center)
                     .onClicked { nav.openGroup("navigation") }
-
-                Label("The way out is one move, and it lands where it says: the section "
-                    + "becomes home and the group is pushed onto it, so the back button "
-                    + "leads home from there. There is no route syntax to get wrong.")
-                    .fontSize(13)
-                    .textColor(Palette.subtle)
             }
             .spacing(14)
             .padding(24)

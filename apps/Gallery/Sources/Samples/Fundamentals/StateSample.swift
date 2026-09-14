@@ -65,7 +65,7 @@ struct StateSample: SampleContent, ExampleContent {
         // taken.
         Border {
             VStack {
-                Label("THIS CLOSURE READS `counter`")
+                Label("This closure reads `counter`")
                     .fontSize(11)
                     .characterSpacing(1)
                     .textColor(Palette.accent)
@@ -96,15 +96,9 @@ struct StateSample: SampleContent, ExampleContent {
                 .spacing(12)
                 .horizontalOptions(.center)
 
-                Label("This view is a value, rebuilt on every render - and this @State is "
-                    + "declared right on it. The same view at the same place keeps its "
-                    + "state through the rebuild; nothing is invalidated by hand.")
-                    .fontSize(12)
-                    .textColor(Palette.subtle)
-
                 Border {
                     VStack {
-                        Label("AND THIS ONE READS `name`")
+                        Label("And this one reads `name`")
                             .fontSize(11)
                             .characterSpacing(1)
                             .textColor(Palette.accent)
@@ -136,18 +130,34 @@ struct StateSample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("A child view borrows a value with @Binding - `$name` lends it - and "
-            + "writes through it reach the owner. Lending makes no reader: what makes "
-            + "a reader is READING the value inside a closure, and only that closure "
-            + "is rebuilt when the value is written. The two rectangles are those two "
-            + "closures drawn, and their readings say it as you use the example - "
-            + "Increment rebuilds the outer closure and the inner one goes with it, "
-            + "which is what `with its parent` means; typing rebuilds the inner "
-            + "closure alone and leaves the one around it standing. State lives as "
-            + "long as its owner stays in the tree; this gallery keeps its samples in "
-            + "the catalog its pages hold, so the count is still here when you come "
-            + "back.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
+        VStack {
+            Label("This view is a value, rebuilt on every render, and its @State is "
+                + "declared right on it. The same view at the same place keeps its state "
+                + "through the rebuild; nothing is invalidated by hand.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A child view borrows a value with @Binding - `$name` lends it - and "
+                + "writes through it reach the owner. Lending makes no reader: what makes "
+                + "a reader is reading the value inside a closure, and only that closure "
+                + "is rebuilt when the value is written.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The two rectangles are those two closures drawn. The borders are "
+                + "decoration: the reader is the VStack whose braces the get sits in. "
+                + "Increment rebuilds the outer closure and the inner one goes with it, "
+                + "which is what `with its parent` means; typing rebuilds the inner "
+                + "closure alone and leaves the one around it standing.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("State lives as long as its owner stays in the tree. This gallery keeps "
+                + "its samples in the catalog its pages hold, so the count is still here "
+                + "when you come back.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
     }
 }

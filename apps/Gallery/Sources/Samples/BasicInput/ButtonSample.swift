@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Button.
+/// A button wired to a click, beside an outlined one and a disabled one.
 struct ButtonSample: SampleContent, ExampleContent {
     @State private var counter = 0
 
@@ -30,8 +30,6 @@ struct ButtonSample: SampleContent, ExampleContent {
             Button("Disabled")
                 .isEnabled(false)
         }
-
-        // Also .onPressed and .onReleased, named after MAUI's own events.
         """
 
     var content: any View {
@@ -69,7 +67,8 @@ struct ButtonSample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("Also .onPressed and .onReleased, named after MAUI's own events.")
+        Label("Also `.onPressed` and `.onReleased`, for the moment the button goes "
+            + "down and comes up.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

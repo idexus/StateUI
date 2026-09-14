@@ -21,8 +21,7 @@ struct ConverterSample: SampleContent, ExampleContent {
 
     static let id = "converters"
     static let title = "Converters"
-    static let summary = "`$volume.convert { $0 * 100 }.convertBack { $0 / 100 }` - one state "
-        + "in two units, a caption from it, several states into one, and no render for any of it."
+    static let summary = "`convert` and `convertBack`: one state in two units, a caption from it, and no render."
 
     static let code = """
         @State private var volume = 0.2       // 0 to 1
@@ -115,7 +114,7 @@ struct ConverterSample: SampleContent, ExampleContent {
 
     var content: any View {
         VStack {
-            row("1 · the source, 0 to 1 - Slider($volume)") {
+            row("1 · the source, 0 to 1") {
                 Slider($volume)
                     .automationId("converters.volume")
                     .semanticDescription("Volume, 0 to 1")
@@ -125,7 +124,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
             }
 
-            row("2 · the same state in percent - Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })") {
+            row("2 · the same state in percent") {
                 Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })
                     .automationId("converters.volume.percent")
                     .semanticDescription("Volume, in percent")
@@ -135,14 +134,14 @@ struct ConverterSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
             }
 
-            row("3 · a caption from the conversion - Label($volume.convert { … })") {
+            row("3 · a caption from the conversion") {
                 Label()
                     .text($volume.convert { "\(Int($0 * 100))%" })
                     .fontSize(17)
                 DebugInfoLabel()
             }
 
-            row("4 · one temperature, two scales - Stepper($celsius) and its conversion") {
+            row("4 · one temperature, two scales") {
                 HStack {
                     // 5 °C IS 9 °F EXACTLY, and the ends line up too
                     // (-20 °C = -4 °F, 60 °C = 140 °F), so every value either
@@ -174,7 +173,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
             }
 
-            row("5 · two states into one - $width.convert(with: $height) { w, h in … }") {
+            row("5 · two states into one") {
                 Slider($width)
                     .automationId("converters.width")
                     .semanticDescription("Width")
@@ -191,7 +190,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
             }
 
-            row("6 · a field is handed the state - Entry($named) reads nothing, typing lands on it") {
+            row("6 · a field is handed the state") {
                 Entry($named)
                     .automationId("converters.named")
                     .semanticDescription("A name for it")
@@ -199,7 +198,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
             }
 
-            row("7 · as many as you like - .multi($named, $width, $height).convert { … }") {
+            row("7 · as many as you like") {
                 Label()
                     .text(.multi($named, $width, $height)
                         .convert { "\($0): \(Int($1)) × \(Int($2))" })
@@ -232,8 +231,8 @@ struct ConverterSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("THE TEMPERATURE STEPS BY 5 AND BY 9 ON PURPOSE, and it is the one "
-                + "thing to copy from that row. A conversion is exact; a value SHOWN is "
+            Label("The temperature steps by 5 and by 9 on purpose, and it is the one "
+                + "thing to copy from that row. A conversion is exact; a value shown is "
                 + "rounded, and two scales round the same number their own way - step "
                 + "by one on each and the state lands on 20.56, where one caption says "
                 + "20 °C and the other says 69 °F, which no single temperature is. "

@@ -11,7 +11,7 @@ struct HelloWorldApp: Application {
     /// The application as it runs - where its styles go.
     @Environment private var application: ApplicationSession
 
-    /// The application's styles - see Swift/Styles/AppStyles.swift - written
+    /// The application's styles - see Styles/AppStyles.swift - written
     /// as the application is made. A colour in one follows the theme by
     /// itself.
     init() {
@@ -34,10 +34,9 @@ struct MainWindow: Window {
 }
 
 /// The one thing this module exports - the line that names this application to
-/// the host, exactly as MAUI does with `builder.UseMauiApp<App>()`. It cannot
-/// move into the library: on Android and Windows this module is a separate
-/// native library, and nothing in it runs until something calls into it by
-/// name.
+/// the host. It cannot move into the library: the dependency runs app ->
+/// library, and a host that loads the app as a separate native library finds it
+/// by this name.
 @_cdecl("stateui_app_register")
 public func stateui_app_register() {
     stateUIUseApp(HelloWorldApp())

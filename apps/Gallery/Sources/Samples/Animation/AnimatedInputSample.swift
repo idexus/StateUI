@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Slider.Value and Stepper.Value - the two properties a READER can move,
+/// A slider's value and a stepper's - the two properties a READER can move,
 /// both carried by the host. Two sliders and a stepper, and what differs is who
 /// reads the value: the top caption PRINTS it in this body, the two below are
 /// CONVERSIONS the host works out on its own frames.
@@ -28,8 +28,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
 
     static let id = "animatedInput"
     static let title = "Animated inputs"
-    static let summary = "Two sliders over identical states - one read by the page, "
-        + "one handed on by `$` and shown by a converted text."
+    static let summary = "Two sliders over identical states - one read by the page, one handed on with `$`."
 
     static let code = """
         // Two IDENTICAL declarations. What differs is who reads them.
@@ -107,7 +106,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
     var content: any View {
         VStack {
             VStack {
-                Label("A GET — this caption prints `volume`, so a drag builds this closure")
+                Label("A get")
                     .fontSize(12)
                     .textColor(Palette.subtle)
 
@@ -130,7 +129,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
             .spacing(10)
 
             VStack {
-                Label("A BINDING — `$level` is handed on and nothing prints it, so this stands still")
+                Label("A binding")
                     .fontSize(12)
                     .textColor(Palette.subtle)
 
@@ -217,17 +216,13 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The stepper needs that more than the slider does: a Stepper draws two "
-                + "buttons and NO number, so the caption is the only thing that shows "
-                + "the value at all - where a slider has a thumb to watch.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
             Label("Both readings are CONVERSIONS of the journey - "
                 + "`$level.journey.convert { … }` - which is an engine the differ "
                 + "writes for you: it runs on the display's own frames, from the same "
                 + "image the control is walking, so a drag and a journey both cost the "
-                + "arithmetic and no renders.")
+                + "arithmetic and no renders. The stepper needs its caption more than "
+                + "the slider does: a Stepper draws two buttons and NO number, so the "
+                + "caption is the only thing that shows the value at all.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

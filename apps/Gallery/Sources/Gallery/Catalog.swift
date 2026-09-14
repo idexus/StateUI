@@ -179,9 +179,8 @@ final class Catalog {
             SampleGroup(
                 route: "shapes",
                 title: "Shapes",
-                summary: "Outlines, gradients and a canvas - the seven shapes MAUI "
-                    + "draws, brushes on any view at all, and drawing instructions "
-                    + "the host carries out.",
+                summary: "Outlines, gradients and a canvas - seven shapes, brushes on any "
+                    + "view at all, and drawing instructions the host carries out.",
                 icon: ImageSource(light: "nav_shapes.png", dark: "nav_shapes_dark.png"),
                 card: ImageSource("cat_shapes.png"),
                 samples: [
@@ -206,9 +205,8 @@ final class Catalog {
             SampleGroup(
                 route: "gestures",
                 title: "Gestures",
-                summary: "Every recognizer MAUI has, on any view that wants one - a tap, "
-                    + "a drag, a swipe, a pinch, a pointer, and carrying something "
-                    + "from one view to another.",
+                summary: "A gesture on any view that wants one - a tap, a drag, a swipe, "
+                    + "a pinch, a pointer, and carrying something from one view to another.",
                 icon: ImageSource(light: "nav_gestures.png", dark: "nav_gestures_dark.png"),
                 card: ImageSource("cat_gestures.png"),
                 samples: [

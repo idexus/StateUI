@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
 <!-- The StateUI mark: two identical plates, offset, sharing an opening.
-     Two runtimes, one surface - which is the whole library in one shape. It is
-     deliberately neither Swift's bird nor MAUI's ribbon; what it borrows from
-     both is only the palette it is drawn on.
+     A description and the native surface it becomes - which is the whole
+     library in one shape. It is deliberately not Swift's bird; what it
+     borrows is only the palette it is drawn on.
 
      The opening is the INTERSECTION, removed with fill-rule="evenodd": an area
      covered by exactly one plate is filled, an area covered by both is not. So

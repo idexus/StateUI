@@ -10,7 +10,7 @@ struct BindingReaderSample: SampleContent, ExampleContent {
 
     static let id = "bindingReader"
     static let title = "A binding is no reader"
-    static let summary = "One state handed on as `$level`: the meter that reads it is rebuilt, the one that converts it is not."
+    static let summary = "One state, `$level`: the meter that reads it rebuilds, the one that converts it does not."
 
     static let code = """
         @State private var level = 0.2

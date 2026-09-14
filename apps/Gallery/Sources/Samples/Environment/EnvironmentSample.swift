@@ -129,17 +129,6 @@ struct EnvironmentSample: SampleContent, ExampleContent {
             .environment(session)
             .spacing(12)
 
-            Label("The badge and the editor say `@Environment var session: Session` and "
-                + "nothing is passed to them - the type is the key, and they resolve the "
-                + "nearest Session provided above. Press the button and watch the two "
-                + "readings: the badge is built again, the closure around it is not - it "
-                + "passes a reference and reads no property, so a write in the object is "
-                + "none of its business. "
-                + "Typing in the Entry lands on `session.$name`, the provided object's "
-                + "own state for the name.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
             VisitBadge()
                 .environment(preview)
         }
@@ -147,10 +136,27 @@ struct EnvironmentSample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("This second badge sits under its OWN `.environment` - a different "
-            + "Session, so the branch resolves that one: a nearer provider wins for "
-            + "its branch, and the button above moves nothing here.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
+        VStack {
+            Label("The badge and the editor say `@Environment var session: Session` and "
+                + "nothing is passed to them - the type is the key, and they resolve the "
+                + "nearest Session provided above.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Press the button and watch the two readings: the badge is built "
+                + "again, the closure around it is not - it passes a reference and reads "
+                + "no property, so a write in the object is none of its business. Typing "
+                + "in the Entry lands on `session.$name`, the provided object's own state "
+                + "for the name.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The last badge sits under its OWN `.environment` - a different "
+                + "Session, so its branch resolves that one: a nearer provider wins for "
+                + "its branch, and the button moves nothing there.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(10)
     }
 }

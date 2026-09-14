@@ -2,9 +2,10 @@ import StateUI
 
 /// A page pushed for one thing chosen from the search box.
 ///
-/// What it shows arrives as a VALUE of the route - `.item("Alpha")` - not as
-/// global state and not as a dictionary of strings, which is what lets two of
-/// these be on the stack at once showing different things.
+/// What it shows arrives as a VALUE of the route - `.item("Alpha")` - which is
+/// what lets two of these be on the stack at once showing different things.
+/// The value never crosses to the host: the host is sent the page built from
+/// it, and knows nothing about routes or their arguments.
 struct ItemPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
@@ -22,17 +23,14 @@ struct ItemPage: ContentView {
     var content: any View {
         Border {
             VStack {
-                SectionTitle("PUSHED PAGE")
+                SectionTitle("Pushed page")
 
                 Label(item.isEmpty ? "Nothing selected" : item)
                     .fontSize(28)
                     .fontAttributes(.bold)
                     .horizontalTextAlignment(.center)
 
-                Label("Pushed by `path.append(.item(\"\(item)\"))`. The parameter is a field of "
-                    + "the enum, so it never has to cross the boundary at all - the host is "
-                    + "sent the page this side built from it, and knows nothing about routes "
-                    + "or their arguments.")
+                Label("Pushed by `path.append(.item(\"\(item)\"))`.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)

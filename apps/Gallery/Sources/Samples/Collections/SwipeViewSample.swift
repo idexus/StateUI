@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: SwipeView.
+/// Actions behind a row, revealed by a swipe from any of four edges.
 struct SwipeViewSample: SampleContent, ExampleContent {
     @State private var rows = ["Alpha", "Beta", "Gamma"]
     @State private var starred: Set<String> = []
@@ -165,8 +165,7 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                     // does not paint itself shows them through.
                     .backgroundColor(Palette.surface)
                 }
-                // Revealed by swiping RIGHT, which is what MAUI calls the left
-                // items: they come from the left-hand edge.
+                // Revealed by swiping RIGHT: they come from the left-hand edge.
                 .leftItems {
                     SwipeItem(starred.contains(row) ? "Unstar" : "Star")
                         .backgroundColor(.gold)
@@ -273,10 +272,10 @@ struct SwipeViewSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("MAUI has FOUR collections, and each is named for the EDGE its items "
-                + "come from rather than for the swipe that reveals them: the left items "
-                + "come out under a swipe to the right, the top items under a swipe DOWN. "
-                + "The rows use two of them, the card the other two.")
+            Label("A SwipeView has FOUR collections, and each is named for the EDGE its "
+                + "items come from rather than for the swipe that reveals them: the left "
+                + "items come out under a swipe to the right, the top items under a swipe "
+                + "DOWN. The rows use two of them, the card the other two.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -289,22 +288,13 @@ struct SwipeViewSample: SampleContent, ExampleContent {
 
             Label("The three swipe reports are about the SWIPE - it began, it has moved "
                 + "this far, it ended open or sprang back - where an item's `onInvoked` is "
-                + "about one item being chosen. The items are NOT views: a SwipeItem is a "
-                + "MenuItem in MAUI - a caption, a picture, a colour and something to run - "
-                + "so it takes its own modifiers and belongs in one of the four collections "
-                + "and nowhere else.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("ON WINDOWS THIS NEEDS A FINGER: a swipe answers touch and pen and "
-                + "not a mouse there. A desktop app that must work with a mouse wants a "
-                + "context flyout or a button beside the row, not only a swipe. The swipe "
-                + "under Gestures does answer a mouse there, and it is a different thing: "
-                + "that one is a gesture recognizer on an ordinary view, where this is a "
-                + "control the platform draws and drives itself.")
+                + "about one item being chosen. The items are NOT views: a `SwipeItem` has "
+                + "a caption, a picture, a colour and something to run, and no layout of "
+                + "its own - so it takes its own modifiers and belongs in one of the four "
+                + "collections and nowhere else.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

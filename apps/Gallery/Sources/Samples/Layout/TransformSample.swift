@@ -13,7 +13,7 @@ private enum Family {
     static let size = Color(light: AppColors.amber, dark: AppColors.windowYellow)
 }
 
-/// MAUI: VisualElement.Rotation, RotationX, RotationY, Scale and the anchor.
+/// A view turned, tipped and scaled after layout, about an anchor it can move.
 struct TransformSample: SampleContent, ExampleContent {
     static let id = "transform"
     static let title = "Transforms"
@@ -181,41 +181,32 @@ struct TransformSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("One switch throws every example on the page at once. Each transform is "
-                + "written as a choice between itself and none, and a CHANGED transform "
-                + "travels - so the boxes fly to their turned, tipped, grown selves and "
-                + "back, every part of each transform at once.")
+                + "written as a choice between itself and none, and a changed transform "
+                + "travels - so the boxes fly to their turned, tipped, grown selves and back.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.transform(_:)` is ONE transform in the order it is written, about "
-                + "the view's centre: `.rotate(45).translate(28, 0)` moves the turned "
-                + "box a plain 28 to the right, while `.translate(28, 0).rotate(45)` "
-                + "swings that move round with the turn. That is the orange row.")
+            Label("`.transform(_:)` is one transform in the order it is written, about the "
+                + "view's centre: `.rotate(45).translate(28, 0)` moves the turned box a plain "
+                + "28 to the right, while `.translate(28, 0).rotate(45)` swings that move "
+                + "round with the turn. That is the orange row.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A transform happens AFTER the layout: the view keeps the room it was "
-                + "given, and only what is drawn moves. That is why a scaled view can "
-                + "overlap its neighbour without pushing it aside - and why the amber row "
-                + "is spaced wider than the violet one, to leave room it never asks for.")
+            Label("`rotation` turns a view within the plane of the screen, so a square stays "
+                + "square; `rotationX` and `rotationY` tip it out of that plane, so it becomes "
+                + "a trapezium. All of them pivot about the anchor, the middle until it is "
+                + "moved: 0 is the left edge or the top, 1 the right edge or the bottom. The "
+                + "fourth violet box turns about its top left corner.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`rotationX` and `rotationY` tip the view out of the plane of the "
-                + "screen, so a square becomes a trapezium; `rotation` turns it within "
-                + "that plane and a square stays square.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("`scale` is both axes at once; `scaleX` and `scaleY` are one axis each, "
-                + "so the same square comes out wide or tall. All three MULTIPLY the size "
-                + "the layout gave it, so 1 is that size and 0.5 is half of it.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("All of them pivot about the ANCHOR, which is the middle until it is "
-                + "moved: 0 is the left edge or the top, 1 the right edge or the bottom. "
-                + "The fourth violet box turns about its top left corner.")
+            Label("A transform happens after the layout: the view keeps the room it was "
+                + "given, and only what is drawn moves. `scale` is both axes at once and "
+                + "`scaleX` and `scaleY` one each; all three multiply the size the layout "
+                + "gave, so 1 is that size and 0.5 half of it. A scaled view overlaps its "
+                + "neighbour without pushing it aside, which is why the amber row is spaced "
+                + "wider than the violet one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

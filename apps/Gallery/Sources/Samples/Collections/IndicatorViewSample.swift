@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: IndicatorView.
+/// Dots marking a place in a sequence: their shape, their cap and a lone one.
 struct IndicatorViewSample: SampleContent, ExampleContent {
     @State private var step = 0
     @State private var cap = 5.0
@@ -71,7 +71,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .minimum(4)
                 .maximum(12)
 
-            // One item twice. `hideSingle` is true in MAUI and here, so the
+            // One item twice. `hideSingle` is true by default, so the
             // left-hand one draws NOTHING at all - a lone dot says nothing
             // about where the reader is - and the right-hand one asks for it.
             HStack {
@@ -179,7 +179,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .maximum(12)
                 .horizontalOptions(.center)
 
-            // One item twice. `hideSingle` is true in MAUI and here, so the
+            // One item twice. `hideSingle` is true by default, so the
             // left-hand one draws NOTHING at all - a lone dot says nothing
             // about where the reader is - and the right-hand one asks for it.
             HStack {
@@ -229,14 +229,6 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`indicatorsShape` is plural and the enum is not: MAUI's property really "
-                + "is IndicatorsShape, and the names here are MAUI's. ANDROID "
-                + "and WINDOWS draw the squares; on iOS and Mac Catalyst the second row "
-                + "stays round - MAUI's square pass takes a pre-iOS-14 branch there that "
-                + "the modern control ignores.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
             Label("Nothing about it is the reader's to change, so there is no binding "
                 + "overload - `position` is told to it.")
                 .fontSize(12)
@@ -248,20 +240,13 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`hideSingle` is true in MAUI and here, which is why an indicator over a "
+            Label("`hideSingle` is true by default, which is why an indicator over a "
                 + "ONE-item list draws nothing at all: a lone dot says nothing about where "
                 + "the reader is. The two columns above are that same one-item indicator, "
                 + "both ways round.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
-
-            Label("And a sizing trap: an `indicatorSize` other than MAUI's "
-                + "default 6 is, on iOS and Mac Catalyst, a scale TRANSFORM on the whole "
-                + "control that its frame knows nothing about - the look shifts between "
-                + "layout passes and can clip. This sample keeps the default.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

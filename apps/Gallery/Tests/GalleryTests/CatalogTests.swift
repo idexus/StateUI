@@ -97,6 +97,25 @@ private func headings(in node: Node) -> [String] {
     return found
 }
 
+/// How large the heading that says `text` is drawn - zero where there is none.
+private func headingSize(_ text: String, in node: Node) -> Double {
+    func find(_ node: Node) -> Double? {
+        let node = node.built
+
+        if node.props[.semanticHeadingLevel] != nil, node.props["text"]?.string == text {
+            return node.props["fontSize"]?.number ?? 0
+        }
+
+        for child in node.children {
+            if let size = find(child) { return size }
+        }
+
+        return nil
+    }
+
+    return find(node) ?? 0
+}
+
 /// How many scrollers in a tree move down rather than only across.
 private func verticalScrollers(in node: Node) -> Int {
     var count = 0
@@ -637,47 +656,48 @@ final class CatalogTests: XCTestCase {
         }
     }
 
-    /// A page names its sections by place: "Example", "Notes" and "In Swift"
-    /// for a sample of one example, and the same three numbered for a sample
-    /// of several - which is also what the tabs of a held one say, beside
-    /// "In Code".
+    /// A page names its examples by place: "Example" for a sample of one,
+    /// "Example 1", "Example 2" and on for a sample of several - which is also
+    /// what the tabs of a held one say, beside "In Code".
     func testEveryExampleIsNamedByItsPlace() throws {
         let one = try XCTUnwrap(catalog().sample(id: ButtonSample.id))
         let two = try XCTUnwrap(catalog().sample(id: WebViewSample.id))
-        let first = one.headings(of: 0)
-        let second = two.headings(of: 1)
 
-        XCTAssertEqual([first.example, first.notes, first.code], ["Example", "Notes", "In Swift"])
-        XCTAssertEqual(
-            [second.example, second.notes, second.code],
-            ["Example 2", "Example 2 Notes", "Example 2 in Swift"])
+        XCTAssertEqual(one.name(ofExample: 0), "Example")
+        XCTAssertEqual(two.examples.indices.map(two.name(ofExample:)), ["Example 1", "Example 2"])
         XCTAssertEqual(two.tabs.map(two.caption(of:)), ["Example 1", "Example 2", "In Code"])
     }
 
-    /// A scrolling page shows each example, then its notes, then its Swift.
-    /// The notes sit in no scroller of their own and a listing moves only
-    /// across, so the page's scroller is the one thing that moves down.
+    /// A scrolling page shows each example, then its notes, then its Swift -
+    /// among several, under the example's name, drawn larger than the
+    /// sections it heads. The notes sit in no scroller of their own and a
+    /// listing moves only across, so the page's scroller is the one thing that
+    /// moves down.
     func testAScrollingPageShowsEachExampleThenItsNotesThenItsSwift() throws {
         let sample = try XCTUnwrap(catalog().sample(id: TwoLayersSample.id))
         let page = SamplePage(sample: sample, nav: Place().nav).body.built
 
         XCTAssertEqual(headings(in: page), [
-            "Example 1", "Example 1 Notes", "Example 1 in Swift",
-            "Example 2", "Example 2 Notes", "Example 2 in Swift",
+            "Example 1", "Notes", "In Swift",
+            "Example 2", "Notes", "In Swift",
         ])
+        XCTAssertGreaterThan(
+            headingSize("Example 1", in: page), headingSize("Notes", in: page),
+            "an example's name heads its group, above the sections under it")
         XCTAssertEqual(verticalScrollers(in: page), 1, "a scroller inside the page's scroller")
     }
 
-    /// A held sample's code tab is one scroller: each example's notes, then
-    /// its Swift, in turn - the notes in no scroller of their own.
+    /// A held sample's code tab is one scroller: each example's name, then its
+    /// notes and its Swift, in turn - the notes in no scroller of their own.
     func testAHeldSamplesCodeTabGivesEachExamplesNotesThenItsSwift() throws {
         let sample = try XCTUnwrap(catalog().sample(id: WebViewSample.id))
         let tab = SampleTabPage(sample: sample, tab: .code, nav: Place().nav).body.built
 
         XCTAssertEqual(headings(in: tab), [
-            "Example 1 Notes", "Example 1 in Swift",
-            "Example 2 Notes", "Example 2 in Swift",
+            "Example 1", "Notes", "In Swift",
+            "Example 2", "Notes", "In Swift",
         ])
+        XCTAssertGreaterThan(headingSize("Example 1", in: tab), headingSize("Notes", in: tab))
         XCTAssertEqual(verticalScrollers(in: tab), 1, "a scroller inside the tab's scroller")
     }
 
@@ -894,10 +914,8 @@ final class CatalogTests: XCTestCase {
     /// gives a child the length the child asks for, and a scroller asked how
     /// long it wants to be answers with the whole of its content - so a list
     /// under one is laid out as long as its run, spills off the page and has
-    /// nothing left to scroll. Measured on Mac Catalyst: a thousand-row list
-    /// reported a viewport of 37061 points against a run of 37000 and
-    /// described every row of it, and a hundred thousand rows exhausted the
-    /// renderer's child count. What carries such an example
+    /// nothing left to scroll - a thousand-row list is measured at its whole
+    /// run and describes every row of it. What carries such an example
     /// is therefore a GRID, whose one implicit row IS the cell.
     func testAFillingExampleRidesAGridRatherThanAStack() throws {
         let page = SampleTabPage(sample: Sample(Filling()), tab: .example(0), nav: Place().nav).body
@@ -927,32 +945,40 @@ final class CatalogTests: XCTestCase {
             + "height it asks for, and a scroller asks for the whole of its content")
     }
 
-    /// A HELD example shows no paragraphs: its words are declared as `notes`.
+    /// An example shows no paragraphs: its words are declared as `notes`.
     ///
-    /// A page that cannot scroll gives the example and the words ONE screen
-    /// between them, so an explanation written as the example's last row is
-    /// taken out of the example - measured on an iPhone SE, two paragraphs left
-    /// a list three rows. Declared as `notes` the same words sit on the code
-    /// tab, in a scroller that has room for them.
+    /// The example is what a reader tries; the words about it sit under
+    /// "Notes", where there is room for them - on a held page, whose one screen
+    /// the example needs for itself, on the code tab.
     ///
-    /// What tells the two apart is LENGTH. A held example says short things -
-    /// a caption on a box, a reading it writes as it runs, "Tapped 3 time(s)" -
-    /// and the longest of them across the whole gallery is little more than
-    /// half this bound, while a paragraph runs to three or four times it.
-    func testAHeldExamplePutsItsParagraphsInItsNotes() {
-        // The longest a held example's text may be.
+    /// What tells the two apart is LENGTH. An example says short things - a
+    /// caption on a box, a reading it writes as it runs, "Tapped 3 time(s)",
+    /// one line saying what to try - while a paragraph runs to several times
+    /// this bound.
+    func testAnExampleKeepsItsParagraphsInItsNotes() {
+        // The longest an example's text may be.
         let bound = 100
 
         for group in catalog().groups {
-            for sample in group.samples where !sample.scrolls {
+            for sample in group.samples {
                 for example in sample.examples {
                     for said in shownTexts(in: example.view.body.built) where said.count > bound {
                         XCTFail("\(sample.id) explains itself inside the example - "
-                                + "\"\(said.prefix(60))...\" - and a held page has one "
-                                + "screen for the example and the words together, so the "
-                                + "words belong in `notes`")
+                                + "\"\(said.prefix(60))...\" - and the words belong in `notes`")
                     }
                 }
+            }
+        }
+    }
+
+    /// A summary is one short line: the card's second line and the page's
+    /// first. Anything longer is an explanation, which belongs in the notes.
+    func testEverySummaryIsOneShortLine() {
+        for group in catalog().groups {
+            for sample in group.samples {
+                XCTAssertLessThanOrEqual(
+                    sample.summary.count, 100,
+                    "\(sample.id)'s summary runs to \(sample.summary.count) characters")
             }
         }
     }
@@ -1120,8 +1146,8 @@ final class CatalogTests: XCTestCase {
 
     /// The menu lists Home, every group, and the one row that performs an act.
     ///
-    /// A Shell built these rows from items it held; this walks the page the app
-    /// wrote, which is what the reader taps.
+    /// The menu is a page the app wrote, so this walks that page - which is
+    /// what the reader taps.
     func testTheMenuHasARowForHomeEveryGroupAndTheActAtTheEnd() {
         let catalog = catalog()
         let menu = MenuPage(catalog: catalog, nav: Place().nav,
@@ -1207,13 +1233,11 @@ final class CatalogTests: XCTestCase {
 
     // MARK: - The section that is not a stack
 
-    /// One section is arranged as tabs, which a Shell could not do at all: a Tab
-    /// was shell structure, so its pages could only be declared beside the
-    /// flyout items and reached by a route.
+    /// One section is arranged as tabs - an arrangement like any other, over
+    /// state the window owns.
     ///
     /// The first tab holds a whole navigation stack, and its caption and picture
-    /// are the STACK's - measured, and where the first live run of TabbedView
-    /// showed no icons at all.
+    /// are the STACK's.
     func testTheTabsSectionIsATabbedViewWithAStackInsideIt() throws {
         let place = Place()
         place.section.wrappedValue = .tabs

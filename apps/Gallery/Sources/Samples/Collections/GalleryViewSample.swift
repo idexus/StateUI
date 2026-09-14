@@ -1,11 +1,10 @@
 import StateUI
 
-/// This library's own: a run of cards swiped through, in a shape one word
-/// chooses.
+/// A run of cards swiped through, in a shape one word chooses.
 struct GalleryViewSample: SampleContent, ExampleContent {
     static let id = "galleryView"
     static let title = "GalleryView"
-    static let summary = "A run of cards the reader swipes through - a wheel, a fan or a row, chosen with .galleryStyle. Nothing is described while the cards move."
+    static let summary = "A run of cards the reader swipes through - a wheel, a fan or a row, chosen with .galleryStyle."
 
     /// The cards: what each picture is called and which file it is.
     static let cards: [Card] = [
@@ -293,61 +292,47 @@ struct GalleryViewSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("`GalleryView` is this library's own: a run of cards the "
-                + "reader swipes through, with `.galleryStyle` choosing the "
-                + "shape they stand in - `.default` is a wheel, `.fan` a hand "
-                + "of cards, `.row` a strip. The cards TRAVEL between the "
-                + "three, so the button above carries the whole run across.")
-                .fontSize(13)
+            Label("`GalleryView` is a run of cards the reader swipes through, with "
+                + "`.galleryStyle` choosing the shape they stand in - `.default` is a "
+                + "wheel, `.fan` a hand of cards, `.row` a strip. The cards TRAVEL "
+                + "between the three, so the shape button carries the whole run across.")
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Swipe, drag with the mouse or turn a wheel: the run "
-                + "settles on the card it is nearest. WHICH of those the run "
-                + "answers is the platform's: a finger drags the run itself, "
-                + "so on a phone and a tablet that is the whole of it, while "
-                + "on a desktop - where a pointer scrolls nothing - the cards "
-                + "take a drag of their own. `.position($shown)` is "
-                + "which one, written as the reader moves and glided to when "
-                + "it is assigned - which is what Back and Next do, and what "
-                + "the line under the cards is written from.")
-                .fontSize(13)
+            Label("Swipe, drag with the mouse or turn a wheel: the run settles on the "
+                + "card it is nearest. WHICH of those the run answers is the platform's: "
+                + "a finger drags the run itself, so on a phone and a tablet that is the "
+                + "whole of it, while on a desktop - where a pointer scrolls nothing - "
+                + "the cards take a drag of their own. `.position($shown)` is which "
+                + "one, written as the reader moves and glided to when it is assigned - "
+                + "which is what Back and Next do. The dots under the cards are an "
+                + "`IndicatorView` reading the same `@State`: neither control names the "
+                + "other, and one number joins them.")
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`One card a swipe` is `.snapsAtMost(1)`: however hard the "
-                + "run is thrown it crosses one card, which is what a deck "
-                + "somebody is stepping through wants. `Swipeable` is "
-                + "`.isSwipeEnabled(false)` - the reader's hand is stopped and "
-                + "the buttons still move the run.")
-                .fontSize(13)
+            Label("`One card a swipe` is `.snapsAtMost(1)`: however hard the run is "
+                + "thrown it crosses one card, which is what a deck somebody is stepping "
+                + "through wants. `Swipeable` is `.isSwipeEnabled(false)` - the reader's "
+                + "hand is stopped and the buttons still move the run. A gallery is "
+                + "swiped to choose and tapped to open: `.onItemTapped` is handed the "
+                + "card in the MIDDLE, and a tap beside it answers nothing.")
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("`Shaded` is `.shade(BoxView(Color(\"#000000\")).cornerRadius(16))`: "
-                + "the cards away from the middle are DARKENED by a view drawn "
-                + "over them rather than faded. Turn it off and watch a far "
-                + "card go transparent - what shows through is the card behind "
-                + "it. The shade is a view because it has to wear the card's "
-                + "own corners, and `.fading(_:)` beside it says how much fade "
-                + "is left, from 0 to 1.")
-                .fontSize(13)
+                + "the cards away from the middle are DARKENED by a view drawn over them "
+                + "rather than faded. Turn it off and watch a far card go transparent - "
+                + "what shows through is the card behind it. The shade is a view because "
+                + "it has to wear the card's own corners, and `.fading(_:)` beside it "
+                + "says how much fade is left, from 0 to 1.")
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Tapping the card in the MIDDLE opens it - a gallery is "
-                + "swiped to choose and tapped to open, and the middle card is "
-                + "the choice. `.onItemTapped` is handed it, and a tap beside "
-                + "it answers nothing.")
-                .fontSize(13)
-                .textColor(Palette.subtle)
-
-            Label("The dots under the cards are an `IndicatorView` reading the "
-                + "same `@State` the gallery writes. Neither control names the "
-                + "other; one number joins them.")
-                .fontSize(13)
-                .textColor(Palette.subtle)
-
-            Label("Nothing is described while the cards move: the one render "
-                + "is the card CHANGING. `.itemSize(width:height:)` says how "
-                + "big a card is, and the run scales down to fit a small window.")
-                .fontSize(13)
+            Label("Nothing is described while the cards move: the one render is the "
+                + "card CHANGING. `.itemSize(width:height:)` says how big a card is, and "
+                + "the run scales down to fit a small window.")
+                .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(8)

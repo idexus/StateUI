@@ -13,7 +13,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
     static let id = "semantics"
     static let title = "Semantics"
-    static let summary = "What a view says about itself - to a reader who cannot see it, and to whatever drives the app from outside."
+    static let summary = "What a view says about itself - to a screen reader, and to whatever drives the app."
 
     /// Said once, and both written onto the button and printed under it - so
     /// what the sample shows cannot drift from what the platform was handed.
@@ -168,7 +168,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             }
             .spacing(4)
 
-            SectionTitle("SAID OUT LOUD")
+            SectionTitle("Said out loud")
 
             Button("Announce the count")
                 .automationId("semantics.announce")
@@ -186,7 +186,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 .textColor(said.isEmpty ? Palette.subtle : Palette.accent)
                 .horizontalTextAlignment(.center)
 
-            SectionTitle("WHAT A READER WALKS PAST")
+            SectionTitle("What a reader walks past")
 
             HStack {
                 Border {

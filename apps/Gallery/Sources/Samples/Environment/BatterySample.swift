@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Battery - the standard environment's provider, resolved by type.
+/// The host's battery - a standard environment provider, resolved by type.
 struct BatterySample: SampleContent, ExampleContent {
     /// The provider itself: nothing is passed anywhere - the type is the key,
     /// and the host keeps the object current.
@@ -57,17 +57,15 @@ struct BatterySample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("Reading a property is the whole subscription: the host "
-                + "pushes on every BatteryInfoChanged, and exactly the views "
-                + "that read the battery are rebuilt. On Android, try "
-                + "`adb shell dumpsys battery set level 50` - and note the "
-                + "manifest declares BATTERY_STATS, which MAUI checks for.")
+                + "pushes each change the platform reports, and exactly the "
+                + "views that read the battery are rebuilt. On Android, try "
+                + "`adb shell dumpsys battery set level 50`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A DESKTOP does not say the level straight - Mac Catalyst "
-                + "hands over a hundredth of it - and fires no change on "
-                + "mains. Read state and source there; the LEVEL is the "
-                + "phones' to report.")
+            Label("A host that cannot observe a battery leaves the level at -1, "
+                + "read here as \"the host has not said\", and the other "
+                + "values at `.unknown`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

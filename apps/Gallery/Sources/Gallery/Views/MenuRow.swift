@@ -9,9 +9,9 @@ import StateUI
 /// answer: `nav.showing(...)`, read while the row is being built, so the look
 /// of a chosen row is two ordinary values written on top of its style.
 ///
-/// Tapped rather than pressed, for the reason `Card` is: MAUI draws nothing when
-/// a Button's surroundings are what should look pressed, and every row of this
-/// gallery already answers a tap this way.
+/// Tapped rather than pressed, for the reason `Card` is: a button draws its own
+/// press, never its surroundings', and every row of this gallery answers a tap
+/// this way.
 ///
 /// Shaped like `Card`, and for the same reason: what the row IS goes in the
 /// initializer, and everything a caller may leave out is a modifier.

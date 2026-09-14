@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Entry.
+/// Single-line text fields, with focus, caret, selection and keyboard choices.
 struct EntrySample: SampleContent, ExampleContent {
     @State private var name = ""
     @State private var editing = false

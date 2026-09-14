@@ -112,11 +112,6 @@ struct LabelSample: SampleContent, ExampleContent {
                 .fontSize(16)
                 .textTransform(.lowercase)
 
-            Label("Those two lines are written the same way, in mixed case: the transform "
-                + "changes the DRAWING and leaves the text alone.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
             Label("Grows with the system text size")
                 .fontSize(16)
 
@@ -129,7 +124,12 @@ struct LabelSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Those two are both 16 until the system's text-size setting moves - "
+            Label("The uppercase and the lowercase line are written the same way, in mixed "
+                + "case: the transform changes the DRAWING and leaves the text alone.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The last two are both 16 until the system's text-size setting moves - "
                 + "iOS ▸ Settings ▸ Display & Brightness ▸ Text Size, Android ▸ Settings ▸ "
                 + "Display ▸ Font size. Then the first grows with it and the second stays "
                 + "where it is; where the platform offers no such setting, the two never "

@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: ImageButton.
+/// Two buttons whose captions are pictures, each drawn once per theme.
 struct ImageButtonSample: SampleContent, ExampleContent {
     @State private var taps = 0
     @State private var pressed = false
@@ -85,9 +85,8 @@ struct ImageButtonSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Not an Image with a tap recognizer on it: that gives no pressed state, no "
-                + "border and no corner radius. MAUI's ImageButton is a Button with a Source "
-                + "instead of Text.")
+            Label("It is a button, not an `Image` with a tap recognizer on it: that gives no "
+                + "pressed state, no border and no corner radius.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

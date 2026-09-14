@@ -54,7 +54,7 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
             #endif
 
             var found: [(String, String)] = []
-            found.append(("Host TimeZoneInfo.Local", hostZone))
+            found.append(("Host TimeZoneInfo.local()", hostZone))
 
             let now = Date()
             let zone = TimeZone.current
@@ -70,7 +70,7 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
                 + "\\(pad(parts.hour)):\\(pad(parts.minute)):\\(pad(parts.second))"))
 
             let host = try await ClockTime.now()
-            found.append(("Host DateTime.Now", host.text))
+            found.append(("Host ClockTime.now()", host.text))
 
             found.append(("ISO8601Format", now.ISO8601Format()))
 
@@ -118,10 +118,6 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Label("What Foundation answers on this platform - each row is one question:")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
             ForEach(rows, id: \.0) { row in
                 VStack {
                     Label(row.0)
@@ -148,7 +144,7 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
             #endif
 
             var found: [(String, String)] = []
-            found.append(("Host TimeZoneInfo.Local", hostZone))
+            found.append(("Host TimeZoneInfo.local()", hostZone))
 
             let now = Date()
             let zone = TimeZone.current
@@ -164,7 +160,7 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
                 + "\(pad(parts.hour)):\(pad(parts.minute)):\(pad(parts.second))"))
 
             let host = try await ClockTime.now()
-            found.append(("Host DateTime.Now", host.text))
+            found.append(("Host ClockTime.now()", host.text))
 
             found.append(("ISO8601Format", now.ISO8601Format()))
 
@@ -204,10 +200,11 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The library still crosses the boundary with three-integer dates - "
-                + "Foundation here is the application's own import. On Apple it is the "
-                + "system's; on Android it is swift-foundation, whose zones come from an "
-                + "ICU it carries itself.")
+            Label("Each row is one question put to Foundation on this platform. The "
+                + "library crosses the boundary with three-integer dates; Foundation here "
+                + "is the application's own import. On Apple it is the system's; on "
+                + "Android it is swift-foundation, whose zones come from an ICU it "
+                + "carries itself.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

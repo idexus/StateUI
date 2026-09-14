@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: PanGestureRecognizer.
+/// A view dragged about under a finger, and the one write that must not travel.
 struct PanSample: SampleContent, ExampleContent {
     /// Where the box was left. Ordinary state: it changes once per gesture, so
     /// describing it costs one render at the end of a drag.
@@ -17,11 +17,11 @@ struct PanSample: SampleContent, ExampleContent {
 
     static let id = "pan"
     static let title = "Pan"
-    static let summary = "Dragging a view about, from where it was to where it is let go - and the one write that must not travel."
+    static let summary = "Dragging a view from where it was to where it is let go."
 
-    // A gesture sample is not put in a scroller: the scroller would claim the
-    // drag before the example heard about it. The code below it scrolls
-    // instead - see SampleContent.scrolls.
+    // A gesture sample is not put in a scroller: a scroller would claim the
+    // drag before the example heard about it, so the page holds the example
+    // still - see SampleContent.scrolls.
     static let scrolls = false
 
     static let code = """
@@ -218,6 +218,6 @@ struct PanSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

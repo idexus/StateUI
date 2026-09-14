@@ -4,9 +4,8 @@ import StateUI
 
 /// The gallery's one navigational shape - a row on a group's page.
 ///
-/// The WHOLE card answers a tap, which is what a row of a list is in MAUI: a
-/// view with a `TapGestureRecognizer` on it, not a button with something around
-/// it. The chevron is a chevron - it says where the row goes and nothing more.
+/// The WHOLE card answers a tap: a view with `.onTapped` on it, not a button
+/// with something around it. The chevron is a chevron - it says where the row goes and nothing more.
 /// And because a tapped Border shows nothing where a Button would, the card
 /// says the press back itself: a quick dip in scale before the action runs.
 ///

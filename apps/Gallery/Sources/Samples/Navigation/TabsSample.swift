@@ -96,62 +96,35 @@ struct TabsSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("A TabbedView is a page, so a section of this gallery simply IS one: "
-                + "the button above opens a section that arranges its pages as tabs "
-                + "rather than as a stack. Every other section is a NavigationStack.")
+            Label("A `TabbedView` is a page, so a section of this gallery is one: the "
+                + "button opens a section arranged as tabs rather than as a stack. The "
+                + "tabs are an array of your own type and the selection is a binding of "
+                + "it, so moving the tabs from code is an assignment.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The tabs are a collection of the author's own type and the selection "
-                + "is a binding of that type.")
+            Label("The binding is two-way: tapping a tab writes it, and on Android so does "
+                + "swiping between them. Each tab keeps its own place because each stack "
+                + "is its own array - push a page on the first tab, change tabs and come "
+                + "back, and the page is still on top.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("It is TWO-WAY: tapping a tab writes the binding, and on Android so does "
-                + "swiping between them - there is no tap anywhere in that gesture, and it "
-                + "arrives through the same channel as everything else. Writing the "
-                + "binding from code moves the tabs the other way.")
+            Label("Every tab page carries a panel that adds, inserts, closes and reverses "
+                + "tabs while one is showing. The selection names a tab, not a position, "
+                + "so rearranging the list leaves it alone, and the panel warns the moment "
+                + "the binding and the tab on screen disagree. `Reverse the tabs` from the "
+                + "middle of three rebuilds the whole bar and leaves you on the same page.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Each tab keeps its own place because the ARRAYS are separate: the first "
-                + "tab holds a NavigationStack over a path of its own. Push a page there, "
-                + "change tabs and come back - the page is still on top, and nothing in "
-                + "the library decided that.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The LIST changes too, and every tab page carries the panel that does "
-                + "it: add one at the end, insert one before the tab you are on, close "
-                + "any of them, turn the whole list end for end. The tabs are an array in "
-                + "`@State`, so all four are one line of ordinary Swift, and the selection "
-                + "is untouched by any of them - it names a TAB, not a position.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The panel prints which tab the selection names, and warns the moment "
-                + "that disagrees with the tab on screen. Rearranging never trips it: "
-                + "`Reverse the tabs` from the middle of three rebuilds the whole bar "
-                + "and leaves you on the very page you were reading.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("Closing the tab you are ON is the one move with nothing left to keep "
-                + "showing: the first tab shows instead, and the binding follows it.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The way out is a button on those pages: the menu draws a row per group "
-                + "and none for this section, which is this app's choice rather than a "
-                + "rule: the menu is a page, and its rows are whatever it writes.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The tab bar takes the gallery accent from its arrangement; each "
-                + "page underneath keeps its own content and state.")
+            Label("Closing the tab you are on is the one move with nothing left to keep "
+                + "showing: the first tab shows instead, and the binding follows it. The "
+                + "menu draws no row for this section, so every tab page carries a button "
+                + "back to the samples.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

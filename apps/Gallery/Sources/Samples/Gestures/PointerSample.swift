@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: PointerGestureRecognizer.
+/// A pointer's hover, movement and button over one view.
 struct PointerSample: SampleContent, ExampleContent {
     @State private var pointer = Point(x: 0, y: 0)
     @State private var hovering = false
@@ -11,9 +11,9 @@ struct PointerSample: SampleContent, ExampleContent {
     static let title = "Pointer"
     static let summary = "A mouse, a trackpad or a pen - the gestures a touch-only device never sends."
 
-    // A gesture sample is not put in a scroller: the scroller would claim the
-    // drag before the example heard about it. The code below it scrolls
-    // instead - see SampleContent.scrolls.
+    // A gesture sample is not put in a scroller: a scroller would claim the
+    // drag before the example heard about it, so the page holds the example
+    // still - see SampleContent.scrolls.
     static let scrolls = false
 
     static let code = """
@@ -113,9 +113,9 @@ struct PointerSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Five events, one recognizer: entered, exited, moved, pressed and "
-                + "released all come from the same PointerGestureRecognizer, which is "
-                + "why a view carries one of each kind however many handlers it has.")
+            Label("Five events: entered, exited, moved, pressed and released. A pointer "
+                + "is a mouse, a trackpad or a pen, so on a touch-only device none of "
+                + "them fires.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

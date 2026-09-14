@@ -158,14 +158,11 @@ struct Sample {
         idiom == .unknown || idioms.contains(idiom)
     }
 
-    /// What the page calls example `index`, its words and its code: "Example",
-    /// "Notes" and "In Swift" where it is the only one; "Example 2", "Example 2
-    /// Notes" and "Example 2 in Swift" among several.
-    func headings(of index: Int) -> (example: String, notes: String, code: String) {
-        guard examples.count > 1 else { return ("Example", "Notes", "In Swift") }
-
-        let example = "Example \(index + 1)"
-        return (example, "\(example) Notes", "\(example) in Swift")
+    /// What the page calls example `index`: "Example" where it is the only one,
+    /// "Example 2" among several. Its words and its code are always "Notes"
+    /// and "In Swift"; among several examples the example's name heads them.
+    func name(ofExample index: Int) -> String {
+        examples.count == 1 ? "Example" : "Example \(index + 1)"
     }
 
     init<Content: SampleContent>(_ content: Content) {

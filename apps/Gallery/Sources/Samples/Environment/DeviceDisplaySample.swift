@@ -1,8 +1,8 @@
 import StateUI
 
-/// MAUI: DeviceDisplay - the screen, its density and which way it is turned.
+/// The screen, its density and which way it is turned.
 struct DeviceDisplaySample: SampleContent, ExampleContent {
-    /// The main display, as MAUI measures it.
+    /// The main display, as the host measures it.
     @Environment var display: DeviceDisplay
 
     static let id = "deviceDisplay"
@@ -67,11 +67,11 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("MAUI measures the screen in PIXELS; a layout speaks "
+        Label("The host measures the screen in PIXELS; a layout speaks "
             + "points, which is width divided by density. Rotate a phone "
             + "and every number above moves in one push - orientation, "
             + "rotation, and the width and height swapping places. A "
-            + "desktop usually answers .unknown for both, its window "
+            + "desktop usually answers `.unknown` for both, its window "
             + "being the thing that turns.")
             .fontSize(12)
             .textColor(Palette.subtle)

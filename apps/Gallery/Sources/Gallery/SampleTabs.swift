@@ -21,7 +21,7 @@ extension Sample {
     func caption(of tab: SampleTab) -> String {
         switch tab {
         case .example(let index):
-            return headings(of: index).example
+            return name(ofExample: index)
         case .code:
             return "In Code"
         }
@@ -102,17 +102,19 @@ struct SampleTabPage: ContentView {
         .padding(24)
     }
 
-    /// One example's notes and Swift, each under its heading - "Notes" and
-    /// "In Swift", numbered where the sample has several.
+    /// One example's notes and Swift, under "Notes" and "In Swift" - and,
+    /// among several examples, under the example's name as well.
     private func explanation(of example: Example, at index: Int) -> any View {
-        let headings = sample.headings(of: index)
-
-        return VStack {
-            if let notes = example.notes {
-                SamplePage.section(headings.notes, notes)
+        VStack {
+            if sample.examples.count > 1 {
+                ExampleTitle(sample.name(ofExample: index))
             }
 
-            SamplePage.section(headings.code, CodeBlock(example.code))
+            if let notes = example.notes {
+                SamplePage.section("Notes", notes)
+            }
+
+            SamplePage.section("In Swift", CodeBlock(example.code))
         }
         .spacing(16)
     }

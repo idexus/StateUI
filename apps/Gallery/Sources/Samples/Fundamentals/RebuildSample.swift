@@ -4,10 +4,7 @@ import StateUI
 struct RebuildSample: SampleContent, ExampleContent {
     static let id = "rebuilds"
     static let title = "Why a view rebuilds"
-    static let summary =
-        "`debugInfo()` reads back the view's own name, how many times it has "
-        + "been described and which state this description is for. Change one "
-        + "value and watch which panels answer."
+    static let summary = "`debugInfo()` names each view and counts its builds: change one value and see who answers."
 
     @State private var left = 0
     @State private var right = 0
@@ -81,24 +78,24 @@ struct RebuildSample: SampleContent, ExampleContent {
                 + "answers the view's own name, how many times it has been "
                 + "described, and which piece of state THIS description is "
                 + "for - named by the property the author declared it as.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("Change one of the two values. The panel that borrowed it "
                 + "names it and its count climbs; the other panel stands still, "
                 + "because a render rebuilds only the views whose reads moved.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("The small line inside each panel reads nothing and is "
                 + "built with nothing: it is carried through every rebuild "
                 + "and keeps saying `1 build, first time`.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("Put it in a `Label` on the screen being worked on. Reading "
                 + "it causes no render of its own.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(8)

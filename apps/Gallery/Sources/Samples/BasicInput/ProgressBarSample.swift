@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: ProgressBar.
+/// Two bars over one job: how much of it is done, and how much is left.
 struct ProgressBarSample: SampleContent, ExampleContent {
     @State private var done = 3.0
 
@@ -59,19 +59,7 @@ struct ProgressBarSample: SampleContent, ExampleContent {
                 .increment(1)
                 .horizontalOptions(.center)
 
-            Label("A FRACTION, not a percentage and not a count: 0.4 is four tenths of the "
-                + "way through, whatever the work is measured in. The step count above is "
-                + "divided here, in Swift, because that is where the numbers are.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("MAUI clamps anything outside 0 to 1, so a bar cannot be drawn more than "
-                + "full - and a value that says otherwise is a bug worth seeing rather "
-                + "than a bar drawn off the edge.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("THE SAME PROPERTY, AS A MODIFIER")
+            SectionTitle("The same property, as a modifier")
 
             ProgressBar()
                 .progress(1 - done / steps)
@@ -84,6 +72,13 @@ struct ProgressBarSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
+            Label("A FRACTION, not a percentage and not a count: 0.4 is four tenths of the "
+                + "way through, whatever the work is measured in. The step count is divided "
+                + "in Swift, because that is where the numbers are. A value outside 0 to 1 "
+                + "is clamped, so a bar is never drawn more than full.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("`ProgressBar()` carries no value at all, so `.progress` is how one "
                 + "reaches it - and it sets the very property the initializer's argument "
                 + "sets. This one shows what is LEFT to do, so the two bars move opposite "

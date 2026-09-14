@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: RadioButton.
+/// Three buttons in one group, with one state for what is chosen.
 struct RadioButtonSample: SampleContent, ExampleContent {
     @State private var size = "Medium"
 
@@ -59,14 +59,15 @@ struct RadioButtonSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("MAUI unchecks the others in the same `groupName` and reports BOTH "
-                + "changes - false on the button that lost, true on the new one. So a "
+            Label("Picking one unchecks the others in the same `groupName`, and BOTH changes "
+                + "are reported - false on the button that lost, true on the new one. So a "
                 + "handler that writes only when it hears true is the whole of it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The caption is `content`, not `text`: MAUI's RadioButton has no Text "
-                + "property, and this library does not invent one.")
+            Label("One `@State` holds the whole group's choice rather than one Bool per "
+                + "button: what is chosen is a single value, and each button is checked "
+                + "when it matches it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -1,7 +1,6 @@
 import StateUI
 
 /// The application's styles: what every control of a type looks like.
-/// MAUI: what App.xaml merges.
 ///
 /// A style with no key applies to every control of its type, so the look of
 /// the app is decided here rather than repeated in the views. Add a style the

@@ -4,6 +4,8 @@ import StateUI
 ///
 /// A tab is nothing but a page in a list, so this one says its own caption
 /// and its own picture through its session's `title` and `iconImageSource`.
+/// Its button is `nav.tab = .stack`: the selection is a binding of the
+/// gallery's own type, so moving the tabs from code is an assignment.
 struct SecondTabPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
@@ -16,18 +18,11 @@ struct SecondTabPage: ContentView {
     var content: any View {
         ScrollView {
             VStack {
-                SectionTitle("THE OTHER TAB")
+                SectionTitle("The other tab")
 
                 Label("Second")
                     .fontSize(26)
                     .fontAttributes(.bold)
-
-                Label("A tab is a page in a list, so this page says what its tab is "
-                    + "called and what its picture is - `title` and `iconImageSource`, "
-                    + "from its page session. The tab beside it holds a whole "
-                    + "NavigationStack, so that stack supplies its caption and image.")
-                    .fontSize(13)
-                    .textColor(Palette.subtle)
 
                 Button("Show the first tab")
                     .backgroundColor(Palette.accent)
@@ -36,13 +31,6 @@ struct SecondTabPage: ContentView {
                     .padding(20, 10)
                     .horizontalOptions(.center)
                     .onClicked { nav.tab = .stack }
-
-                Label("`nav.tab = .stack` - the selection is a binding of the author's own "
-                    + "type, so moving the tabs from code is an assignment, and a reader "
-                    + "tapping a tab (or, on Android, SWIPING between them) writes the "
-                    + "same binding back.")
-                    .fontSize(13)
-                    .textColor(Palette.subtle)
 
                 TabsControls(nav: nav, thisTab: .second)
 

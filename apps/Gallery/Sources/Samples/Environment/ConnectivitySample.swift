@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Connectivity - whether the internet is reachable, and by what.
+/// Whether the internet is reachable, and by what.
 struct ConnectivitySample: SampleContent, ExampleContent {
     /// The network, as the host last reported it.
     @Environment var connectivity: Connectivity
@@ -23,8 +23,8 @@ struct ConnectivitySample: SampleContent, ExampleContent {
                     Label(connectivity.networkAccess == .internet
                         ? "online" : "offline · \\(connectivity.networkAccess)")
 
-                    // One entry per ADAPTER on Windows, so repeats are
-                    // collapsed for display.
+                    // A host may report one entry per ADAPTER, so repeats
+                    // are collapsed for display.
                     Label("via \\(Set(connectivity.connectionProfiles
                         .map { "\\($0)" }).sorted().joined(separator: ", "))")
 
@@ -36,10 +36,10 @@ struct ConnectivitySample: SampleContent, ExampleContent {
         """
 
     var content: any View {
-        // The list is MAUI's answer as given, and on Windows it carries one
-        // entry per adapter - seventeen "ethernet" on one machine, measured -
-        // so repeats are collapsed for display and the value stays untouched.
-        // Sorted, because a Set's own order changes run to run.
+        // The list is the host's answer as given, and a host may report one
+        // entry per adapter, so repeats are collapsed for display and the
+        // value stays untouched. Sorted, because a Set's own order changes
+        // run to run.
         let profiles = Set(connectivity.connectionProfiles.map { "\($0)" })
             .sorted()
             .joined(separator: ", ")
@@ -71,17 +71,17 @@ struct ConnectivitySample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("The button above is enabled by a READ - "
-                + "connectivity.networkAccess == .internet - so it follows the "
+                + "`connectivity.networkAccess == .internet` - so it follows the "
                 + "network with no handler anywhere. On a phone, flip airplane "
                 + "mode and watch this page change twice; on Android that is "
-                + "`adb shell svc wifi disable`, and the manifest declares "
-                + "ACCESS_NETWORK_STATE for it.")
+                + "`adb shell svc wifi disable`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("A desktop wired to Ethernet may never CHANGE, but the "
                 + "values here are still the host's answer, pushed before "
-                + "the first render.")
+                + "the first render. A host that cannot observe reachability "
+                + "reports `.unknown` and no profiles.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

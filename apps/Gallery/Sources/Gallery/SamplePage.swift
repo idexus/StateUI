@@ -63,18 +63,28 @@ struct SamplePage: ContentView {
     }
 
     /// One example as this page shows it: "Example", "Notes" and "In Swift",
-    /// each over what it names - numbered where the sample has several.
+    /// each over what it names. Among several examples, the example's name -
+    /// "Example 2" - heads its whole group instead.
     private func sections(of example: Example, at index: Int) -> any View {
-        let headings = sample.headings(of: index)
+        let name = sample.name(ofExample: index)
+        let box = Self.boxed(example.view)
 
         return VStack {
-            Self.section(headings.example, Self.boxed(example.view))
-
-            if let notes = example.notes {
-                Self.section(headings.notes, notes)
+            if sample.examples.count > 1 {
+                VStack {
+                    ExampleTitle(name)
+                    box
+                }
+                .spacing(8)
+            } else {
+                Self.section(name, box)
             }
 
-            Self.section(headings.code, CodeBlock(example.code))
+            if let notes = example.notes {
+                Self.section("Notes", notes)
+            }
+
+            Self.section("In Swift", CodeBlock(example.code))
         }
         .spacing(16)
     }

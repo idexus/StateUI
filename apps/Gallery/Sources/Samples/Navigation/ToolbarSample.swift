@@ -178,12 +178,11 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .fontSize(13)
                 .textColor(Palette.subtle)
 
-            Label("Save and Add are on the bar. Clear is a destructive action in "
-                + "the native overflow and becomes enabled after Save.")
+            Label("Press Save and Add on the bar; Clear is in its overflow.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            SectionTitle("WHICH ONE COMES FIRST")
+            SectionTitle("Which one comes first")
 
             HStack {
                 Switch($addFirst)
@@ -197,7 +196,6 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .verticalOptions(.center)
             }
             .spacing(10)
-
         }
         .spacing(12)
         // The bar and the menus are the PAGE's, so this sample writes them
@@ -218,16 +216,27 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
+            Label("Save and Add are on the page's bar. Clear is a destructive item in the "
+                + "native overflow, enabled once something is saved.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("Lower priority appears first; equal priority keeps source order. "
                 + "Flip the switch and the same native items exchange places.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Recent files live in the desktop File menu. Choosing one removes "
-                + "it; an empty submenu disables itself.")
+            Label("Recent files live in the desktop File menu: Add puts one there, "
+                + "choosing one removes it, and an empty submenu disables itself.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The bar and the menus belong to the page, so they are written into "
+                + "its `PageSession` - and written again whenever the state they show "
+                + "moves.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

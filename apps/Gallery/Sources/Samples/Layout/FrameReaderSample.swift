@@ -10,7 +10,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
 
     static let id = "frameReader"
     static let title = "Measuring a frame"
-    static let summary = "FrameReader builds content from its measured frame; .onFrameChanged reports any view's - in the parent, the window or the safe area."
+    static let summary = "FrameReader builds from its measured frame; `.onFrameChanged` reports any view's."
 
     static let code = """
         @State private var width = 220.0
@@ -155,39 +155,35 @@ struct FrameReaderSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("THE TINTED BOX IS THE PARENT, and it is drawn because the first "
-                + "reading is measured against it: `in its parent` is where the panel "
-                + "sits INSIDE that box, so widening the panel walks its x in towards "
-                + "the middle while the window and safe-area readings move by the "
-                + "same amount from wherever the page happens to be. A frame is "
-                + "always in some space, and this is which one.")
+            Label("The tinted box is the parent, drawn because the first reading is measured "
+                + "against it: `in its parent` is where the panel sits inside that box. "
+                + "Widening the panel walks its x in towards the middle, while the window "
+                + "and safe-area readings move by the same amount from wherever the page is.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The measurement costs nothing until it is asked for, and a report "
-                + "comes when the frame settles somewhere new - dragging the slider "
-                + "re-lays the panel out, and the walk reports every step of the way.")
+            Label("A frame costs nothing until something asks for it: a view with no "
+                + "`.onFrameChanged` is not even subscribed. A report comes when the frame "
+                + "settles somewhere new, so dragging the slider re-lays the panel out and "
+                + "the button's walk reports every step of the way.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The panel's width and the slider's thumb are ONE driven state - "
-                + ".widthRequest($width) and .value($width) - so dragging the thumb "
-                + "resizes the panel without the page being described for it, and "
-                + "the button sends that same state somewhere over 200ms.")
+            Label("The panel's width and the slider's thumb are one driven state - "
+                + "`.widthRequest($width)` and `Slider($width)` - so dragging the thumb "
+                + "resizes the panel without the page being described for it, and the "
+                + "button moves that same state.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("WHAT IS DESCRIBED AGAIN IS THE READER AND THIS PAGE. A driven "
-                + "state describes nothing by itself, so the width costs no build "
-                + "at all; what does is the MEASUREMENT. The reader builds its own "
-                + "content from the frame it was given, and the three handlers "
-                + "beside it write the page's own states, which the three lines "
-                + "under the panel print - so the page is a reader of them too, "
-                + "and the count at the top is its own builds. It moves for the "
-                + "frame reports and for nothing else.")
+            Label("The width costs no build - a driven state describes nothing by itself - "
+                + "but the measurement does. The reader builds its content from the frame "
+                + "it was given, and the three handlers beside it write the page's own "
+                + "states, which the lines under the panel print. So the page is a reader "
+                + "too, and the count at the top moves for the frame reports and nothing else.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
-        .spacing(12)
+        .spacing(8)
     }
 }

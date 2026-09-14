@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: Map and Pin - Microsoft.Maui.Controls.Maps.
+/// The platform's own map, with pins, a region to move to, and what it draws.
 struct MapSample: SampleContent, ExampleContent {
     @State private var said = "tap the map, a marker, or its callout"
 
@@ -45,7 +45,7 @@ struct MapSample: SampleContent, ExampleContent {
                             latitude: 52.1, longitude: 19.4, radiusMeters: 350_000)
                     }
 
-                    // What it DRAWS, cycled so all three can be seen.
+                // What it DRAWS, cycled so all three can be seen.
                 Button(kind == .street ? "Street" : kind == .satellite ? "Satellite" : "Hybrid")
                     .onClicked {
                         kind = kind == .street ? .satellite
@@ -138,8 +138,8 @@ struct MapSample: SampleContent, ExampleContent {
 
             // The opening region is the INITIALIZER's, not an `.onCreated` act:
             // written here it is kept until the platform's map has connected,
-            // while the act - measured on Catalyst - lands an instant too
-            // early and is overwritten by the map's own opening view.
+            // while an act can land an instant too early and be overwritten
+            // by the map's own opening view.
             Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
                 .aim(map)
                 // What the map draws, and whether the reader may move it.
@@ -177,19 +177,18 @@ struct MapSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The platform's own map draws this - MapKit here on Apple, Google "
-                + "Maps on Android - which costs three honest lines: the app registers "
-                + "the handler itself (builder.UseMauiMaps() in MauiProgram), an "
-                + "Android app needs a Google Maps API key in its manifest or the map "
-                + "stays a grey grid, and Windows has no Map handler at all.")
+            Label("`Map` is an optional provider, drawn by the platform's own map where a "
+                + "host provides one - `MKMapView` on Apple. GTK 4, Android Views and "
+                + "WinUI 3 depend on a map library and a map service, and the Web has no "
+                + "map element.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Where the map OPENS is the initializer's - MAUI keeps that region "
-                + "until the platform's map has connected, while the same act from "
-                + "`.onCreated` lands an instant too early and is overwritten. Moving "
-                + "LATER is the act the buttons perform, `moveToRegion` on the view's "
-                + "id - the radius in METERS, MAUI's own Distance unit.")
+            Label("Where the map opens is the initializer's: that region is kept until the "
+                + "platform's map has connected, while the same move from `.onCreated` can "
+                + "land an instant too early and be overwritten. Moving later is the act "
+                + "the buttons perform - `moveToRegion` through the map's `@Aim`, with the "
+                + "radius in meters.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

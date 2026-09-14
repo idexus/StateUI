@@ -1,10 +1,12 @@
 import StateUI
 
-/// One level of the drill-down. Every push makes another of these.
+/// One level of the drill-down. Every push makes another of these: identity on
+/// a stack is the depth together with the route, so a stack may hold the same
+/// route more than once and each is a page with `@State` of its own.
 ///
 /// It also shows what a PAGE can still ask of the stack it is on, the bar
-/// itself belonging to the arrangement. Those requests are written into the
-/// page session and carry the `navigationStack` prefix that names their owner.
+/// itself belonging to the arrangement: those requests are written into the
+/// page session.
 struct LevelPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
@@ -19,6 +21,11 @@ struct LevelPage: ContentView {
     /// The stack this page is ON - the main one, or the one inside a tab. A
     /// page that pushes and pops writes the array it is a member of, which is
     /// why this is a binding rather than a call to something global.
+    ///
+    /// The platform's own back arrow, its swipe and its system back gesture
+    /// write the same array: the host reports the depth that survived and the
+    /// array is truncated to match. A gesture let go halfway reports nothing,
+    /// because nothing happened.
     @Binding var path: [Route]
 
     /// What this page has SEEN of its own life. `@State`, so it belongs to
@@ -38,18 +45,11 @@ struct LevelPage: ContentView {
 
     var content: any View {
         VStack {
-            SectionTitle("PUSHED PAGE")
+            SectionTitle("Pushed page")
 
             Label("Level \(level)")
                 .fontSize(32)
                 .fontAttributes(.bold)
-                .horizontalTextAlignment(.center)
-
-            Label("This page and the one under it are two pages, not one shown twice: "
-                + "identity on a stack is the DEPTH together with the route, so a stack "
-                + "may legally hold the same route more than once.")
-                .fontSize(13)
-                .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
 
             Label("appeared \(arrivals)× · disappeared \(departures)×")
@@ -75,20 +75,7 @@ struct LevelPage: ContentView {
                 .horizontalOptions(.center)
                 .onClicked { path.removeLast() }
 
-            Label("`path.append(...)` and `path.removeLast()` - and the platform's own "
-                + "back arrow, its swipe and Android's system gesture do the same thing "
-                + "to the same array: the host reports the depth that survived and the "
-                + "array is truncated to match. A gesture let go halfway says nothing, "
-                + "because nothing happened.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-                .horizontalTextAlignment(.center)
-
-            Label("Go deeper and come back: this page counts a departure and a "
-                + "SECOND arrival, because it is the same page throughout - its "
-                + "`page.phase` says `appearing` on every arrival, the first one "
-                + "included, which is what makes it the moment to refresh "
-                + "something that may have changed while the page was covered.")
+            Label("Go deeper and come back: the same page counts a second arrival.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -98,13 +85,16 @@ struct LevelPage: ContentView {
         .onCreated {
             page.gallery("Level \(level)", scene: scene, nav: nav)
 
-            // What the back button says on the page ABOVE this one - written on
-            // the page you would go BACK TO, which is iOS's model. Android and
-            // Windows draw an arrow with nowhere to put words and ignore it.
+            // What the back button reads while the page ABOVE this one is on
+            // top - written on the page the reader would go back to. A host
+            // whose back affordance has no text ignores it.
             page.backButtonTitle = "Level \(level)"
         }
         // What this page sees of its own life, one count per moment. Appearing
         // and disappearing answer visibility; the other three answer a move.
+        // `appearing` comes on every arrival, the first one included, which
+        // makes it the moment to refresh what may have changed while the page
+        // was covered.
         .onChanged(page.phase) {
             switch page.phase {
             case .appearing: arrivals += 1

@@ -161,10 +161,10 @@ struct TaskSleepSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Foundation's Timer hangs off a RunLoop, and nothing turns one in a "
-                + "MAUI app on Android or Windows - so a timer here is a loop that "
-                + "sleeps. The handler resumes on the thread MAUI draws on, which is "
-                + "what makes writing state from it ordinary.")
+            Label("Foundation's `Timer` hangs off a RunLoop, and nothing turns one on "
+                + "Android or Windows - so a timer here is a loop that sleeps. The "
+                + "handler resumes on the thread the host draws on, which is what makes "
+                + "writing state from it ordinary.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

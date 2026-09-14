@@ -25,9 +25,9 @@ final class WindowLog {
 ///
 /// The log's first line is `created`, which `MainWindow` writes as the window
 /// is made: `.onChanged` hears a CHANGE, and the phase starts there. The
-/// activated/deactivated pair rides each trip to the background - NOT a mere
-/// focus switch on Mac Catalyst, measured - and where the application stands
-/// is `application.phase`, which the Phases sample shows.
+/// activated/deactivated pair follows the host's own window activation, and
+/// where the application stands is `application.phase`, which the Phases
+/// sample shows.
 struct WindowPhaseLog: ContentView {
     /// Where the moments are written.
     let log: WindowLog

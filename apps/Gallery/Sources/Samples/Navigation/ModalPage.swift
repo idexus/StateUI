@@ -14,7 +14,7 @@ struct ModalPage: ContentView {
 
     var content: any View {
         VStack {
-            SectionTitle("OVER EVERYTHING")
+            SectionTitle("Over everything")
 
             Label("Native modal page")
                 .fontSize(20)

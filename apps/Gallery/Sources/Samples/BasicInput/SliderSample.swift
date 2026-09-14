@@ -84,19 +84,7 @@ struct SliderSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalOptions(.center)
 
-            Label("The drag's two ends are StateUI events - DragStarted as the thumb "
-                + "is grabbed, DragCompleted as it is let go - and every step between "
-                + "them is an onValueChanged. Work too heavy for every step belongs in "
-                + "the completed end.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The value crosses the boundary as its own bits - nothing is "
-                + "formatted or parsed on the way, so no locale can touch it.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("A PICTURE FOR THE THUMB")
+            SectionTitle("A picture for the thumb")
 
             Slider($volume)
                 .automationId("slider.volume.thumb")
@@ -112,6 +100,18 @@ struct SliderSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
+            Label("The drag's two ends are events of their own - `.onDragStarted` as the "
+                + "thumb is grabbed, `.onDragCompleted` as it is let go - and every step "
+                + "between them is an `.onValueChanged`. Work too heavy for every step "
+                + "belongs in the completed end.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The value crosses the boundary as its own bits - nothing is formatted or "
+                + "parsed on the way, so no locale can touch it.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Label("The same value, dragged by a hand: `thumbImageSource` REPLACES the "
                 + "platform's thumb rather than tinting it, so a `thumbColor` written "
                 + "beside it paints nothing. Both sliders hold `volume`, so either one "

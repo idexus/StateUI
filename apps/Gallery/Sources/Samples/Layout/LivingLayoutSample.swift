@@ -4,7 +4,7 @@ import StateUI
 struct LivingLayoutSample: SampleContent, ExampleContent {
     static let id = "livingLayout"
     static let title = "A layout that moves"
-    static let summary = "Insert, remove or reorder, and everything else slides to its new place - in a stack, and in a grid whose columns change width."
+    static let summary = "Insert, remove or reorder, and everything else slides to its new place."
 
     @State private var rows = ["Alpha", "Bravo", "Charlie"]
     @State private var next = 4
@@ -74,7 +74,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
             // is counted by the reading inside their own stack.
             DebugInfoLabel()
 
-            Label("A STACK")
+            Label("A stack")
                 .fontSize(11)
                 .characterSpacing(1)
                 .textColor(Palette.subtle)
@@ -113,7 +113,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            Label("A GRID, ITS COLUMNS CHANGING WIDTH")
+            Label("A grid, its columns changing width")
                 .fontSize(11)
                 .characterSpacing(1)
                 .textColor(Palette.subtle)
@@ -158,7 +158,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 + "example says nothing about animation: it writes "
                 + "`rows.insert(…)`, and the layout works out where everything "
                 + "belongs the same way it would if nothing moved.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("The grid is the same thing one level up. Its columns change "
@@ -166,14 +166,14 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 + "is given is somewhere it travels to. A view that ARRIVES "
                 + "fades in; one that leaves goes at once and the gap closes "
                 + "behind it.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
 
             Label("A layout's own SIZE changing is different, and deliberately: "
                 + "drag the window and the children track it exactly, because a "
                 + "resize is something a reader is doing rather than something "
                 + "the interface decided.")
-                .fontSize(13)
+                .fontSize(12)
                 .textColor(Palette.subtle)
         }
         .spacing(8)

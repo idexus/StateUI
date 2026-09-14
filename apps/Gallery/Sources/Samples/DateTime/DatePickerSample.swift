@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: DatePicker.
+/// A day picked from a calendar: a binding, and the event that answers a pick.
 struct DatePickerSample: SampleContent, ExampleContent {
     @State private var due = CalendarDate(year: 2026, month: 8, day: 2)
     @State private var chosen = ""
@@ -95,8 +95,8 @@ struct DatePickerSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The FORMAT is .NET's, applied on the C# side where a calendar and a "
-                + "locale cost nothing.")
+            Label("The text in the field is the host's to write, in the reader's locale; "
+                + "`.format(\"D\")` asks for the long form.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
