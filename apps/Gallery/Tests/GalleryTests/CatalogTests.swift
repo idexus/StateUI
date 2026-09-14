@@ -313,24 +313,6 @@ private final class Renders {
 ///
 /// A tab is a caption over a rule with a tap on the pair, so the node that
 /// answers is the one holding a Label that says so - see Gallery/Views/Tabs.swift.
-private func tabHandler(_ title: String, in node: Node) -> EventHandler? {
-    func says(_ node: Node) -> Bool {
-        if case .string(title)? = node.props["text"] { return true }
-
-        return false
-    }
-
-    if let tap = node.events["tapped"], node.children.contains(where: says) {
-        return tap
-    }
-
-    for child in node.children {
-        if let hit = tabHandler(title, in: child) { return hit }
-    }
-
-    return nil
-}
-
 private extension String {
     /// How many times a one-character marker appears.
     func count(of marker: String) -> Int {
@@ -830,7 +812,7 @@ final class CatalogTests: XCTestCase {
     /// renderer's child count. What carries such an example
     /// is therefore a GRID, whose one implicit row IS the cell.
     func testAFillingExampleRidesAGridRatherThanAStack() throws {
-        let page = SamplePage(sample: Sample(Filling()), nav: Place().nav).body
+        let page = SampleTabPage(sample: Sample(Filling()), tab: .part(0), nav: Place().nav).body
         var carriers: [String] = []
 
         // The chain from the box the page draws around a part down to the
@@ -890,6 +872,27 @@ final class CatalogTests: XCTestCase {
                 }
             }
         }
+    }
+
+    /// A sample whose example holds the page still is shown as tabs - the
+    /// window's own - one per example, its words where kept apart and its
+    /// code, each named in the words a tab takes. A sample that scrolls is one
+    /// page.
+    func testAHeldSampleIsShownAsTabs() throws {
+        let held = try XCTUnwrap(catalog().groups.first { $0.route == "gestures" }?.samples.first)
+        let scrolling = try XCTUnwrap(catalog().groups.flatMap(\.samples).first { $0.scrolls })
+
+        XCTAssertTrue(SamplePage.shown(held, nav: Place().nav) is TabbedView)
+        XCTAssertTrue(SamplePage.shown(scrolling, nav: Place().nav) is SamplePage)
+        XCTAssertEqual(held.tabs.first, .part(0))
+        XCTAssertTrue(held.tabs.contains(.swift))
+        XCTAssertEqual(held.caption(of: .swift), "In Swift")
+        XCTAssertEqual(
+            held.caption(of: .part(0)).first?.isUppercase, true,
+            "a tab's caption starts with a capital")
+        XCTAssertNotEqual(
+            held.caption(of: .part(0)), held.caption(of: .part(0)).uppercased(),
+            "a tab's caption is not shouted")
     }
 
     // MARK: - The arrangement built from it
@@ -1485,7 +1488,6 @@ final class CatalogTests: XCTestCase {
             var caught: [String] = []
             var codeScrolls = false
             var found = 0
-            var tabs: [Int] = []
 
             /// What a node says, whether that is one string or a set of runs.
             ///
@@ -1505,11 +1507,6 @@ final class CatalogTests: XCTestCase {
             }
 
             func walk(_ node: Node, scrolled: Bool) {
-                // The page's own tab strip is a scroller too - a phone cannot
-                // hold five tabs across - and the taps in it are TABS, which
-                // any scroller passes through. This rule is about the sample.
-                guard node.id != Tabs.strip else { return }
-
                 let scrolled = scrolled || node.type == "ScrollView"
                 let handled = node.events.keys.map(\.name).filter { gestures.contains($0) }
 
@@ -1530,22 +1527,13 @@ final class CatalogTests: XCTestCase {
             // BOTH tabs, because the page shows one at a time and each has to
             // hold on its own: the example must never be under a scroller, and
             // the code must always be under one.
-            //
-            // The tab is TAPPED rather than the state being set, because the
-            // state is the page's own and a test has no business reaching into
-            // it - and tapping is what a reader does anyway. The handler is on
-            // the node, so no differ and no host are needed to run it.
-            let page = SamplePage(sample: sample, nav: Place().nav)
+            XCTAssertTrue(
+                sample.tabs.contains(.part(0)) && sample.tabs.contains(.swift),
+                "\(sample.id) does not offer the example and the code")
 
-            for title in ["EXAMPLE", "IN SWIFT"] {
-                guard let tap = tabHandler(title, in: page.body.built) else { continue }
-
-                tabs.append(tabs.count)
-                Renderer.shared.start(tap)
-                walk(page.body.built, scrolled: false)
+            for tab in [SampleTab.part(0), .swift] {
+                walk(SampleTabPage(sample: sample, tab: tab, nav: Place().nav).body.built, scrolled: false)
             }
-
-            XCTAssertEqual(tabs.count, 2, "\(sample.id) does not offer the example and the code")
             XCTAssertGreaterThan(found, 0, "\(sample.id) is a gesture sample with no gesture on it")
             XCTAssertEqual(caught, [], "\(sample.id) would lose \(caught) to the page's scroller")
             XCTAssertTrue(codeScrolls, "\(sample.id) shows its code with no way to scroll it")

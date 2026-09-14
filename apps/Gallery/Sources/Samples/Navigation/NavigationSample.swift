@@ -41,7 +41,7 @@ struct NavigationSample: SampleContent {
                     return MissingPage(id: id, nav: nav, path: $path)
                 }
 
-                return SamplePage(sample: sample, nav: nav)
+                return SamplePage.shown(sample, nav: nav)
 
             case .level(let n):
                 return LevelPage(level: n, nav: nav, path: $path)
