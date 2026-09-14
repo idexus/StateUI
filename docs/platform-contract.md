@@ -8,6 +8,9 @@ implementation evidence for each host.
 
 - ✅ means the member is implemented by that host and exercised by its host
   test suite.
+- ✅* means the member is implemented and tested but incomplete; the
+  control's file in [the control dictionary](controls/README.md) names what is
+  missing.
 - — means the implementation is absent, incomplete, or not yet verified. It
   is deliberately not an estimate of how difficult the work will be.
 - A control-level ✅ means the host recognizes and tests the node. Native and
@@ -16,6 +19,10 @@ implementation evidence for each host.
   every property has been completed; member rows state that separately.
 - A grouped member row receives ✅ only when every member named in that row is
   implemented. Inseparable overloads may share one row.
+
+Member by member and control by control, the marks live in [the control
+dictionary](controls/README.md): a realization updates its rows there, and the
+counts under [Control dictionary](#control-dictionary) are taken from its files.
 
 The matrix describes observable StateUI semantics. Platform classes are
 implementation details. A host may choose another native class when it
@@ -293,6 +300,63 @@ individual control already uses that member.
 | pan and pinch | `panXChannel`, `panYChannel`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `onPinchUpdated` (`pinchUpdated`) | ✅ | — | — | — | — | — |
 | pointer | `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`) | ✅ | — | — | — | — | — |
 | drag and drop | `canDrag`, `allowDrop`, `dragText`, `dragStarting`, `onDropCompleted` (`dropCompleted`), `onDrop` (`drop`), `onDragOver` (`dragOver`), `onDragLeave` (`dragLeave`) | — | — | — | — | — | — |
+
+## Control dictionary
+
+Every control, and every part an application, its windows and its pages are made of, has its members in [the control dictionary](controls/README.md): one row per property and handler, with a mark per platform. The counts below are taken from its files.
+
+<!-- dictionary:begin -->
+| Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
+| --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| [Label](controls/Label.md) | 78 | 35 ✅ · 1 ✅* |  |  |  |  |  |
+| [Button](controls/Button.md) | 83 | 33 ✅ · 1 ✅* |  |  |  |  |  |
+| [TextField](controls/TextField.md) | 87 | 38 ✅ · 1 ✅* |  |  |  |  |  |
+| [TextEditor](controls/TextEditor.md) | 84 | 37 ✅ · 1 ✅* |  |  |  |  |  |
+| [SearchField](controls/SearchField.md) | 86 | 37 ✅ · 1 ✅* |  |  |  |  |  |
+| [Image](controls/Image.md) | 65 | 23 ✅ · 1 ✅* |  |  |  |  |  |
+| [Picker](controls/Picker.md) | 79 | 29 ✅ · 1 ✅* |  |  |  |  |  |
+| [DatePicker](controls/DatePicker.md) | 77 | 25 ✅ · 1 ✅* |  |  |  |  |  |
+| [TimePicker](controls/TimePicker.md) | 75 | 23 ✅ · 1 ✅* |  |  |  |  |  |
+| [Switch](controls/Switch.md) | 66 | 23 ✅ · 1 ✅* |  |  |  |  |  |
+| [CheckBox](controls/CheckBox.md) | 66 | 24 ✅ · 1 ✅* |  |  |  |  |  |
+| [RadioButton](controls/RadioButton.md) | 78 | 25 ✅ · 1 ✅* |  |  |  |  |  |
+| [Slider](controls/Slider.md) | 70 | 28 ✅ · 1 ✅* |  |  |  |  |  |
+| [Stepper](controls/Stepper.md) | 68 | 26 ✅ · 1 ✅* |  |  |  |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 65 | 22 ✅ · 1 ✅* |  |  |  |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 65 | 22 ✅ · 1 ✅* |  |  |  |  |  |
+| [ColorBox](controls/ColorBox.md) | 65 | 23 ✅ |  |  |  |  |  |
+| [Border](controls/Border.md) | 72 | 21 ✅ |  |  |  |  |  |
+| [PositionIndicator](controls/PositionIndicator.md) | 71 | 21 ✅ · 1 ✅* |  |  |  |  |  |
+| [VStack](controls/VStack.md) | 68 | 23 ✅ · 1 ✅* |  |  |  |  |  |
+| [HStack](controls/HStack.md) | 68 | 23 ✅ · 1 ✅* |  |  |  |  |  |
+| [Grid](controls/Grid.md) | 71 | 21 ✅ · 1 ✅* |  |  |  |  |  |
+| [AbsoluteLayout](controls/AbsoluteLayout.md) | 67 | 21 ✅ · 1 ✅* |  |  |  |  |  |
+| [ScrollView](controls/ScrollView.md) | 73 | 30 ✅ · 1 ✅* |  |  |  |  |  |
+| [RefreshView](controls/RefreshView.md) | 67 | 21 ✅ · 1 ✅* |  |  |  |  |  |
+| [SwipeView](controls/SwipeView.md) | 68 | 21 ✅ · 1 ✅* |  |  |  |  |  |
+| [Map](controls/Map.md) | 75 | 21 ✅ · 1 ✅* |  |  |  |  |  |
+| [WebView](controls/WebView.md) | 70 | 21 ✅ · 1 ✅* |  |  |  |  |  |
+| [TitleBar](controls/TitleBar.md) | 66 | 24 ✅ · 1 ✅* |  |  |  |  |  |
+| [Canvas](controls/Canvas.md) | 64 | 22 ✅ · 1 ✅* |  |  |  |  |  |
+| [Rectangle](controls/Rectangle.md) | 74 | 21 ✅ · 1 ✅* |  |  |  |  |  |
+| [Ellipse](controls/Ellipse.md) | 73 | 21 ✅ · 1 ✅* |  |  |  |  |  |
+| [Line](controls/Line.md) | 77 | 25 ✅ · 1 ✅* |  |  |  |  |  |
+| [Path](controls/Path.md) | 74 | 22 ✅ · 1 ✅* |  |  |  |  |  |
+| [Polygon](controls/Polygon.md) | 75 | 23 ✅ · 1 ✅* |  |  |  |  |  |
+| [Polyline](controls/Polyline.md) | 75 | 23 ✅ · 1 ✅* |  |  |  |  |  |
+
+| Part | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
+| --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| [Scene](controls/Scene.md) | 6 | 6 ✅ |  |  |  |  |  |
+| [Window](controls/Window.md) | 22 | 22 ✅ |  |  |  |  |  |
+| [Page](controls/Page.md) | 12 | 12 ✅ |  |  |  |  |  |
+| [NavigationStack](controls/NavigationStack.md) | 6 | 3 ✅ |  |  |  |  |  |
+| [TabbedView](controls/TabbedView.md) | 6 | 3 ✅ |  |  |  |  |  |
+| [SplitView](controls/SplitView.md) | 4 | 1 ✅ |  |  |  |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | 8 | 7 ✅ |  |  |  |  |  |
+| [Menu](controls/Menu.md) | 1 |  |  |  |  |  |  |
+| [MenuItem](controls/MenuItem.md) | 6 | 5 ✅ |  |  |  |  |  |
+<!-- dictionary:end -->
 
 ## Control properties and handlers
 

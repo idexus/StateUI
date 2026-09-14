@@ -449,9 +449,10 @@ enum Fixtures {
     }
 
     /// One of the library's own source files, read as text - found by its name
-    /// wherever it sits, the names being unique across the sources.
+    /// wherever it sits, the names being unique across the sources, or by its
+    /// path under the sources, `Views/Label.swift`.
     static func text(in file: String) throws -> String {
-        guard let source = try allSources().first(where: { $0.path.hasSuffix("/" + file) }) else {
+        guard let source = try allSources().first(where: { $0.path == file || $0.path.hasSuffix("/" + file) }) else {
             throw CocoaError(.fileNoSuchFile, userInfo: [NSFilePathErrorKey: file])
         }
 
