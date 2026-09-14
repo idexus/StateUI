@@ -1650,7 +1650,7 @@ final class MountedNode: NSObject {
             return left == right ? $0.offset < $1.offset : left < right
         }.map(\.element)
         let actions = ordered.map { item in
-            (overflows: item.enumeration(.order) == 2, action: AppKitToolbarAction(
+            (overflows: item.enumeration(.placement) == 2, action: AppKitToolbarAction(
                 identifier: NSToolbarItem.Identifier("StateUI.action.\(item.mount)"),
                 title: item.string(.text) ?? "",
                 image: item.image(.iconImageSource),
@@ -1845,7 +1845,7 @@ final class MountedNode: NSObject {
         .minimumWidth, .minimumHeight,
         .maximumWidth, .maximumHeight,
         .gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan,
-        .absoluteLayoutBounds, .absoluteLayoutFlags,
+        .absoluteLayoutBounds, .absoluteLayoutProportions,
     ]
 
     /// Properties whose change is drawn without changing any native
@@ -1861,7 +1861,7 @@ final class MountedNode: NSObject {
         .strokeMiterLimit, .strokeShape, .cornerRadius, .renderTransform,
         .minimumTrackColor, .maximumTrackColor, .thumbColor, .onColor, .offColor,
         .progressColor, .barBackgroundColor, .barTextColor, .foregroundColor,
-        .drawable, .value, .progress, .scroll, .isToggled, .isChecked, .isEnabled,
+        .drawable, .value, .progress, .scrollOffset, .isOn, .isEnabled,
         .ignoresInput, .letsInputThrough,
         .automationId, .automationIsInAccessibleTree, .automationExcludedWithChildren,
         .semanticDescription, .semanticHint, .semanticHeadingLevel,
@@ -1941,20 +1941,20 @@ final class MountedNode: NSObject {
         let scope = radioScope(named: group)
         let peers = group.map { scope.radioButtons(named: $0) }
             ?? (parent?.children.filter { $0.type == .radioButton } ?? [self])
-        let formerlySelected = peers.filter { $0 !== self && $0.bool(.isChecked) == true }
-        let alreadySelected = bool(.isChecked) == true
+        let formerlySelected = peers.filter { $0 !== self && $0.bool(.isOn) == true }
+        let alreadySelected = bool(.isOn) == true
 
         guard !formerlySelected.isEmpty || !alreadySelected else { return }
 
         host.performReaderTransaction {
             for peer in formerlySelected {
                 peer.setRadioChecked(false)
-                peer.changedBoolean(false, property: .isChecked, event: .checkedChanged)
+                peer.changedBoolean(false, property: .isOn, event: .toggled)
             }
 
             if !alreadySelected {
                 setRadioChecked(true)
-                changedBoolean(true, property: .isChecked, event: .checkedChanged)
+                changedBoolean(true, property: .isOn, event: .toggled)
             }
         }
     }
@@ -2091,7 +2091,7 @@ final class MountedNode: NSObject {
         guard let host else { return }
         var tookState = false
         host.performReaderTransaction {
-            if old != new, let binding = driven[.scroll] {
+            if old != new, let binding = driven[.scrollOffset] {
                 tookState = host.take([Double(new.x), Double(new.y)], through: binding)
             }
 
@@ -2233,14 +2233,14 @@ final class MountedNode: NSObject {
         case .switch:
             let toggle = AppKitSwitchView()
             toggle.onToggled = { [weak self] in
-                self?.changedBoolean($0, property: .isToggled, event: .toggled)
+                self?.changedBoolean($0, property: .isOn, event: .toggled)
             }
             return toggle
 
         case .checkBox:
             let checkBox = AppKitCheckBoxView()
             checkBox.onCheckedChanged = { [weak self] in
-                self?.changedBoolean($0, property: .isChecked, event: .checkedChanged)
+                self?.changedBoolean($0, property: .isOn, event: .toggled)
             }
             return checkBox
 
@@ -2406,8 +2406,8 @@ final class MountedNode: NSObject {
         }
 
         if let grid = view as? AppKitGridView {
-            grid.rows = gridLengths(.rowDefinitions)
-            grid.columns = gridLengths(.columnDefinitions)
+            grid.rows = gridLengths(.rows)
+            grid.columns = gridLengths(.columns)
             grid.rowSpacing = value(.rowSpacing)?.number ?? 0
             grid.columnSpacing = value(.columnSpacing)?.number ?? 0
             grid.padding = insets(.padding)
@@ -2422,8 +2422,8 @@ final class MountedNode: NSObject {
                 lastScrollXBucket = nil
                 lastScrollYBucket = nil
             }
-            let offset = changed.contains(.scroll)
-                ? value(.scroll)?.numbers.flatMap { values -> NSPoint? in
+            let offset = changed.contains(.scrollOffset)
+                ? value(.scrollOffset)?.numbers.flatMap { values -> NSPoint? in
                     guard values.count >= 2 else { return nil }
                     return NSPoint(x: values[0], y: values[1])
                 }
@@ -2444,7 +2444,7 @@ final class MountedNode: NSObject {
             imageView.apply(
                 image: string(.source).flatMap { image(named: $0) },
                 aspect: imageAspect(enumeration(.aspect)),
-                animationPlaying: value(.isAnimationPlaying)?.bool ?? false)
+                animationPlaying: value(.isAnimating)?.bool ?? false)
         }
 
         if let entry = view as? AppKitTextFieldView {
@@ -2544,18 +2544,18 @@ final class MountedNode: NSObject {
         }
         if let toggle = view as? AppKitSwitchView {
             toggle.apply(
-                toggled: value(.isToggled)?.bool ?? false,
+                toggled: value(.isOn)?.bool ?? false,
                 enabled: value(.isEnabled)?.bool ?? true)
         }
         if let checkBox = view as? AppKitCheckBoxView {
             checkBox.apply(
-                checked: value(.isChecked)?.bool ?? false,
+                checked: value(.isOn)?.bool ?? false,
                 enabled: value(.isEnabled)?.bool ?? true,
                 color: color(.color))
         }
         if let radio = view as? AppKitRadioButtonView {
             radio.apply(
-                checked: value(.isChecked)?.bool ?? false,
+                checked: value(.isOn)?.bool ?? false,
                 text: transformed(
                     string(.text) ?? "",
                     by: enumeration(.textCase)),
@@ -2569,12 +2569,12 @@ final class MountedNode: NSObject {
                 writeValue: changed.contains(.value),
                 minimum: value(.minimum)?.number ?? 0,
                 maximum: value(.maximum)?.number ?? 100,
-                increment: value(.increment)?.number ?? 1,
+                step: value(.step)?.number ?? 1,
                 enabled: value(.isEnabled)?.bool ?? true)
         }
         if let picker = view as? AppKitPickerView {
             picker.apply(
-                items: value(.itemsSource)?.strings ?? [],
+                items: value(.options)?.strings ?? [],
                 selectedIndex: whole(.selectedIndex) ?? -1,
                 writeSelection: changed.contains(.selectedIndex),
                 title: string(.title),
@@ -2857,7 +2857,7 @@ final class MountedNode: NSObject {
         item.rowSpan = max(whole(.gridRowSpan) ?? 1, 1)
         item.columnSpan = max(whole(.gridColumnSpan) ?? 1, 1)
         item.absoluteBounds = value(.absoluteLayoutBounds)?.numbers
-        item.absoluteFlags = enumeration(.absoluteLayoutFlags) ?? 0
+        item.absoluteProportions = enumeration(.absoluteLayoutProportions) ?? 0
         item.drawing = presentableDrawing
         return item
     }
@@ -3609,12 +3609,12 @@ final class MountedNode: NSObject {
 
     private static let booleanProperties: Set<Prop> = [
         .allowDrop, .autoHide, .canDrag, .floatsOnTop, .growsWithText, .ignoresInput,
-        .isAnimationPlaying, .isChecked, .clipsContent, .isDestructive,
+        .isAnimating, .clipsContent, .isDestructive,
         .isEnabled, .isMaximizable, .isMinimizable,
         .isOpaque, .isOpen, .isPassword, .isSidebarVisible, .isReadOnly,
         .isRefreshEnabled, .isRefreshing, .isRunning, .isScrollEnabled,
-        .isShowingUser, .isSpellCheckEnabled, .isTextPredictionEnabled,
-        .isToggled, .isTrafficEnabled, .isVisible, .isZoomEnabled, .letsInputThrough,
+        .showsUserLocation, .isSpellCheckEnabled, .isTextPredictionEnabled,
+        .isOn, .isTrafficEnabled, .isVisible, .isZoomEnabled, .letsInputThrough,
         .showsClearButton,
     ]
 

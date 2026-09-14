@@ -31,12 +31,12 @@ final class AppKitStepperView: NSStepper {
         writeValue: Bool,
         minimum: Double,
         maximum: Double,
-        increment: Double,
+        step: Double,
         enabled: Bool
     ) {
         minValue = min(minimum, maximum)
         maxValue = max(minimum, maximum)
-        self.increment = increment.isFinite && increment > 0 ? increment : 1
+        self.increment = step.isFinite && step > 0 ? step : 1
         isEnabled = enabled
 
         if writeValue, let value {

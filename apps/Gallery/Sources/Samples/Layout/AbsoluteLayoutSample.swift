@@ -20,19 +20,19 @@ struct AbsoluteLayoutSample: SampleContent, ExampleContent {
                 // layout turns out to be.
                 ColorBox(Palette.outline)
                     .absoluteLayoutBounds(Rect(0, 0, 1, 1))
-                    .absoluteLayoutFlags(.all)
+                    .absoluteLayoutProportions(.all)
 
                 Marker(text: "0, 0", color: "#E53935")
                     .absoluteLayoutBounds(bounds(x: 0, y: 0))
-                    .absoluteLayoutFlags(flags)
+                    .absoluteLayoutProportions(flags)
 
                 Marker(text: "middle", color: "#1E88E5")
                     .absoluteLayoutBounds(bounds(x: 0.5, y: 0.5))
-                    .absoluteLayoutFlags(flags)
+                    .absoluteLayoutProportions(flags)
 
                 Marker(text: "1, 1", color: "#00897B")
                     .absoluteLayoutBounds(bounds(x: 1, y: 1))
-                    .absoluteLayoutFlags(flags)
+                    .absoluteLayoutProportions(flags)
             }
             .height(180)
 
@@ -48,8 +48,8 @@ struct AbsoluteLayoutSample: SampleContent, ExampleContent {
                 height: AbsoluteLayout.autoSize)
         }
 
-        private var flags: AbsoluteLayoutFlags {
-            proportional ? .positionProportional : .none
+        private var flags: AbsoluteLayoutProportions {
+            proportional ? .position : .none
         }
 
         private struct Marker: ContentView {
@@ -77,19 +77,19 @@ struct AbsoluteLayoutSample: SampleContent, ExampleContent {
                 // "as big as the layout", whatever the layout turns out to be.
                 ColorBox(Palette.outline)
                     .absoluteLayoutBounds(Rect(0, 0, 1, 1))
-                    .absoluteLayoutFlags(.all)
+                    .absoluteLayoutProportions(.all)
 
                 Marker(text: "0, 0", color: "#E53935")
                     .absoluteLayoutBounds(bounds(x: 0, y: 0))
-                    .absoluteLayoutFlags(flags)
+                    .absoluteLayoutProportions(flags)
 
                 Marker(text: "middle", color: "#1E88E5")
                     .absoluteLayoutBounds(bounds(x: 0.5, y: 0.5))
-                    .absoluteLayoutFlags(flags)
+                    .absoluteLayoutProportions(flags)
 
                 Marker(text: "1, 1", color: "#00897B")
                     .absoluteLayoutBounds(bounds(x: 1, y: 1))
-                    .absoluteLayoutFlags(flags)
+                    .absoluteLayoutProportions(flags)
             }
             .height(180)
 
@@ -125,8 +125,8 @@ struct AbsoluteLayoutSample: SampleContent, ExampleContent {
             height: AbsoluteLayout.autoSize)
     }
 
-    private var flags: AbsoluteLayoutFlags {
-        proportional ? .positionProportional : .none
+    private var flags: AbsoluteLayoutProportions {
+        proportional ? .position : .none
     }
 }
 

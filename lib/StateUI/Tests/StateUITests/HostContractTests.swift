@@ -201,8 +201,8 @@ final class HostContractTests: XCTestCase {
         }
 
         for property in [
-            Prop.columnDefinitions, .gridColumn, .gridColumnSpan, .gridRow,
-            .gridRowSpan, .rowDefinitions,
+            Prop.columns, .gridColumn, .gridColumnSpan, .gridRow,
+            .gridRowSpan, .rows,
         ] {
             XCTAssertEqual(HostContract.properties[property], .stateUI)
         }
@@ -406,6 +406,52 @@ final class HostContractTests: XCTestCase {
                 XCTAssertFalse(source.contains("func \(name)("), "\(file) still declares .\(name)")
             }
             XCTAssertFalse(source.contains("var menuBarItems"), "\(file) still keeps menuBarItems")
+        }
+    }
+
+    /// A control's properties speak in plain words: a stepper moves by its
+    /// `step`, a picker offers `options`, a grid has `rows` and `columns` of
+    /// `.fixed`, `.proportional` or `.fill` length, a Boolean choice is `isOn`
+    /// and reports `onToggled`, a toolbar item has a `placement`.
+    func testControlPropertiesSpeakInPlainWords() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+        let events = declaredNames(of: "Event", in: tokenSource)
+        let former = [
+            "increment", "itemsSource", "isAnimationPlaying", "rowDefinitions",
+            "columnDefinitions", "absoluteLayoutFlags", "isShowingUser", "order",
+            "isToggled", "isChecked",
+        ]
+
+        XCTAssertTrue(properties.isSuperset(of: [
+            "step", "options", "isAnimating", "rows", "columns",
+            "absoluteLayoutProportions", "showsUserLocation", "placement", "isOn",
+        ]))
+        XCTAssertTrue(
+            properties.isDisjoint(with: former),
+            "a former control property remains in the host contract")
+        XCTAssertTrue(events.contains("toggled"))
+        XCTAssertFalse(events.contains("checkedChanged"), "a Boolean choice keeps a second event")
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            for name in former + ["galleryStyle", "onCheckedChanged", "scroll"] {
+                XCTAssertFalse(
+                    source.contains("public func \(name)("), "\(file) still declares .\(name)")
+            }
+            for type in ["enum GalleryStyle", "enum ToolbarItemOrder", "struct AbsoluteLayoutFlags"] {
+                XCTAssertFalse(source.contains(type), "\(file) still declares \(type)")
+            }
+            XCTAssertFalse(
+                source.contains("case star(") || source.contains("case absolute("),
+                "\(file) still names a grid length in markup words")
         }
     }
 

@@ -69,7 +69,7 @@ struct MapSample: SampleContent, ExampleContent {
                 // What the map draws, and whether the reader may move it.
                 .mapType(kind)
                 .isTrafficEnabled(traffic)
-                .isShowingUser(showsMe)
+                .showsUserLocation(showsMe)
                 .isZoomEnabled(!locked)
                 .isScrollEnabled(!locked)
                 .pins {
@@ -145,7 +145,7 @@ struct MapSample: SampleContent, ExampleContent {
                 // What the map draws, and whether the reader may move it.
                 .mapType(kind)
                 .isTrafficEnabled(traffic)
-                .isShowingUser(showsMe)
+                .showsUserLocation(showsMe)
                 .isZoomEnabled(!locked)
                 .isScrollEnabled(!locked)
                 .pins {

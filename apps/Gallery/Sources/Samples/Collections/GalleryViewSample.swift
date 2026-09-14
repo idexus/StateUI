@@ -4,7 +4,7 @@ import StateUI
 struct GalleryViewSample: SampleContent, ExampleContent {
     static let id = "galleryView"
     static let title = "GalleryView"
-    static let summary = "A run of cards the reader swipes through - a wheel, a fan or a row, chosen with .galleryStyle."
+    static let summary = "A run of cards the reader swipes through - a wheel, a fan or a row, chosen with .arrangement."
 
     /// The cards: what each picture is called and which file it is.
     static let cards: [Card] = [
@@ -24,7 +24,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     }
 
     /// The three shapes, and what to call them on the button that cycles them.
-    static let shapes: [(GalleryStyle, String)] = [
+    static let shapes: [(GalleryArrangement, String)] = [
         (.default, "Wheel"),
         (.fan, "Fan"),
         (.row, "Row"),
@@ -68,7 +68,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
 
         // The three shapes, and what to call them on the button that cycles
         // them.
-        private let shapes: [(GalleryStyle, String)] = [
+        private let shapes: [(GalleryArrangement, String)] = [
             (.default, "Wheel"),
             (.fan, "Fan"),
             (.row, "Row"),
@@ -80,7 +80,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             // THE WHOLE CONTROL: the run made below - one card per item, the
             // item its identity - and one word for the shape they stand in.
             gallery
-                .galleryStyle(shapes[shape].0)
+                .arrangement(shapes[shape].0)
                 .position($shown)
                 .isSwipeEnabled(swipes)
                 .snapsAtMost(stepped ? 1 : 0)
@@ -126,7 +126,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             }
             .gridRow(2)
         }
-        .rowDefinitions(.star, .auto, .auto)
+        .rows(.fill, .auto, .auto)
 
         // The run, shaded or faded as the switch says.
         private var gallery: GalleryView<[Card], String> {
@@ -170,7 +170,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .cornerRadius(14)
 
                 gallery
-                    .galleryStyle(Self.shapes[shape].0)
+                    .arrangement(Self.shapes[shape].0)
                     .position($shown)
                     .isSwipeEnabled(swipes)
                     .snapsAtMost(stepped ? 1 : 0)
@@ -243,7 +243,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(2)
         }
-        .rowDefinitions(.star, .auto, .auto)
+        .rows(.fill, .auto, .auto)
         .rowSpacing(8)
     }
 
@@ -293,7 +293,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("`GalleryView` is a run of cards the reader swipes through, with "
-                + "`.galleryStyle` choosing the shape they stand in - `.default` is a "
+                + "`.arrangement` choosing the shape they stand in - `.default` is a "
                 + "wheel, `.fan` a hand of cards, `.row` a strip. The cards TRAVEL "
                 + "between the three, so the shape button carries the whole run across.")
                 .fontSize(12)

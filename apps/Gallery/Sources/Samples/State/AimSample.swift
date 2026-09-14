@@ -144,7 +144,7 @@ struct AimSample: SampleContent, ExampleContent {
             Label("A property is a modifier - opacity, rotation, a Border's background - "
                 + "which takes a binding and animates along that binding's journey. Nothing "
                 + "is both a modifier and a method, and a scroller's offset is state as "
-                + "well: `.scroll($offset)`.")
+                + "well: `.scrollOffset($offset)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

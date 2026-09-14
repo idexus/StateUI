@@ -64,14 +64,14 @@ struct ConverterSample: SampleContent, ExampleContent {
                 // and the two captions would round it their own way.
                 HStack {
                     Stepper($celsius)
-                        .increment(5)
+                        .step(5)
                         .minimum(-20)
                         .maximum(60)
                     Label($celsius.convert { "\\(Int($0)) °C" })
                 }
                 HStack {
                     Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
-                        .increment(9)
+                        .step(9)
                         .minimum(-4)
                         .maximum(140)
                     Label($celsius.convert { "\\(Int($0 * 9 / 5 + 32)) °F" })
@@ -150,7 +150,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                     Stepper($celsius)
                         .automationId("converters.celsius")
                         .semanticDescription("Celsius")
-                        .increment(5)
+                        .step(5)
                         .minimum(-20)
                         .maximum(60)
                     Label()
@@ -162,7 +162,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                     Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
                         .automationId("converters.fahrenheit")
                         .semanticDescription("Fahrenheit")
-                        .increment(9)
+                        .step(9)
                         .minimum(-4)
                         .maximum(140)
                     Label()

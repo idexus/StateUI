@@ -184,7 +184,7 @@ page.toolbarItems = [
         .onClicked { try await save() },
     ToolbarItem("Delete")
         .id("delete")
-        .order(.secondary)
+        .placement(.overflow)
         .isDestructive(true)
         .onClicked { try await delete() },
 ]

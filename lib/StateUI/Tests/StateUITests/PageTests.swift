@@ -52,7 +52,7 @@ private struct EveryPropertyPage: ContentView {
                 ToolbarItem("Save")
                     .automationId("bar.save")
                     .iconImageSource(ImageSource("mark.png"))
-                    .order(.secondary)
+                    .placement(.overflow)
                     .priority(2)
                     .isDestructive(true)
                     .isEnabled(false)

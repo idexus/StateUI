@@ -11,23 +11,23 @@ extension GridProperties {
     /// How tall each row is - one length per row, so the count says how many
     /// rows there are.
     ///
-    ///     .rowDefinitions(.auto, .star, .star(2), .absolute(100))
+    ///     .rows(.auto, .fill, .proportional(2), .fixed(100))
     ///
-    /// `.auto` fits what is in the row, `.star` takes a share of what is left
+    /// `.auto` fits what is in the row, `.fill` takes a share of what is left
     /// over, and `.absolute` is that many device units. A grid told nothing has
     /// one row and one column.
-    public func rowDefinitions(_ lengths: GridLength...) -> Modified {
-        setValue(.rowDefinitions, lengths.propValue)
+    public func rows(_ lengths: GridLength...) -> Modified {
+        setValue(.rows, lengths.propValue)
     }
 
     /// How wide each column is - one length per column, so the count says how
     /// many columns there are.
     ///
-    ///     .columnDefinitions(.star, .star(2))
+    ///     .columns(.fill, .proportional(2))
     ///
-    /// The same three kinds of length as `rowDefinitions`.
-    public func columnDefinitions(_ lengths: GridLength...) -> Modified {
-        setValue(.columnDefinitions, lengths.propValue)
+    /// The same three kinds of length as `rows`.
+    public func columns(_ lengths: GridLength...) -> Modified {
+        setValue(.columns, lengths.propValue)
     }
 
     /// The gap between one row and the next, in device units. It falls
@@ -54,8 +54,8 @@ extension GridProperties {
 ///             .gridRow(1)
 ///             .gridColumnSpan(2)
 ///     }
-///     .rowDefinitions(.auto, .star)
-///     .columnDefinitions(.star, .star(2))
+///     .rows(.auto, .fill)
+///     .columns(.fill, .proportional(2))
 ///     .rowSpacing(12)
 ///     .columnSpacing(12)
 ///

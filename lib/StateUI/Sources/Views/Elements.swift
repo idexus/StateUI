@@ -1382,7 +1382,7 @@ extension ViewProperties {
 // nobody types right first time.
 //
 // So the doubled word goes and nothing else does: `.absoluteLayoutBounds` and
-// `.absoluteLayoutFlags`, keeping the prefix that says which layout is asking.
+// `.absoluteLayoutProportions`, keeping the prefix that says which layout is asking.
 //
 // The wire says the same thing, so there is one name from the modifier to the
 // host's table rather than a mapping in between.
@@ -1394,15 +1394,15 @@ extension ViewProperties {
     /// the two go together:
     ///
     ///     .absoluteLayoutBounds(Rect(0.5, 0, 0.5, 1))
-    ///     .absoluteLayoutFlags(.all)
+    ///     .absoluteLayoutProportions(.all)
     public func absoluteLayoutBounds(_ value: Rect) -> Modified {
         setValue(.absoluteLayoutBounds, value.propValue)
     }
 
     /// Which of those four numbers are fractions of the layout rather than
     /// device units.
-    public func absoluteLayoutFlags(_ value: AbsoluteLayoutFlags) -> Modified {
-        setValue(.absoluteLayoutFlags, value.propValue)
+    public func absoluteLayoutProportions(_ value: AbsoluteLayoutProportions) -> Modified {
+        setValue(.absoluteLayoutProportions, value.propValue)
     }
 }
 

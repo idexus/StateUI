@@ -69,11 +69,11 @@ struct VisualStateSample: SampleContent, ExampleContent {
             // A RadioButton has two states of its own, and it RESTS in
             // .unchecked rather than .normal.
             RadioButton("Ready")
-                .isChecked($ready)
+                .isOn($ready)
                 .visualState(.checked) { $0.background(Palette.selected) }
 
             RadioButton("Busy")
-                .isChecked($busy)
+                .isOn($busy)
                 .visualState(.checked) { $0.background(Palette.selected) }
         }
         """
@@ -138,11 +138,11 @@ struct VisualStateSample: SampleContent, ExampleContent {
             SectionTitle("States only a RadioButton has")
 
             RadioButton("Ready")
-                .isChecked($ready)
+                .isOn($ready)
                 .visualState(.checked) { $0.background(Palette.selected) }
 
             RadioButton("Busy")
-                .isChecked($busy)
+                .isOn($busy)
                 .visualState(.checked) { $0.background(Palette.selected) }
         }
         .spacing(12)
@@ -152,7 +152,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
         VStack {
             Label("Which states a control enters is the control's own business, so the "
                 + "list after the dot is exactly those. A Button has .pressed, a Switch has "
-                + ".on and .off, a CheckBox has .isChecked, a RadioButton has .checked and "
+                + ".on and .off, a CheckBox has .on, a RadioButton has .checked and "
                 + ".unchecked - and every view has .normal, .disabled, .focused, "
                 + ".unfocused, .pointerOver and .selected. Writing a state a control never "
                 + "enters does not compile: it would be a style that silently does nothing. "

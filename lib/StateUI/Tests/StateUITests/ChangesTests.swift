@@ -302,7 +302,7 @@ final class ChangesTests: XCTestCase {
     ///
     /// An animation writes the CONTROL, never the tree, so a watch cannot see
     /// it directly - but a property the host REPORTS (a scroller's
-    /// `.scroll($offset)`) comes back as it moves: the host writes the state,
+    /// `.scrollOffset($offset)`) comes back as it moves: the host writes the state,
     /// and the watch hears the state - report by report while the scroller
     /// glides, and the last report carries the value it ended on. This test
     /// stands in for the host exactly as a host behaves, with the write the
@@ -315,7 +315,7 @@ final class ChangesTests: XCTestCase {
         func tree() -> Node {
             VStack {
                 ScrollView { Label("long") }
-                    .scroll(offset.projectedValue)
+                    .scrollOffset(offset.projectedValue)
             }
             .onChanged(offset.wrappedValue) { old, new in log.lines.append("\(old.y) -> \(new.y)") }
             .body
@@ -345,7 +345,7 @@ final class ChangesTests: XCTestCase {
         let offset = State(Point.zero)
         let reader = reading { _ = offset.get() }
 
-        renders.render(VStack { ScrollView { Label("long") }.scroll(offset.projectedValue) }.body)
+        renders.render(VStack { ScrollView { Label("long") }.scrollOffset(offset.projectedValue) }.body)
 
         Renderer.shared.clearInvalidation()
         slid(offset.number, to: Point(0, 250))
@@ -363,7 +363,7 @@ final class ChangesTests: XCTestCase {
         let renders = Renders()
         let offset = State(Point.zero)
 
-        renders.render(VStack { ScrollView { Label("wide") }.scroll(offset.projectedValue) }.body)
+        renders.render(VStack { ScrollView { Label("wide") }.scrollOffset(offset.projectedValue) }.body)
         slid(offset.number, to: Point(120, 40))
 
         XCTAssertEqual(offset.wrappedValue.x, 120, "the horizontal half did not reach its state")

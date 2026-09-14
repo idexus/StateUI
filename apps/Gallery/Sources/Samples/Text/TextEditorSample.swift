@@ -36,7 +36,7 @@ struct TextEditorSample: SampleContent, ExampleContent {
                 }
                 .gridColumn(1)
             }
-            .columnDefinitions(.star, .star)
+            .columns(.fill, .fill)
 
             Label(draft.isEmpty ? "nothing written yet" : "\\(draft.count) character(s)")
 
@@ -81,7 +81,7 @@ struct TextEditorSample: SampleContent, ExampleContent {
                 .verticalAlignment(.start)
                 .gridColumn(1)
             }
-            .columnDefinitions(.star, .star)
+            .columns(.fill, .fill)
             .columnSpacing(12)
 
             Label(draft.isEmpty ? "nothing written yet" : "\(draft.count) character(s)")

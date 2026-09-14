@@ -53,7 +53,7 @@ final class WireVocabularyTests: XCTestCase {
     /// after it - silently, and only in Swift. A host goes on reading the
     /// old numbers as the new members and the interface fills with
     /// values nobody wrote. Some values are not declaration order in the first
-    /// place (`AbsoluteLayoutFlags.all` is -1), which is why the rule is that
+    /// place (`AbsoluteLayoutProportions.all` is -1), which is why the rule is that
     /// EVERY case says its own.
     func testEveryWireEnumNumbersEveryCaseExplicitly() throws {
         var offenders: [String] = []

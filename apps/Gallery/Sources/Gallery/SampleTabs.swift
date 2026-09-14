@@ -97,7 +97,7 @@ struct SampleTabPage: ContentView {
                 .gridRow(1)
             }
         }
-        .rowDefinitions(.auto, .star)
+        .rows(.auto, .fill)
         .rowSpacing(16)
         .padding(24)
     }

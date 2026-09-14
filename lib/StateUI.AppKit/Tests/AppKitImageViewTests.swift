@@ -96,7 +96,7 @@ final class AppKitImageViewTests: XCTestCase {
         picture.properties = [
             .source: .string("picture.png"),
             .aspect: .enumeration(Aspect.aspectFill.rawValue),
-            .isAnimationPlaying: .bool(true),
+            .isAnimating: .bool(true),
         ]
 
         renderer.applyForTesting(tree(picture))

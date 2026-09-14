@@ -72,7 +72,7 @@ final class DrivenWireTests: XCTestCase {
     /// THE FIVE SHAPES A BINDING TAKES ON A PROPERTY, written down: a journey
     /// from a plain number (`fontSize($size)`), a plain flag the host sets
     /// (`isVisible($shown)`), words (`placeholder($hint)`), a plain choice the
-    /// host sets and reports (`selectedIndex($size)`, `isToggled($on)`), and a
+    /// host sets and reports (`selectedIndex($size)`, `isOn($on)`), and a
     /// MEMBER (`horizontalAlignment($side)`), which crosses as its number and is
     /// resolved by the host into the platform's own member. A host is held to
     /// landing each of them.
@@ -316,7 +316,7 @@ final class DrivenWireTests: XCTestCase {
         // is a property the platform keeps read-only - a scroller reports
         // where it stands and has no setter worth writing to - so there is nothing for
         // the tree to describe and the state is its only spelling, both ways.
-        let stateOnly: Set<String> = ["scroll"]
+        let stateOnly: Set<String> = ["scrollOffset"]
 
         for modifier in walked {
             XCTAssertTrue(
@@ -396,9 +396,9 @@ final class DrivenWireTests: XCTestCase {
         same(Stepper(number.projectedValue).node,
              Stepper().value(number.projectedValue).node, "Stepper.value")
         same(Switch(flag.projectedValue).node,
-             Switch().isToggled(flag.projectedValue).node, "Switch.isToggled")
+             Switch().isOn(flag.projectedValue).node, "Switch.isOn")
         same(CheckBox(flag.projectedValue).node,
-             CheckBox().isChecked(flag.projectedValue).node, "CheckBox.isChecked")
+             CheckBox().isOn(flag.projectedValue).node, "CheckBox.isOn")
     }
 
     /// AND SO IS A DRIVEN ONE: `Slider($level)` says exactly what

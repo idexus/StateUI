@@ -16,7 +16,7 @@ final class AppKitStepperViewTests: XCTestCase {
             writeValue: true,
             minimum: 2,
             maximum: 12,
-            increment: 2.5,
+            step: 2.5,
             enabled: false)
 
         XCTAssertEqual(stepper.minValue, 2)
@@ -37,7 +37,7 @@ final class AppKitStepperViewTests: XCTestCase {
             writeValue: true,
             minimum: 0,
             maximum: 10,
-            increment: 1,
+            step: 1,
             enabled: true)
         XCTAssertTrue(reports.isEmpty)
 

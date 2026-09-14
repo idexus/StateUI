@@ -112,7 +112,7 @@ struct Card: ContentView {
             // empty star column beside it holding the space it needed. A star
             // column is given what the others left, and a Label given a width
             // wraps to it.
-            .columnDefinitions(.auto, .star, .auto)
+            .columns(.auto, .fill, .auto)
             .padding(16, 14)
         }
         // A CARD IS A BORDER WITH A TAP ON IT, which no platform reads as a

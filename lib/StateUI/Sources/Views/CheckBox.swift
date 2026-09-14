@@ -12,8 +12,8 @@ extension CheckBoxProperties {
     ///
     /// Usually given in the initializer instead; this is the way to set it in a
     /// style, or to change it on a checkbox built elsewhere.
-    public func isChecked(_ value: Bool) -> Modified {
-        setValue(.isChecked, .bool(value))
+    public func isOn(_ value: Bool) -> Modified {
+        setValue(.isOn, .bool(value))
     }
 
     /// What colour the tick and the box around it are drawn in.
@@ -32,7 +32,7 @@ extension CheckBoxProperties {
 ///     }
 ///
 /// Given a binding it shows what the binding holds and writes every tick back.
-/// Given a plain `Bool` it only shows: `.onCheckedChanged` is then the one way
+/// Given a plain `Bool` it only shows: `.onToggled` is then the one way
 /// a tick reaches anywhere.
 ///
 /// No caption of its own - a CheckBox is the box and nothing else. Put a
@@ -47,14 +47,14 @@ public struct CheckBox: View, CheckBoxProperties {
     }
 
     /// A box that is ticked or not. One-way: what is ticked goes nowhere
-    /// without `.onCheckedChanged`.
-    public init(_ isChecked: Bool) {
-        node = Node(type: .checkBox, props: [.isChecked: .bool(isChecked)])
+    /// without `.onToggled`.
+    public init(_ isOn: Bool) {
+        node = Node(type: .checkBox, props: [.isOn: .bool(isOn)])
     }
 
     /// Two-way: shows what the binding holds, and writes back what is ticked.
-    public init(_ isChecked: Binding<Bool>) {
-        self = CheckBox().isChecked(isChecked)
+    public init(_ isOn: Binding<Bool>) {
+        self = CheckBox().isOn(isOn)
     }
 
     /// Two-way: shows what the state holds and writes back what is ticked -
@@ -65,10 +65,10 @@ public struct CheckBox: View, CheckBoxProperties {
     /// - Parameter value: the state shown, and written back into as the
     ///   reader ticks it.
     /// - Returns: the box, wearing and reporting that value.
-    public func isChecked(_ value: Binding<Bool>) -> Modified {
+    public func isOn(_ value: Binding<Bool>) -> Modified {
         value.image == nil
-            ? described(.isChecked, value, on: .checkedChanged)
-            : plain(.isChecked, by: value, mode: .inOut)
+            ? described(.isOn, value, on: .toggled)
+            : plain(.isOn, by: value, mode: .inOut)
     }
 
     // MARK: Properties
@@ -77,8 +77,8 @@ public struct CheckBox: View, CheckBoxProperties {
 
     /// Fires when it is ticked or unticked, with the new value. Runs after a
     /// binding's write, if there is one.
-    public func onCheckedChanged(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
-        addHandler(.checkedChanged) {
+    public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
+        addHandler(.toggled) {
             if let checked = EventBuffer.current.value()?.bool {
                 try await handler(checked)
             }

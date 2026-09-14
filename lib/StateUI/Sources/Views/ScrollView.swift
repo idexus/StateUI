@@ -72,7 +72,7 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     ///
     ///     @State private var offset = Point.zero
     ///
-    ///     ScrollView { VStack { … } }.scroll($offset)
+    ///     ScrollView { VStack { … } }.scrollOffset($offset)
     ///
     ///     Button("Top").onClicked { offset = .zero }
     ///
@@ -98,8 +98,8 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     ///
     /// - Parameter state: the state the offset is walked on.
     /// - Returns: the scroller, moving with that state and reporting into it.
-    public func scroll(_ state: Binding<Point>) -> Self {
-        journey(.scroll, by: state)
+    public func scrollOffset(_ state: Binding<Point>) -> Self {
+        journey(.scrollOffset, by: state)
     }
 
     /// Makes the scroller come to rest on a GRID: the offsets it may stop at

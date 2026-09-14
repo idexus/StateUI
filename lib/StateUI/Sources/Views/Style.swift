@@ -151,26 +151,26 @@ extension VisualState where Target == ImageButton {
 
 /// A Switch says which way it is.
 extension VisualState where Target == Switch {
-    /// While `isToggled` is true.
+    /// While `isOn` is true.
     public static var on: Self { Self("On") }
 
-    /// While `isToggled` is false.
+    /// While `isOn` is false.
     public static var off: Self { Self("Off") }
 }
 
-/// A CheckBox has ONE state of its own, and it is named for the property.
+/// A CheckBox has ONE state of its own - the Switch's word for it.
 extension VisualState where Target == CheckBox {
-    /// While `isChecked` is true. There is no unchecked state beside it: a
-    /// CheckBox that is not checked is in `.normal`.
-    public static var isChecked: Self { Self("IsChecked") }
+    /// While `isOn` is true. There is no off state beside it: a CheckBox that
+    /// is not on is in `.normal`.
+    public static var on: Self { Self("On") }
 }
 
 /// A RadioButton has two, and neither is spelled the CheckBox's way.
 extension VisualState where Target == RadioButton {
-    /// While `isChecked` is true.
+    /// While `isOn` is true.
     public static var checked: Self { Self("Checked") }
 
-    /// While `isChecked` is false, which is where a RadioButton RESTS.
+    /// While `isOn` is false, which is where a RadioButton RESTS.
     ///
     /// A RadioButton rests here rather than in `.normal`, because it enters
     /// Checked or Unchecked FIRST and the ordinary Normal AFTER, so a group

@@ -53,7 +53,7 @@ VStack 1 arranged(3)
     strokeThickness: number 2
   Label 3
     absoluteLayoutBounds: numbers 0,0,120,40
-    absoluteLayoutFlags: enum sizeProportional(12)
+    absoluteLayoutProportions: enum size(12)
     automationExcludedWithChildren: false
     automationId: string "tiers"
     automationIsInAccessibleTree: true

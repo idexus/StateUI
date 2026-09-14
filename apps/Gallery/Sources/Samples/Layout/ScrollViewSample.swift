@@ -73,7 +73,7 @@ private struct DescribedOffset: ContentView {
             columnTitle("DESCRIBED")
 
             numberedLines()
-                .scroll($offset)
+                .scrollOffset($offset)
                 .gridRow(1)
 
             // THE GET. Reading the offset here is what makes this Grid its
@@ -91,7 +91,7 @@ private struct DescribedOffset: ContentView {
             spelling("a get in these braces")
                 .gridRow(4)
         }
-        .rowDefinitions(.auto, .star, .auto, .auto, .auto)
+        .rows(.auto, .fill, .auto, .auto, .auto)
         .rowSpacing(6)
     }
 }
@@ -113,7 +113,7 @@ private struct PacedOffset: ContentView {
             columnTitle("ON A CADENCE")
 
             numberedLines()
-                .scroll($offset)
+                .scrollOffset($offset)
                 .gridRow(1)
 
             // The same get as the column before, over the SAMPLE rather than
@@ -133,7 +133,7 @@ private struct PacedOffset: ContentView {
             spelling(".samples($offset, into: $shown, .every(100))")
                 .gridRow(4)
         }
-        .rowDefinitions(.auto, .star, .auto, .auto, .auto)
+        .rows(.auto, .fill, .auto, .auto, .auto)
         .rowSpacing(6)
     }
 }
@@ -150,7 +150,7 @@ private struct DrivenOffset: ContentView {
             columnTitle("A CHANNEL")
 
             numberedLines()
-                .scroll($offset)
+                .scrollOffset($offset)
                 .gridRow(1)
 
             // NO GET. The conversion is a second state the host writes from
@@ -170,7 +170,7 @@ private struct DrivenOffset: ContentView {
             spelling("$offset.journey.convert { … }")
                 .gridRow(4)
         }
-        .rowDefinitions(.auto, .star, .auto, .auto, .auto)
+        .rows(.auto, .fill, .auto, .auto, .auto)
         .rowSpacing(6)
     }
 }
@@ -223,7 +223,7 @@ private struct OffsetStrips: ExampleContent {
                     columnTitle("DESCRIBED")
 
                     numberedLines()
-                        .scroll($offset)
+                        .scrollOffset($offset)
                         .gridRow(1)
 
                     // THE GET. Reading the journey here is what makes this Grid
@@ -234,7 +234,7 @@ private struct OffsetStrips: ExampleContent {
                     DebugInfoLabel()
                         .gridRow(3)
                 }
-                .rowDefinitions(.auto, .star, .auto, .auto)
+                .rows(.auto, .fill, .auto, .auto)
             }
         }
 
@@ -252,7 +252,7 @@ private struct OffsetStrips: ExampleContent {
                     columnTitle("ON A CADENCE")
 
                     numberedLines()
-                        .scroll($offset)
+                        .scrollOffset($offset)
                         .gridRow(1)
 
                     Label("\\(Int(shown.y)) down")
@@ -261,7 +261,7 @@ private struct OffsetStrips: ExampleContent {
                     DebugInfoLabel()
                         .gridRow(3)
                 }
-                .rowDefinitions(.auto, .star, .auto, .auto)
+                .rows(.auto, .fill, .auto, .auto)
             }
         }
 
@@ -275,7 +275,7 @@ private struct OffsetStrips: ExampleContent {
                     columnTitle("A CHANNEL")
 
                     numberedLines()
-                        .scroll($offset)
+                        .scrollOffset($offset)
                         .gridRow(1)
 
                     // NO GET: a second state the host writes from the first,
@@ -287,7 +287,7 @@ private struct OffsetStrips: ExampleContent {
                     DebugInfoLabel()
                         .gridRow(3)
                 }
-                .rowDefinitions(.auto, .star, .auto, .auto)
+                .rows(.auto, .fill, .auto, .auto)
             }
         }
 
@@ -308,7 +308,7 @@ private struct OffsetStrips: ExampleContent {
                             .gridColumn(1)
                         DrivenOffset(offset: $driven).gridColumn(2)
                     }
-                    .columnDefinitions(.star, .star, .star)
+                    .columns(.fill, .fill, .fill)
                     .gridRow(0)
 
                     HStack {
@@ -317,7 +317,7 @@ private struct OffsetStrips: ExampleContent {
                     }
                     .gridRow(1)
                 }
-                .rowDefinitions(.star, .auto)
+                .rows(.fill, .auto)
             }
 
             // A journey is awaited and answers when the glide has FINISHED,
@@ -348,7 +348,7 @@ private struct OffsetStrips: ExampleContent {
                 DrivenOffset(offset: $driven)
                     .gridColumn(2)
             }
-            .columnDefinitions(.star, .star, .star)
+            .columns(.fill, .fill, .fill)
             .columnSpacing(12)
             .gridRow(0)
 
@@ -367,7 +367,7 @@ private struct OffsetStrips: ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(1)
         }
-        .rowDefinitions(.star, .auto)
+        .rows(.fill, .auto)
         .rowSpacing(10)
     }
 
@@ -386,7 +386,7 @@ private struct OffsetStrips: ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Three strips, three states. `.scroll($offset)` hands the state over, "
+            Label("Three strips, three states. `.scrollOffset($offset)` hands the state over, "
                 + "so the scroller is no reader of it: what the offset costs is decided "
                 + "by who reads it, and each column reads it differently.")
                 .fontSize(12)
@@ -408,7 +408,7 @@ private struct OffsetStrips: ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.scroll($offset)` goes both ways: scrolling writes the state, and a "
+            Label("`.scrollOffset($offset)` goes both ways: scrolling writes the state, and a "
                 + "write moves the scroller. `try await $offset.journey.move(to:)` returns "
                 + "when the glide finishes, which is why Top moves the strips one after "
                 + "another; `$offset.journey.snap(to:)` puts one there at once.")
@@ -471,7 +471,7 @@ private struct GridStrips: ExampleContent {
                     tileStrip()
                         .gridRow(3)
                 }
-                .rowDefinitions(.auto, .auto, .auto, .auto, .auto)
+                .rows(.auto, .auto, .auto, .auto, .auto)
                 .rowSpacing(10)
                 .verticalAlignment(.center)
             }
@@ -514,7 +514,7 @@ private struct GridStrips: ExampleContent {
                 .horizontalTextAlignment(.center)
                 .gridRow(4)
         }
-        .rowDefinitions(.auto, .auto, .auto, .auto, .auto)
+        .rows(.auto, .auto, .auto, .auto, .auto)
         .rowSpacing(10)
         // The bands are as tall as they need to be, so the pair sits in the
         // middle of whatever height the window gave the cell.
@@ -564,7 +564,7 @@ private struct ThrowStrips: ExampleContent {
                         .momentum(0.35)
                         .gridRow(2)
                 }
-                .rowDefinitions(.auto, .auto, .auto, .auto)
+                .rows(.auto, .auto, .auto, .auto)
                 .rowSpacing(10)
                 .verticalAlignment(.center)
             }
@@ -596,7 +596,7 @@ private struct ThrowStrips: ExampleContent {
                 .horizontalTextAlignment(.center)
                 .gridRow(3)
         }
-        .rowDefinitions(.auto, .auto, .auto, .auto)
+        .rows(.auto, .auto, .auto, .auto)
         .rowSpacing(10)
         .verticalAlignment(.center)
     }
@@ -628,7 +628,7 @@ private struct BarStrips: ExampleContent {
                     barCase(.always).gridColumn(0)
                     barCase(.never).gridColumn(1)
                 }
-                .columnDefinitions(.star, .star)
+                .columns(.fill, .fill)
                 .columnSpacing(12)
             }
 
@@ -654,7 +654,7 @@ private struct BarStrips: ExampleContent {
             barCase(.never, "verticalScrollBarVisibility(.never)")
                 .gridColumn(1)
         }
-        .columnDefinitions(.star, .star)
+        .columns(.fill, .fill)
         .columnSpacing(12)
     }
 
@@ -683,7 +683,7 @@ private struct BarStrips: ExampleContent {
                 .horizontalTextAlignment(.center)
                 .gridRow(1)
         }
-        .rowDefinitions(.star, .auto)
+        .rows(.fill, .auto)
         .rowSpacing(6)
     }
 

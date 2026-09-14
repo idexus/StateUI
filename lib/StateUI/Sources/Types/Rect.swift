@@ -16,7 +16,7 @@
 ///
 /// What an `AbsoluteLayout` places a child with, and what a frame report
 /// carries back. The numbers are device units unless the thing reading them
-/// says otherwise - `absoluteLayoutFlags` is where that is said.
+/// says otherwise - `absoluteLayoutProportions` is where that is said.
 public struct Rect: Equatable, Sendable {
     /// The left edge, in device units - or a fraction of the layout's width when
     /// the bounds are proportional.

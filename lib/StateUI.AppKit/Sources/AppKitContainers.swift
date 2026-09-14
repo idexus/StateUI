@@ -87,7 +87,7 @@ struct AppKitLayoutItem {
     var rowSpan = 1
     var columnSpan = 1
     var absoluteBounds: [Double]?
-    var absoluteFlags: Int32 = 0
+    var absoluteProportions: Int32 = 0
 
     /// How the view is drawn over its frame, for a layout that places it.
     var drawing: AppKitViewDrawing?
@@ -147,7 +147,7 @@ struct AppKitLayoutItem {
             && rowSpan == other.rowSpan
             && columnSpan == other.columnSpan
             && absoluteBounds == other.absoluteBounds
-            && absoluteFlags == other.absoluteFlags
+            && absoluteProportions == other.absoluteProportions
     }
 
     /// Whether two complete arrangements place the same views the same way.
@@ -280,7 +280,7 @@ final class AppKitAbsoluteLayoutView: AppKitHitTestView {
         for item in items where !item.view.isHidden {
             let values = item.absoluteBounds ?? [0, 0, -1, -1]
             let natural = item.fittingSize()
-            let flags = item.absoluteFlags
+            let flags = item.absoluteProportions
             var width = values.count > 2 ? CGFloat(values[2]) : natural.width
             var height = values.count > 3 ? CGFloat(values[3]) : natural.height
 
@@ -1150,8 +1150,8 @@ final class AppKitSplitView: AppKitHitTestView {
 /// One parsed row or column definition in a StateUI grid.
 struct AppKitGridLength: Equatable {
     enum Kind {
-        case absolute
-        case star
+        case fixed
+        case proportional
         case auto
     }
 
@@ -1170,8 +1170,8 @@ struct AppKitGridLength: Equatable {
         else { return nil }
 
         switch rawKind {
-        case 0: kind = .absolute
-        case 1: kind = .star
+        case 0: kind = .fixed
+        case 1: kind = .proportional
         case 2: kind = .auto
         default: return nil
         }
@@ -1307,7 +1307,7 @@ final class AppKitGridView: AppKitHitTestView {
 
     private func completed(_ definitions: [AppKitGridLength], count: Int) -> [AppKitGridLength] {
         definitions + Array(
-            repeating: AppKitGridLength(kind: .star, value: 1),
+            repeating: AppKitGridLength(kind: .proportional, value: 1),
             count: max(0, count - definitions.count))
     }
 
@@ -1320,7 +1320,7 @@ final class AppKitGridView: AppKitHitTestView {
     ) -> [CGFloat] {
         var sizes = Array(repeating: CGFloat(0), count: count)
 
-        for index in 0..<count where definitions[index].kind == .absolute {
+        for index in 0..<count where definitions[index].kind == .fixed {
             sizes[index] = definitions[index].value
         }
 
@@ -1341,11 +1341,11 @@ final class AppKitGridView: AppKitHitTestView {
         let gaps = spacing * CGFloat(max(count - 1, 0))
         let fixed = sizes.reduce(0, +) + gaps
         let starWeight = definitions.reduce(CGFloat(0)) {
-            $0 + ($1.kind == .star ? max($1.value, 0.000_001) : 0)
+            $0 + ($1.kind == .proportional ? max($1.value, 0.000_001) : 0)
         }
         let remainder = max(0, (available ?? fixed) - fixed)
 
-        for index in 0..<count where definitions[index].kind == .star {
+        for index in 0..<count where definitions[index].kind == .proportional {
             if available == nil {
                 let matching = items.filter {
                     (vertical ? $0.row : $0.column) == index

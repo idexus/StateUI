@@ -308,14 +308,14 @@ extension Grid {
 // MARK: - Image
 
 extension Image {
-    /// `isAnimationPlaying`, handed on as `$x`: the host sets it as it is, and
+    /// `isAnimating`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
     /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func isAnimationPlaying(_ state: Binding<Bool>) -> Modified {
-        plain(.isAnimationPlaying, by: state)
+    public func isAnimating(_ state: Binding<Bool>) -> Modified {
+        plain(.isAnimating, by: state)
     }
 }
 
@@ -899,13 +899,13 @@ extension StackBase {
 // MARK: - Stepper
 
 extension Stepper {
-    /// `increment`, handed on as `$x`: the host sets it as it is, and handing
+    /// `step`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func increment(_ state: Binding<Double>) -> Modified {
-        plain(.increment, by: state)
+    public func step(_ state: Binding<Double>) -> Modified {
+        plain(.step, by: state)
     }
 }
 
@@ -997,14 +997,14 @@ extension TextStyleElement where Self: VisualElement {
 // MARK: - View
 
 extension View {
-    /// `absoluteLayoutFlags`, handed on as `$x`: the host sets the member it
+    /// `absoluteLayoutProportions`, handed on as `$x`: the host sets the member it
     /// names, and handing it on reads nothing - a write renders only a body
     /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func absoluteLayoutFlags(_ state: Binding<AbsoluteLayoutFlags>) -> Modified {
-        plain(.absoluteLayoutFlags, by: state)
+    public func absoluteLayoutProportions(_ state: Binding<AbsoluteLayoutProportions>) -> Modified {
+        plain(.absoluteLayoutProportions, by: state)
     }
 
     /// `gridColumn`, handed on as `$x`: the host sets it as it is, and handing

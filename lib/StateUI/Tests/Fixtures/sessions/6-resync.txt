@@ -41,5 +41,5 @@ Application 1 moves over 200ms cubicOut arranged(1)
               text: string "Settings"
               textColor: color FF000000
             Switch 9 arranged(0)
-              isToggled: true
+              isOn: true
               on toggled=20

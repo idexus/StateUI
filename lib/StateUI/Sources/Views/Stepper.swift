@@ -33,8 +33,8 @@ extension StepperProperties {
 
     /// How far one tap moves the value.
     /// It is 1 until told otherwise.
-    public func increment(_ value: Double) -> Modified {
-        setValue(.increment, .number(value))
+    public func step(_ value: Double) -> Modified {
+        setValue(.step, .number(value))
     }
 }
 
@@ -43,7 +43,7 @@ extension StepperProperties {
 ///     Stepper($servings)
 ///         .minimum(1)
 ///         .maximum(12)
-///         .increment(1)
+///         .step(1)
 ///
 /// A Slider for a value with few enough steps to name: where a slider is dragged
 /// to somewhere about right, a stepper is tapped to exactly four.

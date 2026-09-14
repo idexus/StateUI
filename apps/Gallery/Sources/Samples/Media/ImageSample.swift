@@ -181,7 +181,7 @@ struct ImageSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.isAnimationPlaying(true)` runs a picture that HAS frames - a GIF, an "
+            Label("`.isAnimating(true)` runs a picture that HAS frames - a GIF, an "
                 + "animated WebP - and does nothing at all to a still one, which is why "
                 + "no example above uses it: the gallery ships no animated artwork. It is "
                 + "a property rather than an act, so a paused animation is a state the "

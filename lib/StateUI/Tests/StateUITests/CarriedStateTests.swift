@@ -494,11 +494,11 @@ final class CarriedStateTests: XCTestCase {
         let patch = renders.render(
             ScrollView { Label("x") }
                 .orientation(.horizontal)
-                .scroll(offset.projectedValue)
+                .scrollOffset(offset.projectedValue)
                 .body)
 
         XCTAssertEqual(
-            patch.driven?[.scroll],
+            patch.driven?[.scrollOffset],
             HostStateBinding(state: offset.number, mode: .inOut, kind: .property))
         XCTAssertNil(patch.events?["scrollXChanged"])
         XCTAssertNil(patch.events?["scrollYChanged"])
@@ -526,7 +526,7 @@ final class CarriedStateTests: XCTestCase {
 
         let patch = renders.render(
             ScrollReader(across: 540) { Label("under") }
-                .scroll(across.projectedValue)
+                .scrollOffset(across.projectedValue)
                 .snapInterval(90)
                 .id("reader")
                 .body)
@@ -544,7 +544,7 @@ final class CarriedStateTests: XCTestCase {
         let found = scroller(patch)
 
         XCTAssertEqual(
-            found?.driven?[.scroll],
+            found?.driven?[.scrollOffset],
             HostStateBinding(state: across.number, mode: .inOut, kind: .property))
         XCTAssertEqual(found?.props[.snapInterval], .number(90))
         XCTAssertEqual(found?.props[.orientation]?.enumeration, ScrollOrientation.horizontal.rawValue)

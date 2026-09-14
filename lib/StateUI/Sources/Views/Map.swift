@@ -33,8 +33,8 @@ extension MapProperties {
     /// `NSLocationWhenInUseUsageDescription` in its Info.plist is killed the
     /// moment this turns on, and Android needs the location permission
     /// granted. The map itself needs none of that.
-    public func isShowingUser(_ value: Bool) -> Modified {
-        setValue(.isShowingUser, .bool(value))
+    public func showsUserLocation(_ value: Bool) -> Modified {
+        setValue(.showsUserLocation, .bool(value))
     }
 }
 

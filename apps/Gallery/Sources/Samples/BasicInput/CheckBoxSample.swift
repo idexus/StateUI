@@ -30,7 +30,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
                 let (index, name) = pair
                 return HStack {
                     CheckBox(extras[index])
-                        .onCheckedChanged { ticked in extras[index] = ticked }
+                        .onToggled { ticked in extras[index] = ticked }
 
                     Label(name)
                         .verticalAlignment(.center)
@@ -76,7 +76,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
                         .automationId("checkBox.extra.\(index)")
                         .semanticDescription(name)
                         .color(Palette.accent)
-                        .onCheckedChanged { ticked in extras[index] = ticked }
+                        .onToggled { ticked in extras[index] = ticked }
 
                     Label(name)
                         .fontSize(15)

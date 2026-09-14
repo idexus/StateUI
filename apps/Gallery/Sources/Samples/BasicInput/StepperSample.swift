@@ -20,14 +20,14 @@ struct StepperSample: SampleContent, ExampleContent {
             Stepper($servings)
                 .minimum(1)
                 .maximum(12)
-                .increment(1)
+                .step(1)
 
             // The same value, stepped by five - and written back by hand,
             // which is what the binding above does for you.
             Stepper(servings)
                 .minimum(1)
                 .maximum(12)
-                .increment(5)
+                .step(5)
                 .onValueChanged { value in servings = value }
         }
         """
@@ -45,7 +45,7 @@ struct StepperSample: SampleContent, ExampleContent {
                 .semanticDescription("Servings")
                 .minimum(1)
                 .maximum(12)
-                .increment(1)
+                .step(1)
                 .horizontalAlignment(.center)
 
             SectionTitle("A bigger step")
@@ -55,7 +55,7 @@ struct StepperSample: SampleContent, ExampleContent {
                 .semanticDescription("Servings, five at a time")
                 .minimum(1)
                 .maximum(12)
-                .increment(5)
+                .step(5)
                 .horizontalAlignment(.center)
                 .onValueChanged { value in servings = value }
         }
@@ -70,7 +70,7 @@ struct StepperSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The second holds the same value, stepped by five: `increment` is how far "
+            Label("The second holds the same value, stepped by five: `step` is how far "
                 + "one tap goes, and `minimum` and `maximum` are where the buttons stop.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

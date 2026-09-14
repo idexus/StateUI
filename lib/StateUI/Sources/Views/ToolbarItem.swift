@@ -15,7 +15,7 @@
 ///                             .onClicked { save() },
 ///
 ///                         ToolbarItem("Delete")
-///                             .order(.secondary)
+///                             .placement(.overflow)
 ///                             .isDestructive(true)
 ///                             .onClicked { delete() },
 ///                     ]
@@ -58,7 +58,7 @@ public struct ToolbarItem: Element, MenuItemElement {
     // what a TOOLBAR item alone has.
 
     /// Whether it sits on the bar itself or behind the overflow menu.
-    public func order(_ value: ToolbarItemOrder) -> Self { setValue(.order, value.propValue) }
+    public func placement(_ value: ToolbarItemPlacement) -> Self { setValue(.placement, value.propValue) }
 
     /// Where this item sorts among items in the same order group.
     ///

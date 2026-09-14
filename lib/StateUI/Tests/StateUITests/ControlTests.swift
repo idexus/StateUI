@@ -145,7 +145,7 @@ final class ControlTests: XCTestCase {
             ControlCase("Image", source: "Image.swift",
                 Image("tab_list.png")
                     .aspect(.aspectFill)
-                    .isAnimationPlaying(true)),
+                    .isAnimating(true)),
 
             ControlCase("ImageButton", source: "ImageButton.swift",
                 ImageButton("tab_list.png")
@@ -189,7 +189,7 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Switch", source: "Switch.swift",
                 Switch(true)
-                    .isToggled(true)
+                    .isOn(true)
                     .onColor(.green)
                     .offColor(.lightGray)
                     .thumbColor(.white)
@@ -197,20 +197,20 @@ final class ControlTests: XCTestCase {
 
             ControlCase("CheckBox", source: "CheckBox.swift",
                 CheckBox(true)
-                    .isChecked(true)
+                    .isOn(true)
                     .color(.firebrick)
-                    .onCheckedChanged { _ in }),
+                    .onToggled { _ in }),
 
             ControlCase("RadioButton", source: "RadioButton.swift",
                 RadioButton("Medium")
                     .text("Medium")
-                    .isChecked(true)
+                    .isOn(true)
                     .groupName("size")
                     .textCase(.uppercase)
                     .borderColor(.gray)
                     .borderWidth(1)
                     .cornerRadius(8)
-                    .onCheckedChanged { _ in }),
+                    .onToggled { _ in }),
 
             ControlCase("Slider", source: "Slider.swift",
                 Slider(40)
@@ -229,7 +229,7 @@ final class ControlTests: XCTestCase {
                     .value(4)
                     .minimum(1)
                     .maximum(12)
-                    .increment(2)
+                    .step(2)
                     .onValueChanged { _ in }),
 
             ControlCase("SearchField", source: "SearchField.swift",
@@ -296,8 +296,8 @@ final class ControlTests: XCTestCase {
                         .gridRow(1)
                         .gridColumnSpan(2)
                 }
-                .rowDefinitions(.absolute(70), .auto)
-                .columnDefinitions(.star, .star(2))
+                .rows(.fixed(70), .auto)
+                .columns(.fill, .proportional(2))
                 .rowSpacing(12)
                 .columnSpacing(8)),
 
@@ -317,12 +317,12 @@ final class ControlTests: XCTestCase {
                 AbsoluteLayout {
                     ColorBox(.cornflowerBlue)
                         .absoluteLayoutBounds(Rect(0, 0, 1, 0.5))
-                        .absoluteLayoutFlags(.all)
+                        .absoluteLayoutProportions(.all)
 
                     Label("Bottom right")
                         .absoluteLayoutBounds(
                             Rect(1, 1, AbsoluteLayout.autoSize, AbsoluteLayout.autoSize))
-                        .absoluteLayoutFlags(.positionProportional)
+                        .absoluteLayoutProportions(.position)
                 }),
 
             ControlCase("ScrollView", source: "ScrollView.swift",
@@ -334,7 +334,7 @@ final class ControlTests: XCTestCase {
                 .horizontalScrollBarVisibility(.always)
                 // The offset is ONE POINT - both axes on one state - written
                 // by the host on its own frames and walked by it on a write.
-                .scroll(offset.projectedValue)
+                .scrollOffset(offset.projectedValue)
                 .snapInterval(80, from: 10)
                 .snapsAtMost(1)
                 .momentum(0.5)
@@ -352,7 +352,7 @@ final class ControlTests: XCTestCase {
                     .isScrollEnabled(true)
                     .isZoomEnabled(true)
                     .isTrafficEnabled(false)
-                    .isShowingUser(false)
+                    .showsUserLocation(false)
                     .pins {
                         Pin("Royal Castle")
                             .address("Plac Zamkowy 4")
@@ -578,7 +578,7 @@ final class ControlTests: XCTestCase {
                         // Harmless on a view in neither: a placement means
                         // something only to the layout that asks for it.
                         .absoluteLayoutBounds(Rect(0, 0, 120, 40))
-                        .absoluteLayoutFlags(.sizeProportional)
+                        .absoluteLayoutProportions(.size)
                         // A drag written into states rather than reported -
                         // the path that describes nothing.
                         .panX(followed.projectedValue)
@@ -783,12 +783,12 @@ final class ControlTests: XCTestCase {
             // A value the host cannot be handed whole.
             "background", "fill", "stroke", "icon", "iconImageSource",
             "imageSource", "thumbImageSource", "maximumDate",
-            "minimumDate", "strokeDashArray", "points", "itemsSource", "columnDefinitions",
-            "rowDefinitions", "strokeShape", "renderTransform", "transform", "motion", "id",
+            "minimumDate", "strokeDashArray", "points", "options", "columns",
+            "rows", "strokeShape", "renderTransform", "transform", "motion", "id",
             "assign", "absoluteLayoutBounds",
             // Tiers no view wears.
             "barBackgroundColor", "barTextColor", "isScrollEnabled", "isZoomEnabled",
-            "isTrafficEnabled", "isShowingUser", "isDestructive", "title", "subtitle",
+            "isTrafficEnabled", "showsUserLocation", "isDestructive", "title", "subtitle",
             "foregroundColor", "mapType", "safeAreaEdges",
             // The two-way form IS the binding form, and it is an initializer's.
             "isRefreshing",
@@ -941,7 +941,7 @@ final class ControlTests: XCTestCase {
             Picker(["S", "M", "L"]).selectedIndex(size.projectedValue).body,
             DatePicker(due.projectedValue).body,
             CheckBox(ticked.projectedValue).id("checkBox").body,
-            RadioButton("Medium").isChecked(chosen.projectedValue).id("radio").body,
+            RadioButton("Medium").isOn(chosen.projectedValue).id("radio").body,
             Stepper(servings.projectedValue).id("stepper").body,
             SearchField(query.projectedValue).id("search").body,
             TimePicker(alarm.projectedValue).id("time").body,
@@ -992,7 +992,7 @@ final class ControlTests: XCTestCase {
         let renders = Renders()
         renders.render(
             RadioButton("Medium")
-                .isChecked(chosen.projectedValue)
+                .isOn(chosen.projectedValue)
                 .groupName("size")
                 .body)
 
@@ -1194,7 +1194,7 @@ final class ControlTests: XCTestCase {
             TimePicker(time).id("time").body,
         ]))
 
-        XCTAssertEqual(patch.children[0].props[.isToggled], .bool(false), "described: the value is written at build")
+        XCTAssertEqual(patch.children[0].props[.isOn], .bool(false), "described: the value is written at build")
         XCTAssertNil(patch.children[0].driven, "and nothing is tied")
         XCTAssertEqual(patch.children[1].props[.selectedIndex], .number(3))
 
@@ -1237,7 +1237,7 @@ final class ControlTests: XCTestCase {
             ScrollView {
                 Label("content")
             }
-            .scroll(scrolled.projectedValue)
+            .scrollOffset(scrolled.projectedValue)
             .body)
 
         slid(scrolled.number, to: Point(0, 120))

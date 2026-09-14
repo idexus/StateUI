@@ -182,7 +182,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                     ScrollReader(across: Double(cards.count - 1) * 90) {
                         board
                     }
-                    .scroll($scrolled)
+                    .scrollOffset($scrolled)
                     .snapInterval(90)
                     // THE OPENING AIM: a scroller cannot be moved before its
                     // content is laid out - asked earlier it clamps to the
@@ -260,7 +260,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             }
             .gridRow(1)
         }
-        .rowDefinitions(.star, .auto)
+        .rows(.fill, .auto)
 
         // THE LAYOUT IS AN ENGINE, and `.engine(following:)` says which values moving
         // ask for it again. It runs on the display's own frames, reads those
@@ -386,7 +386,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                     ScrollReader(across: Double(Self.cards.count - 1) * Self.reach) {
                         cards
                     }
-                    .scroll($scrolled)
+                    .scrollOffset($scrolled)
                     // ONE CARD PER `reach`, so the platform's own snapping
                     // settles the ring on the card it is nearest.
                     .snapInterval(Self.reach)
@@ -474,7 +474,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(1)
         }
-        .rowDefinitions(.star, .auto)
+        .rows(.fill, .auto)
         .rowSpacing(10)
     }
 

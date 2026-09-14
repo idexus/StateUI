@@ -42,8 +42,8 @@ private struct GridPlacement: ExampleContent {
                     .gridRow(2)
                     .gridColumnSpan(2)
             }
-            .rowDefinitions(.absolute(64), .absolute(64), .auto)
-            .columnDefinitions(.star, .star(wideSecondColumn ? 2 : 1))
+            .rows(.fixed(64), .fixed(64), .auto)
+            .columns(.fill, .proportional(wideSecondColumn ? 2 : 1))
             .rowSpacing(10)
             .columnSpacing(10)
 
@@ -86,8 +86,8 @@ private struct GridPlacement: ExampleContent {
                     .gridRow(2)
                     .gridColumnSpan(2)
             }
-            .rowDefinitions(.absolute(64), .absolute(64), .auto)
-            .columnDefinitions(.star, .star(wideSecondColumn ? 2 : 1))
+            .rows(.fixed(64), .fixed(64), .auto)
+            .columns(.fill, .proportional(wideSecondColumn ? 2 : 1))
             .rowSpacing(10)
             .columnSpacing(10)
 
@@ -114,8 +114,8 @@ private struct GridPlacement: ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A row or column is a `GridLength`: `.absolute(64)`, `.auto`, `.star` "
-                + "and `.star(2)`.")
+            Label("A row or column is a `GridLength`: `.fixed(64)`, `.auto`, `.fill` "
+                + "and `.proportional(2)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

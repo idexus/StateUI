@@ -93,7 +93,7 @@ private struct WebBrowserPart: ExampleContent {
                     Label(answer)
                         .gridRow(4)
                 }
-                .rowDefinitions(.auto, .star, .auto, .auto, .auto)
+                .rows(.auto, .fill, .auto, .auto, .auto)
             }
         }
         """
@@ -162,7 +162,7 @@ private struct WebBrowserPart: ExampleContent {
                 .textColor(Palette.subtle)
                 .gridRow(4)
         }
-        .rowDefinitions(.auto, .star, .auto, .auto, .auto)
+        .rows(.auto, .fill, .auto, .auto, .auto)
         .rowSpacing(12)
     }
 

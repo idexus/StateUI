@@ -416,20 +416,20 @@ struct InspectorPanel: ContentView {
             // UNDER THE BAR, which keeps the page's own buttons - its ⓘ among
             // them - where the reader left them.
             return Grid { panel.gridRow(1).gridColumn(1) }
-                .rowDefinitions(.absolute(Look.bar), .star)
-                .columnDefinitions(.star, .absolute(Look.side))
+                .rows(.fixed(Look.bar), .fill)
+                .columns(.fill, .fixed(Look.side))
                 .letsInputThrough(true)
         }
 
         if collapsed {
             // One line along the bottom, as tall as what it says.
             return Grid { panel.gridRow(1) }
-                .rowDefinitions(.star, .auto)
+                .rows(.fill, .auto)
                 .letsInputThrough(true)
         }
 
         return Grid { panel.gridRow(1) }
-            .rowDefinitions(.star(wide ? 1.25 : 1), .star(1))
+            .rows(.proportional(wide ? 1.25 : 1), .proportional(1))
             .letsInputThrough(true)
     }
 }
@@ -518,7 +518,7 @@ struct InspectorView: ContentView {
                     Grid { detail(chosen, scene: element, at: index) }
                         .gridColumn(1)
                 }
-                .columnDefinitions(.star(1), .star(1.5))
+                .columns(.proportional(1), .proportional(1.5))
                 .columnSpacing(10)
                 .gridRow(2)
             } else if let chosen {
@@ -529,7 +529,7 @@ struct InspectorView: ContentView {
                     .gridRow(2)
             }
         }
-        .rowDefinitions(.auto, .auto, .star)
+        .rows(.auto, .auto, .fill)
         .rowSpacing(6)
         .padding(10, 8)
     }
@@ -628,7 +628,7 @@ struct InspectorView: ContentView {
             .verticalAlignment(.start)
             .gridColumn(1)
         }
-        .columnDefinitions(.star, .auto)
+        .columns(.fill, .auto)
     }
 
     /// One line about the scene's renders.
@@ -719,7 +719,7 @@ struct InspectorView: ContentView {
             }
             .gridRow(1)
         }
-        .rowDefinitions(.auto, .star)
+        .rows(.auto, .fill)
         .rowSpacing(8)
     }
 
@@ -774,7 +774,7 @@ struct InspectorStrip: ContentView {
             .verticalAlignment(.center)
             .gridColumn(1)
         }
-        .columnDefinitions(.star, .auto)
+        .columns(.fill, .auto)
         .padding(2, 4)
     }
 }

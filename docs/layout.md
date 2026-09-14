@@ -129,8 +129,8 @@ Grid {
         .gridRow(1)
         .gridColumnSpan(2)
 }
-.rowDefinitions(.auto, .star)
-.columnDefinitions(.auto, .star)
+.rows(.auto, .fill)
+.columns(.auto, .fill)
 .rowSpacing(8)
 .columnSpacing(12)
 ```
@@ -139,10 +139,10 @@ Grid {
 
 | Value | Meaning |
 | --- | --- |
-| `.absolute(100)` | 100 device-independent units |
+| `.fixed(100)` | 100 device-independent units |
 | `.auto` | enough room for measured content |
-| `.star` | one share of remaining room |
-| `.star(2)` | two shares of remaining room |
+| `.fill` | one share of remaining room |
+| `.proportional(2)` | two shares of remaining room |
 
 An omitted row or column is zero. An omitted span is one. Several children may
 occupy the same cell; they overlap and `zIndex` decides drawing order.
@@ -160,12 +160,12 @@ being described frame by frame.
 AbsoluteLayout {
     ColorBox(.cornflowerBlue)
         .absoluteLayoutBounds(Rect(0.5, 0.5, 120, 60))
-        .absoluteLayoutFlags(.positionProportional)
+        .absoluteLayoutProportions(.position)
 }
 .height(240)
 ```
 
-`AbsoluteLayoutFlags` says which coordinates and dimensions are proportional
+`AbsoluteLayoutProportions` says which coordinates and dimensions are proportional
 to the layout. Unflagged values are device-independent units.
 `AbsoluteLayout.autoSize` leaves that dimension to the child's measurement.
 Attached placement lives on the child because any view can become an absolute
@@ -189,7 +189,7 @@ ScrollView {
         }
     }
 }
-.scroll($offset)
+.scrollOffset($offset)
 .verticalScrollBarVisibility(.default)
 ```
 
@@ -203,7 +203,7 @@ Optional snapping is a property of that same viewport:
 ```swift quote
 ScrollView { cards }
     .orientation(.horizontal)
-    .scroll($offset)
+    .scrollOffset($offset)
     .snapInterval(320, from: 0)
     .snapItem($selectedCard)
     .snapsAtMost(1)
@@ -249,7 +249,7 @@ ScrollReader(across: Double(cards.count - 1) * 90) {
             places = placements(at: $offset.journey.value.x / 90)
         }
 }
-.scroll($offset)
+.scrollOffset($offset)
 .snapInterval(90)
 .snapItem($selectedCard)
 ```
@@ -260,7 +260,7 @@ both for two-dimensional input.
 
 The rest of the contract follows from that ownership:
 
-- `.scroll($offset)` is the two-way offset. A program write moves the native
+- `.scrollOffset($offset)` is the two-way offset. A program write moves the native
   scroller; input reports into the same state. `Journey.snap(to:)` lands now
   and `Journey.move(to:)` requests a host-driven trip.
 - `snapInterval`, `snapItem`, `snapsAtMost`, and `momentum` have the same grid,

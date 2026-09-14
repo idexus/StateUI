@@ -22,8 +22,8 @@ extension PickerProperties {
     /// The host boundary carries captions rather than application objects, so
     /// an application choosing among models formats them here and resolves the
     /// chosen model through its index.
-    public func itemsSource(_ value: [String]) -> Modified {
-        setValue(.itemsSource, .strings(value))
+    public func options(_ value: [String]) -> Modified {
+        setValue(.options, .strings(value))
     }
 
     /// Which item is chosen, counted from zero; -1 for none.
@@ -75,7 +75,7 @@ public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement,
     /// A picker offering `items`, with nothing chosen until `.selectedIndex`
     /// says so.
     public init(_ items: [String]) {
-        node = Node(type: .picker, props: [.itemsSource: .strings(items)])
+        node = Node(type: .picker, props: [.options: .strings(items)])
     }
 
     // MARK: Properties

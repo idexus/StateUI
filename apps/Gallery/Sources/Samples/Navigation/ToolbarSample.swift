@@ -55,7 +55,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
                 ToolbarItem("Clear")
                     .id("clear")
-                    .order(.secondary)
+                    .placement(.overflow)
                     .isDestructive(true)
                     .isEnabled(saved > 0)
                     .onClicked { saved = 0 },
@@ -135,7 +135,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
             ToolbarItem("Clear")
                 .id("clear")
-                .order(.secondary)
+                .placement(.overflow)
                 .isDestructive(true)
                 .isEnabled(saved > 0)
                 .onClicked { saved = 0 },

@@ -267,7 +267,7 @@ final class GalleryViewTests: XCTestCase {
         // says nothing about a tie that did not change.
         let showing = laid(renders, { self.gallery(6).body }).first
 
-        guard let scroller = find(.scrollView, in: showing)?.driven?[.scroll]?.state else {
+        guard let scroller = find(.scrollView, in: showing)?.driven?[.scrollOffset]?.state else {
             XCTFail("the gallery's scroller is moved by no number")
             return
         }
@@ -304,7 +304,7 @@ final class GalleryViewTests: XCTestCase {
     /// there are.
     func testARowPutsTheCardsSideBySide() {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(3).galleryStyle(.row).body }).patch
+        let showing = laid(renders, { self.gallery(3).arrangement(.row).body }).patch
 
         assertCard(showing, 0, Rect(88, 76, 176, 248))
         assertCard(showing, 1, Rect(200.64, 76, 176, 248))
@@ -314,7 +314,7 @@ final class GalleryViewTests: XCTestCase {
     /// well as to the side.
     func testAFanLeansTheCardsOutAndSinksThem() {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(3).galleryStyle(.fan).body }).patch
+        let showing = laid(renders, { self.gallery(3).arrangement(.fan).body }).patch
 
         assertCard(showing, 0, Rect(88, 76, 176, 248))
         assertCard(showing, 1, Rect(158.4, 92.12, 176, 248))
@@ -742,11 +742,11 @@ final class GalleryViewTests: XCTestCase {
 
         // The shape is worn a render LATE, so the first of these fires the
         // handler that writes it down and the second is the one that wears it.
-        _ = renders.render(self.gallery(3).galleryStyle(.row).body)
+        _ = renders.render(self.gallery(3).arrangement(.row).body)
 
-        let lined = placements(renders.render(self.gallery(3).galleryStyle(.row).body))
+        let lined = placements(renders.render(self.gallery(3).arrangement(.row).body))
 
-        _ = renders.render(self.gallery(3).galleryStyle(.fan).body)
+        _ = renders.render(self.gallery(3).arrangement(.fan).body)
 
         let fanned = placements(renders.revisit(changed: Renderer.shared.pendingChanges))
 

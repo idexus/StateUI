@@ -39,7 +39,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
                         .gridColumn(1)
                         .onClicked { remove(row) }
                 }
-                .columnDefinitions(.star, .auto)
+                .columns(.fill, .auto)
                 .isVisible(!gone.contains(row) && !atOnce.contains(row))
                 // What the switch below chooses: a row told to travel at NO
                 // motion goes at once, and the stack still closes over it.
@@ -86,7 +86,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
                             .gridColumn(1)
                             .onClicked { remove(row) }
                     }
-                    .columnDefinitions(.star, .auto)
+                    .columns(.fill, .auto)
                     .padding(14, 6)
                     .background(Palette.raised)
                     .height(46)

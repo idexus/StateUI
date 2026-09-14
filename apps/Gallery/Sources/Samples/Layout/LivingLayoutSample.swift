@@ -23,7 +23,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
         // layout; what carries it from the old place to the new one is the
         // host's engine, so an insert slides everything under it down.
         VStack {
-            // `wide` is read in THESE braces - `.columnDefinitions` below asks
+            // `wide` is read in THESE braces - `.columns` below asks
             // it - so widening the grid builds this closure. What the rows do
             // is counted by the reading inside their own stack.
             DebugInfoLabel()
@@ -58,10 +58,10 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 Label("two").gridColumn(1)
                 Label("three").gridColumn(2)
             }
-            .columnDefinitions(
-                wide ? .star(3) : .star(1),
-                .star(1),
-                wide ? .star(1) : .star(3))
+            .columns(
+                wide ? .proportional(3) : .proportional(1),
+                .proportional(1),
+                wide ? .proportional(1) : .proportional(3))
 
             Button("Widen the other end").onClicked { wide.toggle() }
         }
@@ -69,7 +69,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
 
     var content: any View {
         VStack {
-            // `wide` is read in THESE braces - `.columnDefinitions` below asks
+            // `wide` is read in THESE braces - `.columns` below asks
             // it - so widening the grid builds this closure. What the rows do
             // is counted by the reading inside their own stack.
             DebugInfoLabel()
@@ -123,10 +123,10 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 cell("two", Palette.accent, at: 1)
                 cell("three", Palette.brand, at: 2, faded: true)
             }
-            .columnDefinitions(
-                wide ? .star(3) : .star(1),
-                .star(1),
-                wide ? .star(1) : .star(3))
+            .columns(
+                wide ? .proportional(3) : .proportional(1),
+                .proportional(1),
+                wide ? .proportional(1) : .proportional(3))
             .columnSpacing(8)
             .height(52)
 

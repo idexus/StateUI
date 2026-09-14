@@ -14,7 +14,7 @@
 ///                 run = PlacedRun(place(at: $across.journey.value.x / 90))
 ///             }
 ///     }
-///     .scroll($across)
+///     .scrollOffset($across)
 ///     .snapInterval(90)
 ///
 /// What it holds is not scrolled: the views stay where their own arithmetic
@@ -107,7 +107,7 @@ public struct ScrollReader: ContentView {
     ///
     /// - Parameter state: the state the offset is walked on.
     /// - Returns: the reader, moving with that state and reporting into it.
-    public func scroll(_ state: Binding<Point>) -> ScrollReader {
+    public func scrollOffset(_ state: Binding<Point>) -> ScrollReader {
         var copy = self
         copy.reports = state
         return copy
@@ -141,7 +141,7 @@ public struct ScrollReader: ContentView {
     /// be nearest a point of.
     ///
     ///     ScrollReader(across: 540) { … }
-    ///         .scroll($across)
+    ///         .scrollOffset($across)
     ///         .snapInterval(90)
     ///         .snapItem($card)
     ///
@@ -218,7 +218,7 @@ public struct ScrollReader: ContentView {
     /// on the empty run beside it means nothing.
     ///
     /// It needs a driven state to be carried by, so a reader given no
-    /// `.scroll($:)` answers the tap on the whole of the run, as `onTapped`
+    /// `.scrollOffset($:)` answers the tap on the whole of the run, as `onTapped`
     /// does.
     ///
     /// - Parameters:
@@ -241,7 +241,7 @@ public struct ScrollReader: ContentView {
     /// button moves a run without a finger - `$across.journey.snap(to: )` at
     /// once, `try await $across.journey.move(to: )` gliding.
     ///
-    ///     ScrollReader(across: 540) { … }.scroll($across).aim(scroller)
+    ///     ScrollReader(across: 540) { … }.scrollOffset($across).aim(scroller)
     ///
     /// - Parameter aim: the aim the scroller answers to.
     /// - Returns: the reader, whose scroller answers there.
@@ -460,7 +460,7 @@ extension ScrollView {
     /// - Parameter at: where the offset is walked, if anywhere.
     /// - Returns: the scroller, moving with that state and reporting into it.
     func reporting(at: Binding<Point>?) -> ScrollView {
-        at.map { self.scroll($0) } ?? self
+        at.map { self.scrollOffset($0) } ?? self
     }
 }
 

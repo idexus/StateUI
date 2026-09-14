@@ -6,9 +6,9 @@
 /// How much room one grid row or column takes.
 ///
 ///     Grid { … }
-///         .rowDefinitions(.auto, .star, .star(2), .absolute(100))
+///         .rows(.auto, .fill, .proportional(2), .fixed(100))
 ///
-/// Three kinds: `.auto` fits the content, `.star` shares what is left in
+/// Three kinds: `.auto` fits the content, `.fill` shares what is left in
 /// proportion, and `.absolute` is device-independent units. The stars are
 /// settled last, out of whatever the auto and absolute rows leave.
 ///
@@ -19,21 +19,21 @@ public enum GridLength: Sendable {
     case auto
 
     /// A share of what is left over, in proportion to the other stars: two
-    /// columns of `.star` and `.star(2)` split it one to two.
-    case star(Double)
+    /// columns of `.fill` and `.proportional(2)` split it one to two.
+    case proportional(Double)
 
     /// Exactly this many device units, whatever the content measures at.
-    case absolute(Double)
+    case fixed(Double)
 
-    /// One share of what is left - the same as `.star(1)`.
-    public static var star: GridLength { .star(1) }
+    /// One share of what is left - the same as `.proportional(1)`.
+    public static var fill: GridLength { .proportional(1) }
 
     /// Which of the three kinds a length is, as the number that crosses - a
     /// closed vocabulary, so it rides its member rather than a spelling. The
     /// numbers are this library's own: see the head of Types/Enums.swift.
     enum Kind: Int32, Sendable {
-        case absolute = 0
-        case star = 1
+        case fixed = 0
+        case proportional = 1
         case auto = 2
     }
 
@@ -46,10 +46,10 @@ public enum GridLength: Sendable {
         switch self {
         case .auto:
             return .values([.enumeration(Kind.auto.rawValue), .number(1)])
-        case .star(let share):
-            return .values([.enumeration(Kind.star.rawValue), .number(share)])
-        case .absolute(let length):
-            return .values([.enumeration(Kind.absolute.rawValue), .number(length)])
+        case .proportional(let share):
+            return .values([.enumeration(Kind.proportional.rawValue), .number(share)])
+        case .fixed(let length):
+            return .values([.enumeration(Kind.fixed.rawValue), .number(length)])
         }
     }
 }

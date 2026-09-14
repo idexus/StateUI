@@ -6,7 +6,7 @@
 /// the element side and the style on the property side, which is what
 /// makes the same modifiers compile on both.
 ///
-/// One property of its own, `isAnimationPlaying`; `aspect` lives on
+/// One property of its own, `isAnimating`; `aspect` lives on
 /// `ImageElement` because images and image buttons share it.
 public protocol ImageProperties: PropertyContainer {}
 
@@ -16,8 +16,8 @@ extension ImageProperties {
     /// For a source that HAS frames - a GIF, an animated WebP - and nothing at
     /// all for a still one. It is a property rather than an act, so a paused
     /// animation is a state the tree describes and a rebuild cannot lose.
-    public func isAnimationPlaying(_ value: Bool) -> Modified {
-        setValue(.isAnimationPlaying, .bool(value))
+    public func isAnimating(_ value: Bool) -> Modified {
+        setValue(.isAnimating, .bool(value))
     }
 }
 

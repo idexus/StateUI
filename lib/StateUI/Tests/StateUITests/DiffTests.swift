@@ -154,7 +154,7 @@ final class DiffTests: XCTestCase {
 
         renders.render(Node(type: "Picker", id: "a", props: [
             "title": .string("pick"),
-            "itemsSource": .values([.string("one"), .string("two")]),
+            "options": .values([.string("one"), .string("two")]),
         ]))
 
         let patch = renders.render(Node(type: "Picker", id: "a", props: ["title": .string("pick")]))

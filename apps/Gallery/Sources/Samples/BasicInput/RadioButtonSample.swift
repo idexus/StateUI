@@ -18,10 +18,10 @@ struct RadioButtonSample: SampleContent, ExampleContent {
             ForEach(["Small", "Medium", "Large"]) { name in
                 RadioButton(name)
                     .groupName("size")
-                    .isChecked(size == name)
+                    .isOn(size == name)
                     // Fires on the button that WAS chosen too, with false - so
                     // the state is written only by the one that won.
-                    .onCheckedChanged { chosen in
+                    .onToggled { chosen in
                         if chosen {
                             size = name
                         }
@@ -40,10 +40,10 @@ struct RadioButtonSample: SampleContent, ExampleContent {
             ForEach(sizes) { name in
                 RadioButton(name)
                     .groupName("size")
-                    .isChecked(size == name)
+                    .isOn(size == name)
                     // Fires on the button that WAS chosen too, with false - so
                     // the state is written only by the one that won.
-                    .onCheckedChanged { chosen in
+                    .onToggled { chosen in
                         if chosen {
                             size = name
                         }

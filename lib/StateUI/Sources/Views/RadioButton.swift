@@ -9,8 +9,8 @@ public protocol RadioButtonProperties: PropertyContainer {}
 
 extension RadioButtonProperties {
     /// Whether this is the chosen one.
-    public func isChecked(_ value: Bool) -> Modified {
-        setValue(.isChecked, .bool(value))
+    public func isOn(_ value: Bool) -> Modified {
+        setValue(.isOn, .bool(value))
     }
 
     /// Which set this belongs to - picking one clears every other button
@@ -31,8 +31,8 @@ extension RadioButtonProperties {
 ///         ForEach(["Small", "Medium", "Large"]) { option in
 ///             RadioButton(option)
 ///                 .groupName("size")
-///                 .isChecked(option == size)
-///                 .onCheckedChanged { checked in
+///                 .isOn(option == size)
+///                 .onToggled { checked in
 ///                     if checked { size = option }
 ///                 }
 ///         }
@@ -60,7 +60,7 @@ public struct RadioButton: View, TextElement, FontElement, PaddingElement,
     }
 
     /// A button captioned `text`. One-way: what is picked goes nowhere
-    /// without `.onCheckedChanged`.
+    /// without `.onToggled`.
     public init(_ text: String) {
         node = Node(type: .radioButton, props: [.text: .string(text)])
     }
@@ -74,10 +74,10 @@ public struct RadioButton: View, TextElement, FontElement, PaddingElement,
     /// - Parameter binding: the state shown, and written back into as the
     ///   reader picks or clears it.
     /// - Returns: the button, wearing and reporting that value.
-    public func isChecked(_ binding: Binding<Bool>) -> Self {
+    public func isOn(_ binding: Binding<Bool>) -> Self {
         binding.image == nil
-            ? described(.isChecked, binding, on: .checkedChanged)
-            : plain(.isChecked, by: binding, mode: .inOut)
+            ? described(.isOn, binding, on: .toggled)
+            : plain(.isOn, by: binding, mode: .inOut)
     }
 
     // MARK: Events
@@ -86,8 +86,8 @@ public struct RadioButton: View, TextElement, FontElement, PaddingElement,
     /// one raises this on two buttons:
     /// false on the one that was chosen before, true on the new one. Runs after
     /// a binding's write, if there is one.
-    public func onCheckedChanged(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
-        addHandler(.checkedChanged) {
+    public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
+        addHandler(.toggled) {
             if let checked = EventBuffer.current.value()?.bool {
                 try await handler(checked)
             }

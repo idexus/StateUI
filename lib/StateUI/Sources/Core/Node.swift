@@ -34,7 +34,7 @@ public enum PropValue: Equatable, Sendable {
     /// `.bold`, `.cubicOut`. Whose numbers those are, and why, is the head of
     /// Types/Enums.swift.
     ///
-    /// A bit set - FontAttributes, TextDecorations, AbsoluteLayoutFlags,
+    /// A bit set - FontAttributes, TextDecorations, AbsoluteLayoutProportions,
     /// SwipeDirection - is one of these too, carrying its bits.
     ///
     /// `Int32` rather than a Double because that is what the host contract's

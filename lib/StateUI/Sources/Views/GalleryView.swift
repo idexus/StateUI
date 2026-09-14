@@ -7,7 +7,7 @@
 //     GalleryView(albums, id: \.title) { album in
 //         AlbumFace(album)
 //     }
-//     .galleryStyle(.fan)
+//     .arrangement(.fan)
 //     .position($shown)
 //
 // WHAT IT IS MADE OF. A `PlacedLayout` for the cards, a `ScrollReader` for the
@@ -30,7 +30,7 @@
 /// One word per arrangement, and the cards travel between them: the shape is a
 /// set of values like any other, so a gallery told to be a fan carries every
 /// card from where it was to where the fan puts it.
-public enum GalleryStyle: Sendable, Equatable {
+public enum GalleryArrangement: Sendable, Equatable {
     /// The cards stand on a wheel: the one in the middle faces the reader and
     /// the rest turn away, shrink and fade behind it.
     case `default`
@@ -52,7 +52,7 @@ public enum GalleryStyle: Sendable, Equatable {
 ///     GalleryView(albums, id: \.title) { album in
 ///         AlbumFace(album)
 ///     }
-///     .galleryStyle(.default)
+///     .arrangement(.default)
 ///     .position($shown)
 ///     .onItemTapped { open(albums[shown]) }
 ///
@@ -100,7 +100,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// the shape they are in for the render that notices, and fly in the next
     /// one. Nothing, until the first change: the shape asked for is the shape
     /// a gallery opens in.
-    @State private var wearing: GalleryStyle?
+    @State private var wearing: GalleryArrangement?
 
     /// Whether the cards are TRAVELLING to a new shape rather than following
     /// the scroller.
@@ -166,7 +166,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     private var tapped: ValueEventHandler<Items.Element>?
 
     /// Which shape the cards stand in.
-    private var look = GalleryStyle.default
+    private var look = GalleryArrangement.default
 
     /// How wide a card is, in device units.
     private var cardWidth = 176.0
@@ -232,7 +232,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// Which shape the cards stand in. A wheel unless this says otherwise.
     /// This library's own.
     ///
-    ///     GalleryView(albums) { … }.galleryStyle(.fan)
+    ///     GalleryView(albums) { … }.arrangement(.fan)
     ///
     /// The cards TRAVEL to the new arrangement: where a card goes, how far it
     /// is turned and how big it looks are values like any other, so changing
@@ -240,7 +240,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     ///
     /// - Parameter style: the arrangement.
     /// - Returns: the gallery, in that shape.
-    public func galleryStyle(_ style: GalleryStyle) -> Self {
+    public func arrangement(_ style: GalleryArrangement) -> Self {
         var copy = self
         copy.look = style
         return copy
@@ -593,7 +593,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         }
 
         var reader = ScrollReader(across: Double(count - 1) * step) { cards }
-            .scroll($scrolled)
+            .scrollOffset($scrolled)
             // ONE CARD PER `reach`, so the platform's own snapping settles the
             // run on the card it is nearest.
             .snapInterval(step)
@@ -820,7 +820,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         _ index: Int,
         _ count: Int,
         _ room: Rect,
-        _ shape: GalleryStyle
+        _ shape: GalleryArrangement
     ) -> Placement {
         var placement = placed(Double(index) - at, count, room, shape)
 
@@ -837,7 +837,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// middle of the room holds whatever the offset is - taken through its own
     /// shape's transform, so the answer is the card as the reader sees it
     /// rather than the rectangle it was laid out in.
-    private func front(in room: Rect, shape: GalleryStyle) -> Rect {
+    private func front(in room: Rect, shape: GalleryArrangement) -> Rect {
         let placement = placed(0, source.items.count, room, shape)
         let box = placement.bounds
         let transform = placement.transform
@@ -856,7 +856,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         _ step: Double,
         _ count: Int,
         _ room: Rect,
-        _ shape: GalleryStyle
+        _ shape: GalleryArrangement
     ) -> Placement {
         let fit = fit(in: room)
 
@@ -988,7 +988,7 @@ private struct Turning: ContentView {
     let at: () -> Int
 
     /// The shape it is asked to stand in.
-    let look: GalleryStyle
+    let look: GalleryArrangement
 
     /// What a new position means: the run is sent there, and the author told.
     let turned: (Int) async throws -> Void

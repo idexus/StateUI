@@ -19,7 +19,7 @@ Page 1 arranged(4)
       iconImageSource: string "mark.png"
       isDestructive: true
       isEnabled: false
-      order: enum secondary(2)
+      placement: enum overflow(2)
       priority: number 2
       text: string "Save"
       on clicked=6

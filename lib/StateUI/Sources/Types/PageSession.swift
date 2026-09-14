@@ -167,7 +167,7 @@ public final class PageSession {
     ///
     ///     page.toolbarItems = [
     ///         ToolbarItem("Add").onClicked { items.append(Item()) },
-    ///         ToolbarItem("Sort").order(.secondary),
+    ///         ToolbarItem("Sort").placement(.overflow),
     ///     ]
     ///
     /// What the bar offers is what was written: a button whose caption follows

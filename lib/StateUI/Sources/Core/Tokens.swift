@@ -128,9 +128,9 @@ extension Prop {
     static let notCleared: Set<Prop> = [
         .numberOfTapsRequired, .swipeDirection, .swipeThreshold, .panTouchCount,
         .dragText, .canDrag, .allowDrop,
-        .itemsSource,
+        .options,
         .selectedIndex, .currentPage,
-        .order, .priority, .side,
+        .placement, .priority, .side,
         .region,
         .windowType, .windowValue, .autoHide, .floatsOnTop,
     ]
@@ -217,13 +217,13 @@ extension Prop {
     static let unmoved: Set<Prop> = [
         .count, .currentPage, .cursorPosition, .selectionLength, .maximumLength, .maximumLines,
         .gridColumn, .gridColumnSpan, .gridRow, .gridRowSpan, .zIndex,
-        .order, .priority, .position, .selectedIndex,
+        .placement, .priority, .position, .selectedIndex,
         .numberOfTapsRequired, .panTouchCount, .maximumVisible,
         .snapsAtMost, .snapInterval, .snapFrom, .scrollMomentum, .scrollStep,
-        .increment, .minimum, .maximum, .swipeThreshold,
+        .step, .minimum, .maximum, .swipeThreshold,
         .points, .strokeDashArray, .region, .location,
-        .absoluteLayoutBounds, .absoluteLayoutFlags,
-        .scroll,
+        .absoluteLayoutBounds, .absoluteLayoutProportions,
+        .scrollOffset,
         .panXChannel, .panYChannel,
     ]
 }
@@ -422,7 +422,7 @@ public extension NodeType {
 
 public extension Prop {
     static let absoluteLayoutBounds = Prop("absoluteLayoutBounds")
-    static let absoluteLayoutFlags = Prop("absoluteLayoutFlags")
+    static let absoluteLayoutProportions = Prop("absoluteLayoutProportions")
     static let address = Prop("address")
     static let allowDrop = Prop("allowDrop")
     static let pivotX = Prop("pivotX")
@@ -443,7 +443,7 @@ public extension Prop {
     static let characterSpacing = Prop("characterSpacing")
     static let showsClearButton = Prop("showsClearButton")
     static let color = Prop("color")
-    static let columnDefinitions = Prop("columnDefinitions")
+    static let columns = Prop("columns")
     static let columnSpacing = Prop("columnSpacing")
     static let content = Prop("content")
     static let contentLayout = Prop("contentLayout")
@@ -481,13 +481,13 @@ public extension Prop {
     static let icon = Prop("icon")
     static let iconImageSource = Prop("iconImageSource")
     static let imageSource = Prop("imageSource")
-    static let increment = Prop("increment")
+    static let step = Prop("step")
     static let indicatorColor = Prop("indicatorColor")
     static let indicatorSize = Prop("indicatorSize")
     static let indicatorsShape = Prop("indicatorsShape")
     static let ignoresInput = Prop("ignoresInput")
-    static let isAnimationPlaying = Prop("isAnimationPlaying")
-    static let isChecked = Prop("isChecked")
+    static let isAnimating = Prop("isAnimating")
+    static let isOn = Prop("isOn")
     static let clipsContent = Prop("clipsContent")
     static let isDestructive = Prop("isDestructive")
     static let isEnabled = Prop("isEnabled")
@@ -502,14 +502,13 @@ public extension Prop {
     static let isRefreshing = Prop("isRefreshing")
     static let isRunning = Prop("isRunning")
     static let isScrollEnabled = Prop("isScrollEnabled")
-    static let isShowingUser = Prop("isShowingUser")
+    static let showsUserLocation = Prop("showsUserLocation")
     static let isSpellCheckEnabled = Prop("isSpellCheckEnabled")
     static let isTextPredictionEnabled = Prop("isTextPredictionEnabled")
-    static let isToggled = Prop("isToggled")
     static let isTrafficEnabled = Prop("isTrafficEnabled")
     static let isVisible = Prop("isVisible")
     static let isZoomEnabled = Prop("isZoomEnabled")
-    static let itemsSource = Prop("itemsSource")
+    static let options = Prop("options")
     static let inputPurpose = Prop("inputPurpose")
     static let label = Prop("label")
     static let lineBreak = Prop("lineBreak")
@@ -539,7 +538,7 @@ public extension Prop {
     static let offColor = Prop("offColor")
     static let onColor = Prop("onColor")
     static let opacity = Prop("opacity")
-    static let order = Prop("order")
+    static let placement = Prop("placement")
     static let orientation = Prop("orientation")
     static let padding = Prop("padding")
     static let panTouchCount = Prop("panTouchCount")
@@ -567,7 +566,7 @@ public extension Prop {
     static let rotation = Prop("rotation")
     static let rotationX = Prop("rotationX")
     static let rotationY = Prop("rotationY")
-    static let rowDefinitions = Prop("rowDefinitions")
+    static let rows = Prop("rows")
     static let rowSpacing = Prop("rowSpacing")
     static let safeAreaEdges = Prop("safeAreaEdges")
     static let scale = Prop("scale")
@@ -578,7 +577,7 @@ public extension Prop {
     /// This library's own: where the scroller stands, as one point of two
     /// lanes - the platform's offset being one point, and one journey being
     /// what makes a diagonal move arrive on both axes together.
-    static let scroll = Prop("scroll")
+    static let scrollOffset = Prop("scrollOffset")
     static let scrollStep = Prop("scrollStep")
     static let searchIconColor = Prop("searchIconColor")
     static let selectedIndex = Prop("selectedIndex")
@@ -643,7 +642,6 @@ public extension Event {
     static let appearing = Event("appearing")
     static let canGoBackChanged = Event("canGoBackChanged")
     static let canGoForwardChanged = Event("canGoForwardChanged")
-    static let checkedChanged = Event("checkedChanged")
     static let clicked = Event("clicked")
     static let closed = Event("closed")
     static let submitted = Event("submitted")

@@ -9,15 +9,15 @@ import XCTest
 
 final class AppKitContainerTests: XCTestCase {
     func testGridLengthsDecodeStateUISemantics() throws {
-        let absolute = try XCTUnwrap(AppKitGridLength(.values([.enumeration(0), .number(48)])))
-        let star = try XCTUnwrap(AppKitGridLength(.values([.enumeration(1), .number(2)])))
+        let fixed = try XCTUnwrap(AppKitGridLength(.values([.enumeration(0), .number(48)])))
+        let proportional = try XCTUnwrap(AppKitGridLength(.values([.enumeration(1), .number(2)])))
         let auto = try XCTUnwrap(AppKitGridLength(.values([.enumeration(2), .number(1)])))
 
-        guard case .absolute = absolute.kind else { return XCTFail("expected an absolute track") }
-        guard case .star = star.kind else { return XCTFail("expected a star track") }
+        guard case .fixed = fixed.kind else { return XCTFail("expected a fixed track") }
+        guard case .proportional = proportional.kind else { return XCTFail("expected a proportional track") }
         guard case .auto = auto.kind else { return XCTFail("expected an automatic track") }
-        XCTAssertEqual(absolute.value, 48)
-        XCTAssertEqual(star.value, 2)
+        XCTAssertEqual(fixed.value, 48)
+        XCTAssertEqual(proportional.value, 2)
     }
 
     @MainActor

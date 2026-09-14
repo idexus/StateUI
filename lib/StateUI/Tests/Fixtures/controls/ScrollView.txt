@@ -7,7 +7,7 @@ ScrollView 1 arranged(1)
   snapInterval: number 80
   snapsAtMost: number 1
   verticalScrollBarVisibility: enum never(2)
-  driven scroll<-1 inOut property
+  driven scrollOffset<-1 inOut property
   on scrollStopped=1 snapItemChanged=2
   Label 2
     text: string "content"

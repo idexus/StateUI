@@ -6,16 +6,16 @@
 ///     AbsoluteLayout {
 ///         ColorBox(.cornflowerBlue)
 ///             .absoluteLayoutBounds(Rect(0, 0, 1, 1))
-///             .absoluteLayoutFlags(.all)
+///             .absoluteLayoutProportions(.all)
 ///
 ///         Label("Bottom right")
 ///             .absoluteLayoutBounds(Rect(1, 1, AbsoluteLayout.autoSize, AbsoluteLayout.autoSize))
-///             .absoluteLayoutFlags(.positionProportional)
+///             .absoluteLayoutProportions(.position)
 ///     }
 ///     .height(160)
 ///
 /// Where a child sits is written on the CHILD, with `.absoluteLayoutBounds(…)`
-/// and `.absoluteLayoutFlags(…)`. Those two modifiers are on `ViewProperties`,
+/// and `.absoluteLayoutProportions(…)`. Those two modifiers are on `ViewProperties`,
 /// so any view can carry them; see Elements.swift.
 ///
 /// The FLAGS decide how the four numbers in the bounds are read: each is either
@@ -37,10 +37,10 @@ public struct AbsoluteLayout: Layout {
     ///     Label("Bottom right")
     ///         .absoluteLayoutBounds(
     ///             Rect(1, 1, AbsoluteLayout.autoSize, AbsoluteLayout.autoSize))
-    ///         .absoluteLayoutFlags(.positionProportional)
+    ///         .absoluteLayoutProportions(.position)
     ///
     /// Only the POSITION is proportional there: a size the child chooses is not
-    /// a fraction of anything, so `.sizeProportional` and this cannot both be
+    /// a fraction of anything, so `.size` and this cannot both be
     /// meant at once.
     public static let autoSize = -1.0
 

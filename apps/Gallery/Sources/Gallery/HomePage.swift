@@ -254,7 +254,7 @@ struct HomePage: ContentView {
             .isVisible(wearing.foots)
             .gridRow(2)
         }
-        .rowDefinitions(.auto, .star, .auto)
+        .rows(.auto, .fill, .auto)
         .rowSpacing(Self.gap)
         // The margin is the rows' own to lose: the frame below is this grid's
         // outer one, so the arithmetic takes the margin off explicitly.

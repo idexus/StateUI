@@ -92,7 +92,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
             }
             .gridRow(1)
         }
-        .rowDefinitions(.star, .auto)
+        .rows(.fill, .auto)
         .onCreated {
             // A STATE'S OWN DEFAULT CANNOT ASK WHAT PLATFORM THIS IS - it is
             // worked out where the view is built, before anything is around to
@@ -174,7 +174,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
             .gridRow(1)
         }
-        .rowDefinitions(.star, .auto)
+        .rows(.fill, .auto)
         .rowSpacing(12)
         .onCreated {
             // A STATE'S OWN DEFAULT CANNOT ASK WHAT PLATFORM THIS IS - it is

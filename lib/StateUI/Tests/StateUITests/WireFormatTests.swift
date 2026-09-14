@@ -48,7 +48,7 @@ final class WireFormatTests: XCTestCase {
             props(of: message(Node(type: "Label", props: ["padding": .numbers([1, 2, 3, 4])])).root)["padding"],
             .numbers([1, 2, 3, 4]))
         XCTAssertEqual(
-            props(of: message(Node(type: "Picker", props: ["itemsSource": .strings(["a", "b"])])).root)["itemsSource"],
+            props(of: message(Node(type: "Picker", props: ["options": .strings(["a", "b"])])).root)["options"],
             .strings(["a", "b"]))
     }
 

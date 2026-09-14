@@ -16,7 +16,7 @@
 // accident. `WireVocabularyTests` holds every case to a number written out.
 // Appending a case is free; inserting or reordering one is not.
 //
-// The flag sets (FontAttributes, TextDecorations, AbsoluteLayoutFlags) are
+// The flag sets (FontAttributes, TextDecorations, AbsoluteLayoutProportions) are
 // OptionSets, so both `.bold` and `[.bold, .italic]` work. Their bits are ours
 // by the same rule - `1 << 0` upwards in declaration order - and a composite
 // is written as the OR of its parts, so a bit set travels as nothing more than
@@ -394,12 +394,12 @@ public enum StrokeShape: Sendable {
 /// than as device units - a flag set, with bits of this library's own.
 ///
 ///     .absoluteLayoutBounds(Rect(0.5, 0, 0.5, 1))
-///     .absoluteLayoutFlags(.all)
+///     .absoluteLayoutProportions(.all)
 ///
 /// A fraction is of the LAYOUT's size, so 0.5 is half of it however big it
 /// turns out to be - which is the whole reason to reach for an AbsoluteLayout
 /// rather than nailing numbers down.
-public struct AbsoluteLayoutFlags: OptionSet, Sendable {
+public struct AbsoluteLayoutProportions: OptionSet, Sendable {
     /// The bits, as an OptionSet keeps them - this library's own, see the head
     /// of this file.
     public let rawValue: Int32
@@ -410,29 +410,29 @@ public struct AbsoluteLayoutFlags: OptionSet, Sendable {
     }
 
     /// Every number is device units. The default.
-    public static let none = AbsoluteLayoutFlags([])
+    public static let none = AbsoluteLayoutProportions([])
 
     /// The position across as a fraction.
-    public static let xProportional = AbsoluteLayoutFlags(rawValue: 1 << 0)
+    public static let x = AbsoluteLayoutProportions(rawValue: 1 << 0)
 
     /// The position down as a fraction.
-    public static let yProportional = AbsoluteLayoutFlags(rawValue: 1 << 1)
+    public static let y = AbsoluteLayoutProportions(rawValue: 1 << 1)
 
     /// Both edges as fractions, the size still in device units.
-    public static let positionProportional: AbsoluteLayoutFlags = [.xProportional, .yProportional]
+    public static let position: AbsoluteLayoutProportions = [.x, .y]
 
     /// The width as a fraction.
-    public static let widthProportional = AbsoluteLayoutFlags(rawValue: 1 << 2)
+    public static let width = AbsoluteLayoutProportions(rawValue: 1 << 2)
 
     /// The height as a fraction.
-    public static let heightProportional = AbsoluteLayoutFlags(rawValue: 1 << 3)
+    public static let height = AbsoluteLayoutProportions(rawValue: 1 << 3)
 
     /// Both lengths as fractions, the position still in device units.
-    public static let sizeProportional: AbsoluteLayoutFlags = [.widthProportional, .heightProportional]
+    public static let size: AbsoluteLayoutProportions = [.width, .height]
 
     /// All four as fractions - the OR of the other four, as a composite here
     /// always is.
-    public static let all: AbsoluteLayoutFlags = [.positionProportional, .sizeProportional]
+    public static let all: AbsoluteLayoutProportions = [.position, .size]
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
@@ -538,15 +538,15 @@ public enum IndicatorShape: Int32, Sendable {
 }
 
 /// Where a toolbar item goes in the platform's native action surface.
-public enum ToolbarItemOrder: Int32, Sendable {
+public enum ToolbarItemPlacement: Int32, Sendable {
     /// Wherever the platform normally puts an item.
-    case `default` = 0
+    case automatic = 0
 
-    /// On the bar itself, where it can be tapped straight away.
-    case primary = 1
+    /// On the bar itself, where it can be chosen straight away.
+    case bar = 1
 
     /// Behind the native overflow menu.
-    case secondary = 2
+    case overflow = 2
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
@@ -584,7 +584,7 @@ public enum SafeAreaRegions: Int32, Sendable {
 // beside the type, because what makes a choice carriable is its number and
 // nothing else: see `StateChoice` in Core/StateValue.swift.
 
-extension AbsoluteLayoutFlags: StateChoice {}
+extension AbsoluteLayoutProportions: StateChoice {}
 extension Aspect: StateChoice {}
 extension FillRule: StateChoice {}
 extension LayoutDirection: StateChoice {}

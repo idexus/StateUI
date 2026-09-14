@@ -650,8 +650,8 @@ public enum WireProbe {
             return spelled(member, as: ScrollOrientation.self)
         case Prop.horizontalScrollBarVisibility.name, Prop.verticalScrollBarVisibility.name:
             return spelled(member, as: ScrollBarVisibility.self)
-        case Prop.order.name:
-            return spelled(member, as: ToolbarItemOrder.self)
+        case Prop.placement.name:
+            return spelled(member, as: ToolbarItemPlacement.self)
 
         // The swipe.
         case Prop.mode.name:
@@ -692,16 +692,16 @@ public enum WireProbe {
                 ("underline", TextDecorations.underline.rawValue),
                 ("strikethrough", TextDecorations.strikethrough.rawValue),
             ])
-        case Prop.absoluteLayoutFlags.name:
+        case Prop.absoluteLayoutProportions.name:
             return spelled(member, asBitsOf: [
-                ("none", AbsoluteLayoutFlags.none.rawValue),
-                ("xProportional", AbsoluteLayoutFlags.xProportional.rawValue),
-                ("yProportional", AbsoluteLayoutFlags.yProportional.rawValue),
-                ("widthProportional", AbsoluteLayoutFlags.widthProportional.rawValue),
-                ("heightProportional", AbsoluteLayoutFlags.heightProportional.rawValue),
-                ("positionProportional", AbsoluteLayoutFlags.positionProportional.rawValue),
-                ("sizeProportional", AbsoluteLayoutFlags.sizeProportional.rawValue),
-                ("all", AbsoluteLayoutFlags.all.rawValue),
+                ("none", AbsoluteLayoutProportions.none.rawValue),
+                ("x", AbsoluteLayoutProportions.x.rawValue),
+                ("y", AbsoluteLayoutProportions.y.rawValue),
+                ("width", AbsoluteLayoutProportions.width.rawValue),
+                ("height", AbsoluteLayoutProportions.height.rawValue),
+                ("position", AbsoluteLayoutProportions.position.rawValue),
+                ("size", AbsoluteLayoutProportions.size.rawValue),
+                ("all", AbsoluteLayoutProportions.all.rawValue),
             ])
         case Prop.swipeDirection.name:
             return spelled(member, asBitsOf: [
@@ -736,9 +736,9 @@ public enum WireProbe {
 
     /// A BIT SET's bits, named: 3 under `fontAttributes` is `bold|italic`.
     ///
-    /// A whole-set match comes first, so `AbsoluteLayoutFlags.all` reads as
+    /// A whole-set match comes first, so `AbsoluteLayoutProportions.all` reads as
     /// `all` rather than as the four bits that -1 happens to contain, and
-    /// `positionProportional` beats `xProportional|yProportional` - both are
+    /// `position` beats `x|y` - both are
     /// names the library itself declares for that number. Failing that the single
     /// bits are named, and a bit no member accounts for gives up and answers
     /// nil: half a spelling would read as the whole of one.

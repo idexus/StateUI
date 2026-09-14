@@ -124,7 +124,7 @@ extension Journey {
     ///
     ///     @State private var offset = Point.zero
     ///
-    ///     ScrollView { … }.scroll($offset)
+    ///     ScrollView { … }.scrollOffset($offset)
     ///     Label($offset.journey.convert { "\(Int($0.value.y)) down" })
     ///
     /// `$offset.convert { … }` beside it is a conversion of the STATE, which

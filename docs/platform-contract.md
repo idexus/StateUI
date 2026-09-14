@@ -320,14 +320,14 @@ token in parentheses.
 | `SplitView` | native presentation | adaptive native pane and native platform affordances | ✅ | — | — | — | — | — |
 | `ModalStack` | state/events | bound modal stack (`modalPopped`) | ✅ | — | — | — | — | — |
 | menu items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled` | ✅ | — | — | — | — | — |
-| toolbar items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled`, `order`, `priority` | ✅ | — | — | — | — | — |
+| toolbar items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled`, `placement`, `priority` | ✅ | — | — | — | — | — |
 | menu / toolbar items | handlers | `onClicked` (`clicked`) | ✅ | — | — | — | — | — |
 | `TitleBar` | properties/slots | `title`, `subtitle`, `icon`, `foregroundColor`, `background`, leading/content/trailing slots | ✅ | — | — | — | — | — |
 | stack layouts | properties | `padding`, `spacing` | ✅ | — | — | — | — | — |
-| `Grid` | properties | `rowDefinitions`, `columnDefinitions`, `rowSpacing`, `columnSpacing`, child `gridRow`, `gridColumn`, `gridRowSpan`, `gridColumnSpan` | — | — | — | — | — | — |
-| `AbsoluteLayout` | properties | child `absoluteLayoutBounds`, `absoluteLayoutFlags` | — | — | — | — | — | — |
+| `Grid` | properties | `rows`, `columns`, `rowSpacing`, `columnSpacing`, child `gridRow`, `gridColumn`, `gridRowSpan`, `gridColumnSpan` | — | — | — | — | — | — |
+| `AbsoluteLayout` | properties | child `absoluteLayoutBounds`, `absoluteLayoutProportions` | — | — | — | — | — | — |
 | layouts | properties | `clipsContent`, `safeAreaEdges` | — | — | — | — | — | — |
-| `ScrollView` | properties | `orientation`, `verticalScrollBarVisibility`, `horizontalScrollBarVisibility`, `scroll`, `snapInterval`, `snapFrom`, `snapsAtMost`, `scrollMomentum` | ✅ | — | — | — | — | — |
+| `ScrollView` | properties | `orientation`, `verticalScrollBarVisibility`, `horizontalScrollBarVisibility`, `scrollOffset`, `snapInterval`, `snapFrom`, `snapsAtMost`, `scrollMomentum` | ✅ | — | — | — | — | — |
 | `ScrollView` | events | `scrollXChanged`, `scrollYChanged`, `snapItemChanged`, `onScrollStopped` (`scrollStopped`) | ✅ | — | — | — | — | — |
 | `Border` | properties | `stroke`, `strokeThickness`, `strokeShape`, `background` | — | — | — | — | — | — |
 | `Border` | properties | `strokeDashArray`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit` | — | — | — | — | — | — |
@@ -337,7 +337,7 @@ token in parentheses.
 | `Button` | handlers | `onClicked` (`clicked`), `onPressed` (`pressed`), `onReleased` (`released`) | ✅ | — | — | — | — | — |
 | `ImageButton` | properties | `source`, `aspect`, `padding`, `borderColor`, `borderWidth`, `cornerRadius` | ✅ | — | — | — | — | — |
 | `ImageButton` | handlers | `onClicked` (`clicked`), `onPressed` (`pressed`), `onReleased` (`released`) | ✅ | — | — | — | — | — |
-| `Image` | properties | `source`, `aspect`, `isAnimationPlaying` | ✅ | — | — | — | — | — |
+| `Image` | properties | `source`, `aspect`, `isAnimating` | ✅ | — | — | — | — | — |
 | `ColorBox` | properties | `color`, `cornerRadius` | ✅ | — | — | — | — | — |
 | text inputs | properties | two-way `text`, `placeholder`, `placeholderColor`, `textColor`, `fontSize`, `fontFamily`, `fontAttributes`, `horizontalTextAlignment`, `isReadOnly`, `maximumLength`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `cursorPosition`, `selectionLength` | ✅ | — | — | — | — | — |
 | text inputs | properties | `inputPurpose`, `verticalTextAlignment`, `characterSpacing`, `textCase`, `fontAutoScalingEnabled` | — | — | — | — | — | — |
@@ -348,7 +348,7 @@ token in parentheses.
 | `TextEditor` | properties | `growsWithText` | ✅ | — | — | — | — | — |
 | `SearchField` | properties | `returnKey`, `cancelButtonColor`, `searchIconColor` | — | — | — | — | — | — |
 | `SearchField` | handlers | `onSubmitted` (`submitted`) | ✅ | — | — | — | — | — |
-| `Picker` | properties | `itemsSource`, `selectedIndex`, `title`, `titleColor`, `isOpen` | ✅ | — | — | — | — | — |
+| `Picker` | properties | `options`, `selectedIndex`, `title`, `titleColor`, `isOpen` | ✅ | — | — | — | — | — |
 | `Picker` | handlers | `onSelectedIndexChanged` (`selectedIndexChanged`), `onOpened` (`opened`), `onClosed` (`closed`) | ✅ | — | — | — | — | — |
 | `DatePicker` | properties | `date`, `minimumDate`, `maximumDate` | ✅ | — | — | — | — | — |
 | `DatePicker` | properties | `format`, `isOpen` | — | — | — | — | — | — |
@@ -358,14 +358,14 @@ token in parentheses.
 | `TimePicker` | properties | `format`, `isOpen` | — | — | — | — | — | — |
 | `TimePicker` | handlers | `onTimeSelected` (`timeSelected`) | ✅ | — | — | — | — | — |
 | `TimePicker` | handlers | `onOpened` (`opened`), `onClosed` (`closed`) | — | — | — | — | — | — |
-| `Switch` | properties/events | two-way `isToggled`, `onToggled` (`toggled`) | ✅ | — | — | — | — | — |
+| `Switch` | properties/events | two-way `isOn`, `onToggled` (`toggled`) | ✅ | — | — | — | — | — |
 | `Switch` | properties | `onColor`, `offColor`, `thumbColor` | — | — | — | — | — | — |
-| `CheckBox` | properties/events | two-way `isChecked`, `color`, `onCheckedChanged` (`checkedChanged`) | ✅ | — | — | — | — | — |
-| `RadioButton` | properties/events | `text`, two-way `isChecked`, `groupName`, `onCheckedChanged` (`checkedChanged`) | ✅ | — | — | — | — | — |
+| `CheckBox` | properties/events | two-way `isOn`, `color`, `onToggled` (`toggled`) | ✅ | — | — | — | — | — |
+| `RadioButton` | properties/events | `text`, two-way `isOn`, `groupName`, `onToggled` (`toggled`) | ✅ | — | — | — | — | — |
 | `Slider` | properties | two-way `value`, `minimum`, `maximum`, `minimumTrackColor` | ✅ | — | — | — | — | — |
 | `Slider` | properties | `maximumTrackColor`, `thumbColor`, `thumbImageSource` | — | — | — | — | — | — |
 | `Slider` | handlers | `onValueChanged` (`valueChanged`), `onDragStarted` (`dragStarted`), `onDragCompleted` (`dragCompleted`) | ✅ | — | — | — | — | — |
-| `Stepper` | properties/events | two-way `value`, `minimum`, `maximum`, `increment`, `onValueChanged` (`valueChanged`) | ✅ | — | — | — | — | — |
+| `Stepper` | properties/events | two-way `value`, `minimum`, `maximum`, `step`, `onValueChanged` (`valueChanged`) | ✅ | — | — | — | — | — |
 | `ProgressBar` | properties | `progress` | ✅ | — | — | — | — | — |
 | `ProgressBar` | properties | `progressColor` | — | — | — | — | — | — |
 | `ActivityIndicator` | properties | `isRunning` | ✅ | — | — | — | — | — |
@@ -384,7 +384,7 @@ token in parentheses.
 | `RefreshView` | state event | `isRefreshingChanged` | — | — | — | — | — | — |
 | `WebView` | properties/events | `source`, `userAgent`, `canGoBackChanged`, `canGoForwardChanged` | — | — | — | — | — | — |
 | `WebView` | handlers | `onNavigating` (`navigating`), `onNavigated` (`navigated`), `onProcessTerminated` (`processTerminated`) | — | — | — | — | — | — |
-| `Map` / `Pin` | provider properties | `region`, `mapType`, `isScrollEnabled`, `isZoomEnabled`, `isTrafficEnabled`, `isShowingUser`, pin `label`, `address`, `location`, `type` | — | — | — | — | — | — |
+| `Map` / `Pin` | provider properties | `region`, `mapType`, `isScrollEnabled`, `isZoomEnabled`, `isTrafficEnabled`, `showsUserLocation`, pin `label`, `address`, `location`, `type` | — | — | — | — | — | — |
 | `Map` / `Pin` | provider handlers | `mapClicked`, `markerClicked`, `infoWindowClicked` | — | — | — | — | — | — |
 | host metadata | structural/adaptive | `content`, `group`, `mode`, `name`, `style`, `isOpaque`, `scrollStep`, `textType`, `visualStateChanged` | — | — | — | — | — | — |
 
@@ -417,43 +417,42 @@ host status.
 
 ### Properties
 
-`absoluteLayoutBounds`, `absoluteLayoutFlags`, `address`, `allowDrop`,
+`absoluteLayoutBounds`, `absoluteLayoutProportions`, `address`, `allowDrop`,
 `aspect`, `autoHide`, `automationExcludedWithChildren`, `automationId`,
 `automationIsInAccessibleTree`, `backButtonTitle`, `background`,
 `barBackgroundColor`, `barTextColor`, `borderColor`, `borderWidth`,
 `cancelButtonColor`, `canDrag`, `characterSpacing`, `clipsContent`, `color`,
-`columnDefinitions`, `columnSpacing`, `content`, `contentLayout`,
-`cornerRadius`, `count`, `currentPage`, `cursorPosition`, `data`, `date`,
-`dragText`, `drawable`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
+`columns`, `columnSpacing`, `content`, `contentLayout`, `cornerRadius`,
+`count`, `currentPage`, `cursorPosition`, `data`, `date`, `dragText`,
+`drawable`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
 `fontAutoScalingEnabled`, `fontFamily`, `fontSize`, `foregroundColor`,
 `format`, `frame`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`,
 `group`, `groupName`, `growsWithText`, `hasBackButton`, `hasNavigationBar`,
 `height`, `hideSingle`, `horizontalAlignment`, `horizontalScrollBarVisibility`,
 `horizontalTextAlignment`, `icon`, `iconImageSource`, `ignoresInput`,
-`imageSource`, `increment`, `indicatorColor`, `indicatorSize`,
-`indicatorsShape`, `inputPurpose`, `isAnimationPlaying`, `isChecked`,
-`isDestructive`, `isEnabled`, `isMaximizable`, `isMinimizable`, `isOpaque`,
-`isOpen`, `isPassword`, `isReadOnly`, `isRefreshEnabled`, `isRefreshing`,
-`isRunning`, `isScrollEnabled`, `isShowingUser`, `isSidebarVisible`,
-`isSpellCheckEnabled`, `isTextPredictionEnabled`, `isToggled`,
-`isTrafficEnabled`, `isVisible`, `isZoomEnabled`, `itemsSource`, `label`,
-`layoutDirection`, `letsInputThrough`, `lineBreak`, `lineHeight`, `location`,
-`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`,
-`maximumLength`, `maximumLines`, `maximumTrackColor`, `maximumVisible`,
-`maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`, `minimumTrackColor`,
-`minimumWidth`, `mode`, `name`, `numberOfTapsRequired`, `offColor`, `onColor`,
-`opacity`, `order`, `orientation`, `padding`, `panTouchCount`, `panXChannel`,
-`panYChannel`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`,
+`imageSource`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
+`inputPurpose`, `isAnimating`, `isDestructive`, `isEnabled`, `isMaximizable`,
+`isMinimizable`, `isOn`, `isOpaque`, `isOpen`, `isPassword`, `isReadOnly`,
+`isRefreshEnabled`, `isRefreshing`, `isRunning`, `isScrollEnabled`,
+`isSidebarVisible`, `isSpellCheckEnabled`, `isTextPredictionEnabled`,
+`isTrafficEnabled`, `isVisible`, `isZoomEnabled`, `label`, `layoutDirection`,
+`letsInputThrough`, `lineBreak`, `lineHeight`, `location`, `mapType`, `margin`,
+`maximum`, `maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`,
+`maximumTrackColor`, `maximumVisible`, `maximumWidth`, `minimum`,
+`minimumDate`, `minimumHeight`, `minimumTrackColor`, `minimumWidth`, `mode`,
+`name`, `numberOfTapsRequired`, `offColor`, `onColor`, `opacity`, `options`,
+`orientation`, `padding`, `panTouchCount`, `panXChannel`, `panYChannel`,
+`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`, `points`,
 `position`, `priority`, `progress`, `progressColor`, `radiusX`, `radiusY`,
 `refreshColor`, `region`, `renderTransform`, `returnKey`, `rotation`,
-`rotationX`, `rotationY`, `rowDefinitions`, `rowSpacing`, `safeAreaEdges`,
-`scale`, `scaleX`, `scaleY`, `scroll`, `scrollMomentum`, `scrollStep`,
+`rotationX`, `rotationY`, `rows`, `rowSpacing`, `safeAreaEdges`, `scale`,
+`scaleX`, `scaleY`, `scrollMomentum`, `scrollOffset`, `scrollStep`,
 `searchIconColor`, `selectedIndex`, `selectedIndicatorColor`,
 `selectionLength`, `semanticDescription`, `semanticHeadingLevel`,
-`semanticHint`, `showsClearButton`, `side`, `snapFrom`, `snapInterval`,
-`snapsAtMost`, `source`, `spacing`, `stroke`, `strokeDashArray`,
-`strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`,
-`strokeShape`, `strokeThickness`, `style`, `subtitle`,
+`semanticHint`, `showsClearButton`, `showsUserLocation`, `side`, `snapFrom`,
+`snapInterval`, `snapsAtMost`, `source`, `spacing`, `step`, `stroke`,
+`strokeDashArray`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`,
+`strokeMiterLimit`, `strokeShape`, `strokeThickness`, `style`, `subtitle`,
 `swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `text`,
 `textCase`, `textColor`, `textDecorations`, `textType`, `threshold`,
 `thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`,
@@ -464,18 +463,17 @@ host status.
 
 ### Events
 
-`activated`, `appearing`, `canGoBackChanged`, `canGoForwardChanged`,
-`checkedChanged`, `clicked`, `closed`, `created`, `currentPageChanged`,
-`dateSelected`, `deactivated`, `destroying`, `disappearing`, `dragCompleted`,
-`dragged`, `dragLeave`, `dragOver`, `dragStarted`, `dragStarting`, `drop`,
-`dropCompleted`, `frameChanged`, `infoWindowClicked`, `isFocusedChanged`,
-`isRefreshingChanged`, `isSidebarVisibleChanged`, `mapClicked`,
-`markerClicked`, `modalPopped`, `navigated`, `navigatedFrom`, `navigatedTo`,
-`navigating`, `navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`,
-`pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
-`pointerReleased`, `popped`, `pressed`, `processTerminated`, `refreshing`,
-`released`, `resumed`, `scrollStopped`, `scrollXChanged`, `scrollYChanged`,
-`selectedIndexChanged`, `snapItemChanged`, `stopped`, `submitted`,
-`swipeChanging`, `swiped`, `swipeEnded`, `swipeStarted`, `tapped`,
-`textChanged`, `timeSelected`, `toggled`, `valueChanged`, `visualStateChanged`,
-`windowClosed`, `windowRestored`.
+`activated`, `appearing`, `canGoBackChanged`, `canGoForwardChanged`, `clicked`,
+`closed`, `created`, `currentPageChanged`, `dateSelected`, `deactivated`,
+`destroying`, `disappearing`, `dragCompleted`, `dragged`, `dragLeave`,
+`dragOver`, `dragStarted`, `dragStarting`, `drop`, `dropCompleted`,
+`frameChanged`, `infoWindowClicked`, `isFocusedChanged`, `isRefreshingChanged`,
+`isSidebarVisibleChanged`, `mapClicked`, `markerClicked`, `modalPopped`,
+`navigated`, `navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`,
+`opened`, `panUpdated`, `pinchUpdated`, `pointerEntered`, `pointerExited`,
+`pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`, `pressed`,
+`processTerminated`, `refreshing`, `released`, `resumed`, `scrollStopped`,
+`scrollXChanged`, `scrollYChanged`, `selectedIndexChanged`, `snapItemChanged`,
+`stopped`, `submitted`, `swipeChanging`, `swiped`, `swipeEnded`,
+`swipeStarted`, `tapped`, `textChanged`, `timeSelected`, `toggled`,
+`valueChanged`, `visualStateChanged`, `windowClosed`, `windowRestored`.

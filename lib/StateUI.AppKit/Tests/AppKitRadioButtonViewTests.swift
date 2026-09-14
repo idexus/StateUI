@@ -59,17 +59,17 @@ final class AppKitRadioButtonViewTests: XCTestCase {
         first.properties = [
             .text: .string("Medium"),
             .groupName: .name("size"),
-            .isChecked: .bool(true),
+            .isOn: .bool(true),
         ]
-        first.events = .replace([.checkedChanged: 11])
+        first.events = .replace([.toggled: 11])
 
         var second = HostPatch(id: .manual("large"), type: .radioButton)
         second.properties = [
             .text: .string("Large"),
             .groupName: .name("size"),
-            .isChecked: .bool(false),
+            .isOn: .bool(false),
         ]
-        second.events = .replace([.checkedChanged: 12])
+        second.events = .replace([.toggled: 12])
 
         var firstContainer = HostPatch(id: .manual("first-container"), type: .vStack)
         firstContainer.children = .arranged([first])

@@ -51,7 +51,7 @@ struct MenuPage: ContentView {
         //
         // The header is outside the scroller so its background owns the page's
         // top edge while only the rows participate in scrolling.
-        .rowDefinitions(.auto, .star, .auto)
+        .rows(.auto, .fill, .auto)
         // EDGE TO EDGE, so the gradient runs behind the status bar the way the
         // navigation bar beside it does. Every LAYOUT insets itself, so the
         // header says it too.

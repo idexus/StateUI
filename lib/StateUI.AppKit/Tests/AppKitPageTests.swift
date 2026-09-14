@@ -766,7 +766,7 @@ final class AppKitPageTests: XCTestCase {
             item.properties = [
                 .text: .string(title),
                 .priority: .number(Double(priority)),
-                .order: .enumeration(order),
+                .placement: .enumeration(order),
                 .isEnabled: .bool(enabled),
                 .isDestructive: .bool(destructive),
             ]

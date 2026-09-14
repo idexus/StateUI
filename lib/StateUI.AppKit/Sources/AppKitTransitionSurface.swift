@@ -134,7 +134,7 @@ enum AppKitTransitionSurface {
     private static let stackProperties: Set<Prop> = [.padding, .spacing]
 
     private static let gridProperties: Set<Prop> = [
-        .padding, .rowSpacing, .columnSpacing, .rowDefinitions, .columnDefinitions,
+        .padding, .rowSpacing, .columnSpacing, .rows, .columns,
     ]
 
     private static let labelProperties: Set<Prop> = [

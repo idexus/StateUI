@@ -1,9 +1,9 @@
 generation 1 names +9
 Grid 1 arranged(2)
-  columnDefinitions: values [values [enum 1, number 1], values [enum 1, number 2]]
   columnSpacing: number 8
-  rowDefinitions: values [values [enum 0, number 70], values [enum 2, number 1]]
+  columns: values [values [enum 1, number 1], values [enum 1, number 2]]
   rowSpacing: number 12
+  rows: values [values [enum 0, number 70], values [enum 2, number 1]]
   Label 2
     text: string "Top left"
   Label 3

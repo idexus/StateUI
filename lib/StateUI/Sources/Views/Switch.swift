@@ -15,8 +15,8 @@ extension SwitchProperties {
     /// `Switch(true)` and `Switch($soundOn)` both say this from their argument,
     /// so a modifier written beside one wins - and a binding goes on being
     /// written back to, which is how the two can then disagree.
-    public func isToggled(_ value: Bool) -> Modified {
-        setValue(.isToggled, .bool(value))
+    public func isOn(_ value: Bool) -> Modified {
+        setValue(.isOn, .bool(value))
     }
 
     /// The colour of the track while it is ON.
@@ -44,7 +44,7 @@ extension SwitchProperties {
 ///         .onColor(.green)
 ///
 /// Given a binding it shows the value and writes every flip back. Given a plain
-/// `Bool` - or nothing plus `.isToggled(_:)` - it shows that and reports
+/// `Bool` - or nothing plus `.isOn(_:)` - it shows that and reports
 /// nothing, so `.onToggled` is how the flip gets anywhere.
 ///
 /// A `CheckBox` asks the same question in the shape a form uses; a
@@ -54,20 +54,20 @@ public struct Switch: View, SwitchProperties {
     public var node: Node
 
     /// An empty one - what a `Style<Switch>` is written against, and what
-    /// `.isToggled(_:)` plus `.onToggled` build on.
+    /// `.isOn(_:)` plus `.onToggled` build on.
     public init() {
         node = Node(type: .`switch`)
     }
 
-    /// A switch showing `isToggled`. One-way: the flip goes nowhere without
+    /// A switch showing `isOn`. One-way: the flip goes nowhere without
     /// `.onToggled` - CheckBox's `CheckBox(true)` is the same pair.
-    public init(_ isToggled: Bool) {
-        node = Node(type: .`switch`, props: [.isToggled: .bool(isToggled)])
+    public init(_ isOn: Bool) {
+        node = Node(type: .`switch`, props: [.isOn: .bool(isOn)])
     }
 
     /// Two-way: shows what the binding holds, and writes back what is flipped.
-    public init(_ isToggled: Binding<Bool>) {
-        self = Switch().isToggled(isToggled)
+    public init(_ isOn: Binding<Bool>) {
+        self = Switch().isOn(isOn)
     }
 
     /// Two-way: shows what the state holds and writes back what is flipped -
@@ -85,10 +85,10 @@ public struct Switch: View, SwitchProperties {
     /// - Parameter value: the state shown, and written back into as the
     ///   reader flips it.
     /// - Returns: the switch, wearing and reporting that value.
-    public func isToggled(_ value: Binding<Bool>) -> Modified {
+    public func isOn(_ value: Binding<Bool>) -> Modified {
         value.image == nil
-            ? described(.isToggled, value, on: .toggled)
-            : plain(.isToggled, by: value, mode: .inOut)
+            ? described(.isOn, value, on: .toggled)
+            : plain(.isOn, by: value, mode: .inOut)
     }
 
     // MARK: Properties

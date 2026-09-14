@@ -28,7 +28,7 @@ struct ProgressBarSample: SampleContent, ExampleContent {
             Stepper($done)
                 .minimum(0)
                 .maximum(steps)
-                .increment(1)
+                .step(1)
 
             // A bar built empty carries no value at all, so `.progress` is
             // how one reaches it. This one shows what is LEFT, so the two
@@ -56,7 +56,7 @@ struct ProgressBarSample: SampleContent, ExampleContent {
                 .semanticDescription("Work done")
                 .minimum(0)
                 .maximum(steps)
-                .increment(1)
+                .step(1)
                 .horizontalAlignment(.center)
 
             SectionTitle("The same property, as a modifier")

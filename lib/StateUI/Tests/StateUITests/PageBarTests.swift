@@ -33,7 +33,7 @@ private struct BarredPage: ContentView {
 
                 ToolbarItem("Delete")
                     .id("delete")
-                    .order(.secondary)
+                    .placement(.overflow)
                     .isDestructive(true),
             ]
 
@@ -78,8 +78,8 @@ final class PageBarTests: XCTestCase {
         let toolbar = try XCTUnwrap(page.children.first { $0.type == "ToolbarItems" })
         XCTAssertEqual(toolbar.children.map { $0.id }, [.manual("save"), .manual("delete")])
         XCTAssertEqual(toolbar.children[0].props["text"], .string("Save"))
-        XCTAssertEqual(toolbar.children[1].props["order"], .enumeration(2),
-                       "ToolbarItemOrder.Secondary")
+        XCTAssertEqual(toolbar.children[1].props["placement"], .enumeration(2),
+                       "ToolbarItemPlacement.Overflow")
         XCTAssertNotNil(toolbar.children[0].events?["clicked"])
 
         let menus = try XCTUnwrap(page.children.first { $0.type == "MenuBar" })

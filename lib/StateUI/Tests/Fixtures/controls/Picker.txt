@@ -1,7 +1,7 @@
 generation 1 names +9
 Picker 1
   isOpen: false
-  itemsSource: strings "Small","Medium","Large"
+  options: strings "Small","Medium","Large"
   selectedIndex: number 1
   title: string "Size"
   titleColor: color FF808080
