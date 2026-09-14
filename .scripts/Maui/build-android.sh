@@ -29,8 +29,8 @@
 #
 # WHY SwiftPM:
 # Android needs it, because a Swift SDK is a SwiftPM feature and swiftc rejects
-# -swift-sdk outright. The app is a real package - its manifest beside the
-# .csproj, its sources under Swift/ - depending on the library, so both modules
+# -swift-sdk outright. The app is a real package - its manifest at the
+# application's root, its sources under Sources/ - depending on the library, so both modules
 # build in one pass, and the same manifest is what gives SourceKit the context
 # it needs in the editor.
 #
@@ -50,7 +50,7 @@ fi
 
 if [[ ! -f "$APP_PACKAGE/Package.swift" ]]; then
   echo "ERROR: no Package.swift in $APP_PACKAGE"
-  echo "An app must be a SwiftPM package - Package.swift beside the .csproj. See apps/HelloWorld."
+  echo "An application is a SwiftPM package - Package.swift at its root, beside Sources/. See apps/HelloWorld."
   exit 1
 fi
 

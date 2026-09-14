@@ -7,7 +7,7 @@ namespace HelloWorld;
 /// </summary>
 /// <remarks>
 /// The window, its pages and everything on them are declared in Swift - see
-/// <c>Swift/HelloWorldApp.swift</c>. <see cref="StateUIWindow"/> asks the
+/// <c>Sources/HelloWorldApp.swift</c>. <see cref="StateUIWindow"/> asks the
 /// Swift side what to show and materializes it as native MAUI controls, so the
 /// only thing left to say here is which kind of window to open.
 /// </remarks>

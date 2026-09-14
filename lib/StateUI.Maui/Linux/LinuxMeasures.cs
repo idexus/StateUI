@@ -367,7 +367,7 @@ internal static class LinuxMeasures
     }
 
     /// <summary>
-    /// Gives the seven shapes the measure their author asked for.
+    /// Gives the six shapes the measure their author asked for.
     /// </summary>
     /// <remarks>
     /// LAST, AFTER THE LIBRARY'S OWN REGISTRATION. The shapes are this
@@ -379,7 +379,6 @@ internal static class LinuxMeasures
     internal static MauiAppBuilder Shapes(MauiAppBuilder builder) =>
         builder.ConfigureMauiHandlers(handlers =>
         {
-            handlers.AddHandler<SwiftRectangle, Drawn>();
             handlers.AddHandler<SwiftRoundRectangle, Drawn>();
             handlers.AddHandler<SwiftEllipse, Drawn>();
             handlers.AddHandler<SwiftLine, Drawn>();

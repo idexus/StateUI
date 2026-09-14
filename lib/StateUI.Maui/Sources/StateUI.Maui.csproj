@@ -55,23 +55,20 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
   
-    <!-- The SHIPPED name, which is deliberately not the project's. `dotnet add
-         package StateUI` is what a person types, and it is the same name the
-         Swift half carries, so one library is asked for by one word on both
-         sides.
+    <!-- The package, the project, the assembly and the namespaces are all
+         StateUI.Maui: the MAUI host of StateUI.
 
-         THE ASSEMBLY MUST NOT FOLLOW IT. On Windows the native Swift library IS
-         StateUI.dll - NativeMethods.Lib names it, build-windows.ps1 produces it -
-         and it sits in the app's output directory beside the managed ones, so a
-         managed StateUI.dll would collide with it there. The project, the
-         assembly and the namespaces stay StateUI.Maui; only what NuGet
-         publishes is shortened. -->
+         THE NAME StateUI ALONE IS THE SWIFT LIBRARY'S. On Windows the native
+         Swift library IS StateUI.dll - NativeMethods.Lib names it,
+         build-windows.ps1 produces it - and it sits in the app's output
+         directory beside the managed ones, so a managed StateUI.dll would
+         collide with it there. -->
     <PackageId>StateUI.Maui</PackageId>
     <Version>0.3.1</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
-    <Title>StateUI</Title>
-    <PackageDescription>Write .NET MAUI user interfaces in Swift. State goes in, native controls come out - on iOS, Android, macOS, Windows and Linux. This is the C# half: the renderer that turns the described tree into real MAUI controls. Version 0.3: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <Title>StateUI MAUI host</Title>
+    <PackageDescription>StateUI's .NET MAUI host: native interfaces written in Swift, rendered with MAUI controls on Android, iOS, Mac Catalyst, Windows and Linux. This is the C# half; an application's Swift half comes from the StateUI Swift package. On Linux, reference StateUI.Maui.Linux beside it. Version 0.3: the API is still changing, so use in a project is at your own risk.</PackageDescription>
     <PackageTags>maui;swift;ui;declarative;ios;android;maccatalyst;windows;linux;gtk4;cross-platform</PackageTags>
     <!-- Both URLs are what nuget.org shows beside the package, and both are read
          when a package id prefix is applied for: a listing that says who owns it
@@ -87,7 +84,7 @@
 
   <!-- THE MAUI VERSION IS CHOSEN BY THE TARGET, NEVER BY THE MACHINE BUILDING.
        The plain net10.0 lib is what a LINUX head consumes - beside
-       StateUI.Linux, whose GTK4 backend is built against 10.0.41 - so that is
+       StateUI.Maui.Linux, whose GTK4 backend is built against 10.0.41 - so that is
        the version its group asks for, and the four platform heads take
        10.0.100. Asked of the host instead, the same package id would carry
        different dependency metadata depending on where it was packed, and a
@@ -135,7 +132,7 @@
   <ItemGroup>
     <!-- THE HOSTING CALL IS PER PLATFORM, and plain net10.0 has two of them:
          the headless tests, which host nothing, and LINUX, whose hosting lives
-         in StateUI.Linux beside the platform it brings with it. So the four
+         in StateUI.Maui.Linux beside the platform it brings with it. So the four
          workload heads take this file and that framework does not - which is
          also what lets both assemblies declare the same extension method
          without an application ever seeing two of them. -->
@@ -151,7 +148,7 @@
     <InternalsVisibleTo Include="StateUI.Maui.Tests" />
 
     <!-- AND THE LINUX PLATFORM IS THE OTHER HALF OF THIS LIBRARY, not a
-         consumer of it: StateUI.Linux is a package of its own only because
+         consumer of it: StateUI.Maui.Linux is a package of its own only because
          plain net10.0 means two different things, and what it reaches for -
          the frame clock seam every platform's clock is written against - is
          the same internal machinery the four workload heads compile straight

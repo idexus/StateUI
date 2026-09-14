@@ -18,7 +18,7 @@ namespace StateUI.Maui.Rendering;
 /// <c>Shape</c> subclass holding the MAUI original as its GEOMETRY ENGINE:
 /// the original answers <c>IShape.PathForBounds</c> - its own arithmetic,
 /// stroke insets and aspect fitting, byte for byte - and the wrapper runs
-/// that answer through the matrix kept here. One mechanism for all seven
+/// that answer through the matrix kept here. One mechanism for all six
 /// shapes, and every platform rasterizes from the same transformed path,
 /// which is what makes the transform the same picture everywhere.
 /// </para>

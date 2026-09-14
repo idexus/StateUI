@@ -8,8 +8,8 @@
 # The container is swift.org's own image, so the Swift half compiles with the
 # release this library is written against; .NET goes in beside it. The apt list
 # is what a GTK4 application needs at BUILD time: the development files for the
-# backend's own dependencies, and graphene for the small C shim StateUI.Linux
-# compiles beside the Swift libraries.
+# backend's own dependencies, and graphene for the small C shim
+# StateUI.Maui.Linux compiles beside the Swift libraries.
 #
 # NOTHING RUNS THE APPLICATION HERE - a GTK4 app needs a display, and a build
 # that produces the executable and its native payload is what this job proves.

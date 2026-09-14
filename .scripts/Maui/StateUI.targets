@@ -18,10 +18,10 @@
   <!-- ======================================================================
        StateUI native build integration
        ======================================================================
-       Compiles the Swift side and attaches it to the app. Import it from an app
-       project with a single line:
+       Compiles the Swift side and attaches it to the app. Import it from the
+       application's MAUI project, in Platforms/Maui/, with a single line:
 
-           <Import Project="..\..\.scripts\StateUI.targets" />
+           <Import Project="../../.scripts/Maui/StateUI.targets" />
 
        TWO SWIFT MODULES ARE BUILT:
 
@@ -29,9 +29,9 @@
                               nothing about any application, which is what lets
                               it be published on its own.
 
-         $(StateUIAppModule) the application's own UI, from the Swift/ folder
-                              in the project. Named after the project, so a
-                              second sample app needs no configuration.
+         $(StateUIAppModule) the application's own UI, from the Sources/ folder
+                              at the application's root. Named after the
+                              project, so a second app needs no configuration.
 
        The dependency runs app -> library, never the reverse.
 
@@ -44,13 +44,16 @@
            SwiftConfig           debug | release
            SwiftDebugFormat      codeview | dwarf (defaults per platform)
 
-       TWO LAYOUTS, ONE FILE. In this repository an app sits under apps/<Name>/
-       and imports ../../.scripts/StateUI.targets, with the library's sources
-       a few directories away. An app made by `dotnet new stateui` has no such
-       directory above it: the .scripts folder sits beside the project file, and
-       the library arrives as a SwiftPM dependency the app's own manifest names
-       by URL. Everything below that could differ between the two is DERIVED
-       rather than assumed, so the same scripts ship in both places.
+       TWO LAYOUTS, ONE FILE. In this repository an application sits under
+       apps/<Name>/ and its MAUI project imports
+       ../../../../.scripts/Maui/StateUI.targets, with the library's sources a
+       few directories away. An application made by `dotnet new stateui-maui`
+       carries .scripts/ at its own root, and the library arrives as a SwiftPM
+       dependency its manifest names - by URL, or by path when the application
+       was made against a checkout, with the template's stateui-path option.
+       Everything below that could differ between
+       the two is DERIVED rather than assumed, so the same scripts ship in both
+       places.
 
        NOTE: forward slashes everywhere, deliberately. MSBuild accepts them on
        Windows, but a backslash on macOS or Linux is an ordinary character -
@@ -111,10 +114,8 @@
 
     <!-- The whole folder is the app's code - the application and its pages sit
          directly in it, Styles/ holds the styles, and a directory added beside
-         them needs no edit anywhere. The manifest and SwiftPM's own .build/ are
-         excluded here and in the scripts, exactly as SwiftPM itself leaves them
-         out - which costs nothing now that both sit one level up, and is what
-         keeps a manifest left inside Swift/ working. -->
+         them needs no edit anywhere. SwiftPM's own .build/ is excluded here and
+         in the scripts, exactly as SwiftPM itself leaves it out. -->
     <StateUIAppSources>$(StateUIAppSwiftDir)</StateUIAppSources>
 
     <!-- Module name DERIVED FROM THE PROJECT, never hardcoded: Gallery
@@ -198,8 +199,8 @@
   <!-- ======================================================================
        THE LIBRARY, WHEN IT IS A DEPENDENCY RATHER THAN A SIBLING
        ======================================================================
-       An app scaffolded by `dotnet new stateui` names StateUI by URL in its
-       own Package.swift, so its sources arrive as a SwiftPM checkout. On
+       An application made by `dotnet new stateui-maui` names StateUI by URL in
+       its own Package.swift, so its sources arrive as a SwiftPM checkout. On
        Android that happens by itself - the whole build IS SwiftPM - but Apple
        and Windows call swiftc directly and need the files on disk first.
 
@@ -601,9 +602,9 @@ internal static partial class StateUIAppInterop
          Content items, so without the guard a deliberate C#-only build fails on
          a library it was told not to make. -->
     <Error Condition="!Exists('$(SwiftWindowsDir)StateUI.dll') And '$(SkipSwiftBuild)' != 'true' And '$([MSBuild]::IsOSPlatform(`WINDOWS`))' == 'true'"
-           Text="StateUI: $(SwiftWindowsDir)StateUI.dll was not produced. Run .scripts/build-windows.cmd by hand for the real cause - and note that by hand builds RELEASE, while MSBuild passes debug." />
+           Text="StateUI: $(SwiftWindowsDir)StateUI.dll was not produced. Run .scripts/Maui/build-windows.cmd by hand for the real cause - and note that by hand builds RELEASE, while MSBuild passes debug." />
     <Error Condition="!Exists('$(SwiftWindowsDir)$(StateUIAppModule).dll') And '$(SkipSwiftBuild)' != 'true' And '$([MSBuild]::IsOSPlatform(`WINDOWS`))' == 'true'"
-           Text="StateUI: $(SwiftWindowsDir)$(StateUIAppModule).dll was not produced. The application's own Swift module is missing, so nothing would register the app. Run .scripts/build-windows.cmd by hand for the real cause." />
+           Text="StateUI: $(SwiftWindowsDir)$(StateUIAppModule).dll was not produced. The application's own Swift module is missing, so nothing would register the app. Run .scripts/Maui/build-windows.cmd by hand for the real cause." />
   </Target>
 
   <Target Name="CopySwiftWindows"
@@ -700,9 +701,9 @@ internal static partial class StateUIAppInterop
          literal item says nothing, ever. `SkipSwiftBuild` guards both: the
          build that was asked to compile no Swift has none to package. -->
     <Error Condition="!Exists('$(SwiftLinuxDir)libStateUI.so') And '$(SkipSwiftBuild)' != 'true'"
-           Text="StateUI: $(SwiftLinuxDir)libStateUI.so was not produced. Run .scripts/build-linux.sh by hand for the real cause - and note that by hand builds RELEASE, while MSBuild passes debug." />
+           Text="StateUI: $(SwiftLinuxDir)libStateUI.so was not produced. Run .scripts/Maui/build-linux.sh by hand for the real cause - and note that by hand builds RELEASE, while MSBuild passes debug." />
     <Error Condition="!Exists('$(SwiftLinuxDir)lib$(StateUIAppModule).so') And '$(SkipSwiftBuild)' != 'true'"
-           Text="StateUI: $(SwiftLinuxDir)lib$(StateUIAppModule).so was not produced. The application's own Swift module is missing, so nothing would register the app. Run .scripts/build-linux.sh by hand for the real cause." />
+           Text="StateUI: $(SwiftLinuxDir)lib$(StateUIAppModule).so was not produced. The application's own Swift module is missing, so nothing would register the app. Run .scripts/Maui/build-linux.sh by hand for the real cause." />
   </Target>
 
   <!-- ======================================================================

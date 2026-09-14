@@ -12,7 +12,7 @@
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-android;net10.0-windows10.0.19041.0</TargetFrameworks>
     <!-- LINUX IS A PLAIN net10.0 HEAD: there is no MAUI workload there, so the
          framework carries no platform and everything below conditions on the
-         HOST rather than on a platform identifier. StateUI.Linux is what puts
+         HOST rather than on a platform identifier. StateUI.Maui.Linux is what puts
          a real MAUI application underneath it.
 
          SINGULAR, and that is the whole of what makes `dotnet run` work: the
@@ -163,7 +163,7 @@
     <AndroidEnvironment Include="Android/frames.txt" />
   </ItemGroup>
 
-  <!-- The Linux head's rendering stack, in ONE reference: StateUI.Linux hosts
+  <!-- The Linux head's rendering stack, in ONE reference: StateUI.Maui.Linux hosts
        the app over Microsoft's own GTK4 backend from dotnet/maui-labs, brings
        that backend and its Essentials along as ordinary dependencies, and
        answers the gaps it leaves. `builder.UseStateUIApp<App>()` in MauiProgram
@@ -199,7 +199,7 @@
 
   <!-- LINUX SHIPS THE VECTORS UNDER THE NAMES THE OTHER PLATFORMS RASTERIZE
        THEM TO. There is no Resizetizer here, so nothing turns `nav_home.svg`
-       into `nav_home.png` - and `nav_home.png` is what every source in Swift/
+       into `nav_home.png` - and `nav_home.png` is what every source in Sources/
        asks for, that being the name MAUI gives an SVG everywhere else. The
        backend resolves a file source by looking for exactly that name beside
        the executable, so the vectors are copied there under it.
@@ -218,7 +218,7 @@
 
     <!-- AND THE APP ICON, where an icon theme keeps one. Nothing composes the
          two halves of MauiIcon here, so the ready-made tile is what the windows
-         wear - StateUI.Linux adds this directory to the theme's search path and
+         wear - StateUI.Maui.Linux adds this directory to the theme's search path and
          makes `appicon` every window's default.
 
          THE SAME VECTOR UNDER FOUR SIZES, because GTK publishes a window icon
@@ -280,10 +280,10 @@
     <ProjectReference Include="../../../../lib/StateUI.Maui/Sources/StateUI.Maui.csproj" />
   </ItemGroup>
 
-  <!-- The app's own Swift UI lives in Swift/ next to this file. It is compiled
-       into a separate Swift module named after the project (GalleryUI),
-       which imports the StateUI library. StateUI.targets discovers the
-       files, so nothing is listed here. -->
+  <!-- The app's own Swift UI lives in Sources/ at the application's root. It is
+       compiled into a separate Swift module named after the project
+       (GalleryUI), which imports the StateUI library. StateUI.targets
+       discovers the files, so nothing is listed here. -->
 
   <ItemGroup>
     <!-- The mark, on the identity gradient. Color is what a platform falls back

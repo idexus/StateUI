@@ -17,7 +17,7 @@ namespace StateUI.Maui.Hosting;
 /// beside it - and on Android the answer to a wrapped view's transform, on
 /// Apple the hook that reads a scene session as it connects; on Linux the same
 /// call is the
-/// <c>StateUI.Linux</c> package's, and it brings a whole platform with it -
+/// <c>StateUI.Maui.Linux</c> package's, and it brings a whole platform with it -
 /// the GTK4 backend's hosting, its Essentials, and this library's answers to
 /// what that backend leaves undone. An application says the same sentence
 /// either way and carries no platform files of its own.

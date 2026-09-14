@@ -82,18 +82,19 @@ $rootDir   = Split-Path -Parent (Split-Path -Parent $scriptDir)
 $sourceDir = $Sources
 
 if (-not $OutDir) {
-    # MSBuild passes an explicit directory (the app's obj/stateui/...). A
-    # manual run has none, and defaulting to a separate artifacts/ folder is a
-    # trap: the script reports success while the app still finds nothing,
-    # because it looks under obj/. Default to the sample app's obj/ when that
-    # project is present.
-    $sampleObj = Join-Path $rootDir "apps\Gallery\obj\stateui\windows"
-    $ownObj = Join-Path $rootDir "obj\stateui\windows"
-    if (Test-Path (Join-Path $rootDir "apps\Gallery")) {
+    # MSBuild passes an explicit directory (the MAUI project's obj/stateui/...).
+    # A manual run has none, and defaulting to a separate artifacts/ folder is
+    # a trap: the script reports success while the app still finds nothing,
+    # because it looks under obj/. Default to the gallery's MAUI project when
+    # it is present.
+    $sampleObj = Join-Path $rootDir "apps\Gallery\Platforms\Maui\obj\stateui\windows"
+    $heads = Join-Path $rootDir "Platforms\Maui"
+    $ownObj = Join-Path $heads "obj\stateui\windows"
+    if (Test-Path (Join-Path $rootDir "apps\Gallery\Platforms\Maui")) {
         $OutDir = $sampleObj
-    } elseif (Get-ChildItem -Path $rootDir -Filter *.csproj -File -ErrorAction SilentlyContinue) {
-        # A scaffolded app: the project file sits beside .scripts, so its own
-        # obj/ is where the app will look.
+    } elseif (Get-ChildItem -Path $heads -Filter *.csproj -File -ErrorAction SilentlyContinue) {
+        # An application made by the template: its MAUI project sits in
+        # Platforms\Maui, so that project's obj/ is where the app will look.
         $OutDir = $ownObj
     } else {
         $OutDir = Join-Path $rootDir "artifacts\windows"
@@ -191,10 +192,10 @@ if (Test-Path $Pdb) { Remove-Item $Pdb -Force }
 # Discovered, never listed: adding a .swift file anywhere under the sources
 # folder picks it up with no change here.
 #
-# Two exclusions, the same two SwiftPM applies on its own: the app module is
-# compiled from its whole Swift/ folder, where Package.swift is the MANIFEST
-# and .build/ is SwiftPM's scratch - SourceKit fills it with checkouts whose
-# .swift files belong to other packages entirely.
+# Two exclusions, the same two SwiftPM applies on its own, for a folder that
+# holds them: Package.swift is the MANIFEST, and .build/ is SwiftPM's scratch -
+# SourceKit fills it with checkouts whose .swift files belong to other packages
+# entirely.
 #
 # THE .build EXCLUSION IS ANCHORED to the source directory, and it was not: a
 # pattern matching .build anywhere in the path threw away everything when the

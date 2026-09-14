@@ -34,7 +34,7 @@
 #
 # WHY SwiftPM:
 # The host toolchain builds natively, so no Swift SDK is involved - but the
-# app is a real package, its manifest beside the .csproj, depending on the
+# app is a real package, its manifest at the application's root, depending on the
 # library, so one `swift build` compiles both modules, exactly as the Android
 # build does. NonisolatedNonsendingByDefault comes from
 # the manifests' swiftSettings, since SwiftPM reads them here.
@@ -67,7 +67,7 @@ fi
 
 if [[ ! -f "$APP_PACKAGE/Package.swift" ]]; then
   echo "ERROR: no Package.swift in $APP_PACKAGE"
-  echo "An app must be a SwiftPM package - Package.swift beside the .csproj. See apps/HelloWorld."
+  echo "An application is a SwiftPM package - Package.swift at its root, beside Sources/. See apps/HelloWorld."
   exit 1
 fi
 
@@ -140,13 +140,13 @@ done
 # Native shims - a C file becomes lib<name>.so beside the modules. A shim
 # interposes one native symbol and forwards the rest through its own
 # dependency, which is how this side answers a native bug it cannot reach from
-# C#; StateUI.Maui.Linux/native/graphene-shim.c says why that one exists.
+# C#; lib/StateUI.Maui/Linux/native/graphene-shim.c says why that one exists.
 #
 # TWO PLACES, and the library's is the one that matters: an application gets
 # its shims from the library it consumes - the same checkout SwiftPM makes for
 # the Swift half, which is why $LIB_PACKAGE finds them for an app built from
 # NuGet exactly as it does inside this repository. An app may add its own
-# beside its Platforms/Linux sources.
+# beside its Platforms/Maui/Linux sources.
 for shim_src in "$LIB_PACKAGE"/lib/StateUI.Maui/Linux/native/*.c "$APP_PACKAGE"/Platforms/Maui/Linux/*.c; do
   [[ -f "$shim_src" ]] || continue
   shim_name="lib$(basename "$shim_src" .c).so"

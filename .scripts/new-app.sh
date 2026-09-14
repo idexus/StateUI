@@ -75,15 +75,23 @@ fail() {
 APP="$APPS_DIR/$NAME"
 LOWER="$(echo "$NAME" | tr '[:upper:]' '[:lower:]')"
 
-mkdir -p "$APP"
-for item in Package.swift Sources Resources Platforms; do
+mkdir -p "$APP/Platforms/Maui"
+for item in Package.swift Sources Resources Platforms/AppKit; do
   cp -R "$MODEL/$item" "$APP/$item"
 done
 
-# What HelloWorld's own builds wrote - its MAUI head's output and whatever
-# Finder left behind. SwiftPM's .build/ and Package.resolved sit beside the
-# manifest, which is outside what was copied.
-rm -rf "$APP/Platforms/Maui/bin" "$APP/Platforms/Maui/obj"
+# The MAUI head without what its builds write: bin/ and obj/ stay where they
+# are rather than being copied and removed, which a build of HelloWorld under
+# way would race. SwiftPM's .build/ and Package.resolved sit beside the
+# manifest, outside what is copied at all.
+for item in "$MODEL"/Platforms/Maui/*; do
+  case "$(basename "$item")" in
+    bin|obj) continue ;;
+  esac
+  cp -R "$item" "$APP/Platforms/Maui/"
+done
+
+# And whatever Finder left behind.
 find "$APP" -name .DS_Store -delete
 
 # The rename, in names and then in contents: the model's name is a plain token

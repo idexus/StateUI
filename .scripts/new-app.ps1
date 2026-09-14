@@ -51,17 +51,19 @@ if (-not (Test-Path $model)) { throw "HelloWorld is not at $model - it is what a
 
 $lower = $Name.ToLowerInvariant()
 
-New-Item -ItemType Directory -Path $app -Force | Out-Null
-foreach ($item in @("Package.swift", "Sources", "Resources", "Platforms")) {
+New-Item -ItemType Directory -Path (Join-Path $app "Platforms/Maui") -Force | Out-Null
+foreach ($item in @("Package.swift", "Sources", "Resources", "Platforms/AppKit")) {
     Copy-Item -Recurse (Join-Path $model $item) (Join-Path $app $item)
 }
 
-# What HelloWorld's own builds wrote - its MAUI head's output and whatever
-# Finder left behind.
-foreach ($built in @("Platforms/Maui/bin", "Platforms/Maui/obj")) {
-    $path = Join-Path $app $built
-    if (Test-Path $path) { Remove-Item -Recurse -Force $path }
-}
+# The MAUI head without what its builds write: bin/ and obj/ stay where they
+# are rather than being copied and removed, which a build of HelloWorld under
+# way would race.
+Get-ChildItem -Path (Join-Path $model "Platforms/Maui") |
+    Where-Object { $_.Name -notin @("bin", "obj") } |
+    ForEach-Object { Copy-Item -Recurse $_.FullName (Join-Path $app "Platforms/Maui") }
+
+# And whatever Finder left behind.
 Get-ChildItem -Path $app -Recurse -Force -Filter ".DS_Store" | Remove-Item -Force
 
 # The rename, in names and then in contents: the model's name is a plain token

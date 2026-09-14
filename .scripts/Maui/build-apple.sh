@@ -94,11 +94,11 @@ SOURCES_DIR="$(cd "$SOURCES_DIR" && pwd)"
 
 # Sources are DISCOVERED, never listed - a new .swift file needs no edit here.
 #
-# Two exclusions, the same two SwiftPM applies on its own: the app module is
-# compiled from its whole Swift/ folder, where Package.swift is the MANIFEST
-# (import PackageDescription would fail to compile, and it is not app code)
-# and .build/ is SwiftPM's scratch, which SourceKit fills with checkouts
-# whose .swift files belong to other packages entirely.
+# Two exclusions, the same two SwiftPM applies on its own, for a folder that
+# holds them: Package.swift is the MANIFEST (import PackageDescription would
+# fail to compile, and it is not app code), and .build/ is SwiftPM's scratch,
+# which SourceKit fills with checkouts whose .swift files belong to other
+# packages entirely.
 #
 # THE .build EXCLUSION IS ANCHORED to this directory, and it was not: a plain
 # */.build/* threw away everything when the LIBRARY was the thing being

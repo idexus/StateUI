@@ -1,15 +1,21 @@
 # Overview
 
-Write .NET MAUI user interfaces in Swift. Project template.
+A StateUI application: its interface written in Swift, with a .NET MAUI head
+for Android, iOS, Mac Catalyst, Windows and Linux.
 
 **Version 0.3 - the API is still changing.** Use in a project is at your own
 risk: names and signatures move between versions while the design is being
 found.
 
 ```
-dotnet new install StateUI.Template
-dotnet new stateui -n MyApp
+dotnet new install StateUI.Maui.Template
+dotnet new stateui-maui -n MyApp --stateui-path /path/to/StateUI
 ```
+
+- `--stateui-path` builds the application against a StateUI checkout, whose
+  directory is named `StateUI`.
+- `--appkit` adds a native macOS head beside the MAUI one; it needs
+  `--stateui-path`.
 
 Name the app with letters and digits only: the name becomes the Swift module
 and the Android application id, and a hyphen or space in either fails far from

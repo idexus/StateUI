@@ -23,8 +23,8 @@
     <Version>0.3.1</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
-    <Title>StateUI for Linux</Title>
-    <PackageDescription>The Linux half of StateUI: hosting over MAUI's GTK4 backend, and this library's answers to what that backend leaves undone - styling, gestures, scrolling, measures, dispatching, navigation teardown and transforms. Reference it beside StateUI in an application's Linux head. Version 0.3: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <Title>StateUI MAUI host for Linux</Title>
+    <PackageDescription>The Linux platform of StateUI's .NET MAUI host: hosting over MAUI's GTK 4 backend, with the styling, gestures, scrolling, measurement, dispatching, navigation teardown and transforms that backend leaves open. Reference it beside StateUI.Maui in an application's Linux head. Version 0.3: the API is still changing, so use in a project is at your own risk.</PackageDescription>
     <PackageTags>maui;swift;ui;declarative;linux;gtk4;cross-platform</PackageTags>
     <PackageProjectUrl>https://github.com/idexus/StateUI</PackageProjectUrl>
     <RepositoryUrl>https://github.com/idexus/StateUI</RepositoryUrl>
@@ -39,8 +39,8 @@
          draws every control, its Essentials, and MAUI itself at the version
          that backend asks for - 10.0.41, which the runtime's own net10.0 build
          pins too, against the 10.0.100 its four platform builds pin. They are
-         ordinary dependencies, so `dotnet add package StateUI.Linux` brings
-         the whole platform with it. -->
+         ordinary dependencies, so `dotnet add package StateUI.Maui.Linux`
+         brings the whole platform with it. -->
     <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" />
     <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4" Version="0.1.0-preview.12.26421.1" />
     <PackageReference Include="Microsoft.Maui.Platforms.Linux.Gtk4.Essentials" Version="0.1.0-preview.12.26421.1" />
@@ -48,7 +48,7 @@
 
   <ItemGroup>
     <!-- The renderer itself, which this hosts. As a package dependency it is
-         `StateUI`, the runtime's own published name. -->
+         `StateUI.Maui`, the runtime's own published name. -->
     <ProjectReference Include="../Sources/StateUI.Maui.csproj" />
   </ItemGroup>
 
@@ -76,9 +76,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- The runtime's README: one page describes both packages, this one being
+         the runtime's Linux platform. -->
     <None Include="../../../LICENSE" Pack="true" PackagePath="\" />
     <None Include="../../../NOTICE" Pack="true" PackagePath="\" />
-    <None Include="../StateUI.Maui/README.md" Pack="true" PackagePath="\" />
+    <None Include="../Sources/README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>

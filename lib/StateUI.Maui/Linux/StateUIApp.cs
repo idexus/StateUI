@@ -15,8 +15,8 @@ namespace StateUI.Maui.Hosting;
 /// answered here by the whole of what Linux needs: MAUI's GTK4 backend, its
 /// Essentials, and this library's answers to the gaps that backend leaves.
 /// The name is the runtime's own, and which of the two assemblies answers it
-/// is decided by the packages a head references - <c>StateUI.Linux</c> here,
-/// <c>StateUI</c> alone everywhere else - so an application never writes a
+/// is decided by the packages a head references - <c>StateUI.Maui.Linux</c> here,
+/// <c>StateUI.Maui</c> alone everywhere else - so an application never writes a
 /// platform condition to say it.
 /// </remarks>
 public static class StateUIApp
@@ -34,11 +34,11 @@ public static class StateUIApp
         this MauiAppBuilder builder)
         where TApp : class, IApplication =>
         LinuxHost.Use<TApp>(builder)
-            // The seven shapes are this library's own controls over MAUI's
+            // The six shapes are this library's own controls over MAUI's
             // sealed originals - see Rendering/SwiftShapes.cs - and on this
             // platform the base ShapeViewHandler is the GTK backend's, so the
             // one registration serves here too.
-            .ConfigureMauiHandlers(Runtime.Rendering.SwiftShapes.AddHandlers)
+            .ConfigureMauiHandlers(Rendering.SwiftShapes.AddHandlers)
             // And the measure they are drawn at, which has to be told after
             // that registration to be the one the registry answers with.
             .Then(LinuxMeasures.Shapes);
