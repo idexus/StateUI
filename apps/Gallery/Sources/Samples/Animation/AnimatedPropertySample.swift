@@ -7,7 +7,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
 
     @State private var panelColor = AppColors.lineDark
     @State private var panelHeight = 90.0
-    @State private var panelPadding = Thickness(16)
+    @State private var panelPadding = Insets(16)
     @State private var captionColor = AppColors.ink
     @State private var captionSize = 17.0
 
@@ -20,7 +20,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
 
         @State private var panelColor = AppColors.lineDark
         @State private var panelHeight = 90.0
-        @State private var panelPadding = Thickness(16)
+        @State private var panelPadding = Insets(16)
         @State private var captionColor = AppColors.ink
         @State private var captionSize = 17.0
 
@@ -51,8 +51,8 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
             }
 
             Button("Padding").onClicked {
-                try await $panelPadding.journey.move(to: Thickness(48), .eased(400))
-                try await $panelPadding.journey.move(to: Thickness(16), .eased(400))
+                try await $panelPadding.journey.move(to: Insets(48), .eased(400))
+                try await $panelPadding.journey.move(to: Insets(16), .eased(400))
             }
 
             Button("Text size").onClicked {
@@ -112,8 +112,8 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                 }
 
                 button("Padding") {
-                    try await $panelPadding.journey.move(to: Thickness(48), .eased(400))
-                    try await $panelPadding.journey.move(to: Thickness(16), .eased(400))
+                    try await $panelPadding.journey.move(to: Insets(48), .eased(400))
+                    try await $panelPadding.journey.move(to: Insets(16), .eased(400))
                 }
             }
             .spacing(8)

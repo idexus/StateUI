@@ -91,7 +91,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                             .fontSize(15)
                             .verticalAlignment(.center)
                     }
-                    .padding(Thickness(12, 8, 12, 8))
+                    .padding(Insets(12, 8, 12, 8))
                     .background(Palette.raised)
                     .strokeWidth(0)
                     .height(40)

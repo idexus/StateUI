@@ -33,7 +33,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
         @Environment private var device: DeviceInfo
 
         private var pulls: Bool {
-            device.idiom == .phone || device.idiom == .tablet
+            device.formFactor == .phone || device.formFactor == .tablet
         }
 
         // The pull area takes the STAR row, so it fills whatever the switch
@@ -215,7 +215,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
 
     /// Whether this sample offers a pull here - see `device`.
     private var pulls: Bool {
-        device.idiom == .phone || device.idiom == .tablet
+        device.formFactor == .phone || device.formFactor == .tablet
     }
 
     /// What a refresh DOES, wherever it was asked for - the pull's handler runs

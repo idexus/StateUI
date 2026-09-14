@@ -67,7 +67,7 @@ public enum PropValue: Equatable, Sendable {
     case bool(Bool)
 
     /// A fixed-length list of numbers. Used by the structured value types - a
-    /// Thickness travels as left, top, right, bottom.
+    /// Insets travel as left, top, right, bottom.
     case numbers([Double])
 
     /// A list of strings. What a Picker is given to choose from.

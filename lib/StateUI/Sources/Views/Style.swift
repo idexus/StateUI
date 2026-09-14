@@ -595,7 +595,7 @@ public struct AnyStyle {
 /// Collects the styles written in a `StyleSheet`'s closure.
 ///
 /// `if`, `else` and `for` all work here, which is what lets a sheet answer a
-/// platform or an idiom. There is no identity to lose in a loop - a style is
+/// platform or an formFactor. There is no identity to lose in a loop - a style is
 /// filed by its target type or its key - so unlike a view builder this one
 /// keeps `buildArray`.
 @resultBuilder

@@ -51,7 +51,7 @@ struct SwatchPage: ContentView {
         }
         .spacing(14)
         .onCreated {
-            page.padding = Thickness(16)
+            page.padding = Insets(16)
 
             window.title = "Swatch \(number)"
             window.width = 300

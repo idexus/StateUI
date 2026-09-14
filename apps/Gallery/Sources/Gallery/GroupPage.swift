@@ -38,7 +38,7 @@ struct GroupPage: ContentView {
                 // route rather than as a string in a dictionary.
                 // `shown`, not `samples`: a sample about desktop chrome is not
                 // listed on a phone.
-                ForEach(group.shown(on: device.idiom), id: \.id) { sample in
+                ForEach(group.shown(on: device.formFactor), id: \.id) { sample in
                     Card(sample.title, summary: sample.summary) {
                         nav.push(.sample(sample.id))
                     }

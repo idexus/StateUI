@@ -18,7 +18,7 @@
 // `Renderer.renderWire` - which is what makes `.onCreated` the place to give
 // an element's session its first values.
 
-extension BindableObject {
+extension ModifiableElement {
     /// Runs something once, when the element is first described - the render
     /// that brings it into the tree, its `@State` adopted and its
     /// `@Environment` resolved. This library's own.

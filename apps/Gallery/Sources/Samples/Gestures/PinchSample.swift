@@ -43,7 +43,7 @@ struct PinchSample: SampleContent, ExampleContent {
                 // Scale is what changed since the LAST report, so a view being
                 // pinched MULTIPLIES rather than assigns - and nothing here
                 // waits for .started, which a platform need not send.
-                if update.status == .running {
+                if update.phase == .running {
                     pinch = max(0.5, min(3, pinch * update.scale))
                 }
             }
@@ -99,7 +99,7 @@ struct PinchSample: SampleContent, ExampleContent {
                 // is what makes it the version to write: .started is not
                 // guaranteed, and a trackpad magnification may send .running
                 // and .completed and nothing else.
-                if update.status == .running {
+                if update.phase == .running {
                     pinch = max(0.5, min(3, pinch * update.scale))
                 }
             }

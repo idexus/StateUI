@@ -592,8 +592,8 @@ final class CatalogTests: XCTestCase {
 
     /// A sample about desktop chrome is LISTED only on a desktop. The catalog
     /// still carries it - the route reaches the page on any device - what the
-    /// idiom steers is the group page, the count and the "Surprise me" pick.
-    /// An UNKNOWN idiom lists everything, which is why this headless test -
+    /// formFactor steers is the group page, the count and the "Surprise me" pick.
+    /// An UNKNOWN formFactor lists everything, which is why this headless test -
     /// and every other one here - sees the whole catalog.
     func testASampleAboutDesktopChromeIsListedOnlyOnADesktop() throws {
         let catalog = catalog()
@@ -1069,8 +1069,8 @@ final class CatalogTests: XCTestCase {
     /// The live window exercises the complete authored title-area value group
     /// and retains interactive content as identified slot children.
     func testTheWindowCarriesTheCompleteTitleBarContract() throws {
-        StandardEnvironment.device.idiom = .desktop
-        defer { StandardEnvironment.device.idiom = .unknown }
+        StandardEnvironment.device.formFactor = .desktop
+        defer { StandardEnvironment.device.formFactor = .unknown }
 
         let state = TitleBarState()
         state.subtitle = "Shared"
@@ -1407,8 +1407,8 @@ final class CatalogTests: XCTestCase {
     /// smallest view that can.
     func testACardCrossedDescribesTheCaptionAndNotThePage() throws {
         // The arrows are a desktop's, a finger having the run itself.
-        StandardEnvironment.device.idiom = .desktop
-        defer { StandardEnvironment.device.idiom = .unknown }
+        StandardEnvironment.device.formFactor = .desktop
+        defer { StandardEnvironment.device.formFactor = .unknown }
 
         Renderer.shared.clearInvalidation()
 
@@ -1684,10 +1684,10 @@ final class CatalogTests: XCTestCase {
 
         // Exactly what the platform sent, in the order it sent it.
         renders.fire(pinchUpdated, with: [
-            .enumeration(GestureStatus.running.rawValue), .number(1.02), .numbers([0.5, 0.45]),
+            .enumeration(GesturePhase.running.rawValue), .number(1.02), .numbers([0.5, 0.45]),
         ])
         renders.fire(pinchUpdated, with: [
-            .enumeration(GestureStatus.completed.rawValue), .number(1), .numbers([0, 0]),
+            .enumeration(GesturePhase.completed.rawValue), .number(1), .numbers([0, 0]),
         ])
 
         let second = renders.render(PinchSample().body, changed: Renderer.shared.pendingChanges)
@@ -1696,7 +1696,7 @@ final class CatalogTests: XCTestCase {
 
         // And a second gesture goes on from where the first left off.
         renders.fire(pinchUpdated, with: [
-            .enumeration(GestureStatus.running.rawValue), .number(1.02), .numbers([0.5, 0.45]),
+            .enumeration(GesturePhase.running.rawValue), .number(1.02), .numbers([0.5, 0.45]),
         ])
 
         let third = renders.render(PinchSample().body, changed: Renderer.shared.pendingChanges)

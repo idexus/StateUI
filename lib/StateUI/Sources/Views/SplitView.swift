@@ -90,7 +90,7 @@
 /// - A shared overlay/split policy or gesture switch. Those are capabilities
 ///   of a particular native container. The host adapts its own presentation;
 ///   StateUI owns the two pages and whether the sidebar shows.
-public struct SplitView: Page, BindableObject, PageElement, PageArrangement {
+public struct SplitView: Page, ModifiableElement, PageElement, PageArrangement {
     /// The node this page describes.
     public var node: Node
 

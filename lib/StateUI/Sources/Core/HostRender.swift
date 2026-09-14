@@ -35,7 +35,7 @@ import CRT
 ///
 /// A native host uses this representation instead of knowing how StateUI lays
 /// a journey out in numeric state lanes. Values are arrays because the same
-/// channel may carry a number, point, rectangle, thickness or colour.
+/// channel may carry a number, point, rectangle, insets or colour.
 @_spi(Host) public struct HostJourney: Equatable, Sendable {
     /// Where the value stands on the current frame.
     public let value: [Double]
@@ -348,7 +348,7 @@ extension HostPlacement {
 /// Device facts supplied before a native host asks for its first render.
 @_spi(Host) public struct HostDeviceInfo: Equatable, Sendable {
     /// The device class used by adaptive application code.
-    public let idiom: DeviceIdiom
+    public let formFactor: FormFactor
 
     /// The platform's stable public name.
     public let platform: String
@@ -370,7 +370,7 @@ extension HostPlacement {
 
     /// A complete device report.
     public init(
-        idiom: DeviceIdiom,
+        formFactor: FormFactor,
         platform: String,
         model: String,
         manufacturer: String,
@@ -378,7 +378,7 @@ extension HostPlacement {
         versionString: String,
         deviceType: DeviceType
     ) {
-        self.idiom = idiom
+        self.formFactor = formFactor
         self.platform = platform
         self.model = model
         self.manufacturer = manufacturer
@@ -658,14 +658,14 @@ extension HostChildrenUpdate: RandomAccessCollection {
     public static var needsRender: Bool { Renderer.shared.needsRender }
 
     /// Updates the appearance used to resolve themed values before rendering.
-    public static func setTheme(_ theme: AppTheme) {
+    public static func setTheme(_ theme: Theme) {
         StandardEnvironment.app.requestedTheme = theme
     }
 
     /// Replaces the standard device report used by application builds.
     public static func setDeviceInfo(_ info: HostDeviceInfo) {
         let device = StandardEnvironment.device
-        device.idiom = info.idiom
+        device.formFactor = info.formFactor
         device.platform = info.platform
         device.model = info.model
         device.manufacturer = info.manufacturer

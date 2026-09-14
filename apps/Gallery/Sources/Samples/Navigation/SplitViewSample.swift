@@ -57,7 +57,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
                     }
 
                     // A row that DOES something rather than going somewhere.
-                    MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.idiom) }
+                    MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.formFactor) }
                         .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
 
                     // The window's phase, written into its log by a view of

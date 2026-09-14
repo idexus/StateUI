@@ -239,7 +239,7 @@ final class AppKitRenderer: @unchecked Sendable {
         let bundle = Bundle.main
 
         StateUIHost.setDeviceInfo(HostDeviceInfo(
-            idiom: .desktop,
+            formFactor: .desktop,
             platform: "macOS",
             model: machineModel(),
             manufacturer: "Apple",
@@ -2644,7 +2644,7 @@ final class MountedNode: NSObject {
             shape.apply(
                 fill: value(.fill),
                 stroke: value(.stroke),
-                thickness: number(.strokeWidth) ?? 1,
+                strokeWidth: number(.strokeWidth) ?? 1,
                 dash: value(.strokeDashPattern)?.numbers ?? [],
                 dashOffset: number(.strokeDashOffset) ?? 0,
                 lineCap: enumeration(.strokeLineCap) ?? 0,

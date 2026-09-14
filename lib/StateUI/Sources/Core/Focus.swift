@@ -7,7 +7,7 @@
 // Command.swift, with two forms:
 //
 //     try await field.focus()      // this view, by the id it was given
-//     try await SoftInput.hide()   // whatever has the keyboard, whatever it is
+//     try await OnScreenKeyboard.hide()   // whatever has the keyboard, whatever it is
 //
 // The second form lets a Done button close a keyboard it did not open. The
 // focused control is whichever one the reader touched last, so the host asks
@@ -16,7 +16,7 @@
 // THE TRAP, on iOS: a search box on the navigation bar takes the focus and
 // iOS gives the whole bar to the search field - the back button goes with it.
 // A reader who has nothing to tap has no way out of the search and no way
-// back to the previous page. `SoftInput.hide()` is what puts the bar back,
+// back to the previous page. `OnScreenKeyboard.hide()` is what puts the bar back,
 // and the gallery's Keyboard sample offers it as a button.
 
 extension Aim {
@@ -42,7 +42,7 @@ extension Aim {
     ///     Button("Done").onClicked { try await email.unfocus() }
     ///
     /// For a keyboard whose view is not known here - a Done button above a form
-    /// of several fields - use `SoftInput.hide()`, which asks the page.
+    /// of several fields - use `OnScreenKeyboard.hide()`, which asks the page.
     ///
     /// - Throws: `StateUIError` when no view of that id is being shown.
     public nonisolated(nonsending) func unfocus() async throws {
@@ -56,10 +56,10 @@ extension Aim {
 ///
 /// A known view is released with `Aim.unfocus()`. Use `hide()` when the native
 /// focus system must identify the current input.
-public enum SoftInput {
+public enum OnScreenKeyboard {
     /// Closes the keyboard by taking the focus off whatever has it.
     ///
-    ///     Button("Done").onClicked { try await SoftInput.hide() }
+    ///     Button("Done").onClicked { try await OnScreenKeyboard.hide() }
     ///
     /// The host looks at the page that is showing and walks it for whatever
     /// holds the focus - a search box in the navigation bar is an ordinary
@@ -71,6 +71,6 @@ public enum SoftInput {
     ///   means the keyboard was already down - an answer, not a failure.
     @discardableResult
     public static nonisolated(nonsending) func hide() async throws -> Bool {
-        try await stateUICall(.hideSoftInput).value()?.bool == true
+        try await stateUICall(.hideOnScreenKeyboard).value()?.bool == true
     }
 }

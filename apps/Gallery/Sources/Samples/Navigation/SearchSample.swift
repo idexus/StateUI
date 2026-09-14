@@ -117,7 +117,7 @@ struct SearchSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`SoftInput.hide()` takes the focus off whatever holds it - the box on "
+            Label("`OnScreenKeyboard.hide()` takes the focus off whatever holds it - the box on "
                 + "the bar included. On iOS a focused search box takes over the bar, back "
                 + "button and all, and unfocusing it gives the bar back.")
                 .fontSize(12)

@@ -6,7 +6,7 @@ struct AppThemeSample: SampleContent, ExampleContent {
     @Environment var app: AppInfo
 
     static let id = "appTheme"
-    static let title = "AppTheme"
+    static let title = "Theme"
     static let summary = "The theme as a value a view can branch on - "
         + "updated live when the system switches."
 

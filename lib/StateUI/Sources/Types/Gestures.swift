@@ -7,8 +7,8 @@
 // contract (Core/Wire.swift):
 //
 //     swiped          the direction, as the one number its bits are
-//     panUpdated      status, totalX, totalY
-//     pinchUpdated    status, scale, then the origin as one pair
+//     panUpdated      phase, totalX, totalY
+//     pinchUpdated    phase, scale, then the origin as one pair
 //     pointerMoved    the position as one pair
 //
 // Nothing is formatted or parsed: a number crosses as its own bits, and a
@@ -21,7 +21,7 @@
 /// The numbers are StateUI's declaration order from 0. Native enum values stay
 /// outside the boundary so a platform release cannot silently reinterpret a
 /// stored or transported report.
-public enum GestureStatus: Int32, Sendable {
+public enum GesturePhase: Int32, Sendable {
     /// The gesture has begun. A host that receives no distinct native begin
     /// phase may start with `.running`; handlers must use the values carried by
     /// each report rather than relying on capture here.
@@ -36,7 +36,7 @@ public enum GestureStatus: Int32, Sendable {
     /// The platform took the gesture away - a call arriving, a scroll winning.
     case canceled = 3
 
-    /// Reads a payload's status value - a member of a closed vocabulary, so
+    /// Reads a payload's phase value - a member of a closed vocabulary, so
     /// `.enumeration` and not a plain number. Nil for anything that is not
     /// one, so a report that will not read leaves the handler alone.
     init?(_ value: PropValue?) {
@@ -158,14 +158,14 @@ extension Array where Element == Point {
 ///     ColorBox(.cornflowerBlue)
 ///         .translationX(offsetX)
 ///         .onPanUpdated { pan in
-///             if pan.status == .running { offsetX = pan.totalX }
+///             if pan.phase == .running { offsetX = pan.totalX }
 ///         }
 ///
-/// One of these arrives per movement, each carrying `status` and how far the
+/// One of these arrives per movement, each carrying `phase` and how far the
 /// finger has come since the pan began.
 public struct PanUpdate: Equatable, Sendable {
     /// How far along the pan is.
-    public var status: GestureStatus
+    public var phase: GesturePhase
 
     /// How far the pointer has moved sideways since the pan began, in device
     /// units.
@@ -181,14 +181,14 @@ public struct PanUpdate: Equatable, Sendable {
     /// PanFrame.
     public var totalY: Double
 
-    /// Reads a payload's three values: status, totalX, totalY. Nil for anything
+    /// Reads a payload's three values: phase, totalX, totalY. Nil for anything
     /// else, so a report that will not read leaves the handler alone.
     init?(_ payload: [PropValue]) {
-        guard let status = GestureStatus(payload.value(0)),
+        guard let phase = GesturePhase(payload.value(0)),
               let totalX = payload.value(1)?.number,
               let totalY = payload.value(2)?.number else { return nil }
 
-        self.status = status
+        self.phase = phase
         self.totalX = totalX
         self.totalY = totalY
     }
@@ -204,7 +204,7 @@ public struct PanUpdate: Equatable, Sendable {
 /// multiplies what it holds rather than assigning.
 public struct PinchUpdate: Equatable, Sendable {
     /// How far along the pinch is.
-    public var status: GestureStatus
+    public var phase: GesturePhase
 
     /// How much the fingers have moved apart since the last report. The scale
     /// is relative, not cumulative.
@@ -214,15 +214,15 @@ public struct PinchUpdate: Equatable, Sendable {
     /// left and (1,1) the bottom right.
     public var scaleOrigin: Point
 
-    /// Reads a payload's three values: status, scale, then the origin as one
+    /// Reads a payload's three values: phase, scale, then the origin as one
     /// pair. Nil for anything else, so a report that will not read leaves the
     /// handler alone.
     init?(_ payload: [PropValue]) {
-        guard let status = GestureStatus(payload.value(0)),
+        guard let phase = GesturePhase(payload.value(0)),
               let scale = payload.value(1)?.number,
               let origin = Point(payload.value(2)) else { return nil }
 
-        self.status = status
+        self.phase = phase
         self.scale = scale
         self.scaleOrigin = origin
     }

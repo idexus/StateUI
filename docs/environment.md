@@ -121,8 +121,8 @@ StateUI's contract:
 | connectivity — `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
 | display — `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
 | locale — `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric` | host-normalized language, region, IANA zone, clock and calendar conventions; text starts empty, the clock starts 12-hour, the week on Sunday, and units metric |
-| device — `DeviceInfo` | `idiom`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | form factor, open platform name, hardware and system facts; text starts empty and closed values `.unknown` |
-| app — `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `requestedTheme` | manifest identity and live requested appearance; text starts empty and theme `.unspecified` |
+| device — `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | form factor, open platform name, hardware and system facts; text starts empty and closed values `.unknown` |
+| app — `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `requestedTheme` | manifest identity and live requested appearance; text starts empty and theme `.system` |
 | application — `ApplicationSession` | `phase` | process-wide visibility state; the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
 A host may be unable to observe a domain. The documented fallback remains
@@ -143,9 +143,9 @@ The closed vocabulary used by these fields is:
 | `DisplayOrientation` | `unknown`, `portrait`, `landscape` |
 | `DisplayRotation` | `unknown`, `rotation0`, `rotation90`, `rotation180`, `rotation270` |
 | `Weekday` | `sunday` through `saturday` |
-| `DeviceIdiom` | `unknown`, `phone`, `tablet`, `desktop`, `tv`, `watch` |
+| `FormFactor` | `unknown`, `phone`, `tablet`, `desktop`, `tv`, `watch` |
 | `DeviceType` | `unknown`, `physical`, `virtual` |
-| `AppTheme` | `unspecified`, `light`, `dark` |
+| `Theme` | `system`, `light`, `dark` |
 | `ApplicationPhase` | `active`, `inactive`, `background` |
 
 The [Platform contract](platform-contract.md) is the implementation-status
@@ -165,7 +165,7 @@ struct RuntimeSummary: ContentView {
     var content: any View {
         VStack {
             Label("\(app.name) \(app.versionString)")
-            Label("\(device.platform) · \(device.idiom)")
+            Label("\(device.platform) · \(device.formFactor)")
             Label("\(Int(display.width / max(display.density, 1))) points wide")
             Label("\(locale.language)-\(locale.region) · \(locale.timeZone)")
         }
@@ -173,7 +173,7 @@ struct RuntimeSummary: ContentView {
 }
 ```
 
-Use `DeviceInfo.idiom` for a semantic form-factor decision. Use display points
+Use `DeviceInfo.formFactor` for a semantic form-factor decision. Use display points
 for layout (`pixels / density`) and handle zero density before the first host
 report. Use `AppInfo.requestedTheme` only when logic itself branches on the
 theme; themed colors resolve through the style and color system directly.

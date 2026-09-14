@@ -123,7 +123,7 @@ public final class PageSession {
     /// The space kept between the page's edge and its content.
     ///
     /// A page has no margin to go with it: nothing is outside a page.
-    @State public var padding: Thickness? = nil
+    @State public var padding: Insets? = nil
 
     /// What is drawn behind the page.
     ///

@@ -483,6 +483,48 @@ final class HostContractTests: XCTestCase {
     /// a caption - on a button, a menu or toolbar item, a page's tab - with its
     /// `iconPosition` and `iconSpacing`, and `Button(icon:)` when there is no
     /// caption at all.
+    func testTypesSpeakInPlainWords() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+        let acts = declaredNames(of: "Act", in: tokenSource)
+
+        XCTAssertTrue(properties.contains("avoidsSafeArea"))
+        XCTAssertFalse(properties.contains("safeAreaEdges"), "a layout's safe area keeps a second name")
+        XCTAssertTrue(acts.contains("hideOnScreenKeyboard"))
+        XCTAssertFalse(acts.contains("hideSoftInput"), "the keyboard keeps a second name")
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        var everything = ""
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            everything += source
+            for former in [
+                "struct Thickness:", "enum DeviceIdiom", "enum AppTheme", "case unspecified",
+                "enum GestureStatus", "case sinIn", "case sinOut",
+                "enum SemanticScreenReader", "enum SoftInput", "enum SafeAreaRegions", "case softInput",
+                "func safeAreaEdges(", "protocol BindableObject", "var idiom", "let idiom:",
+                "var status: GesturePhase",
+            ] {
+                XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
+            }
+        }
+        for spelling in [
+            "public struct Insets:", "public enum FormFactor", "public enum Theme", "case system",
+            "public enum GesturePhase", "case sineIn", "case sineOut", "public enum ScreenReader",
+            "public enum OnScreenKeyboard", "public enum SafeArea", "case keyboard",
+            "func avoidsSafeArea(", "public protocol ModifiableElement", "var formFactor",
+            "var phase: GesturePhase",
+        ] {
+            XCTAssertTrue(everything.contains(spelling), "no source says \(spelling)")
+        }
+    }
+
     func testQuestionsAndActsSayWhatTheyAsk() throws {
         let tokenSource = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),

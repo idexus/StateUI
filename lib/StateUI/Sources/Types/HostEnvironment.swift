@@ -157,9 +157,9 @@ public enum DisplayRotation: Int32, Sendable {
 }
 
 /// Which look the system asked for.
-public enum AppTheme: Int32, Sendable {
+public enum Theme: Int32, Sendable {
     /// The system did not say.
-    case unspecified = 0
+    case system = 0
 
     /// Light.
     case light = 1
@@ -376,7 +376,7 @@ public final class AppInfo {
     /// need it: the differ reads this very property as it builds an element
     /// wearing a `Color(light:dark:)`, so that element already follows. This
     /// property is for logic that branches on the theme.
-    @State public var requestedTheme: AppTheme = .unspecified
+    @State public var requestedTheme: Theme = .system
 
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. The values start as a headless host's do.
@@ -390,14 +390,14 @@ public final class AppInfo {
 ///     @Environment var device: DeviceInfo
 ///
 ///     var content: any View {
-///         device.idiom == .desktop ? wideLayout : phoneLayout
+///         device.formFactor == .desktop ? wideLayout : phoneLayout
 ///     }
 ///
-/// The idiom distinguishes form factors that share an operating system. A
+/// The formFactor distinguishes form factors that share an operating system. A
 /// headless host leaves values at their documented defaults.
 public final class DeviceInfo {
     /// Phone, tablet, desktop, television, or watch.
-    @State public var idiom: DeviceIdiom = .unknown
+    @State public var formFactor: FormFactor = .unknown
 
     /// The host platform's name, such as "macOS", "iOS", "Android",
     /// "Windows", "Linux", or "Web". This is authored text because the set
@@ -757,7 +757,7 @@ public final class WindowSession {
     /// area.
     ///
     ///     .onCreated {
-    ///         if device.idiom == .desktop {
+    ///         if device.formFactor == .desktop {
     ///             window.titleBar = TitleBar("Notes").trailingContent { AccountButton() }
     ///         }
     ///     }
@@ -1044,7 +1044,7 @@ enum StandardEnvironment {
 
     private static func applyDevice(_ values: [PropValue]) -> Bool {
         guard values.count == 7,
-              let idiom = values[0].enumeration,
+              let formFactor = values[0].enumeration,
               let platform = values[1].string,
               let model = values[2].string,
               let manufacturer = values[3].string,
@@ -1053,7 +1053,7 @@ enum StandardEnvironment {
               let type = values[6].enumeration
         else { return false }
 
-        device.idiom = DeviceIdiom(rawValue: idiom) ?? .unknown
+        device.formFactor = FormFactor(rawValue: formFactor) ?? .unknown
         device.platform = platform
         device.model = model
         device.manufacturer = manufacturer
@@ -1076,7 +1076,7 @@ enum StandardEnvironment {
         app.packageName = packageName
         app.versionString = versionString
         app.buildString = buildString
-        app.requestedTheme = AppTheme(rawValue: theme) ?? .unspecified
+        app.requestedTheme = Theme(rawValue: theme) ?? .system
         return true
     }
 

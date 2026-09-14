@@ -209,7 +209,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             Label("The rule is the same one everywhere: a get makes the closure it sits "
                 + "in a reader, a binding makes none. What a property can be handed is "
                 + "every value form's twin taking `Binding<T>` - a number, a colour, a "
-                + "thickness, a flag, a count, a string - so a value that moves is never "
+                + "insets, a flag, a count, a string - so a value that moves is never "
                 + "a reason to build the view again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

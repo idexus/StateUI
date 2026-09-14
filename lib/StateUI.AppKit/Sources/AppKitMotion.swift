@@ -910,11 +910,11 @@ struct AppKitMotionCurve {
         switch curve {
         case .linear:
             return value
-        case .sinOut:
+        case .sineOut:
             return sin(value * .pi / 2)
-        case .sinIn:
+        case .sineIn:
             return 1 - cos(value * .pi / 2)
-        case .sinInOut:
+        case .sineInOut:
             return (1 - cos(value * .pi)) / 2
         case .cubicIn:
             return value * value * value

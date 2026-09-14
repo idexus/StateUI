@@ -796,27 +796,27 @@ final class GalleryViewTests: XCTestCase {
     /// A finger drags the scroller itself, so a pan beside it moves the same
     /// cards a second time; a pointer scrolls nothing - a mouse drag leaves a
     /// UIScrollView exactly where it stands - so without the pan a desktop
-    /// reader could move a run of cards only by the wheel. The idiom is the
+    /// reader could move a run of cards only by the wheel. The formFactor is the
     /// question and not the platform's name: iOS is a phone AND a tablet.
     func testOnlyADesktopTurnsTheRunByDragging() throws {
-        let was = StandardEnvironment.device.idiom
+        let was = StandardEnvironment.device.formFactor
 
-        defer { StandardEnvironment.device.idiom = was }
+        defer { StandardEnvironment.device.formFactor = was }
 
-        for (idiom, drags) in [
-            (DeviceIdiom.desktop, true),
-            (DeviceIdiom.phone, false),
-            (DeviceIdiom.tablet, false),
+        for (formFactor, drags) in [
+            (FormFactor.desktop, true),
+            (FormFactor.phone, false),
+            (FormFactor.tablet, false),
         ] {
             Renderer.shared.clearStates()
-            StandardEnvironment.device.idiom = idiom
+            StandardEnvironment.device.formFactor = formFactor
 
             let showing = laid(Renders(), { self.gallery(5).body }).first
 
             XCTAssertEqual(
                 hears(.panUpdated, in: showing),
                 drags,
-                "a \(idiom) answers a drag \(drags ? "when it should" : "when it should not")")
+                "a \(formFactor) answers a drag \(drags ? "when it should" : "when it should not")")
         }
     }
 }

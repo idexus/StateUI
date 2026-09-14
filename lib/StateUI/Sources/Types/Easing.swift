@@ -32,22 +32,22 @@ public enum Easing: Int32, Sendable {
     case linear = 0
 
     /// Slow at the end, following a sine curve.
-    case sinOut = 1
+    case sineOut = 1
 
     /// Slow at the start, following a sine curve.
-    case sinIn = 2
+    case sineIn = 2
 
     /// Slow at both ends, following a sine curve.
-    case sinInOut = 3
+    case sineInOut = 3
 
-    /// Slow at the start, and more pronounced than `.sinIn`.
+    /// Slow at the start, and more pronounced than `.sineIn`.
     case cubicIn = 4
 
-    /// Slow at the end, and more pronounced than `.sinOut`. The usual choice for
+    /// Slow at the end, and more pronounced than `.sineOut`. The usual choice for
     /// something appearing.
     case cubicOut = 5
 
-    /// Slow at both ends, and more pronounced than `.sinInOut`.
+    /// Slow at both ends, and more pronounced than `.sineInOut`.
     case cubicInOut = 6
 
     /// Overshoots at the end and settles back, twice.

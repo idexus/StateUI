@@ -140,7 +140,7 @@
             .isMaximizable, .isMinimizable, .inputPurpose,
             .backButtonTitle,
             .hasBackButton, .hasNavigationBar,
-            .placement, .priority, .returnKey, .safeAreaEdges, .searchIconColor,
+            .placement, .priority, .returnKey, .avoidsSafeArea, .searchIconColor,
             .subtitle, .textType, .thumbImageSource, .userAgent,
             .verticalScrollBarVisibility,
         ]),

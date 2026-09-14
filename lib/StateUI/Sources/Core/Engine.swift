@@ -223,7 +223,7 @@ extension Binding: Followable {}
 
 // MARK: - Attaching one
 
-extension BindableObject {
+extension ModifiableElement {
     /// Arithmetic the host runs on its own frames, whenever a state it follows
     /// has been written.
     ///

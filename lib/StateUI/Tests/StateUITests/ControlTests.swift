@@ -594,7 +594,7 @@ final class ControlTests: XCTestCase {
                 .spacing(12)
                 // The safe strip is the LAYOUT tier's one property of its own;
                 // the four-value form pins its full spelling on the wire.
-                .safeAreaEdges(.none, .softInput, .container, .all)
+                .avoidsSafeArea(.none, .keyboard, .container, .all)
                 .clipsContent(true)
                 .letsInputThrough(true)
                 .style("Card")
@@ -781,7 +781,7 @@ final class ControlTests: XCTestCase {
             // Tiers no view wears.
             "barBackgroundColor", "barForegroundColor", "isScrollEnabled", "isZoomEnabled",
             "isTrafficEnabled", "showsUserLocation", "isDestructive", "title", "subtitle",
-            "mapType", "safeAreaEdges",
+            "mapType", "avoidsSafeArea",
             // The two-way form IS the binding form, and it is an initializer's.
             "isRefreshing",
         ]

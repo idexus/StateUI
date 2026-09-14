@@ -531,20 +531,20 @@ public enum ToolbarItemPlacement: Int32, Sendable {
 }
 
 /// What one edge of a layout stays clear of on the screen's UNSAFE strip -
-/// the notch, the bars, the soft keyboard. Four combinations, each worth
+/// the notch, the bars, the on-screen keyboard. Four combinations, each worth
 /// naming; there is no "platform default" case, `.container` being what the
 /// one platform that insets does.
 ///
 /// iOS is where it shows; the other platforms have no unsafe strip and
 /// ignore it. A layout's default there is `.container` - see
-/// `safeAreaEdges`, whose doc says what that costs.
-public enum SafeAreaRegions: Int32, Sendable {
+/// `avoidsSafeArea`, whose doc says what that costs.
+public enum SafeArea: Int32, Sendable {
     /// Edge to edge: content may run under the notch, the bars and the
     /// keyboard.
     case none = 0
 
-    /// Clear of the soft keyboard, under everything else.
-    case softInput = 1
+    /// Clear of the on-screen keyboard, under everything else.
+    case keyboard = 1
 
     /// Clear of the bars and the notch, under the keyboard. What an iOS
     /// layout does when nothing is said.
@@ -576,7 +576,7 @@ extension LineBreak: StateChoice {}
 extension LineCap: StateChoice {}
 extension LineJoin: StateChoice {}
 extension ReturnKey: StateChoice {}
-extension SafeAreaRegions: StateChoice {}
+extension SafeArea: StateChoice {}
 extension SemanticHeadingLevel: StateChoice {}
 extension ScrollBarVisibility: StateChoice {}
 extension ScrollOrientation: StateChoice {}

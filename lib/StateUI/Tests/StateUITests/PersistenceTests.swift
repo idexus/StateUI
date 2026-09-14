@@ -327,10 +327,10 @@ final class PersistenceTests: XCTestCase {
     /// The saves come AFTER whatever the handlers queued, so an act a handler
     /// awaited is not held up behind a store.
     func testSavesComeAfterTheActsTheHandlersQueued() {
-        Renderer.shared.send(.hideSoftInput, [], completion: nil)
+        Renderer.shared.send(.hideOnScreenKeyboard, [], completion: nil)
         Sidebar().count = 3
 
-        XCTAssertEqual(drainedActs().map(\.name), ["hideSoftInput", "persistValue"])
+        XCTAssertEqual(drainedActs().map(\.name), ["hideOnScreenKeyboard", "persistValue"])
     }
 
     /// Assigning the same value still saves. The state is unchanged and the

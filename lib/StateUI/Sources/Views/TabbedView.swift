@@ -126,7 +126,7 @@
 ///   closure already is that data-driven form.
 /// - The current page as a readable property. The bound selection answers it
 ///   on this side, before the host has drawn anything.
-public struct TabbedView: Page, BindableObject, BarElement, PageElement, PageArrangement {
+public struct TabbedView: Page, ModifiableElement, BarElement, PageElement, PageArrangement {
     /// The node this page describes.
     public var node: Node
 

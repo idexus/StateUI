@@ -48,7 +48,7 @@ final class HostChannelTests: XCTestCase {
         try check(payload([.numbers([])]), against: "payloads/event-selection-empty")
         try check(
             payload([
-                .enumeration(GestureStatus.running.rawValue), .number(12.5), .number(-3),
+                .enumeration(GesturePhase.running.rawValue), .number(12.5), .number(-3),
             ]),
             against: "payloads/event-pan")
         try check(
@@ -141,7 +141,7 @@ final class HostChannelTests: XCTestCase {
             .strings(["a", "b,c", ""]),
             .color(red: 0x33, green: 0x66, blue: 0xCC, alpha: 0xFF),
             .values([.enumeration(2), .number(0.5), .nothing]),
-            .enumeration(GestureStatus.running.rawValue),
+            .enumeration(GesturePhase.running.rawValue),
             .nothing,
         ]
 

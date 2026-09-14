@@ -957,7 +957,7 @@ final class StyleTests: XCTestCase {
     /// The property tiers must stay PROPERTY tiers: a handler subscribed from
     /// one would be reachable from a style, which is the exact hole the tier
     /// split closes. Source-read, so it can only under-report; the compiler
-    /// carries the rest - `addHandler` is declared on `BindableObject`, out of
+    /// carries the rest - `addHandler` is declared on `ModifiableElement`, out of
     /// a `PropertyContainer` extension's reach.
     func testThePropertyTiersCarryNoHandlers() throws {
         for source in try Fixtures.allSources() where source.path.hasPrefix("Views/") {

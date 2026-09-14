@@ -498,7 +498,7 @@ public func stateui_jobs_pending() -> Int32 {
 /// per call, in the environment layout (Core/Wire.swift): the version, the
 /// domain byte, then the typed values in the order the provider declares its
 /// properties. Called for every domain BEFORE the first render, so the first
-/// tree already knows its idiom and its locale, and again whenever a platform
+/// tree already knows its formFactor and its locale, and again whenever a platform
 /// event says something moved - which is what rebuilds exactly the views that
 /// read the changed provider. See Types/HostEnvironment.swift.
 ///

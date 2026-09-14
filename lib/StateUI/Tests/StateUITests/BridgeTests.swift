@@ -42,18 +42,18 @@ final class BridgeTests: XCTestCase {
     /// the tree is built.
     func testTheEnvironmentTheHostPushesIsReadableAtBuildTime() {
         defer {
-            StandardEnvironment.device.idiom = .unknown
+            StandardEnvironment.device.formFactor = .unknown
             Renderer.shared.clearInvalidation()
         }
 
-        XCTAssertEqual(StandardEnvironment.device.idiom, .unknown)
+        XCTAssertEqual(StandardEnvironment.device.formFactor, .unknown)
 
         var out: [UInt8] = []
         out.u8(Wire.version)
         out.u8(5)
         out.u8(7)
         for value in [
-            PropValue.enumeration(DeviceIdiom.desktop.rawValue), .string("macOS"),
+            PropValue.enumeration(FormFactor.desktop.rawValue), .string("macOS"),
             .string(""), .string(""), .string(""), .string(""),
             .enumeration(DeviceType.physical.rawValue),
         ] {
@@ -65,7 +65,7 @@ final class BridgeTests: XCTestCase {
         }
 
         XCTAssertEqual(applied, 1)
-        XCTAssertEqual(StandardEnvironment.device.idiom, .desktop)
+        XCTAssertEqual(StandardEnvironment.device.formFactor, .desktop)
     }
 }
 

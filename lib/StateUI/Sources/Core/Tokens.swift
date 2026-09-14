@@ -423,6 +423,7 @@ public extension Prop {
     static let absoluteLayoutProportions = Prop("absoluteLayoutProportions")
     static let address = Prop("address")
     static let allowDrop = Prop("allowDrop")
+    static let avoidsSafeArea = Prop("avoidsSafeArea")
     static let barForegroundColor = Prop("barForegroundColor")
     static let hidesWhenInactive = Prop("hidesWhenInactive")
     static let pivotX = Prop("pivotX")
@@ -562,7 +563,6 @@ public extension Prop {
     static let rotationY = Prop("rotationY")
     static let rows = Prop("rows")
     static let rowSpacing = Prop("rowSpacing")
-    static let safeAreaEdges = Prop("safeAreaEdges")
     static let scale = Prop("scale")
     static let scaleX = Prop("scaleX")
     static let scaleY = Prop("scaleY")
@@ -725,8 +725,8 @@ public extension Act {
 
     /// Takes the keyboard down from whichever view on the showing page holds
     /// the focus - the host finds that view, which this side cannot. See
-    /// `SoftInput.hide()`.
-    static let hideSoftInput = Act("hideSoftInput")
+    /// `OnScreenKeyboard.hide()`.
+    static let hideOnScreenKeyboard = Act("hideOnScreenKeyboard")
 
     /// Tells the reader something on the showing page, with one button that
     /// dismisses it; nothing comes back but the dismissal. See `Dialogs.alert`.
@@ -745,7 +745,7 @@ public extension Act {
     static let prompt = Act("prompt")
 
     /// Has the platform's screen reader say a text. See
-    /// `SemanticScreenReader.announce`.
+    /// `ScreenReader.announce`.
     static let announce = Act("announce")
 
     /// The host's local time of day, asked of its clock. See `ClockTime.now()`.

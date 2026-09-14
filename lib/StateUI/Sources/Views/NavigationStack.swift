@@ -153,7 +153,7 @@
 /// where another container presents it; and `.onCreated`, `.onDestroying` and
 /// `.onChanged`, as on anything bindable. The title on the bar belongs to the
 /// top page.
-public struct NavigationStack: Page, BindableObject, BarElement, PageElement, PageArrangement {
+public struct NavigationStack: Page, ModifiableElement, BarElement, PageElement, PageArrangement {
     /// The node this page describes.
     public var node: Node
 

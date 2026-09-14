@@ -44,7 +44,7 @@ struct ColoursPage: ContentView {
         .spacing(10)
         .onCreated {
             page.title = "Colours"
-            page.padding = Thickness(16)
+            page.padding = Insets(16)
 
             window.title = "Colours"
             window.width = 320

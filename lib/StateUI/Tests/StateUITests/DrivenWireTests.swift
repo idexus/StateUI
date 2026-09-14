@@ -107,7 +107,7 @@ final class DrivenWireTests: XCTestCase {
     func testEveryDrivenModifierIsWrittenDown() throws {
         let number = State(wrappedValue: 0.5)
         let colour = State(wrappedValue: Color("#102030"))
-        let inset = State(wrappedValue: Thickness(4))
+        let inset = State(wrappedValue: Insets(4))
 
         let border = Border {
             Label("words")
@@ -310,7 +310,7 @@ final class DrivenWireTests: XCTestCase {
         // two lanes the host carries by the scroller's own key rather than by
         // a property's type, the platform declaring no settable property for
         // it.
-        let carried: Set<String> = ["Double", "Color", "Thickness", "Point"]
+        let carried: Set<String> = ["Double", "Color", "Insets", "Point"]
 
         // THE ONE WALKED MODIFIER WITH NO DESCRIBED TWIN. A scroller's offset
         // is a property the platform keeps read-only - a scroller reports

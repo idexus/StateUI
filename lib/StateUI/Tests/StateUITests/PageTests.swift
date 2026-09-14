@@ -36,7 +36,7 @@ private struct EveryPropertyPage: ContentView {
             // The page's own.
             page.title = "Everything"
             page.icon = ImageSource("tab.png")
-            page.padding = Thickness(4, 8, 12, 16)
+            page.padding = Insets(4, 8, 12, 16)
             page.background = .whiteSmoke
 
             // What it asks of a NavigationStack.
@@ -119,7 +119,7 @@ private struct KnobPage: ContentView {
     private func dress(_ on: Bool) {
         page.title = on ? "On" : "Off"
         page.icon = ImageSource(on ? "on.png" : "off.png")
-        page.padding = Thickness(on ? 8 : 4)
+        page.padding = Insets(on ? 8 : 4)
         page.background = on ? .red : .whiteSmoke
 
         page.hasNavigationBar = on

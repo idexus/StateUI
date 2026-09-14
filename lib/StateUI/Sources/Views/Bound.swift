@@ -554,14 +554,14 @@ extension Layout {
         plain(.clipsContent, by: state)
     }
 
-    /// `safeAreaEdges`, handed on as `$x`: the host sets the member it names,
+    /// `avoidsSafeArea`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
     /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func safeAreaEdges(_ state: Binding<SafeAreaRegions>) -> Modified {
-        plain(.safeAreaEdges, by: state)
+    public func avoidsSafeArea(_ state: Binding<SafeArea>) -> Modified {
+        plain(.avoidsSafeArea, by: state)
     }
 }
 
@@ -631,7 +631,7 @@ extension PaddingElement where Self: VisualElement {
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func padding(_ state: Binding<Thickness>) -> Modified {
+    public func padding(_ state: Binding<Insets>) -> Modified {
         journey(.padding, by: state)
     }
 }
@@ -1072,7 +1072,7 @@ extension View {
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func margin(_ state: Binding<Thickness>) -> Modified {
+    public func margin(_ state: Binding<Insets>) -> Modified {
         journey(.margin, by: state)
     }
 

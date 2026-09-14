@@ -707,7 +707,7 @@ func stack(_ children: [Node], id: String? = nil) -> Node {
 /// - see Types/Color.swift - so this is how a test asks for the other half.
 /// The provider is the one the host pushes into, which is exactly what a real
 /// theme change writes.
-func withTheme(_ theme: AppTheme, _ body: () -> Void) {
+func withTheme(_ theme: Theme, _ body: () -> Void) {
     let held = StandardEnvironment.app.requestedTheme
     StandardEnvironment.app.requestedTheme = theme
     defer { StandardEnvironment.app.requestedTheme = held }

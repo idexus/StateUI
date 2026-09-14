@@ -91,7 +91,7 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
 ///         .fontAttributes(.bold)
 ///
 /// NOT a view, which is why it wears `TextElement` and `FontElement` rather
-/// than `View`: a run is a `BindableObject` with text and font properties
+/// than `View`: a run is a `ModifiableElement` with text and font properties
 /// and nothing else - no opacity, no margin, no size of its own. It goes in one
 /// place, a Label's `spans`, and nowhere else in the tree.
 ///
@@ -103,7 +103,7 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
 /// Measured from a module importing this one. The node on the wire is `Span`
 /// all the same - the vocabulary's name for a run, and what the fixture
 /// sidecars read.
-public struct TextSpan: BindableObject, TextElement, FontElement,
+public struct TextSpan: ModifiableElement, TextElement, FontElement,
     LineHeightElement, DecorableTextElement {
     /// The node this run describes.
     public var node: Node

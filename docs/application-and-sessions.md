@@ -370,7 +370,7 @@ its platform's native presentation for pages in `WindowSession.modalStack`.
 
 Page content remains compositional. An image behind content is an `Image` in
 the page tree, safe-area participation is a layout property, and input is
-released explicitly with `Aim.unfocus()` or `SoftInput.hide()`. A custom title,
+released explicitly with `Aim.unfocus()` or `OnScreenKeyboard.hide()`. A custom title,
 including an image, belongs in `titleView`; bar foreground color
 belongs to the containing page arrangement.
 

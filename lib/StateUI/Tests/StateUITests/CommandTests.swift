@@ -81,7 +81,7 @@ final class CommandTests: XCTestCase {
     func testAnnouncingQueuesTheWordsWithNoTarget() async throws {
         drain()
 
-        let said = begin { try await SemanticScreenReader.announce("Row deleted") }
+        let said = begin { try await ScreenReader.announce("Row deleted") }
 
         let acts = drain()
         XCTAssertEqual(acts.first?.name, "announce")

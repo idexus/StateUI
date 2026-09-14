@@ -396,7 +396,7 @@ final class Scenes: @unchecked Sendable {
     static var opensWindows: Bool {
         let device = StandardEnvironment.device
 
-        switch device.idiom {
+        switch device.formFactor {
         case .desktop, .unknown: return true
         case .tablet: return device.platform == "iOS"
         default: return false

@@ -56,8 +56,8 @@ final class MotionTests: XCTestCase {
     func testEdgesTravel() {
         let renders = Renders()
 
-        renders.render(VStack { Label("x") }.padding(Thickness(4)).id("s").body)
-        let patch = renders.render(VStack { Label("x") }.padding(Thickness(16)).id("s").body)
+        renders.render(VStack { Label("x") }.padding(Insets(4)).id("s").body)
+        let patch = renders.render(VStack { Label("x") }.padding(Insets(16)).id("s").body)
 
         XCTAssertNotNil(patch.transitions[.padding])
     }

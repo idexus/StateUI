@@ -52,7 +52,7 @@ struct PanSample: SampleContent, ExampleContent {
                     .translationX($liveX)
                     .translationY($liveY)
                     .onPanUpdated { update in
-                        switch update.status {
+                        switch update.phase {
                         case .running:
                             follow(panX + update.totalX, panY + update.totalY)
                         case .completed:
@@ -123,7 +123,7 @@ struct PanSample: SampleContent, ExampleContent {
                     .translationX($liveX)
                     .translationY($liveY)
                     .onPanUpdated { update in
-                        switch update.status {
+                        switch update.phase {
                         case .running:
                             follow(panX + update.totalX, panY + update.totalY)
                         case .completed:

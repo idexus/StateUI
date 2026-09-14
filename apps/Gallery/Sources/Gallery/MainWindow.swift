@@ -84,7 +84,7 @@ struct MainWindow: Window {
 
             // Authored window chrome is meaningful on a desktop host, and
             // there the menu is a sidebar beside the page.
-            if device.idiom == .desktop {
+            if device.formFactor == .desktop {
                 window.titleBar = chrome
                 nav.menuOverlays = false
             }
@@ -104,12 +104,12 @@ struct MainWindow: Window {
         // The chrome is painted in the gallery's accent, which the Colours
         // window chooses - so the bar is written again when it moves.
         .onChanged(style.accent.color) {
-            if device.idiom == .desktop {
+            if device.formFactor == .desktop {
                 window.titleBar = chrome
             }
         }
         .onChanged(bar.subtitle) {
-            if device.idiom == .desktop {
+            if device.formFactor == .desktop {
                 window.titleBar = chrome
             }
         }
@@ -267,7 +267,7 @@ private struct ChromeEnd: ContentView {
                     .iconSpacing(5)
                     .style("ChromeChip")
                     .verticalAlignment(.center)
-                    .onClicked { nav.surprise(from: catalog, on: device.idiom) }
+                    .onClicked { nav.surprise(from: catalog, on: device.formFactor) }
             }
         }
         .margin(0, 0, 5, 0)

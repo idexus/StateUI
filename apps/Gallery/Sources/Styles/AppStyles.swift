@@ -23,10 +23,10 @@ import StateUI
 enum AppStyles {
     /// Built once, as the application is made, and never sent: the differ
     /// merges each style into the controls it applies to, so what crosses is a
-    /// control with its values already on it. The idiom comes from the
+    /// control with its values already on it. The formFactor comes from the
     /// application's `@Environment` - one style reads it: the SearchField's
-    /// touch floor, which every idiom but the desktop keeps.
-    static func sheet(on idiom: DeviceIdiom) -> StyleSheet {
+    /// touch floor, which every formFactor but the desktop keeps.
+    static func sheet(on formFactor: FormFactor) -> StyleSheet {
         StyleSheet {
             // MARK: Text
 
@@ -224,7 +224,7 @@ enum AppStyles {
                 .placeholderColor(Palette.subtle)
                 .cancelButtonColor(Palette.accent)
                 .fontSize(15)
-                .minimumHeight(idiom == .desktop ? 0 : 44)
+                .minimumHeight(formFactor == .desktop ? 0 : 44)
                 .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)

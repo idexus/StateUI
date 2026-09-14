@@ -113,8 +113,8 @@ public enum Inspector {
     /// Whether it may dock down the side: a third of a desktop's or a tablet's
     /// window, where it would be all of a phone's.
     static var offersSide: Bool {
-        let idiom = StandardEnvironment.device.idiom
-        return idiom == .desktop || idiom == .tablet
+        let formFactor = StandardEnvironment.device.formFactor
+        return formFactor == .desktop || formFactor == .tablet
     }
 
     /// Whether a scene's inspector may show in a window of its own: the scene
@@ -397,7 +397,7 @@ struct InspectorPanel: ContentView {
         // Read here, so a panel folding or opening out is the one view built
         // again - the window under it standing as it was.
         let collapsed = place == .bottom && InspectorModel.shared.collapsed.contains(scene)
-        let wide = place == .bottom && device.idiom != .phone && device.idiom != .unknown
+        let wide = place == .bottom && device.formFactor != .phone && device.formFactor != .unknown
 
         let panel = Border {
             if collapsed {

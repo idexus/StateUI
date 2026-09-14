@@ -244,7 +244,7 @@ facts current, or lacks direct tests remains unmarked for that domain.
 | `Connectivity` | `networkAccess`, `connectionProfiles` | — | — | — | — | — | — |
 | `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | — | — | — | — | — | — |
 | `LocaleInfo` | `language`, `region`, `name`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric` | — | — | — | — | — | — |
-| `DeviceInfo` | `idiom`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | — | — | — | — | — | — |
+| `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | — | — | — | — | — | — |
 | `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `requestedTheme` | — | — | — | — | — | — |
 | `ApplicationSession` | `phase` | ✅ | — | — | — | — | — |
 
@@ -324,7 +324,7 @@ token in parentheses.
 | stack layouts | properties | `padding`, `spacing` | ✅ | — | — | — | — | — |
 | `Grid` | properties | `rows`, `columns`, `rowSpacing`, `columnSpacing`, child `gridRow`, `gridColumn`, `gridRowSpan`, `gridColumnSpan` | — | — | — | — | — | — |
 | `AbsoluteLayout` | properties | child `absoluteLayoutBounds`, `absoluteLayoutProportions` | — | — | — | — | — | — |
-| layouts | properties | `clipsContent`, `safeAreaEdges` | — | — | — | — | — | — |
+| layouts | properties | `clipsContent`, `avoidsSafeArea` | — | — | — | — | — | — |
 | `ScrollView` | properties | `orientation`, `verticalScrollBarVisibility`, `horizontalScrollBarVisibility`, `scrollOffset`, `snapInterval`, `snapFrom`, `snapsAtMost`, `scrollMomentum` | ✅ | — | — | — | — | — |
 | `ScrollView` | events | `scrollXChanged`, `scrollYChanged`, `snapItemChanged`, `onScrollStopped` (`scrollStopped`) | ✅ | — | — | — | — | — |
 | `Border` | properties | `stroke`, `strokeWidth`, `shape`, `background` | — | — | — | — | — | — |
@@ -414,16 +414,16 @@ host status.
 
 `absoluteLayoutBounds`, `absoluteLayoutProportions`, `address`, `allowDrop`,
 `aspect`, `automationExcludedWithChildren`, `automationId`,
-`automationIsInAccessibleTree`, `backButtonTitle`, `background`,
-`barBackgroundColor`, `barForegroundColor`, `borderColor`, `borderWidth`,
-`cancelButtonColor`, `canDrag`, `characterSpacing`, `clipsContent`, `color`,
-`columns`, `columnSpacing`, `content`, `cornerRadius`, `count`, `currentPage`,
-`cursorPosition`, `data`, `date`, `dragText`, `drawable`, `fill`, `fillRule`,
-`floatsOnTop`, `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`,
-`fontSize`, `format`, `frame`, `gridColumn`, `gridColumnSpan`, `gridRow`,
-`gridRowSpan`, `group`, `groupName`, `growsWithText`, `hasBackButton`,
-`hasNavigationBar`, `height`, `hideSingle`, `hidesWhenInactive`,
-`horizontalAlignment`, `horizontalScrollBarVisibility`,
+`automationIsInAccessibleTree`, `avoidsSafeArea`, `backButtonTitle`,
+`background`, `barBackgroundColor`, `barForegroundColor`, `borderColor`,
+`borderWidth`, `cancelButtonColor`, `canDrag`, `characterSpacing`,
+`clipsContent`, `color`, `columns`, `columnSpacing`, `content`, `cornerRadius`,
+`count`, `currentPage`, `cursorPosition`, `data`, `date`, `dragText`,
+`drawable`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
+`fontAutoScalingEnabled`, `fontFamily`, `fontSize`, `format`, `frame`,
+`gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `group`, `groupName`,
+`growsWithText`, `hasBackButton`, `hasNavigationBar`, `height`, `hideSingle`,
+`hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollBarVisibility`,
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
 `inputPurpose`, `isAnimating`, `isDestructive`, `isEnabled`, `isMaximizable`,
@@ -440,16 +440,16 @@ host status.
 `placeholder`, `placeholderColor`, `placement`, `points`, `position`,
 `priority`, `progress`, `progressColor`, `refreshColor`, `region`,
 `renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
-`rowSpacing`, `safeAreaEdges`, `scale`, `scaleX`, `scaleY`, `scrollMomentum`,
-`scrollOffset`, `scrollStep`, `searchIconColor`, `selectedIndex`,
-`selectedIndicatorColor`, `selectionLength`, `semanticDescription`,
-`semanticHeadingLevel`, `semanticHint`, `shape`, `showsClearButton`,
-`showsUserLocation`, `side`, `snapFrom`, `snapInterval`, `snapsAtMost`,
-`source`, `spacing`, `step`, `stroke`, `strokeDashOffset`, `strokeDashPattern`,
-`strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`,
-`subtitle`, `swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`,
-`tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `textType`,
-`threshold`, `thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`,
+`rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollMomentum`, `scrollOffset`,
+`scrollStep`, `searchIconColor`, `selectedIndex`, `selectedIndicatorColor`,
+`selectionLength`, `semanticDescription`, `semanticHeadingLevel`,
+`semanticHint`, `shape`, `showsClearButton`, `showsUserLocation`, `side`,
+`snapFrom`, `snapInterval`, `snapsAtMost`, `source`, `spacing`, `step`,
+`stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`,
+`strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`, `subtitle`,
+`swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `tapCount`,
+`text`, `textCase`, `textColor`, `textDecorations`, `textType`, `threshold`,
+`thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`,
 `translationX`, `translationY`, `type`, `userAgent`, `value`,
 `verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
 `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,

@@ -30,7 +30,7 @@ much room. Minimum and maximum values bound the request. The enclosing layout
 still decides the final rectangle.
 
 `margin` is outside a view. `padding` is inside controls and containers that
-own content padding. `Thickness` can be supplied as one value, horizontal and
+own content padding. `Insets` can be supplied as one value, horizontal and
 vertical values, or four edges. `horizontalAlignment` and `verticalAlignment`
 express start, center, end, or fill behavior in the slot assigned by the
 parent.
@@ -388,7 +388,7 @@ measurements back into the same calculation.
 
 ## Safe areas and clipping
 
-`safeAreaEdges` states which edges participate in the host's safe-area
+`avoidsSafeArea` states which edges participate in the host's safe-area
 integration. `clipsContent` controls whether descendants may draw outside
 the assigned rectangle. Both are semantic requests and only count as available
 on a platform after the matrix records host tests for them.

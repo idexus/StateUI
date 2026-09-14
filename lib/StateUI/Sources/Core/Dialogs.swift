@@ -20,7 +20,7 @@
 // None of these names a page: a handler holds a description of a page rather
 // than the page, so the host shows the dialog on the page the reader is
 // actually looking at - the top of the modal stack included, which only the
-// host can know. `SoftInput` is the same shape of answer for the keyboard.
+// host can know. `OnScreenKeyboard` is the same shape of answer for the keyboard.
 
 /// Questions for the reader - an alert, a confirmation, a choice among actions
 /// and a prompt,

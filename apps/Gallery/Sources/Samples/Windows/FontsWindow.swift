@@ -53,7 +53,7 @@ struct FontsPage: ContentView {
         .spacing(10)
         .onCreated {
             page.title = "Fonts"
-            page.padding = Thickness(16)
+            page.padding = Insets(16)
 
             window.title = "Fonts"
             window.width = 320

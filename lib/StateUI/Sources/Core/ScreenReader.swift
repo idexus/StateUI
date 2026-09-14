@@ -8,16 +8,16 @@
 // reader is not looking at, and nothing on screen will announce itself.
 //
 //     items.removeAll { $0 == item }
-//     try await SemanticScreenReader.announce("Row deleted")
+//     try await ScreenReader.announce("Row deleted")
 //
 // An ACT rather than a property, for the reason every act here is one: it is
 // something that HAPPENS, at a moment, and no value on a tree can say "again".
 
 /// What the platform's screen reader says out loud, asked of the host.
-public enum SemanticScreenReader {
+public enum ScreenReader {
     /// Says something to the reader now, whatever they were on.
     ///
-    ///     try await SemanticScreenReader.announce("5 results")
+    ///     try await ScreenReader.announce("5 results")
     ///
     /// For what changed WITHOUT the reader doing it - a search that finished, a
     /// row that went, work that ended. A screen reader has one voice and this

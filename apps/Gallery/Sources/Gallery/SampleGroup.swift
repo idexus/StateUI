@@ -36,12 +36,12 @@ struct SampleGroup {
 
     let samples: [Sample]
 
-    /// The samples a device of `idiom` lists, through `Sample.isShown(on:)`.
-    /// What every page and count reads, each passing the idiom it resolved
+    /// The samples a device of `formFactor` lists, through `Sample.isShown(on:)`.
+    /// What every page and count reads, each passing the formFactor it resolved
     /// with `@Environment var device: DeviceInfo`; `samples` is the whole
     /// set, which is what the pushed pages and the tests read.
-    func shown(on idiom: DeviceIdiom) -> [Sample] {
-        samples.filter { $0.isShown(on: idiom) }
+    func shown(on formFactor: FormFactor) -> [Sample] {
+        samples.filter { $0.isShown(on: formFactor) }
     }
 }
 

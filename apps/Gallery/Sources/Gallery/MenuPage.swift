@@ -55,7 +55,7 @@ struct MenuPage: ContentView {
         // EDGE TO EDGE, so the gradient runs behind the status bar the way the
         // navigation bar beside it does. Every LAYOUT insets itself, so the
         // header says it too.
-        .safeAreaEdges(.none)
+        .avoidsSafeArea(.none)
         .onCreated {
             page.title = "StateUI"
 
@@ -94,7 +94,7 @@ struct MenuPage: ContentView {
         // (measured on an iPhone 15 Pro simulator: 59 points, the tagline gone
         // and the name cut mid-letter). The gradient was always meant to run
         // behind the status bar anyway.
-        .safeAreaEdges(.none)
+        .avoidsSafeArea(.none)
         .padding(20, 40, 20, 22)
         .background(Palette.identity)
     }
@@ -127,15 +127,15 @@ struct MenuPage: ContentView {
 
             // A row that DOES something rather than going somewhere. It needs
             // no type of its own: the same view, with a different handler.
-            MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.idiom) }
+            MenuRow("Surprise me") { nav.surprise(from: catalog, on: device.formFactor) }
                 .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
         }
     }
 
-    /// What is underneath: the platform compiled in, and the idiom the host
+    /// What is underneath: the platform compiled in, and the formFactor the host
     /// answered before the first render.
     private var footer: any View {
-        Label("native: \(stateUIPlatform()) · \(device.idiom)")
+        Label("native: \(stateUIPlatform()) · \(device.formFactor)")
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)

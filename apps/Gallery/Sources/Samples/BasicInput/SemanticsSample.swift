@@ -61,7 +61,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             Button("Announce the count")
                 .onClicked {
                     let words = "Tapped \\(taps) time\\(taps == 1 ? "" : "s")"
-                    try await SemanticScreenReader.announce(words)
+                    try await ScreenReader.announce(words)
                     said = words
                 }
 
@@ -180,7 +180,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .onClicked {
                     let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
-                    try await SemanticScreenReader.announce(words)
+                    try await ScreenReader.announce(words)
                     said = words
                 }
 

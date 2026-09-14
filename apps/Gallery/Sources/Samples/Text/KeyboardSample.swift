@@ -39,7 +39,7 @@ struct KeyboardSample: SampleContent, ExampleContent {
 
             Button("Close keyboard")
                 .onClicked {
-                    said = try await SoftInput.hide()
+                    said = try await OnScreenKeyboard.hide()
                         ? "Focus released"
                         : "Nothing was focused"
                 }
@@ -50,7 +50,7 @@ struct KeyboardSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         Label("`focus()` and `unfocus()` are acts aimed at one field with `@Aim`. "
-            + "`SoftInput.hide()` releases whichever input holds the focus, and answers "
+            + "`OnScreenKeyboard.hide()` releases whichever input holds the focus, and answers "
             + "whether anything did.")
             .fontSize(12)
             .textColor(Palette.subtle)
@@ -84,7 +84,7 @@ struct KeyboardSample: SampleContent, ExampleContent {
 
             Button("Close keyboard")
                 .onClicked {
-                    said = try await SoftInput.hide()
+                    said = try await OnScreenKeyboard.hide()
                         ? "Focus released"
                         : "Nothing was focused"
                 }

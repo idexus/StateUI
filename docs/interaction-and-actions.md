@@ -82,10 +82,10 @@ ColorBox(.cornflowerBlue)
     .translationX(x)
     .scale(scale)
     .onPanUpdated { update in
-        if update.status == .running { x = update.totalX }
+        if update.phase == .running { x = update.totalX }
     }
     .onPinchUpdated { update in
-        if update.status == .running { scale *= update.scale }
+        if update.phase == .running { scale *= update.scale }
     }
 ```
 
@@ -151,7 +151,7 @@ history navigation or map movement. `.id(...)` and `.aim(...)` can be used
 together because they answer different questions: identity says which element
 continues, while the aim says where an action goes.
 
-`SoftInput.hide()` dismisses whichever text input currently owns the on-screen
+`OnScreenKeyboard.hide()` dismisses whichever text input currently owns the on-screen
 keyboard when the application does not hold that control's aim.
 
 ## Dialogs
@@ -267,7 +267,7 @@ the tree's `.id`, and assigning one does not change StateUI identity.
 Announce an important asynchronous change that has no visible focused element:
 
 ```swift quote
-try await SemanticScreenReader.announce("Import complete")
+try await ScreenReader.announce("Import complete")
 ```
 
 Do not announce a tap result the reader's focused control already expresses;

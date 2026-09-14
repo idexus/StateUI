@@ -161,8 +161,8 @@ final class CommandWireTests: XCTestCase {
     /// The one act with no view in it: the host asks the page which of its
     /// views has the focus, because the Swift side cannot know.
     func testClosingTheKeyboardCrossesAsItsFixtureSays() async throws {
-        try await check("HideSoftInput") {
-            _ = try await SoftInput.hide()
+        try await check("HideOnScreenKeyboard") {
+            _ = try await OnScreenKeyboard.hide()
         }
     }
 

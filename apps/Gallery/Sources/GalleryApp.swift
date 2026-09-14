@@ -45,13 +45,13 @@ struct GalleryApp: Application {
 
     /// What every gallery shares, written as the application is made.
     init() {
-        // The styles every control in the gallery is given. The idiom goes in
+        // The styles every control in the gallery is given. The formFactor goes in
         // because one style reads
         // it: the SearchField's touch floor is a touch screen's, not the
         // desktop's - and the host says the device before the application is
         // made. A colour in a style follows the theme by itself. See
         // Styles/AppStyles.swift.
-        application.styles = AppStyles.sheet(on: device.idiom)
+        application.styles = AppStyles.sheet(on: device.formFactor)
 
         // What the gallery KEEPS between launches - `PersistentStateSample`'s
         // three settings, and nothing else. Listed because a settings store

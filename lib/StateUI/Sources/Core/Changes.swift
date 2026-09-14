@@ -93,7 +93,7 @@ struct Watch {
     }
 }
 
-extension BindableObject {
+extension ModifiableElement {
     /// Runs something when `value` is not what it was last render.
     ///
     ///     VStack { … }

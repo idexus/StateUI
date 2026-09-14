@@ -43,7 +43,7 @@ protocol SampleContent {
     /// count, the "Surprise me" pick. The ROUTE still reaches the page on any
     /// device, deliberately: a link followed is better answered by the page
     /// saying what is missing than by a dead end.
-    static var idioms: Set<DeviceIdiom> { get }
+    static var formFactors: Set<FormFactor> { get }
 
     /// Whether an example is given the WINDOW's height rather than its own -
     /// true for an example that scrolls itself, such as a `ScrollView`,
@@ -72,7 +72,7 @@ extension SampleContent {
     static var fills: Bool { false }
 
     /// Listed on every kind of device, which is what almost every sample is.
-    static var idioms: Set<DeviceIdiom> { [.phone, .tablet, .desktop, .tv, .watch] }
+    static var formFactors: Set<FormFactor> { [.phone, .tablet, .desktop, .tv, .watch] }
 }
 
 extension SampleContent where Self: ExampleContent {
@@ -140,7 +140,7 @@ struct Sample {
     let title: String
     let summary: String
     let scrolls: Bool
-    let idioms: Set<DeviceIdiom>
+    let formFactors: Set<FormFactor>
 
     /// Whether an example is given the window's height rather than its own.
     let fills: Bool
@@ -151,11 +151,11 @@ struct Sample {
     /// that keeps this catalog.
     let examples: [Example]
 
-    /// Whether a device of `idiom` lists this sample. An UNKNOWN idiom - a
+    /// Whether a device of `formFactor` lists this sample. An UNKNOWN formFactor - a
     /// headless test, a host that could not say - lists everything: hiding is
     /// a courtesy to the reader, and a test wants to see it all.
-    func isShown(on idiom: DeviceIdiom) -> Bool {
-        idiom == .unknown || idioms.contains(idiom)
+    func isShown(on formFactor: FormFactor) -> Bool {
+        formFactor == .unknown || formFactors.contains(formFactor)
     }
 
     /// What the page calls example `index`: "Example" where it is the only one,
@@ -170,7 +170,7 @@ struct Sample {
         title = Content.title
         summary = Content.summary
         scrolls = Content.scrolls
-        idioms = Content.idioms
+        formFactors = Content.formFactors
         fills = Content.fills
         examples = content.examples
     }

@@ -321,7 +321,7 @@ extension Navigation {
     /// Opens a sample nobody asked for - the menu's last row and the title
     /// bar's chip both call it. Flattened, so every sample is as likely as
     /// every other - picking a group first would favour whatever is in the
-    /// shortest one - and drawn from what `idiom` shows, so a phone is never
+    /// shortest one - and drawn from what `formFactor` shows, so a phone is never
     /// surprised with a page about desktop chrome.
     ///
     /// A method on values both callers already hold: a closure handed down
@@ -330,9 +330,9 @@ extension Navigation {
     ///
     /// Two assignments: the menu closes and the page goes on the stack, and
     /// the next render is what moves the screen.
-    func surprise(from catalog: Catalog, on idiom: DeviceIdiom) {
+    func surprise(from catalog: Catalog, on formFactor: FormFactor) {
         guard let sample = catalog.groups
-            .flatMap({ $0.shown(on: idiom) })
+            .flatMap({ $0.shown(on: formFactor) })
             .randomElement()
         else { return }
 

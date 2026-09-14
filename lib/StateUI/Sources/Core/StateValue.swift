@@ -170,11 +170,11 @@ extension Rect: StateValue {
     public static var lanes: Int { 4 }
 }
 
-extension Thickness: StateValue {
+extension Insets: StateValue {
     /// Left, top, right, bottom.
     public var carried: StateCarried { .lanes([left, top, right, bottom]) }
 
-    /// A thickness from those four lanes.
+    /// Insets from those four lanes.
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 4 else { return nil }
 
@@ -306,7 +306,7 @@ extension StateChoice {
 extension Double: Walked {}
 extension Point: Walked {}
 extension Rect: Walked {}
-extension Thickness: Walked {}
+extension Insets: Walked {}
 extension Color: Walked {}
 
 /// How a value lies on the image, in bytes.

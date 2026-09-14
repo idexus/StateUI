@@ -37,7 +37,7 @@ struct HomePage: ContentView {
     @State private var chosen = 0
 
     /// The device's facts, resolved from the standard environment - the
-    /// idiom for the count, and the footer's word.
+    /// formFactor for the count, and the footer's word.
     @Environment var device: DeviceInfo
 
     /// The screen, which decides whether a phone is on its side.
@@ -162,7 +162,7 @@ struct HomePage: ContentView {
                 .strokeWidth(0)
                 .shape(.roundedRectangle(18))
 
-                SectionTitle("\(catalog.sampleCount(on: device.idiom)) SAMPLES "
+                SectionTitle("\(catalog.sampleCount(on: device.formFactor)) SAMPLES "
                     + "IN \(groups.count) GROUPS")
             }
             .spacing(14)
@@ -199,7 +199,7 @@ struct HomePage: ContentView {
                 // it steps. ON A DESKTOP ONLY: a finger has the run itself and
                 // needs no buttons, where a mouse without a wheel - or a hand
                 // on a keyboard - has no way to turn it at all.
-                if device.idiom == .desktop {
+                if device.formFactor == .desktop {
                     Steps(position: $chosen, count: groups.count)
                 }
 
@@ -222,7 +222,7 @@ struct HomePage: ContentView {
                 // to as many lines as it wants, the count sits under it, and
                 // what changes between cards is how much of the block is
                 // empty underneath rather than how tall it is.
-                Caption(catalog: catalog, position: $chosen, idiom: device.idiom)
+                Caption(catalog: catalog, position: $chosen, formFactor: device.formFactor)
                     .height(Self.caption)
                     .verticalAlignment(.start)
             }
@@ -242,10 +242,10 @@ struct HomePage: ContentView {
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
 
-                // The platform is compiled in; the idiom - phone, tablet,
+                // The platform is compiled in; the formFactor - phone, tablet,
                 // desktop - is the host's answer, which is what lets the
                 // catalog list desktop chrome only where it draws.
-                Label("native: \(stateUIPlatform()) · \(device.idiom)")
+                Label("native: \(stateUIPlatform()) · \(device.formFactor)")
                     .fontSize(11)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
@@ -376,7 +376,7 @@ struct HomePage: ContentView {
     /// of everything above them for nothing. Where there is never room, the
     /// answer is not to ask.
     private var affords: Chrome {
-        guard device.idiom == .phone else { return .full }
+        guard device.formFactor == .phone else { return .full }
 
         return display.orientation == .landscape ? .cards : .heading
     }
@@ -496,7 +496,7 @@ private struct Caption: ContentView {
     @Binding var position: Int
 
     /// What the device is, for the count - a phone is shown fewer samples.
-    let idiom: DeviceIdiom
+    let formFactor: FormFactor
 
     var content: any View {
         let groups = catalog.groups
@@ -505,7 +505,7 @@ private struct Caption: ContentView {
         // THE NAME IS NOT AMONG THEM: the card carries it, and saying it again
         // a card's width below reads as two things rather than one.
         return VStack {
-            Label("\(group.shown(on: idiom).count) samples · tap the card to open")
+            Label("\(group.shown(on: formFactor).count) samples · tap the card to open")
                 .fontSize(12)
                 .textColor(Palette.accent)
                 .horizontalTextAlignment(.center)

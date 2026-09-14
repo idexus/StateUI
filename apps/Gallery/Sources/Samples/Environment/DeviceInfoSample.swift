@@ -3,7 +3,7 @@ import StateUI
 /// DeviceInfo and AppInfo - the two providers whose facts mostly stand still:
 /// what machine this is, and what app this is.
 struct DeviceInfoSample: SampleContent, ExampleContent {
-    /// The machine's facts - the idiom is the one the gallery itself builds
+    /// The machine's facts - the formFactor is the one the gallery itself builds
     /// by, listing desktop chrome only where it draws.
     @Environment var device: DeviceInfo
 
@@ -31,7 +31,7 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
 
                     Label("\\(device.manufacturer) \\(device.model)")
                     Label("\\(device.platform) \\(device.versionString) · "
-                        + "\\(device.idiom) · \\(device.deviceType)")
+                        + "\\(device.formFactor) · \\(device.deviceType)")
                     Label(device.name.isEmpty ? "not said" : device.name)
                 }
             }
@@ -54,7 +54,7 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
                 .fontSize(15)
             Label("system · \(device.platform) \(device.versionString)")
                 .fontSize(15)
-            Label("idiom · \(device.idiom), \(device.deviceType)")
+            Label("formFactor · \(device.formFactor), \(device.deviceType)")
                 .fontSize(15)
             Label("name · \(device.name.isEmpty ? "not said" : device.name)")
                 .fontSize(15)
@@ -64,9 +64,9 @@ struct DeviceInfoSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The idiom is the value this gallery itself builds by: the "
+            Label("The formFactor is the value this gallery itself builds by: the "
                 + "window wears a title bar and lists the TitleBar sample only "
-                + "where device.idiom answers .desktop. It is known BEFORE the "
+                + "where device.formFactor answers .desktop. It is known BEFORE the "
                 + "first render, so the first tree already has it - which "
                 + "pages exist is decided while the tree is built.")
                 .fontSize(12)

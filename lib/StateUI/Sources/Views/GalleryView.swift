@@ -621,9 +621,9 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         // drag leaves a scroller exactly where it stands - so without this a
         // run of cards could only be moved by the wheel. The IDIOM is the question and not the platform's name,
         // because iOS is a phone and a tablet and neither of them wants it.
-        if device.idiom == .desktop {
+        if device.formFactor == .desktop {
             reader = reader.onPanUpdated { pan in
-                switch pan.status {
+                switch pan.phase {
                 case .started:
                     drags.wrappedValue = offset.projectedValue.journey.value.x
 

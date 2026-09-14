@@ -118,7 +118,7 @@ exposes what the host is showing between writes:
 | `snap(to:)` | set standing value, destination, and zero velocity together |
 | `convert` | derive another host-driven value from live journey lanes |
 
-The built-in `Walked` values are `Double`, `Point`, `Rect`, `Thickness`, and
+The built-in `Walked` values are `Double`, `Point`, `Rect`, `Insets`, and
 `Color`. Each has a fixed set of numeric lanes. A part binding and a binding
 made from get/set closures do not own the complete storage image a host needs
 to walk; move the complete state instead.

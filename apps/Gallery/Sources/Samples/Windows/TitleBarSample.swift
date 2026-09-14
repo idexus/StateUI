@@ -17,7 +17,7 @@ struct TitleBarSample: SampleContent, ExampleContent {
     static let id = "titleBar"
     static let title = "TitleBar"
     static let summary = "Title, color, and interactive content in native window chrome."
-    static let idioms: Set<DeviceIdiom> = [.desktop]
+    static let formFactors: Set<FormFactor> = [.desktop]
 
     static let code = """
         final class TitleBarState {

@@ -630,8 +630,8 @@ public enum WireProbe {
             return spelled(member, as: IconPosition.self)
         case Prop.type.name:
             return spelled(member, as: PinType.self)
-        case Prop.safeAreaEdges.name:
-            return spelled(member, as: SafeAreaRegions.self)
+        case Prop.avoidsSafeArea.name:
+            return spelled(member, as: SafeArea.self)
         case Prop.layoutDirection.name:
             return spelled(member, as: LayoutDirection.self)
         case Prop.semanticHeadingLevel.name:

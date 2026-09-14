@@ -22,7 +22,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     static let summary = "Open tools, valued windows, and another independent scene."
 
     /// Devices whose host can present independent windows.
-    static let idioms: Set<DeviceIdiom> = [.tablet, .desktop]
+    static let formFactors: Set<FormFactor> = [.tablet, .desktop]
 
     static let code = """
         extension WindowType {

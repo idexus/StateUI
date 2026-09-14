@@ -304,10 +304,10 @@ final class Catalog {
         ]
     }
 
-    /// How many samples a device of `idiom` lists - the home page's count, so
+    /// How many samples a device of `formFactor` lists - the home page's count, so
     /// it agrees with what the group pages show.
-    func sampleCount(on idiom: DeviceIdiom) -> Int {
-        groups.reduce(0) { $0 + $1.shown(on: idiom).count }
+    func sampleCount(on formFactor: FormFactor) -> Int {
+        groups.reduce(0) { $0 + $1.shown(on: formFactor).count }
     }
 
     /// The sample behind an id, for the route that pushes one.

@@ -11,7 +11,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
 
     // The interaction belongs to desktop hosts. The route still remains
     // reachable on every device even where the sample is not listed.
-    static let idioms: Set<DeviceIdiom> = [.desktop]
+    static let formFactors: Set<FormFactor> = [.desktop]
 
     static let code = """
         @State private var items = ["Alpha", "Beta", "Gamma"]

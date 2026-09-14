@@ -17,7 +17,7 @@
 //     PropertyContainer            what holds property VALUES - controls and styles
 //     ├── VisualElementProperties  opacity, isVisible, background, size…
 //     │   └── ViewProperties       margin, options, grid and absolute placement
-//     │       ├── LayoutProperties safeAreaEdges
+//     │       ├── LayoutProperties avoidsSafeArea
 //     │       │   └── StackBaseProperties  spacing
 //     │       └── ShapeProperties  fill, stroke…
 //     └── the mixins, one file each, worn by whichever controls carry them:
@@ -26,7 +26,7 @@
 //         BorderElement, BarElement, ImageElement, MenuItemElement
 //
 //     Element                      anything that can describe itself as a tree
-//     └── BindableObject           a PropertyContainer IN the tree - events and lifetime live here
+//     └── ModifiableElement           a PropertyContainer IN the tree - events and lifetime live here
 //         └── VisualElement        identity (.id), the read-only bindings
 //             └── View             gestures, pan feeds, the frame report, the context menu
 //                 └── Layout       (wears LayoutProperties and PaddingElement)
@@ -436,12 +436,12 @@ extension PropertyContainer where Modified == Self {
 /// in the tree, where a `Style` only carries values - which is why the events
 /// are declared HERE and not one tier down. What can hold a handler is
 /// something that exists on screen, never a bag of values.
-public protocol BindableObject: PropertyContainer, Element where Modified: Element {}
+public protocol ModifiableElement: PropertyContainer, Element where Modified: Element {}
 
 /// A control backed by a node, and drawn.
-public protocol VisualElement: BindableObject, VisualElementProperties {}
+public protocol VisualElement: ModifiableElement, VisualElementProperties {}
 
-extension BindableObject {
+extension ModifiableElement {
     /// Registers a handler for an event by name, for events the typed modifiers
     /// do not cover yet - beside whatever is there, with the VALUES the event
     /// carried.
@@ -486,7 +486,7 @@ extension BindableObject {
     }
 }
 
-extension BindableObject where Modified == Self {
+extension ModifiableElement where Modified == Self {
     /// The node this control describes - itself, since a control has one.
     public var body: Node { node }
 }
@@ -496,7 +496,7 @@ extension BindableObject where Modified == Self {
 /// The properties every drawn control has - the value half of
 /// `VisualElement`, shared by the control and its `Style`. What is NOT here is
 /// deliberate: identity and the read-only bindings live on `VisualElement`,
-/// and an element's lifetime on `BindableObject`, where only a control can
+/// and an element's lifetime on `ModifiableElement`, where only a control can
 /// reach them.
 public protocol VisualElementProperties: PropertyContainer {}
 
@@ -1026,17 +1026,17 @@ extension ViewProperties {
     /// Padding is the space inside.
     ///
     ///     Label("Total").margin(16)                      // all four sides
-    ///     Label("Total").margin(Thickness(16, 0, 0, 0))  // the left edge only
-    public func margin(_ value: Thickness) -> Modified { setValue(.margin, value.propValue) }
+    ///     Label("Total").margin(Insets(16, 0, 0, 0))  // the left edge only
+    public func margin(_ value: Insets) -> Modified { setValue(.margin, value.propValue) }
 
     /// Left and right, then top and bottom.
     public func margin(_ horizontalSize: Double, _ verticalSize: Double) -> Modified {
-        margin(Thickness(horizontalSize, verticalSize))
+        margin(Insets(horizontalSize, verticalSize))
     }
 
     /// Each side in turn: left, top, right, bottom.
     public func margin(_ left: Double, _ top: Double, _ right: Double, _ bottom: Double) -> Modified {
-        margin(Thickness(left, top, right, bottom))
+        margin(Insets(left, top, right, bottom))
     }
 
     /// How the view uses the width its parent offers - filling it, or sitting at
@@ -1209,7 +1209,7 @@ extension View {
     ///     ColorBox(.cornflowerBlue)
     ///         .translationX(offsetX)
     ///         .onPanUpdated { pan in
-    ///             if pan.status == .running { offsetX = pan.totalX }
+    ///             if pan.phase == .running { offsetX = pan.totalX }
     ///         }
     ///
     /// The totals are measured from where the pan began, which is what makes
@@ -1438,22 +1438,22 @@ extension LayoutProperties {
     }
 
     /// Which parts of the screen's UNSAFE strip - the notch, the bars, the
-    /// soft keyboard - this layout stays clear of, one value for all four
+    /// on-screen keyboard - this layout stays clear of, one value for all four
     /// edges.
     ///
-    ///     VStack { … }.safeAreaEdges(.none)    // edge to edge
+    ///     VStack { … }.avoidsSafeArea(.none)    // edge to edge
     ///
     /// iOS is where it shows; the other platforms have no unsafe strip and
     /// ignore it. A layout that stays clear of the strip is inset by it, so a
     /// header meant to reach the top edge wants `.none`: its content then sits
     /// where its padding says, and its frame fits that content.
-    public func safeAreaEdges(_ value: SafeAreaRegions) -> Modified {
-        setValue(.safeAreaEdges, value.propValue)
+    public func avoidsSafeArea(_ value: SafeArea) -> Modified {
+        setValue(.avoidsSafeArea, value.propValue)
     }
 
     /// The same, said for the horizontal and the vertical edges separately.
     ///
-    ///     Grid { … }.safeAreaEdges(.none, .container)
+    ///     Grid { … }.avoidsSafeArea(.none, .container)
     ///
     /// Written out to all four edges before it travels - left and right from
     /// the first, top and bottom from the second - so the wire carries the one
@@ -1463,11 +1463,11 @@ extension LayoutProperties {
     /// - Parameters:
     ///   - horizontal: what the left and right edges stay clear of.
     ///   - vertical: what the top and bottom edges stay clear of.
-    public func safeAreaEdges(
-        _ horizontal: SafeAreaRegions,
-        _ vertical: SafeAreaRegions
+    public func avoidsSafeArea(
+        _ horizontal: SafeArea,
+        _ vertical: SafeArea
     ) -> Modified {
-        safeAreaEdges(horizontal, vertical, horizontal, vertical)
+        avoidsSafeArea(horizontal, vertical, horizontal, vertical)
     }
 
     /// The same, one edge at a time: left, top, right, bottom.
@@ -1482,13 +1482,13 @@ extension LayoutProperties {
     ///   - top: what the top edge stays clear of.
     ///   - right: what the right edge stays clear of.
     ///   - bottom: what the bottom edge stays clear of.
-    public func safeAreaEdges(
-        _ left: SafeAreaRegions,
-        _ top: SafeAreaRegions,
-        _ right: SafeAreaRegions,
-        _ bottom: SafeAreaRegions
+    public func avoidsSafeArea(
+        _ left: SafeArea,
+        _ top: SafeArea,
+        _ right: SafeArea,
+        _ bottom: SafeArea
     ) -> Modified {
-        setValue(.safeAreaEdges, .values([
+        setValue(.avoidsSafeArea, .values([
             left.propValue,
             top.propValue,
             right.propValue,

@@ -278,7 +278,7 @@ final class CycleTests: XCTestCase {
         trip(false)
         trip(Point(x: 3, y: -4))
         trip(Rect(1, 2, 3, 4))
-        trip(Thickness(1, 2, 3, 4))
+        trip(Insets(1, 2, 3, 4))
         trip(Color("#8040C0FF"))
         trip("a caption, ż and 漢")
         trip("")

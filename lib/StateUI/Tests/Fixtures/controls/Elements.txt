@@ -1,6 +1,7 @@
 generation 1 names +100
 VStack 1 arranged(3)
   allowDrop: true
+  avoidsSafeArea: values [enum 0, enum 1, enum 2, enum 3]
   background: color FFF5F5F5
   canDrag: true
   clipsContent: true
@@ -25,7 +26,6 @@ VStack 1 arranged(3)
   rotation: number 15
   rotationX: number 30
   rotationY: number 45
-  safeAreaEdges: values [enum 0, enum 1, enum 2, enum 3]
   scale: number 1.5
   scaleX: number 2
   scaleY: number 3

@@ -6,7 +6,7 @@
 // Three initializers: one value for all four sides, two for the horizontal and
 // the vertical, and four in the order left, top, right, bottom. A numeric
 // literal is one too, so the common case reads as `.padding(24)` rather than
-// `.padding(Thickness(24))`.
+// `.padding(Insets(24))`.
 
 /// Space on the four sides of something.
 ///
@@ -17,7 +17,7 @@
 /// `.margin` keeps it OUTSIDE, between the control and its neighbours. A
 /// number written where one of these is wanted becomes the same value on all
 /// four sides.
-public struct Thickness: Equatable, Sendable {
+public struct Insets: Equatable, Sendable {
     /// The space on the left, in device units.
     public var left: Double
 
@@ -37,7 +37,7 @@ public struct Thickness: Equatable, Sendable {
 
     /// Left and right first, then top and bottom.
     ///
-    ///     Thickness(16, 8)   // 16 either side, 8 above and below
+    ///     Insets(16, 8)   // 16 either side, 8 above and below
     public init(_ horizontalSize: Double, _ verticalSize: Double) {
         self.init(horizontalSize, verticalSize, horizontalSize, verticalSize)
     }
@@ -57,8 +57,8 @@ public struct Thickness: Equatable, Sendable {
     }
 }
 
-extension Thickness: ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
-    /// The same on all four sides, so `.padding(24)` needs no Thickness written
+extension Insets: ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
+    /// The same on all four sides, so `.padding(24)` needs no Insets written
     /// around it.
     public init(integerLiteral value: Int) {
         self.init(Double(value))

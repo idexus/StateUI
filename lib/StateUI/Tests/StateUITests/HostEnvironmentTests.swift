@@ -83,7 +83,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.battery.energySaverStatus = .unknown
         StandardEnvironment.connectivity.networkAccess = .unknown
         StandardEnvironment.connectivity.connectionProfiles = []
-        StandardEnvironment.device.idiom = .unknown
+        StandardEnvironment.device.formFactor = .unknown
         StandardEnvironment.device.platform = ""
         StandardEnvironment.device.model = ""
         StandardEnvironment.device.manufacturer = ""
@@ -94,7 +94,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.app.packageName = ""
         StandardEnvironment.app.versionString = ""
         StandardEnvironment.app.buildString = ""
-        StandardEnvironment.app.requestedTheme = .unspecified
+        StandardEnvironment.app.requestedTheme = .system
         StandardEnvironment.application.phase = .active
 
         // Display providers are process-wide. Restore every field so a later
@@ -244,24 +244,24 @@ final class HostEnvironmentTests: XCTestCase {
 
     func testTheDevicePushCarriesTheIdiom() {
         // Platform is an open vocabulary, so it rides as authored text while
-        // the device idiom remains a closed StateUI enumeration.
+        // the device formFactor remains a closed StateUI enumeration.
         XCTAssertEqual(push(5, [
-            .enumeration(DeviceIdiom.desktop.rawValue), .string("macOS"),
+            .enumeration(FormFactor.desktop.rawValue), .string("macOS"),
             .string("Mac14,9"), .string("Apple"), .string("mac"), .string("14.5"),
             .enumeration(DeviceType.physical.rawValue),
         ]), 1)
 
-        XCTAssertEqual(StandardEnvironment.device.idiom, .desktop)
+        XCTAssertEqual(StandardEnvironment.device.formFactor, .desktop)
         XCTAssertEqual(StandardEnvironment.device.deviceType, .physical)
 
-        // An idiom this library has no case for degrades to .unknown - the
+        // An formFactor this library has no case for degrades to .unknown - the
         // host is at most a release newer, and unknown shows everything.
         XCTAssertEqual(push(5, [
             .enumeration(99), .string(""), .string(""),
             .string(""), .string(""), .string(""),
             .enumeration(DeviceType.unknown.rawValue),
         ]), 1)
-        XCTAssertEqual(StandardEnvironment.device.idiom, .unknown)
+        XCTAssertEqual(StandardEnvironment.device.formFactor, .unknown)
     }
 
     // MARK: - Refusals
@@ -334,10 +334,10 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(ConnectionProfile.wiFi.rawValue, 4)
         XCTAssertEqual(DisplayOrientation.landscape.rawValue, 2)
         XCTAssertEqual(DisplayRotation.rotation270.rawValue, 4)
-        XCTAssertEqual(AppTheme.dark.rawValue, 2)
+        XCTAssertEqual(Theme.dark.rawValue, 2)
         XCTAssertEqual(DeviceType.virtual.rawValue, 2)
         XCTAssertEqual(Weekday.saturday.rawValue, 6)
-        XCTAssertEqual(DeviceIdiom.desktop.rawValue, 3)
+        XCTAssertEqual(FormFactor.desktop.rawValue, 3)
         XCTAssertEqual(ApplicationPhase.background.rawValue, 2)
     }
 
@@ -401,7 +401,7 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertTrue(StandardEnvironment.locale.isMetric)
 
         XCTAssertEqual(push(5, [
-            .enumeration(DeviceIdiom.desktop.rawValue),
+            .enumeration(FormFactor.desktop.rawValue),
             .string("macOS"),
             .string("Mac14,9"),
             .string("Apple"),
@@ -409,7 +409,7 @@ final class HostEnvironmentTests: XCTestCase {
             .string("26.0"),
             .enumeration(DeviceType.physical.rawValue),
         ]), 1)
-        XCTAssertEqual(StandardEnvironment.device.idiom, .desktop)
+        XCTAssertEqual(StandardEnvironment.device.formFactor, .desktop)
         XCTAssertEqual(StandardEnvironment.device.platform, "macOS")
         XCTAssertEqual(StandardEnvironment.device.model, "Mac14,9")
         XCTAssertEqual(StandardEnvironment.device.manufacturer, "Apple")
@@ -422,7 +422,7 @@ final class HostEnvironmentTests: XCTestCase {
             .string("com.example.gallery"),
             .string("1.2"),
             .string("34"),
-            .enumeration(AppTheme.dark.rawValue),
+            .enumeration(Theme.dark.rawValue),
         ]), 1)
         XCTAssertEqual(StandardEnvironment.app.name, "Gallery")
         XCTAssertEqual(StandardEnvironment.app.packageName, "com.example.gallery")

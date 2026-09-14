@@ -15,7 +15,7 @@ final class AppKitShapeViewTests: XCTestCase {
         view.apply(
             fill: nil,
             stroke: brush(.cornflowerBlue),
-            thickness: 4,
+            strokeWidth: 4,
             dash: [3, 2],
             dashOffset: 2.5,
             lineCap: LineCap.round.rawValue,
@@ -40,7 +40,7 @@ final class AppKitShapeViewTests: XCTestCase {
         view.apply(
             fill: brush(.red),
             stroke: nil,
-            thickness: 1,
+            strokeWidth: 1,
             dash: [],
             dashOffset: 0,
             lineCap: 0,
@@ -64,7 +64,7 @@ final class AppKitShapeViewTests: XCTestCase {
         view.apply(
             fill: nil,
             stroke: brush(.black),
-            thickness: 1,
+            strokeWidth: 1,
             dash: [],
             dashOffset: 0,
             lineCap: 0,
@@ -86,7 +86,7 @@ final class AppKitShapeViewTests: XCTestCase {
         view.apply(
             fill: brush(.gold),
             stroke: nil,
-            thickness: 1,
+            strokeWidth: 1,
             dash: [],
             dashOffset: 0,
             lineCap: 0,
@@ -110,7 +110,7 @@ final class AppKitShapeViewTests: XCTestCase {
         view.apply(
             fill: nil,
             stroke: brush(.black),
-            thickness: 1,
+            strokeWidth: 1,
             dash: [],
             dashOffset: 0,
             lineCap: 0,

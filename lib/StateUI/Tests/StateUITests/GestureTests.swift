@@ -32,20 +32,20 @@ final class GestureTests: XCTestCase {
 
         renders.fire(events["swiped"] ?? -1, with: [.enumeration(SwipeDirection.left.rawValue)])
         renders.fire(events["panUpdated"] ?? -1, with: [
-            .enumeration(GestureStatus.running.rawValue), .number(12.5), .number(-3),
+            .enumeration(GesturePhase.running.rawValue), .number(12.5), .number(-3),
         ])
         renders.fire(events["pinchUpdated"] ?? -1, with: [
-            .enumeration(GestureStatus.completed.rawValue), .number(1.25), .numbers([0.5, 0.75]),
+            .enumeration(GesturePhase.completed.rawValue), .number(1.25), .numbers([0.5, 0.75]),
         ])
         renders.fire(events["pointerMoved"] ?? -1, with: [.numbers([12.5, 30])])
 
         XCTAssertEqual(swipes, [.left])
 
-        XCTAssertEqual(pans.first?.status, .running)
+        XCTAssertEqual(pans.first?.phase, .running)
         XCTAssertEqual(pans.first?.totalX, 12.5)
         XCTAssertEqual(pans.first?.totalY, -3)
 
-        XCTAssertEqual(pinches.first?.status, .completed)
+        XCTAssertEqual(pinches.first?.phase, .completed)
         XCTAssertEqual(pinches.first?.scale, 1.25)
         XCTAssertEqual(pinches.first?.scaleOrigin, Point(x: 0.5, y: 0.75))
 
@@ -67,16 +67,16 @@ final class GestureTests: XCTestCase {
         let patch = renders.render(ColorBox().onPanUpdated { _ in pans += 1 }.body)
         let id = patch.events?["panUpdated"] ?? -1
 
-        renders.fire(id, with: [.enumeration(GestureStatus.running.rawValue), .number(12.5)])
+        renders.fire(id, with: [.enumeration(GesturePhase.running.rawValue), .number(12.5)])
         renders.fire(id, with: [
-            .number(Double(GestureStatus.running.rawValue)), .number(1), .number(2),
+            .number(Double(GesturePhase.running.rawValue)), .number(1), .number(2),
         ])
         renders.fire(id, with: [])
 
         XCTAssertEqual(pans, 0)
 
         renders.fire(id, with: [
-            .enumeration(GestureStatus.started.rawValue), .number(0), .number(0),
+            .enumeration(GesturePhase.started.rawValue), .number(0), .number(0),
         ])
         XCTAssertEqual(pans, 1)
     }
@@ -177,10 +177,10 @@ final class GestureTests: XCTestCase {
         // The second is the first with its status sent as a plain number, which
         // is the whole difference between a report and a refusal.
         let readable: [PropValue] = [
-            .enumeration(GestureStatus.running.rawValue), .number(1.25), .numbers([0.5, 0.5]),
+            .enumeration(GesturePhase.running.rawValue), .number(1.25), .numbers([0.5, 0.5]),
         ]
         let garbled: [PropValue] = [
-            .number(Double(GestureStatus.running.rawValue)), .number(1.25), .numbers([0.5, 0.5]),
+            .number(Double(GesturePhase.running.rawValue)), .number(1.25), .numbers([0.5, 0.5]),
         ]
 
         renders.fire(id, with: readable)
