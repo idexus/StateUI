@@ -9,7 +9,7 @@ import XCTest
 
 final class AppKitPageTests: XCTestCase {
     @MainActor
-    func testAWindowPresentsItsContentPageExactlyOnce() {
+    func testAWindowPresentsItsPageExactlyOnce() {
         var reported: [(Int32, [HostValue])] = []
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
@@ -672,7 +672,7 @@ private extension AppKitPageTests {
         var label = HostPatch(id: .manual("label-\(id)"), type: .label)
         label.properties[.text] = .string(id)
 
-        var page = HostPatch(id: .manual(id), type: .contentPage)
+        var page = HostPatch(id: .manual(id), type: .page)
         if let title { page.properties[.title] = .string(title) }
         page.events = .replace([
             .appearing: base,

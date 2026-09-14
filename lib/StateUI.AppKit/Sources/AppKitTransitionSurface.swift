@@ -21,7 +21,7 @@ enum AppKitTransitionSurface {
         }
 
         switch type {
-        case .contentPage:
+        case .page:
             return contentPageProperties.contains(property)
 
         case .border:

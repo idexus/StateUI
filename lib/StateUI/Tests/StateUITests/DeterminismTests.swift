@@ -57,7 +57,7 @@ private struct Counter: ContentView {
 /// The stack's root. Every page of the session names itself as it comes into
 /// the tree, which is the message that brings it - so the session's messages
 /// carry every title the C# side reads.
-private struct HomePage: ContentPage {
+private struct HomePage: ContentView {
     @Environment private var page: PageSession
 
     /// Lent rather than read here: what reads it is `Counter`, one level down,
@@ -78,14 +78,14 @@ private struct HomePage: ContentPage {
     }
 }
 
-private struct DetailPage: ContentPage {
+private struct DetailPage: ContentView {
     @Environment private var page: PageSession
     let name: String
 
     var content: any View { Label(name).onCreated { page.title = name } }
 }
 
-private struct SettingsPage: ContentPage {
+private struct SettingsPage: ContentView {
     @Environment private var page: PageSession
 
     var content: any View {
@@ -107,7 +107,7 @@ private struct DeterminismWindow: Window {
     let path: Binding<[Route]>
     let count: Binding<Int>
 
-    var page: any Page {
+    var page: any View {
         TabbedView([Tab.home, .settings]) { which in
             switch which {
             case .home:

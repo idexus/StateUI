@@ -27,7 +27,7 @@ usable platform promise.
 ## Build an interface
 
 - [Applications and sessions](application-and-sessions.md) covers
-  `Application -> Scene -> Window -> Page`, restoration, scene-local state,
+  `Application -> Scene -> Window -> page`, restoration, scene-local state,
   window groups, lifecycle, and geometry.
 - [Navigation and presentation](navigation-and-presentation.md) covers stacks,
   tabs, split views, modal pages, toolbars, menu bars, and context menus.

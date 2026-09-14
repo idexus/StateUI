@@ -1,5 +1,5 @@
 generation 1 names +29
-ContentPage 1 arranged(4)
+Page 1 arranged(4)
   backButtonTitle: string "Back"
   backgroundColor: color FFF5F5F5
   hasBackButton: false

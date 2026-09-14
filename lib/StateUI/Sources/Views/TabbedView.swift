@@ -49,7 +49,7 @@
 ///     struct MainWindow: Window {
 ///         @State private var tab: Tab = .today
 ///
-///         var page: any Page {
+///         var page: any View {
 ///             TabbedView(Tab.allCases) { tab in
 ///                 switch tab {
 ///                 case .today:    TodayPage()
@@ -60,7 +60,7 @@
 ///         }
 ///     }
 ///
-///     struct TodayPage: ContentPage {
+///     struct TodayPage: ContentView {
 ///         @Environment private var page: PageSession
 ///
 ///         var content: any View {
@@ -126,7 +126,7 @@
 ///   thing - which is what passing an array and a closure already is.
 /// - `CurrentPage` as a readable property. The bound selection answers it on
 ///   this side, before the host has drawn anything.
-public struct TabbedView: Page, BarElement, PageElement {
+public struct TabbedView: View, BarElement, PageElement, PageArrangement {
     /// The node this page describes.
     public var node: Node
 
@@ -154,7 +154,7 @@ public struct TabbedView: Page, BarElement, PageElement {
     /// - Parameter destination: the page for one tab.
     public init<Tabs: RandomAccessCollection>(
         _ tabs: Tabs,
-        destination: (Tabs.Element) -> Page
+        destination: (Tabs.Element) -> any View
     ) where Tabs.Element: Hashable {
         let ordered = Array(tabs)
         self.tabs = ordered.map { AnyHashable($0) }
@@ -162,7 +162,7 @@ public struct TabbedView: Page, BarElement, PageElement {
         node = Node(
             type: .tabbedView,
             children: ordered.map { tab in
-                Self.identified(destination(tab).body, as: String(describing: tab))
+                Self.identified(Node.page(destination(tab)), as: String(describing: tab))
             })
     }
 
@@ -235,7 +235,7 @@ public struct TabbedView: Page, BarElement, PageElement {
     /// The stack's rule, for the stack's reason: identity on an arrangement is
     /// what pairs a report with the page it is about, so it belongs to the
     /// mechanism rather than to the author - who cannot write it here anyway,
-    /// `.id()` answering a view where this holds a `Page`.
+    /// an `.id()` written on the view staying on the view the page shows.
     private static func identified(_ node: Node, as identity: String) -> Node {
         var copy = node
         copy.id = identity

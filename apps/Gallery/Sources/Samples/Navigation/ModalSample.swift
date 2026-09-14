@@ -16,12 +16,12 @@ struct ModalSample: SampleContent {
         struct MainWindow: Window {
             @State private var sheets: [Sheet] = []
 
-            var page: any Page {
+            var page: any View {
                 HomePage(sheets: $sheets)
             }
         }
 
-        struct HomePage: ContentPage {
+        struct HomePage: ContentView {
             @Environment private var window: WindowSession
             @Binding var sheets: [Sheet]
 
@@ -40,7 +40,7 @@ struct ModalSample: SampleContent {
             }
         }
 
-        struct SettingsPage: ContentPage {
+        struct SettingsPage: ContentView {
             @Binding var sheets: [Sheet]
 
             var content: any View {

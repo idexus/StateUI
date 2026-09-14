@@ -52,7 +52,7 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | `Application` / `Scene` | structure | ✅ | — | — | — | — | — |
 | `Window` | structure | ✅ | — | — | — | — | — |
-| `ContentPage` | adaptive shell | ✅ | — | — | — | — | — |
+| `Page` | adaptive shell | ✅ | — | — | — | — | — |
 | `NavigationStack` | adaptive shell | ✅ | — | — | — | — | — |
 | `TabbedView` | adaptive shell | ✅ | — | — | — | — | — |
 | `SplitView` | adaptive shell | ✅ | — | — | — | — | — |
@@ -134,7 +134,7 @@ may still choose another class that preserves the same contract.
 | --- | --- | --- | --- | --- | --- | --- |
 | `Application` / `Scene` | `NSApplication` / structure | `UIApplication` / `UIWindowScene` | `GtkApplication` / structure | `Application` / structure | `Application` / structure | `document` / structure |
 | `Window` | `NSWindow` | `UIWindow` | `GtkApplicationWindow` | `Activity` | `Window` | browser `window` |
-| `ContentPage` | custom `NSView` | `UIViewController` | custom `GtkWidget` | custom `ViewGroup` | `Page` | `<section>` |
+| `Page` | custom `NSView` | `UIViewController` | custom `GtkWidget` | custom `ViewGroup` | `Page` | `<section>` |
 | `NavigationStack` | custom `NSView` stack; title, back and actions in the window's `NSToolbar` | `UINavigationController` | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` | custom `ViewGroup` stack + `Toolbar` | `Frame` | History API |
 | `TabbedView` | `NSSegmentedControl` over a custom `NSView` | `UITabBarController` | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` | Material Components `BottomNavigationView` (?) | `NavigationView` with a top pane | ARIA `tablist` |
 | `SplitView` | `NSSplitViewController` | `UISplitViewController` | `GtkPaned`; libadwaita `AdwOverlaySplitView` | AndroidX `DrawerLayout` | `SplitView` | `<aside>` |
@@ -302,8 +302,8 @@ token in parentheses.
 | `WindowGroup` / `Window` | session metadata | `windowType`, `windowValue`, `autoHide`, `floatsOnTop` | ✅ | — | — | — | — | — |
 | `Window` | handlers | `created`, `activated`, `deactivated`, `stopped`, `resumed`, `destroying` | ✅ | — | — | — | — | — |
 | `Scene` | handlers | `activated`, `deactivated`, `stopped`, `destroying`, `windowClosed`, `windowRestored` | ✅ | — | — | — | — | — |
-| `ContentPage` | properties | `title`, `iconImageSource`, `padding`, `backgroundColor`, `backButtonTitle`, `hasBackButton`, `hasNavigationBar`, `titleView`, toolbar and menu slots | ✅ | — | — | — | — | — |
-| `ContentPage` | handlers | `appearing`, `disappearing`, `navigatingFrom`, `navigatedFrom`, `navigatedTo` | ✅ | — | — | — | — | — |
+| `Page` | properties | `title`, `iconImageSource`, `padding`, `backgroundColor`, `backButtonTitle`, `hasBackButton`, `hasNavigationBar`, `titleView`, toolbar and menu slots | ✅ | — | — | — | — | — |
+| `Page` | handlers | `appearing`, `disappearing`, `navigatingFrom`, `navigatedFrom`, `navigatedTo` | ✅ | — | — | — | — | — |
 | `NavigationStack` | state | bound path and committed native back (`popped`) | ✅ | — | — | — | — | — |
 | `NavigationStack` | properties | `barBackgroundColor` | ✅ | — | — | — | — | — |
 | `NavigationStack` | properties | `barTextColor` | ✅ | — | — | — | — | — |
@@ -396,18 +396,18 @@ host status.
 ### Controls and structural nodes
 
 `AbsoluteLayout`, `ActivityIndicator`, `Application`, `Border`, `BoxView`,
-`Button`, `CheckBox`, `Content`, `ContentPage`, `ContextFlyout`, `DatePicker`,
-`Editor`, `Ellipse`, `Entry`, `SplitView`, `FormattedString`, `GraphicsView`,
-`Grid`, `HStack`, `Image`, `ImageButton`, `IndicatorView`,
-`Label`, `LeadingContent`, `Line`, `Map`, `MenuBarItem`, `MenuBarItems`,
+`Button`, `CheckBox`, `Composed`, `Content`, `ContextFlyout`, `DatePicker`,
+`Editor`, `Ellipse`, `Entry`, `FormattedString`, `GraphicsView`, `Grid`,
+`HStack`, `Image`, `ImageButton`, `IndicatorView`, `Label`,
+`LeadingContent`, `Line`, `Map`, `MenuBarItem`, `MenuBarItems`,
 `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem`, `ModalStack`,
-`NavigationStack`, `TitleView`, `Overlay`, `Path`, `Picker`, `Pin`,
-`Polygon`, `Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`, `RefreshView`,
+`NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`, `Polygon`,
+`Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`, `RefreshView`,
 `RoundRectangle`, `Scene`, `ScrollView`, `SearchBar`, `Setters`, `Slider`,
-`Span`, `Stepper`, `SwipeItem`, `SwipeItems`, `SwipeView`, `Switch`,
-`TabbedView`, `TimePicker`, `TitleBar`, `ToolbarItem`, `ToolbarItems`,
-`TrailingContent`, `VStack`, `VisualState`, `WebView`, `Window`,
-`Composed`.
+`Span`, `SplitView`, `Stepper`, `SwipeItem`, `SwipeItems`, `SwipeView`,
+`Switch`, `TabbedView`, `TimePicker`, `TitleBar`, `TitleView`,
+`ToolbarItem`, `ToolbarItems`, `TrailingContent`, `VisualState`, `VStack`,
+`WebView`, `Window`.
 
 ### Properties
 

@@ -5,7 +5,7 @@ Application 1 moves over 200ms cubicOut arranged(2)
     Window "main" arranged(1)
       title: string "Studio"
       on activated=7 created=8 deactivated=9 destroying=10 resumed=11 stopped=12
-      ContentPage 2 arranged(1)
+      Page 2 arranged(1)
         on appearing=13 disappearing=14 navigatedFrom=15 navigatedTo=16 navigatingFrom=17
         VStack 3 arranged(6)
           Label 4 arranged(0)
@@ -30,7 +30,7 @@ Application 1 moves over 200ms cubicOut arranged(2)
       title: string "Fonts"
       windowType: name "fonts"
       on activated=22 created=23 deactivated=24 destroying=25 resumed=26 stopped=27
-      ContentPage 10 arranged(1)
+      Page 10 arranged(1)
         on appearing=28 disappearing=29 navigatedFrom=30 navigatedTo=31 navigatingFrom=32
         Label 11 arranged(0)
           text: string "violet"
@@ -39,7 +39,7 @@ Application 1 moves over 200ms cubicOut arranged(2)
     Window "main" arranged(1)
       title: string "Studio 2"
       on activated=39 created=40 deactivated=41 destroying=42 resumed=43 stopped=44
-      ContentPage 12 arranged(1)
+      Page 12 arranged(1)
         on appearing=45 disappearing=46 navigatedFrom=47 navigatedTo=48 navigatingFrom=49
         VStack 13 arranged(6)
           Label 14 arranged(0)

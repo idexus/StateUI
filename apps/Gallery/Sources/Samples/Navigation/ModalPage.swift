@@ -4,7 +4,7 @@ import StateUI
 ///
 /// It carries its own way out because the modal presentation covers the page
 /// that opened it.
-struct ModalPage: ContentPage {
+struct ModalPage: ContentView {
     /// Where the gallery is. A modal closes itself by shortening the array it
     /// is a member of, exactly as a pushed page pops itself.
     let nav: Navigation

@@ -77,7 +77,7 @@ final class AppKitViewDrawingTests: XCTestCase {
     @MainActor
     func testEveryControlKeepsAppKitsLayerAndItsDrawing() throws {
         let appKitLayer = String(describing: type(of: NSView().makeBackingLayer()))
-        let pages: Set<NodeType> = [.contentPage, .navigationStack, .tabbedView, .splitView]
+        let pages: Set<NodeType> = [.page, .navigationStack, .tabbedView, .splitView]
         let drawn = HostContract.controls
             .filter { $0.value != .structure && $0.value != .provider }
             .keys.sorted()

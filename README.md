@@ -10,7 +10,7 @@ AppKit is the active host. UIKit, Android Views, WinUI 3, and GTK 4 follow the
 same host contract. Web DOM/CSS comes after the native contract is settled.
 
 ```swift
-struct CounterPage: ContentPage {
+struct CounterPage: ContentView {
     @State private var count = 0
 
     var content: any View {

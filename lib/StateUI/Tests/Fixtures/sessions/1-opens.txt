@@ -11,7 +11,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
           barTextColor: color FFFFFFFF
           title: string "Home"
           on popped=8
-          ContentPage "root" arranged(1)
+          Page "root" arranged(1)
             iconImageSource: string "home.png"
             title: string "Home"
             on appearing=9 disappearing=10 navigatedFrom=11 navigatedTo=12 navigatingFrom=13
@@ -30,7 +30,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
                 fontSize: number 14
                 text: string "themed"
                 textColor: color FF000000
-        ContentPage "settings" arranged(1)
+        Page "settings" arranged(1)
           iconImageSource: string "settings.png"
           title: string "Settings"
           on appearing=15 disappearing=16 navigatedFrom=17 navigatedTo=18 navigatingFrom=19

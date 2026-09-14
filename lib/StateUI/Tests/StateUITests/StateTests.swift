@@ -86,7 +86,7 @@ private struct Shelf: ContentView {
 /// the navigation bar hang off the page, not under it - written into the
 /// page's session as it comes into the tree: the title again whenever the
 /// query moves, and the view on the bar holding the query's own binding.
-private struct QueryPage: ContentPage {
+private struct QueryPage: ContentView {
     @Environment private var page: PageSession
     @State var query = ""
 
@@ -105,7 +105,7 @@ private struct QueryPage: ContentPage {
 /// the shape EVERY optional property of a page and a window has,
 /// `title.map { … }`, and the one whose clearing must not take the state under
 /// it down.
-private struct TitledPage: ContentPage {
+private struct TitledPage: ContentView {
     @Environment private var page: PageSession
     let titled: Bool
 
@@ -326,7 +326,7 @@ final class StateTests: XCTestCase {
     func testAPageThatLosesItsTitleKeepsTheStateUnderIt() {
         let renders = Renders()
 
-        let first = renders.settled(TitledPage(titled: true).body)
+        let first = renders.settled(Node.page(TitledPage(titled: true)))
         let clicked = first.children[0].events?["clicked"] ?? -1
 
         XCTAssertEqual(first.props["title"], .string("Named"), "the title the page wrote on its way in")
@@ -334,7 +334,7 @@ final class StateTests: XCTestCase {
         renders.fire(clicked)
 
         let second = renders.settled(
-            TitledPage(titled: false).body, changed: Renderer.shared.pendingChanges)
+            Node.page(TitledPage(titled: false)), changed: Renderer.shared.pendingChanges)
 
         XCTAssertFalse(second.replace, "the page is not built again")
         XCTAssertEqual(second.cleared, ["title"], "the property that went away is named instead")
@@ -345,7 +345,7 @@ final class StateTests: XCTestCase {
         renders.fire(clicked)
 
         let third = renders.settled(
-            TitledPage(titled: false).body, changed: Renderer.shared.pendingChanges)
+            Node.page(TitledPage(titled: false)), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(third.children[0].props["text"], .string("Count: 2"))
     }
@@ -357,7 +357,7 @@ final class StateTests: XCTestCase {
     func testStateReadBesideTheContentSeesTheSurvivingValue() {
         let renders = Renders()
 
-        let first = renders.settled(QueryPage().body)
+        let first = renders.settled(Node.page(QueryPage()))
         let slot = first.children.first { $0.type == "TitleView" }
         let search = slot?.children.first
         let number = search?.driven?[.text]?.state
@@ -369,7 +369,7 @@ final class StateTests: XCTestCase {
 
         // The title the page writes as the query moves, and the label, both see
         // the typed query; the search bar shows it from the state.
-        let second = renders.settled(QueryPage().body, changed: Renderer.shared.pendingChanges)
+        let second = renders.settled(Node.page(QueryPage()), changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.props["title"], .string("Results: alpha"))
         XCTAssertEqual(second.children.first { $0.type == "Label" }?.props["text"],

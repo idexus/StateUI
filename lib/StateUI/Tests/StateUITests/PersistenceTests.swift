@@ -38,10 +38,10 @@ private struct Preferences {
 }
 
 private struct KeepingWindow: Window {
-    var page: any Page { KeepingPage() }
+    var page: any View { KeepingPage() }
 }
 
-private struct KeepingPage: ContentPage {
+private struct KeepingPage: ContentView {
     var content: any View { Label("kept") }
 }
 

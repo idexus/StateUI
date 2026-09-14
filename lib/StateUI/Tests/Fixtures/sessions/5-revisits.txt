@@ -4,7 +4,7 @@ Application 1
     Window "main"
       TabbedView 2
         NavigationStack "home"
-          ContentPage "root"
+          Page "root"
             VStack 3
               Label 4
                 text: string "Count: 1"

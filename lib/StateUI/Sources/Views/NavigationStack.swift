@@ -44,7 +44,7 @@
 ///     struct MainWindow: Window {
 ///         @State private var path: [Route] = []
 ///
-///         var page: any Page {
+///         var page: any View {
 ///             NavigationStack($path) {
 ///                 HomePage(path: $path)
 ///             } destination: { route in
@@ -55,7 +55,7 @@
 ///         }
 ///     }
 ///
-///     struct HomePage: ContentPage {
+///     struct HomePage: ContentView {
 ///         @Binding var path: [Route]
 ///         @Environment private var page: PageSession
 ///
@@ -100,14 +100,14 @@
 ///     struct RoutedWindow: Window {
 ///         let router: Router
 ///
-///         var page: any Page {
+///         var page: any View {
 ///             NavigationStack(router.$path) {
 ///                 RoutedHomePage()
 ///             } destination: { … }
 ///         }
 ///     }
 ///
-///     struct RoutedHomePage: ContentPage {
+///     struct RoutedHomePage: ContentView {
 ///         @Environment private var router: Router
 ///
 ///         var content: any View {
@@ -144,17 +144,15 @@
 /// - Parallel push and pop notifications. The path is the one channel: a view
 ///   holding it uses `.onChanged(path) { … }` and observes every committed
 ///   arrival and departure as state.
-/// - The page's own look - a padding, a background, a safe-area inset. A
-///   NavigationStack draws nothing but its bar and whatever page is on top, so
-///   the page on top carries all of that.
+/// - The page's own look - a padding, a safe-area inset. A NavigationStack
+///   draws nothing but its bar and whatever page is on top, so the page on
+///   top carries all of that.
 ///
-/// What IS on it: the bar's flat background and foreground tint;
-/// `PageElement`'s `.title`
-/// and `.iconImageSource`, which name the whole stack where another container
-/// presents it; and `PageElement`'s `.onCreated` and `.onDestroying`, run as
-/// the stack enters the tree and leaves it. The title on the bar belongs to
-/// the top page.
-public struct NavigationStack: Page, BarElement, PageElement {
+/// What IS on it: what every view carries; the bar's flat background and
+/// foreground tint; and `PageElement`'s `.title` and `.iconImageSource`, which
+/// name the whole stack where another container presents it. The title on the
+/// bar belongs to the top page.
+public struct NavigationStack: View, BarElement, PageElement, PageArrangement {
     /// The node this page describes.
     public var node: Node
 
@@ -169,14 +167,14 @@ public struct NavigationStack: Page, BarElement, PageElement {
     /// - Parameter destination: the page for one route, asked in path order.
     public init<Route: Hashable>(
         _ path: Binding<[Route]>,
-        root: () -> Page,
-        destination: (Route) -> Page
+        root: () -> any View,
+        destination: (Route) -> any View
     ) {
-        var children: [Node] = [Self.identified(root().body, as: Self.rootIdentity)]
+        var children: [Node] = [Self.identified(Node.page(root()), as: Self.rootIdentity)]
 
         for (depth, route) in path.wrappedValue.enumerated() {
             children.append(
-                Self.identified(destination(route).body, as: Self.identity(depth: depth, route: route)))
+                Self.identified(Node.page(destination(route)), as: Self.identity(depth: depth, route: route)))
         }
 
         node = Node(type: .navigationStack, children: children)

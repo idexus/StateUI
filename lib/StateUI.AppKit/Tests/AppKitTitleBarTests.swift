@@ -205,7 +205,7 @@ private extension AppKitTitleBarTests {
         var label = HostPatch(id: .manual("page-label"), type: .label)
         label.properties[.text] = .string("Page")
 
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
+        var page = HostPatch(id: .manual("page"), type: .page)
         page.properties[.title] = .string("Page")
         page.children = .arranged([label])
 
@@ -262,7 +262,7 @@ private extension AppKitTitleBarTests {
         var label = HostPatch(id: .manual("page-label"), type: .label)
         label.properties[.text] = .string("Page")
 
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
+        var page = HostPatch(id: .manual("page"), type: .page)
         page.properties[.title] = .string("Page")
         page.children = .arranged([label])
 
@@ -291,7 +291,7 @@ private extension AppKitTitleBarTests {
         stack.children = .arranged(rows)
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.children = .arranged([stack])
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
+        var page = HostPatch(id: .manual("page"), type: .page)
         page.properties[.title] = .string("Page")
         page.children = .arranged([scroll])
         var navigation = HostPatch(id: .manual("navigation"), type: .navigationStack)
@@ -299,7 +299,7 @@ private extension AppKitTitleBarTests {
 
         var menuLabel = HostPatch(id: .manual("menu-label"), type: .label)
         menuLabel.properties[.text] = .string("Menu")
-        var menu = HostPatch(id: .manual("menu"), type: .contentPage)
+        var menu = HostPatch(id: .manual("menu"), type: .page)
         menu.children = .arranged([menuLabel])
 
         var flyout = HostPatch(id: .manual("flyout"), type: .splitView)

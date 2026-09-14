@@ -658,7 +658,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private func refreshVisiblePageChrome() {
         guard let node, let window else { return }
         let titleBar = node.children.first { $0.type == .titleBar }
-        let page = node.visibleContentPage
+        let page = node.visiblePage
         let titleView = node.visibleTitleView
         window.title = page?.string(.title) ?? node.string(.title) ?? "StateUI"
         window.subtitle = ""
@@ -871,7 +871,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
             content.autoresizingMask = [.width, .height]
             window.contentView = content
         }
-        window.title = node.visibleContentPage?.string(.title) ?? "StateUI"
+        window.title = node.visiblePage?.string(.title) ?? "StateUI"
     }
 
     func present(over parent: NSWindow, actuallyPresent: Bool) {

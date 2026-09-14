@@ -83,7 +83,7 @@
             .timePicker, .vStack, .webView,
         ]),
         (.adaptive, [
-            .contentPage, .splitView, .navigationStack, .tabbedView, .titleBar,
+            .page, .splitView, .navigationStack, .tabbedView, .titleBar,
         ]),
         (.stateUI, [
             .checkBox, .ellipse, .grid, .imageButton,

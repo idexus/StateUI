@@ -3,7 +3,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
   Scene "1" arranged(1)
     Window "main" arranged(1)
       title: string "StateUI"
-      ContentPage 2 arranged(1)
+      Page 2 arranged(1)
         title: string "Counter"
         VStack 3 arranged(3)
           spacing: number 20

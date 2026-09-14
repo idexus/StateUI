@@ -4,7 +4,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
     Window "main" arranged(1)
       title: string "StateUI"
       on activated=1 created=2 deactivated=3 destroying=4 resumed=5 stopped=6
-      ContentPage 2 arranged(1)
+      Page 2 arranged(1)
         title: string "Home"
         Label 3
           text: string "one"

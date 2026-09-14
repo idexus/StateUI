@@ -8,11 +8,11 @@ struct SwatchWindow: Window {
     /// Which swatch the window is for - its value, lent by its group.
     @Binding var number: Int
 
-    var page: any Page { SwatchPage(number: $number) }
+    var page: any View { SwatchPage(number: $number) }
 }
 
 /// One swatch: its colour, its number, and a way on to the next.
-struct SwatchPage: ContentPage {
+struct SwatchPage: ContentView {
     /// The window's own value.
     @Binding var number: Int
 

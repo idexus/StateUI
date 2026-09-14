@@ -4,7 +4,7 @@ import StateUI
 ///
 /// A page is a value rebuilt on every render, and the `@State` on it survives
 /// that - which is the whole of what makes the counter below work.
-struct MainPage: ContentPage {
+struct MainPage: ContentView {
     /// The page as it runs - what it is called, and the rest of what it
     /// says about itself.
     @Environment private var page: PageSession

@@ -6,7 +6,7 @@ import StateUI
 /// Nothing distinguishes it from the two the demonstration opens with: a tab is
 /// a page in a list, so a page built from a number is as much a tab as one
 /// written out by hand.
-struct TabsExtraPage: ContentPage {
+struct TabsExtraPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 

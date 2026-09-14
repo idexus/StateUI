@@ -5,7 +5,7 @@ import StateUI
 /// It also shows what a PAGE can still ask of the stack it is on, the bar
 /// itself belonging to the arrangement. Those requests are written into the
 /// page session and carry the `navigationStack` prefix that names their owner.
-struct LevelPage: ContentPage {
+struct LevelPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 

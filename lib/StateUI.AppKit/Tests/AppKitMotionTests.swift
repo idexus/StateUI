@@ -9,7 +9,7 @@ import XCTest
 final class AppKitMotionTests: XCTestCase {
     func testTransitionSurfaceIsClosedAroundNativePresentations() {
         XCTAssertTrue(AppKitTransitionSurface.presents(.opacity, on: .label))
-        XCTAssertTrue(AppKitTransitionSurface.presents(.padding, on: .contentPage))
+        XCTAssertTrue(AppKitTransitionSurface.presents(.padding, on: .page))
         XCTAssertTrue(AppKitTransitionSurface.presents(.renderTransform, on: .line))
         XCTAssertTrue(AppKitTransitionSurface.presents(.x, on: .window))
         XCTAssertTrue(AppKitTransitionSurface.presents(.backgroundColor, on: .titleBar))
@@ -217,7 +217,7 @@ final class AppKitMotionTests: XCTestCase {
         func tree(children: HostChildrenUpdate) -> HostPatch {
             var stack = HostPatch(id: .manual("stack"), type: .vStack)
             stack.children = children
-            var page = HostPatch(id: .manual("page"), type: .contentPage)
+            var page = HostPatch(id: .manual("page"), type: .page)
             page.children = .arranged([stack])
             var window = HostPatch(id: .manual("window"), type: .window)
             window.children = .arranged([page])
@@ -1343,7 +1343,7 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     private func testWindow() -> HostPatch {
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
+        var page = HostPatch(id: .manual("page"), type: .page)
         page.children = .arranged([])
         var window = HostPatch(id: .manual("window"), type: .window)
         window.children = .arranged([page])

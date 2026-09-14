@@ -4,26 +4,26 @@ Window 1 arranged(2)
   NavigationStack 2 arranged(2)
     title: string "Diary"
     on popped=7
-    ContentPage "root" arranged(1)
+    Page "root" arranged(1)
       title: string "Home"
       on appearing=8 disappearing=9 navigatedFrom=10 navigatedTo=11 navigatingFrom=12
       Button 3
         text: string "Settings"
         on clicked=13
-    ContentPage "0/1" arranged(1)
+    Page "0/1" arranged(1)
       title: string "Home"
       on appearing=14 disappearing=15 navigatedFrom=16 navigatedTo=17 navigatingFrom=18
       Button 4
         text: string "Settings"
         on clicked=19
   ModalStack 5 arranged(2)
-    ContentPage "0/settings" arranged(1)
+    Page "0/settings" arranged(1)
       title: string "Settings"
       on appearing=21 disappearing=22 navigatedFrom=23 navigatedTo=24 navigatingFrom=25
       Button 6
         text: string "Close"
         on clicked=26
-    ContentPage "1/about" arranged(1)
+    Page "1/about" arranged(1)
       title: string "About"
       on appearing=27 disappearing=28 navigatedFrom=29 navigatedTo=30 navigatingFrom=31
       Button 7

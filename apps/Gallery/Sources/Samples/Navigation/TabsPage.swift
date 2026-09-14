@@ -5,7 +5,7 @@ import StateUI
 /// It is the ROOT of a `NavigationStack` that lives inside a `TabbedView`. All
 /// three of those are pages, and pages nest - so a tab holding a stack needs no
 /// permission from anything, and the stack it holds is its own array.
-struct TabsPage: ContentPage {
+struct TabsPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 

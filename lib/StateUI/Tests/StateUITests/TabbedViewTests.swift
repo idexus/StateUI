@@ -22,7 +22,7 @@ private enum Tab: Hashable, CaseIterable {
 
 /// A tab's page, which says its own caption and picture - written into its
 /// session as it comes into the tree, which is the message that brings it.
-private struct TabPage: ContentPage {
+private struct TabPage: ContentView {
     @Environment private var page: PageSession
     let tab: Tab
 

@@ -3,7 +3,7 @@
 
 /// An action in the page's native navigation or toolbar surface.
 ///
-///     struct NotesPage: ContentPage {
+///     struct NotesPage: ContentView {
 ///         @Environment private var page: PageSession
 ///
 ///         var content: any View {

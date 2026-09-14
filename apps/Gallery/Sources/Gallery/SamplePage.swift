@@ -7,7 +7,7 @@ import StateUI
 /// PUSHED - it arrives as `.sample(id)` on the bound path - so the platform's
 /// back button and back gesture work as they do anywhere else, and two samples
 /// can be on the stack at once.
-struct SamplePage: ContentPage {
+struct SamplePage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 

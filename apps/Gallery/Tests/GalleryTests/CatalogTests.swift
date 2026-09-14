@@ -925,14 +925,14 @@ final class CatalogTests: XCTestCase {
 
         let pane = try XCTUnwrap(flyout.children.first).built
 
-        XCTAssertEqual(pane.type, "ContentPage")
+        XCTAssertEqual(pane.type, "Page")
 
         // The pane's title is its session's, written as the pane comes in, so
         // it is in the complete patch that brings the pane to the host.
         let first = firstPatch(self.window(Place().nav))
         let shownPane = try XCTUnwrap(first.children.first?.children.first)
 
-        XCTAssertEqual(shownPane.type, "ContentPage")
+        XCTAssertEqual(shownPane.type, "Page")
         XCTAssertNotNil(prop(shownPane, .title), "the flyout pane has no native title")
 
         let detail = try XCTUnwrap(flyout.children.last).built

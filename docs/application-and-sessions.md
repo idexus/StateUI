@@ -9,7 +9,7 @@ declaration         runtime state
 Application         ApplicationSession
 Scene               SceneSession
 Window              WindowSession
-ContentPage         PageSession
+page (any view)     PageSession
 ```
 
 A declaration answers what it is composed of. Its session answers what the
@@ -28,10 +28,10 @@ struct SingleWindowApp: Application {
 }
 
 struct MainWindow: Window {
-    var page: any Page { HomePage() }
+    var page: any View { HomePage() }
 }
 
-struct HomePage: ContentPage {
+struct HomePage: ContentView {
     var content: any View { Label("Home") }
 }
 ```
@@ -331,10 +331,15 @@ and therefore triggers no extra reaction.
 
 ## Page session
 
-A written page conforms to `ContentPage` and declares only `content`. Every
-identified content-page element owns one `PageSession`; carrying that element
-also carries its session. Navigation containers are structural values, while
-the `ContentPage` instances they present each have their own session.
+A page is a role, not a type. Whatever a container shows as a screen - a
+window's `page`, a navigation stack's root and destinations, a tab, either
+half of a split view, a sheet - goes on a page, usually a `ContentView` of the
+application's own. The page owns one `PageSession` for as long as the same
+view stands on it: the same view type under the same explicit id. Another view
+in that place starts a session of its own. A write to the session builds the
+page again and carries the view on it whole. An arrangement -
+`NavigationStack`, `TabbedView`, `SplitView` - is a page already and is shown
+as it is; it is told what it is by modifier.
 
 | Member | Meaning |
 | --- | --- |
@@ -370,7 +375,7 @@ Set stable page furniture when the content element is created and update it
 when the state it depends on changes:
 
 ```swift quote
-struct EditorPage: ContentPage {
+struct EditorPage: ContentView {
     @Environment private var page: PageSession
     @State private var dirty = false
 

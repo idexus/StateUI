@@ -28,7 +28,7 @@ import XCTest
 /// navigation bar at once, which no real page would. What it is for is the
 /// guards below: a property nobody writes here is a property the host may
 /// quietly not apply.
-private struct EveryPropertyPage: ContentPage {
+private struct EveryPropertyPage: ContentView {
     @Environment private var page: PageSession
 
     var content: any View {
@@ -82,7 +82,7 @@ private struct EveryPropertyPage: ContentPage {
 
 /// A window whose session says everything a window can be told.
 private struct EveryPropertyWindow: Window {
-    var page: any Page { EveryPropertyPage() }
+    var page: any View { EveryPropertyPage() }
 
     static var node: Node {
         let session = WindowSession()
@@ -106,7 +106,7 @@ private struct EveryPropertyWindow: Window {
 /// property to another value - on a press. So the write that matters is made
 /// once the page is standing, and what the next message carries is what the
 /// page READ of its session, nothing else having moved.
-private struct KnobPage: ContentPage {
+private struct KnobPage: ContentView {
     @Environment private var page: PageSession
 
     var content: any View {
@@ -132,7 +132,129 @@ private struct KnobPage: ContentPage {
     }
 }
 
+/// A view that says nothing about the page it is shown on.
+private struct Plain: ContentView {
+    var content: any View { Label("plain") }
+}
+
+/// A view that names the page it is shown on, as it arrives.
+private struct Named: ContentView {
+    @Environment private var page: PageSession
+    let name: String
+
+    var content: any View {
+        Label(name).onCreated { page.title = name }
+    }
+}
+
+/// How often what a view is made of was read.
+private final class Builds {
+    var count = 0
+}
+
+/// A view that renames its page on a press, counting its builds.
+private struct Renaming: ContentView {
+    @Environment private var page: PageSession
+    let builds: Builds
+
+    var content: any View {
+        builds.count += 1
+        return Button("rename").onClicked { page.title = "Renamed" }
+    }
+}
+
 final class PageTests: XCTestCase {
+    // MARK: - A view shown as a page
+
+    /// The page holds its session while the same view stands on it: the parent
+    /// building again hands the page a fresh value of the view, and the page
+    /// keeps what the first one wrote.
+    func testAPageKeepsItsSessionWhileTheSameViewStandsOnIt() {
+        let renders = Renders()
+        let first = renders.settled(Node.page(Named(name: "Home")))
+        let again = renders.settled(Node.page(Named(name: "Home")))
+
+        XCTAssertEqual(first.props[.title], .string("Home"))
+        XCTAssertNil(again.props[.title], "the title stands, so nothing is said about it")
+        XCTAssertEqual(again.cleared, [], "and nothing is taken off the page")
+    }
+
+    /// Another view standing there is another page: it starts with a session
+    /// of its own, and nothing the view before it wrote is left on it.
+    func testAnotherViewOnThePageStartsASessionOfItsOwn() {
+        let renders = Renders()
+        renders.settled(Node.page(Named(name: "Home")))
+        let other = renders.settled(Node.page(Plain()))
+
+        XCTAssertEqual(other.cleared, ["title"], "the title was the view before's")
+    }
+
+    /// The same kind of view under another explicit id is another view, and
+    /// so another page.
+    func testTheSameViewUnderAnotherIdStartsASessionOfItsOwn() {
+        let renders = Renders()
+        renders.settled(Node.page(Named(name: "Home").id("one")))
+        let other = renders.settled(Node.page(Named(name: "Away").id("two")))
+
+        XCTAssertEqual(other.props[.title], .string("Away"), "the page the second view arrived on")
+    }
+
+    /// A write to the page's session builds the page again and carries the
+    /// view on it whole: the view read nothing the write moved.
+    func testAWriteToThePageCarriesTheViewWhole() throws {
+        let builds = Builds()
+        let renders = Renders()
+        let first = renders.settled(Node.page(Renaming(builds: builds)))
+        let rename = try XCTUnwrap(first.children.first?.events?[.clicked])
+
+        XCTAssertEqual(builds.count, 1)
+        XCTAssertTrue(renders.fire(rename))
+
+        let second = renders.settled(
+            Node.page(Renaming(builds: builds)), changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(second.props[.title], .string("Renamed"))
+        XCTAssertEqual(builds.count, 1, "the view was built again for a write it never read")
+    }
+
+    /// A view with no element of its own - a control, a stack - is shown the
+    /// same way, and follows its parent: what the parent builds it with is on
+    /// the page in the next message.
+    func testAPlainViewOnAPageFollowsItsParent() {
+        let renders = Renders()
+        renders.settled(Node.page(Label("one")))
+        let second = renders.settled(Node.page(Label("two")))
+
+        XCTAssertEqual(second.children.first?.props[.text], .string("two"))
+    }
+
+    /// What is written ON a view shown as a page is the view's, whichever kind
+    /// of view it is: the page carries its session's properties, and the view
+    /// on it its own.
+    func testWhatIsWrittenOnAViewStaysOnTheView() {
+        let written: [any View] = [
+            Plain().backgroundColor(.red),
+            Label("plain").backgroundColor(.red),
+        ]
+
+        for view in written {
+            let page = Node.page(view).built
+
+            XCTAssertEqual(page.type, .page)
+            XCTAssertNil(page.props[.backgroundColor], "the page's colour is its session's")
+            XCTAssertEqual(page.children.first?.props[.backgroundColor], Color.red.propValue)
+        }
+    }
+
+    /// An arrangement is a page already, and is shown as it is.
+    func testAnArrangementIsShownAsItIs() {
+        let path = State<[Int]>([])
+        let stack = NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }
+
+        XCTAssertEqual(Node.page(stack).built.type, .navigationStack)
+        XCTAssertEqual(Node.page(stack).built.children.first?.type, .page)
+    }
+
     // MARK: - The guards
 
     /// The same promise `testEveryModifierIsExercised` makes a control: a
@@ -175,7 +297,7 @@ final class PageTests: XCTestCase {
     /// its three slots included.
     func testEveryPagePropertyFollowsTheStateItReads() throws {
         let renders = Renders()
-        let first = renders.settled(KnobPage().body)
+        let first = renders.settled(Node.page(KnobPage()))
         let dress = try XCTUnwrap(first.children.first?.events?[.clicked])
 
         XCTAssertTrue(renders.fire(dress))
@@ -183,7 +305,7 @@ final class PageTests: XCTestCase {
 
         // Nothing the page was built with changed, so it is built again only
         // because it READ what the press wrote.
-        let patch = renders.settled(KnobPage().body, changed: Renderer.shared.pendingChanges)
+        let patch = renders.settled(Node.page(KnobPage()), changed: Renderer.shared.pendingChanges)
         let missing = try Self.declaredOnPage().subtracting(Self.carried(by: patch)).sorted()
 
         XCTAssertTrue(
@@ -244,11 +366,10 @@ final class PageTests: XCTestCase {
     /// report and nobody's to write, `public internal(set)`, so the scan passes
     /// over it.
     ///
-    /// `PageSession` rather than the `ContentPage` protocol, and that is the
-    /// point of the split: a page DECLARES only its content, and what it can be
-    /// told is its session's state. `Page` is the marker a CONSTRUCTED page
-    /// wears too, and declares nothing - a constructed page is told what it is
-    /// by modifier.
+    /// `PageSession`, because a page is a role rather than a type: the view it
+    /// shows declares only what it is made of, and what the page can be told
+    /// is its session's state. An arrangement, a page already, is told what it
+    /// is by modifier.
     ///
     /// Comment lines go first: the doc above each property shows how to write
     /// it, and a scan that read those examples would think the property was
@@ -355,11 +476,7 @@ final class PageTests: XCTestCase {
 
     /// A page that says nothing sends nothing, leaving native defaults intact.
     func testAPageThatSaysNothingCarriesNothing() {
-        struct Plain: ContentPage {
-            var content: any View { Label("plain") }
-        }
-
-        let page = Plain().body.built
+        let page = Node.page(Plain()).built
 
         XCTAssertEqual(page.props.count, 0)
         XCTAssertEqual(page.children.count, 1, "the content, and no slot it did not ask for")
@@ -367,8 +484,8 @@ final class PageTests: XCTestCase {
 
     /// What a page's first message carries - its `.onCreated` run, and what it
     /// wrote walked in, the way the renderer sends it.
-    private static func arrived(_ page: some ContentPage) -> HostPatch {
-        Renders().settled(page.body)
+    private static func arrived(_ view: some View) -> HostPatch {
+        Renders().settled(Node.page(view))
     }
 
     /// Every property name in one place, however deep it sits.
@@ -401,29 +518,24 @@ final class PageTests: XCTestCase {
     // MARK: - The page's own events
 
     /// A page's arrival and departure ride as HANDLERS on the page node, the
-    /// way a window's six lifecycle events ride on its own - a page is not a
-    /// view, and the differ has never cared.
+    /// way a window's six lifecycle events ride on its own.
     ///
     /// Five of them: the two that answer the page being on screen at all, and
     /// the three that answer a MOVE - which are not the same question, since a
     /// page appears again when the application wakes and nothing navigated.
     func testAPagesArrivalAndDepartureRideAsItsEvents() {
-        let node = EveryPropertyPage().body.built
+        let node = Node.page(EveryPropertyPage()).built
 
         XCTAssertEqual(
             node.events.keys.map(\.name).sorted(),
             ["appearing", "disappearing", "navigatedFrom", "navigatedTo", "navigatingFrom"])
     }
 
-    /// EVERY content page carries the five, whatever it writes: they are what
+    /// EVERY page carries the five, whatever its view writes: they are what
     /// move its session's `phase`, which anything in the page may watch - so a
     /// page is heard arriving whether it says one word about itself or all of
     /// them.
-    func testEveryContentPageCarriesItsFiveEventsWhateverItWrites() {
-        struct Plain: ContentPage {
-            var content: any View { Label("plain") }
-        }
-
+    func testEveryPageCarriesItsFiveEventsWhateverItsViewWrites() {
         let five = ["appearing", "disappearing", "navigatedFrom", "navigatedTo", "navigatingFrom"]
 
         XCTAssertEqual(
@@ -443,7 +555,7 @@ final class PageTests: XCTestCase {
     func testAPagesArrivalHandlerRuns() throws {
         let arrivals = State(0)
 
-        struct Watched: ContentPage {
+        struct Watched: ContentView {
             @Environment private var page: PageSession
             let arrivals: Binding<Int>
 
@@ -456,7 +568,7 @@ final class PageTests: XCTestCase {
         }
 
         let renders = Renders()
-        let first = renders.settled(Watched(arrivals: arrivals.projectedValue).body)
+        let first = renders.settled(Node.page(Watched(arrivals: arrivals.projectedValue)))
         let events = try XCTUnwrap(first.events)
 
         XCTAssertEqual(first.children.first?.props[.text], .string("created"))
@@ -466,7 +578,7 @@ final class PageTests: XCTestCase {
             XCTAssertTrue(renders.fire(try XCTUnwrap(events[event])))
 
             return renders.settled(
-                Watched(arrivals: arrivals.projectedValue).body,
+                Node.page(Watched(arrivals: arrivals.projectedValue)),
                 changed: Renderer.shared.pendingChanges)
         }
 
@@ -496,6 +608,6 @@ final class PageTests: XCTestCase {
         try Fixtures.check(
             bytes,
             sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
-            against: "pages/ContentPage")
+            against: "pages/Page")
     }
 }

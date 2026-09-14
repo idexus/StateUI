@@ -3,21 +3,21 @@
 
 // The stable shape every StateUI host materializes.
 //
-//     Application  ──scene──▶  Scene  ──windows──▶  Window  ──page──▶  Page  ──content──▶  the view tree
+//     Application  ──scene──▶  Scene  ──windows──▶  Window  ──page──▶  Page  ──view──▶  the view tree
 //
-// An Application declares its scene, a Scene its windows, a Window its page, a
-// ContentPage its content - and that is ALL any of them declares. Each is a
-// type, declared rather than constructed:
+// An Application declares its scene, a Scene its windows, a Window the view it
+// shows as its page - and that is ALL any of them declares. Each is a type,
+// declared rather than constructed:
 //
 //     struct GalleryApp: Application {
 //         var scene: any Scene { MainWindow() }
 //     }
 //
 //     struct MainWindow: Window {
-//         var page: any Page { MainPage() }
+//         var page: any View { MainPage() }
 //     }
 //
-//     struct MainPage: ContentPage {
+//     struct MainPage: ContentView {
 //         var content: any View {
 //             VStack { … }
 //         }
@@ -78,17 +78,17 @@ public protocol Application {
 /// A window onto a page.
 ///
 ///     struct MainWindow: Window {
-///         var page: any Page { MainPage() }
+///         var page: any View { MainPage() }
 ///     }
 ///
-/// Written the way a PAGE is written here: a type you DECLARE, never a value
-/// you chain onto, and `page` is its one requirement. What the window IS as
+/// Written the way a view of the application's own is: a type you DECLARE,
+/// never a value you chain onto, and `page` is its one requirement. What the window IS as
 /// it runs - what it is called, where it is and how big, its title bar, the
 /// pages presented over it, where it stands in its life - is its
 /// `WindowSession`, in the environment of everything in it and written like
 /// any state:
 ///
-///     struct MainPage: ContentPage {
+///     struct MainPage: ContentView {
 ///         @Environment private var window: WindowSession
 ///
 ///         var content: any View {
@@ -118,12 +118,13 @@ public protocol Application {
 public protocol Window: Element, Scene {
     /// What the window shows - a `NavigationStack` for an app that pushes and
     /// pops, a `TabbedView` for tabs, a `SplitView` for a menu beside the page,
-    /// a `ContentPage` for one screen.
+    /// any other view for one screen - usually a `ContentView` of the
+    /// application's own, which the window shows on a page.
     ///
     /// The only thing a window must say - read as the window is built, and
     /// again when what it was built with or a state it read changes; otherwise
     /// the window is carried whole.
-    var page: any Page { get }
+    var page: any View { get }
 }
 
 extension Window {
@@ -135,7 +136,7 @@ extension Window {
 
     /// The window as a node: its page, and whatever hangs off it beside.
     ///
-    /// A placeholder, exactly like a page's, so that a window declared as a type
+    /// A placeholder, exactly like a composed view's, so that a window declared as a type
     /// may hold `@State` of its own and be rebuilt on its own when that state
     /// changes. A window shown ALONE, outside every scene, keeps a session of
     /// its own on its element, the way a page does; a scene's windows are
@@ -187,7 +188,7 @@ extension Window {
             // window's children the same list in every run.
             var node = Node(
                 type: .window, props: session.props,
-                children: [page.body] + session.slots + (overlay.map { [$0] } ?? []))
+                children: [Node.page(page)] + session.slots + (overlay.map { [$0] } ?? []))
 
             // Where the window stands, as its platform window reports it -
             // written out one by one rather than walked over a collection: the
@@ -219,31 +220,16 @@ extension Node {
     }
 }
 
-/// A screenful of interface.
+/// What a container shows as a screen - a role a view takes, not a type an
+/// author picks.
 ///
-/// What a window shows, what a navigation stack holds, what a tab is - and it
-/// asks nothing else, which is the whole of this protocol.
+/// Any view can be shown as a page: a window's `page`, a navigation stack's
+/// root and destinations, a tab, either half of a split view, a sheet. The
+/// container puts what it shows on a page, which carries what a screen IS -
+/// its title, its buttons, its menus, where it stands in its life - as the
+/// `PageSession` in the environment of the view and of everything in it:
 ///
-/// There are TWO KINDS, and the difference is who writes the type. A page an
-/// author WRITES conforms to `ContentPage`: it declares its content, and what
-/// it IS - its title, its buttons - is its `PageSession`'s state. A page an
-/// author CONSTRUCTS is a value this library declares - `NavigationStack($path)
-/// { … }`, `TabbedView(tabs) { … }`, `SplitView($open) { … }` - and a
-/// constructor's result is told what it is by MODIFIER: `.title("Stack")`,
-/// from `PageElement`.
-///
-/// Which is why nothing is declared here: a property declared on `Page` is one
-/// every CONSTRUCTED page would wear without being able to answer it.
-public protocol Page: Element {}
-
-/// A page showing a single view.
-///
-/// What a page SHOWS is its one requirement. What it IS - what it is called,
-/// its buttons, how it is presented, where it stands in its life - is its
-/// `PageSession`, in the environment of the page and of everything in it, and
-/// written like any state:
-///
-///     struct MainPage: ContentPage {
+///     struct MainPage: ContentView {
 ///         @Environment private var page: PageSession
 ///
 ///         var content: any View {
@@ -254,57 +240,65 @@ public protocol Page: Element {}
 ///
 /// What `.onCreated` writes is in the message that brings the page, so the
 /// page arrives with its title and its buttons. A page also says what it asks
-/// of the CONTAINER showing it, written on the page itself through the same
-/// session:
-/// `page.hasNavigationBar = false`. What the BAR looks like is
-/// not a page's at all: it belongs to the arrangement drawing it - see
-/// `barBackgroundColor` on `NavigationStack` and `TabbedView`.
-public protocol ContentPage: Page {
-    /// What the page shows. One view - put a layout here for more than one.
-    ///
-    /// The only thing a page must say - read as the page is built, and again
-    /// when what it was built with or a state it read changes; otherwise the
-    /// page is carried whole.
-    var content: any View { get }
-}
+/// of the CONTAINER showing it, through the same session:
+/// `page.hasNavigationBar = false`. What the BAR looks like is not a page's at
+/// all: it belongs to the arrangement drawing it - see `barBackgroundColor` on
+/// `NavigationStack` and `TabbedView`.
+///
+/// An ARRANGEMENT - a `NavigationStack`, a `TabbedView`, a `SplitView` - is a
+/// page already and is shown as it is. It is told what it is by modifier,
+/// `.title("Stack")`, from `PageElement`.
+protocol PageArrangement {}
 
-extension ContentPage {
-    /// The page as a node: its session's properties, its content, and whatever
-    /// hangs off it besides.
+extension Node {
+    /// A view shown as a screen: an arrangement as it is, any other view on a
+    /// page of its own.
     ///
-    /// A placeholder, like ContentView's, and for one reason more: the page's
-    /// session is the ELEMENT's - made the first time the page is built and
-    /// handed back on every build after - so a page, a value its parent makes
-    /// afresh every time the parent builds, keeps one for its life, and its
-    /// title view, buttons and menus are read off it as the page builds. See
-    /// Core/Stateful.swift and Core/ElementSession.swift.
-    public var body: Node {
+    /// The page is an element around the view, holding the session for its
+    /// life - kept while the same view stands there, the same kind under the
+    /// same explicit id, and made afresh for another. The view stays the
+    /// element it is, with its state, its inputs and whatever was written on
+    /// it, one level down - so a write to the session builds the page again
+    /// and carries the view whole.
+    static func page(_ view: any View) -> Node {
+        if view is any PageArrangement { return view.body }
+
+        let content = view.body
+        let kind = (content.stateful?.viewType ?? content.type.name) + (content.id.map { "#\($0)" } ?? "")
         let request = ElementSession(PageSession.self) { PageSession() }
 
-        var node = Node.composed(self, type: String(reflecting: Self.self)) {
-            let session = request.held(as: PageSession.self)
-
-            // The content first, so a page that gained a title view does not
-            // look to the differ as though its content moved.
-            var node = Node(
-                type: .contentPage, props: session.props, children: [content.body] + session.slots)
-
-            // Where the page stands, as the platform reports it - one by one
-            // rather than over a collection, the window's rule: the wire is
-            // deterministic and nothing may iterate a Dictionary into a
-            // message.
-            node.addHandler(.appearing) { session.phase = .appearing }
-            node.addHandler(.disappearing) { session.phase = .disappearing }
-            node.addHandler(.navigatedTo) { session.phase = .navigatedTo }
-            node.addHandler(.navigatingFrom) { session.phase = .navigatingFrom }
-            node.addHandler(.navigatedFrom) { session.phase = .navigatedFrom }
-
-            return node
+        var node = composed(ShownView(content: content), type: "StateUI.Page(\(kind))") {
+            page(around: content, session: request.held(as: PageSession.self))
         }
 
         node.session = request
         return node
     }
+
+    /// The page itself: the session's properties, what it shows, and whatever
+    /// hangs off it besides - the content first, so a page that gained a title
+    /// view does not look to the differ as though its content moved.
+    private static func page(around content: Node, session: PageSession) -> Node {
+        var node = Node(type: .page, props: session.props, children: [content] + session.slots)
+
+        // Where the page stands, as the platform reports it - one by one
+        // rather than over a collection, the window's rule: the wire is
+        // deterministic and nothing may iterate a Dictionary into a message.
+        node.addHandler(.appearing) { session.phase = .appearing }
+        node.addHandler(.disappearing) { session.phase = .disappearing }
+        node.addHandler(.navigatedTo) { session.phase = .navigatedTo }
+        node.addHandler(.navigatingFrom) { session.phase = .navigatingFrom }
+        node.addHandler(.navigatedFrom) { session.phase = .navigatedFrom }
+
+        return node
+    }
+}
+
+/// The view a page shows, as the page's element holds it: a node, which is
+/// interface rather than an input anything compares - so the page is built
+/// with its parent, and the view inside is compared on its own.
+private struct ShownView {
+    let content: Node
 }
 
 /// Names the application to the host.

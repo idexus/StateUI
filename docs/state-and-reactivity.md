@@ -309,10 +309,10 @@ struct NotesApp: Application {
 }
 
 struct NotesWindow: Window {
-    var page: any Page { SettingsPage() }
+    var page: any View { SettingsPage() }
 }
 
-struct SettingsPage: ContentPage {
+struct SettingsPage: ContentView {
     @State(persistentKey: .appearance) private var appearance = Appearance.system
 
     var content: any View {

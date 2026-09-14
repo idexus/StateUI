@@ -18,7 +18,7 @@ struct WindowSample: SampleContent {
         struct MainWindow: Window {
             @Environment private var window: WindowSession
 
-            var page: any Page {
+            var page: any View {
                 HomePage()
                     .onCreated {
                         window.title = "Notes"

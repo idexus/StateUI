@@ -16,7 +16,7 @@ import XCTest
 
 /// The window under every styled application here.
 private struct HomeWindow: Window {
-    var page: any Page { Home() }
+    var page: any View { Home() }
 }
 
 /// An application with styles, which is where MAUI keeps them too - written
@@ -33,7 +33,7 @@ private struct StyledApp: Application {
     var scene: any Scene { HomeWindow() }
 }
 
-private struct Home: ContentPage {
+private struct Home: ContentView {
     var content: any View { ModifiedContent(node: label("home")) }
 }
 
@@ -1022,7 +1022,7 @@ final class StyleTests: XCTestCase {
         }
 
         var main = Node(type: "Window", children: [
-            Node(type: "ContentPage", children: [
+            Node(type: "Page", children: [
                 VStack {
                     Label("Welcome").style("Headline")
                     Label("Body text")

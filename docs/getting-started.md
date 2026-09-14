@@ -49,10 +49,10 @@ struct NotesApp: Application {
 }
 
 struct NotesWindow: Window {
-    var page: any Page { NotesPage() }
+    var page: any View { NotesPage() }
 }
 
-struct NotesPage: ContentPage {
+struct NotesPage: ContentView {
     @Environment private var page: PageSession
     @State private var note = ""
 
@@ -68,8 +68,9 @@ struct NotesPage: ContentPage {
 }
 ```
 
-`Application`, `Scene`, `Window`, and `ContentPage` are declarations, not
-native objects. Their sessions carry the identity and mutable runtime state.
+`Application`, `Scene` and `Window` are declarations, not native objects, and
+so is the view a window shows as its page. Their sessions carry the identity
+and mutable runtime state.
 [Applications and sessions](application-and-sessions.md) describes that model
 in full.
 
@@ -96,10 +97,10 @@ struct RegisteredApp: Application {
 }
 
 struct RegisteredWindow: Window {
-    var page: any Page { RegisteredPage() }
+    var page: any View { RegisteredPage() }
 }
 
-struct RegisteredPage: ContentPage {
+struct RegisteredPage: ContentView {
     var content: any View { Label("Hello, StateUI") }
 }
 

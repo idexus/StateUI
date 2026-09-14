@@ -139,7 +139,7 @@ final class AppKitRecyclingTests: XCTestCase {
     }
 
     private func tree(_ content: HostPatch) -> HostPatch {
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
+        var page = HostPatch(id: .manual("page"), type: .page)
         page.children = .arranged([content])
         var window = HostPatch(id: .manual("window"), type: .window)
         window.children = .arranged([page])

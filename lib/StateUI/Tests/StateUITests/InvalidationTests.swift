@@ -189,17 +189,14 @@ private struct Inner: ContentView {
     }
 }
 
-/// A PAGE holding the choice its content shows - the shape a tabbed sample
-/// page has. Its root node is built directly (a page's node is its properties,
-/// its content and its slots), so the state is read inside a container BELOW
-/// that root rather than on it.
-private struct Tabbed: ContentPage {
-    let builds: Builds
+/// A view holding the choice its content shows - the shape a tabbed sample
+/// page has - so the state is read inside the container the view is made of,
+/// once the view's body has returned.
+private struct Tabbed: ContentView {
     @State var showing = 0
 
     var content: any View {
-        builds.count += 1
-        return Grid {
+        Grid {
             Label("one").isVisible(showing == 0).gridRow(1).id("one")
             Label("two").isVisible(showing == 1).gridRow(1).id("two")
         }
@@ -349,25 +346,21 @@ final class InvalidationTests: XCTestCase {
 
     // MARK: - Builder paths under the clean walk
 
-    /// A page's own state, read inside the container its content is.
+    /// A view's own state, read inside the container it is made of.
     ///
     /// The read happens when the DIFFER runs the container's content, which is
-    /// after the body that wrote it has returned - and a page's root node is
-    /// built directly, so the deferred content sits BELOW the node the
-    /// unwrapping ends on. THE CONTAINER IS THE READER: its content is built
-    /// again when the state moves, and the page's own body - which read
-    /// nothing - is not.
+    /// after the body that wrote it has returned - and it is the VIEW's read:
+    /// the view is built again when the state moves, and the panels move with
+    /// it, on the page it is shown on.
     ///
     /// What it looks like when the read is recorded nowhere: the panels stand
     /// still while everything with state of its own beside them - a tab strip
     /// reading the same value through a binding - moves.
-    func testAPagesStateReadByItsContentRebuildsTheContentAlone() {
+    func testAViewsStateReadInsideItsContainerMovesThePanels() {
         let renders = Renders()
-        let builds = Builds()
-        let page = Tabbed(builds: builds)
+        let page = Tabbed()
 
-        let first = renders.render(page.body)
-        XCTAssertEqual(builds.count, 1)
+        let first = renders.render(Node.page(page))
         let grid = first.children.first
         XCTAssertEqual(grid?.child("one")?.props["isVisible"], .bool(true))
         XCTAssertEqual(grid?.child("two")?.props["isVisible"], .bool(false))
@@ -375,7 +368,6 @@ final class InvalidationTests: XCTestCase {
         page.showing = 1
         let patch = renders.revisit(changed: changed)
 
-        XCTAssertEqual(builds.count, 1, "the page's body read nothing; the Grid's content did")
         let moved = patch.children.first
         XCTAssertEqual(moved?.child("one")?.props["isVisible"], .bool(false))
         XCTAssertEqual(moved?.child("two")?.props["isVisible"], .bool(true))
@@ -973,7 +965,7 @@ private final class WritingPage: @unchecked Sendable {
     var writes = 0
 }
 
-private struct WritingBody: ContentPage {
+private struct WritingBody: ContentView {
     var content: any View {
         let page = WritingPage.shared
         let shown = page.count.wrappedValue
@@ -988,7 +980,7 @@ private struct WritingBody: ContentPage {
 }
 
 private struct WritingWindow: Window {
-    var page: any Page { WritingBody() }
+    var page: any View { WritingBody() }
 }
 
 private struct WritingApp: Application {
@@ -1004,7 +996,7 @@ private final class Aside: @unchecked Sendable {
     var writes = 0
 }
 
-private struct AsideBody: ContentPage {
+private struct AsideBody: ContentView {
     var content: any View {
         let aside = Aside.shared
 
@@ -1018,7 +1010,7 @@ private struct AsideBody: ContentPage {
 }
 
 private struct AsideWindow: Window {
-    var page: any Page { AsideBody() }
+    var page: any View { AsideBody() }
 }
 
 private struct AsideApp: Application {
@@ -1036,14 +1028,14 @@ private final class Chosen: @unchecked Sendable {
 }
 
 /// The page it shows, handed what was chosen.
-private struct ChosenPage: ContentPage {
+private struct ChosenPage: ContentView {
     let text: String
 
     var content: any View { ModifiedContent(node: label(text)) }
 }
 
 private struct ChosenWindow: Window {
-    var page: any Page {
+    var page: any View {
         ChosenPage(
             text: Chosen.shared.byFirst
                 ? Chosen.shared.first.wrappedValue

@@ -4,11 +4,11 @@ import StateUI
 /// opened it: it closes with that gallery, may step aside for another, and
 /// changes what this gallery shows and no other. See `MultiWindowSample`.
 struct FontsWindow: Window {
-    var page: any Page { FontsPage() }
+    var page: any View { FontsPage() }
 }
 
 /// The families on offer, each set in itself.
-struct FontsPage: ContentPage {
+struct FontsPage: ContentView {
     /// The gallery's look - the one its scene offers every window of it.
     @Environment private var style: SessionStyle
 

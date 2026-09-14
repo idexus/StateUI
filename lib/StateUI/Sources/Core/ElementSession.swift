@@ -5,12 +5,12 @@
 // built, kept on it across every build after, and offered to everything under
 // it by its type, the element's own `@Environment` included.
 //
-// It is how a page has a session: a `ContentPage` is a value the parent's
-// closure constructs afresh on every render, so nothing stored on it outlives
-// a build - the element does. The differ keeps the object on the element's
-// `RenderedNode`, hands it to the page's closure through this request, and
-// puts it in the scope before the page's slots resolve. See
-// Types/PageSession.swift.
+// It is how a page has a session: the view a page shows is a value the
+// parent's closure constructs afresh on every render, so nothing stored on it
+// outlives a build - the page's element does. The differ keeps the object on
+// the element's `RenderedNode`, hands it to the page's closure through this
+// request, and puts it in the scope before anything under the page resolves.
+// See Types/PageSession.swift and Views/Application.swift.
 
 /// A composed view's request for an object it keeps for its life.
 final class ElementSession {

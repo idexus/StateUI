@@ -7,7 +7,7 @@ import StateUI
 /// One type for every group rather than one page per category - a group differs
 /// by what is in it, and nothing else. Adding a category is a line in the
 /// catalog, not a file.
-struct GroupPage: ContentPage {
+struct GroupPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 

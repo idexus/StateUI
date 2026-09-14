@@ -255,11 +255,11 @@ private struct Titling: Application {
 
 /// The window the page names.
 private struct TitlingWindow: Window {
-    var page: any Page { TitlingPage() }
+    var page: any View { TitlingPage() }
 }
 
 /// A page that names the window it is in as it comes into the tree.
-private struct TitlingPage: ContentPage {
+private struct TitlingPage: ContentView {
     @Environment private var window: WindowSession
 
     var content: any View {
@@ -274,11 +274,11 @@ private struct Chaining: Application {
 
 /// The window the counting page is in.
 private struct ChainingWindow: Window {
-    var page: any Page { ChainingPage() }
+    var page: any View { ChainingPage() }
 }
 
 /// A page whose count moves every time it is seen to have moved.
-private struct ChainingPage: ContentPage {
+private struct ChainingPage: ContentView {
     @State private var count = 0
 
     var content: any View {
@@ -289,6 +289,6 @@ private struct ChainingPage: ContentPage {
 }
 
 /// A page with nothing on it, for a stack to hold.
-private struct LifetimePage: ContentPage {
+private struct LifetimePage: ContentView {
     var content: any View { Label("page") }
 }

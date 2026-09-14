@@ -42,13 +42,13 @@ private struct Holds: ContentView {
 }
 
 /// A page with nothing on it.
-private struct Blank: ContentPage {
+private struct Blank: ContentView {
     var content: any View { Label("blank") }
 }
 
 /// A scene's main window.
 private struct First: Window {
-    var page: any Page { Blank() }
+    var page: any View { Blank() }
 }
 
 /// What an inspector holds, for the test that writes it - a model at file
@@ -60,12 +60,12 @@ private final class Drawn: @unchecked Sendable {
 private let drawn = Drawn()
 
 /// A page that reads it, so a write to it has a reader.
-private struct Showing: ContentPage {
+private struct Showing: ContentView {
     var content: any View { Label("\(drawn.revision)") }
 }
 
 private struct ShowingWindow: Window {
-    var page: any Page { Showing() }
+    var page: any View { Showing() }
 }
 
 private struct ShowingApplication: Application {
@@ -374,13 +374,13 @@ final class InspectionTests: XCTestCase {
         twoScenes()
 
         Inspector.show(in: Scenes.shared.list[1], .side)
-        XCTAssertEqual(slots(), [[.contentPage], [.contentPage, .overlay]])
+        XCTAssertEqual(slots(), [[.page], [.page, .overlay]])
 
         Inspector.show(in: Scenes.shared.list[0], .bottom)
-        XCTAssertEqual(slots(), [[.contentPage, .overlay], [.contentPage, .overlay]])
+        XCTAssertEqual(slots(), [[.page, .overlay], [.page, .overlay]])
 
         Inspector.hide(in: Scenes.shared.list[1])
-        XCTAssertEqual(slots(), [[.contentPage, .overlay], [.contentPage]])
+        XCTAssertEqual(slots(), [[.page, .overlay], [.page]])
     }
 
     /// In a window of its own, an inspector is a window OF ITS SCENE - the

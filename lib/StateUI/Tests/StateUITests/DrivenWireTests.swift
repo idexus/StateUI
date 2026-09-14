@@ -28,7 +28,7 @@ final class DrivenWireTests: XCTestCase {
     /// rather than a fragment.
     private func message(_ content: Node) -> Node {
         var main = Node(type: "Window", children: [
-            Node(type: "ContentPage", children: [content]),
+            Node(type: "Page", children: [content]),
         ])
         main.id = SceneElement.mainKey
 

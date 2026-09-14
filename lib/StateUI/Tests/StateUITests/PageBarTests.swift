@@ -15,7 +15,7 @@ import XCTest
 /// A page with a toolbar and a menu, which are lists of things that are not
 /// views and hang BESIDE the content - written into the page's session as it
 /// comes into the tree.
-private struct BarredPage: ContentPage {
+private struct BarredPage: ContentView {
     @Environment private var page: PageSession
 
     var content: any View {
@@ -64,7 +64,7 @@ final class PageBarTests: XCTestCase {
     /// What the page's first message carries - its `.onCreated` run, and what
     /// it wrote walked in.
     private static func arrived() -> HostPatch {
-        Renders().settled(BarredPage().body)
+        Renders().settled(Node.page(BarredPage()))
     }
 
     /// The slots travel beside the content, each as a collection of its own -
@@ -124,10 +124,10 @@ final class PageBarTests: XCTestCase {
     /// A page with neither says nothing about them, so a host that has none is
     /// not told to empty one.
     func testAPageWithNoToolbarSendsNoSlot() {
-        struct Plain: ContentPage {
+        struct Plain: ContentView {
             var content: any View { Label("one") }
         }
 
-        XCTAssertEqual(Plain().body.built.children.map { $0.type }, ["Label"])
+        XCTAssertEqual(Node.page(Plain()).built.children.map { $0.type }, ["Label"])
     }
 }

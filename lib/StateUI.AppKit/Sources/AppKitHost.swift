@@ -1484,18 +1484,18 @@ final class MountedNode: NSObject {
         slot(.overlay)?.children.first?.layoutItem
     }
 
-    var visibleContentPage: MountedNode? {
+    var visiblePage: MountedNode? {
         switch type {
-        case .contentPage:
+        case .page:
             return self
         case .navigationStack:
-            return children.last?.visibleContentPage
+            return children.last?.visiblePage
         case .tabbedView:
-            return selectedTab?.visibleContentPage
+            return selectedTab?.visiblePage
         case .splitView:
-            return children.dropFirst().first?.visibleContentPage
+            return children.dropFirst().first?.visiblePage
         default:
-            return pageNode?.visibleContentPage
+            return pageNode?.visiblePage
         }
     }
 
@@ -1543,7 +1543,7 @@ final class MountedNode: NSObject {
     /// native overflow, each group by priority and then source order. A page
     /// that hides its navigation furniture puts none of them in the toolbar.
     var visibleToolbarActions: (primary: [AppKitToolbarAction], overflow: [AppKitToolbarAction]) {
-        guard let page = visibleContentPage,
+        guard let page = visiblePage,
               page.bool(.hasNavigationBar) ?? true,
               let items = page.slot(.toolbarItems)?.children
         else { return ([], []) }
@@ -1568,11 +1568,11 @@ final class MountedNode: NSObject {
 
     /// The view the visible page shows in place of its title.
     var visibleTitleView: NSView? {
-        visibleContentPage?.slot(.titleView)?.presentableViews.first
+        visiblePage?.slot(.titleView)?.presentableViews.first
     }
 
     var pageMenuItems: [NSMenuItem] {
-        visibleContentPage?.slot(.menuBarItems)?.children.compactMap { $0.nativeMenuItem } ?? []
+        visiblePage?.slot(.menuBarItems)?.children.compactMap { $0.nativeMenuItem } ?? []
     }
 
     /// Makes this page tree visible or hidden, reporting phases only after the
@@ -1582,7 +1582,7 @@ final class MountedNode: NSObject {
         pagePresented = presented
 
         switch type {
-        case .contentPage:
+        case .page:
             if presented {
                 announce(.appearing)
                 if reason == .navigation { announce(.navigatedTo) }
@@ -2037,7 +2037,7 @@ final class MountedNode: NSObject {
         case .application, .scene, .window:
             return nil
 
-        case .contentPage:
+        case .page:
             let page = AppKitSingleChildView()
             page.translatesAutoresizingMaskIntoConstraints = true
             return page
@@ -3494,7 +3494,7 @@ final class MountedNode: NSObject {
     ]
 
     private static let pageTypes: Set<NodeType> = [
-        .contentPage, .navigationStack, .tabbedView, .splitView,
+        .page, .navigationStack, .tabbedView, .splitView,
     ]
 
     /// Several visible windows' worth, but never an unbounded history of rows.

@@ -30,7 +30,7 @@ final class HostContractTests: XCTestCase {
     /// dismissal and navigation-title composition are expressed by their
     /// dedicated StateUI structures. They do not create a second, page-only
     /// vocabulary for capabilities that native hosts do not share.
-    func testContentPageVocabularyContainsOnlySharedCapabilities() throws {
+    func testPageVocabularyContainsOnlySharedCapabilities() throws {
         let source = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
             encoding: .utf8)
@@ -152,6 +152,27 @@ final class HostContractTests: XCTestCase {
             for former in formerTypes {
                 XCTAssertFalse(
                     text.contains("struct \(former)"),
+                    "\(former) is declared again in \(path)")
+            }
+        }
+    }
+
+    /// A page is a role any view takes, not a type an author picks: nothing
+    /// declares a page protocol again, and the host vocabulary names the page
+    /// once, as `Page`.
+    func testAPageIsARoleAnyViewTakes() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let controls = declaredNames(of: "NodeType", in: tokenSource)
+
+        XCTAssertTrue(controls.contains("Page"))
+        XCTAssertFalse(controls.contains("ContentPage"), "the page is named twice on the host boundary")
+
+        for (path, text) in try Fixtures.allSources() {
+            for former in ["protocol Page", "protocol ContentPage"] {
+                XCTAssertNil(
+                    text.range(of: "\\b\(former)\\b", options: .regularExpression),
                     "\(former) is declared again in \(path)")
             }
         }

@@ -4,7 +4,7 @@ import StateUI
 ///
 /// A tab is nothing but a page in a list, so this one says its own caption
 /// and its own picture through its session's `title` and `iconImageSource`.
-struct SecondTabPage: ContentPage {
+struct SecondTabPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 

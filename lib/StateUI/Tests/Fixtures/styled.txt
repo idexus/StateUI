@@ -2,7 +2,7 @@ generation 1 names +28
 Application 1 moves over 200ms cubicOut arranged(1)
   Scene "1" arranged(1)
     Window "main" arranged(1)
-      ContentPage 2 arranged(1)
+      Page 2 arranged(1)
         VStack 3 arranged(4)
           Label 4
             fontAttributes: enum bold(1)

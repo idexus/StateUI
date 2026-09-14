@@ -7,13 +7,13 @@ TabbedView 1 arranged(2)
     iconImageSource: string "house.png"
     title: string "Home"
     on popped=2
-    ContentPage "root" arranged(1)
+    Page "root" arranged(1)
       iconImageSource: string "home.png"
       title: string "home"
       on appearing=3 disappearing=4 navigatedFrom=5 navigatedTo=6 navigatingFrom=7
       Label 2
         text: string "home"
-  ContentPage "settings" arranged(1)
+  Page "settings" arranged(1)
     iconImageSource: string "settings.png"
     title: string "settings"
     on appearing=8 disappearing=9 navigatedFrom=10 navigatedTo=11 navigatingFrom=12

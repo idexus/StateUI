@@ -4,11 +4,11 @@ import StateUI
 /// opened it, painting that gallery's bars and no other's. See
 /// `MultiWindowSample`.
 struct ColoursWindow: Window {
-    var page: any Page { ColoursPage() }
+    var page: any View { ColoursPage() }
 }
 
 /// The accents on offer, each drawn in itself.
-struct ColoursPage: ContentPage {
+struct ColoursPage: ContentView {
     /// The gallery's look - the one its scene offers every window of it.
     @Environment private var style: SessionStyle
 

@@ -28,7 +28,7 @@ extension TitleBarProperties {
 /// Hosts with native window chrome place this content according to their own
 /// title-area conventions. Hosts without an authored title area may ignore it.
 ///
-///     struct HomePage: ContentPage {
+///     struct HomePage: ContentView {
 ///         @Environment private var window: WindowSession
 ///
 ///         var content: any View {

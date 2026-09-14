@@ -8,7 +8,7 @@ import StateUI
 /// row for it is optional in the plainest sense of the word - written inside an
 /// `if`, while the page behind it stays reachable from anywhere that can name
 /// the case.
-struct HiddenPage: ContentPage {
+struct HiddenPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 

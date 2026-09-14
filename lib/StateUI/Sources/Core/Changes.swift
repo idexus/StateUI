@@ -165,39 +165,3 @@ extension BindableObject {
         }
     }
 }
-
-extension PageElement {
-    /// Runs something when `value` is not what it was last render. The same as
-    /// a view's `onChanged`.
-    ///
-    ///     SplitView($open) { … } detail: { … }
-    ///         .onChanged(window.phase) { log(window.phase) }
-    ///
-    /// - Parameters:
-    ///   - value: What to watch. Anything `Equatable`.
-    ///   - handler: What to run once the value has moved.
-    public func onChanged<Value: Equatable>(
-        _ value: Value,
-        _ handler: @escaping EventHandler
-    ) -> Modified {
-        modified { $0.watches.append(Watch(value) { _, _ in try await handler() }) }
-    }
-
-    /// The same, handed the value it was and the value it now is.
-    ///
-    /// - Parameters:
-    ///   - value: What to watch. Anything `Equatable`.
-    ///   - handler: What to run, given the old value and the new one.
-    public func onChanged<Value: Equatable>(
-        _ value: Value,
-        _ handler: @escaping ChangeHandler<Value>
-    ) -> Modified {
-        modified {
-            $0.watches.append(Watch(value) { old, new in
-                guard let old = old as? Value, let new = new as? Value else { return }
-
-                try await handler(old, new)
-            })
-        }
-    }
-}

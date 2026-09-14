@@ -20,7 +20,7 @@ private enum Route: Hashable {
 
 /// The root, named as it comes into the tree - which is the message that brings
 /// it, so a stack arrives with its titles.
-private struct Root: ContentPage {
+private struct Root: ContentView {
     @Environment private var page: PageSession
 
     var content: any View {
@@ -29,7 +29,7 @@ private struct Root: ContentPage {
 }
 
 /// A pushed page, named for the route it stands for.
-private struct Destination: ContentPage {
+private struct Destination: ContentView {
     @Environment private var page: PageSession
     let name: String
 
@@ -41,7 +41,7 @@ private struct Destination: ContentPage {
 /// A pushed page that asks the STACK for everything a page can ask of it - the
 /// attached properties, spelled with the class that declares them, written
 /// into its session as it comes into the tree.
-private struct DressedDestination: ContentPage {
+private struct DressedDestination: ContentView {
     @Environment private var page: PageSession
     let depth: Int
 

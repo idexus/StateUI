@@ -8,7 +8,7 @@
 /// scene, one window, one content page. Tests hand it to the renderer so the
 /// content mounts where an application mounts it.
 func tree(_ content: HostPatch) -> HostPatch {
-    var page = HostPatch(id: .manual("page"), type: .contentPage)
+    var page = HostPatch(id: .manual("page"), type: .page)
     page.children = .arranged([content])
     var window = HostPatch(id: .manual("window"), type: .window)
     window.children = .arranged([page])
@@ -21,7 +21,7 @@ func tree(_ content: HostPatch) -> HostPatch {
 
 /// A later patch of the same application in which only `content` changed.
 func changedTree(_ content: HostPatch) -> HostPatch {
-    var page = HostPatch(id: .manual("page"), type: .contentPage)
+    var page = HostPatch(id: .manual("page"), type: .page)
     page.children = .changed([content])
     var window = HostPatch(id: .manual("window"), type: .window)
     window.children = .changed([page])

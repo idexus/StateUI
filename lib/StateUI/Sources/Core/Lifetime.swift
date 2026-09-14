@@ -61,24 +61,3 @@ extension BindableObject {
         modified { $0.destroying.append(handler) }
     }
 }
-
-extension PageElement {
-    /// Runs something once, when the page is first described - the render that
-    /// brings it into the tree. The same as a view's `onCreated`.
-    ///
-    ///     SplitView($open) { … } detail: { … }
-    ///         .onCreated { window.title = "Gallery" }
-    ///
-    /// - Parameter handler: what to run.
-    public func onCreated(_ handler: @escaping EventHandler) -> Modified {
-        modified { $0.created.append(handler) }
-    }
-
-    /// Runs something once, as the page leaves the tree. The same as a view's
-    /// `onDestroying`.
-    ///
-    /// - Parameter handler: what to run.
-    public func onDestroying(_ handler: @escaping EventHandler) -> Modified {
-        modified { $0.destroying.append(handler) }
-    }
-}

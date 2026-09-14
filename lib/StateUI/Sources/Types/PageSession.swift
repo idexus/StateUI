@@ -8,7 +8,7 @@
 // `.onCreated` of its content, and read into the page's node every time the
 // page is built.
 //
-//     struct FeedPage: ContentPage {
+//     struct FeedPage: ContentView {
 //         @Environment private var page: PageSession
 //         @State private var greeting = "Hello"
 //
@@ -91,14 +91,14 @@ public enum PagePhase: Sendable {
 ///             page.title = "Settings"
 ///         }
 ///
-/// Every content page offers its own to itself and to everything in it, so a
-/// view acts on the page it is in, and what the page is told stands until it
+/// Every page offers its own to the view it shows and to everything in it, so
+/// a view acts on the page it is in, and what the page is told stands until it
 /// is told otherwise. Every optional property is nil until written, leaving
 /// the native host to choose its default. See `ApplicationSession` for what a
 /// session is.
 ///
-/// A page the library CONSTRUCTS - a `NavigationStack`, a `TabbedView`, a
-/// `SplitView` - has none: it is a value, told what it is by modifier, from
+/// An arrangement - a `NavigationStack`, a `TabbedView`, a `SplitView` - is a
+/// page already and has none: it is told what it is by modifier, from
 /// `PageElement`.
 public final class PageSession {
     /// Where the page stands in its life right now. Starts `.created`.
@@ -107,8 +107,8 @@ public final class PageSession {
     /// What the page is called.
     ///
     /// The navigation bar's text while this page is on top, and the caption of
-    /// the tab holding it - the same meaning `.title(_:)` carries on a page the
-    /// library constructs; see `PageElement`.
+    /// the tab holding it - the same meaning `.title(_:)` carries on an
+    /// arrangement; see `PageElement`.
     @State public var title: String? = nil
 
     /// The picture that stands for the page.

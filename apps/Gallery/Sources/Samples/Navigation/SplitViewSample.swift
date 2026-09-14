@@ -26,7 +26,7 @@ struct SplitViewSample: SampleContent {
 
         // -- AND THE MENU IS A PAGE --
 
-        struct MenuPage: ContentPage {
+        struct MenuPage: ContentView {
             let catalog: Catalog
             let nav: Navigation
             let log: WindowLog

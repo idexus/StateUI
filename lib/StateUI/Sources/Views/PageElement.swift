@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What a page value constructed by StateUI can be told about itself.
+// What an arrangement can be told about itself.
 //
-// A written `ContentPage` owns a `PageSession`. A container such as
-// `NavigationStack`, `TabbedView` or `SplitView` is a value with no session of
-// its own, so the two properties needed when another container presents it are
-// modifiers on this protocol.
+// A view shown as a page is told through the `PageSession` its page holds. An
+// arrangement - a `NavigationStack`, a `TabbedView`, a `SplitView` - is a page
+// already, a value with no session of its own, so the two properties needed
+// when another container presents it are modifiers on this protocol.
 
 /// The identity shown for a constructed container page.
 ///

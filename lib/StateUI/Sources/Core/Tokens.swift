@@ -359,7 +359,7 @@ public extension NodeType {
     static let button = NodeType("Button")
     static let checkBox = NodeType("CheckBox")
     static let content = NodeType("Content")
-    static let contentPage = NodeType("ContentPage")
+    static let page = NodeType("Page")
     static let contextFlyout = NodeType("ContextFlyout")
     static let datePicker = NodeType("DatePicker")
     static let editor = NodeType("Editor")

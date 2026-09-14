@@ -62,7 +62,7 @@ final class WireTests: XCTestCase {
     /// The window of that page, with the tree under it.
     private func window(count: Int, items: [String], sized: Bool = true) -> Node {
         Node(type: "Window", props: ["title": .string("StateUI")], children: [
-            Node(type: "ContentPage", props: ["title": .string("Counter")], children: [
+            Node(type: "Page", props: ["title": .string("Counter")], children: [
                 Node(type: "VStack", props: ["spacing": .number(20)], children: [
                     counter(count: count, sized: sized),
                     Node(type: "Button",
@@ -140,7 +140,7 @@ final class WireTests: XCTestCase {
             type: "Window",
             props: ["title": .string("StateUI")],
             children: [
-                Node(type: "ContentPage", props: ["title": .string("Home")], children: [
+                Node(type: "Page", props: ["title": .string("Home")], children: [
                     Node(type: "Label", props: ["text": .string("one")]),
                 ]),
             ],

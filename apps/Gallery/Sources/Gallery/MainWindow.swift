@@ -55,7 +55,7 @@ struct MainWindow: Window {
 
     /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
     /// pages, a stack holding an array, a set of tabs holding a selection.
-    var page: any Page {
+    var page: any View {
         SplitView(nav.$menuOpen) {
             MenuPage(
                 catalog: catalog,
@@ -124,7 +124,7 @@ struct MainWindow: Window {
     /// `TabbedView` is a page like any other, so a section may simply be one -
     /// and a stack may sit inside a tab, because pages nest without a rule
     /// about which may hold which.
-    func detail() -> Page {
+    func detail() -> any View {
         if case .tabs = nav.section {
             return tabs()
         }
@@ -147,7 +147,7 @@ struct MainWindow: Window {
     /// group each. The reader's way back out of anything is therefore the
     /// platform's own back button, all the way to the run of group cards the
     /// gallery opens with.
-    func root() -> Page {
+    func root() -> any View {
         switch nav.section {
         case .home:
             return HomePage(catalog: catalog, nav: nav)
@@ -170,7 +170,7 @@ struct MainWindow: Window {
     /// - Parameter route: which page the stack asked for.
     /// - Parameter path: the stack this page is ON, so a page that pushes or
     ///   pops writes the array it is a member of - the main one, or the tab's.
-    func page(for route: Route, path: Binding<[Route]>) -> Page {
+    func page(for route: Route, path: Binding<[Route]>) -> any View {
         switch route {
         case .group(let route):
             guard let group = catalog.groups.first(where: { $0.route == route }) else {
@@ -199,7 +199,7 @@ struct MainWindow: Window {
     ///
     /// Its own flat bar background. The native selector owns the distinction
     /// between selected and unselected tabs.
-    func tabs() -> Page {
+    func tabs() -> any View {
         TabbedView(nav.tabs) { which in
             switch which {
             case .stack:

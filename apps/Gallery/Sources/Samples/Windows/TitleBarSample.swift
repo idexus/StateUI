@@ -29,7 +29,7 @@ struct TitleBarSample: SampleContent {
             let titleBar: TitleBarState
             @Environment private var window: WindowSession
 
-            var page: any Page {
+            var page: any View {
                 HomePage()
                     .onCreated { window.titleBar = chrome }
                     .onChanged(titleBar.subtitle) {

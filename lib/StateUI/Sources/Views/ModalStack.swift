@@ -10,7 +10,7 @@
 //
 //     enum Sheet: Hashable { case settings, about }
 //
-//     struct HomePage: ContentPage {
+//     struct HomePage: ContentView {
 //         @Environment private var window: WindowSession
 //         @Binding var sheets: [Sheet]
 //
@@ -90,13 +90,13 @@ public struct ModalStack {
     /// - Parameter destination: the page for one element, asked in stack order.
     public init<Sheet: Hashable>(
         _ stack: Binding<[Sheet]>,
-        destination: @escaping (Sheet) -> Page
+        destination: @escaping (Sheet) -> any View
     ) {
         build = {
             Node(
                 type: .modalStack,
                 children: stack.wrappedValue.enumerated().map { depth, sheet in
-                    var page = destination(sheet).body
+                    var page = Node.page(destination(sheet))
                     page.id = ModalStack.identity(depth: depth, sheet: sheet)
                     return page
                 })

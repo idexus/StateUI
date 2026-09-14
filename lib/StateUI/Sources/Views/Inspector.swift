@@ -259,7 +259,7 @@ public struct DebugInspector: Window {
     public init() {}
 
     /// The inspector, for its scene.
-    public var page: any Page { InspectorPage(scene: scene.id) }
+    public var page: any View { InspectorPage(scene: scene.id) }
 }
 
 // MARK: - What it remembers
@@ -438,7 +438,7 @@ struct InspectorPanel: ContentView {
 }
 
 /// The page of an inspector's own window.
-struct InspectorPage: ContentPage {
+struct InspectorPage: ContentView {
     /// The scene it looks at, by its number.
     let scene: String
 

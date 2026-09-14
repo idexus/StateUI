@@ -4,8 +4,8 @@ Application 1
     Window "main"
       TabbedView 2
         NavigationStack "home" arranged(2)
-          ContentPage "root"
-          ContentPage "0/detail("one")" arranged(1)
+          Page "root"
+          Page "0/detail("one")" arranged(1)
             title: string "one"
             on appearing=21 disappearing=22 navigatedFrom=23 navigatedTo=24 navigatingFrom=25
             Label 10

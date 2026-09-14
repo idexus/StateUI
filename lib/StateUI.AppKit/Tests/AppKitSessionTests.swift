@@ -677,7 +677,7 @@ final class AppKitSessionTests: XCTestCase {
         var label = HostPatch(id: .manual("label-\(id)"), type: .label)
         label.properties[.text] = .string(id)
 
-        var page = HostPatch(id: .manual("page-\(id)"), type: .contentPage)
+        var page = HostPatch(id: .manual("page-\(id)"), type: .page)
         page.children = .arranged([label])
 
         var window = HostPatch(id: .manual(id), type: .window)
@@ -702,17 +702,17 @@ private extension WindowType {
     static let appKitTestTool = WindowType("appkit.test.tool")
 }
 
-private struct AppKitSessionPage: ContentPage {
+private struct AppKitSessionPage: ContentView {
     let caption: String
     var content: any View { Label(caption) }
 }
 
 private struct AppKitSessionMainWindow: Window {
-    var page: any Page { AppKitSessionPage(caption: "Main") }
+    var page: any View { AppKitSessionPage(caption: "Main") }
 }
 
 private struct AppKitSessionToolWindow: Window {
-    var page: any Page { AppKitSessionPage(caption: "Tool") }
+    var page: any View { AppKitSessionPage(caption: "Tool") }
 }
 
 private struct AppKitSessionScene: Scene {

@@ -35,7 +35,7 @@ private struct Accent: ContentView {
 /// The session's main page: its accent and the value it keeps, and a button
 /// for each thing a test does from inside the scene - through the scene's
 /// session, which is in the environment of everything in it.
-private struct Home: ContentPage {
+private struct Home: ContentView {
     @Environment private var palette: Palette
     @Environment private var scene: SceneSession
     @Binding var shade: String
@@ -56,22 +56,22 @@ private struct Home: ContentPage {
 private struct MainWindow: Window {
     @Binding var shade: String
 
-    var page: any Page { Home(shade: $shade) }
+    var page: any View { Home(shade: $shade) }
 }
 
 /// A page showing the session's accent.
-private struct Showing: ContentPage {
+private struct Showing: ContentView {
     var content: any View { Accent() }
 }
 
 /// The one fonts window a session may open.
 private struct FontsWindow: Window {
-    var page: any Page { Showing() }
+    var page: any View { Showing() }
 }
 
 /// A page that says which document its window is for, and makes the window
 /// about another.
-private struct Retargeting: ContentPage {
+private struct Retargeting: ContentView {
     @Binding var number: Int
 
     var content: any View {
@@ -86,7 +86,7 @@ private struct Retargeting: ContentPage {
 private struct DocumentWindow: Window {
     @Binding var number: Int
 
-    var page: any Page { Retargeting(number: $number) }
+    var page: any View { Retargeting(number: $number) }
 }
 
 /// A session: its own palette, a value it keeps, a group of one and a group
@@ -113,13 +113,13 @@ private struct Studio: Application {
 }
 
 /// A page with nothing on it.
-private struct Blank: ContentPage {
+private struct Blank: ContentView {
     var content: any View { Label("blank") }
 }
 
 /// A window and nothing else.
 private struct PlainWindow: Window {
-    var page: any Page { Blank() }
+    var page: any View { Blank() }
 }
 
 /// An application whose scene is a window alone.
@@ -128,7 +128,7 @@ private struct Alone: Application {
 }
 
 /// A page that says loading is over.
-private struct Waiting: ContentPage {
+private struct Waiting: ContentView {
     @Binding var loading: Bool
 
     var content: any View { Button("ready").onClicked { loading = false } }
@@ -138,7 +138,7 @@ private struct Waiting: ContentPage {
 private struct LoadingWindow: Window {
     @Binding var loading: Bool
 
-    var page: any Page { Waiting(loading: $loading) }
+    var page: any View { Waiting(loading: $loading) }
 }
 
 /// A session whose main window is one thing and then another.
@@ -162,7 +162,7 @@ private struct StartingApp: Application {
 }
 
 /// A page showing what its window counted, and counting one more.
-private struct Counting: ContentPage {
+private struct Counting: ContentView {
     @Binding var opened: Int
 
     var content: any View {
@@ -177,7 +177,7 @@ private struct Counting: ContentPage {
 private struct CountingWindow: Window {
     @State private var opened = 0
 
-    var page: any Page { Counting(opened: $opened) }
+    var page: any View { Counting(opened: $opened) }
 }
 
 private struct CountingApp: Application {
@@ -186,7 +186,7 @@ private struct CountingApp: Application {
 
 /// A page that names its window and sizes it as it comes into the tree, and
 /// renames it on a press - through the window's session.
-private struct Naming: ContentPage {
+private struct Naming: ContentView {
     @Environment private var window: WindowSession
 
     var content: any View {
@@ -201,7 +201,7 @@ private struct Naming: ContentPage {
 }
 
 private struct NamingWindow: Window {
-    var page: any Page { Naming() }
+    var page: any View { Naming() }
 }
 
 private struct NamingApp: Application {
@@ -209,7 +209,7 @@ private struct NamingApp: Application {
 }
 
 /// A page that says how many scenes are open and what its own has open.
-private struct Listing: ContentPage {
+private struct Listing: ContentView {
     @Environment private var application: ApplicationSession
     @Environment private var scene: SceneSession
 
@@ -222,7 +222,7 @@ private struct Listing: ContentPage {
 }
 
 private struct ListingWindow: Window {
-    var page: any Page { Listing() }
+    var page: any View { Listing() }
 }
 
 /// A scene whose page counts, with a group of one beside it.
@@ -606,7 +606,7 @@ final class SceneTests: XCTestCase {
                 "isMaximizable", "isMinimizable", "titleBar", "modalStack", "environment",
                 "onCreated", "onActivated", "onDeactivated", "onStopped", "onResumed", "onDestroying",
             ]),
-            ("ContentPage", onPage + [
+            ("ContentView", onPage + [
                 "onAppearing", "onDisappearing", "onNavigatedTo", "onNavigatingFrom", "onNavigatedFrom",
             ]),
         ]
@@ -654,7 +654,7 @@ final class SceneTests: XCTestCase {
     }
 
     /// The direct members of every type declared a `kind` - `Window`,
-    /// `ContentPage`, `Application` - as text: what stands one level inside
+    /// `ContentView`, `Application` - as text: what stands one level inside
     /// its braces, nested types left out.
     private func bodies(of kind: String, in text: String) -> [String] {
         var bodies: [String] = []

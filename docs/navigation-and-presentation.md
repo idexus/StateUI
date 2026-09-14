@@ -19,7 +19,7 @@ enum Route: Hashable {
 struct MainWindow: Window {
     @State private var path: [Route] = []
 
-    var page: any Page {
+    var page: any View {
         NavigationStack($path) {
             HomePage(path: $path)
         } destination: { route in
@@ -140,8 +140,8 @@ present it. Replacing or closing that window tears down every modal it owns.
 
 ## Page titles and navigation furniture
 
-A written `ContentPage` changes its `PageSession`. Container pages created by
-StateUI use modifiers because they have no independent content-page session:
+A view shown as a page changes its `PageSession`. An arrangement is a page
+already, with no session of its own, so it is told what it is by modifier:
 
 ```swift quote
 NavigationStack($settingsPath) {

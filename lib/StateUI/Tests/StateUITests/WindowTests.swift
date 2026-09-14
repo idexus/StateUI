@@ -16,10 +16,10 @@ import XCTest
 /// A window as an author declares one: a page, and nothing else - what it is
 /// told, a title bar included, being its session's.
 private struct PlainWindow: Window {
-    var page: any Page { Home() }
+    var page: any View { Home() }
 }
 
-private struct Home: ContentPage {
+private struct Home: ContentView {
     var content: any View { ModifiedContent(node: label("home")) }
 }
 
@@ -219,7 +219,7 @@ final class WindowTests: XCTestCase {
         let node = PlainWindow().body(panel: nil, session: desktop()).built
 
         XCTAssertEqual(node.children.count, 1)
-        XCTAssertEqual(try XCTUnwrap(node.children.first).type, "ContentPage")
+        XCTAssertEqual(try XCTUnwrap(node.children.first).type, "Page")
     }
 
     /// A number crosses as a double's own bits - nothing formatted, nothing

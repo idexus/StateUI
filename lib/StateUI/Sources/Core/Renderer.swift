@@ -1175,7 +1175,7 @@ public final class Renderer: @unchecked Sendable {
     /// produces so the host has one thing to read.
     private static var unregistered: Node {
         var main = Node(type: .window, children: [
-            Node(type: .contentPage, children: [
+            Node(type: .page, children: [
                 Node(type: .label, props: [
                     .text: .string("StateUI: no application registered")
                 ])

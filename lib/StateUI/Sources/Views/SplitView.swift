@@ -35,7 +35,7 @@
 ///         @State private var section: Section = .today
 ///         @State private var menu = false
 ///
-///         var page: any Page {
+///         var page: any View {
 ///             SplitView($menu) {
 ///                 MenuPage(section: $section, menu: $menu)
 ///             } detail: {
@@ -47,7 +47,7 @@
 ///         }
 ///     }
 ///
-///     struct MenuPage: ContentPage {
+///     struct MenuPage: ContentView {
 ///         @Binding var section: Section
 ///         @Binding var menu: Bool
 ///         @Environment private var page: PageSession
@@ -90,7 +90,7 @@
 /// - A shared overlay/split policy or gesture switch. Those are capabilities
 ///   of a particular native container. The host adapts its own presentation;
 ///   StateUI owns the two pages and whether the sidebar shows.
-public struct SplitView: Page, PageElement {
+public struct SplitView: View, PageElement, PageArrangement {
     /// The node this page describes.
     public var node: Node
 
@@ -106,15 +106,15 @@ public struct SplitView: Page, PageElement {
     /// - Parameter detail: the page beside it, which is the application.
     public init(
         _ isSidebarVisible: Binding<Bool>,
-        sidebar: () -> Page,
-        detail: () -> Page
+        sidebar: () -> any View,
+        detail: () -> any View
     ) {
         node = Node(
             type: .splitView,
             props: [.isSidebarVisible: .bool(isSidebarVisible.wrappedValue)],
             children: [
-                Self.identified(sidebar().body, as: Self.sidebarIdentity),
-                Self.identified(detail().body, as: Self.detailIdentity),
+                Self.identified(Node.page(sidebar()), as: Self.sidebarIdentity),
+                Self.identified(Node.page(detail()), as: Self.detailIdentity),
             ])
 
         // The reader's own ways in and out - the platform's sidebar button,

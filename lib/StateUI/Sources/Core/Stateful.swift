@@ -3,7 +3,7 @@
 
 // How `@State` on a view survives the view being rebuilt.
 //
-// A composed view - a ContentView, a ContentPage - is a value, rebuilt on every
+// A composed view - a ContentView, a Window - is a value, rebuilt on every
 // render, so a `@State` declared on one comes back as a fresh box holding the
 // initial value. What makes the state survive anyway is done here, in two
 // halves:

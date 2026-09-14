@@ -78,7 +78,7 @@ final class AppKitRadioButtonViewTests: XCTestCase {
 
         var content = HostPatch(id: .manual("content"), type: .vStack)
         content.children = .arranged([firstContainer, secondContainer])
-        var page = HostPatch(id: .manual("page"), type: .contentPage)
+        var page = HostPatch(id: .manual("page"), type: .page)
         page.children = .arranged([content])
         var window = HostPatch(id: .manual("window"), type: .window)
         window.children = .arranged([page])

@@ -5,7 +5,7 @@ import StateUI
 /// What it shows arrives as a VALUE of the route - `.item("Alpha")` - not as
 /// global state and not as a dictionary of strings, which is what lets two of
 /// these be on the stack at once showing different things.
-struct ItemPage: ContentPage {
+struct ItemPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 

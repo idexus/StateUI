@@ -13,7 +13,7 @@ import StateUI
 /// enum and the compiler answers for every case - there is no route string to
 /// mistype. What is left is the id INSIDE the case, which is data: a catalog
 /// entry renamed and a card not.
-struct MissingPage: ContentPage {
+struct MissingPage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 

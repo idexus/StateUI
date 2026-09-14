@@ -27,7 +27,7 @@ import Dispatch
 
 /// A mutable piece of state, owned by whoever declares it.
 ///
-///     struct CounterPage: ContentPage {
+///     struct CounterPage: ContentView {
 ///         @State private var counter = 0
 ///         …
 ///     }
@@ -1275,7 +1275,7 @@ extension State: SceneClaiming {
 
 /// A piece of state a view BORROWS from whoever owns it.
 ///
-///     struct CounterPage: ContentPage {
+///     struct CounterPage: ContentView {
 ///         @State private var counter = 0
 ///
 ///         var content: any View {

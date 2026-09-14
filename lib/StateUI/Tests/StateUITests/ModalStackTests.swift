@@ -24,7 +24,7 @@ private enum Sheet: Hashable {
 
 /// The page underneath, which is what presents - and what hands its window the
 /// modal stack as it comes into the tree.
-private struct HomePage: ContentPage {
+private struct HomePage: ContentView {
     @Environment private var page: PageSession
     @Environment private var window: WindowSession
     @Binding var sheets: [Sheet]
@@ -48,7 +48,7 @@ private struct HomePage: ContentPage {
 /// A presented page. It carries its own way out, because a modal covers the
 /// bars as well as the content and there is nothing else to close it with -
 /// and it says what it is called as it comes into the tree.
-private struct SheetPage: ContentPage {
+private struct SheetPage: ContentView {
     @Environment private var page: PageSession
     @Binding var sheets: [Sheet]
 
@@ -71,7 +71,7 @@ private struct TestWindow: Window {
     /// under the sheets. Nil is the plain home page.
     var path: Binding<[Int]>?
 
-    var page: any Page {
+    var page: any View {
         guard let path else { return HomePage(sheets: sheets) }
 
         return NavigationStack(path) {
@@ -99,7 +99,7 @@ final class ModalStackTests: XCTestCase {
 
         let patch = Renders().settled(window(sheets.projectedValue).body)
 
-        XCTAssertEqual(patch.children.map { $0.type.name }, ["ContentPage", "ModalStack"])
+        XCTAssertEqual(patch.children.map { $0.type.name }, ["Page", "ModalStack"])
         XCTAssertEqual(patch.children.last?.children.count, 0)
     }
 

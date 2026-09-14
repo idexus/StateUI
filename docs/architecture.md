@@ -291,8 +291,10 @@ The structural path is:
 Application -> Scene -> Window -> Page -> View
 ```
 
-Each structural protocol has one composition property. Runtime values belong
-to identity-bearing sessions and are obtained with `@Environment`.
+Each structural protocol has one composition property. A page is not a
+protocol: it is the role a container gives the view it shows, and it holds
+that view's `PageSession`. Runtime values belong to identity-bearing sessions
+and are obtained with `@Environment`.
 
 ```swift
 struct HandbookApp: Application {
@@ -300,10 +302,10 @@ struct HandbookApp: Application {
 }
 
 struct HandbookWindow: Window {
-    var page: any Page { HandbookPage() }
+    var page: any View { HandbookPage() }
 }
 
-struct HandbookPage: ContentPage {
+struct HandbookPage: ContentView {
     @Environment private var page: PageSession
 
     var content: any View {

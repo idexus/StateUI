@@ -20,7 +20,7 @@ import StateUI
 /// but only when a reader turns the device or drags the window past a
 /// threshold, which is a handful of times in a session rather than a handful of
 /// times a second.
-struct HomePage: ContentPage {
+struct HomePage: ContentView {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
 

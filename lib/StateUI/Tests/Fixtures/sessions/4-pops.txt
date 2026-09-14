@@ -4,4 +4,4 @@ Application 1
     Window "main"
       TabbedView 2
         NavigationStack "home" arranged(1)
-          ContentPage "root"
+          Page "root"

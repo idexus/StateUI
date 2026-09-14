@@ -15,7 +15,7 @@ import XCTest
 /// The pane. A page like any other, which is the whole point - and it needs a
 /// title, which is MAUI's rule rather than this library's: written as it comes
 /// into the tree, so the pane arrives with one.
-private struct MenuPage: ContentPage {
+private struct MenuPage: ContentView {
     @Environment private var page: PageSession
     @Binding var section: String
     @Binding var menu: Bool
@@ -37,7 +37,7 @@ private struct MenuPage: ContentPage {
 
 /// The page under the pane, named for the section it shows - as it comes into
 /// the tree, and again whenever it is handed another.
-private struct DetailPage: ContentPage {
+private struct DetailPage: ContentView {
     @Environment private var page: PageSession
     let section: String
 
