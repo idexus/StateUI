@@ -383,6 +383,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     var toolbarForTesting: AppKitWindowToolbar { toolbar }
     var tabRowForTesting: AppKitTabRow { tabRow }
     var tabRowStandsInTitleBarForTesting: Bool { tabRowAccessory != nil }
+    var tabRowAccessoryForTesting: NSTitlebarAccessoryViewController? { tabRowAccessory }
     var tabRowSplitForTesting: AppKitSplitView? { tabRowSplit }
     var titleAccessoryForTesting: NSTitlebarAccessoryViewController? { titleAccessory }
     var titleClusterForTesting: AppKitTitleBarTitleView { titleCluster }
@@ -717,12 +718,15 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
         guard placement != nil else { return }
         if #available(macOS 26, *), let column {
+            tabRow.insets = AppKitTabRow.columnInsets
             column.setDetailRow(tabRow)
             tabRowSplit = column
         } else {
+            tabRow.insets = AppKitTabRow.titleBarInsets
             let accessory = NSTitlebarAccessoryViewController()
             accessory.layoutAttribute = .bottom
             accessory.view = tabRow
+            if #available(macOS 26.1, *) { accessory.preferredScrollEdgeEffectStyle = .soft }
             window.addTitlebarAccessoryViewController(accessory)
             tabRowAccessory = accessory
         }

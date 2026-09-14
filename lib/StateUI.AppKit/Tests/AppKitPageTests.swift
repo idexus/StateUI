@@ -215,6 +215,9 @@ final class AppKitPageTests: XCTestCase {
         let row = controller.tabRowForTesting
         let control = row.controlForTesting
         XCTAssertTrue(controller.tabRowStandsInTitleBarForTesting)
+        if #available(macOS 26.1, *) {
+            XCTAssertEqual(controller.tabRowAccessoryForTesting?.preferredScrollEdgeEffectStyle, .soft)
+        }
         XCTAssertEqual(control.trackingMode, .selectOne)
         XCTAssertEqual(control.segmentDistribution, .fillEqually)
         XCTAssertEqual(
@@ -265,7 +268,11 @@ final class AppKitPageTests: XCTestCase {
             XCTAssertTrue(split.detailRowForTesting === controller.tabRowForTesting)
             XCTAssertTrue(controller.tabRowSplitForTesting === split)
             XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
-        } else {
+        }
+        if #available(macOS 26.1, *) {
+            XCTAssertEqual(split.detailRowAccessoryForTesting?.preferredScrollEdgeEffectStyle, .soft)
+        }
+        if #unavailable(macOS 26) {
             XCTAssertTrue(controller.tabRowStandsInTitleBarForTesting)
         }
 
@@ -327,7 +334,9 @@ final class AppKitPageTests: XCTestCase {
 
     /// Each of a window's tabs shows its glyph beside its title, the tabs
     /// sharing the row's width equally: the picture as a template the system
-    /// tints, at a glyph's height, the tab's own picture left as it is.
+    /// tints, at a glyph's height, the tab's own picture left as it is. A tab
+    /// is a capsule on macOS 26 and later, and a row across a column is as
+    /// tall as its tabs.
     @MainActor
     func testATabShowsItsGlyphBesideItsTitle() {
         let picture = NSImage(size: NSSize(width: 48, height: 48))
@@ -346,6 +355,10 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertNil(control.image(forSegment: 1))
         XCTAssertFalse(picture.isTemplate)
         XCTAssertEqual(picture.size, NSSize(width: 48, height: 48))
+        XCTAssertEqual(row.frame.height, control.fittingSize.height)
+        if #available(macOS 26, *) {
+            XCTAssertEqual(control.borderShape, .capsule)
+        }
     }
 
     @MainActor

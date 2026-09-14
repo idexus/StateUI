@@ -37,14 +37,30 @@ struct AppKitTabsPlacement {
 /// as that column's own accessory; otherwise the title bar's bottom
 /// accessory, which AppKit lays beside a full-height sidebar. A native
 /// select-one segmented control whose tabs share the width equally, each
-/// tab's glyph beside its title and the chosen tab a pill.
+/// tab's glyph beside its title and the chosen tab a pill - a capsule on
+/// macOS 26 and later, the platform's own shape there. The row is as tall as
+/// its tabs, and where the system has a soft scroll edge the page shows
+/// beneath it.
 @MainActor
 final class AppKitTabRow: NSView {
     /// How tall a tab's glyph stands beside a label in the system font.
     static let glyphHeight = (NSFont.systemFontSize * 1.25).rounded()
 
-    /// The room between the control and the row's edges.
-    private static let inset = NSEdgeInsets(top: 4, left: 8, bottom: 8, right: 8)
+    /// The room between the tabs and the row's edges across a split view
+    /// column, which AppKit pads itself.
+    static let columnInsets = NSEdgeInsets()
+
+    /// The same beneath the title bar, where the row keeps its own margins.
+    static let titleBarInsets = NSEdgeInsets(top: 0, left: 8, bottom: 6, right: 8)
+
+    /// The margins of the place the row stands in.
+    var insets = AppKitTabRow.columnInsets {
+        didSet {
+            frame.size.height = rowHeight
+            invalidateIntrinsicContentSize()
+            needsLayout = true
+        }
+    }
 
     private let control = NSSegmentedControl()
     private var tabs: AppKitWindowTabs?
@@ -53,6 +69,7 @@ final class AppKitTabRow: NSView {
         super.init(frame: frameRect)
         control.trackingMode = .selectOne
         control.segmentDistribution = .fillEqually
+        if #available(macOS 26, *) { control.borderShape = .capsule }
         control.target = self
         control.action = #selector(chose(_:))
         addSubview(control)
@@ -80,6 +97,12 @@ final class AppKitTabRow: NSView {
         }
 
         control.selectedSegment = next.selected
+
+        // As tall as its tabs, which it knows only once it has them.
+        if frame.height != rowHeight {
+            frame.size.height = rowHeight
+            invalidateIntrinsicContentSize()
+        }
         needsLayout = true
     }
 
@@ -90,14 +113,14 @@ final class AppKitTabRow: NSView {
     override func layout() {
         super.layout()
         control.frame = NSRect(
-            x: Self.inset.left,
-            y: Self.inset.bottom,
-            width: max(0, bounds.width - Self.inset.left - Self.inset.right),
+            x: insets.left,
+            y: insets.bottom,
+            width: max(0, bounds.width - insets.left - insets.right),
             height: control.fittingSize.height)
     }
 
     private var rowHeight: CGFloat {
-        Self.inset.top + control.fittingSize.height + Self.inset.bottom
+        insets.top + control.fittingSize.height + insets.bottom
     }
 
     /// A tab's picture as a glyph: a template the system tints with the

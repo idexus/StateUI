@@ -988,6 +988,9 @@ final class AppKitSplitView: AppKitHitTestView {
         if let row {
             let accessory = NSSplitViewItemAccessoryViewController()
             accessory.view = row
+            // The row stands over the page rather than on a band of its own:
+            // a soft edge lets the page show beneath the tabs.
+            if #available(macOS 26.1, *) { accessory.preferredScrollEdgeEffectStyle = .soft }
             detailItem.addTopAlignedAccessoryViewController(accessory)
         }
     }
@@ -995,6 +998,11 @@ final class AppKitSplitView: AppKitHitTestView {
     @available(macOS 26, *)
     var detailRowForTesting: NSView? {
         detailItem.topAlignedAccessoryViewControllers.first?.view
+    }
+
+    @available(macOS 26, *)
+    var detailRowAccessoryForTesting: NSSplitViewItemAccessoryViewController? {
+        detailItem.topAlignedAccessoryViewControllers.first
     }
 
     func setItems(_ items: [AppKitLayoutItem]) {
