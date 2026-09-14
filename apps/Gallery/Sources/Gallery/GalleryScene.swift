@@ -50,11 +50,11 @@ struct GalleryScene: Scene {
 
         return Windows {
             WindowGroup(.fonts) { FontsWindow() }
-                .autoHide(style.hidesTools)
+                .hidesWhenInactive(style.hidesTools)
                 .floatsOnTop(style.floatsTools)
 
             WindowGroup(.colours) { ColoursWindow() }
-                .autoHide(style.hidesTools)
+                .hidesWhenInactive(style.hidesTools)
                 .floatsOnTop(style.floatsTools)
 
             WindowGroup(.debugInspector) { DebugInspector() }

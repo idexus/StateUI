@@ -41,7 +41,7 @@ struct TitleBarSample: SampleContent, ExampleContent {
                 TitleBar("StateUI")
                     .subtitle(titleBar.subtitle)
                     .icon("stateui_mark.png")
-                    .foregroundColor(.white)
+                    .barForegroundColor(.white)
                     .background(.cornflowerBlue)
                     .leadingContent { Button("Sidebar") }
                     .content { SearchField("Search") }

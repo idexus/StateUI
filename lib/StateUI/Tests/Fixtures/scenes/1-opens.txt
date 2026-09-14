@@ -25,8 +25,8 @@ Application 1 moves over 200ms cubicOut arranged(2)
             text: string "dusk"
             on clicked=21
     Window "fonts 1" arranged(1)
-      autoHide: true
       floatsOnTop: true
+      hidesWhenInactive: true
       title: string "Fonts"
       windowType: name "fonts"
       on activated=22 created=23 deactivated=24 destroying=25 resumed=26 stopped=27

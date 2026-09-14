@@ -172,12 +172,12 @@ final class NavigationStackTests: XCTestCase {
 
         let node = stack(path.projectedValue)
             .barBackgroundColor(Color("#512BD4"))
-            .barTextColor(.white)
+            .barForegroundColor(.white)
             .body
             .built
 
         XCTAssertEqual(node.props["barBackgroundColor"], Color("#512BD4").propValue)
-        XCTAssertEqual(node.props["barTextColor"], Color("#FFFFFF").propValue)
+        XCTAssertEqual(node.props["barForegroundColor"], Color("#FFFFFF").propValue)
         XCTAssertNil(node.children.first?.built.props["barBackgroundColor"],
                      "and not on the page under it")
     }
@@ -191,7 +191,7 @@ final class NavigationStackTests: XCTestCase {
         let sent = Set(
             stack(path.projectedValue)
                 .barBackgroundColor(.black)
-                .barTextColor(.white)
+                .barForegroundColor(.white)
                 .body
                 .built
                 .props
@@ -230,7 +230,7 @@ final class NavigationStackTests: XCTestCase {
             }
         }
         .barBackgroundColor(Color("#512BD4"))
-        .barTextColor(.white)
+        .barForegroundColor(.white)
         .body
 
         // As the message that brings the pages carries them - with what each

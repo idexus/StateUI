@@ -48,7 +48,7 @@ struct NavigationSample: SampleContent, ExampleContent {
             }
         }
         .barBackgroundColor(AppColors.violet)
-        .barTextColor(Palette.onBrand)
+        .barForegroundColor(Palette.onBrand)
 
         // Every move there is, from this page. The stack and the arrivals are
         // read wherever they are printed, so that closure is what a push and

@@ -137,7 +137,7 @@ struct MainWindow: Window {
         // The bar belongs to the navigation arrangement, not one page on it.
         // Its foreground stays white against the gallery accent in both themes.
         .barBackgroundColor(style.accent.color)
-        .barTextColor(Palette.onBrand)
+        .barForegroundColor(Palette.onBrand)
     }
 
     /// The page under everything, for the section the menu chose.
@@ -215,7 +215,7 @@ struct MainWindow: Window {
                 .title("Stack")
                 .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
                 .barBackgroundColor(style.accent.color)
-                .barTextColor(Palette.onBrand)
+                .barForegroundColor(Palette.onBrand)
 
             case .second:
                 return SecondTabPage(nav: nav)
@@ -237,7 +237,7 @@ struct MainWindow: Window {
             .subtitle(bar.subtitle)
             .icon("stateui_mark.png")
             .background(style.accent.color)
-            .foregroundColor(Palette.onBrand)
+            .barForegroundColor(Palette.onBrand)
             .trailingContent {
                 ChromeEnd(bar: bar, nav: nav, catalog: catalog)
             }

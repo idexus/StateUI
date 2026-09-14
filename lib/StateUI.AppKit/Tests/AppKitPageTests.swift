@@ -790,7 +790,7 @@ final class AppKitPageTests: XCTestCase {
             page("home", title: "Home", events: 100),
             details,
         ])
-        stack.properties[.barTextColor] = .color(
+        stack.properties[.barForegroundColor] = .color(
             red: 51, green: 179, blue: 230, alpha: 255)
         renderer.applyForTesting(tree(stack))
 

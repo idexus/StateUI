@@ -72,8 +72,8 @@ final class HostContractTests: XCTestCase {
         XCTAssertFalse(properties.contains("selectedTabColor"))
         XCTAssertFalse(properties.contains("unselectedTabColor"))
         XCTAssertFalse(barSource.contains("func barBackground("))
-        XCTAssertFalse(barSource.contains("func barTextColor("))
-        XCTAssertTrue(navigationSource.contains("func barTextColor("))
+        XCTAssertFalse(barSource.contains("func barForegroundColor("))
+        XCTAssertTrue(navigationSource.contains("func barForegroundColor("))
         XCTAssertFalse(tabSource.contains("func selectedTabColor("))
         XCTAssertFalse(tabSource.contains("func unselectedTabColor("))
     }
@@ -483,6 +483,41 @@ final class HostContractTests: XCTestCase {
     /// a caption - on a button, a menu or toolbar item, a page's tab - with its
     /// `iconPosition` and `iconSpacing`, and `Button(icon:)` when there is no
     /// caption at all.
+    func testABarNamesItsForegroundOnce() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+
+        XCTAssertTrue(properties.isSuperset(of: ["barForegroundColor", "hidesWhenInactive"]))
+        XCTAssertTrue(
+            properties.isDisjoint(with: ["barTextColor", "foregroundColor", "autoHide"]),
+            "a bar's foreground, or when a window hides, keeps a second name")
+
+        for (file, spelling) in [
+            ("Views/NavigationStack.swift", "func barForegroundColor("),
+            ("Views/TitleBar.swift", "func barForegroundColor("),
+            ("Views/Scene.swift", "func hidesWhenInactive("),
+        ] {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            XCTAssertTrue(source.contains(spelling), "\(file) does not say \(spelling)")
+        }
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            for former in ["func barTextColor(", "func foregroundColor(", "func autoHide("] {
+                XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
+            }
+        }
+    }
+
     func testEventsNameWhatHappened() throws {
         let tokenSource = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),

@@ -236,9 +236,9 @@ public struct NavigationStack: Page, BindableObject, BarElement, PageElement, Pa
 }
 
 extension NavigationStack {
-    /// The colour of the navigation title and native navigation and toolbar
-    /// affordances. Destructive actions retain the platform's warning colour.
-    public func barTextColor(_ value: Color) -> NavigationStack {
-        setValue(.barTextColor, value.propValue)
+    /// The colour the bar draws on its background: the navigation title and
+    /// native navigation and toolbar affordances. Destructive actions retain the platform's warning colour.
+    public func barForegroundColor(_ value: Color) -> NavigationStack {
+        setValue(.barForegroundColor, value.propValue)
     }
 }

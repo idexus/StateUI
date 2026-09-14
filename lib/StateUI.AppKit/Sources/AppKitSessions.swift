@@ -698,7 +698,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
             bandTitle.stringValue = window.title
             bandTitle.textColor = Self.foreground(
                 on: band,
-                written: node.visibleBarForeground ?? titleBar?.color(.foregroundColor))
+                written: node.visibleBarForeground ?? titleBar?.color(.barForegroundColor))
             bandTitle.sizeToFit()
             return bandTitle
         }
@@ -720,7 +720,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
             foreground: barColor.map { band in
                 Self.foreground(
                     on: band,
-                    written: titleBar?.color(.foregroundColor) ?? node.visibleBarForeground)
+                    written: titleBar?.color(.barForegroundColor) ?? node.visibleBarForeground)
             })
         synchronizeTabRow(window, node.visibleWindowTabs)
         host?.pageMenusChanged(in: self)
@@ -865,7 +865,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
     private func synchronizeSceneVisibility() {
         guard let node, let window else { return }
-        let shouldHide = node.bool(.autoHide) == true && !sceneIsActive
+        let shouldHide = node.bool(.hidesWhenInactive) == true && !sceneIsActive
 
         guard presented else {
             if shouldHide {

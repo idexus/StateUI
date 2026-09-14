@@ -1548,7 +1548,7 @@ final class MountedNode: NSObject {
 
     /// The colour written for what stands on those bars.
     var visibleBarForeground: NSColor? {
-        visibleNavigationStack?.color(.barTextColor)
+        visibleNavigationStack?.color(.barForegroundColor)
     }
 
     /// The tabs the window shows beneath its toolbar - those of the tabbed
@@ -1861,7 +1861,7 @@ final class MountedNode: NSObject {
         .strokeDashPattern, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
         .strokeMiterLimit, .shape, .cornerRadius, .renderTransform,
         .minimumTrackColor, .maximumTrackColor, .thumbColor, .onColor, .offColor,
-        .progressColor, .barBackgroundColor, .barTextColor, .foregroundColor,
+        .progressColor, .barBackgroundColor, .barForegroundColor,
         .drawable, .value, .progress, .scrollOffset, .isOn, .isEnabled,
         .ignoresInput, .letsInputThrough,
         .automationId, .automationIsInAccessibleTree, .automationExcludedWithChildren,
@@ -3612,8 +3612,8 @@ final class MountedNode: NSObject {
     }
 
     private static let colorProperties: Set<Prop> = [
-        .background, .barBackgroundColor, .barTextColor, .borderColor, .color,
-        .foregroundColor, .indicatorColor, .maximumTrackColor, .minimumTrackColor,
+        .background, .barBackgroundColor, .barForegroundColor, .borderColor, .color,
+        .indicatorColor, .maximumTrackColor, .minimumTrackColor,
         .offColor, .onColor, .placeholderColor, .progressColor, .refreshColor,
         .selectedIndicatorColor, .textColor, .thumbColor, .titleColor,
     ]
@@ -3626,7 +3626,7 @@ final class MountedNode: NSObject {
     private static let recyclingCapacity = 32
 
     private static let booleanProperties: Set<Prop> = [
-        .allowDrop, .autoHide, .canDrag, .floatsOnTop, .growsWithText, .ignoresInput,
+        .allowDrop, .hidesWhenInactive, .canDrag, .floatsOnTop, .growsWithText, .ignoresInput,
         .isAnimating, .clipsContent, .isDestructive,
         .isEnabled, .isMaximizable, .isMinimizable,
         .isOpaque, .isOpen, .isPassword, .isSidebarVisible, .isReadOnly,

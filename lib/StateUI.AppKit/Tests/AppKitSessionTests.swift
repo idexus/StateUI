@@ -257,7 +257,7 @@ final class AppKitSessionTests: XCTestCase {
 
         var tool = window("tool", kind: "notes.inspector", eventBase: 300)
         tool.properties[.windowValue] = .string("selection-7")
-        tool.properties[.autoHide] = .bool(true)
+        tool.properties[.hidesWhenInactive] = .bool(true)
         tool.properties[.floatsOnTop] = .bool(true)
         renderer.applyForTesting(tree(
             scene("1", windows: [window("main"), tool]),
@@ -285,7 +285,7 @@ final class AppKitSessionTests: XCTestCase {
         XCTAssertEqual(reported, [303])
 
         var cleared = HostPatch(id: .manual("tool"), type: .window)
-        cleared.clearedProperties = [.windowValue, .autoHide, .floatsOnTop]
+        cleared.clearedProperties = [.windowValue, .hidesWhenInactive, .floatsOnTop]
         renderer.applyForTesting(tree(
             scene("1", windows: [window("main"), cleared]),
             scene("2", windows: [window("main")])
@@ -300,7 +300,7 @@ final class AppKitSessionTests: XCTestCase {
 
         native.orderFront(nil)
         var hiddenAgain = HostPatch(id: .manual("tool"), type: .window)
-        hiddenAgain.properties[.autoHide] = .bool(true)
+        hiddenAgain.properties[.hidesWhenInactive] = .bool(true)
         renderer.applyForTesting(tree(
             scene("1", windows: [window("main"), hiddenAgain]),
             scene("2", windows: [window("main")])

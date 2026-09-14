@@ -120,7 +120,7 @@ private struct DeterminismWindow: Window {
                 }
                 .title("Home")
                 .barBackgroundColor(Color("#512BD4"))
-                .barTextColor(.white)
+                .barForegroundColor(.white)
 
             case .settings:
                 return SettingsPage()

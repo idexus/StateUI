@@ -114,24 +114,24 @@ application-qualified names because restoration records them.
 
 Every owned window carries the same four host metadata values. `windowType`
 is the group's open and restoration identity; `windowValue` is the encoded
-per-value identity when the group has one. `autoHide` and `floatsOnTop` are
+per-value identity when the group has one. `hidesWhenInactive` and `floatsOnTop` are
 always explicit booleans, so changing either policy updates an existing native
 window without replacing it. The main window carries none of this group
 metadata.
 
 ### Auxiliary-window policy
 
-`autoHide` and `floatsOnTop` describe auxiliary windows, not new scenes:
+`hidesWhenInactive` and `floatsOnTop` describe auxiliary windows, not new scenes:
 
 ```swift quote
 WindowGroup(.inspector) { InspectorWindow() }
-    .autoHide(true)
+    .hidesWhenInactive(true)
     .floatsOnTop(true)
 ```
 
 Both default to `false` and are independent.
 
-- `autoHide(true)` hides each window of the group while another scene of the
+- `hidesWhenInactive(true)` hides each window of the group while another scene of the
   same application is in front, then shows it again with its owning scene. It
   does not close the window or end its `WindowSession`.
 - `floatsOnTop(true)` keeps the group's windows above the application's normal
@@ -142,7 +142,7 @@ Both default to `false` and are independent.
   main windows, not these helpers.
 
 Changing either policy updates windows that are already open. In particular,
-turning `autoHide` off while a window is hidden by its scene makes that window
+turning `hidesWhenInactive` off while a window is hidden by its scene makes that window
 visible again. Window lifecycle reports follow effective visibility: overlapping
 scene and application hiding produces one `stopped`, and `resumed` arrives only
 after neither cause keeps the window hidden.
@@ -428,7 +428,7 @@ separate, adaptive view for a host that supports an authored title area:
 window.titleBar = TitleBar("Notes")
     .subtitle("Personal")
     .icon("notes.png")
-    .foregroundColor(.white)
+    .barForegroundColor(.white)
     .leadingContent { Button("Sidebar") }
     .content { SearchField($query) }
     .trailingContent { Button("Account") }
@@ -436,7 +436,7 @@ window.titleBar = TitleBar("Notes")
 ```
 
 The initializer supplies the title. `subtitle`, `icon`, and
-`foregroundColor` supply title-area values; ordinary view modifiers such as
+`barForegroundColor` supply title-area values; ordinary view modifiers such as
 `background` style the bar itself. The leading, center, and trailing
 closures are identified child subtrees, so controls in them keep ordinary
 state, events, and identity. Returning no child removes that slot; use a

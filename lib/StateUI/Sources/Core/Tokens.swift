@@ -132,7 +132,7 @@ extension Prop {
         .selectedIndex, .currentPage,
         .placement, .priority, .side,
         .region,
-        .windowType, .windowValue, .autoHide, .floatsOnTop,
+        .windowType, .windowValue, .hidesWhenInactive, .floatsOnTop,
     ]
 
     /// The `MotionValues` group contributed by this property's semantics.
@@ -423,17 +423,17 @@ public extension Prop {
     static let absoluteLayoutProportions = Prop("absoluteLayoutProportions")
     static let address = Prop("address")
     static let allowDrop = Prop("allowDrop")
+    static let barForegroundColor = Prop("barForegroundColor")
+    static let hidesWhenInactive = Prop("hidesWhenInactive")
     static let pivotX = Prop("pivotX")
     static let pivotY = Prop("pivotY")
     static let aspect = Prop("aspect")
     static let automationExcludedWithChildren = Prop("automationExcludedWithChildren")
     static let automationId = Prop("automationId")
     static let automationIsInAccessibleTree = Prop("automationIsInAccessibleTree")
-    static let autoHide = Prop("autoHide")
     static let growsWithText = Prop("growsWithText")
     static let background = Prop("background")
     static let barBackgroundColor = Prop("barBackgroundColor")
-    static let barTextColor = Prop("barTextColor")
     static let borderColor = Prop("borderColor")
     static let borderWidth = Prop("borderWidth")
     static let cancelButtonColor = Prop("cancelButtonColor")
@@ -464,7 +464,6 @@ public extension Prop {
     static let fontAutoScalingEnabled = Prop("fontAutoScalingEnabled")
     static let fontFamily = Prop("fontFamily")
     static let fontSize = Prop("fontSize")
-    static let foregroundColor = Prop("foregroundColor")
     static let format = Prop("format")
     static let frame = Prop("frame")
     static let gridColumn = Prop("gridColumn")

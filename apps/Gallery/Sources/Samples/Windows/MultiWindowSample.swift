@@ -48,10 +48,10 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             var windows: Windows {
                 Windows {
                     WindowGroup(.fonts) { FontsWindow() }
-                        .autoHide(style.hidesTools)
+                        .hidesWhenInactive(style.hidesTools)
                         .floatsOnTop(style.floatsTools)
                     WindowGroup(.colours) { ColoursWindow() }
-                        .autoHide(style.hidesTools)
+                        .hidesWhenInactive(style.hidesTools)
                         .floatsOnTop(style.floatsTools)
                     WindowGroup(.debugInspector) { DebugInspector() }
                     WindowGroup(.swatch, for: Int.self) { number in     // one per value,

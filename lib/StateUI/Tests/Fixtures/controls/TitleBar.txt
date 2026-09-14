@@ -1,6 +1,6 @@
 generation 1 names +11
 TitleBar 1 arranged(3)
-  foregroundColor: color FFFFFFFF
+  barForegroundColor: color FFFFFFFF
   icon: string "stateui_mark.png"
   subtitle: string "Fundamentals"
   title: string "StateUI Gallery"

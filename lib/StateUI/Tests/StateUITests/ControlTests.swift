@@ -383,7 +383,7 @@ final class ControlTests: XCTestCase {
                 TitleBar("StateUI Gallery")
                     .subtitle("Fundamentals")
                     .icon("stateui_mark.png")
-                    .foregroundColor(.white)
+                    .barForegroundColor(.white)
                     .leadingContent {
                         Label("lead")
                     }
@@ -779,9 +779,9 @@ final class ControlTests: XCTestCase {
             "rows", "shape", "renderTransform", "transform", "motion", "id",
             "assign", "absoluteLayoutBounds",
             // Tiers no view wears.
-            "barBackgroundColor", "barTextColor", "isScrollEnabled", "isZoomEnabled",
+            "barBackgroundColor", "barForegroundColor", "isScrollEnabled", "isZoomEnabled",
             "isTrafficEnabled", "showsUserLocation", "isDestructive", "title", "subtitle",
-            "foregroundColor", "mapType", "safeAreaEdges",
+            "mapType", "safeAreaEdges",
             // The two-way form IS the binding form, and it is an initializer's.
             "isRefreshing",
         ]

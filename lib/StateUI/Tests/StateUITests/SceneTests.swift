@@ -97,7 +97,7 @@ private struct Session: Scene {
     var windows: Windows {
         Windows {
             WindowGroup(.fonts) { FontsWindow() }
-                .autoHide(true)
+                .hidesWhenInactive(true)
                 .floatsOnTop(true)
             WindowGroup(.document, for: Int.self) { $number in DocumentWindow(number: $number) }
         } main: {
@@ -708,7 +708,7 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(document.id, .manual("document 1"))
         XCTAssertEqual(document.props[.windowType], .name("document"))
         XCTAssertEqual(document.props[.windowValue], .string("42"))
-        XCTAssertEqual(document.props[.autoHide], .bool(false))
+        XCTAssertEqual(document.props[.hidesWhenInactive], .bool(false))
         XCTAssertEqual(document.props[.floatsOnTop], .bool(false))
         XCTAssertEqual(texts(in: document), ["Document 42"])
     }
@@ -758,7 +758,7 @@ final class SceneTests: XCTestCase {
 
         let whole = renders.renderFromScratch(tree())
 
-        XCTAssertEqual(whole.children[0].children.last?.props[.autoHide], .bool(true))
+        XCTAssertEqual(whole.children[0].children.last?.props[.hidesWhenInactive], .bool(true))
         XCTAssertEqual(whole.children[0].children.last?.props[.floatsOnTop], .bool(true))
     }
 

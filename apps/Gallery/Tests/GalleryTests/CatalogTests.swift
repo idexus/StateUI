@@ -1043,7 +1043,7 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(detail.type, "NavigationStack")
         XCTAssertNotNil(detail.props["barBackgroundColor"], "the bar is left to the platform")
-        XCTAssertNotNil(detail.props["barTextColor"])
+        XCTAssertNotNil(detail.props["barForegroundColor"])
         XCTAssertNotNil(detail.events["popped"], "a back gesture would not reach the path")
         XCTAssertEqual(detail.children.count, 1, "the stack opens on its root alone")
     }
@@ -1081,7 +1081,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(prop(bar, .title), .string("StateUI"))
         XCTAssertEqual(prop(bar, .subtitle), .string("Shared"))
         XCTAssertEqual(prop(bar, .icon), .string("stateui_mark.png"))
-        XCTAssertNotNil(prop(bar, .foregroundColor))
+        XCTAssertNotNil(prop(bar, .barForegroundColor))
         XCTAssertNotNil(prop(bar, .background))
         XCTAssertNil(
             bar.children.first { $0.type == "LeadingContent" },

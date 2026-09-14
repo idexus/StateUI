@@ -278,7 +278,7 @@ private extension AppKitTitleBarTests {
         bar.properties[.subtitle] = .string(subtitle)
         bar.properties[.icon] = .string("notes.png")
         if let foreground {
-            bar.properties[.foregroundColor] = .color(
+            bar.properties[.barForegroundColor] = .color(
                 red: foreground.0, green: foreground.1, blue: foreground.2, alpha: 255)
         }
         if let background {

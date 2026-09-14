@@ -189,7 +189,7 @@ public struct Windows {
 ///     Button("Open").onClicked { try await scene.openWindow(.document, value: id) }
 ///
 /// A window of a group belongs to its scene: it closes with the scene, it
-/// may hide while another scene is in front (`autoHide`) or float above the
+/// may hide while another scene is in front (`hidesWhenInactive`) or float above the
 /// application's windows (`floatsOnTop`). A host's scene-listing surfaces
 /// enumerate main windows rather than these owned helpers. Opening another
 /// application scene remains a separate operation. When the platform restores
@@ -274,8 +274,8 @@ public struct WindowGroup {
     /// A host without that native policy leaves the windows visible.
     ///
     ///     WindowGroup(.fonts) { FontsWindow() }
-    ///         .autoHide(true)
-    public func autoHide(_ hides: Bool) -> WindowGroup {
+    ///         .hidesWhenInactive(true)
+    public func hidesWhenInactive(_ hides: Bool) -> WindowGroup {
         var copy = self
         copy.hides = hides
         return copy

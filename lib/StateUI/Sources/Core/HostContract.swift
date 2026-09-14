@@ -132,9 +132,9 @@
             .verticalAlignment, .verticalTextAlignment, .width, .zIndex,
         ]),
         (.adaptive, [
-            .autoHide, .barBackgroundColor, .barTextColor, .cancelButtonColor,
+            .barBackgroundColor, .barForegroundColor, .cancelButtonColor,
             .showsClearButton, .iconPosition, .iconSpacing, .floatsOnTop,
-            .fontAutoScalingEnabled, .foregroundColor,
+            .fontAutoScalingEnabled, .hidesWhenInactive,
             .horizontalScrollBarVisibility, .icon,
             .isDestructive,
             .isMaximizable, .isMinimizable, .inputPurpose,

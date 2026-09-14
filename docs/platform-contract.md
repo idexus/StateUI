@@ -99,7 +99,7 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 The AppKit split view uses `NSSplitViewController`.
 
 Page arrangements expose an optional flat `barBackgroundColor`. A
-`NavigationStack` additionally exposes `barTextColor` for its title and native
+`NavigationStack` additionally exposes `barForegroundColor` for its title and native
 action affordances. A tab selector keeps the toolkit's selected and unselected
 appearance. An unwritten background retains the native material; StateUI does
 not ask a host to rasterize an arbitrary brush into page chrome.
@@ -108,8 +108,8 @@ On AppKit a written bar colour paints the band the title bar and toolbar cover
 over the visible content - a split view's detail, the sidebar keeping its own
 glass - and an authored `TitleBar`'s `background` paints it where no
 arrangement writes one. Text on a painted band is the bar's: the page's title
-in `barTextColor`, the title bar's own title in its `foregroundColor`, each
-falling back to the other and then to white or black by the band's lightness.
+in the arrangement's `barForegroundColor`, the title bar's own title in the
+title bar's, each falling back to the other and then to white or black by the band's lightness.
 On the system's material both keep the system's colours.
 
 `ItemsView` is the reserved public name for the native virtualized collection.
@@ -304,14 +304,14 @@ token in parentheses.
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | `Application` / `Scene` / `Window` | sessions | multiple scenes, owned windows, restoration, focus, close | ✅ | — | — | — | — | — |
 | `Window` | properties | `title`, `x`, `y`, `width`, `height`, `minimumWidth`, `minimumHeight`, `maximumWidth`, `maximumHeight`, `isMaximizable`, `isMinimizable` | ✅ | — | — | — | — | — |
-| `WindowGroup` / `Window` | session metadata | `windowType`, `windowValue`, `autoHide`, `floatsOnTop` | ✅ | — | — | — | — | — |
+| `WindowGroup` / `Window` | session metadata | `windowType`, `windowValue`, `hidesWhenInactive`, `floatsOnTop` | ✅ | — | — | — | — | — |
 | `Window` | handlers | `created`, `activated`, `deactivated`, `stopped`, `resumed`, `destroying` | ✅ | — | — | — | — | — |
 | `Scene` | handlers | `activated`, `deactivated`, `stopped`, `destroying`, `windowClosed`, `windowRestored` | ✅ | — | — | — | — | — |
 | `Page` | properties | `title`, `icon`, `padding`, `background`, `backButtonTitle`, `hasBackButton`, `hasNavigationBar`, `titleView`, toolbar and menu slots | ✅ | — | — | — | — | — |
 | `Page` | handlers | `appearing`, `disappearing`, `navigatingFrom`, `navigatedFrom`, `navigatedTo` | ✅ | — | — | — | — | — |
 | `NavigationStack` | state | bound path and committed native back (`popped`) | ✅ | — | — | — | — | — |
 | `NavigationStack` | properties | `barBackgroundColor` | ✅ | — | — | — | — | — |
-| `NavigationStack` | properties | `barTextColor` | ✅ | — | — | — | — | — |
+| `NavigationStack` | properties | `barForegroundColor` | ✅ | — | — | — | — | — |
 | `TabbedView` | state/events | bound `currentPage` (`currentPageChanged`) | ✅ | — | — | — | — | — |
 | `TabbedView` | properties | `barBackgroundColor`; native selected/unselected appearance | ✅ | — | — | — | — | — |
 | `SplitView` | state/events | bound `isSidebarVisible` (`isSidebarVisibleChanged`) | ✅ | — | — | — | — | — |
@@ -320,7 +320,7 @@ token in parentheses.
 | menu items | properties | `text`, `icon`, `isDestructive`, `isEnabled` | ✅ | — | — | — | — | — |
 | toolbar items | properties | `text`, `icon`, `isDestructive`, `isEnabled`, `placement`, `priority` | ✅ | — | — | — | — | — |
 | menu / toolbar items | handlers | `onClicked` (`clicked`) | ✅ | — | — | — | — | — |
-| `TitleBar` | properties/slots | `title`, `subtitle`, `icon`, `foregroundColor`, `background`, leading/content/trailing slots | ✅ | — | — | — | — | — |
+| `TitleBar` | properties/slots | `title`, `subtitle`, `icon`, `barForegroundColor`, `background`, leading/content/trailing slots | ✅ | — | — | — | — | — |
 | stack layouts | properties | `padding`, `spacing` | ✅ | — | — | — | — | — |
 | `Grid` | properties | `rows`, `columns`, `rowSpacing`, `columnSpacing`, child `gridRow`, `gridColumn`, `gridRowSpan`, `gridColumnSpan` | — | — | — | — | — | — |
 | `AbsoluteLayout` | properties | child `absoluteLayoutBounds`, `absoluteLayoutProportions` | — | — | — | — | — | — |
@@ -413,16 +413,16 @@ host status.
 ### Properties
 
 `absoluteLayoutBounds`, `absoluteLayoutProportions`, `address`, `allowDrop`,
-`aspect`, `autoHide`, `automationExcludedWithChildren`, `automationId`,
+`aspect`, `automationExcludedWithChildren`, `automationId`,
 `automationIsInAccessibleTree`, `backButtonTitle`, `background`,
-`barBackgroundColor`, `barTextColor`, `borderColor`, `borderWidth`,
+`barBackgroundColor`, `barForegroundColor`, `borderColor`, `borderWidth`,
 `cancelButtonColor`, `canDrag`, `characterSpacing`, `clipsContent`, `color`,
 `columns`, `columnSpacing`, `content`, `cornerRadius`, `count`, `currentPage`,
 `cursorPosition`, `data`, `date`, `dragText`, `drawable`, `fill`, `fillRule`,
 `floatsOnTop`, `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`,
-`fontSize`, `foregroundColor`, `format`, `frame`, `gridColumn`,
-`gridColumnSpan`, `gridRow`, `gridRowSpan`, `group`, `groupName`,
-`growsWithText`, `hasBackButton`, `hasNavigationBar`, `height`, `hideSingle`,
+`fontSize`, `format`, `frame`, `gridColumn`, `gridColumnSpan`, `gridRow`,
+`gridRowSpan`, `group`, `groupName`, `growsWithText`, `hasBackButton`,
+`hasNavigationBar`, `height`, `hideSingle`, `hidesWhenInactive`,
 `horizontalAlignment`, `horizontalScrollBarVisibility`,
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,

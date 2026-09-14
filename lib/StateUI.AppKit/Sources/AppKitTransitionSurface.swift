@@ -160,11 +160,11 @@ enum AppKitTransitionSurface {
     private static let sliderProperties: Set<Prop> = [.value, .minimumTrackColor]
 
     private static let navigationProperties: Set<Prop> = [
-        .barBackgroundColor, .barTextColor,
+        .barBackgroundColor, .barForegroundColor,
     ]
 
     private static let titleBarProperties: Set<Prop> = [
-        .background, .foregroundColor,
+        .background, .barForegroundColor,
     ]
 
     private static let shapeProperties: Set<Prop> = [

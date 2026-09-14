@@ -552,7 +552,7 @@ struct SceneElement: Element {
             // taken off a window it was on.
             window.props[.windowType] = .name(opened.type.name)
             window.props[.windowValue] = opened.text.map { .string($0) }
-            window.props[.autoHide] = .bool(group.hides)
+            window.props[.hidesWhenInactive] = .bool(group.hides)
             window.props[.floatsOnTop] = .bool(group.floats)
 
             children.append(window)
