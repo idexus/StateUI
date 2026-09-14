@@ -432,22 +432,9 @@ public class ControlTests
             Assert.Equal(ScrollBarVisibility.Never, scroll.VerticalScrollBarVisibility);
             Assert.Equal(ScrollBarVisibility.Always, scroll.HorizontalScrollBarVisibility);
 
-            // And the grid it may come to rest on, which the platform hooks
-            // round a lifted finger's predicted stop to - and which the item
-            // report counts in.
-            Assert.Equal(80.0, scroll.GetValue(StateUIRenderer.SnapIntervalProperty));
-            Assert.Equal(10.0, scroll.GetValue(StateUIRenderer.SnapFromProperty));
-
-            // And how much of the platform's own throw a release keeps, and the
-            // most points of that grid one release may cross.
-            Assert.Equal(0.5, scroll.GetValue(StateUIRenderer.ScrollMomentumProperty));
-            Assert.Equal(1.0, scroll.GetValue(StateUIRenderer.SnapsAtMostProperty));
-
-            // The grid is 10, 90, 170 …, so 170 is item 2 and it is named from
-            // the halfway mark before it - the same rounding that chooses where
-            // a movement lands.
-            ((IScrollViewController)scroll).SetScrolledPosition(140, 0);
-            Assert.Contains((2, "2"), host.Dispatched);
+            // And its movement, which a handler for its rest and a state
+            // carrying its offset each ask for - this one has both.
+            Assert.NotNull(scroll.GetValue(StateUIRenderer.ScrollMovementProperty));
 
             // A LAID OUT scroller carries no Clip of its own anywhere but
             // Windows. MEASURED 2026-08-13 on a gallery that showed one

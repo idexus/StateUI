@@ -63,16 +63,24 @@ internal static class TestDispatcher
     }
 
     /// <summary>
-    /// Holds dispatched jobs instead of running them, so a test can see a
-    /// DEFERRED report land after the render that caused it.
+    /// Holds dispatched jobs instead of running them - a delayed one too - so
+    /// a test can see a DEFERRED report land after the render that caused it,
+    /// or look at what stands while a wait has not yet run out.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// Inline is what every other test wants - a job that runs where it is
     /// dispatched is one less thing to drive. But a report deferred a turn is
     /// the whole point in one place: a control enters Disabled inside a render,
     /// where the renderer answers no events at all, so running the job inline
     /// would drop it exactly as it did before it was deferred. Test classes do
     /// not run in parallel here, so one static is enough.
+    /// </para>
+    /// <para>
+    /// A delayed job joins the same queue, in the order it was dispatched: a
+    /// test holding one is asking what is true BEFORE the wait runs out, and
+    /// drains when it wants the wait over.
+    /// </para>
     /// </remarks>
     internal static Queue<Action>? Held { get; private set; }
 
@@ -120,11 +128,7 @@ internal static class TestDispatcher
             return true;
         }
 
-        public bool DispatchDelayed(TimeSpan delay, Action action)
-        {
-            action();
-            return true;
-        }
+        public bool DispatchDelayed(TimeSpan delay, Action action) => Dispatch(action);
 
         public IDispatcherTimer CreateTimer() => new Timer();
     }

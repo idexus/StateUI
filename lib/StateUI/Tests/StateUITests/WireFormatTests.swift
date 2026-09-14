@@ -131,15 +131,17 @@ final class WireFormatTests: XCTestCase {
     }
 
     /// Every name the Swift side can send is a member on the MAUI host's side,
-    /// spelled the same.
+    /// spelled the same - and every member there is a name this side sends.
     ///
     /// The one guard that reads both languages, and the only thing that can:
     /// a name leaves here as a token and arrives there as a lookup, so a name
     /// with no member on the far side is not a compile error anywhere - it is
     /// a property that quietly does nothing, or an act that answers "unknown
-    /// command" to a handler that was awaiting it. The host maps a name to a
-    /// member by camelCasing the member, capitalizing it for a node type.
-    func testEveryTokenHasAMemberOnTheOtherSide() throws {
+    /// command" to a handler that was awaiting it. The other way round, a
+    /// member left behind by a token that was removed is a capability the host
+    /// goes on realizing for nothing. The host maps a name to a member by
+    /// camelCasing the member, capitalizing it for a node type.
+    func testTheTokensAndTheHostsMembersAreTheSameNames() throws {
         let vocabularies = [
             ("NodeType", "Protocol/SwiftNodeType.cs"),
             ("Prop", "Protocol/SwiftProp.cs"),
@@ -149,6 +151,7 @@ final class WireFormatTests: XCTestCase {
 
         let host = try Fixtures.mauiSources()
         var missing: [String] = []
+        var stranded: [String] = []
         var checked = 0
 
         for (vocabulary, file) in vocabularies {
@@ -173,10 +176,16 @@ final class WireFormatTests: XCTestCase {
             missing += declared
                 .filter { !members.contains($0.capitalizedFirst) }
                 .map { "\(vocabulary).\($0)" }
+
+            // `None` is each enumeration's zero - the absence of a member,
+            // which no token names.
+            let named = Set(declared.map(\.capitalizedFirst)).union(["None"])
+            stranded += members.subtracting(named).sorted().map { "\(vocabulary).\($0)" }
         }
 
         XCTAssertGreaterThan(checked, 300, "the scan read almost nothing")
         XCTAssertEqual(missing, [], "declared in Core/Tokens.swift with no member in the MAUI host")
+        XCTAssertEqual(stranded, [], "a member in the MAUI host for a name Core/Tokens.swift does not declare")
     }
 
     /// Every act the MAUI host has a MEMBER for also has an ARM in `Perform`.

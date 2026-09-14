@@ -18,11 +18,7 @@ final class AppKitScrollViewTests: XCTestCase {
             padding: NSEdgeInsets(top: 3, left: 5, bottom: 7, right: 11),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 2,
-            offset: nil,
-            snapInterval: 0,
-            snapFrom: 0,
-            momentum: 1,
-            snapsAtMost: 0)
+            offset: nil)
 
         XCTAssertEqual(scroll.intrinsicContentSize.width, 516, accuracy: 0.001)
         XCTAssertEqual(scroll.intrinsicContentSize.height, 46, accuracy: 0.001)
@@ -62,11 +58,7 @@ final class AppKitScrollViewTests: XCTestCase {
             padding: NSEdgeInsets(),
             verticalBarVisibility: 0,
             horizontalBarVisibility: 0,
-            offset: NSPoint(x: 0, y: 160),
-            snapInterval: 0,
-            snapFrom: 0,
-            momentum: 1,
-            snapsAtMost: 0)
+            offset: NSPoint(x: 0, y: 160))
         scroll.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(scroll.offset.y, 160, accuracy: 0.001)
@@ -93,11 +85,7 @@ final class AppKitScrollViewTests: XCTestCase {
             padding: NSEdgeInsets(),
             verticalBarVisibility: 0,
             horizontalBarVisibility: 0,
-            offset: nil,
-            snapInterval: 0,
-            snapFrom: 0,
-            momentum: 1,
-            snapsAtMost: 0)
+            offset: nil)
         scroll.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(scroll.offset, .zero)
@@ -111,11 +99,7 @@ final class AppKitScrollViewTests: XCTestCase {
             padding: NSEdgeInsets(top: 2, left: 3, bottom: 4, right: 5),
             verticalBarVisibility: 1,
             horizontalBarVisibility: 2,
-            offset: nil,
-            snapInterval: 0,
-            snapFrom: 0,
-            momentum: 1,
-            snapsAtMost: 0)
+            offset: nil)
 
         XCTAssertFalse(scroll.hasVerticalScroller)
         XCTAssertFalse(scroll.hasHorizontalScroller)
@@ -161,11 +145,7 @@ final class AppKitScrollViewTests: XCTestCase {
             padding: NSEdgeInsets(),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 0,
-            offset: nil,
-            snapInterval: 0,
-            snapFrom: 0,
-            momentum: 1,
-            snapsAtMost: 0)
+            offset: nil)
         page.addSubview(inner)
 
         let wheel = try XCTUnwrap(CGEvent(
@@ -237,11 +217,7 @@ final class AppKitScrollViewTests: XCTestCase {
             padding: NSEdgeInsets(),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 0,
-            offset: nil,
-            snapInterval: 0,
-            snapFrom: 0,
-            momentum: 1,
-            snapsAtMost: 0)
+            offset: nil)
         page.addSubview(inner)
         return (outer, inner)
     }
@@ -267,64 +243,7 @@ final class AppKitScrollViewTests: XCTestCase {
     }
 
     @MainActor
-    func testSnapMomentumAndPointLimitSettleOnOneDeterministicTarget() {
-        let scroll = AppKitScrollView()
-        scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 80)
-        scroll.setItems([AppKitLayoutItem(
-            view: FixedScrollTestView(width: 1_000, height: 40))])
-        scroll.apply(
-            orientation: ScrollOrientation.horizontal.rawValue,
-            padding: NSEdgeInsets(),
-            verticalBarVisibility: 2,
-            horizontalBarVisibility: 0,
-            offset: nil,
-            snapInterval: 100,
-            snapFrom: 0,
-            momentum: 0.5,
-            snapsAtMost: 1)
-        scroll.layoutSubtreeIfNeeded()
-        var stopped = 0
-        scroll.onScrollStopped = { stopped += 1 }
-
-        scroll.beginMovementForTesting()
-        scroll.moveAsReaderForTesting(to: NSPoint(x: 460, y: 0))
-        scroll.settleForTesting()
-        scroll.frame(now: 0)
-
-        XCTAssertEqual(scroll.offset.x, 100, accuracy: 0.001)
-        XCTAssertEqual(stopped, 1)
-    }
-
-    @MainActor
-    func testADiscreteWheelTurnAdvancesOnePointWithoutMomentumShortening() {
-        let scroll = AppKitScrollView()
-        scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 80)
-        scroll.setItems([AppKitLayoutItem(
-            view: FixedScrollTestView(width: 1_000, height: 40))])
-        scroll.apply(
-            orientation: ScrollOrientation.horizontal.rawValue,
-            padding: NSEdgeInsets(),
-            verticalBarVisibility: 2,
-            horizontalBarVisibility: 0,
-            offset: nil,
-            snapInterval: 100,
-            snapFrom: 0,
-            momentum: 0,
-            snapsAtMost: 1)
-        scroll.layoutSubtreeIfNeeded()
-        var stopped = 0
-        scroll.onScrollStopped = { stopped += 1 }
-
-        XCTAssertTrue(scroll.stepDiscreteWheelForTesting(by: 1))
-        scroll.settleForTesting()
-        scroll.frame(now: 0)
-
-        XCTAssertEqual(scroll.offset.x, 100, accuracy: 0.001)
-        XCTAssertEqual(stopped, 1)
-    }
-
-    @MainActor
-    func testHostPatchReportsChangedAxesNearestItemAndRestExactlyOnce() throws {
+    func testHostPatchReportsChangedAxesAndRestExactlyOnce() throws {
         var reports: [(Int32, [HostValue])] = []
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
@@ -336,12 +255,10 @@ final class AppKitScrollViewTests: XCTestCase {
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.properties = [
             .orientation: .enumeration(2),
-            .snapInterval: .number(100),
         ]
         scroll.events = .replace([
             .scrollXChanged: 10,
             .scrollYChanged: 11,
-            .snapItemChanged: 12,
             .scrollStopped: 13,
         ])
         scroll.children = .arranged([content])
@@ -355,10 +272,10 @@ final class AppKitScrollViewTests: XCTestCase {
         native.beginMovementForTesting()
         native.moveAsReaderForTesting(to: NSPoint(x: 120, y: 40))
         renderer.displayFrameForTesting()
-        native.settleForTesting()
+        native.restForTesting()
         renderer.displayFrameForTesting()
 
-        XCTAssertEqual(reports.map(\.0), [10, 11, 12, 10, 13])
+        XCTAssertEqual(reports.map(\.0), [10, 11, 13])
         XCTAssertEqual(reports[0].1, [.number(120)])
         XCTAssertEqual(reports[1].1, [.number(40)])
         XCTAssertEqual(reports.last?.1, [])
@@ -406,38 +323,6 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(scrollers.map { $0.autohidesScrollers }, [true, true, false])
     }
 
-    /// A released scroll carries the scroller's momentum fraction of the way
-    /// the reader sent it: all of it by default, half of it for a momentum
-    /// of one half.
-    @MainActor
-    func testAScrollersMomentumScalesWhereAReleaseComesToRest() throws {
-        let renderer = AppKitRenderer.running {
-            VStack {
-                ScrollView { ColorBox(.red).height(1_000) }
-                    .width(100)
-                    .height(100)
-                ScrollView { ColorBox(.red).height(1_000) }
-                    .momentum(0.5)
-                    .width(100)
-                    .height(100)
-            }
-        }
-        defer { renderer.closeForTesting() }
-        let scrollers = renderer.nativeViews(AppKitScrollView.self)
-
-        let rests = scrollers.map { scroller -> CGFloat in
-            scroller.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
-            scroller.layoutSubtreeIfNeeded()
-            scroller.beginMovementForTesting()
-            scroller.moveAsReaderForTesting(to: NSPoint(x: 0, y: 300))
-            scroller.settleForTesting()
-            return scroller.offset.y
-        }
-
-        XCTAssertEqual(rests, [300, 150])
-    }
-
-
     /// A run that answers a tap on one part of the room is still as long as the
     /// room plus its reach, so a trackpad or a wheel has somewhere to scroll it:
     /// its content is the run's layout, sized by the length it was given rather
@@ -463,9 +348,9 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(scroller.documentView?.frame.width ?? 0, room + 300, accuracy: 1)
     }
 
-    /// A push of the trackpad turns a run of cards by what it pushed: a pointer
-    /// keeps the whole of its gesture, so a push past half a card lands on the
-    /// next one rather than rounding back to where it began.
+    /// A push of the trackpad turns a run of cards by what it pushed: past half
+    /// a card, the next card is named as the run passes halfway, and when the
+    /// scroller comes to rest the run travels on to it rather than back.
     @MainActor
     func testATrackpadPushPastHalfACardTurnsTheRun() throws {
         let positions = Received<Int>()
@@ -490,9 +375,10 @@ final class AppKitScrollViewTests: XCTestCase {
         // goes 80 - past half a turn, short of a whole one.
         scroller.beginMovementForTesting()
         scroller.moveAsReaderForTesting(to: NSPoint(x: 80, y: 0))
-        scroller.settleForTesting()
-        let settled = Date(timeIntervalSinceNow: 1)
-        while positions.values.last != 1, Date() < settled {
+        scroller.restForTesting()
+        let settled = Date(timeIntervalSinceNow: 2)
+        while positions.values.last != 1 || abs(scroller.contentView.bounds.origin.x - 105.6) > 0.5,
+              Date() < settled {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
             renderer.displayFrameForTesting()
             renderer.pump()
@@ -554,70 +440,6 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertFalse(renderer.displayLinkRunningForTesting, "a scroller that stands lets the clock go")
     }
 
-    /// A strip 100 wide over 2000 of content, on a grid of 160.
-    @MainActor
-    private func snappingStrip() -> AppKitScrollView {
-        let scroll = AppKitScrollView()
-        scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 80)
-        scroll.setItems([AppKitLayoutItem(view: FixedScrollTestView(width: 2_000, height: 40))])
-        scroll.apply(
-            orientation: ScrollOrientation.horizontal.rawValue,
-            padding: NSEdgeInsets(),
-            verticalBarVisibility: 2,
-            horizontalBarVisibility: 0,
-            offset: nil,
-            snapInterval: 160,
-            snapFrom: 0,
-            momentum: 1,
-            snapsAtMost: 0)
-        scroll.layoutSubtreeIfNeeded()
-        return scroll
-    }
-
-    /// A release at 1250 points a second - 20 points every 16 ms, the content
-    /// moving on - and the first event of the momentum the platform starts.
-    private func trackpadThrow() throws -> [NSEvent] {
-        [
-            try wheel(dy: 0, dx: 0, phase: 1, momentum: 0, at: 1.000),
-            try wheel(dy: 0, dx: -20, phase: 2, momentum: 0, at: 1.016),
-            try wheel(dy: 0, dx: -20, phase: 2, momentum: 0, at: 1.032),
-            try wheel(dy: 0, dx: -20, phase: 2, momentum: 0, at: 1.048),
-            try wheel(dy: 0, dx: -20, phase: 2, momentum: 0, at: 1.064),
-            try wheel(dy: 0, dx: 0, phase: 4, momentum: 0, at: 1.070),
-            try wheel(dy: 0, dx: -30, phase: 0, momentum: 1, at: 1.080),
-        ]
-    }
-
-    /// A trackpad throw is aimed where the platform decides - the moment its
-    /// momentum begins - at the grid point the release was going for, half a
-    /// second of its speed on; the platform's own momentum after it moves
-    /// nothing. One movement, onto the grid.
-    @MainActor
-    func testATrackpadThrowIsAimedAtTheGridWhenItsMomentumBegins() throws {
-        let scroll = snappingStrip()
-        for event in try trackpadThrow() { scroll.scrollWheel(with: event) }
-
-        let released = scroll.offset.x
-        let expected = ((released + 625) / 160).rounded() * 160
-        XCTAssertEqual(scroll.aimedThrowForTesting?.x ?? -1, expected, accuracy: 0.5)
-
-        try scroll.scrollWheel(with: wheel(dy: 0, dx: -30, phase: 0, momentum: 2, at: 1.096))
-        XCTAssertEqual(scroll.aimedThrowForTesting?.x ?? -1, expected, accuracy: 0.5,
-                       "the platform's momentum does not move a throw of ours")
-    }
-
-    /// The reader outranks a movement of this side's own: a gesture that begins
-    /// while a throw is going to the grid stops it where it stands.
-    @MainActor
-    func testANewGestureStopsAThrowThatIsGoingToTheGrid() throws {
-        let scroll = snappingStrip()
-        for event in try trackpadThrow() { scroll.scrollWheel(with: event) }
-        XCTAssertNotNil(scroll.aimedThrowForTesting)
-
-        try scroll.scrollWheel(with: wheel(dy: 0, dx: 0, phase: 1, momentum: 0, at: 1.200))
-
-        XCTAssertNil(scroll.aimedThrowForTesting)
-    }
 }
 
 @MainActor

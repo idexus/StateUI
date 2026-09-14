@@ -331,7 +331,7 @@ Every control, and every part an application, its windows and its pages are made
 | [HStack](controls/HStack.md) | 68 | 22 ✅ · 2 ✅* |  |  |  |  |  |
 | [Grid](controls/Grid.md) | 71 | 20 ✅ · 2 ✅* |  |  |  |  |  |
 | [AbsoluteLayout](controls/AbsoluteLayout.md) | 67 | 20 ✅ · 2 ✅* |  |  |  |  |  |
-| [ScrollView](controls/ScrollView.md) | 73 | 29 ✅ · 2 ✅* |  |  |  |  |  |
+| [ScrollView](controls/ScrollView.md) | 68 | 24 ✅ · 2 ✅* |  |  |  |  |  |
 | [RefreshView](controls/RefreshView.md) | 67 |  |  |  |  |  |  |
 | [SwipeView](controls/SwipeView.md) | 68 |  |  |  |  |  |  |
 | [Map](controls/Map.md) | 75 |  |  |  |  |  |  |
@@ -389,8 +389,8 @@ token in parentheses.
 | `Grid` | properties | `rows`, `columns`, `rowSpacing`, `columnSpacing`, child `gridRow`, `gridColumn`, `gridRowSpan`, `gridColumnSpan` | — | — | — | — | — | — |
 | `AbsoluteLayout` | properties | child `absoluteLayoutBounds`, `absoluteLayoutProportions` | — | — | — | — | — | — |
 | layouts | properties | `clipsContent`, `avoidsSafeArea` | — | — | — | — | — | — |
-| `ScrollView` | properties | `orientation`, `verticalScrollBarVisibility`, `horizontalScrollBarVisibility`, `scrollOffset`, `snapInterval`, `snapFrom`, `snapsAtMost`, `scrollMomentum` | ✅ | — | — | — | — | — |
-| `ScrollView` | events | `scrollXChanged`, `scrollYChanged`, `snapItemChanged`, `onScrollStopped` (`scrollStopped`) | ✅ | — | — | — | — | — |
+| `ScrollView` | properties | `orientation`, `verticalScrollBarVisibility`, `horizontalScrollBarVisibility`, `scrollOffset` | ✅ | — | — | — | — | — |
+| `ScrollView` | events | `scrollXChanged`, `scrollYChanged`, `onScrollStopped` (`scrollStopped`) | ✅ | — | — | — | — | — |
 | `Border` | properties | `stroke`, `strokeWidth`, `shape`, `background` | — | — | — | — | — | — |
 | `Border` | properties | `strokeDashPattern`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit` | — | — | — | — | — | — |
 | `Label` / `TextSpan` | properties | `text`, `textColor`, `characterSpacing`, `textCase`, `fontSize`, `fontFamily`, `fontAttributes`, `lineBreak`, `lineHeight`, `maximumLines`, `textDecorations`, `spans` | ✅ | — | — | — | — | — |
@@ -503,10 +503,10 @@ host status.
 `panYChannel`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`,
 `placement`, `points`, `position`, `priority`, `progress`, `region`,
 `renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
-`rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollMomentum`, `scrollOffset`,
+`rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`,
 `scrollStep`, `selectedIndex`, `selectedIndicatorColor`, `selectionLength`,
-`shape`, `showsClearButton`, `showsUserLocation`, `side`, `snapFrom`,
-`snapInterval`, `snapsAtMost`, `source`, `spacing`, `step`, `stroke`,
+`shape`, `showsClearButton`, `showsUserLocation`, `side`,
+`source`, `spacing`, `step`, `stroke`,
 `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`,
 `strokeMiterLimit`, `strokeWidth`, `style`, `subtitle`,
 `swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `tapCount`,
@@ -529,7 +529,7 @@ host status.
 `pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
 `pointerReleased`, `popped`, `pressed`, `processTerminated`,
 `refreshRequested`, `released`, `resumed`, `scrollStopped`, `scrollXChanged`,
-`scrollYChanged`, `selectedIndexChanged`, `snapItemChanged`, `stopped`,
+`scrollYChanged`, `selectedIndexChanged`, `stopped`,
 `submitted`, `swipeChanging`, `swiped`, `swipeEnded`, `swipeStarted`, `tapped`,
 `textChanged`, `timeChanged`, `toggled`, `valueChanged`, `visualStateChanged`,
 `windowClosed`, `windowRestored`.

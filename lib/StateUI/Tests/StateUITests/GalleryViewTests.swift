@@ -468,61 +468,106 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(shade(of: -2), 0, accuracy: 0.001, "and below is none of it")
     }
 
-   func testTheRunIsAsLongAsTheCardsItHas() throws {
-        let renders = Renders()
-        let showing = laid(renders, { self.gallery(4).body })
-        let scroller = try XCTUnwrap(find(.scrollView, in: showing.first))
+    /// The distance a card is worth along the run: the content is the room
+    /// plus that much per card past the first.
+    private func travel(_ patch: HostPatch, cards: Int) -> Double? {
+        guard let width = find(.colorBox, in: patch)?.props[.width]?.number else { return nil }
 
-        // THE RULE RATHER THAN THE NUMBER. How far a hand travels for a card
-        // is the only thing that decides how sensitive the run is - what a
-        // device sends is a constant, so a longer run is fewer cards a push -
-        // and it is a value somebody tunes. What must never drift is that the
-        // content and the grid are the SAME number: a run whose length says
-        // one distance a card while its grid says another lands off the grid
-        // at every card and is dragged back onto it, which a reader sees as a
-        // deck that will not sit still.
-        let step = try XCTUnwrap(scroller.props[.snapInterval])
+        return (width - room.width) / Double(cards - 1)
+    }
 
-        guard case .number(let travel) = step else {
-            return XCTFail("the run named no grid")
+    /// THE RUN IS AS LONG AS THE CARDS IT HAS: the room, and the same travel
+    /// for every card past the first - so what a device sends buys the same part
+    /// of a card wherever the run stands.
+    func testTheRunIsAsLongAsTheCardsItHas() throws {
+        func length(_ count: Int) throws -> Double {
+            let showing = laid(Renders(), { self.gallery(count).body })
+
+            return try XCTUnwrap(find(.colorBox, in: showing.patch)?.props[.width]?.number)
         }
 
-        XCTAssertGreaterThan(travel, 0, "a run of cards is snapped to its cards")
-        XCTAssertEqual(
-            find(.colorBox, in: showing.patch)?.props[.width],
-            .number(352 + (3 * travel)),
-            "the content is the room plus one card's travel per card past the first")
+        let two = try length(2)
+        let three = try length(3)
+        let four = try length(4)
 
-        // AND A RUN OF CARDS KEEPS HALF THE PLATFORM'S THROW: a flick
-        // meant for a long list carries most of a deck, which is past whatever
-        // the reader was aiming at.
-        XCTAssertEqual(scroller.props[.scrollMomentum], .number(0.5))
+        XCTAssertGreaterThan(three - two, 0, "a card past the first adds a card's travel")
+        XCTAssertEqual(four - three, three - two, accuracy: 0.001, "and every card adds the same")
+        XCTAssertEqual(two - (three - two), room.width, accuracy: 0.001, "on top of the room")
     }
 
-    /// The scroller names the card it is nearest, and that is the position.
-    func testTheScrollerWritesTheCardItSettledOn() throws {
+    /// The run NAMES the card it passes: as the offset crosses halfway between
+    /// two cards the position is the nearer one, a frame between two names
+    /// nothing new, and a card the run cannot reach is not one it names.
+    func testTheRunNamesTheCardItPasses() throws {
         let renders = Renders()
         let shown = State(0)
-        let tree = { self.gallery(5).position(shown.projectedValue).body }
-        let showing = laid(renders, tree).first
+        let showing = laid(renders, { self.gallery(5).position(shown.projectedValue).body })
+        let offset = try XCTUnwrap(find(.scrollView, in: showing.first)?.driven?[.scrollOffset]?.state)
+        let step = try XCTUnwrap(travel(showing.patch, cards: 5))
+        let board = Renderer.shared.board(for: .display)
 
-        let scroller = try XCTUnwrap(find(.scrollView, in: showing))
-        let report = try XCTUnwrap(scroller.events?[.snapItemChanged])
+        // THE FIRST CYCLE OF ALL LATCHES rather than runs.
+        _ = board.cycle(now: turned, reducesMotion: false)
 
-        XCTAssertTrue(renders.fire(report, with: [.number(3)]))
+        func scroll(to cards: Double) {
+            slid(offset, to: Point(cards * step, 0))
+            turned += 16
+            _ = board.cycle(now: turned, reducesMotion: false)
+        }
+
+        scroll(to: 2.6)
         XCTAssertEqual(shown.wrappedValue, 3)
 
-        // And a card the run cannot reach is not one it settled on.
-        XCTAssertTrue(renders.fire(report, with: [.number(9)]))
-        XCTAssertEqual(shown.wrappedValue, 4)
+        scroll(to: 2.9)
+        XCTAssertEqual(shown.wrappedValue, 3, "a frame between two cards names nothing new")
+
+        scroll(to: 0.4)
+        XCTAssertEqual(shown.wrappedValue, 0)
+
+        scroll(to: 9)
+        XCTAssertEqual(shown.wrappedValue, 4, "a card past the last is the last")
     }
 
-    /// Holding a swipe to one card reaches the scroller.
-    func testHoldingASwipeToOneCardReachesTheScroller() throws {
+    /// A run that COMES TO REST between two cards travels on to the nearer: its
+    /// scroller's stop is heard, and the offset is SENT to that card - a
+    /// destination, so the host walks the rest of the way from where the run
+    /// stands. A run already on a card is left there.
+    func testARunAtRestBetweenTwoCardsTravelsOnToTheNearer() throws {
         let renders = Renders()
-        let showing = laid(renders, { self.gallery(5).snapsAtMost(1).body }).first
+        let showing = laid(renders, { self.gallery(5).body })
+        let scroller = try XCTUnwrap(find(.scrollView, in: showing.first))
+        let offset = try XCTUnwrap(scroller.driven?[.scrollOffset]?.state)
+        let stopped = try XCTUnwrap(scroller.events?[.scrollStopped])
+        let step = try XCTUnwrap(travel(showing.patch, cards: 5))
+        let board = Renderer.shared.board(for: .display)
 
-        XCTAssertEqual(find(.scrollView, in: showing)?.props[.snapsAtMost], .number(1))
+        // THE FIRST CYCLE OF ALL LATCHES rather than runs.
+        _ = board.cycle(now: turned, reducesMotion: false)
+
+        // The reader leaves the run there, a cycle takes the report in, and
+        // the scroller says it has stopped.
+        func rest(at cards: Double) throws -> JourneyLanes<Point> {
+            slid(offset, to: Point(cards * step, 0))
+            turned += 16
+            _ = board.cycle(now: turned, reducesMotion: false)
+
+            XCTAssertTrue(renders.fire(stopped))
+
+            // And a cycle takes the write out to where the host reads it.
+            turned += 16
+            _ = board.cycle(now: turned, reducesMotion: false)
+
+            return try XCTUnwrap(standing(offset, as: JourneyLanes<Point>.self))
+        }
+
+        let sent = try rest(at: 1.4)
+
+        XCTAssertEqual(sent.destination.x, step, accuracy: 0.001, "the nearer card")
+        XCTAssertEqual(sent.value.x, 1.4 * step, accuracy: 0.001, "from where the run stands")
+
+        let left = try rest(at: 3)
+
+        XCTAssertEqual(left.destination.x, 3 * step, accuracy: 0.001, "a run on a card stays")
     }
 
     /// A tap is answered inside the scroller, which is what lies over the cards

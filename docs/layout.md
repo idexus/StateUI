@@ -198,23 +198,23 @@ scrolling reports the standing offset into the same state. The state is a
 `Journey`, so `offset` is its destination and `$offset.journey.value` is its
 current host-frame position.
 
-Optional snapping is a property of that same viewport:
+Where a scroller comes to rest is the platform's, with the platform's own
+deceleration. `onScrollStopped` runs once a movement has ended, and a write to
+the offset from there carries the viewport on to a resting place of the
+author's own:
 
 ```swift quote
 ScrollView { cards }
     .orientation(.horizontal)
     .scrollOffset($offset)
-    .snapInterval(320, from: 0)
-    .snapItem($selectedCard)
-    .snapsAtMost(1)
-    .momentum(0.5)
-    .onScrollStopped { settled = true }
+    .onScrollStopped {
+        let card = ($offset.journey.value.x / 320).rounded()
+        offset = Point(card * 320, 0)
+    }
 ```
 
-`snapInterval` defines the legal resting grid. `snapItem` reports the nearest
-grid index. `snapsAtMost` limits how many points one release can cross, and
-`momentum` scales the projected throw. These are StateUI scroll semantics; the
-host integrates them with native input and deceleration.
+The write is a destination, so the host carries the viewport there from where
+it stands. `GalleryView` comes to rest on its cards the same way.
 
 A scroller must own a bounded viewport. Putting it in a parent that measures
 it to the full content length leaves nothing to scroll. Avoid nesting two
@@ -250,8 +250,6 @@ ScrollReader(across: Double(cards.count - 1) * 90) {
         }
 }
 .scrollOffset($offset)
-.snapInterval(90)
-.snapItem($selectedCard)
 ```
 
 `across` and `down` are the distances the run may travel beyond the measured
@@ -263,10 +261,8 @@ The rest of the contract follows from that ownership:
 - `.scrollOffset($offset)` is the two-way offset. A program write moves the native
   scroller; input reports into the same state. `Journey.snap(to:)` lands now
   and `Journey.move(to:)` requests a host-driven trip.
-- `snapInterval`, `snapItem`, `snapsAtMost`, and `momentum` have the same grid,
-  selection, crossing-limit, and projected-throw meanings as on `ScrollView`.
-  `snapItem` is meaningful beside a nonzero interval; a crossing limit of zero
-  means no limit.
+- `onScrollStopped` is the scroller's own: it runs once a movement has ended,
+  and a write to the offset from there is how a run comes to rest on an item.
 - The held subtree is input-transparent because the scroller owns the room's
   native input. Attach `onTapped`, `onPanUpdated`, or `onTapped(within:_:)` to
   the reader rather than to a held card.

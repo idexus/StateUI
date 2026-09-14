@@ -45,6 +45,18 @@ public class StateCycleTests
         return bytes;
     }
 
+    /// <summary>
+    /// The same for a POINT - a scroller's offset - whose value, set point and
+    /// speed are two lanes each, across then down.
+    /// </summary>
+    private static byte[] Lanes(
+        (double X, double Y) value,
+        (double X, double Y) setPoint,
+        double law = 0,
+        double a = 0,
+        double b = 0) =>
+        Plain(value.X, value.Y, setPoint.X, setPoint.Y, 0, 0, law, a, b, 0, 0);
+
     /// <summary>One number, as a batch of one - what a read answers.</summary>
     private static byte[] Batch(int number, ulong mask, byte[] bytes)
     {
@@ -64,6 +76,9 @@ public class StateCycleTests
     private const ulong SetPoint = 1UL << 1;
     private const ulong Velocity = 1UL << 2;
     private const ulong Stopped = 1UL << 7;
+
+    /// <summary>And where a POINT's set point sits: two lanes, after its value's two.</summary>
+    private const ulong PointSetPoint = (1UL << 2) | (1UL << 3);
 
     // ---- The registrations ---------------------------------------------------
 
@@ -1480,13 +1495,13 @@ public class StateCycleTests
     }
 
     /// <summary>
-    /// A DRIVEN SCROLLER'S OWN MOVEMENT IS THE STATE'S. A settle onto the grid
-    /// and an asked-for glide are decisions this side makes about the offset,
-    /// and an offset on a state moves on the state's channel - so every scroller
-    /// on the number moves with it, and the state is told where it is going.
+    /// A WRITTEN OFFSET MOVES THE SCROLLER ON THE STATE'S CHANNEL. The platform
+    /// keeps a scroller's offset read-only, so the tie carries no property:
+    /// the channel writes the scroller through its movement, a frame at a time
+    /// on the engine's clock, to where the state sent it.
     /// </summary>
     [Fact]
-    public void ADrivenScrollersOwnMovementMovesTheState()
+    public void AWrittenOffsetMovesTheScrollerOnTheStatesChannel()
     {
         var host = new Host();
         var crossing = new HandCrossing();
@@ -1495,6 +1510,149 @@ public class StateCycleTests
         host.Renderer.Motion.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
+        ScrollView scroll = TiedScroller(host);
+
+        // What a scroller with no platform under it is moved by: MAUI's own
+        // request, which is all a headless offset can be.
+        List<Point> put = [];
+
+        ((IScrollViewController)scroll).ScrollToRequested +=
+            (_, e) => put.Add(new Point(e.ScrollX, e.ScrollY));
+
+        // Sent from the top to 300 down, over 200 ms.
+        Travel(host, crossing, down: 300, ms: 200);
+
+        clock.Tick(100);
+
+        Assert.Equal(0, put[^1].X, 3);
+        Assert.Equal(150, put[^1].Y, 3);
+        Assert.Equal(1, host.Renderer.Motion.Carrying);
+
+        clock.Tick(100);
+
+        Assert.Equal(0, put[^1].X, 3);
+        Assert.Equal(300, put[^1].Y, 3);
+        Assert.Equal(0, host.Renderer.Motion.Carrying);
+    }
+
+    /// <summary>
+    /// A TRAVEL THE APPLICATION WROTE IS NOT THE READER'S, AND NEITHER IS ITS
+    /// ANSWER. A platform that answers a written offset at its next frame -
+    /// WinUI answers a <c>ChangeView</c> so - reports each of the travel's
+    /// frames after the write that made it, outside it; heard as the reader's,
+    /// that report would land on the state and stop the travel it came from.
+    /// </summary>
+    [Fact]
+    public void AWrittenTravelsLateAnswerIsNotTheReaders()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Cycle.Crossing = crossing;
+
+        ScrollView scroll = TiedScroller(host);
+
+        List<Point> put = [];
+
+        ((IScrollViewController)scroll).ScrollToRequested +=
+            (_, e) => put.Add(new Point(e.ScrollX, e.ScrollY));
+
+        // A travel ends a quiet after its last frame, and the quiet is a
+        // wait: held, the travel is looked at while it is still under way.
+        TestDispatcher.Hold();
+
+        Travel(host, crossing, down: 300, ms: 200);
+        clock.Tick(100);
+
+        // The frame written at 150, answered a frame late.
+        ((IScrollViewController)scroll).SetScrolledPosition(0, 150);
+
+        Assert.Equal(1, host.Renderer.Motion.Carrying);
+
+        clock.Tick(100);
+
+        Assert.Equal(300, put[^1].Y, 3);
+        Assert.Equal(0, host.Renderer.Motion.Carrying);
+
+        TestDispatcher.Drain();
+    }
+
+    /// <summary>
+    /// THE READER TAKING HOLD STOPS A WRITTEN TRAVEL WHERE IT STANDS. The
+    /// offset the travel has reached lands on the state as the reader's -
+    /// where it is and where it is going, together - which is what lets the
+    /// state's channel go, so no frame of the travel is written under the hand.
+    /// </summary>
+    [Fact]
+    public void TheReaderTakingHoldStopsAWrittenTravelWhereItStands()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+        var clock = new HandMotionClock();
+
+        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Cycle.Crossing = crossing;
+
+        ScrollView scroll = TiedScroller(host);
+
+        List<Point> put = [];
+
+        ((IScrollViewController)scroll).ScrollToRequested +=
+            (_, e) => put.Add(new Point(e.ScrollX, e.ScrollY));
+
+        TestDispatcher.Hold();
+
+        Travel(host, crossing, down: 300, ms: 200);
+        clock.Tick(100);
+
+        // The frame written at 150, answered inside the write - the way UIKit
+        // and Android answer one, and never the reader's either way.
+        MotionEngine.Writing++;
+
+        try
+        {
+            ((IScrollViewController)scroll).SetScrolledPosition(0, 150);
+        }
+        finally
+        {
+            MotionEngine.Writing--;
+        }
+
+        Assert.Equal(1, host.Renderer.Motion.Carrying);
+
+        crossing.Written.Clear();
+
+        // A hand comes down on the scroller - the road a platform package
+        // without hooks of its own takes, and the one every hook takes too.
+        host.Renderer.MovementOf(scroll).Fingers(true);
+
+        Assert.Equal(0, host.Renderer.Motion.Carrying);
+
+        (int number, _, double[] lanes) = Assert.NotNull(Told(crossing));
+
+        Assert.Equal(3, number);
+        Assert.Equal(0, lanes[0], 3);
+        Assert.Equal(150, lanes[1], 3);
+        Assert.Equal(0, lanes[2], 3);
+        Assert.Equal(150, lanes[3], 3);
+
+        // And nothing of the travel is written after it.
+        put.Clear();
+        clock.Tick(100);
+
+        Assert.Empty(put);
+
+        TestDispatcher.Drain();
+    }
+
+    /// <summary>
+    /// A scroller whose offset state number 3 carries, laid out with a run
+    /// three viewports tall so there is somewhere to go.
+    /// </summary>
+    private static ScrollView TiedScroller(Host host)
+    {
         var scroll = (ScrollView)host.ApplyMessage(new SwiftNode
         {
             Id = new SwiftId(1),
@@ -1516,25 +1674,33 @@ public class StateCycleTests
             States =
             [
                 new SwiftStateEntry(
-                    SwiftProp.ScrollOffset, "scroll", 3, SwiftStateMode.InOut, SwiftStateKind.Property),
+                    SwiftProp.ScrollOffset, "scrollOffset", 3, SwiftStateMode.InOut, SwiftStateKind.Property),
             ],
         });
 
-        // Laid out with a run three viewports tall, so there is somewhere to go.
         ((IView)scroll).Arrange(new Rect(0, 0, 100, 300));
 
         Assert.Single(host.Renderer.Cycle.Registered(scroll));
-        crossing.Written.Clear();
 
-        _ = host.Renderer.SettleOf(scroll).GlideTo(0, 300);
+        return scroll;
+    }
 
-        // Told where the offset is going - which only the state's own channel
-        // says, a movement of the scroller's own being nobody's news.
-        (int number, ulong mask, double[] lanes) = Assert.NotNull(Told(crossing));
+    /// <summary>
+    /// The state on number 3 sent from the top to a point further down, the
+    /// way a cycle answers a write: a set point, walked in a straight line.
+    /// </summary>
+    /// <param name="host">The host the scroller is on.</param>
+    /// <param name="crossing">The crossing the cycle answers through.</param>
+    /// <param name="down">How far down it is sent.</param>
+    /// <param name="ms">How long the walk takes.</param>
+    private static void Travel(Host host, HandCrossing crossing, double down, double ms)
+    {
+        byte[] going = Lanes(
+            value: (0, 0), setPoint: (0, down), law: 2, a: ms, b: (int)SwiftEasing.Linear);
 
-        Assert.Equal(3, number);
-        Assert.NotEqual(0UL, mask & (1UL << 3));
-        Assert.Equal(300, lanes[3], 6);
-        Assert.Equal(1, host.Renderer.Motion.Carrying);
+        crossing.Answers = 1;
+        crossing.Dirty = Batch(3, PointSetPoint, going);
+        host.Renderer.Cycle.Run(CycleReason.Told);
+        crossing.Whole[3] = Batch(3, ~0UL, going);
     }
 }

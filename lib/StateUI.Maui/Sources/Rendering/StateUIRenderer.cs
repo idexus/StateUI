@@ -371,13 +371,13 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// Whether a state carries this scroller's offset - the Swift side's
-    /// <c>.scroll($offset)</c>, read off the message's state entries where the
-    /// scroller is reconciled.
+    /// <c>.scrollOffset($offset)</c>, read off the message's state entries
+    /// where the scroller is reconciled.
     /// </summary>
     /// <remarks>
     /// Written where the scroller is reconciled, before the tie is made later
-    /// in the same pass, and read by <c>ObserveScroll</c>, which arms the
-    /// snap's hooks for it. See <see cref="StateCycle"/>.
+    /// in the same pass, and read by <c>ObserveScroll</c>, which makes the
+    /// scroller's movement for it. See <see cref="StateCycle"/>.
     /// </remarks>
     internal static readonly BindableProperty ScrolledProperty =
         BindableProperty.CreateAttached(
@@ -409,95 +409,40 @@ public sealed class StateUIRenderer
             defaultValue: 0);
 
     /// <summary>
-    /// The distance between the offsets a scroller may come to rest on, in
-    /// device units - the Swift side's <c>snapInterval</c>. Zero is a scroller
-    /// that rests wherever the platform leaves it. Read at the moment a finger
-    /// lifts, so it can be recut on every render.
+    /// One scroller's movement as the host knows it - the reader's hand, the
+    /// rest, the offset as a target - one object per scroller: see
+    /// <see cref="ScrollMovement"/>.
     /// </summary>
-    internal static readonly BindableProperty SnapIntervalProperty =
+    internal static readonly BindableProperty ScrollMovementProperty =
         BindableProperty.CreateAttached(
-            "StateUISnapInterval",
-            typeof(double),
-            typeof(StateUIRenderer),
-            defaultValue: 0.0);
-
-    /// <summary>
-    /// The most points of its grid a scroller may cross in one release - the
-    /// Swift side's <c>snapsAtMost</c>. Zero is no limit, and is the default.
-    /// </summary>
-    /// <remarks>
-    /// A release going further than this is brought back to the furthest point
-    /// allowed, which then makes it a movement of this side's own - see
-    /// <see cref="ScrollGlide"/>. Counted from where the FINGER LANDED rather
-    /// than from where it let go, so a drag and the throw that ends it are one
-    /// movement between them and cannot add up to two points.
-    /// </remarks>
-    internal static readonly BindableProperty SnapsAtMostProperty =
-        BindableProperty.CreateAttached(
-            "StateUISnapsAtMost",
-            typeof(double),
-            typeof(StateUIRenderer),
-            defaultValue: 0.0);
-
-    /// <summary>
-    /// Where a scroller's grid starts, in device units - the Swift side's
-    /// <c>snapFrom</c>. Nothing, for a grid that starts at the content's own
-    /// beginning.
-    /// </summary>
-    internal static readonly BindableProperty SnapFromProperty =
-        BindableProperty.CreateAttached(
-            "StateUISnapFrom",
-            typeof(double),
-            typeof(StateUIRenderer),
-            defaultValue: 0.0);
-
-    /// <summary>
-    /// How far a released scroll carries, as a fraction of the whole throw -
-    /// the Swift side's <c>scrollMomentum</c>. One is the whole of it, and
-    /// anything less also asks for the movement to be settled here rather than
-    /// left to the platform. See <see cref="ScrollGlide"/>.
-    /// </summary>
-    internal static readonly BindableProperty ScrollMomentumProperty =
-        BindableProperty.CreateAttached(
-            "StateUIScrollMomentum",
-            typeof(double),
-            typeof(StateUIRenderer),
-            defaultValue: 1.0);
-
-    /// <summary>
-    /// The platform hooks that keep a scroller on its grid, one object per
-    /// scroller - see <see cref="ScrollSnap"/>.
-    /// </summary>
-    internal static readonly BindableProperty ScrollSnapProperty =
-        BindableProperty.CreateAttached(
-            "StateUIScrollSnap",
-            typeof(ScrollSnap),
+            "StateUIScrollMovement",
+            typeof(ScrollMovement),
             typeof(StateUIRenderer),
             defaultValue: null);
 
     /// <summary>
-    /// What settles this scroller, made the first time anything asks for it.
+    /// This scroller's movement, made the first time anything asks for it.
     /// </summary>
     /// <remarks>
-    /// One thing does: <c>ObserveScroll</c>, on every render of a scroller with
-    /// a grid, a shortened throw, a handler for its stop or a state carrying
-    /// its offset. A scroller nobody asks about never makes one.
+    /// One thing does: <c>ObserveScroll</c>, on every render of a scroller
+    /// heard stopping or carrying its offset on a state. A scroller nobody
+    /// asks about never makes one.
     /// </remarks>
     /// <param name="scroll">The scroller.</param>
-    internal ScrollSnap SettleOf(ScrollView scroll)
+    internal ScrollMovement MovementOf(ScrollView scroll)
     {
-        if (scroll.GetValue(ScrollSnapProperty) is ScrollSnap settle)
+        if (scroll.GetValue(ScrollMovementProperty) is ScrollMovement movement)
         {
-            return settle;
+            return movement;
         }
 
-        settle = new ScrollSnap(scroll, _motion);
+        movement = new ScrollMovement(scroll);
 
-        scroll.SetValue(ScrollSnapProperty, settle);
-        scroll.HandlerChanged += (_, _) => settle.Hook();
-        settle.Hook();
+        scroll.SetValue(ScrollMovementProperty, movement);
+        scroll.HandlerChanged += (_, _) => movement.Hook();
+        movement.Hook();
 
-        return settle;
+        return movement;
     }
 
     /// <summary>
@@ -1753,146 +1698,46 @@ public sealed class StateUIRenderer
     {
         WatchOffset(scroll, element, SwiftEvent.ScrollXChanged, ScrollView.ScrollXProperty, () => scroll.ScrollX);
         WatchOffset(scroll, element, SwiftEvent.ScrollYChanged, ScrollView.ScrollYProperty, () => scroll.ScrollY);
-        WatchSnapItem(scroll, element);
 
-        // The hooks are what shortens a throw as well as what lands it on a
-        // grid and what knows when a movement ended, so any of the four asks
-        // for them - a CHANNEL among them, because the snap's watcher is the
-        // one place that knows a real report from a relayout's clamp, and the
-        // channel must hear only the real ones.
+        // The movement is what hears a movement of the reader's end, and what
+        // tells a reader's report from a relayout's clamp and from the frames
+        // of a travel the application wrote - so a handler for the stop asks
+        // for it, and so does a CHANNEL, which must hear only the reader's
+        // reports and moves the scroller through it.
         bool stops = element.Events?.ContainsKey(SwiftEvent.ScrollStopped) == true;
         bool channelled = (bool)scroll.GetValue(ScrolledProperty);
 
-        if (!stops && !channelled
-            && (double)scroll.GetValue(SnapIntervalProperty) <= 0
-            && (double)scroll.GetValue(ScrollMomentumProperty) >= 1)
+        if (!stops && !channelled)
         {
             return;
         }
 
-        ScrollSnap snap = SettleOf(scroll);
+        ScrollMovement movement = MovementOf(scroll);
 
         if (stops && (element.Observed ??= []).Add(SwiftEvent.ScrollStopped))
         {
-            snap.Rested += () => Raise(scroll, SwiftEvent.ScrollStopped);
+            movement.Rested += () => Raise(scroll, SwiftEvent.ScrollStopped);
         }
 
         if (channelled)
         {
-            snap.Slid = lanes => _cycle.Slid(scroll, lanes);
-
-            // And a movement of the snap's own - a settle, a glide - is made on
-            // the state's channel, asked for when it is made: the number is
-            // registered after the node, so it is not there to look up yet.
-            snap.Driven = () => _cycle.Sink(scroll, SwiftProp.ScrollOffset)?.Fan;
+            movement.Slid = lanes => _cycle.Slid(scroll, lanes);
         }
 
-        snap.Hook();
+        movement.Hook();
     }
-
-    /// <summary>
-    /// Which point of the scroller's grid it is nearest, reported when that
-    /// changes.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// THE SAME ROUNDING THAT CHOSE WHERE TO LAND, which is what makes the
-    /// number worth sending: it changes as the offset passes the halfway mark
-    /// between two points, so it names the point the scroller is going to stop
-    /// at while the movement is still under way, and it cannot disagree with
-    /// where the movement actually ends.
-    /// </para>
-    /// <para>
-    /// The grid runs along the way the scroller scrolls, which is what says
-    /// which offset to read - a two-way scroller has no single number to send
-    /// and is read across, being the way a run of cards lies.
-    /// </para>
-    /// <para>
-    /// IT IS A READING ABOUT THE OFFSET AND GOES THE OFFSET'S OWN WAY -
-    /// <see cref="Report"/>, which an apply refuses and a motion of ours does
-    /// not. The tree describes no such property, so there is no journey for
-    /// the report to snap; and the movement this reading is most about is
-    /// often one this side is making, since a settle, a correction and an
-    /// asked-for scroll are all the engine writing the offset frame by frame.
-    /// Where a platform hooks no touch of its own, EVERY movement is that
-    /// one: measured on Linux, a run of cards wheeled to its end reported not
-    /// one slot, and the cards behind advanced while the card in front and
-    /// the caption under it stood at the first card for ever.
-    /// </para>
-    /// </remarks>
-    private void WatchSnapItem(ScrollView scroll, RenderedElement element)
-    {
-        if (element.Events?.ContainsKey(SwiftEvent.SnapItemChanged) != true
-            || !(element.Observed ??= []).Add(SwiftEvent.SnapItemChanged))
-        {
-            return;
-        }
-
-        long reported = long.MinValue;
-
-        void Look(object? sender)
-        {
-            double interval = (double)scroll.GetValue(SnapIntervalProperty);
-
-            if (interval <= 0)
-            {
-                return;
-            }
-
-            double offset = scroll.Orientation == ScrollOrientation.Vertical ? scroll.ScrollY : scroll.ScrollX;
-            long item = (long)Math.Round(
-                (offset - (double)scroll.GetValue(SnapFromProperty)) / interval,
-                MidpointRounding.AwayFromZero);
-
-            if (item == reported)
-            {
-                return;
-            }
-
-            // Remembered only once the report went out: one dropped under an
-            // apply must not dedup the retry the settled value makes.
-            if (Report(sender, SwiftEvent.SnapItemChanged, (double)item))
-            {
-                reported = item;
-            }
-        }
-
-        scroll.PropertyChanged += (sender, e) =>
-        {
-            if (e.PropertyName == ScrollView.ScrollXProperty.PropertyName
-                || e.PropertyName == ScrollView.ScrollYProperty.PropertyName)
-            {
-                Look(sender);
-            }
-        };
-    }
-
-    /// <summary>
-    /// Which point of a grid an offset is nearest - the rounding a snapping
-    /// scroller lands by, on every platform; the item a scroller reports
-    /// (<c>WatchSnapItem</c>) is rounded the same way.
-    /// </summary>
-    /// <param name="offset">Where the scroller is, or is going to be.</param>
-    /// <param name="interval">How far apart the points of the grid are.</param>
-    /// <param name="from">Where the grid starts.</param>
-    internal static double SnapPoint(double offset, double interval, double from) =>
-        interval > 0
-            ? from + Math.Round(
-                (offset - from) / interval,
-                MidpointRounding.AwayFromZero) * interval
-            : offset;
 
     /// <summary>
     /// An offset the scroller can actually be at: never before the content's
     /// start, never past what is left of it once the visible part is taken off.
     /// </summary>
     /// <remarks>
-    /// Two things need it. A grid whose points do not divide the content would
-    /// otherwise ask for an offset past the end, the scroller would stop as far
-    /// as it can go, and the rest that follows would ask for the same
-    /// unreachable point again. And a scroller BOUNCING past its start is
-    /// showing a negative offset - writing that back as the model would hold it
-    /// there under the reader's next finger.
+    /// Two things need it. An offset a state writes, or one put back after a
+    /// relayout, may lie past the end of a content that has since shrunk:
+    /// asked for anyway, the scroller would stop as far as it can go and the
+    /// next ask would ask for the same unreachable place again. And a scroller
+    /// BOUNCING past its start is showing a negative offset - written back,
+    /// that would hold it there under the reader's next finger.
     /// </remarks>
     /// <param name="offset">The offset in question.</param>
     /// <param name="content">How long the content is.</param>
@@ -1942,10 +1787,10 @@ public sealed class StateUIRenderer
         void Deliver()
         {
             // A REPORT REFUSED UNDER AN APPLY IS ASKED AGAIN A TURN LATER,
-            // because the offset it is about may never move again: a glide
+            // because the offset it is about may never move again: a travel
             // that has landed writes no further frame, so the landing dropped
             // here would be the last word and the reading would stay wrong for
-            // good. Every report renders, and the frames of a glide arrive
+            // good. Every report renders, and the frames of a travel arrive
             // inside the render the one before it asked for, which is exactly
             // when this happens. Coalesced by a flag, the way a frame report
             // is, so a burst costs one turn and the value read is the settled
@@ -2101,14 +1946,14 @@ public sealed class StateUIRenderer
     /// state the property was described from, and snap the journey it came
     /// from. A scroller's offset has no such echo - <c>ScrollX</c> and
     /// <c>ScrollY</c> have no setter the tree writes - so refusing it buys
-    /// nothing and costs the one thing the reading is for: a scroller this
-    /// side moves - a settle onto its grid, a glide - would never be heard
-    /// arriving.
+    /// nothing and costs the one thing the reading is for: a scroller the
+    /// offset's channel moves would never be heard arriving.
     /// </para>
     /// <para>
-    /// Measured on the gallery's ScrollView sample: a glide made 43 offset
-    /// reports, every one of them refused, and the reading went on showing
-    /// where the wheel had last left it until the reader nudged it by hand.
+    /// Measured on the gallery's ScrollView sample: a movement written frame
+    /// by frame made 43 offset reports, every one of them refused, and the
+    /// reading went on showing where the wheel had last left it until the
+    /// reader nudged it by hand.
     /// </para>
     /// <para>
     /// An APPLY still refuses it, as it refuses everything: a report raised
@@ -3831,8 +3676,8 @@ public sealed class StateUIRenderer
 
             // The wheel, which this side takes over whole on Windows - a
             // mouse's notches and a touchpad's fractions turned into a written
-            // offset. See ScrollTuning.
-            ScrollTuning.Watch(scroll);
+            // offset. See ScrollWheel.
+            ScrollWheel.Watch(scroll);
 #endif
         }
 
@@ -3862,11 +3707,6 @@ public sealed class StateUIRenderer
         }
 
         scroll.SetValue(ScrolledProperty, carried);
-
-        if (node.GetNumber(SwiftProp.SnapInterval) is double snap) { scroll.SetValue(SnapIntervalProperty, snap); }
-        if (node.GetNumber(SwiftProp.SnapFrom) is double from) { scroll.SetValue(SnapFromProperty, from); }
-        if (node.GetNumber(SwiftProp.ScrollMomentum) is double carry) { scroll.SetValue(ScrollMomentumProperty, carry); }
-        if (node.GetNumber(SwiftProp.SnapsAtMost) is double most) { scroll.SetValue(SnapsAtMostProperty, most); }
 
         ApplyView(node, scroll);
         Track(scroll, node);

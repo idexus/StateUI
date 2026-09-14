@@ -17,35 +17,31 @@ namespace StateUI.Maui.Rendering;
 /// notch - and each one is turned into a distance and the offset WRITTEN, so
 /// the content moves by exactly what the device asked and CANNOT be carried
 /// past the end: a written offset is clamped where an elastic pan is not.
-/// Left to the platform instead, a touchpad's stream was answered with a wheel
-/// ANIMATION whose standing inertia had to be spent before the next run of the
-/// fingers was felt at all - the crossing a reader has to push through before
+/// Left to the platform, a touchpad's stream is answered with a wheel
+/// ANIMATION whose standing inertia has to be spent before the next run of the
+/// fingers is felt at all - the crossing a reader has to push through before
 /// the content goes their way. That is why the wheel cannot be the platform's;
 /// it is the one input this file exists for.
 /// </para>
 /// <para>
 /// TOUCH AND THE PEN ARE LEFT ALONE, inertia included. They reach the scroller
-/// through DirectManipulation, which the wheel take-over never touches - and
-/// their inertia is the very thing the grid is aimed by, because WinUI hands
-/// over the end of it as it begins (<c>ViewChanging.FinalView</c>, read in
-/// <see cref="ScrollSnap"/>), the same shape as the other platforms' own
-/// predicted stop. Inertia stays ON: off, a drag stops dead where the fingers
-/// leave and no gesture is ever held to <c>snapsAtMost</c>.
+/// through DirectManipulation, which the wheel take-over never touches.
 /// </para>
 /// <para>
-/// A scroller with a GRID answers the message itself - see
-/// <see cref="ScrollSnap"/> - and a scroller without one is slid straight
-/// through here. Either way the movement is counted from what the wheel has
-/// ASKED FOR rather than from where the scroller has got to: a touchpad sends
-/// faster than the platform draws, and reading the offset back would lose every
-/// message that shared a frame with another.
+/// Every message is counted from what the wheel has ASKED FOR rather than from
+/// where the scroller has got to: a touchpad sends faster than the platform
+/// draws, and reading the offset back would lose every message that shared a
+/// frame with another. And every message tells the scroller's movement that
+/// the wheel is turning - see <see cref="ScrollMovement.Wheeled"/> - so a run
+/// of the wheel rests once, at its quiet, and a travel the application wrote
+/// stops where it stands.
 /// </para>
 /// <para>
 /// A wheel this scroller cannot answer is left alone, which is what keeps a
 /// page scrolling under the pointer while a run of cards inside it holds still.
 /// </para>
 /// </remarks>
-internal static class ScrollTuning
+internal static class ScrollWheel
 {
     /// <summary>What one whole notch of the wheel reports.</summary>
     internal const double Whole = 120;
@@ -72,7 +68,7 @@ internal static class ScrollTuning
             ? Path.Combine(MotionTrace.Somewhere(), "stateui-scroll.log")
             : null;
 
-    /// <summary>When the wheel's trace started, so its lines order against the snap's.</summary>
+    /// <summary>When the wheel's trace started, so its lines order against the scroller's.</summary>
     private static readonly System.Diagnostics.Stopwatch Clock =
         System.Diagnostics.Stopwatch.StartNew();
 
@@ -153,7 +149,6 @@ internal static class ScrollTuning
         // counts on from. One scroller's, held in the closure that hooked it.
         Point asked = default;
         double heard = double.NegativeInfinity;
-        bool snapped = false;
         bool wasAcross = false;
         var clock = System.Diagnostics.Stopwatch.StartNew();
 
@@ -236,9 +231,6 @@ internal static class ScrollTuning
             // its positive being to the right.
             double step = delta / Whole * Notch * (turn.IsHorizontalMouseWheel ? 1 : -1);
 
-            // A FRACTION OF A NOTCH IS A TOUCHPAD, and no mouse sends one.
-            bool clicked = Math.Abs(delta) % (int)Whole == 0;
-
             double now = clock.Elapsed.TotalMilliseconds;
 
             // ONE RUN IS ONE AXIS. A scroller that runs both ways is fed two
@@ -248,40 +240,23 @@ internal static class ScrollTuning
             // viewer, exactly as a pause does.
             bool carry = now - heard < Settled && across == wasAcross;
 
-            // The grid moved the scroller last time, so what this side asked
-            // for says nothing about where this message starts.
-            bool follow = carry && !snapped;
-
             heard = now;
             wasAcross = across;
-            snapped = false;
 
-            var snap = scroll.GetValue(StateUIRenderer.ScrollSnapProperty) as ScrollSnap;
-
-            if (snap is not null && snap.Turned(across, step, clicked))
-            {
-                snapped = true;
-                e.Handled = true;
-                return;
-            }
+            // THE SCROLLER HEARS THE WHEEL BEFORE THE OFFSET MOVES: the run it
+            // holds together, and the travel it stops where it stands. See
+            // ScrollMovement.Wheeled.
+            (scroll.GetValue(StateUIRenderer.ScrollMovementProperty) as ScrollMovement)?.Wheeled();
 
             // TAKEN ONLY WHERE IT WAS ANSWERED. A scroller that has not been
             // laid out yet refuses the offset, and a message marked handled
             // anyway is one the reader simply loses - measured as a page that
             // would not scroll at all for the first seconds after it opened.
-            e.Handled = Slide(across, step, most, follow);
-
-            if (!e.Handled)
-            {
-                // The platform answers this one, with an inertia of its own -
-                // which the gesture hooks must not read as a gesture.
-                snap?.PlatformWheel();
-            }
+            e.Handled = Slide(across, step, most, carry);
         }
 
         bool Slide(bool across, double step, double most, bool carry)
         {
-
             // A RUN OF THE WHEEL COUNTS ON FROM ITSELF. ChangeView is answered
             // at the next frame, so two messages inside one frame would both
             // read the same offset back and the first one's distance would be
@@ -290,9 +265,10 @@ internal static class ScrollTuning
             //
             // BUT ONLY WHILE THE SCROLLER IS WHERE THE ASKS PUT IT. The viewer
             // lags the asks by a frame or two - a few notches at most - so an
-            // offset further off than that was moved by somebody else, an act
-            // or a gesture, and counting on from the old asks would write the
-            // pre-move offset straight back over their movement.
+            // offset further off than that was moved by somebody else, a
+            // written offset or a gesture, and counting on from the old asks
+            // would write the pre-move offset straight back over their
+            // movement.
             if (carry)
             {
                 double lag = across

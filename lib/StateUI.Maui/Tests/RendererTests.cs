@@ -662,36 +662,6 @@ public class RendererTests
     }
 
     [Fact]
-    public void ASnapItemIsReportedWhileAMotionOfOursIsWritingFrames()
-    {
-        var host = new Host();
-
-        var scroll = (ScrollView)host.Apply("""
-            {"id":"s","type":"ScrollView","props":{"snapInterval":90},
-             "events":{"snapItemChanged":11}}
-            """);
-
-        // WHICH POINT OF THE GRID IT IS NEAREST IS A READING ABOUT THE OFFSET,
-        // taken by the same rounding and off the same property - so it goes the
-        // same way, and a settle, a correction or an asked-for scroll, which
-        // are all this side's own motion writing that offset, still say which
-        // card the run came to rest on. Where a platform hooks no touch of its
-        // own that motion is the only thing that ever moves the scroller.
-        MotionEngine.Writing++;
-
-        try
-        {
-            ((IScrollView)scroll).VerticalOffset = 180;
-        }
-        finally
-        {
-            MotionEngine.Writing--;
-        }
-
-        Assert.Equal((11, "2"), host.Dispatched[^1]);
-    }
-
-    [Fact]
     public void APropertyWithNoEventOfItsOwnIsWatchedOnlyWhenAsked()
     {
         var watched = new Host();
@@ -953,18 +923,18 @@ public class RendererTests
     }
 
     /// <summary>
-    /// A scroller asked only to be HEARD STOPPING gets the platform hooks, as
-    /// a grid and a shortened throw do.
+    /// A scroller is watched only when its rest or its offset is asked for: a
+    /// handler for its stop, or a state carrying its offset.
     /// </summary>
     /// <remarks>
-    /// They are the one thing that knows a movement has ended - every platform
-    /// announces it and nothing else does - so unlike an offset it cannot be
-    /// watched for through PropertyChanged. What they then DO for such a
-    /// scroller is nothing: with no grid and the platform's whole throw, no
-    /// movement is aimed anywhere.
+    /// Its movement is the one thing that hears a movement of the reader's end
+    /// - every platform announces that its own way, and nothing else listens -
+    /// and the one thing that tells a reader's report from a relayout's clamp,
+    /// which is all a state carrying the offset may hear. A scroller asked for
+    /// neither is the platform's entirely.
     /// </remarks>
     [Fact]
-    public void AScrollerHeardStoppingGetsTheHooksWithoutAGrid()
+    public void AScrollerIsWatchedOnlyWhenItsRestOrItsOffsetIsAskedFor()
     {
         var host = new Host();
 
@@ -978,8 +948,24 @@ public class RendererTests
         var plain = Assert.IsType<ScrollView>(stack.Children[0]);
         var heard = Assert.IsType<ScrollView>(stack.Children[1]);
 
-        Assert.Null(plain.GetValue(StateUIRenderer.ScrollSnapProperty));
-        Assert.NotNull(heard.GetValue(StateUIRenderer.ScrollSnapProperty));
+        Assert.Null(plain.GetValue(StateUIRenderer.ScrollMovementProperty));
+        Assert.NotNull(heard.GetValue(StateUIRenderer.ScrollMovementProperty));
+
+        // And a scroller whose offset a state carries, with no handler at all.
+        var carried = (ScrollView)new Host().ApplyMessage(new SwiftNode
+        {
+            Id = new SwiftId(1),
+            Type = SwiftNodeType.ScrollView,
+            Arranged = true,
+            Children = [],
+            States =
+            [
+                new SwiftStateEntry(
+                    SwiftProp.ScrollOffset, "scrollOffset", 3, SwiftStateMode.InOut, SwiftStateKind.Property),
+            ],
+        });
+
+        Assert.NotNull(carried.GetValue(StateUIRenderer.ScrollMovementProperty));
     }
 
     /// <summary>

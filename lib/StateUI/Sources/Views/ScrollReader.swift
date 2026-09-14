@@ -15,7 +15,6 @@
 ///             }
 ///     }
 ///     .scrollOffset($across)
-///     .snapInterval(90)
 ///
 /// What it holds is not scrolled: the views stay where their own arithmetic
 /// puts them, and what moves is a NUMBER - the offset of an empty scroller
@@ -25,8 +24,10 @@
 ///
 /// A SCROLLER RATHER THAN A DRAG, on purpose: a finger drag, a two-finger
 /// trackpad swipe and a mouse wheel are ONE thing to a scroller and three
-/// different things to everything else, so all three move the run and the
-/// grid described here is what settles it.
+/// different things to everything else, so all three move the run, with the
+/// platform's own physics. Where the run comes to rest is the author's:
+/// `onScrollStopped` hears the scroller stop, and a write to the offset from
+/// there carries it on to the item it is nearest.
 ///
 /// How far it goes is how far BEYOND the room it can be scrolled, in device
 /// units - `across: 540` on a room 300 wide is a run 840 long - so what an
@@ -38,15 +39,10 @@ public struct ScrollReader: ContentView {
     private let held: () -> [Element]
 
     private var reports: Binding<Point>?
-    private var interval: Double?
-    private var from: Double?
     private var scroller: Aim<ScrollView>?
-    private var nearest: Binding<Int>?
-    private var limit = 0
 
-    /// How much of the platform's own throw a release keeps. Nothing said
-    /// leaves the platform's physics alone.
-    private var carry: Double?
+    /// What runs when the scroller comes to rest, if anything.
+    private var stopped: EventHandler?
     private var tapped: EventHandler?
 
     /// Where in the ROOM a tap is answered, given the room - or nothing, which
@@ -113,68 +109,21 @@ public struct ScrollReader: ContentView {
         return copy
     }
 
-    /// Makes it come to rest on a GRID, the way a `ScrollView` does: the
-    /// offsets it may stop at are `from`, `from + value`, and so on.
-    ///
-    /// One step of the grid is one step of whatever the arithmetic counts in -
-    /// a card, a notch of a ring - so this is what makes a run settle on one
-    /// of them rather than between two.
-    ///
-    /// - Parameters:
-    ///   - value: the distance between the offsets it may rest on, in device
-    ///     units. Zero rests wherever the platform leaves it.
-    ///   - start: the first of them. Zero unless it says otherwise.
-    /// - Returns: the reader, resting on that grid.
-    public func snapInterval(_ value: Double, from start: Double = 0) -> ScrollReader {
-        var copy = self
-        copy.interval = value
-        copy.from = start
-        return copy
-    }
-
-    /// Which point of the GRID the run is nearest, written as it moves.
-    ///
-    /// The number is the host's rounding of the offset to the grid - the same
-    /// one that chose where the movement lands - so it names the point while
-    /// the run is still crossing to it and cannot disagree with where it ends.
-    /// Beside `snapInterval(_:from:)`, which is what makes there be a grid to
-    /// be nearest a point of.
+    /// What runs when the scroller comes to REST - the moment a run is carried
+    /// on to the item it is nearest, by a write to its offset.
+    /// `ScrollView.onScrollStopped(_:)`.
     ///
     ///     ScrollReader(across: 540) { … }
     ///         .scrollOffset($across)
-    ///         .snapInterval(90)
-    ///         .snapItem($card)
+    ///         .onScrollStopped {
+    ///             across = Point(($across.journey.value.x / 90).rounded() * 90, 0)
+    ///         }
     ///
-    /// - Parameter binding: where the nearest point of the grid is written.
-    /// - Returns: the reader, naming it.
-    public func snapItem(_ binding: Binding<Int>) -> ScrollReader {
+    /// - Parameter handler: what to run once the scroller has stopped.
+    /// - Returns: the reader, answering its scroller coming to rest.
+    public func onScrollStopped(_ handler: @escaping EventHandler) -> ScrollReader {
         var copy = self
-        copy.nearest = binding
-        return copy
-    }
-
-    /// The most points of the grid one release may cross. Nothing is the
-    /// default, and means as many as the throw carries.
-    /// `ScrollView.snapsAtMost(_:)`.
-    ///
-    /// - Parameter points: how many points a release may cross. Zero is no
-    ///   limit.
-    /// - Returns: the reader, holding a release to that many.
-    public func snapsAtMost(_ points: Int) -> ScrollReader {
-        var copy = self
-        copy.limit = max(0, points)
-        return copy
-    }
-
-    /// How far a released scroll CARRIES, as a fraction of what the platform
-    /// would do on its own. The platform's own throw is the default.
-    /// `ScrollView.momentum(_:)`.
-    ///
-    /// - Parameter fraction: how much of the platform's throw to keep.
-    /// - Returns: the reader, throwing that far.
-    public func momentum(_ fraction: Double) -> ScrollReader {
-        var copy = self
-        copy.carry = max(0, fraction)
+        copy.stopped = handler
         return copy
     }
 
@@ -268,12 +217,8 @@ public struct ScrollReader: ContentView {
         let sideways = across
         let downward = down
         let at = reports
-        let step = interval
-        let start = from
         let aimed = scroller
-        let slot = nearest
-        let most = limit
-        let thrown = carry
+        let rest = stopped
         let tap = tapped
         let area = target
         let drag = dragged
@@ -409,11 +354,8 @@ public struct ScrollReader: ContentView {
                         : .vertical)
                 .horizontalScrollBarVisibility(.never)
                 .verticalScrollBarVisibility(.never)
-                .snapInterval(step ?? 0, from: start ?? 0)
-                .throwing(thrown)
-                .holding(most)
                 .reporting(at: at)
-                .naming(slot)
+                .stopping(rest)
                 .aimed(at: aimed)
             }
         }
@@ -430,33 +372,14 @@ extension ScrollView {
         aim.map { self.aim($0) } ?? self
     }
 
-    /// The scroller, keeping that much of the platform's own throw - and left
-    /// alone where nothing asked, there being no fraction that means "all of
-    /// it and do not say so".
+    /// The scroller, answering its own coming to rest - and left alone where
+    /// nothing asked, an unwanted handler being an event subscribed to on
+    /// every platform.
     ///
-    /// - Parameter fraction: how much to keep, if anything was said.
+    /// - Parameter handler: what to run once it has stopped, if anything.
     /// - Returns: the scroller.
-    func throwing(_ fraction: Double?) -> ScrollView {
-        fraction.map { momentum($0) } ?? self
-    }
-
-    /// The scroller, holding one release to that many points of the grid - and
-    /// left alone where nothing asked, nought being the absence of a limit
-    /// rather than a limit of nought.
-    ///
-    /// - Parameter points: the limit, if any.
-    /// - Returns: the scroller.
-    func holding(_ points: Int) -> ScrollView {
-        points > 0 ? snapsAtMost(points) : self
-    }
-
-    /// The scroller, naming the point of the grid it is nearest - and left
-    /// alone where nothing asked.
-    ///
-    /// - Parameter binding: where to write it, if anywhere.
-    /// - Returns: the scroller.
-    func naming(_ binding: Binding<Int>?) -> ScrollView {
-        binding.map { snapItem($0) } ?? self
+    func stopping(_ handler: EventHandler?) -> ScrollView {
+        handler.map { onScrollStopped($0) } ?? self
     }
 
     /// The scroller, walked on the reader's offset where one was given and

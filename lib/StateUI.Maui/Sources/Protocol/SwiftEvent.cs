@@ -74,7 +74,6 @@ internal enum SwiftEvent : ushort
     ScrollXChanged = 57,
     ScrollYChanged = 58,
     SelectedIndexChanged = 60,
-    SnapItemChanged = 75,
     Stopped = 62,
     SwipeChanging = 63,
     Swiped = 64,

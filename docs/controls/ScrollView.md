@@ -14,12 +14,7 @@ Declared in `lib/StateUI/Sources/Views/ScrollView.swift`.
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `horizontalScrollBarVisibility` | property | ✅ |  |  |  |  |  |  |
 | `orientation` | property | ✅ |  |  |  |  |  |  |
-| `scrollMomentum` | property | ✅ |  |  |  |  |  |  |
 | `onScrollStopped` (`scrollStopped`) | handler | ✅ |  |  |  |  |  |  |
-| `snapFrom` | property | ✅ |  |  |  |  |  |  |
-| `snapInterval` | property | ✅ |  |  |  |  |  |  |
-| `snapItemChanged` | handler | ✅ |  |  |  |  |  |  |
-| `snapsAtMost` | property | ✅ |  |  |  |  |  |  |
 | `verticalScrollBarVisibility` | property | ✅ |  |  |  |  |  |  |
 
 Realization:

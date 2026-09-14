@@ -32,7 +32,6 @@ struct GalleryViewSample: SampleContent, ExampleContent {
 
     @State private var shape = 0
     @State private var shown = 0
-    @State private var stepped = false
     @State private var swipes = true
     @State private var shaded = true
     @State private var opened = "tap one"
@@ -49,7 +48,6 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     static let code = """
         @State private var shape = 0
         @State private var shown = 0
-        @State private var stepped = false
         @State private var swipes = true
         @State private var shaded = true
         @State private var opened = "tap one"
@@ -83,7 +81,6 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .arrangement(shapes[shape].0)
                 .position($shown)
                 .isSwipeEnabled(swipes)
-                .snapsAtMost(stepped ? 1 : 0)
                 .onItemTapped { card in opened = "tapped \\(card.name)" }
                 .gridRow(0)
 
@@ -120,7 +117,6 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .isEnabled(shown < cards.count - 1)
                     .onClicked { shown += 1 }
 
-                SwitchRow("One card a swipe", $stepped)
                 SwitchRow("Swipeable", $swipes)
                 SwitchRow("Shaded", $shaded)
             }
@@ -173,7 +169,6 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .arrangement(Self.shapes[shape].0)
                     .position($shown)
                     .isSwipeEnabled(swipes)
-                    .snapsAtMost(stepped ? 1 : 0)
                     .onItemTapped { card in opened = "tapped \(card.name)" }
             }
             .gridRow(0)
@@ -230,7 +225,6 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .isEnabled(shown < Self.cards.count - 1)
                     .onClicked { shown += 1 }
 
-                SwitchRow("One card a swipe", $stepped)
                     .margin(4, 0)
 
                 SwitchRow("Swipeable", $swipes)
@@ -311,9 +305,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`One card a swipe` is `.snapsAtMost(1)`: however hard the run is "
-                + "thrown it crosses one card, which is what a deck somebody is stepping "
-                + "through wants. `Swipeable` is `.isSwipeEnabled(false)` - the reader's "
+            Label("`Swipeable` is `.isSwipeEnabled(false)` - the reader's "
                 + "hand is stopped and the buttons still move the run. A gallery is "
                 + "swiped to choose and tapped to open: `.onItemTapped` is handed the "
                 + "card in the MIDDLE, and a tap beside it answers nothing.")

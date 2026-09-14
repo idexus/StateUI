@@ -423,16 +423,16 @@ private struct OffsetStrips: ExampleContent {
     }
 }
 
-/// The offsets a scroller may come to rest on, and which of them it is nearest.
-private struct GridStrips: ExampleContent {
-    @State private var tile = 0
+/// A scroller brought to rest on a tile of its own: the platform's throw stops
+/// wherever it stops, and a write to the offset carries the strip on from there.
+private struct RestStrips: ExampleContent {
+    @State private var offset = Point.zero
 
-    @State private var rests = 0
+    @State private var rested = 1
 
     static let code = """
-        // The strip both strips here are cut from, and the next example's too.
-        // A tile is 140 wide with 20 between them, so one starts every 160,
-        // which is the interval a snapping strip is told to rest on.
+        // The strip both strips here are cut from. A tile is 140 wide with 20
+        // between them, so one starts every 160.
         func tileStrip() -> ScrollView {
             ScrollView {
                 HStack {
@@ -447,27 +447,28 @@ private struct GridStrips: ExampleContent {
             .orientation(.horizontal)
         }
 
-        struct GridStrips: ContentView {
-            @State private var tile = 0
-            @State private var rests = 0
+        struct RestStrips: ContentView {
+            @State private var offset = Point.zero
+            @State private var rested = 1
 
             var content: any View {
                 Grid {
                     tileStrip()
-                        // The offsets it may rest on, and which of them it is
-                        // nearest - reported as that changes, which is halfway
-                        // between two tiles.
-                        .snapInterval(160)
-                        .snapItem($tile)
-                        // And the moment nothing is moving any more - once per
-                        // drag, however many tiles it crossed on the way.
-                        .onScrollStopped { rests += 1 }
+                        .scrollOffset($offset)
+                        // Once a movement has ended - a drag let go of, a
+                        // throw that ran out - a write carries the strip on to
+                        // the tile it is nearest.
+                        .onScrollStopped {
+                            let tile = max(($offset.journey.value.x / 160).rounded(), 0)
+                            rested = Int(tile) + 1
+                            offset = Point(tile * 160, 0)
+                        }
                         .gridRow(0)
 
-                    Label("nearest tile: \\(tile + 1)   ·   came to rest \\(rests) times")
+                    Label("at rest on tile \\(rested)")
                         .gridRow(1)
 
-                    // The same strip with nothing said about where it may rest.
+                    // The same strip with nothing said about where it rests.
                     tileStrip()
                         .gridRow(3)
                 }
@@ -481,34 +482,36 @@ private struct GridStrips: ExampleContent {
     var content: any View {
         Grid {
             tileStrip()
-                // The offsets it may rest on, and which of them it is nearest -
-                // reported as that changes, which is halfway between two tiles.
-                .snapInterval(160)
-                .snapItem($tile)
-                // And the moment nothing is moving any more - once per drag,
-                // however many tiles it crossed on the way.
-                .onScrollStopped { rests += 1 }
+                .scrollOffset($offset)
+                // Once a movement has ended - a drag let go of, a throw that
+                // ran out - a write carries the strip on to the tile it is
+                // nearest.
+                .onScrollStopped {
+                    let tile = max(($offset.journey.value.x / 160).rounded(), 0)
+                    rested = Int(tile) + 1
+                    offset = Point(tile * 160, 0)
+                }
                 .gridRow(0)
 
-            Label("nearest tile: \(tile + 1)   ·   came to rest \(rests) times")
+            Label("at rest on tile \(rested)")
                 .fontSize(12)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
                 .horizontalTextAlignment(.center)
                 .gridRow(1)
 
-            Label("`.snapInterval(160)`")
+            Label("`.onScrollStopped` + a write to `.scrollOffset`")
                 .fontSize(11)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
                 .gridRow(2)
 
-            // The same strip with nothing said about where it may rest, so the
-            // difference on screen is the interval and nothing else.
+            // The same strip with nothing said about where it rests, so the
+            // difference on screen is the handler and nothing else.
             tileStrip()
                 .gridRow(3)
 
-            Label("no interval")
+            Label("the platform's own rest")
                 .fontSize(11)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -523,95 +526,16 @@ private struct GridStrips: ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("`.snapInterval(160)`: drag the first strip and let go, and it comes to "
-                + "rest on a tile however it was thrown. The strip under it says nothing "
-                + "and stops wherever the throw ends.")
+            Label("Drag the first strip and let go: the throw stops where the platform "
+                + "stops it, and the strip then glides on to the tile it is nearest. The "
+                + "strip under it stays wherever the throw ends.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.snapItem($tile)` names the tile the strip will stop at while it is "
-                + "still moving: the number changes as the strip passes the halfway mark "
-                + "between two tiles.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("`.onScrollStopped` runs once the strip has stopped - once per drag, "
-                + "however many tiles it crossed, and after the correction where one was "
-                + "needed. That is the moment work costs nothing, so it is where a list "
-                + "builds the rows the next swipe needs.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-        }
-        .spacing(12)
-    }
-}
-
-/// How much of the platform's own throw a release keeps.
-private struct ThrowStrips: ExampleContent {
-    static let code = """
-        // Made of the tileStrip() the previous example defines.
-        struct ThrowStrips: ContentView {
-            var content: any View {
-                Grid {
-                    tileStrip()
-                        .snapInterval(160)
-                        .gridRow(0)
-
-                    // The same grid keeping a THIRD of the platform's own
-                    // throw, so the pair differs by that and nothing else.
-                    tileStrip()
-                        .snapInterval(160)
-                        .momentum(0.35)
-                        .gridRow(2)
-                }
-                .rows(.auto, .auto, .auto, .auto)
-                .rowSpacing(10)
-                .verticalAlignment(.center)
-            }
-        }
-        """
-
-    var content: any View {
-        Grid {
-            tileStrip()
-                .snapInterval(160)
-                .gridRow(0)
-
-            Label("the platform's whole throw")
-                .fontSize(11)
-                .textColor(Palette.subtle)
-                .horizontalTextAlignment(.center)
-                .gridRow(1)
-
-            // The same grid keeping a THIRD of the platform's own throw, so the
-            // pair differs by that and nothing else.
-            tileStrip()
-                .snapInterval(160)
-                .momentum(0.35)
-                .gridRow(2)
-
-            Label("`.momentum(0.35)`")
-                .fontSize(11)
-                .textColor(Palette.subtle)
-                .horizontalTextAlignment(.center)
-                .gridRow(3)
-        }
-        .rows(.auto, .auto, .auto, .auto)
-        .rowSpacing(10)
-        .verticalAlignment(.center)
-    }
-
-    var notes: Element? {
-        VStack {
-            Label("Flick both strips the same way. The lower one keeps a third of what the "
-                + "platform would have thrown it, so the same flick means a tile or two "
-                + "rather than five.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("`.momentum` scales the platform's own prediction rather than replacing "
-                + "it, so a hard throw still goes further than a gentle one. A GalleryView "
-                + "keeps half, which is what makes an ordinary swipe mean the next card.")
+            Label("`.onScrollStopped` runs once a movement of the reader's has ended - "
+                + "a drag, a throw, a wheel - and not after the glide it asked for itself. "
+                + "That is the moment work costs nothing, so it is also where a list builds "
+                + "the rows the next swipe needs.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -697,8 +621,8 @@ private struct BarStrips: ExampleContent {
     }
 }
 
-/// A scroller: what reading its offset costs, where it may come to rest, how
-/// far a throw carries it, and its bar.
+/// A scroller: what reading its offset costs, where it comes to rest, and its
+/// bar.
 struct ScrollViewSample: SampleContent {
     static let id = "scrollView"
     static let title = "ScrollView"
@@ -714,6 +638,6 @@ struct ScrollViewSample: SampleContent {
     static let fills = true
 
     var examples: [Example] {
-        [Example(OffsetStrips()), Example(GridStrips()), Example(ThrowStrips()), Example(BarStrips())]
+        [Example(OffsetStrips()), Example(RestStrips()), Example(BarStrips())]
     }
 }

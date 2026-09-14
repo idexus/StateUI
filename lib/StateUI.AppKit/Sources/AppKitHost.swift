@@ -2168,11 +2168,6 @@ final class MountedNode: NSObject {
         return (current != previous, current)
     }
 
-    private func changedSnapItem(to item: Int) {
-        guard let handler = events[.snapItemChanged] else { return }
-        host?.dispatch(handler, payload: [.number(Double(item))])
-    }
-
     private func scrollStopped() {
         guard let handler = events[.scrollStopped] else { return }
         host?.dispatch(handler)
@@ -2222,9 +2217,6 @@ final class MountedNode: NSObject {
             let scroll = AppKitScrollView()
             scroll.onOffsetChanged = { [weak self] old, new in
                 self?.scrolled(from: old, to: new)
-            }
-            scroll.onSnapItemChanged = { [weak self] item in
-                self?.changedSnapItem(to: item)
             }
             scroll.onScrollStopped = { [weak self] in self?.scrollStopped() }
             scroll.onFramesWanted = { [weak self, weak scroll] in
@@ -2483,11 +2475,7 @@ final class MountedNode: NSObject {
                 padding: insets(.padding),
                 verticalBarVisibility: enumeration(.verticalScrollBarVisibility) ?? 0,
                 horizontalBarVisibility: enumeration(.horizontalScrollBarVisibility) ?? 0,
-                offset: offset,
-                snapInterval: number(.snapInterval) ?? 0,
-                snapFrom: number(.snapFrom) ?? 0,
-                momentum: number(.scrollMomentum) ?? 1,
-                snapsAtMost: max(0, whole(.snapsAtMost) ?? 0))
+                offset: offset)
         }
 
         if let imageView = view as? AppKitImageView {

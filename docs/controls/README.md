@@ -35,7 +35,7 @@ A host's column is what that host declares it realizes - AppKit's is `AppKitReal
 | [HStack](HStack.md) | 68 | 22 ✅ · 2 ✅* |  |  |  |  |  |
 | [Grid](Grid.md) | 71 | 20 ✅ · 2 ✅* |  |  |  |  |  |
 | [AbsoluteLayout](AbsoluteLayout.md) | 67 | 20 ✅ · 2 ✅* |  |  |  |  |  |
-| [ScrollView](ScrollView.md) | 73 | 29 ✅ · 2 ✅* |  |  |  |  |  |
+| [ScrollView](ScrollView.md) | 68 | 24 ✅ · 2 ✅* |  |  |  |  |  |
 | [RefreshView](RefreshView.md) | 67 |  |  |  |  |  |  |
 | [SwipeView](SwipeView.md) | 68 |  |  |  |  |  |  |
 | [Map](Map.md) | 75 |  |  |  |  |  |  |

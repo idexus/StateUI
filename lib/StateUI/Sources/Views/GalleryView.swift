@@ -87,9 +87,9 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// Which card is in the middle, where no binding was lent.
     @State private var shown = 0
 
-    /// The slot the SCROLLER last named, which is what tells a position the
-    /// reader swiped to from one somebody assigned: only an assigned one has
-    /// anything to move.
+    /// The card the RUN last named as it passed, which is what tells a position
+    /// the reader swiped to from one somebody assigned: only an assigned one
+    /// has anything to move.
     @State private var reported = 0
 
     /// The shape the cards are IN, which is one render behind the shape asked
@@ -176,9 +176,6 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 
     /// Whether the reader may swipe at all.
     private var swipes = true
-
-    /// The most cards one swipe may cross. Zero is as many as it carries.
-    private var limit = 0
 
     /// What stands in when there are no items at all.
     private var empty: (any View)?
@@ -340,25 +337,6 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return copy
     }
 
-    /// The most cards one swipe may cross. Nothing is the default, and means as
-    /// many as the throw carries. This library's own - the same limit
-    /// `ScrollView.snapsAtMost` is.
-    ///
-    ///     GalleryView(steps) { … }.snapsAtMost(1)
-    ///
-    /// A hard swipe crosses several cards, which is right for a deck somebody
-    /// is looking THROUGH and wrong for one they are stepping through. At `1`
-    /// every swipe moves exactly one card, however hard it was thrown, and the
-    /// card still arrives the way any other swipe brings one.
-    ///
-    /// - Parameter cards: how many cards a swipe may cross. Zero is no limit.
-    /// - Returns: the gallery, holding a swipe to that many.
-    public func snapsAtMost(_ cards: Int) -> Self {
-        var copy = self
-        copy.limit = max(0, cards)
-        return copy
-    }
-
     /// What the gallery shows while it has no items at all. This library's own.
     ///
     /// - Parameter view: what stands in for the cards.
@@ -498,6 +476,23 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         let travels = flying
         let drawn = { (room: Rect) in self.front(in: room, shape: shape) }
 
+        // WHICH CARD IS IN THE MIDDLE, written only where it changed. What the
+        // run names is where it already is, so the watcher below moves nothing
+        // for it, and the page hears it as it hears an assignment.
+        let name = { (slot: Int) in
+            let card = min(max(slot, 0), count - 1)
+
+            guard card != reports.wrappedValue else { return }
+
+            reports.wrappedValue = card
+
+            if let pin {
+                if pin.wrappedValue != card { pin.wrappedValue = card }
+            } else if showns.wrappedValue != card {
+                showns.wrappedValue = card
+            }
+        }
+
         // A VIEW OF ITS OWN FOR THE PLACEMENT, and it has to be one: a card's
         // turn, fade and size are written by the DRIVEN STATE, on the host's own
         // frames, so a press written on the same node is snapped away by the
@@ -537,6 +532,14 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                     // hand is a card that lags. A change of SHAPE is the other
                     // case, and the only one where these do travel.
                     motion: travels ? .inherited : .none)
+
+                // THE CARD IN THE MIDDLE IS NAMED AS THE RUN PASSES HALFWAY
+                // between two - under the hand, in the platform's throw, or on
+                // the way to a card - so a card crossed is one render and a
+                // frame is none.
+                if swipes {
+                    name(Int((offset.projectedValue.journey.value.x / step).rounded()))
+                }
             }
 
         // THE WATCHERS ARE A VIEW OF THEIR OWN, BESIDE THE DECK.
@@ -600,27 +603,18 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 
         var reader = ScrollReader(across: Double(count - 1) * step) { cards }
             .scrollOffset($scrolled)
-            // ONE CARD PER `reach`, so the platform's own snapping settles the
-            // run on the card it is nearest.
-            .snapInterval(step)
-            // A RUN OF CARDS WANTS LESS THROW THAN A LIST DOES where a finger
-            // throws it - see `carry`. A pointer's push is kept whole: halved,
-            // a trackpad push shorter than a card rounds back to where it began.
-            .momentum(device.formFactor == .desktop ? 1 : Self.carry)
-            .snapItem(
-                Binding(
-                    get: { reports.wrappedValue },
-                    set: { slot in
-                        let card = min(max(slot, 0), count - 1)
+            // THE RUN COMES TO REST ON A CARD. The scroller stops wherever the
+            // platform's own throw leaves it, and from there the run travels on
+            // to the card it is nearest - a write, so the scroller glides there
+            // under the element's law and the cards follow it the whole way.
+            .onScrollStopped {
+                let stood = offset.projectedValue.journey.value.x
+                let rest = Double(min(max(Int((stood / step).rounded()), 0), count - 1)) * step
 
-                        reports.wrappedValue = card
-
-                        if let pin {
-                            if pin.wrappedValue != card { pin.wrappedValue = card }
-                        } else if showns.wrappedValue != card {
-                            showns.wrappedValue = card
-                        }
-                    }))
+                if abs(stood - rest) > Self.settled {
+                    offset.wrappedValue = Point(rest, 0)
+                }
+            }
 
         // A DRAG TURNS THE RUN WHERE A SCROLLER WILL NOT TAKE ONE ITSELF.
         // On a phone and on a tablet the finger IS the scroller's own gesture:
@@ -661,10 +655,6 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                     offset.wrappedValue = Point(Double(card) * step, 0)
                 }
             }
-        }
-
-        if limit > 0 {
-            reader = reader.snapsAtMost(limit)
         }
 
         if let tapped {
@@ -762,15 +752,9 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// rather than more than one, near enough that a deck is quick to cross.
     private var reach: Double { cardWidth * 0.6 }
 
-    /// How much of the platform's own throw a release keeps where a finger
-    /// throws the run; a pointer's gesture keeps all of it.
-    ///
-    /// Half. A touch platform throws a scroller far enough to cross a
-    /// long list, which over a run of CARDS is most of the deck for one flick
-    /// - past whatever the reader was aiming at, and a swipe back to find it.
-    /// Scaled rather than replaced, so a hard throw still carries further than
-    /// a gentle one. It is the scale `ScrollView.momentum` takes.
-    private static var carry: Double { 0.5 }
+    /// How near a card the run has to stand to count as resting on it, in
+    /// device units - closer than this is not worth a movement.
+    private static var settled: Double { 0.5 }
 
     /// How far the run is turned, in CARDS - a whole number at rest and
     /// whatever the scroller says while it is moving.

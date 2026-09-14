@@ -519,7 +519,7 @@ final class CarriedStateTests: XCTestCase {
 
     /// A `ScrollReader` lays an empty scroller over what it holds, as long as
     /// the room plus how far the run goes beyond it, reporting into the
-    /// state.
+    /// state - and hearing the scroller come to rest.
     func testAScrollReaderReportsIntoItsState() {
         let across = State(wrappedValue: Point.zero)
         let renders = Renders()
@@ -527,7 +527,7 @@ final class CarriedStateTests: XCTestCase {
         let patch = renders.render(
             ScrollReader(across: 540) { Label("under") }
                 .scrollOffset(across.projectedValue)
-                .snapInterval(90)
+                .onScrollStopped {}
                 .id("reader")
                 .body)
 
@@ -546,7 +546,7 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(
             found?.driven?[.scrollOffset],
             HostStateBinding(state: across.number, mode: .inOut, kind: .property))
-        XCTAssertEqual(found?.props[.snapInterval], .number(90))
+        XCTAssertNotNil(found?.events?[.scrollStopped], "the scroller hears itself come to rest")
         XCTAssertEqual(found?.props[.orientation]?.enumeration, ScrollOrientation.horizontal.rawValue)
     }
 

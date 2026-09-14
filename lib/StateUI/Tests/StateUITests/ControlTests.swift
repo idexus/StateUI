@@ -87,7 +87,6 @@ final class ControlTests: XCTestCase {
         // the same thing an application holds.
         let followed = State(wrappedValue: 0.0)
         let offset = State(wrappedValue: Point.zero)
-        let nearest = State(0)
         let refreshing = State(false)
         let hasBack = State(false)
         let hasForward = State(false)
@@ -326,10 +325,6 @@ final class ControlTests: XCTestCase {
                 // The offset is ONE POINT - both axes on one state - written
                 // by the host on its own frames and walked by it on a write.
                 .scrollOffset(offset.projectedValue)
-                .snapInterval(80, from: 10)
-                .snapsAtMost(1)
-                .momentum(0.5)
-                .snapItem(nearest.projectedValue)
                 .onScrollStopped {}),
 
             // Both halves of a map: the control, and the pins on it. A Pin is

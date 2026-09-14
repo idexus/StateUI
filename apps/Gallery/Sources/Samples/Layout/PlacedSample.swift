@@ -183,7 +183,12 @@ struct PlacedSample: SampleContent, ExampleContent {
                         board
                     }
                     .scrollOffset($scrolled)
-                    .snapInterval(90)
+                    // AT REST ON A CARD: the scroller stops where the throw
+                    // leaves it, and a write carries it on to the nearest one.
+                    .onScrollStopped {
+                        let card = min(max(($scrolled.journey.value.x / 90).rounded(), 0), Double(cards.count - 1))
+                        scrolled = Point(card * 90, 0)
+                    }
                     // THE OPENING AIM: a scroller cannot be moved before its
                     // content is laid out - asked earlier it clamps to the
                     // length it has so far - so this sends it again until the
@@ -387,9 +392,13 @@ struct PlacedSample: SampleContent, ExampleContent {
                         cards
                     }
                     .scrollOffset($scrolled)
-                    // ONE CARD PER `reach`, so the platform's own snapping
-                    // settles the ring on the card it is nearest.
-                    .snapInterval(Self.reach)
+                    // AT REST ON A CARD: the scroller stops where the throw
+                    // leaves it, and a write carries it on to the one it is
+                    // nearest.
+                    .onScrollStopped {
+                        let card = min(max(($scrolled.journey.value.x / Self.reach).rounded(), 0), Double(Self.cards.count - 1))
+                        scrolled = Point(card * Self.reach, 0)
+                    }
                     // THE OPENING AIM: a scroller cannot be moved before its
                     // content is laid out - asked earlier it clamps to the
                     // length it has so far - so this puts it there again

@@ -694,9 +694,10 @@ internal sealed class StateCycle
     /// </summary>
     /// <remarks>
     /// A scroller has no settable property for this side to hear, so the
-    /// report comes from the snap's own watcher - the one place that tells a
-    /// real report from a relayout's clamp - and lands here by KEY instead.
-    /// Both lanes always, the offset being one point.
+    /// report comes from the scroller's movement - the one place that tells a
+    /// reader's report from a relayout's clamp and from the frames of a travel
+    /// the application wrote - and lands here by KEY instead. Both lanes
+    /// always, the offset being one point.
     /// </remarks>
     /// <param name="view">The scroller.</param>
     /// <param name="lanes">Where it stands, across then down.</param>
@@ -1576,8 +1577,7 @@ internal sealed class StateTie
         // A SCROLLER'S OFFSET IS ONE POINT AND HAS NO SETTABLE PROPERTY: the
         // platform declares ScrollX and ScrollY read-only, so this tie carries
         // no property at all and aims at the scroller itself, which the engine
-        // has moved as a two-lane target since long before a state could name
-        // it. See ScrollSnap.Walked.
+        // moves as a two-lane target. See ScrollMovement.Walked.
         if (entry.Key.Prop == SwiftProp.ScrollOffset)
         {
             return view is ScrollView ? new StateTie(view, entry, null, MotionValue.Offset) : null;
@@ -1908,12 +1908,13 @@ internal sealed class StateTie
 
     /// <summary>
     /// The offset's own target, for a scroller - the platform keeps the offset
-    /// read-only and the snap moves it, see <see cref="ScrollSnap.Walked"/>.
+    /// read-only and the scroller's movement writes it, see
+    /// <see cref="ScrollMovement.Walked"/>.
     /// </summary>
     private IMotionTarget? Sliding =>
         View is ScrollView scroll && Property is null
-            && scroll.GetValue(StateUIRenderer.ScrollSnapProperty) is ScrollSnap settle
-            ? settle.Walked
+            && scroll.GetValue(StateUIRenderer.ScrollMovementProperty) is ScrollMovement movement
+            ? movement.Walked
             : null;
 
     /// <summary>

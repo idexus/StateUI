@@ -219,8 +219,7 @@ extension Prop {
         .gridColumn, .gridColumnSpan, .gridRow, .gridRowSpan, .zIndex,
         .placement, .priority, .position, .selectedIndex,
         .tapCount, .panTouchCount, .maximumVisible,
-        .snapsAtMost, .snapInterval, .snapFrom, .scrollMomentum, .scrollStep,
-        .step, .minimum, .maximum, .swipeThreshold,
+        .scrollStep, .step, .minimum, .maximum, .swipeThreshold,
         .points, .strokeDashPattern, .region, .location,
         .absoluteLayoutBounds, .absoluteLayoutProportions,
         .scrollOffset,
@@ -562,7 +561,6 @@ public extension Prop {
     static let scale = Prop("scale")
     static let scaleX = Prop("scaleX")
     static let scaleY = Prop("scaleY")
-    static let scrollMomentum = Prop("scrollMomentum")
 
     /// This library's own: where the scroller stands, as one point of two
     /// lanes - the platform's offset being one point, and one journey being
@@ -573,9 +571,6 @@ public extension Prop {
     static let selectedIndicatorColor = Prop("selectedIndicatorColor")
     static let selectionLength = Prop("selectionLength")
     static let side = Prop("side")
-    static let snapFrom = Prop("snapFrom")
-    static let snapInterval = Prop("snapInterval")
-    static let snapsAtMost = Prop("snapsAtMost")
     static let source = Prop("source")
     static let spacing = Prop("spacing")
     static let stroke = Prop("stroke")
@@ -674,7 +669,6 @@ public extension Event {
     static let scrollXChanged = Event("scrollXChanged")
     static let scrollYChanged = Event("scrollYChanged")
     static let selectedIndexChanged = Event("selectedIndexChanged")
-    static let snapItemChanged = Event("snapItemChanged")
     static let stopped = Event("stopped")
     static let swipeChanging = Event("swipeChanging")
     static let swiped = Event("swiped")
