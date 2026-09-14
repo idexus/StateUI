@@ -303,23 +303,6 @@ final class Catalog {
                     Sample(TaskSleepSample()),
                     Sample(FoundationProbeSample()),
                 ]),
-
-            SampleGroup(
-                route: "interop",
-                title: "C# interop",
-                summary: "Calling C#, hearing from it, and controls the app registers - "
-                    + "spoken to like the library's own.",
-                icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
-                card: ImageSource("cat_interop.png"),
-                samples: [
-                    Sample(CustomActsSample()),
-                    Sample(CustomEventsSample()),
-                    Sample(CustomControlSample()),
-                    Sample(CustomContainerSample()),
-                    Sample(CustomBindingSample()),
-                    Sample(CustomStyleSample()),
-                    Sample(CustomAnimationSample()),
-                ]),
         ]
     }
 

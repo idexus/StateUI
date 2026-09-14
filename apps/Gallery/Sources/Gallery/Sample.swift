@@ -29,12 +29,6 @@ protocol SampleContent: ContentView {
     /// The Swift that produced the example, as a reader would write it.
     static var code: String { get }
 
-    /// The C# behind the example, when there is any - what the interop
-    /// samples show under IN C#: the registration in MauiProgram, the control
-    /// class beside it. Empty for a sample with no C# half, which is most of
-    /// them, and the page then draws no section.
-    static var codeCSharp: String { get }
-
     /// Whether the page may put the example in a scroller. Yes unless a sample
     /// says otherwise.
     ///
@@ -133,9 +127,6 @@ extension SampleContent {
     /// No words but the summary, which is what most samples say.
     var notes: Element? { nil }
 
-    /// No C# half, which is what almost every sample says.
-    static var codeCSharp: String { "" }
-
     static var scrolls: Bool { true }
 
     /// Listed on every kind of device, which is what almost every sample is.
@@ -182,7 +173,6 @@ struct Sample {
     let title: String
     let summary: String
     let code: String
-    let codeCSharp: String
     let scrolls: Bool
     let idioms: Set<DeviceIdiom>
 
@@ -214,7 +204,6 @@ struct Sample {
         title = Content.title
         summary = Content.summary
         code = Content.code
-        codeCSharp = Content.codeCSharp
         scrolls = Content.scrolls
         idioms = Content.idioms
         warns = Content.warns

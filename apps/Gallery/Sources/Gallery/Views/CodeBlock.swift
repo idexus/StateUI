@@ -9,8 +9,6 @@ import StateUI
 struct CodeBlock: ContentView {
     private let code: String
 
-    private var spoken: CodeLanguage = .swift
-
     private var heading = "IN SWIFT"
 
     private var warned = false
@@ -18,15 +16,6 @@ struct CodeBlock: ContentView {
     /// - Parameter code: The snippet, as a reader would write it.
     init(_ code: String) {
         self.code = code
-    }
-
-    /// What the snippet is written in - Swift unless a block says otherwise,
-    /// which only the IN C# sections do. Steers the highlighter's vocabulary
-    /// and nothing else.
-    func language(_ value: CodeLanguage) -> Self {
-        var copy = self
-        copy.spoken = value
-        return copy
     }
 
     /// What the heading above the code says. "IN SWIFT" is the page's
@@ -89,7 +78,7 @@ struct CodeBlock: ContentView {
                     // in the same colour, and the snippet never changes, so
                     // the offsets never move.
                     ForEach(
-                        Array(CodeHighlight.runs(in: code, language: spoken).enumerated()),
+                        Array(CodeHighlight.runs(in: code).enumerated()),
                         id: \.offset
                     ) { run in
                         // The size goes on every run rather than on the

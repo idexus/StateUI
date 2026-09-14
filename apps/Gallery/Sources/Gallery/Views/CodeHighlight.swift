@@ -1,6 +1,6 @@
-// Colouring Swift source, on this side of the boundary.
+// Colouring Swift source.
 //
-// A MAUI Label has ONE TextColor, so text in six colours is six Spans - which is
+// A Label has one text colour, so text in six colours is six spans - which is
 // what `Label.formattedText` is for. This file turns a snippet into those runs.
 //
 // ASCII only, on purpose. Deciding what is a letter with `Character.isLetter`
@@ -11,17 +11,6 @@
 // falls through as plain text, which is the right answer for it anyway.
 
 import StateUI
-
-/// Which language's words are drawn as keywords. The scanner is shared -
-/// comments, strings, attributes, capitalised names and numbers read the
-/// same in both - only the vocabulary differs.
-enum CodeLanguage {
-    /// The default: every sample's own code.
-    case swift
-
-    /// On request: the C# half an interop sample shows under IN C#.
-    case csharp
-}
 
 /// One run of source that is all the same colour.
 struct CodeRun {
@@ -84,23 +73,8 @@ enum CodeHighlight {
         "didSet",
     ]
 
-    /// The words C# owns - the interop listings' vocabulary, plus the
-    /// neighbours somebody would notice missing.
-    private static let csharpKeywords: Set<String> = [
-        "abstract", "async", "await", "base", "bool", "break", "case", "catch",
-        "class", "const", "continue", "default", "delegate", "do", "double",
-        "else", "enum", "event", "false", "field", "finally", "for", "foreach",
-        "get", "if", "in", "init", "int", "interface", "internal", "is",
-        "lock", "nameof", "namespace", "new", "null", "object", "out",
-        "override", "params", "private", "protected", "public", "readonly",
-        "record", "ref", "return", "sealed", "set", "static", "string",
-        "struct", "switch", "this", "throw", "true", "try", "typeof", "using",
-        "var", "void", "when", "where", "while",
-    ]
-
     /// The snippet, split into runs in the order it was written.
-    static func runs(in source: String, language: CodeLanguage = .swift) -> [CodeRun] {
-        let keywords = language == .swift ? Self.keywords : Self.csharpKeywords
+    static func runs(in source: String) -> [CodeRun] {
         let characters = Array(source)
         var runs: [CodeRun] = []
         var plain = ""

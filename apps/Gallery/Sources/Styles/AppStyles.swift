@@ -312,15 +312,6 @@ enum AppStyles {
             Style<RefreshView>()
                 .refreshColor(Palette.accent)
 
-            // The interop group's registered control - a Style can target it
-            // because a style resolves on this side by the node type
-            // `RatingBar()` makes; its `rating` setter comes from the
-            // protocol the control conforms to. Keyed, so only the sample
-            // that asks wears it; see Samples/Interop/CustomStyleSample.swift.
-            Style<RatingBar>("FourStars")
-                .rating(4)
-                .backgroundColor(Palette.selected)
-
             // MARK: The menu's rows
             //
             // A menu row is a view like any other, so it takes a style like any

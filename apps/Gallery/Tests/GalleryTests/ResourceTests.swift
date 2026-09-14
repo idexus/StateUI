@@ -26,10 +26,6 @@ final class ResourceTests: XCTestCase {
         "RadioButton", "Slider", "ActivityIndicator", "ProgressBar",
         "IndicatorView", "RefreshView", "Image", "BoxView", "Border",
         "Grid", "ScrollView", "VStack", "HStack",
-        // The gallery's own registered control - the renderer knows it
-        // through StateUIControls, which is also where a Style targeting
-        // it resolves its class.
-        "Gallery.RatingBar",
     ]
 
     func testEveryStyleTargetsAControlThatExists() {

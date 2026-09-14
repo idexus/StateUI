@@ -65,12 +65,6 @@ struct SamplePage: ContentView {
                         .title(section.element.title ?? "IN SWIFT")
                         .warns(section.element.title.map(sample.warns.contains) ?? false)
                 }
-
-                // The C# half, where a sample has one - the interop group's
-                // registrations and controls.
-                if !sample.codeCSharp.isEmpty {
-                    CodeBlock(sample.codeCSharp).language(.csharp).title("IN C#")
-                }
             }
             .spacing(16)
             .padding(24)

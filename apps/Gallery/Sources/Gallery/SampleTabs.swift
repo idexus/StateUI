@@ -12,20 +12,15 @@ enum SampleTab: Hashable {
 
     /// Its Swift.
     case swift
-
-    /// Its C#, where it has any.
-    case csharp
 }
 
 extension Sample {
     /// The tabs of a page that holds still: each example, the words where a
-    /// part has words the sample did not keep under it, the Swift, and the C#
-    /// where there is any.
+    /// part has words the sample did not keep under it, and the Swift.
     var tabs: [SampleTab] {
         parts.indices.map(SampleTab.part)
             + (notesHaveTab ? [.notes] : [])
             + [.swift]
-            + (codeCSharp.isEmpty ? [] : [.csharp])
     }
 
     /// Whether the words take a tab of their own.
@@ -50,8 +45,6 @@ extension Sample {
             return "Notes"
         case .swift:
             return "In Swift"
-        case .csharp:
-            return "In C#"
         }
     }
 }
@@ -139,7 +132,7 @@ struct SampleTabPage: ContentView {
                 }
                 .orientation(.vertical)
                 .gridRow(1)
-            } else if tab == .swift {
+            } else {
                 ScrollView {
                     VStack {
                         // The tab already says In Swift, so a lone block goes
@@ -152,12 +145,6 @@ struct SampleTabPage: ContentView {
                         }
                     }
                     .spacing(16)
-                }
-                .orientation(.vertical)
-                .gridRow(1)
-            } else {
-                ScrollView {
-                    CodeBlock(sample.codeCSharp).language(.csharp).title("")
                 }
                 .orientation(.vertical)
                 .gridRow(1)
