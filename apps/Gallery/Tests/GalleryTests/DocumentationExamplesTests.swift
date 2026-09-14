@@ -197,23 +197,25 @@ final class DocumentationExamplesTests: XCTestCase {
 
     // MARK: - Running the compiler
 
-    /// Where this package's DEBUG build put the library's module, or nil.
+    /// Where the build that made THIS test put the library's module, or nil.
     ///
-    /// The debug build alone: a release directory beside it, where one exists,
-    /// and the index build are other compiler modes' output, which this one
-    /// refuses to read.
+    /// The Modules folder beside the test bundle - inside it, where the bundle
+    /// is the folder the test executable stands in. The listings are checked
+    /// with the compiler running them, against what that compiler wrote: a walk
+    /// of .build meets every triple built there, and an application's Android
+    /// build writes its own module there with another compiler.
     static func builtModuleDirectory() -> URL? {
-        let build = repository.appendingPathComponent("apps/Gallery/.build")
-        guard let walk = FileManager.default.enumerator(at: build, includingPropertiesForKeys: nil) else {
-            return nil
-        }
-        for case let url as URL in walk {
-            if url.lastPathComponent == "StateUI.swiftmodule",
-               !url.path.contains("index-build"),
-               url.deletingLastPathComponent().path.hasSuffix("/debug/Modules") {
-                return url.deletingLastPathComponent()
+        let bundle = Bundle(for: DocumentationExamplesTests.self).bundleURL
+
+        for folder in [bundle, bundle.deletingLastPathComponent()] {
+            let modules = folder.appendingPathComponent("Modules")
+
+            if FileManager.default.fileExists(
+                atPath: modules.appendingPathComponent("StateUI.swiftmodule").path) {
+                return modules
             }
         }
+
         return nil
     }
 
