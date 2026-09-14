@@ -218,7 +218,8 @@ final class Differ {
                 id: rendered.id,
                 rendered: rendered,
                 node: placeholder,
-                forced: true)
+                forced: true,
+                sizesArrive: rendered.sizesArrive)
         }
 
         // A composed view walked past, which an inspector writes down only as
@@ -362,11 +363,15 @@ final class Differ {
     /// patched into shape (replaced whole), an element that changed (its
     /// properties, events and children), and one that did not (an empty patch
     /// its parent drops).
+    ///
+    /// `sizesArrive` says the layout this element stands in is measured, so a
+    /// size of its own takes its new value at once.
     private func element(
         id: ElementId,
         rendered: RenderedNode?,
         node: Node,
-        forced: Bool = false
+        forced: Bool = false,
+        sizesArrive: Bool = false
     ) -> (node: RenderedNode, patch: HostPatch) {
         var node = node
 
@@ -803,6 +808,10 @@ final class Differ {
             if travel(.width).isNothing { lanes.subtract(.width) }
             if travel(.height).isNothing { lanes.subtract(.height) }
 
+            // A MEASURED LAYOUT's children take their sizes at once and travel
+            // only by their place - the rule for properties below.
+            if node.childSizesArrive { lanes.subtract([.width, .height]) }
+
             let stood = describeAll ? MotionLanes.all : (previous?.lanes ?? .all)
 
             if was != mine || stood != lanes {
@@ -873,10 +882,19 @@ final class Differ {
         // Nothing is written for a value with no half-way - a string, a flag, a
         // member of an enumeration, a brush - and nothing at all when the
         // motion is none, where a snap costs exactly the bytes it always did.
+        //
+        // A SIZE SOMEBODY MEASURES ARRIVES. Where this element reports its own
+        // frame, or the layout it stands in is measured, a size is worked out
+        // from a report - and carried through a motion it would lay the page
+        // out at sizes nobody chose, growing from nothing on its first report.
+        let measured = sizesArrive || node.reportsFrame
+
         if !describeAll, !replace, previous != nil, plan != nil || !travels.isNothing {
             for (property, value) in patch.properties
             where value.moves && !Prop.unmoved.contains(property)
                 && patch.transitions[property] == nil {
+                if measured, !property.moving.isDisjoint(with: [.width, .height]) { continue }
+
                 let moves = travel(value.kind.union(property.moving))
 
                 if moves.isNothing { continue }
@@ -979,7 +997,8 @@ final class Differ {
             patch.driven = .replace(driven.mapValues(HostStateBinding.init))
         }
 
-        let children = reconcileChildren(of: previous, node: node, into: &patch)
+        let children = reconcileChildren(
+            of: previous, node: node, into: &patch, sizesArrive: node.childSizesArrive)
 
         let result = RenderedNode(
             id: id,
@@ -1003,6 +1022,7 @@ final class Differ {
             readings: readings,
             children: children
         )
+        result.sizesArrive = sizesArrive
 
         // What it runs as it leaves: this build's closures, the newest.
         result.destroying = node.destroying
@@ -1092,10 +1112,14 @@ final class Differ {
     /// patch carries the COMPLETE list in order, the unchanged children as
     /// stubs. The list is then the whole story: its order, its length, and
     /// who is no longer in it.
+    ///
+    /// `sizesArrive` is handed to every child: the layout is measured, so their
+    /// sizes take their new values at once.
     private func reconcileChildren(
         of previous: RenderedNode?,
         node: Node,
-        into patch: inout HostPatch
+        into patch: inout HostPatch,
+        sizesArrive: Bool
     ) -> [RenderedNode] {
         let rendered = previous?.children ?? []
 
@@ -1175,7 +1199,8 @@ final class Differ {
 
             used.insert(id)
 
-            var (child, childPatch) = element(id: id, rendered: match, node: childNode)
+            var (child, childPatch) = element(
+                id: id, rendered: match, node: childNode, sizesArrive: sizesArrive)
 
             // What this row LOOKS like, so the host can hand its control to
             // the next row of the same shape. Only under a layout that says

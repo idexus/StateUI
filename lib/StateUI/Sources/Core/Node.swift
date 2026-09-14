@@ -407,6 +407,22 @@ public struct Node {
     /// property's value again. See Core/StateValue.swift.
     var driven: [Prop: StateRegistration] = [:]
 
+    /// Whether this element reports its own frame - an `.onFrameChanged`, or a
+    /// `.frame($x)` feed. What it reports is what it holds, arranged in the
+    /// size it was given, so a size of its own is not carried through a
+    /// motion. See Core/Diff.swift.
+    var reportsFrame: Bool {
+        events[.frameChanged] != nil || driven[.frame] != nil
+    }
+
+    /// Whether this layout's children take their sizes at once: it reports its
+    /// own frame, or one of them reports theirs - and what a measurement
+    /// reports is what the views beside it leave it. Their places still
+    /// travel.
+    var childSizesArrive: Bool {
+        reportsFrame || children.contains(where: \.reportsFrame)
+    }
+
     /// How this element's values MOVE when they change - what `.motion(_:)`
     /// and `.motion(_:_:)` wrote, or nil to travel at whatever the application
     /// says.

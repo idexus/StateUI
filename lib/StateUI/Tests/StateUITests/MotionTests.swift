@@ -360,6 +360,90 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(patch.lanes, .place, "the corner travels; the sides arrive")
     }
 
+    // ---- A size somebody measures arrives ------------------------------------
+
+    /// A layout whose frame is watched reports how big its room is, and a size
+    /// worked out from that report is the LAYOUT's answer: travelling through
+    /// it would lay the page out at sizes nobody chose, growing from nothing.
+    /// So a child's size arrives there, where the same change travels in a
+    /// room nobody measures.
+    func testASizeInsideAMeasuredLayoutArrives() {
+        let renders = Renders()
+
+        func room(_ width: Double) -> Node {
+            VStack { Border { Label("x") }.width(width).id("held") }
+                .onFrameChanged { _ in }
+                .id("room")
+                .body
+        }
+
+        renders.render(room(0))
+        let patch = renders.render(room(300))
+
+        XCTAssertEqual(patch.child("held")?.props[.width], .number(300))
+        XCTAssertNil(patch.child("held")?.transitions[.width], "the measured room's child takes its size at once")
+    }
+
+    func testASizeInARoomNobodyMeasuresStillTravels() {
+        let renders = Renders()
+
+        func room(_ width: Double) -> Node {
+            VStack { Border { Label("x") }.width(width).id("held") }.id("room").body
+        }
+
+        renders.render(room(0))
+        let patch = renders.render(room(300))
+
+        XCTAssertEqual(patch.child("held")?.transitions[.width]?.motion, .standard)
+    }
+
+    /// A view that reports its own frame takes a new size at once: what it
+    /// reports is what it holds, arranged in that size.
+    func testAViewWhoseOwnFrameIsWatchedTakesItsSizeAtOnce() {
+        let renders = Renders()
+
+        func panel(_ height: Double) -> Node {
+            Border { Label("x") }.height(height).onFrameChanged { _ in }.id("p").body
+        }
+
+        renders.render(panel(40))
+        let patch = renders.render(panel(80))
+
+        XCTAssertEqual(patch.props[.height], .number(80))
+        XCTAssertNil(patch.transitions[.height])
+    }
+
+    /// Where ANY child of a layout is measured, none of that layout's children
+    /// is carried through a size: what the measured one reports is what the
+    /// views beside it leave it.
+    func testAMeasuredChildMakesItsSiblingsSizesArrive() {
+        let renders = Renders()
+
+        func room(_ width: Double) -> Node {
+            VStack {
+                Label("measured").onFrameChanged { _ in }
+                Border { Label("x") }.width(width).id("beside")
+            }
+            .id("room")
+            .body
+        }
+
+        renders.render(room(100))
+        let patch = renders.render(room(200))
+
+        XCTAssertNil(patch.child("beside")?.transitions[.width])
+    }
+
+    /// And such a layout says so for the places it works out: its children's
+    /// corners travel, their sides arrive.
+    func testAMeasuredLayoutsChildrenTravelOnlyByTheirPlace() {
+        let renders = Renders()
+
+        let patch = renders.render(VStack { Label("x") }.onFrameChanged { _ in }.id("s").body)
+
+        XCTAssertEqual(patch.lanes, .place)
+    }
+
     /// A gradient is the same picture in different colours, so it crosses -
     /// which is what keeps a theme change uniform.
     func testAGradientTravels() {

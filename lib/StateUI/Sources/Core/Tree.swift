@@ -167,6 +167,11 @@ final class RenderedNode {
     /// is a different set of engines and starts over. See Core/Cycle.swift.
     var engines: [Int] = []
 
+    /// Whether this element takes a new size at once, because the layout it
+    /// stands in is measured - kept so the clean walk, which builds it again
+    /// without its parent, answers as its parent did. See Core/Diff.swift.
+    var sizesArrive = false
+
     /// The properties this element has driven to a state, as the host was told
     /// them - which is what a render is compared against, so a registration
     /// that did not change costs nothing. See Core/StateValue.swift.
