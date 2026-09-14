@@ -62,7 +62,10 @@ Treat one control, property, event, or host action as one vertical change:
 4. Implement every host claimed by the change, keeping native adapters thin.
 5. Add focused core tests and direct native-host tests.
 6. Add or update the smallest Gallery demonstration and handbook section.
-7. Mark the exact rows in `platform-contract.md` only after host tests pass.
+7. Regenerate the member lists with `python3 .scripts/controls-dictionary.py`,
+   and mark the exact rows in `platform-contract.md` and in the member's
+   `docs/controls/` file only after host tests pass; a `✅*` note says what is
+   still missing.
 
 Removing a capability follows the same path: remove stale vocabulary, host
 branches, tests, samples, and documentation together. Do not leave an inert

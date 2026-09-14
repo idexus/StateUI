@@ -50,6 +50,8 @@ that is usable now.
   lifetime, and native adapter rules.
 - [Platform contract](docs/platform-contract.md) — the control, property, and
   event inventory with verified host coverage.
+- [Control dictionary](docs/controls/README.md) — every control and part of an
+  application's structure, member by member, with a mark per platform.
 - [Project structure and development](docs/development.md) — packages, Gallery,
   build, F5, and test commands.
 - [Contributing](CONTRIBUTING.md) — rules for changing the public contract.

@@ -52,6 +52,8 @@ usable platform promise.
 - [Platform contract](platform-contract.md) is the checked control, property,
   event, environment, and host-capability matrix. A check mark means native
   implementation plus host tests.
+- [Control dictionary](controls/README.md) lists every control and part of an
+  application's structure member by member, each with a mark per platform.
 - [Project structure and development](development.md) covers repository
   layout, Gallery samples, vertical feature work, tests, and native builds.
 - [Contributing](../CONTRIBUTING.md) states the evidence, documentation, and
@@ -75,7 +77,7 @@ StateUI uses one source for each kind of question:
 | What StateUI means | this handbook and public `///` documentation |
 | What an application can spell | public declarations in `lib/StateUI/Sources` |
 | What crosses a host boundary | `HostContract` and [Host contract](host-contract.md) |
-| What a particular host implements | [Platform contract](platform-contract.md) |
+| What a particular host implements | [Platform contract](platform-contract.md) and the [control dictionary](controls/README.md) |
 | What works as visible behavior | the native Gallery |
 | What keeps the contract stable | core, host, and Gallery tests |
 

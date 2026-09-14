@@ -209,7 +209,8 @@ alone is not an implementation.
 
 The human-readable inventory and implementation matrix for AppKit, UIKit,
 GTK 4, Android Views, WinUI 3, and Web are maintained in
-[Platform contract](platform-contract.md). A check mark is evidence about a
+[Platform contract](platform-contract.md), and member by member in the
+[control dictionary](controls/README.md). A check mark is evidence about a
 host implementation, not merely the existence of a Swift declaration.
 
 A public control belongs in the base library only when the target host families
