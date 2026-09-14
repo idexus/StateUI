@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: VisualElement.InputTransparent and Layout.CascadeInputTransparent.
-struct TouchThroughSample: SampleContent {
+struct TouchThroughSample: SampleContent, ExampleContent {
     static let id = "touchThrough"
     static let title = "Touch through"
     static let summary = "A view that is not touched at all, and whether that reaches its children."

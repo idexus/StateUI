@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: ActivityIndicator.
-struct ActivityIndicatorSample: SampleContent {
+struct ActivityIndicatorSample: SampleContent, ExampleContent {
     @State private var loading = true
 
     static let id = "activityIndicator"

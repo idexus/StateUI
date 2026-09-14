@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Map and Pin - Microsoft.Maui.Controls.Maps.
-struct MapSample: SampleContent {
+struct MapSample: SampleContent, ExampleContent {
     @State private var said = "tap the map, a marker, or its callout"
 
     @Aim(Map.self) private var map

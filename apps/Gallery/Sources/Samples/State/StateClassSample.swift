@@ -50,7 +50,7 @@ private struct NoteRow: ContentView {
 /// A model in a class, edited in place - `@State` on its properties is what
 /// makes the writes visible, and `@State` on the view is what keeps the
 /// instance.
-struct StateClassSample: SampleContent {
+struct StateClassSample: SampleContent, ExampleContent {
     @State private var basket = Basket()
 
     static let id = "stateClass"

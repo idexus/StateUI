@@ -6,7 +6,7 @@ import StateUI
 /// under it are ordinary rows this page draws. Nothing about either is special
 /// to searching, which is the point: the app decides what a suggestion looks
 /// like and what choosing one does.
-struct SearchSample: SampleContent {
+struct SearchSample: SampleContent, ExampleContent {
     /// Where the gallery is: choosing a suggestion pushes a page.
     let nav: Navigation
 

@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: ImageButton.
-struct ImageButtonSample: SampleContent {
+struct ImageButtonSample: SampleContent, ExampleContent {
     @State private var taps = 0
     @State private var pressed = false
 

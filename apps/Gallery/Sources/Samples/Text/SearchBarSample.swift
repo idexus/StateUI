@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: SearchBar.
-struct SearchBarSample: SampleContent {
+struct SearchBarSample: SampleContent, ExampleContent {
     @State private var query = ""
     @State private var searched = ""
 

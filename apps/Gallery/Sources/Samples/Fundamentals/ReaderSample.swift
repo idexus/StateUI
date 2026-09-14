@@ -3,7 +3,7 @@ import StateUI
 /// WHO IS THE READER: one state, written by a slider and a button, and seven
 /// places it is used - each wearing its own build count, so the rule is on the
 /// screen. A get makes the closure it sits in a reader; a binding makes none.
-struct ReaderSample: SampleContent {
+struct ReaderSample: SampleContent, ExampleContent {
     /// The one value this page is about. Nothing in this view's own braces
     /// reads it: every get is inside a row, so a write builds that row alone.
     @State private var value = 0.3

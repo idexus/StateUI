@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Span, in the FormattedString a Label's FormattedText holds.
-struct TextSpanSample: SampleContent {
+struct TextSpanSample: SampleContent, ExampleContent {
     @State private var highlighted = 1
 
     /// The line the last example colours one word of.

@@ -1,6 +1,6 @@
 import StateUI
 
-struct LabelSample: SampleContent {
+struct LabelSample: SampleContent, ExampleContent {
     static let id = "label"
     static let title = "Label"
     static let summary = "Read-only native text with StateUI typography and alignment."

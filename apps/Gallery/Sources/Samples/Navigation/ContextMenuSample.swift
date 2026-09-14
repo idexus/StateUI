@@ -1,7 +1,7 @@
 import StateUI
 
 /// A native context menu attached to any StateUI view.
-struct ContextMenuSample: SampleContent {
+struct ContextMenuSample: SampleContent, ExampleContent {
     @State private var items = ["Alpha", "Beta", "Gamma"]
     @State private var chosen = "nothing yet"
 

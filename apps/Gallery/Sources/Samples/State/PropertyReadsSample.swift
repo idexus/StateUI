@@ -11,7 +11,7 @@ private final class Profile {
 }
 
 /// One model, two properties, two readers - and a write reaches one of them.
-struct PropertyReadsSample: SampleContent {
+struct PropertyReadsSample: SampleContent, ExampleContent {
     @State private var profile = Profile()
 
     static let id = "propertyReads"

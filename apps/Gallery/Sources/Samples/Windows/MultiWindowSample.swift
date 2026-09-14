@@ -2,7 +2,7 @@ import StateUI
 
 /// A gallery is a SCENE: its main window, the windows it opens beside it, and
 /// the state they share - and another gallery is one more scene.
-struct MultiWindowSample: SampleContent {
+struct MultiWindowSample: SampleContent, ExampleContent {
     /// This gallery's look, which its Fonts and Colours windows change.
     let style: SessionStyle
 
@@ -71,7 +71,7 @@ struct MultiWindowSample: SampleContent {
             @State var floatsTools = false
         }
 
-        // -- OPENING AND CLOSING --
+        // Opening and closing this gallery's windows:
 
         let style: SessionStyle
         @Environment private var scene: SceneSession            // THIS gallery
@@ -95,7 +95,7 @@ struct MultiWindowSample: SampleContent {
         //     @Environment private var window: WindowSession
         //     Button("Done").onClicked { try await window.close() }
 
-        // -- A WINDOW PER VALUE --
+        // A window per value:
 
         Button("Swatch 2").onClicked { try await scene.openWindow(.swatch, value: 2) }
         Button("Close swatch 2").onClicked { try await scene.closeWindow(.swatch, value: 2) }
@@ -104,7 +104,7 @@ struct MultiWindowSample: SampleContent {
         // SAME window about another swatch, in SwatchWindow.swift:
         //     Button("Next").onClicked { number += 1 }
 
-        // -- ANOTHER GALLERY --
+        // Another gallery:
 
         Button("Open another gallery").onClicked { try await application.openScene() }
         Button("Close this gallery").onClicked { try await scene.close() }
@@ -123,7 +123,7 @@ struct MultiWindowSample: SampleContent {
         VStack {
             preview
 
-            SectionTitle("THIS GALLERY'S WINDOWS")
+            SectionTitle("This gallery's windows")
 
             HStack {
                 opens("Fonts", .fonts)
@@ -165,7 +165,7 @@ struct MultiWindowSample: SampleContent {
             SwitchRow("Hide them behind another gallery", style.$hidesTools)
             SwitchRow("Keep them on top", style.$floatsTools)
 
-            SectionTitle("A WINDOW PER VALUE")
+            SectionTitle("A window per value")
 
             HStack {
                 swatch(1)
@@ -181,7 +181,7 @@ struct MultiWindowSample: SampleContent {
                 .horizontalOptions(.center)
                 .onClicked { await closeSwatch(2) }
 
-            SectionTitle("ANOTHER GALLERY")
+            SectionTitle("Another gallery")
 
             Button("Open another gallery")
                 .backgroundColor(style.accent.color)
@@ -200,6 +200,15 @@ struct MultiWindowSample: SampleContent {
                 .onClicked { await closeThis() }
         }
         .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("Fonts and Colours are this gallery's own windows: they change its font "
+            + "and accent, and close with it. A swatch window exists once per value, "
+            + "its number lent to it as a binding. Another gallery is one more scene, "
+            + "with windows and state of its own.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 
     /// A line in the gallery's own font and accent - what its two windows

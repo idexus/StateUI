@@ -4,7 +4,7 @@ import StateUI
 /// A layout of the author's own: one line of arithmetic says where each card
 /// goes and how it is turned, and the host puts every card there on its own
 /// frames.
-struct PlacedSample: SampleContent {
+struct PlacedSample: SampleContent, ExampleContent {
     static let id = "placed"
     static let title = "PlacedLayout"
     static let summary = "PlacedLayout puts each view where an engine of yours says - where it goes, how it is turned, how opaque it is - here a RING the cards stand on. Swipe or take hold of them to turn it, with nothing described as it moves."

@@ -1,7 +1,7 @@
 import StateUI
 
 /// `if`, `if/else` and `ForEach` inside a builder - and what stays put across them.
-struct BuilderSample: SampleContent {
+struct BuilderSample: SampleContent, ExampleContent {
     @State private var signedIn = false
     @State private var note = ""
     @State private var editing = false

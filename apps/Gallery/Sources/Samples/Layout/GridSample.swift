@@ -1,23 +1,28 @@
 import StateUI
 
-/// MAUI: Grid.
+/// Rows and columns with each child's place written on the child, and two
+/// views sharing one cell.
 struct GridSample: SampleContent {
-    @State private var wideSecondColumn = true
-    @State private var redInFront = false
-
     static let id = "grid"
     static let title = "Grid"
-    static let summary = "Rows and columns, sized the way MAUI sizes them - and placement written on the child."
+    static let summary = "Rows and columns, with each child's place written on the child."
+
+    var examples: [Example] {
+        [Example(GridPlacement()), Example(SharedCell())]
+    }
+}
+
+/// Four cells - one down two rows, one across both columns - and a column
+/// whose width a switch changes.
+private struct GridPlacement: ExampleContent {
+    @State private var wideSecondColumn = true
 
     static let code = """
         @State private var wideSecondColumn = true
-        @State private var redInFront = false
 
         VStack {
             // `wideSecondColumn` is read here, so flipping its switch builds
             // this closure - and the cells cross to their new places.
-            // `redInFront` is read inside the second grid's own braces, so
-            // its switch builds that grid alone.
             DebugInfoLabel()
 
             Grid {
@@ -58,23 +63,6 @@ struct GridSample: SampleContent {
                     .padding(8)
             }
         }
-
-        // -- TWO VIEWS IN ONE CELL --
-
-        // Nothing stops two children claiming the same cell. They overlap, and
-        // zIndex decides which is drawn on top - the higher number is nearer
-        // the front. Left alone, the one written LAST wins.
-        Grid {
-            BoxView(Color.fromArgb("#E53935"))
-                .horizontalOptions(.start)
-                .zIndex(redInFront ? 1 : 0)
-
-            BoxView(Color.fromArgb("#1E88E5"))
-                .horizontalOptions(.end)
-                .zIndex(redInFront ? 0 : 1)
-        }
-
-        SwitchRow("Red in front", $redInFront)
         """
 
     var content: any View {
@@ -107,26 +95,61 @@ struct GridSample: SampleContent {
             // their controls and only the column widths move.
             SwitchRow("Second column twice as wide", $wideSecondColumn)
                 .horizontalOptions(.center)
+        }
+        .spacing(12)
+    }
 
-            Label("Where a view sits is written on the VIEW, as in XAML: Grid.Row=\"1\" "
-                + "is .gridRow(1). Those modifiers are on View, because any view can be "
-                + "a grid child.")
+    var notes: Element? {
+        VStack {
+            Label("Where a view sits is written on the view - `.gridRow(1)`, "
+                + "`.gridColumn(1)` - and those modifiers are on every view, because any "
+                + "view can be a grid child.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A span counts from the view's OWN cell: .gridRowSpan(2) on the red one "
-                + "covers rows 0 and 1 and the spacing between them, and .gridColumnSpan(2) "
-                + "does the same across. A cell nothing was placed in is simply empty.")
+            Label("A span counts from the view's own cell: `.gridRowSpan(2)` on the red "
+                + "cell covers rows 0 and 1 and the spacing between them, and "
+                + "`.gridColumnSpan(2)` does the same across. A cell nothing is placed in "
+                + "stays empty.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A definition is a GridLength: .absolute(64), .auto, .star and .star(2) "
-                + "are XAML's 64, Auto, * and 2*.")
+            Label("A row or column is a `GridLength`: `.absolute(64)`, `.auto`, `.star` "
+                + "and `.star(2)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
+        }
+        .spacing(8)
+    }
+}
 
-            SectionTitle("TWO VIEWS IN ONE CELL")
+/// Two views in one cell, and which is drawn on top.
+private struct SharedCell: ExampleContent {
+    @State private var redInFront = false
 
+    static let code = """
+        @State private var redInFront = false
+
+        VStack {
+            // Nothing stops two children claiming the same cell. They overlap,
+            // and zIndex decides which is drawn on top - the higher number is
+            // nearer the front. Left alone, the one written LAST wins.
+            Grid {
+                BoxView(Color.fromArgb("#E53935"))
+                    .horizontalOptions(.start)
+                    .zIndex(redInFront ? 1 : 0)
+
+                BoxView(Color.fromArgb("#1E88E5"))
+                    .horizontalOptions(.end)
+                    .zIndex(redInFront ? 0 : 1)
+            }
+
+            SwitchRow("Red in front", $redInFront)
+        }
+        """
+
+    var content: any View {
+        VStack {
             // Nothing stops two children claiming the same cell - they simply
             // overlap, and `zIndex` is what decides which is drawn on top.
             Grid {

@@ -3,7 +3,7 @@ import StateUI
 /// A binding is no reader: one state, handed on as `$level` to a knob that
 /// drags it and to two meters that show it - one by READING the value, one by
 /// CONVERTING it - and each meter wears its own build count.
-struct BindingReaderSample: SampleContent {
+struct BindingReaderSample: SampleContent, ExampleContent {
     /// The one value this page is about, owned here and handed on to every
     /// child as `$level`. This body never reads it.
     @State private var level = 0.2

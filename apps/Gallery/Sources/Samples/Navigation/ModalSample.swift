@@ -1,7 +1,7 @@
 import StateUI
 
 /// A native modal stack owned by application state.
-struct ModalSample: SampleContent {
+struct ModalSample: SampleContent, ExampleContent {
     let nav: Navigation
 
     static let id = "modal"
@@ -49,6 +49,8 @@ struct ModalSample: SampleContent {
             }
         }
         """
+
+    var notes: Element? { nil }
 
     var content: any View {
         VStack {

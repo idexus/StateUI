@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Entry.
-struct EntrySample: SampleContent {
+struct EntrySample: SampleContent, ExampleContent {
     @State private var name = ""
     @State private var editing = false
     @State private var code = ""

@@ -1,7 +1,7 @@
 import StateUI
 
 /// Running something when a value is not what it was last render.
-struct OnChangedSample: SampleContent {
+struct OnChangedSample: SampleContent, ExampleContent {
     @State private var celsius = 20.0
     @State private var log: [String] = []
     @State private var fired = 0

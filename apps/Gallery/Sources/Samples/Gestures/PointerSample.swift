@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: PointerGestureRecognizer.
-struct PointerSample: SampleContent {
+struct PointerSample: SampleContent, ExampleContent {
     @State private var pointer = Point(x: 0, y: 0)
     @State private var hovering = false
     @State private var pressing = false

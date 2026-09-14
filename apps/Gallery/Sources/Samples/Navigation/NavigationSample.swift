@@ -1,7 +1,7 @@
 import StateUI
 
 /// A native navigation stack kept in step with one application array.
-struct NavigationSample: SampleContent {
+struct NavigationSample: SampleContent, ExampleContent {
     /// Where the gallery is. Borrowed, not held: this sample can move the
     /// application and READ where it is, and it cannot keep a stale copy of
     /// either.
@@ -50,10 +50,9 @@ struct NavigationSample: SampleContent {
         .barBackgroundColor(AppColors.violet)
         .barTextColor(Palette.onBrand)
 
-        // -- EVERY MOVE THERE IS --
-
-        // The stack and the arrivals are read wherever they are printed, so
-        // that closure is what a push and a pop build again.
+        // Every move there is, from this page. The stack and the arrivals are
+        // read wherever they are printed, so that closure is what a push and
+        // a pop build again.
         DebugInfoLabel()
 
         Button("Push a page")
@@ -74,7 +73,7 @@ struct NavigationSample: SampleContent {
         Button("Empty the stack")
             .onClicked { path = [] }
 
-        // Where am I? A question this side answers, with no host in it:
+        // Where am I? A question Swift answers, with no host in it:
         Label("\\(path.count) page(s) on top of \\(section)")
         Label("Arrived home \\(arrivals) time(s)")
         """
@@ -91,29 +90,13 @@ struct NavigationSample: SampleContent {
                 .horizontalOptions(.center)
                 .onClicked { nav.push(.level(1)) }
 
-            Label("Push the same route again from there and it builds ANOTHER page - "
-                + "identity on a stack is the depth TOGETHER WITH the route, so two "
-                + "`.level(2)` pages are two pages with `@State` of their own.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("WHERE AM I?")
-
             // No act, no await, no question asked of the host: the answer is
             // the state this page is reading.
             Label(here)
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.accent)
-
-            Label("The stack IS this array, so where the gallery is can be read, "
-                + "written, tested and serialized on this side - and the platform's own "
-                + "back gesture writes it too, so the array is still the answer after a "
-                + "swipe nobody asked this app about.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            SectionTitle("GOING HOME")
+                .horizontalTextAlignment(.center)
 
             Button("Go home, and count the visit")
                 .padding(20, 10)
@@ -123,11 +106,9 @@ struct NavigationSample: SampleContent {
                     arrivals += 1
                 }
 
-            Label("Arrived home \(arrivals) time(s) from here. `home()` is three "
-                + "assignments - the section, the empty path and the closed menu - with "
-                + "nothing to await and nothing to undo along the way.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
+            Label("Arrived home \(arrivals) time(s)")
+                .fontSize(13)
+                .horizontalTextAlignment(.center)
 
             Button("Empty the stack")
                 .padding(20, 10)
@@ -138,12 +119,28 @@ struct NavigationSample: SampleContent {
     }
 
     var notes: Element? {
-        Label("`path = []` takes everything off, including this page and the group "
-            + "page under it - so you land on the home page, the root of the stack. "
-            + "There is no PopToRoot to call: assigning the state you want IS the "
-            + "navigation, and the host reconciles the native stack to it in one move.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
+        VStack {
+            Label("The stack is this array, so where the gallery is can be read, written, "
+                + "tested and serialized in Swift - and the platform's own back gesture "
+                + "writes it too, so the array is still the answer after a swipe.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Push the same route again from a pushed page and it builds another "
+                + "page: identity on a stack is the depth together with the route, so two "
+                + "`.level(2)` pages are two pages with `@State` of their own.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`home()` is three assignments - the section, the empty path and the "
+                + "closed menu - with nothing to await. `path = []` takes everything off, "
+                + "this page and the group page under it included, so you land on the "
+                + "home page. Assigning the state you want is the navigation, and the "
+                + "host brings the native stack to it in one move.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
     }
 
     /// Where the reader is, in words - the section and how deep above it.

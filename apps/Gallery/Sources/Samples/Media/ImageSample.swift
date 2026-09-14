@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Image.
-struct ImageSample: SampleContent {
+struct ImageSample: SampleContent, ExampleContent {
     static let id = "image"
     static let title = "Image"
     static let summary = "A picture from the app's resources, asked for by the name MAUI gives it."

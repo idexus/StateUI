@@ -1,7 +1,7 @@
 import StateUI
 
 /// The library's own way to tell the time: acts, not Foundation.
-struct HostTimeSample: SampleContent {
+struct HostTimeSample: SampleContent, ExampleContent {
     @State private var zone = ""
     @State private var clocks: [(String, String)] = []
     @State private var season = ""

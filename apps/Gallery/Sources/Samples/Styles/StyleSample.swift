@@ -1,7 +1,7 @@
 import StateUI
 
 /// Where the gallery's appearance actually comes from.
-struct StyleSample: SampleContent {
+struct StyleSample: SampleContent, ExampleContent {
     @State private var enabled = true
 
     static let id = "styles"

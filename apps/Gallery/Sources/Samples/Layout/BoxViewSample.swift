@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: BoxView.
-struct BoxViewSample: SampleContent {
+struct BoxViewSample: SampleContent, ExampleContent {
     static let id = "boxView"
     static let title = "BoxView"
     static let summary = "A rectangle of colour - the simplest thing MAUI draws."

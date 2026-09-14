@@ -1,6 +1,6 @@
 import StateUI
 
-/// MAUI: WebView.
+/// A page of the web: fetched by URL, and HTML written in place.
 struct WebViewSample: SampleContent {
     static let id = "webView"
     static let title = "WebView"
@@ -10,33 +10,27 @@ struct WebViewSample: SampleContent {
     /// would claim every drag - the rule every gesture sample follows.
     static let scrolls = false
 
-    /// Each half is given the WINDOW's height: the web content scrolls itself,
-    /// so a stated height would show the same sliver on every size of screen.
+    /// Each example is given the WINDOW's height: the web content scrolls
+    /// itself, so a stated height would show the same sliver on every size of
+    /// screen.
     static let fills = true
 
-    /// Two halves that share nothing: the browser on a URL, and HTML written
-    /// in place - each under a tab of its own, IN SWIFT after them.
-    var parts: [SamplePart] {
-        let browser = WebBrowserPart()
-        let written = WrittenInPlacePart()
-
-        return [SamplePart(title: "EXAMPLE 1", view: browser, notes: browser.words),
-                SamplePart(title: "EXAMPLE 2", view: written, notes: written.words)]
+    var examples: [Example] {
+        [Example(WebBrowserPart()), Example(WrittenInPlacePart())]
     }
+}
 
-    /// Unused: `parts` above is what the page draws. Kept because the protocol
-    /// asks for a `content` and these two halves have no single one.
-    var content: any View {
-        VStack {
-            WebBrowserPart()
-            WrittenInPlacePart()
-        }
-        .spacing(16)
-    }
+/// The browser: a URL source, the platform's history reported into bindings,
+/// and the four acts aimed at the view with `@Aim`.
+private struct WebBrowserPart: ExampleContent {
+    @State private var hasBack = false
+    @State private var hasForward = false
+    @State private var status = "nothing has loaded yet"
+    @State private var answer = ""
+
+    @Aim(WebView.self) private var browser
 
     static let code = """
-        // -- EXAMPLE 1 --
-
         struct WebBrowserPart: ContentView {
             @State private var hasBack = false
             @State private var hasForward = false
@@ -102,27 +96,7 @@ struct WebViewSample: SampleContent {
                 .rowDefinitions(.auto, .star, .auto, .auto, .auto)
             }
         }
-
-        // -- EXAMPLE 2 --
-
-        struct WrittenInPlacePart: ContentView {
-            var content: any View {
-                WebView()
-                    .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
-            }
-        }
         """
-}
-
-/// The browser half: a URL source, the platform's history reported into
-/// bindings, and the four acts aimed at the view with `@Aim`.
-private struct WebBrowserPart: ContentView {
-    @State private var hasBack = false
-    @State private var hasForward = false
-    @State private var status = "nothing has loaded yet"
-    @State private var answer = ""
-
-    @Aim(WebView.self) private var browser
 
     var content: any View {
         Grid {
@@ -192,23 +166,19 @@ private struct WebBrowserPart: ContentView {
         .rowSpacing(12)
     }
 
-    var words: any View {
+    var notes: Element? {
         VStack {
-            Label("Follow the page's own link, and Back lights up: the two CanGo "
-                + "properties are reported into bindings after every navigation, MAUI "
-                + "giving neither an event. Back, Forward, Reload and the JavaScript "
-                + "question are ACTS aimed at the view with `@Aim` - methods in MAUI, "
-                + "so calls here.")
+            Label("Follow the page's own link, and Back lights up: `canGoBack` and "
+                + "`canGoForward` are reported into bindings after every navigation. "
+                + "Back, Forward, Reload and the title question are acts aimed at the "
+                + "view with `@Aim`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The view also carries `.onProcessTerminated`, which no button here "
-                + "can provoke: the platform runs web content in a process of "
-                + "its own and kills that process when it runs out of memory, which "
-                + "leaves the view BLANK with no navigation report to explain it. A "
-                + "reader meets it on a phone with a heavy page open and the app left in "
-                + "the background - and the recovery is `reload()`, which is what the "
-                + "message it writes into the status says.")
+            Label("`.onProcessTerminated` reports what no button here can provoke: the "
+                + "platform runs web content in a process of its own and ends it when "
+                + "memory runs short, which leaves the view blank. `reload()` brings the "
+                + "page back.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -216,18 +186,26 @@ private struct WebBrowserPart: ContentView {
     }
 }
 
-/// The other shape of the same property: HTML written in the tree rather than
-/// fetched - MAUI's HtmlWebViewSource. Nothing here touches the network.
-private struct WrittenInPlacePart: ContentView {
+/// HTML written in the tree rather than fetched. Nothing here touches the
+/// network.
+private struct WrittenInPlacePart: ExampleContent {
+    static let code = """
+        struct WrittenInPlacePart: ContentView {
+            var content: any View {
+                WebView()
+                    .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
+            }
+        }
+        """
+
     var content: any View {
         WebView()
             .source(html: "<h2>Written in place</h2><p>No network involved.</p>")
     }
 
-    var words: any View {
-        Label("The same property, the other shape: `source(html:)` is MAUI's "
-            + "HtmlWebViewSource, shown without the network. The web content "
-            + "scrolls itself, which is why this page holds still and each view "
+    var notes: Element? {
+        Label("`source(html:)` shows HTML written in place, without the network. Web "
+            + "content scrolls itself, which is why this page holds still and the view "
             + "fills the height the window gives it.")
             .fontSize(12)
             .textColor(Palette.subtle)

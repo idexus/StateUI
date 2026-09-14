@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: RefreshView.
-struct RefreshViewSample: SampleContent {
+struct RefreshViewSample: SampleContent, ExampleContent {
     @State private var refreshing = false
     @State private var enabled = true
     @State private var readings = ["Reading 3", "Reading 2", "Reading 1"]

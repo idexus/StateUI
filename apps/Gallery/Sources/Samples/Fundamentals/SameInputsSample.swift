@@ -2,7 +2,7 @@ import StateUI
 
 /// A composed view is built again when what it was built with changed, or
 /// when a state it read changed - and not otherwise.
-struct SameInputsSample: SampleContent {
+struct SameInputsSample: SampleContent, ExampleContent {
     @State private var counter = 0
     @State private var items = ["Alpha", "Beta", "Gamma"]
 

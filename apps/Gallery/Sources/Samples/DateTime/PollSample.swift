@@ -1,7 +1,7 @@
 import StateUI
 
 /// A ticker that does not repeat, restarted by the work it started.
-struct PollSample: SampleContent {
+struct PollSample: SampleContent, ExampleContent {
     /// One tick, then stopped - and the tick starts the next round when its
     /// work is done. So the gap is measured from where the work ENDED, and two
     /// rounds can never overlap however long one takes.

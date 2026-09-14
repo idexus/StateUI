@@ -2,7 +2,7 @@ import StateUI
 
 /// A value both sides hold, moved by the host and read by arithmetic that
 /// describes nothing.
-struct DrivenSample: SampleContent {
+struct DrivenSample: SampleContent, ExampleContent {
     /// Which law the buttons send the marker under - ORDINARY state, read
     /// below so the caption can name it, which is what puts this page's build
     /// count next to a value that moves for nothing.

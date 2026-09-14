@@ -4,7 +4,7 @@ import StateUI
 /// branches on it. Colours do not need this: `Color(light:dark:)` reads this
 /// very property as the view wearing it is built, so a view using one already
 /// follows the theme.
-struct AppThemeSample: SampleContent {
+struct AppThemeSample: SampleContent, ExampleContent {
     /// Where the theme lives: on the app's provider, MAUI's own placement.
     @Environment var app: AppInfo
 

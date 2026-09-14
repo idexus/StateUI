@@ -1,7 +1,7 @@
 import StateUI
 
 /// Explicit native focus and soft-input actions.
-struct KeyboardSample: SampleContent {
+struct KeyboardSample: SampleContent, ExampleContent {
     @State private var name = ""
     @State private var note = ""
     @State private var said = ""
@@ -30,6 +30,8 @@ struct KeyboardSample: SampleContent {
         Button("Close keyboard")
             .onClicked { try await SoftInput.hide() }
         """
+
+    var notes: Element? { nil }
 
     var content: any View {
         VStack {

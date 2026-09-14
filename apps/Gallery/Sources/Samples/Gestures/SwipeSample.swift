@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: SwipeGestureRecognizer.
-struct SwipeSample: SampleContent {
+struct SwipeSample: SampleContent, ExampleContent {
     @State private var swipe = ""
 
     @State private var narrowed = ""

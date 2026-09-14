@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Battery - the standard environment's provider, resolved by type.
-struct BatterySample: SampleContent {
+struct BatterySample: SampleContent, ExampleContent {
     /// The provider itself: nothing is passed anywhere - the type is the key,
     /// and the host keeps the object current.
     @Environment var battery: Battery

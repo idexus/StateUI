@@ -3,7 +3,7 @@ import StateUI
 /// A BINDING CONVERTED ON ITS WAY TO A CONTROL: one state shown in two units,
 /// a caption worked out from it, two states worked into one - all by engines
 /// the differ writes, on the host's frames, with nothing built for any of it.
-struct ConverterSample: SampleContent {
+struct ConverterSample: SampleContent, ExampleContent {
     /// The one value the first three rows are about, in 0 to 1.
     @State private var volume = 0.2
 

@@ -4,7 +4,7 @@ import StateUI
 /// both carried by the host. Two sliders and a stepper, and what differs is who
 /// reads the value: the top caption PRINTS it in this body, the two below are
 /// CONVERSIONS the host works out on its own frames.
-struct AnimatedInputSample: SampleContent {
+struct AnimatedInputSample: SampleContent, ExampleContent {
     /// The TOP slider's value. The caption above the slider PRINTS it, which
     /// makes the closure it sits in a reader - so every report the thumb
     /// makes builds that closure again, and nothing around it.

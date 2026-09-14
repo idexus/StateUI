@@ -2,7 +2,7 @@ import StateUI
 
 /// States written on the control itself, and the list of them being the
 /// control's own.
-struct VisualStateSample: SampleContent {
+struct VisualStateSample: SampleContent, ExampleContent {
     @State private var enabled = true
     @State private var presses = 0
     @State private var ready = true

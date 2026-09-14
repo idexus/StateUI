@@ -2,7 +2,7 @@ import StateUI
 
 /// `@State` owns a value, `@Binding` borrows one - the whole of how this library
 /// remembers anything.
-struct StateSample: SampleContent {
+struct StateSample: SampleContent, ExampleContent {
     @State private var counter = 0
     @State private var name = ""
 

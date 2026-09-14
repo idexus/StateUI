@@ -1,7 +1,7 @@
 import StateUI
 
 /// The two non-wrapping stack directions.
-struct StackLayoutSample: SampleContent {
+struct StackLayoutSample: SampleContent, ExampleContent {
     static let id = "stackLayout"
     static let title = "Stack layouts"
     static let summary = "Children top to bottom or left to right."

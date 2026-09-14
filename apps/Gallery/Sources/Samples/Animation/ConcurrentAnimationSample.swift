@@ -1,7 +1,7 @@
 import StateUI
 
 /// Several movements in the air at once, which is what `async let` buys.
-struct ConcurrentAnimationSample: SampleContent {
+struct ConcurrentAnimationSample: SampleContent, ExampleContent {
     @State private var playing = false
 
     /// One driven state per bar. FOUR of them rather than an array, because a

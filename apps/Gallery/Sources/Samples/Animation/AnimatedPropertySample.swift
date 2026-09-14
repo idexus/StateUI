@@ -2,7 +2,7 @@ import StateUI
 
 /// A colour, a size, a padding and a font size, each read off a state the host
 /// moves on its own frames.
-struct AnimatedPropertySample: SampleContent {
+struct AnimatedPropertySample: SampleContent, ExampleContent {
     @State private var wide = false
 
     @State private var panelColor = AppColors.lineDark

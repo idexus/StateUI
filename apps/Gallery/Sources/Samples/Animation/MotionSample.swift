@@ -2,7 +2,7 @@ import StateUI
 
 /// A value that changes TRAVELS - the default, and the three laws it can travel
 /// under.
-struct MotionSample: SampleContent {
+struct MotionSample: SampleContent, ExampleContent {
     static let id = "motion"
     static let title = "Motion"
     static let summary = "A value that changes travels to it. Assign the state and the control goes there - at a length, on a spring, or not at all."

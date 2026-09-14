@@ -1,6 +1,6 @@
 import StateUI
 
-struct ShapesSample: SampleContent {
+struct ShapesSample: SampleContent, ExampleContent {
     @State private var rule = FillRule.evenOdd
 
     static let id = "shapes"

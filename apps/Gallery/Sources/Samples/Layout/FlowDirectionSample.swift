@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: VisualElement.FlowDirection.
-struct FlowDirectionSample: SampleContent {
+struct FlowDirectionSample: SampleContent, ExampleContent {
     static let id = "flowDirection"
     static let title = "Flow direction"
     static let summary = "Laying a view out for a language written right to left."

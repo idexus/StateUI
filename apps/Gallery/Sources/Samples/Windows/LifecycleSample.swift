@@ -1,7 +1,7 @@
 import StateUI
 
 /// The native window lifecycle recorded through `WindowSession.phase`.
-struct LifecycleSample: SampleContent {
+struct LifecycleSample: SampleContent, ExampleContent {
     /// The window's log, kept with the gallery. It is written by `MainWindow`,
     /// which watches its window's phase - see Gallery/MainWindow.swift - and
     /// this sample only reads it.
@@ -42,6 +42,8 @@ struct LifecycleSample: SampleContent {
             }
         }
         """
+
+    var notes: Element? { nil }
 
     var content: any View {
         VStack {

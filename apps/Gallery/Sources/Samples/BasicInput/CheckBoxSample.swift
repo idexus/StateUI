@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: CheckBox.
-struct CheckBoxSample: SampleContent {
+struct CheckBoxSample: SampleContent, ExampleContent {
     @State private var agreed = false
     @State private var extras = [false, false, false]
 

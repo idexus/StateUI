@@ -10,7 +10,7 @@ final class TitleBarState {
 }
 
 /// Native window chrome described by a `TitleBar` value and its three slots.
-struct TitleBarSample: SampleContent {
+struct TitleBarSample: SampleContent, ExampleContent {
     /// The values shared with this gallery's main window.
     let bar: TitleBarState
 
@@ -75,6 +75,8 @@ struct TitleBarSample: SampleContent {
             }
         }
         """
+
+    var notes: Element? { nil }
 
     var content: any View {
         VStack {

@@ -2,63 +2,42 @@
 
 import StateUI
 
-/// One tab of a sample whose example holds the page still.
+/// One tab of a sample whose examples hold the page still.
 enum SampleTab: Hashable {
     /// One of its examples, by its place among them.
-    case part(Int)
+    case example(Int)
 
-    /// Its words, where they are kept apart from the examples.
-    case notes
-
-    /// Its Swift.
-    case swift
+    /// Its code: each example's notes and Swift, in turn.
+    case code
 }
 
 extension Sample {
-    /// The tabs of a page that holds still: each example, the words where a
-    /// part has words the sample did not keep under it, and the Swift.
+    /// The tabs of a page that holds still: each example, then the code.
     var tabs: [SampleTab] {
-        parts.indices.map(SampleTab.part)
-            + (notesHaveTab ? [.notes] : [])
-            + [.swift]
+        examples.indices.map(SampleTab.example) + [.code]
     }
 
-    /// Whether the words take a tab of their own.
-    ///
-    /// NOTHING ON A HELD PAGE SCROLLS but the words and the code, so words that
-    /// do not fit beside the example take a turn like it - unless the sample
-    /// says `notesUnder`, which keeps them under the example, where the eye
-    /// already is.
-    var notesHaveTab: Bool {
-        !notesUnder && parts.contains { $0.notes != nil }
-    }
-
-    /// What a tab is called, in the words a tab takes: each word capitalized.
+    /// What a tab is called: "Example", or "Example 1" and on, then "In Code".
     func caption(of tab: SampleTab) -> String {
         switch tab {
-        case .part(let index):
-            return parts[index].title
-                .split(separator: " ")
-                .map { $0.prefix(1).uppercased() + $0.dropFirst().lowercased() }
-                .joined(separator: " ")
-        case .notes:
-            return "Notes"
-        case .swift:
-            return "In Swift"
+        case .example(let index):
+            return headings(of: index).example
+        case .code:
+            return "In Code"
         }
     }
 }
 
-/// One tab of a sample whose example holds the page still: the line saying
-/// what the sample is about, over one of its examples, its words or its code.
+/// One tab of a sample whose examples hold the page still: the line saying
+/// what the sample is about, over one of its examples or over its code.
 ///
-/// A gesture sample asks for this. A ScrollView claims a drag before the view
+/// A gesture sample asks for this. A scroller claims a drag before the view
 /// under it hears about it, so an example inside one loses every gesture that
 /// looks like scrolling to the platform. The page is held to the window's
-/// height instead, and the example, the words and the code take turns as the
-/// window's tabs rather than sharing the height. The words and the code are
-/// each in a scroller of their own, which lets them be long; the example is
-/// the one that must not be in one.
+/// height instead, and each example takes a tab of its own. The code tab is
+/// the one that scrolls: each example's notes and then its Swift, in turn -
+/// the notes in no scroller of their own and each listing scrolling only
+/// across, so nothing competes with the tab's own scroller.
 ///
 /// Every tab stays in the tree while the sample is shown, so reading the code
 /// and coming back keeps the example's state - what a gesture sample has to
@@ -99,52 +78,20 @@ struct SampleTabPage: ContentView {
                 .fontSize(15)
                 .textColor(Palette.subtle)
 
-            if case .part(let index) = tab {
-                // The words go under the example unless they have a tab of
-                // their own; an example that scrolls itself takes the whole
-                // cell, one that does not keeps its own height at the top.
-                SamplePage.boxed(
-                    sample.parts[index].view,
-                    notes: sample.notesHaveTab ? nil : sample.parts[index].notes,
-                    fills: sample.fills)
+            if case .example(let index) = tab {
+                // An example that scrolls itself takes the whole cell; one
+                // that does not keeps its own height at the top.
+                SamplePage.boxed(sample.examples[index].view, fills: sample.fills)
                     .verticalOptions(sample.fills ? .fill : .start)
                     .gridRow(1)
-            } else if tab == .notes {
-                ScrollView {
-                    VStack {
-                        ForEach(Array(sample.parts.enumerated()), id: \.offset) { part in
-                            VStack {
-                                // Whose words these are, where a sample has two
-                                // examples; a lone example needs no heading.
-                                if sample.parts.count > 1 {
-                                    SectionTitle(part.element.title)
-                                        .warns(sample.warns.contains(part.element.title))
-                                }
-
-                                if let notes = part.element.notes {
-                                    notes
-                                }
-                            }
-                            .spacing(16)
-                        }
-                    }
-                    .spacing(24)
-                }
-                .orientation(.vertical)
-                .gridRow(1)
             } else {
                 ScrollView {
                     VStack {
-                        // The tab already says In Swift, so a lone block goes
-                        // untitled - while a section a marker named says its own
-                        // words, EXAMPLE 1 over the code of example 1.
-                        ForEach(Array(CodeBlock.sections(of: sample.code).enumerated()), id: \.offset) { section in
-                            CodeBlock(section.element.code)
-                                .title(section.element.title ?? "")
-                                .warns(section.element.title.map(sample.warns.contains) ?? false)
+                        ForEach(Array(sample.examples.enumerated()), id: \.offset) { item in
+                            explanation(of: item.element, at: item.offset)
                         }
                     }
-                    .spacing(16)
+                    .spacing(24)
                 }
                 .orientation(.vertical)
                 .gridRow(1)
@@ -153,5 +100,20 @@ struct SampleTabPage: ContentView {
         .rowDefinitions(.auto, .star)
         .rowSpacing(16)
         .padding(24)
+    }
+
+    /// One example's notes and Swift, each under its heading - "Notes" and
+    /// "In Swift", numbered where the sample has several.
+    private func explanation(of example: Example, at index: Int) -> any View {
+        let headings = sample.headings(of: index)
+
+        return VStack {
+            if let notes = example.notes {
+                SamplePage.section(headings.notes, notes)
+            }
+
+            SamplePage.section(headings.code, CodeBlock(example.code))
+        }
+        .spacing(16)
     }
 }

@@ -14,7 +14,7 @@ private enum Family {
 }
 
 /// MAUI: VisualElement.Rotation, RotationX, RotationY, Scale and the anchor.
-struct TransformSample: SampleContent {
+struct TransformSample: SampleContent, ExampleContent {
     static let id = "transform"
     static let title = "Transforms"
     static let summary = "Turning, tipping and resizing a view after it has been laid out."

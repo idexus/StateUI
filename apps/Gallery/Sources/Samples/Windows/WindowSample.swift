@@ -1,7 +1,7 @@
 import StateUI
 
 /// Native window identity, geometry, constraints, and operations.
-struct WindowSample: SampleContent {
+struct WindowSample: SampleContent, ExampleContent {
     @Environment private var window: WindowSession
 
     @State private var renames = 0
@@ -58,6 +58,8 @@ struct WindowSample: SampleContent {
             window.isMinimizable = minimizable
         }
         """
+
+    var notes: Element? { nil }
 
     var content: any View {
         VStack {

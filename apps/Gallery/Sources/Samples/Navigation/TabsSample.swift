@@ -5,7 +5,7 @@ import StateUI
 /// The example is not on this page, and it cannot be: a `TabbedView` is a PAGE,
 /// so the honest demonstration is for a section of the gallery to be one. What
 /// is here is the button that goes there, and the code that arranges it.
-struct TabsSample: SampleContent {
+struct TabsSample: SampleContent, ExampleContent {
     let nav: Navigation
 
     static let id = "tabs"

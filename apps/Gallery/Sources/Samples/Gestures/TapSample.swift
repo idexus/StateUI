@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: TapGestureRecognizer.
-struct TapSample: SampleContent {
+struct TapSample: SampleContent, ExampleContent {
     @State private var taps = 0
 
     static let id = "tap"

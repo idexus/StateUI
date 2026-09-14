@@ -2,7 +2,7 @@ import StateUI
 
 /// MAUI: DeviceInfo and AppInfo - the two providers whose facts mostly stand
 /// still: what machine this is, and what app this is.
-struct DeviceInfoSample: SampleContent {
+struct DeviceInfoSample: SampleContent, ExampleContent {
     /// The machine's facts - the idiom is the one the gallery itself builds
     /// by, listing desktop chrome only where it draws.
     @Environment var device: DeviceInfo

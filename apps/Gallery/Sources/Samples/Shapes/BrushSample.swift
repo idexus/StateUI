@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Brush, SolidColorBrush, LinearGradientBrush, RadialGradientBrush.
-struct BrushSample: SampleContent {
+struct BrushSample: SampleContent, ExampleContent {
     @State private var end = 0
 
     static let id = "brush"

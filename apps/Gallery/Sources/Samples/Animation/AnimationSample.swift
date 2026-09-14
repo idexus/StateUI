@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: VisualElement.Opacity, TranslationX, Scale and Rotation, driven.
-struct AnimationSample: SampleContent {
+struct AnimationSample: SampleContent, ExampleContent {
     @State private var curve = 0
 
     /// The four values the card is drawn from, one per thing a button moves.

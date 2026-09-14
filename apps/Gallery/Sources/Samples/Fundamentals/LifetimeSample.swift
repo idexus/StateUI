@@ -2,7 +2,7 @@ import StateUI
 
 /// `.onCreated` and `.onDestroying`: what runs as an element comes into the
 /// tree and as it leaves, once each.
-struct LifetimeSample: SampleContent {
+struct LifetimeSample: SampleContent, ExampleContent {
     /// Whether the card is in the tree at all.
     @State private var shown = true
 

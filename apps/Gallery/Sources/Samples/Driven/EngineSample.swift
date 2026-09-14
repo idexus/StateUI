@@ -9,7 +9,7 @@ import StateUI
 /// by hand where the arithmetic REMEMBERS something between frames: here a
 /// clock that is running or stopped and the time it has counted, neither of
 /// which any conversion of any state could work out.
-struct EngineSample: SampleContent {
+struct EngineSample: SampleContent, ExampleContent {
     /// The reading as it stood when Lap was last pressed - ORDINARY state, so
     /// the same reading that costs nothing driven costs a render here.
     @State private var lap = "-"

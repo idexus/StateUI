@@ -1,7 +1,7 @@
 import StateUI
 
 /// What a view answers when it is asked why it is being described.
-struct RebuildSample: SampleContent {
+struct RebuildSample: SampleContent, ExampleContent {
     static let id = "rebuilds"
     static let title = "Why a view rebuilds"
     static let summary =

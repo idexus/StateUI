@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: DragGestureRecognizer and DropGestureRecognizer.
-struct DragAndDropSample: SampleContent {
+struct DragAndDropSample: SampleContent, ExampleContent {
     @State private var items = ["Alpha", "Beta", "Gamma"]
     @State private var basket: [String] = []
     @State private var over = false

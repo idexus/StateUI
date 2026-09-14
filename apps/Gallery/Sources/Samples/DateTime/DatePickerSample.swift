@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: DatePicker.
-struct DatePickerSample: SampleContent {
+struct DatePickerSample: SampleContent, ExampleContent {
     @State private var due = CalendarDate(year: 2026, month: 8, day: 2)
     @State private var chosen = ""
     @State private var picks = 0

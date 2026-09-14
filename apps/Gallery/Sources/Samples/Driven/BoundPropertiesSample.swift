@@ -4,7 +4,7 @@ import StateUI
 /// placeholder, a choice, a toggle - each a plain `@State` handed on as `$x`,
 /// each carried by the host, and each row wearing its own build count so the
 /// cost is on the screen: a write renders nobody, unless somebody reads.
-struct BoundPropertiesSample: SampleContent {
+struct BoundPropertiesSample: SampleContent, ExampleContent {
     /// A number the host WALKS: handed to `fontSize`, an assignment travels
     /// there under the label's law.
     @State private var size = 18.0

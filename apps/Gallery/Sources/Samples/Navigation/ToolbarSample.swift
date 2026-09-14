@@ -1,7 +1,7 @@
 import StateUI
 
 /// Page-owned native toolbar and menu items.
-struct ToolbarSample: SampleContent {
+struct ToolbarSample: SampleContent, ExampleContent {
     @State private var saved = 0
     @State private var recent = ["notes.txt", "budget.csv"]
 

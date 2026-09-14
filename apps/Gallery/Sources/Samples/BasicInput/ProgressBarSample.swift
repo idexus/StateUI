@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: ProgressBar.
-struct ProgressBarSample: SampleContent {
+struct ProgressBarSample: SampleContent, ExampleContent {
     @State private var done = 3.0
 
     static let id = "progressBar"

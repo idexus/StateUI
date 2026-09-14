@@ -1,7 +1,7 @@
 import StateUI
 
 /// A native split view whose sidebar is an ordinary StateUI page.
-struct SplitViewSample: SampleContent {
+struct SplitViewSample: SampleContent, ExampleContent {
     /// Where the gallery is: this sample opens and closes the menu, and sends
     /// the reader to the section the menu does not always list.
     let nav: Navigation
@@ -24,8 +24,7 @@ struct SplitViewSample: SampleContent {
             }
         }
 
-        // -- AND THE MENU IS A PAGE --
-
+        // The menu is a page of its own:
         struct MenuPage: ContentView {
             let catalog: Catalog
             let nav: Navigation
@@ -80,15 +79,11 @@ struct SplitViewSample: SampleContent {
 
     var content: any View {
         VStack {
-            Label("Open the menu: every row you see is a view this app wrote.")
+            Label("Open the menu: every row in it is a view.")
                 .fontSize(14)
-
-            SectionTitle("OPENING IT")
 
             SwitchRow("Menu open", nav.$menuOpen)
                 .horizontalOptions(.center)
-
-            SectionTitle("A ROW THAT IS NOT LISTED")
 
             HStack {
                 Switch(nav.$listsHiddenRow)
@@ -114,7 +109,8 @@ struct SplitViewSample: SampleContent {
     var notes: Element? {
         VStack {
             Label("The pane is an ordinary page. Every row is a view whose action chooses "
-                + "a section and closes the menu.")
+                + "a section and closes the menu, and a row the app does not want is an "
+                + "`if` around it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

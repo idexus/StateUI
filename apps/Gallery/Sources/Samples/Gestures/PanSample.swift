@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: PanGestureRecognizer.
-struct PanSample: SampleContent {
+struct PanSample: SampleContent, ExampleContent {
     /// Where the box was left. Ordinary state: it changes once per gesture, so
     /// describing it costs one render at the end of a drag.
     @State private var panX = 0.0

@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: IndicatorView.
-struct IndicatorViewSample: SampleContent {
+struct IndicatorViewSample: SampleContent, ExampleContent {
     @State private var step = 0
     @State private var cap = 5.0
 

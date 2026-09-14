@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Connectivity - whether the internet is reachable, and by what.
-struct ConnectivitySample: SampleContent {
+struct ConnectivitySample: SampleContent, ExampleContent {
     /// The network, as the host last reported it.
     @Environment var connectivity: Connectivity
 

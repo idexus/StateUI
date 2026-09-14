@@ -2,7 +2,7 @@ import StateUI
 
 /// This library's own: a run of cards swiped through, in a shape one word
 /// chooses.
-struct GalleryViewSample: SampleContent {
+struct GalleryViewSample: SampleContent, ExampleContent {
     static let id = "galleryView"
     static let title = "GalleryView"
     static let summary = "A run of cards the reader swipes through - a wheel, a fan or a row, chosen with .galleryStyle. Nothing is described while the cards move."

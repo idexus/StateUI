@@ -1,7 +1,7 @@
 import StateUI
 
 /// The same countdown as Task.sleep, out of the library's own timer.
-struct TickerSample: SampleContent {
+struct TickerSample: SampleContent, ExampleContent {
     /// `@State` keeps the instance across renders; a tick asks for the render
     /// itself, naming the ticker - so the views that read it are rebuilt and
     /// the rest of the tree is left alone. Nothing here subscribes to anything.

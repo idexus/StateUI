@@ -2,7 +2,7 @@ import StateUI
 
 /// The item is a row's identity - what keeps a control across a change to
 /// the list around it, and what a written `.id()` overrides.
-struct IdentitySample: SampleContent {
+struct IdentitySample: SampleContent, ExampleContent {
     @State private var items = ["Alpha", "Beta", "Gamma"]
     @State private var nextItem = 1
 

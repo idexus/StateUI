@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: VisualElement.WidthRequest and the four bounds around it.
-struct SizingSample: SampleContent {
+struct SizingSample: SampleContent, ExampleContent {
     static let id = "sizing"
     static let title = "Sizing and clipping"
     static let summary = "How big a view asks to be, the bounds on it, and what happens at the edge."

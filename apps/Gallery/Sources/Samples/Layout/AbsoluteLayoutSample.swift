@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: AbsoluteLayout.
-struct AbsoluteLayoutSample: SampleContent {
+struct AbsoluteLayoutSample: SampleContent, ExampleContent {
     @State private var proportional = true
 
     static let id = "absoluteLayout"

@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Stepper.
-struct StepperSample: SampleContent {
+struct StepperSample: SampleContent, ExampleContent {
     @State private var servings = 4.0
 
     static let id = "stepper"

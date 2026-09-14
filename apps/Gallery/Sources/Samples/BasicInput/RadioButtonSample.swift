@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: RadioButton.
-struct RadioButtonSample: SampleContent {
+struct RadioButtonSample: SampleContent, ExampleContent {
     @State private var size = "Medium"
 
     static let id = "radioButton"

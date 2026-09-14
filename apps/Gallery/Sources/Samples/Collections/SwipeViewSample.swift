@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: SwipeView.
-struct SwipeViewSample: SampleContent {
+struct SwipeViewSample: SampleContent, ExampleContent {
     @State private var rows = ["Alpha", "Beta", "Gamma"]
     @State private var starred: Set<String> = []
     @State private var archived = false

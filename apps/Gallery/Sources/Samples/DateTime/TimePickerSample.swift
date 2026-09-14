@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: TimePicker.
-struct TimePickerSample: SampleContent {
+struct TimePickerSample: SampleContent, ExampleContent {
     @State private var alarm = ClockTime(hour: 7, minute: 30)
     @State private var picks = 0
 

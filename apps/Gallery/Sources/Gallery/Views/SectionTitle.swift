@@ -2,43 +2,18 @@
 
 import StateUI
 
-/// A piece of interface, factored out. MAUI calls this a ContentView, and so
-/// does StateUI: give it a `content` and it can be used like any other view.
+/// The heading over a section of a page - "Example", "Notes", "In Swift".
 ///
-/// Shaped the way every control in the library is: what it SAYS is the
-/// initializer's one argument, and everything optional is a modifier. See
-/// `Card` for the whole of that rule written out.
+/// What it says is the initializer's one argument.
 struct SectionTitle: ContentView {
     private let text: String
-
-    /// Whether this section shows a TRAP rather than a way to do something.
-    private var warned = false
 
     /// - Parameter text: What the heading says.
     init(_ text: String) {
         self.text = text
     }
 
-    /// Puts the warning triangle beside the words: this section is a trap
-    /// rather than a way to do something. A reader who skims the headings must
-    /// not take the trap for the recipe.
-    func warns(_ value: Bool) -> Self {
-        var copy = self
-        copy.warned = value
-        return copy
-    }
-
     var content: any View {
-        guard warned else { return words }
-
-        return HStack {
-            WarningMark()
-            words
-        }
-        .spacing(6)
-    }
-
-    private var words: any View {
         Label(text)
             // A HEADING IS WHAT THIS SAYS IT IS, not what it is drawn like:
             // a reader moving through a long sample page by its headings
@@ -47,7 +22,6 @@ struct SectionTitle: ContentView {
             .fontSize(13)
             .fontAttributes(.bold)
             .textColor(Palette.subtle)
-            .characterSpacing(1)
             .verticalOptions(.center)
     }
 }

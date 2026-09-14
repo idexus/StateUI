@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Switch.
-struct SwitchSample: SampleContent {
+struct SwitchSample: SampleContent, ExampleContent {
     @State private var soundOn = true
     @State private var said = "not thrown yet"
 

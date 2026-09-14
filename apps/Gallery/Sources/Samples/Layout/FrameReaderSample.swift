@@ -1,7 +1,7 @@
 import StateUI
 
 /// Content built from the space it was given, and frames reported on request.
-struct FrameReaderSample: SampleContent {
+struct FrameReaderSample: SampleContent, ExampleContent {
     @State private var slot = Rect(0, 0, 0, 0)
     @State private var window = Rect(0, 0, 0, 0)
     @State private var safe = Rect(0, 0, 0, 0)

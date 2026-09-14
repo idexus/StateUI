@@ -1,7 +1,7 @@
 import StateUI
 
 /// A row taken away, and the stack closing over it.
-struct RemovingRowSample: SampleContent {
+struct RemovingRowSample: SampleContent, ExampleContent {
     static let id = "removingRow"
     static let title = "Removing a row"
     static let summary = "A row fades where it stands and the stack closes over it - a plain VStack, and the switch chooses whether the row itself takes its time."

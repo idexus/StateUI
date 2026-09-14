@@ -20,7 +20,7 @@ extension PersistentKey {
 
 /// `@State` under a key is state the application KEEPS - the value is there
 /// again the next time the app opens, with nothing to load and nothing to save.
-struct PersistentStateSample: SampleContent {
+struct PersistentStateSample: SampleContent, ExampleContent {
     @State(persistentKey: .visits) private var visits = 0
     @State(persistentKey: .who) private var who = ""
     @State(persistentKey: .shade) private var shade = Shade.quiet

@@ -55,7 +55,7 @@ private struct Place {
 
 /// A sample that FILLS its cell and scrolls itself, which is the shape the
 /// page has to carry without a stack in the way.
-private struct Filling: SampleContent {
+private struct Filling: SampleContent, ExampleContent {
     static let id = "filling"
     static let title = "Fills its cell"
     static let summary = "A scroller given the whole of the cell."
@@ -68,6 +68,52 @@ private struct Filling: SampleContent {
             Label("row")
         }
     }
+
+    var notes: Element? { nil }
+}
+
+private extension Sample {
+    /// Every listing on the sample's page as one text - what a check over all
+    /// of a sample's Swift reads.
+    var code: String { examples.map(\.code).joined(separator: "\n\n") }
+}
+
+/// The headings a tree shows, in order - what a reader moving by heading
+/// lands on.
+private func headings(in node: Node) -> [String] {
+    var found: [String] = []
+
+    func walk(_ node: Node) {
+        let node = node.built
+
+        if node.props[.semanticHeadingLevel] != nil, let text = node.props["text"]?.string {
+            found.append(text)
+        }
+
+        node.children.forEach(walk)
+    }
+
+    walk(node)
+    return found
+}
+
+/// How many scrollers in a tree move down rather than only across.
+private func verticalScrollers(in node: Node) -> Int {
+    var count = 0
+
+    func walk(_ node: Node) {
+        let node = node.built
+
+        if node.type == "ScrollView",
+           node.props["orientation"] != .enumeration(ScrollOrientation.horizontal.rawValue) {
+            count += 1
+        }
+
+        node.children.forEach(walk)
+    }
+
+    walk(node)
+    return count
 }
 
 /// Everything a tree SAYS, node by node - one string, or the runs one spells.
@@ -591,21 +637,64 @@ final class CatalogTests: XCTestCase {
         }
     }
 
-    /// A `// -- TITLE --` line in a sample's code cuts it into sections, each
-    /// shown under its own heading - the WebView sample names its two examples
-    /// that way. Code without a marker is one untitled section, the block as
-    /// it always was; the marker is a comment, so the snippet still compiles
-    /// pasted whole.
-    func testTheCodeSplitsWhereAMarkerNamesASection() throws {
-        let sample = try XCTUnwrap(catalog().sample(id: "webView"))
-        let sections = CodeBlock.sections(of: sample.code)
+    /// A page names its sections by place: "Example", "Notes" and "In Swift"
+    /// for a sample of one example, and the same three numbered for a sample
+    /// of several - which is also what the tabs of a held one say, beside
+    /// "In Code".
+    func testEveryExampleIsNamedByItsPlace() throws {
+        let one = try XCTUnwrap(catalog().sample(id: ButtonSample.id))
+        let two = try XCTUnwrap(catalog().sample(id: WebViewSample.id))
+        let first = one.headings(of: 0)
+        let second = two.headings(of: 1)
 
-        XCTAssertEqual(sections.map(\.title), ["EXAMPLE 1", "EXAMPLE 2"])
-        XCTAssertTrue(sections.allSatisfy { !$0.code.isEmpty })
+        XCTAssertEqual([first.example, first.notes, first.code], ["Example", "Notes", "In Swift"])
+        XCTAssertEqual(
+            [second.example, second.notes, second.code],
+            ["Example 2", "Example 2 Notes", "Example 2 in Swift"])
+        XCTAssertEqual(two.tabs.map(two.caption(of:)), ["Example 1", "Example 2", "In Code"])
+    }
 
-        let plain = CodeBlock.sections(of: "let one = 1")
-        XCTAssertEqual(plain.count, 1)
-        XCTAssertNil(plain[0].title)
+    /// A scrolling page shows each example, then its notes, then its Swift.
+    /// The notes sit in no scroller of their own and a listing moves only
+    /// across, so the page's scroller is the one thing that moves down.
+    func testAScrollingPageShowsEachExampleThenItsNotesThenItsSwift() throws {
+        let sample = try XCTUnwrap(catalog().sample(id: TwoLayersSample.id))
+        let page = SamplePage(sample: sample, nav: Place().nav).body.built
+
+        XCTAssertEqual(headings(in: page), [
+            "Example 1", "Example 1 Notes", "Example 1 in Swift",
+            "Example 2", "Example 2 Notes", "Example 2 in Swift",
+        ])
+        XCTAssertEqual(verticalScrollers(in: page), 1, "a scroller inside the page's scroller")
+    }
+
+    /// A held sample's code tab is one scroller: each example's notes, then
+    /// its Swift, in turn - the notes in no scroller of their own.
+    func testAHeldSamplesCodeTabGivesEachExamplesNotesThenItsSwift() throws {
+        let sample = try XCTUnwrap(catalog().sample(id: WebViewSample.id))
+        let tab = SampleTabPage(sample: sample, tab: .code, nav: Place().nav).body.built
+
+        XCTAssertEqual(headings(in: tab), [
+            "Example 1 Notes", "Example 1 in Swift",
+            "Example 2 Notes", "Example 2 in Swift",
+        ])
+        XCTAssertEqual(verticalScrollers(in: tab), 1, "a scroller inside the tab's scroller")
+    }
+
+    /// A listing is one example's Swift, whole. Nothing cuts it into sections
+    /// under headings of its own: a second thing to show is a second example.
+    func testNoListingIsCutIntoSections() {
+        for group in catalog().groups {
+            for sample in group.samples {
+                for example in sample.examples {
+                    let marked = example.code.split(separator: "\n").contains {
+                        $0.trimmingCharacters(in: .whitespaces).hasPrefix("// -- ")
+                    }
+
+                    XCTAssertFalse(marked, "\(sample.id) cuts a listing with a `// -- ` marker")
+                }
+            }
+        }
     }
 
     /// A code listing owns only horizontal overflow. The sample page owns its
@@ -638,14 +727,14 @@ final class CatalogTests: XCTestCase {
             for sample in group.samples {
                 XCTAssertFalse(sample.title.isEmpty, "\(sample.id) has no title")
                 XCTAssertFalse(sample.summary.isEmpty, "\(sample.id) has no summary")
-                XCTAssertFalse(sample.code.isEmpty, "\(sample.id) shows no code")
+                XCTAssertFalse(sample.examples.isEmpty, "\(sample.id) shows no example")
 
-                // Every part of the example is a view like any other, and has
-                // to describe itself without being on a page. A part with an
-                // empty title would draw a blank tab.
-                for part in sample.parts {
-                    XCTAssertFalse(part.title.isEmpty, "\(sample.id) has an untitled part")
-                    XCTAssertFalse(part.view.body.built.type.name.isEmpty)
+                // Every example is a view like any other, has to describe
+                // itself without being on a page, and shows the code that
+                // wrote it.
+                for (index, example) in sample.examples.enumerated() {
+                    XCTAssertFalse(example.code.isEmpty, "\(sample.id) example \(index + 1) shows no code")
+                    XCTAssertFalse(example.view.body.built.type.name.isEmpty)
                 }
             }
         }
@@ -653,7 +742,7 @@ final class CatalogTests: XCTestCase {
 
     /// The code beside an example is REAL code, not a sketch of one.
     ///
-    /// What a reader sees under "IN SWIFT" is the sample's own view code with
+    /// What a reader sees under "In Swift" is the example's own view code with
     /// the decoration taken out - the layout and the meaning of the example,
     /// nothing invented. A sketch is what that rots into: `Border { … }`,
     /// `VStack { ... }`, a structure that stops halfway, a type the sample does
@@ -699,14 +788,13 @@ final class CatalogTests: XCTestCase {
 
         for group in catalog().groups {
             for sample in group.samples {
-                let code = sample.code
-
-                guard placements.contains(where: { code.contains(".\($0)") }) else { continue }
-
-                XCTAssertTrue(
-                    code.contains("Grid {") || code.contains("Grid("),
-                    "\(sample.id) places a child with .gridRow or .gridColumn and shows no "
-                    + "Grid around it - pasted back, that does not compile")
+                for code in sample.examples.map(\.code)
+                where placements.contains(where: { code.contains(".\($0)") }) {
+                    XCTAssertTrue(
+                        code.contains("Grid {") || code.contains("Grid("),
+                        "\(sample.id) places a child with .gridRow or .gridColumn and shows no "
+                        + "Grid around it - pasted back, that does not compile")
+                }
             }
         }
     }
@@ -722,13 +810,13 @@ final class CatalogTests: XCTestCase {
     func testEverySamplesCodeDeclaresTheBindingsItLends() {
         for group in catalog().groups {
             for sample in group.samples {
-                let code = stripComments(from: sample.code)
-
-                for name in bareProjections(in: code) {
-                    XCTAssertTrue(
-                        code.contains("var \(name)") || code.contains("let \(name)"),
-                        "\(sample.id) lends $\(name) and never declares it - pasted back, "
-                        + "that does not compile")
+                for code in sample.examples.map({ stripComments(from: $0.code) }) {
+                    for name in bareProjections(in: code) {
+                        XCTAssertTrue(
+                            code.contains("var \(name)") || code.contains("let \(name)"),
+                            "\(sample.id) lends $\(name) and never declares it - pasted back, "
+                            + "that does not compile")
+                    }
                 }
             }
         }
@@ -812,7 +900,7 @@ final class CatalogTests: XCTestCase {
     /// renderer's child count. What carries such an example
     /// is therefore a GRID, whose one implicit row IS the cell.
     func testAFillingExampleRidesAGridRatherThanAStack() throws {
-        let page = SampleTabPage(sample: Sample(Filling()), tab: .part(0), nav: Place().nav).body
+        let page = SampleTabPage(sample: Sample(Filling()), tab: .example(0), nav: Place().nav).body
         var carriers: [String] = []
 
         // The chain from the box the page draws around a part down to the
@@ -834,7 +922,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertFalse(carriers.isEmpty, "the page draws no box around the example")
 
         XCTAssertFalse(
-            carriers.contains { $0.hasSuffix("StackLayout") },
+            carriers.contains { $0 == "VStack" || $0 == "HStack" },
             "a filling example hangs under \(carriers) - a stack gives a child the "
             + "height it asks for, and a scroller asks for the whole of its content")
     }
@@ -844,26 +932,21 @@ final class CatalogTests: XCTestCase {
     /// A page that cannot scroll gives the example and the words ONE screen
     /// between them, so an explanation written as the example's last row is
     /// taken out of the example - measured on an iPhone SE, two paragraphs left
-    /// a list three rows. Declared as `notes` the same words sit under the
-    /// example where there is room for both and move to a NOTES tab where there
-    /// is not.
+    /// a list three rows. Declared as `notes` the same words sit on the code
+    /// tab, in a scroller that has room for them.
     ///
     /// What tells the two apart is LENGTH. A held example says short things -
     /// a caption on a box, a reading it writes as it runs, "Tapped 3 time(s)" -
     /// and the longest of them across the whole gallery is little more than
     /// half this bound, while a paragraph runs to three or four times it.
     func testAHeldExamplePutsItsParagraphsInItsNotes() {
-        // The longest a held example's text may be. The exception is a
-        // WARNING: `rowState`'s second example shows what NOT to rely on, and
-        // says so above the list, where somebody who only tries the example
-        // reads it - which the NOTES tab cannot promise.
+        // The longest a held example's text may be.
         let bound = 100
-        let warns: Set<String> = ["rowState"]
 
         for group in catalog().groups {
-            for sample in group.samples where !sample.scrolls && !warns.contains(sample.id) {
-                for part in sample.parts {
-                    for said in shownTexts(in: part.view.body.built) where said.count > bound {
+            for sample in group.samples where !sample.scrolls {
+                for example in sample.examples {
+                    for said in shownTexts(in: example.view.body.built) where said.count > bound {
                         XCTFail("\(sample.id) explains itself inside the example - "
                                 + "\"\(said.prefix(60))...\" - and a held page has one "
                                 + "screen for the example and the words together, so the "
@@ -874,25 +957,17 @@ final class CatalogTests: XCTestCase {
         }
     }
 
-    /// A sample whose example holds the page still is shown as tabs - the
-    /// window's own - one per example, its words where kept apart and its
-    /// code, each named in the words a tab takes. A sample that scrolls is one
-    /// page.
+    /// A sample whose examples hold the page still is shown as tabs - the
+    /// window's own - one per example, then the code. A sample that scrolls
+    /// is one page.
     func testAHeldSampleIsShownAsTabs() throws {
         let held = try XCTUnwrap(catalog().groups.first { $0.route == "gestures" }?.samples.first)
         let scrolling = try XCTUnwrap(catalog().groups.flatMap(\.samples).first { $0.scrolls })
 
         XCTAssertTrue(SamplePage.shown(held, nav: Place().nav) is TabbedView)
         XCTAssertTrue(SamplePage.shown(scrolling, nav: Place().nav) is SamplePage)
-        XCTAssertEqual(held.tabs.first, .part(0))
-        XCTAssertTrue(held.tabs.contains(.swift))
-        XCTAssertEqual(held.caption(of: .swift), "In Swift")
-        XCTAssertEqual(
-            held.caption(of: .part(0)).first?.isUppercase, true,
-            "a tab's caption starts with a capital")
-        XCTAssertNotEqual(
-            held.caption(of: .part(0)), held.caption(of: .part(0)).uppercased(),
-            "a tab's caption is not shouted")
+        XCTAssertEqual(held.tabs, [.example(0), .code])
+        XCTAssertEqual(held.tabs.map(held.caption(of:)), ["Example", "In Code"])
     }
 
     // MARK: - The arrangement built from it
@@ -1518,7 +1593,7 @@ final class CatalogTests: XCTestCase {
                     // The code is the one thing that DOES scroll. It is drawn as
                     // coloured runs rather than one string, so the runs are put
                     // back together to recognize it.
-                    codeScrolls = codeScrolls || shownText(node) == sample.code
+                    codeScrolls = codeScrolls || sample.examples.contains { $0.code == shownText(node) }
                 }
 
                 node.children.forEach { walk($0, scrolled: scrolled) }
@@ -1528,10 +1603,10 @@ final class CatalogTests: XCTestCase {
             // hold on its own: the example must never be under a scroller, and
             // the code must always be under one.
             XCTAssertTrue(
-                sample.tabs.contains(.part(0)) && sample.tabs.contains(.swift),
+                sample.tabs.contains(.example(0)) && sample.tabs.contains(.code),
                 "\(sample.id) does not offer the example and the code")
 
-            for tab in [SampleTab.part(0), .swift] {
+            for tab in [SampleTab.example(0), .code] {
                 walk(SampleTabPage(sample: sample, tab: tab, nav: Place().nav).body.built, scrolled: false)
             }
             XCTAssertGreaterThan(found, 0, "\(sample.id) is a gesture sample with no gesture on it")
@@ -1557,8 +1632,8 @@ final class CatalogTests: XCTestCase {
             node.children.forEach(walk)
         }
 
-        for part in sample.parts {
-            walk(part.view.body.built)
+        for example in sample.examples {
+            walk(example.view.body.built)
         }
 
         XCTAssertEqual(pinched.count, 1)

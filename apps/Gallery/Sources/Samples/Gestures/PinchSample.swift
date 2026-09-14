@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: PinchGestureRecognizer.
-struct PinchSample: SampleContent {
+struct PinchSample: SampleContent, ExampleContent {
     @State private var pinch = 1.0
     @State private var reports = 0
     @State private var log: [String] = []

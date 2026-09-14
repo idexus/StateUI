@@ -7,7 +7,7 @@ import StateUI
 /// notes carry the rule the screen cannot show - never hop onto `@MainActor`
 /// or `DispatchQueue.main`, and reach for `update` when two tasks change the
 /// same state at the same moment.
-struct ConcurrentStateSample: SampleContent {
+struct ConcurrentStateSample: SampleContent, ExampleContent {
     /// The shared count every task increments. `_total` - the box behind it -
     /// is what the tasks capture; it is Sendable, so it crosses to the
     /// cooperative pool safely.

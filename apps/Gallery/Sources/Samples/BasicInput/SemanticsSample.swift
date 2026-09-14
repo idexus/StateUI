@@ -1,7 +1,7 @@
 import StateUI
 
 /// The accessible meaning and stable external identity of a StateUI view.
-struct SemanticsSample: SampleContent {
+struct SemanticsSample: SampleContent, ExampleContent {
     @State private var described = true
 
     @State private var taps = 0

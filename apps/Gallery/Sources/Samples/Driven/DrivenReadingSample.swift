@@ -3,7 +3,7 @@ import StateUI
 /// Where a value is GOING and where it HAS GOT TO are two readings, and a
 /// walked state holds both: the state itself is the destination from the first
 /// millisecond, and its journey's `value` is what is on the screen this frame.
-struct DrivenReadingSample: SampleContent {
+struct DrivenReadingSample: SampleContent, ExampleContent {
     /// The bar's width, driven - so both readings live here and neither costs
     /// a render.
     @State private var width = 60.0

@@ -1,7 +1,7 @@
 import StateUI
 
 /// A countdown written by hand: a loop, a sleep and a flag.
-struct TaskSleepSample: SampleContent {
+struct TaskSleepSample: SampleContent, ExampleContent {
     /// Whole seconds left. The interface reads this, so writing it is the whole
     /// of "tick".
     @State private var remaining = 0

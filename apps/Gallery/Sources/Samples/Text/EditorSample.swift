@@ -1,18 +1,18 @@
 import StateUI
 
-/// MAUI: Editor.
-struct EditorSample: SampleContent {
-    @State private var notes = ""
+/// Text of several lines, in an editor of a stated height and one that grows.
+struct EditorSample: SampleContent, ExampleContent {
+    @State private var draft = ""
 
     static let id = "editor"
     static let title = "Editor"
     static let summary = "An Entry with room: several lines, and a size that can follow the text."
 
     static let code = """
-        @State private var notes = ""
+        @State private var draft = ""
 
         VStack {
-            // The count of characters below reads `notes`, so every keystroke
+            // The count of characters below reads `draft`, so every keystroke
             // builds this closure; the two editors are handed the state.
             DebugInfoLabel()
 
@@ -22,7 +22,7 @@ struct EditorSample: SampleContent {
                 VStack {
                     Label("a stated height")
 
-                    Editor($notes)
+                    Editor($draft)
                         .placeholder("Anything worth remembering")
                         .heightRequest(110)
                 }
@@ -30,7 +30,7 @@ struct EditorSample: SampleContent {
                 VStack {
                     Label(".autoSize(.textChanges)")
 
-                    Editor($notes)
+                    Editor($draft)
                         .placeholder("The same text, sized by it")
                         .autoSize(.textChanges)
                 }
@@ -38,11 +38,11 @@ struct EditorSample: SampleContent {
             }
             .columnDefinitions(.star, .star)
 
-            Label(notes.isEmpty ? "nothing written yet" : "\\(notes.count) character(s)")
+            Label(draft.isEmpty ? "nothing written yet" : "\\(draft.count) character(s)")
 
             Button("Clear")
-                .isEnabled(!notes.isEmpty)
-                .onClicked { notes = "" }
+                .isEnabled(!draft.isEmpty)
+                .onClicked { draft = "" }
         }
         """
 
@@ -58,7 +58,7 @@ struct EditorSample: SampleContent {
                         .fontSize(12)
                         .textColor(Palette.subtle)
 
-                    Editor($notes)
+                    Editor($draft)
                         .automationId("editor.notes")
                         .semanticDescription("Notes")
                         .placeholder("Anything worth remembering")
@@ -71,7 +71,7 @@ struct EditorSample: SampleContent {
                         .fontSize(12)
                         .textColor(Palette.subtle)
 
-                    Editor($notes)
+                    Editor($draft)
                         .automationId("editor.notes.autoSize")
                         .semanticDescription("Notes, sized by the text")
                         .placeholder("The same text, sized by it")
@@ -84,7 +84,7 @@ struct EditorSample: SampleContent {
             .columnDefinitions(.star, .star)
             .columnSpacing(12)
 
-            Label(notes.isEmpty ? "nothing written yet" : "\(notes.count) character(s)")
+            Label(draft.isEmpty ? "nothing written yet" : "\(draft.count) character(s)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
                 .horizontalTextAlignment(.center)
@@ -93,9 +93,11 @@ struct EditorSample: SampleContent {
                 .fontSize(13)
                 .padding(16, 6)
                 .horizontalOptions(.center)
-                .isEnabled(!notes.isEmpty)
-                .onClicked { notes = "" }
+                .isEnabled(!draft.isEmpty)
+                .onClicked { draft = "" }
         }
         .spacing(12)
     }
+
+    var notes: Element? { nil }
 }

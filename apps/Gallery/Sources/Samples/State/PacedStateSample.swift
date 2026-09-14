@@ -1,7 +1,7 @@
 import StateUI
 
 /// Three roads to the same walking number, and what each one costs.
-struct PacedStateSample: SampleContent {
+struct PacedStateSample: SampleContent, ExampleContent {
     static let id = "paced"
     static let title = "A state on a cadence"
     static let summary =

@@ -1,7 +1,7 @@
 import StateUI
 
 /// The three lifecycle scopes available to every view in a window.
-struct WindowPhaseSample: SampleContent {
+struct WindowPhaseSample: SampleContent, ExampleContent {
     /// The application as it runs.
     @Environment var application: ApplicationSession
 
@@ -28,6 +28,8 @@ struct WindowPhaseSample: SampleContent {
             Label("this window · \\(window.phase)")        // from created to destroying
         }
         """
+
+    var notes: Element? { nil }
 
     var content: any View {
         VStack {

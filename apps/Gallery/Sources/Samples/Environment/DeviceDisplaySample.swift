@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: DeviceDisplay - the screen, its density and which way it is turned.
-struct DeviceDisplaySample: SampleContent {
+struct DeviceDisplaySample: SampleContent, ExampleContent {
     /// The main display, as MAUI measures it.
     @Environment var display: DeviceDisplay
 

@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Picker.
-struct PickerSample: SampleContent {
+struct PickerSample: SampleContent, ExampleContent {
     @State private var size = 1
     @State private var changes = 0
     @State private var opened = 0

@@ -1,38 +1,26 @@
 import StateUI
 
-/// MAUI: GraphicsView, and the ICanvas its drawable draws on.
+/// A canvas drawn from state, and one drawn from a finger.
 struct GraphicsViewSample: SampleContent {
     static let id = "graphicsView"
     static let title = "GraphicsView"
-    static let summary = "A canvas: the instructions travel, and the host draws them."
+    static let summary = "A canvas: the drawing instructions travel, and the host draws them."
 
     // A drag is a gesture, and a scroller would claim it before the canvas
     // heard about it - see SampleContent.scrolls.
     static let scrolls = false
 
-    /// Two drawings that share nothing: one that follows STATE, and one that
-    /// follows a FINGER - each under a tab of its own, IN SWIFT after them.
-    var parts: [SamplePart] {
-        let bars = FollowsState()
-        let trail = FollowsAFinger()
-
-        return [SamplePart(title: "EXAMPLE 1", view: bars, notes: bars.words),
-                SamplePart(title: "EXAMPLE 2", view: trail, notes: trail.words)]
+    var examples: [Example] {
+        [Example(FollowsState()), Example(FollowsAFinger())]
     }
+}
 
-    /// Unused: `parts` above is what the page draws. Kept because the protocol
-    /// asks for a `content` and these two halves have no single one.
-    var content: any View {
-        VStack {
-            FollowsState()
-            FollowsAFinger()
-        }
-        .spacing(16)
-    }
+/// A drawing described from state, redrawn because the state changed and for
+/// no other reason.
+private struct FollowsState: ExampleContent {
+    @State private var bars = [0.4, 0.75, 0.3, 0.95, 0.6]
 
     static let code = """
-        // -- EXAMPLE 1 --
-
         struct FollowsState: ContentView {
             @State private var bars = [0.4, 0.75, 0.3, 0.95, 0.6]
 
@@ -66,9 +54,53 @@ struct GraphicsViewSample: SampleContent {
                 }
             }
         }
+        """
 
-        // -- EXAMPLE 2 --
+    var content: any View {
+        VStack {
+            DebugInfoLabel()
 
+            GraphicsView {
+                for (index, value) in bars.enumerated() {
+                    let height = value * 90
+                    let x = Double(index) * 44
+
+                    Draw.fillColor(Palette.accent)
+                    Draw.fillRoundedRectangle(
+                        x: x, y: 100 - height, width: 32, height: height, cornerRadius: 4)
+
+                    Draw.fontColor(Palette.text)
+                    Draw.fontSize(11)
+                    Draw.drawString(
+                        "\(Int(value * 100))", x: x, y: 104, width: 32, height: 14,
+                        horizontalAlignment: .center)
+                }
+            }
+            .heightRequest(120)
+
+            Button("Different numbers")
+                .fontSize(13)
+                .padding(16, 6)
+                .horizontalOptions(.center)
+                .onClicked { bars = bars.map { _ in Double.random(in: 0.15...1) } }
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        Label("The drawing is a list of instructions described in Swift. They travel to "
+            + "the host, which draws them on the platform's canvas. The bars are read "
+            + "inside the drawing, so new numbers draw it again.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
+}
+
+/// The same canvas, drawn from what a finger is doing to it.
+private struct FollowsAFinger: ExampleContent {
+    @State private var trail: [Point] = []
+
+    static let code = """
         struct FollowsAFinger: ContentView {
             @State private var trail: [Point] = []
 
@@ -103,56 +135,6 @@ struct GraphicsViewSample: SampleContent {
             }
         }
         """
-}
-
-/// The first half: a drawing described from state, redrawn because the state
-/// changed and for no other reason.
-private struct FollowsState: ContentView {
-    @State private var bars = [0.4, 0.75, 0.3, 0.95, 0.6]
-
-    var content: any View {
-        VStack {
-            DebugInfoLabel()
-
-            GraphicsView {
-                for (index, value) in bars.enumerated() {
-                    let height = value * 90
-                    let x = Double(index) * 44
-
-                    Draw.fillColor(Palette.accent)
-                    Draw.fillRoundedRectangle(
-                        x: x, y: 100 - height, width: 32, height: height, cornerRadius: 4)
-
-                    Draw.fontColor(Palette.text)
-                    Draw.fontSize(11)
-                    Draw.drawString(
-                        "\(Int(value * 100))", x: x, y: 104, width: 32, height: 14,
-                        horizontalAlignment: .center)
-                }
-            }
-            .heightRequest(120)
-
-            Button("Different numbers")
-                .fontSize(13)
-                .padding(16, 6)
-                .horizontalOptions(.center)
-                .onClicked { bars = bars.map { _ in Double.random(in: 0.15...1) } }
-        }
-        .spacing(12)
-    }
-
-    var words: any View {
-        Label("MAUI's GraphicsView takes an IDrawable - an object with a Draw method, "
-            + "which is the one thing this boundary cannot carry. So the calls that "
-            + "method would have made travel instead, and the host replays them.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
-    }
-}
-
-/// And the second: the same canvas, drawn from what a finger is doing to it.
-private struct FollowsAFinger: ContentView {
-    @State private var trail: [Point] = []
 
     var content: any View {
         VStack {
@@ -183,10 +165,9 @@ private struct FollowsAFinger: ContentView {
         .spacing(12)
     }
 
-    var words: any View {
-        Label("Every point is a render: the state changes, the instructions are read "
-            + "again, and the new drawing is what crosses. Nothing else was needed to "
-            + "make a drawing follow the interface it belongs to.")
+    var notes: Element? {
+        Label("Every point the finger reports is a write: the trail changes, the "
+            + "drawing is described again, and the new instructions travel.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

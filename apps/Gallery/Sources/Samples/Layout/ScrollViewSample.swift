@@ -1,8 +1,8 @@
 import StateUI
 
-/// A strip of tiles a fixed distance apart - the shape both grid halves are cut
-/// from. A tile is 140 wide with 20 between them, so one starts every 160,
-/// which is the interval a snapping strip is told to rest on.
+/// A strip of tiles a fixed distance apart - the shape the grid and throw
+/// examples are cut from. A tile is 140 wide with 20 between them, so one
+/// starts every 160, which is the interval a snapping strip is told to rest on.
 private func tileStrip() -> ScrollView {
     ScrollView {
         HStack {
@@ -177,7 +177,7 @@ private struct DrivenOffset: ContentView {
 
 /// What an offset costs, three ways over three identical strips - and the
 /// write that moves all three.
-private struct OffsetStrips: ContentView {
+private struct OffsetStrips: ExampleContent {
     /// One state per strip, and the three roads the columns are about: a get,
     /// a get on a cadence, and a value nothing reads. THE DECLARATIONS ARE
     /// IDENTICAL - what differs is what each column asks for and how it reads
@@ -192,317 +192,7 @@ private struct OffsetStrips: ContentView {
 
     @State private var driven = Point.zero
 
-    var content: any View {
-        Grid {
-            // THREE IDENTICAL STRIPS over three states. What differs is where
-            // each column's reading comes from, and the count under it is
-            // what that costs - drag them and watch.
-            Grid {
-                DescribedOffset(offset: $described)
-
-                // THE READING IS ASKED FOR WHERE IT IS SHOWN, and it is a
-                // reading of where the value HAS GOT TO - which the state
-                // itself never says, standing at its destination.
-                PacedOffset(offset: $paced, shown: pacedShown)
-                    .samples($paced, into: $pacedShown, .every(100))
-                    .gridColumn(1)
-
-                DrivenOffset(offset: $driven)
-                    .gridColumn(2)
-            }
-            .columnDefinitions(.star, .star, .star)
-            .columnSpacing(12)
-            .gridRow(0)
-
-            HStack {
-                Button("Top")
-                    .fontSize(13)
-                    .padding(16, 6)
-                    .onClicked { try await move(to: 0) }
-
-                Button("Line 9")
-                    .fontSize(13)
-                    .padding(16, 6)
-                    .onClicked { try await move(to: 240) }
-            }
-            .spacing(16)
-            .horizontalOptions(.center)
-            .gridRow(1)
-        }
-        .rowDefinitions(.star, .auto)
-        .rowSpacing(10)
-    }
-
-    /// Puts all three strips at the same offset, one after another.
-    ///
-    /// A journey is awaited and answers when the glide has FINISHED, so the
-    /// three strips move in turn rather than together - which is what `await`
-    /// on a write to `scroll($:)` means, said on the screen.
-    ///
-    /// - Parameter y: how far down each strip is sent.
-    private func move(to y: Double) async throws {
-        for strip in [$described, $paced, $driven] {
-            try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut))
-        }
-    }
-
-    /// The words under this half - the page places them, and on a held page
-    /// they take a tab of their own. See `SampleContent.notes`.
-    var notes: Element {
-        VStack {
-            Label("Three strips, three states, one report each. `.scroll($offset)` hands "
-                + "the state over, so the scroller is no reader of it and the offset "
-                + "itself costs nothing wherever it moves. What it costs is decided by "
-                + "who reads it, and each column reads it a different way.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("DESCRIBED reads the offset in the column's own braces, so that column "
-                + "is rebuilt on every report - a render for every few points of a drag. "
-                + "ON A CADENCE is the same get over a SAMPLE - "
-                + "`.samples($offset, into: $shown, .every(100))` - which "
-                + "asks for a render at most ten times a second: the number is as right "
-                + "as the other one whenever it is read, and the count is a tenth of it. "
-                + "A CHANNEL reads nothing - the words are "
-                + "`$offset.journey.convert { … }`, a second state the host works out "
-                + "on its own frames - so the number keeps up with the finger and the "
-                + "count stays at one.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("So the ladder is: hand the value on and show it through a channel where "
-                + "it moves with a finger; read it where something has to DECIDE by it, "
-                + "and put a cadence on it where a reader could not see the difference "
-                + "anyway. The cadence itself has a sample of its own, `A state on a "
-                + "cadence`, under Using state.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("`.scroll($offset)` goes BOTH WAYS. The reader's scrolling is the host's "
-                + "own write into the state, and a write to the state moves the scroller: "
-                + "`try await $offset.journey.move(to: Point(0, y), …)` is suspended until the "
-                + "glide finishes, which is why Top sends the three strips one after "
-                + "another rather than all at once, and `$offset.journey.snap(to:)` puts one "
-                + "there at once. The offset is one point - MAUI's ScrollX and ScrollY "
-                + "together - so a move on both axes arrives on both together.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("A ScrollView holds ONE view; several children are wrapped in a stack "
-                + "by the renderer rather than all but the first being dropped.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-        }
-        .spacing(12)
-    }
-}
-
-/// The offsets a scroller may come to rest on, and which of them it is nearest.
-private struct GridStrips: ContentView {
-    @State private var tile = 0
-
-    @State private var rests = 0
-
-    var content: any View {
-        Grid {
-            tileStrip()
-                // The offsets it may rest on, and which of them it is nearest -
-                // reported as that changes, which is halfway between two tiles.
-                .snapInterval(160)
-                .snapItem($tile)
-                // And the moment nothing is moving any more - once per drag,
-                // however many tiles it crossed on the way.
-                .onScrollStopped { rests += 1 }
-                .gridRow(0)
-
-            Label("nearest tile: \(tile + 1)   ·   came to rest \(rests) times")
-                .fontSize(12)
-                .fontFamily("Menlo")
-                .textColor(Palette.accent)
-                .horizontalTextAlignment(.center)
-                .gridRow(1)
-
-            Label("`.snapInterval(160)`")
-                .fontSize(11)
-                .textColor(Palette.subtle)
-                .horizontalTextAlignment(.center)
-                .gridRow(2)
-
-            // The same strip with nothing said about where it may rest, so the
-            // difference on screen is the interval and nothing else.
-            tileStrip()
-                .gridRow(3)
-
-            Label("nothing said - it stops where the throw ran out")
-                .fontSize(11)
-                .textColor(Palette.subtle)
-                .horizontalTextAlignment(.center)
-                .gridRow(4)
-        }
-        .rowDefinitions(.auto, .auto, .auto, .auto, .auto)
-        .rowSpacing(10)
-        // The bands are as tall as they need to be, so the pair sits in the
-        // middle of whatever height the window gave the cell.
-        .verticalOptions(.center)
-    }
-
-    /// See `OffsetStrips.notes`.
-    var notes: Element {
-        VStack {
-            Label("`.snapInterval(160)` - drag the first strip and let go: it always comes "
-                + "to rest on a tile, however it was thrown. The strip under it is the "
-                + "same one with nothing said, and stops half a tile off as often as not.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("`.snapItem($tile)` is the other half: the number above changes as the "
-                + "strip passes the halfway mark, which is the same rounding, so it names "
-                + "the tile it is going to stop at while it is still moving.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("`.onScrollStopped` is the third: it runs once the strip has stopped "
-                + "moving - once per drag, whether that drag crossed one tile or six, and "
-                + "after the correction where one was needed. That is the moment work "
-                + "costs nothing to do, so it is where a list builds the rows "
-                + "the next swipe will need.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("ON WINDOWS THE STRIP FOLLOWS A TOUCHPAD and meets the grid once, when "
-                + "the fingers stop; a mouse wheel steps it a tile a click. Both land on a "
-                + "tile, so the number above and `.onScrollStopped` say the same there as "
-                + "anywhere.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-        }
-        .spacing(12)
-    }
-}
-
-/// How much of the platform's own throw a release keeps.
-private struct ThrowStrips: ContentView {
-    var content: any View {
-        Grid {
-            tileStrip()
-                .snapInterval(160)
-                .gridRow(0)
-
-            Label("the whole of the platform's throw")
-                .fontSize(11)
-                .textColor(Palette.subtle)
-                .horizontalTextAlignment(.center)
-                .gridRow(1)
-
-            // The same grid keeping a THIRD of the platform's own throw, so the
-            // pair differs by that and nothing else.
-            tileStrip()
-                .snapInterval(160)
-                .momentum(0.35)
-                .gridRow(2)
-
-            Label("`.momentum(0.35)`")
-                .fontSize(11)
-                .textColor(Palette.subtle)
-                .horizontalTextAlignment(.center)
-                .gridRow(3)
-        }
-        .rowDefinitions(.auto, .auto, .auto, .auto)
-        .rowSpacing(10)
-        .verticalOptions(.center)
-    }
-
-    /// See `OffsetStrips.notes`.
-    var notes: Element {
-        VStack {
-            Label("Flick both strips the same way. The lower one keeps a THIRD of what the "
-                + "platform would have thrown it, so the same flick means a tile or two "
-                + "rather than five.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("It scales the platform's own prediction rather than replacing it, so a "
-                + "hard throw still goes further than a gentle one. A GalleryView keeps "
-                + "half, which is what makes an ordinary swipe mean the next card.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-        }
-        .spacing(12)
-    }
-}
-
-/// The bar down the side, asked for and taken away.
-private struct BarStrips: ContentView {
-    var content: any View {
-        Grid {
-            barCase(.always, "verticalScrollBarVisibility(.always)")
-                .gridColumn(0)
-
-            barCase(.never, "verticalScrollBarVisibility(.never)")
-                .gridColumn(1)
-        }
-        .columnDefinitions(.star, .star)
-        .columnSpacing(12)
-    }
-
-    /// One scroller with the setting that made it named underneath, so the pair
-    /// reads as one difference rather than as two scrollers.
-    ///
-    /// - Parameter visibility: what this half asks for.
-    /// - Parameter caption: the words under it.
-    private func barCase(_ visibility: ScrollBarVisibility, _ caption: String) -> Grid {
-        Grid {
-            ScrollView {
-                VStack {
-                    ForEach(1...40) { line in
-                        Label("Line \(line)")
-                            .fontSize(13)
-                            .padding(6, 4)
-                    }
-                }
-            }
-            .verticalScrollBarVisibility(visibility)
-            .gridRow(0)
-
-            Label(caption)
-                .fontSize(11)
-                .textColor(Palette.subtle)
-                .horizontalTextAlignment(.center)
-                .gridRow(1)
-        }
-        .rowDefinitions(.star, .auto)
-        .rowSpacing(6)
-    }
-
-    /// See `OffsetStrips.notes`.
-    var notes: Element {
-        Label("`.never` takes the bar away and nothing brings it back; `.always` asks "
-            + "for one that stands there whether or not a drag is under way. Where the "
-            + "platform draws an OVERLAY bar that fades on its own - macOS, Android - "
-            + "the two look alike until the scroller is dragged.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
-    }
-}
-
-/// MAUI: ScrollView.
-struct ScrollViewSample: SampleContent {
-    static let id = "scrollView"
-    static let title = "ScrollView"
-    static let summary = "A scrollable container - what its offset costs read three ways, and a write that moves it."
-
-    // Every half of this sample IS a scroller, so the page must not put one
-    // inside another: the wrong one moves under the reader's finger, and a
-    // scroller inside a scroller cannot be given a height worth having.
-    static let scrolls = false
-
-    /// Each half is given the WINDOW's height, which is what a scroller needs
-    /// to be worth dragging.
-    static let fills = true
-
     static let code = """
-        // -- OFFSET --
-
         // The same strip in all three columns, so the only difference on the
         // screen is what the offset costs.
         func numberedLines() -> ScrollView {
@@ -638,11 +328,110 @@ struct ScrollViewSample: SampleContent {
                 }
             }
         }
+        """
 
-        // -- GRID --
+    var content: any View {
+        Grid {
+            // THREE IDENTICAL STRIPS over three states. What differs is where
+            // each column's reading comes from, and the count under it is
+            // what that costs - drag them and watch.
+            Grid {
+                DescribedOffset(offset: $described)
 
-        // The strip both halves are cut from - and THROW below reuses it. A
-        // tile is 140 wide with 20 between them, so one starts every 160,
+                // THE READING IS ASKED FOR WHERE IT IS SHOWN, and it is a
+                // reading of where the value HAS GOT TO - which the state
+                // itself never says, standing at its destination.
+                PacedOffset(offset: $paced, shown: pacedShown)
+                    .samples($paced, into: $pacedShown, .every(100))
+                    .gridColumn(1)
+
+                DrivenOffset(offset: $driven)
+                    .gridColumn(2)
+            }
+            .columnDefinitions(.star, .star, .star)
+            .columnSpacing(12)
+            .gridRow(0)
+
+            HStack {
+                Button("Top")
+                    .fontSize(13)
+                    .padding(16, 6)
+                    .onClicked { try await move(to: 0) }
+
+                Button("Line 9")
+                    .fontSize(13)
+                    .padding(16, 6)
+                    .onClicked { try await move(to: 240) }
+            }
+            .spacing(16)
+            .horizontalOptions(.center)
+            .gridRow(1)
+        }
+        .rowDefinitions(.star, .auto)
+        .rowSpacing(10)
+    }
+
+    /// Puts all three strips at the same offset, one after another.
+    ///
+    /// A journey is awaited and answers when the glide has FINISHED, so the
+    /// three strips move in turn rather than together - which is what `await`
+    /// on a write to `scroll($:)` means, said on the screen.
+    ///
+    /// - Parameter y: how far down each strip is sent.
+    private func move(to y: Double) async throws {
+        for strip in [$described, $paced, $driven] {
+            try await strip.journey.move(to: Point(0, y), .eased(300, .cubicOut))
+        }
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("Three strips, three states. `.scroll($offset)` hands the state over, "
+                + "so the scroller is no reader of it: what the offset costs is decided "
+                + "by who reads it, and each column reads it differently.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Described reads the offset in its own braces, so the column is built "
+                + "again on every report. On a cadence reads a sample of it - "
+                + "`.samples($offset, into: $shown, .every(100))` - at most ten times a "
+                + "second, so its count is a tenth. A channel reads nothing: "
+                + "`$offset.journey.convert { … }` is a second state the host works out "
+                + "on its own frames, and the count stays at one.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Hand the value on where it moves with a finger, read it where "
+                + "something decides by it, and put a cadence on the read where the "
+                + "difference cannot be seen. `A state on a cadence`, under Using state, "
+                + "shows the cadence on its own.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`.scroll($offset)` goes both ways: scrolling writes the state, and a "
+                + "write moves the scroller. `try await $offset.journey.move(to:)` returns "
+                + "when the glide finishes, which is why Top moves the strips one after "
+                + "another; `$offset.journey.snap(to:)` puts one there at once.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A ScrollView holds one view; several children are wrapped in a stack.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(12)
+    }
+}
+
+/// The offsets a scroller may come to rest on, and which of them it is nearest.
+private struct GridStrips: ExampleContent {
+    @State private var tile = 0
+
+    @State private var rests = 0
+
+    static let code = """
+        // The strip both strips here are cut from, and the next example's too.
+        // A tile is 140 wide with 20 between them, so one starts every 160,
         // which is the interval a snapping strip is told to rest on.
         func tileStrip() -> ScrollView {
             ScrollView {
@@ -687,10 +476,80 @@ struct ScrollViewSample: SampleContent {
                 .verticalOptions(.center)
             }
         }
+        """
 
-        // -- THROW --
+    var content: any View {
+        Grid {
+            tileStrip()
+                // The offsets it may rest on, and which of them it is nearest -
+                // reported as that changes, which is halfway between two tiles.
+                .snapInterval(160)
+                .snapItem($tile)
+                // And the moment nothing is moving any more - once per drag,
+                // however many tiles it crossed on the way.
+                .onScrollStopped { rests += 1 }
+                .gridRow(0)
 
-        // Made of the tileStrip() the GRID section defines.
+            Label("nearest tile: \(tile + 1)   ·   came to rest \(rests) times")
+                .fontSize(12)
+                .fontFamily("Menlo")
+                .textColor(Palette.accent)
+                .horizontalTextAlignment(.center)
+                .gridRow(1)
+
+            Label("`.snapInterval(160)`")
+                .fontSize(11)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+                .gridRow(2)
+
+            // The same strip with nothing said about where it may rest, so the
+            // difference on screen is the interval and nothing else.
+            tileStrip()
+                .gridRow(3)
+
+            Label("no interval")
+                .fontSize(11)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+                .gridRow(4)
+        }
+        .rowDefinitions(.auto, .auto, .auto, .auto, .auto)
+        .rowSpacing(10)
+        // The bands are as tall as they need to be, so the pair sits in the
+        // middle of whatever height the window gave the cell.
+        .verticalOptions(.center)
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("`.snapInterval(160)`: drag the first strip and let go, and it comes to "
+                + "rest on a tile however it was thrown. The strip under it says nothing "
+                + "and stops wherever the throw ends.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`.snapItem($tile)` names the tile the strip will stop at while it is "
+                + "still moving: the number changes as the strip passes the halfway mark "
+                + "between two tiles.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`.onScrollStopped` runs once the strip has stopped - once per drag, "
+                + "however many tiles it crossed, and after the correction where one was "
+                + "needed. That is the moment work costs nothing, so it is where a list "
+                + "builds the rows the next swipe needs.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(12)
+    }
+}
+
+/// How much of the platform's own throw a release keeps.
+private struct ThrowStrips: ExampleContent {
+    static let code = """
+        // Made of the tileStrip() the previous example defines.
         struct ThrowStrips: ContentView {
             var content: any View {
                 Grid {
@@ -710,9 +569,59 @@ struct ScrollViewSample: SampleContent {
                 .verticalOptions(.center)
             }
         }
+        """
 
-        // -- BAR --
+    var content: any View {
+        Grid {
+            tileStrip()
+                .snapInterval(160)
+                .gridRow(0)
 
+            Label("the platform's whole throw")
+                .fontSize(11)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+                .gridRow(1)
+
+            // The same grid keeping a THIRD of the platform's own throw, so the
+            // pair differs by that and nothing else.
+            tileStrip()
+                .snapInterval(160)
+                .momentum(0.35)
+                .gridRow(2)
+
+            Label("`.momentum(0.35)`")
+                .fontSize(11)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+                .gridRow(3)
+        }
+        .rowDefinitions(.auto, .auto, .auto, .auto)
+        .rowSpacing(10)
+        .verticalOptions(.center)
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("Flick both strips the same way. The lower one keeps a third of what the "
+                + "platform would have thrown it, so the same flick means a tile or two "
+                + "rather than five.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("`.momentum` scales the platform's own prediction rather than replacing "
+                + "it, so a hard throw still goes further than a gentle one. A GalleryView "
+                + "keeps half, which is what makes an ordinary swipe mean the next card.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(12)
+    }
+}
+
+/// The bar down the side, asked for and taken away.
+private struct BarStrips: ExampleContent {
+    static let code = """
         struct BarStrips: ContentView {
             var content: any View {
                 Grid {
@@ -737,25 +646,74 @@ struct ScrollViewSample: SampleContent {
         }
         """
 
-    var parts: [SamplePart] {
-        let offset = OffsetStrips()
-        let grid = GridStrips()
-        let carried = ThrowStrips()
-        let bars = BarStrips()
+    var content: any View {
+        Grid {
+            barCase(.always, "verticalScrollBarVisibility(.always)")
+                .gridColumn(0)
 
-        return [SamplePart(title: "OFFSET", view: offset, notes: offset.notes),
-                SamplePart(title: "GRID", view: grid, notes: grid.notes),
-                SamplePart(title: "THROW", view: carried, notes: carried.notes),
-                SamplePart(title: "BAR", view: bars, notes: bars.notes)]
+            barCase(.never, "verticalScrollBarVisibility(.never)")
+                .gridColumn(1)
+        }
+        .columnDefinitions(.star, .star)
+        .columnSpacing(12)
     }
 
-    var content: any View {
-        VStack {
-            OffsetStrips()
-            GridStrips()
-            ThrowStrips()
-            BarStrips()
+    /// One scroller with the setting that made it named underneath, so the pair
+    /// reads as one difference rather than as two scrollers.
+    ///
+    /// - Parameter visibility: what this half asks for.
+    /// - Parameter caption: the words under it.
+    private func barCase(_ visibility: ScrollBarVisibility, _ caption: String) -> Grid {
+        Grid {
+            ScrollView {
+                VStack {
+                    ForEach(1...40) { line in
+                        Label("Line \(line)")
+                            .fontSize(13)
+                            .padding(6, 4)
+                    }
+                }
+            }
+            .verticalScrollBarVisibility(visibility)
+            .gridRow(0)
+
+            Label(caption)
+                .fontSize(11)
+                .textColor(Palette.subtle)
+                .horizontalTextAlignment(.center)
+                .gridRow(1)
         }
-        .spacing(16)
+        .rowDefinitions(.star, .auto)
+        .rowSpacing(6)
+    }
+
+    var notes: Element? {
+        Label("`.never` takes the bar away and nothing brings it back; `.always` asks for "
+            + "one that stays whether or not a drag is under way. Where the platform draws "
+            + "an overlay bar that fades on its own, the two look alike until the scroller "
+            + "is dragged.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
+}
+
+/// A scroller: what reading its offset costs, where it may come to rest, how
+/// far a throw carries it, and its bar.
+struct ScrollViewSample: SampleContent {
+    static let id = "scrollView"
+    static let title = "ScrollView"
+    static let summary = "A scrollable container - what its offset costs read three ways, and a write that moves it."
+
+    // Every example here IS a scroller, so the page must not put one inside
+    // another: the wrong one moves under the reader's finger, and a scroller
+    // inside a scroller cannot be given a height worth having.
+    static let scrolls = false
+
+    /// Each example is given the WINDOW's height, which is what a scroller
+    /// needs to be worth dragging.
+    static let fills = true
+
+    var examples: [Example] {
+        [Example(OffsetStrips()), Example(GridStrips()), Example(ThrowStrips()), Example(BarStrips())]
     }
 }

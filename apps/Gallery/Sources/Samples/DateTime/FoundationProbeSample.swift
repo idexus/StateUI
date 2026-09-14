@@ -12,7 +12,7 @@ import Android
 // its own, namespaced ICU, and on Windows FoundationEssentials alone, with no
 // zones. On Android the trap is the current zone, and the first two lines of
 // the handler are the fix; on Windows the host's rows are the answer.
-struct FoundationProbeSample: SampleContent {
+struct FoundationProbeSample: SampleContent, ExampleContent {
     @State private var rows: [(String, String)] = []
 
     static let id = "foundationProbe"

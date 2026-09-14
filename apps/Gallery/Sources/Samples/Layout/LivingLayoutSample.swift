@@ -1,7 +1,7 @@
 import StateUI
 
 /// A layout whose children travel to their new places when the layout changes.
-struct LivingLayoutSample: SampleContent {
+struct LivingLayoutSample: SampleContent, ExampleContent {
     static let id = "livingLayout"
     static let title = "A layout that moves"
     static let summary = "Insert, remove or reorder, and everything else slides to its new place - in a stack, and in a grid whose columns change width."

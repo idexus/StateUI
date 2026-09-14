@@ -43,7 +43,7 @@ private struct NameEditor: ContentView {
 /// An object provided above, resolved below - by type. The provider passes a
 /// reference and reads no property, so it is never rebuilt by changes IN the
 /// object; the readers are, each exactly when what it read moved.
-struct EnvironmentSample: SampleContent {
+struct EnvironmentSample: SampleContent, ExampleContent {
     @State private var session = Session()
     @State private var preview = Session()
 

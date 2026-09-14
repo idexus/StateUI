@@ -1,7 +1,7 @@
 import StateUI
 
 /// Native alerts, action sheets and prompts exposed as awaited StateUI acts.
-struct DialogsSample: SampleContent {
+struct DialogsSample: SampleContent, ExampleContent {
     @State private var answer = "nothing asked yet"
     @State private var name = "Draft 1"
 

@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Border.
-struct BorderSample: SampleContent {
+struct BorderSample: SampleContent, ExampleContent {
     static let id = "border"
     static let title = "Border"
     static let summary = "One view with a stroke around it, in the shape XAML writes."

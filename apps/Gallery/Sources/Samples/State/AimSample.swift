@@ -3,7 +3,7 @@ import StateUI
 /// The other half of the doctrine: an author holds a CONTROL as well as
 /// values, and declares it with `@Aim`. On a value you write; on a control you
 /// call - and which member is which was decided by MAUI, not here.
-struct AimSample: SampleContent {
+struct AimSample: SampleContent, ExampleContent {
     @State private var text = ""
 
     /// The control an act is about. `.aim` puts the element's own identity in

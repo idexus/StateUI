@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: Button.
-struct ButtonSample: SampleContent {
+struct ButtonSample: SampleContent, ExampleContent {
     @State private var counter = 0
 
     static let id = "button"

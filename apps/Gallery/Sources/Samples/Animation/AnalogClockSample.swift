@@ -1,7 +1,7 @@
 import StateUI
 
 /// MAUI: VisualElement.Rotation, sprung to real time by a plain Swift loop.
-struct AnalogClockSample: SampleContent {
+struct AnalogClockSample: SampleContent, ExampleContent {
     @State private var ticking = false
 
     /// Whether the first reading of this visit has SET the clock. Travelling

@@ -1,7 +1,7 @@
 import StateUI
 
 /// A native slider driven by one shared StateUI journey.
-struct SliderSample: SampleContent {
+struct SliderSample: SampleContent, ExampleContent {
     @State private var volume = 40.0
     @State private var soundOn = true
     @State private var dragging = false
