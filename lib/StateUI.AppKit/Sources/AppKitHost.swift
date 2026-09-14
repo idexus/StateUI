@@ -1511,6 +1511,59 @@ final class MountedNode: NSObject {
         }
     }
 
+    /// The tabs the window's toolbar shows: those of the tabbed view on the
+    /// visible page path, where its selector is the toolbar's.
+    var visibleToolbarTabs: AppKitToolbarTabs? {
+        guard let tabbed = visibleTabbedView, tabbed.tabsStandInWindowToolbar,
+              let tabs = tabbed.view as? AppKitTabbedView
+        else { return nil }
+
+        let segments = tabs.segments
+        return AppKitToolbarTabs(
+            titles: segments.map(\.title),
+            images: segments.map(\.image),
+            selected: tabs.selectedIndex,
+            select: { [weak tabs] index in tabs?.selectByReader(index) })
+    }
+
+    /// The first tabbed view on the visible page path.
+    private var visibleTabbedView: MountedNode? {
+        switch type {
+        case .page:
+            return nil
+        case .tabbedView:
+            return self
+        case .navigationStack:
+            return children.last?.visibleTabbedView
+        case .splitView:
+            return children.dropFirst().first?.visibleTabbedView
+        default:
+            return pageNode?.visibleTabbedView
+        }
+    }
+
+    /// Whether this tabbed view's selector is its window's toolbar's: it stands
+    /// on the window's page path, nothing but stacks and split views between
+    /// it and the window. In a sheet, in a tab of another tabbed view or inside
+    /// content, its selector stands at the top of its own content. Decided by
+    /// where the tabbed view stands rather than by what is visible, so its
+    /// selector never moves while it lives.
+    private var tabsStandInWindowToolbar: Bool {
+        guard type == .tabbedView else { return false }
+        var ancestor = parent
+        while let node = ancestor {
+            switch node.type {
+            case .window:
+                return true
+            case .navigationStack, .splitView:
+                ancestor = node.parent
+            default:
+                return false
+            }
+        }
+        return false
+    }
+
     /// The native split view controller of a split page.
     var sidebarController: NSSplitViewController? {
         (view as? AppKitSplitView)?.splitController
@@ -2303,10 +2356,6 @@ final class MountedNode: NSObject {
             page.padding = insets(.padding)
         }
 
-        if let tabs = view as? AppKitTabbedView {
-            tabs.applyBar(backgroundColor: color(.barBackgroundColor))
-        }
-
         if let split = view as? AppKitSplitView {
             split.onPresentationChanged = { [weak self] presented in
                 self?.changeSidebarVisibility(to: presented)
@@ -2717,6 +2766,7 @@ final class MountedNode: NSObject {
                     title: child.string(.title),
                     image: child.string(.iconImageSource).flatMap { image(named: $0) })
             }
+            tabs.selectorInToolbar = tabsStandInWindowToolbar
             tabs.onSelection = { [weak self] previous, selected in
                 self?.selectTab(from: previous, to: selected)
             }

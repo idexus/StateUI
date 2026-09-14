@@ -653,8 +653,9 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
     /// Composes the window's one native chrome from the visible arrangement:
     /// the top page names the window, the stack's way back and the page's
-    /// actions are toolbar items, a split page adds the sidebar toggle, and
-    /// an authored title bar adds its slots and its own title.
+    /// actions are toolbar items, a split page adds the sidebar toggle, a
+    /// tabbed view on the page path its tabs, and an authored title bar adds
+    /// its slots and its own title.
     private func refreshVisiblePageChrome() {
         guard let node, let window else { return }
         let titleBar = node.children.first { $0.type == .titleBar }
@@ -672,6 +673,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
             back: node.visibleBackAction,
             leading: titleBar?.firstView(in: .leadingContent),
             center: titleBar?.firstView(in: .content) ?? titleView,
+            tabs: node.visibleToolbarTabs,
             actions: actions.primary,
             overflow: actions.overflow,
             trailing: titleBar?.firstView(in: .trailingContent)))

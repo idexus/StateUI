@@ -188,39 +188,106 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(tabs.selectedIndexForTesting, 1)
     }
 
+    /// A tabbed view on the window's page path puts its selector in the
+    /// window's toolbar - one select-one group of its tabs, centred, showing
+    /// the selection - and none on its content, where nothing is painted.
+    /// Choosing in the toolbar is the reader choosing.
     @MainActor
-    func testTabbedViewAppliesAndClearsItsFlatBarBackground() throws {
+    func testAWindowsTabbedViewSelectsFromTheToolbar() throws {
+        var reported: [(Int32, [HostValue])] = []
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
-            eventSink: { _, _ in })
+            eventSink: { reported.append(($0, $1)) })
         defer { renderer.closeForTesting() }
-        let authored = NSColor(
-            srgbRed: 54.0 / 255.0,
-            green: 42.0 / 255.0,
-            blue: 86.0 / 255.0,
-            alpha: 1)
+        let pages = [
+            page("home", title: "Home", events: 100),
+            page("browse", title: "Browse", events: 200),
+        ]
 
-        var tabsPatch = tabbed([
-            page("home", events: 100),
-            page("browse", events: 200),
-        ], selected: 0)
-        tabsPatch.properties[.barBackgroundColor] = .color(
-            red: 54, green: 42, blue: 86, alpha: 255)
-        renderer.applyForTesting(tree(tabsPatch))
+        var painted = tabbed(pages, selected: 0, changed: 9)
+        painted.properties[.barBackgroundColor] = .color(red: 54, green: 42, blue: 86, alpha: 255)
+        renderer.applyForTesting(tree(painted))
+        reported.removeAll()
+
+        let toolbar = try XCTUnwrap(renderer.windowsForTesting.first?.toolbarForTesting)
+        let group = try XCTUnwrap(
+            toolbar.itemForTesting(AppKitWindowToolbar.tabs) as? NSToolbarItemGroup)
+        XCTAssertEqual(group.selectionMode, .selectOne)
+        XCTAssertEqual(group.subitems.map(\.label), ["Home", "Browse"])
+        XCTAssertEqual(group.selectedIndex, 0)
+        XCTAssertEqual(toolbar.toolbar.centeredItemIdentifiers, [AppKitWindowToolbar.tabs])
 
         let tabs = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabbedView)
-        XCTAssertTrue(tabs.barBackgroundColorForTesting?.isEqual(authored) == true)
+        XCTAssertFalse(tabs.showsTabsForTesting)
+        XCTAssertNil(tabs.layer?.backgroundColor, "the toolbar and the tab view are the system's")
 
-        var cleared = tabbed([
-            page("home", events: 100),
-            page("browse", events: 200),
-        ], selected: 0)
-        cleared.clearedProperties = [.barBackgroundColor]
-        renderer.applyForTesting(tree(cleared))
+        toolbar.selectTabForTesting(1)
+        XCTAssertEqual(reported.map(\.0), [101, 200, 9])
+        XCTAssertEqual(reported.last?.1, [.number(1)])
+        XCTAssertEqual(tabs.selectedIndexForTesting, 1)
 
-        XCTAssertNil(tabs.barBackgroundColorForTesting)
+        renderer.applyForTesting(tree(tabbed(pages, selected: 1, changed: 9)))
+        let shown = try XCTUnwrap(
+            toolbar.itemForTesting(AppKitWindowToolbar.tabs) as? NSToolbarItemGroup)
+        XCTAssertEqual(shown.selectedIndex, 1)
+    }
+
+    /// A tabbed view in a tab of another is a native tab view with its tabs on
+    /// the top edge of its content, named by its pages; a tab clicked there is
+    /// the reader choosing. The window's toolbar serves only the outer one.
+    @MainActor
+    func testATabbedViewInsideATabShowsItsTabsOnItsContent() throws {
+        var reported: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reported.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(tabbed([
+            tabbed([
+                page("home", title: "Home", events: 100),
+                page("more", title: "More", events: 300),
+            ], selected: 0, changed: 903, id: "inner"),
+            page("browse", title: "Browse", events: 200),
+        ], selected: 0)))
+        reported.removeAll()
+
+        let inner = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("inner")) as? AppKitTabbedView)
+        let outer = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabbedView)
+        XCTAssertTrue(inner.showsTabsForTesting)
+        XCTAssertEqual(inner.tabLabelsForTesting, ["Home", "More"])
+        XCTAssertFalse(outer.showsTabsForTesting)
+
+        inner.selectForTesting(1)
+        XCTAssertEqual(reported.map(\.0), [101, 300, 903])
+        XCTAssertEqual(reported.last?.1, [.number(1)])
+    }
+
+    /// A tab is named in text, or pictured when no tab of the view has a
+    /// title - never both, the platform's rule for one selector.
+    @MainActor
+    func testATabbedViewNamesItsTabsInTextOrInPicturesNeverBoth() {
+        let picture = NSImage(size: NSSize(width: 16, height: 16))
+        let tabs = AppKitTabbedView(frame: .zero)
+
+        _ = tabs.setItems([
+            AppKitTabItem(layout: AppKitLayoutItem(view: NSView()), title: "Home", image: picture),
+            AppKitTabItem(layout: AppKitLayoutItem(view: NSView()), title: nil, image: picture),
+        ], requestedIndex: 0)
+        XCTAssertEqual(tabs.segments.map(\.title), ["Home", ""])
+        XCTAssertTrue(tabs.segments.allSatisfy { $0.image == nil })
+
+        _ = tabs.setItems([
+            AppKitTabItem(layout: AppKitLayoutItem(view: NSView()), title: nil, image: picture),
+            AppKitTabItem(layout: AppKitLayoutItem(view: NSView()), title: "", image: picture),
+        ], requestedIndex: 0)
+        XCTAssertEqual(tabs.segments.map(\.title), ["", ""])
+        XCTAssertTrue(tabs.segments.allSatisfy { $0.image === picture })
     }
 
     @MainActor
@@ -705,9 +772,10 @@ private extension AppKitPageTests {
     func tabbed(
         _ pages: [HostPatch],
         selected: Int,
-        changed: Int32 = 901
+        changed: Int32 = 901,
+        id: String = "tabs"
     ) -> HostPatch {
-        var tabs = HostPatch(id: .manual("tabs"), type: .tabbedView)
+        var tabs = HostPatch(id: .manual(id), type: .tabbedView)
         tabs.properties[.currentPage] = .number(Double(selected))
         tabs.events = .replace([.currentPageChanged: changed])
         tabs.children = .arranged(pages)

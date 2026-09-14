@@ -24,19 +24,37 @@ struct AppKitToolbarAction {
     }
 }
 
+/// The tabs a window's toolbar shows for the tabbed view it serves.
+@MainActor
+struct AppKitToolbarTabs {
+    let titles: [String]
+    let images: [NSImage?]
+    let selected: Int
+    let select: (Int) -> Void
+
+    /// Whether two show the same segments. The selection is written on the
+    /// standing item.
+    func draws(like other: AppKitToolbarTabs) -> Bool {
+        titles == other.titles
+            && images.count == other.images.count
+            && zip(images, other.images).allSatisfy { $0 === $1 }
+    }
+}
+
 /// What a window's toolbar shows.
 ///
 /// The window controller composes it from the visible arrangement and an
 /// authored `TitleBar`, and the toolbar lays it out in one order: the
 /// sidebar toggle and the separator that tracks the sidebar, the way back,
-/// the title bar's leading content, the centre, the page's actions, native
-/// overflow, and the title bar's trailing content.
+/// the title bar's leading content, the tabs and the centre, the page's
+/// actions, native overflow, and the title bar's trailing content.
 @MainActor
 struct AppKitWindowChrome {
     var sidebar: NSSplitViewController?
     var back: AppKitToolbarAction?
     var leading: NSView?
     var center: NSView?
+    var tabs: AppKitToolbarTabs?
     var actions: [AppKitToolbarAction] = []
     var overflow: [AppKitToolbarAction] = []
     var trailing: NSView?
@@ -53,6 +71,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     static let back = NSToolbarItem.Identifier("StateUI.back")
     static let leading = NSToolbarItem.Identifier("StateUI.leading")
     static let center = NSToolbarItem.Identifier("StateUI.center")
+    static let tabs = NSToolbarItem.Identifier("StateUI.tabs")
     static let trailing = NSToolbarItem.Identifier("StateUI.trailing")
     static let overflow = NSToolbarItem.Identifier("StateUI.overflow")
 
@@ -65,6 +84,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
 
     private var identifiers: [NSToolbarItem.Identifier] = []
     private weak var sidebar: NSSplitViewController?
+    private var tabs: AppKitToolbarTabs?
     private var views: [NSToolbarItem.Identifier: NSView] = [:]
     private var actions: [NSToolbarItem.Identifier: AppKitToolbarAction] = [:]
     private var overflowActions: [AppKitToolbarAction] = []
@@ -99,9 +119,15 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             nextViews[Self.leading] = leading
         }
         nextIdentifiers.append(.flexibleSpace)
+        if chrome.tabs != nil {
+            nextIdentifiers.append(Self.tabs)
+        }
         if let center = chrome.center {
-            nextIdentifiers += [Self.center, .flexibleSpace]
+            nextIdentifiers.append(Self.center)
             nextViews[Self.center] = center
+        }
+        if chrome.tabs != nil || chrome.center != nil {
+            nextIdentifiers.append(.flexibleSpace)
         }
         for action in chrome.actions {
             nextIdentifiers.append(action.identifier)
@@ -113,8 +139,11 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             nextViews[Self.trailing] = trailing
         }
 
+        let sameTabs = chrome.tabs.map { next in tabs.map { next.draws(like: $0) } ?? false }
+            ?? (tabs == nil)
         let sameItems = nextIdentifiers == identifiers
             && chrome.sidebar === sidebar
+            && sameTabs
             && nextViews.count == views.count
             && nextViews.allSatisfy { views[$0.key] === $0.value }
         let drawsAlike = nextActions.allSatisfy { identifier, action in
@@ -122,13 +151,19 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         }
             && chrome.overflow.count == overflowActions.count
             && zip(chrome.overflow, overflowActions).allSatisfy { $0.draws(like: $1) }
+            && chrome.tabs?.selected == tabs?.selected
 
         identifiers = nextIdentifiers
         sidebar = chrome.sidebar
+        tabs = chrome.tabs
         views = nextViews
         actions = nextActions
         overflowActions = chrome.overflow
-        toolbar.centeredItemIdentifiers = chrome.center == nil ? [] : [Self.center]
+
+        var centered: Set<NSToolbarItem.Identifier> = []
+        if chrome.tabs != nil { centered.insert(Self.tabs) }
+        if chrome.center != nil { centered.insert(Self.center) }
+        toolbar.centeredItemIdentifiers = centered
 
         if sameItems {
             if !drawsAlike { toolbar.items.forEach(configure) }
@@ -174,6 +209,27 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
                 dividerIndex: 0)
         }
 
+        if itemIdentifier == Self.tabs, let tabs {
+            let pictured = tabs.titles.allSatisfy(\.isEmpty) && tabs.images.contains { $0 != nil }
+            let group = pictured
+                ? NSToolbarItemGroup(
+                    itemIdentifier: itemIdentifier,
+                    images: tabs.images.map { $0 ?? NSImage() },
+                    selectionMode: .selectOne,
+                    labels: tabs.titles,
+                    target: self,
+                    action: #selector(performTab(_:)))
+                : NSToolbarItemGroup(
+                    itemIdentifier: itemIdentifier,
+                    titles: tabs.titles,
+                    selectionMode: .selectOne,
+                    labels: tabs.titles,
+                    target: self,
+                    action: #selector(performTab(_:)))
+            configure(group)
+            return group
+        }
+
         let item = itemIdentifier == Self.overflow
             ? NSMenuToolbarItem(itemIdentifier: itemIdentifier)
             : NSToolbarItem(itemIdentifier: itemIdentifier)
@@ -183,6 +239,11 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
 
     private func configure(_ item: NSToolbarItem) {
         let identifier = item.itemIdentifier
+
+        if identifier == Self.tabs, let group = item as? NSToolbarItemGroup {
+            group.selectedIndex = tabs?.selected ?? -1
+            return
+        }
 
         if let view = views[identifier] {
             item.view = view
@@ -234,6 +295,14 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         actions[sender.itemIdentifier]?.perform()
     }
 
+    /// The reader chose a tab in the toolbar's group.
+    @objc private func performTab(_ sender: Any?) {
+        guard let group = toolbar.items.first(where: { $0.itemIdentifier == Self.tabs })
+            as? NSToolbarItemGroup
+        else { return }
+        tabs?.select(group.selectedIndex)
+    }
+
     @objc private func performOverflow(_ sender: NSMenuItem) {
         guard overflowActions.indices.contains(sender.tag) else { return }
         overflowActions[sender.tag].perform()
@@ -247,6 +316,11 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     }
 
     var overflowTitlesForTesting: [String] { overflowActions.map(\.title) }
+    var tabTitlesForTesting: [String] { tabs?.titles ?? [] }
+
+    func selectTabForTesting(_ index: Int) {
+        tabs?.select(index)
+    }
 
     func itemForTesting(_ identifier: NSToolbarItem.Identifier) -> NSToolbarItem? {
         toolbar.items.first { $0.itemIdentifier == identifier }

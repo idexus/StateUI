@@ -685,23 +685,43 @@ struct AppKitTabItem {
     let image: NSImage?
 }
 
-/// A native tab selector over the page arrangement StateUI owns.
+/// AppKit's presentation of a tabbed view: a native `NSTabView` over the
+/// pages StateUI owns.
+///
+/// Where the window's toolbar serves the tabbed view, the tab view shows no
+/// tabs and no border, and the toolbar's group chooses; anywhere else its tabs
+/// stand on the top edge of its content, as a Mac tab view's do. A tab is
+/// named in text, or pictured when no tab of the view has a title - never
+/// both, the platform's rule for one selector. The tab view is the system's,
+/// and nothing is painted on it.
 @MainActor
-final class AppKitTabbedView: AppKitHitTestView {
+final class AppKitTabbedView: AppKitHitTestView, NSTabViewDelegate {
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
 
-    private let selector = NSSegmentedControl()
+    /// Whether the window's toolbar chooses the tab. The tab view then shows
+    /// no tabs and no border, and the page takes the whole view.
+    var selectorInToolbar = false {
+        didSet {
+            guard selectorInToolbar != oldValue else { return }
+            tabView.tabViewType = selectorInToolbar ? .noTabsNoBorder : .topTabsBezelBorder
+            invalidateIntrinsicContentSize()
+            needsLayout = true
+        }
+    }
+
+    private let tabView = NSTabView()
     private var items: [AppKitTabItem] = []
     private(set) var selectedIndex = -1
-    private let barHeight: CGFloat = 40
+
+    /// Set while this side selects, so the tab view's report of it is not
+    /// taken for the reader's.
+    private var selecting = false
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
-        selector.trackingMode = .selectOne
-        selector.segmentStyle = .automatic
-        selector.target = self
-        selector.action = #selector(selectionChanged(_:))
-        addSubview(selector)
+        tabView.tabViewType = .topTabsBezelBorder
+        tabView.delegate = self
+        addSubview(tabView)
     }
 
     @available(*, unavailable)
@@ -711,18 +731,13 @@ final class AppKitTabbedView: AppKitHitTestView {
 
     override var isFlipped: Bool { true }
 
-    /// Reconciles the native selector and returns a platform fallback only
-    /// when the selected page itself disappeared from the arrangement.
+    /// Reconciles the native tabs and returns a platform fallback only when
+    /// the selected page itself disappeared from the arrangement.
     func setItems(_ items: [AppKitTabItem], requestedIndex: Int?) -> Int? {
         let formerView = item(at: selectedIndex)?.layout.view
         let formerIndex = selectedIndex
         self.items = items
-
-        selector.segmentCount = items.count
-        for (index, item) in items.enumerated() {
-            selector.setLabel(item.title ?? "", forSegment: index)
-            selector.setImage(item.image, forSegment: index)
-        }
+        reconcileTabs()
 
         let next: Int
         var fallback: Int?
@@ -738,79 +753,158 @@ final class AppKitTabbedView: AppKitHitTestView {
             if formerIndex >= 0 { fallback = next }
         }
 
-        show(next, replacing: formerView)
+        show(next)
         return fallback
     }
 
-    func applyBar(backgroundColor: NSColor?) {
-        wantsLayer = backgroundColor != nil
-        layer?.backgroundColor = backgroundColor?.cgColor
-    }
-
-    override var intrinsicContentSize: NSSize {
-        guard let item = item(at: selectedIndex) else {
-            return NSSize(width: selector.fittingSize.width, height: barHeight)
-        }
-
-        let size = item.layout.fittingSize()
-        return NSSize(
-            width: max(selector.fittingSize.width,
-                size.width + item.layout.margin.left + item.layout.margin.right),
-            height: barHeight + size.height + item.layout.margin.top + item.layout.margin.bottom)
-    }
-
-    override func layout() {
-        super.layout()
-        selector.frame = NSRect(x: 10, y: 5, width: max(0, bounds.width - 20), height: 30)
-
-        guard let item = item(at: selectedIndex) else { return }
-        let margin = item.layout.margin
-        item.layout.view.frame = NSRect(
-            x: margin.left,
-            y: barHeight + margin.top,
-            width: max(0, bounds.width - margin.left - margin.right),
-            height: max(0, bounds.height - barHeight - margin.top - margin.bottom))
-    }
-
-    @objc private func selectionChanged(_ sender: NSSegmentedControl) {
-        let next = sender.selectedSegment
+    /// Selects a tab as the reader does from the window's toolbar. A tab the
+    /// reader clicks on the tab view itself arrives through its delegate.
+    func selectByReader(_ next: Int) {
         guard items.indices.contains(next), next != selectedIndex else { return }
         let previous = selectedIndex
         show(next)
         onSelection?(previous, next)
     }
 
-    private func show(_ index: Int, replacing previousView: NSView? = nil) {
-        let previous = previousView ?? item(at: selectedIndex)?.layout.view
-        let next = item(at: index)?.layout.view
+    /// What each tab shows in a selector: its title, or - when no tab of the
+    /// view has one - its picture.
+    var segments: [(title: String, image: NSImage?)] {
+        let titled = items.contains { !($0.title ?? "").isEmpty }
+        return items.map { titled ? ($0.title ?? "", nil) : ("", $0.image) }
+    }
 
-        if previous !== next {
-            previous?.removeFromSuperview()
+    func tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) {
+        guard !selecting, let tabViewItem else { return }
+        let next = tabView.indexOfTabViewItem(tabViewItem)
+        guard items.indices.contains(next), next != selectedIndex else { return }
+        let previous = selectedIndex
+        selectedIndex = next
+        invalidateIntrinsicContentSize()
+        needsLayout = true
+        onSelection?(previous, next)
+    }
+
+    override var intrinsicContentSize: NSSize {
+        let chrome = Self.chrome(of: tabView.tabViewType)
+        let minimum = tabView.minimumSize.width
+        guard let item = item(at: selectedIndex) else {
+            return NSSize(width: minimum, height: chrome.top + chrome.bottom)
         }
+
+        let size = item.layout.fittingSize()
+        let margin = item.layout.margin
+        return NSSize(
+            width: max(minimum,
+                size.width + margin.left + margin.right + chrome.left + chrome.right),
+            height: size.height + margin.top + margin.bottom + chrome.top + chrome.bottom)
+    }
+
+    override func layout() {
+        super.layout()
+        tabView.frame = bounds
+        tabView.selectedTabViewItem?.view?.frame = tabView.contentRect
+    }
+
+    /// One native tab per page, each holding its page in a pane, labelled by
+    /// the segments.
+    private func reconcileTabs() {
+        selecting = true
+        defer { selecting = false }
+
+        let standing = tabView.tabViewItems.map { ($0.view as? AppKitTabPane)?.item?.view }
+        let same = standing.count == items.count
+            && zip(standing, items).allSatisfy { $0 === $1.layout.view }
+
+        if !same {
+            for tab in tabView.tabViewItems.reversed() {
+                tabView.removeTabViewItem(tab)
+            }
+            for _ in items {
+                let tab = NSTabViewItem(identifier: nil)
+                tab.view = AppKitTabPane()
+                tabView.addTabViewItem(tab)
+            }
+        }
+
+        for (index, segment) in segments.enumerated() {
+            let tab = tabView.tabViewItems[index]
+            (tab.view as? AppKitTabPane)?.item = items[index].layout
+            tab.label = segment.title
+            tab.image = segment.image
+        }
+    }
+
+    private func show(_ index: Int) {
         selectedIndex = index
-        selector.selectedSegment = index
-
-        if let view = next, view.superview !== self {
-            addSubview(view, positioned: .below, relativeTo: selector)
+        if tabView.tabViewItems.indices.contains(index) {
+            let wasSelecting = selecting
+            selecting = true
+            tabView.selectTabViewItem(at: index)
+            selecting = wasSelecting
         }
-
         invalidateIntrinsicContentSize()
         needsLayout = true
     }
 
+    /// The room a tab view of a kind takes around its page, measured once on
+    /// a probe large enough to hold it.
+    private static var chromes: [NSTabView.TabType: NSEdgeInsets] = [:]
+
+    private static func chrome(of type: NSTabView.TabType) -> NSEdgeInsets {
+        if let known = chromes[type] { return known }
+
+        let probe = NSTabView(frame: NSRect(x: 0, y: 0, width: 400, height: 400))
+        probe.tabViewType = type
+        probe.addTabViewItem(NSTabViewItem(identifier: nil))
+        let content = probe.contentRect
+        let bounds = probe.bounds
+        let chrome = NSEdgeInsets(
+            top: probe.isFlipped ? content.minY - bounds.minY : bounds.maxY - content.maxY,
+            left: content.minX - bounds.minX,
+            bottom: probe.isFlipped ? bounds.maxY - content.maxY : content.minY - bounds.minY,
+            right: bounds.maxX - content.maxX)
+        chromes[type] = chrome
+        return chrome
+    }
+
+    /// Clicks a tab on the tab view, as the reader does.
     func selectForTesting(_ index: Int) {
-        selector.selectedSegment = index
-        selectionChanged(selector)
+        tabView.selectTabViewItem(at: index)
     }
 
     var selectedIndexForTesting: Int { selectedIndex }
-    var barBackgroundColorForTesting: NSColor? {
-        layer?.backgroundColor.flatMap(NSColor.init(cgColor:))
-    }
+    var showsTabsForTesting: Bool { tabView.tabViewType != .noTabsNoBorder }
+    var tabLabelsForTesting: [String] { tabView.tabViewItems.map(\.label) }
 
     private func item(at index: Int) -> AppKitTabItem? {
         guard items.indices.contains(index) else { return nil }
         return items[index]
+    }
+}
+
+/// A tab's page inside the native tab view, laid at its margins.
+@MainActor
+final class AppKitTabPane: NSView {
+    var item: AppKitLayoutItem? {
+        didSet {
+            if let view = item?.view, view.superview !== self {
+                addSubview(view)
+            }
+            needsLayout = true
+        }
+    }
+
+    override var isFlipped: Bool { true }
+
+    override func layout() {
+        super.layout()
+        guard let item else { return }
+        let margin = item.margin
+        item.view.frame = NSRect(
+            x: margin.left,
+            y: margin.top,
+            width: max(0, bounds.width - margin.left - margin.right),
+            height: max(0, bounds.height - margin.top - margin.bottom))
     }
 }
 
