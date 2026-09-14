@@ -197,9 +197,10 @@ and available space. Give stable identities to items whose list can change.
 On AppKit a page's furniture is its window's toolbar: the top page's title
 names the window, the way back is the system's back item, primary actions are
 toolbar items, and secondary ones sit in the toolbar's overflow menu. A tabbed
-view on the window's page path shows its tabs as one segmented control centred
-in the toolbar, each tab's picture beside its title; one in a sheet or inside
-another tab is a tab view with its tabs on the top edge of its content.
+view on the window's page path shows its tabs in a row beneath the toolbar,
+beside any sidebar, the tabs sharing its width with each picture beside its
+title; one in a sidebar, a sheet or inside another tab is a tab view with its
+tabs on the top edge of its content.
 
 Page arrangements accept a flat `barBackgroundColor`. A `NavigationStack` also
 accepts `barTextColor` for its title and native action affordances. Native tab

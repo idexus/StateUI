@@ -1529,19 +1529,28 @@ final class MountedNode: NSObject {
         }
     }
 
-    /// The tabs the window's toolbar shows: those of the tabbed view on the
-    /// visible page path, where its selector is the toolbar's.
-    var visibleToolbarTabs: AppKitToolbarTabs? {
-        guard let tabbed = visibleTabbedView, tabbed.tabsStandInWindowToolbar,
-              let tabs = tabbed.view as? AppKitTabbedView
+    /// The tabs the window shows beneath its toolbar - those of the tabbed
+    /// view on the visible page path, where its tabs are the window's - and
+    /// the split view whose detail it stands in, if any.
+    var visibleWindowTabs: AppKitTabsPlacement? {
+        guard let tabbed = visibleTabbedView,
+              let tabs = tabbed.view as? AppKitTabbedView,
+              tabs.tabsShownByWindow
         else { return nil }
 
+        var ancestor = tabbed.parent
+        while let node = ancestor, node.type != .splitView {
+            ancestor = node.parent
+        }
+
         let segments = tabs.segments
-        return AppKitToolbarTabs(
-            titles: segments.map(\.title),
-            images: segments.map(\.image),
-            selected: tabs.selectedIndex,
-            select: { [weak tabs] index in tabs?.selectByReader(index) })
+        return AppKitTabsPlacement(
+            tabs: AppKitWindowTabs(
+                titles: segments.map(\.title),
+                images: segments.map(\.image),
+                selected: tabs.selectedIndex,
+                select: { [weak tabs] index in tabs?.selectByReader(index) }),
+            split: ancestor?.view as? AppKitSplitView)
     }
 
     /// The first tabbed view on the visible page path.
@@ -1560,26 +1569,24 @@ final class MountedNode: NSObject {
         }
     }
 
-    /// Whether this tabbed view's selector is its window's toolbar's: it stands
-    /// on the window's page path, nothing but stacks and split views between
-    /// it and the window. In a sheet, in a tab of another tabbed view or inside
-    /// content, its selector stands at the top of its own content. Decided by
-    /// where the tabbed view stands rather than by what is visible, so its
-    /// selector never moves while it lives.
-    private var tabsStandInWindowToolbar: Bool {
-        guard type == .tabbedView else { return false }
-        var ancestor = parent
-        while let node = ancestor {
-            switch node.type {
-            case .window:
-                return true
-            case .navigationStack, .splitView:
-                ancestor = node.parent
-            default:
-                return false
-            }
+    /// Tells each tabbed view on this page path that its tabs are the
+    /// window's, in the row beneath its toolbar: the first tabbed view down
+    /// any path of stacks and split view details - the row stands beside a
+    /// sidebar, never over it. Asked of the window's page once the whole tree
+    /// is arranged, so what stands where is the tree's final word. A tabbed
+    /// view in a sidebar, a sheet, a tab of another or inside content is never
+    /// told, and keeps its tabs on its own content.
+    func markTabsShownByWindow() {
+        switch type {
+        case .tabbedView:
+            (view as? AppKitTabbedView)?.tabsShownByWindow = true
+        case .navigationStack:
+            children.forEach { $0.markTabsShownByWindow() }
+        case .splitView:
+            children.dropFirst().forEach { $0.markTabsShownByWindow() }
+        default:
+            break
         }
-        return false
     }
 
     /// The native split view controller of a split page.
@@ -2784,7 +2791,6 @@ final class MountedNode: NSObject {
                     title: child.string(.title),
                     image: child.string(.iconImageSource).flatMap { image(named: $0) })
             }
-            tabs.selectorInToolbar = tabsStandInWindowToolbar
             tabs.onSelection = { [weak self] previous, selected in
                 self?.selectTab(from: previous, to: selected)
             }

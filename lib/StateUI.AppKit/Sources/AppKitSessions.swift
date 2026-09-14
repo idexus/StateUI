@@ -359,6 +359,12 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private var presentedPage: MountedNode?
     private var modals: [AppKitModalWindowController] = []
     private lazy var toolbar = AppKitWindowToolbar(windowIdentifier: record.windowIdentifier)
+
+    /// The row a window's tabs stand in beneath its toolbar, and where it
+    /// stands: the title bar's accessory, or a split view detail's own.
+    private lazy var tabRow = AppKitTabRow(frame: NSRect(x: 0, y: 0, width: 400, height: 40))
+    private var tabRowAccessory: NSTitlebarAccessoryViewController?
+    private weak var tabRowSplit: AppKitSplitView?
     private var titleAccessory: NSTitlebarAccessoryViewController?
     private let titleCluster = AppKitTitleBarTitleView()
     private let content = AppKitWindowContentView()
@@ -375,6 +381,9 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     var modalCountForTesting: Int { modals.count }
     var hiddenBySceneForTesting: Bool { stopCauses.contains(.sceneHidden) }
     var toolbarForTesting: AppKitWindowToolbar { toolbar }
+    var tabRowForTesting: AppKitTabRow { tabRow }
+    var tabRowStandsInTitleBarForTesting: Bool { tabRowAccessory != nil }
+    var tabRowSplitForTesting: AppKitSplitView? { tabRowSplit }
     var titleAccessoryForTesting: NSTitlebarAccessoryViewController? { titleAccessory }
     var titleClusterForTesting: AppKitTitleBarTitleView { titleCluster }
 
@@ -654,11 +663,12 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
     /// Composes the window's one native chrome from the visible arrangement:
     /// the top page names the window, the stack's way back and the page's
-    /// actions are toolbar items, a split page adds the sidebar toggle, a
-    /// tabbed view on the page path its tabs, and an authored title bar adds
-    /// its slots and its own title.
+    /// actions are toolbar items, a split page adds the sidebar toggle, the
+    /// tabs of a tabbed view on the page path stand beneath the toolbar, and
+    /// an authored title bar adds its slots and its own title.
     private func refreshVisiblePageChrome() {
         guard let node, let window else { return }
+        node.pageNode?.markTabsShownByWindow()
         let titleBar = node.children.first { $0.type == .titleBar }
         let page = node.visiblePage
         let titleView = node.visibleTitleView
@@ -674,12 +684,48 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
             back: node.visibleBackAction,
             leading: titleBar?.firstView(in: .leadingContent),
             center: titleBar?.firstView(in: .content) ?? titleView,
-            tabs: node.visibleToolbarTabs,
             actions: actions.primary,
             overflow: actions.overflow,
             trailing: titleBar?.firstView(in: .trailingContent)))
         synchronizeTitleAccessory(window, titleBar: titleBar)
+        synchronizeTabRow(window, node.visibleWindowTabs)
         host?.pageMenusChanged(in: self)
+    }
+
+    /// A window's tabs stand beneath its toolbar: on macOS 26 and later across
+    /// the split view detail the tabbed view stands in, as that column's own
+    /// accessory; otherwise as the title bar's bottom accessory.
+    private func synchronizeTabRow(_ window: NSWindow, _ placement: AppKitTabsPlacement?) {
+        if let placement { tabRow.apply(placement.tabs) }
+
+        var column: AppKitSplitView?
+        if #available(macOS 26, *) { column = placement?.split }
+        let stays = placement == nil
+            ? tabRowAccessory == nil && tabRowSplit == nil
+            : column == nil ? tabRowAccessory != nil : column === tabRowSplit
+        guard !stays else { return }
+
+        // Out of where it stood before it stands anywhere else: a view has one
+        // superview, and taking an accessory away takes its view with it.
+        if #available(macOS 26, *) { tabRowSplit?.setDetailRow(nil) }
+        tabRowSplit = nil
+        if let accessory = tabRowAccessory,
+           let index = window.titlebarAccessoryViewControllers.firstIndex(of: accessory) {
+            window.removeTitlebarAccessoryViewController(at: index)
+        }
+        tabRowAccessory = nil
+
+        guard placement != nil else { return }
+        if #available(macOS 26, *), let column {
+            column.setDetailRow(tabRow)
+            tabRowSplit = column
+        } else {
+            let accessory = NSTitlebarAccessoryViewController()
+            accessory.layoutAttribute = .bottom
+            accessory.view = tabRow
+            window.addTitlebarAccessoryViewController(accessory)
+            tabRowAccessory = accessory
+        }
     }
 
     /// An authored title bar's own title stands at the trailing edge of the

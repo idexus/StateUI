@@ -188,12 +188,13 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(tabs.selectedIndexForTesting, 1)
     }
 
-    /// A tabbed view on the window's page path puts its selector in the
-    /// window's toolbar - one select-one segmented control, centred, showing
-    /// the selection - and none on its content, where nothing is painted.
-    /// Choosing in the toolbar is the reader choosing.
+    /// A tabbed view on the window's page path shows its tabs in a row
+    /// beneath the window's toolbar - beneath the title bar where there is no
+    /// split view - one select-one segmented control sharing the width
+    /// equally, and none on its content, where nothing is painted. Choosing in
+    /// the row is the reader choosing.
     @MainActor
-    func testAWindowsTabbedViewSelectsFromTheToolbar() throws {
+    func testAWindowsTabbedViewSelectsFromTheRowBeneathItsToolbar() throws {
         var reported: [(Int32, [HostValue])] = []
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
@@ -210,30 +211,84 @@ final class AppKitPageTests: XCTestCase {
         renderer.applyForTesting(tree(painted))
         reported.removeAll()
 
-        let toolbar = try XCTUnwrap(renderer.windowsForTesting.first?.toolbarForTesting)
-        let control = try XCTUnwrap(
-            toolbar.itemForTesting(AppKitWindowToolbar.tabs)?.view as? NSSegmentedControl)
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let row = controller.tabRowForTesting
+        let control = row.controlForTesting
+        XCTAssertTrue(controller.tabRowStandsInTitleBarForTesting)
         XCTAssertEqual(control.trackingMode, .selectOne)
+        XCTAssertEqual(control.segmentDistribution, .fillEqually)
         XCTAssertEqual(
             (0..<control.segmentCount).map { control.label(forSegment: $0) },
             ["Home", "Browse"])
         XCTAssertEqual(control.selectedSegment, 0)
-        XCTAssertEqual(toolbar.toolbar.centeredItemIdentifiers, [AppKitWindowToolbar.tabs])
 
         let tabs = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabbedView)
         XCTAssertFalse(tabs.showsTabsForTesting)
-        XCTAssertNil(tabs.layer?.backgroundColor, "the toolbar and the tab view are the system's")
+        XCTAssertNil(tabs.layer?.backgroundColor, "the tab row and the tab view are the system's")
 
-        toolbar.selectTabForTesting(1)
+        row.chooseForTesting(1)
         XCTAssertEqual(reported.map(\.0), [101, 200, 9])
         XCTAssertEqual(reported.last?.1, [.number(1)])
         XCTAssertEqual(tabs.selectedIndexForTesting, 1)
 
         renderer.applyForTesting(tree(tabbed(pages, selected: 1, changed: 9)))
-        let shown = try XCTUnwrap(
-            toolbar.itemForTesting(AppKitWindowToolbar.tabs)?.view as? NSSegmentedControl)
-        XCTAssertEqual(shown.selectedSegment, 1)
+        XCTAssertEqual(control.selectedSegment, 1)
+    }
+
+    /// A tabbed view in a split view's detail shows its tabs in the row
+    /// beneath the toolbar - across that column as its own accessory on macOS
+    /// 26 and later, beneath the title bar before - and a detail that is no
+    /// tabbed view takes the row away; a tabbed view in the sidebar keeps its
+    /// tabs on its content.
+    @MainActor
+    func testATabbedDetailShowsItsTabsBeneathTheToolbar() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu", events: 100),
+            detail: tabbed([
+                page("home", title: "Home", events: 200),
+                page("browse", title: "Browse", events: 300),
+            ], selected: 0))))
+
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let split = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
+        XCTAssertEqual(controller.tabRowForTesting.controlForTesting.segmentCount, 2)
+        if #available(macOS 26, *) {
+            XCTAssertTrue(split.detailRowForTesting === controller.tabRowForTesting)
+            XCTAssertTrue(controller.tabRowSplitForTesting === split)
+            XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
+        } else {
+            XCTAssertTrue(controller.tabRowStandsInTitleBarForTesting)
+        }
+
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu", events: 100),
+            detail: page("detail", title: "Detail", events: 400))))
+        XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
+        if #available(macOS 26, *) {
+            XCTAssertNil(split.detailRowForTesting)
+        }
+
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: tabbed([
+                page("near", title: "Near", events: 500),
+                page("far", title: "Far", events: 600),
+            ], selected: 0, changed: 904, id: "sidebar-tabs"),
+            detail: page("detail", title: "Detail", events: 400))))
+        let sidebarTabs = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("sidebar-tabs")) as? AppKitTabbedView)
+        XCTAssertTrue(sidebarTabs.showsTabsForTesting)
+        XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
     }
 
     /// A tabbed view in a tab of another is a native tab view with its tabs on
@@ -270,33 +325,24 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(reported.last?.1, [.number(1)])
     }
 
-    /// Each tab of a window's tabbed view shows its picture beside its title
-    /// on the toolbar's control, as a template the system tints with the
-    /// control's state; the tab's own picture is left as it is.
+    /// Each of a window's tabs shows its glyph beside its title, the tabs
+    /// sharing the row's width equally: the picture as a template the system
+    /// tints, at a glyph's height, the tab's own picture left as it is.
     @MainActor
-    func testAToolbarTabShowsItsPictureBesideItsTitle() throws {
+    func testATabShowsItsGlyphBesideItsTitle() {
         let picture = NSImage(size: NSSize(width: 48, height: 48))
-        let toolbar = AppKitWindowToolbar(windowIdentifier: "picture-tabs")
-        let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
-            styleMask: [.titled],
-            backing: .buffered,
-            defer: true)
-        window.isReleasedWhenClosed = false
-        window.toolbar = toolbar.toolbar
-        defer { window.close() }
-
-        toolbar.apply(AppKitWindowChrome(tabs: AppKitToolbarTabs(
+        let row = AppKitTabRow(frame: NSRect(x: 0, y: 0, width: 600, height: 40))
+        row.apply(AppKitWindowTabs(
             titles: ["Home", "Browse"],
             images: [picture, nil],
             selected: 0,
-            select: { _ in })))
+            select: { _ in }))
 
-        let control = try XCTUnwrap(
-            toolbar.itemForTesting(AppKitWindowToolbar.tabs)?.view as? NSSegmentedControl)
+        let control = row.controlForTesting
+        XCTAssertEqual(control.segmentDistribution, .fillEqually)
         XCTAssertEqual(control.label(forSegment: 0), "Home")
         XCTAssertEqual(control.image(forSegment: 0)?.isTemplate, true)
-        XCTAssertEqual(control.image(forSegment: 0)?.size.height, AppKitWindowToolbar.tabGlyphHeight)
+        XCTAssertEqual(control.image(forSegment: 0)?.size.height, AppKitTabRow.glyphHeight)
         XCTAssertNil(control.image(forSegment: 1))
         XCTAssertFalse(picture.isTemplate)
         XCTAssertEqual(picture.size, NSSize(width: 48, height: 48))

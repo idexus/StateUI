@@ -688,21 +688,21 @@ struct AppKitTabItem {
 /// AppKit's presentation of a tabbed view: a native `NSTabView` over the
 /// pages StateUI owns.
 ///
-/// Where the window's toolbar serves the tabbed view, the tab view shows no
-/// tabs and no border, and the toolbar's group chooses; anywhere else its tabs
-/// stand on the top edge of its content, as a Mac tab view's do. In the
-/// toolbar each tab shows its picture beside its title. The tab view is the
-/// system's, and nothing is painted on it.
+/// Where the window serves the tabbed view, the tab view shows no tabs and no
+/// border, and the row of tabs beneath the window's toolbar chooses; anywhere
+/// else its tabs stand on the top edge of its content, as a Mac tab view's do.
+/// The tab view is the system's, and nothing is painted on it.
 @MainActor
 final class AppKitTabbedView: AppKitHitTestView, NSTabViewDelegate {
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
 
-    /// Whether the window's toolbar chooses the tab. The tab view then shows
-    /// no tabs and no border, and the page takes the whole view.
-    var selectorInToolbar = false {
+    /// Whether the window shows this tabbed view's tabs, beneath its toolbar.
+    /// The tab view then shows no tabs and no border, and the page takes the
+    /// whole view.
+    var tabsShownByWindow = false {
         didSet {
-            guard selectorInToolbar != oldValue else { return }
-            tabView.tabViewType = selectorInToolbar ? .noTabsNoBorder : .topTabsBezelBorder
+            guard tabsShownByWindow != oldValue else { return }
+            tabView.tabViewType = tabsShownByWindow ? .noTabsNoBorder : .topTabsBezelBorder
             invalidateIntrinsicContentSize()
             needsLayout = true
         }
@@ -756,7 +756,7 @@ final class AppKitTabbedView: AppKitHitTestView, NSTabViewDelegate {
         return fallback
     }
 
-    /// Selects a tab as the reader does from the window's toolbar. A tab the
+    /// Selects a tab as the reader does from the window's row of tabs. A tab the
     /// reader clicks on the tab view itself arrives through its delegate.
     func selectByReader(_ next: Int) {
         guard items.indices.contains(next), next != selectedIndex else { return }
@@ -974,6 +974,28 @@ final class AppKitSplitView: AppKitHitTestView {
     }
 
     override var isFlipped: Bool { true }
+
+    /// Shows a row across the top of the detail - the tabs of a tabbed view
+    /// standing in it - as the detail item's own accessory, or takes it away.
+    @available(macOS 26, *)
+    func setDetailRow(_ row: NSView?) {
+        let standing = detailItem.topAlignedAccessoryViewControllers.first?.view
+        guard standing !== row else { return }
+
+        if !detailItem.topAlignedAccessoryViewControllers.isEmpty {
+            detailItem.removeTopAlignedAccessoryViewController(at: 0)
+        }
+        if let row {
+            let accessory = NSSplitViewItemAccessoryViewController()
+            accessory.view = row
+            detailItem.addTopAlignedAccessoryViewController(accessory)
+        }
+    }
+
+    @available(macOS 26, *)
+    var detailRowForTesting: NSView? {
+        detailItem.topAlignedAccessoryViewControllers.first?.view
+    }
 
     func setItems(_ items: [AppKitLayoutItem]) {
         sidebarSurface.setItem(items.first)
