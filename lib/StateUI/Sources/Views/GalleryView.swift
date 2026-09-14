@@ -553,7 +553,13 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             at: asked,
             look: look,
             turned: { position in
-                guard position != reports.wrappedValue else { return }
+                // A position the scroller REPORTED is where the run already
+                // is: it moves nothing, and it is still a card come to the
+                // middle, which the handler hears as it hears an assignment.
+                guard position != reports.wrappedValue else {
+                    if let moved { try await moved(position) }
+                    return
+                }
 
                 reports.wrappedValue = position
 
@@ -597,8 +603,10 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             // ONE CARD PER `reach`, so the platform's own snapping settles the
             // run on the card it is nearest.
             .snapInterval(step)
-            // A RUN OF CARDS WANTS LESS THROW THAN A LIST DOES - see `carry`.
-            .momentum(Self.carry)
+            // A RUN OF CARDS WANTS LESS THROW THAN A LIST DOES where a finger
+            // throws it - see `carry`. A pointer's push is kept whole: halved,
+            // a trackpad push shorter than a card rounds back to where it began.
+            .momentum(device.formFactor == .desktop ? 1 : Self.carry)
             .snapItem(
                 Binding(
                     get: { reports.wrappedValue },
@@ -754,7 +762,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// rather than more than one, near enough that a deck is quick to cross.
     private var reach: Double { cardWidth * 0.6 }
 
-    /// How much of the platform's own throw a release keeps.
+    /// How much of the platform's own throw a release keeps where a finger
+    /// throws the run; a pointer's gesture keeps all of it.
     ///
     /// Half. A touch platform throws a scroller far enough to cross a
     /// long list, which over a run of CARDS is most of the deck for one flick

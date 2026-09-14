@@ -355,6 +355,15 @@ public struct ScrollReader: ContentView {
                                 .dragging(drag)
                         }
                         .placement($boxes)
+                        // THE LENGTH IS THE LAYOUT'S OWN SIZE, and not an
+                        // extent a host has to find among its placements: what
+                        // a host counts into a placed layout's natural size is
+                        // its own business, and the scroller measures its
+                        // content by that size. Worked out from the measured
+                        // room, so it arrives rather than travelling.
+                        .width(long)
+                        .height(tall)
+                        .motion(.none, .size)
                         .engine(following: carried) { _ in
                             // WHERE IT IS, not where it is going: the box
                             // must sit under the card the reader can see.

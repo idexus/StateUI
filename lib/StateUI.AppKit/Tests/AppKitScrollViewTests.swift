@@ -428,6 +428,70 @@ final class AppKitScrollViewTests: XCTestCase {
 
         XCTAssertEqual(rests, [300, 150])
     }
+
+
+    /// A run that answers a tap on one part of the room is still as long as the
+    /// room plus its reach, so a trackpad or a wheel has somewhere to scroll it:
+    /// its content is the run's layout, sized by the length it was given rather
+    /// than by whatever a host counts into a placed layout's natural size.
+    @MainActor
+    func testARunThatAnswersATapIsAsLongAsItsReach() throws {
+        let renderer = AppKitRenderer.running { TappedRun() }
+        defer { renderer.closeForTesting() }
+        let scroller = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
+
+        // The room arrives with the first frame report, and the run is built
+        // again with its length.
+        let deadline = Date(timeIntervalSinceNow: 2)
+        while (scroller.documentView?.frame.width ?? 0) <= scroller.contentView.bounds.width + 1,
+              Date() < deadline {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+            renderer.pump()
+            scroller.window?.contentView?.layoutSubtreeIfNeeded()
+        }
+
+        let room = scroller.contentView.bounds.width
+        XCTAssertGreaterThan(room, 1)
+        XCTAssertEqual(scroller.documentView?.frame.width ?? 0, room + 300, accuracy: 1)
+    }
+
+    /// A push of the trackpad turns a run of cards by what it pushed: a pointer
+    /// keeps the whole of its gesture, so a push past half a card lands on the
+    /// next one rather than rounding back to where it began.
+    @MainActor
+    func testATrackpadPushPastHalfACardTurnsTheRun() throws {
+        let positions = Received<Int>()
+        let renderer = AppKitRenderer.running {
+            GalleryView(0..<7) { number in Label("\(number)") }
+                .onPositionChanged { positions.values.append($0) }
+                .onItemTapped { _ in }
+        }
+        defer { renderer.closeForTesting() }
+        let scroller = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
+
+        // The run is the room plus six turns long once the room has arrived.
+        let deadline = Date(timeIntervalSinceNow: 2)
+        while (scroller.documentView?.frame.width ?? 0) < scroller.contentView.bounds.width + 600,
+              Date() < deadline {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+            renderer.pump()
+            scroller.window?.contentView?.layoutSubtreeIfNeeded()
+        }
+
+        // A card is 176 wide and a turn is three fifths of one, 105.6; the push
+        // goes 80 - past half a turn, short of a whole one.
+        scroller.beginMovementForTesting()
+        scroller.moveAsReaderForTesting(to: NSPoint(x: 80, y: 0))
+        scroller.settleForTesting()
+        let settled = Date(timeIntervalSinceNow: 1)
+        while positions.values.last != 1, Date() < settled {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+            renderer.pump()
+        }
+
+        XCTAssertEqual(scroller.contentView.bounds.origin.x, 105.6, accuracy: 0.5)
+        XCTAssertEqual(positions.values.last, 1)
+    }
 }
 
 @MainActor
@@ -456,4 +520,18 @@ private final class ScrollWheelSpyView: NSScrollView {
     }
 }
 
+
+/// A run the reader can scroll 300 points beyond its room, answering a tap on
+/// its first hundred.
+private struct TappedRun: ContentView {
+    @State private var across = Point.zero
+
+    var content: any View {
+        ScrollReader(across: 300) {
+            ColorBox(Color("#3366FF"))
+        }
+        .scrollOffset($across)
+        .onTapped(within: { room in Rect(0, 0, 100, room.height) }) {}
+    }
+}
 #endif
