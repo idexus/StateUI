@@ -1,7 +1,7 @@
 // Colouring Swift source.
 //
 // A Label has one text colour, so text in six colours is six spans - which is
-// what `Label.formattedText` is for. This file turns a snippet into those runs.
+// what `Label.spans` is for. This file turns a snippet into those runs.
 //
 // ASCII only, on purpose. Deciding what is a letter with `Character.isLetter`
 // would work, but the whole question of which Unicode tables that reaches is one

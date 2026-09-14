@@ -888,8 +888,8 @@ extension StyleBag: BoxViewProperties where Target == BoxView {}
 extension StyleBag: ButtonProperties where Target == Button {}
 extension StyleBag: CheckBoxProperties where Target == CheckBox {}
 extension StyleBag: DatePickerProperties where Target == DatePicker {}
-extension StyleBag: EditorProperties where Target == Editor {}
-extension StyleBag: EntryProperties where Target == Entry {}
+extension StyleBag: TextEditorProperties where Target == TextEditor {}
+extension StyleBag: TextFieldProperties where Target == TextField {}
 extension StyleBag: GraphicsViewProperties where Target == GraphicsView {}
 extension StyleBag: GridProperties where Target == Grid {}
 extension StyleBag: ImageProperties where Target == Image {}
@@ -908,7 +908,7 @@ extension StyleBag: RectangleProperties where Target == Rectangle {}
 extension StyleBag: RefreshViewProperties where Target == RefreshView {}
 extension StyleBag: RoundRectangleProperties where Target == RoundRectangle {}
 extension StyleBag: ScrollViewProperties where Target == ScrollView {}
-extension StyleBag: SearchBarProperties where Target == SearchBar {}
+extension StyleBag: SearchFieldProperties where Target == SearchField {}
 extension StyleBag: SliderProperties where Target == Slider {}
 extension StyleBag: StepperProperties where Target == Stepper {}
 extension StyleBag: SwipeViewProperties where Target == SwipeView {}
@@ -927,8 +927,8 @@ extension StyleBag: WebViewProperties where Target == WebView {}
 
 extension Label: StyleTarget {}
 extension Button: StyleTarget {}
-extension Entry: StyleTarget {}
-extension Editor: StyleTarget {}
+extension TextField: StyleTarget {}
+extension TextEditor: StyleTarget {}
 extension Picker: StyleTarget {}
 extension DatePicker: StyleTarget {}
 extension TimePicker: StyleTarget {}
@@ -937,7 +937,7 @@ extension CheckBox: StyleTarget {}
 extension RadioButton: StyleTarget {}
 extension Slider: StyleTarget {}
 extension Stepper: StyleTarget {}
-extension SearchBar: StyleTarget {}
+extension SearchField: StyleTarget {}
 extension ActivityIndicator: StyleTarget {}
 extension ProgressBar: StyleTarget {}
 extension Image: StyleTarget {}

@@ -254,7 +254,7 @@ final class PersistenceTests: XCTestCase {
     }
 
     /// A key written many times between two drains is saved ONCE, holding the
-    /// last value - which is what keeps an Entry bound to kept state from
+    /// last value - which is what keeps a TextField bound to kept state from
     /// saving on every letter.
     /// A write and the record beside it happen under ONE hold, so no other
     /// write can land between them.

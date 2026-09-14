@@ -144,7 +144,7 @@ public enum PropValue: Equatable, Sendable {
     }
 
     /// The text, when this value is text - nil for any other kind. What an
-    /// `onEvent` handler reads an Entry's new text with, and what the few
+    /// `onEvent` handler reads a TextField's new text with, and what the few
     /// places that read a property back off a node use.
     public var string: String? {
         if case .string(let value) = self { return value }
@@ -252,7 +252,7 @@ public typealias EventHandler = nonisolated(nonsending) () async throws -> Void
 
 /// The same execution contract, for an event that carries a value.
 ///
-///     Entry("").onTextChanged { text in query = text }
+///     TextField("").onTextChanged { text in query = text }
 ///
 /// The distinct name is required because Swift cannot overload type aliases by
 /// generic arity.

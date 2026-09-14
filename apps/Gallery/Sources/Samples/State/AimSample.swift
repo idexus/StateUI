@@ -7,11 +7,11 @@ struct AimSample: SampleContent, ExampleContent {
 
     /// The control an act is about. `.aim` puts the element's own identity in
     /// here as the differ walks, so nothing is named and nothing collides.
-    @Aim(Entry.self) private var field
+    @Aim(TextField.self) private var field
 
     /// A second one, to show that two of them are two controls - and that an
     /// act aims at exactly the view it was put on.
-    @Aim(Entry.self) private var note
+    @Aim(TextField.self) private var note
 
     /// What the last act did. Written by the HANDLER rather than read in the
     /// body: the differ fills an aim as it WALKS, which is after the body that
@@ -28,8 +28,8 @@ struct AimSample: SampleContent, ExampleContent {
 
         // A CONTROL: .aim puts this view's identity in the aim, and the
         // control's methods are called on the aim.
-        @Aim(Entry.self) private var field
-        @Aim(Entry.self) private var note
+        @Aim(TextField.self) private var field
+        @Aim(TextField.self) private var note
         @State private var says = "Press a button, and it says which view it reached."
 
         VStack {
@@ -38,11 +38,11 @@ struct AimSample: SampleContent, ExampleContent {
             // and an aim, neither of which reads anything.
             DebugInfoLabel()
 
-            Entry($text)
+            TextField($text)
                 .placeholder("The first field")
                 .aim(field)
 
-            Entry()
+            TextField()
                 .placeholder("The second field")
                 .aim(note)
 
@@ -78,13 +78,13 @@ struct AimSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Entry($text)
+            TextField($text)
                 .automationId("aim.first")
                 .semanticDescription("The first field")
                 .placeholder("The first field")
                 .aim(field)
 
-            Entry()
+            TextField()
                 .automationId("aim.second")
                 .semanticDescription("The second field")
                 .placeholder("The second field")

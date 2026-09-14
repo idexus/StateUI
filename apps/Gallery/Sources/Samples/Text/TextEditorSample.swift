@@ -1,12 +1,12 @@
 import StateUI
 
 /// Text of several lines, in an editor of a stated height and one that grows.
-struct EditorSample: SampleContent, ExampleContent {
+struct TextEditorSample: SampleContent, ExampleContent {
     @State private var draft = ""
 
-    static let id = "editor"
-    static let title = "Editor"
-    static let summary = "An Entry with room: several lines, and a size that can follow the text."
+    static let id = "textEditor"
+    static let title = "TextEditor"
+    static let summary = "A TextField with room: several lines, and a size that can follow the text."
 
     static let code = """
         @State private var draft = ""
@@ -22,17 +22,17 @@ struct EditorSample: SampleContent, ExampleContent {
                 VStack {
                     Label("a stated height")
 
-                    Editor($draft)
+                    TextEditor($draft)
                         .placeholder("Anything worth remembering")
                         .height(110)
                 }
 
                 VStack {
-                    Label(".autoSize(.textChanges)")
+                    Label(".growsWithText(true)")
 
-                    Editor($draft)
+                    TextEditor($draft)
                         .placeholder("The same text, sized by it")
-                        .autoSize(.textChanges)
+                        .growsWithText(true)
                 }
                 .gridColumn(1)
             }
@@ -58,7 +58,7 @@ struct EditorSample: SampleContent, ExampleContent {
                         .fontSize(12)
                         .textColor(Palette.subtle)
 
-                    Editor($draft)
+                    TextEditor($draft)
                         .automationId("editor.notes")
                         .semanticDescription("Notes")
                         .placeholder("Anything worth remembering")
@@ -67,15 +67,15 @@ struct EditorSample: SampleContent, ExampleContent {
                 .spacing(4)
 
                 VStack {
-                    Label(".autoSize(.textChanges)")
+                    Label(".growsWithText(true)")
                         .fontSize(12)
                         .textColor(Palette.subtle)
 
-                    Editor($draft)
-                        .automationId("editor.notes.autoSize")
+                    TextEditor($draft)
+                        .automationId("editor.notes.growsWithText")
                         .semanticDescription("Notes, sized by the text")
                         .placeholder("The same text, sized by it")
-                        .autoSize(.textChanges)
+                        .growsWithText(true)
                 }
                 .spacing(4)
                 .verticalAlignment(.start)

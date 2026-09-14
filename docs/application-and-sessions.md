@@ -383,7 +383,7 @@ struct EditorPage: ContentView {
     @State private var dirty = false
 
     var content: any View {
-        Editor()
+        TextEditor()
             .onCreated {
                 page.title = "Draft"
                 page.toolbarItems = [saveItem]
@@ -430,7 +430,7 @@ window.titleBar = TitleBar("Notes")
     .icon("notes.png")
     .foregroundColor(.white)
     .leadingContent { Button("Sidebar") }
-    .content { SearchBar($query) }
+    .content { SearchField($query) }
     .trailingContent { Button("Account") }
     .background(.cornflowerBlue)
 ```

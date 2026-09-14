@@ -155,7 +155,7 @@ public final class PageSession {
 
     /// A view on the bar, in place of the title.
     ///
-    ///     page.titleView = SearchBar($query)
+    ///     page.titleView = SearchField($query)
     ///
     /// A view rather than a handler: whatever is written here is an ordinary
     /// part of the tree, built where the bar is - a composed view there reads

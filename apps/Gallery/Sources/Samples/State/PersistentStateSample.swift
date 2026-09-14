@@ -73,7 +73,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                     .onClicked { visits = 0 }
             }
 
-            Entry($who)
+            TextField($who)
                 .placeholder("Your name")
 
             Label(who.isEmpty ? "Welcome back" : "Welcome back, \\(who)")
@@ -147,7 +147,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
-            Entry($who)
+            TextField($who)
                 .automationId("persistent-state.who")
                 .semanticDescription("Your name")
                 .placeholder("Your name")

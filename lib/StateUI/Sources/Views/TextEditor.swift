@@ -1,23 +1,23 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Editor's own properties - the half a `Style<Editor>` shares with the
+/// TextEditor's own properties - the half a `Style<TextEditor>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
 /// makes the same modifiers compile on both.
-public protocol EditorProperties: PropertyContainer {}
+public protocol TextEditorProperties: PropertyContainer {}
 
-extension EditorProperties {
+extension TextEditorProperties {
     /// Whether the editor grows as the text does.
     ///
-    ///     Editor($notes).autoSize(.textChanges)
+    ///     TextEditor($notes).growsWithText(true)
     ///
-    /// `.textChanges` grows the control on every edit; `.disabled`, the
-    /// default, keeps the height it was given and scrolls the text inside it.
-    /// A growing editor wants a ScrollView above it, having no height of its
-    /// own to stop at.
-    public func autoSize(_ value: EditorAutoSizeOption) -> Modified {
-        setValue(.autoSize, value.propValue)
+    /// Growing, the control takes the height of its text on every edit; not
+    /// growing, the default, it keeps the height it was given and scrolls the
+    /// text inside it. A growing editor wants a ScrollView above it, having no
+    /// height of its own to stop at.
+    public func growsWithText(_ value: Bool) -> Modified {
+        setValue(.growsWithText, .bool(value))
     }
 }
 
@@ -25,38 +25,38 @@ extension EditorProperties {
 ///
 ///     @State private var notes = ""
 ///     …
-///     Editor($notes)
+///     TextEditor($notes)
 ///         .placeholder("Anything worth remembering")
 ///         .height(120)
 ///
-/// An `Entry` with room: the same two-way binding and the same handlers, over a
-/// field that wraps and keeps the newlines the reader types. Where an Entry
-/// ends its editing with a Return, this one takes it as text - so there is no
-/// `onCompleted` from the keyboard, only from losing the focus.
-public struct Editor: InputView, TextElement, FontElement, TextAlignmentElement, EditorProperties {
+/// A `TextField` with room: the same two-way binding and `onTextChanged`, over
+/// a field that wraps and keeps the newlines the reader types. A Return is
+/// text here, so it has no `onSubmitted`; `isFocused` says when the editing
+/// ends.
+public struct TextEditor: InputView, TextElement, FontElement, TextAlignmentElement, TextEditorProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Editor>` is written against.
+    /// An empty one - what a `Style<TextEditor>` is written against.
     public init() {
-        node = Node(type: .editor)
+        node = Node(type: .textEditor)
     }
 
     /// An editor showing `text`. One-way: what is typed goes nowhere without
     /// `.onTextChanged`, which is what the binding form does for you.
     public init(_ text: String) {
-        node = Node(type: .editor, props: [.text: .string(text)])
+        node = Node(type: .textEditor, props: [.text: .string(text)])
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
     public init(_ text: Binding<String>) {
-        self = Editor().text(text)
+        self = TextEditor().text(text)
     }
 
-    /// The same two-way text as `Editor($text)`, written as a modifier.
+    /// The same two-way text as `TextEditor($text)`, written as a modifier.
     ///
-    ///     Editor($query)
-    ///     Editor().text($query)
+    ///     TextEditor($query)
+    ///     TextEditor().text($query)
     ///
     /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
     /// the short way to say what gives this control its purpose, and the
@@ -82,16 +82,4 @@ public struct Editor: InputView, TextElement, FontElement, TextAlignmentElement,
             : words(.text, by: value, mode: .inOut)
     }
 
-    // MARK: Properties
-
-    // MARK: Events
-
-    /// Fires when the editor loses the focus after being edited - the place to
-    /// save what was written.
-    ///
-    /// A Return is an ordinary newline here, so nothing on the keyboard ends
-    /// the editing; only moving the focus away does.
-    public func onCompleted(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.completed, handler)
-    }
 }

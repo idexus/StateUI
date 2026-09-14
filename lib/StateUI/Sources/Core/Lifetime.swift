@@ -46,7 +46,7 @@ extension BindableObject {
     /// message leaves, while its `@State` and `@Environment` still answer. This
     /// library's own.
     ///
-    ///     Editor(text)
+    ///     TextEditor(text)
     ///         .onDestroying { try await save(text) }
     ///
     /// A state written here has nobody left to show it, and one read here holds

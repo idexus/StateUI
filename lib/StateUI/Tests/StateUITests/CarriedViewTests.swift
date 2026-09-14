@@ -57,7 +57,7 @@ private struct Typed: ContentView {
 
     var content: any View {
         builds.count += 1
-        return Entry($text)
+        return TextField($text)
     }
 }
 

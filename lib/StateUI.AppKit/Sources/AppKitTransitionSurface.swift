@@ -48,7 +48,7 @@ enum AppKitTransitionSurface {
         case .imageButton:
             return imageButtonProperties.contains(property)
 
-        case .entry, .editor, .searchBar:
+        case .textField, .textEditor, .searchField:
             return fieldProperties.contains(property)
 
         case .radioButton:
@@ -103,10 +103,10 @@ enum AppKitTransitionSurface {
 
     private static let nativeViewTypes: Set<NodeType> = [
         .absoluteLayout, .activityIndicator, .border, .boxView, .button,
-        .checkBox, .datePicker, .editor, .ellipse, .entry, .graphicsView,
+        .checkBox, .datePicker, .textEditor, .ellipse, .textField, .graphicsView,
         .grid, .hStack, .image, .imageButton, .label, .line,
         .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
-        .rectangle, .roundRectangle, .scrollView, .searchBar, .slider,
+        .rectangle, .roundRectangle, .scrollView, .searchField, .slider,
         .stepper, .switch, .timePicker, .vStack,
     ]
 

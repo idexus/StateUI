@@ -24,8 +24,8 @@ struct LabelSample: SampleContent, ExampleContent {
                 .padding(8)
 
             Label("A long line that has nowhere left to go, so it is cut short with an ellipsis")
-                .lineBreakMode(.tailTruncation)
-                .maxLines(1)
+                .lineBreak(.tailTruncation)
+                .maximumLines(1)
 
             Label("Letters spaced out")
                 .characterSpacing(3)
@@ -43,10 +43,10 @@ struct LabelSample: SampleContent, ExampleContent {
             // One string in mixed case, drawn twice. The case is the DRAWING;
             // the text stays as it was written.
             Label("One string, drawn in Two Ways")
-                .textTransform(.uppercase)
+                .textCase(.uppercase)
 
             Label("One string, drawn in Two Ways")
-                .textTransform(.lowercase)
+                .textCase(.lowercase)
 
             // Text follows the system's text-size setting unless a label says
             // it does not.
@@ -84,8 +84,8 @@ struct LabelSample: SampleContent, ExampleContent {
 
             Label("A long line that has nowhere left to go, so it is cut short with an ellipsis")
                 .fontSize(16)
-                .lineBreakMode(.tailTruncation)
-                .maxLines(1)
+                .lineBreak(.tailTruncation)
+                .maximumLines(1)
 
             Label("Letters spaced out")
                 .fontSize(16)
@@ -106,11 +106,11 @@ struct LabelSample: SampleContent, ExampleContent {
 
             Label("One string, drawn in Two Ways")
                 .fontSize(16)
-                .textTransform(.uppercase)
+                .textCase(.uppercase)
 
             Label("One string, drawn in Two Ways")
                 .fontSize(16)
-                .textTransform(.lowercase)
+                .textCase(.lowercase)
 
             Label("Grows with the system text size")
                 .fontSize(16)

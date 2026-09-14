@@ -19,7 +19,7 @@ import XCTest
 final class WireVocabularyTests: XCTestCase {
     /// No closed vocabulary may ride its spelling.
     ///
-    /// `enum LineBreakMode: String` is what makes a binary wire spend four
+    /// `enum LineBreak: String` is what makes a binary wire spend four
     /// bytes of length and fourteen of UTF-8 saying `tailTruncation`, and a
     /// host a string comparison per property to read it back. There is no
     /// exemption list on purpose: nothing in this library needs a

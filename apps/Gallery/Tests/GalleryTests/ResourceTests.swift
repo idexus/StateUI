@@ -21,8 +21,8 @@ final class ResourceTests: XCTestCase {
     /// The explicit list keeps a misspelled target from becoming a silent
     /// no-op in the running application.
     private static let renderable: Set<String> = [
-        "Label", "Button", "ImageButton", "Entry", "Editor", "Picker",
-        "DatePicker", "TimePicker", "SearchBar", "Switch", "CheckBox",
+        "Label", "Button", "ImageButton", "TextField", "TextEditor", "Picker",
+        "DatePicker", "TimePicker", "SearchField", "Switch", "CheckBox",
         "RadioButton", "Slider", "ActivityIndicator", "ProgressBar",
         "IndicatorView", "RefreshView", "Image", "BoxView", "Border",
         "Grid", "ScrollView", "VStack", "HStack",

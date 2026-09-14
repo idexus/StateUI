@@ -58,7 +58,7 @@ struct IdentitySample: SampleContent, ExampleContent {
                         .width(90)
                         .verticalAlignment(.center)
 
-                    Entry()
+                    TextField()
                         .placeholder("type here")
                         .horizontalAlignment(.fill)
 
@@ -147,7 +147,7 @@ private struct IdentityRow: ContentView {
                 .width(90)
                 .verticalAlignment(.center)
 
-            Entry()
+            TextField()
                 .automationId("identity.typed")
                 .semanticDescription("Anything typed here")
                 .placeholder("type here")

@@ -33,7 +33,7 @@ enum Recycling {
     /// later are all outside it until somebody puts them in deliberately. What
     /// is kept out and why:
     ///
-    /// - `Entry`, `Editor`, `SearchBar`, `Picker`, `DatePicker`, `TimePicker` -
+    /// - `TextField`, `TextEditor`, `SearchField`, `Picker`, `DatePicker`, `TimePicker` -
     ///   the caret, the selection, which of them the platform is typing into,
     ///   and whether a list is open. None of it is a property, so none of it is
     ///   in the shape.
@@ -47,7 +47,7 @@ enum Recycling {
     ///   on is not.
     static let poolable: Set<NodeType> = [
         .absoluteLayout, .activityIndicator, .border, .boxView, .button,
-        .checkBox, .ellipse, .formattedString, .grid,
+        .checkBox, .ellipse, .spans, .grid,
         .hStack, .image, .imageButton, .indicatorView, .label,
         .line, .path, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .roundRectangle, .slider, .span, .stepper, .switch,

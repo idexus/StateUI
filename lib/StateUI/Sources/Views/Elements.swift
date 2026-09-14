@@ -8,7 +8,7 @@
 // `VisualElementProperties`, margin from `ViewProperties`, padding from
 // `PaddingElement`, the font size from `FontElement`. So a modifier is
 // available on exactly the controls that carry the property - `.spacing()` on
-// a stack, `.placeholder()` on an Entry, and nothing on a Label that a Label
+// a stack, `.placeholder()` on a TextField, and nothing on a Label that a Label
 // does not carry.
 //
 // The hierarchy is TWO parallel halves, and the split is what makes "only what
@@ -55,7 +55,7 @@ public protocol PropertyContainer {
     /// What a modifier gives back.
     ///
     /// A control gives back ITSELF, so a chain goes on offering everything that
-    /// control has: `Label("Hi").margin(8).lineBreakMode(.wordWrap)`. A style
+    /// control has: `Label("Hi").margin(8).lineBreak(.wordWrap)`. A style
     /// gives back itself the same way.
     ///
     /// A composed view has no node of its own to change, so it gives back a
@@ -473,7 +473,7 @@ extension BindableObject {
     /// every modifier in this library writes: `.textChanged`, never a
     /// spelling, Core/Tokens.swift being the one place the names exist.
     ///
-    /// What a two-way binding leaves behind is a handler: `Entry($name)` writes
+    /// What a two-way binding leaves behind is a handler: `TextField($name)` writes
     /// the new text back on every edit. An `.onTextChanged` written after it has
     /// to run BESIDE that, not instead of it, or the binding would go quietly
     /// dead - which is why the typed event modifiers all come through here.
@@ -616,9 +616,9 @@ extension VisualElement {
     /// the aim with the element's own identity as it walks, so there is
     /// nothing to spell and nothing to collide. See Core/Aim.swift.
     ///
-    ///     @Aim(Entry.self) private var field
+    ///     @Aim(TextField.self) private var field
     ///
-    ///     Entry($address).aim(field)
+    ///     TextField($address).aim(field)
     ///     Button("Edit").onClicked { try await field.focus() }
     ///
     /// **A model declares one the same way**, beside the state its page
@@ -628,7 +628,7 @@ extension VisualElement {
     ///     final class Form {
     ///         @State var address = ""
     ///
-    ///         @Aim(Entry.self) var field
+    ///         @Aim(TextField.self) var field
     ///     }
     ///
     /// Who the view is to an ACT, where `.id(_:)` is who it is to the differ -
@@ -989,7 +989,7 @@ extension VisualElementProperties {
 //
 // A binding is the whole API: give it one and it is kept in step.
 //
-//     Entry($name).isFocused($editing)
+//     TextField($name).isFocused($editing)
 //
 // Nothing is watched until it is asked for. A size changes at every measure,
 // and a subscription per control would cost real work for an answer nobody
@@ -1359,7 +1359,7 @@ extension ViewProperties {
     /// Which row of the enclosing Grid the view sits in, counting from 0.
     ///
     ///     Label("Name").gridRow(0).gridColumn(0)
-    ///     Entry($name).gridRow(0).gridColumn(1)
+    ///     TextField($name).gridRow(0).gridColumn(1)
     public func gridRow(_ value: Int) -> Modified { setValue(.gridRow, .number(Double(value))) }
 
     /// Which column of the enclosing Grid the view sits in, counting from 0.
@@ -1601,7 +1601,7 @@ extension ShapeProperties {
 
 // MARK: - InputView
 
-/// What Entry, Editor and SearchBar share: the hint, its colour, the
+/// What TextField, TextEditor and SearchField share: the hint, its colour, the
 /// keyboard, the length cap and read-only. Declared once here, so the three
 /// fields carry one definition of each rather than a copy apiece.
 ///
@@ -1616,7 +1616,7 @@ public protocol InputViewProperties: ViewProperties {}
 /// A View the reader types into.
 ///
 /// The element half of the tier, the way `Layout` and `Shape` are the element
-/// halves of theirs - and it is what a `Style<Entry>` is told apart BY: the
+/// halves of theirs - and it is what a `Style<TextField>` is told apart BY: the
 /// conditional conformances in Style.swift name the element protocol, so a
 /// tier with only a property half cannot be given to a style without giving it
 /// `View`'s modifiers by accident.
@@ -1650,7 +1650,7 @@ extension InputViewProperties {
 
     /// How many characters from the caret are selected, 0 being none.
     ///
-    ///     Entry($name).cursorPosition(0).selectionLength(name.count)
+    ///     TextField($name).cursorPosition(0).selectionLength(name.count)
     ///
     /// selects the lot, which is what a field wants when it is filled in for
     /// the reader to replace.
@@ -1691,14 +1691,15 @@ extension InputViewProperties {
         setValue(.isReadOnly, .bool(value))
     }
 
-    /// Which keyboard the platform offers - numeric, email, url and the rest.
-    public func keyboard(_ value: Keyboard) -> Modified {
-        setValue(.keyboard, value.propValue)
+    /// What the field is for - an email address, a number, a url and the rest -
+    /// which picks the keyboard the platform offers.
+    public func inputPurpose(_ value: InputPurpose) -> Modified {
+        setValue(.inputPurpose, value.propValue)
     }
 
     /// How many characters the field accepts.
-    public func maxLength(_ value: Int) -> Modified {
-        setValue(.maxLength, .number(Double(value)))
+    public func maximumLength(_ value: Int) -> Modified {
+        setValue(.maximumLength, .number(Double(value)))
     }
 }
 

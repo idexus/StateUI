@@ -65,7 +65,7 @@ final class DiffTests: XCTestCase {
 
         func code(_ name: Color) -> Node {
             Label()
-                .formattedText {
+                .spans {
                     TextSpan("let ").textColor(.purple)
                     TextSpan("counter").textColor(name)
                 }
@@ -75,10 +75,10 @@ final class DiffTests: XCTestCase {
         renders.render(code(.steelBlue))
         let patch = renders.render(code(.firebrick))
 
-        // The FormattedString is the label's one child, and it is on the path
+        // The Spans is the label's one child, and it is on the path
         // to the run rather than a thing that changed itself.
         let runs = try XCTUnwrap(patch.children.first)
-        XCTAssertEqual(runs.type, "FormattedString")
+        XCTAssertEqual(runs.type, "Spans")
         XCTAssertTrue(runs.props.isEmpty)
         XCTAssertFalse(runs.arranged, "the arrangement of the runs did not change")
 
@@ -96,7 +96,7 @@ final class DiffTests: XCTestCase {
 
         func line(_ sold: Bool) -> Node {
             Label()
-                .formattedText {
+                .spans {
                     TextSpan("Sold")
 
                     if sold {

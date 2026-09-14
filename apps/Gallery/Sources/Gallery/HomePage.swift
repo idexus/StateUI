@@ -579,7 +579,7 @@ private struct GroupFace: ContentView {
                         .fontSize(18)
                         .fontAttributes(.bold)
                         .textColor(Palette.onBrand)
-                        .lineBreakMode(.tailTruncation)
+                        .lineBreak(.tailTruncation)
                         .padding(12, 10)
                 }
                 .background(Color("#B3000000"))

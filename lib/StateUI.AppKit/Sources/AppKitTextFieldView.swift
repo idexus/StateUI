@@ -7,13 +7,13 @@ import AppKit
 /// A native single-line text field that can change between ordinary and
 /// secure AppKit editors without changing the StateUI element's identity.
 @MainActor
-final class AppKitEntryView: NSView, NSTextFieldDelegate {
+final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     private(set) var textField: NSTextField
     private(set) var isSecure = false
-    private(set) var maxLength: Int?
+    private(set) var maximumLength: Int?
 
     var onTextChanged: ((String) -> Void)?
-    var onCompleted: (() -> Void)?
+    var onSubmitted: (() -> Void)?
 
     private var writing = false
     private var spellChecking = true
@@ -29,7 +29,7 @@ final class AppKitEntryView: NSView, NSTextFieldDelegate {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("AppKitEntryView is created in code")
+        fatalError("AppKitTextFieldView is created in code")
     }
 
     override var intrinsicContentSize: NSSize { textField.intrinsicContentSize }
@@ -63,7 +63,7 @@ final class AppKitEntryView: NSView, NSTextFieldDelegate {
             replaceTextField(secure: secure)
         }
 
-        maxLength = maximumLength.map { max(0, $0) }
+        self.maximumLength = maximumLength.map { max(0, $0) }
         self.spellChecking = spellChecking
         self.textPrediction = textPrediction
         self.cursorPosition = cursorPosition
@@ -144,14 +144,14 @@ final class AppKitEntryView: NSView, NSTextFieldDelegate {
         onTextChanged?(typed)
     }
 
-    @objc func completed(_ sender: NSTextField) {
-        onCompleted?()
+    @objc func submitted(_ sender: NSTextField) {
+        onSubmitted?()
     }
 
     private func install(_ field: NSTextField) {
         field.delegate = self
         field.target = self
-        field.action = #selector(completed(_:))
+        field.action = #selector(submitted(_:))
         field.maximumNumberOfLines = 1
         field.translatesAutoresizingMaskIntoConstraints = true
         field.autoresizingMask = [.width, .height]
@@ -201,8 +201,8 @@ final class AppKitEntryView: NSView, NSTextFieldDelegate {
     }
 
     private func limited(_ text: String) -> String {
-        guard let maxLength, text.count > maxLength else { return text }
-        return String(text.prefix(maxLength))
+        guard let maximumLength, text.count > maximumLength else { return text }
+        return String(text.prefix(maximumLength))
     }
 
     private func utf16Offset(of characterOffset: Int, in text: String) -> Int {

@@ -48,7 +48,7 @@ struct ProfileForm: ContentView {
 
     var content: any View {
         VStack {
-            Entry(profile.$name)
+            TextField(profile.$name)
             Switch(profile.$notifications)
         }
     }
@@ -75,7 +75,7 @@ struct Greeting: ContentView {
 
     var content: any View {
         VStack {
-            Entry($name).placeholder("Name")
+            TextField($name).placeholder("Name")
             Label("Hello, \(name)")
         }
     }

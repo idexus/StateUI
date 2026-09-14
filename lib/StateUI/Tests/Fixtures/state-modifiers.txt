@@ -15,7 +15,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
           Button 7
             text: string "press"
             driven borderColor<-2 inOut property borderWidth<-1 inOut property
-          Entry 8
+          TextField 8
             text: string ""
             driven placeholderColor<-2 inOut property
           BoxView 9

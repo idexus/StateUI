@@ -122,7 +122,7 @@ A grid owns row and column definitions; each child states its cell and spans:
 Grid {
     Label("Name")
 
-    Entry($name)
+    TextField($name)
         .gridColumn(1)
 
     Button("Save")

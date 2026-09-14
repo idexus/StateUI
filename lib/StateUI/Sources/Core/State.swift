@@ -506,7 +506,7 @@ public final class State<Value>: @unchecked Sendable {
     /// What `$counter` gives: this state, for something else to borrow.
     ///
     /// Hand it to a child that has to write the value (`@Binding`), to an
-    /// input that shows it and writes it back (`Entry($name)`), to a modifier
+    /// input that shows it and writes it back (`TextField($name)`), to a modifier
     /// that has the HOST carry it (`.opacity($fade)`), or to an engine that
     /// follows it (`following: $offset`) - none of which reads anything at
     /// build, so handing it over makes nobody a reader: the value moving renders
@@ -534,7 +534,7 @@ public final class State<Value>: @unchecked Sendable {
     /// reflects the instance ONCE and names every state it holds by the
     /// property it is declared as; every access after that is one nil check.
     ///
-    /// The model's own `$name` is the whole state - `Entry(profile.$name)` is
+    /// The model's own `$name` is the whole state - `TextField(profile.$name)` is
     /// carried by the host and makes nobody a reader, `.opacity(profile.$fade)`
     /// is walked, `following: profile.$step` wakes an engine.
     /// `$profile.name` through a key path is a PART of the holding state and
@@ -1399,7 +1399,7 @@ public struct Binding<Value> {
     /// A binding to something this library does not own: read it with `get`,
     /// write it with `set`.
     ///
-    ///     Entry(Binding(get: { settings.name }, set: { settings.name = $0 }))
+    ///     TextField(Binding(get: { settings.name }, set: { settings.name = $0 }))
     ///
     /// The escape hatch, for a value that is not a `@State` - in a view or in
     /// a model, both of which have a shorter spelling, `$x` and `model.$x`.
@@ -1440,7 +1440,7 @@ public struct Binding<Value> {
     ///
     ///     @State private var profile = Profile()
     ///     …
-    ///     Entry($profile.name)
+    ///     TextField($profile.name)
     ///
     /// A key path, so a name that is not a property does not compile - this is
     /// dynamic in the spelling only.
@@ -1468,7 +1468,7 @@ public struct Binding<Value> {
     ///         @Binding var basket: Basket
     ///
     ///         var content: any View {
-    ///             Entry($basket.note)
+    ///             TextField($basket.note)
     ///         }
     ///     }
     ///

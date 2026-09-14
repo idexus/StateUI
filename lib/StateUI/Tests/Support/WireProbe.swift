@@ -15,9 +15,9 @@
 //
 // IT ALSO RENDERS WHAT A NUMBER MEANS. A closed vocabulary rides its member
 // NUMBER, so the bytes say 4 where a reviewer needs `tailTruncation` - and
-// `lineBreakMode: enum 4` tells them nothing at all. The probe therefore keeps
+// `lineBreak: enum 4` tells them nothing at all. The probe therefore keeps
 // ONE table, from a property KEY to the vocabulary that property carries, and
-// prints both halves: `lineBreakMode: enum tailTruncation(4)`. The KEY is the
+// prints both halves: `lineBreak: enum tailTruncation(4)`. The KEY is the
 // only thing that can say which vocabulary a number belongs to, so a number
 // with no key over it - an act's positional argument, an event's payload, a
 // value nested inside a list - is printed bare and is meant to be.
@@ -597,7 +597,7 @@ public enum WireProbe {
     // MARK: - What a member number means
 
     /// The spelling of one member of a closed vocabulary, given the property
-    /// key it was written under: `(4, "lineBreakMode")` is `tailTruncation`.
+    /// key it was written under: `(4, "lineBreak")` is `tailTruncation`.
     ///
     /// The probe's one table, and it is a table of KEYS - `Prop`'s own members
     /// rather than literals, so a renamed property is a compile error here
@@ -626,10 +626,10 @@ public enum WireProbe {
             return spelled(member, as: Alignment.self)
         case Prop.horizontalTextAlignment.name, Prop.verticalTextAlignment.name:
             return spelled(member, as: TextAlignment.self)
-        case Prop.lineBreakMode.name:
-            return spelled(member, as: LineBreakMode.self)
-        case Prop.textTransform.name:
-            return spelled(member, as: TextTransform.self)
+        case Prop.lineBreak.name:
+            return spelled(member, as: LineBreak.self)
+        case Prop.textCase.name:
+            return spelled(member, as: TextCase.self)
         case Prop.type.name:
             return spelled(member, as: PinType.self)
         case Prop.safeAreaEdges.name:
@@ -640,14 +640,10 @@ public enum WireProbe {
             return spelled(member, as: SemanticHeadingLevel.self)
 
         // The inputs.
-        case Prop.keyboard.name:
-            return spelled(member, as: Keyboard.self)
-        case Prop.returnType.name:
-            return spelled(member, as: ReturnType.self)
-        case Prop.clearButtonVisibility.name:
-            return spelled(member, as: ClearButtonVisibility.self)
-        case Prop.autoSize.name:
-            return spelled(member, as: EditorAutoSizeOption.self)
+        case Prop.inputPurpose.name:
+            return spelled(member, as: InputPurpose.self)
+        case Prop.returnKey.name:
+            return spelled(member, as: ReturnKey.self)
 
         // Scrolling, and the pages.
         case Prop.orientation.name:

@@ -121,8 +121,9 @@ public enum Dialogs {
     ///   - cancel: the dismissing button's caption.
     ///   - placeholder: what the field says while it is empty. Nil for nothing.
     ///   - initialValue: what the field starts holding.
-    ///   - maxLength: how many characters the field accepts. Nil for no limit.
-    ///   - keyboard: which keyboard the platform offers.
+    ///   - maximumLength: how many characters the field accepts. Nil for no limit.
+    ///   - inputPurpose: what the field is for, which picks the keyboard the
+    ///     platform offers.
     /// - Returns: what was typed when `accept` was pressed - empty included,
     ///   which is an answer - or nil when the prompt was cancelled.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
@@ -130,15 +131,15 @@ public enum Dialogs {
         _ title: String, message: String = "",
         accept: String = "OK", cancel: String = "Cancel",
         placeholder: String? = nil, initialValue: String = "",
-        maxLength: Int? = nil, keyboard: Keyboard = .default
+        maximumLength: Int? = nil, inputPurpose: InputPurpose = .default
     ) async throws -> String? {
         chosen(try await stateUICall(
             .displayPromptAsync,
             [
                 .string(title), .string(message), .string(accept), .string(cancel),
                 placeholder.map { PropValue.string($0) } ?? .nothing,
-                maxLength.map { PropValue.number(Double($0)) } ?? .nothing,
-                keyboard.propValue, .string(initialValue),
+                maximumLength.map { PropValue.number(Double($0)) } ?? .nothing,
+                inputPurpose.propValue, .string(initialValue),
             ]))
     }
 

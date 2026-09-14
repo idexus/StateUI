@@ -59,7 +59,7 @@ struct NotesPage: ContentView {
     var content: any View {
         VStack {
             Label(note.isEmpty ? "A new note" : note)
-            Entry($note).placeholder("Write something")
+            TextField($note).placeholder("Write something")
         }
         .spacing(12)
         .padding(24)

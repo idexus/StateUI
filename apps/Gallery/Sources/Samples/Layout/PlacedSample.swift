@@ -526,13 +526,13 @@ struct PlacedSample: SampleContent, ExampleContent {
                         .fontSize(18)
                         .fontAttributes(.bold)
                         .textColor(Palette.onBrand)
-                        .lineBreakMode(.tailTruncation)
+                        .lineBreak(.tailTruncation)
 
                     Label("Placed by arithmetic")
                         .fontSize(10)
                         .textColor(Palette.onBrand)
                         .opacity(0.8)
-                        .lineBreakMode(.tailTruncation)
+                        .lineBreak(.tailTruncation)
                 }
                 .padding(12, 10)
                 .spacing(1)

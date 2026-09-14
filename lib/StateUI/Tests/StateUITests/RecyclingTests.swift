@@ -157,10 +157,10 @@ final class RecyclingTests: XCTestCase {
         // that control and nothing else about the two.
         let patch = renders.render(run([1, 2]) { number in
             if number == 1 {
-                // An Entry's caret, its selection and whether the platform is
+                // A TextField's caret, its selection and whether the platform is
                 // typing into it are none of them properties, so nothing in a
                 // shape could say two of them are alike.
-                return HStack { Label("\(number)"); Entry("") }
+                return HStack { Label("\(number)"); TextField("") }
             }
 
             return HStack { Label("\(number)"); Label("") }

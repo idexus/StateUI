@@ -24,22 +24,22 @@ struct BuilderSample: SampleContent, ExampleContent {
 
             Switch($signedIn)
 
-            // An `if` with no `else`. The Entry below it is child 2 in one
+            // An `if` with no `else`. The TextField below it is child 2 in one
             // state and child 3 in the other - and it is the same control
             // either way, so what has been typed in it survives the toggle.
             if signedIn {
                 Label("Signed in")
             }
 
-            Entry($note)
+            TextField($note)
 
             // Two branches are two elements, even though both are Entries:
             // switching REPLACES the control rather than editing it, which is
             // what the author wrote.
             if editing {
-                Entry("name")
+                TextField("name")
             } else {
-                Entry("nickname")
+                TextField("nickname")
             }
 
             SwitchRow("Editing", $editing)
@@ -78,18 +78,18 @@ struct BuilderSample: SampleContent, ExampleContent {
                     .fontAttributes(.bold)
             }
 
-            Entry($note)
+            TextField($note)
                 .automationId("builder.note")
                 .semanticDescription("Note")
                 .placeholder("Type here, then flip the switch")
 
             if editing {
-                Entry("name")
+                TextField("name")
                     .automationId("builder.name")
                     .semanticDescription("Name")
                     .placeholder("name")
             } else {
-                Entry("nickname")
+                TextField("nickname")
                     .automationId("builder.nickname")
                     .semanticDescription("Nickname")
                     .placeholder("nickname")
@@ -119,12 +119,12 @@ struct BuilderSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("An `if` above a view does not move it: type in the field, flip the "
-                + "switch, and the Entry keeps its control - and with it the text, the "
+                + "switch, and the TextField keeps its control - and with it the text, the "
                 + "caret and the focus.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Both branches of the `if/else` build an Entry, and they are still two "
+            Label("Both branches of the `if/else` build a TextField, and they are still two "
                 + "different elements: swapping replaces the control rather than editing "
                 + "it, which is what the two branches say.")
                 .fontSize(12)

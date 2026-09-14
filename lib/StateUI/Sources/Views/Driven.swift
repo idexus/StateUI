@@ -51,7 +51,7 @@
 //
 // There is no driven `.text` on the `TextElement` tier, though the value form
 // sits there: a Label's and a Button's text is OUT, written by the host and
-// reported by nobody, where an Entry's, an Editor's and a SearchBar's is BOTH
+// reported by nobody, where a TextField's, a TextEditor's and a SearchField's is BOTH
 // WAYS - the reader types into it, and the typed words land on the state as
 // the host's own write - and is each field's own `text(_:)`. Text is per class
 // here for that reason.

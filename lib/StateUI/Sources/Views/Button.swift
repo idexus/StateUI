@@ -9,8 +9,8 @@ public protocol ButtonProperties: PropertyContainer {}
 
 extension ButtonProperties {
     /// What happens to a caption too long for the button.
-    public func lineBreakMode(_ value: LineBreakMode) -> Modified {
-        setValue(.lineBreakMode, value.propValue)
+    public func lineBreak(_ value: LineBreak) -> Modified {
+        setValue(.lineBreak, value.propValue)
     }
 
     /// A picture beside the caption - a file among the application's image

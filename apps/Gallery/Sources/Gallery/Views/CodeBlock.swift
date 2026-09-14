@@ -39,7 +39,7 @@ struct CodeBlock: ContentView {
     private var snippet: any View {
         VStack {
             Label()
-                .formattedText {
+                .spans {
                     // Identified by OFFSET: two runs may be the same words
                     // in the same colour, and the snippet never changes, so
                     // the offsets never move.

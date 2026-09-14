@@ -3,18 +3,18 @@
 
 // A text field that searches.
 
-/// SearchBar's own properties - the half a `Style<SearchBar>` shares with the
+/// SearchField's own properties - the half a `Style<SearchField>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
 /// makes the same modifiers compile on both.
-public protocol SearchBarProperties: PropertyContainer {}
+public protocol SearchFieldProperties: PropertyContainer {}
 
-extension SearchBarProperties {
+extension SearchFieldProperties {
     /// What the keyboard's return key is captioned. What that key DOES is
-    /// `.onSearchButtonPressed`, which is a handler rather than a caption.
+    /// `.onSubmitted`, which is a handler rather than a caption.
     /// Already `.search` on a search box.
-    public func returnType(_ value: ReturnType) -> Modified {
-        setValue(.returnType, value.propValue)
+    public func returnKey(_ value: ReturnKey) -> Modified {
+        setValue(.returnKey, value.propValue)
     }
 
     /// The colour of the button that empties the box - the one the platform
@@ -31,11 +31,11 @@ extension SearchBarProperties {
 
 /// A text field with a search button on the keyboard.
 ///
-///     SearchBar($query)
+///     SearchField($query)
 ///         .placeholder("Search the list")
-///         .onSearchButtonPressed { runTheSearch() }
+///         .onSubmitted { runTheSearch() }
 ///
-/// An Entry that says what it is for: the platform draws the magnifier and the
+/// A TextField that says what it is for: the platform draws the magnifier and the
 /// cancel button, and the keyboard's return key searches.
 ///
 /// It goes wherever a view goes - in the page's content, or ON the navigation
@@ -45,32 +45,32 @@ extension SearchBarProperties {
 /// Given a binding the field shows the value and writes every edit back; given a
 /// plain string it shows that, and `.onTextChanged` is how what is typed gets
 /// anywhere.
-public struct SearchBar: InputView, TextElement, FontElement, TextAlignmentElement,
-    SearchBarProperties
+public struct SearchField: InputView, TextElement, FontElement, TextAlignmentElement,
+    SearchFieldProperties
 {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<SearchBar>` is written against.
+    /// An empty one - what a `Style<SearchField>` is written against.
     public init() {
-        node = Node(type: .searchBar)
+        node = Node(type: .searchField)
     }
 
     /// A search box showing `text`. One-way: what is typed goes nowhere without
     /// `.onTextChanged`.
     public init(_ text: String) {
-        node = Node(type: .searchBar, props: [.text: .string(text)])
+        node = Node(type: .searchField, props: [.text: .string(text)])
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
     public init(_ text: Binding<String>) {
-        self = SearchBar().text(text)
+        self = SearchField().text(text)
     }
 
-    /// The same two-way text as `SearchBar($text)`, written as a modifier.
+    /// The same two-way text as `SearchField($text)`, written as a modifier.
     ///
-    ///     SearchBar($query)
-    ///     SearchBar().text($query)
+    ///     SearchField($query)
+    ///     SearchField().text($query)
     ///
     /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
     /// the short way to say what gives this control its purpose, and the
@@ -100,9 +100,9 @@ public struct SearchBar: InputView, TextElement, FontElement, TextAlignmentEleme
 
     // MARK: Events
 
-    /// Fires when the search button is pressed - the one on the keyboard, or the
-    /// magnifier where a platform draws a button.
-    public func onSearchButtonPressed(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.searchButtonPressed, handler)
+    /// Fires when the search is submitted - the return key, or the magnifier
+    /// where a platform draws a button.
+    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
+        addHandler(.submitted, handler)
     }
 }

@@ -6,5 +6,5 @@ RadioButton 1
   groupName: name "size"
   isChecked: true
   text: string "Medium"
-  textTransform: enum uppercase(3)
+  textCase: enum uppercase(3)
   on checkedChanged=1

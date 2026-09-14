@@ -7,7 +7,7 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-final class AppKitEntryViewTests: XCTestCase {
+final class AppKitTextFieldViewTests: XCTestCase {
     /// The render that follows a keystroke carries the typed text back. It
     /// must not move the caret the reader is typing at, even when the entry
     /// describes a caret position: only a change of that position moves it.
@@ -15,13 +15,13 @@ final class AppKitEntryViewTests: XCTestCase {
     func testReapplyingTheTypedTextKeepsTheReadersCaret() throws {
         let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var entry = HostPatch(id: .manual("entry"), type: .entry)
+        var entry = HostPatch(id: .manual("entry"), type: .textField)
         entry.properties[.text] = .string("")
         entry.properties[.cursorPosition] = .number(0)
         renderer.applyForTesting(tree(entry))
 
         let view = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("entry")) as? AppKitEntryView)
+            renderer.viewForTesting(id: .manual("entry")) as? AppKitTextFieldView)
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 300, height: 80),
             styleMask: .titled,
@@ -33,7 +33,7 @@ final class AppKitEntryViewTests: XCTestCase {
         let editor = try XCTUnwrap(view.textField.currentEditor() as? NSTextView)
         editor.insertText("abc", replacementRange: editor.selectedRange())
 
-        var typed = HostPatch(id: .manual("entry"), type: .entry)
+        var typed = HostPatch(id: .manual("entry"), type: .textField)
         typed.properties[.text] = .string("abc")
         renderer.applyForTesting(changedTree(typed))
 
@@ -43,7 +43,7 @@ final class AppKitEntryViewTests: XCTestCase {
 
     @MainActor
     func testAnEntryUsesNativeTextFieldProperties() {
-        let view = AppKitEntryView()
+        let view = AppKitTextFieldView()
         let font = NSFont.systemFont(ofSize: 18, weight: .bold)
 
         apply(
@@ -68,12 +68,12 @@ final class AppKitEntryViewTests: XCTestCase {
         XCTAssertFalse(view.textField.isEnabled)
         XCTAssertFalse(view.textField.isEditable)
         XCTAssertTrue(view.textField.isSelectable)
-        XCTAssertEqual(view.maxLength, 12)
+        XCTAssertEqual(view.maximumLength, 12)
     }
 
     @MainActor
     func testPasswordChangesTheNativeEditorWithoutLosingText() {
-        let view = AppKitEntryView()
+        let view = AppKitTextFieldView()
         apply(view, text: "secret")
 
         apply(view, text: nil, writeText: false, secure: true)
@@ -91,7 +91,7 @@ final class AppKitEntryViewTests: XCTestCase {
 
     @MainActor
     func testTypingIsCappedAndReportedAsTheWholeText() {
-        let view = AppKitEntryView()
+        let view = AppKitTextFieldView()
         var reports: [String] = []
         view.onTextChanged = { reports.append($0) }
         apply(view, text: "", maximumLength: 4)
@@ -105,7 +105,7 @@ final class AppKitEntryViewTests: XCTestCase {
 
     @MainActor
     func testAStateWriteDoesNotBecomeAUserReport() {
-        let view = AppKitEntryView()
+        let view = AppKitTextFieldView()
         var reports: [String] = []
         view.onTextChanged = { reports.append($0) }
         apply(view, text: "Ada")
@@ -118,7 +118,7 @@ final class AppKitEntryViewTests: XCTestCase {
 
     @MainActor
     private func apply(
-        _ view: AppKitEntryView,
+        _ view: AppKitTextFieldView,
         text: String?,
         writeText: Bool = true,
         placeholder: String? = nil,

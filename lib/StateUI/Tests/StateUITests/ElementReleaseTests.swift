@@ -148,9 +148,9 @@ final class ElementReleaseTests: XCTestCase {
     /// An aim the differ pointed at the element.
     func testAnAimGoesWithTheElement() {
         XCTAssertTrue(released { renders in
-            let aim = Aim(Entry.self)
+            let aim = Aim(TextField.self)
 
-            renders.render(stack([Entry("").aim(aim).body], id: "root"))
+            renders.render(stack([TextField("").aim(aim).body], id: "root"))
             return aim
         })
     }

@@ -24,7 +24,7 @@ enum AppStyles {
     /// Built once, as the application is made, and never sent: the differ
     /// merges each style into the controls it applies to, so what crosses is a
     /// control with its values already on it. The idiom comes from the
-    /// application's `@Environment` - one style reads it: the SearchBar's
+    /// application's `@Environment` - one style reads it: the SearchField's
     /// touch floor, which every idiom but the desktop keeps.
     static func sheet(on idiom: DeviceIdiom) -> StyleSheet {
         StyleSheet {
@@ -160,7 +160,7 @@ enum AppStyles {
 
             // MARK: Fields
 
-            Style<Entry>()
+            Style<TextField>()
                 .textColor(Palette.text)
                 .background(.transparent)
                 .placeholderColor(Palette.subtle)
@@ -171,7 +171,7 @@ enum AppStyles {
                     .textColor(Palette.disabled)
                 }
 
-            Style<Editor>()
+            Style<TextEditor>()
                 .textColor(Palette.text)
                 .background(.transparent)
                 .placeholderColor(Palette.subtle)
@@ -219,7 +219,7 @@ enum AppStyles {
             // 44-point floor is a TOUCH screen's: on a desktop it shows as a
             // dead band under the field - a mouse is not a thumb, the
             // ChromeChip rule.
-            Style<SearchBar>()
+            Style<SearchField>()
                 .textColor(Palette.text)
                 .placeholderColor(Palette.subtle)
                 .cancelButtonColor(Palette.accent)

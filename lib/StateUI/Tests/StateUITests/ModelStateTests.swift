@@ -70,7 +70,7 @@ private struct CartPage: ContentView {
 private struct CartOwner {
     @State var cart = Cart()
 
-    /// What `Entry($cart.note)` would be given - a binding INTO the model,
+    /// What `TextField($cart.note)` would be given - a binding INTO the model,
     /// through a key path.
     var note: Binding<String> { $cart.note }
 }
@@ -191,7 +191,7 @@ final class ModelStateTests: XCTestCase {
     /// THE MODEL'S OWN `$note` IS THE WHOLE STATE, and a field handed it is no
     /// reader of it: the host carries the text, the typed words land on the
     /// model, and nobody renders for a value nobody prints - exactly what
-    /// `Entry($name)` over a view's `@State` does.
+    /// `TextField($name)` over a view's `@State` does.
     func testAModelsOwnStateIsHandedToTheHostWhole() {
         let cart = Cart()
         let holder = Tally()
@@ -201,7 +201,7 @@ final class ModelStateTests: XCTestCase {
         XCTAssertNotNil(cart.$note.followed, "and an engine can follow it")
 
         renders.render(stack([
-            Reader { _ in holder.builds += 1; _ = Entry(cart.$note) }.body,
+            Reader { _ in holder.builds += 1; _ = TextField(cart.$note) }.body,
         ], id: "root"))
         settled()
         XCTAssertEqual(holder.builds, 1)
@@ -266,7 +266,7 @@ final class ModelStateTests: XCTestCase {
 
         renders.render(stack([
             Reader { page.builds += 1; _ = cart.note; page.said = $0 }.body,
-            Reader { _ in field.builds += 1; _ = Entry(cart.$note) }.body,
+            Reader { _ in field.builds += 1; _ = TextField(cart.$note) }.body,
             Reader { row.builds += 1; _ = cart.note; row.said = $0 }.body,
         ], id: "root"))
         settled()
@@ -294,7 +294,7 @@ final class ModelStateTests: XCTestCase {
         XCTAssertEqual(field.builds, 1)
     }
 
-    /// `Entry(cart.$note)` written in a closure over `@State var cart` reads
+    /// `TextField(cart.$note)` written in a closure over `@State var cart` reads
     /// the BOX holding the reference and not `note`: a write to `note` leaves
     /// the closure standing, and REPLACING the model rebuilds it - which is
     /// when the field has to be handed the new model's state, or it would go
@@ -305,7 +305,7 @@ final class ModelStateTests: XCTestCase {
         let renders = Renders()
 
         renders.render(stack([
-            Reader { _ in holder.builds += 1; _ = Entry(owner.cart.$note) }.body,
+            Reader { _ in holder.builds += 1; _ = TextField(owner.cart.$note) }.body,
         ], id: "root"))
         settled()
         XCTAssertEqual(holder.builds, 1)

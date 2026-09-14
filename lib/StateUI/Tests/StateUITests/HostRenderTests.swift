@@ -111,10 +111,10 @@ final class HostRenderTests: XCTestCase {
     func testANativeHostReadsAndReportsTwoWayTextWithoutWire() throws {
         let name = State("Ada")
         let renders = Renders()
-        let patch = renders.render(Entry(name.projectedValue).body)
+        let patch = renders.render(TextField(name.projectedValue).body)
 
         guard case .replace(let driven)? = patch.driven else {
-            return XCTFail("expected the Entry's state attachment")
+            return XCTFail("expected the TextField's state attachment")
         }
 
         let binding = try XCTUnwrap(driven[.text])

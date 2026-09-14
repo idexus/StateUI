@@ -6,7 +6,7 @@ struct KeyboardSample: SampleContent, ExampleContent {
     @State private var note = ""
     @State private var said = ""
 
-    @Aim(Entry.self) private var first
+    @Aim(TextField.self) private var first
 
     static let id = "keyboard"
     static let title = "Keyboard"
@@ -16,17 +16,17 @@ struct KeyboardSample: SampleContent, ExampleContent {
         @State private var name = ""
         @State private var note = ""
         @State private var said = ""
-        @Aim(Entry.self) private var first
+        @Aim(TextField.self) private var first
 
         VStack {
             // `said` is read here, so the answer below builds this closure.
             DebugInfoLabel()
 
-            Entry($name)
+            TextField($name)
                 .placeholder("Name")
                 .aim(first)
 
-            Entry($note)
+            TextField($note)
                 .placeholder("Note")
 
             HStack {
@@ -60,13 +60,13 @@ struct KeyboardSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Entry($name)
+            TextField($name)
                 .automationId("keyboard.name")
                 .semanticDescription("Name")
                 .placeholder("Name")
                 .aim(first)
 
-            Entry($note)
+            TextField($note)
                 .automationId("keyboard.note")
                 .semanticDescription("Note")
                 .placeholder("Note")

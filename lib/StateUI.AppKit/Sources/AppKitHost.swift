@@ -1893,13 +1893,8 @@ final class MountedNode: NSObject {
         }
     }
 
-    private func completed() {
-        guard let handler = events[.completed] else { return }
-        host?.dispatch(handler)
-    }
-
-    private func searched() {
-        guard let handler = events[.searchButtonPressed] else { return }
+    private func submitted() {
+        guard let handler = events[.submitted] else { return }
         host?.dispatch(handler)
     }
 
@@ -2153,7 +2148,7 @@ final class MountedNode: NSObject {
         case .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
              .titleView, .toolbarItems, .menuBarItems, .contextMenu,
              .menuBarItem, .menuFlyoutItem, .menuFlyoutSubItem,
-             .menuFlyoutSeparator, .formattedString, .span:
+             .menuFlyoutSeparator, .spans, .span:
             return nil
 
         case .navigationStack:
@@ -2205,22 +2200,21 @@ final class MountedNode: NSObject {
             // The window's toolbar makes the native item; see visibleToolbarActions.
             return nil
 
-        case .entry:
-            let entry = AppKitEntryView()
+        case .textField:
+            let entry = AppKitTextFieldView()
             entry.onTextChanged = { [weak self] in self?.typed($0) }
-            entry.onCompleted = { [weak self] in self?.completed() }
+            entry.onSubmitted = { [weak self] in self?.submitted() }
             return entry
 
-        case .editor:
-            let editor = AppKitEditorView()
+        case .textEditor:
+            let editor = AppKitTextEditorView()
             editor.onTextChanged = { [weak self] in self?.typed($0) }
-            editor.onCompleted = { [weak self] in self?.completed() }
             return editor
 
-        case .searchBar:
-            let search = AppKitSearchView()
+        case .searchField:
+            let search = AppKitSearchFieldView()
             search.onTextChanged = { [weak self] in self?.typed($0) }
-            search.onSearch = { [weak self] in self?.searched() }
+            search.onSubmitted = { [weak self] in self?.submitted() }
             return search
 
         case .slider:
@@ -2391,7 +2385,7 @@ final class MountedNode: NSObject {
                 borderColor: color(.borderColor),
                 borderWidth: value(.borderWidth)?.number ?? 0,
                 cornerRadius: value(.cornerRadius)?.number ?? 0,
-                lineBreakMode: lineBreakMode(enumeration(.lineBreakMode)),
+                lineBreakMode: lineBreakMode(enumeration(.lineBreak)),
                 enabled: value(.isEnabled)?.bool ?? true)
         }
 
@@ -2453,7 +2447,7 @@ final class MountedNode: NSObject {
                 animationPlaying: value(.isAnimationPlaying)?.bool ?? false)
         }
 
-        if let entry = view as? AppKitEntryView {
+        if let entry = view as? AppKitTextFieldView {
             let attachedText = attachedTextValue()
 
             entry.apply(
@@ -2468,7 +2462,7 @@ final class MountedNode: NSObject {
                 enabled: value(.isEnabled)?.bool ?? true,
                 readOnly: value(.isReadOnly)?.bool ?? false,
                 secure: value(.isPassword)?.bool ?? false,
-                maximumLength: whole(.maxLength),
+                maximumLength: whole(.maximumLength),
                 spellChecking: value(.isSpellCheckEnabled)?.bool ?? true,
                 textPrediction: value(.isTextPredictionEnabled)?.bool ?? true,
                 cursorPosition: whole(.cursorPosition),
@@ -2477,7 +2471,7 @@ final class MountedNode: NSObject {
                     || changed.contains(.selectionLength))
         }
 
-        if let editor = view as? AppKitEditorView {
+        if let editor = view as? AppKitTextEditorView {
             let attachedText = attachedTextValue()
 
             editor.apply(
@@ -2491,17 +2485,17 @@ final class MountedNode: NSObject {
                 horizontalAlignment: enumeration(.horizontalTextAlignment),
                 enabled: value(.isEnabled)?.bool ?? true,
                 readOnly: value(.isReadOnly)?.bool ?? false,
-                maximumLength: whole(.maxLength),
+                maximumLength: whole(.maximumLength),
                 spellChecking: value(.isSpellCheckEnabled)?.bool ?? true,
                 textPrediction: value(.isTextPredictionEnabled)?.bool ?? true,
                 cursorPosition: whole(.cursorPosition),
                 selectionLength: whole(.selectionLength),
                 writeSelection: changed.contains(.cursorPosition)
                     || changed.contains(.selectionLength),
-                growsWithText: enumeration(.autoSize) == 1)
+                growsWithText: value(.growsWithText)?.bool == true)
         }
 
-        if let search = view as? AppKitSearchView {
+        if let search = view as? AppKitSearchFieldView {
             let attachedText = attachedTextValue()
 
             search.apply(
@@ -2515,7 +2509,7 @@ final class MountedNode: NSObject {
                 horizontalAlignment: enumeration(.horizontalTextAlignment),
                 enabled: value(.isEnabled)?.bool ?? true,
                 readOnly: value(.isReadOnly)?.bool ?? false,
-                maximumLength: whole(.maxLength),
+                maximumLength: whole(.maximumLength),
                 spellChecking: value(.isSpellCheckEnabled)?.bool ?? true,
                 textPrediction: value(.isTextPredictionEnabled)?.bool ?? true,
                 cursorPosition: whole(.cursorPosition),
@@ -2564,7 +2558,7 @@ final class MountedNode: NSObject {
                 checked: value(.isChecked)?.bool ?? false,
                 text: transformed(
                     string(.text) ?? "",
-                    by: enumeration(.textTransform)),
+                    by: enumeration(.textCase)),
                 font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
                 textColor: color(.textColor) ?? .controlTextColor,
                 enabled: value(.isEnabled)?.bool ?? true)
@@ -2786,7 +2780,7 @@ final class MountedNode: NSObject {
                 horizontalAlignment: textAlignment(enumeration(.horizontalTextAlignment)),
                 verticalAlignment: AppKitVerticalTextAlignment(
                     rawValue: enumeration(.verticalTextAlignment) ?? 0) ?? .start,
-                lineBreakMode: lineBreakMode(enumeration(.lineBreakMode)),
+                lineBreakMode: lineBreakMode(enumeration(.lineBreak)),
                 maximumNumberOfLines: effectiveMaximumLines())
             return
         }
@@ -3097,13 +3091,13 @@ final class MountedNode: NSObject {
     private func attributedLabelText() -> NSAttributedString {
         let baseFont = font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize))
         let baseColor = color(.textColor) ?? .labelColor
-        let formatted = slot(.formattedString)
+        let formatted = slot(.spans)
         let runs = formatted?.children ?? [self]
         let result = NSMutableAttributedString()
 
         for run in runs where run.type == .span || run === self {
             let source = run.string(.text) ?? ""
-            let text = run.transformed(source, by: run.enumeration(.textTransform))
+            let text = run.transformed(source, by: run.enumeration(.textCase))
             let font = run === self ? baseFont : run.font(fallback: baseFont)
             let color = run === self ? baseColor : (run.color(.textColor) ?? baseColor)
             let spacing = run.number(.characterSpacing) ?? number(.characterSpacing) ?? 0
@@ -3140,9 +3134,9 @@ final class MountedNode: NSObject {
     }
 
     private func effectiveMaximumLines() -> Int {
-        switch enumeration(.lineBreakMode) {
+        switch enumeration(.lineBreak) {
         case 0, 3, 4, 5: return 1
-        default: return max(0, whole(.maxLines) ?? 0)
+        default: return max(0, whole(.maximumLines) ?? 0)
         }
     }
 
@@ -3612,20 +3606,21 @@ final class MountedNode: NSObject {
     private static let recyclingCapacity = 32
 
     private static let booleanProperties: Set<Prop> = [
-        .allowDrop, .autoHide, .canDrag, .floatsOnTop, .ignoresInput,
+        .allowDrop, .autoHide, .canDrag, .floatsOnTop, .growsWithText, .ignoresInput,
         .isAnimationPlaying, .isChecked, .clipsContent, .isDestructive,
         .isEnabled, .isMaximizable, .isMinimizable,
         .isOpaque, .isOpen, .isPassword, .isSidebarVisible, .isReadOnly,
         .isRefreshEnabled, .isRefreshing, .isRunning, .isScrollEnabled,
         .isShowingUser, .isSpellCheckEnabled, .isTextPredictionEnabled,
         .isToggled, .isTrafficEnabled, .isVisible, .isZoomEnabled, .letsInputThrough,
+        .showsClearButton,
     ]
 
     private static let enumerationProperties: Set<Prop> = [
-        .aspect, .clearButtonVisibility, .layoutDirection, .fontAttributes,
+        .aspect, .layoutDirection, .fontAttributes,
         .horizontalAlignment, .horizontalScrollBarVisibility,
-        .horizontalTextAlignment, .keyboard,
-        .lineBreakMode, .orientation, .returnType, .textDecorations, .textTransform,
+        .horizontalTextAlignment, .inputPurpose,
+        .lineBreak, .orientation, .returnKey, .textDecorations, .textCase,
         .verticalAlignment, .verticalScrollBarVisibility, .verticalTextAlignment,
     ]
 }

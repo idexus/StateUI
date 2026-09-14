@@ -99,7 +99,7 @@ import Dispatch
 /// Declared with `@Aim` - on a view, a window or a model alike - which keeps
 /// it across renders the way `@State` keeps a value. A view HANDED one, a
 /// child given its parent's, keeps it in a plain property
-/// (`let field: Aim<Entry>`) and aims at its parent's control. It is not a
+/// (`let field: Aim<TextField>`) and aims at its parent's control. It is not a
 /// state: it holds nothing of the control's own, which is why it has a
 /// declaration of its own.
 ///
@@ -126,7 +126,7 @@ public final class Aim<Target>: @unchecked Sendable, CustomStringConvertible {
     /// An aim at a control of this kind, aimed at nothing until `.aim(_:)`
     /// puts it on a view and that view renders.
     ///
-    ///     @Aim(Entry.self) private var field
+    ///     @Aim(TextField.self) private var field
     ///
     /// - Parameter target: the kind of control it aims at.
     public init(_ target: Target.Type) {}

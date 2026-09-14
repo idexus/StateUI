@@ -507,7 +507,7 @@ struct InspectorView: ContentView {
             Label(summary(passes, all: all.count, at: index))
                 .fontSize(11)
                 .textColor(Look.subtle)
-                .lineBreakMode(.tailTruncation)
+                .lineBreak(.tailTruncation)
                 .gridRow(1)
 
             if wide {
@@ -756,7 +756,7 @@ struct InspectorStrip: ContentView {
                     Label(InspectorView.waiting(all.count))
                         .fontSize(12)
                         .textColor(Look.subtle)
-                        .lineBreakMode(.tailTruncation)
+                        .lineBreak(.tailTruncation)
                         .margin(8, 4)
                 }
             }
@@ -801,12 +801,12 @@ private struct Row: ContentView {
                 .fontSize(12)
                 .fontAttributes(.bold)
                 .textColor(Look.ink)
-                .lineBreakMode(.tailTruncation)
+                .lineBreak(.tailTruncation)
 
             Label("Swift \(swift) · host \(host) · \(built) built · \(carried) carried")
                 .fontSize(11)
                 .textColor(Look.subtle)
-                .lineBreakMode(.tailTruncation)
+                .lineBreak(.tailTruncation)
         }
         .spacing(1)
         .padding(8, 4)
@@ -834,7 +834,7 @@ private struct Branch: ContentView {
         return Label("\(mark) \(entry.view) — \(said)")
             .fontSize(12)
             .textColor(colour)
-            .lineBreakMode(.tailTruncation)
+            .lineBreak(.tailTruncation)
             .padding(Double(entry.depth) * 12 + 6, 2)
             .horizontalAlignment(.start)
     }
@@ -918,7 +918,7 @@ enum Look {
         Label(text)
             .fontSize(11)
             .textColor(subtle)
-            .lineBreakMode(.tailTruncation)
+            .lineBreak(.tailTruncation)
     }
 
     /// How long one scene's part of the host's apply took, where it said.

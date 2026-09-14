@@ -6,10 +6,10 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-final class AppKitSearchViewTests: XCTestCase {
+final class AppKitSearchFieldViewTests: XCTestCase {
     @MainActor
     func testSearchUsesNativeFieldProperties() {
-        let search = AppKitSearchView()
+        let search = AppKitSearchFieldView()
 
         search.apply(
             text: "Ada",
@@ -35,17 +35,17 @@ final class AppKitSearchViewTests: XCTestCase {
         XCTAssertEqual(search.alignment, .center)
         XCTAssertFalse(search.isEnabled)
         XCTAssertFalse(search.isEditable)
-        XCTAssertEqual(search.maxLength, 12)
+        XCTAssertEqual(search.maximumLength, 12)
         XCTAssertTrue(search.sendsWholeSearchString)
     }
 
     @MainActor
     func testStateWriteIsSilentWhileReaderTextAndSubmitAreSeparate() {
-        let search = AppKitSearchView()
+        let search = AppKitSearchFieldView()
         var texts: [String] = []
         var submits = 0
         search.onTextChanged = { texts.append($0) }
-        search.onSearch = { submits += 1 }
+        search.onSubmitted = { submits += 1 }
 
         search.apply(
             text: "tree",

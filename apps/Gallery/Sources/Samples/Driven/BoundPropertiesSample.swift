@@ -78,7 +78,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
 
             // WORDS: written by the host as the state changes.
             VStack {
-                Entry().placeholder($hint)
+                TextField().placeholder($hint)
                 DebugInfoLabel()                            // stays at one
             }
             Button("Another hint").onClicked {
@@ -150,7 +150,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             SwitchRow("Shown", $shown)
 
             row("4 · words the host writes - placeholder($hint)") {
-                Entry()
+                TextField()
                     .automationId("boundProperties.hint")
                     .semanticDescription("A field whose placeholder the host writes")
                     .placeholder($hint)

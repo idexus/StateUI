@@ -44,7 +44,7 @@ struct TitleBarSample: SampleContent, ExampleContent {
                     .foregroundColor(.white)
                     .background(.cornflowerBlue)
                     .leadingContent { Button("Sidebar") }
-                    .content { SearchBar("Search") }
+                    .content { SearchField("Search") }
                     .trailingContent {
                         TitleBarAction(state: titleBar)
                     }
@@ -69,7 +69,7 @@ struct TitleBarSample: SampleContent, ExampleContent {
             var content: any View {
                 VStack {
                     DebugInfoLabel()
-                    Entry(state.$subtitle).placeholder("Window subtitle")
+                    TextField(state.$subtitle).placeholder("Window subtitle")
                     Switch(state.$showsAction)
                 }
             }
@@ -82,7 +82,7 @@ struct TitleBarSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Entry(bar.$subtitle)
+            TextField(bar.$subtitle)
                 .automationId("titleBar.subtitle")
                 .semanticDescription("Subtitle for the window")
                 .placeholder("Window subtitle")

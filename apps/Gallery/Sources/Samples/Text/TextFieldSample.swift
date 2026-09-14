@@ -1,7 +1,7 @@
 import StateUI
 
 /// Single-line text fields, with focus, caret, selection and keyboard choices.
-struct EntrySample: SampleContent, ExampleContent {
+struct TextFieldSample: SampleContent, ExampleContent {
     @State private var name = ""
     @State private var editing = false
     @State private var code = ""
@@ -9,8 +9,8 @@ struct EntrySample: SampleContent, ExampleContent {
     @State private var email = ""
     @State private var done = 0
 
-    static let id = "entry"
-    static let title = "Entry"
+    static let id = "textField"
+    static let title = "TextField"
     static let summary = "A single-line field. Given a binding it writes every edit back."
 
     static let code = """
@@ -28,9 +28,9 @@ struct EntrySample: SampleContent, ExampleContent {
             // password builds nothing at all.
             DebugInfoLabel()
 
-            Entry($name)
+            TextField($name)
                 .placeholder("Type your name")
-                .clearButtonVisibility(.whileEditing)
+                .showsClearButton(true)
                 .isFocused($editing)
 
             Label(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
@@ -42,7 +42,7 @@ struct EntrySample: SampleContent, ExampleContent {
             // A field for something that is not prose: the platform's
             // underline and its next-word guesses only get in the way, and the
             // caret can be put where the reader did not.
-            Entry($code)
+            TextField($code)
                 .placeholder("a serial number")
                 .isSpellCheckEnabled(false)
                 .isTextPredictionEnabled(false)
@@ -57,21 +57,21 @@ struct EntrySample: SampleContent, ExampleContent {
             Button(selectAll ? "Clear the selection" : "Select the lot")
                 .onClicked { selectAll.toggle() }
 
-            Entry("read only")
+            TextField("read only")
                 .isReadOnly(true)
 
-            Entry()
+            TextField()
                 .placeholder("a password")
                 .isPassword(true)
-                .returnType(.done)
+                .returnKey(.done)
 
             // The keyboard the platform brings up, a cap on the length, and
             // what the return key does when it is pressed.
-            Entry($email)
+            TextField($email)
                 .placeholder("an address, capped at 20")
-                .keyboard(.email)
-                .maxLength(20)
-                .onCompleted { done += 1 }
+                .inputPurpose(.email)
+                .maximumLength(20)
+                .onSubmitted { done += 1 }
         }
         """
 
@@ -79,11 +79,11 @@ struct EntrySample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Entry($name)
+            TextField($name)
                 .automationId("entry.name")
                 .semanticDescription("Name")
                 .placeholder("Type your name")
-                .clearButtonVisibility(.whileEditing)
+                .showsClearButton(true)
                 .isFocused($editing)
 
             Label(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")
@@ -103,7 +103,7 @@ struct EntrySample: SampleContent, ExampleContent {
             // A field for something that is not prose: the platform's
             // underline and its next-word guesses only get in the way, and
             // the caret can be put where the reader did not.
-            Entry($code)
+            TextField($code)
                 .automationId("entry.code")
                 .semanticDescription("Serial number")
                 .placeholder("a serial number")
@@ -123,33 +123,33 @@ struct EntrySample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .onClicked { selectAll.toggle() }
 
-            Entry("read only")
+            TextField("read only")
                 .automationId("entry.readOnly")
                 .semanticDescription("A field that cannot be typed in")
                 .isReadOnly(true)
 
-            Entry()
+            TextField()
                 .automationId("entry.password")
                 .semanticDescription("Password")
                 .placeholder("a password")
                 .isPassword(true)
-                .returnType(.done)
+                .returnKey(.done)
 
             // The keyboard the platform brings up, a cap on the length, and
             // what the return key does when it is pressed.
-            Entry($email)
+            TextField($email)
                 .automationId("entry.email")
                 .semanticDescription("Email address")
                 .placeholder("an address, capped at 20")
-                .keyboard(.email)
-                .maxLength(20)
-                .onCompleted { done += 1 }
+                .inputPurpose(.email)
+                .maximumLength(20)
+                .onSubmitted { done += 1 }
         }
         .spacing(12)
     }
 
     var notes: Element? {
-        Label("The binding IS the two-way part: `Entry($name)` hands the state to the "
+        Label("The binding IS the two-way part: `TextField($name)` hands the state to the "
             + "host, which shows it in the field and lands every edit back on it. "
             + "`.onTextChanged` written afterwards runs beside it, never instead of "
             + "it, and after the state already holds the text.")

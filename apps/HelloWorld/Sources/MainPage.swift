@@ -23,9 +23,9 @@ struct MainPage: ContentView {
                 .fontAttributes(.bold)
                 .horizontalAlignment(.center)
 
-            Entry($name)
+            TextField($name)
                 .placeholder("Type your name")
-                .maxLength(40)
+                .maximumLength(40)
                 .width(240)
 
             Button(count == 0 ? "Click me" : "Clicked \(count) time\(count == 1 ? "" : "s")")

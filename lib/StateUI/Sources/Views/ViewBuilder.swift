@@ -30,19 +30,19 @@
 //
 //     VStack {
 //         if signedIn { Label("Welcome") }
-//         Entry($search)
+//         TextField($search)
 //     }
 //
-// Signed out, the Entry is child 0. Signed in, child 0 is the Label and the
-// Entry is child 1 - so by index, signing in matches the new Label against the
-// Entry, which is a changed type and therefore a REPLACED control: the search
+// Signed out, the TextField is child 0. Signed in, child 0 is the Label and the
+// TextField is child 1 - so by index, signing in matches the new Label against the
+// TextField, which is a changed type and therefore a REPLACED control: the search
 // box is rebuilt, losing its focus, its caret and its scroll, and rebuilt
-// again on signing out. With the path, the Label is "0.some" and the Entry is
-// "1" in both states; the Entry is matched to itself and never moves.
+// again on signing out. With the path, the Label is "0.some" and the TextField is
+// "1" in both states; the TextField is matched to itself and never moves.
 //
 // The other half is that two branches are two elements, not one:
 //
-//     if editing { Entry($name) } else { Entry($nickname) }
+//     if editing { TextField($name) } else { TextField($nickname) }
 //
 // Both are Entries with the same properties, so by index they are ONE control
 // that merely changes its text, and the caret stays put across what the author

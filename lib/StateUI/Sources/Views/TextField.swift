@@ -3,30 +3,31 @@
 
 // A native single-line text entry and the properties specific to it.
 
-/// Entry's own properties - the half a `Style<Entry>` shares with the
+/// TextField's own properties - the half a `Style<TextField>` shares with the
 /// control, beside what its tiers already carry. The control conforms on the
 /// element side and the style on the property side, which is what makes the
 /// same modifiers compile on both.
-public protocol EntryProperties: PropertyContainer {}
+public protocol TextFieldProperties: PropertyContainer {}
 
-extension EntryProperties {
+extension TextFieldProperties {
     /// Whether what is typed is hidden behind the platform's secure-entry marks.
     public func isPassword(_ value: Bool) -> Modified {
         setValue(.isPassword, .bool(value))
     }
 
     /// What the keyboard's return key is captioned - Go, Search, Send, Next.
-    /// The caption only; what the key does is `.onCompleted`, which it raises
+    /// The caption only; what the key does is `.onSubmitted`, which it raises
     /// whatever it says. A host with a hardware keyboard may have no caption
-    /// to change and still reports completion.
-    public func returnType(_ value: ReturnType) -> Modified {
-        setValue(.returnType, value.propValue)
+    /// to change and still reports the submission.
+    public func returnKey(_ value: ReturnKey) -> Modified {
+        setValue(.returnKey, value.propValue)
     }
 
-    /// When the native button that empties the field appears, on platforms
-    /// whose ordinary text field provides one.
-    public func clearButtonVisibility(_ value: ClearButtonVisibility) -> Modified {
-        setValue(.clearButtonVisibility, value.propValue)
+    /// Whether the field shows the native button that empties it - while
+    /// there is text and the field has the focus, on platforms whose ordinary
+    /// text field provides one. It does unless told otherwise.
+    public func showsClearButton(_ value: Bool) -> Modified {
+        setValue(.showsClearButton, .bool(value))
     }
 }
 
@@ -34,43 +35,43 @@ extension EntryProperties {
 ///
 ///     @State private var name = ""
 ///
-///     Entry($name)
+///     TextField($name)
 ///         .placeholder("Type your name")
-///         .keyboard(.text)
+///         .inputPurpose(.text)
 ///
 /// Given a binding the field shows the value and writes every edit back. Given a
 /// plain string it shows that and nothing else, and `.onTextChanged` is how what
 /// is typed gets anywhere:
 ///
-///     Entry(name)
+///     TextField(name)
 ///         .onTextChanged { edited in name = edited }
 ///
 /// The handler receives the whole text as it stands after the edit. It runs
 /// beside a binding rather than instead of one, so a field may have both.
-public struct Entry: InputView, TextElement, FontElement, TextAlignmentElement, EntryProperties {
+public struct TextField: InputView, TextElement, FontElement, TextAlignmentElement, TextFieldProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<Entry>` is written against.
+    /// An empty one - what a `Style<TextField>` is written against.
     public init() {
-        node = Node(type: .entry)
+        node = Node(type: .textField)
     }
 
     /// A field showing `text`. One-way: what is typed goes nowhere without
     /// `.onTextChanged`, which is what the binding form does for you.
     public init(_ text: String) {
-        node = Node(type: .entry, props: [.text: .string(text)])
+        node = Node(type: .textField, props: [.text: .string(text)])
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
     public init(_ text: Binding<String>) {
-        self = Entry().text(text)
+        self = TextField().text(text)
     }
 
-    /// The same two-way text as `Entry($text)`, written as a modifier.
+    /// The same two-way text as `TextField($text)`, written as a modifier.
     ///
-    ///     Entry($query)
-    ///     Entry().text($query)
+    ///     TextField($query)
+    ///     TextField().text($query)
     ///
     /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
     /// the short way to say what gives this control its purpose, and the
@@ -102,7 +103,7 @@ public struct Entry: InputView, TextElement, FontElement, TextAlignmentElement, 
 
     /// Fires when the return key is pressed - the moment to move to the next
     /// field or run the search.
-    public func onCompleted(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.completed, handler)
+    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
+        addHandler(.submitted, handler)
     }
 }

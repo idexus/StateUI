@@ -93,9 +93,9 @@ final class WindowTests: XCTestCase {
             session.titleBar = TitleBar("StateUI")
                 .content {
                     if editing {
-                        Entry("name")
+                        TextField("name")
                     } else {
-                        Entry("nickname")
+                        TextField("nickname")
                     }
                 }
 
@@ -176,9 +176,9 @@ final class WindowTests: XCTestCase {
                        "the wrapper is absent, which is what empties the slot")
     }
 
-    /// The identity of the first Entry a patch mentions, at any depth.
+    /// The identity of the first TextField a patch mentions, at any depth.
     private func entry(in patch: HostPatch) -> ElementId? {
-        if patch.type == "Entry" { return patch.id }
+        if patch.type == "TextField" { return patch.id }
 
         for child in patch.children {
             if let hit = entry(in: child) { return hit }

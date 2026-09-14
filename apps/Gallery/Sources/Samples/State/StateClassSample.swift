@@ -24,7 +24,7 @@ private final class Basket {
 /// `@Binding`, the same wrapper an Int is borrowed with - a model is a value
 /// like any other as far as lending is concerned. `$basket` says: I lend you
 /// this, do with it what you want - and `basket.$note` is the note's own
-/// state, the `Binding<String>` an Entry takes and the host carries.
+/// state, the `Binding<String>` a TextField takes and the host carries.
 private struct NoteRow: ContentView {
     @Binding var basket: Basket
 
@@ -34,7 +34,7 @@ private struct NoteRow: ContentView {
             // label below READS `note`, which is what builds this again.
             DebugInfoLabel()
 
-            Entry(basket.$note)
+            TextField(basket.$note)
                 .automationId("stateClass.note")
                 .semanticDescription("A note on the basket")
                 .placeholder("A note on the basket")
@@ -78,7 +78,7 @@ struct StateClassSample: SampleContent, ExampleContent {
                     // nothing; the label READS `note`, so typing rebuilds this.
                     DebugInfoLabel()
 
-                    Entry(basket.$note)
+                    TextField(basket.$note)
                         .placeholder("A note on the basket")
 
                     Label(basket.note.isEmpty ? "No note yet" : "Note: \\(basket.note)")

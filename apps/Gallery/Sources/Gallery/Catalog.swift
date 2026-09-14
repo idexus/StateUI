@@ -126,17 +126,17 @@ final class Catalog {
             SampleGroup(
                 route: "text",
                 title: "Text & typing",
-                summary: "Words shown and words typed - a Label and its spans, Entry, "
-                    + "Editor, SearchBar on the page rather than in the navigation "
+                summary: "Words shown and words typed - a Label and its spans, TextField, "
+                    + "TextEditor, SearchField on the page rather than in the navigation "
                     + "bar, and giving the keyboard back.",
                 icon: ImageSource(light: "nav_text.png", dark: "nav_text_dark.png"),
                 card: ImageSource("cat_text.png"),
                 samples: [
                     Sample(LabelSample()),
                     Sample(TextSpanSample()),
-                    Sample(EntrySample()),
-                    Sample(EditorSample()),
-                    Sample(SearchBarSample()),
+                    Sample(TextFieldSample()),
+                    Sample(TextEditorSample()),
+                    Sample(SearchFieldSample()),
                     Sample(KeyboardSample()),
                 ]),
 

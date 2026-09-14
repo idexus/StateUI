@@ -54,7 +54,7 @@ struct DialogsSample: SampleContent, ExampleContent {
                 .onClicked {
                     let typed = try await Dialogs.displayPrompt(
                         "Rename", message: "A new name for the draft",
-                        placeholder: "Name", initialValue: name, maxLength: 40)
+                        placeholder: "Name", initialValue: name, maximumLength: 40)
                     if let typed { name = typed }
                     answer = typed.map { "renamed to '\\($0)'" } ?? "cancelled"
                 }
@@ -96,7 +96,7 @@ struct DialogsSample: SampleContent, ExampleContent {
                 .onClicked {
                     let typed = try await Dialogs.displayPrompt(
                         "Rename", message: "A new name for the draft",
-                        placeholder: "Name", initialValue: name, maxLength: 40)
+                        placeholder: "Name", initialValue: name, maximumLength: 40)
                     if let typed { name = typed }
                     answer = typed.map { "renamed to '\($0)'" } ?? "cancelled"
                 }

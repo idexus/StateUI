@@ -20,11 +20,11 @@ extension TextElement {
 
     /// Whether those letters are DRAWN as written or in one case throughout.
     ///
-    ///     Label("total").textTransform(.uppercase)
+    ///     Label("total").textCase(.uppercase)
     ///
     /// On this tier rather than on `TextStyleElement`, because transforming a
     /// formatted picker value would be a different, platform-specific promise.
-    public func textTransform(_ value: TextTransform) -> Modified {
-        setValue(.textTransform, value.propValue)
+    public func textCase(_ value: TextCase) -> Modified {
+        setValue(.textCase, value.propValue)
     }
 }

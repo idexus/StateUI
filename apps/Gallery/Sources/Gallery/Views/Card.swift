@@ -92,7 +92,7 @@ struct Card: ContentView {
                     Label(summary)
                         .fontSize(13)
                         .textColor(Palette.subtle)
-                        .maxLines(2)
+                        .maximumLines(2)
                 }
                 .gridColumn(1)
                 .spacing(2)

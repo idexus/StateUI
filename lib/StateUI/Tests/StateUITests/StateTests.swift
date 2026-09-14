@@ -23,7 +23,7 @@ private struct Profile {
 private struct Settings {
     @State var profile = Profile()
 
-    /// What `Entry($profile.name)` would be given.
+    /// What `TextField($profile.name)` would be given.
     var name: Binding<String> { $profile.name }
 }
 
@@ -94,7 +94,7 @@ private struct QueryPage: ContentView {
         Label(query)
             .onCreated {
                 page.title = "Results: \(query)"
-                page.titleView = SearchBar($query).placeholder("Type here")
+                page.titleView = SearchField($query).placeholder("Type here")
             }
             .onChanged(query) { page.title = "Results: \(query)" }
     }

@@ -32,7 +32,7 @@ struct AccountEditor: ContentView {
     @Environment private var account: Account
 
     var content: any View {
-        Entry(account.$name)
+        TextField(account.$name)
     }
 }
 

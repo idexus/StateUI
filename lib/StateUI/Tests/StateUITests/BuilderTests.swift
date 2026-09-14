@@ -34,8 +34,8 @@ final class BuilderTests: XCTestCase {
 
     /// The one that started this: an `if` with no `else` moved its siblings.
     ///
-    /// Signed out, the Entry is child 0; signed in, child 0 is the Label. By
-    /// index that reads as "the Entry became a Label", which is a changed type
+    /// Signed out, the TextField is child 0; signed in, child 0 is the Label. By
+    /// index that reads as "the TextField became a Label", which is a changed type
     /// and so a REPLACED control - the search box was rebuilt on every toggle,
     /// losing its focus, its caret and its scroll.
     func testAConditionalDoesNotMoveTheViewsAfterIt() {
@@ -45,7 +45,7 @@ final class BuilderTests: XCTestCase {
                     Label("Welcome")
                 }
 
-                Entry("search")
+                TextField("search")
             }
             .body
         }
@@ -53,24 +53,24 @@ final class BuilderTests: XCTestCase {
         let renders = Renders()
 
         let first = renders.render(tree(signedIn: false))
-        let entry = try? XCTUnwrap(patch(first, forType: "Entry")?.id)
+        let entry = try? XCTUnwrap(patch(first, forType: "TextField")?.id)
 
         let second = renders.render(tree(signedIn: true))
 
         XCTAssertTrue(second.children.map(\.id).contains(entry ?? .auto(-1)),
-                      "nothing left the tree - the Entry is still in the list")
+                      "nothing left the tree - the TextField is still in the list")
 
-        // The Entry moved down one place, so it is mentioned; what matters is
+        // The TextField moved down one place, so it is mentioned; what matters is
         // that it is the SAME element and was not rebuilt.
-        if let moved = patch(second, forType: "Entry") {
-            XCTAssertEqual(moved.id, entry, "the Entry was handed another element's identity")
-            XCTAssertFalse(moved.replace, "the Entry was rebuilt by an `if` that is not about it")
-            XCTAssertNil(moved.props["text"], "the Entry's own properties were re-sent for no reason")
+        if let moved = patch(second, forType: "TextField") {
+            XCTAssertEqual(moved.id, entry, "the TextField was handed another element's identity")
+            XCTAssertFalse(moved.replace, "the TextField was rebuilt by an `if` that is not about it")
+            XCTAssertNil(moved.props["text"], "the TextField's own properties were re-sent for no reason")
         }
 
         // And back again.
         let third = renders.render(tree(signedIn: false))
-        XCTAssertEqual(patch(third, forType: "Entry")?.id ?? entry, entry)
+        XCTAssertEqual(patch(third, forType: "TextField")?.id ?? entry, entry)
     }
 
     /// A handler belongs to the element, so a conditional above it must not
@@ -107,17 +107,17 @@ final class BuilderTests: XCTestCase {
 
     /// Two branches are two elements, even when they build the same control.
     ///
-    /// Read as ONE Entry that merely changes its text,
-    /// `if editing { Entry($name) } else { Entry($nickname) }` would keep the
+    /// Read as ONE TextField that merely changes its text,
+    /// `if editing { TextField($name) } else { TextField($nickname) }` would keep the
     /// caret put across what the author wrote as a switch between two
     /// different fields.
     func testTheTwoBranchesOfAnIfAreDifferentElements() {
         func tree(editing: Bool) -> Node {
             VStack {
                 if editing {
-                    Entry("name")
+                    TextField("name")
                 } else {
-                    Entry("nickname")
+                    TextField("nickname")
                 }
             }
             .body
@@ -126,10 +126,10 @@ final class BuilderTests: XCTestCase {
         let renders = Renders()
 
         let first = renders.render(tree(editing: true))
-        let name = patch(first, forType: "Entry")?.id
+        let name = patch(first, forType: "TextField")?.id
 
         let second = renders.render(tree(editing: false))
-        let nickname = patch(second, forType: "Entry")?.id
+        let nickname = patch(second, forType: "TextField")?.id
 
         XCTAssertNotNil(name)
         XCTAssertNotNil(nickname)
@@ -355,7 +355,7 @@ final class BuilderTests: XCTestCase {
                 type: "VStack",
                 children: [
                     Node(type: "Label", props: ["text": .string(text)]),
-                    Node(type: "Entry", props: ["text": .string("kept")]),
+                    Node(type: "TextField", props: ["text": .string("kept")]),
                 ])
         }
 

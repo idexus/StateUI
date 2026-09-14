@@ -87,8 +87,9 @@ native report calls the setter.
 ## Two-way input and event ordering
 
 Controls with an editable purpose value accept either a value or a binding.
-Examples include `Entry`, `Editor`, `SearchBar`, `Switch`, `CheckBox`,
-`RadioButton`, `Slider`, `Stepper`, `Picker`, `DatePicker`, and `TimePicker`.
+Examples include `TextField`, `TextEditor`, `SearchField`, `Switch`,
+`CheckBox`, `RadioButton`, `Slider`, `Stepper`, `Picker`, `DatePicker`, and
+`TimePicker`.
 
 ```swift
 @State var enabled = false
@@ -113,7 +114,7 @@ caused by the reader. Do not duplicate the assignment in the handler.
 
 ```swift
 Label()
-    .formattedText {
+    .spans {
         TextSpan("let ").textColor(.purple)
         TextSpan("count").fontAttributes(.bold)
         TextSpan(" = 0")
@@ -136,22 +137,25 @@ Text properties distinguish their semantic tier:
 
 ## Text entry, caret, and selection
 
-`Entry` is single-line, `Editor` is multiline, and `SearchBar` expresses search
-intent. All three share two-way text and `onTextChanged`:
+`TextField` is single-line, `TextEditor` is multiline, and `SearchField`
+expresses search intent. All three share two-way text and `onTextChanged`. A
+`TextField` and a `SearchField` report the return key as `onSubmitted`; a
+`TextEditor` takes a Return as text, and `isFocused` says when its editing
+ends.
 
 ```swift
 @State var query = ""
 
-SearchBar($query)
+SearchField($query)
     .placeholder("Search notes")
-    .onSearchButtonPressed {
+    .onSubmitted {
         if query.isEmpty { query = "All notes" }
     }
 ```
 
 `cursorPosition` and `selectionLength` describe and report the native caret
 and selection. The host remains responsible for valid positions after native
-text normalization. `maxLength` limits accepted content; read-only,
+text normalization. `maximumLength` limits accepted content; read-only,
 spell-check, prediction, password, return-key, and clear-button choices remain
 separate semantic capabilities.
 

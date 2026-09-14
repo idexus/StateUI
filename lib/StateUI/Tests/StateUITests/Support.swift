@@ -541,7 +541,7 @@ enum Fixtures {
     ///
     /// A Span is one run of text inside a Label - text and a font, and no
     /// opacity, no margin, no size - so it can neither be built alone nor
-    /// styled. FormattedString is the collection holding the runs, exactly as
+    /// styled. Spans is the collection holding the runs, exactly as
     /// SwipeItems holds swipe items. Both are exercised by the Label case,
     /// which builds them.
     ///
@@ -558,7 +558,7 @@ enum Fixtures {
     /// Map case, which builds both.
     static let notViews: Set<String> = [
         "SwipeItem", "SwipeItems",
-        "FormattedString", "Span",
+        "Spans", "Span",
         "ToolbarItem", "MenuBarItem",
         "MenuFlyoutItem", "MenuFlyoutSubItem", "MenuFlyoutSeparator",
         "ContextMenu",

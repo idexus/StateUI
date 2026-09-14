@@ -27,13 +27,13 @@ private struct VisitBadge: ContentView {
 }
 
 /// Writes through the environment: `session.$name` is the provided object's
-/// own state for the name, handed to the Entry whole - typing lands on it and
+/// own state for the name, handed to the TextField whole - typing lands on it and
 /// rebuilds the badge, which reads `name`.
 private struct NameEditor: ContentView {
     @Environment var session: Session
 
     var content: any View {
-        Entry(session.$name)
+        TextField(session.$name)
             .automationId("environment.name")
             .semanticDescription("Signed-in name")
             .placeholder("Signed-in name")
@@ -75,7 +75,7 @@ struct EnvironmentSample: SampleContent, ExampleContent {
             @Environment var session: Session
 
             var content: any View {
-                Entry(session.$name)
+                TextField(session.$name)
                     .placeholder("Signed-in name")
             }
         }
@@ -146,7 +146,7 @@ struct EnvironmentSample: SampleContent, ExampleContent {
             Label("Press the button and watch the two readings: the badge is built "
                 + "again, the closure around it is not - it passes a reference and reads "
                 + "no property, so a write in the object is none of its business. Typing "
-                + "in the Entry lands on `session.$name`, the provided object's own state "
+                + "in the TextField lands on `session.$name`, the provided object's own state "
                 + "for the name.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

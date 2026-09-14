@@ -47,7 +47,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             // Writes `name` and reads nothing: `profile.$name` is the name's
             // own state, handed to the host whole, so the field is no reader.
             VStack {
-                Entry(profile.$name)
+                TextField(profile.$name)
                     .placeholder("Type a name")
             }
 
@@ -88,7 +88,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             .background(Palette.surface)
 
             VStack {
-                Entry(profile.$name)
+                TextField(profile.$name)
                     .automationId("propertyReads.name")
                     .semanticDescription("Name")
                     .placeholder("Type a name")
@@ -99,7 +99,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
 
                 Label("name: \(profile.name.isEmpty ? "-" : profile.name)")
                     .fontSize(17)
-                    .lineBreakMode(.tailTruncation)
+                    .lineBreak(.tailTruncation)
             }
             .spacing(4)
             .padding(14)

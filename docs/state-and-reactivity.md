@@ -110,7 +110,7 @@ struct ProfileCard: ContentView {
 
     var content: any View {
         VStack {
-            Entry(profile.$name)
+            TextField(profile.$name)
             Label("\(profile.name) · \(profile.visits) visit(s)")
             Button("Visit").onClicked { profile.visits += 1 }
         }
@@ -174,7 +174,7 @@ struct NameEditor: ContentView {
     @Binding var name: String
 
     var content: any View {
-        Entry($name)
+        TextField($name)
     }
 }
 
@@ -211,7 +211,7 @@ struct ContactForm: ContentView {
 
     var content: any View {
         VStack {
-            Entry($contact.name)
+            TextField($contact.name)
             Switch($contact.subscribed)
         }
     }

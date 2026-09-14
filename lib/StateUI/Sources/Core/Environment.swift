@@ -63,7 +63,7 @@ protocol EnvironmentSlot: AnyObject {
 /// The object's properties are usually `@State`, and the ordinary rules then
 /// apply: a body that READS one depends on that property and is rebuilt when
 /// it changes; the provider, which only passes the reference, is not.
-/// `basket.$note` is the note's own state, which hands an `Entry` its text -
+/// `basket.$note` is the note's own state, which hands a `TextField` its text -
 /// exactly as it does off a model held in a view's `@State`.
 ///
 /// Reading one that no ancestor provided stops the program with a message
@@ -112,7 +112,7 @@ public final class Environment<Value: AnyObject>: @unchecked Sendable {
     }
 
     /// The provided object lent on as a `Binding`, so one property of it can
-    /// be handed to an input: `Entry($context.note)`. Assigning the WHOLE
+    /// be handed to an input: `TextField($context.note)`. Assigning the WHOLE
     /// binding a new object stops the program - the object is the ancestor's
     /// to provide, and only its properties are writable from below.
     public var projectedValue: Binding<Value> {

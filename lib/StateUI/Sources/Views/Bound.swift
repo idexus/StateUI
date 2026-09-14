@@ -163,14 +163,14 @@ extension BoxView {
 // MARK: - Button
 
 extension Button {
-    /// `lineBreakMode`, handed on as `$x`: the host sets the member it names,
+    /// `lineBreak`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
     /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func lineBreakMode(_ state: Binding<LineBreakMode>) -> Modified {
-        plain(.lineBreakMode, by: state)
+    public func lineBreak(_ state: Binding<LineBreak>) -> Modified {
+        plain(.lineBreak, by: state)
     }
 }
 
@@ -201,31 +201,31 @@ extension DecorableTextElement where Self: VisualElement {
     }
 }
 
-// MARK: - Editor
+// MARK: - TextEditor
 
-extension Editor {
-    /// `autoSize`, handed on as `$x`: the host sets the member it names, and
+extension TextEditor {
+    /// `growsWithText`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
     /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func autoSize(_ state: Binding<EditorAutoSizeOption>) -> Modified {
-        plain(.autoSize, by: state)
+    public func growsWithText(_ state: Binding<Bool>) -> Modified {
+        plain(.growsWithText, by: state)
     }
 }
 
-// MARK: - Entry
+// MARK: - TextField
 
-extension Entry {
-    /// `clearButtonVisibility`, handed on as `$x`: the host sets the member it
-    /// names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state.
+extension TextField {
+    /// `showsClearButton`, handed on as `$x`: the host sets it as it is, and
+    /// handing it on reads nothing - a write renders only a body that reads the
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func clearButtonVisibility(_ state: Binding<ClearButtonVisibility>) -> Modified {
-        plain(.clearButtonVisibility, by: state)
+    public func showsClearButton(_ state: Binding<Bool>) -> Modified {
+        plain(.showsClearButton, by: state)
     }
 
     /// `isPassword`, handed on as `$x`: the host sets it as it is, and handing
@@ -237,14 +237,14 @@ extension Entry {
         plain(.isPassword, by: state)
     }
 
-    /// `returnType`, handed on as `$x`: the host sets the member it names, and
+    /// `returnKey`, handed on as `$x`: the host sets the member it names, and
     /// handing it on reads nothing - a write renders only a body that reads the
     /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func returnType(_ state: Binding<ReturnType>) -> Modified {
-        plain(.returnType, by: state)
+    public func returnKey(_ state: Binding<ReturnKey>) -> Modified {
+        plain(.returnKey, by: state)
     }
 }
 
@@ -448,23 +448,23 @@ extension InputView {
         plain(.isTextPredictionEnabled, by: state)
     }
 
-    /// `keyboard`, handed on as `$x`: the host sets the member it names, and
+    /// `inputPurpose`, handed on as `$x`: the host sets the member it names, and
     /// handing it on reads nothing - a write renders only a body that reads the
     /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func keyboard(_ state: Binding<Keyboard>) -> Modified {
-        plain(.keyboard, by: state)
+    public func inputPurpose(_ state: Binding<InputPurpose>) -> Modified {
+        plain(.inputPurpose, by: state)
     }
 
-    /// `maxLength`, handed on as `$x`: the host sets it as it is, and handing
+    /// `maximumLength`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func maxLength(_ state: Binding<Int>) -> Modified {
-        plain(.maxLength, by: state)
+    public func maximumLength(_ state: Binding<Int>) -> Modified {
+        plain(.maximumLength, by: state)
     }
 
     /// `placeholder`, handed on as `$x`: the host writes the words, and handing
@@ -500,13 +500,13 @@ extension InputView {
 // MARK: - Label
 
 extension Label {
-    /// `maxLines`, handed on as `$x`: the host sets it as it is, and handing it
+    /// `maximumLines`, handed on as `$x`: the host sets it as it is, and handing it
     /// on reads nothing - a write renders only a body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func maxLines(_ state: Binding<Int>) -> Modified {
-        plain(.maxLines, by: state)
+    public func maximumLines(_ state: Binding<Int>) -> Modified {
+        plain(.maximumLines, by: state)
     }
 
 }
@@ -671,14 +671,14 @@ extension ProgressBar {
 // MARK: - RadioButton
 
 extension RadioButton {
-    /// `textTransform`, handed on as `$x`: the host sets the member it names,
+    /// `textCase`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
     /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func textTransform(_ state: Binding<TextTransform>) -> Modified {
-        plain(.textTransform, by: state)
+    public func textCase(_ state: Binding<TextCase>) -> Modified {
+        plain(.textCase, by: state)
     }
 }
 
@@ -762,9 +762,9 @@ extension ScrollView {
     }
 }
 
-// MARK: - SearchBar
+// MARK: - SearchField
 
-extension SearchBar {
+extension SearchField {
     /// `cancelButtonColor`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
     /// only a body that reads the state.

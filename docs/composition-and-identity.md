@@ -120,7 +120,7 @@ struct FileRow: ContentView {
     let path: String
 
     var content: any View {
-        Entry()
+        TextField()
             .placeholder(path)
             .id(path)
     }
@@ -146,13 +146,13 @@ VStack {
         Label("Welcome")
     }
 
-    Entry($search)
+    TextField($search)
 }
 ```
 
-The `Entry` remains the second statement in the builder even while its flattened
-array position changes. Its native focus and caret do not belong to the
-temporary array index.
+The `TextField` remains the second statement in the builder even while its
+flattened array position changes. Its native focus and caret do not belong to
+the temporary array index.
 
 The `if` and `else` branches are distinct identities even when both create the
 same control type. Switching branches replaces the element because the

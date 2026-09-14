@@ -1,6 +1,6 @@
 import StateUI
 
-/// A `SearchBar` on the navigation bar in place of the title, and the rows it filters.
+/// A `SearchField` on the navigation bar in place of the title, and the rows it filters.
 struct SearchSample: SampleContent, ExampleContent {
     /// Where the gallery is: choosing a suggestion pushes a page.
     let nav: Navigation
@@ -42,7 +42,7 @@ struct SearchSample: SampleContent, ExampleContent {
             }
             // The title view belongs to the page session, like toolbar items.
             .onCreated {
-                page.titleView = SearchBar($query)
+                page.titleView = SearchField($query)
                     .placeholder("Search the list")
                     .background(Palette.surface)
                     .height(38)
@@ -91,7 +91,7 @@ struct SearchSample: SampleContent, ExampleContent {
         // The box goes in the page's title slot. It is an ordinary view in the
         // tree, handed the same `@State` the content reads.
         .onCreated {
-            page.titleView = SearchBar($query)
+            page.titleView = SearchField($query)
                 .automationId("search.query")
                 .semanticDescription("Search the list")
                 .placeholder("Search the list")
@@ -105,7 +105,7 @@ struct SearchSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The box is a `SearchBar` written into `page.titleView`, the bar's title "
+            Label("The box is a `SearchField` written into `page.titleView`, the bar's title "
                 + "slot, so it sits where this page's title would; the page a match pushes "
                 + "wears its own. The rows under it are drawn by this page from its own "
                 + "state, so they look like the app and do whatever choosing one should do.")

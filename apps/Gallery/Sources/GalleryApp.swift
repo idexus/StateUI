@@ -36,7 +36,7 @@ import StateUI
 struct GalleryApp: Application {
     /// Which kind of device this is, from the standard environment - answered
     /// by the host before the application is made, so the styles below already
-    /// know whether the SearchBar wants a touch floor. An APPLICATION's
+    /// know whether the SearchField wants a touch floor. An APPLICATION's
     /// unfilled slot answers the standard provider directly.
     @Environment var device: DeviceInfo
 
@@ -47,7 +47,7 @@ struct GalleryApp: Application {
     init() {
         // The styles every control in the gallery is given. The idiom goes in
         // because one style reads
-        // it: the SearchBar's touch floor is a touch screen's, not the
+        // it: the SearchField's touch floor is a touch screen's, not the
         // desktop's - and the host says the device before the application is
         // made. A colour in a style follows the theme by itself. See
         // Styles/AppStyles.swift.

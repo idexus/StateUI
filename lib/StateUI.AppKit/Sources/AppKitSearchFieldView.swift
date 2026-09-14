@@ -6,10 +6,10 @@ import AppKit
 
 /// AppKit's native search field with separate edit and submit reports.
 @MainActor
-final class AppKitSearchView: NSSearchField, NSSearchFieldDelegate {
+final class AppKitSearchFieldView: NSSearchField, NSSearchFieldDelegate {
     var onTextChanged: ((String) -> Void)?
-    var onSearch: (() -> Void)?
-    private(set) var maxLength: Int?
+    var onSubmitted: (() -> Void)?
+    private(set) var maximumLength: Int?
 
     private var writing = false
     private var spellChecking = true
@@ -31,7 +31,7 @@ final class AppKitSearchView: NSSearchField, NSSearchFieldDelegate {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("AppKitSearchView is created in code")
+        fatalError("AppKitSearchFieldView is created in code")
     }
 
     func apply(
@@ -52,7 +52,7 @@ final class AppKitSearchView: NSSearchField, NSSearchFieldDelegate {
         selectionLength: Int?,
         writeSelection: Bool
     ) {
-        maxLength = maximumLength.map { max(0, $0) }
+        self.maximumLength = maximumLength.map { max(0, $0) }
         self.spellChecking = spellChecking
         self.textPrediction = textPrediction
         self.cursorPosition = cursorPosition
@@ -115,7 +115,7 @@ final class AppKitSearchView: NSSearchField, NSSearchFieldDelegate {
     }
 
     @objc private func submitted(_ sender: NSSearchField) {
-        onSearch?()
+        onSubmitted?()
     }
 
     private func applyEditorPreferences() {
@@ -141,8 +141,8 @@ final class AppKitSearchView: NSSearchField, NSSearchFieldDelegate {
     }
 
     private func limited(_ text: String) -> String {
-        guard let maxLength, text.count > maxLength else { return text }
-        return String(text.prefix(maxLength))
+        guard let maximumLength, text.count > maximumLength else { return text }
+        return String(text.prefix(maximumLength))
     }
 
     private func utf16Offset(of characterOffset: Int, in text: String) -> Int {

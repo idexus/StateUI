@@ -6,14 +6,13 @@ import AppKit
 
 /// A native multiline editor whose scroll ownership stays inside the control.
 @MainActor
-final class AppKitEditorView: NSView, NSTextViewDelegate {
+final class AppKitTextEditorView: NSView, NSTextViewDelegate {
     let scrollView = NSScrollView()
     let textView = NSTextView()
-    private let placeholder = AppKitEditorPlaceholder()
+    private let placeholder = AppKitTextEditorPlaceholder()
 
     var onTextChanged: ((String) -> Void)?
-    var onCompleted: (() -> Void)?
-    private(set) var maxLength: Int?
+    private(set) var maximumLength: Int?
 
     private var writing = false
     private var growsWithText = false
@@ -64,7 +63,7 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("AppKitEditorView is created in code")
+        fatalError("AppKitTextEditorView is created in code")
     }
 
     override var intrinsicContentSize: NSSize {
@@ -105,7 +104,7 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
         writeSelection: Bool,
         growsWithText: Bool
     ) {
-        maxLength = maximumLength.map { max(0, $0) }
+        self.maximumLength = maximumLength.map { max(0, $0) }
         self.growsWithText = growsWithText
         self.cursorPosition = cursorPosition
         self.selectionLength = selectionLength
@@ -158,10 +157,6 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
         onTextChanged?(typed)
     }
 
-    func textDidEndEditing(_ notification: Notification) {
-        onCompleted?()
-    }
-
     private func updatePlaceholder() {
         placeholder.isHidden = !textView.string.isEmpty
     }
@@ -180,8 +175,8 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
     }
 
     private func limited(_ text: String) -> String {
-        guard let maxLength, text.count > maxLength else { return text }
-        return String(text.prefix(maxLength))
+        guard let maximumLength, text.count > maximumLength else { return text }
+        return String(text.prefix(maximumLength))
     }
 
     private func utf16Offset(of characterOffset: Int, in text: String) -> Int {
@@ -205,12 +200,9 @@ final class AppKitEditorView: NSView, NSTextViewDelegate {
         textDidChange(Notification(name: NSText.didChangeNotification, object: textView))
     }
 
-    func completeForTesting() {
-        textDidEndEditing(Notification(name: NSText.didEndEditingNotification, object: textView))
-    }
 }
 
-private final class AppKitEditorPlaceholder: NSTextField {
+private final class AppKitTextEditorPlaceholder: NSTextField {
     convenience init() {
         self.init(labelWithString: "")
     }

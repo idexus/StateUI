@@ -39,11 +39,11 @@ struct StateSample: SampleContent, ExampleContent {
                     VStack {
                         // And this closure reads `name` alone. Typing rebuilds
                         // it and leaves the one around it standing still;
-                        // `$name` lends the value to the Entry and makes a
+                        // `$name` lends the value to the TextField and makes a
                         // reader of nobody.
                         DebugInfoLabel()
 
-                        Entry($name)
+                        TextField($name)
                             .placeholder("And the same for text")
 
                         Label(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
@@ -105,7 +105,7 @@ struct StateSample: SampleContent, ExampleContent {
 
                         DebugInfoLabel()
 
-                        Entry($name)
+                        TextField($name)
                             .automationId("state.name")
                             .semanticDescription("Name")
                             .placeholder("And the same for text")

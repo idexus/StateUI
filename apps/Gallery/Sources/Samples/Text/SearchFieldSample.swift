@@ -1,13 +1,13 @@
 import StateUI
 
 /// A search box on the page, narrowing a list as the reader types.
-struct SearchBarSample: SampleContent, ExampleContent {
+struct SearchFieldSample: SampleContent, ExampleContent {
     @State private var query = ""
     @State private var searched = ""
 
-    static let id = "searchBar"
-    static let title = "SearchBar"
-    static let summary = "An Entry that says what it is for, on the page rather than in the navigation bar."
+    static let id = "searchField"
+    static let title = "SearchField"
+    static let summary = "A TextField that says what it is for, on the page rather than in the navigation bar."
 
     static let code = """
         @State private var query = ""
@@ -18,9 +18,9 @@ struct SearchBarSample: SampleContent, ExampleContent {
             // this closure; the bar itself is handed the state.
             DebugInfoLabel()
 
-            SearchBar($query)
+            SearchField($query)
                 .placeholder("Search the list")
-                .onSearchButtonPressed { searched = query }
+                .onSubmitted { searched = query }
 
             VStack {
                 ForEach(matches) { item in
@@ -36,7 +36,7 @@ struct SearchBarSample: SampleContent, ExampleContent {
             // The same query again, with the platform's two icons tinted -
             // the magnifier at the front and the button that empties the
             // field.
-            SearchBar($query)
+            SearchField($query)
                 .placeholder("Search the list")
                 .searchIconColor(Palette.accent)
                 .cancelButtonColor(Palette.accent)
@@ -56,11 +56,11 @@ struct SearchBarSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            SearchBar($query)
+            SearchField($query)
                 .automationId("searchBar.query")
                 .semanticDescription("Search the list")
                 .placeholder("Search the list")
-                .onSearchButtonPressed { searched = query }
+                .onSubmitted { searched = query }
 
             VStack {
                 ForEach(matches) { item in
@@ -80,7 +80,7 @@ struct SearchBarSample: SampleContent, ExampleContent {
 
             SectionTitle("The magnifier and the clear button")
 
-            SearchBar($query)
+            SearchField($query)
                 .automationId("searchBar.query.styled")
                 .semanticDescription("Search the list, coloured")
                 .placeholder("Search the list")
@@ -93,7 +93,7 @@ struct SearchBarSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("Two events: `.onTextChanged` on every edit - which runs after the binding "
-                + "has landed the words on `query` - and `.onSearchButtonPressed` when the "
+                + "has landed the words on `query` - and `.onSubmitted` when the "
                 + "reader says they mean it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -105,7 +105,7 @@ struct SearchBarSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Those two colours are all a `SearchBar` offers over the artwork: the "
+            Label("Those two colours are all a `SearchField` offers over the artwork: the "
                 + "icons themselves are the platform's, and there is no picture to put in "
                 + "their place.")
                 .fontSize(12)

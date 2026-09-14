@@ -1344,7 +1344,7 @@ public final class Renderer: @unchecked Sendable {
     func takeCommands() -> [Command] {
         // The saves waiting for a store, made into acts HERE rather than at
         // the write: a key written five times between two takes is one act
-        // holding the last value, which is what keeps an Entry bound to kept
+        // holding the last value, which is what keeps a TextField bound to kept
         // state from saving once per letter. Sorted by name inside the store,
         // the determinism rule.
         //
@@ -1529,7 +1529,7 @@ private struct CarriedHandler: @unchecked Sendable {
 ///
 /// Keeping it in a side channel avoids widening the P/Invoke surface: the
 /// dispatch entry point takes an id plus one byte buffer, instead of needing
-/// a variant per event shape. An Entry's textChanged handler reads its new
+/// a variant per event shape. A TextField's textChanged handler reads its new
 /// text from here; a pan handler reads its status and totals. A handler that
 /// suspends keeps the payload it started with - `Renderer.start` carries it
 /// into the task - so the next event cannot swap it mid-handler.

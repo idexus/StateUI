@@ -128,12 +128,12 @@ state and does not participate in tree identity:
 
 ```swift
 struct FocusForm: ContentView {
-    @Aim(Entry.self) private var field
+    @Aim(TextField.self) private var field
     @State private var text = ""
 
     var content: any View {
         VStack {
-            Entry($text).aim(field)
+            TextField($text).aim(field)
             Button("Edit").onClicked { try await field.focus() }
             Button("Done").onClicked { try await field.unfocus() }
         }

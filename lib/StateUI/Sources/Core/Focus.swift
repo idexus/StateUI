@@ -22,9 +22,9 @@
 extension Aim {
     /// Puts the keyboard on this view.
     ///
-    ///     @Aim(Entry.self) private var email
+    ///     @Aim(TextField.self) private var email
     ///
-    ///     Entry($address).aim(email)
+    ///     TextField($address).aim(email)
     ///     Button("Edit").onClicked { try await email.focus() }
     ///
     /// - Returns: true when the view took the focus. False is an ordinary

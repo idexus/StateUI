@@ -5,6 +5,6 @@ Button 1
   contentLayout: values [enum 0, number 8]
   cornerRadius: number 8
   imageSource: string "tab_list.png"
-  lineBreakMode: enum noWrap(0)
+  lineBreak: enum noWrap(0)
   text: string "Increment"
   on clicked=1 pressed=2 released=3

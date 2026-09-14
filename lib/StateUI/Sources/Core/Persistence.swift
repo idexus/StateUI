@@ -30,9 +30,9 @@
 // for saving. What actually goes out is one act per key per drain, sorted by
 // name - see `Renderer.takeCommandsWire` - so a key written five times inside
 // one handler is saved once. It is a collapse PER DRAIN and not a delay: an
-// event drains, so an `Entry` bound to kept state does reach the store once a
+// event drains, so a `TextField` bound to kept state does reach the store once a
 // letter. A view that wants the store touched when the typing stops keeps the
-// text in ordinary state and writes the kept one from `.onEvent(.completed)`.
+// text in ordinary state and writes the kept one from `.onEvent(.submitted)`.
 //
 // ONE KEY IS ONE PIECE OF STATE, everywhere in the application. Two views that
 // declare the same key share the storage itself, not a copy of the value, so a

@@ -91,7 +91,7 @@ final class DrivenWireTests: XCTestCase {
                         .fontSize(size.projectedValue)
                         .isVisible(shown.projectedValue)
                         .horizontalAlignment(side.projectedValue)
-                    Entry()
+                    TextField()
                         .placeholder(hint.projectedValue)
                     Picker(["S", "M", "L"])
                         .selectedIndex(choice.projectedValue)
@@ -141,13 +141,13 @@ final class DrivenWireTests: XCTestCase {
             .strokeDashOffset(number.projectedValue)
             .strokeMiterLimit(number.projectedValue)
 
-        // A Button for the outline the mixin is about, and an Entry for the
+        // A Button for the outline the mixin is about, and a TextField for the
         // placeholder - neither of them a Border's.
         let button = Button("press")
             .borderColor(colour.projectedValue)
             .borderWidth(number.projectedValue)
 
-        let entry = Entry("").placeholderColor(colour.projectedValue)
+        let entry = TextField("").placeholderColor(colour.projectedValue)
 
         // And the one modifier that is a control's own rather than a tier's.
         let box = BoxView().color(colour.projectedValue)
@@ -175,9 +175,9 @@ final class DrivenWireTests: XCTestCase {
             message(VStack {
                 // A handler BESIDE the state, so the host side can prove the
                 // state's own words raise no event.
-                Entry(name.projectedValue).onTextChanged { _ in }
-                Editor(name.projectedValue)
-                SearchBar(name.projectedValue)
+                TextField(name.projectedValue).onTextChanged { _ in }
+                TextEditor(name.projectedValue)
+                SearchField(name.projectedValue)
             }.body),
             against: "state-text-two-way")
     }
@@ -454,9 +454,9 @@ final class DrivenWireTests: XCTestCase {
         let due = State(wrappedValue: CalendarDate(year: 2026, month: 8, day: 2))
         let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 30))
 
-        registers(Entry(text.projectedValue), Entry().text(text.projectedValue), "Entry")
-        registers(Editor(text.projectedValue), Editor().text(text.projectedValue), "Editor")
-        registers(SearchBar(text.projectedValue), SearchBar().text(text.projectedValue), "SearchBar")
+        registers(TextField(text.projectedValue), TextField().text(text.projectedValue), "TextField")
+        registers(TextEditor(text.projectedValue), TextEditor().text(text.projectedValue), "TextEditor")
+        registers(SearchField(text.projectedValue), SearchField().text(text.projectedValue), "SearchField")
         registers(DatePicker(due.projectedValue), DatePicker().date(due.projectedValue), "DatePicker")
         registers(TimePicker(alarm.projectedValue), TimePicker().time(alarm.projectedValue), "TimePicker")
     }

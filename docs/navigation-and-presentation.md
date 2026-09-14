@@ -157,14 +157,15 @@ The container's title and icon describe it when it is an item in another
 container, such as a tab. The title shown for the top page of a navigation
 stack comes from that page's own `PageSession`.
 
-A view such as `SearchBar` can occupy the current page's navigation title slot:
+A view such as `SearchField` can occupy the current page's navigation title
+slot:
 
 ```swift quote
 @Environment private var page: PageSession
 @State private var query = ""
 
 .onCreated {
-    page.titleView = SearchBar($query)
+    page.titleView = SearchField($query)
         .placeholder("Search")
 }
 ```

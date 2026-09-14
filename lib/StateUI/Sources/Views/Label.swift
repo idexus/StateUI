@@ -10,15 +10,15 @@ public protocol LabelProperties: PropertyContainer {}
 extension LabelProperties {
     /// What happens to text too long for the space: wrap it, or cut it and say
     /// so.
-    public func lineBreakMode(_ value: LineBreakMode) -> Modified {
-        setValue(.lineBreakMode, value.propValue)
+    public func lineBreak(_ value: LineBreak) -> Modified {
+        setValue(.lineBreak, value.propValue)
     }
 
     /// How many lines to show before the text is cut - what the cut LOOKS like
-    /// is `lineBreakMode`'s business. A count of -1 means no limit, which is
+    /// is `lineBreak`'s business. A count of -1 means no limit, which is
     /// the default.
-    public func maxLines(_ value: Int) -> Modified {
-        setValue(.maxLines, .number(Double(value)))
+    public func maximumLines(_ value: Int) -> Modified {
+        setValue(.maximumLines, .number(Double(value)))
     }
 }
 
@@ -58,7 +58,7 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     /// Text made of runs, each with a look of its own.
     ///
     ///     Label()
-    ///         .formattedText {
+    ///         .spans {
     ///             TextSpan("let ").textColor(.purple)
     ///             TextSpan("counter").textColor(.steelBlue)
     ///             TextSpan(" = 0")
@@ -69,7 +69,7 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     /// what it is usually for, and a `ForEach` builds the runs - identified by
     /// where each one sits, since two tokens may read the same:
     ///
-    ///     Label().formattedText {
+    ///     Label().spans {
     ///         ForEach(Array(highlighted(code).enumerated()), id: \.offset) { token in
     ///             TextSpan(token.element.text).textColor(token.element.colour)
     ///         }
@@ -77,9 +77,9 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     ///
     /// **This and `text` are mutually exclusive**: a Label given both shows
     /// the runs and not its `text`.
-    public func formattedText(@ViewBuilder _ spans: () -> [Element]) -> Self {
+    public func spans(@ViewBuilder _ spans: () -> [Element]) -> Self {
         modified {
-            $0.children = [Node(type: .formattedString, children: spans().map { $0.body })]
+            $0.children = [Node(type: .spans, children: spans().map { $0.body })]
         }
     }
 }
@@ -93,7 +93,7 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
 /// NOT a view, which is why it wears `TextElement` and `FontElement` rather
 /// than `View`: a run is a `BindableObject` with text and font properties
 /// and nothing else - no opacity, no margin, no size of its own. It goes in one
-/// place, a Label's `formattedText`, and nowhere else in the tree.
+/// place, a Label's `spans`, and nowhere else in the tree.
 ///
 /// **`TextSpan` rather than `Span`, because `Span` is taken.** Swift's own
 /// standard library has a `Span<Element>` - a view over contiguous memory - and

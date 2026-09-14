@@ -306,6 +306,63 @@ final class HostContractTests: XCTestCase {
         }
     }
 
+    /// Text and input speak in plain words: a field is a `TextField`, a
+    /// `TextEditor` or a `SearchField`, what its return key does is
+    /// `onSubmitted`, and no former spelling is declared anywhere in the
+    /// library.
+    func testTextAndInputSpeakInPlainWords() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let controls = declaredNames(of: "NodeType", in: tokenSource)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+        let events = declaredNames(of: "Event", in: tokenSource)
+        let former = [
+            "formattedText", "maxLines", "maxLength", "lineBreakMode", "textTransform",
+            "keyboard", "returnType", "clearButtonVisibility", "autoSize",
+        ]
+
+        XCTAssertTrue(controls.isSuperset(of: ["TextField", "TextEditor", "SearchField", "Spans"]))
+        XCTAssertTrue(
+            controls.isDisjoint(with: ["Entry", "Editor", "SearchBar", "FormattedString"]),
+            "a text control keeps its former name")
+        XCTAssertTrue(properties.isSuperset(of: [
+            "maximumLines", "maximumLength", "lineBreak", "textCase", "inputPurpose",
+            "returnKey", "showsClearButton", "growsWithText",
+        ]))
+        XCTAssertTrue(
+            properties.isDisjoint(with: former),
+            "a former text property remains in the host contract")
+        XCTAssertTrue(events.contains("submitted"))
+        XCTAssertTrue(
+            events.isDisjoint(with: ["completed", "searchButtonPressed"]),
+            "a field's return key keeps a former event")
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        XCTAssertGreaterThan(files.count, 50)
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            for name in former + ["onCompleted", "onSearchButtonPressed"] {
+                XCTAssertFalse(source.contains("func \(name)("), "\(file) still declares .\(name)")
+            }
+            for type in [
+                "LineBreakMode", "TextTransform", "Keyboard", "ReturnType",
+                "ClearButtonVisibility", "EditorAutoSizeOption",
+            ] {
+                XCTAssertFalse(
+                    source.contains("enum \(type):") || source.contains("enum \(type) {"),
+                    "\(file) still declares \(type)")
+            }
+            for control in ["Entry", "Editor", "SearchBar"] {
+                XCTAssertFalse(source.contains("struct \(control):"), "\(file) still declares \(control)")
+            }
+        }
+    }
+
     private func declaredNames(of vocabulary: String, in source: String) -> Set<String> {
         let marker = "= \(vocabulary)(\""
 

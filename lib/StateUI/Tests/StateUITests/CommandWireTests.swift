@@ -97,7 +97,7 @@ final class CommandWireTests: XCTestCase {
     /// here because the differ's half is AimTests' business; what this
     /// pins is the wire.
     func testAnActByElementNumberCrossesAsItsFixtureSays() async throws {
-        let field = Aim(Entry.self)
+        let field = Aim(TextField.self)
         field.box.attach(.auto(7), walk: 1)
 
         try await check("FocusByNumber") {
@@ -142,19 +142,19 @@ final class CommandWireTests: XCTestCase {
             _ = try await Dialogs.displayPrompt(
                 "Rename", message: "A new name for the draft",
                 placeholder: "Name", initialValue: "Draft 1",
-                maxLength: 40, keyboard: .text)
+                maximumLength: 40, inputPurpose: .text)
         }
     }
 
     func testFocusingAViewCrossesAsItsFixtureSays() async throws {
         try await check("Focus") {
-            _ = try await named("email", Entry.self).focus()
+            _ = try await named("email", TextField.self).focus()
         }
     }
 
     func testUnfocusingAViewCrossesAsItsFixtureSays() async throws {
         try await check("Unfocus") {
-            try await named("email", Entry.self).unfocus()
+            try await named("email", TextField.self).unfocus()
         }
     }
 

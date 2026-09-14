@@ -302,7 +302,7 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(words.wrappedValue, "y")
     }
 
-    /// A FIELD HANDED A STATE IS NO READER OF IT. `Entry($name)` reads nothing
+    /// A FIELD HANDED A STATE IS NO READER OF IT. `TextField($name)` reads nothing
     /// at build, so a report of what was typed renders nobody - unless a body
     /// prints the state, which is then the reader and is built again per
     /// keystroke.
@@ -310,7 +310,7 @@ final class CycleTests: XCTestCase {
         let quiet = Renders()
         let name = State(wrappedValue: "")
 
-        quiet.render(VStack { Entry(name.projectedValue) }.body)
+        quiet.render(VStack { TextField(name.projectedValue) }.body)
         Renderer.shared.clearInvalidation()
 
         typed(name.number, "Ada")
@@ -321,7 +321,7 @@ final class CycleTests: XCTestCase {
         let shown = Renders()
         let said = State(wrappedValue: "")
 
-        shown.render(VStack { Entry(said.projectedValue); Label(said.wrappedValue) }.body)
+        shown.render(VStack { TextField(said.projectedValue); Label(said.wrappedValue) }.body)
         Renderer.shared.clearInvalidation()
 
         typed(said.number, "Ada")

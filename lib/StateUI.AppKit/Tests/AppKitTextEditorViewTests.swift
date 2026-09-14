@@ -6,10 +6,10 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-final class AppKitEditorViewTests: XCTestCase {
+final class AppKitTextEditorViewTests: XCTestCase {
     @MainActor
     func testEditorUsesNativeMultilineTextViewAndScrollView() {
-        let editor = AppKitEditorView()
+        let editor = AppKitTextEditorView()
 
         editor.apply(
             text: "First\nSecond",
@@ -35,13 +35,13 @@ final class AppKitEditorViewTests: XCTestCase {
         XCTAssertEqual(editor.textView.alignment, .center)
         XCTAssertTrue(editor.textView.isEditable)
         XCTAssertTrue(editor.scrollView.hasVerticalScroller)
-        XCTAssertEqual(editor.maxLength, 20)
+        XCTAssertEqual(editor.maximumLength, 20)
         XCTAssertEqual(editor.placeholderForTesting, "Notes")
     }
 
     @MainActor
     func testGrowingEditorDisablesItsOwnVerticalScroller() {
-        let editor = AppKitEditorView()
+        let editor = AppKitTextEditorView()
         apply(editor, text: "One\nTwo\nThree", growsWithText: true)
 
         XCTAssertFalse(editor.scrollView.hasVerticalScroller)
@@ -50,25 +50,21 @@ final class AppKitEditorViewTests: XCTestCase {
 
     @MainActor
     func testProgramWriteIsSilentAndReaderTypingIsCapped() {
-        let editor = AppKitEditorView()
+        let editor = AppKitTextEditorView()
         var texts: [String] = []
-        var completions = 0
         editor.onTextChanged = { texts.append($0) }
-        editor.onCompleted = { completions += 1 }
         apply(editor, text: "tree", maximumLength: 5)
         XCTAssertTrue(texts.isEmpty)
 
         editor.typeForTesting("reader")
-        editor.completeForTesting()
 
         XCTAssertEqual(editor.textView.string, "reade")
         XCTAssertEqual(texts, ["reade"])
-        XCTAssertEqual(completions, 1)
     }
 
     @MainActor
     private func apply(
-        _ editor: AppKitEditorView,
+        _ editor: AppKitTextEditorView,
         text: String?,
         maximumLength: Int? = nil,
         growsWithText: Bool = false

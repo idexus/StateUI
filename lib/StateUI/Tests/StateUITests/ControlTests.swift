@@ -95,14 +95,14 @@ final class ControlTests: XCTestCase {
         return [
             ControlCase("Label", source: "Label.swift",
                 Label("Total")
-                    .lineBreakMode(.tailTruncation)
+                    .lineBreak(.tailTruncation)
                     .lineHeight(1.5)
-                    .maxLines(2)
+                    .maximumLines(2)
                     .textDecorations([.underline, .strikethrough])
                     // The runs go here rather than in a case of their own: a
                     // Span is not a view, so it has no fixture, and Label.swift
                     // is the file that declares it.
-                    .formattedText {
+                    .spans {
                         TextSpan("let ")
                             .textColor(.purple)
                             .background(.whiteSmoke)
@@ -122,26 +122,25 @@ final class ControlTests: XCTestCase {
                     .borderColor(.gray)
                     .borderWidth(1)
                     .cornerRadius(8)
-                    .lineBreakMode(.noWrap)
+                    .lineBreak(.noWrap)
                     .imageSource("tab_list.png")
                     .contentLayout(.left, spacing: 8)
                     .onClicked {}
                     .onPressed {}
                     .onReleased {}),
 
-            ControlCase("Entry", source: "Entry.swift",
-                Entry("Ada")
+            ControlCase("TextField", source: "TextField.swift",
+                TextField("Ada")
                     .isPassword(false)
-                    .returnType(.done)
-                    .clearButtonVisibility(.whileEditing)
+                    .returnKey(.done)
+                    .showsClearButton(true)
                     .onTextChanged { _ in }
-                    .onCompleted {}),
+                    .onSubmitted {}),
 
-            ControlCase("Editor", source: "Editor.swift",
-                Editor("Notes")
-                    .autoSize(.textChanges)
-                    .onTextChanged { _ in }
-                    .onCompleted {}),
+            ControlCase("TextEditor", source: "TextEditor.swift",
+                TextEditor("Notes")
+                    .growsWithText(true)
+                    .onTextChanged { _ in }),
 
             ControlCase("Image", source: "Image.swift",
                 Image("tab_list.png")
@@ -207,7 +206,7 @@ final class ControlTests: XCTestCase {
                     .text("Medium")
                     .isChecked(true)
                     .groupName("size")
-                    .textTransform(.uppercase)
+                    .textCase(.uppercase)
                     .borderColor(.gray)
                     .borderWidth(1)
                     .cornerRadius(8)
@@ -233,13 +232,13 @@ final class ControlTests: XCTestCase {
                     .increment(2)
                     .onValueChanged { _ in }),
 
-            ControlCase("SearchBar", source: "SearchBar.swift",
-                SearchBar("al")
-                    .returnType(.search)
+            ControlCase("SearchField", source: "SearchField.swift",
+                SearchField("al")
+                    .returnKey(.search)
                     .cancelButtonColor(.gray)
                     .searchIconColor(.cornflowerBlue)
                     .onTextChanged { _ in }
-                    .onSearchButtonPressed {}),
+                    .onSubmitted {}),
 
             ControlCase("ActivityIndicator", source: "ActivityIndicator.swift",
                 ActivityIndicator(true)
@@ -556,7 +555,7 @@ final class ControlTests: XCTestCase {
                     Label("Tiers")
                         .textColor(.firebrick)
                         .characterSpacing(1.5)
-                        .textTransform(.uppercase)
+                        .textCase(.uppercase)
                         .fontSize(20)
                         .fontFamily("OpenSansRegular")
                         .fontAttributes(.bold)
@@ -586,15 +585,15 @@ final class ControlTests: XCTestCase {
                         .panY(followed.projectedValue)
                         .padding(8, 4)
 
-                    // The input tier, which Entry, Editor and SearchBar all
+                    // The input tier, which TextField, TextEditor and SearchField all
                     // share - checked here rather than in each of their cases,
                     // exactly as the shape tier is.
-                    Entry("Ada")
+                    TextField("Ada")
                         .placeholder("Name")
                         .placeholderColor(.lightGray)
                         .isReadOnly(false)
-                        .keyboard(.email)
-                        .maxLength(40)
+                        .inputPurpose(.email)
+                        .maximumLength(40)
                         .isSpellCheckEnabled(false)
                         .isTextPredictionEnabled(false)
                         .cursorPosition(1)
@@ -672,6 +671,18 @@ final class ControlTests: XCTestCase {
                 sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
                 against: "controls/\(control.name)")
         }
+    }
+
+    /// A control's fixture goes with it: every message in `fixtures/controls/`
+    /// is one a case writes. A renamed or removed control would otherwise
+    /// leave a file that nothing checks any more.
+    func testEveryControlFixtureIsOneACaseWrites() throws {
+        let written = Set(Self.cases.map(\.name))
+        let files = try FileManager.default.contentsOfDirectory(
+            atPath: Fixtures.directory.appendingPathComponent("controls").path)
+        let kept = Set(files.map { String($0.prefix { $0 != "." }) })
+
+        XCTAssertEqual(kept.subtracting(written).sorted(), [], "a fixture that no case writes")
     }
 
     // MARK: - The set, kept honest
@@ -923,8 +934,8 @@ final class ControlTests: XCTestCase {
         // Rendered for the numbers the states are issued, which is what the
         // host's writes below are addressed by.
         _ = renders.render(Node(type: "VStack", children: [
-            Entry(text.projectedValue).body,
-            Editor(text.projectedValue).id("editor").body,
+            TextField(text.projectedValue).body,
+            TextEditor(text.projectedValue).id("editor").body,
             Switch(toggled.projectedValue).body,
             Slider(volume.projectedValue).body,
             Picker(["S", "M", "L"]).selectedIndex(size.projectedValue).body,
@@ -932,13 +943,13 @@ final class ControlTests: XCTestCase {
             CheckBox(ticked.projectedValue).id("checkBox").body,
             RadioButton("Medium").isChecked(chosen.projectedValue).id("radio").body,
             Stepper(servings.projectedValue).id("stepper").body,
-            SearchBar(query.projectedValue).id("search").body,
+            SearchField(query.projectedValue).id("search").body,
             TimePicker(alarm.projectedValue).id("time").body,
             RefreshView(refreshing.projectedValue) { Label("rows") }.id("refresh").body,
         ]))
 
         // What the reader TYPES is the HOST's own write onto the text state,
-        // whole - an Entry and an Editor over one state are two fields the
+        // whole - a TextField and a TextEditor over one state are two fields the
         // same words land on.
         typed(text.number, "Ada")
         typed(text.number, "Notes")
@@ -1038,7 +1049,7 @@ final class ControlTests: XCTestCase {
 
         let renders = Renders()
         let patch = renders.render(
-            Entry(text.projectedValue)
+            TextField(text.projectedValue)
                 .onTextChanged { seen.append($0) }
                 .body)
 
@@ -1176,9 +1187,9 @@ final class ControlTests: XCTestCase {
         let patch = renders.render(Node(type: "VStack", children: [
             Switch(closure).body,
             Picker(["S", "M", "L"]).selectedIndex(Binding(get: { Int(room.wrappedValue.width) }, set: { room.wrappedValue.width = Double($0) })).body,
-            Entry(text).body,
-            Editor(profile.projectedValue.name).id("editor").body,
-            SearchBar(text).id("search").body,
+            TextField(text).body,
+            TextEditor(profile.projectedValue.name).id("editor").body,
+            SearchField(text).id("search").body,
             DatePicker(date).id("date").body,
             TimePicker(time).id("time").body,
         ]))

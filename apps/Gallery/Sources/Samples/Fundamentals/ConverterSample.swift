@@ -92,10 +92,10 @@ struct ConverterSample: SampleContent, ExampleContent {
             }
 
             VStack {
-                // A FIELD IS HANDED THE STATE TOO: `Entry($named)` reads nothing
+                // A FIELD IS HANDED THE STATE TOO: `TextField($named)` reads nothing
                 // at build, and what is typed lands on `named` as the host's
                 // own write - so this row stays at one as well.
-                Entry($named)
+                TextField($named)
                 DebugInfoLabel()                  // stays at one
             }
 
@@ -191,7 +191,7 @@ struct ConverterSample: SampleContent, ExampleContent {
             }
 
             row("6 · a field is handed the state") {
-                Entry($named)
+                TextField($named)
                     .automationId("converters.named")
                     .semanticDescription("A name for it")
                     .placeholder("Call it something")
@@ -224,7 +224,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                 + "`convert(with:)`; and `.multi($named, $width, $height)` for as many "
                 + "states as you like - two to ten, of any types, the closure taking them "
                 + "in the order they were named. Every count here stays at one, the "
-                + "field's included: `Entry($named)` hands the state to the host as a "
+                + "field's included: `TextField($named)` hands the state to the host as a "
                 + "caption does, so what is typed lands on `named` with no render - type "
                 + "in the field and watch the `.multi` caption in the next row follow "
                 + "while every count stands still.")

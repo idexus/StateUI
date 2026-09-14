@@ -66,14 +66,14 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `Grid` | StateUI-owned layout contract | ✅ | — | — | — | — | — |
 | `ScrollView` | native primitive | ✅ | — | — | — | — | — |
 | `Border` | native primitive | — | — | — | — | — | — |
-| `Label` / `FormattedString` / `Span` | native primitive / structure | ✅ | — | — | — | — | — |
+| `Label` / `Spans` / `Span` | native primitive / structure | ✅ | — | — | — | — | — |
 | `Button` | native primitive | ✅ | — | — | — | — | — |
 | `ImageButton` | StateUI-owned composition contract | ✅ | — | — | — | — | — |
 | `Image` | native primitive | ✅ | — | — | — | — | — |
 | `BoxView` | native primitive | ✅ | — | — | — | — | — |
-| `Entry` | native primitive | ✅ | — | — | — | — | — |
-| `Editor` | native primitive | ✅ | — | — | — | — | — |
-| `SearchBar` | native primitive | ✅ | — | — | — | — | — |
+| `TextField` | native primitive | ✅ | — | — | — | — | — |
+| `TextEditor` | native primitive | ✅ | — | — | — | — | — |
+| `SearchField` | native primitive | ✅ | — | — | — | — | — |
 | `Picker` | native primitive | ✅ | — | — | — | — | — |
 | `DatePicker` | native primitive | ✅ | — | — | — | — | — |
 | `TimePicker` | native primitive | ✅ | — | — | — | — | — |
@@ -156,14 +156,14 @@ may still choose another class that preserves the same contract.
 | `Grid` | custom `NSView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
 | `ScrollView` | `NSScrollView` | `UIScrollView` | `GtkScrolledWindow` | `ScrollView` / `HorizontalScrollView` | `ScrollViewer` | `overflow: auto` |
 | `Border` | custom `NSView` drawing `NSBezierPath` | `UIView` + `CAShapeLayer` | custom `GtkWidget` snapshot | `FrameLayout` + `GradientDrawable` | `Border` | `<div>` + CSS `border` |
-| `Label` / `FormattedString` / `Span` | `NSTextField` label; `NSAttributedString` runs | `UILabel`; `NSAttributedString` runs | `GtkLabel`; `PangoAttrList` runs | `TextView`; `SpannableString` spans | `TextBlock`; `Run` inlines | text element; `<span>` runs |
+| `Label` / `Spans` / `Span` | `NSTextField` label; `NSAttributedString` runs | `UILabel`; `NSAttributedString` runs | `GtkLabel`; `PangoAttrList` runs | `TextView`; `SpannableString` spans | `TextBlock`; `Run` inlines | text element; `<span>` runs |
 | `Button` | `NSButton` | `UIButton` | `GtkButton` | `Button` | `Button` | `<button>` |
 | `ImageButton` | `NSButton` with an image | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
 | `Image` | `NSImageView` | `UIImageView` | `GtkPicture` | `ImageView` | `Image` | `<img>` |
 | `BoxView` | custom `NSView` drawing | `UIView` + `CALayer` | custom `GtkWidget` snapshot | `View` + `GradientDrawable` | `Border` | `<div>` |
-| `Entry` | `NSTextField` / `NSSecureTextField` | `UITextField` | `GtkEntry` / `GtkPasswordEntry` | `EditText` | `TextBox` / `PasswordBox` | `<input>` |
-| `Editor` | `NSTextView` in an `NSScrollView` | `UITextView` | `GtkTextView` | multi-line `EditText` | multi-line `TextBox` | `<textarea>` |
-| `SearchBar` | `NSSearchField` | `UISearchBar` | `GtkSearchEntry` | `SearchView` | `AutoSuggestBox` | `<input type=search>` |
+| `TextField` | `NSTextField` / `NSSecureTextField` | `UITextField` | `GtkEntry` / `GtkPasswordEntry` | `EditText` | `TextBox` / `PasswordBox` | `<input>` |
+| `TextEditor` | `NSTextView` in an `NSScrollView` | `UITextView` | `GtkTextView` | multi-line `EditText` | multi-line `TextBox` | `<textarea>` |
+| `SearchField` | `NSSearchField` | `UISearchBar` | `GtkSearchEntry` | `SearchView` | `AutoSuggestBox` | `<input type=search>` |
 | `Picker` | `NSPopUpButton` | pop-up `UIButton` menu | `GtkDropDown` | `Spinner` | `ComboBox` | `<select>` |
 | `DatePicker` | `NSDatePicker` | `UIDatePicker` | `GtkCalendar` in a `GtkPopover` | `DatePickerDialog` | `CalendarDatePicker` | `<input type=date>` |
 | `TimePicker` | `NSDatePicker` in time mode | `UIDatePicker` in time mode | — | `TimePickerDialog` | `TimePicker` | `<input type=time>` |
@@ -331,23 +331,23 @@ token in parentheses.
 | `ScrollView` | events | `scrollXChanged`, `scrollYChanged`, `snapItemChanged`, `onScrollStopped` (`scrollStopped`) | ✅ | — | — | — | — | — |
 | `Border` | properties | `stroke`, `strokeThickness`, `strokeShape`, `background` | — | — | — | — | — | — |
 | `Border` | properties | `strokeDashArray`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit` | — | — | — | — | — | — |
-| `Label` / `TextSpan` | properties | `text`, `textColor`, `characterSpacing`, `textTransform`, `fontSize`, `fontFamily`, `fontAttributes`, `lineBreakMode`, `lineHeight`, `maxLines`, `textDecorations`, formatted text | ✅ | — | — | — | — | — |
+| `Label` / `TextSpan` | properties | `text`, `textColor`, `characterSpacing`, `textCase`, `fontSize`, `fontFamily`, `fontAttributes`, `lineBreak`, `lineHeight`, `maximumLines`, `textDecorations`, `spans` | ✅ | — | — | — | — | — |
 | `Label` | properties | `horizontalTextAlignment`, `verticalTextAlignment`, `padding` | ✅ | — | — | — | — | — |
-| `Button` | properties | `text`, `imageSource`, `contentLayout`, `lineBreakMode`, `padding`, `borderColor`, `borderWidth`, `cornerRadius` | ✅ | — | — | — | — | — |
+| `Button` | properties | `text`, `imageSource`, `contentLayout`, `lineBreak`, `padding`, `borderColor`, `borderWidth`, `cornerRadius` | ✅ | — | — | — | — | — |
 | `Button` | handlers | `onClicked` (`clicked`), `onPressed` (`pressed`), `onReleased` (`released`) | ✅ | — | — | — | — | — |
 | `ImageButton` | properties | `source`, `aspect`, `padding`, `borderColor`, `borderWidth`, `cornerRadius` | ✅ | — | — | — | — | — |
 | `ImageButton` | handlers | `onClicked` (`clicked`), `onPressed` (`pressed`), `onReleased` (`released`) | ✅ | — | — | — | — | — |
 | `Image` | properties | `source`, `aspect`, `isAnimationPlaying` | ✅ | — | — | — | — | — |
 | `BoxView` | properties | `color`, `cornerRadius` | ✅ | — | — | — | — | — |
-| text inputs | properties | two-way `text`, `placeholder`, `placeholderColor`, `textColor`, `fontSize`, `fontFamily`, `fontAttributes`, `horizontalTextAlignment`, `isReadOnly`, `maxLength`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `cursorPosition`, `selectionLength` | ✅ | — | — | — | — | — |
-| text inputs | properties | `keyboard`, `verticalTextAlignment`, `characterSpacing`, `textTransform`, `fontAutoScalingEnabled` | — | — | — | — | — | — |
+| text inputs | properties | two-way `text`, `placeholder`, `placeholderColor`, `textColor`, `fontSize`, `fontFamily`, `fontAttributes`, `horizontalTextAlignment`, `isReadOnly`, `maximumLength`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `cursorPosition`, `selectionLength` | ✅ | — | — | — | — | — |
+| text inputs | properties | `inputPurpose`, `verticalTextAlignment`, `characterSpacing`, `textCase`, `fontAutoScalingEnabled` | — | — | — | — | — | — |
 | text inputs | handlers | `onTextChanged` (`textChanged`) | ✅ | — | — | — | — | — |
-| `Entry` | properties | `isPassword` | ✅ | — | — | — | — | — |
-| `Entry` | properties | `returnType`, `clearButtonVisibility` | — | — | — | — | — | — |
-| `Entry` | handlers | `onCompleted` (`completed`) | ✅ | — | — | — | — | — |
-| `Editor` | properties/handlers | `autoSize`, `onCompleted` (`completed`) | ✅ | — | — | — | — | — |
-| `SearchBar` | properties | `returnType`, `cancelButtonColor`, `searchIconColor` | — | — | — | — | — | — |
-| `SearchBar` | handlers | `onSearchButtonPressed` (`searchButtonPressed`) | ✅ | — | — | — | — | — |
+| `TextField` | properties | `isPassword` | ✅ | — | — | — | — | — |
+| `TextField` | properties | `returnKey`, `showsClearButton` | — | — | — | — | — | — |
+| `TextField` | handlers | `onSubmitted` (`submitted`) | ✅ | — | — | — | — | — |
+| `TextEditor` | properties | `growsWithText` | ✅ | — | — | — | — | — |
+| `SearchField` | properties | `returnKey`, `cancelButtonColor`, `searchIconColor` | — | — | — | — | — | — |
+| `SearchField` | handlers | `onSubmitted` (`submitted`) | ✅ | — | — | — | — | — |
 | `Picker` | properties | `itemsSource`, `selectedIndex`, `title`, `titleColor`, `isOpen` | ✅ | — | — | — | — | — |
 | `Picker` | handlers | `onSelectedIndexChanged` (`selectedIndexChanged`), `onOpened` (`opened`), `onClosed` (`closed`) | ✅ | — | — | — | — | — |
 | `DatePicker` | properties | `date`, `minimumDate`, `maximumDate` | ✅ | — | — | — | — | — |
@@ -404,14 +404,14 @@ host status.
 
 `AbsoluteLayout`, `ActivityIndicator`, `Application`, `Border`, `BoxView`,
 `Button`, `CheckBox`, `Composed`, `Content`, `ContextMenu`, `DatePicker`,
-`Editor`, `Ellipse`, `Entry`, `FormattedString`, `GraphicsView`, `Grid`,
-`HStack`, `Image`, `ImageButton`, `IndicatorView`, `Label`, `LeadingContent`,
-`Line`, `Map`, `MenuBarItem`, `MenuBarItems`, `MenuFlyoutItem`,
-`MenuFlyoutSeparator`, `MenuFlyoutSubItem`, `ModalStack`, `NavigationStack`,
-`Overlay`, `Page`, `Path`, `Picker`, `Pin`, `Polygon`, `Polyline`,
-`ProgressBar`, `RadioButton`, `Rectangle`, `RefreshView`, `RoundRectangle`,
-`Scene`, `ScrollView`, `SearchBar`, `Setters`, `Slider`, `Span`, `SplitView`,
-`Stepper`, `SwipeItem`, `SwipeItems`, `SwipeView`, `Switch`, `TabbedView`,
+`Ellipse`, `GraphicsView`, `Grid`, `HStack`, `Image`, `ImageButton`,
+`IndicatorView`, `Label`, `LeadingContent`, `Line`, `Map`, `MenuBarItem`,
+`MenuBarItems`, `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem`,
+`ModalStack`, `NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`,
+`Polygon`, `Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`,
+`RefreshView`, `RoundRectangle`, `Scene`, `ScrollView`, `SearchField`,
+`Setters`, `Slider`, `Span`, `Spans`, `SplitView`, `Stepper`, `SwipeItem`,
+`SwipeItems`, `SwipeView`, `Switch`, `TabbedView`, `TextEditor`, `TextField`,
 `TimePicker`, `TitleBar`, `TitleView`, `ToolbarItem`, `ToolbarItems`,
 `TrailingContent`, `VisualState`, `VStack`, `WebView`, `Window`.
 
@@ -419,43 +419,43 @@ host status.
 
 `absoluteLayoutBounds`, `absoluteLayoutFlags`, `address`, `allowDrop`,
 `aspect`, `autoHide`, `automationExcludedWithChildren`, `automationId`,
-`automationIsInAccessibleTree`, `autoSize`, `backButtonTitle`, `background`,
+`automationIsInAccessibleTree`, `backButtonTitle`, `background`,
 `barBackgroundColor`, `barTextColor`, `borderColor`, `borderWidth`,
-`cancelButtonColor`, `canDrag`, `characterSpacing`, `clearButtonVisibility`,
-`clipsContent`, `color`, `columnDefinitions`, `columnSpacing`, `content`,
-`contentLayout`, `cornerRadius`, `count`, `currentPage`, `cursorPosition`,
-`data`, `date`, `dragText`, `drawable`, `fill`, `fillRule`, `floatsOnTop`,
-`fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`, `fontSize`,
-`foregroundColor`, `format`, `frame`, `gridColumn`, `gridColumnSpan`,
-`gridRow`, `gridRowSpan`, `group`, `groupName`, `hasBackButton`,
-`hasNavigationBar`, `height`, `hideSingle`, `horizontalAlignment`,
-`horizontalScrollBarVisibility`, `horizontalTextAlignment`, `icon`,
-`iconImageSource`, `ignoresInput`, `imageSource`, `increment`,
-`indicatorColor`, `indicatorSize`, `indicatorsShape`, `isAnimationPlaying`,
-`isChecked`, `isDestructive`, `isEnabled`, `isMaximizable`, `isMinimizable`,
-`isOpaque`, `isOpen`, `isPassword`, `isReadOnly`, `isRefreshEnabled`,
-`isRefreshing`, `isRunning`, `isScrollEnabled`, `isShowingUser`,
-`isSidebarVisible`, `isSpellCheckEnabled`, `isTextPredictionEnabled`,
-`isToggled`, `isTrafficEnabled`, `isVisible`, `isZoomEnabled`, `itemsSource`,
-`keyboard`, `label`, `layoutDirection`, `letsInputThrough`, `lineBreakMode`,
-`lineHeight`, `location`, `mapType`, `margin`, `maximum`, `maximumDate`,
-`maximumHeight`, `maximumTrackColor`, `maximumVisible`, `maximumWidth`,
-`maxLength`, `maxLines`, `minimum`, `minimumDate`, `minimumHeight`,
-`minimumTrackColor`, `minimumWidth`, `mode`, `name`, `numberOfTapsRequired`,
-`offColor`, `onColor`, `opacity`, `order`, `orientation`, `padding`,
-`panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
-`placeholder`, `placeholderColor`, `points`, `position`, `priority`,
-`progress`, `progressColor`, `radiusX`, `radiusY`, `refreshColor`, `region`,
-`renderTransform`, `returnType`, `rotation`, `rotationX`, `rotationY`,
-`rowDefinitions`, `rowSpacing`, `safeAreaEdges`, `scale`, `scaleX`, `scaleY`,
-`scroll`, `scrollMomentum`, `scrollStep`, `searchIconColor`, `selectedIndex`,
-`selectedIndicatorColor`, `selectionLength`, `semanticDescription`,
-`semanticHeadingLevel`, `semanticHint`, `side`, `snapFrom`, `snapInterval`,
+`cancelButtonColor`, `canDrag`, `characterSpacing`, `clipsContent`, `color`,
+`columnDefinitions`, `columnSpacing`, `content`, `contentLayout`,
+`cornerRadius`, `count`, `currentPage`, `cursorPosition`, `data`, `date`,
+`dragText`, `drawable`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
+`fontAutoScalingEnabled`, `fontFamily`, `fontSize`, `foregroundColor`,
+`format`, `frame`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`,
+`group`, `groupName`, `growsWithText`, `hasBackButton`, `hasNavigationBar`,
+`height`, `hideSingle`, `horizontalAlignment`, `horizontalScrollBarVisibility`,
+`horizontalTextAlignment`, `icon`, `iconImageSource`, `ignoresInput`,
+`imageSource`, `increment`, `indicatorColor`, `indicatorSize`,
+`indicatorsShape`, `inputPurpose`, `isAnimationPlaying`, `isChecked`,
+`isDestructive`, `isEnabled`, `isMaximizable`, `isMinimizable`, `isOpaque`,
+`isOpen`, `isPassword`, `isReadOnly`, `isRefreshEnabled`, `isRefreshing`,
+`isRunning`, `isScrollEnabled`, `isShowingUser`, `isSidebarVisible`,
+`isSpellCheckEnabled`, `isTextPredictionEnabled`, `isToggled`,
+`isTrafficEnabled`, `isVisible`, `isZoomEnabled`, `itemsSource`, `label`,
+`layoutDirection`, `letsInputThrough`, `lineBreak`, `lineHeight`, `location`,
+`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`,
+`maximumLength`, `maximumLines`, `maximumTrackColor`, `maximumVisible`,
+`maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`, `minimumTrackColor`,
+`minimumWidth`, `mode`, `name`, `numberOfTapsRequired`, `offColor`, `onColor`,
+`opacity`, `order`, `orientation`, `padding`, `panTouchCount`, `panXChannel`,
+`panYChannel`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`,
+`position`, `priority`, `progress`, `progressColor`, `radiusX`, `radiusY`,
+`refreshColor`, `region`, `renderTransform`, `returnKey`, `rotation`,
+`rotationX`, `rotationY`, `rowDefinitions`, `rowSpacing`, `safeAreaEdges`,
+`scale`, `scaleX`, `scaleY`, `scroll`, `scrollMomentum`, `scrollStep`,
+`searchIconColor`, `selectedIndex`, `selectedIndicatorColor`,
+`selectionLength`, `semanticDescription`, `semanticHeadingLevel`,
+`semanticHint`, `showsClearButton`, `side`, `snapFrom`, `snapInterval`,
 `snapsAtMost`, `source`, `spacing`, `stroke`, `strokeDashArray`,
 `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`,
 `strokeShape`, `strokeThickness`, `style`, `subtitle`,
 `swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `text`,
-`textColor`, `textDecorations`, `textTransform`, `textType`, `threshold`,
+`textCase`, `textColor`, `textDecorations`, `textType`, `threshold`,
 `thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`,
 `translationX`, `translationY`, `type`, `userAgent`, `value`,
 `verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
@@ -465,18 +465,18 @@ host status.
 ### Events
 
 `activated`, `appearing`, `canGoBackChanged`, `canGoForwardChanged`,
-`checkedChanged`, `clicked`, `closed`, `completed`, `created`,
-`currentPageChanged`, `dateSelected`, `deactivated`, `destroying`,
-`disappearing`, `dragCompleted`, `dragInteraction`, `dragLeave`, `dragOver`,
-`dragStarted`, `dragStarting`, `drop`, `dropCompleted`, `endInteraction`,
-`frameChanged`, `infoWindowClicked`, `invoked`, `isFocusedChanged`,
-`isRefreshingChanged`, `isSidebarVisibleChanged`, `mapClicked`,
-`markerClicked`, `modalPopped`, `navigated`, `navigatedFrom`, `navigatedTo`,
-`navigating`, `navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`,
-`pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
-`pointerReleased`, `popped`, `pressed`, `processTerminated`, `refreshing`,
-`released`, `resumed`, `scrollStopped`, `scrollXChanged`, `scrollYChanged`,
-`searchButtonPressed`, `selectedIndexChanged`, `snapItemChanged`,
-`startInteraction`, `stopped`, `swipeChanging`, `swiped`, `swipeEnded`,
-`swipeStarted`, `tapped`, `textChanged`, `timeSelected`, `toggled`,
-`valueChanged`, `visualStateChanged`, `windowClosed`, `windowRestored`.
+`checkedChanged`, `clicked`, `closed`, `created`, `currentPageChanged`,
+`dateSelected`, `deactivated`, `destroying`, `disappearing`, `dragCompleted`,
+`dragInteraction`, `dragLeave`, `dragOver`, `dragStarted`, `dragStarting`,
+`drop`, `dropCompleted`, `endInteraction`, `frameChanged`, `infoWindowClicked`,
+`invoked`, `isFocusedChanged`, `isRefreshingChanged`,
+`isSidebarVisibleChanged`, `mapClicked`, `markerClicked`, `modalPopped`,
+`navigated`, `navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`,
+`opened`, `panUpdated`, `pinchUpdated`, `pointerEntered`, `pointerExited`,
+`pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`, `pressed`,
+`processTerminated`, `refreshing`, `released`, `resumed`, `scrollStopped`,
+`scrollXChanged`, `scrollYChanged`, `selectedIndexChanged`, `snapItemChanged`,
+`startInteraction`, `stopped`, `submitted`, `swipeChanging`, `swiped`,
+`swipeEnded`, `swipeStarted`, `tapped`, `textChanged`, `timeSelected`,
+`toggled`, `valueChanged`, `visualStateChanged`, `windowClosed`,
+`windowRestored`.

@@ -400,7 +400,7 @@ private struct Choosing: ContentView {
 private final class Form {
     @State var note = ""
 
-    @Aim(Entry.self) var field
+    @Aim(TextField.self) var field
 }
 
 /// A view keeping such a model.
@@ -408,6 +408,6 @@ private struct FormPage: ContentView {
     @State var form = Form()
 
     var content: any View {
-        Entry(form.$note).aim(form.field)
+        TextField(form.$note).aim(form.field)
     }
 }

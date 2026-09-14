@@ -15,7 +15,7 @@ final class AppKitLabelViewTests: XCTestCase {
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties = [
             .text: .string("StateUI"),
-            .textTransform: .enumeration(TextTransform.uppercase.rawValue),
+            .textCase: .enumeration(TextCase.uppercase.rawValue),
             .textColor: .color(red: 20, green: 40, blue: 60, alpha: 255),
             .fontSize: .number(18),
             .fontAttributes: .enumeration(FontAttributes.bold.rawValue),
@@ -60,9 +60,9 @@ final class AppKitLabelViewTests: XCTestCase {
         second.properties = [
             .text: .string("counter"),
             .background: .color(red: 240, green: 230, blue: 140, alpha: 255),
-            .textTransform: .enumeration(TextTransform.uppercase.rawValue),
+            .textCase: .enumeration(TextCase.uppercase.rawValue),
         ]
-        var formatted = HostPatch(id: .manual("formatted"), type: .formattedString)
+        var formatted = HostPatch(id: .manual("formatted"), type: .spans)
         formatted.children = .arranged([first, second])
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties[.fontSize] = .number(15)
@@ -92,7 +92,7 @@ final class AppKitLabelViewTests: XCTestCase {
         var second = HostPatch(id: .manual("second"), type: .span)
         second.properties = [.text: .string("B"), .textColor: .color(
             red: 0, green: 0, blue: 255, alpha: 255)]
-        var formatted = HostPatch(id: .manual("formatted"), type: .formattedString)
+        var formatted = HostPatch(id: .manual("formatted"), type: .spans)
         formatted.children = .arranged([first, second])
         var label = HostPatch(id: .manual("label"), type: .label)
         label.children = .arranged([formatted])
@@ -101,7 +101,7 @@ final class AppKitLabelViewTests: XCTestCase {
         var changedSecond = HostPatch(id: .manual("second"), type: .span)
         changedSecond.properties[.textColor] = .color(
             red: 255, green: 0, blue: 0, alpha: 255)
-        var changedFormatted = HostPatch(id: .manual("formatted"), type: .formattedString)
+        var changedFormatted = HostPatch(id: .manual("formatted"), type: .spans)
         changedFormatted.children = .changed([changedSecond])
         var changedLabel = HostPatch(id: .manual("label"), type: .label)
         changedLabel.children = .changed([changedFormatted])

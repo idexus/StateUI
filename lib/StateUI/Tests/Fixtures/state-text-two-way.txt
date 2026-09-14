@@ -4,10 +4,10 @@ Application 1 moves over 200ms cubicOut arranged(1)
     Window "main" arranged(1)
       Page 2 arranged(1)
         VStack 3 arranged(3)
-          Entry 4
+          TextField 4
             driven text<-1 inOut text
             on textChanged=1
-          Editor 5
+          TextEditor 5
             driven text<-1 inOut text
-          SearchBar 6
+          SearchField 6
             driven text<-1 inOut text

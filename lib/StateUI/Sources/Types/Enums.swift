@@ -94,7 +94,7 @@ public enum TextAlignment: Int32, Sendable {
 ///
 /// The truncating cases need the control to be BOUNDED to show anything: a
 /// label free to grow never runs out of room, so nothing is ever cut.
-public enum LineBreakMode: Int32, Sendable {
+public enum LineBreak: Int32, Sendable {
     /// One line, whatever it costs.
     case noWrap = 0
 
@@ -147,9 +147,9 @@ public struct TextDecorations: OptionSet, Sendable {
 /// Whether the text is drawn as written, or in one case throughout.
 ///
 /// The letters the reader SEES change; the value behind them does not - an
-/// `Entry` set to `.uppercase` still reports what was typed, so this is a look
+/// `TextField` set to `.uppercase` still reports what was typed, so this is a look
 /// rather than an edit.
-public enum TextTransform: Int32, Sendable {
+public enum TextCase: Int32, Sendable {
     /// As written.
     case none = 0
 
@@ -165,8 +165,9 @@ public enum TextTransform: Int32, Sendable {
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// The on-screen keyboard for a text input.
-public enum Keyboard: Int32, Sendable {
+/// What a text input is for, which picks the on-screen keyboard the platform
+/// offers.
+public enum InputPurpose: Int32, Sendable {
     /// Whatever the platform offers, with its own correction and capitalization.
     case `default` = 0
 
@@ -195,7 +196,7 @@ public enum Keyboard: Int32, Sendable {
 }
 
 /// The label on the keyboard's return key.
-public enum ReturnType: Int32, Sendable {
+public enum ReturnKey: Int32, Sendable {
     /// Whatever the platform calls it.
     case `default` = 0
 
@@ -213,17 +214,6 @@ public enum ReturnType: Int32, Sendable {
 
     /// "Send".
     case send = 5
-
-    var propValue: PropValue { .enumeration(rawValue) }
-}
-
-/// When an `Entry` shows the button that empties it.
-public enum ClearButtonVisibility: Int32, Sendable {
-    /// No clear button at all.
-    case never = 0
-
-    /// While there is text and the field has the focus. The default.
-    case whileEditing = 1
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
@@ -355,17 +345,6 @@ public enum ScrollBarVisibility: Int32, Sendable {
 
     /// Never shown, though it still scrolls.
     case never = 2
-
-    var propValue: PropValue { .enumeration(rawValue) }
-}
-
-/// Whether an `Editor` grows taller as more is typed into it.
-public enum EditorAutoSizeOption: Int32, Sendable {
-    /// A fixed height. The default.
-    case disabled = 0
-
-    /// Grows as the text does.
-    case textChanges = 1
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
@@ -607,18 +586,16 @@ public enum SafeAreaRegions: Int32, Sendable {
 
 extension AbsoluteLayoutFlags: StateChoice {}
 extension Aspect: StateChoice {}
-extension ClearButtonVisibility: StateChoice {}
-extension EditorAutoSizeOption: StateChoice {}
 extension FillRule: StateChoice {}
 extension LayoutDirection: StateChoice {}
 extension FontAttributes: StateChoice {}
 extension IndicatorShape: StateChoice {}
-extension Keyboard: StateChoice {}
+extension InputPurpose: StateChoice {}
 extension Alignment: StateChoice {}
-extension LineBreakMode: StateChoice {}
+extension LineBreak: StateChoice {}
 extension PenLineCap: StateChoice {}
 extension PenLineJoin: StateChoice {}
-extension ReturnType: StateChoice {}
+extension ReturnKey: StateChoice {}
 extension SafeAreaRegions: StateChoice {}
 extension SemanticHeadingLevel: StateChoice {}
 extension ScrollBarVisibility: StateChoice {}
@@ -626,4 +603,4 @@ extension ScrollOrientation: StateChoice {}
 extension Stretch: StateChoice {}
 extension TextAlignment: StateChoice {}
 extension TextDecorations: StateChoice {}
-extension TextTransform: StateChoice {}
+extension TextCase: StateChoice {}

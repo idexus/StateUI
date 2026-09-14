@@ -23,7 +23,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
             // Two colours in one line, which is what runs are FOR: a label
             // has one `textColor`, so this is the only way.
             Label()
-                .formattedText {
+                .spans {
                     TextSpan("let ").textColor(Palette.brand)
                     TextSpan("counter").textColor(Palette.accent)
                     TextSpan(" = 0")
@@ -32,7 +32,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
             // A run carries font properties of its own, and what an unset one
             // falls back to is the platform's business.
             Label()
-                .formattedText {
+                .spans {
                     TextSpan("Sold ")
                     TextSpan("out")
                         .fontAttributes(.bold)
@@ -43,7 +43,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
             // A loop is the usual way - one run per token, which is how the
             // code block on every page of this gallery is drawn.
             Label()
-                .formattedText {
+                .spans {
                     ForEach(Array(words.enumerated()), id: \\.offset) { pair in
                         let (index, word) = pair
                         return TextSpan(word + " ")
@@ -55,10 +55,10 @@ struct TextSpanSample: SampleContent, ExampleContent {
             Button("Move the highlight")
                 .onClicked { highlighted = (highlighted + 1) % words.count }
 
-            // `text` and `formattedText` are MUTUALLY EXCLUSIVE: a label
+            // `text` and `spans` are MUTUALLY EXCLUSIVE: a label
             // given both shows the runs.
             Label("this text never appears")
-                .formattedText {
+                .spans {
                     TextSpan("the runs win")
                 }
         }
@@ -69,7 +69,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Label()
-                .formattedText {
+                .spans {
                     TextSpan("let ").textColor(Palette.brand)
                     TextSpan("counter").textColor(Palette.accent)
                     TextSpan(" = 0")
@@ -78,7 +78,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
                 .fontFamily("Menlo")
 
             Label()
-                .formattedText {
+                .spans {
                     TextSpan("Sold ")
                         .fontSize(17)
                         .textColor(Palette.text)
@@ -91,7 +91,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
                 }
 
             Label()
-                .formattedText {
+                .spans {
                     ForEach(Array(words.enumerated()), id: \.offset) { pair in
                         let (index, word) = pair
                         return TextSpan(word + " ")
@@ -105,7 +105,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
                 .onClicked { highlighted = (highlighted + 1) % words.count }
 
             Label("this text never appears")
-                .formattedText {
+                .spans {
                     TextSpan("the runs win")
                         .fontSize(17)
                         .textColor(Palette.text)
@@ -131,7 +131,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`text` and `formattedText` are MUTUALLY EXCLUSIVE: the last label is given "
+            Label("`text` and `spans` are MUTUALLY EXCLUSIVE: the last label is given "
                 + "both, and it shows only the runs.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

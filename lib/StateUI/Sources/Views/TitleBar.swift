@@ -90,7 +90,7 @@ public struct TitleBar: View, TitleBarProperties {
     ///
     ///     TitleBar("Notes")
     ///         .content {
-    ///             SearchBar($query).width(320)
+    ///             SearchField($query).width(320)
     ///         }
     ///
     /// A closure producing nothing empties the slot.
