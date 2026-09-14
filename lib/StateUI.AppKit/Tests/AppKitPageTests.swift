@@ -239,6 +239,36 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(control.selectedSegment, 1)
     }
 
+    /// A tab the reader chooses changes the window's chrome at once - its
+    /// title and its row - whether or not the application binds the selection
+    /// and renders again.
+    @MainActor
+    func testAReaderChosenTabRenamesTheWindowAtOnce() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        var unbound = tabbed([
+            page("home", title: "Home", events: 100),
+            page("browse", title: "Browse", events: 200),
+        ], selected: 0)
+        unbound.events = .replace([:])
+        unbound.properties[.currentPage] = nil
+        renderer.applyForTesting(tree(unbound))
+
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        XCTAssertEqual(controller.window?.title, "Home")
+
+        controller.tabRowForTesting.chooseForTesting(1)
+        XCTAssertEqual(controller.window?.title, "Browse")
+        XCTAssertEqual(controller.tabRowForTesting.controlForTesting.selectedSegment, 1)
+
+        controller.tabRowForTesting.chooseForTesting(0)
+        XCTAssertEqual(controller.window?.title, "Home")
+    }
+
     /// A tabbed view in a split view's detail shows its tabs in the row
     /// beneath the toolbar - across that column as its own accessory on macOS
     /// 26 and later, beneath the title bar before - and a detail that is no

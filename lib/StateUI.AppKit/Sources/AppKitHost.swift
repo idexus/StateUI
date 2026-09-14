@@ -309,6 +309,15 @@ final class AppKitRenderer: @unchecked Sendable {
             isPhase: isPhase))
     }
 
+    /// Composes every window's chrome again from what it shows now - after a
+    /// change the reader made on a native control, which the application may
+    /// not render for.
+    func refreshWindowChrome() {
+        for controller in orderedWindowControllers {
+            controller.refreshChrome()
+        }
+    }
+
     /// Commits a reader-driven page change and its lifecycle as one ordered
     /// batch. The native control has already settled before this is called.
     func commit(_ handler: Int32?, payload: [HostValue] = []) {
@@ -3026,6 +3035,11 @@ final class MountedNode: NSObject {
         }
 
         host?.commit(events[.currentPageChanged], payload: [.number(Double(selected))])
+
+        // The window's chrome follows what the reader sees now - its title,
+        // its actions, its row of tabs - whether or not the application binds
+        // the selection and renders again.
+        host?.refreshWindowChrome()
     }
 
     private func changeSidebarVisibility(to presented: Bool) {

@@ -662,6 +662,11 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         host?.commit(node?.handler(.modalPopped), payload: [.number(Double(modals.count))])
     }
 
+    /// Composes the window's chrome again from what it shows now.
+    func refreshChrome() {
+        refreshVisiblePageChrome()
+    }
+
     /// Composes the window's one native chrome from the visible arrangement:
     /// the top page names the window, the stack's way back and the page's
     /// actions are toolbar items, a split page adds the sidebar toggle, the
