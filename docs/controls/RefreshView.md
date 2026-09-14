@@ -31,7 +31,7 @@ Anything carrying property values, whether or not it is drawn - a control, a `St
 
 | Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | ✅ |  |  |  |  |  |  |
+| `accessibilityIdentifier` | property |  |  |  |  |  |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -39,15 +39,15 @@ A control backed by a node, and drawn.
 
 | Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | ✅ |  |  |  |  |  |  |
-| `accessibilityHint` | property | ✅ |  |  |  |  |  |  |
-| `accessibilityLabel` | property | ✅ |  |  |  |  |  |  |
-| `automationExcludedWithChildren` | property | ✅ |  |  |  |  |  |  |
-| `background` | property | ✅* |  |  |  |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
-| `frame` | property | ✅ |  |  |  |  |  |  |
+| `accessibilityHeadingLevel` | property |  |  |  |  |  |  |  |
+| `accessibilityHint` | property |  |  |  |  |  |  |  |
+| `accessibilityLabel` | property |  |  |  |  |  |  |  |
+| `automationExcludedWithChildren` | property |  |  |  |  |  |  |  |
+| `background` | property |  |  |  |  |  |  |  |
+| `frame` | property |  |  |  |  |  |  |  |
 | `height` | property |  |  |  |  |  |  |  |
 | `ignoresInput` | property |  |  |  |  |  |  |  |
-| `isAccessibilityHidden` | property | ✅ |  |  |  |  |  |  |
+| `isAccessibilityHidden` | property |  |  |  |  |  |  |  |
 | `isEnabled` | property |  |  |  |  |  |  |  |
 | `isFocusedChanged` | handler |  |  |  |  |  |  |  |
 | `isVisible` | property |  |  |  |  |  |  |  |
@@ -87,26 +87,26 @@ A VisualElement a layout positions.
 | `dragText` | property |  |  |  |  |  |  |  |
 | `onDrop` (`drop`) | handler |  |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | handler |  |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | handler | ✅ |  |  |  |  |  |  |
+| `onFrameChanged` (`frameChanged`) | handler |  |  |  |  |  |  |  |
 | `gridColumn` | property |  |  |  |  |  |  |  |
 | `gridColumnSpan` | property |  |  |  |  |  |  |  |
 | `gridRow` | property |  |  |  |  |  |  |  |
 | `gridRowSpan` | property |  |  |  |  |  |  |  |
 | `horizontalAlignment` | property |  |  |  |  |  |  |  |
 | `margin` | property |  |  |  |  |  |  |  |
-| `panTouchCount` | property | ✅ |  |  |  |  |  |  |
-| `onPanUpdated` (`panUpdated`) | handler | ✅ |  |  |  |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | handler | ✅ |  |  |  |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | handler | ✅ |  |  |  |  |  |  |
-| `onPointerExited` (`pointerExited`) | handler | ✅ |  |  |  |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | handler | ✅ |  |  |  |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | handler | ✅ |  |  |  |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | handler | ✅ |  |  |  |  |  |  |
-| `swipeDirection` | property | ✅ |  |  |  |  |  |  |
-| `swipeThreshold` | property | ✅ |  |  |  |  |  |  |
-| `onSwiped` (`swiped`) | handler | ✅ |  |  |  |  |  |  |
-| `tapCount` | property | ✅ |  |  |  |  |  |  |
-| `onTapped` (`tapped`) | handler | ✅ |  |  |  |  |  |  |
+| `panTouchCount` | property |  |  |  |  |  |  |  |
+| `onPanUpdated` (`panUpdated`) | handler |  |  |  |  |  |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | handler |  |  |  |  |  |  |  |
+| `onPointerEntered` (`pointerEntered`) | handler |  |  |  |  |  |  |  |
+| `onPointerExited` (`pointerExited`) | handler |  |  |  |  |  |  |  |
+| `onPointerMoved` (`pointerMoved`) | handler |  |  |  |  |  |  |  |
+| `onPointerPressed` (`pointerPressed`) | handler |  |  |  |  |  |  |  |
+| `onPointerReleased` (`pointerReleased`) | handler |  |  |  |  |  |  |  |
+| `swipeDirection` | property |  |  |  |  |  |  |  |
+| `swipeThreshold` | property |  |  |  |  |  |  |  |
+| `onSwiped` (`swiped`) | handler |  |  |  |  |  |  |  |
+| `tapCount` | property |  |  |  |  |  |  |  |
+| `onTapped` (`tapped`) | handler |  |  |  |  |  |  |  |
 | `verticalAlignment` | property |  |  |  |  |  |  |  |
 
 ## From [TintElement](tiers/TintElement.md)

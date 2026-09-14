@@ -9,11 +9,11 @@ Members come from the sources by the rule the tests use - a property is a
 the `on...` function that registers it when there is one. An entry's own
 members are what its source file declares; an entry sharing its file with
 another takes the blocks of its own type, and a part of the structure takes
-what SOURCES names - so a file always lists what the code declares. The marks,
-notes and realization lines already written in a file are kept: a realization
-is recorded by editing its rows, and running this again only adds or removes
-members. On the first run the AppKit marks are read from the rows of
-docs/platform-contract.md.
+what SOURCES names - so a file always lists what the code declares.
+
+A host's column is what that host declares it realizes: the AppKit column and
+its notes are written from `AppKitRealization` in the AppKit host's sources. The
+other columns and every realization line already written are kept.
 
     python3 .scripts/controls-dictionary.py
 """
@@ -27,6 +27,7 @@ VIEWS = os.path.join(SOURCES_DIR, "Views")
 DOCS = os.path.join(ROOT, "docs")
 OUT = os.path.join(DOCS, "controls")
 CONTRACT = os.path.join(DOCS, "platform-contract.md")
+APPKIT_REALIZATION = os.path.join(ROOT, "lib/StateUI.AppKit/Sources/AppKitRealization.swift")
 
 PLATFORMS = ["AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
 CONTROLS = [
@@ -57,18 +58,6 @@ TIER_ORDER = [
 ]
 PAIRED = {"VisualElement", "View", "Layout", "StackBase", "InputView", "Shape"}
 SKIPPED_FILES = {"Bound.swift", "Style.swift", "ViewBuilder.swift"}
-# Labels the matrix uses for more than one entry, or for members another entry registers.
-GROUPS = {
-    "text inputs": ["TextField", "TextEditor", "SearchField"],
-    "shapes": ["Rectangle", "Ellipse", "Line", "Path", "Polygon", "Polyline"],
-    "stack layouts": ["VStack", "HStack"],
-    "layouts": ["Grid", "AbsoluteLayout", "VStack", "HStack"],
-    "`ModalStack`": ["Window"],
-    "menu items": ["MenuItem"],
-    "toolbar items": ["ToolbarItem"],
-    "menu / toolbar items": ["MenuItem", "ToolbarItem"],
-}
-MARKS = {"✅", "✅*"}
 LEGEND = ("✅ realized by that host and covered by its tests · ✅* realized and tested, but "
           "incomplete - the note says what is missing · empty: absent, partial and unverified, "
           "or not looked at yet")
@@ -215,31 +204,14 @@ def model():
     return entries, tiers
 
 
-def matrix_marks():
-    """{(entry or '*', token): {platform: mark}} from the contract's rows."""
-    text = open(CONTRACT, encoding="utf-8").read().split("\n")
-    marks = {}
-
-    def section(title):
-        start = next(i for i, l in enumerate(text) if l.startswith(title))
-        end = next(i for i in range(start + 1, len(text)) if text[i].startswith("## "))
-        return text[start:end]
-
-    for line in section("## Shared view members"):
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) == 8 and cells[2] in ("✅", "—"):
-            for token in re.findall(r"`(\w+)`", cells[1]):
-                marks[("*", token)] = {p: ("✅" if cells[2 + k] == "✅" else "") for k, p in enumerate(PLATFORMS)}
-    for line in section("## Control properties and handlers"):
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) != 9 or cells[3] not in ("✅", "—"):
-            continue
-        label = cells[0]
-        targets = GROUPS.get(label, [n for n in re.findall(r"`(\w+)`", label) if n in ENTRIES])
-        for entry in targets:
-            for token in re.findall(r"`(\w+)`", cells[2]):
-                marks[(entry, token)] = {p: ("✅" if cells[3 + k] == "✅" else "") for k, p in enumerate(PLATFORMS)}
-    return marks
+def appkit_realization():
+    """({(owner, member): missing, or None when complete}, unrealized entries) - the AppKit host's records."""
+    text = uncommented(open(APPKIT_REALIZATION, encoding="utf-8").read())
+    records = {}
+    for m in re.finditer(r'\.(complete|partial)\("(\w+)", "(\w+)"(?:, missing: "((?:[^"\\]|\\.)*)")?\)', text):
+        records[(m.group(2), m.group(3))] = m.group(4).replace('\\"', '"') if m.group(1) == "partial" else None
+    block = re.search(r"static let unrealized: Set<String> = \[([^\]]*)\]", text)
+    return records, set(re.findall(r'"(\w+)"', block.group(1))) if block else set()
 
 
 def native_mapping():
@@ -288,10 +260,20 @@ HEADER = ("| Member | Kind | " + " | ".join(PLATFORMS) + " | Notes |\n"
 
 def write():
     entries, tiers = model()
-    matrix = matrix_marks()
+    records, unrealized = appkit_realization()
     native = native_mapping()
     os.makedirs(os.path.join(OUT, "tiers"), exist_ok=True)
     summary = OrderedDict()
+
+    def appkit(entry, tier, token):
+        """The AppKit mark and note: the entry's own record, else its tier's."""
+        if entry in unrealized:
+            return "", ""
+        for owner in [entry] + ([tier] if tier else []):
+            if (owner, token) in records:
+                missing = records[(owner, token)]
+                return ("✅", "") if missing is None else ("✅*", missing)
+        return "", ""
 
     for c, info in entries.items():
         path = os.path.join(OUT, f"{c}.md")
@@ -299,21 +281,12 @@ def write():
         counts = {p: [0, 0] for p in PLATFORMS}
         total = 0
 
-        def table(props, handlers, section):
+        def table(props, handlers, tier):
             nonlocal total
             lines = [HEADER]
             for token in sorted(props | set(handlers)):
-                if token in kept:
-                    marks, note = kept[token]
-                    marks = (marks + [""] * len(PLATFORMS))[:len(PLATFORMS)]
-                else:
-                    shared = matrix.get(("*", token)) if c in CONTROLS else None
-                    found = matrix.get((c, token)) or shared or {}
-                    marks = [found.get(p, "") for p in PLATFORMS]
-                    note = ""
-                    if token == "background" and c in CONTROLS and c not in ("Border", "ColorBox"):
-                        marks[0] = "✅*"
-                        note = "AppKit paints a colour on this view; a brush is drawn only by `Border`."
+                marks = (kept.get(token, ([], ""))[0] + [""] * len(PLATFORMS))[:len(PLATFORMS)]
+                marks[0], note = appkit(c, tier, token)
                 total += 1
                 for k, p in enumerate(PLATFORMS):
                     if marks[k] == "✅":
@@ -333,7 +306,7 @@ def write():
         own_heading = f"## {c}'s own members"
         body += [own_heading, ""]
         if info["own"]["props"] or info["own"]["handlers"]:
-            body += table(info["own"]["props"], info["own"]["handlers"], own_heading)
+            body += table(info["own"]["props"], info["own"]["handlers"], None)
         else:
             body += [f"{c} declares no members of its own; everything it takes comes from the sections below."]
         realized = kept_realizations.get(own_heading) or [
@@ -345,7 +318,7 @@ def write():
             tier = tiers[t]
             props = tier["props"] - info["own"]["props"]
             handlers = {e: n for e, n in tier["handlers"].items() if e not in info["own"]["handlers"]}
-            body += [heading, "", tier["doc"], ""] + table(props, handlers, heading) + [""]
+            body += [heading, "", tier["doc"], ""] + table(props, handlers, t) + [""]
             if kept_realizations.get(heading):
                 body += ["Realization:", ""] + kept_realizations[heading] + [""]
         open(path, "w", encoding="utf-8").write("\n".join(body).rstrip() + "\n")
@@ -396,9 +369,11 @@ def write():
               "platform, because a host realizes the same inherited member differently on different controls - "
               "a background is a layer colour on a label and a path fill on a border.", "",
               f"Marks: {LEGEND}.", "",
-              "A realization updates its rows in the same change. `ControlDictionaryTests` fails when a file's "
-              "members differ from the code, when a ✅* has no note, or when a file is missing; the member lists "
-              "are regenerated with `python3 .scripts/controls-dictionary.py`, which keeps every mark, note and "
+              "A host's column is what that host declares it realizes - AppKit's is `AppKitRealization`, in its "
+              "sources - and a realization records itself there in the same change. `ControlDictionaryTests` "
+              "fails when a file's members differ from the code, when a ✅* has no note, or when a file is "
+              "missing; `AppKitRealizationTests` fails when the AppKit column differs from the records. "
+              "`python3 .scripts/controls-dictionary.py` rewrites the member lists and the columns, keeping every "
               "realization line already written.", "",
               "## Controls", ""] + summary_table("", CONTROLS, "Control") + [
               "", "## Application structure", "",

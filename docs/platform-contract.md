@@ -308,42 +308,42 @@ Every control, and every part an application, its windows and its pages are made
 <!-- dictionary:begin -->
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Label](controls/Label.md) | 78 | 35 ✅ · 1 ✅* |  |  |  |  |  |
-| [Button](controls/Button.md) | 83 | 33 ✅ · 1 ✅* |  |  |  |  |  |
-| [TextField](controls/TextField.md) | 87 | 38 ✅ · 1 ✅* |  |  |  |  |  |
-| [TextEditor](controls/TextEditor.md) | 84 | 37 ✅ · 1 ✅* |  |  |  |  |  |
-| [SearchField](controls/SearchField.md) | 86 | 37 ✅ · 1 ✅* |  |  |  |  |  |
-| [Image](controls/Image.md) | 65 | 23 ✅ · 1 ✅* |  |  |  |  |  |
-| [Picker](controls/Picker.md) | 79 | 29 ✅ · 1 ✅* |  |  |  |  |  |
-| [DatePicker](controls/DatePicker.md) | 77 | 25 ✅ · 1 ✅* |  |  |  |  |  |
-| [TimePicker](controls/TimePicker.md) | 75 | 23 ✅ · 1 ✅* |  |  |  |  |  |
-| [Switch](controls/Switch.md) | 66 | 23 ✅ · 1 ✅* |  |  |  |  |  |
-| [CheckBox](controls/CheckBox.md) | 66 | 24 ✅ · 1 ✅* |  |  |  |  |  |
-| [RadioButton](controls/RadioButton.md) | 78 | 25 ✅ · 1 ✅* |  |  |  |  |  |
-| [Slider](controls/Slider.md) | 70 | 28 ✅ · 1 ✅* |  |  |  |  |  |
-| [Stepper](controls/Stepper.md) | 68 | 26 ✅ · 1 ✅* |  |  |  |  |  |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 65 | 22 ✅ · 1 ✅* |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 65 | 22 ✅ · 1 ✅* |  |  |  |  |  |
-| [ColorBox](controls/ColorBox.md) | 65 | 23 ✅ |  |  |  |  |  |
-| [Border](controls/Border.md) | 72 | 21 ✅ |  |  |  |  |  |
-| [PositionIndicator](controls/PositionIndicator.md) | 71 | 21 ✅ · 1 ✅* |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 68 | 23 ✅ · 1 ✅* |  |  |  |  |  |
-| [HStack](controls/HStack.md) | 68 | 23 ✅ · 1 ✅* |  |  |  |  |  |
-| [Grid](controls/Grid.md) | 71 | 21 ✅ · 1 ✅* |  |  |  |  |  |
-| [AbsoluteLayout](controls/AbsoluteLayout.md) | 67 | 21 ✅ · 1 ✅* |  |  |  |  |  |
-| [ScrollView](controls/ScrollView.md) | 73 | 30 ✅ · 1 ✅* |  |  |  |  |  |
-| [RefreshView](controls/RefreshView.md) | 67 | 21 ✅ · 1 ✅* |  |  |  |  |  |
-| [SwipeView](controls/SwipeView.md) | 68 | 21 ✅ · 1 ✅* |  |  |  |  |  |
-| [Map](controls/Map.md) | 75 | 21 ✅ · 1 ✅* |  |  |  |  |  |
-| [WebView](controls/WebView.md) | 70 | 21 ✅ · 1 ✅* |  |  |  |  |  |
-| [TitleBar](controls/TitleBar.md) | 66 | 24 ✅ · 1 ✅* |  |  |  |  |  |
-| [Canvas](controls/Canvas.md) | 64 | 22 ✅ · 1 ✅* |  |  |  |  |  |
-| [Rectangle](controls/Rectangle.md) | 74 | 21 ✅ · 1 ✅* |  |  |  |  |  |
-| [Ellipse](controls/Ellipse.md) | 73 | 21 ✅ · 1 ✅* |  |  |  |  |  |
-| [Line](controls/Line.md) | 77 | 25 ✅ · 1 ✅* |  |  |  |  |  |
-| [Path](controls/Path.md) | 74 | 22 ✅ · 1 ✅* |  |  |  |  |  |
-| [Polygon](controls/Polygon.md) | 75 | 23 ✅ · 1 ✅* |  |  |  |  |  |
-| [Polyline](controls/Polyline.md) | 75 | 23 ✅ · 1 ✅* |  |  |  |  |  |
+| [Label](controls/Label.md) | 78 | 34 ✅ · 2 ✅* |  |  |  |  |  |
+| [Button](controls/Button.md) | 83 | 32 ✅ · 2 ✅* |  |  |  |  |  |
+| [TextField](controls/TextField.md) | 87 | 37 ✅ · 2 ✅* |  |  |  |  |  |
+| [TextEditor](controls/TextEditor.md) | 84 | 36 ✅ · 2 ✅* |  |  |  |  |  |
+| [SearchField](controls/SearchField.md) | 86 | 36 ✅ · 2 ✅* |  |  |  |  |  |
+| [Image](controls/Image.md) | 65 | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [Picker](controls/Picker.md) | 79 | 28 ✅ · 2 ✅* |  |  |  |  |  |
+| [DatePicker](controls/DatePicker.md) | 77 | 24 ✅ · 2 ✅* |  |  |  |  |  |
+| [TimePicker](controls/TimePicker.md) | 75 | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [Switch](controls/Switch.md) | 66 | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [CheckBox](controls/CheckBox.md) | 66 | 23 ✅ · 2 ✅* |  |  |  |  |  |
+| [RadioButton](controls/RadioButton.md) | 78 | 24 ✅ · 2 ✅* |  |  |  |  |  |
+| [Slider](controls/Slider.md) | 70 | 27 ✅ · 2 ✅* |  |  |  |  |  |
+| [Stepper](controls/Stepper.md) | 68 | 25 ✅ · 2 ✅* |  |  |  |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 65 | 21 ✅ · 2 ✅* |  |  |  |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 65 | 21 ✅ · 2 ✅* |  |  |  |  |  |
+| [ColorBox](controls/ColorBox.md) | 65 | 22 ✅ · 1 ✅* |  |  |  |  |  |
+| [Border](controls/Border.md) | 72 | 20 ✅ · 1 ✅* |  |  |  |  |  |
+| [PositionIndicator](controls/PositionIndicator.md) | 71 |  |  |  |  |  |  |
+| [VStack](controls/VStack.md) | 68 | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [HStack](controls/HStack.md) | 68 | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [Grid](controls/Grid.md) | 71 | 20 ✅ · 2 ✅* |  |  |  |  |  |
+| [AbsoluteLayout](controls/AbsoluteLayout.md) | 67 | 20 ✅ · 2 ✅* |  |  |  |  |  |
+| [ScrollView](controls/ScrollView.md) | 73 | 29 ✅ · 2 ✅* |  |  |  |  |  |
+| [RefreshView](controls/RefreshView.md) | 67 |  |  |  |  |  |  |
+| [SwipeView](controls/SwipeView.md) | 68 |  |  |  |  |  |  |
+| [Map](controls/Map.md) | 75 |  |  |  |  |  |  |
+| [WebView](controls/WebView.md) | 70 |  |  |  |  |  |  |
+| [TitleBar](controls/TitleBar.md) | 66 | 23 ✅ · 2 ✅* |  |  |  |  |  |
+| [Canvas](controls/Canvas.md) | 64 | 21 ✅ · 2 ✅* |  |  |  |  |  |
+| [Rectangle](controls/Rectangle.md) | 74 | 20 ✅ · 2 ✅* |  |  |  |  |  |
+| [Ellipse](controls/Ellipse.md) | 73 | 20 ✅ · 2 ✅* |  |  |  |  |  |
+| [Line](controls/Line.md) | 77 | 24 ✅ · 2 ✅* |  |  |  |  |  |
+| [Path](controls/Path.md) | 74 | 21 ✅ · 2 ✅* |  |  |  |  |  |
+| [Polygon](controls/Polygon.md) | 75 | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [Polyline](controls/Polyline.md) | 75 | 22 ✅ · 2 ✅* |  |  |  |  |  |
 
 | Part | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |

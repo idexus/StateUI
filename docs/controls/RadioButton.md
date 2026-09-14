@@ -94,7 +94,7 @@ A VisualElement a layout positions.
 | `gridRowSpan` | property |  |  |  |  |  |  |  |
 | `horizontalAlignment` | property |  |  |  |  |  |  |  |
 | `margin` | property |  |  |  |  |  |  |  |
-| `panTouchCount` | property | ✅ |  |  |  |  |  |  |
+| `panTouchCount` | property | ✅* |  |  |  |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
 | `onPanUpdated` (`panUpdated`) | handler | ✅ |  |  |  |  |  |  |
 | `onPinchUpdated` (`pinchUpdated`) | handler | ✅ |  |  |  |  |  |  |
 | `onPointerEntered` (`pointerEntered`) | handler | ✅ |  |  |  |  |  |  |
