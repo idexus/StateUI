@@ -105,18 +105,18 @@ final class CommandWireTests: XCTestCase {
         }
     }
 
-    /// The one-button alert: three arguments, so the host knows there is
-    /// nothing to answer beyond "it was dismissed".
-    func testAnInformingAlertCrossesAsItsFixtureSays() async throws {
-        try await check("DisplayAlertOneButton") {
-            try await Dialogs.displayAlert("Saved", message: "The draft is safe")
+    /// The alert: three arguments, and nothing to answer beyond "it was
+    /// dismissed".
+    func testAnAlertCrossesAsItsFixtureSays() async throws {
+        try await check("Alert") {
+            try await Dialogs.alert("Saved", message: "The draft is safe")
         }
     }
 
-    /// The question form: four arguments, accept before cancel.
-    func testAQuestionAlertCrossesAsItsFixtureSays() async throws {
-        try await check("DisplayAlert") {
-            _ = try await Dialogs.displayAlert(
+    /// The confirmation: four arguments, accept before cancel.
+    func testAConfirmationCrossesAsItsFixtureSays() async throws {
+        try await check("Confirm") {
+            _ = try await Dialogs.confirm(
                 "Delete draft?", message: "This cannot be undone",
                 accept: "Delete", cancel: "Keep")
         }
@@ -125,9 +125,9 @@ final class CommandWireTests: XCTestCase {
     /// Title, cancel, destruction, then the buttons. An absent caption
     /// crosses as the wire's own NOTHING, never as an empty
     /// string: an empty string is a caption someone could have written.
-    func testAnActionSheetCrossesAsItsFixtureSays() async throws {
-        try await check("DisplayActionSheet") {
-            _ = try await Dialogs.displayActionSheet(
+    func testAChoiceOfActionsCrossesAsItsFixtureSays() async throws {
+        try await check("ChooseAction") {
+            _ = try await Dialogs.chooseAction(
                 "Share via", cancel: "Cancel", destruction: "Delete",
                 buttons: ["Mail", "Message"])
         }
@@ -138,8 +138,8 @@ final class CommandWireTests: XCTestCase {
     /// limit" - a toolkit's sentinel stays in the host and never rides this
     /// wire.
     func testAPromptCrossesAsItsFixtureSays() async throws {
-        try await check("DisplayPrompt") {
-            _ = try await Dialogs.displayPrompt(
+        try await check("Prompt") {
+            _ = try await Dialogs.prompt(
                 "Rename", message: "A new name for the draft",
                 placeholder: "Name", initialValue: "Draft 1",
                 maximumLength: 40, inputPurpose: .text)
@@ -218,7 +218,7 @@ final class CommandWireTests: XCTestCase {
 
     func testAskingForAnOffsetCrossesAsItsFixtureSays() async throws {
         try await check("UtcOffset") {
-            _ = try? await TimeZoneInfo.getUtcOffset(
+            _ = try? await TimeZoneInfo.utcOffset(
                 of: "Europe/Warsaw",
                 on: CalendarDate(year: 2026, month: 1, day: 15))
         }
@@ -230,7 +230,7 @@ final class CommandWireTests: XCTestCase {
     /// loud, and this is the fixture that says it.
     func testAskingForAnOffsetWithNoDayCrossesAsItsFixtureSays() async throws {
         try await check("UtcOffsetToday") {
-            _ = try? await TimeZoneInfo.getUtcOffset(of: "Europe/Warsaw")
+            _ = try? await TimeZoneInfo.utcOffset(of: "Europe/Warsaw")
         }
     }
 

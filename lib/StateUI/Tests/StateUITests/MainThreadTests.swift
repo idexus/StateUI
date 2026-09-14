@@ -228,7 +228,7 @@ final class MainThreadTests: XCTestCase {
         let patch = renders.render(
             Button("Go")
                 .onClicked {
-                    try await Dialogs.displayAlert("//list", message: "saved")
+                    try await Dialogs.alert("//list", message: "saved")
                     reached = true
                 }
                 .body)
@@ -239,7 +239,7 @@ final class MainThreadTests: XCTestCase {
         XCTAssertFalse(reached, "the handler is suspended, waiting for the host")
 
         let acts = drainedActs()
-        XCTAssertEqual(acts.first?.name, "displayAlertAsync")
+        XCTAssertEqual(acts.first?.name, "alert")
 
         // What the host does when the navigation is over.
         let completion = try XCTUnwrap(acts.compactMap(\.completion).first)

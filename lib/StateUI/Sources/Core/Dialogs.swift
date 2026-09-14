@@ -7,7 +7,7 @@
 // goes through Command.swift exactly as focusing a field or scrolling a list
 // does:
 //
-//     let ok = try await Dialogs.displayAlert(
+//     let ok = try await Dialogs.confirm(
 //         "Delete draft?", message: "This cannot be undone",
 //         accept: "Delete", cancel: "Keep")
 //
@@ -22,13 +22,14 @@
 // actually looking at - the top of the modal stack included, which only the
 // host can know. `SoftInput` is the same shape of answer for the keyboard.
 
-/// Questions for the reader - an alert, a choice among actions and a prompt,
+/// Questions for the reader - an alert, a confirmation, a choice among actions
+/// and a prompt,
 /// asked of the page that is showing. Each suspends the handler until the
 /// reader answers.
 public enum Dialogs {
     /// Tells the reader something, with one button to dismiss it.
     ///
-    ///     try await Dialogs.displayAlert("Saved", message: "The draft is safe")
+    ///     try await Dialogs.alert("Saved", message: "The draft is safe")
     ///
     /// Suspends until the button is pressed, so the next line runs with the
     /// alert already gone.
@@ -38,19 +39,19 @@ public enum Dialogs {
     ///   - message: the sentence under it.
     ///   - cancel: the one button's caption.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static nonisolated(nonsending) func displayAlert(
+    public static nonisolated(nonsending) func alert(
         _ title: String,
         message: String,
         cancel: String = "OK"
     ) async throws {
         try await stateUICall(
-            .displayAlertAsync,
+            .alert,
             [.string(title), .string(message), .string(cancel)])
     }
 
     /// Asks the reader a yes-or-no question.
     ///
-    ///     let ok = try await Dialogs.displayAlert(
+    ///     let ok = try await Dialogs.confirm(
     ///         "Delete draft?", message: "This cannot be undone",
     ///         accept: "Delete", cancel: "Keep")
     ///     if ok { drafts.remove(draft) }
@@ -62,21 +63,21 @@ public enum Dialogs {
     ///   - cancel: the caption of the button that answers no.
     /// - Returns: true when `accept` was pressed.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static nonisolated(nonsending) func displayAlert(
+    public static nonisolated(nonsending) func confirm(
         _ title: String,
         message: String,
         accept: String,
         cancel: String
     ) async throws -> Bool {
         try await stateUICall(
-            .displayAlertAsync,
+            .confirm,
             [.string(title), .string(message), .string(accept), .string(cancel)])
             .value()?.bool == true
     }
 
     /// Offers the reader a list of things to do.
     ///
-    ///     let choice = try await Dialogs.displayActionSheet(
+    ///     let choice = try await Dialogs.chooseAction(
     ///         "Share via", cancel: "Cancel", buttons: ["Mail", "Message"])
     ///
     /// What comes back is the pressed CAPTION - `cancel` and `destruction`
@@ -90,14 +91,14 @@ public enum Dialogs {
     /// - Returns: the pressed caption, or nil when the sheet was dismissed
     ///   without choosing - tapping beside it, where the platform allows that.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static nonisolated(nonsending) func displayActionSheet(
+    public static nonisolated(nonsending) func chooseAction(
         _ title: String,
         cancel: String? = nil,
         destruction: String? = nil,
         buttons: [String]
     ) async throws -> String? {
         chosen(try await stateUICall(
-            .displayActionSheetAsync,
+            .chooseAction,
             [
                 .string(title),
                 cancel.map { PropValue.string($0) } ?? .nothing,
@@ -109,7 +110,7 @@ public enum Dialogs {
     /// order, `initialValue` last; the Swift signature keeps it beside
     /// `placeholder`, where it reads.
     ///
-    ///     let name = try await Dialogs.displayPrompt(
+    ///     let name = try await Dialogs.prompt(
     ///         "Rename", message: "A new name for the draft",
     ///         placeholder: "Name", initialValue: draft.name)
     ///     if let name { draft.name = name }
@@ -127,14 +128,14 @@ public enum Dialogs {
     /// - Returns: what was typed when `accept` was pressed - empty included,
     ///   which is an answer - or nil when the prompt was cancelled.
     /// - Throws: `StateUIError` when there is no page on screen to show it.
-    public static nonisolated(nonsending) func displayPrompt(
+    public static nonisolated(nonsending) func prompt(
         _ title: String, message: String = "",
         accept: String = "OK", cancel: String = "Cancel",
         placeholder: String? = nil, initialValue: String = "",
         maximumLength: Int? = nil, inputPurpose: InputPurpose = .default
     ) async throws -> String? {
         chosen(try await stateUICall(
-            .displayPromptAsync,
+            .prompt,
             [
                 .string(title), .string(message), .string(accept), .string(cancel),
                 placeholder.map { PropValue.string($0) } ?? .nothing,

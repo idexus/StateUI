@@ -143,7 +143,7 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
     ///
     /// - Returns: the host's local time of day.
     public static nonisolated(nonsending) func now() async throws -> ClockTime {
-        let reply = try await stateUICall(.dateTimeNow)
+        let reply = try await stateUICall(.currentTime)
 
         guard let numbers = reply.value()?.numbers, numbers.count == 4 else {
             throw StateUIError(

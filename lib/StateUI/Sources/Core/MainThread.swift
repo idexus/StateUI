@@ -83,7 +83,7 @@ import Dispatch
 ///
 ///     @MainThread
 ///     func loadTheNextPage() async throws {
-///         try await Dialogs.displayAlert("Loaded", message: "the next page")
+///         try await Dialogs.alert("Loaded", message: "the next page")
 ///     }
 ///
 /// A handler closure is already isolated to it, so an ordinary

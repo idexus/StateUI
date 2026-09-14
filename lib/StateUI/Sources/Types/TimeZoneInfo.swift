@@ -29,7 +29,7 @@ public enum TimeZoneInfo {
     ///
     /// - Returns: the IANA identifier of the host's local time zone.
     public static nonisolated(nonsending) func local() async throws -> String {
-        guard let zone = try await stateUICall(.localTimeZone).value()?.string else {
+        guard let zone = try await stateUICall(.currentTimeZone).value()?.string else {
             throw StateUIError(
                 message: "the host's reply does not read as a zone name. Usually "
                     + "a native library and a runtime built from different versions.")
@@ -40,9 +40,9 @@ public enum TimeZoneInfo {
 
     /// How far a zone is from UTC on a given day.
     ///
-    ///     let here = try await TimeZoneInfo.getUtcOffset()
-    ///     let tokyo = try await TimeZoneInfo.getUtcOffset(of: "Asia/Tokyo")
-    ///     let inJanuary = try await TimeZoneInfo.getUtcOffset(
+    ///     let here = try await TimeZoneInfo.utcOffset()
+    ///     let tokyo = try await TimeZoneInfo.utcOffset(of: "Asia/Tokyo")
+    ///     let inJanuary = try await TimeZoneInfo.utcOffset(
     ///         on: CalendarDate(year: 2026, month: 1, day: 15))
     ///
     /// A `Duration` rather than a `ClockTime`, because an offset can be
@@ -57,7 +57,7 @@ public enum TimeZoneInfo {
     ///   - zone: an IANA identifier, or nil for the host's own zone.
     ///   - date: the day to ask about, or nil for today.
     /// - Returns: the zone's distance from UTC, negative west of it.
-    public static nonisolated(nonsending) func getUtcOffset(
+    public static nonisolated(nonsending) func utcOffset(
         of zone: String? = nil,
         on date: CalendarDate? = nil
     ) async throws -> Duration {
@@ -67,7 +67,7 @@ public enum TimeZoneInfo {
         // it is for "today": an argument list has no such thing as a field
         // left out, so absence has to be said out loud.
         let reply = try await stateUICall(
-            .getUtcOffset,
+            .utcOffset,
             [
                 zone.map { PropValue.string($0) } ?? .nothing,
                 date?.propValue ?? .nothing,

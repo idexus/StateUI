@@ -1,1 +1,1 @@
-localTimeZone completion=-1
+currentTimeZone completion=-1

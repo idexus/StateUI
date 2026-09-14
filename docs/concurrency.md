@@ -38,7 +38,7 @@ or state its isolation explicitly:
 ```swift quote
 @MainThread
 func loadDocument() async throws {
-    let name = try await Dialogs.displayPrompt(
+    let name = try await Dialogs.prompt(
         "Open", message: "Document name", placeholder: "Name")
     if let name { currentDocument = name }
 }
@@ -101,12 +101,12 @@ Use `await` to express a dependency:
 
 ```swift quote
 Button("Rename and confirm").onClicked {
-    guard let name = try await Dialogs.displayPrompt(
+    guard let name = try await Dialogs.prompt(
         "Rename", message: "New name", placeholder: "Name")
     else { return }
 
     title = name
-    try await Dialogs.displayAlert("Renamed", message: name)
+    try await Dialogs.alert("Renamed", message: name)
 }
 ```
 

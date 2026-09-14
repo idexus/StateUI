@@ -314,7 +314,7 @@ extension Aim where Target == WebView {
     /// - Throws: `StateUIError` when no view of that id is being shown, or
     ///   the view it names is not a WebView.
     public nonisolated(nonsending) func evaluateJavaScript(_ script: String) async throws -> String {
-        try await stateUICall(.evaluateJavaScriptAsync, [try target, .string(script)])
+        try await stateUICall(.evaluateJavaScript, [try target, .string(script)])
             .value()?.string ?? ""
     }
 }

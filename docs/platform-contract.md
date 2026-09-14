@@ -259,9 +259,9 @@ zone is a host action because the host owns the active locale and zone database.
 
 | Surface | Host act | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| `ClockTime.now()` | `dateTimeNow` | — | — | — | — | — | — |
-| `TimeZoneInfo.local()` | `localTimeZone` | — | — | — | — | — | — |
-| `TimeZoneInfo.getUtcOffset(of:on:)` | `getUtcOffset` | — | — | — | — | — | — |
+| `ClockTime.now()` | `currentTime` | — | — | — | — | — | — |
+| `TimeZoneInfo.local()` | `currentTimeZone` | — | — | — | — | — | — |
+| `TimeZoneInfo.utcOffset(of:on:)` | `utcOffset` | — | — | — | — | — | — |
 
 ## Shared view members
 

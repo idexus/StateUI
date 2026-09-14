@@ -25,7 +25,7 @@
 //     Node(type: "ColorWheel")
 //
 // The SOURCES of this library write only the static members - `.label`,
-// `.fontSize`, `.textChanged`, `.displayAlertAsync` - and the guard test in
+// `.fontSize`, `.textChanged`, `.alert` - and the guard test in
 // WireFormatTests names any file that spells a name out instead. This file is
 // deliberately the one place the spellings exist.
 
@@ -263,7 +263,7 @@ public struct Event: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
 }
 
 /// One act the host can perform - one the library ships
-/// (`.displayAlertAsync`), or an application's own registered function.
+/// (`.alert`), or an application's own registered function.
 ///
 /// The host performs what it has a case - or a registration - for; asking for
 /// anything else throws with the host's "unknown command" reason, which is
@@ -718,7 +718,7 @@ public extension Act {
 
     /// Runs JavaScript in the aimed web view's page, answering what it
     /// evaluated to, as text.
-    static let evaluateJavaScriptAsync = Act("evaluateJavaScriptAsync")
+    static let evaluateJavaScript = Act("evaluateJavaScript")
 
     /// Moves the aimed map to show a region.
     static let moveToRegion = Act("moveToRegion")
@@ -728,32 +728,36 @@ public extension Act {
     /// `SoftInput.hide()`.
     static let hideSoftInput = Act("hideSoftInput")
 
-    /// Shows an alert on the showing page and, given an accept button,
-    /// answers whether it was pressed. See `Dialogs.displayAlert`.
-    static let displayAlertAsync = Act("displayAlertAsync")
+    /// Tells the reader something on the showing page, with one button that
+    /// dismisses it; nothing comes back but the dismissal. See `Dialogs.alert`.
+    static let alert = Act("alert")
+
+    /// Asks the reader a yes-or-no question on the showing page, answering
+    /// whether the accept button was pressed. See `Dialogs.confirm`.
+    static let confirm = Act("confirm")
 
     /// Offers the reader a list of choices on the showing page, answering the
-    /// pressed caption. See `Dialogs.displayActionSheet`.
-    static let displayActionSheetAsync = Act("displayActionSheetAsync")
+    /// pressed caption. See `Dialogs.chooseAction`.
+    static let chooseAction = Act("chooseAction")
 
     /// Asks the reader to type something on the showing page, answering the
-    /// text. See `Dialogs.displayPrompt`.
-    static let displayPromptAsync = Act("displayPromptAsync")
+    /// text. See `Dialogs.prompt`.
+    static let prompt = Act("prompt")
 
     /// Has the platform's screen reader say a text. See
     /// `SemanticScreenReader.announce`.
     static let announce = Act("announce")
 
     /// The host's local time of day, asked of its clock. See `ClockTime.now()`.
-    static let dateTimeNow = Act("dateTimeNow")
+    static let currentTime = Act("currentTime")
 
     /// The IANA identifier of the host's local time zone. See
     /// `TimeZoneInfo.local()`.
-    static let localTimeZone = Act("localTimeZone")
+    static let currentTimeZone = Act("currentTimeZone")
 
     /// How far a zone is from UTC on a given day, asked of the host. See
-    /// `TimeZoneInfo.getUtcOffset`.
-    static let getUtcOffset = Act("getUtcOffset")
+    /// `TimeZoneInfo.utcOffset`.
+    static let utcOffset = Act("utcOffset")
 
     /// A persistent key's new value, on its way to the store. Which store
     /// that is belongs to the host - see Core/Persistence.swift.

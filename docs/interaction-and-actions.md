@@ -160,7 +160,7 @@ Dialogs are sequential host actions rather than tree nodes:
 
 ```swift quote
 Button("Delete").onClicked {
-    let confirmed = try await Dialogs.displayAlert(
+    let confirmed = try await Dialogs.confirm(
         "Delete draft?",
         message: "This cannot be undone",
         accept: "Delete",
@@ -170,7 +170,7 @@ Button("Delete").onClicked {
 }
 ```
 
-StateUI also provides a one-button alert, an action sheet that returns the
+StateUI also provides a one-button `alert`, a `chooseAction` that returns the
 chosen caption, and a prompt that returns typed text or `nil` on cancellation.
 An accepted empty prompt is `""`, distinct from cancellation.
 

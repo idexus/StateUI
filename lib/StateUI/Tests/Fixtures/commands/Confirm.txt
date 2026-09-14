@@ -1,4 +1,4 @@
-displayAlertAsync completion=-1
+confirm completion=-1
   string "Delete draft?"
   string "This cannot be undone"
   string "Delete"

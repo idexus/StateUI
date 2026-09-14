@@ -9,9 +9,9 @@
 //
 // So the same split applies. Swift DESCRIBES the act and the host performs it:
 //
-//     try await Dialogs.displayAlert("Saved", message: "the draft is safe")
+//     try await Dialogs.alert("Saved", message: "the draft is safe")
 //
-// puts one act in a queue - displayAlertAsync, three string arguments, and the
+// puts one act in a queue - `alert`, three string arguments, and the
 // completion id of the continuation waiting for it. The host drains that queue
 // after the handler suspends, and performs the act against the real page.
 //
@@ -76,7 +76,7 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
 /// Asks the host to perform an act - one the library ships, or a function the
 /// application registered with the host - and waits for it.
 ///
-/// The escape hatch behind the typed calls - `Dialogs.displayAlert` is one line
+/// The escape hatch behind the typed calls - `Dialogs.alert` is one line
 /// over this - and the way an application reaches its OWN host code: register a
 /// performer with the host under a name, declare the same name as an `Act`
 /// token, and call it like any act the library ships:

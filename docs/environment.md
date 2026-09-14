@@ -258,8 +258,8 @@ clock, locale, and zone database:
 ```swift
 let zone = try await TimeZoneInfo.local()
 let now = try await ClockTime.now()
-let localOffset = try await TimeZoneInfo.getUtcOffset()
-let winterOffset = try await TimeZoneInfo.getUtcOffset(
+let localOffset = try await TimeZoneInfo.utcOffset()
+let winterOffset = try await TimeZoneInfo.utcOffset(
     of: zone,
     on: CalendarDate(year: 2027, month: 1, day: 15))
 
@@ -267,7 +267,7 @@ Label("\(zone) · \(now.text) · \(localOffset.components.seconds) seconds from 
 Label("Winter: \(winterOffset.components.seconds) seconds from UTC")
 ```
 
-`TimeZoneInfo.local()` returns an IANA identifier. `getUtcOffset(of:on:)`
+`TimeZoneInfo.local()` returns an IANA identifier. `utcOffset(of:on:)`
 returns a Swift `Duration`, negative west of UTC; omit the zone for the local
 zone and omit the date for today. Supplying a date makes daylight-saving
 differences explicit. Offset transport uses signed minutes, so half-hour and

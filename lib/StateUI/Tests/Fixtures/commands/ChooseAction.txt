@@ -1,4 +1,4 @@
-displayActionSheetAsync completion=-1
+chooseAction completion=-1
   string "Share via"
   string "Cancel"
   string "Delete"

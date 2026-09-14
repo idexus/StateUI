@@ -1,13 +1,13 @@
 import StateUI
 
-/// Native alerts, action sheets and prompts exposed as awaited StateUI acts.
+/// Native alerts, confirmations, choices of actions and prompts, asked as awaited StateUI acts.
 struct DialogsSample: SampleContent, ExampleContent {
     @State private var answer = "nothing asked yet"
     @State private var name = "Draft 1"
 
     static let id = "dialogs"
     static let title = "Dialogs"
-    static let summary = "An alert, an action sheet and a prompt - asked, awaited, answered."
+    static let summary = "An alert, a confirmation, a choice of actions and a prompt - asked, awaited, answered."
 
     static let code = """
         @State private var answer = "nothing asked yet"
@@ -22,7 +22,7 @@ struct DialogsSample: SampleContent, ExampleContent {
             // dismissed, so the next line runs with the alert already gone.
             Button("Tell me something")
                 .onClicked {
-                    try await Dialogs.displayAlert(
+                    try await Dialogs.alert(
                         "Saved", message: "The draft is safe")
                     answer = "the alert was dismissed"
                 }
@@ -30,7 +30,7 @@ struct DialogsSample: SampleContent, ExampleContent {
             // Ask, await, branch - in one place, which is what an act is for.
             Button("Ask me a question")
                 .onClicked {
-                    let ok = try await Dialogs.displayAlert(
+                    let ok = try await Dialogs.confirm(
                         "Delete draft?", message: "This cannot be undone",
                         accept: "Delete", cancel: "Keep")
                     answer = ok ? "Delete pressed" : "Keep pressed"
@@ -41,7 +41,7 @@ struct DialogsSample: SampleContent, ExampleContent {
             // chosen, tapping beside it where the platform allows that.
             Button("Offer me choices")
                 .onClicked {
-                    let choice = try await Dialogs.displayActionSheet(
+                    let choice = try await Dialogs.chooseAction(
                         "Share via", cancel: "Cancel", destruction: "Delete",
                         buttons: ["Mail", "Message"])
                     answer = choice.map { "\\($0) pressed" }
@@ -52,7 +52,7 @@ struct DialogsSample: SampleContent, ExampleContent {
             // back as "" - an empty answer, which is still an answer.
             Button("Ask me to type")
                 .onClicked {
-                    let typed = try await Dialogs.displayPrompt(
+                    let typed = try await Dialogs.prompt(
                         "Rename", message: "A new name for the draft",
                         placeholder: "Name", initialValue: name, maximumLength: 40)
                     if let typed { name = typed }
@@ -70,14 +70,14 @@ struct DialogsSample: SampleContent, ExampleContent {
 
             Button("Tell me something")
                 .onClicked {
-                    try await Dialogs.displayAlert(
+                    try await Dialogs.alert(
                         "Saved", message: "The draft is safe")
                     answer = "the alert was dismissed"
                 }
 
             Button("Ask me a question")
                 .onClicked {
-                    let ok = try await Dialogs.displayAlert(
+                    let ok = try await Dialogs.confirm(
                         "Delete draft?", message: "This cannot be undone",
                         accept: "Delete", cancel: "Keep")
                     answer = ok ? "Delete pressed" : "Keep pressed"
@@ -85,7 +85,7 @@ struct DialogsSample: SampleContent, ExampleContent {
 
             Button("Offer me choices")
                 .onClicked {
-                    let choice = try await Dialogs.displayActionSheet(
+                    let choice = try await Dialogs.chooseAction(
                         "Share via", cancel: "Cancel", destruction: "Delete",
                         buttons: ["Mail", "Message"])
                     answer = choice.map { "\($0) pressed" }
@@ -94,7 +94,7 @@ struct DialogsSample: SampleContent, ExampleContent {
 
             Button("Ask me to type")
                 .onClicked {
-                    let typed = try await Dialogs.displayPrompt(
+                    let typed = try await Dialogs.prompt(
                         "Rename", message: "A new name for the draft",
                         placeholder: "Name", initialValue: name, maximumLength: 40)
                     if let typed { name = typed }
@@ -120,7 +120,7 @@ struct DialogsSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An action sheet answers with the pressed caption, cancel and "
+            Label("A choice of actions answers with the pressed caption, cancel and "
                 + "destruction included. A prompt answers nil when cancelled - an "
                 + "accepted empty answer is \"\", which is not the same thing.")
                 .fontSize(12)

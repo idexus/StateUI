@@ -51,15 +51,15 @@ struct HostTimeSample: SampleContent, ExampleContent {
             zone = try await TimeZoneInfo.local()
 
             let now = try await ClockTime.now()
-            let here = try await TimeZoneInfo.getUtcOffset()
-            let winter = try await TimeZoneInfo.getUtcOffset(
+            let here = try await TimeZoneInfo.utcOffset()
+            let winter = try await TimeZoneInfo.utcOffset(
                 on: CalendarDate(year: 2026, month: 1, day: 15))
 
             season = "Offset now \\(offsetText(here)), on 15 January \\(offsetText(winter))"
 
             var found: [(String, String)] = []
             for city in Self.cities {
-                let there = try await TimeZoneInfo.getUtcOffset(of: city)
+                let there = try await TimeZoneInfo.utcOffset(of: city)
                 found.append((city, "\\(shifted(now, by: there - here).text)  \\(offsetText(there))"))
             }
 
@@ -126,7 +126,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("Every line above crossed the boundary as an act - `ClockTime.now()`, "
-                + "`TimeZoneInfo.local()`, `TimeZoneInfo.getUtcOffset` - and came back as "
+                + "`TimeZoneInfo.local()`, `TimeZoneInfo.utcOffset` - and came back as "
                 + "a `ClockTime` and a `Duration`, both of which this side owns. No "
                 + "Foundation is involved, which is why the answers are the same on every "
                 + "platform.")
@@ -147,15 +147,15 @@ struct HostTimeSample: SampleContent, ExampleContent {
         zone = try await TimeZoneInfo.local()
 
         let now = try await ClockTime.now()
-        let here = try await TimeZoneInfo.getUtcOffset()
-        let winter = try await TimeZoneInfo.getUtcOffset(
+        let here = try await TimeZoneInfo.utcOffset()
+        let winter = try await TimeZoneInfo.utcOffset(
             on: CalendarDate(year: 2026, month: 1, day: 15))
 
         season = "Offset now \(offsetText(here)), on 15 January \(offsetText(winter))"
 
         var found: [(String, String)] = []
         for city in Self.cities {
-            let there = try await TimeZoneInfo.getUtcOffset(of: city)
+            let there = try await TimeZoneInfo.utcOffset(of: city)
             found.append((city, "\(shifted(now, by: there - here).text)  \(offsetText(there))"))
         }
 

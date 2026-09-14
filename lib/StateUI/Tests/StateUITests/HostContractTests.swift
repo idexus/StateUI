@@ -483,6 +483,46 @@ final class HostContractTests: XCTestCase {
     /// a caption - on a button, a menu or toolbar item, a page's tab - with its
     /// `iconPosition` and `iconSpacing`, and `Button(icon:)` when there is no
     /// caption at all.
+    func testQuestionsAndActsSayWhatTheyAsk() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let acts = declaredNames(of: "Act", in: tokenSource)
+
+        XCTAssertTrue(acts.isSuperset(of: [
+            "alert", "confirm", "chooseAction", "prompt",
+            "currentTime", "currentTimeZone", "utcOffset", "evaluateJavaScript",
+        ]))
+        XCTAssertTrue(
+            acts.isDisjoint(with: [
+                "displayAlertAsync", "displayActionSheetAsync", "displayPromptAsync",
+                "dateTimeNow", "localTimeZone", "getUtcOffset", "evaluateJavaScriptAsync",
+            ]),
+            "an act keeps a name the Swift side does not say")
+
+        let dialogs = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Dialogs.swift"),
+            encoding: .utf8)
+        for spelling in ["func alert(", "func confirm(", "func chooseAction(", "func prompt("] {
+            XCTAssertTrue(dialogs.contains(spelling), "Dialogs does not say \(spelling)")
+        }
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            for former in [
+                "func displayAlert(", "func displayActionSheet(", "func displayPrompt(",
+                "func getUtcOffset(",
+            ] {
+                XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
+            }
+        }
+    }
+
     func testABarNamesItsForegroundOnce() throws {
         let tokenSource = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),

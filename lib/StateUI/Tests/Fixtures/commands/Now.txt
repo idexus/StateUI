@@ -1,1 +1,1 @@
-dateTimeNow completion=-1
+currentTime completion=-1

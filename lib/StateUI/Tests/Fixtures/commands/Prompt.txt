@@ -1,4 +1,4 @@
-displayPromptAsync completion=-1
+prompt completion=-1
   string "Rename"
   string "A new name for the draft"
   string "OK"

@@ -6,7 +6,7 @@
 // These stand in for the host by hand: start the act, read what was queued,
 // report an outcome under the completion id, and see what the awaiting side
 // makes of it. That is the whole protocol, and it is the same one whether the
-// caller is `try await Dialogs.displayAlert(…)` or a typed call added later.
+// caller is `try await Dialogs.alert(…)` or a typed call added later.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -64,10 +64,10 @@ final class CommandTests: XCTestCase {
     func testAnAlertQueuesItsActByName() async throws {
         drain()
 
-        let navigation = begin { try await Dialogs.displayAlert("//list", message: "saved") }
+        let navigation = begin { try await Dialogs.alert("//list", message: "saved") }
 
         let acts = drain()
-        XCTAssertEqual(acts.first?.name, "displayAlertAsync")
+        XCTAssertEqual(acts.first?.name, "alert")
         XCTAssertEqual(acts.first?.arguments.first, .string("//list"))
 
         await report(try completionId(in: acts), .finished([]))
@@ -93,7 +93,7 @@ final class CommandTests: XCTestCase {
 
     func testTakingTheCommandsEmptiesTheQueue() async throws {
         drain()
-        let navigation = begin { try await Dialogs.displayAlert("//list", message: "saved") }
+        let navigation = begin { try await Dialogs.alert("//list", message: "saved") }
 
         let acts = drain()
         XCTAssertFalse(acts.isEmpty)
@@ -152,8 +152,8 @@ final class CommandTests: XCTestCase {
         drain()
 
         let navigation = begin {
-            try await Dialogs.displayAlert("//first", message: "saved")
-            try await Dialogs.displayAlert("//second", message: "saved")
+            try await Dialogs.alert("//first", message: "saved")
+            try await Dialogs.alert("//second", message: "saved")
         }
 
         let first = drain()
@@ -193,18 +193,18 @@ final class CommandTests: XCTestCase {
         drain()
 
         let sheet = begin {
-            try await Dialogs.displayActionSheet("Share via", buttons: ["Mail"])
+            try await Dialogs.chooseAction("Share via", buttons: ["Mail"])
         }
         await report(try completionId(in: drain()), .finished([.string("Mail")]))
         let choice = try await sheet.value
         XCTAssertEqual(choice, "Mail")
 
-        let accepted = begin { try await Dialogs.displayPrompt("Rename") }
+        let accepted = begin { try await Dialogs.prompt("Rename") }
         await report(try completionId(in: drain()), .finished([.string("")]))
         let typed = try await accepted.value
         XCTAssertEqual(typed, "", "accepted with nothing typed is an empty answer")
 
-        let cancelled = begin { try await Dialogs.displayPrompt("Rename") }
+        let cancelled = begin { try await Dialogs.prompt("Rename") }
         await report(try completionId(in: drain()), .finished([]))
         let nothing = try await cancelled.value
         XCTAssertNil(nothing, "cancelled is no answer at all")
@@ -215,7 +215,7 @@ final class CommandTests: XCTestCase {
         drain()
 
         let asked = begin {
-            try await Dialogs.displayAlert(
+            try await Dialogs.confirm(
                 "Delete?", message: "Sure?", accept: "Delete", cancel: "Keep")
         }
         await report(try completionId(in: drain()), .finished([.bool(true)]))
@@ -226,7 +226,7 @@ final class CommandTests: XCTestCase {
     func testAFailureReportedByTheHostIsThrown() async throws {
         drain()
 
-        let navigation = begin { try await Dialogs.displayAlert("//nowhere", message: "saved") }
+        let navigation = begin { try await Dialogs.alert("//nowhere", message: "saved") }
 
         await report(try completionId(in: drain()), .failed("there is no page to show a dialog on"))
 
@@ -285,7 +285,7 @@ final class CommandTests: XCTestCase {
         drain()
         let owed = Renderer.shared.resumesPending
 
-        let navigation = begin { try await Dialogs.displayAlert("//list", message: "saved") }
+        let navigation = begin { try await Dialogs.alert("//list", message: "saved") }
         let id = try completionId(in: drain())
 
         XCTAssertEqual(Renderer.shared.resumesPending, owed,
@@ -316,7 +316,7 @@ final class CommandTests: XCTestCase {
     func testACompletionThatResumedNobodyOwesNothing() async throws {
         drain()
 
-        let navigation = begin { try await Dialogs.displayAlert("//list", message: "saved") }
+        let navigation = begin { try await Dialogs.alert("//list", message: "saved") }
         let id = try completionId(in: drain())
 
         await report(id, .finished([]))
@@ -330,7 +330,7 @@ final class CommandTests: XCTestCase {
     func testAnActIsReportedOnce() async throws {
         drain()
 
-        let navigation = begin { try await Dialogs.displayAlert("//list", message: "saved") }
+        let navigation = begin { try await Dialogs.alert("//list", message: "saved") }
         let id = try completionId(in: drain())
 
         let ran = await report(id, .finished([]))
@@ -351,7 +351,7 @@ final class CommandTests: XCTestCase {
     func testAnUnreadableBatchFailsItsActInsteadOfHangingIt() async throws {
         drain()
 
-        let navigation = begin { try await Dialogs.displayAlert("//list", message: "saved") }
+        let navigation = begin { try await Dialogs.alert("//list", message: "saved") }
         XCTAssertFalse(drain().isEmpty)
 
         Renderer.shared.failTakenCommands("the host could not read the batch")
@@ -373,7 +373,7 @@ final class CommandTests: XCTestCase {
     func testTheReceiptIsCashedOnce() async throws {
         drain()
 
-        let first = begin { try await Dialogs.displayAlert("//list", message: "saved") }
+        let first = begin { try await Dialogs.alert("//list", message: "saved") }
         XCTAssertFalse(drain().isEmpty)
 
         Renderer.shared.failTakenCommands("unreadable")
@@ -386,7 +386,7 @@ final class CommandTests: XCTestCase {
 
         // Queued but NOT yet taken, so no receipt covers it - the stale
         // cashing below must leave it alone.
-        let second = begin { try await Dialogs.displayAlert("//home", message: "saved") }
+        let second = begin { try await Dialogs.alert("//home", message: "saved") }
         Renderer.shared.failTakenCommands("stale")
 
         let acts = drain()
