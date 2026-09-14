@@ -465,7 +465,7 @@ enum Inspection {
         head += " · Swift \(whole(pass.describe + pass.encode)), \(pass.bytes) bytes"
 
         if let host = pass.host {
-            head += " · C# \(whole(host.read + host.apply)), \(host.nodes) nodes,"
+            head += " · host \(whole(host.read + host.apply)), \(host.nodes) nodes,"
                 + " \(host.made) made, \(host.kept) kept, \(host.adopted) adopted"
         }
 

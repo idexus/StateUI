@@ -3,26 +3,17 @@
 
 // How an animation spends its time.
 //
-// MAUI's Easing is a class of static instances rather than an enum, so there is
-// no member list to camelCase - but the names are MAUI's all the same, and each
-// case's `///` says which static member it stands for. Anything not here is one
-// MAUI does not ship.
-//
 // The numbers are this library's own, as every closed vocabulary's on this wire
-// are: declaration order from 0, written out, fixed forever. MAUI is free to
-// renumber or reorder anything of its own in any release, and a wire carrying
-// its values would then be reinterpreted silently; ours cannot move. The far
-// side translates by NAME - a mirror enum carrying these same numbers, each
-// member mapped onto the MAUI instance `SwiftTransitions.Read` already knows - and
-// `WireEnumTests.cs` reads this declaration and compares it against that
-// mirror, so the two cannot drift apart without a red test. Appending a case is
-// free; inserting or reordering one is not.
+// are: declaration order from 0, written out, fixed forever. A host maps each
+// case onto the curve it names, and no toolkit's numbering reaches the wire.
+// Appending a case is free; inserting or reordering one is not - a moved number
+// is read as a different curve, with nothing failing anywhere.
 //
 // An easing is a curve from 0 to 1: given how far through the animation is, it
 // says how far through the CHANGE should be. Linear is the straight line, and
 // every other one here is worth having only because it is not.
 
-/// The curve an animation follows. MAUI: Easing.
+/// The curve an animation follows.
 ///
 /// Half of an eased law - the other half being how long it takes:
 ///
@@ -32,45 +23,43 @@
 ///     …
 ///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
 ///
-/// The names are MAUI's static members, camelCased like every other enum in
-/// this library; the numbers are this library's own, as they are everywhere
-/// else on this wire. `In` accelerates from a standstill, `Out` decelerates
-/// into one, and `InOut` does both - which is why `.cubicOut` is the one to
-/// reach for when something arrives on screen, and `.cubicIn` when it leaves.
+/// The numbers are this library's own, as they are everywhere else on this
+/// wire. `In` accelerates from a standstill, `Out` decelerates into one, and
+/// `InOut` does both - which is why `.cubicOut` is the one to reach for when
+/// something arrives on screen, and `.cubicIn` when it leaves.
 public enum Easing: Int32, Sendable {
-    /// A straight line: the same speed from beginning to end. MAUI: Easing.Linear.
+    /// A straight line: the same speed from beginning to end.
     case linear = 0
 
-    /// Slow at the end, following a sine curve. MAUI: Easing.SinOut.
+    /// Slow at the end, following a sine curve.
     case sinOut = 1
 
-    /// Slow at the start, following a sine curve. MAUI: Easing.SinIn.
+    /// Slow at the start, following a sine curve.
     case sinIn = 2
 
-    /// Slow at both ends, following a sine curve. MAUI: Easing.SinInOut.
+    /// Slow at both ends, following a sine curve.
     case sinInOut = 3
 
-    /// Slow at the start, and more pronounced than `.sinIn`. MAUI: Easing.CubicIn.
+    /// Slow at the start, and more pronounced than `.sinIn`.
     case cubicIn = 4
 
     /// Slow at the end, and more pronounced than `.sinOut`. The usual choice for
-    /// something appearing. MAUI: Easing.CubicOut.
+    /// something appearing.
     case cubicOut = 5
 
     /// Slow at both ends, and more pronounced than `.sinInOut`.
-    /// MAUI: Easing.CubicInOut.
     case cubicInOut = 6
 
-    /// Overshoots at the end and settles back, twice. MAUI: Easing.BounceOut.
+    /// Overshoots at the end and settles back, twice.
     case bounceOut = 7
 
-    /// Bounces before it sets off. MAUI: Easing.BounceIn.
+    /// Bounces before it sets off.
     case bounceIn = 8
 
-    /// Pulls back before it sets off, the way a spring loads. MAUI: Easing.SpringIn.
+    /// Pulls back before it sets off, the way a spring loads.
     case springIn = 9
 
-    /// Overshoots the target and comes back to it. MAUI: Easing.SpringOut.
+    /// Overshoots the target and comes back to it.
     case springOut = 10
 
     var propValue: PropValue { .enumeration(rawValue) }

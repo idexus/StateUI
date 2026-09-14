@@ -5,7 +5,7 @@
 //
 // The tree says what the interface IS. Some things are not a shape but an act -
 // navigate, show an alert, copy to the clipboard - and Swift can no more perform
-// those than it can create a Label: they are MAUI methods on MAUI objects.
+// those than it can create a Label: they are calls on the host's native objects.
 //
 // So the same split applies. Swift DESCRIBES the act and the host performs it:
 //
@@ -15,23 +15,22 @@
 // completion id of the continuation waiting for it. The host drains that queue
 // after the handler suspends, and performs the act against the real page.
 //
-// The name is the MAUI method camelCased, as everywhere else in this library;
-// the class it sits on is said in the token's comment rather than in the name.
-// On the wire it travels as its number from the session's dictionary in
-// Core/Wire.swift, announced by the first batch that uses it.
+// The act is a token from Core/Tokens.swift, whose comment says what the host
+// does for it. On the wire it travels as its number from the session's
+// dictionary in Core/Wire.swift, announced by the first batch that uses it.
 //
 // WHY THE HANDLER SUSPENDS RATHER THAN TAKING A CLOSURE:
 // Both work; `await` reads better and sequences without nesting, which is what
 // an animation or a confirm-then-act will want. What makes it SAFE is
-// Core/MainThread.swift: the handler resumes on the thread MAUI draws on,
-// because this library's executor puts it there. Read that file before changing
-// anything here - a suspension that resumes anywhere else writes state next to a
-// C# render, and nothing crashes reliably.
+// Core/MainThread.swift: the handler resumes on the host's UI thread, because
+// this library's executor puts it there. Read that file before changing
+// anything here - a suspension that resumes anywhere else writes state next to
+// a render the host is running, and nothing crashes reliably.
 //
 // A BATCH IS A BATCH AND NOT A TRANSACTION. The host takes the queue in order
 // and STARTS each act in that order, but an act that waits - a dialog waiting
 // for the reader, a scroll animating to a row - does not hold up the one behind
-// it, so the answers come back in whatever order the MAUI methods finish. What
+// it, so the answers come back in whatever order the host finishes them. What
 // puts one act after another is `await`: a handler that awaits the first queues
 // the second only once the answer is in.
 //
@@ -41,11 +40,11 @@
 
 /// One act for the host to perform.
 struct Command {
-    /// The act - the MAUI method's name as a token, or an application's own
+    /// The act - one of the library's tokens, or an application's own
     /// registered one. What travels is the session dictionary's number for it.
     let act: Act
 
-    /// Its arguments, in the order MAUI takes them.
+    /// Its arguments, in the order the act takes them.
     let arguments: [PropValue]
 
     /// The id of the continuation waiting for it, if anyone is waiting.
@@ -59,8 +58,8 @@ struct Command {
 
 /// Something the host could not do.
 ///
-/// Carries the message the host reported, which for a MAUI method is usually the
-/// exception it threw - a view that has gone, a page that is not there.
+/// Carries the message the host reported, which is usually why the platform
+/// refused - a view that has gone, a page that is not there.
 public struct StateUIError: Error, CustomStringConvertible, Equatable {
     /// What went wrong, as the host described it.
     public let message: String
@@ -74,11 +73,11 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
     public var description: String { message }
 }
 
-/// Asks the host to perform a MAUI method - or a function the application
-/// registered with the host - and waits for it.
+/// Asks the host to perform an act - one the library ships, or a function the
+/// application registered with the host - and waits for it.
 ///
 /// The escape hatch behind the typed calls - `Dialogs.displayAlert` is one line
-/// over this - and the way an application reaches its OWN C# code: register a
+/// over this - and the way an application reaches its OWN host code: register a
 /// performer with the host under a name, declare the same name as an `Act`
 /// token, and call it like any act the library ships:
 ///
@@ -91,7 +90,7 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
 /// Returns the VALUES the host's reply carried - read them with `PropValue`'s
 /// accessors - and throws `StateUIError` if the act could not be performed,
 /// including when the host has no case and no registration for the name.
-/// Resumes on the thread MAUI draws on, which is where it was called from.
+/// Resumes on the host's UI thread, which is where it was called from.
 ///
 /// Callable from a handler, from a child task a handler started - `async let`
 /// runs its child on the cooperative pool, and the queue behind this is locked
@@ -128,9 +127,9 @@ public nonisolated(nonsending) func stateUICall(
 ///
 /// For an act whose outcome nothing depends on: it returns at once, and the
 /// host performs it on its next drain. Anything that fails reaches nothing
-/// here: the host logs a name it has no case for through `Report`, and Swift
-/// is never told - which is the difference from `stateUICall` and the reason
-/// to reach for that one instead.
+/// here: the host logs a name it has no case for, and Swift is never told -
+/// which is the difference from `stateUICall` and the reason to reach for
+/// that one instead.
 ///
 /// - Parameters:
 ///   - act: the act's token - a literal spelling works too.

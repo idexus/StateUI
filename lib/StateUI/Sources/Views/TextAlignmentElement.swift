@@ -8,7 +8,6 @@
 // controls' alone.
 
 /// Where a control's text sits INSIDE the control.
-/// MAUI: ITextAlignmentElement.
 ///
 /// Not where the control sits in its parent, which is `horizontalOptions` and
 /// `verticalOptions` on View - the trap this tier exists next to.
@@ -16,7 +15,6 @@ public protocol TextAlignmentElement: VisualElementProperties {}
 
 extension TextAlignmentElement {
     /// Where the text sits within the control's own width.
-    /// MAUI: HorizontalTextAlignment.
     ///
     /// Not the same as `horizontalOptions`, which is where the CONTROL sits
     /// within its parent - a centred label in a left-aligned control looks
@@ -26,7 +24,6 @@ extension TextAlignmentElement {
     }
 
     /// Where the text sits within the control's own height.
-    /// MAUI: VerticalTextAlignment.
     public func verticalTextAlignment(_ value: TextAlignment) -> Modified {
         setValue(.verticalTextAlignment, value.propValue)
     }

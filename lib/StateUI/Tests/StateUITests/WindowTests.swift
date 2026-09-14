@@ -187,7 +187,7 @@ final class WindowTests: XCTestCase {
         return nil
     }
 
-    /// The maximum has to be there as well: MAUI declares both ends, and a
+    /// The maximum has to be there as well: a window has both ends, and a
     /// property missing from one of them is a gap somebody has to work around.
     func testAWindowCanBeGivenAMaximumToo() {
         let session = WindowSession()
@@ -255,8 +255,8 @@ final class WindowTests: XCTestCase {
         XCTAssertEqual(patch.children.count, 0)
     }
 
-    /// The window node carries the six moments of its life - MAUI's Window
-    /// event names, camelCased - so the host's window reports with them.
+    /// The window node carries the six moments of its life as its events, so
+    /// the host's window reports with them.
     func testAWindowsLifetimeRidesAsItsEvents() {
         let patch = Renders().render(PlainWindow().body(panel: nil, session: WindowSession()))
 

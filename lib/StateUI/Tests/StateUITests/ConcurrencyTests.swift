@@ -7,11 +7,9 @@
 // task does not inherit the parent's actor - so two animations started with
 // `async let` reach `Renderer.send` from pool threads while the host thread is
 // taking commands and dispatching completions. The registry behind that is a
-// dictionary and an array, and unguarded they were a data race: a lost
+// dictionary and an array, and unguarded they are a data race: a lost
 // continuation on a good day, which reads as a handler frozen at its `await`,
-// and corrupted memory on a bad one, which took real devices down. Measured on
-// Mac Catalyst, an iOS device and an Android device alike, in the gallery's
-// concurrent-animation sample.
+// and corrupted memory on a bad one.
 //
 // What these tests pin is the guarantee, not the crash: every act queued from a
 // child task is taken exactly once, answered exactly once, and every awaiting
@@ -236,8 +234,8 @@ final class ConcurrencyTests: XCTestCase {
     /// The gallery Card's shape: an act awaited, a child STARTED and left
     /// running, another act awaited beside it, the child awaited last. What
     /// the press animation does - dip, then the return and the navigation
-    /// starting together - and the shape that froze the gallery on Mac
-    /// Catalyst with the handler never resuming from its FIRST await.
+    /// starting together - and the shape in which an unguarded registry
+    /// leaves the handler never resuming from its FIRST await.
     func testAChildStartedBetweenTwoActsLeavesBothAnswered() async throws {
         let renders = Renders()
         var reached = false

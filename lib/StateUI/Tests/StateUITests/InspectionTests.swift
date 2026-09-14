@@ -210,7 +210,7 @@ final class InspectionTests: XCTestCase {
         let head = try XCTUnwrap(lines.first)
 
         XCTAssertTrue(head.hasPrefix("StateUI inspect #\(first.number) build at "), head)
-        XCTAssertTrue(head.contains(" · C# 352 µs, 5 nodes, 2 made, 3 kept, 0 adopted · 3 built · 0 carried"), head)
+        XCTAssertTrue(head.contains(" · host 352 µs, 5 nodes, 2 made, 3 kept, 0 adopted · 3 built · 0 carried"), head)
         XCTAssertEqual(lines.dropFirst().map { $0.components(separatedBy: " · ")[0] }, [
             "  ● Holds — first time",
             "    ● Titled — first time",

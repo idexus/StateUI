@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: GraphicsView.
-
 /// GraphicsView's own properties - the half a `Style<GraphicsView>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
@@ -10,8 +8,7 @@
 public protocol GraphicsViewProperties: PropertyContainer {}
 
 extension GraphicsViewProperties {
-    /// What to draw, written as the calls a MAUI `IDrawable` would have made.
-    /// MAUI: GraphicsView.Drawable.
+    /// What to draw, written as the canvas calls that make the drawing.
     ///
     ///     .drawable {
     ///         Draw.strokeColor(.firebrick)
@@ -27,7 +24,7 @@ extension GraphicsViewProperties {
     }
 }
 
-/// A canvas to draw on, one instruction at a time. MAUI: GraphicsView.
+/// A canvas to draw on, one instruction at a time.
 ///
 ///     GraphicsView {
 ///         Draw.fillColor(.cornflowerBlue)
@@ -42,10 +39,10 @@ extension GraphicsViewProperties {
 ///     }
 ///     .heightRequest(48)
 ///
-/// MAUI's GraphicsView takes an `IDrawable` - an object with a Draw method, and
-/// an object is the one thing this boundary cannot carry. So the drawing travels
-/// as the calls that method would have made, and the host replays them against
-/// the real canvas. Everything `Draw` offers is a member of MAUI's own ICanvas.
+/// The drawing travels as DATA - its canvas calls, in order - because an
+/// object with a draw method is the one thing this boundary cannot carry; the
+/// host replays the calls against the platform's own canvas. Everything `Draw`
+/// offers is one such call - see Types/Drawing.swift.
 ///
 /// The instructions are run again whenever the view is described again -
 /// which a state the drawing reads is enough to cause - so a drawing follows
@@ -65,7 +62,6 @@ public struct GraphicsView: View, GraphicsViewProperties {
     }
 
     /// A finger went down, or a mouse button was pressed.
-    /// MAUI: GraphicsView.StartInteraction.
     ///
     /// The point is in the canvas's own coordinates - the same ones the drawing
     /// instructions use, so what arrives can be drawn where it happened.
@@ -74,13 +70,12 @@ public struct GraphicsView: View, GraphicsViewProperties {
     }
 
     /// It moved while still down, with where it is now - the canvas's own
-    /// coordinates again. MAUI: GraphicsView.DragInteraction.
+    /// coordinates again.
     public func onDragInteraction(_ handler: @escaping ValueEventHandler<Point>) -> Self {
         point(.dragInteraction, handler)
     }
 
     /// It was lifted, with where it left off.
-    /// MAUI: GraphicsView.EndInteraction.
     public func onEndInteraction(_ handler: @escaping ValueEventHandler<Point>) -> Self {
         point(.endInteraction, handler)
     }

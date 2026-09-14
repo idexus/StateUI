@@ -3,7 +3,7 @@
 
 // The host's time zones, without Foundation.
 
-/// What the host knows about time zones. .NET: TimeZoneInfo.
+/// What the host knows about time zones.
 ///
 /// Two questions - which zone the reader is in, and how far a zone is from UTC
 /// on a given day - and the host answers both the same way on every platform
@@ -18,9 +18,8 @@
 /// So a zone reached through here is the same answer everywhere, the way
 /// `ClockTime.now()` is the same clock everywhere.
 public enum TimeZoneInfo {
-    /// The IANA identifier of the host's local zone - `Europe/Warsaw`. .NET:
-    /// TimeZoneInfo.Local, converted from a Windows zone name where the
-    /// platform uses its own.
+    /// The IANA identifier of the host's local zone - `Europe/Warsaw` -
+    /// converted from the platform's own zone name where it uses one.
     ///
     ///     let zone = try await TimeZoneInfo.local()
     ///
@@ -39,8 +38,7 @@ public enum TimeZoneInfo {
         return zone
     }
 
-    /// How far a zone is from UTC on a given day. .NET:
-    /// TimeZoneInfo.GetUtcOffset.
+    /// How far a zone is from UTC on a given day.
     ///
     ///     let here = try await TimeZoneInfo.getUtcOffset()
     ///     let tokyo = try await TimeZoneInfo.getUtcOffset(of: "Asia/Tokyo")

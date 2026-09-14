@@ -5,8 +5,7 @@
 // window and the windows it opens beside it - and this is what the tree says
 // about them: which scenes are open, what each has open, what every window is
 // known by, what each session is told and does, and what the host writes down
-// for the system to restore. What the host does with it is next door, in the
-// C# SceneTests.
+// for the system to restore.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -907,11 +906,11 @@ final class SceneTests: XCTestCase {
         XCTAssertTrue(resync.complete, "a stale generation is answered with the whole tree")
     }
 
-    // MARK: - The contract the C# side reads
+    // MARK: - The contract a host reads
 
     /// Two scenes, the first with a window beside its main one, every window
     /// named on its own session, and then that window closed - written down
-    /// for the C# side to apply to a real application.
+    /// for a host to apply to a real application.
     func testTheScenesAreWrittenDown() throws {
         twoScenes()
         Scenes.shared.list[0].windows = [OpenedWindow(type: .fonts, serial: 1, value: nil, text: nil)]

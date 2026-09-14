@@ -14,12 +14,12 @@
 // it. It is the library's own - named FRAME because a frame is where a view
 // sits in its PARENT's coordinates, where "bounds" would say the view's own.
 //
-// The CONTAINER is Swift-side sugar over it, and earns its place by what the
-// modifier cannot do: its content is built FROM the measurement. A
+// The CONTAINER is composed over it in the core, and earns its place by what
+// the modifier cannot do: its content is built FROM the measurement. A
 // `FrameReader` holds the last frame in a `@State` of its own, so the closure
 // runs again whenever the frame settles somewhere new, with the measurement
 // arriving through the same channel as every other report. Nothing about it
-// exists on the C# side at all.
+// exists in the host at all.
 //
 // ONE REPORT CARRIES EVERY SPACE. The wire says
 // "x,y,width,height,windowX,windowY,safeX,safeY" - the frame in the parent,

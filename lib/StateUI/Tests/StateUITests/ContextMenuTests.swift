@@ -66,7 +66,7 @@ final class ContextMenuTests: XCTestCase {
         XCTAssertEqual(node.children.map { $0.type }, ["Label", "ContextFlyout"])
     }
 
-    /// A leaf takes one too: MAUI puts ContextFlyout on any view.
+    /// A leaf takes one too: any view can carry a menu.
     func testALeafViewTakesAMenu() throws {
         let flyout = try XCTUnwrap(menu(Label("row").contextFlyout { MenuFlyoutItem("Copy") }))
 
@@ -127,7 +127,7 @@ final class ContextMenuTests: XCTestCase {
     }
 
     /// The slot is counted like any other child on the wire; what leaves it out
-    /// of the arrangement is the host - see StateUIRenderer.IsSlot.
+    /// of the arrangement is the host.
     func testTheSlotIsCountedAmongTheChildrenOnTheWire() throws {
         let renders = Renders()
 

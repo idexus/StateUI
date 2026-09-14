@@ -9,7 +9,8 @@
 //   RenderedNode  one element as it now stands on the host - its identity,
 //                 its properties, the handler ids it quotes back, its children
 //   HostPatch     the difference between that and the tree just written, which
-//                 a native host reads directly and Wire serializes for MAUI
+//                 a native host reads directly and Wire serializes for a
+//                 foreign-language host
 //
 // Keeping the first is what makes the second possible. Without it, "what
 // changed" has no answer and the only correct message is the whole tree.
@@ -46,7 +47,7 @@ public enum ElementId: Hashable, Sendable {
     }
 }
 
-/// One element as it currently stands on the C# side.
+/// One element as it currently stands on the host.
 ///
 /// A class, not a struct: the differ carries the unchanged parts of the previous
 /// tree straight into the next one, and shares them rather than copying.
@@ -54,19 +55,19 @@ final class RenderedNode {
     /// Who this element is. Fixed for as long as it stays in the tree.
     let id: ElementId
 
-    /// The MAUI class C# made for it. A change here cannot be patched, so it
-    /// forces a replace.
+    /// The kind of control the host made for it. A change here cannot be
+    /// patched, so it forces a replace.
     var type: NodeType
 
-    /// Every property C# has been told about, as it was told.
+    /// Every property the host has been told about, as it was told.
     var props: [Prop: PropValue]
 
-    /// MAUI event name -> the handler id C# quotes back when it fires.
+    /// Event token -> the handler id the host quotes back when it fires.
     ///
     /// Assigned once, when the element first handles that event, and kept for as
     /// long as it does. An element that is not part of a render's message keeps
-    /// the ids C# already has - which is exactly why they cannot be per-render
-    /// numbers.
+    /// the ids the host already has - which is exactly why they cannot be
+    /// per-render numbers.
     var events: [Event: Int]
 
     /// The path the builder took to write it - see `Node.key`, and `Differ.match`,
@@ -182,7 +183,7 @@ final class RenderedNode {
     /// its window again. See Core/Sampling.swift.
     let readings: [Sampling]
 
-    /// The elements under it, in the order C# has them.
+    /// The elements under it, in the order the host has them.
     var children: [RenderedNode]
 
     /// What this element's subtree LOOKS like, values left out - filled in
@@ -204,7 +205,8 @@ final class RenderedNode {
     /// And which parts of a child's place travelled, for the same reason.
     var lanes: MotionLanes = .all
 
-    /// One element as C# currently has it. Built by the differ, never by hand.
+    /// One element as the host currently has it. Built by the differ, never
+    /// by hand.
     init(
         id: ElementId,
         type: NodeType,

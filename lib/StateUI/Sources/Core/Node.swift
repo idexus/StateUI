@@ -267,10 +267,10 @@ public typealias ValueEventHandler<Value> = nonisolated(nonsending) (Value) asyn
 /// a property for which it has no typed modifier:
 ///
 ///     extension NodeType {
-///         static let trafficLight = NodeType("Gallery.TrafficLight")
+///         static let marker = NodeType("Maps.Marker")
 ///     }
 ///
-///     Node(type: .trafficLight, props: ["state": .enumeration(0)])
+///     Node(type: .marker, props: ["title": .string("Harbour")])
 ///
 /// The host resolves the type token through StateUI's built-in contract or its
 /// application control registry. An unresolved type draws the unknown-control

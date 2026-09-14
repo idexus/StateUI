@@ -63,11 +63,11 @@ public final class WireNames {
 
 /// One decoded act: what `Command` says, read back off the wire.
 public struct WireAct {
-    /// The MAUI method name, resolved from the session's dictionary - an act
-    /// the library wraps and one an application named for itself alike.
+    /// The act's name, resolved from the session's dictionary - an act the
+    /// library wraps and one an application named for itself alike.
     public let name: String
 
-    /// Its arguments, in the order MAUI takes them.
+    /// Its arguments, in the order the act declares them.
     public let arguments: [PropValue]
 
     /// The completion id, when someone is waiting. Negative, always.
@@ -621,7 +621,7 @@ public enum WireProbe {
     ///     here.)
     private static func spelling(of member: Int32, under key: String) -> String? {
         switch key {
-        // VisualElement, View and the text mixins.
+        // The view tiers and the text mixins.
         case Prop.horizontalOptions.name, Prop.verticalOptions.name:
             return spelled(member, as: LayoutOptions.self)
         case Prop.horizontalTextAlignment.name, Prop.verticalTextAlignment.name:
@@ -681,9 +681,9 @@ public enum WireProbe {
         case Prop.mapType.name:
             return spelled(member, as: MapType.self)
 
-        // The bit sets. MAUI's own bits, so the numbers come from the library
-        // and only the member NAMES are written out - an OptionSet's members
-        // are static properties, which nothing can enumerate.
+        // The bit sets. The numbers come from the library and only the member
+        // NAMES are written out - an OptionSet's members are static
+        // properties, which nothing can enumerate.
         case Prop.fontAttributes.name:
             return spelled(member, asBitsOf: [
                 ("none", FontAttributes.none.rawValue),
@@ -743,7 +743,7 @@ public enum WireProbe {
     /// A whole-set match comes first, so `AbsoluteLayoutFlags.all` reads as
     /// `all` rather than as the four bits that -1 happens to contain, and
     /// `positionProportional` beats `xProportional|yProportional` - both are
-    /// names MAUI itself declares for that number. Failing that the single
+    /// names the library itself declares for that number. Failing that the single
     /// bits are named, and a bit no member accounts for gives up and answers
     /// nil: half a spelling would read as the whole of one.
     private static func spelled(

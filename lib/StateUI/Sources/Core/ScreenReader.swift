@@ -14,10 +14,8 @@
 // something that HAPPENS, at a moment, and no value on a tree can say "again".
 
 /// What the platform's screen reader says out loud, asked of the host.
-/// MAUI: SemanticScreenReader.
 public enum SemanticScreenReader {
     /// Says something to the reader now, whatever they were on.
-    /// MAUI: SemanticScreenReader.Announce.
     ///
     ///     try await SemanticScreenReader.announce("5 results")
     ///

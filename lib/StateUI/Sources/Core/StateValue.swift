@@ -71,7 +71,7 @@ public protocol StateValue: Equatable, Sendable {
     static var lanes: Int { get }
 
     /// Which of a view's values this one IS, where the property alone cannot
-    /// say. MAUI has no equivalent: it is what `.motion(_:_:)` names.
+    /// say - the group `.motion(_:_:)` names.
     ///
     /// A colour is the case, and it is known from the value and from nothing
     /// else - which is what keeps a colour property added later in the right

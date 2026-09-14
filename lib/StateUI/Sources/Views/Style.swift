@@ -3,9 +3,9 @@
 
 // Styles: what every control of a type looks like - resolved on THIS side.
 //
-// A MAUI Style is a bag of property values applied to every control of a type,
-// and this library already writes those values one way: as modifiers. So a
-// style is written with the same modifiers, chained on the style itself:
+// A style is a bag of property values applied to every control of a type, and
+// this library already writes those values one way: as modifiers. So a style
+// is written with the same modifiers, chained on the style itself:
 //
 //     Style<Label>()
 //         .textColor(AppColors.text)
@@ -37,20 +37,18 @@
 //
 //     Label("Welcome").style("Headline")
 //
-// WHERE A STYLE IS APPLIED is the one thing here that is not MAUI's. Nothing
-// about a style crosses the boundary: the differ merges it into the control it
-// belongs to, so what the host receives is a control with every value already
-// on it. There is no ResourceDictionary, no `Style` object, no StaticResource
-// and nothing on the far side that has to know what a style is - which is what
-// keeps the renderer small enough to be written again for another platform, and
-// why the rules are stated here rather than inherited:
+// WHERE A STYLE IS APPLIED is this side. Nothing about a style crosses the
+// boundary: the differ merges it into the control it belongs to, so what the
+// host receives is a control with every value already on it. There is no style
+// object, no resource lookup and nothing in the host that has to know what a
+// style is - which is what keeps the host small enough to be written again for
+// another platform, and why the rules are stated here:
 //
 //   - A KEYED style replaces the implicit one for the type, and a value written
 //     on the control beats both - one property at a time.
 //   - A state written on the CONTROL is written over the state of the same name
-//     in its style, one setter at a time. MAUI replaces the whole group list,
-//     because a group list is one property; merging is the rule every other
-//     value here already follows, and it is what lets a control hear a state
+//     in its style, one setter at a time. Merging is the rule every other value
+//     here already follows, and it is what lets a control hear a state
 //     (`.onVisualStateChanged`) without losing the paint its style gave it.
 //   - `basedOn` is flattened when the sheet is built, so a chain costs nothing
 //     per control.
@@ -60,10 +58,9 @@
 
 /// A control a style can be written for.
 ///
-/// The requirement is an initializer that sets nothing - `new Label()` is
-/// legal in MAUI for the same reason - and what the style takes from it is
-/// the node TYPE, so the target is named once, by the control itself, rather
-/// than spelled again as a string.
+/// The requirement is an initializer that sets nothing, and what the style
+/// takes from it is the node TYPE, so the target is named once, by the control
+/// itself, rather than spelled again as a string.
 public protocol StyleTarget: VisualElement {
     /// A control with nothing set. Where a style reads its target's type.
     init()
@@ -72,47 +69,45 @@ public protocol StyleTarget: VisualElement {
     /// group of states that named none is given, so that it has somewhere to
     /// return to.
     ///
-    /// It is `.normal` for everything but a RadioButton, and that exception is
-    /// MAUI's doing rather than a choice made here - see the note on
-    /// `VisualState.unchecked`. A control an application registers itself may
-    /// say so too, if the C# behind it drives a state of its own.
+    /// It is `.normal` for everything but a RadioButton, which rests in
+    /// `.unchecked` - see the note on `VisualState.unchecked`. A control an
+    /// application registers itself may say so too, if the native control
+    /// behind it drives a state of its own.
     static var restingVisualState: VisualState<Self> { get }
 }
 
 extension StyleTarget {
-    /// Where nearly everything rests: `VisualElement.ChangeVisualState` moves an
-    /// enabled, unfocused, un-hovered control to Normal.
+    /// Where nearly everything rests: an enabled, unfocused, un-hovered control
+    /// is in Normal.
     public static var restingVisualState: VisualState<Self> { .normal }
 }
 
-/// One state a control can be in. MAUI: VisualState.
+/// One state a control can be in.
 ///
-/// The names are MAUI's, spelled exactly as they are: the VisualStateManager
-/// matches a state by its name, so unlike an enum value on the wire this is not
-/// camelCased - "PointerOver" is the state, and "pointerOver" is nothing.
+/// The names are spelled exactly as the host matches them: a state is matched
+/// by its name, so unlike an enum value on the wire this is not camelCased -
+/// "PointerOver" is the state, and "pointerOver" is nothing.
 ///
 /// The TARGET is a phantom, and it is what makes the list after the dot the
 /// states that control actually enters: `Style<Switch>().visualState(.on)`
 /// compiles and `Style<Button>().visualState(.on)` does not, because nothing
 /// ever moves a Button into On and a state nothing drives is a style that
-/// silently does nothing. Which control drives which was measured against MAUI
-/// itself - `MauiStatesTests` on the C# side is where that is pinned.
+/// silently does nothing.
 public struct VisualState<Target>: Equatable, Sendable {
-    /// The name the VisualStateManager matches on, exactly as MAUI spells it.
+    /// The name a state is matched on, spelled exactly.
     public let name: String
 
-    /// A state MAUI has that this type does not name yet. Spell it as MAUI
-    /// does: `VisualState("PointerOver")`, not "pointerOver".
+    /// A state by its name, for one this type does not name yet. Spell it as
+    /// the host matches it: `VisualState("PointerOver")`, not "pointerOver".
     public init(_ name: String) {
         self.name = name
     }
 }
 
-/// The states every view has, `VisualElement.ChangeVisualState` being what
-/// drives them.
+/// The states every view has, driven for every visual element.
 extension VisualState where Target: VisualElement {
     /// The ordinary state - nothing pressed, focused or disabled. What a control
-    /// returns to. MAUI: VisualStateManager.CommonStates.
+    /// returns to.
     public static var normal: Self { Self("Normal") }
 
     /// While `isEnabled` is false.
@@ -123,10 +118,10 @@ extension VisualState where Target: VisualElement {
 
     /// While the control does NOT have the keyboard focus.
     ///
-    /// MAUI enters this straight AFTER Normal, so a group declaring both rests
-    /// here rather than there - measured. That makes it a second spelling of
-    /// Normal rather than the pair of `.focused`, and worth writing only where
-    /// saying it twice says something.
+    /// A control enters this straight AFTER Normal, so a group declaring both
+    /// rests here rather than there. That makes it a second spelling of Normal
+    /// rather than the pair of `.focused`, and worth writing only where saying
+    /// it twice says something.
     public static var unfocused: Self { Self("Unfocused") }
 
     /// While a mouse or pen is over the control. Never on a touch-only device.
@@ -135,16 +130,16 @@ extension VisualState where Target: VisualElement {
     /// While the control is the chosen one.
     ///
     /// Nothing in `VisualElement` drives this: it is entered by whatever does
-    /// the choosing - MAUI's own indicator dots, where an `IndicatorView` draws
-    /// them from views.
+    /// the choosing - an `IndicatorView`'s dots, where it draws them from
+    /// views.
     public static var selected: Self { Self("Selected") }
 
 }
 
-/// A Button is held down. MAUI: `Button.ChangeVisualState`.
+/// A Button is held down.
 extension VisualState where Target == Button {
-    /// While the button is held down. MAUI raises it from the platform, so this
-    /// is a real press rather than a gesture recognized on this side.
+    /// While the button is held down. The host raises it from the platform, so
+    /// this is a real press rather than a gesture recognized on this side.
     public static var pressed: Self { Self("Pressed") }
 }
 
@@ -154,7 +149,7 @@ extension VisualState where Target == ImageButton {
     public static var pressed: Self { Self("Pressed") }
 }
 
-/// A Switch says which way it is. MAUI: `Switch.ChangeVisualState`.
+/// A Switch says which way it is.
 extension VisualState where Target == Switch {
     /// While `isToggled` is true.
     public static var on: Self { Self("On") }
@@ -177,14 +172,12 @@ extension VisualState where Target == RadioButton {
 
     /// While `isChecked` is false, which is where a RadioButton RESTS.
     ///
-    /// A RadioButton rests here rather than in `.normal`, and that is MAUI's
-    /// doing rather than a choice made on this side.
-    /// `RadioButton.ChangeVisualState` enters Checked or Unchecked FIRST and the
-    /// ordinary Normal AFTER, so a group that declares Normal ends every
-    /// transition there and the pair is never seen at all. It is the only
-    /// control this way round - a Switch and a CheckBox call the base first, so
-    /// their own states win over a Normal beside them. Measured;
-    /// `MauiStatesTests` pins both halves.
+    /// A RadioButton rests here rather than in `.normal`, because it enters
+    /// Checked or Unchecked FIRST and the ordinary Normal AFTER, so a group
+    /// that declares Normal ends every transition there and the pair is never
+    /// seen at all. It is the only control this way round - a Switch and a
+    /// CheckBox enter Normal first, so their own states win over a Normal
+    /// beside them. `StyleTests` pins the resting state this gives a group.
     public static var unchecked: Self { Self("Unchecked") }
 }
 
@@ -193,7 +186,7 @@ extension RadioButton {
     public static var restingVisualState: VisualState<RadioButton> { .unchecked }
 }
 
-/// Property values for every control of a type. MAUI: Style.
+/// Property values for every control of a type.
 ///
 ///     Style<Button>()
 ///         .textColor(.white)
@@ -209,7 +202,7 @@ extension RadioButton {
 /// of its target's tiers and to nothing else - so what can be written on one
 /// is exactly what a style can carry. An event, a gesture, an `.id()` or
 /// another control's property does not compile; the compiler is the check,
-/// not the renderer.
+/// not the host.
 ///
 /// `Style<Button>` is this type with its second parameter filled in. That
 /// parameter is the CONTEXT - the style itself, or one of its states - a
@@ -261,19 +254,17 @@ extension StyleBag: PropertyContainer {
 }
 
 extension StyleBag where Context == StyleBase {
-    /// A style every control of the type gets. MAUI: a Style with no `x:Key`.
+    /// A style every control of the type gets.
     public init() {
         self.init(key: nil)
     }
 
-    /// A style asked for by name. MAUI: `x:Key`, read back with
-    /// `Style="{StaticResource …}"` - here, `.style("Headline")`.
+    /// A style asked for by name - `.style("Headline")` on a control.
     public init(_ key: String) {
         self.init(key: key)
     }
 
-    /// The style this one starts from. MAUI: Style.BasedOn, which takes the
-    /// style itself; here it is the key that style was given.
+    /// The style this one starts from, named by the key that style was given.
     ///
     /// The one it names must be in the same sheet - which is where the chain is
     /// flattened, once, so a style based on a style based on a style costs a
@@ -286,7 +277,6 @@ extension StyleBag where Context == StyleBase {
     }
 
     /// What changes while a control of this type is in a state.
-    /// MAUI: a VisualState inside `VisualStateManager.VisualStateGroups`.
     ///
     ///     Style<Button>()
     ///         .backgroundColor(.cornflowerBlue)
@@ -299,11 +289,11 @@ extension StyleBag where Context == StyleBase {
     /// - Parameters:
     ///   - state: which state these setters describe. What is offered after
     ///     the dot is the states this target actually enters.
-    ///   - group: which VisualStateGroup the state belongs to. A control is in
+    ///   - group: which group of states the state belongs to. A control is in
     ///     one state per group and leaves a state only by entering another in
     ///     the SAME group, so states that exclude one another belong together.
-    ///     MAUI requires a name and nearly everything is in `CommonStates`, so
-    ///     that is the default.
+    ///     Every group has a name and nearly everything is in `CommonStates`,
+    ///     so that is the default.
     ///   - setters: the property values in force while the control is there.
     public func visualState(
         _ state: VisualState<Target>,
@@ -336,7 +326,7 @@ extension StyleBag where Context == StyleBase {
     ///
     /// - Parameters:
     ///   - state: the state the control returns to, changing nothing.
-    ///   - group: which VisualStateGroup it belongs to, `CommonStates` unless
+    ///   - group: which group of states it belongs to, `CommonStates` unless
     ///     said otherwise.
     public func visualState(_ state: VisualState<Target>, group: String = "CommonStates") -> Self {
         var copy = self
@@ -374,12 +364,12 @@ extension StyleBag where Context == StyleBase {
 /// list of states is arranged, so a style and a control put theirs in the same
 /// shape.
 ///
-/// Three rules, and each is there for a measured reason:
+/// Three rules, and each is there for a reason:
 ///
 /// - A state REPLACES one of the same name in the same group, WHERE THE FIRST
-///   ONE WAS. MAUI refuses two states of one name in one group, so the second
-///   writing has to win rather than stand beside the first; it wins the values
-///   and not the position, so writing order is what the list reads as.
+///   ONE WAS. A group holds one state of each name, so the second writing has
+///   to win rather than stand beside the first; it wins the values and not the
+///   position, so writing order is what the list reads as.
 /// - A group that names no resting state is given the TARGET's - an empty one,
 ///   changing nothing. A group is left by entering another state, so a group
 ///   whose only state is Disabled has no way back: the control is disabled once
@@ -434,8 +424,7 @@ func visualStates(_ existing: [Node], adding state: Node, resting: String) -> [N
 
 extension VisualElement where Self: StyleTarget {
     /// What changes while THIS control is in a state - the same thing a style
-    /// says, said about one control. MAUI: `VisualStateManager.VisualStateGroups`
-    /// set on the control rather than through a Setter.
+    /// says, said about one control.
     ///
     ///     Button("Save")
     ///         .visualState(.disabled) { $0.textColor(Palette.disabled) }
@@ -448,16 +437,15 @@ extension VisualElement where Self: StyleTarget {
     /// - Important: a state written here is written OVER the state of the same
     ///   name in the control's style, one setter at a time - so a control may
     ///   change what one state looks like and leave the rest of its style's
-    ///   states exactly as they were. MAUI cannot do that, a group list being
-    ///   one property; this side can, because the style is resolved here.
+    ///   states exactly as they were, the style being resolved on this side.
     /// - Parameters:
     ///   - state: which state these setters describe. What is offered after
     ///     the dot is the states this control actually enters.
-    ///   - group: which VisualStateGroup the state belongs to. A control is in
+    ///   - group: which group of states the state belongs to. A control is in
     ///     one state per group and leaves a state only by entering another in
     ///     the SAME group, so states that exclude one another belong together.
-    ///     MAUI requires a name and nearly everything is in `CommonStates`, so
-    ///     that is the default.
+    ///     Every group has a name and nearly everything is in `CommonStates`,
+    ///     so that is the default.
     ///   - setters: the property values in force while the control is there.
     public func visualState(
         _ state: VisualState<Self>,
@@ -484,7 +472,7 @@ extension VisualElement where Self: StyleTarget {
     ///
     /// - Parameters:
     ///   - state: the state the control returns to, changing nothing.
-    ///   - group: which VisualStateGroup it belongs to, `CommonStates` unless
+    ///   - group: which group of states it belongs to, `CommonStates` unless
     ///     said otherwise.
     public func visualState(
         _ state: VisualState<Self>,
@@ -506,17 +494,15 @@ extension VisualElement where Self: StyleTarget {
     ///             try await $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(120, .cubicOut))
     ///         }
     ///
-    /// A style's setters change instantly and there is nothing MAUI can do
-    /// about that; a handler can take as long as it likes, so this is where a
-    /// state becomes a transition.
+    /// A style's setters change instantly; a handler can take as long as it
+    /// likes, so this is where a state becomes a transition.
     ///
-    /// - Important: a control reports the states it DECLARES, and nothing else.
-    ///   A VisualStateGroup announces what it entered in no other way - MAUI
-    ///   gives `CurrentState` no event of its own - so the announcement is a
-    ///   setter, and a setter has to sit in a state somebody wrote down. The
-    ///   states named here are declared for you, in `CommonStates`, without
-    ///   changing what the control looks like in them; states written with
-    ///   `.visualState` are heard as they are, whatever group they are in.
+    /// - Important: a control reports the states it DECLARES, and nothing else:
+    ///   the host knows a state only from the list it is sent, so a state
+    ///   nobody wrote down is one it cannot announce. The states named here
+    ///   are declared for you, in `CommonStates`, without changing what the
+    ///   control looks like in them; states written with `.visualState` are
+    ///   heard as they are, whatever group they are in.
     /// - Important: DECLARING a state can change which one the control rests in
     ///   - see `VisualState.unchecked` for the case where that bites. Name here
     ///   only the states this control is meant to react to.
@@ -548,7 +534,7 @@ extension VisualElement where Self: StyleTarget {
             }
 
             node.addHandler(.visualStateChanged) {
-                // The name is what MAUI matches a state by, and what the report
+                // The name is what a state is matched by, and what the report
                 // carries. A payload of another shape leaves the handler alone,
                 // the rule every typed event follows.
                 //
@@ -566,8 +552,7 @@ extension VisualElement where Self: StyleTarget {
     ///
     /// The states ride as CHILDREN of the control - the `.contextFlyout` shape,
     /// a modifier that writes a child rather than a property - appended after
-    /// whatever the control lays out, which is where the renderer subtracts
-    /// them.
+    /// whatever the control lays out, which is where the host subtracts them.
     private func visualState(_ written: Node) -> Modified {
         modified { write(written, into: &$0, resting: Self.restingVisualState.name) }
     }
@@ -645,10 +630,10 @@ public enum StyleBuilder {
     public static func buildArray(_ parts: [[AnyStyle]]) -> [AnyStyle] { parts.flatMap { $0 } }
 }
 
-/// The styles an application makes available. MAUI: ResourceDictionary.
+/// The styles an application makes available.
 ///
-/// Written into the application's session as it is made, which is where MAUI
-/// keeps the ones that apply to the whole app:
+/// Written into the application's session as it is made, so they apply to the
+/// whole application:
 ///
 ///     application.styles = StyleSheet {
 ///         Style<Label>().textColor(AppColors.text)
@@ -659,11 +644,8 @@ public enum StyleBuilder {
 /// control, and it is a VALUE: two sheets saying the same thing are the same
 /// sheet.
 ///
-/// - Note: MAUI's own `StyleSheet` is its CSS one, which this library does not
-///   surface. This is the sheet of `Style`s an application declares - what
-///   `Application.Resources` holds in a MAUI app, minus everything a resource
-///   dictionary can hold that is not a style, because nothing else is resolved
-///   on this side.
+/// - Note: a sheet holds `Style`s and nothing else, because a style is the one
+///   thing resolved on this side.
 public struct StyleSheet {
     /// Every style, in writing order, each with whatever it is based on already
     /// under it.
@@ -682,8 +664,7 @@ public struct StyleSheet {
     /// The styles the closure describes, with every `basedOn` chain flattened.
     ///
     /// Two styles under one key, or two implicit ones for one target, are one:
-    /// the LAST wins, as it does in a dictionary literal and in MAUI's own
-    /// resource dictionary.
+    /// the LAST wins, as a second assignment to one dictionary key does.
     public init(@StyleBuilder _ content: () -> [AnyStyle]) {
         written = content()
 
@@ -696,8 +677,8 @@ public struct StyleSheet {
         }
 
         // Flattened against what was WRITTEN, so a style may name one written
-        // below it - the one thing this does that a XAML dictionary cannot,
-        // where a StaticResource has to be declared first.
+        // below it: where a style stands in the sheet does not decide what it
+        // may start from.
         let unflattened = written
 
         for index in written.indices {
@@ -733,12 +714,11 @@ public struct StyleSheet {
     /// The style a node wears: the one it asked for by name, or the one every
     /// control of its type gets.
     ///
-    /// A key naming nothing falls through to the implicit style, which is what
-    /// MAUI does too - an unresolved `Style` is no style, and no style is what
-    /// makes an implicit one apply. A key naming a style declared for ANOTHER
-    /// control falls through the same way: its values would be half applied
-    /// and half dropped unread here, where MAUI refuses the TargetType
-    /// mismatch out loud.
+    /// A key naming nothing falls through to the implicit style - an
+    /// unresolved key is no style, and no style is what makes an implicit one
+    /// apply. A key naming a style declared for ANOTHER control falls through
+    /// the same way, since its values would be half applied and half dropped
+    /// unread.
     func style(for node: Node) -> AnyStyle? {
         if let key = node.props[.style]?.name, let at = keyed[key],
            written[at].target == node.type {
@@ -803,8 +783,8 @@ func styled(_ node: Node, with sheet: StyleSheet?) -> Node {
 
     guard let style = style else { return node }
 
-    // The control's own values win, one property at a time - which is MAUI's
-    // precedence and this library's everywhere else.
+    // The control's own values win, one property at a time - this library's
+    // precedence everywhere.
     if !style.props.isEmpty {
         node.props = style.props.merging(node.props) { _, own in own }
     }
@@ -829,9 +809,8 @@ func styled(_ node: Node, with sheet: StyleSheet?) -> Node {
 ///
 /// A state of the same name in the same group is OVERLAID rather than replaced,
 /// so a control that declares `.pointerOver` only to hear it
-/// (`.onVisualStateChanged`) keeps whatever its style paints there. MAUI cannot
-/// do this - a group list is one property, so a control's replaces its style's
-/// whole - and merging is what every other value on this side already does.
+/// (`.onVisualStateChanged`) keeps whatever its style paints there - and
+/// merging is what every other value on this side already does.
 ///
 /// A state in a group the base does not have is appended, which is enough to
 /// keep the arrangement: both lists arrive arranged, so each group's resting
@@ -985,6 +964,6 @@ extension WebView: StyleTarget {}
 extension Map: StyleTarget {}
 extension TitleBar: StyleTarget {}
 
-// A SwipeItem is NOT one, and cannot be: MAUI's is a MenuItem rather than a
-// View, so it has none of the properties a style would set and no VisualElement
-// to hang one on. See Views/SwipeView.swift.
+// A SwipeItem is NOT one, and cannot be: it is a menu item rather than a view,
+// so it has none of the properties a style would set and no VisualElement to
+// hang one on. See Views/SwipeView.swift.

@@ -10,8 +10,6 @@
 // being described for the first time, a value with no half-way, a place or a
 // count, a property the library computes, and a READING a control wrote back,
 // which arrives because a value following a finger must not lag behind it.
-//
-// The host's half is MotionTests.cs.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -447,8 +445,9 @@ final class MotionTests: XCTestCase {
     /// ONE TRANSFORM, HAPPENING IN THE ORDER IT IS WRITTEN. Each part is done
     /// to what the parts before it made - so a move written BEFORE a turn is
     /// swung round by it, and one written after is not - and all of the
-    /// arithmetic is this side's, so the chain is the same numbers and the
-    /// same picture on every platform. What comes out is MAUI's own five.
+    /// arithmetic is StateUI's, so the chain is the same numbers and the
+    /// same picture on every platform. What comes out is five plain
+    /// properties: a rotation, two translations and two scales.
     func testATransformHappensInTheOrderItIsWritten() throws {
         let renders = Renders()
 
@@ -608,8 +607,8 @@ final class MotionTests: XCTestCase {
     ///
     /// Two messages, because a motion is what a CONTINUING element does: the
     /// first describes the panel and carries none, the second changes one
-    /// number and carries the walk to it. The C# half applies these very
-    /// files.
+    /// number and carries the walk to it. These are the files a host is held
+    /// to.
     func testAValueThatTravelsIsWrittenDown() throws {
         let differ = Differ()
         let dictionary = WireDictionary()

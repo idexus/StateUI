@@ -6,8 +6,8 @@
 // sends it does.
 //
 // A GalleryView is made of things that already exist - a ScrollReader over a
-// PlacedLayout, with a number between them - so there is nothing on the C#
-// side to check it against and everything worth pinning is here.
+// PlacedLayout, with a number between them - so there is nothing in a host to
+// check it against and everything worth pinning is here.
 
 import XCTest
 

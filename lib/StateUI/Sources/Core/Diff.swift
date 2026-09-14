@@ -81,8 +81,9 @@ final class Differ {
     /// object.
     private var stylesMoved = false
 
-    /// The state that has changed since the tree C# is showing was built, by
-    /// storage identity - what the renderer collected from `stateChanged`.
+    /// The state that has changed since the tree the host is showing was
+    /// built, by storage identity - what the renderer collected from
+    /// `stateChanged`.
     ///
     /// Read by `revisit`, deciding whether a kept element must be built again,
     /// and by the carry, which never carries a view that read what moved.
@@ -139,7 +140,7 @@ final class Differ {
         didSet { Scenes.shared.building = sceneRecord }
     }
 
-    /// Reconciles the tree just written against the one C# is showing.
+    /// Reconciles the tree just written against the one the host is showing.
     ///
     /// `describeAll` makes the patch carry every element in full - for a host
     /// that has lost track of the tree and needs the whole thing - while the
@@ -173,8 +174,9 @@ final class Differ {
         return element(id: id, rendered: previous, node: tree)
     }
 
-    /// Walks the tree C# is showing with NO fresh tree to compare against, and
-    /// rebuilds exactly the elements whose recorded reads intersect `changed`.
+    /// Walks the tree the host is showing with NO fresh tree to compare
+    /// against, and rebuilds exactly the elements whose recorded reads
+    /// intersect `changed`.
     ///
     /// This is the render that skips the author's closure: nothing above a
     /// changed view is built, walked or sent - the ancestors contribute only
@@ -350,8 +352,9 @@ final class Differ {
         }
     }
 
-    /// Reconciles one element against what C# has for it, and returns both the
-    /// element as it now stands and the patch that gets C# there.
+    /// Reconciles one element against what the host has for it, and returns
+    /// both the element as it now stands and the patch that gets the host
+    /// there.
     ///
     /// The four cases, in the order they are decided: a composed view built
     /// with the same inputs that read nothing that moved (nothing is built at
@@ -665,8 +668,8 @@ final class Differ {
         }
 
         // The style, applied HERE and nowhere else: what the host receives is a
-        // control with every value already on it, so nothing on the far side
-        // has to know what a style is. After the unwrapping, because it is the
+        // control with every value already on it, so no host has to know what
+        // a style is. After the unwrapping, because it is the
         // real node's type and key that decide which style it wears; before
         // everything below, because from here on this node is what is sent.
         // See Views/Style.swift.
@@ -882,8 +885,8 @@ final class Differ {
             }
         }
 
-        // Events. Ids are inherited so that an element C# is not being told
-        // about goes on resolving the ids it already has.
+        // Events. Ids are inherited so that an element the host is not being
+        // told about goes on resolving the ids it already has.
         //
         // In name order, because a Dictionary has none: Swift seeds its hashing
         // per process, so the same tree would hand the same three events three
@@ -905,13 +908,13 @@ final class Differ {
             }
         }
 
-        // Set when the event set CHANGED, so C# replaces its map. Empty counts
-        // as a change only for a CONTINUING element - one whose last handler
-        // went - because there an empty map MEANS "clear what you had"; for a
-        // new element or a resync an empty set is nothing to say, and writing
-        // it would put a redundant field on every eventless control. See
-        // Core/Wire.swift, which writes an empty set through rather than
-        // skipping it.
+        // Set when the event set CHANGED, so the host replaces its map. Empty
+        // counts as a change only for a CONTINUING element - one whose last
+        // handler went - because there an empty map MEANS "clear what you
+        // had"; for a new element or a resync an empty set is nothing to say,
+        // and writing it would put a redundant field on every eventless
+        // control. See Core/Wire.swift, which writes an empty set through
+        // rather than skipping it.
         let eventsChanged = describeAll || previous == nil
             ? !events.isEmpty
             : Set(events.keys) != Set(previous!.events.keys)
@@ -1126,16 +1129,16 @@ final class Differ {
         var manualSeen: [String: Int] = [:]
 
         for (index, childNode) in node.children.enumerated() {
-            // Two siblings written with the same `.id()`. C# matches children
-            // by identity and one control cannot be in two places, so the
-            // repeat cannot keep the bare id - but a fresh AUTOMATIC id every
-            // render would rebuild its control, its handlers and its `@State`
-            // each time and resend the arrangement each time. A STABLE variant
-            // instead - the id with an occurrence number behind a NUL - is the
-            // same identity every render, so the repeat keeps everything a
-            // first-occurrence element would. A NUL cannot come out of a
-            // `String(describing:)` an author wrote, so the variant can never
-            // collide with an id someone spelled.
+            // Two siblings written with the same `.id()`. The host matches
+            // children by identity and one control cannot be in two places,
+            // so the repeat cannot keep the bare id - but a fresh AUTOMATIC id
+            // every render would rebuild its control, its handlers and its
+            // `@State` each time and resend the arrangement each time. A
+            // STABLE variant instead - the id with an occurrence number behind
+            // a NUL - is the same identity every render, so the repeat keeps
+            // everything a first-occurrence element would. A NUL cannot come
+            // out of a `String(describing:)` an author wrote, so the variant
+            // can never collide with an id someone spelled.
             var childNode = childNode
             if let rawId = childNode.id {
                 let occurrence = manualSeen[rawId, default: 0]
@@ -1201,8 +1204,8 @@ final class Differ {
         }
 
         // The arrangement is described only when it changed. Sending it always
-        // would make C# rearrange the child list on every render of a parent
-        // whose children merely changed their text.
+        // would make the host rearrange the child list on every render of a
+        // parent whose children merely changed their text.
         if describeAll || children.map(\.id) != rendered.map(\.id) {
             patch.children = .arranged(patches)
         } else {

@@ -6,8 +6,8 @@
 // Holds the application, produces the message on demand, and tracks whether
 // anything changed since the last render. A host drives it: it asks for an
 // update, applies it, reports events back, and asks again when told the tree is
-// dirty. Compatibility hosts enter through Wire; an in-process native Swift
-// host uses the Host SPI.
+// dirty. A foreign-language host enters through Wire; an in-process native
+// Swift host uses the Host SPI.
 //
 // The application's closure runs where a cause could not be named; otherwise
 // only the views that read what changed are built again (`Differ.revisit`), and
@@ -98,8 +98,8 @@ public final class Renderer: @unchecked Sendable {
     /// How many rendered nodes are ALIVE right now - counted in as each is
     /// made and out as it goes, so a page that was left and still stands in
     /// memory shows here as a number that does not come back down. The
-    /// tally's `alive` column: the one reading that tells a ghost from a
-    /// garbage collector that has not run yet, which RSS cannot.
+    /// tally's `alive` column: the one reading that tells a ghost from memory
+    /// the allocator has not handed back yet, which RSS cannot.
     private(set) var liveNodes = 0
 
     /// Counts a rendered node in.
@@ -119,7 +119,7 @@ public final class Renderer: @unchecked Sendable {
     /// happens on the host's one thread.
     private let wireDictionary = WireDictionary()
 
-    /// The tree as C# is showing it, as far as this side knows.
+    /// The tree as the host is showing it, as far as this side knows.
     private var rendered: RenderedNode?
 
     /// Which render produced `rendered`.
@@ -161,8 +161,7 @@ public final class Renderer: @unchecked Sendable {
     /// dispatching completions. Unguarded, that is a data race on this
     /// dictionary and array: a lost continuation on a good day, which reads as
     /// a handler frozen at its `await`, and corrupted memory on a bad one,
-    /// which takes real devices down. Measured on Mac Catalyst, an iOS device
-    /// and an Android device alike.
+    /// which takes real devices down.
     ///
     /// A serial `DispatchQueue` as a mutex for the reason `MainThreadExecutor`
     /// uses one: libdispatch exists on every platform this targets, and
@@ -195,8 +194,8 @@ public final class Renderer: @unchecked Sendable {
     private var takenCompletions: [Int] = []
 
     /// How many resumes the host has reported that have not come back yet.
-    /// Behind `guarded`, because the far side of a child task's `await` is a
-    /// pool thread.
+    /// Behind `guarded`, because a child task comes back from its `await` on
+    /// a pool thread.
     private var resumes = 0
 
     /// How many handlers have been told their act is over and have not run a
@@ -209,8 +208,7 @@ public final class Renderer: @unchecked Sendable {
     ///
     /// It exists because the job a resume produces does not exist yet when the
     /// host reports the outcome - measured - so the host has to ask again, and
-    /// this is what tells it whether asking again is still worth anything. See
-    /// `StateUISession.DrainWhenTheResumeArrives`.
+    /// this is what tells it whether asking again is still worth anything.
     var resumesPending: Int { guarded.sync { resumes } }
 
     private init() {}
@@ -864,7 +862,7 @@ public final class Renderer: @unchecked Sendable {
     }
 
     /// Whether anything has changed since the last render. The host polls this
-    /// rather than being called back, so nothing here has to reach into C#.
+    /// rather than being called back, so nothing here calls into the host.
     public var needsRender: Bool { guarded.sync { dirty } }
 
     /// Renders - building the tree, or walking to what changed - and
@@ -1273,7 +1271,7 @@ public final class Renderer: @unchecked Sendable {
     /// `nonisolated(nonsending)` so that it runs - and resumes - on the executor
     /// of whoever called it, which for a handler is `@MainThread`. Written as a
     /// plain async function it would run on Swift's cooperative pool, and the
-    /// caller would come back to life beside a C# render.
+    /// caller would come back to life beside a render the host is running.
     ///
     /// Returns the VALUES the act came to, already typed - `focus` reads one
     /// bool, the clock reads its numbers - and throws `StateUIError` with

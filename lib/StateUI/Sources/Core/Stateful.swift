@@ -24,9 +24,7 @@
 // type replaces the control.
 //
 // The boxes are found by reflection, ONCE per placeholder, walking the view's
-// stored properties. Reflection is otherwise banned in this project because of
-// trimming on the C# side; this is Swift's own Mirror over Swift values, which
-// trimming never sees.
+// stored properties with Swift's own Mirror over Swift values.
 
 /// What the differ needs to know about any state box, without knowing the
 /// value's type: that it can adopt another box's storage.

@@ -56,9 +56,8 @@ final class DiffTests: XCTestCase {
     /// The runs of a formatted label are a list like any other, so a change to
     /// one of them carries THAT one.
     ///
-    /// This is the half of the promise this side makes; the host's half is
-    /// keeping the collection rather than rebuilding it, which
-    /// `APatchAboutOneRunLeavesTheOtherRunsAlone` pins. A message that repeated
+    /// This is the half of the promise StateUI makes; the host's half is
+    /// keeping the collection rather than rebuilding it. A message that repeated
     /// every run on every render would work and would send a whole highlighted
     /// code block each time one token changed colour.
     func testAChangedRunCarriesThatRunAlone() throws {
@@ -160,7 +159,7 @@ final class DiffTests: XCTestCase {
 
         let patch = renders.render(Node(type: "Picker", id: "a", props: ["title": .string("pick")]))
 
-        // A list's items are data: MAUI has no default to put back, so the
+        // A list's items are data: there is no default to put back, so the
         // only honest answer is the control again. See Prop.notCleared.
         XCTAssertTrue(patch.replace, "nothing can clear items away")
         XCTAssertTrue(patch.cleared.isEmpty, "a complete node has nothing to clear")
@@ -253,14 +252,14 @@ final class DiffTests: XCTestCase {
         let second = renders.render(tree("two"))
         XCTAssertNil(second.events, "the set of events did not change, so nothing is sent")
 
-        XCTAssertTrue(renders.fire(id!), "the id C# is holding still resolves")
+        XCTAssertTrue(renders.fire(id!), "the id the host is holding still resolves")
         XCTAssertEqual(taps, 1)
     }
 
     /// An element that SURVIVES but loses its last handler carries an EMPTY
     /// event set - not nothing. An empty set is "clear what you had"; nothing
-    /// at all would read as "unchanged", and C# would keep resolving a gesture
-    /// to a handler this side has forgotten. See Core/Wire.swift.
+    /// at all would read as "unchanged", and the host would keep resolving a
+    /// gesture to a handler StateUI has forgotten. See Core/Wire.swift.
     func testAnElementThatLosesItsLastHandlerCarriesAnEmptySet() {
         let renders = Renders()
 
@@ -277,7 +276,7 @@ final class DiffTests: XCTestCase {
 
         XCTAssertEqual(
             second.events?.isEmpty, true,
-            "the emptied set crosses, so C# clears its map")
+            "the emptied set crosses, so the host clears its map")
     }
 
     /// And an element that never had a handler says NOTHING about events, on a
@@ -476,8 +475,9 @@ extension DiffTests {
             "only the label that changed is sent, the repeat left alone")
     }
 
-    /// The two carry DIFFERENT identities on the wire, so C# keeps them as two
-    /// controls: the second's is the id with an occurrence number behind it.
+    /// The two carry DIFFERENT identities on the wire, so the host keeps them
+    /// as two controls: the second's is the id with an occurrence number
+    /// behind it.
     func testTwoDuplicatesAreTwoIdentities() {
         let renders = Renders()
 

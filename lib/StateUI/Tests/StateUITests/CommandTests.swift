@@ -61,7 +61,7 @@ final class CommandTests: XCTestCase {
 
     // MARK: - What goes out
 
-    func testNavigatingQueuesTheMauiMethodByName() async throws {
+    func testAnAlertQueuesItsActByName() async throws {
         drain()
 
         let navigation = begin { try await Dialogs.displayAlert("//list", message: "saved") }
@@ -120,10 +120,10 @@ final class CommandTests: XCTestCase {
     /// themselves and nothing is substituted for them anywhere: the batch stays
     /// readable, and every argument after one is still at its own place.
     ///
-    /// The refusal happens at the far end instead, which is where it belongs -
+    /// The refusal happens in the host instead, which is where it belongs -
     /// the HOST's typed accessors answer "not a number" for a non-finite, so a
     /// value nobody could act on is refused by whoever would have acted on it.
-    /// That half is pinned on the C# side.
+    /// That half is each host's to pin.
     func testANumberThatIsNotFiniteCrossesAsItsOwnBits() throws {
         drain()
 
@@ -277,7 +277,7 @@ final class CommandTests: XCTestCase {
 
     /// The host reports an outcome and then has to decide whether to keep
     /// looking for the work that continues the handler. This is what it decides
-    /// on - see `StateUISession.DrainWhenTheResumeArrives`.
+    /// on, through `stateui_resumes_pending`.
     ///
     /// Read as a difference rather than an absolute: the renderer is shared, so
     /// what this test can honestly say is what its own act did to the count.

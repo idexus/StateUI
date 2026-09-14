@@ -10,15 +10,13 @@
 // there is nothing to spell and nothing to collide.
 //
 // The name sits with the rest of the state layer - `@State` owns, `@Binding`
-// borrows, `@Environment` resolves - and MAUI has no equivalent concept: its
-// `BindingContext` is a different thing entirely, and `Context` would read as
-// that - which is why this is not called Context.
+// borrows, `@Environment` resolves.
 //
 // HOW IT MOVES, and what it deliberately does not touch:
 //
 //   - `.environment()` stores the object on the Node as a NON-WIRE field,
 //     `aim`'s pattern. Nothing about it ever crosses the boundary; the
-//     C# side has no idea environments exist.
+//     host has no idea environments exist.
 //   - The differ keeps a stack of them as it walks - both walks, the full
 //     build and the clean one - and fills every `@Environment` slot of a
 //     composed view from that stack BEFORE the body builds, so handlers that
@@ -81,7 +79,7 @@ protocol EnvironmentSlot: AnyObject {
 public final class Environment<Value: AnyObject>: @unchecked Sendable {
     /// What the differ resolved for this view's position in the tree. Written
     /// by the walk that builds the view, read by the body and by handlers
-    /// that captured the view - all on the thread MAUI draws on.
+    /// that captured the view - all on the host's UI thread.
     private var resolved: Value?
 
     /// Declares the slot. The differ fills it before the view's body builds.

@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The command channel's wire format, written down for the other side.
+// The command channel's wire format, written down for the host.
 //
 // `fixtures/commands/*.bin` are produced here by the REAL typed calls -
-// `focus`, a scroll, a dialog - and read by `CommandFixtureTests.cs`, which
-// asserts the exact reads `StateUISession.Perform` makes: the view name at 0,
-// the length two from the end, the easing last. One fixture per SHAPE rather
-// than per method, because the ten ViewExtensions animations share one and
-// `testEveryAnimationInTheLibraryIsExercised` already holds each to it.
+// `focus`, a dialog, a web view's navigation - and they are what a host's
+// reader of the channel is held to: the view name at 0, then each argument
+// at its own place. One fixture per SHAPE rather than per method where acts
+// share one, as the parameterless web view acts share the Focus shape.
 //
 // Beside every `.bin` sits a `.txt` sidecar - WireProbe's rendering of the
 // same batch - because a binary fixture is unreadable in a review diff and
@@ -20,9 +19,9 @@
 // value level, and encoded again with the library's own writer - the same
 // bytes a run with those numbers would have produced.
 //
-// Without these, the two sides of the channel were tested only against
-// themselves: reordering length and easing on both sides at once kept every
-// suite green while every animation ran with a garbage duration.
+// Without these, each side of the channel is tested only against itself:
+// swapping two arguments on both sides at once keeps every suite green while
+// a host reads each argument as the other.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -114,7 +113,7 @@ final class CommandWireTests: XCTestCase {
         }
     }
 
-    /// The question form: four arguments, accept before cancel, MAUI's order.
+    /// The question form: four arguments, accept before cancel.
     func testAQuestionAlertCrossesAsItsFixtureSays() async throws {
         try await check("DisplayAlert") {
             _ = try await Dialogs.displayAlert(
@@ -123,8 +122,8 @@ final class CommandWireTests: XCTestCase {
         }
     }
 
-    /// Title, cancel, destruction, then the buttons - MAUI's params order. An
-    /// absent caption crosses as the wire's own NOTHING, never as an empty
+    /// Title, cancel, destruction, then the buttons. An absent caption
+    /// crosses as the wire's own NOTHING, never as an empty
     /// string: an empty string is a caption someone could have written.
     func testAnActionSheetCrossesAsItsFixtureSays() async throws {
         try await check("DisplayActionSheet") {
@@ -134,9 +133,10 @@ final class CommandWireTests: XCTestCase {
         }
     }
 
-    /// All eight of MAUI's parameters, in MAUI's order. An absent limit crosses
-    /// as NOTHING, which the HOST turns into MAUI's own -1 - the sentinel is
-    /// MAUI's, at the far end, and never on this wire.
+    /// All eight parameters, in their order. An absent limit crosses as
+    /// NOTHING, which the HOST turns into whatever its toolkit means by "no
+    /// limit" - a toolkit's sentinel stays in the host and never rides this
+    /// wire.
     func testAPromptCrossesAsItsFixtureSays() async throws {
         try await check("DisplayPrompt") {
             _ = try await Dialogs.displayPrompt(
@@ -196,7 +196,7 @@ final class CommandWireTests: XCTestCase {
     }
 
     /// A map slides on three numbers after the view: latitude, longitude, and
-    /// the radius in METERS - the unit MAUI's Distance is at bottom.
+    /// the radius in METERS.
     func testMovingAMapCrossesAsItsFixtureSays() async throws {
         try await check("MoveToRegion") {
             try await named("map", Map.self).moveToRegion(

@@ -1,73 +1,53 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The enumerations a MAUI property takes, with MAUI's names.
+// The closed vocabularies a property takes.
 //
-// Each case is the MAUI member camelCased, so `LayoutOptions.Center` is
-// `.center` and `LineBreakMode.TailTruncation` is `.tailTruncation`, and every
-// case's `///` says WHICH MAUI member it stands for. What a case does not carry
-// is MAUI's number.
-//
-// THE NUMBERS ON THIS WIRE ARE OURS. A closed vocabulary rides the wire as a
-// number rather than a spelling, and that number is this library's own. MAUI's
-// own values are MAUI's internal business: a release is free to renumber an
-// enum or insert a member in the middle of one and break nothing on its own
-// side - and a wire carrying those values would then be reinterpreted SILENTLY,
-// every property on it reading as a different member, with nothing failing
-// anywhere. Ours cannot move, so a MAUI upgrade cannot reach them.
-//
-// The far side does the translating, and it translates by NAME: the C# half
-// holds an internal mirror enum per type carrying these same numbers, and maps
-// each of its members onto the MAUI member named in the `///` here. That
-// pairing - case to MAUI member - is the contract; the number is only how it
-// crosses. `WireEnumTests.cs` READS these declarations and compares them
-// against the mirrors, so the two lists cannot drift apart without a red test.
+// Each case travels on the wire as a number rather than a spelling, and that
+// number belongs to StateUI's wire contract, never to a toolkit. A host maps
+// each case onto its own toolkit's equivalent: what a case promises is what its
+// `///` says, and the number is only how it crosses.
 //
 // Declaration order from 0, and it has no exceptions. The numbers are written
 // out rather than left to the compiler because they are a wire contract: a case
-// inserted in the middle would silently shift every case after it, and seeing
-// the numbers is what makes that hard to do by accident. Appending a case is
-// free; inserting or reordering one is not.
+// inserted in the middle would silently shift every case after it - every
+// property on the wire then reading as a different member, with nothing
+// failing anywhere - and seeing the numbers is what makes that hard to do by
+// accident. `WireVocabularyTests` holds every case to a number written out.
+// Appending a case is free; inserting or reordering one is not.
 //
-// MAUI's flag enumerations (FontAttributes, TextDecorations,
-// AbsoluteLayoutFlags) are OptionSets here, so both `.bold` and
-// `[.bold, .italic]` work, just as the [Flags] enum does in C#. Their bits are
-// ours by the same rule - `1 << 0` upwards in declaration order - and a
-// composite is written as the OR of its parts, so a bit set travels as nothing
-// more than its bits.
+// The flag sets (FontAttributes, TextDecorations, AbsoluteLayoutFlags) are
+// OptionSets, so both `.bold` and `[.bold, .italic]` work. Their bits are ours
+// by the same rule - `1 << 0` upwards in declaration order - and a composite
+// is written as the OR of its parts, so a bit set travels as nothing more than
+// its bits.
 
-/// Where a view sits in the space its layout gives it. MAUI: LayoutOptions.
-///
-/// MAUI's LayoutOptions is a STRUCT rather than an enum, and what a case here
-/// stands for is one member of its `Alignment` -
-/// `Microsoft.Maui.Controls.LayoutAlignment`, which is what the far side sets.
+/// Where a view sits in the space its layout gives it - what
+/// `.horizontalOptions` and `.verticalOptions` take.
 public enum LayoutOptions: Int32, Sendable {
     /// At the near edge - the left, or the top - taking only the room it needs.
-    /// MAUI: LayoutAlignment.Start.
     case start = 0
 
     /// In the middle, taking only the room it needs.
-    /// MAUI: LayoutAlignment.Center.
     case center = 1
 
     /// At the far edge, taking only the room it needs.
-    /// MAUI: LayoutAlignment.End.
     case end = 2
 
-    /// Taking all of it. MAUI's default, and LayoutAlignment.Fill.
+    /// Taking all of it. The default.
     case fill = 3
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// Whether text is drawn bold, italic, or both. MAUI: FontAttributes, a
-/// [Flags] enum - with bits numbered here rather than there.
+/// Whether text is drawn bold, italic, or both - a flag set, with bits of this
+/// library's own.
 ///
 ///     Label("Total").fontAttributes(.bold)
 ///     Label("Total").fontAttributes([.bold, .italic])
 ///
 /// Only the weight and the slant: the family is `.fontFamily` and the size
-/// `.fontSize`, each its own modifier as it is its own MAUI property.
+/// `.fontSize`, each its own modifier as it is its own property.
 public struct FontAttributes: OptionSet, Sendable {
     /// The bits, as an OptionSet keeps them - this library's own, see the head
     /// of this file.
@@ -79,71 +59,66 @@ public struct FontAttributes: OptionSet, Sendable {
         self.rawValue = rawValue
     }
 
-    /// Neither bold nor italic. MAUI: FontAttributes.None.
+    /// Neither bold nor italic.
     public static let none = FontAttributes([])
 
-    /// MAUI: FontAttributes.Bold.
+    /// Drawn bold.
     public static let bold = FontAttributes(rawValue: 1 << 0)
 
-    /// MAUI: FontAttributes.Italic.
+    /// Drawn italic.
     public static let italic = FontAttributes(rawValue: 1 << 1)
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// Where text sits inside the space its own control was given.
-/// MAUI: TextAlignment, numbered here rather than there.
 ///
 /// What `.horizontalTextAlignment` and `.verticalTextAlignment` take. NOT
 /// `.horizontalOptions`, which moves the whole control inside its layout: a
 /// label centred with this one still occupies the same box.
 public enum TextAlignment: Int32, Sendable {
     /// Against the near edge - the left in a left-to-right language.
-    /// MAUI: TextAlignment.Start.
     case start = 0
 
-    /// Centred. MAUI: TextAlignment.Center.
+    /// Centred.
     case center = 1
 
-    /// Against the far edge. MAUI: TextAlignment.End.
+    /// Against the far edge.
     case end = 2
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// What text does when it will not fit on one line - wrap, or be cut short
-/// with an ellipsis. MAUI: LineBreakMode, numbered here rather than there.
+/// with an ellipsis.
 ///
 /// The truncating cases need the control to be BOUNDED to show anything: a
 /// label free to grow never runs out of room, so nothing is ever cut.
 public enum LineBreakMode: Int32, Sendable {
-    /// One line, whatever it costs. MAUI: LineBreakMode.NoWrap.
+    /// One line, whatever it costs.
     case noWrap = 0
 
-    /// Wraps at spaces. MAUI's default for a Label, and LineBreakMode.WordWrap.
+    /// Wraps at spaces. The default for a Label.
     case wordWrap = 1
 
     /// Wraps mid-word where a word does not fit.
-    /// MAUI: LineBreakMode.CharacterWrap.
     case characterWrap = 2
 
     /// One line, cut at the START, with an ellipsis there.
-    /// MAUI: LineBreakMode.HeadTruncation.
     case headTruncation = 3
 
     /// One line, cut at the END, with an ellipsis there.
-    /// MAUI: LineBreakMode.TailTruncation.
     case tailTruncation = 4
 
     /// One line, cut in the MIDDLE - which keeps both ends readable, as a file
-    /// path wants. MAUI: LineBreakMode.MiddleTruncation.
+    /// path wants.
     case middleTruncation = 5
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// The lines drawn through or under text. MAUI: TextDecorations, a [Flags]
-/// enum - with bits numbered here rather than there.
+/// The lines drawn through or under text - a flag set, with bits of this
+/// library's own.
 ///
 ///     Label("$40").textDecorations(.strikethrough)
 public struct TextDecorations: OptionSet, Sendable {
@@ -157,171 +132,154 @@ public struct TextDecorations: OptionSet, Sendable {
         self.rawValue = rawValue
     }
 
-    /// Plain text. MAUI: TextDecorations.None.
+    /// Plain text.
     public static let none = TextDecorations([])
 
-    /// A line under the text. MAUI: TextDecorations.Underline.
+    /// A line under the text.
     public static let underline = TextDecorations(rawValue: 1 << 0)
 
-    /// A line through it. MAUI: TextDecorations.Strikethrough.
+    /// A line through it.
     public static let strikethrough = TextDecorations(rawValue: 1 << 1)
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// Whether the text is drawn as written, or in one case throughout.
-/// MAUI: TextTransform, numbered here rather than there.
 ///
 /// The letters the reader SEES change; the value behind them does not - an
 /// `Entry` set to `.uppercase` still reports what was typed, so this is a look
 /// rather than an edit.
 public enum TextTransform: Int32, Sendable {
-    /// As written. MAUI: TextTransform.None.
+    /// As written.
     case none = 0
 
     /// As the platform sees fit, which everywhere is as written.
-    /// MAUI: TextTransform.Default.
     case `default` = 1
 
-    /// all in lower case. MAUI: TextTransform.Lowercase.
+    /// all in lower case.
     case lowercase = 2
 
     /// ALL IN UPPER CASE - a heading, a button's caption.
-    /// MAUI: TextTransform.Uppercase.
     case uppercase = 3
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// The on-screen keyboard for a text input. MAUI: Keyboard, whose members are
-/// static properties on a CLASS rather than enum cases - so there is no MAUI
-/// enum here even in principle, and the far side reaches the eight static
-/// properties these name.
+/// The on-screen keyboard for a text input.
 public enum Keyboard: Int32, Sendable {
     /// Whatever the platform offers, with its own correction and capitalization.
-    /// MAUI: Keyboard.Default.
     case `default` = 0
 
     /// The default one with no correction, capitalization or suggestions.
-    /// MAUI: Keyboard.Plain.
     case plain = 1
 
     /// Set up for conversation - emoji, and no autocorrection getting in the way.
-    /// MAUI: Keyboard.Chat.
     case chat = 2
 
-    /// With @ and . to hand. MAUI: Keyboard.Email.
+    /// With @ and . to hand.
     case email = 3
 
-    /// Digits only. MAUI: Keyboard.Numeric.
+    /// Digits only.
     case numeric = 4
 
-    /// A phone dialler's keypad. MAUI: Keyboard.Telephone.
+    /// A phone dialler's keypad.
     case telephone = 5
 
     /// General text, with the platform's spellcheck and capitalization.
-    /// MAUI: Keyboard.Text.
     case text = 6
 
-    /// With / and .com to hand. MAUI: Keyboard.Url.
+    /// With / and .com to hand.
     case url = 7
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// The label on the keyboard's return key. MAUI: ReturnType, numbered here
-/// rather than there.
+/// The label on the keyboard's return key.
 public enum ReturnType: Int32, Sendable {
-    /// Whatever the platform calls it. MAUI: ReturnType.Default.
+    /// Whatever the platform calls it.
     case `default` = 0
 
-    /// "Done". MAUI: ReturnType.Done.
+    /// "Done".
     case done = 1
 
-    /// "Go". MAUI: ReturnType.Go.
+    /// "Go".
     case go = 2
 
-    /// "Next", for a field with another after it. MAUI: ReturnType.Next.
+    /// "Next", for a field with another after it.
     case next = 3
 
-    /// "Search". MAUI: ReturnType.Search.
+    /// "Search".
     case search = 4
 
-    /// "Send". MAUI: ReturnType.Send.
+    /// "Send".
     case send = 5
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// When an `Entry` shows the button that empties it.
-/// MAUI: ClearButtonVisibility, numbered here rather than there.
 public enum ClearButtonVisibility: Int32, Sendable {
-    /// No clear button at all. MAUI: ClearButtonVisibility.Never.
+    /// No clear button at all.
     case never = 0
 
-    /// While there is text and the field has the focus. MAUI's default, and
-    /// ClearButtonVisibility.WhileEditing.
+    /// While there is text and the field has the focus. The default.
     case whileEditing = 1
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// Which ways a `ScrollView` scrolls.
-/// MAUI: ScrollOrientation, numbered here rather than there.
 public enum ScrollOrientation: Int32, Sendable {
-    /// Up and down. MAUI's default, and ScrollOrientation.Vertical.
+    /// Up and down. The default.
     case vertical = 0
 
-    /// Sideways. MAUI: ScrollOrientation.Horizontal.
+    /// Sideways.
     case horizontal = 1
 
-    /// Both at once. MAUI: ScrollOrientation.Both.
+    /// Both at once.
     case both = 2
 
     /// Neither - which is how a ScrollView is stopped from scrolling without
-    /// being replaced. MAUI: ScrollOrientation.Neither.
+    /// being replaced.
     case neither = 3
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// What a map pin stands for - what `.type` takes, and what decides the icon
-/// the platform draws. MAUI: PinType, numbered here rather than there.
+/// the platform draws.
 public enum PinType: Int32, Sendable {
-    /// Somewhere on the map, with no more said. MAUI's default, and
-    /// PinType.Generic.
+    /// Somewhere on the map, with no more said. The default.
     case generic = 0
 
-    /// A place - a shop, a station, a landmark. MAUI: PinType.Place.
+    /// A place - a shop, a station, a landmark.
     case place = 1
 
-    /// One the reader saved. MAUI: PinType.SavedPin.
+    /// One the reader saved.
     case savedPin = 2
 
-    /// One a search turned up. MAUI: PinType.SearchResult.
+    /// One a search turned up.
     case searchResult = 3
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// How a picture fills the space an `Image` was given, when the two are not
-/// the same shape. MAUI: Aspect, numbered here rather than there.
+/// the same shape.
 ///
 /// Something has to give: the space, the edges, or the proportions.
 public enum Aspect: Int32, Sendable {
     /// Fits it all in, keeping the proportions - so there may be space at the
-    /// sides. MAUI's default, and Aspect.AspectFit.
+    /// sides. The default.
     case aspectFit = 0
 
     /// Fills the space, keeping the proportions - so the picture may be cropped.
-    /// MAUI: Aspect.AspectFill.
     case aspectFill = 1
 
     /// Fills the space, proportions and all - so the picture may be stretched.
-    /// MAUI: Aspect.Fill.
     case fill = 2
 
-    /// Drawn at its own size, in the middle. MAUI: Aspect.Center.
+    /// Drawn at its own size, in the middle.
     case center = 3
 
     var propValue: PropValue { .enumeration(rawValue) }
@@ -329,22 +287,19 @@ public enum Aspect: Int32, Sendable {
 
 /// Which way a view lays its content out, and which edge it starts from -
 /// what `.flowDirection` takes.
-/// MAUI: FlowDirection, numbered here rather than there.
 ///
 /// The point of it is a language written right to left: a view told
 /// `.rightToLeft` mirrors its layout, so a stack fills from the right and a
 /// label's natural alignment moves with it.
 public enum FlowDirection: Int32, Sendable {
     /// Whatever the view above says, which is how a view inherits the
-    /// application's. MAUI's default, and FlowDirection.MatchParent.
+    /// application's. The default.
     case matchParent = 0
 
     /// Left to right, whatever the view above says.
-    /// MAUI: FlowDirection.LeftToRight.
     case leftToRight = 1
 
     /// Right to left, whatever the view above says.
-    /// MAUI: FlowDirection.RightToLeft.
     case rightToLeft = 2
 
     var propValue: PropValue { .enumeration(rawValue) }
@@ -391,28 +346,25 @@ public enum SemanticHeadingLevel: Int32, Sendable {
 
 /// When the scroll bars are drawn - what `.verticalScrollBarVisibility` and
 /// `.horizontalScrollBarVisibility` take.
-/// MAUI: ScrollBarVisibility, numbered here rather than there.
 public enum ScrollBarVisibility: Int32, Sendable {
-    /// As the platform sees fit. MAUI: ScrollBarVisibility.Default.
+    /// As the platform sees fit.
     case `default` = 0
 
-    /// Always shown. MAUI: ScrollBarVisibility.Always.
+    /// Always shown.
     case always = 1
 
-    /// Never shown, though it still scrolls. MAUI: ScrollBarVisibility.Never.
+    /// Never shown, though it still scrolls.
     case never = 2
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// Whether an `Editor` grows taller as more is typed into it.
-/// MAUI: EditorAutoSizeOption, numbered here rather than there.
 public enum EditorAutoSizeOption: Int32, Sendable {
-    /// A fixed height, which is MAUI's default.
-    /// MAUI: EditorAutoSizeOption.Disabled.
+    /// A fixed height. The default.
     case disabled = 0
 
-    /// Grows as the text does. MAUI: EditorAutoSizeOption.TextChanges.
+    /// Grows as the text does.
     case textChanges = 1
 
     var propValue: PropValue { .enumeration(rawValue) }
@@ -420,15 +372,14 @@ public enum EditorAutoSizeOption: Int32, Sendable {
 
 /// The outline a Border draws, and the shape its own background is painted to
 /// - which is where a rounded corner comes from on anything but a Button or a
-/// BoxView. MAUI: Border.StrokeShape, an IShape.
+/// BoxView. What `.strokeShape` takes.
 ///
 ///     Border { … }.strokeShape(.roundRectangle(12))
 ///
-/// An IShape is an OBJECT rather than a member of anything, so there is no MAUI
-/// member for a case to stand for: this travels as a typed value list whose
-/// first element is the KIND and whose rest is what that kind is made of -
-/// `.roundRectangle(12)` as `[1, 12]`. The kinds are numbered by this library
-/// like everything else here, and mirrored by `SwiftStrokeShapeKind`.
+/// A shape can carry a number of its own, so this travels as a typed value
+/// list whose first element is the KIND and whose rest is what that kind is
+/// made of - `.roundRectangle(12)` as `[1, 12]`. The kinds are numbered by
+/// this library like everything else here.
 public enum StrokeShape: Sendable {
     /// Square corners.
     case rectangle
@@ -440,8 +391,7 @@ public enum StrokeShape: Sendable {
     case ellipse
 
     /// Which shape this is, as the number that crosses - a closed vocabulary,
-    /// so both sides of this repository spell it rather than sending the name.
-    /// Mirrored by `SwiftStrokeShapeKind`.
+    /// so the host reads its number rather than its name.
     enum Kind: Int32, Sendable {
         case rectangle = 0
         case roundRectangle = 1
@@ -462,8 +412,7 @@ public enum StrokeShape: Sendable {
 }
 
 /// Which parts of a child's bounds an AbsoluteLayout reads as fractions rather
-/// than as device units. MAUI: AbsoluteLayoutFlags, a [Flags] enum - with bits
-/// numbered here rather than there.
+/// than as device units - a flag set, with bits of this library's own.
 ///
 ///     .absoluteLayoutBounds(Rect(0.5, 0, 0.5, 1))
 ///     .absoluteLayoutFlags(.all)
@@ -481,145 +430,129 @@ public struct AbsoluteLayoutFlags: OptionSet, Sendable {
         self.rawValue = rawValue
     }
 
-    /// Every number is device units. MAUI's default, and
-    /// AbsoluteLayoutFlags.None.
+    /// Every number is device units. The default.
     public static let none = AbsoluteLayoutFlags([])
 
-    /// MAUI: AbsoluteLayoutFlags.XProportional.
+    /// The position across as a fraction.
     public static let xProportional = AbsoluteLayoutFlags(rawValue: 1 << 0)
 
-    /// MAUI: AbsoluteLayoutFlags.YProportional.
+    /// The position down as a fraction.
     public static let yProportional = AbsoluteLayoutFlags(rawValue: 1 << 1)
 
     /// Both edges as fractions, the size still in device units.
-    /// MAUI: AbsoluteLayoutFlags.PositionProportional.
     public static let positionProportional: AbsoluteLayoutFlags = [.xProportional, .yProportional]
 
-    /// MAUI: AbsoluteLayoutFlags.WidthProportional.
+    /// The width as a fraction.
     public static let widthProportional = AbsoluteLayoutFlags(rawValue: 1 << 2)
 
-    /// MAUI: AbsoluteLayoutFlags.HeightProportional.
+    /// The height as a fraction.
     public static let heightProportional = AbsoluteLayoutFlags(rawValue: 1 << 3)
 
     /// Both lengths as fractions, the position still in device units.
-    /// MAUI: AbsoluteLayoutFlags.SizeProportional.
     public static let sizeProportional: AbsoluteLayoutFlags = [.widthProportional, .heightProportional]
 
     /// All four as fractions - the OR of the other four, as a composite here
-    /// always is. MAUI: AbsoluteLayoutFlags.All.
+    /// always is.
     public static let all: AbsoluteLayoutFlags = [.positionProportional, .sizeProportional]
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// What a swipe reveals: buttons to tap, or one act carried out by the swipe
-/// itself. MAUI: SwipeMode, numbered here rather than there.
+/// itself.
 public enum SwipeMode: Int32, Sendable {
-    /// The items appear and wait to be tapped. MAUI's default, and
-    /// SwipeMode.Reveal.
+    /// The items appear and wait to be tapped. The default.
     case reveal = 0
 
     /// A full swipe runs the first item, with no tap at all.
-    /// MAUI: SwipeMode.Execute.
     case execute = 1
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// What the open items do once one of them has run.
-/// MAUI: SwipeBehaviorOnInvoked, numbered here rather than there.
 public enum SwipeBehaviorOnInvoked: Int32, Sendable {
-    /// Closed after a reveal, left open after an execute. MAUI's default, and
-    /// SwipeBehaviorOnInvoked.Auto.
+    /// Closed after a reveal, left open after an execute. The default.
     case auto = 0
 
-    /// Always closed. MAUI: SwipeBehaviorOnInvoked.Close.
+    /// Always closed.
     case close = 1
 
-    /// Always left open. MAUI: SwipeBehaviorOnInvoked.RemainOpen.
+    /// Always left open.
     case remainOpen = 2
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// How the end of an open line is drawn. MAUI: PenLineCap, numbered here rather
-/// than there.
+/// How the end of an open line is drawn.
 public enum PenLineCap: Int32, Sendable {
-    /// Cut off square at the end point. MAUI's default, and PenLineCap.Flat.
+    /// Cut off square at the end point. The default.
     case flat = 0
 
     /// A half-circle beyond the end point, so the line looks rounded off.
-    /// MAUI: PenLineCap.Round.
     case round = 1
 
     /// A square beyond the end point - the same shape as `.flat`, half a stroke
-    /// further along. MAUI: PenLineCap.Square.
+    /// further along.
     case square = 2
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// How two segments of a line meet. MAUI: PenLineJoin, numbered here rather
-/// than there.
+/// How two segments of a line meet.
 public enum PenLineJoin: Int32, Sendable {
-    /// A sharp corner, as far out as the two edges reach. MAUI's default, and
-    /// PenLineJoin.Miter.
+    /// A sharp corner, as far out as the two edges reach. The default.
     case miter = 0
 
-    /// The corner cut off flat. MAUI: PenLineJoin.Bevel.
+    /// The corner cut off flat.
     case bevel = 1
 
-    /// The corner rounded. MAUI: PenLineJoin.Round.
+    /// The corner rounded.
     case round = 2
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// What a shape does with the room it is given. MAUI: Stretch, which is what
-/// `Shape.Aspect` is - not `Aspect`, which is an Image's - and numbered here
-/// rather than there.
+/// What a shape does with the room it is given - what `.aspect` takes on a
+/// shape. An Image's `.aspect` takes `Aspect` instead.
 public enum Stretch: Int32, Sendable {
     /// Drawn at the size its own numbers say, whatever room there is.
-    /// MAUI: Stretch.None.
     case none = 0
 
     /// Stretched to fill the room, in both directions independently - a circle
-    /// becomes an oval. MAUI: Stretch.Fill.
+    /// becomes an oval.
     case fill = 1
 
-    /// Scaled to fit the room, keeping its proportions. MAUI's default for a
-    /// Path, and Stretch.Uniform.
+    /// Scaled to fit the room, keeping its proportions. The default for a
+    /// Path.
     case uniform = 2
 
     /// Scaled to cover the room, keeping its proportions, clipping what does not
-    /// fit. MAUI: Stretch.UniformToFill.
+    /// fit.
     case uniformToFill = 3
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// Which parts of a self-crossing outline count as inside it. MAUI: FillRule,
-/// numbered here rather than there.
+/// Which parts of a self-crossing outline count as inside it.
 public enum FillRule: Int32, Sendable {
     /// Inside where a ray out of the shape crosses an odd number of edges - so
-    /// the middle of a five-pointed star is a hole. MAUI's default, and
-    /// FillRule.EvenOdd.
+    /// the middle of a five-pointed star is a hole. The default.
     case evenOdd = 0
 
     /// Inside where the edges crossed do not cancel out by direction - so the
-    /// middle of a star is filled. MAUI: FillRule.Nonzero.
+    /// middle of a star is filled.
     case nonzero = 1
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// What one dot of an IndicatorView is drawn as. MAUI: IndicatorShape, numbered
-/// here rather than there.
+/// What one dot of an IndicatorView is drawn as.
 public enum IndicatorShape: Int32, Sendable {
-    /// A dot. MAUI's default, and IndicatorShape.Circle.
+    /// A dot. The default.
     case circle = 0
 
-    /// A square. MAUI: IndicatorShape.Square.
+    /// A square.
     case square = 1
 
     var propValue: PropValue { .enumeration(rawValue) }
@@ -640,30 +573,26 @@ public enum ToolbarItemOrder: Int32, Sendable {
 }
 
 /// What one edge of a layout stays clear of on the screen's UNSAFE strip -
-/// the notch, the bars, the soft keyboard. MAUI: SafeAreaRegions, numbered here
-/// rather than there - MAUI's is a [Flags] enum, this is the four combinations
-/// worth naming, and MAUI's `Default` - "apply platform defaults" - has no case
-/// here, `.container` being what the one platform that insets does.
+/// the notch, the bars, the soft keyboard. Four combinations, each worth
+/// naming; there is no "platform default" case, `.container` being what the
+/// one platform that insets does.
 ///
 /// iOS is where it shows; the other platforms have no unsafe strip and
-/// ignore it. A layout's default there is `.container`, and MAUI applies the
-/// inset at ARRANGE time only - see `safeAreaEdges`, whose doc says what that
-/// costs.
+/// ignore it. A layout's default there is `.container` - see
+/// `safeAreaEdges`, whose doc says what that costs.
 public enum SafeAreaRegions: Int32, Sendable {
     /// Edge to edge: content may run under the notch, the bars and the
-    /// keyboard. MAUI: SafeAreaRegions.None.
+    /// keyboard.
     case none = 0
 
     /// Clear of the soft keyboard, under everything else.
-    /// MAUI: SafeAreaRegions.SoftInput.
     case softInput = 1
 
     /// Clear of the bars and the notch, under the keyboard. What an iOS
-    /// layout does when nothing is said. MAUI: SafeAreaRegions.Container.
+    /// layout does when nothing is said.
     case container = 2
 
     /// Clear of everything - bars, notch and keyboard alike.
-    /// MAUI: SafeAreaRegions.All.
     case all = 3
 
     var propValue: PropValue { .enumeration(rawValue) }

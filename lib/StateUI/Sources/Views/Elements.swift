@@ -1,25 +1,26 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The control hierarchy, mirroring MAUI's.
+// The control hierarchy: the tiers a control's modifiers come from.
 //
-// MAUI declares its properties once, high up, and every control inherits them:
-// Opacity comes from VisualElement, Margin from View, Padding from Layout,
-// FontSize from the IFontElement interface. The same split is repeated here as
-// protocols, so a modifier is available on exactly the controls that have the
-// property in MAUI - `.spacing()` on a stack, `.placeholder()` on an Entry, and
-// nothing on a Label that a MAUI Label does not have.
+// Each property is declared ONCE, on the tier whose controls all carry it, and
+// every control on that tier inherits it: opacity from
+// `VisualElementProperties`, margin from `ViewProperties`, padding from
+// `PaddingElement`, the font size from `FontElement`. So a modifier is
+// available on exactly the controls that carry the property - `.spacing()` on
+// a stack, `.placeholder()` on an Entry, and nothing on a Label that a Label
+// does not carry.
 //
 // The hierarchy is TWO parallel halves, and the split is what makes "only what
 // is allowed can be written" a compiler rule rather than a convention:
 //
 //     PropertyContainer            what holds property VALUES - controls and styles
 //     ├── VisualElementProperties  opacity, isVisible, backgroundColor, size…
-//     │   └── ViewProperties       margin, options, the attached properties
+//     │   └── ViewProperties       margin, options, grid and absolute placement
 //     │       ├── LayoutProperties safeAreaEdges
 //     │       │   └── StackBaseProperties  spacing
 //     │       └── ShapeProperties  fill, stroke…
-//     └── the mixins MAUI expresses as interfaces, one file each:
+//     └── the mixins, one file each, worn by whichever controls carry them:
 //         TextStyleElement, TextElement, FontElement, TextAlignmentElement,
 //         PaddingElement, LineHeightElement, DecorableTextElement,
 //         BorderElement, BarElement, ImageElement, MenuItemElement
@@ -41,16 +42,15 @@
 //
 //     Label("Total").fontSize(20).textColor(.gray).margin(0, 8)
 
-/// Anything carrying MAUI properties, whether or not it is drawn.
-/// MAUI: BindableObject.
+/// Anything carrying property values, whether or not it is drawn - a control,
+/// a `Style`, a `TextSpan`.
 ///
-/// It sits BELOW VisualElement because MAUI has a tier there too. MAUI's
-/// `Span` - one run of text inside a Label, and `TextSpan` here - carries
-/// TextColor, FontSize and BackgroundColor and is not a view at all: no
-/// opacity, no margin, no size. So
-/// the mixins standing for MAUI's ITextElement and IFontElement have to be
-/// wearable by something that is not a VisualElement, and this is what they are
-/// written against.
+/// It sits BELOW `VisualElement` because not everything that carries
+/// properties is a view. A `TextSpan` - one run of text inside a Label -
+/// carries a text colour, a font size and a background colour and is not a
+/// view at all: no opacity, no margin, no size. So the text and font mixins,
+/// `TextStyleElement` and `FontElement`, have to be wearable by something that
+/// is not a `VisualElement`, and this is what they are written against.
 public protocol PropertyContainer {
     /// What a modifier gives back.
     ///
@@ -78,7 +78,7 @@ public protocol PropertyContainer {
 
 extension PropertyContainer {
     /// Sets a property by its token, for anything the typed modifiers do not
-    /// cover yet. Named after MAUI's BindableObject.SetValue.
+    /// cover yet.
     ///
     ///     Label("Hi").setValue(.fontSize, .number(20))
     ///     Label("Hi").setValue("fontSize", .number(20))   // the same, spelled
@@ -88,7 +88,7 @@ extension PropertyContainer {
     /// declares a token of its own the same way, and a literal serves for a
     /// one-off, `Prop` being `ExpressibleByStringLiteral`. See Core/Tokens.swift.
     ///
-    /// The renderer has to know the name too - an unrecognized property is
+    /// The host has to know the name too - an unrecognized property is
     /// ignored rather than reported.
     public func setValue(_ property: Prop, _ value: PropValue) -> Modified {
         modified { $0.props[property] = value }
@@ -400,7 +400,6 @@ extension VisualElement {
 
 extension PropertyContainer {
     /// A stable name that automation finds this by.
-    /// MAUI: Element.AutomationId.
     ///
     ///     Button("Save").automationId("save")
     ///     ToolbarItem("Home").automationId("chrome.home")
@@ -410,10 +409,10 @@ extension PropertyContainer {
     /// own automation for, where the alternative is a coordinate read off a
     /// picture. What a READER is told is `.semanticDescription`.
     ///
-    /// On this tier because MAUI declares it on `Element`, which a toolbar
-    /// item and a menu entry are as much as a view is - so the button in a
-    /// page's bar can be named, and the three a screen reader hears cannot
-    /// go here, MAUI mapping those for a view alone.
+    /// On this tier because a toolbar item and a menu entry carry one as much
+    /// as a view does - so the button in a page's bar can be named. The three
+    /// a screen reader hears are a view's alone and stay on
+    /// `VisualElementProperties`.
     ///
     /// Keep it stable across renders and unique on the page: an id that moves
     /// with the state is an id nothing can wait for, and two things sharing
@@ -431,8 +430,7 @@ extension PropertyContainer where Modified == Self {
     }
 }
 
-/// Anything carrying MAUI properties IN THE TREE, whether or not it is drawn.
-/// MAUI: BindableObject.
+/// Anything carrying property values IN THE TREE, whether or not it is drawn.
 ///
 /// A `PropertyContainer` that is also an `Element`: a control describes itself
 /// in the tree, where a `Style` only carries values - which is why the events
@@ -440,7 +438,7 @@ extension PropertyContainer where Modified == Self {
 /// something that exists on screen, never a bag of values.
 public protocol BindableObject: PropertyContainer, Element where Modified: Element {}
 
-/// A control backed by a node, and drawn. MAUI: VisualElement.
+/// A control backed by a node, and drawn.
 public protocol VisualElement: BindableObject, VisualElementProperties {}
 
 extension BindableObject {
@@ -460,12 +458,13 @@ extension BindableObject {
     /// binding without a word. A typed modifier turns a payload into a value
     /// and drops one it cannot read - which is right for an author and wrong
     /// for anyone asking why nothing happens. This hands over exactly what the
-    /// host sent, unread: one typed value per property of the MAUI EventArgs,
-    /// in the order MAUI declares them - `payload.value(0)?.string` reads the
-    /// first as text, `.number`, `.bool` and `.numbers` read the other kinds,
-    /// and an event with nothing to say hands over an empty list. The event
-    /// is a token - a literal spelling works, and an application listening to
-    /// its own control's event declares one, exactly as the library does.
+    /// host sent, unread: one typed value per field of the event's payload,
+    /// in the order the event declares them - `payload.value(0)?.string`
+    /// reads the first as text, `.number`, `.bool` and `.numbers` read the
+    /// other kinds, and an event with nothing to say hands over an empty list.
+    /// The event is a token - a literal spelling works, and an application
+    /// listening to its own control's event declares one, exactly as the
+    /// library does.
     public func onEvent(_ event: Event, _ handler: @escaping ValueEventHandler<[PropValue]>) -> Modified {
         addHandler(event) { try await handler(EventBuffer.current) }
     }
@@ -494,15 +493,15 @@ extension BindableObject where Modified == Self {
 
 // MARK: - VisualElement
 
-/// The properties every drawn control has - the value half of MAUI's
-/// VisualElement, shared by the control and its `Style`. What is NOT here is
+/// The properties every drawn control has - the value half of
+/// `VisualElement`, shared by the control and its `Style`. What is NOT here is
 /// deliberate: identity and the read-only bindings live on `VisualElement`,
 /// and an element's lifetime on `BindableObject`, where only a control can
 /// reach them.
 public protocol VisualElementProperties: PropertyContainer {}
 
 extension VisualElement {
-    /// How this view's values MOVE when they change. This library's own.
+    /// How this view's values MOVE when they change.
     ///
     ///     Border { … }.motion(.spring(response: 260))
     ///     Label(count).motion(.none)
@@ -529,7 +528,6 @@ extension VisualElement {
     }
 
     /// How SOME of this view's values move, leaving the rest as they were.
-    /// This library's own.
     ///
     ///     VStack { … }
     ///         .motion(.spring(response: 240))
@@ -604,8 +602,8 @@ extension VisualElement {
     /// something it HOLDS (`.id(file.path)`) rather than by the object.
     ///
     /// Not a property in the usual sense, so it does not go through `setValue`:
-    /// it is not sent to MAUI as one. The host keeps it on the control, in the
-    /// attached element every walk matches by.
+    /// it travels as the element's identity, and the host finds and keeps the
+    /// native control by it.
     ///
     /// - Parameter value: who this view is. Distinct among its siblings and
     ///   the same across renders - two views sharing one identity are two views
@@ -745,7 +743,6 @@ extension VisualElement {
     }
 
     /// A style from the application's resources, by the key it was given.
-    /// MAUI: VisualElement.Style, written `Style="{StaticResource Headline}"`.
     ///
     ///     Label("Welcome").style("Headline")
     ///
@@ -760,35 +757,33 @@ extension VisualElement {
 }
 
 extension VisualElementProperties {
-    /// Whether the view is there at all. MAUI: VisualElement.IsVisible.
+    /// Whether the view is there at all.
     ///
-    /// **SHOWING AND HIDING CROSSES.** MAUI's own property is a flag and
-    /// nothing else - a view blinks in and out of existence with it - and here
-    /// it is a MOTION: a view being hidden fades to nothing FIRST and goes when
-    /// it gets there, and one being shown appears at nothing and comes up. Two
-    /// views in one slot - a tab chosen, a panel swapped - therefore cross,
-    /// which is the whole reason it works this way.
+    /// **SHOWING AND HIDING CROSSES.** This is a MOTION, not a flag that blinks
+    /// a view in and out of existence: a view being hidden fades to nothing
+    /// FIRST and goes when it gets there, and one being shown appears at
+    /// nothing and comes up. Two views in one slot - a tab chosen, a panel
+    /// swapped - therefore cross, which is the whole reason it works this way.
     ///
-    /// The view stays in the tree the entire time and MAUI is simply told
-    /// later; a view on its way out answers no touch, so a tap during the
+    /// The view stays in the tree the entire time and is hidden only once the
+    /// fade lands; a view on its way out answers no touch, so a tap during the
     /// change reaches what is arriving. A view described for the FIRST time is
     /// simply there or not - nothing anybody saw is changing - and
     /// `.motion(.none)` puts the flag back to being a flag.
     public func isVisible(_ value: Bool) -> Modified { setValue(.isVisible, .bool(value)) }
 
     /// Whether the view responds to the user. Disabling a container disables
-    /// everything in it. MAUI: VisualElement.IsEnabled.
+    /// everything in it.
     public func isEnabled(_ value: Bool) -> Modified { setValue(.isEnabled, .bool(value)) }
 
     /// Whether the view lets touches through to whatever is behind it. A view
     /// that is `true` is not hit at all, and is not the same as one that is
     /// disabled: a disabled view still takes the touch and does nothing with
-    /// it. MAUI: VisualElement.InputTransparent.
+    /// it.
     public func inputTransparent(_ value: Bool) -> Modified { setValue(.inputTransparent, .bool(value)) }
 
     /// Which way the view lays its content out - and, for a language written
     /// right to left, the edge everything starts from.
-    /// MAUI: VisualElement.FlowDirection.
     ///
     ///     VStack { … }.flowDirection(.rightToLeft)
     ///
@@ -796,10 +791,10 @@ extension VisualElementProperties {
     /// above it has, so an application usually says it once at the top.
     public func flowDirection(_ value: FlowDirection) -> Modified { setValue(.flowDirection, value.propValue) }
 
-    /// How opaque the view is, from 0 to 1. MAUI: VisualElement.Opacity.
+    /// How opaque the view is, from 0 to 1.
     public func opacity(_ value: Double) -> Modified { setValue(.opacity, .number(value)) }
 
-    /// What is drawn behind the view. MAUI: VisualElement.BackgroundColor.
+    /// What is drawn behind the view.
     ///
     /// A `Color(light:dark:)` here carries both halves; the differ picks the
     /// one the theme asks for as it builds the view, so a theme change builds
@@ -807,47 +802,40 @@ extension VisualElementProperties {
     public func backgroundColor(_ value: Color) -> Modified { setValue(.backgroundColor, value.propValue) }
 
     /// What is drawn behind the view, when one colour will not do.
-    /// MAUI: VisualElement.Background, which is a Brush.
     ///
     ///     VStack { … }.background(.linearGradient([
     ///         GradientStop(.cornflowerBlue, 0),
     ///         GradientStop(.indigo, 1),
     ///     ]))
     ///
-    /// Both exist for the reason MAUI has both: `.backgroundColor` is one
-    /// colour, and this is a gradient. A view given both draws the brush.
+    /// `.backgroundColor` is one colour, and this is a gradient. A view given
+    /// both draws the brush.
     public func background(_ value: Brush) -> Modified { setValue(.background, value.propValue) }
 
     /// How wide the view asks to be, in device units. A REQUEST: the layout has
-    /// the last word. MAUI: VisualElement.WidthRequest.
+    /// the last word.
     public func widthRequest(_ value: Double) -> Modified { setValue(.widthRequest, .number(value)) }
 
-    /// How tall the view asks to be. MAUI: VisualElement.HeightRequest.
+    /// How tall the view asks to be.
     public func heightRequest(_ value: Double) -> Modified { setValue(.heightRequest, .number(value)) }
 
     /// The width below which the view asks not to be squeezed.
-    /// MAUI: VisualElement.MinimumWidthRequest.
     public func minimumWidthRequest(_ value: Double) -> Modified { setValue(.minimumWidthRequest, .number(value)) }
 
     /// The height below which the view asks not to be squeezed.
-    /// MAUI: VisualElement.MinimumHeightRequest.
     public func minimumHeightRequest(_ value: Double) -> Modified { setValue(.minimumHeightRequest, .number(value)) }
 
     /// The width above which the view asks not to be stretched.
-    /// MAUI: VisualElement.MaximumWidthRequest.
     public func maximumWidthRequest(_ value: Double) -> Modified { setValue(.maximumWidthRequest, .number(value)) }
 
     /// The height above which the view asks not to be stretched.
-    /// MAUI: VisualElement.MaximumHeightRequest.
     public func maximumHeightRequest(_ value: Double) -> Modified { setValue(.maximumHeightRequest, .number(value)) }
 
     /// Turns the view, in degrees clockwise, about its anchor.
-    /// MAUI: VisualElement.Rotation.
     public func rotation(_ value: Double) -> Modified { setValue(.rotation, .number(value)) }
 
     /// How this view is moved, turned and sized - ONE transform, about the
     /// view's own centre, and the same picture on every platform.
-    /// This library's own.
     ///
     ///     Card(item).transform(.rotate(14).scale(0.9).translate(100, 200))
     ///
@@ -857,8 +845,8 @@ extension VisualElementProperties {
     /// one chain the five properties cannot carry whole, and why `turn` is not
     /// `.rotationY`.
     ///
-    /// It writes MAUI's `TranslationX`, `TranslationY`, `Rotation`, `ScaleX`
-    /// and `ScaleY` - so those five are this modifier's to say, and a view uses
+    /// It writes `translationX`, `translationY`, `rotation`, `scaleX` and
+    /// `scaleY` - so those five are this modifier's to say, and a view uses
     /// one or the other rather than both.
     ///
     /// - Parameter transform: how the view is moved, turned and sized. It is a
@@ -876,7 +864,7 @@ extension VisualElementProperties {
     }
 
     /// Tips the view about its horizontal axis, in degrees - the top going away
-    /// as the bottom comes forward. MAUI: VisualElement.RotationX.
+    /// as the bottom comes forward.
     ///
     /// The trap: a turn OUT of the screen's plane is projected through a
     /// camera each platform chooses for itself, so the same number is not the
@@ -887,7 +875,8 @@ extension VisualElementProperties {
     public func rotationX(_ value: Double) -> Modified { setValue(.rotationX, .number(value)) }
 
     /// Turns the view about its vertical axis, in degrees - one side going away
-    /// as the other comes forward. MAUI: VisualElement.RotationY.
+    /// as the other comes forward.
+    ///
     /// The trap: a turn OUT of the screen's plane is projected through a
     /// camera each platform chooses for itself, so the same number is not the
     /// same picture everywhere. A turn that must look alike on every platform
@@ -897,33 +886,28 @@ extension VisualElementProperties {
 
     /// Resizes the view about its anchor, 1 being its natural size. Drawing
     /// only - the space the layout gave it does not change.
-    /// MAUI: VisualElement.Scale.
     public func scale(_ value: Double) -> Modified { setValue(.scale, .number(value)) }
 
-    /// Scales the view sideways only. MAUI: VisualElement.ScaleX.
+    /// Scales the view sideways only.
     public func scaleX(_ value: Double) -> Modified { setValue(.scaleX, .number(value)) }
 
-    /// Scales the view up and down only. MAUI: VisualElement.ScaleY.
+    /// Scales the view up and down only.
     public func scaleY(_ value: Double) -> Modified { setValue(.scaleY, .number(value)) }
 
     /// Moves the view sideways from where the layout put it, in device units.
-    /// MAUI: VisualElement.TranslationX.
     public func translationX(_ value: Double) -> Modified { setValue(.translationX, .number(value)) }
 
     /// Moves the view up or down from where the layout put it.
-    /// MAUI: VisualElement.TranslationY.
     public func translationY(_ value: Double) -> Modified { setValue(.translationY, .number(value)) }
 
     /// Where rotation and scaling pivot, sideways: 0 the left edge, 1 the right,
-    /// 0.5 the middle. MAUI: VisualElement.AnchorX.
+    /// 0.5 the middle.
     public func anchorX(_ value: Double) -> Modified { setValue(.anchorX, .number(value)) }
 
     /// The same, vertically: 0 the top edge, 1 the bottom.
-    /// MAUI: VisualElement.AnchorY.
     public func anchorY(_ value: Double) -> Modified { setValue(.anchorY, .number(value)) }
 
     /// Who is drawn on top where views overlap, higher being nearer the front.
-    /// MAUI: VisualElement.ZIndex.
     public func zIndex(_ value: Int) -> Modified { setValue(.zIndex, .number(Double(value))) }
 
     // MARK: - What the view says about itself
@@ -997,22 +981,21 @@ extension VisualElementProperties {
 
 // MARK: - What the control knows and this side does not
 //
-// Everything above is written TO a control. These read FROM one: properties MAUI
-// changes by itself - the size a layout settled on, the focus the platform moved
-// - which no event on this side could have predicted.
+// Everything above is written TO a control. These read FROM one: properties
+// the platform changes by itself - the size a layout settled on, the focus it
+// moved - which no event on this side could have predicted.
 //
 // A binding is the whole API: give it one and it is kept in step.
 //
 //     Entry($name).isFocused($editing)
 //
-// Nothing is watched until it is asked for. MAUI raises PropertyChanged on Width
-// and Height at every measure, and a subscription per control would cost real
-// work for an answer nobody wanted.
+// Nothing is watched until it is asked for. A size changes at every measure,
+// and a subscription per control would cost real work for an answer nobody
+// wanted.
 
 extension VisualElement {
-    /// Whether the platform has given this control the focus.
-    /// MAUI: VisualElement.IsFocused, which is read-only - so this only writes
-    /// INTO the binding.
+    /// Whether the platform has given this control the focus. Read-only - the
+    /// platform moves the focus - so this only writes INTO the binding.
     public func isFocused(_ binding: Binding<Bool>) -> Modified {
         addHandler(.isFocusedChanged) {
             if let focused = EventBuffer.current.value()?.bool {
@@ -1021,8 +1004,8 @@ extension VisualElement {
         }
     }
 
-    /// The width a layout settled on. MAUI: VisualElement.Width, also read-only
-    /// - `widthRequest` is what asks for one.
+    /// The width a layout settled on. Read-only - `widthRequest` is what asks
+    /// for one.
     public func width(_ binding: Binding<Double>) -> Modified {
         addHandler(.widthChanged) {
             if let width = EventBuffer.current.value()?.number {
@@ -1034,7 +1017,8 @@ extension VisualElement {
         }
     }
 
-    /// The height a layout settled on. MAUI: VisualElement.Height.
+    /// The height a layout settled on. Read-only - `heightRequest` is what
+    /// asks for one.
     public func height(_ binding: Binding<Double>) -> Modified {
         addHandler(.heightChanged) {
             if let height = EventBuffer.current.value()?.number {
@@ -1046,44 +1030,44 @@ extension VisualElement {
 
 // MARK: - View
 
-/// The properties every positioned view has - the value half of MAUI's View,
-/// shared by the control and its `Style`. The attached properties are here
-/// too, being properties: where a view sits in a grid is as styleable as its
-/// margin.
+/// The properties every positioned view has - the value half of `View`,
+/// shared by the control and its `Style`. Where a view sits in a parent Grid
+/// or AbsoluteLayout is here too, being a property: where a view sits in a
+/// grid is as styleable as its margin.
 public protocol ViewProperties: VisualElementProperties {}
 
-/// A VisualElement a layout positions. MAUI: View. What this tier ADDS to the
+/// A VisualElement a layout positions. What this tier ADDS to the
 /// property half is what only a control can carry: the gestures, the two pan
 /// feeds, the frame report, and the context menu.
 public protocol View: VisualElement, ViewProperties, Page {}
 
 extension ViewProperties {
     /// The space kept OUTSIDE the view, between it and its neighbours.
-    /// MAUI: View.Margin. Padding is the space inside.
+    /// Padding is the space inside.
     ///
     ///     Label("Total").margin(16)                      // all four sides
     ///     Label("Total").margin(Thickness(16, 0, 0, 0))  // the left edge only
     public func margin(_ value: Thickness) -> Modified { setValue(.margin, value.propValue) }
 
-    /// Left and right, then top and bottom. MAUI writes this `Margin="16,8"`.
+    /// Left and right, then top and bottom.
     public func margin(_ horizontalSize: Double, _ verticalSize: Double) -> Modified {
         margin(Thickness(horizontalSize, verticalSize))
     }
 
-    /// Each side in turn, in MAUI's order: left, top, right, bottom.
+    /// Each side in turn: left, top, right, bottom.
     public func margin(_ left: Double, _ top: Double, _ right: Double, _ bottom: Double) -> Modified {
         margin(Thickness(left, top, right, bottom))
     }
 
     /// How the view uses the width its parent offers - filling it, or sitting at
-    /// one end of it. MAUI: View.HorizontalOptions.
+    /// one end of it.
     ///
     ///     Button("Save").horizontalOptions(.center)
     public func horizontalOptions(_ value: LayoutOptions) -> Modified {
         setValue(.horizontalOptions, value.propValue)
     }
 
-    /// The same, for the height. MAUI: View.VerticalOptions.
+    /// The same, for the height.
     public func verticalOptions(_ value: LayoutOptions) -> Modified {
         setValue(.verticalOptions, value.propValue)
     }
@@ -1202,7 +1186,7 @@ extension View {
     // MARK: Pan
 
     /// Writes how far the view has been dragged ACROSS into a driven state, which
-    /// describes nothing again. This library's own.
+    /// describes nothing again.
     ///
     ///     @State private var turn = 0.0
     ///
@@ -1225,7 +1209,7 @@ extension View {
     }
 
     /// Writes how far the view has been dragged DOWN into a driven state, which
-    /// describes nothing again. This library's own.
+    /// describes nothing again.
     ///
     ///     BoxView(.transparent).panY($turn)
     ///
@@ -1384,55 +1368,47 @@ extension View {
 
 // MARK: - Where a view sits in a Grid
 //
-// MAUI declares these on Grid and writes them on the CHILD - `Grid.Row="1"` in
-// XAML, `Grid.SetRow(view, 1)` in code. An attached property, in other words:
-// the grid asks, the child answers. So they live on View, where any view that
-// might find itself in a grid can reach them, and they keep the name they are
-// written under rather than being shortened to `.row()`.
+// A grid's placement is written on the CHILD: the grid asks, the child
+// answers. So these live on View, where any view that might find itself in a
+// grid can reach them, and they carry the grid's name - `.gridRow()`, never
+// `.row()` - which says which layout is asking.
 //
 // A view that says nothing sits at row 0, column 0, spanning one of each.
 
 extension ViewProperties {
     /// Which row of the enclosing Grid the view sits in, counting from 0.
-    /// MAUI: Grid.Row.
     ///
     ///     Label("Name").gridRow(0).gridColumn(0)
     ///     Entry($name).gridRow(0).gridColumn(1)
     public func gridRow(_ value: Int) -> Modified { setValue(.gridRow, .number(Double(value))) }
 
     /// Which column of the enclosing Grid the view sits in, counting from 0.
-    /// MAUI: Grid.Column.
     public func gridColumn(_ value: Int) -> Modified { setValue(.gridColumn, .number(Double(value))) }
 
     /// How many rows the view covers, starting at its own.
-    /// MAUI: Grid.RowSpan.
     public func gridRowSpan(_ value: Int) -> Modified { setValue(.gridRowSpan, .number(Double(value))) }
 
     /// How many columns the view covers, starting at its own.
-    /// MAUI: Grid.ColumnSpan.
     public func gridColumnSpan(_ value: Int) -> Modified { setValue(.gridColumnSpan, .number(Double(value))) }
 }
 
 // MARK: - Where a view sits in an AbsoluteLayout
 //
-// The same story as a Grid's, and the one place the prefix rule gives ground.
-// Written out it would be `absoluteLayoutLayoutBounds`: MAUI's property really
-// is LayoutBounds and its class really is AbsoluteLayout, so the stutter is
-// MAUI's own. Repeating it buys nothing - `Layout` twice says no more than
-// `Layout` once, and there is no second `Bounds` on an AbsoluteLayout to tell it
-// apart from - and it costs an author a name nobody types right first time.
+// The same as a Grid's, and the one place the prefix rule gives ground. The
+// layout's name followed by the property's would be
+// `absoluteLayoutLayoutBounds`, and repeating it buys nothing - `Layout` twice
+// says no more than `Layout` once, and there is no second `Bounds` on an
+// AbsoluteLayout to tell it apart from - while it costs an author a name
+// nobody types right first time.
 //
 // So the doubled word goes and nothing else does: `.absoluteLayoutBounds` and
-// `.absoluteLayoutFlags`, keeping the class prefix that says which layout is
-// asking. The MAUI name is in the `///` above each, as it is everywhere else,
-// which is what keeps MAUI's documentation the reference for this library.
+// `.absoluteLayoutFlags`, keeping the prefix that says which layout is asking.
 //
 // The wire says the same thing, so there is one name from the modifier to the
-// renderer's table rather than a mapping in between.
+// host's table rather than a mapping in between.
 
 extension ViewProperties {
     /// Where the view sits and how big it is.
-    /// MAUI: AbsoluteLayout.LayoutBounds, shortened by the one repeated word.
     ///
     /// Read as device units unless the flags say otherwise, which is what makes
     /// the two go together:
@@ -1444,7 +1420,7 @@ extension ViewProperties {
     }
 
     /// Which of those four numbers are fractions of the layout rather than
-    /// device units. MAUI: AbsoluteLayout.LayoutFlags, shortened the same way.
+    /// device units.
     public func absoluteLayoutFlags(_ value: AbsoluteLayoutFlags) -> Modified {
         setValue(.absoluteLayoutFlags, value.propValue)
     }
@@ -1455,12 +1431,11 @@ extension ViewProperties {
 /// The properties every layout has, shared by the control and its `Style`.
 public protocol LayoutProperties: ViewProperties {}
 
-/// A view that arranges children. MAUI: Layout.
+/// A view that arranges children.
 public protocol Layout: View, LayoutProperties, PaddingElement {}
 
 extension LayoutProperties {
     /// Whether a child drawn outside the layout's bounds is cut off at them.
-    /// MAUI: Layout.IsClippedToBounds.
     ///
     /// The trap is that this is about the LAYOUT's edges, while `.clip` on any
     /// view is about a shape given to that view.
@@ -1469,9 +1444,8 @@ extension LayoutProperties {
     }
 
     /// Whether `.inputTransparent` on this layout reaches its children too.
-    /// MAUI: Layout.CascadeInputTransparent.
     ///
-    /// True - MAUI's default - means a transparent layout lets touches through
+    /// True - the default - means a transparent layout lets touches through
     /// to whatever is behind the whole of it, children included. False lets the
     /// children go on being touched while the layout's own background does not.
     public func cascadeInputTransparent(_ value: Bool) -> Modified {
@@ -1480,24 +1454,19 @@ extension LayoutProperties {
 
     /// Which parts of the screen's UNSAFE strip - the notch, the bars, the
     /// soft keyboard - this layout stays clear of, one value for all four
-    /// edges. MAUI: Layout.SafeAreaEdges.
+    /// edges.
     ///
     ///     VStack { … }.safeAreaEdges(.none)    // edge to edge
     ///
     /// iOS is where it shows; the other platforms have no unsafe strip and
-    /// ignore it. THE TRAP this answers, measured on an iPhone: an iOS
-    /// layout defaults to `.container` and MAUI applies the inset at ARRANGE
-    /// time only, so a sidebar's header pushes its content below the
-    /// status bar while its MEASURED height knows nothing of it - the bottom
-    /// of the header is clipped by exactly the safe-area inset. `.none` on
-    /// the header is the answer: the content sits where the padding says and
-    /// the frame fits it.
+    /// ignore it. A layout that stays clear of the strip is inset by it, so a
+    /// header meant to reach the top edge wants `.none`: its content then sits
+    /// where its padding says, and its frame fits that content.
     public func safeAreaEdges(_ value: SafeAreaRegions) -> Modified {
         setValue(.safeAreaEdges, value.propValue)
     }
 
-    /// The same, said for the horizontal and the vertical edges separately -
-    /// MAUI's two-value form.
+    /// The same, said for the horizontal and the vertical edges separately.
     ///
     ///     Grid { … }.safeAreaEdges(.none, .container)
     ///
@@ -1516,13 +1485,12 @@ extension LayoutProperties {
         safeAreaEdges(horizontal, vertical, horizontal, vertical)
     }
 
-    /// The same, one edge at a time, in MAUI's order.
+    /// The same, one edge at a time: left, top, right, bottom.
     ///
-    /// The four regions travel as MEMBERS, in the order MAUI's `SafeAreaEdges`
-    /// declares them - each one a value of its own rather than a run of
-    /// numbers, a member and a quantity being different things on this wire.
-    /// The one-value form sends the same member once, as a single
-    /// `.enumeration`.
+    /// The four regions travel as MEMBERS, in that order - each one a value of
+    /// its own rather than a run of numbers, a member and a quantity being
+    /// different things on this wire. The one-value form sends the same
+    /// member once, as a single `.enumeration`.
     ///
     /// - Parameters:
     ///   - left: what the left edge stays clear of.
@@ -1547,12 +1515,12 @@ extension LayoutProperties {
 /// The properties every stack has, shared by the control and its `Style`.
 public protocol StackBaseProperties: LayoutProperties {}
 
-/// A layout that stacks its children in one direction. MAUI: StackBase.
+/// A layout that stacks its children in one direction.
 public protocol StackBase: Layout, StackBaseProperties {}
 
 extension StackBaseProperties {
     /// The gap left BETWEEN children, in device units - not before the first or
-    /// after the last, which is what padding is for. MAUI: StackBase.Spacing.
+    /// after the last, which is what padding is for.
     public func spacing(_ value: Double) -> Modified { setValue(.spacing, .number(value)) }
 }
 
@@ -1650,20 +1618,19 @@ extension ShapeProperties {
 
 // MARK: - InputView
 
-/// MAUI: InputView - the class Entry, Editor and SearchBar all derive from,
-/// and the one place MAUI declares what they share: the hint, its colour, the
-/// keyboard, the length cap and read-only. Declared once here for the same
-/// reason.
+/// What Entry, Editor and SearchBar share: the hint, its colour, the
+/// keyboard, the length cap and read-only. Declared once here, so the three
+/// fields carry one definition of each rather than a copy apiece.
 ///
-/// `ViewProperties` rather than `VisualElementProperties`, because this names a
-/// CLASS and MAUI's InputView derives from View: a tier standing for a class
-/// sits where that class sits. It is the mixins - `PaddingElement`,
-/// `TextAlignmentElement` - that stop at VisualElement, and they stop there
-/// because MAUI's interfaces do not imply IView: a Page takes a padding and is
-/// not a view.
+/// `ViewProperties` rather than `VisualElementProperties`, because this tier
+/// stands for a KIND of control - a positioned view the reader types into -
+/// and so sits where a view sits. It is the mixins - `PaddingElement`,
+/// `TextAlignmentElement` - that stop at `VisualElementProperties`: each names
+/// a set of properties rather than a kind of control, and asks for nothing a
+/// positioned view adds.
 public protocol InputViewProperties: ViewProperties {}
 
-/// A View the reader types into. MAUI: InputView.
+/// A View the reader types into.
 ///
 /// The element half of the tier, the way `Layout` and `Shape` are the element
 /// halves of theirs - and it is what a `Style<Entry>` is told apart BY: the
@@ -1674,7 +1641,7 @@ public protocol InputView: View, InputViewProperties {}
 
 extension InputView {
     /// Fires on every edit, with the whole of the new text - not the character
-    /// that arrived. MAUI: InputView.TextChanged.
+    /// that arrived.
     ///
     /// Runs after a binding's write, if there is one, so the state already
     /// holds what the payload carries.
@@ -1689,18 +1656,16 @@ extension InputView {
 
 extension InputViewProperties {
     /// Where the caret sits, counted in characters from the start.
-    /// MAUI: InputView.CursorPosition.
     ///
     /// A field the reader is typing in moves this by itself, so writing it is
     /// for putting the caret somewhere the reader did not - the end of text
-    /// just filled in, say. MAUI CLAMPS it to the text, so a position past the
+    /// just filled in, say. It is CLAMPED to the text, so a position past the
     /// end lands at the end.
     public func cursorPosition(_ value: Int) -> Modified {
         setValue(.cursorPosition, .number(Double(value)))
     }
 
     /// How many characters from the caret are selected, 0 being none.
-    /// MAUI: InputView.SelectionLength.
     ///
     ///     Entry($name).cursorPosition(0).selectionLength(name.count)
     ///
@@ -1711,7 +1676,6 @@ extension InputViewProperties {
     }
 
     /// Whether the platform underlines what it thinks is misspelt.
-    /// MAUI: InputView.IsSpellCheckEnabled.
     ///
     /// Worth turning off for anything that is not prose - a code, a name, a
     /// serial number - where the underline says nothing and the platform's
@@ -1721,7 +1685,6 @@ extension InputViewProperties {
     }
 
     /// Whether the platform offers the next word as the reader types.
-    /// MAUI: InputView.IsTextPredictionEnabled.
     ///
     /// Not the same as the spell check, and usually turned off with it and for
     /// the same fields.
@@ -1729,29 +1692,28 @@ extension InputViewProperties {
         setValue(.isTextPredictionEnabled, .bool(value))
     }
 
-    /// What the field says while it is empty. MAUI: InputView.Placeholder.
+    /// What the field says while it is empty.
     public func placeholder(_ value: String) -> Modified {
         setValue(.placeholder, .string(value))
     }
 
-    /// The colour of that text. MAUI: InputView.PlaceholderColor.
+    /// The colour of that text.
     public func placeholderColor(_ value: Color) -> Modified {
         setValue(.placeholderColor, value.propValue)
     }
 
     /// Whether the text can be selected and copied but not changed - which is
-    /// not the same as disabled. MAUI: InputView.IsReadOnly.
+    /// not the same as disabled.
     public func isReadOnly(_ value: Bool) -> Modified {
         setValue(.isReadOnly, .bool(value))
     }
 
     /// Which keyboard the platform offers - numeric, email, url and the rest.
-    /// MAUI: InputView.Keyboard.
     public func keyboard(_ value: Keyboard) -> Modified {
         setValue(.keyboard, value.propValue)
     }
 
-    /// How many characters the field accepts. MAUI: InputView.MaxLength.
+    /// How many characters the field accepts.
     public func maxLength(_ value: Int) -> Modified {
         setValue(.maxLength, .number(Double(value)))
     }
@@ -1759,7 +1721,7 @@ extension InputViewProperties {
 
 // MARK: - Composition
 
-/// A view assembled from other views. MAUI: ContentView.
+/// A view assembled from other views.
 ///
 /// This is how a piece of interface is factored out and reused:
 ///
@@ -1845,7 +1807,7 @@ extension ContentView {
 /// has a node to hold the change, and from there it behaves like any other
 /// view.
 ///
-/// It offers what every MAUI view has - margin, opacity, where it sits in a grid
+/// It offers what every view has - margin, opacity, where it sits in a grid
 /// - and nothing that only some do. What is inside might be a Label or a stack,
 /// and this is not the place to guess.
 public struct ModifiedContent: View {

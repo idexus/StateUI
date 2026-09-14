@@ -57,7 +57,7 @@
 // here for that reason.
 
 extension Label {
-    /// What the label says, read from state. MAUI: Label.Text.
+    /// What the label says, read from state.
     ///
     ///     @State private var caption = ""
     ///
@@ -80,7 +80,7 @@ extension Label {
 }
 
 extension Button {
-    /// What the button says, read from state. MAUI: Button.Text.
+    /// What the button says, read from state.
     ///
     /// Out only, and written when the bytes change - see `Label.text(_:)`.
     ///
@@ -95,7 +95,7 @@ extension Button {
 
 extension VisualElement {
     /// The room the platform gave the view, written onto state whenever it
-    /// changes. MAUI: VisualElement.Frame.
+    /// changes.
     ///
     ///     @State private var room = Rect(0, 0, 0, 0)
     ///

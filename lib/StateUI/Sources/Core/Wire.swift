@@ -19,9 +19,9 @@
 //            what an act came to - the values a `try await` resumes with, or
 //            ok 0 and one string, the reason it throws.
 //   payload  [version: U8][count: U8][values...]
-//            what an event carried - one value per property of the MAUI
-//            EventArgs it stands for, in the order MAUI declares them. An
-//            event with nothing to say crosses no bytes at all.
+//            what an event carried - one value per thing the event reports,
+//            in the order the event declares them. An event with nothing to
+//            say crosses no bytes at all.
 //
 // THE DICTIONARY: a name - a node type, a property key, an event, an act -
 // does not travel as its spelling. Each SESSION numbers the names it actually
@@ -33,7 +33,7 @@
 //     is no reserved pool, no table to be missing from, and no ledger to keep
 //     append-only - the name IS the registration, said once per session.
 //   - The reader can never hold a table from another version: it learns every
-//     entry from the message itself. A name the RENDERER does not recognize
+//     entry from the message itself. A name the HOST does not recognize
 //     degrades gently - an unknown property is ignored, an unknown node type
 //     draws the marker.
 //   - A message costs a name's spelling once per session and two bytes ever
@@ -84,7 +84,7 @@
 //
 // A COLOUR has a tag of its own because it is the value this tree carries
 // most of and the cheapest to say exactly: four bytes against the twelve a
-// "#RRGGBB" string cost, with no parser and no vocabulary on the far side.
+// "#RRGGBB" string cost, with no parser and no vocabulary on the host.
 // Channel order is written out rather than packed into a word, so there is no
 // endianness to agree about.
 //
@@ -144,7 +144,7 @@
 // override and its going away. Written when it CHANGES, like everything here.
 //
 // Beside the props rather than inside them, and this is why: a wrapped VALUE
-// answers nil from every typed accessor on the far side, so a host that did
+// answers nil from every typed accessor on the host, so a host that did
 // not know the wrapper would silently not write the property -
 // indistinguishable from "this did not change" - and a wrapper leaking into
 // the visual-state overlay, which copies prop bags whole, would set a motion
@@ -317,9 +317,9 @@ public enum Wire {
 
     /// Writes one element's patch, and recursively the elements under it.
     ///
-    /// The identity and the type come first, always - the id is how C# finds
-    /// the control and the type is worth its two bytes on every message - and
-    /// every other field is written only when it is there.
+    /// The identity and the type come first, always - the id is how the host
+    /// finds the control and the type is worth its two bytes on every
+    /// message - and every other field is written only when it is there.
     private static func write(
         _ patch: HostPatch,
         into out: inout [UInt8],
@@ -359,8 +359,8 @@ public enum Wire {
 
         // What this element described last time and does not describe now.
         // Only the keys: there is no value to send for a property that is
-        // gone, and what it goes back to is MAUI's business rather than this
-        // side's. Already in name order, as everything written here is.
+        // gone, and what it goes back to is the host's business rather than
+        // this side's. Already in name order, as everything written here is.
         if !patch.clearedProperties.isEmpty {
             out.u8(Field.cleared)
             out.u16(count(
@@ -478,7 +478,7 @@ public enum Wire {
     }
 
     /// An identity, in the shape that says which kind it is: a number when
-    /// the renderer assigned it, a string when the author did - the two
+    /// the differ assigned it, a string when the author did - the two
     /// namespaces the tree's ids travel in.
     private static func write(_ id: ElementId, into out: inout [UInt8]) {
         switch id {
@@ -528,8 +528,8 @@ public enum Wire {
 
     // MARK: - Reading the host's channels
 
-    /// Decodes an event's payload: the typed values a control reported, one
-    /// per property of the MAUI EventArgs. An empty buffer IS the payload of
+    /// Decodes an event's payload: the typed values a control reported, in
+    /// the order the event declares them. An empty buffer IS the payload of
     /// an event with nothing to say - the host crosses no bytes for one - and
     /// nil is a buffer that would not read, which every typed reader treats
     /// as the gesture parse rule treats garbage: nothing moves.
@@ -566,8 +566,8 @@ public enum Wire {
     }
 
     /// Decodes an event the HOST raised by name - no element behind it, so
-    /// the name travels in the buffer: the application registered it on the
-    /// C# side and a `HostEvents.on` subscription is what hears it. Nil for
+    /// the name travels in the buffer: the application registered it with the
+    /// host and a `HostEvents.on` subscription is what hears it. Nil for
     /// a buffer that would not read, which the caller answers with -1 so the
     /// host can say version skew rather than nothing.
     static func decodeHostEvent(_ bytes: [UInt8]) -> (name: String, payload: [PropValue])? {

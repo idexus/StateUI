@@ -3,10 +3,10 @@
 
 // A colour, read from hex and written as four bytes.
 //
-// The parser is this side's, so what a colour may be is defined here rather
-// than in the host: hex, in MAUI's own four lengths, checked below. A host
-// that read colours for itself would have to reproduce that exactly or differ
-// in silence.
+// The parser is StateUI's, so what a colour may be is defined here rather
+// than in the host: hex, in four lengths, checked below. A host that read
+// colours for itself would have to reproduce that exactly or differ in
+// silence.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -14,7 +14,7 @@ import XCTest
 final class ColorTests: XCTestCase {
     // MARK: - Reading hex
 
-    /// The four lengths MAUI reads, and the shorthand doubling each digit.
+    /// The four lengths hex is read in, and the shorthand doubling each digit.
     func testEveryLengthOfHexReadsTheSameColour() {
         XCTAssertEqual(Color("#F00"), Color("#FF0000"))
         XCTAssertEqual(Color("#8F00"), Color("#88FF0000"))
@@ -32,8 +32,7 @@ final class ColorTests: XCTestCase {
                        .color(red: 0x20, green: 0x40, blue: 0x60, alpha: 0x40))
     }
 
-    /// Case does not matter, and the `#` may be left off - both are MAUI's own
-    /// reading.
+    /// Case does not matter, and the `#` may be left off.
     func testHexIsReadInEitherCaseWithOrWithoutTheHash() {
         XCTAssertEqual(Color("#ff0000"), Color("#FF0000"))
         XCTAssertEqual(Color("FF0000"), Color("#FF0000"))

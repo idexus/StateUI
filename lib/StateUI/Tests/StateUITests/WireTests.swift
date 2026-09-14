@@ -3,11 +3,11 @@
 
 // The wire format itself, written down.
 //
-// These produce the exact messages the C# side is given, and keep them in
-// `lib/StateUI/Tests/Fixtures/`. The host tests read the SAME files,
-// so the two halves cannot drift apart quietly: change what Swift sends and this
-// test fails; update the fixture and the C# test starts exercising the new
-// shape.
+// These produce the exact messages a host is given, and keep them in
+// `lib/StateUI/Tests/Fixtures/`. A host's tests read the SAME files, so the
+// two halves cannot drift apart quietly: change what Swift sends and this
+// test fails; update the fixture and a host test that reads it exercises the
+// new shape.
 //
 // Run with STATEUI_UPDATE_FIXTURES=1 to write them instead of checking them,
 // which is the whole of "the design assumption changed, update the test".
@@ -130,9 +130,7 @@ final class WireTests: XCTestCase {
     }
 
     /// The window's lifetime on the wire: six handlers on the WINDOW node, the
-    /// ids the host's Window events report with. The C# WindowTests apply
-    /// this very file to a StateUIApplication and read the map back off the
-    /// window it opens.
+    /// ids the host's window reports each moment of its life with.
     func testTheWindowsLifetimeIsTheWindowsEvents() throws {
         let differ = Differ()
 

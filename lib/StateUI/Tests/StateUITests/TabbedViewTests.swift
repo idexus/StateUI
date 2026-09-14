@@ -7,8 +7,6 @@
 // per tab, in order - and which one is showing as an INDEX into that same list.
 // That is the whole protocol going out. Coming back there is one report - which
 // page became current - and it writes the bound selection.
-//
-// What the renderer does with it is next door, in the C# TabbedViewTests.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -61,8 +59,8 @@ final class TabbedViewTests: XCTestCase {
                        [.string("home"), .string("browse"), .string("settings")])
     }
 
-    /// A tab's caption and its picture are the PAGE's, which is where MAUI
-    /// reads them from too - so a page written for a tab says them itself, into
+    /// A tab's caption and its picture are the PAGE's, which is where a host
+    /// reads them from - so a page written for a tab says them itself, into
     /// its session as it comes into the tree.
     func testATabsCaptionAndIconAreThePages() {
         let selection = State<Tab>(.home)
@@ -145,8 +143,7 @@ final class TabbedViewTests: XCTestCase {
     }
 
     /// And a tab bar with nothing in it is describable - an application whose
-    /// tabs are loaded starts there, and MAUI's own TabbedView is empty until
-    /// something is put in it.
+    /// tabs are loaded starts there, empty until something is put in it.
     func testATabBarCanBeEmpty() {
         let selection = State<Tab>(.home)
         let node = tabs(selection.projectedValue, []).body.built
@@ -229,7 +226,7 @@ final class TabbedViewTests: XCTestCase {
             """)
     }
 
-    // MARK: - The contract the C# side reads
+    // MARK: - The contract a host reads
 
     /// The whole thing, written down: a tab bar with its background, a tab holding
     /// a navigation stack that carries its own caption, and a tab that is a

@@ -15,10 +15,9 @@
 /// is what this library cannot have.
 ///
 /// It travels as those integers - hour, minute, second - which is also how it
-/// comes BACK from a picker, so the two directions say the same thing. .NET
-/// makes them the `TimeSpan` MAUI's `TimePicker.Time` is: a time SINCE
-/// MIDNIGHT rather than a point on a clock, which is why 24:00 is as
-/// meaningless here as it is there.
+/// comes BACK from a picker, so the two directions say the same thing. The
+/// host reads them as a length of time SINCE MIDNIGHT rather than a point on
+/// a clock.
 public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
     /// The hour, 0 to 23. Midnight is 0, and one in the afternoon is 13 - there
     /// is no am/pm here, that being a matter of `.format(…)`.
@@ -28,8 +27,8 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
     public var minute: Int
 
     /// The second, 0 to 59. Rarely written: a TimePicker picks hours and
-    /// minutes on every platform, and this is what a `TimeSpan` carries when
-    /// something else set it.
+    /// minutes on every platform, so a second is only ever what something
+    /// else set.
     public var second: Int
 
     /// The millisecond, 0 to 999. What `now()` fills in, so that a clock can
@@ -39,9 +38,9 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
     public var millisecond: Int
 
     /// A time of day. Nothing checks that the three make one, and neither does
-    /// the host: .NET adds them into the length since midnight a `TimeSpan` is,
-    /// so `ClockTime(hour: 25, minute: 99)` reaches the picker as 26:39 rather
-    /// than being refused.
+    /// the host: it adds them into a length of time since midnight, so
+    /// `ClockTime(hour: 25, minute: 99)` reaches the picker as 26 hours and 39
+    /// minutes past midnight rather than being refused.
     public init(hour: Int, minute: Int, second: Int = 0, millisecond: Int = 0) {
         self.hour = hour
         self.minute = minute
@@ -50,7 +49,7 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
     }
 
     /// Reads `09:30`, `09:30:05` and `09:30:05.123` - the fraction exactly
-    /// three digits, as .NET's `fff` writes it.
+    /// three digits, which are milliseconds.
     ///
     ///     guard let alarm = ClockTime(saved.alarmText) else { return }
     ///
@@ -76,9 +75,8 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
                 return
             }
 
-            // Exactly three digits, as .NET's "fff" writes them - "05.12"
-            // would be 120ms wearing a 12, and refusing it is what keeps a
-            // truncated value visible.
+            // Exactly three digits - "05.12" would be 120ms wearing a 12, and
+            // refusing it is what keeps a truncated value visible.
             guard tail[1].count == 3, let millisecond = Int(tail[1]) else { return nil }
 
             self.init(hour: hour, minute: minute, second: second, millisecond: millisecond)
@@ -101,7 +99,7 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
     ///
     /// One fixed shape, 24-hour and without the millisecond, never a display
     /// format: how a TimePicker WRITES a time for the reader is `.format(…)`,
-    /// which the C# side does against the locale. This is for text an
+    /// which the host does against the reader's locale. This is for text an
     /// application composes itself.
     public var text: String {
         "\(pad(hour)):\(pad(minute)):\(pad(second))"
@@ -128,7 +126,7 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
         value < 10 && value >= 0 ? "0\(value)" : String(value)
     }
 
-    /// The time of day right now, by the host's clock. .NET: DateTime.Now.
+    /// The time of day right now, by the host's clock.
     ///
     ///     let time = try await ClockTime.now()
     ///

@@ -47,6 +47,46 @@ final class NativeProjectTests: XCTestCase {
         }
     }
 
+    /// The former toolkit stays in the archive.
+    ///
+    /// A sample, a comment or a document that names it describes StateUI
+    /// through something StateUI is not. The word is assembled here so this
+    /// guard does not find itself. Allowed to hold it: the guard that keeps it
+    /// out of the editor configuration, and the working agreement - ignored by
+    /// git - which tells an agent what the archive is so that it leaves it
+    /// alone.
+    func testNothingOutsideTheArchiveNamesTheFormerToolkit() throws {
+        let word = "ma" + "ui"
+        let repository = Fixtures.repository
+        let scratch: Set<String> = ["_old", ".build", ".git", ".swiftpm", "obj", "bin"]
+        let allowed: Set<String> = [
+            "lib/StateUI/Tests/StateUITests/NativeConfigurationTests.swift",
+            "AGENTS.md", "CLAUDE.md",
+        ]
+        let enumerator = try XCTUnwrap(FileManager.default.enumerator(
+            at: repository, includingPropertiesForKeys: [.isDirectoryKey]))
+        var offenders: [String] = []
+
+        for case let url as URL in enumerator {
+            if scratch.contains(url.lastPathComponent) {
+                enumerator.skipDescendants()
+                continue
+            }
+
+            let relative = String(url.path.dropFirst(repository.path.count + 1))
+            guard !allowed.contains(relative),
+                  (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) != true,
+                  let text = try? String(contentsOf: url, encoding: .utf8) else { continue }
+
+            for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false).enumerated()
+            where line.lowercased().contains(word) {
+                offenders.append("\(relative):\(number + 1)")
+            }
+        }
+
+        XCTAssertEqual(offenders, [], "these name the former toolkit outside _old/")
+    }
+
     func testGalleryOwnsItsAcceptanceTests() {
         let repository = Fixtures.repository
 

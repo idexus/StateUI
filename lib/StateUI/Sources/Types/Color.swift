@@ -1,21 +1,20 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Color, as MAUI defines it - but held as what it IS, four channels.
+// A colour, held as what it IS: four channels.
 //
-// The factory methods keep MAUI's names - `Color.fromArgb("#512BD4")`,
-// `Color.fromRgb(81, 43, 212)` - and the named colors keep the names from MAUI's
-// `Colors` class, camelCased: `.red`, `.lightGray`, `.cornflowerBlue`.
+// It is written as hex - `Color("#512BD4")`, `Color.fromArgb("#512BD4")` - as
+// channels - `Color.fromRgb(81, 43, 212)` - or by name, camelCased: `.red`,
+// `.lightGray`, `.cornflowerBlue`.
 //
 // The parser is THIS side's, it reads hex and nothing else, and what crosses
-// the wire is four bytes - see `PropValue.color`. Leaving the reading to MAUI's
-// own `Color.TryParse` would put the definition of what a colour may be inside
-// MAUI - the named CSS colours, `rgb()`, `hsl()`, four lengths of hex - and a
-// second host would then have to reproduce that parser exactly or differ in
-// silence.
+// the wire is four bytes - see `PropValue.color`. Leaving the reading to a
+// host would put the definition of what a colour may be inside that host's
+// parser, and every other host would then have to reproduce that parser
+// exactly or differ in silence.
 //
 // Eight bits per channel loses nothing this API can express: every constructor
-// here produces them, and MAUI's floats are 0-1 over the same sRGB channels.
+// here produces them, over the sRGB channels a host draws them in.
 // Holding them also makes equality mean the COLOUR rather than its spelling -
 // `Color("#ff0000")` and `.red` are one value, so two spellings of one colour
 // are not a change and nothing is sent for them.
@@ -26,24 +25,24 @@
 // records that read against the element. So a theme change builds exactly the
 // elements wearing a pair and nothing around them; a pair written outside
 // every build - into a session from a handler, in a style sheet made once - is
-// right in both themes; and nothing on the far side binds anything. See
+// right in both themes; and nothing in the host binds anything. See
 // `element` in Core/Diff.swift. A pair in a state the HOST carries crosses as
 // the half in force, and the element handing that state on reads the theme -
 // see `State.Storage.wearThemedPair()`.
 
-/// A colour. MAUI: Color.
+/// A colour.
 ///
 ///     Color("#512BD4")
 ///     Color.cornflowerBlue
 ///     Color(light: .white, dark: .black)
 ///
-/// Written as hex or by one of MAUI's names, and as a PAIR where the two
-/// themes want different colours - `Color(light:dark:)` is one value that goes
-/// wherever a colour goes. Held as four 8-bit channels, so two spellings of
-/// one colour are equal and neither is a change worth sending.
+/// Written as hex or by name, and as a PAIR where the two themes want
+/// different colours - `Color(light:dark:)` is one value that goes wherever a
+/// colour goes. Held as four 8-bit channels, so two spellings of one colour
+/// are equal and neither is a change worth sending.
 public struct Color: Equatable, Sendable {
-    /// The four channels of one colour, 0-255 each - what MAUI holds as four
-    /// floats over the same sRGB channels, and what crosses the wire.
+    /// The four sRGB channels of one colour, 0-255 each - what crosses the
+    /// wire.
     struct Rgba: Equatable, Sendable {
         let red: UInt8
         let green: UInt8
@@ -57,10 +56,9 @@ public struct Color: Equatable, Sendable {
 
     /// What to use when the system is in dark mode, when a colour says.
     ///
-    /// A colour with one of these is what MAUI writes as
-    /// `{AppThemeBinding Light=…, Dark=…}`. Nothing is bound here: the half in
-    /// force is picked by the differ, as the element wearing the colour is
-    /// built - see `propValue`.
+    /// A colour with one of these is a PAIR, written `Color(light:dark:)`.
+    /// Nothing is bound here: the half in force is picked by the differ, as
+    /// the element wearing the colour is built - see `propValue`.
     let dark: Rgba?
 
     /// A colour from the four channels, for a value coming BACK from the host
@@ -72,8 +70,7 @@ public struct Color: Equatable, Sendable {
     }
 
     /// A colour from hex: "#RGB", "#ARGB", "#RRGGBB" or "#AARRGGBB", with or
-    /// without the leading `#`. `Color.fromArgb` says the same thing in MAUI's
-    /// own words.
+    /// without the leading `#`. `Color.fromArgb` says the same thing.
     ///
     /// Hex and nothing else - a colour NAME is `Color.red` and its kin, which
     /// the compiler checks where a string could not. Anything else traps
@@ -91,7 +88,6 @@ public struct Color: Equatable, Sendable {
     }
 
     /// The same color named twice, once for each theme.
-    /// MAUI: `{AppThemeBinding Light=…, Dark=…}`.
     ///
     ///     static let surface = Color(light: .white, dark: AppColors.offBlack)
     ///
@@ -112,17 +108,15 @@ public struct Color: Equatable, Sendable {
     }
 
     /// A colour from hex - "#RGB", "#ARGB", "#RRGGBB" or "#AARRGGBB".
-    /// MAUI: Color.FromArgb.
     ///
-    /// The same thing as `Color("#512BD4")`, under the name someone coming
-    /// from MAUI will look for. Traps on anything that is not hex, as that
+    /// The same thing as `Color("#512BD4")`, under a name that says where the
+    /// alpha goes: first. Traps on anything that is not hex, as that
     /// initializer does.
     public static func fromArgb(_ hex: String) -> Color {
         Color(hex)
     }
 
     /// Red, green and blue, each 0-255, fully opaque.
-    /// MAUI: Color.FromRgb - whose own overload takes 0-1 floats as well.
     ///
     ///     Color.fromRgb(81, 43, 212)
     ///
@@ -132,7 +126,6 @@ public struct Color: Equatable, Sendable {
     }
 
     /// The same with an alpha, 0 being invisible and 255 opaque.
-    /// MAUI: Color.FromRgba.
     public static func fromRgba(_ red: Int, _ green: Int, _ blue: Int, _ alpha: Int) -> Color {
         Color(Rgba(
             red: channel(red),
@@ -143,8 +136,8 @@ public struct Color: Equatable, Sendable {
 
     /// The colour under the wire's own colour tag - four bytes, which colours
     /// have because they are the value a tree carries most of and the cheapest
-    /// to say exactly. Nothing on the far side parses a colour or has to know
-    /// what one may look like.
+    /// to say exactly. Nothing in the host parses a colour or has to know what
+    /// one may look like.
     ///
     /// A pair is BOTH, `.themed`, for the differ to pick from as it builds the
     /// element wearing it - see the head of this file.
@@ -167,10 +160,9 @@ public struct Color: Equatable, Sendable {
 
     /// The channels a hex string names, or nil when it names none.
     ///
-    /// Four lengths, exactly MAUI's: three and four digits are the shorthand
-    /// where each digit stands for both of its pair, six and eight the full
-    /// form. Alpha comes FIRST in the four- and eight-digit forms, which is
-    /// what ARGB means.
+    /// Four lengths: three and four digits are the shorthand where each digit
+    /// stands for both of its pair, six and eight the full form. Alpha comes
+    /// FIRST in the four- and eight-digit forms, which is what ARGB means.
     static func channels(of text: String) -> Rgba? {
         var digits: [UInt8] = []
         digits.reserveCapacity(8)
@@ -232,111 +224,110 @@ public struct Color: Equatable, Sendable {
 
 // MARK: - Named colors
 //
-// The set from MAUI's `Colors` class that comes up in practice. Anything else is
-// one `Color.fromArgb("#…")` away - MAUI's full list is CSS's, and repeating all
-// 140 of them here would be noise.
+// The named colours that come up in practice, each with its CSS name and
+// value. Anything else is one `Color.fromArgb("#…")` away - the full CSS list
+// is 140 names, and repeating all of them here would be noise.
 
 extension Color {
-    /// Nothing at all. MAUI: Colors.Transparent, #00FFFFFF.
+    /// Nothing at all, #00FFFFFF.
     public static let transparent = Color("#00FFFFFF")
 
-    /// MAUI: Colors.Black, #000000.
+    /// Black, #000000.
     public static let black = Color("#000000")
 
-    /// MAUI: Colors.White, #FFFFFF.
+    /// White, #FFFFFF.
     public static let white = Color("#FFFFFF")
 
-    /// MAUI: Colors.Gray, #808080.
+    /// Gray, #808080.
     public static let gray = Color("#808080")
 
-    /// MAUI: Colors.LightGray, #D3D3D3.
+    /// Light gray, #D3D3D3.
     public static let lightGray = Color("#D3D3D3")
 
-    /// Lighter than Gray despite the name - CSS's, and MAUI keeps it.
-    /// MAUI: Colors.DarkGray, #A9A9A9.
+    /// Dark gray, #A9A9A9 - lighter than `.gray` despite the CSS name.
     public static let darkGray = Color("#A9A9A9")
 
-    /// MAUI: Colors.DimGray, #696969.
+    /// Dim gray, #696969.
     public static let dimGray = Color("#696969")
 
-    /// MAUI: Colors.Silver, #C0C0C0.
+    /// Silver, #C0C0C0.
     public static let silver = Color("#C0C0C0")
 
-    /// MAUI: Colors.WhiteSmoke, #F5F5F5.
+    /// White smoke, #F5F5F5.
     public static let whiteSmoke = Color("#F5F5F5")
 
-    /// MAUI: Colors.Red, #FF0000.
+    /// Red, #FF0000.
     public static let red = Color("#FF0000")
 
-    /// MAUI: Colors.Firebrick, #B22222.
+    /// Firebrick, #B22222.
     public static let firebrick = Color("#B22222")
 
-    /// MAUI: Colors.Tomato, #FF6347.
+    /// Tomato, #FF6347.
     public static let tomato = Color("#FF6347")
 
-    /// MAUI: Colors.Orange, #FFA500.
+    /// Orange, #FFA500.
     public static let orange = Color("#FFA500")
 
-    /// MAUI: Colors.Gold, #FFD700.
+    /// Gold, #FFD700.
     public static let gold = Color("#FFD700")
 
-    /// MAUI: Colors.Yellow, #FFFF00.
+    /// Yellow, #FFFF00.
     public static let yellow = Color("#FFFF00")
 
-    /// The dark one. MAUI: Colors.Green, #008000 - `.lime` is #00FF00.
+    /// Green, the dark one: #008000 - `.lime` is #00FF00.
     public static let green = Color("#008000")
 
-    /// MAUI: Colors.Lime, #00FF00.
+    /// Lime, #00FF00.
     public static let lime = Color("#00FF00")
 
-    /// MAUI: Colors.ForestGreen, #228B22.
+    /// Forest green, #228B22.
     public static let forestGreen = Color("#228B22")
 
-    /// MAUI: Colors.Teal, #008080.
+    /// Teal, #008080.
     public static let teal = Color("#008080")
 
-    /// MAUI: Colors.Cyan, #00FFFF.
+    /// Cyan, #00FFFF.
     public static let cyan = Color("#00FFFF")
 
-    /// MAUI: Colors.Blue, #0000FF.
+    /// Blue, #0000FF.
     public static let blue = Color("#0000FF")
 
-    /// MAUI: Colors.Navy, #000080.
+    /// Navy, #000080.
     public static let navy = Color("#000080")
 
-    /// MAUI: Colors.DodgerBlue, #1E90FF.
+    /// Dodger blue, #1E90FF.
     public static let dodgerBlue = Color("#1E90FF")
 
-    /// MAUI: Colors.CornflowerBlue, #6495ED.
+    /// Cornflower blue, #6495ED.
     public static let cornflowerBlue = Color("#6495ED")
 
-    /// MAUI: Colors.SteelBlue, #4682B4.
+    /// Steel blue, #4682B4.
     public static let steelBlue = Color("#4682B4")
 
-    /// MAUI: Colors.LightBlue, #ADD8E6.
+    /// Light blue, #ADD8E6.
     public static let lightBlue = Color("#ADD8E6")
 
-    /// MAUI: Colors.Purple, #800080.
+    /// Purple, #800080.
     public static let purple = Color("#800080")
 
-    /// MAUI: Colors.Indigo, #4B0082.
+    /// Indigo, #4B0082.
     public static let indigo = Color("#4B0082")
 
-    /// MAUI: Colors.Violet, #EE82EE.
+    /// Violet, #EE82EE.
     public static let violet = Color("#EE82EE")
 
-    /// MAUI: Colors.Magenta, #FF00FF.
+    /// Magenta, #FF00FF.
     public static let magenta = Color("#FF00FF")
 
-    /// MAUI: Colors.Pink, #FFC0CB.
+    /// Pink, #FFC0CB.
     public static let pink = Color("#FFC0CB")
 
-    /// MAUI: Colors.Brown, #A52A2A.
+    /// Brown, #A52A2A.
     public static let brown = Color("#A52A2A")
 
-    /// MAUI: Colors.Maroon, #800000.
+    /// Maroon, #800000.
     public static let maroon = Color("#800000")
 
-    /// MAUI: Colors.Olive, #808000.
+    /// Olive, #808000.
     public static let olive = Color("#808000")
 }

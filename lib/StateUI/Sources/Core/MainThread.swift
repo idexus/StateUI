@@ -4,15 +4,15 @@
 // The one thread everything here runs on, expressed to the compiler.
 //
 // This library has no thread and no run loop of its own. Everything it does
-// happens inside a call the C# host makes - a render, an event, a command
-// reporting back - on the thread MAUI draws on. A handler may SUSPEND in the
+// happens inside a call the host makes - a render, an event, a command
+// reporting back - on the host's UI thread. A handler may SUSPEND in the
 // middle of that, and Swift's runtime has an opinion about where it resumes.
 //
 // Left alone, that opinion is wrong for us. Measured: `continuation.resume()`
 // does not continue the handler where it stands. It schedules the rest of it,
 // and the scheduler hands it to a thread from the cooperative pool - so the
-// state writes after an `await` would land next to a C# render that assumes it
-// is alone. Nothing would crash reliably, which is the worst kind of wrong.
+// state writes after an `await` would land next to a host render that assumes
+// it is alone. Nothing would crash reliably, which is the worst kind of wrong.
 //
 // So the executor is ours, and it runs NOTHING by itself. A job is put in a
 // queue, and the queue is emptied only when the host calls in - which is exactly
@@ -21,8 +21,8 @@
 // WHY NOT @MainActor:
 // On Apple it would work - MainActor's executor is the main queue and UIKit
 // drains it. On Android and Windows MainActor is libdispatch's main queue, which
-// nothing drains in a MAUI app: the main thread is turning Android's Looper or
-// the WinUI message pump instead. A handler would suspend at its first `await`
+// nothing drains: the host's main thread is turning Android's Looper or the
+// WinUI message pump instead. A handler would suspend at its first `await`
 // and never wake up, silently, on Android and Windows. Replacing
 // MainActor's own executor exists only behind an experimental SPI
 // (`@_spi(ExperimentalCustomExecutors)`, from Swift 6.3) that any toolchain may
@@ -30,14 +30,15 @@
 // it. Hence a global actor of this library's own, whose jobs the host runs.
 //
 // WHY THE HOST IS NOT CALLED BACK:
-// Handing each job to a C# function pointer works everywhere but Android, and
-// there it is a trap. `resume()` produces its job on a cooperative-pool thread
-// - measured, and unavoidable: resuming from inside a job on this very executor
-// does not change it - so such a callback enters managed code from a thread the
-// .NET runtime has never seen. Mono attaches such a thread on the way in, and
-// with a debugger attached that attach deadlocks the UI thread: the app freezes
-// on the first `await` in a handler and Android stops delivering touches to it.
-// Without a debugger the same build is fine, which is the worst way to find out.
+// Handing each job to a host function pointer is a trap. `resume()` produces
+// its job on a cooperative-pool thread - measured, and unavoidable: resuming
+// from inside a job on this very executor does not change it - so such a
+// callback enters the host from a thread its runtime has never seen. A
+// foreign-language host's runtime attaches such a thread on the way in, and on
+// Android, with a debugger attached, that attach can deadlock the UI thread:
+// the app freezes on the first `await` in a handler and stops receiving
+// touches. Without a debugger the same build is fine, which is the worst way
+// to find out.
 //
 // So nothing here calls out. The host asks, through `stateui_run_jobs`.
 //
@@ -54,23 +55,24 @@
 // reported the completion, so it asks right after (and keeps asking, on a
 // clock). But a job can land when no command is in flight at all: Task.sleep
 // coming due, a Task an author started finishing, an AsyncStream yielding. For
-// those the host parks a MANAGED thread inside `stateui_wait_work`, and
+// those the host parks a thread of its OWN inside `stateui_wait_work`, and
 // `enqueue` signals it - as does `Renderer.send` (`poke`), for the act a
 // plain `Task` queues from the pool with no job to announce it. The thread
-// wakes, posts one drain onto the UI thread through the host's own
-// dispatcher - which is thread-safe on every platform - and parks again.
+// wakes, posts one drain onto the UI thread the toolkit's own way - which is
+// thread-safe on every platform - and parks again.
 //
 // That is what makes `Task.sleep` and every other plain Swift await legal in a
 // handler: what a handler awaits does not have to be a host command.
 //
-// The Mono trap above shapes that thread too: it is CREATED BY C#, so the
-// runtime has always known it, and it only ever calls MANAGED code (its own
-// dispatcher). Nothing here calls out; the host asks, through a thread whose
-// whole job is to ask the moment there is something to ask about.
+// The attach trap above shapes that thread too: the HOST creates it, so its
+// runtime has always known it, and it only ever calls the host's own code
+// (the post onto the UI thread). Nothing here calls out; the host asks,
+// through a thread whose whole job is to ask the moment there is something to
+// ask about.
 
 import Dispatch
 
-/// The thread MAUI draws on, as an isolation domain. MAUI: MainThread.
+/// The host's UI thread, as an isolation domain.
 ///
 /// Every event handler runs here, and so does everything a handler awaits. It is
 /// the same thread the renderer works on, which is what lets a handler read and
@@ -188,8 +190,8 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
     }
 
     /// Parks the calling thread until a job lands, and returns how many are
-    /// waiting. The far side of `stateui_wait_work` - see Bridge/Exports.swift
-    /// for who calls it and why that thread is the host's to give.
+    /// waiting. What `stateui_wait_work` runs - see Bridge/Exports.swift for
+    /// who calls it and why that thread is the host's to give.
     func waitForWork() -> Int {
         wake.wait()
 
@@ -241,7 +243,7 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// completion accounting covers, because what it awaited was its own child
     /// tasks rather than a host command. The host polls this beside
     /// `stateui_resumes_pending`, so a job that lands after the counters read
-    /// zero is still collected. See `StateUISession.DrainWhenTheResumeArrives`.
+    /// zero is still collected.
     var pendingCount: Int {
         guarded.sync { pending.count }
     }

@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: ImageButton.
-
 /// ImageButton's own properties - the half a `Style<ImageButton>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
@@ -18,14 +16,14 @@ public protocol ImageButtonProperties: PropertyContainer {}
 extension ImageButtonProperties {
 }
 
-/// A button that is a picture, with no caption at all. MAUI: ImageButton.
+/// A button that is a picture, with no caption at all.
 ///
 ///     ImageButton("nav_media.png")
 ///         .aspect(.aspectFit)
 ///         .padding(12)
 ///         .onClicked { shown.toggle() }
 ///
-/// MAUI's ImageButton is a Button with a Source instead of Text - not an Image
+/// It is a button with a picture where the caption would be - not an Image
 /// with a tap recognizer on it, which is the other way to say something like
 /// this and gives no pressed state, no border and no corner radius.
 ///
@@ -54,9 +52,8 @@ public struct ImageButton: View, PaddingElement, BorderElement, ImageElement,
         node = Node(type: .imageButton, props: [.source: source.propValue])
     }
 
-    /// One picture per theme. MAUI: Source with an AppThemeBinding on it -
-    /// here both halves go on the node, and the differ picks one as it builds
-    /// the view.
+    /// One picture per theme: both halves go on the node, and the differ picks
+    /// one as it builds the view.
     public init(light: String, dark: String) {
         self.init(ImageSource(light: light, dark: dark))
     }
@@ -67,19 +64,18 @@ public struct ImageButton: View, PaddingElement, BorderElement, ImageElement,
 
     /// Runs when the button is pressed AND released on it - the ordinary one.
     /// A second `.onClicked` runs beside the first, like every typed event
-    /// modifier. MAUI: ImageButton.Clicked.
+    /// modifier.
     public func onClicked(_ handler: @escaping EventHandler) -> Self {
         addHandler(.clicked, handler)
     }
 
     /// Runs the moment the finger goes down, before it is lifted.
-    /// MAUI: ImageButton.Pressed.
     public func onPressed(_ handler: @escaping EventHandler) -> Self {
         addHandler(.pressed, handler)
     }
 
     /// Runs when the finger is lifted, wherever it ends up - unlike `onClicked`,
-    /// which needs it lifted on the button. MAUI: ImageButton.Released.
+    /// which needs it lifted on the button.
     public func onReleased(_ handler: @escaping EventHandler) -> Self {
         addHandler(.released, handler)
     }

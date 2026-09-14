@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Rect, as MAUI defines it.
+// A rectangle.
 //
 // Where a view is and how big it is, in one value - which is what an
 // AbsoluteLayout positions its children with. The four-value initializer takes
-// them in MAUI's own order: x, y, width, height.
+// them in the order x, y, width, height.
 //
-// A size of `AbsoluteLayout.autoSize` means "whatever the view asks for", which
-// is MAUI's `AbsoluteLayout.AutoSize` and travels as the -1 it is.
+// A size of `AbsoluteLayout.autoSize` means "whatever the view asks for", and
+// travels as the -1 it is.
 
-/// A rectangle: a position and a size, in one value. MAUI: Rect.
+/// A rectangle: a position and a size, in one value.
 ///
 ///     Label("Corner").absoluteLayoutBounds(Rect(0, 0, 120, 40))
 ///
@@ -31,7 +31,7 @@ public struct Rect: Equatable, Sendable {
     /// How tall.
     public var height: Double
 
-    /// In MAUI's order: x, y, width, height. What `Rect(0, 0, 120, 40)` means.
+    /// In that order: x, y, width, height. What `Rect(0, 0, 120, 40)` means.
     public init(_ x: Double, _ y: Double, _ width: Double, _ height: Double) {
         self.x = x
         self.y = y
@@ -47,7 +47,7 @@ public struct Rect: Equatable, Sendable {
         self.init(x, y, width, height)
     }
 
-    /// The wire form: an array, in the order MAUI's constructor takes them.
+    /// The wire form: an array, in the initializer's order.
     var propValue: PropValue {
         .numbers([x, y, width, height])
     }

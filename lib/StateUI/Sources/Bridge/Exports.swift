@@ -3,11 +3,11 @@
 
 // The C boundary.
 //
-// Every function crossing into .NET lives here, in ONE file on purpose: @_cdecl
-// is an underscored (compiler-private) attribute, so keeping all uses together
-// makes a future migration to the official @cdecl a local change. It also keeps
-// the exported surface easy to audit - what is here is the entire API .NET can
-// reach.
+// Every function a foreign-language host calls lives here, in ONE file on
+// purpose: @_cdecl is an underscored (compiler-private) attribute, so keeping
+// all uses together makes a future migration to the official @cdecl a local
+// change. It also keeps the exported surface easy to audit - what is here is
+// the entire API a foreign-language host can reach.
 //
 // NOTE ON DIRECTION:
 // This library knows nothing about any particular application. The app module
@@ -49,8 +49,8 @@ private func makeCString(_ text: String) -> UnsafeMutablePointer<CChar>? {
 ///
 /// The `_wire` suffix names the FORMAT, for the reason
 /// stateui_take_commands_wire carries it: a half built for another format
-/// calls a name that is not here and fails with EntryPointNotFoundException -
-/// a clean, nameable error - where one name over two signatures would read a
+/// calls a name that is not here and fails to find the entry point - a
+/// clean, nameable error - where one name over two signatures would read a
 /// register as a pointer.
 ///
 /// The caller owns the returned memory and must release it with
@@ -94,8 +94,8 @@ private func makeBuffer(
 /// The buffer is the caller's and is read before this returns; nothing is
 /// kept, so there is nothing to free. The `_wire` suffix names the format, for
 /// the reason the other two `_wire` exports carry it: a half built for another
-/// format fails with EntryPointNotFoundException - a clean, nameable error -
-/// instead of reading bytes as a C string.
+/// format fails to find the entry point - a clean, nameable error - instead of
+/// reading bytes as a C string.
 @_cdecl("stateui_dispatch_wire")
 public func stateui_dispatch_wire(
     _ handlerId: Int32,
@@ -124,7 +124,7 @@ public func stateui_dispatch_wire(
 }
 
 /// Reports an event the HOST raised by NAME, with no element behind it - the
-/// application's own pushes, registered on the C# side and heard by
+/// application's own pushes, registered with the host and heard by
 /// `HostEvents.on`. `bytes` is the host-event layout (Core/Wire.swift): the
 /// name, then the typed values.
 ///
@@ -152,9 +152,9 @@ public func stateui_dispatch_host_event(
 /// allocating nothing.
 ///
 /// The `_wire` suffix names the FORMAT, and is what makes a mismatch loud: a
-/// half built for another format calls a name that is not here and fails with
-/// EntryPointNotFoundException - a clean, nameable error - where one name over
-/// two signatures would read a register as a pointer.
+/// half built for another format calls a name that is not here and fails to
+/// find the entry point - a clean, nameable error - where one name over two
+/// signatures would read a register as a pointer.
 ///
 /// The caller owns the returned memory and must release it with
 /// stateui_free_buffer.
@@ -170,8 +170,8 @@ public func stateui_take_commands_wire(
 /// The host asks BEFORE the first render and refuses a mismatch loudly - two
 /// halves built from different versions must fail at startup with a sentence,
 /// never by reading each other's bytes wrong. A library too old to have this
-/// export fails the same check as EntryPointNotFoundException, which is the
-/// same sentence one step earlier.
+/// export fails the same check as a missing entry point, which is the same
+/// sentence one step earlier.
 @_cdecl("stateui_wire_version")
 public func stateui_wire_version() -> Int32 {
     Int32(Wire.version)
@@ -422,7 +422,7 @@ public func stateui_connect_scene(_ bytes: UnsafePointer<UInt8>?, _ length: Int3
 /// Runs whatever a suspended handler has waiting, and returns how many jobs ran.
 ///
 /// This is where a handler comes back to life after an `await`. The host calls it
-/// on the thread MAUI draws on, after reporting that an act has finished - the
+/// on its UI thread, after reporting that an act has finished - the
 /// job a resume produces does not exist yet when the report returns, so a host
 /// that gets 0 should ask again on its next turn.
 ///
@@ -431,9 +431,9 @@ public func stateui_connect_scene(_ bytes: UnsafePointer<UInt8>?, _ length: Int3
 /// it does after an event.
 ///
 /// Deliberately a call INTO this library rather than a callback out of it: a
-/// resume arrives on a cooperative-pool thread, and entering .NET from a thread
-/// it has never seen deadlocks Mono when a debugger is attached. See
-/// Core/MainThread.swift.
+/// resume arrives on a cooperative-pool thread, and entering a foreign-language
+/// host from a thread its runtime has never seen can deadlock the UI thread
+/// when a debugger is attached. See Core/MainThread.swift.
 @_cdecl("stateui_run_jobs")
 public func stateui_run_jobs() -> Int32 {
     Int32(stateUIRunJobs())
@@ -462,10 +462,9 @@ public func stateui_resumes_pending() -> Int32 {
 /// performed promptly: an act queued from a plain `Task` runs on the pool,
 /// puts nothing on the executor, and `send`'s poke is the only thing that
 /// says it exists. The host gives this library a thread - one it CREATED, so
-/// the .NET runtime has always known it, which is the whole Mono constraint -
-/// and that thread spends its life parked here. When it returns, the host
-/// posts one drain onto its UI thread through its own dispatcher and calls
-/// back in.
+/// its runtime has always known it, which is the whole of the attach trap in
+/// Core/MainThread.swift - and that thread spends its life parked here. When
+/// it returns, the host posts one drain onto its UI thread and calls back in.
 ///
 /// Nothing is ever run on this thread; it is a doorbell, not a worker.
 @_cdecl("stateui_wait_work")

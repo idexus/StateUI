@@ -9,7 +9,7 @@
 // the host boundary, and nothing between the two says they agree on the name.
 //
 // That gap is silent by design. An unknown property is ignored rather than
-// reported, so a modifier the renderer has not caught up with does nothing at
+// reported, so a modifier a host has not caught up with does nothing at
 // all, looks exactly like one that works, and no test that exercises the
 // mechanism will ever notice.
 //
@@ -262,7 +262,7 @@ final class ControlTests: XCTestCase {
                 .stroke(.lightGray)
                 .strokeThickness(1)
                 .strokeShape(.roundRectangle(12))
-                // The rest of MAUI's IStroke, which a Border declares of its
+                // The rest of the stroke set, which a Border declares of its
                 // own beside the identical set on Shape.
                 .strokeDashArray([6, 3])
                 .strokeDashOffset(2)
@@ -282,7 +282,7 @@ final class ControlTests: XCTestCase {
                     .hideSingle(false)),
 
             // The dots as VIEWS - the second shape the same control takes:
-            // the items run the template here, and MAUI counts them itself.
+            // the items run the template here, and the host counts them itself.
             ControlCase("IndicatorDots", source: "IndicatorView.swift",
                 IndicatorView(["one", "two", "three"]) { name in
                     Label("*").id(name)
@@ -343,7 +343,7 @@ final class ControlTests: XCTestCase {
                 .onScrollStopped {}),
 
             // Both halves of a map: the control, and the pins on it. A Pin is
-            // not a control of its own - MAUI's is a BindableObject - so this
+            // not a control of its own - it is a marker on the map - so this
             // case is where its modifiers are exercised as well. Where the
             // map LOOKS is an act (moveToRegion), pinned by its command
             // fixture rather than here.
@@ -369,10 +369,9 @@ final class ControlTests: XCTestCase {
                     .onMapClicked { _ in }),
 
             // The fixture's source is the URL form; HTML written in place
-            // travels as a list under the same name, which is the renderer
-            // test AWebViewSourceTakesAUrlAndHtmlUnderTheSameName - the brush
-            // rule, one level up. The two CanGo bindings are watches, MAUI
-            // giving neither property an event.
+            // travels as a list under the same name - the brush rule, one
+            // level up. The canGoBack and canGoForward bindings are watches
+            // rather than events.
             ControlCase("WebView", source: "WebView.swift",
                 WebView("https://example.com/docs")
                     .userAgent("StateUI/1.0")
@@ -399,7 +398,7 @@ final class ControlTests: XCTestCase {
                         Button("act")
                     }),
 
-            // The binding form, because IsRefreshing is the one property here
+            // The binding form, because isRefreshing is the one property here
             // written from both sides: the pull sets it and the handler clears
             // it, so the fixture has to carry the watch as well as the event.
             ControlCase("RefreshView", source: "RefreshView.swift",
@@ -412,8 +411,9 @@ final class ControlTests: XCTestCase {
                 .onRefreshing {}),
 
             // Both halves of a swipe: the view, and the items each side reveals.
-            // SwipeItem is not a control of its own - MAUI's is a MenuItem - so
-            // this case is where its modifiers are exercised as well.
+            // SwipeItem is not a control of its own - it is an action the swipe
+            // reveals - so this case is where its modifiers are exercised as
+            // well.
             ControlCase("SwipeView", source: "SwipeView.swift",
                 SwipeView {
                     Label("Swipe me")
@@ -477,7 +477,7 @@ final class ControlTests: XCTestCase {
                     .fillRule(.evenOdd)),
 
             // A canvas, and the instructions it draws - every one of them, since
-            // the format they travel in is read in one place on the other side.
+            // the format they travel in is read in one place by a host.
             ControlCase("GraphicsView", source: "GraphicsView.swift",
                 GraphicsView {
                     Draw.fillColor(.cornflowerBlue)
@@ -523,13 +523,13 @@ final class ControlTests: XCTestCase {
             // The protocol tiers, once, on the three controls it takes to reach all
             // of them: a stack for spacing and padding, a label for text, font and
             // alignment, and a shape for what a shape is drawn with. The grid
-            // placement is on the label because that is where an attached property
+            // placement is on the label because that is where a placement
             // lives - on the child, not the grid.
             ControlCase("Elements", source: "Elements.swift",
                 VStack {
-                    // The Shape tier, which MAUI declares once and all seven
-                    // shapes inherit - so it is checked here rather than in each
-                    // of their cases, exactly as the font tier is.
+                    // The Shape tier, which all seven shapes share - so it is
+                    // checked here rather than in each of their cases, exactly
+                    // as the font tier is.
                     Ellipse()
                         .fill(.radialGradient([
                             GradientStop(.white, 0),
@@ -576,8 +576,8 @@ final class ControlTests: XCTestCase {
                         .gridRowSpan(3)
                         .gridColumnSpan(4)
                         // The other two layouts that ask a child where it goes.
-                        // Harmless on a view in neither, which is what an
-                        // attached property is.
+                        // Harmless on a view in neither: a placement means
+                        // something only to the layout that asks for it.
                         .absoluteLayoutBounds(Rect(0, 0, 120, 40))
                         .absoluteLayoutFlags(.sizeProportional)
                         // A drag written into states rather than reported -
@@ -586,11 +586,9 @@ final class ControlTests: XCTestCase {
                         .panY(followed.projectedValue)
                         .padding(8, 4)
 
-                    // The InputView tier, which MAUI declares once and Entry,
-                    // Editor and SearchBar all inherit - checked here rather
-                    // than in each of their cases, exactly as the shape tier
-                    // is. The other two controls' renderer reads are pinned by
-                    // TheInputTierLandsOnEveryInputView on the C# side.
+                    // The input tier, which Entry, Editor and SearchBar all
+                    // share - checked here rather than in each of their cases,
+                    // exactly as the shape tier is.
                     Entry("Ada")
                         .placeholder("Name")
                         .placeholderColor(.lightGray)
@@ -604,7 +602,7 @@ final class ControlTests: XCTestCase {
                 }
                 .spacing(12)
                 // The safe strip is the LAYOUT tier's one property of its own;
-                // the four-value form pins the full MAUI spelling on the wire.
+                // the four-value form pins its full spelling on the wire.
                 .safeAreaEdges(.none, .softInput, .container, .all)
                 .isClippedToBounds(true)
                 .cascadeInputTransparent(false)
@@ -636,7 +634,7 @@ final class ControlTests: XCTestCase {
                 .anchorX(0.25)
                 .anchorY(0.75)
                 .zIndex(3)
-                // Every gesture MAUI has, on one view - which is legal, and the
+                // Every gesture StateUI has, on one view - which is legal, and the
                 // only way to check that each recognizer is asked for on its
                 // own terms.
                 .onTapped(numberOfTapsRequired: 2) {}
@@ -661,8 +659,8 @@ final class ControlTests: XCTestCase {
     /// Every case, rendered from nothing, written down.
     ///
     /// A fresh differ per case, so each file reads as a first render and the
-    /// identities start at 1 - a fixture is easier to read that way, and the C#
-    /// side applies each on a renderer of its own anyway.
+    /// identities start at 1 - a fixture is easier to read that way, and each
+    /// stands alone.
     func testEveryControlIsWrittenDown() throws {
         for control in Self.cases {
             let differ = Differ()
@@ -679,7 +677,7 @@ final class ControlTests: XCTestCase {
     // MARK: - The set, kept honest
 
     /// A modifier that no case uses is a modifier no fixture carries, which is a
-    /// modifier the renderer can quietly not implement.
+    /// modifier a host can quietly not implement.
     func testEveryModifierIsExercised() throws {
         var covered: [String: Set<String>] = [:]
 
@@ -883,9 +881,9 @@ final class ControlTests: XCTestCase {
                     ControlTests.
 
                     Every control is built here with everything it can do, and \
-                    the message is kept in fixtures/controls/ for the C# tests \
-                    to apply. A control without one is a control nothing checks \
-                    the renderer against.
+                    the message is kept in fixtures/controls/, where a host's \
+                    own tests apply it. A control without one is a control \
+                    nothing checks a host against.
                     """)
             }
         }
@@ -974,9 +972,9 @@ final class ControlTests: XCTestCase {
         XCTAssertTrue(refreshing.wrappedValue)
     }
 
-    /// A radio button hears its own CLEARING as well: MAUI reports both sides of
-    /// a change of mind, and the host lands the false on the state the
-    /// button borrows exactly as it lands the true.
+    /// A radio button hears its own CLEARING as well: a change of mind is
+    /// reported from both buttons, and the host lands the false on the state
+    /// the button borrows exactly as it lands the true.
     func testARadioButtonThatLosesTheGroupWritesBackFalse() {
         let chosen = State(true)
 
@@ -1001,7 +999,7 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(ClockTime(hour: 9, minute: 5).text, "09:05:00")
         XCTAssertEqual(ClockTime(hour: 21, minute: 5, second: 30).text, "21:05:30")
 
-        // Read back in the form C# sends, and in the shorter one a hand would
+        // Read back in the full form, and in the shorter one a hand would
         // write.
         XCTAssertEqual(ClockTime("21:05:30"), ClockTime(hour: 21, minute: 5, second: 30))
         XCTAssertEqual(ClockTime("09:30"), ClockTime(hour: 9, minute: 30))
@@ -1013,9 +1011,9 @@ final class ControlTests: XCTestCase {
 
         XCTAssertLessThan(ClockTime(hour: 9, minute: 30), ClockTime(hour: 9, minute: 31))
 
-        // .NET's "fff" - exactly three digits of millisecond - for text an
-        // author hands in. now() answers as four numbers, not as this, and the
-        // text form drops the milliseconds again on the way out.
+        // Exactly three digits of millisecond, for text an author hands in.
+        // now() answers as four numbers, not as this, and the text form drops
+        // the milliseconds again on the way out.
         XCTAssertEqual(
             ClockTime("21:05:30.125"),
             ClockTime(hour: 21, minute: 5, second: 30, millisecond: 125))
@@ -1107,8 +1105,8 @@ final class ControlTests: XCTestCase {
     /// event modifier by hand: one that ASSIGNED the handler would let a
     /// second silently replace the first while "every typed event modifier
     /// composes" stood written on Button. A ToolbarItem and a Pin
-    /// stand for the family - MenuItem, MenuFlyoutItem and SwipeItem are the
-    /// same two lines.
+    /// stand for the family - MenuFlyoutItem and SwipeItem are the same two
+    /// lines.
     func testASecondHandlerOnAnItemRunsBesideTheFirst() {
         var seen: [String] = []
 
@@ -1216,8 +1214,8 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(clock, ClockTime(hour: 9, minute: 30))
     }
 
-    /// A value the PLATFORM moves - the scroller's offset, which MAUI keeps
-    /// read-only - comes back into the state as the host's own write: the host
+    /// A value the PLATFORM moves - the scroller's offset, which the platform
+    /// keeps read-only - comes back into the state as the host's own write: the host
     /// writes the image by the number the state was issued, and the state reads
     /// what it wrote.
     func testAReportedPropertyWritesIntoItsBinding() {
@@ -1257,13 +1255,13 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(volume.wrappedValue, 0)
     }
 
-    /// A navigation MAUI gives no reason for still reports, because the url
-    /// and the outcome beside it are perfectly good.
+    /// A navigation that arrives with no reason still reports, because the
+    /// url and the outcome beside it are perfectly good.
     ///
-    /// Measured on Windows 11 arm64, 2026-08-13: a WebView's FIRST navigation
-    /// - the source it was handed before its browser existed - arrives with a
-    /// `NavigationEvent` MAUI declares no member for, and the host has nothing
-    /// to translate it onto but `.unknown`. Refusing that report would leave a
+    /// Measured on Windows: a web view's FIRST navigation - the source it was
+    /// handed before its browser existed - arrives with a reason no
+    /// `WebNavigationEvent` member names, and the host has nothing to
+    /// translate it onto but `.unknown`. Refusing that report would leave a
     /// page loaded on screen while the interface still said nothing had, with
     /// only a second navigation ever reporting. An unknown member degrades; a
     /// wrong SHAPE still refuses, which is the test below.
@@ -1300,7 +1298,7 @@ final class ControlTests: XCTestCase {
     }
 
     /// The other half of the same rule: a value of the wrong KIND is a
-    /// garbled payload rather than a reason MAUI left out, so nothing runs -
+    /// garbled payload rather than a reason the platform left unnamed, so nothing runs -
     /// a report invented from rubbish is worse than a report not made.
     func testANavigationReportOfTheWrongShapeLeavesTheHandlerAlone() {
         var seen: [WebNavigation] = []

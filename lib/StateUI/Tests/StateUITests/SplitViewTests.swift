@@ -6,15 +6,12 @@
 // A SplitView puts two pages on the wire - the pane and the page under it,
 // each wearing the identity of its half - and whether the pane is showing as
 // one property. Coming back there is one report, and it says what is true now.
-//
-// What the renderer does with it is next door, in the C# SplitViewTests.
 
 import XCTest
 @_spi(Host) @testable import StateUI
 
-/// The pane. A page like any other, which is the whole point - and it needs a
-/// title, which is MAUI's rule rather than this library's: written as it comes
-/// into the tree, so the pane arrives with one.
+/// The pane. A page like any other, which is the whole point - and it carries
+/// a title, written as it comes into the tree, so the pane arrives with one.
 private struct MenuPage: ContentView {
     @Environment private var page: PageSession
     @Binding var section: String
@@ -128,7 +125,7 @@ final class SplitViewTests: XCTestCase {
         XCTAssertEqual(next.child("detail")?.props["title"], .string("archive"))
     }
 
-    // MARK: - The contract the C# side reads
+    // MARK: - The contract a host reads
 
     /// The whole thing, written down: a pane with two rows, a detail page that
     /// is a whole navigation stack, and the pane showing.

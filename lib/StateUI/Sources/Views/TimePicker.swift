@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: TimePicker.
+// A time of day, chosen from the platform's own clock.
 
 /// TimePicker's own properties - the half a `Style<TimePicker>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
@@ -10,7 +10,7 @@
 public protocol TimePickerProperties: PropertyContainer {}
 
 extension TimePickerProperties {
-    /// Whether the clock face is showing. MAUI: TimePicker.IsOpen.
+    /// Whether the clock face is showing.
     ///
     /// Settable, so a button elsewhere on the page can open it - and the
     /// platform closes it by itself, which is what `onClosed` is for.
@@ -19,7 +19,7 @@ extension TimePickerProperties {
     }
 
     /// The time the field is showing, on a 24-hour clock whatever `.format`
-    /// draws. MAUI: TimePicker.Time.
+    /// draws.
     ///
     ///     TimePicker().time(ClockTime(hour: 7, minute: 30))
     ///
@@ -30,11 +30,10 @@ extension TimePickerProperties {
         setValue(.time, value.propValue)
     }
 
-    /// How the time is written, in .NET's format strings - "t" for the short
-    /// form, "T" for the long one, or a pattern like "HH:mm".
-    /// MAUI: TimePicker.Format.
+    /// How the time is written - "t" for the short form, "T" for the long one,
+    /// or a pattern like "HH:mm".
     ///
-    /// Formatting happens on the C# side, where a locale is available and costs
+    /// Formatting happens in the host, where a locale is available and costs
     /// nothing - which is also what decides whether the reader sees 13:00 or
     /// 1:00 PM.
     public func format(_ value: String) -> Modified {
@@ -42,7 +41,7 @@ extension TimePickerProperties {
     }
 }
 
-/// A time of day, chosen from the platform's own clock. MAUI: TimePicker.
+/// A time of day, chosen from the platform's own clock.
 ///
 ///     @State private var alarm = ClockTime(hour: 7, minute: 0)
 ///
@@ -54,11 +53,11 @@ extension TimePickerProperties {
 /// gets anywhere.
 ///
 /// The time is a `ClockTime` rather than a Foundation value - see that type for
-/// why. MAUI's `TimePicker.Time` is a `TimeSpan`, a length SINCE MIDNIGHT, which
-/// is what three integers describe exactly.
+/// why. A time of day is a length SINCE MIDNIGHT, which is what three integers
+/// describe exactly.
 ///
-/// `TextStyleElement` rather than `TextElement`: MAUI's TimePicker colours its
-/// text and spaces its letters, and has no Text property - the field shows the
+/// `TextStyleElement` rather than `TextElement`: a TimePicker colours its text
+/// and spaces its letters, and has no text property - the field shows the
 /// formatted time.
 public struct TimePicker: View, TextStyleElement, FontElement, TimePickerProperties {
     /// The node this control describes.
@@ -96,9 +95,9 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
     /// shown from the value read at build, written back through the binding
     /// when a time is chosen, the closure that wrote the picker a reader of it.
     ///
-    /// A time of more than a day is shown as the platform folds it - a
-    /// `TimeSpan` is a length since midnight - while the state keeps what was
-    /// written; the reader's next pick lands the time shown.
+    /// A time of more than a day is shown as the platform folds it into one
+    /// day, while the state keeps what was written; the reader's next pick
+    /// lands the time shown.
     ///
     /// - Parameter value: the state shown, and written back into when a time
     ///   is chosen.
@@ -113,9 +112,8 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
 
     // MARK: Events
 
-    /// Fires when a time is chosen, with the new one - MAUI's
-    /// `TimeChangedEventArgs.NewTime`. Runs after a binding's write, if there is
-    /// one. MAUI: TimePicker.TimeSelected.
+    /// Fires when a time is chosen, with the new one. Runs after a binding's
+    /// write, if there is one.
     public func onTimeSelected(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
         addHandler(.timeSelected) {
             if let time = ClockTime(EventBuffer.current.value()) {
@@ -124,11 +122,10 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
         }
     }
 
-    /// The clock face has opened. MAUI: TimePicker.Opened.
+    /// The clock face has opened.
     ///
-    /// THE TRAP: it answers the READER opening it and not `isOpen(true)`
-    /// - measured on Mac Catalyst, where the tree opening it really does open
-    /// the platform's own and raises nothing. An application that opens it
+    /// THE TRAP: it answers the READER opening it and not `isOpen(true)`:
+    /// the tree opening it opens the platform's own and raises nothing. An application that opens it
     /// from a button of its own already knows, so what this is for is the
     /// other direction.
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
@@ -136,7 +133,6 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
     }
 
     /// It has closed - by a choice, by a tap outside, or by the platform.
-    /// MAUI: TimePicker.Closed.
     public func onClosed(_ handler: @escaping EventHandler) -> Self {
         addHandler(.closed, handler)
     }

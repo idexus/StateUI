@@ -119,13 +119,13 @@
 ///
 /// **What is deliberately NOT here:**
 ///
-/// - `Children` as a builder. The tabs are a collection so that a tab can be
+/// - A builder of child pages. The tabs are a collection so that a tab can be
 ///   identified by its own value; a builder would hand back an anonymous list
 ///   whose only identity is position.
-/// - `ItemsSource` and `ItemTemplate`. MAUI's data-driven form of the same
-///   thing - which is what passing an array and a closure already is.
-/// - `CurrentPage` as a readable property. The bound selection answers it on
-///   this side, before the host has drawn anything.
+/// - A separate items source and item template. Passing an array and a
+///   closure already is that data-driven form.
+/// - The current page as a readable property. The bound selection answers it
+///   on this side, before the host has drawn anything.
 public struct TabbedView: Page, BindableObject, BarElement, PageElement, PageArrangement {
     /// The node this page describes.
     public var node: Node
@@ -167,7 +167,7 @@ public struct TabbedView: Page, BindableObject, BarElement, PageElement, PageArr
     }
 
     /// Which tab is showing, borrowed two-way. A tab the reader chooses is
-    /// written here. MAUI: TabbedView.CurrentPage.
+    /// written here.
     ///
     ///     @State private var tab: Tab = .home
     ///

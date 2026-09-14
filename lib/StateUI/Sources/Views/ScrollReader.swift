@@ -192,8 +192,8 @@ public struct ScrollReader: ContentView {
         return copy
     }
 
-    /// What runs while the reader DRAGS the run, reported the way MAUI reports
-    /// a pan.
+    /// What runs while the reader DRAGS the run, reported the way a view's
+    /// `onPanUpdated` reports a pan.
     ///
     /// It lands on the same view the tap does - inside the scroller, which is
     /// the only thing over the run a hand can reach - and it is what turns a

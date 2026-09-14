@@ -359,7 +359,7 @@ final class TickerTests: XCTestCase {
 
     /// Zero is not a very fast ticker and a negative one is not a ticker at
     /// all: the deadline would never move ahead of the clock and the loop would
-    /// spin on the thread MAUI draws on. A millisecond is the floor.
+    /// spin on the thread the host draws on. A millisecond is the floor.
     func testAnIntervalOfNothingIsGivenAFloor() {
         XCTAssertEqual(Ticker(every: .zero).interval, .milliseconds(1))
         XCTAssertEqual(Ticker(every: .seconds(-5)).interval, .milliseconds(1))

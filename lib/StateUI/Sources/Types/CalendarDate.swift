@@ -71,8 +71,8 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable {
     /// `Label("Due \(due.text)")`.
     ///
     /// One fixed shape, never a display format: how a DatePicker WRITES a date
-    /// for the reader is `.format(…)`, which the C# side does against the
-    /// locale. This is for text an application composes itself.
+    /// for the reader is `.format(…)`, which the host does against the
+    /// reader's locale. This is for text an application composes itself.
     public var text: String {
         "\(pad(year, 4))-\(pad(month, 2))-\(pad(day, 2))"
     }

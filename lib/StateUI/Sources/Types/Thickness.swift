@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Thickness, as MAUI defines it.
+// Space on the four sides of something.
 //
-// The three initializers mirror MAUI's three constructors exactly, the order of
-// the four-value one included: left, top, right, bottom. A numeric literal is
-// one too, so the common case reads as `.padding(24)` rather than
+// Three initializers: one value for all four sides, two for the horizontal and
+// the vertical, and four in the order left, top, right, bottom. A numeric
+// literal is one too, so the common case reads as `.padding(24)` rather than
 // `.padding(Thickness(24))`.
 
-/// Space on the four sides of something. MAUI: Thickness.
+/// Space on the four sides of something.
 ///
 ///     VStack { … }.padding(24)
 ///     Label("Total").margin(0, 8, 0, 16)
@@ -35,17 +35,15 @@ public struct Thickness: Equatable, Sendable {
         self.init(uniformSize, uniformSize, uniformSize, uniformSize)
     }
 
-    /// Left and right first, then top and bottom - MAUI's two-value
-    /// constructor, and the order XAML's `16,8` is read in.
+    /// Left and right first, then top and bottom.
     ///
     ///     Thickness(16, 8)   // 16 either side, 8 above and below
     public init(_ horizontalSize: Double, _ verticalSize: Double) {
         self.init(horizontalSize, verticalSize, horizontalSize, verticalSize)
     }
 
-    /// Each side in turn, in MAUI's order: left, top, right, bottom -
-    /// clockwise from the LEFT, where CSS's four-value shorthand starts at the
-    /// top.
+    /// Each side in turn: left, top, right, bottom - clockwise from the LEFT,
+    /// not from the top.
     public init(_ left: Double, _ top: Double, _ right: Double, _ bottom: Double) {
         self.left = left
         self.top = top
@@ -53,7 +51,7 @@ public struct Thickness: Equatable, Sendable {
         self.bottom = bottom
     }
 
-    /// The wire form: an array, in the order MAUI's constructor takes them.
+    /// The wire form: an array, in the four-value initializer's order.
     var propValue: PropValue {
         .numbers([left, top, right, bottom])
     }

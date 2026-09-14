@@ -1,45 +1,44 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Where a picture comes from, as MAUI names it.
+// Where a picture comes from.
 //
 // It is a type rather than a String for one reason, and it is the same reason
 // Color is not a String: a picture may be TWO pictures, one per theme. Black
-// artwork that reads well on a white page disappears on a dark one, and MAUI's
-// answer is `{AppThemeBinding Light=… Dark=…}` on the source. Here the half in
-// force is picked by the differ as the element showing it is built, exactly as
-// a Color's is - so ONE name crosses, the far side binds nothing, and that
+// artwork that reads well on a white page disappears on a dark one. The half
+// in force is picked by the differ as the element showing it is built, exactly
+// as a Color's is - so ONE name crosses, the host binds nothing, and that
 // element is built again when the system flips. See Types/Color.swift.
 //
-// Not a tint: MAUI's only one is `<MauiImage TintColor="…" />`, which recolours
-// the file as it is built and so cannot follow anything. Two files it is.
+// Not a tint: a tint paints a picture in one colour, while a second file keeps
+// artwork of any colours as it was drawn. Two files it is.
 
-/// A picture, by file name. MAUI: ImageSource.
+/// A picture, by file name.
 ///
 ///     Image("tab_list.png")
 ///     ToolbarItem("Media").iconImageSource("tab_list.png")
 ///     Image(light: "tab_list.png", dark: "tab_list_dark.png")
 ///
-/// A file in the application's `Resources/Images`, by the name MAUI gives it
-/// once built - so `tab_list.svg` is asked for as `tab_list.png`, exactly as
-/// it would be in XAML. A plain string is one of these, so only artwork that
-/// differs between the themes needs the type written out.
+/// A file in the application's `Resources/Images`, by name. An SVG is asked
+/// for by its `.png` name - `tab_list.svg` as `tab_list.png` - and the host
+/// finds the SVG where no PNG of that name exists. A plain string is one of
+/// these, so only artwork that differs between the themes needs the type
+/// written out.
 public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral {
-    /// The file, by the name MAUI gives it once built.
+    /// The file, by name.
     public let file: String
 
     /// The file to use when the system is in dark mode, when there is one.
     public let dark: String?
 
-    /// One picture, by the name MAUI gives it once built.
+    /// One picture, by file name.
     public init(_ file: String) {
         self.file = file
         self.dark = nil
     }
 
-    /// Two files, one per theme.
-    /// MAUI: `{AppThemeBinding Light=…, Dark=…}` on the source - here the half
-    /// in force is picked by the differ, as the element showing it is built.
+    /// Two files, one per theme. The half in force is picked by the differ,
+    /// as the element showing it is built.
     ///
     ///     ImageSource(light: "logo.png", dark: "logo_dark.png")
     ///

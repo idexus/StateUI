@@ -8,23 +8,22 @@
 // text, by `TextSpan`, which is not a view, and by a `Style`, which is not in
 // the tree at all.
 
-/// MAUI: ITextElement - TextColor and CharacterSpacing, WITHOUT the text
+/// The colour and letter spacing of a control's text, WITHOUT the text
 /// itself.
 ///
-/// Two tiers rather than one, because MAUI has controls that colour their text
-/// and have no Text property to say it with: a Picker shows the chosen item, a
-/// DatePicker and a TimePicker format a value, a RadioButton captions itself
-/// with Content. Each carries TextColor and CharacterSpacing all the same, so
-/// this is the tier they join - and a control that also SAYS something takes
-/// `TextElement`, one step up.
+/// Two tiers rather than one, because some controls colour their text and
+/// have no text property to say it with: a Picker shows the chosen item, and
+/// a DatePicker and a TimePicker format a value. Each carries `textColor` and
+/// `characterSpacing` all the same, so this is the tier they join - and a
+/// control that also SAYS something takes `TextElement`, one step up.
 ///
-/// `PropertyContainer` rather than a view tier, twice over: MAUI's `Span`
-/// wears this interface and is not a view, and a `Style` wears it without
-/// being in the tree at all.
+/// `PropertyContainer` rather than a view tier, twice over: a `TextSpan`
+/// wears this tier and is not a view, and a `Style` wears it without being
+/// in the tree at all.
 public protocol TextStyleElement: PropertyContainer {}
 
 extension TextStyleElement {
-    /// The colour of the text. MAUI: TextColor.
+    /// The colour of the text.
     ///
     /// A `Color(light:dark:)` here carries both halves; the differ picks the
     /// one the theme asks for as it builds the view, so a theme change builds
@@ -32,6 +31,5 @@ extension TextStyleElement {
     public func textColor(_ value: Color) -> Modified { setValue(.textColor, value.propValue) }
 
     /// The space added between letters, in device units.
-    /// MAUI: CharacterSpacing.
     public func characterSpacing(_ value: Double) -> Modified { setValue(.characterSpacing, .number(value)) }
 }

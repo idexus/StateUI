@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: Map and Pin - Microsoft.Maui.Controls.Maps.
-
 /// Map's own properties - the half a `Style<Map>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
@@ -11,37 +9,36 @@ public protocol MapProperties: PropertyContainer {}
 
 extension MapProperties {
     /// How the world is drawn - streets, satellite photography, or both.
-    /// MAUI: Map.MapType.
     public func mapType(_ value: MapType) -> Modified {
         setValue(.mapType, value.propValue)
     }
 
-    /// Whether a drag pans it. MAUI: Map.IsScrollEnabled.
+    /// Whether a drag pans it.
     public func isScrollEnabled(_ value: Bool) -> Modified {
         setValue(.isScrollEnabled, .bool(value))
     }
 
-    /// Whether a pinch zooms it. MAUI: Map.IsZoomEnabled.
+    /// Whether a pinch zooms it.
     public func isZoomEnabled(_ value: Bool) -> Modified {
         setValue(.isZoomEnabled, .bool(value))
     }
 
-    /// Whether the roads are coloured by traffic. MAUI: Map.IsTrafficEnabled.
+    /// Whether the roads are coloured by traffic.
     public func isTrafficEnabled(_ value: Bool) -> Modified {
         setValue(.isTrafficEnabled, .bool(value))
     }
 
-    /// Whether the reader's own position is drawn on it. MAUI:
-    /// Map.IsShowingUser - and the PLATFORM's location permission is the
-    /// price: on iOS an app without `NSLocationWhenInUseUsageDescription` in
-    /// its Info.plist is killed the moment this turns on, and Android needs
-    /// the location permission granted. The map itself needs none of that.
+    /// Whether the reader's own position is drawn on it - and the PLATFORM's
+    /// location permission is the price: on iOS an app without
+    /// `NSLocationWhenInUseUsageDescription` in its Info.plist is killed the
+    /// moment this turns on, and Android needs the location permission
+    /// granted. The map itself needs none of that.
     public func isShowingUser(_ value: Bool) -> Modified {
         setValue(.isShowingUser, .bool(value))
     }
 }
 
-/// A map of the world, with pins on it. MAUI: Map.
+/// A map of the world, with pins on it.
 ///
 ///     Map()
 ///         .pins {
@@ -55,18 +52,17 @@ extension MapProperties {
 /// still - rather than a seat inside a ScrollView, the rule every gesture
 /// follows.
 ///
-/// Where it looks is an ACT rather than a property, because MAUI's
-/// `MoveToRegion` is a method: declare an `@Aim(Map.self)`, put it on the map
-/// with `.aim(_:)`, then call `map.moveToRegion(latitude:longitude:radiusMeters:)`.
-/// Where it OPENS is the initializer below, which is not the same thing.
+/// Where it looks is an ACT rather than a property: declare an
+/// `@Aim(Map.self)`, put it on the map with `.aim(_:)`, then call
+/// `map.moveToRegion(latitude:longitude:radiusMeters:)`. Where it OPENS is the
+/// initializer below, which is not the same thing.
 ///
-/// What draws it is the platform's own map - MapKit on iOS and Mac Catalyst,
-/// Google Maps on Android - and that costs three things the doc of nothing
-/// else here has to say: the application registers the handler itself with
-/// `builder.UseMauiMaps()` in MauiProgram, an Android app also needs a Google
-/// Maps API key in its manifest (`com.google.android.geo.API_KEY`; without
-/// one the map stays a grey grid), and Windows has no Map handler at all, so
-/// a Map there renders as the unknown-control marker.
+/// What draws it is the platform's own map - MapKit on Apple platforms, a map
+/// provider elsewhere - and that costs two things the doc of nothing else here
+/// has to say: where the provider is Google Maps, an Android app needs a
+/// Google Maps API key in its manifest (`com.google.android.geo.API_KEY`;
+/// without one the map stays a grey grid), and a host with no map provider
+/// shows its unsupported-control marker where the map belongs.
 public struct Map: View, MapProperties {
     /// The node this control describes.
     public var node: Node
@@ -76,20 +72,19 @@ public struct Map: View, MapProperties {
         node = Node(type: .map)
     }
 
-    /// A map opening on the region around a point. MAUI: Map(MapSpan), the
-    /// span built with `MapSpan.FromCenterAndRadius`.
+    /// A map opening on the region around a point.
     ///
     ///     Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
     ///
-    /// Where a map OPENS belongs here rather than in an act from `.onCreated`,
-    /// and the difference is measured on Mac Catalyst: a region given while
-    /// the platform's map is still connecting is kept by MAUI and applied at
-    /// the right moment, while the same act lands an instant after the handler
-    /// exists and the platform's own opening region overwrites it. Moving
-    /// LATER is the act - `map.moveToRegion(latitude:longitude:radiusMeters:)`.
+    /// Where a map OPENS belongs here rather than in an act from `.onCreated`:
+    /// a region given here is kept by the host and applied once the
+    /// platform's map is ready, while the same act lands an instant after the
+    /// native map exists and the platform's own opening region overwrites it.
+    /// Moving LATER is the act -
+    /// `map.moveToRegion(latitude:longitude:radiusMeters:)`.
     ///
     /// - Parameter radiusMeters: Half the width of what is shown, in METERS -
-    ///   MAUI's `Distance` is meters at bottom, so no unit is invented here.
+    ///   a plain number, its unit in its name.
     public init(latitude: Double, longitude: Double, radiusMeters: Double) {
         node = Node(type: .map, props: [
             .region: .numbers([latitude, longitude, radiusMeters]),
@@ -100,7 +95,7 @@ public struct Map: View, MapProperties {
 
     // MARK: The pins
 
-    /// The markers on it, replacing whatever was pinned before. MAUI: Map.Pins.
+    /// The markers on it, replacing whatever was pinned before.
     ///
     /// A `Pin` is not a view - a label, an address and a point, nothing to lay
     /// out - so it takes none of the modifiers a view has and belongs here and
@@ -120,8 +115,7 @@ public struct Map: View, MapProperties {
 
     // MARK: Events
 
-    /// Fires when the map itself is tapped - not a pin - with where. MAUI:
-    /// Map.MapClicked.
+    /// Fires when the map itself is tapped - not a pin - with where.
     public func onMapClicked(_ handler: @escaping ValueEventHandler<Location>) -> Self {
         addHandler(.mapClicked) {
             guard let location = Location(EventBuffer.current.value()) else { return }
@@ -130,7 +124,7 @@ public struct Map: View, MapProperties {
     }
 }
 
-/// A marker on the map. MAUI: Pin.
+/// A marker on the map.
 ///
 ///     Pin("Royal Castle")
 ///         .address("Plac Zamkowy 4")
@@ -144,7 +138,7 @@ public struct Pin: Element {
     public var node: Node
 
     /// A pin labelled `label` - what the callout shows in bold. Give it a
-    /// `.location`, or it stands at zero-zero in the Atlantic. MAUI: Pin.Label.
+    /// `.location`, or it stands at zero-zero in the Atlantic.
     public init(_ label: String) {
         node = Node(type: .pin, props: [.label: .string(label)])
     }
@@ -153,14 +147,14 @@ public struct Pin: Element {
     public var body: Node { node }
 
     /// The callout's first line, in bold. The initializer takes the same
-    /// value and is where a pin usually gets it. MAUI: Pin.Label.
+    /// value and is where a pin usually gets it.
     public func label(_ value: String) -> Self {
         var copy = self
         copy.node.props[.label] = .string(value)
         return copy
     }
 
-    /// The line under the label in the callout. MAUI: Pin.Address.
+    /// The line under the label in the callout.
     public func address(_ value: String) -> Self {
         var copy = self
         copy.node.props[.address] = .string(value)
@@ -168,23 +162,23 @@ public struct Pin: Element {
     }
 
     /// What the pin stands for, which is what decides the icon the platform
-    /// draws for it. MAUI: Pin.Type.
+    /// draws for it.
     public func type(_ value: PinType) -> Self {
         var copy = self
         copy.node.props[.type] = value.propValue
         return copy
     }
 
-    /// Where it stands. MAUI: Pin.Location.
+    /// Where it stands.
     public func location(latitude: Double, longitude: Double) -> Self {
         var copy = self
         copy.node.props[.location] = .numbers([latitude, longitude])
         return copy
     }
 
-    /// Fires when the marker is tapped. OBSERVING only: MAUI's event can keep
-    /// the callout shut by setting `HideInfoWindow` before it returns, and a
-    /// handler here runs a boundary away, after it has. MAUI: Pin.MarkerClicked.
+    /// Fires when the marker is tapped. OBSERVING only: a handler here runs a
+    /// boundary away, after the platform has already decided whether the
+    /// callout opens, so it cannot keep the callout shut.
     public func onMarkerClicked(_ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(.markerClicked, handler)
@@ -192,7 +186,7 @@ public struct Pin: Element {
     }
 
     /// Fires when the callout above the marker is tapped - the place a
-    /// navigation usually goes. MAUI: Pin.InfoWindowClicked.
+    /// navigation usually goes.
     public func onInfoWindowClicked(_ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(.infoWindowClicked, handler)
@@ -200,24 +194,23 @@ public struct Pin: Element {
     }
 }
 
-/// How the world is drawn. MAUI: MapType, numbered here rather than there -
-/// the rule at the head of Types/Enums.swift, which every closed vocabulary on
-/// this wire follows.
+/// How the world is drawn. Its numbers are this wire's own - the rule at the
+/// head of Types/Enums.swift, which every closed vocabulary on this wire
+/// follows.
 public enum MapType: Int32, Sendable {
-    /// Roads and their names - the default. MAUI: MapType.Street.
+    /// Roads and their names - the default.
     case street = 0
 
-    /// Photography from above, no names on it. MAUI: MapType.Satellite.
+    /// Photography from above, no names on it.
     case satellite = 1
 
-    /// The photography with the roads drawn over it. MAUI: MapType.Hybrid.
+    /// The photography with the roads drawn over it.
     case hybrid = 2
 
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// A point on the world, as an event reports one. MAUI: Location
-/// (Microsoft.Maui.Devices.Sensors), reduced to the two values every map
+/// A point on the world, as an event reports one - the two values every map
 /// answer carries.
 public struct Location: Equatable, Sendable {
     /// Degrees north of the equator, negative south of it.
@@ -253,8 +246,7 @@ public struct Location: Equatable, Sendable {
 // MARK: - The acts
 
 extension Aim where Target == Map {
-    /// Slides the map until it shows the region around a point. MAUI:
-    /// Map.MoveToRegion, the span built with `MapSpan.FromCenterAndRadius`.
+    /// Slides the map until it shows the region around a point.
     ///
     ///     @Aim(Map.self) private var map
     ///
@@ -268,11 +260,11 @@ extension Aim where Target == Map {
     ///
     /// For moving a map that is already up. Where one OPENS is
     /// `Map(latitude:longitude:radiusMeters:)`, not this act from `.onCreated`:
-    /// that lands an instant after the handler exists and the platform's own
-    /// opening region overwrites it. Measured on Mac Catalyst.
+    /// that lands an instant after the native map exists and the platform's
+    /// own opening region overwrites it.
     ///
     /// - Parameter radiusMeters: Half the width of what is shown, in METERS -
-    ///   MAUI's `Distance` is meters at bottom, so no unit is invented here.
+    ///   a plain number, its unit in its name.
     /// - Throws: `StateUIError` when no view of that id is being shown, or
     ///   the view it names is not a Map.
     public nonisolated(nonsending) func moveToRegion(

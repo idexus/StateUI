@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: AbsoluteLayout.
-
 /// Puts each child exactly where it is told, and nowhere else.
-/// MAUI: AbsoluteLayout.
 ///
 ///     AbsoluteLayout {
 ///         BoxView(.cornflowerBlue)
@@ -17,10 +14,9 @@
 ///     }
 ///     .heightRequest(160)
 ///
-/// Where a child sits is written on the CHILD, as in XAML -
-/// `AbsoluteLayout.LayoutBounds="0,0,1,1"` is `.absoluteLayoutBounds(…)`. Those
-/// two modifiers are on `ViewProperties`, so any view can carry them; see
-/// Elements.swift.
+/// Where a child sits is written on the CHILD, with `.absoluteLayoutBounds(…)`
+/// and `.absoluteLayoutFlags(…)`. Those two modifiers are on `ViewProperties`,
+/// so any view can carry them; see Elements.swift.
 ///
 /// The FLAGS decide how the four numbers in the bounds are read: each is either
 /// a fraction of the layout or a length in device units. That is what makes an
@@ -28,16 +24,15 @@
 /// `Rect(0.5, 0, 0.5, 1)` with `.all` is the right-hand half, whatever the
 /// window turns out to be.
 ///
-/// A child that says neither sits at 0,0 at the size it measures itself at,
-/// which is MAUI's default - and is why children with no bounds of their own
-/// end up drawn on top of one another.
+/// A child that says neither sits at 0,0 at the size it measures itself at -
+/// which is why children with no bounds of their own end up drawn on top of
+/// one another.
 public struct AbsoluteLayout: Layout {
     /// The node this control describes.
     public var node: Node
 
     /// Written in place of a width or a height in the bounds, to say that the
     /// child measures itself there rather than being given a size.
-    /// MAUI: AbsoluteLayout.AutoSize, which is -1 there too.
     ///
     ///     Label("Bottom right")
     ///         .absoluteLayoutBounds(

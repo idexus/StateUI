@@ -462,10 +462,10 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(page.props["backgroundColor"], Color("#F5F5F5").propValue)
     }
 
-    /// The stack's attached properties are spelled with the class that
-    /// declares them, which is what keeps them apart from the page's own: a
-    /// page under no stack simply has them never read.
-    func testAPageCarriesTheStacksAttachedPropertiesUnderItsName() {
+    /// What a page asks of the stack it is on travels with the page, apart
+    /// from the page's own properties: a page under no stack simply has them
+    /// never read.
+    func testAPageCarriesWhatItAsksOfTheStack() {
         let page = Self.arrived(EveryPropertyPage())
 
         XCTAssertEqual(page.props["hasNavigationBar"], .bool(false))

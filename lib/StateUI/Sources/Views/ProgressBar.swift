@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: ProgressBar.
+// How far along something is, as a bar.
 
 /// ProgressBar's own properties - the half a `Style<ProgressBar>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
@@ -11,14 +11,12 @@ public protocol ProgressBarProperties: PropertyContainer {}
 
 extension ProgressBarProperties {
     /// How far along, as a FRACTION from 0 to 1 - not a percentage and not a
-    /// count of items. MAUI: ProgressBar.Progress, which clamps anything
-    /// outside that range.
+    /// count of items. The host clamps anything outside that range.
     public func progress(_ value: Double) -> Modified {
         setValue(.progress, .number(value))
     }
 
     /// What the FILLED part of the bar is painted.
-    /// MAUI: ProgressBar.ProgressColor.
     ///
     /// The track behind it is `.backgroundColor`, from `VisualElement` - the
     /// two are set separately.
@@ -27,7 +25,7 @@ extension ProgressBarProperties {
     }
 }
 
-/// How far along something is, from 0 to 1. MAUI: ProgressBar.
+/// How far along something is, from 0 to 1.
 ///
 ///     @State private var done = 0.0
 ///
@@ -52,8 +50,8 @@ public struct ProgressBar: View, ProgressBarProperties {
         node = Node(type: .progressBar)
     }
 
-    /// A bar filled `progress` of the way, from 0 to 1. MAUI clamps anything
-    /// outside that.
+    /// A bar filled `progress` of the way, from 0 to 1. The host clamps
+    /// anything outside that.
     public init(_ progress: Double) {
         node = Node(type: .progressBar, props: [.progress: .number(progress)])
     }

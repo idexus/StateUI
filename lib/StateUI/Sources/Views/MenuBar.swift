@@ -1,14 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: MenuBarItem, MenuFlyoutItem, MenuFlyoutSubItem, MenuFlyoutSeparator.
-//
 // The desktop menu bar. A page writes its menus into its session and each menu
 // lists its entries, and the platform puts them where a desktop puts menus - at
 // the top of the screen on a Mac, under the title bar on Windows. A phone has no
-// menu bar and shows none of it, which is what MAUI does too.
+// menu bar and shows none of it.
 
-/// One menu on the menu bar. MAUI: MenuBarItem.
+/// One menu on the menu bar.
 ///
 ///     page.menuBarItems = [
 ///         MenuBarItem("File") {
@@ -51,7 +49,7 @@ public struct MenuBarItem: Element {
         return copy
     }
 
-    /// Whether the menu opens at all. MAUI: MenuBarItem.IsEnabled.
+    /// Whether the menu opens at all.
     public func isEnabled(_ value: Bool) -> Self {
         var copy = self
         copy.node.props[.isEnabled] = .bool(value)
@@ -59,7 +57,7 @@ public struct MenuBarItem: Element {
     }
 }
 
-/// One entry in a menu. MAUI: MenuFlyoutItem.
+/// One entry in a menu.
 ///
 ///     MenuFlyoutItem("Save")
 ///         .iconImageSource("nav_media.png")
@@ -84,20 +82,21 @@ public struct MenuFlyoutItem: Element, MenuItemElement {
         modified { $0.id = String(describing: value) }
     }
 
-    // `text`, `iconImageSource`, `isDestructive` and `isEnabled` are MenuItem's
-    // and live on MenuItemElement, which this conforms to.
+    // `text`, `iconImageSource`, `isDestructive` and `isEnabled` are shared
+    // with the toolbar and swipe items and live on MenuItemElement, which this
+    // conforms to.
 
-    /// What it does. MAUI: MenuItem.Clicked. A second `.onClicked` runs beside
-    /// the first, like every typed event modifier.
+    /// What it does. A second `.onClicked` runs beside the first, like every
+    /// typed event modifier.
     ///
     /// Written here rather than on `MenuItemElement` because a `SwipeItem` is
-    /// answered by `Invoked` instead - see that protocol.
+    /// answered by `onInvoked` instead - see that protocol.
     public func onClicked(_ handler: @escaping EventHandler) -> Self {
         modified { $0.addHandler(.clicked, handler) }
     }
 }
 
-/// A menu inside a menu. MAUI: MenuFlyoutSubItem.
+/// A menu inside a menu.
 ///
 ///     MenuFlyoutSubItem("Recent") {
 ///         ForEach(recent) { file in
@@ -134,7 +133,7 @@ public struct MenuFlyoutSubItem: Element {
         return copy
     }
 
-    /// Whether it opens at all. MAUI: MenuItem.IsEnabled.
+    /// Whether it opens at all.
     public func isEnabled(_ value: Bool) -> Self {
         var copy = self
         copy.node.props[.isEnabled] = .bool(value)
@@ -143,7 +142,7 @@ public struct MenuFlyoutSubItem: Element {
 }
 
 /// A line between entries, grouping the ones above it apart from the ones
-/// below. MAUI: MenuFlyoutSeparator.
+/// below.
 ///
 ///     MenuBarItem("File") {
 ///         MenuFlyoutItem("New").onClicked { create() }

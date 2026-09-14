@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: Switch.
+// An on/off toggle.
 
 /// Switch's own properties - the half a `Style<Switch>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
@@ -10,7 +10,7 @@
 public protocol SwitchProperties: PropertyContainer {}
 
 extension SwitchProperties {
-    /// Which way it is thrown - true for on. MAUI: Switch.IsToggled.
+    /// Which way it is thrown - true for on.
     ///
     /// `Switch(true)` and `Switch($soundOn)` both say this from their argument,
     /// so a modifier written beside one wins - and a binding goes on being
@@ -19,12 +19,12 @@ extension SwitchProperties {
         setValue(.isToggled, .bool(value))
     }
 
-    /// The colour of the track while it is ON. MAUI: Switch.OnColor.
+    /// The colour of the track while it is ON.
     public func onColor(_ value: Color) -> Modified {
         setValue(.onColor, value.propValue)
     }
 
-    /// The colour of the track while it is OFF. MAUI: Switch.OffColor.
+    /// The colour of the track while it is OFF.
     ///
     /// Left unwritten it is the platform's own, which is what most switches
     /// want - the off track is what tells one platform's switch from another's.
@@ -33,13 +33,12 @@ extension SwitchProperties {
     }
 
     /// The colour of the knob that slides, whichever way it is thrown.
-    /// MAUI: Switch.ThumbColor.
     public func thumbColor(_ value: Color) -> Modified {
         setValue(.thumbColor, value.propValue)
     }
 }
 
-/// An on/off toggle. MAUI: Switch.
+/// An on/off toggle.
 ///
 ///     Switch($soundOn)
 ///         .onColor(.green)
@@ -77,7 +76,7 @@ public struct Switch: View, SwitchProperties {
     /// write, and what a flip COSTS is decided by who reads the state at
     /// build. A part of a state, or a binding made from closures, is one the
     /// host cannot carry: the tree shows it, and the closure that wrote it
-    /// renders per flip. MAUI: Switch.IsToggled.
+    /// renders per flip.
     ///
     ///     @State private var on = false
     ///
@@ -96,9 +95,8 @@ public struct Switch: View, SwitchProperties {
 
     // MARK: Events
 
-    /// Fires when it is flipped, with the way it was flipped TO - MAUI's
-    /// `ToggledEventArgs.Value`. Runs after a binding's write, if there is one.
-    /// MAUI: Switch.Toggled.
+    /// Fires when it is flipped, with the way it was flipped TO. Runs after a
+    /// binding's write, if there is one.
     public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
         addHandler(.toggled) {
             if let toggled = EventBuffer.current.value()?.bool {

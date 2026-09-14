@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: Editor.
-
 /// Editor's own properties - the half a `Style<Editor>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
@@ -10,12 +8,12 @@
 public protocol EditorProperties: PropertyContainer {}
 
 extension EditorProperties {
-    /// Whether the editor grows as the text does. MAUI: Editor.AutoSize.
+    /// Whether the editor grows as the text does.
     ///
     ///     Editor($notes).autoSize(.textChanges)
     ///
-    /// `.textChanges` grows the control on every edit; `.disabled` - MAUI's own
-    /// default - keeps the height it was given and scrolls the text inside it.
+    /// `.textChanges` grows the control on every edit; `.disabled`, the
+    /// default, keeps the height it was given and scrolls the text inside it.
     /// A growing editor wants a ScrollView above it, having no height of its
     /// own to stop at.
     public func autoSize(_ value: EditorAutoSizeOption) -> Modified {
@@ -23,7 +21,7 @@ extension EditorProperties {
     }
 }
 
-/// A text field of several lines. MAUI: Editor.
+/// A text field of several lines.
 ///
 ///     @State private var notes = ""
 ///     …
@@ -89,7 +87,7 @@ public struct Editor: InputView, TextElement, FontElement, TextAlignmentElement,
     // MARK: Events
 
     /// Fires when the editor loses the focus after being edited - the place to
-    /// save what was written. MAUI: Editor.Completed.
+    /// save what was written.
     ///
     /// A Return is an ordinary newline here, so nothing on the keyboard ends
     /// the editing; only moving the focus away does.

@@ -10,8 +10,8 @@
 // decoder handed a shape that is not its own must answer nil exactly as it
 // answers a mangled one.
 //
-// The statement is sharper here than on the C# side, because the failure is:
-// an index past the end of a Swift array is a TRAP, which takes the process
+// The statement is sharp because the failure is: an index past the end of a
+// Swift array is a TRAP, which takes the process
 // down rather than raising something a caller could answer. So what is claimed
 // is that a decoder always RETURNS - and the suite dying where it stands IS
 // the failure. The attempt COUNTS are asserted so that a loop which stopped

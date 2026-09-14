@@ -27,14 +27,13 @@ extension ImageProperties {
 ///         .aspect(.aspectFit)
 ///         .heightRequest(20)
 ///
-/// The name is the one MAUI gives a file in `Resources/Images`, which for an SVG
-/// is the PNG the build rasterizes it into: `tab_list.svg` is asked for as
-/// `tab_list.png`, exactly as it would be in XAML.
+/// The name is a file among the application's image resources, and artwork
+/// kept as an SVG is asked for by its PNG name: `tab_list.svg` is asked for as
+/// `tab_list.png`.
 ///
-/// **A file, never an address.** The host builds every source with
-/// `ImageSource.FromFile`, so a name that looks like a url is looked for among
-/// the resources like any other and simply is not found - where MAUI's own
-/// string conversion would have fetched it.
+/// **A file, never an address.** The host looks every source up among the
+/// application's resources, so a name that looks like a url is looked for
+/// there like any other and simply is not found.
 ///
 /// Artwork that reads on one theme and not the other is drawn twice:
 ///
@@ -47,7 +46,7 @@ extension ImageProperties {
 ///
 /// The source is the initializer argument because it is what an Image is for.
 ///
-/// No PaddingElement: MAUI's Image has no Padding, and a modifier that compiles
+/// No PaddingElement: an Image has no padding, and a modifier that compiles
 /// into nothing is worse than no modifier.
 public struct Image: View, ImageElement, ImageProperties {
     /// The node this control describes.
@@ -64,9 +63,8 @@ public struct Image: View, ImageElement, ImageProperties {
         node = Node(type: .image, props: [.source: source.propValue])
     }
 
-    /// One picture per theme. MAUI: Source with an AppThemeBinding on it -
-    /// here both halves go on the node, and the differ picks one as it builds
-    /// the view.
+    /// One picture per theme: both halves go on the node, and the differ picks
+    /// one as it builds the view.
     public init(light: String, dark: String) {
         self.init(ImageSource(light: light, dark: dark))
     }

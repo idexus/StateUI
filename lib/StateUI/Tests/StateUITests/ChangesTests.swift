@@ -119,7 +119,7 @@ final class ChangesTests: XCTestCase {
         renders.render(
             VStack { Label("x") }.onChanged(1) { log.lines.append("fired") }.body)
 
-        // A different MAUI type at the same position replaces the control -
+        // A different node type at the same position replaces the control -
         // and a replaced element has nothing to have changed FROM.
         renders.render(
             HStack { Label("x") }.onChanged(2) { log.lines.append("fired") }.body)
@@ -306,7 +306,7 @@ final class ChangesTests: XCTestCase {
     /// writes the binding, the binding writes the state, and the watch hears
     /// the state: report by report while the animation runs, and the last
     /// report carries the value it ended on. This test stands in for the host
-    /// exactly as the C# side behaves - a `widthChanged` report with the new
+    /// exactly as a host behaves - a `widthChanged` report with the new
     /// value - so what it pins is everything on this side of that report.
     func testAReportedPropertyReachesAWatchThroughItsBinding() {
         let renders = Renders()

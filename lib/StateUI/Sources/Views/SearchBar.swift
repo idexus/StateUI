@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: SearchBar (and the InputView properties it inherits).
+// A text field that searches.
 
 /// SearchBar's own properties - the half a `Style<SearchBar>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
@@ -12,26 +12,24 @@ public protocol SearchBarProperties: PropertyContainer {}
 extension SearchBarProperties {
     /// What the keyboard's return key is captioned. What that key DOES is
     /// `.onSearchButtonPressed`, which is a handler rather than a caption.
-    /// MAUI: SearchBar.ReturnType, already `.search` on a search box.
+    /// Already `.search` on a search box.
     public func returnType(_ value: ReturnType) -> Modified {
         setValue(.returnType, value.propValue)
     }
 
     /// The colour of the button that empties the box - the one the platform
     /// draws inside the field once there is something to clear.
-    /// MAUI: SearchBar.CancelButtonColor.
     public func cancelButtonColor(_ value: Color) -> Modified {
         setValue(.cancelButtonColor, value.propValue)
     }
 
     /// The colour of the magnifier drawn at the front of the field.
-    /// MAUI: SearchBar.SearchIconColor.
     public func searchIconColor(_ value: Color) -> Modified {
         setValue(.searchIconColor, value.propValue)
     }
 }
 
-/// A text field with a search button on the keyboard. MAUI: SearchBar.
+/// A text field with a search button on the keyboard.
 ///
 ///     SearchBar($query)
 ///         .placeholder("Search the list")
@@ -104,7 +102,6 @@ public struct SearchBar: InputView, TextElement, FontElement, TextAlignmentEleme
 
     /// Fires when the search button is pressed - the one on the keyboard, or the
     /// magnifier where a platform draws a button.
-    /// MAUI: SearchBar.SearchButtonPressed.
     public func onSearchButtonPressed(_ handler: @escaping EventHandler) -> Self {
         addHandler(.searchButtonPressed, handler)
     }

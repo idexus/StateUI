@@ -6,9 +6,8 @@
 // A style never travels. It is a bag of the same property values a control
 // carries, and the differ merges it into the control it belongs to - so most of
 // this file is about the RESOLUTION: which style a control wears, whose value
-// wins, and what the message therefore says. What the renderer does with the
-// result is next door, in the C# StyleTests, against the fixture this file
-// writes.
+// wins, and what the message therefore says - which is the fixture this file
+// writes for a host to read.
 
 import Foundation
 import XCTest
@@ -19,7 +18,7 @@ private struct HomeWindow: Window {
     var page: any Page { Home() }
 }
 
-/// An application with styles, which is where MAUI keeps them too - written
+/// An application with styles, which is where an application keeps them - written
 /// into the application's session as it is made.
 private struct StyledApp: Application {
     @Environment private var application: ApplicationSession
@@ -90,8 +89,8 @@ final class StyleTests: XCTestCase {
         // Four: the two written down, and a Normal for each group - see below.
         XCTAssertEqual(states.count, 4)
 
-        // The name is MAUI's, spelled as MAUI matches it: the state manager
-        // compares strings, so this one is NOT camelCased on the wire.
+        // The name is spelled as a host matches it: states are compared as
+        // strings, so this one is NOT camelCased on the wire.
         let disabled = try XCTUnwrap(states.first { $0.props["name"] == .name("Disabled") })
         XCTAssertEqual(disabled.props["group"], .name("CommonStates"))
         XCTAssertEqual(states.last?.props["group"], .name("SwitchStates"))
@@ -101,9 +100,9 @@ final class StyleTests: XCTestCase {
     }
 
     /// A control starts in the FIRST state its group declares, so a style that
-    /// only says what Disabled looks like would draw everything disabled. MAUI's
-    /// own template writes an empty Normal above every other state for this
-    /// reason; a style that did not write one gets it.
+    /// only says what Disabled looks like would draw everything disabled. So
+    /// an empty Normal stands above every other state; a style that did not
+    /// write one gets it.
     func testAGroupOfStatesAlwaysStartsWithNormal() {
         let states = Style<Button>()
             .textColor(.white)
@@ -117,7 +116,7 @@ final class StyleTests: XCTestCase {
     }
 
     /// And a style that wrote its own is left exactly as it was: two states of
-    /// the same name in one group is what MAUI refuses.
+    /// the same name in one group would contradict each other.
     func testAStyleThatWroteItsOwnNormalKeepsIt() {
         let states = Style<Button>()
             .textColor(.white)
@@ -142,8 +141,9 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(states.map { $0.props["name"] }, [.name("Normal"), .name("Disabled")])
     }
 
-    /// A state written twice is written once - MAUI refuses two states of one
-    /// name in one group, so the second has to win rather than stand beside it.
+    /// A state written twice is written once - two states of one name in one
+    /// group contradict each other, so the second has to win rather than stand
+    /// beside it.
     func testAStateWrittenTwiceIsTheSecondWriting() throws {
         let states = Style<Button>()
             .visualState(.disabled) { $0.textColor(.gray) }
@@ -159,10 +159,9 @@ final class StyleTests: XCTestCase {
             Color("#FFFFFF").propValue)
     }
 
-    /// A RadioButton rests in Unchecked, not Normal - which is MAUI's own doing
-    /// (`ApplyIsCheckedState` runs BEFORE the base, so a Normal beside the pair
-    /// ends every transition and the pair is never seen). Measured on the C#
-    /// side, in MauiStatesTests; what this pins is that the resting state a
+    /// A RadioButton rests in Unchecked, not Normal: its checked pair is its
+    /// resting group, and a Normal beside the pair would end every transition
+    /// so the pair was never seen. What this pins is that the resting state a
     /// style is given follows the TARGET.
     func testARadioButtonRestsInUncheckedRatherThanNormal() {
         let states = Style<RadioButton>()
@@ -214,7 +213,7 @@ final class StyleTests: XCTestCase {
     }
 
     /// And they are appended AFTER whatever the control lays out, which is where
-    /// the renderer subtracts them - the `.contextFlyout` rule.
+    /// a host subtracts them - the `.contextFlyout` rule.
     func testAControlsStatesComeAfterWhatItLaysOut() {
         var node = VStack {
             Label("one")
@@ -306,7 +305,7 @@ final class StyleTests: XCTestCase {
         XCTAssertNotNil(node.events["visualStateChanged"])
     }
 
-    /// The report carries the state's NAME, which is what MAUI matches one by -
+    /// The report carries the state's NAME, which is what a state is matched by -
     /// and it arrives as the typed state, so it can be compared to `.pressed`.
     func testTheReportArrivesAsTheStateItself() {
         let renders = Renders()
@@ -364,7 +363,7 @@ final class StyleTests: XCTestCase {
     /// A key naming a style declared for ANOTHER control falls through to the
     /// implicit style, exactly as a key naming nothing does: half of a
     /// Button's values applied to a Label and half dropped unread is a
-    /// mismatch MAUI refuses out loud, and no style is the honest answer.
+    /// mismatch, and no style is the honest answer.
     func testAKeyDeclaredForAnotherControlFallsThroughToTheImplicit() {
         let sheet = StyleSheet {
             Style<Button>("Cta").fontSize(20)
@@ -394,7 +393,7 @@ final class StyleTests: XCTestCase {
     }
 
     /// It may name one written BELOW it - the whole sheet is filed before any of
-    /// it is flattened, which a XAML dictionary cannot do.
+    /// it is flattened.
     func testAStyleMayBeBasedOnOneWrittenAfterIt() {
         let sheet = StyleSheet {
             Style<Label>("Headline").fontSize(32).basedOn("Body")
@@ -419,9 +418,8 @@ final class StyleTests: XCTestCase {
                        .number(10))
     }
 
-    /// A key naming nothing falls through to the implicit style, which is what
-    /// MAUI does: an unresolved Style is no style, and no style is what makes an
-    /// implicit one apply.
+    /// A key naming nothing falls through to the implicit style: an unresolved
+    /// style is no style, and no style is what makes an implicit one apply.
     func testAKeyNobodyFiledFallsThroughToTheImplicitStyle() {
         let sheet = StyleSheet { Style<Label>().fontSize(14) }
 
@@ -432,8 +430,8 @@ final class StyleTests: XCTestCase {
     // MARK: - Resolving one into a control
 
     /// The implicit style's values arrive on the control, and the control's own
-    /// win - one property at a time, which is MAUI's precedence and this
-    /// library's everywhere else.
+    /// win - one property at a time, which is this library's precedence
+    /// everywhere.
     func testAControlWearsItsStyleAndItsOwnValuesWin() {
         let sheet = StyleSheet {
             Style<Label>().fontSize(14).textColor(.black)
@@ -482,8 +480,8 @@ final class StyleTests: XCTestCase {
         XCTAssertNil(patch.props["fontSize"])
     }
 
-    /// The style's states become the control's own, which is the one shape the
-    /// renderer knows.
+    /// The style's states become the control's own, which is the one shape a
+    /// host knows.
     func testAStylesStatesArriveAsTheControlsOwn() throws {
         let sheet = StyleSheet {
             Style<Button>().visualState(.disabled) { $0.textColor(.gray) }
@@ -499,9 +497,8 @@ final class StyleTests: XCTestCase {
     }
 
     /// A state written on the CONTROL is written OVER the style's state of the
-    /// same name, one setter at a time. MAUI replaces the whole group list -
-    /// a list is one property - and merging is what every other value here
-    /// does, so this is a deliberate difference.
+    /// same name, one setter at a time - merging is what every other value
+    /// here does, so a state does it too.
     func testAControlsStateIsWrittenOverItsStylesState() throws {
         let sheet = StyleSheet {
             Style<Button>().visualState(.disabled) { $0
@@ -752,7 +749,7 @@ final class StyleTests: XCTestCase {
     }
 
     /// And a style's colour becomes the CONTROL's, resolved on the way - so
-    /// nothing on the far side binds or resolves a theme.
+    /// no host binds or resolves a theme.
     func testAStylesThemedColourArrivesOnTheControlResolved() {
         let sheet = StyleSheet {
             Style<Label>().textColor(Color(light: .black, dark: .white))

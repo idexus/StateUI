@@ -161,7 +161,7 @@ final class Renders {
     }
 
     /// Runs what the walk found once it is done - queued as jobs and run by
-    /// one `stateUIRunJobs()`, exactly what `ScheduleDrain` calls. The
+    /// one `stateUIRunJobs()`, exactly what a host's drain calls. The
     /// differ's view alone: the renderer also walks what these write into the
     /// same message, which a test of that renders through `Renderer.renderWire`.
     private func runFired() {
@@ -265,8 +265,9 @@ func named<Target>(_ name: String, _ type: Target.Type) -> Aim<Target> {
 ///
 /// `resume()` schedules the rest of a handler rather than continuing it, and the
 /// job it produces arrives a moment later - so a test that reports an act as
-/// finished has to wait for it, exactly as `DrainWhenTheResumeArrives` does on
-/// the C# side. Returns as soon as something ran.
+/// finished has to wait for it, exactly as a host keeps draining while
+/// `stateui_resumes_pending` says a resume is owed. Returns as soon as
+/// something ran.
 @discardableResult
 func settle(timeout: TimeInterval = 2) async -> Int {
     let deadline = Date().addingTimeInterval(timeout)
@@ -317,7 +318,7 @@ enum Fixtures {
     /// fixtures, or writes both when updating.
     ///
     /// `name` carries no extension - `commands/Focus` is checked against
-    /// `Focus.bin`, the CONTRACT the C# side reads, and `Focus.txt`, the
+    /// `Focus.bin`, the CONTRACT a host reads, and `Focus.txt`, the
     /// rendering a review diff reads. It may name a subdirectory, which is
     /// created if it is not there. Both files are compared: a sidecar that
     /// drifted from its bytes would lie to exactly the reader it exists for.
@@ -419,7 +420,7 @@ enum Fixtures {
         return events
     }
 
-    /// Every MAUI type a source file describes - `Node(type: .label)`. A
+    /// Every node type a source file describes - `Node(type: .label)`. A
     /// NodeType token's member is the type name with its first letter
     /// lowered, so the scan raises it back; the member ends at the first
     /// character an identifier cannot contain, whether a comma or the
@@ -466,8 +467,7 @@ enum Fixtures {
     /// yields `Bridge\Exports.swift` on Windows, and a caller comparing against
     /// a written path - `hasSuffix("Bridge/Exports.swift")`, which is how the
     /// one file allowed to declare `@_cdecl` is recognized - then matches
-    /// nothing and names that very file as the offender. Measured 2026-08-06;
-    /// the same rule the build follows for MSBuild paths, one level up.
+    /// nothing and names that very file as the offender.
     static func allSources() throws -> [(path: String, text: String)] {
         let root = sources
         var found: [(path: String, text: String)] = []
@@ -526,36 +526,36 @@ enum Fixtures {
 
     /// Node types described under Views/ that are not VIEWS.
     ///
-    /// MAUI's SwipeItem is a MenuItem - a caption, a picture and something to
-    /// run - and SwipeItems is the collection holding them. Neither can be
-    /// built on its own, placed anywhere else, or styled, so neither has a
-    /// fixture of its own nor a StyleTarget conformance. They are described in
-    /// SwipeView.swift because that is the only place they appear, and their
-    /// modifiers are exercised by the SwipeView case, which builds both.
+    /// A SwipeItem is an action a swipe reveals - a caption, a picture and
+    /// something to run - and SwipeItems is the collection holding them.
+    /// Neither can be built on its own, placed anywhere else, or styled, so
+    /// neither has a fixture of its own nor a StyleTarget conformance. They are
+    /// described in SwipeView.swift because that is the only place they appear,
+    /// and their modifiers are exercised by the SwipeView case, which builds
+    /// both.
     ///
-    /// A ToolbarItem and the menu types are MenuItems in MAUI - a caption, a
-    /// picture and something to run - and they belong to a PAGE rather than
-    /// sitting in one, so they have no fixture and no style. Their modifiers are
-    /// exercised by `PageBarTests`, which is where a page is described.
+    /// A ToolbarItem and the menu types are items too - a caption, a picture
+    /// and something to run - and they belong to a PAGE rather than sitting in
+    /// one, so they have no fixture and no style. Their modifiers are exercised
+    /// by `PageBarTests`, which is where a page is described.
     ///
-    /// A Span is one run of text inside a Label and MAUI's own class for it is a
-    /// BindableObject, not a VisualElement - no opacity, no margin, no size - so
-    /// it can neither be built alone nor styled. FormattedString is the
-    /// collection holding the runs, exactly as SwipeItems holds swipe items.
-    /// Both are exercised by the Label case, which builds them.
+    /// A Span is one run of text inside a Label - text and a font, and no
+    /// opacity, no margin, no size - so it can neither be built alone nor
+    /// styled. FormattedString is the collection holding the runs, exactly as
+    /// SwipeItems holds swipe items. Both are exercised by the Label case,
+    /// which builds them.
     ///
     /// The alternative would be leaving SwipeView.swift out of the scan
     /// altogether, the way the page arrangements are - which would take the
     /// SwipeView with them.
     /// ContextFlyout is the one written by a MODIFIER rather than by a type:
-    /// `.contextFlyout` on any view appends it, MAUI's own ContextFlyout being
-    /// an attached property. It is a MenuFlyout on that side - an Element, not a
-    /// view - and the entries in it are the menu bar's, already here. Covered by
-    /// ContextMenuTests on both sides rather than by a control fixture, for the
-    /// reason the toolbar's are: there is no control to build one on.
-    /// A Pin is a map's marker - a label, an address and a point, MAUI's Pin
-    /// being a plain BindableObject - so it cannot be built alone or styled,
-    /// and its modifiers are exercised by the Map case, which builds both.
+    /// `.contextFlyout` on any view appends it. It is a menu, not a view - and
+    /// the entries in it are the menu bar's, already here. Covered by
+    /// ContextMenuTests rather than by a control fixture, for the reason the
+    /// toolbar's are: there is no control to build one on.
+    /// A Pin is a map's marker - a label, an address and a point - so it
+    /// cannot be built alone or styled, and its modifiers are exercised by the
+    /// Map case, which builds both.
     static let notViews: Set<String> = [
         "SwipeItem", "SwipeItems",
         "FormattedString", "Span",
@@ -576,7 +576,7 @@ enum Fixtures {
     /// PAGE arranges other pages, so there is no control to build one on and
     /// nothing about it can be styled - what they do is a stack and a set of
     /// tabs, and NavigationStackTests and TabbedViewTests are where those are
-    /// checked, on both sides. ModalStack.swift arranges pages too, over the
+    /// checked. ModalStack.swift arranges pages too, over the
     /// window rather than inside it.
     ///
     /// Elements.swift STAYS IN, describing no type of its own: its property

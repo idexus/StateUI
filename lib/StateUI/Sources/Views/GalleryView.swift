@@ -618,9 +618,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         // On a phone and on a tablet the finger IS the scroller's own gesture:
         // it drags the run natively, and a pan beside it moves the same cards
         // a second time. On a desktop the pointer scrolls nothing - a mouse
-        // drag leaves a UIScrollView exactly where it stands, measured on Mac
-        // Catalyst - so without this a run of cards could only be moved by the
-        // wheel. The IDIOM is the question and not the platform's name,
+        // drag leaves a scroller exactly where it stands - so without this a
+        // run of cards could only be moved by the wheel. The IDIOM is the question and not the platform's name,
         // because iOS is a phone and a tablet and neither of them wants it.
         if device.idiom == .desktop {
             reader = reader.onPanUpdated { pan in
@@ -761,7 +760,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// long list, which over a run of CARDS is most of the deck for one flick
     /// - past whatever the reader was aiming at, and a swipe back to find it.
     /// Scaled rather than replaced, so a hard throw still carries further than
-    /// a gentle one. MAUI has no such property; this is `ScrollView.momentum`.
+    /// a gentle one. It is the scale `ScrollView.momentum` takes.
     private static var carry: Double { 0.5 }
 
     /// How far the run is turned, in CARDS - a whole number at rest and

@@ -56,7 +56,7 @@ private struct Counter: ContentView {
 
 /// The stack's root. Every page of the session names itself as it comes into
 /// the tree, which is the message that brings it - so the session's messages
-/// carry every title the C# side reads.
+/// carry every title a host reads.
 private struct HomePage: ContentView {
     @Environment private var page: PageSession
 
@@ -443,10 +443,9 @@ final class DeterminismTests: XCTestCase {
     /// The message head, read on its own: the announcements this message
     /// carries, before anything that could refer to them.
     ///
-    /// A hand-written reader rather than the probe's, deliberately - the same
-    /// reason the C# tests decode a payload by hand. What is being checked is
-    /// the LAYOUT, and a second spelling of it is what makes a writer's mistake
-    /// a failure instead of two halves agreeing on it.
+    /// A hand-written reader rather than the probe's, deliberately. What is
+    /// being checked is the LAYOUT, and a second spelling of it is what makes
+    /// a writer's mistake a failure instead of two halves agreeing on it.
     private static func announcements(in bytes: [UInt8]) -> [(id: Int, name: String)] {
         var at = 0
 
@@ -481,7 +480,7 @@ final class DeterminismTests: XCTestCase {
         }
     }
 
-    // MARK: - The contract the C# side reads
+    // MARK: - The contract a host reads
 
     /// The session, written down message by message - the cross-PROCESS proof,
     /// since Swift seeds its hashing per process and these files were written
@@ -489,8 +488,8 @@ final class DeterminismTests: XCTestCase {
     ///
     /// Its own directory rather than a name each, because what it pins is the
     /// SEQUENCE: the numbering of the names is the session's, and message 4
-    /// speaks numbers that message 1 announced. The C# side applies them in
-    /// order, to one host, and reads the same tree out twice.
+    /// speaks numbers that message 1 announced. A host reads them in order, as
+    /// one session.
     func testTheSessionIsWrittenDown() throws {
         let names = WireNames()
 

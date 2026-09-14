@@ -10,10 +10,9 @@
 // three controls have one - so it is a tier of its own, beside them rather
 // than among them.
 
-/// The outline of a control that draws one.
-/// MAUI: IBorderElement - the interface `Button`, `ImageButton` and
-/// `RadioButton` all implement, and the one place MAUI declares the three
-/// properties that paint an outline.
+/// The outline of a control that draws one - the tier `Button`,
+/// `ImageButton` and `RadioButton` all wear, and the one place the three
+/// properties that paint an outline are declared.
 ///
 ///     Button("Save")
 ///         .borderColor(.cornflowerBlue)
@@ -25,13 +24,13 @@
 /// and the binding twins in Bound.swift are written once against this
 /// interface, so `.borderWidth($thickness)` drives all three.
 ///
-/// A `Border` control is NOT one of these. MAUI's Border is a view that puts a
-/// `Stroke` around whatever it holds - a brush, with its own shape, dash and
-/// cap - and none of that is this interface; see Views/Border.swift.
+/// A `Border` control is NOT one of these. A Border is a view that puts a
+/// stroke around whatever it holds - a brush, with its own shape, dash and
+/// cap - and none of that is this tier; see Views/Border.swift.
 public protocol BorderElement: PropertyContainer {}
 
 extension BorderElement {
-    /// The colour of the outline. MAUI: IBorderElement.BorderColor.
+    /// The colour of the outline.
     ///
     /// Nothing is drawn until `borderWidth` is set as well: a colour on its own
     /// shows no outline at all.
@@ -40,14 +39,12 @@ extension BorderElement {
     }
 
     /// How thick the outline is, in device units.
-    /// MAUI: IBorderElement.BorderWidth.
     public func borderWidth(_ value: Double) -> Modified {
         setValue(.borderWidth, .number(value))
     }
 
     /// How rounded the corners are, in device units - the control's own
     /// corners, outline or none.
-    /// MAUI: IBorderElement.CornerRadius, which is an Int rather than a Double.
     ///
     /// A whole number, so its twin in Bound.swift sets it as it stands rather
     /// than walking it: nothing walks an integer.

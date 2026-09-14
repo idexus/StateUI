@@ -33,7 +33,7 @@
 /// structural node StateUI defines, or an application's own control.
 ///
 /// A token, not an enum, so an application can name a control the library has
-/// never heard of and drop it into any builder - the renderer draws an unknown
+/// never heard of and drop it into any builder - the host draws an unknown
 /// type as a red marker rather than failing, which is what keeps a lagging
 /// host visible without hiding the rest of the interface.
 public struct NodeType: Hashable, Comparable, Sendable,
@@ -102,19 +102,19 @@ extension Prop {
     /// The properties whose loss the host cannot UNDO, so an element that
     /// stops describing one is built again instead.
     ///
-    /// Everything else this library writes lands on a MAUI BindableProperty,
-    /// which the host clears by name: a modifier that stops being written puts
-    /// its property back to MAUI's own default, and the control - with its
-    /// handlers, and the `@State` of every view under it - stays where it is.
-    /// These few have no such property to clear:
+    /// Everything else this library writes lands on a property the host clears
+    /// by name: a modifier that stops being written puts its property back to
+    /// the control's own default, and the control - with its handlers, and the
+    /// `@State` of every view under it - stays where it is. These few have no
+    /// such property to clear:
     ///
     /// - a gesture's settings belong to the recognizer carrying them rather
     ///   than to the view;
     /// - a list's items are data, which no default answers for;
-    /// - a toolbar item's `order` and `priority`, and a swipe's `side`, are
-    ///   not bindable properties at all - two are plain properties on MAUI's
-    ///   own class, and the third says which of a SwipeView's four collections
-    ///   the items are, which the renderer decides rather than writes;
+    /// - a toolbar item's `order` and `priority`, and a swipe's `side`, say
+    ///   where the host PUTS an item rather than a value on it - which part of
+    ///   the toolbar, which of a `SwipeView`'s four sides - so there is no
+    ///   default to put back;
     /// - a CHOICE must not move the reader when it stops being described, and
     ///   clearing one would: back to the first tab, the first item, the top of
     ///   the list;
@@ -123,10 +123,8 @@ extension Prop {
     ///   on no property at all - nor are they ever taken off a window they
     ///   were on.
     ///
-    /// `EveryPropertyThatCannotBeClearedIsNamedOnBothSides` READS this
-    /// declaration and walks every fixture against the host's table, so a
-    /// property added on either side without the other is named by a test
-    /// rather than found on a screen.
+    /// Every host has to agree with this list: a property added on one side
+    /// without the other is otherwise found only on a screen.
     static let notCleared: Set<Prop> = [
         .numberOfTapsRequired, .swipeDirection, .swipeThreshold, .panTouchCount,
         .dragText, .canDrag, .allowDrop,
@@ -264,8 +262,8 @@ public struct Event: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
     }
 }
 
-/// One act the host can perform - the MAUI method camelCased
-/// ("displayAlertAsync"), or an application's own registered function.
+/// One act the host can perform - one the library ships
+/// (`.displayAlertAsync`), or an application's own registered function.
 ///
 /// The host performs what it has a case - or a registration - for; asking for
 /// anything else throws with the host's "unknown command" reason, which is
@@ -277,12 +275,12 @@ public struct Event: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
 /// what keeps the two sets from meeting at all.
 public struct Act: Hashable, Sendable, ExpressibleByStringLiteral,
     CustomStringConvertible {
-    /// The act's name - the MAUI method camelCased, or the application's
-    /// registered one.
+    /// The act's name - the library's own, or the application's registered
+    /// one.
     public let name: String
 
-    /// An act from its name, which is how an application names a C# function
-    /// it registered with the host - see `stateUICall`:
+    /// An act from its name, which is how an application names a function it
+    /// registered with the host - see `stateUICall`:
     ///
     ///     extension Act {
     ///         static let batteryLevel = Act("Gallery.BatteryLevel")
@@ -325,8 +323,8 @@ public struct Act: Hashable, Sendable, ExpressibleByStringLiteral,
 // belongs on the modifier an author actually types. Hundreds of restatements
 // would be the kind of documentation that rots without anyone noticing.
 //
-// An ACT is the exception to the exemption and says which MAUI method it
-// stands for, because that is the one thing its name does not carry.
+// An ACT is the exception to the exemption and says what the host does for
+// it, because that is the one thing its name does not carry.
 extension NodeType {
     /// Elements whose host arranges children from native measurement rather
     /// than from an ordinary property.
@@ -725,64 +723,68 @@ public extension Event {
 }
 
 public extension Act {
-    /// VisualElement.Focus.
+    /// Gives the aimed view the keyboard focus, answering whether it took it.
     static let focus = Act("focus")
 
-    /// VisualElement.Unfocus.
+    /// Takes the keyboard focus off the aimed view.
     static let unfocus = Act("unfocus")
 
-    /// WebView.GoBack.
+    /// Steps the aimed web view back through its history.
     static let goBack = Act("goBack")
 
-    /// WebView.GoForward.
+    /// Steps the aimed web view forward through its history.
     static let goForward = Act("goForward")
 
-    /// WebView.Reload.
+    /// Loads the aimed web view's page again.
     static let reload = Act("reload")
 
-    /// WebView.EvaluateJavaScriptAsync.
+    /// Runs JavaScript in the aimed web view's page, answering what it
+    /// evaluated to, as text.
     static let evaluateJavaScriptAsync = Act("evaluateJavaScriptAsync")
 
-    /// Map.MoveToRegion.
+    /// Moves the aimed map to show a region.
     static let moveToRegion = Act("moveToRegion")
 
-    /// This library's own: takes the keyboard down from whichever view on the
-    /// showing page holds the focus - MAUI's `HideSoftInputAsync` wants the
-    /// input named, which this side cannot.
+    /// Takes the keyboard down from whichever view on the showing page holds
+    /// the focus - the host finds that view, which this side cannot. See
+    /// `SoftInput.hide()`.
     static let hideSoftInput = Act("hideSoftInput")
 
-    /// Page.DisplayAlertAsync.
+    /// Shows an alert on the showing page and, given an accept button,
+    /// answers whether it was pressed. See `Dialogs.displayAlert`.
     static let displayAlertAsync = Act("displayAlertAsync")
 
-    /// Page.DisplayActionSheetAsync.
+    /// Offers the reader a list of choices on the showing page, answering the
+    /// pressed caption. See `Dialogs.displayActionSheet`.
     static let displayActionSheetAsync = Act("displayActionSheetAsync")
 
-    /// Page.DisplayPromptAsync.
+    /// Asks the reader to type something on the showing page, answering the
+    /// text. See `Dialogs.displayPrompt`.
     static let displayPromptAsync = Act("displayPromptAsync")
 
-    /// SemanticScreenReader.Announce.
+    /// Has the platform's screen reader say a text. See
+    /// `SemanticScreenReader.announce`.
     static let announce = Act("announce")
 
-    /// DateTime.Now - the host's clock, asked. The class stays in the name:
-    /// bare "now" would not say whose.
+    /// The host's local time of day, asked of its clock. See `ClockTime.now()`.
     static let dateTimeNow = Act("dateTimeNow")
 
-    /// TimeZoneInfo.Local. The class stays in the name: bare "local" would
-    /// not say whose.
+    /// The IANA identifier of the host's local time zone. See
+    /// `TimeZoneInfo.local()`.
     static let localTimeZone = Act("localTimeZone")
 
-    /// TimeZoneInfo.GetUtcOffset.
+    /// How far a zone is from UTC on a given day, asked of the host. See
+    /// `TimeZoneInfo.getUtcOffset`.
     static let getUtcOffset = Act("getUtcOffset")
 
-    /// This library's own: a persistent key's new value, on its way to the
-    /// store. Which store that is belongs to the host - see
-    /// Core/Persistence.swift.
+    /// A persistent key's new value, on its way to the store. Which store
+    /// that is belongs to the host - see Core/Persistence.swift.
     static let persistValue = Act("persistValue")
 
-    /// This library's own: a scene key's new value, on its way to the
-    /// platform's record of that scene. See Core/Scenes.swift.
+    /// A scene key's new value, on its way to the platform's record of that
+    /// scene. See Core/Scenes.swift.
     static let persistSceneValue = Act("persistSceneValue")
 
-    /// This library's own: a handler's escaped error, reported to the host.
+    /// A handler's escaped error, reported to the host.
     static let handlerFailed = Act("handlerFailed")
 }

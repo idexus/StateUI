@@ -27,7 +27,7 @@
 extension ActivityIndicator {
     /// `color`, handed on as `$x`: the host walks it there under the element's
     /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state. MAUI: ActivityIndicator.Color.
+    /// reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -37,7 +37,6 @@ extension ActivityIndicator {
 
     /// `isRunning`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: ActivityIndicator.IsRunning.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -51,7 +50,7 @@ extension ActivityIndicator {
 extension Border {
     /// `strokeDashOffset`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: Border.StrokeDashOffset.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -61,7 +60,7 @@ extension Border {
 
     /// `strokeLineCap`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: Border.StrokeLineCap.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -71,7 +70,7 @@ extension Border {
 
     /// `strokeLineJoin`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: Border.StrokeLineJoin.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -81,7 +80,7 @@ extension Border {
 
     /// `strokeMiterLimit`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: Border.StrokeMiterLimit.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -91,7 +90,7 @@ extension Border {
 
     /// `strokeThickness`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: Border.StrokeThickness.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -105,7 +104,7 @@ extension Border {
 extension BorderElement where Self: VisualElement {
     /// `borderColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: IBorderElement.BorderColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -115,7 +114,7 @@ extension BorderElement where Self: VisualElement {
 
     /// `borderWidth`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: IBorderElement.BorderWidth.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -125,7 +124,7 @@ extension BorderElement where Self: VisualElement {
 
     /// `cornerRadius`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: IBorderElement.CornerRadius.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -139,7 +138,7 @@ extension BorderElement where Self: VisualElement {
 extension BoxView {
     /// `color`, handed on as `$x`: the host walks it there under the element's
     /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state. MAUI: BoxView.Color.
+    /// reads the state.
     ///
     /// Not `.backgroundColor`, for the reason `color(_:)` gives: the
     /// background is a second square behind the one a box draws.
@@ -152,7 +151,7 @@ extension BoxView {
 
     /// `cornerRadius`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: BoxView.CornerRadius.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -166,7 +165,7 @@ extension BoxView {
 extension Button {
     /// `lineBreakMode`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: Button.LineBreakMode.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -180,7 +179,6 @@ extension Button {
 extension DatePicker {
     /// `isOpen`, handed on as `$x`: the host sets it as it is, and handing it
     /// on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: DatePicker.IsOpen.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -194,7 +192,7 @@ extension DatePicker {
 extension DecorableTextElement where Self: VisualElement {
     /// `textDecorations`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: TextDecorations.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -208,7 +206,7 @@ extension DecorableTextElement where Self: VisualElement {
 extension Editor {
     /// `autoSize`, handed on as `$x`: the host sets the member it names, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: Editor.AutoSize.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -222,7 +220,7 @@ extension Editor {
 extension Entry {
     /// `clearButtonVisibility`, handed on as `$x`: the host sets the member it
     /// names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state. MAUI: Entry.ClearButtonVisibility.
+    /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -232,7 +230,6 @@ extension Entry {
 
     /// `isPassword`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: Entry.IsPassword.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -242,7 +239,7 @@ extension Entry {
 
     /// `returnType`, handed on as `$x`: the host sets the member it names, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: Entry.ReturnType.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -256,7 +253,7 @@ extension Entry {
 extension FontElement where Self: VisualElement {
     /// `fontAttributes`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: FontAttributes.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -266,7 +263,7 @@ extension FontElement where Self: VisualElement {
 
     /// `fontAutoScalingEnabled`, handed on as `$x`: the host sets it as it is,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: FontAutoScalingEnabled.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -276,7 +273,7 @@ extension FontElement where Self: VisualElement {
 
     /// `fontSize`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: FontSize.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -290,7 +287,7 @@ extension FontElement where Self: VisualElement {
 extension Grid {
     /// `columnSpacing`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: Grid.ColumnSpacing.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -300,7 +297,6 @@ extension Grid {
 
     /// `rowSpacing`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: Grid.RowSpacing.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -314,7 +310,7 @@ extension Grid {
 extension Image {
     /// `isAnimationPlaying`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: Image.IsAnimationPlaying.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -328,7 +324,7 @@ extension Image {
 extension ImageElement where Self: VisualElement {
     /// `aspect`, handed on as `$x`: the host sets the member it names, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: IImageElement.Aspect.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -343,7 +339,6 @@ extension ImageElement where Self: VisualElement {
 extension IndicatorView {
     /// `count`, handed on as `$x`: the host sets it as it is, and handing it on
     /// reads nothing - a write renders only a body that reads the state.
-    /// MAUI: IndicatorView.Count.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -353,7 +348,6 @@ extension IndicatorView {
 
     /// `hideSingle`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: IndicatorView.HideSingle.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -363,7 +357,7 @@ extension IndicatorView {
 
     /// `indicatorColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: IndicatorView.IndicatorColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -373,7 +367,7 @@ extension IndicatorView {
 
     /// `indicatorSize`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: IndicatorView.IndicatorSize.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -383,7 +377,7 @@ extension IndicatorView {
 
     /// `indicatorsShape`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: IndicatorView.IndicatorsShape.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -393,7 +387,7 @@ extension IndicatorView {
 
     /// `maximumVisible`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: IndicatorView.MaximumVisible.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -404,7 +398,6 @@ extension IndicatorView {
     /// `selectedIndicatorColor`, handed on as `$x`: the host walks it there
     /// under the element's law, and handing it on reads nothing - a write
     /// renders only a body that reads the state.
-    /// MAUI: IndicatorView.SelectedIndicatorColor.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -418,7 +411,7 @@ extension IndicatorView {
 extension InputView {
     /// `cursorPosition`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: InputView.CursorPosition.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -428,7 +421,6 @@ extension InputView {
 
     /// `isReadOnly`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: InputView.IsReadOnly.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -438,7 +430,7 @@ extension InputView {
 
     /// `isSpellCheckEnabled`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: InputView.IsSpellCheckEnabled.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -448,7 +440,7 @@ extension InputView {
 
     /// `isTextPredictionEnabled`, handed on as `$x`: the host sets it as it is,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: InputView.IsTextPredictionEnabled.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -458,7 +450,7 @@ extension InputView {
 
     /// `keyboard`, handed on as `$x`: the host sets the member it names, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: InputView.Keyboard.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -468,7 +460,6 @@ extension InputView {
 
     /// `maxLength`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: InputView.MaxLength.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -478,7 +469,6 @@ extension InputView {
 
     /// `placeholder`, handed on as `$x`: the host writes the words, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: InputView.Placeholder.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -488,7 +478,7 @@ extension InputView {
 
     /// `placeholderColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: InputView.PlaceholderColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -498,7 +488,7 @@ extension InputView {
 
     /// `selectionLength`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: InputView.SelectionLength.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -512,7 +502,6 @@ extension InputView {
 extension Label {
     /// `maxLines`, handed on as `$x`: the host sets it as it is, and handing it
     /// on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: Label.MaxLines.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -527,7 +516,7 @@ extension Label {
 extension Layout {
     /// `cascadeInputTransparent`, handed on as `$x`: the host sets it as it is,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: Layout.CascadeInputTransparent.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -537,7 +526,7 @@ extension Layout {
 
     /// `isClippedToBounds`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: Layout.IsClippedToBounds.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -547,7 +536,7 @@ extension Layout {
 
     /// `safeAreaEdges`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: Layout.SafeAreaEdges.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -561,7 +550,7 @@ extension Layout {
 extension Line {
     /// `x1`, handed on as `$x`: the host walks it there under the element's
     /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state. MAUI: Line.X1.
+    /// reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -571,7 +560,7 @@ extension Line {
 
     /// `x2`, handed on as `$x`: the host walks it there under the element's
     /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state. MAUI: Line.X2.
+    /// reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -581,7 +570,7 @@ extension Line {
 
     /// `y1`, handed on as `$x`: the host walks it there under the element's
     /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state. MAUI: Line.Y1.
+    /// reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -591,7 +580,7 @@ extension Line {
 
     /// `y2`, handed on as `$x`: the host walks it there under the element's
     /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state. MAUI: Line.Y2.
+    /// reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -605,7 +594,6 @@ extension Line {
 extension LineHeightElement where Self: VisualElement {
     /// `lineHeight`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: LineHeight.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -619,7 +607,7 @@ extension LineHeightElement where Self: VisualElement {
 extension PaddingElement where Self: VisualElement {
     /// `padding`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: Padding.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -633,7 +621,7 @@ extension PaddingElement where Self: VisualElement {
 extension Picker {
     /// `titleColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: Picker.TitleColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -647,7 +635,7 @@ extension Picker {
 extension Polygon {
     /// `fillRule`, handed on as `$x`: the host sets the member it names, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: Polygon.FillRule.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -661,7 +649,7 @@ extension Polygon {
 extension ProgressBar {
     /// `progress`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: ProgressBar.Progress.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -671,7 +659,7 @@ extension ProgressBar {
 
     /// `progressColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: ProgressBar.ProgressColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -685,7 +673,7 @@ extension ProgressBar {
 extension RadioButton {
     /// `textTransform`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: RadioButton.TextTransform.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -699,7 +687,6 @@ extension RadioButton {
 extension Rectangle {
     /// `radiusX`, handed on as `$x`: the host sets it as it is, and handing it
     /// on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: Rectangle.RadiusX.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -709,7 +696,6 @@ extension Rectangle {
 
     /// `radiusY`, handed on as `$x`: the host sets it as it is, and handing it
     /// on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: Rectangle.RadiusY.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -723,7 +709,7 @@ extension Rectangle {
 extension RefreshView {
     /// `isRefreshEnabled`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: RefreshView.IsRefreshEnabled.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -733,7 +719,7 @@ extension RefreshView {
 
     /// `refreshColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: RefreshView.RefreshColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -748,7 +734,6 @@ extension ScrollView {
     /// `horizontalScrollBarVisibility`, handed on as `$x`: the host sets the
     /// member it names, and handing it on reads nothing - a write renders only
     /// a body that reads the state.
-    /// MAUI: ScrollView.HorizontalScrollBarVisibility.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -758,7 +743,7 @@ extension ScrollView {
 
     /// `orientation`, handed on as `$x`: the host sets the member it names, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: ScrollView.Orientation.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -769,7 +754,6 @@ extension ScrollView {
     /// `verticalScrollBarVisibility`, handed on as `$x`: the host sets the
     /// member it names, and handing it on reads nothing - a write renders only
     /// a body that reads the state.
-    /// MAUI: ScrollView.VerticalScrollBarVisibility.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -783,7 +767,7 @@ extension ScrollView {
 extension SearchBar {
     /// `cancelButtonColor`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
-    /// only a body that reads the state. MAUI: SearchBar.CancelButtonColor.
+    /// only a body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -793,7 +777,7 @@ extension SearchBar {
 
     /// `searchIconColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: SearchBar.SearchIconColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -807,7 +791,7 @@ extension SearchBar {
 extension Shape {
     /// `aspect`, handed on as `$x`: the host sets the member it names, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: Shape.Aspect.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -817,7 +801,7 @@ extension Shape {
 
     /// `strokeDashOffset`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: Shape.StrokeDashOffset.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -827,7 +811,7 @@ extension Shape {
 
     /// `strokeMiterLimit`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: Shape.StrokeMiterLimit.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -837,7 +821,7 @@ extension Shape {
 
     /// `strokeThickness`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: Shape.StrokeThickness.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -851,7 +835,6 @@ extension Shape {
 extension Slider {
     /// `maximum`, handed on as `$x`: the host sets it as it is, and handing it
     /// on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: Slider.Maximum.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -861,7 +844,7 @@ extension Slider {
 
     /// `maximumTrackColor`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
-    /// only a body that reads the state. MAUI: Slider.MaximumTrackColor.
+    /// only a body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -871,7 +854,6 @@ extension Slider {
 
     /// `minimum`, handed on as `$x`: the host sets it as it is, and handing it
     /// on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: Slider.Minimum.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -881,7 +863,7 @@ extension Slider {
 
     /// `minimumTrackColor`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
-    /// only a body that reads the state. MAUI: Slider.MinimumTrackColor.
+    /// only a body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -891,7 +873,7 @@ extension Slider {
 
     /// `thumbColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: Slider.ThumbColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -905,7 +887,7 @@ extension Slider {
 extension StackBase {
     /// `spacing`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: StackBase.Spacing.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -919,7 +901,6 @@ extension StackBase {
 extension Stepper {
     /// `increment`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: Stepper.Increment.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -933,7 +914,6 @@ extension Stepper {
 extension SwipeView {
     /// `threshold`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: SwipeView.Threshold.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -947,7 +927,7 @@ extension SwipeView {
 extension Switch {
     /// `offColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: Switch.OffColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -957,7 +937,7 @@ extension Switch {
 
     /// `onColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: Switch.OnColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -971,7 +951,7 @@ extension Switch {
 extension TextAlignmentElement where Self: VisualElement {
     /// `horizontalTextAlignment`, handed on as `$x`: the host sets the member
     /// it names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state. MAUI: HorizontalTextAlignment.
+    /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -981,7 +961,7 @@ extension TextAlignmentElement where Self: VisualElement {
 
     /// `verticalTextAlignment`, handed on as `$x`: the host sets the member it
     /// names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state. MAUI: VerticalTextAlignment.
+    /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -995,7 +975,7 @@ extension TextAlignmentElement where Self: VisualElement {
 extension TextStyleElement where Self: VisualElement {
     /// `characterSpacing`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: CharacterSpacing.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1005,7 +985,7 @@ extension TextStyleElement where Self: VisualElement {
 
     /// `textColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: TextColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1019,7 +999,7 @@ extension TextStyleElement where Self: VisualElement {
 extension View {
     /// `absoluteLayoutFlags`, handed on as `$x`: the host sets the member it
     /// names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state. MAUI: AbsoluteLayout.LayoutFlags.
+    /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1029,7 +1009,6 @@ extension View {
 
     /// `gridColumn`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: Grid.Column.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1039,7 +1018,7 @@ extension View {
 
     /// `gridColumnSpan`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: Grid.ColumnSpan.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1049,7 +1028,6 @@ extension View {
 
     /// `gridRow`, handed on as `$x`: the host sets it as it is, and handing it
     /// on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: Grid.Row.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1059,7 +1037,6 @@ extension View {
 
     /// `gridRowSpan`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: Grid.RowSpan.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1069,7 +1046,7 @@ extension View {
 
     /// `horizontalOptions`, handed on as `$x`: the host sets the member it
     /// names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state. MAUI: View.HorizontalOptions.
+    /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1079,7 +1056,7 @@ extension View {
 
     /// `margin`, handed on as `$x`: the host walks it there under the element's
     /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state. MAUI: View.Margin.
+    /// reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1089,7 +1066,7 @@ extension View {
 
     /// `verticalOptions`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: View.VerticalOptions.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1103,7 +1080,7 @@ extension View {
 extension VisualElement {
     /// `anchorX`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: VisualElement.AnchorX.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1113,7 +1090,7 @@ extension VisualElement {
 
     /// `anchorY`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: VisualElement.AnchorY.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1123,7 +1100,7 @@ extension VisualElement {
 
     /// `automationId`, handed on as `$x`: the host writes the words, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: Element.AutomationId.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1133,7 +1110,7 @@ extension VisualElement {
 
     /// `automationExcludedWithChildren`, handed on as `$x`: the host sets it as
     /// it is, and handing it on reads nothing - a write renders only a body
-    /// that reads the state. MAUI: AutomationProperties.ExcludedWithChildren.
+    /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1143,7 +1120,7 @@ extension VisualElement {
 
     /// `automationIsInAccessibleTree`, handed on as `$x`: the host sets it as
     /// it is, and handing it on reads nothing - a write renders only a body
-    /// that reads the state. MAUI: AutomationProperties.IsInAccessibleTree.
+    /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1153,7 +1130,7 @@ extension VisualElement {
 
     /// `backgroundColor`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: VisualElement.BackgroundColor.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1163,7 +1140,7 @@ extension VisualElement {
 
     /// `flowDirection`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state. MAUI: VisualElement.FlowDirection.
+    /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1173,7 +1150,7 @@ extension VisualElement {
 
     /// `heightRequest`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: VisualElement.HeightRequest.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1183,7 +1160,7 @@ extension VisualElement {
 
     /// `inputTransparent`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: VisualElement.InputTransparent.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1193,7 +1170,6 @@ extension VisualElement {
 
     /// `isEnabled`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: VisualElement.IsEnabled.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1203,7 +1179,6 @@ extension VisualElement {
 
     /// `isVisible`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: VisualElement.IsVisible.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1214,7 +1189,6 @@ extension VisualElement {
     /// `maximumHeightRequest`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
     /// only a body that reads the state.
-    /// MAUI: VisualElement.MaximumHeightRequest.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1225,7 +1199,6 @@ extension VisualElement {
     /// `maximumWidthRequest`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
     /// only a body that reads the state.
-    /// MAUI: VisualElement.MaximumWidthRequest.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1236,7 +1209,6 @@ extension VisualElement {
     /// `minimumHeightRequest`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
     /// only a body that reads the state.
-    /// MAUI: VisualElement.MinimumHeightRequest.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1247,7 +1219,6 @@ extension VisualElement {
     /// `minimumWidthRequest`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
     /// only a body that reads the state.
-    /// MAUI: VisualElement.MinimumWidthRequest.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1257,7 +1228,7 @@ extension VisualElement {
 
     /// `opacity`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: VisualElement.Opacity.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1267,7 +1238,7 @@ extension VisualElement {
 
     /// `rotation`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: VisualElement.Rotation.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1277,7 +1248,7 @@ extension VisualElement {
 
     /// `rotationX`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: VisualElement.RotationX.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1287,7 +1258,7 @@ extension VisualElement {
 
     /// `rotationY`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: VisualElement.RotationY.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1297,7 +1268,7 @@ extension VisualElement {
 
     /// `scale`, handed on as `$x`: the host walks it there under the element's
     /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state. MAUI: VisualElement.Scale.
+    /// reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1307,7 +1278,7 @@ extension VisualElement {
 
     /// `scaleX`, handed on as `$x`: the host walks it there under the element's
     /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state. MAUI: VisualElement.ScaleX.
+    /// reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1317,7 +1288,7 @@ extension VisualElement {
 
     /// `scaleY`, handed on as `$x`: the host walks it there under the element's
     /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state. MAUI: VisualElement.ScaleY.
+    /// reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1327,7 +1298,7 @@ extension VisualElement {
 
     /// `semanticDescription`, handed on as `$x`: the host writes the words, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: SemanticProperties.Description.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1337,7 +1308,7 @@ extension VisualElement {
 
     /// `semanticHeadingLevel`, handed on as `$x`: the host sets the member it
     /// names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state. MAUI: SemanticProperties.HeadingLevel.
+    /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1347,7 +1318,7 @@ extension VisualElement {
 
     /// `semanticHint`, handed on as `$x`: the host writes the words, and
     /// handing it on reads nothing - a write renders only a body that reads the
-    /// state. MAUI: SemanticProperties.Hint.
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1357,7 +1328,7 @@ extension VisualElement {
 
     /// `translationX`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: VisualElement.TranslationX.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1367,7 +1338,7 @@ extension VisualElement {
 
     /// `translationY`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: VisualElement.TranslationY.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1377,7 +1348,7 @@ extension VisualElement {
 
     /// `widthRequest`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state. MAUI: VisualElement.WidthRequest.
+    /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
@@ -1387,7 +1358,6 @@ extension VisualElement {
 
     /// `zIndex`, handed on as `$x`: the host sets it as it is, and handing it
     /// on reads nothing - a write renders only a body that reads the state.
-    /// MAUI: VisualElement.ZIndex.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.

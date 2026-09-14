@@ -131,11 +131,9 @@ public final class PageSession {
     /// `barBackgroundColor` there.
     @State public var backgroundColor: Color? = nil
 
-    // What this page asks of the NAVIGATION STACK it is on. Attached
-    // properties, so each carries the class that declares it -
-    // `NavigationStack.HasNavigationBar` is `hasNavigationBar`.
-    // The colours of the BAR belong to the NavigationStack rather than to a
-    // page on it - see `barBackgroundColor` in Views/BarElement.swift.
+    // What this page asks of the NAVIGATION STACK it is on. The colours of
+    // the BAR belong to the NavigationStack rather than to a page on it - see
+    // `barBackgroundColor` in Views/BarElement.swift.
 
     /// Whether the navigation bar is shown while this page is on top.
     ///

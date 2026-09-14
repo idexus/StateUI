@@ -5,11 +5,11 @@
 // event the host raised by name, and an environment push - read back by the
 // library's own decoder in Core/Wire.swift.
 //
-// The direction is the reverse of every other fixture's: the runtime WRITES
-// these bytes and this side reads them. The fixtures under fixtures/payloads
-// are still authored here, with the library's own append helpers - the same
-// value encoding every channel shares - and the C# side then asserts that its
-// WRITER produces exactly these bytes for the same values. Writer and reader
+// The direction is the reverse of every other fixture's: a host WRITES these
+// bytes and StateUI reads them. The fixtures under fixtures/payloads are still
+// authored here, with the library's own append helpers - the same value
+// encoding every channel shares - and a foreign-language host's WRITER is held
+// to producing exactly these bytes for the same values. Writer and reader
 // meet in the file, so neither can drift alone.
 
 import XCTest
@@ -19,7 +19,7 @@ final class HostChannelTests: XCTestCase {
     // MARK: - The fixtures
 
     /// Every reply shape the host sends, one file each: the bytes are the
-    /// contract the C# writer is held to, the sidecar is what review reads.
+    /// contract a host's writer is held to, the sidecar is what review reads.
     func testEveryReplyShapeIsWrittenDown() throws {
         try check(reply(ok: true, []), against: "payloads/reply-void")
         try check(reply(ok: true, [.bool(true)]), against: "payloads/reply-bool")
@@ -107,8 +107,8 @@ final class HostChannelTests: XCTestCase {
     }
 
     /// And the host-raised event - the one buffer that carries a NAME,
-    /// because no element stands behind it: the application registered the
-    /// raise in C# and subscribes here with `HostEvents.on`.
+    /// because no element stands behind it: the application raises it from
+    /// its host code and subscribes here with `HostEvents.on`.
     func testEveryHostEventShapeIsWrittenDown() throws {
         try check(
             hostEvent("Gallery.BatteryChanged", [.number(0.87), .bool(true)]),

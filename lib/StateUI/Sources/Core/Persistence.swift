@@ -13,7 +13,7 @@
 // read time would answer a render too late, and the reader would see the
 // default flash past. The host therefore hydrates the whole store BEFORE the
 // first render - and to read a store it has to know what to ask for, because
-// MAUI's `Preferences` can be read key by key and never enumerated. So the
+// it reads key by key, each with the kind of value it holds. So the
 // application names its keys, in one list, and the three steps that follow all
 // happen inside the same startup window:
 //
@@ -47,27 +47,26 @@ import Dispatch
 
 /// What kind of value a persistent key holds.
 ///
-/// The host needs this before any state exists, because a store is typed: MAUI
-/// reads a `Preferences` entry with the overload matching what was written, and
-/// asking for the wrong one is an error rather than a conversion. It comes from
-/// the Swift type named at the key's declaration - `of: Int.self` - so there is
+/// The host needs this before any state exists, because a store is typed: an
+/// entry is read as the kind it was written as, and on some platforms asking
+/// for the wrong one is an error rather than a conversion. It comes from the
+/// Swift type named at the key's declaration - `of: Int.self` - so there is
 /// no second vocabulary to keep in step.
 ///
 /// THE NUMBERS ARE THIS LIBRARY'S OWN, the wire's rule: declaration order from
-/// 0, mirrored by `SwiftPersistentKind` on the far side and checked member for
-/// member by `WireEnumTests`.
+/// 0, read by every host exactly as declared here.
 public enum PersistentKind: Int32, Sendable {
-    /// True or false. .NET: `bool`.
+    /// True or false.
     case boolean = 0
 
-    /// A whole number. .NET: `long` - and exact to 2^53, every number on this
-    /// wire being a Double.
+    /// A whole number - exact to 2^53, every number on this wire being a
+    /// Double.
     case integer = 1
 
-    /// A number with a fraction. .NET: `double`.
+    /// A number with a fraction.
     case number = 2
 
-    /// Text. .NET: `string`.
+    /// Text.
     case text = 3
 }
 
@@ -227,14 +226,13 @@ public struct PersistentKey: Hashable, Sendable, CustomStringConvertible {
     public var description: String { name }
 }
 
-/// WHERE kept state is kept. MAUI: Preferences, for the one this library ships.
+/// WHERE kept state is kept.
 ///
-/// An application says nothing and gets `.preferences`, which is MAUI's own
-/// store on every platform - `NSUserDefaults`, `SharedPreferences`,
-/// `ApplicationDataContainer`. Naming any other store names one the host
-/// registered under that name with `StateUIStores.Add`, which is how an
-/// application keeps its state somewhere of its own without this side knowing
-/// what a file is. Written into the application's session as it is made:
+/// An application says nothing and gets `.preferences`, the platform's own
+/// settings store. Naming any other store names one the host registered under
+/// that name, which is how an application keeps its state somewhere of its
+/// own without this side knowing what a file is. Written into the
+/// application's session as it is made:
 ///
 ///     application.persistentStorage = PersistentStorage("Gallery.Json")
 public struct PersistentStorage: Hashable, Sendable, CustomStringConvertible {
@@ -248,7 +246,7 @@ public struct PersistentStorage: Hashable, Sendable, CustomStringConvertible {
     }
 
     /// The platform's own settings store, and the answer an application that
-    /// says nothing gets. MAUI: Preferences.
+    /// says nothing gets.
     public static let preferences = PersistentStorage("preferences")
 
     /// The name, so an interpolated diagnostic prints it plainly.

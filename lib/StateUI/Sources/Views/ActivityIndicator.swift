@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: ActivityIndicator.
-
 /// ActivityIndicator's own properties - the half a `Style<ActivityIndicator>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
@@ -10,7 +8,7 @@
 public protocol ActivityIndicatorProperties: PropertyContainer {}
 
 extension ActivityIndicatorProperties {
-    /// Whether it is spinning. MAUI: ActivityIndicator.IsRunning.
+    /// Whether it is spinning.
     ///
     /// A still indicator is also an INVISIBLE one on most platforms, so this
     /// is the whole of showing and hiding it - `.isVisible` is not needed
@@ -20,7 +18,7 @@ extension ActivityIndicatorProperties {
         setValue(.isRunning, .bool(value))
     }
 
-    /// What colour it spins in. MAUI: ActivityIndicator.Color.
+    /// What colour it spins in.
     ///
     /// Not `.backgroundColor`, which paints the square the spinner sits in.
     public func color(_ value: Color) -> Modified {
@@ -29,7 +27,7 @@ extension ActivityIndicatorProperties {
 }
 
 /// The spinner shown while something is happening that has no measurable
-/// length. MAUI: ActivityIndicator.
+/// length.
 ///
 ///     @State private var loading = false
 ///     …

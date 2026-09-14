@@ -1,42 +1,41 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: DeviceIdiom - Microsoft.Maui.Devices.
+// The kind of device an interface is showing on.
 //
 // The `DeviceInfo` PROVIDER - the class an interface resolves with
 // `@Environment var device: DeviceInfo` - is in Types/HostEnvironment.swift
 // with the other standard providers. This file holds the idiom's own type.
 
-/// The kind of device the interface is showing on. MAUI: DeviceIdiom.
+/// The kind of device the interface is showing on.
 ///
 ///     @Environment var device: DeviceInfo
 ///     …
 ///     device.idiom == .desktop ? wideLayout : phoneLayout
 ///
 /// What separates a phone from a desktop where the PLATFORM cannot: iOS is a
-/// phone and a tablet, Mac Catalyst and Windows are desktops, and
+/// phone and a tablet, macOS and Windows are desktops, and
 /// `stateUIPlatform()` - compiled in - can never tell the first two apart.
 ///
-/// MAUI keeps this as a struct compared by value, with no number of its own,
-/// so the numbers here are this library's - both sides of the wire agree, and
-/// `\(idiom)` prints the case name for a footer that wants the word.
+/// The numbers are this library's own - both sides of the wire agree on them -
+/// and `\(idiom)` prints the case name for a footer that wants the word.
 public enum DeviceIdiom: Int32, Sendable {
     /// The host has not said - a headless test, or a platform that could not
-    /// tell. MAUI: DeviceIdiom.Unknown.
+    /// tell.
     case unknown = 0
 
-    /// A phone. MAUI: DeviceIdiom.Phone.
+    /// A phone.
     case phone = 1
 
-    /// A tablet - an iPad, an Android tablet. MAUI: DeviceIdiom.Tablet.
+    /// A tablet - an iPad, an Android tablet.
     case tablet = 2
 
-    /// A desktop - Mac Catalyst and Windows. MAUI: DeviceIdiom.Desktop.
+    /// A desktop computer.
     case desktop = 3
 
-    /// A television. MAUI: DeviceIdiom.TV.
+    /// A television.
     case tv = 4
 
-    /// A watch. MAUI: DeviceIdiom.Watch.
+    /// A watch.
     case watch = 5
 }

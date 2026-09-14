@@ -4,9 +4,9 @@
 // Where a handler runs, and where it comes back.
 //
 // This is the one part of the library whose failure is silent. A handler that
-// resumes on the wrong thread writes state beside a C# render and nothing
-// crashes reliably - which is why the executor exists at all, and why what it
-// promises is written down here rather than remembered.
+// resumes on the wrong thread writes state while the host is drawing, and
+// nothing crashes reliably - which is why the executor exists at all, and why
+// what it promises is written down here rather than remembered.
 //
 // What a headless test CAN show: that a handler which never awaits finishes
 // inside the call that raised it, that one which does await does not, and that
@@ -282,8 +282,8 @@ final class MainThreadTests: XCTestCase {
     ///
     /// A plain `async` function is nonisolated, and a nonisolated async function
     /// runs on Swift's cooperative pool whoever calls it - so a handler awaiting
-    /// one would come back on a pool thread with a C# render beside it. The
-    /// spelling that prevents it is `nonisolated(nonsending)`. The other
+    /// one would come back on a pool thread with the host drawing beside it.
+    /// The spelling that prevents it is `nonisolated(nonsending)`. The other
     /// spelling that does is `@MainThread`, which names the executor outright
     /// and makes a caller from the pool hop there first - what `Renderer.fly`
     /// does, so that a journey is sent and written on the rendering
@@ -327,7 +327,7 @@ final class MainThreadTests: XCTestCase {
             Write `nonisolated(nonsending)` before `func` - or `@MainThread`, \
             when the function must run on the rendering thread whoever calls \
             it. Without either the function runs on Swift's cooperative pool, \
-            and a handler that awaits it resumes off the thread MAUI draws on \
+            and a handler that awaits it resumes off the thread the host draws on \
             - which corrupts state quietly rather than failing. See \
             Core/MainThread.swift.
             """)
@@ -339,7 +339,7 @@ final class MainThreadTests: XCTestCase {
     /// functions here that say it. An application's own `async func` is beyond
     /// reach - and measured, it is exactly where the rule breaks: a helper an
     /// author writes and awaits from a handler runs on the cooperative pool and
-    /// comes back off the thread MAUI draws on, with no diagnostic anywhere.
+    /// comes back off the thread the host draws on, with no diagnostic anywhere.
     ///
     /// The upcoming feature makes caller-inheriting the DEFAULT, which closes
     /// that. It is per-module, so it has to be set in every manifest and in both
@@ -349,8 +349,7 @@ final class MainThreadTests: XCTestCase {
     /// nothing at build time and everything at run time.
     ///
     /// Every application's manifest is FOUND rather than listed, so a scaffolded
-    /// app is covered the moment it exists - including the one `dotnet new`
-    /// writes, whose template manifest is checked here too.
+    /// app is covered the moment it exists.
     /// THE FOUR NON-NEGOTIABLES, checked instead of remembered - CONTRIBUTING.md
     /// states them, under "The rules a pull request is measured against". Every
     /// one of them breaks a platform silently and far from the cause, which is
@@ -532,7 +531,7 @@ final class MainThreadTests: XCTestCase {
     ///
     /// A resumed continuation arrives when the scheduler gets to it. In an app
     /// A drain is BOUNDED, so a job that queues another for ever cannot take
-    /// the thread MAUI draws on with it.
+    /// the thread the host draws on with it.
     ///
     /// The loop runs at most 64 passes, each of them everything queued at that
     /// moment - which is what lets a handler that awaits several times finish

@@ -4,9 +4,8 @@
 // What a subtree LOOKS like, with every value taken out of it.
 //
 // A list scrolling by one row costs the platform four controls built and four
-// thrown away, and that is the whole of what makes a scroll judder - measured
-// on Mac Catalyst, where the message for the same row is a fifth of a
-// millisecond and the apply is four. The row leaving and the row arriving are
+// thrown away, and that is what makes a scroll judder: the message for a row
+// is cheap, and building its controls is not. The row leaving and the row arriving are
 // usually the SAME SHAPE, so the control that left could stand in for the one
 // arriving; what stops a renderer from simply doing that is that it cannot
 // know the two are alike.

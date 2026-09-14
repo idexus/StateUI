@@ -4,9 +4,10 @@
 // What a gesture reports, and how it gets here.
 //
 // A gesture carries more than one value - a status and a translation, a scale
-// and an origin - so a payload is one value per property, in the order MAUI
-// declares them, each already typed. This is the file that pins that format
-// down from the reading end; the writing end is the renderer's ApplyGestures.
+// and an origin - so a payload is one value per property, in the order its
+// update type declares them, each already typed. This is the file that pins
+// that format down from the reading end; the writing end is each host's
+// gesture adapter.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -52,8 +53,8 @@ final class GestureTests: XCTestCase {
     }
 
     /// A payload that cannot be read leaves the handler alone rather than
-    /// inventing a value - the same rule the renderer follows for a property it
-    /// does not recognize.
+    /// inventing a value - the same rule a host follows for a property it does
+    /// not recognize.
     ///
     /// The three ways one fails: a value short, the status sent as a plain
     /// NUMBER where a member of a closed vocabulary is wanted, and nothing at
@@ -103,12 +104,12 @@ final class GestureTests: XCTestCase {
     /// The payload a platform really sends, kept as a case of its own because
     /// the refusals above are invented and this one is a measurement.
     ///
-    /// MAUI on iOS and Mac Catalyst raises Swiped with the directions the
-    /// recognizer was CONFIGURED for rather than the one the finger went, so a
-    /// view listening every way sends exactly this - a true report of a message
-    /// that says nothing, and refusing it is what leaves such a view silent on
-    /// Apple while Android works. The renderer attaches one recognizer per
-    /// direction, so a mask cannot be assembled in the first place.
+    /// UIKit's swipe recognizer reports the directions it was CONFIGURED for
+    /// rather than the one the finger went, so a view listening every way
+    /// sends exactly this - a true report of a message that says nothing, and
+    /// refusing it is what leaves such a view silent on Apple platforms while
+    /// Android works. A host that attaches one recognizer per direction never
+    /// assembles a mask in the first place.
     func testASetOfDirectionsIsNotADirection() {
         let renders = Renders()
         var swipes: [SwipeDirection] = []

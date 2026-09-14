@@ -3,13 +3,13 @@
 
 // What a GraphicsView draws, as a list of instructions.
 //
-// MAUI's GraphicsView takes an IDrawable - an OBJECT with a Draw method, which
-// is the one thing this boundary cannot carry. So a drawing travels as what the
-// method would have called: one record per canvas operation, in order, and
-// `SwiftDrawable` on the other side replays them against the real ICanvas.
+// Drawing code is a closure, and a closure is the one thing this boundary
+// cannot carry. So a drawing travels as what that code calls: one record per
+// canvas operation, in order, and the host replays them against its toolkit's
+// own canvas.
 //
-// A record is a list of typed VALUES - the ICanvas member first, as the number
-// both sides spell, then that member's arguments as the things they ARE: a
+// A record is a list of typed VALUES - the operation first, as the number
+// both sides spell, then that operation's arguments as the things they ARE: a
 // number as a number, a flag as a bool, a colour as its four bytes, an
 // alignment as its member's number, and text only where an author wrote some.
 // The drawing is the list of those records, so it crosses as one `.values`
@@ -29,12 +29,12 @@
 
 /// One instruction for the canvas. Written with `Draw`, never by hand.
 public struct DrawCommand: Equatable, Sendable {
-    /// Which member of ICanvas an instruction calls, as the number it travels
+    /// Which canvas operation an instruction calls, as the number it travels
     /// as - a closed vocabulary, so it crosses as a number and never a
     /// spelling.
     ///
-    /// These numbers ARE the contract: `SwiftDrawable` switches on the same
-    /// ones, member for member. Add at the END - a case inserted in the middle
+    /// These numbers ARE the contract: the host switches on the same ones,
+    /// case for case. Add at the END - a case inserted in the middle
     /// renumbers every case after it, and the drawing then replays the wrong
     /// instructions without a word from either side.
     enum Kind: Int32, Sendable {
@@ -75,7 +75,7 @@ public struct DrawCommand: Equatable, Sendable {
     /// Which canvas call this instruction is.
     let kind: Kind
 
-    /// What to call it with, in the order ICanvas takes the arguments - each
+    /// What to call it with, in the order the host reads the arguments - each
     /// already the value it is, so nothing is formatted here and nothing is
     /// parsed on arrival.
     let arguments: [PropValue]
@@ -138,44 +138,38 @@ public enum DrawingBuilder {
 
 /// Where a piece of text sits across the box it is drawn in - what
 /// `Draw.drawString` takes for `horizontalAlignment:`.
-/// MAUI: HorizontalAlignment, in Microsoft.Maui.Graphics.
 ///
-/// Mirrored by `SwiftHorizontalAlignment` and checked case for case like every
-/// other vocabulary here. These numbers happen to be MAUI's own as well, which
-/// is why `SwiftDrawable` casts one back instead of translating it member by
-/// member.
+/// Numbered by this library, like every other vocabulary here: see the head
+/// of Types/Enums.swift.
 public enum HorizontalAlignment: Int32, Sendable {
-    /// Against the left edge of the box. MAUI: HorizontalAlignment.Left.
+    /// Against the left edge of the box.
     case left = 0
 
-    /// In the middle of it. MAUI: HorizontalAlignment.Center.
+    /// In the middle of it.
     case center = 1
 
-    /// Against the right edge. MAUI: HorizontalAlignment.Right.
+    /// Against the right edge.
     case right = 2
 
     /// Spread out to fill the width - which does nothing to a single word.
-    /// MAUI: HorizontalAlignment.Justified.
     case justified = 3
 }
 
 /// And where it sits down the box - `Draw.drawString`'s `verticalAlignment:`.
-/// MAUI: VerticalAlignment, in Microsoft.Maui.Graphics.
 ///
-/// Mirrored by `SwiftVerticalAlignment`, and lined up with MAUI's own numbers
-/// exactly as `HorizontalAlignment` is.
+/// Numbered by this library, exactly as `HorizontalAlignment` is.
 public enum VerticalAlignment: Int32, Sendable {
-    /// Against the top of the box. MAUI: VerticalAlignment.Top.
+    /// Against the top of the box.
     case top = 0
 
-    /// In the middle of it. MAUI: VerticalAlignment.Center.
+    /// In the middle of it.
     case center = 1
 
-    /// Against the bottom. MAUI: VerticalAlignment.Bottom.
+    /// Against the bottom.
     case bottom = 2
 }
 
-/// Everything a drawing can tell the canvas to do. MAUI: ICanvas.
+/// Everything a drawing can tell the canvas to do.
 ///
 ///     GraphicsView {
 ///         Draw.fillColor(.cornflowerBlue)
@@ -189,45 +183,45 @@ public enum VerticalAlignment: Int32, Sendable {
 ///             horizontalAlignment: .center, verticalAlignment: .center)
 ///     }
 ///
-/// The names are ICanvas's, camelCased, and so is the order: a `fillColor` holds
-/// until the next one, exactly as it does when the drawing is written in C#.
+/// The instructions run in the order they are written, and a setting holds
+/// until the next of its kind: a `fillColor` paints every `fill…` after it
+/// until another `fillColor` says otherwise.
 public enum Draw {
     // MARK: - What the canvas draws with
 
-    /// The colour the `fill…` instructions paint with. MAUI: ICanvas.FillColor.
+    /// The colour the `fill…` instructions paint with.
     public static func fillColor(_ value: Color) -> DrawCommand {
         DrawCommand(.fillColor, [value.propValue])
     }
 
     /// The colour the `draw…` instructions outline with.
-    /// MAUI: ICanvas.StrokeColor.
     public static func strokeColor(_ value: Color) -> DrawCommand {
         DrawCommand(.strokeColor, [value.propValue])
     }
 
-    /// The colour `drawString` writes in. MAUI: ICanvas.FontColor.
+    /// The colour `drawString` writes in.
     public static func fontColor(_ value: Color) -> DrawCommand {
         DrawCommand(.fontColor, [value.propValue])
     }
 
-    /// How thick that outline is, in device units. MAUI: ICanvas.StrokeSize.
+    /// How thick that outline is, in device units.
     public static func strokeSize(_ value: Double) -> DrawCommand {
         DrawCommand(.strokeSize, [.number(value)])
     }
 
-    /// How big it writes. MAUI: ICanvas.FontSize.
+    /// How big it writes.
     public static func fontSize(_ value: Double) -> DrawCommand {
         DrawCommand(.fontSize, [.number(value)])
     }
 
-    /// How opaque everything after this is, from 0 to 1. MAUI: ICanvas.Alpha.
+    /// How opaque everything after this is, from 0 to 1.
     public static func alpha(_ value: Double) -> DrawCommand {
         DrawCommand(.alpha, [.number(value)])
     }
 
     // MARK: - Outlines
 
-    /// A straight line. MAUI: ICanvas.DrawLine.
+    /// A straight line.
     ///
     /// - Parameters:
     ///   - x1: where it starts, across.
@@ -238,7 +232,7 @@ public enum Draw {
         DrawCommand(.drawLine, [.number(x1), .number(y1), .number(x2), .number(y2)])
     }
 
-    /// The outline of a rectangle. MAUI: ICanvas.DrawRectangle.
+    /// The outline of a rectangle.
     ///
     /// - Parameters:
     ///   - x: the left edge.
@@ -252,7 +246,6 @@ public enum Draw {
     }
 
     /// The outline of a rectangle with rounded corners.
-    /// MAUI: ICanvas.DrawRoundedRectangle.
     ///
     /// - Parameters:
     ///   - x: the left edge.
@@ -269,7 +262,6 @@ public enum Draw {
     }
 
     /// The outline of an oval filling the rectangle given.
-    /// MAUI: ICanvas.DrawEllipse.
     ///
     /// - Parameters:
     ///   - x: the left edge of the rectangle it fits in.
@@ -282,7 +274,7 @@ public enum Draw {
         DrawCommand(.drawEllipse, [.number(x), .number(y), .number(width), .number(height)])
     }
 
-    /// Part of the outline of an oval. MAUI: ICanvas.DrawArc.
+    /// Part of the outline of an oval.
     ///
     /// - Parameters:
     ///   - x: the left edge of the rectangle the oval fits in.
@@ -304,7 +296,7 @@ public enum Draw {
     }
 
     /// The outline of a shape written in SVG path syntax - the same string a
-    /// `Path` takes. MAUI: ICanvas.DrawPath.
+    /// `Path` takes.
     ///
     ///     Draw.drawPath("M 0,20 L 20,0 L 40,20 Z")
     ///
@@ -316,7 +308,7 @@ public enum Draw {
 
     // MARK: - Solid shapes
 
-    /// A filled rectangle. MAUI: ICanvas.FillRectangle.
+    /// A filled rectangle.
     ///
     /// - Parameters:
     ///   - x: the left edge.
@@ -330,7 +322,6 @@ public enum Draw {
     }
 
     /// A filled rectangle with rounded corners.
-    /// MAUI: ICanvas.FillRoundedRectangle.
     ///
     /// - Parameters:
     ///   - x: the left edge.
@@ -346,7 +337,7 @@ public enum Draw {
         ])
     }
 
-    /// A filled oval. MAUI: ICanvas.FillEllipse.
+    /// A filled oval.
     ///
     /// - Parameters:
     ///   - x: the left edge of the rectangle it fits in.
@@ -360,7 +351,6 @@ public enum Draw {
     }
 
     /// A filled wedge of an oval - what a pie chart is made of.
-    /// MAUI: ICanvas.FillArc.
     ///
     /// - Parameters:
     ///   - x: the left edge of the rectangle the oval fits in.
@@ -380,22 +370,20 @@ public enum Draw {
         ])
     }
 
-    /// A filled shape written in SVG path syntax. MAUI: ICanvas.FillPath.
+    /// A filled shape written in SVG path syntax.
     public static func fillPath(_ data: String) -> DrawCommand {
         DrawCommand(.fillPath, [.string(data)])
     }
 
     // MARK: - Text
 
-    /// A piece of text, inside a box. MAUI: ICanvas.DrawString.
+    /// A piece of text, inside a box.
     ///
     ///     Draw.drawString("42", x: 0, y: 100, width: 32, height: 16,
     ///                     horizontalAlignment: .center)
     ///
-    /// Text goes in a BOX rather than at a point, which is MAUI's fuller
-    /// overload and the one that works: the shorter `DrawString(value, x, y,
-    /// alignment)` draws nothing at all on Mac Catalyst - measured, with the
-    /// bars of a chart appearing and their captions not.
+    /// Text goes in a BOX rather than at a point: the box is what the two
+    /// alignments place it in, and what clips it.
     ///
     /// - Parameters:
     ///   - text: what to write.
@@ -423,7 +411,7 @@ public enum Draw {
 
     // MARK: - Where the canvas draws
 
-    /// Moves everything drawn after it. MAUI: ICanvas.Translate.
+    /// Moves everything drawn after it.
     ///
     /// - Parameters:
     ///   - dx: how far across.
@@ -433,12 +421,11 @@ public enum Draw {
     }
 
     /// Turns everything drawn after it, in degrees clockwise about the origin.
-    /// MAUI: ICanvas.Rotate.
     public static func rotate(_ degrees: Double) -> DrawCommand {
         DrawCommand(.rotate, [.number(degrees)])
     }
 
-    /// Resizes everything drawn after it. MAUI: ICanvas.Scale.
+    /// Resizes everything drawn after it.
     ///
     /// - Parameters:
     ///   - sx: how much across, 1 being unchanged.
@@ -448,7 +435,7 @@ public enum Draw {
     }
 
     /// Remembers the colours, sizes and transforms in force, for a later
-    /// `restoreState` to put back. MAUI: ICanvas.SaveState.
+    /// `restoreState` to put back.
     ///
     ///     Draw.saveState()
     ///     Draw.translate(dx: 40, dy: 0)
@@ -463,7 +450,6 @@ public enum Draw {
     }
 
     /// Puts back what the last `saveState` remembered.
-    /// MAUI: ICanvas.RestoreState.
     public static func restoreState() -> DrawCommand {
         DrawCommand(.restoreState)
     }

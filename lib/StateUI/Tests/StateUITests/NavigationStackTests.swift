@@ -38,9 +38,8 @@ private struct Destination: ContentView {
     }
 }
 
-/// A pushed page that asks the STACK for everything a page can ask of it - the
-/// attached properties, spelled with the class that declares them, written
-/// into its session as it comes into the tree.
+/// A pushed page that asks the STACK for everything a page can ask of it,
+/// written into its session as it comes into the tree.
 private struct DressedDestination: ContentView {
     @Environment private var page: PageSession
     let depth: Int

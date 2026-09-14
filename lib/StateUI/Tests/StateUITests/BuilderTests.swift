@@ -74,8 +74,8 @@ final class BuilderTests: XCTestCase {
     }
 
     /// A handler belongs to the element, so a conditional above it must not
-    /// take it away. The id is what C# quotes back; a new one means the button
-    /// C# is showing reports an id nothing answers to.
+    /// take it away. The id is what the host quotes back; a new one means the
+    /// button the host is showing reports an id nothing answers to.
     func testAViewAfterAConditionalKeepsItsHandler() {
         let taps = State(0)
 
@@ -376,9 +376,9 @@ final class BuilderTests: XCTestCase {
 
     /// The path is the differ's business and nobody else's.
     ///
-    /// It is not an identity C# can use - two renders of a carried subtree
+    /// It is not an identity a host can use - two renders of a carried subtree
     /// would report the same path for elements the host has under different
-    /// ids - so it stays on this side, and the wire is unchanged by all of it.
+    /// ids - so it stays in Swift, and the wire is unchanged by all of it.
     func testThePathNeverReachesTheHost() {
         let tree = VStack {
             if true {

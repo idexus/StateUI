@@ -9,10 +9,9 @@
 
 /// The artwork half shared by `Image` and `ImageButton`.
 ///
-/// The picture ITSELF is not here. MAUI declares `Source` on this interface
-/// too, but both controls take it in their initializer - it is the value that
-/// gives either one its purpose, and this library puts that in the initializer
-/// and everything else on a modifier.
+/// The picture ITSELF is not here. Both controls take it in their initializer,
+/// because it is the value that gives either one its purpose, and this library
+/// puts that in the initializer and everything else on a modifier.
 public protocol ImageElement: PropertyContainer {}
 
 extension ImageElement {

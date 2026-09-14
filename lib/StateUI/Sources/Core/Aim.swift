@@ -14,35 +14,32 @@
 //     WebView(address).aim(browser)
 //     Button("Back").onClicked { try await browser.goBack() }
 //
-// AIMING IS WHAT THE HOST CALLS IT TOO: `StateUIRenderer.Aim` points an aiming
-// map's entry at a view and `StateUISession.Aimed` resolves the control an act
-// names, so one word covers the mechanism on both sides of the wire. It holds
-// no state of the control's own - not a property, not a report, nothing
-// readable - which is why it is not a `@State`: it is the answer to "which
-// one", and nothing else.
+// AIMING IS ONE WORD ON BOTH SIDES OF THE WIRE: the host resolves the control
+// an act names by the same aim. It holds no state of the control's own - not a
+// property, not a report, nothing readable - which is why it is not a
+// `@State`: it is the answer to "which one", and nothing else.
 //
 // WHAT AN AUTHOR HOLDS IS DECLARED, ONE WAY FOR EACH KIND: a VALUE with
 // `@State` - shown by the closures that read it, or walked by the host
 // (`.opacity($fade)`, see Core/StateValue.swift) - and a CONTROL with `@Aim`,
 // which `.aim(_:)` puts on a view. On a value you WRITE; on a control you
-// CALL - and which member is which is not this library's taste but MAUI's
-// decision, read off MAUI: a settable BindableProperty is a property here, a
-// method is a method here. `Focus`, `MoveToRegion` and `GoBack` are methods in
-// MAUI (their state is behind read-only keys, or they mean "again", which no
-// value can say on a wire where an absent field means unchanged), so they are
-// acts here. A scroller's offset is the one MAUI method answered with STATE
-// instead - `scroll($:)`, both ways - because this side has an engine of its
-// own to move it with, and a value that is where the scroller IS says more
-// than a call that sends it.
+// CALL - and which member is which follows what the native toolkits share: a
+// value every host can hold and set is a property, and something that HAPPENS
+// is an act. Focusing, moving a map to a region and stepping a web view back
+// are acts (the platforms expose their state read-only, or they mean "again",
+// which no value can say on a wire where an absent field means unchanged). A
+// scroller's offset is answered with STATE instead - `scroll($:)`, both ways -
+// because this side has an engine of its own to move it with, and a value
+// that is where the scroller IS says more than a call that sends it.
 //
 // THE MECHANISM is the differ's: every element carries an identity - allocated
 // once, never reused, stable for as long as the element stays in the tree -
-// and it is on the wire already, being what C# matches controls by. `.aim(_:)`
-// links the aim's box to the node, the differ writes the settled identity into
-// the box as it walks, and the act sends it: a NUMBER for an element the
-// author never named, the NAME for one that also says `.id("x")` - the two
-// namespaces the tree's ids have. The host resolves them through
-// `StateUIRenderer.Tracked` and `Named`.
+// and it is on the wire already, being what the host matches controls by.
+// `.aim(_:)` links the aim's box to the node, the differ writes the settled
+// identity into the box as it walks, and the act sends it: a NUMBER for an
+// element the author never named, the NAME for one that also says
+// `.id("x")` - the two namespaces the tree's ids have. The host resolves
+// either back to its control.
 //
 // WHY A BOX INSIDE THE AIM. `Node.aim` has to hold whatever was written on the
 // view without knowing WHICH control it is about - a node is not generic - so
@@ -160,9 +157,8 @@ public final class Aim<Target>: @unchecked Sendable, CustomStringConvertible {
     ///         }
     ///     }
     ///
-    /// The C# half registers the performer with `StateUIActs.Add` and turns
-    /// the identity back into the control with `StateUIActs.TargetOf` -
-    /// `StateUIRenderer.Tracked` for a number, `Named` for a name. Both
+    /// The host half registers the performer under the act's name and turns
+    /// the identity back into the control - by number, or by name. Both
     /// halves or neither: an aim this side sends alone is one no performer can
     /// resolve.
     ///

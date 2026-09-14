@@ -12,25 +12,21 @@
 //         accept: "Delete", cancel: "Keep")
 //
 // The handler suspends while the dialog is up and resumes with the answer,
-// which is MAUI's own shape - `await DisplayAlertAsync(...)` - and the reason
-// this is not a modifier with a binding: asking, waiting and branching is one
-// sequential thought, and an act keeps it in one place where a binding would
-// split it into a state write here and a result closure there.
+// which is the reason this is not a modifier with a binding: asking, waiting
+// and branching is one sequential thought, and an act keeps it in one place
+// where a binding would split it into a state write here and a result closure
+// there.
 //
-// The METHODS are MAUI's, on Page. The TYPE is this library's own name,
-// because there is no page here to call them on: a MAUI page holds itself and
-// calls DisplayAlertAsync on self, while a handler here holds a description of
-// a page rather than the page. So none of these names a page, and the host
-// shows the dialog on the page the reader is actually looking at - the top of
-// the modal stack included, which only the host can know. `SoftInput` is the
-// same shape of answer for the keyboard.
+// None of these names a page: a handler holds a description of a page rather
+// than the page, so the host shows the dialog on the page the reader is
+// actually looking at - the top of the modal stack included, which only the
+// host can know. `SoftInput` is the same shape of answer for the keyboard.
 
-/// Questions for the reader - MAUI's Page.DisplayAlertAsync,
-/// DisplayActionSheetAsync and DisplayPromptAsync, asked of the page that is
-/// showing. Each suspends the handler until the reader answers.
+/// Questions for the reader - an alert, a choice among actions and a prompt,
+/// asked of the page that is showing. Each suspends the handler until the
+/// reader answers.
 public enum Dialogs {
     /// Tells the reader something, with one button to dismiss it.
-    /// MAUI: Page.DisplayAlertAsync(title, message, cancel).
     ///
     ///     try await Dialogs.displayAlert("Saved", message: "The draft is safe")
     ///
@@ -53,7 +49,6 @@ public enum Dialogs {
     }
 
     /// Asks the reader a yes-or-no question.
-    /// MAUI: Page.DisplayAlertAsync(title, message, accept, cancel).
     ///
     ///     let ok = try await Dialogs.displayAlert(
     ///         "Delete draft?", message: "This cannot be undone",
@@ -80,14 +75,12 @@ public enum Dialogs {
     }
 
     /// Offers the reader a list of things to do.
-    /// MAUI: Page.DisplayActionSheetAsync(title, cancel, destruction, buttons).
     ///
     ///     let choice = try await Dialogs.displayActionSheet(
     ///         "Share via", cancel: "Cancel", buttons: ["Mail", "Message"])
     ///
     /// What comes back is the pressed CAPTION - `cancel` and `destruction`
-    /// included, which is how MAUI answers - so a `switch` over the same
-    /// strings is the whole handling.
+    /// included - so a `switch` over the same strings is the whole handling.
     ///
     /// - Parameters:
     ///   - title: what the choice is about.
@@ -112,10 +105,9 @@ public enum Dialogs {
             ] + buttons.map { .string($0) }))
     }
 
-    /// Asks the reader to type something.
-    /// MAUI: Page.DisplayPromptAsync. The arguments cross in MAUI's order;
-    /// the Swift signature keeps `initialValue` beside `placeholder`, where
-    /// it reads.
+    /// Asks the reader to type something. The arguments cross in the act's
+    /// order, `initialValue` last; the Swift signature keeps it beside
+    /// `placeholder`, where it reads.
     ///
     ///     let name = try await Dialogs.displayPrompt(
     ///         "Rename", message: "A new name for the draft",

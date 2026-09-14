@@ -74,8 +74,8 @@ final class DrivenWireTests: XCTestCase {
     /// (`isVisible($shown)`), words (`placeholder($hint)`), a plain choice the
     /// host sets and reports (`selectedIndex($size)`, `isToggled($on)`), and a
     /// MEMBER (`horizontalOptions($side)`), which crosses as its number and is
-    /// resolved by the host into the platform's own member. The C# side is
-    /// held to landing each of them.
+    /// resolved by the host into the platform's own member. A host is held to
+    /// landing each of them.
     func testEveryShapeOfABoundPropertyIsWrittenDown() throws {
         let size = State(wrappedValue: 14.0)
         let shown = State(wrappedValue: true)
@@ -309,12 +309,12 @@ final class DrivenWireTests: XCTestCase {
         // colour, a thickness, and a POINT, which is the scroller's offset:
         // two lanes the host carries by the scroller's own key rather than by
         // a property's type, the platform declaring no settable property for
-        // it (`StateTie.Of`, `MotionValue.Offset`).
+        // it.
         let carried: Set<String> = ["Double", "Color", "Thickness", "Point"]
 
         // THE ONE WALKED MODIFIER WITH NO DESCRIBED TWIN. A scroller's offset
-        // is a property the platform keeps read-only - MAUI's ScrollX and
-        // ScrollY have no setter worth writing to - so there is nothing for
+        // is a property the platform keeps read-only - a scroller reports
+        // where it stands and has no setter worth writing to - so there is nothing for
         // the tree to describe and the state is its only spelling, both ways.
         let stateOnly: Set<String> = ["scroll"]
 

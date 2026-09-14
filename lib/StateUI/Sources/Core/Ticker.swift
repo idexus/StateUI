@@ -4,11 +4,11 @@
 // A timer, as a loop that sleeps.
 //
 // Foundation has one and it cannot be used here: `Timer` hangs off a `RunLoop`,
-// and nothing turns a RunLoop in a MAUI app on Android or Windows - the same
-// reason handlers are isolated to @MainThread rather than to Swift's
-// @MainActor. What IS available on every platform is Swift's own concurrency,
-// because the host keeps a thread parked in `stateui_wait_work` and a resume
-// wakes it; see Core/MainThread.swift.
+// and nothing turns a RunLoop on Android or Windows - the same reason handlers
+// are isolated to @MainThread rather than to Swift's @MainActor. What IS
+// available on every platform is Swift's own concurrency, because the host
+// keeps a thread parked in `stateui_wait_work` and a resume wakes it; see
+// Core/MainThread.swift.
 //
 // So a timer here is `Task.sleep` in a loop, and this class is that loop with
 // the four things an author would otherwise write again each time:
@@ -71,7 +71,7 @@ public final class Ticker: @unchecked Sendable {
     /// What a tick runs, if anything.
     ///
     /// Isolated to `@MainThread`, this library's own actor, so it runs where a
-    /// handler runs - on the thread MAUI draws on - and may therefore read and
+    /// handler runs - on the host's UI thread - and may therefore read and
     /// write `@State` like any handler. It may await: the tick after it is
     /// scheduled from where this one ENDS, so a slow tick delays the next
     /// rather than overlapping it.
@@ -283,7 +283,7 @@ public final class Ticker: @unchecked Sendable {
         Renderer.shared.stateChanged(self)
     }
 
-    /// The loop, on the thread MAUI draws on.
+    /// The loop, on the host's UI thread.
     ///
     /// Every read of the state goes through the lock, because `stop()` and
     /// `interval` may be written from anywhere between one lap and the next.
@@ -353,8 +353,8 @@ public final class Ticker: @unchecked Sendable {
     ///
     /// Zero is not a very fast ticker and a negative one is not a ticker at
     /// all: the deadline would never reach ahead of the clock, so every sleep
-    /// would return at once and the loop would tick as fast as the thread MAUI
-    /// draws on could carry it - taking the interface down with it, on the one
+    /// would return at once and the loop would tick as fast as the host's UI
+    /// thread could carry it - taking the interface down with it, on the one
     /// thread that draws it. A millisecond is the floor, which is well under
     /// every platform's own resolution (Windows sleeps in steps of about 12),
     /// so nothing anyone could have measured is clamped away.

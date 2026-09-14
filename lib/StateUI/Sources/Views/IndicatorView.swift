@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: IndicatorView.
-
 /// IndicatorView's own properties - the half a `Style<IndicatorView>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
@@ -10,16 +8,15 @@
 public protocol IndicatorViewProperties: PropertyContainer {}
 
 extension IndicatorViewProperties {
-    /// How many dots there are. MAUI: IndicatorView.Count.
+    /// How many dots there are.
     ///
-    /// The other way to say it is `IndicatorView(items) { … }`, which MAUI
-    /// counts for itself - one or the other, never both.
+    /// The other way to say it is `IndicatorView(items) { … }`, which counts
+    /// its items itself - one or the other, never both.
     public func count(_ value: Int) -> Modified {
         setValue(.count, .number(Double(value)))
     }
 
     /// Which one is the current one, counting from 0.
-    /// MAUI: IndicatorView.Position.
     ///
     /// Told to it rather than read from it: nothing about an IndicatorView is
     /// the reader's to change, so there is no binding overload here - a
@@ -30,42 +27,39 @@ extension IndicatorViewProperties {
     }
 
     /// The colour of a dot that is not the current one.
-    /// MAUI: IndicatorView.IndicatorColor.
     public func indicatorColor(_ value: Color) -> Modified {
         setValue(.indicatorColor, value.propValue)
     }
 
-    /// And of the one that is. MAUI: IndicatorView.SelectedIndicatorColor.
+    /// And of the one that is.
     public func selectedIndicatorColor(_ value: Color) -> Modified {
         setValue(.selectedIndicatorColor, value.propValue)
     }
 
-    /// How big each dot is, in device units. MAUI: IndicatorView.IndicatorSize.
+    /// How big each dot is, in device units.
     public func indicatorSize(_ value: Double) -> Modified {
         setValue(.indicatorSize, .number(value))
     }
 
     /// The most dots to draw, however many items there are.
-    /// MAUI: IndicatorView.MaximumVisible.
     public func maximumVisible(_ value: Int) -> Modified {
         setValue(.maximumVisible, .number(Double(value)))
     }
 
-    /// A dot or a square. MAUI: IndicatorView.IndicatorsShape - the property
-    /// name really is plural, and the enum is not.
+    /// A dot or a square, for every dot. The modifier's name is plural and the
+    /// enum's is not.
     public func indicatorsShape(_ value: IndicatorShape) -> Modified {
         setValue(.indicatorsShape, value.propValue)
     }
 
-    /// Whether one lonely dot is hidden rather than drawn.
-    /// MAUI: IndicatorView.HideSingle. True by default, in MAUI as here.
+    /// Whether one lonely dot is hidden rather than drawn. True by default.
     public func hideSingle(_ value: Bool) -> Modified {
         setValue(.hideSingle, .bool(value))
     }
 }
 
 /// The row of dots under a run of cards, saying how many there are and which
-/// one is showing. MAUI: IndicatorView.
+/// one is showing.
 ///
 ///     IndicatorView()
 ///         .count(cards.count)
@@ -95,13 +89,7 @@ public struct IndicatorView: View, IndicatorViewProperties {
     ///     }
     ///     .position(shown)
     ///
-    /// The items take the place of `count` - MAUI derives it from them.
-    ///
-    /// **The platforms disagree about the template, measured.** ANDROID draws
-    /// the described dots and still paints the two dot colours BEHIND them, so
-    /// the current one wears the selected colour as its background. iOS and Mac
-    /// Catalyst draw MAUI's own dots only, and the template never reaches the
-    /// screen there.
+    /// The items take the place of `count`, which is derived from them.
     public init<Items: RandomAccessCollection>(
         _ items: Items,
         content: (Items.Element) -> Element

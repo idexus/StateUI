@@ -7,16 +7,16 @@
 //         .onChanged(count) { try await save() }
 //         .onChanged(query) { old, new in print("\(old) -> \(new)") }
 //
-// MAUI has no such thing, so this is the library's own - the way `debugInfo()`
-// beside it is, and named for what it does rather than for a MAUI member. The
-// semantics are the name's: the value is compared against the one THIS view
-// carried last render, and the handler runs only when the two differ.
+// This is the library's own, the way `debugInfo()` beside it is, and named for
+// what it does. The semantics are the name's: the value is compared against
+// the one THIS view carried last render, and the handler runs only when the
+// two differ.
 //
 // NOTHING ABOUT IT CROSSES THE BOUNDARY. The comparison is a Swift-side question
 // with a Swift-side answer: the differ already visits every element with the
-// element it continues in hand, so the previous value is right there. C# is
-// never told, no property is sent, and no fixture changes - which is why this
-// works for a value MAUI has no property for at all.
+// element it continues in hand, so the previous value is right there. The host
+// is never told, no property is sent, and no fixture changes - which is why
+// this works for a value no control has a property for at all.
 //
 // FOUR RULES, and each of them is a decision:
 //

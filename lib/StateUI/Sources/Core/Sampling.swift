@@ -14,7 +14,7 @@
 // no sweep on this side to hold back - the number would be the same one, over
 // and over. What sweeps is where the value HAS GOT TO - the JOURNEY - and the
 // host sends that every cycle it moves, as lanes beside the destination
-// (`StateCycle.Told` on the far side, `Renderer.cycleWritten` on this one).
+// (`Renderer.cycleWritten` is where they land).
 // A body that reads `$fade.journey.value` is rebuilt on every one of them,
 // which is the honest cost of printing a moving number; a body that reads
 // `fade` alone is not, a value moving being nobody's reason to render.
@@ -43,8 +43,8 @@ import Dispatch
 /// view describing itself again replaces its own reading rather than adding a
 /// second one.
 final class Sampling: @unchecked Sendable {
-    /// Guards the window. The host writes from the thread MAUI draws on and
-    /// the deadline's task resumes on another, which is the same crossing
+    /// Guards the window. The host writes from its UI thread and the
+    /// deadline's task resumes on another, which is the same crossing
     /// `State.Storage` keeps a queue for.
     private let guarded = DispatchQueue(label: "StateUI.Sampling")
 

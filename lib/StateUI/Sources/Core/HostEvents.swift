@@ -4,11 +4,11 @@
 // Events the HOST raises by name, with no element behind them.
 //
 // Every other event belongs to an element of the tree and is found by a
-// handler id the differ issued. What the C# side pushes on its own -
+// handler id the differ issued. What the host pushes on its own -
 // connectivity changing, the battery reporting - has no element to hang off,
-// so the application registers the raise in C# (`StateUIEvents.Raise`) and
-// subscribes here BY NAME, with the same `Event` token both sides of an
-// element's event already share.
+// so the application registers the raise with the host and subscribes here
+// BY NAME, with the same `Event` token both sides of an element's event
+// already share.
 //
 // The handlers run exactly as a control's do: queued on this library's
 // executor, isolated to @MainThread, free to await - `Renderer.start` is where
@@ -41,8 +41,8 @@ public final class HostEventSubscription: @unchecked Sendable {
     }
 }
 
-/// Events raised by the C# side by NAME - the push half of the interop
-/// surface, sister to the acts an application registers.
+/// Events the host raises by NAME - the push half of the interop surface,
+/// sister to the acts an application registers.
 ///
 ///     extension Event {
 ///         static let batteryChanged = Event("Gallery.BatteryChanged")
@@ -54,11 +54,8 @@ public final class HostEventSubscription: @unchecked Sendable {
 ///     // later, when the listener leaves:
 ///     heard.cancel()
 ///
-/// The C# half registers the raise once, at startup:
-///
-///     Battery.Default.BatteryInfoChanged += (_, e) =>
-///         StateUIEvents.Raise("Gallery.BatteryChanged",
-///             SwiftWireValue.Of(e.ChargeLevel));
+/// The host half registers the raise once, at startup, and raises the same
+/// name with the typed values whenever the platform reports a change.
 ///
 /// A raise nobody subscribed to is an ordinary answer, not an error - the
 /// battery reports whether a page is watching or not. Prefix event names with
@@ -85,9 +82,9 @@ public enum HostEvents {
     /// free to await, its thrown errors reported.
     ///
     /// - Parameters:
-    ///   - event: the name the C# side raises - the application's own token,
+    ///   - event: the name the host raises - the application's own token,
     ///     e.g. `Event("Gallery.BatteryChanged")`.
-    ///   - handler: given the raise's typed values, in the order the C# side
+    ///   - handler: given the raise's typed values, in the order the host
     ///     wrote them - read them with `payload.value()?.number` and its kin,
     ///     the `onEvent` shape.
     /// - Returns: the subscription, to `cancel()` when the listener leaves.
@@ -114,9 +111,8 @@ public enum HostEvents {
     }
 
     /// Runs every handler subscribed to a name and answers how many there
-    /// were - called by the export, on the thread MAUI draws on. The
-    /// handlers are taken under the lock and started outside it, the
-    /// dispatch rule.
+    /// were - called by the export, on the host's UI thread. The handlers
+    /// are taken under the lock and started outside it, the dispatch rule.
     static func dispatch(_ name: String, _ payload: [PropValue]) -> Int {
         let handlers = guarded.sync { subscriptions[Event(name)] ?? [] }
 

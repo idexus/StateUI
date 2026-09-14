@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: Border.
-
 /// Border's own properties - the half a `Style<Border>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
@@ -10,7 +8,7 @@
 public protocol BorderProperties: PropertyContainer {}
 
 extension BorderProperties {
-    /// What the outline is painted with. MAUI: Border.Stroke, which is a Brush.
+    /// What the outline is painted with - any `Brush`, a gradient included.
     ///
     ///     Border { … }
     ///         .strokeThickness(3)
@@ -31,8 +29,7 @@ extension BorderProperties {
         stroke(.solidColor(value))
     }
 
-    /// How thick the stroke is drawn, in device units.
-    /// MAUI: Border.StrokeThickness, whose default is 1.
+    /// How thick the stroke is drawn, in device units - 1 unless said.
     ///
     /// A thickness of 0 draws no outline however the stroke is painted - which
     /// is how a Border is used for its SHAPE alone, as the rounded corners on a
@@ -42,7 +39,7 @@ extension BorderProperties {
     }
 
     /// The shape the outline follows, and the shape the border's own
-    /// background is painted to. MAUI: Border.StrokeShape.
+    /// background is painted to.
     ///
     ///     Border { … }
     ///         .backgroundColor(.cornflowerBlue)
@@ -57,18 +54,15 @@ extension BorderProperties {
         setValue(.strokeShape, value.propValue)
     }
 
-    // The rest of MAUI's IStroke, which a Border carries as fully as a Shape
-    // does. Written HERE rather than shared with the shape tier, because
-    // `Border.StrokeDashArrayProperty` and `Shape.StrokeDashArrayProperty` are
-    // two separate BindableProperties declared directly on two classes that
-    // share only the `IStroke` interface - a Border is an `IBorderStroke`, a
-    // Shape an `IShapeView`, and neither implements the other's. The same
-    // shape as ScrollView and ItemsView each declaring a scrollbar visibility
-    // of their own; `stroke` and `strokeThickness` above are this same pair
+    // The rest of the stroke, which a Border carries as fully as a Shape does.
+    // Written HERE rather than shared with the shape tier, because that tier
+    // also carries `fill`, `renderTransform` and a `Stretch` aspect - a drawn
+    // figure's, and none of them a Border's. The properties on the wire are
+    // the same ones; `stroke` and `strokeThickness` above are this same pair
     // said twice.
 
     /// The dashes and the gaps between them, in multiples of the stroke
-    /// thickness. MAUI: Border.StrokeDashArray.
+    /// thickness.
     ///
     ///     Border { … }
     ///         .strokeThickness(2)
@@ -78,33 +72,29 @@ extension BorderProperties {
     }
 
     /// How far into the dash pattern the outline starts.
-    /// MAUI: Border.StrokeDashOffset.
     public func strokeDashOffset(_ value: Double) -> Modified {
         setValue(.strokeDashOffset, .number(value))
     }
 
     /// How the ends of each dash are drawn - and nothing at all on an outline
     /// with no dashes, a closed shape having no ends.
-    /// MAUI: Border.StrokeLineCap.
     public func strokeLineCap(_ value: PenLineCap) -> Modified {
         setValue(.strokeLineCap, value.propValue)
     }
 
     /// How the outline turns a corner of the stroke shape.
-    /// MAUI: Border.StrokeLineJoin.
     public func strokeLineJoin(_ value: PenLineJoin) -> Modified {
         setValue(.strokeLineJoin, value.propValue)
     }
 
     /// How far a sharp corner may reach before it is cut off, in multiples of
     /// the stroke thickness - `.miter` corners only.
-    /// MAUI: Border.StrokeMiterLimit.
     public func strokeMiterLimit(_ value: Double) -> Modified {
         setValue(.strokeMiterLimit, .number(value))
     }
 }
 
-/// A single view with an outline around it. MAUI: Border.
+/// A single view with an outline around it.
 ///
 ///     Border {
 ///         Label("Inside")
@@ -134,8 +124,8 @@ public struct Border: View, PaddingElement, BorderProperties {
         node = Node(type: .border)
     }
 
-    /// A border around what the closure describes. MAUI's Border holds ONE
-    /// view; put a layout in it if there is more than one thing to show.
+    /// A border around what the closure describes. A Border holds ONE view;
+    /// put a layout in it if there is more than one thing to show.
     /// The closure is kept and run when the differ describes the border.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
         node = Node(type: .border)

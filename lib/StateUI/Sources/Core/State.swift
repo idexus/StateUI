@@ -19,9 +19,9 @@
 // holds the lock across the three steps.
 //
 // Event handlers are closures written straight onto the node - see Node.swift.
-// The ids C# quotes back are assigned in Diff.swift, where an element's identity
-// is known, because an id has to belong to the element rather than to the tree
-// that happened to mention it.
+// The ids the host quotes back are assigned in Diff.swift, where an element's
+// identity is known, because an id has to belong to the element rather than to
+// the tree that happened to mention it.
 
 import Dispatch
 
@@ -732,7 +732,7 @@ extension State.Storage where Value: Walked {
             // An image the host has never been told the number of - made by
             // a hand-over the differ has not yet registered, in the same body
             // that now hands `$v` to a slider - is RESHAPED here rather than
-            // refused: nothing on the far side has a picture of it yet, and
+            // refused: the host has no picture of it yet, and
             // the two hand-overs are one state. An image a registration has
             // crossed keeps its shape and the slider is refused, the host
             // being about to write one lane into a journey.

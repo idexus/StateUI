@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: DatePicker.
-
 /// DatePicker's own properties - the half a `Style<DatePicker>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
@@ -10,7 +8,7 @@
 public protocol DatePickerProperties: PropertyContainer {}
 
 extension DatePickerProperties {
-    /// Whether the calendar is showing. MAUI: DatePicker.IsOpen.
+    /// Whether the calendar is showing.
     ///
     /// Settable, so a button elsewhere on the page can open it - and the
     /// platform closes it by itself, which is what `onClosed` is for.
@@ -18,7 +16,7 @@ extension DatePickerProperties {
         setValue(.isOpen, .bool(value))
     }
 
-    /// The day the field shows. MAUI: DatePicker.Date.
+    /// The day the field shows.
     ///
     /// Usually given in the initializer instead; this is the way to set it in a
     /// style, or on a picker built elsewhere.
@@ -27,13 +25,11 @@ extension DatePickerProperties {
     }
 
     /// The earliest day the calendar offers - everything before it is refused.
-    /// MAUI: DatePicker.MinimumDate.
     public func minimumDate(_ value: CalendarDate) -> Modified {
         setValue(.minimumDate, value.propValue)
     }
 
     /// The latest day the calendar offers - everything after it is refused.
-    /// MAUI: DatePicker.MaximumDate.
     ///
     ///     DatePicker($birthday)
     ///         .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
@@ -45,19 +41,19 @@ extension DatePickerProperties {
         setValue(.maximumDate, value.propValue)
     }
 
-    /// How the date is written in the field, as a .NET format string - "D" for
-    /// the long form, "d" for the short one, "dd MMM yyyy" for a pattern of
-    /// your own. MAUI: DatePicker.Format.
+    /// How the date is written in the field, as a format string - "D" for the
+    /// long form, "d" for the short one, "dd MMM yyyy" for a pattern of your
+    /// own.
     ///
-    /// The formatting happens on the C# side, where the calendar and the
-    /// reader's locale are - which is also why the month names come out in the
+    /// The host does the formatting, where the calendar and the reader's
+    /// locale are - which is also why the month names come out in the
     /// reader's language without anything being asked for.
     public func format(_ value: String) -> Modified {
         setValue(.format, .string(value))
     }
 }
 
-/// A day, chosen from the platform's own calendar. MAUI: DatePicker.
+/// A day, chosen from the platform's own calendar.
 ///
 ///     @State private var birthday = CalendarDate(year: 1990, month: 6, day: 1)
 ///     …
@@ -69,8 +65,8 @@ extension DatePickerProperties {
 /// Foundation's `Date`, which this library does not import; see that type for
 /// what it promises on each platform.
 ///
-/// `TextStyleElement` rather than `TextElement`: MAUI's DatePicker colours its
-/// text and spaces its letters but has no Text property, the field showing the
+/// `TextStyleElement` rather than `TextElement`: a DatePicker colours its text
+/// and spaces its letters but has no text of its own, the field showing the
 /// formatted date. So `.textColor` works here and `.text` does not exist.
 public struct DatePicker: View, TextStyleElement, FontElement, DatePickerProperties {
     /// The node this control describes.
@@ -126,7 +122,7 @@ public struct DatePicker: View, TextStyleElement, FontElement, DatePickerPropert
     // MARK: Events
 
     /// Fires when a date is chosen. Runs after a binding's write, if there is
-    /// one. MAUI: DatePicker.DateSelected.
+    /// one.
     public func onDateSelected(_ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
         addHandler(.dateSelected) {
             if let date = CalendarDate(EventBuffer.current.value()) {
@@ -135,11 +131,10 @@ public struct DatePicker: View, TextStyleElement, FontElement, DatePickerPropert
         }
     }
 
-    /// The calendar has opened. MAUI: DatePicker.Opened.
+    /// The calendar has opened.
     ///
-    /// THE TRAP: it answers the READER opening it and not `isOpen(true)`
-    /// - measured on Mac Catalyst, where the tree opening it really does open
-    /// the platform's own and raises nothing. An application that opens it
+    /// THE TRAP: it answers the READER opening it and not `isOpen(true)`:
+    /// the tree opening it opens the platform's own and raises nothing. An application that opens it
     /// from a button of its own already knows, so what this is for is the
     /// other direction.
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
@@ -147,7 +142,6 @@ public struct DatePicker: View, TextStyleElement, FontElement, DatePickerPropert
     }
 
     /// It has closed - by a choice, by a tap outside, or by the platform.
-    /// MAUI: DatePicker.Closed.
     public func onClosed(_ handler: @escaping EventHandler) -> Self {
         addHandler(.closed, handler)
     }

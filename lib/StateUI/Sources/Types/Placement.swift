@@ -11,7 +11,7 @@
 // here because they are the SAME fact - what a placement is - said once for
 // the author and once for the crossing.
 
-/// Where one view goes and how it is turned. This library's own.
+/// Where one view goes and how it is turned.
 ///
 /// What a `PlacedLayout`'s arithmetic answers. Every field but the rectangle
 /// has a default that means "as it was drawn", so a layout that only positions
@@ -19,7 +19,7 @@
 ///
 ///     Placement(Rect(x, 0, 120, 170), transform: .turn(40).scale(0.8), zIndex: 2)
 ///
-/// Each of them IS a MAUI property of the view being placed, written onto it -
+/// Each of them IS a property of the view being placed, written onto it -
 /// so a view inside a `PlacedLayout` is turned, scaled and faded from HERE
 /// rather than in the closure that builds it, which the placement would
 /// overwrite.
@@ -27,8 +27,8 @@
 /// EVERY ONE OF THEM MEANS THE SAME PICTURE ON EVERY PLATFORM, and that is
 /// what decides the list. A move, a turn in the plane of the screen and a
 /// change of size are the same arithmetic wherever they are drawn, about the
-/// view's own centre. A turn out of that plane is not: `RotationX` and
-/// `RotationY` are projected through a camera each platform chooses for itself
+/// view's own centre. A turn out of that plane is not: `.rotationX` and
+/// `.rotationY` are projected through a camera each platform chooses for itself
 /// - measured on one run of cards at the same angle, Apple turned them away
 /// while Android drew them tilted in the plane and moved as well - so they are
 /// not here. A card turned away is written as a `scaleX` of `cos(angle)`,
@@ -41,18 +41,16 @@
 /// instead, in the closure that builds it, where it is a constant.
 public struct Placement: StateValue {
     /// Where the view goes, in device units from the layout's own top left.
-    /// MAUI: AbsoluteLayout.LayoutBounds.
     public var bounds: Rect
 
     /// How it is moved, turned and sized from there, about its own centre.
     public var transform: ViewTransform
 
     /// How opaque, from 0 to 1 - which is one of the two ways the far cards of
-    /// a gallery are sent into the background. MAUI: VisualElement.Opacity.
+    /// a gallery are sent into the background.
     public var opacity: Double
 
     /// How dark, from 0 (as it is drawn) to 1 (gone), and the other way.
-    /// This library's own.
     ///
     /// It is the opacity of the SHADE - a view of the author's own, given to
     /// the layout by `.shade(_:)` and drawn over every placed view. A layout
@@ -68,7 +66,7 @@ public struct Placement: StateValue {
 
     /// Which views are drawn over which: a higher number is nearer the reader.
     /// It is the one part of a placement that does not travel, an order having
-    /// no half-way. MAUI: VisualElement.ZIndex.
+    /// no half-way.
     public var zIndex: Int
 
     /// A placement, and how the view is turned in it.
@@ -163,10 +161,10 @@ extension Placement {
     /// And back - the picture those numbers draw.
     ///
     /// A TURN AND A SIZING SURVIVE; A SHEAR DOES NOT. The five numbers are the
-    /// five MAUI properties a view wears, so what crosses is what the platform
-    /// can be told, and a transform is rebuilt to draw exactly that. A chain
-    /// that never turned comes back to the bit; one that did comes back to
-    /// whatever the arithmetic that turned it can be inverted to.
+    /// five transform properties a view wears, so what crosses is what the
+    /// platform can be told, and a transform is rebuilt to draw exactly that. A
+    /// chain that never turned comes back to the bit; one that did comes back
+    /// to whatever the arithmetic that turned it can be inverted to.
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == Placement.lanes else {
             return nil
@@ -189,8 +187,7 @@ extension Placement {
     public static var lanes: Int { PackedPlacement.fields }
 }
 
-/// Where every view of a run goes, and how THIS answer travels there. This
-/// library's own.
+/// Where every view of a run goes, and how THIS answer travels there.
 ///
 ///     @State private var run = PlacedRun()
 ///

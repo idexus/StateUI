@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// MAUI: Stepper.
+// A number changed one step at a time.
 
 /// Stepper's own properties - the half a `Style<Stepper>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
@@ -11,7 +11,6 @@ public protocol StepperProperties: PropertyContainer {}
 
 extension StepperProperties {
     /// The number it is showing, between `minimum` and `maximum`.
-    /// MAUI: Stepper.Value.
     ///
     /// `Stepper(1)` and `Stepper($count)` both say this from their argument, so
     /// a modifier written beside one wins - and a binding goes on being written
@@ -21,25 +20,25 @@ extension StepperProperties {
     }
 
     /// The lowest it goes - the minus button stops here.
-    /// MAUI: Stepper.Minimum, which is 0 until told otherwise.
+    /// It is 0 until told otherwise.
     public func minimum(_ value: Double) -> Modified {
         setValue(.minimum, .number(value))
     }
 
     /// The highest it goes - the plus button stops here.
-    /// MAUI: Stepper.Maximum, which is 100 until told otherwise.
+    /// It is 100 until told otherwise.
     public func maximum(_ value: Double) -> Modified {
         setValue(.maximum, .number(value))
     }
 
     /// How far one tap moves the value.
-    /// MAUI: Stepper.Increment, which is 1 until told otherwise.
+    /// It is 1 until told otherwise.
     public func increment(_ value: Double) -> Modified {
         setValue(.increment, .number(value))
     }
 }
 
-/// A number changed one step at a time, by two buttons. MAUI: Stepper.
+/// A number changed one step at a time, by two buttons.
 ///
 ///     Stepper($servings)
 ///         .minimum(1)
@@ -104,9 +103,8 @@ public struct Stepper: View, StepperProperties {
 
     // MARK: Events
 
-    /// Fires on every tap of either button, with the value stepped to - MAUI's
-    /// `ValueChangedEventArgs.NewValue`. Runs after a binding's write, if there
-    /// is one. MAUI: Stepper.ValueChanged.
+    /// Fires on every tap of either button, with the value stepped to. Runs
+    /// after a binding's write, if there is one.
     public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
         addHandler(.valueChanged) {
             // A payload that will not parse leaves the handler alone, the rule

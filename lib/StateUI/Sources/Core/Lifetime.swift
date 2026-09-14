@@ -9,8 +9,7 @@
 //
 // This library's own, and about the TREE rather than the platform: an element
 // is created by the first render that describes it, and is destroying in the
-// first render that no longer does. The two words are the ones MAUI gives a
-// window's own pair, `Created` and `Destroying`.
+// first render that no longer does.
 //
 // NOTHING ABOUT IT CROSSES THE BOUNDARY, and the handlers run once the walk is
 // done, as `.onChanged`'s do and for the same reason: a handler may write

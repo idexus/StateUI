@@ -16,7 +16,7 @@ final class FrameReaderTests: XCTestCase {
         var frames: [Rect] = []
     }
 
-    /// One report, as the C# side composes it: parent x, y, width, height,
+    /// One report, as a host composes it: parent x, y, width, height,
     /// then the origin in the window, then in the safe area.
     private let payload: [PropValue] = [.numbers([10, 20, 300, 400, 110, 220, 110, 176])]
 

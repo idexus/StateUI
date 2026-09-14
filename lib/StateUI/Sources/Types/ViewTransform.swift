@@ -16,7 +16,7 @@ import CRT
 #endif
 
 /// How a view is moved, turned and sized - ONE transform, about the view's own
-/// centre, happening in the ORDER it is written. This library's own.
+/// centre, happening in the ORDER it is written.
 ///
 /// It is the ONE transform in the library: a view wears it through
 /// `.transform(_:)`, applied about its centre after the layout has placed it,
@@ -34,13 +34,13 @@ import CRT
 /// the turn. The parts compose as a matrix, and the arithmetic is done HERE,
 /// on this side - the trigonometry the platform C library's, which every
 /// platform agrees on to more places than a screen can show - so a transform
-/// is the same picture on iOS, Android, Mac Catalyst, Windows and Linux.
+/// is the same picture on every host.
 ///
-/// What it comes to on the view is MAUI's own five, about the view's centre:
-/// `TranslationX`, `TranslationY`, `Rotation`, `ScaleX` and `ScaleY` - each an
+/// What it comes to on the view is five properties, about the view's centre:
+/// `translationX`, `translationY`, `rotation`, `scaleX` and `scaleY` - each an
 /// ordinary property, so a CHANGED transform travels like any other value,
-/// every part of it at once. `Scale` is left alone, so a `.scale(_:)` written
-/// on the view multiplies on top of this.
+/// every part of it at once. The view's `scale` is left alone, so a
+/// `.scale(_:)` written on the view multiplies on top of this.
 ///
 /// THE ONE LIMIT IS A SHEAR. Those five can say any move, any turn and any
 /// sizing of the turned view - but not a sizing along one axis of a view
@@ -54,8 +54,8 @@ public struct ViewTransform: Equatable, Sendable {
 
     // The transform is the matrix of what has been written so far -
     // x' = a·x + c·y + tx, y' = b·x + d·y + ty - and each part multiplies
-    // onto it. MAUI's five are read back OUT of it (below), which is where a
-    // shear falls away.
+    // onto it. The five view properties are read back OUT of it (below),
+    // which is where a shear falls away.
 
     /// What the across axis becomes: how much of it stays across.
     var a = 1.0
@@ -245,7 +245,7 @@ public struct ViewTransform: Equatable, Sendable {
 
     /// Leans the view over, in degrees - each vertical line leaning `x`
     /// degrees over, each horizontal line `y` degrees down - AFTER everything
-    /// written before it. MAUI: SkewTransform, on a geometry.
+    /// written before it.
     ///
     /// A GEOMETRY draws a lean whole (`.renderTransform(_:)`). The five VIEW
     /// properties cannot - the lean is exactly the slant the type's own note
@@ -281,17 +281,17 @@ public struct ViewTransform: Equatable, Sendable {
         return copy
     }
 
-    // MAUI's five, read back out of the matrix. The turn is the angle the
-    // ACROSS axis ended up at, the width is that axis's length, and the height
-    // is how far the down axis reaches from it - which keeps a mirror (a
-    // negative height) and drops a shear, there being no property to give one
-    // to.
+    // The five view properties, read back out of the matrix. The turn is the
+    // angle the ACROSS axis ended up at, the width is that axis's length, and
+    // the height is how far the down axis reaches from it - which keeps a
+    // mirror (a negative height) and drops a shear, there being no property to
+    // give one to.
 
     /// The transform those five read-outs describe: `x`, `y`, `rotation`,
     /// `width` and `height` run backwards.
     ///
-    /// What comes back from a boundary, which carries the five MAUI properties
-    /// a view wears and nothing else - an across axis of length `width` turned
+    /// What comes back from a boundary, which carries the five properties a
+    /// view wears and nothing else - an across axis of length `width` turned
     /// by `rotation`, a down axis of length `height` square to it, and the
     /// carry. A SHEAR DOES NOT SURVIVE, there being no property to give one
     /// to; a chain that never turned comes back to the bit.

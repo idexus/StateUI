@@ -8,10 +8,9 @@
 // parts rides as its parts. These guards are what keeps that true, because the
 // way it slips is one enum at a time, each with a good local reason.
 //
-// The other half of the pairing lives on the C# side, in WireEnumTests.cs:
-// this file says the SHAPE of a declaration is right, that one says the
-// NUMBERS mean the same thing to MAUI. Neither can be written on the other
-// side - only Swift can walk its own sources, and only C# can see MAUI.
+// This file says the SHAPE of a declaration is right. That its NUMBERS mean
+// the same member to a host is for each host to prove, since only a host can
+// see its toolkit's members.
 
 import XCTest
 
@@ -21,8 +20,8 @@ final class WireVocabularyTests: XCTestCase {
     /// No closed vocabulary may ride its spelling.
     ///
     /// `enum LineBreakMode: String` is what makes a binary wire spend four
-    /// bytes of length and fourteen of UTF-8 saying `tailTruncation`, and the
-    /// far side a string hash per property to read it back. There is no
+    /// bytes of length and fourteen of UTF-8 saying `tailTruncation`, and a
+    /// host a string comparison per property to read it back. There is no
     /// exemption list on purpose: nothing in this library needs a
     /// string-backed enum, and an enum that genuinely never crosses does not
     /// need a raw type at all.
@@ -43,7 +42,7 @@ final class WireVocabularyTests: XCTestCase {
         XCTAssertEqual(
             offenders, [],
             "a closed vocabulary must ride its NUMBER, not its spelling - "
-                + "declare it `: Int32` with MAUI's own values and write it "
+                + "declare it `: Int32` with stable numbers of its own and write it "
                 + "as `.enumeration(rawValue)`")
     }
 
@@ -51,8 +50,8 @@ final class WireVocabularyTests: XCTestCase {
     ///
     /// Swift numbers an `Int32` enum from 0 in declaration order when nobody
     /// says otherwise, so a case inserted in the middle renumbers every case
-    /// after it - silently, and only on this side. The far side goes on
-    /// casting the old numbers to the new members and the interface fills with
+    /// after it - silently, and only in Swift. A host goes on reading the
+    /// old numbers as the new members and the interface fills with
     /// values nobody wrote. Some values are not declaration order in the first
     /// place (`AbsoluteLayoutFlags.all` is -1), which is why the rule is that
     /// EVERY case says its own.
@@ -101,18 +100,17 @@ final class WireVocabularyTests: XCTestCase {
             offenders, [],
             "a case of an enum that crosses the wire must state its number - "
                 + "an implicit one moves when a case is inserted above it, and "
-                + "the far side is still casting the old numbers")
+                + "a host is still reading the old numbers")
     }
 
     /// A vocabulary that crosses is declared `: Int32`, never `: Int`.
     ///
-    /// `Int32` is what the wire's enumeration tag carries and what a C# enum
-    /// reads back as, so `: Int` needs a conversion at every use - but that is
-    /// the smaller half. The larger half is that every guard over these
-    /// declarations, here and in WireEnumTests.cs, finds a vocabulary by its
+    /// `Int32` is what the wire's enumeration tag carries, so `: Int` needs a
+    /// conversion at every use - but that is the smaller half. The larger half
+    /// is that every guard over these declarations finds a vocabulary by its
     /// RAW TYPE. One declared the other way is invisible to all of them at
-    /// once: no mirror is demanded, no numbers are compared, and it can ride
-    /// the wire as a plain `.number` with nothing to say so.
+    /// once: no number of it is checked, and it can ride the wire as a plain
+    /// `.number` with nothing to say so.
     func testEveryVocabularyThatCrossesIsDeclaredInt32() throws {
         var offenders: [String] = []
 

@@ -3,14 +3,11 @@
 
 // Everything an author can reach has something to say about itself.
 //
-// This library's whole premise is that somebody who knows MAUI should never have
-// to guess: the names are MAUI's, so the only thing left to supply is what each
-// one means and which MAUI property it stands for. That is a doc comment, and a
-// doc comment is the one part of a library nothing else fails without - which is
-// exactly why it needs a test rather than a habit.
-//
-// The C# side has the same rule enforced by the compiler: StateUI.Runtime sets
-// GenerateDocumentationFile and promotes CS1591 and CS1573 to errors.
+// An author should never have to guess what a name means: the doc comment on a
+// declaration is what an author sees while typing, and it is where this
+// library explains itself. A doc comment is the one part of a library nothing
+// else fails without - which is exactly why it needs a test rather than a
+// habit.
 //
 // A regex over source code is a poor way to know anything, and this is the
 // second place it earns its keep, for the reason Fixtures.propertyKeys does: it
@@ -47,10 +44,9 @@ final class DocumentationTests: XCTestCase {
 
             \(undocumented.joined(separator: "\n"))
 
-            Write a `///` above each - what it does, and the MAUI property it
-            stands for, the way its neighbours do. That comment is what an author
-            sees while typing, and it is the only place this library explains
-            itself.
+            Write a `///` above each - what it does, the way its neighbours do.
+            That comment is what an author sees while typing, and it is the
+            only place this library explains itself.
             """)
     }
 
@@ -154,8 +150,8 @@ final class DocumentationTests: XCTestCase {
     /// THE TOKEN VOCABULARIES ARE EXEMPT, by name and on purpose: a `NodeType`,
     /// a `Prop` and an `Event` are names and nothing else, so a comment on one
     /// could only restate it, and what the name MEANS is on the modifier an
-    /// author types. `Act` is NOT exempt - its name does not say which class
-    /// the MAUI method sits on, so that is the one thing it has to say - which
+    /// author types. `Act` is NOT exempt - its name alone does not say what the
+    /// host is asked to do, so that is the one thing it has to say - which
     /// is also what keeps this test reading real declarations rather than
     /// passing over an empty list.
     func testEveryMemberOfAPublicExtensionIsDocumented() throws {
@@ -198,7 +194,7 @@ final class DocumentationTests: XCTestCase {
             \(undocumented.joined(separator: "\n"))
 
             A member of a public extension is public without saying so. Write a \
-            `///` above each - what it does, and the MAUI name it stands for.
+            `///` above each - what it does.
             """)
     }
 
