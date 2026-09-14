@@ -1,6 +1,15 @@
 {
+  // SourceKit resolves imports through SwiftPM manifests, and this repository
+  // has several: the library at the root, the AppKit host, one per app.
   "swift.searchSubfoldersForPackages": true,
   "swift.autoGenerateLaunchConfigurations": false,
+
+  // EXCEPT THE TEMPLATE'S. lib/StateUI.Maui/Template/templates/StateUIStarter
+  // is a real application with a real Package.swift, and it is CONTENT here:
+  // `dotnet new` writes it out somewhere else. Found by the search above, the
+  // extension would resolve a second copy of the library for a package
+  // nothing in this workspace builds. Matched by directory BASENAME, and a
+  // value here REPLACES the defaults, so they are repeated.
   "swift.ignoreSearchingForPackagesInSubfolders": [
     ".",
     ".build",
@@ -8,11 +17,23 @@
     "out",
     "bazel-out",
     "bazel-bin",
-    "_old"
+    "_old",
+    "StateUIStarter"
   ],
   "swift.excludePathsFromActivation": {
-    "**/_old/**": true
+    "**/_old/**": true,
+    "**/Template/templates/**": true
   },
+
+  // WITHOUT THIS, "Launch app (Release)" BUILDS DEBUG: the MAUI extension
+  // replaces a launch's "configuration" with its own active one unless this
+  // says launch.json is to be believed. Window-scoped, so the repository can
+  // decide it.
+  "maui.configuration.useLaunchJsonConfigurations": true,
+
+  // The solution the C# extension and ".NET MAUI: Select Startup Project" read.
+  "dotnet.defaultSolution": "StateUI.slnx",
+
   "files.associations": {
     "*.swift": "swift"
   },

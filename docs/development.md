@@ -79,7 +79,7 @@ The AppKit host requires macOS 14 or newer and a Swift 6 toolchain from Xcode.
 Build the runnable Gallery bundle:
 
 ```bash
-.scripts/build-gallery-appkit.sh debug
+.scripts/AppKit/build-gallery-appkit.sh debug
 ```
 
 Build the smaller example:

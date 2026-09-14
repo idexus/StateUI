@@ -310,6 +310,29 @@ enum Fixtures {
             .deletingLastPathComponent()    // the repository
     }
 
+    /// Every C# source of the MAUI host, `lib/StateUI.Maui/Sources`, for the
+    /// guards that read both languages - a name leaves Swift as a token and
+    /// arrives there as a lookup, so only a reader of both can hold the two
+    /// together.
+    static func mauiSources() throws -> [(path: String, text: String)] {
+        let root = repository.appendingPathComponent("lib/StateUI.Maui/Sources")
+        var found: [(path: String, text: String)] = []
+
+        guard let walk = FileManager.default.enumerator(atPath: root.path) else { return [] }
+
+        for case let name as String in walk where name.hasSuffix(".cs") {
+            // obj/ holds generated copies, and on a machine that has built for
+            // four platforms four stale copies of everything besides.
+            let path = name.replacingOccurrences(of: "\\", with: "/")
+            if path.hasPrefix("obj/") || path.hasPrefix("bin/") { continue }
+
+            let text = try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)
+            found.append((path: path, text: text))
+        }
+
+        return found.sorted { $0.path < $1.path }
+    }
+
     static var updating: Bool {
         ProcessInfo.processInfo.environment["STATEUI_UPDATE_FIXTURES"] == "1"
     }

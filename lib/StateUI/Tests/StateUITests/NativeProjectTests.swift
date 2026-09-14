@@ -5,10 +5,19 @@ import Foundation
 import XCTest
 
 final class NativeProjectTests: XCTestCase {
-    func testEveryApplicationSeparatesSharedSourcesFromItsAppKitEntryPoint() throws {
+    /// Every application is one Swift package shared by one head per host: the
+    /// AppKit executable in `Platforms/AppKit` and the MAUI project in
+    /// `Platforms/Maui`, both compiling the same `Sources/`.
+    func testEveryApplicationSharesItsSourcesBetweenItsHostHeads() throws {
         for name in ["Gallery", "HelloWorld"] {
             let app = Fixtures.repository.appendingPathComponent("apps/\(name)")
-            for relative in ["Package.swift", "Sources", "Platforms/AppKit/main.swift", "Resources"] {
+            for relative in [
+                "Package.swift", "Sources", "Resources", "Platforms/AppKit/main.swift",
+                "Platforms/Maui/\(name).csproj", "Platforms/Maui/Host/App.cs",
+                "Platforms/Maui/Host/MauiProgram.cs", "Platforms/Maui/Android/MainActivity.cs",
+                "Platforms/Maui/iOS/AppDelegate.cs", "Platforms/Maui/MacCatalyst/AppDelegate.cs",
+                "Platforms/Maui/Windows/App.xaml.cs", "Platforms/Maui/Linux/Program.cs",
+            ] {
                 XCTAssertTrue(
                     FileManager.default.fileExists(
                         atPath: app.appendingPathComponent(relative).path),
@@ -27,64 +36,157 @@ final class NativeProjectTests: XCTestCase {
                 encoding: .utf8)
             XCTAssertTrue(entry.contains("import StateUIAppKit"))
             XCTAssertTrue(entry.contains("StateUIAppKit.run("))
+
+            // The MAUI head compiles the same module: StateUI.targets names it
+            // after the project - Gallery becomes GalleryUI - and finds it in
+            // the application's Sources/, two directories up.
+            let project = try String(
+                contentsOf: app.appendingPathComponent("Platforms/Maui/\(name).csproj"),
+                encoding: .utf8)
+            XCTAssertTrue(project.contains(
+                "<Import Project=\"../../../../.scripts/Maui/StateUI.targets\" />"))
+            XCTAssertTrue(project.contains(
+                "../../../../lib/StateUI.Maui/Sources/StateUI.Maui.csproj"))
+            XCTAssertTrue(project.contains("<AndroidProjectFolder>Android/</AndroidProjectFolder>"))
+
+            let registration = try String(
+                contentsOf: app.appendingPathComponent("Sources/\(name)App.swift"),
+                encoding: .utf8)
+            XCTAssertTrue(
+                registration.contains("@_cdecl(\"stateui_app_register\")"),
+                "\(name)'s module does not register the application for the MAUI head")
         }
     }
 
-    func testTheCompatibilityImplementationExistsOnlyInTheArchive() {
-        let pairs = [
-            ("StateUI.slnx", "_old/StateUI.slnx"),
-            ("lib/StateUI.Runtime/StateUI.Runtime.csproj", "_old/src/StateUI.Runtime/StateUI.Runtime.csproj"),
-            ("lib/Tests/StateUIRuntime.Tests/StateUIRuntime.Tests.csproj", "_old/src/Tests/StateUIRuntime.Tests/StateUIRuntime.Tests.csproj"),
-            ("apps/Gallery/Gallery.csproj", "_old/apps/Gallery/Gallery.csproj"),
-            ("apps/HelloWorld/HelloWorld.csproj", "_old/apps/HelloWorld/HelloWorld.csproj"),
-        ]
-
-        for (active, archived) in pairs {
-            XCTAssertFalse(FileManager.default.fileExists(
-                atPath: Fixtures.repository.appendingPathComponent(active).path))
-            XCTAssertTrue(FileManager.default.fileExists(
-                atPath: Fixtures.repository.appendingPathComponent(archived).path))
-        }
-    }
-
-    /// The former toolkit stays in the archive.
-    ///
-    /// A sample, a comment or a document that names it describes StateUI
-    /// through something StateUI is not. The word is assembled here so this
-    /// guard does not find itself. Allowed to hold it: the guard that keeps it
-    /// out of the editor configuration, and the working agreement - ignored by
-    /// git - which tells an agent what the archive is so that it leaves it
-    /// alone.
-    func testNothingOutsideTheArchiveNamesTheFormerToolkit() throws {
-        let word = "ma" + "ui"
+    /// The MAUI host is a host package beside AppKit's: its runtime, its Linux
+    /// platform, its tests and its template, named by one solution, and built
+    /// by the scripts under `.scripts/Maui`.
+    func testTheMauiHostIsAHostPackageBesideAppKit() throws {
         let repository = Fixtures.repository
-        let scratch: Set<String> = ["_old", ".build", ".git", ".swiftpm", "obj", "bin"]
-        let allowed: Set<String> = [
-            "lib/StateUI/Tests/StateUITests/NativeConfigurationTests.swift",
-            "AGENTS.md", "CLAUDE.md",
-        ]
-        let enumerator = try XCTUnwrap(FileManager.default.enumerator(
-            at: repository, includingPropertiesForKeys: [.isDirectoryKey]))
+        for relative in [
+            "lib/StateUI.AppKit/Package.swift",
+            "lib/StateUI.Maui/Sources/StateUI.Maui.csproj",
+            "lib/StateUI.Maui/Linux/StateUI.Maui.Linux.csproj",
+            "lib/StateUI.Maui/Tests/StateUI.Maui.Tests.csproj",
+            "lib/StateUI.Maui/Template/StateUI.Maui.Template.csproj",
+            ".scripts/Maui/StateUI.targets",
+            ".scripts/Maui/build-apple.sh",
+            ".scripts/Maui/build-android.sh",
+            ".scripts/Maui/build-linux.sh",
+            ".scripts/Maui/build-windows.ps1",
+            ".scripts/AppKit/build-gallery-appkit.sh",
+        ] {
+            XCTAssertTrue(
+                FileManager.default.fileExists(
+                    atPath: repository.appendingPathComponent(relative).path),
+                "missing \(relative)")
+        }
+
+        let solution = try String(
+            contentsOf: repository.appendingPathComponent("StateUI.slnx"), encoding: .utf8)
+        let projects = solution.components(separatedBy: "<Project Path=\"").dropFirst()
+            .compactMap { $0.components(separatedBy: "\"").first }
+
+        XCTAssertEqual(Set(projects), [
+            "apps/Gallery/Platforms/Maui/Gallery.csproj",
+            "apps/HelloWorld/Platforms/Maui/HelloWorld.csproj",
+            "lib/StateUI.Maui/Sources/StateUI.Maui.csproj",
+            "lib/StateUI.Maui/Linux/StateUI.Maui.Linux.csproj",
+            "lib/StateUI.Maui/Tests/StateUI.Maui.Tests.csproj",
+            "lib/StateUI.Maui/Template/StateUI.Maui.Template.csproj",
+        ])
+    }
+
+    /// The code every host runs names no host. Swift written for the MAUI host
+    /// alone stands under `#if MAUI` - the condition every MAUI build defines,
+    /// see `testEveryMauiSwiftBuildDefinesTheMauiCondition` - and such a block,
+    /// up to its `#else` or `#endif`, is the one place the library and each
+    /// application's `Sources/` may name it.
+    ///
+    /// The word is assembled here so this guard does not find itself.
+    func testTheSharedSourcesNameTheMauiHostOnlyUnderItsCondition() throws {
+        let word = "ma" + "ui"
+        let condition = "#if " + word.uppercased()
+        let repository = Fixtures.repository
+        var roots = [repository.appendingPathComponent("lib/StateUI/Sources")]
+        let apps = try FileManager.default.contentsOfDirectory(
+            at: repository.appendingPathComponent("apps"), includingPropertiesForKeys: nil)
+        roots += apps.map { $0.appendingPathComponent("Sources") }
+
         var offenders: [String] = []
+        for root in roots {
+            guard let walk = FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)
+            else { continue }
 
-        for case let url as URL in enumerator {
-            if scratch.contains(url.lastPathComponent) {
-                enumerator.skipDescendants()
-                continue
-            }
+            for case let file as URL in walk where file.pathExtension == "swift" {
+                let text = try String(contentsOf: file, encoding: .utf8)
+                // Zero outside the condition's block, one directly inside it,
+                // more inside a block nested in it.
+                var depth = 0
+                for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false)
+                    .enumerated() {
+                    let directive = line.trimmingCharacters(in: .whitespaces)
+                    if depth > 0 {
+                        if directive.hasPrefix("#if") {
+                            depth += 1
+                        } else if directive.hasPrefix("#endif") {
+                            depth -= 1
+                        } else if depth == 1 && directive.hasPrefix("#else") {
+                            // What follows is compiled for every other host.
+                            depth = 0
+                        }
+                        continue
+                    }
 
-            let relative = String(url.path.dropFirst(repository.path.count + 1))
-            guard !allowed.contains(relative),
-                  (try? url.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) != true,
-                  let text = try? String(contentsOf: url, encoding: .utf8) else { continue }
-
-            for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false).enumerated()
-            where line.lowercased().contains(word) {
-                offenders.append("\(relative):\(number + 1)")
+                    if directive == condition {
+                        depth = 1
+                    } else if line.lowercased().contains(word) {
+                        let relative = String(file.path.dropFirst(repository.path.count + 1))
+                        offenders.append("\(relative):\(number + 1)")
+                    }
+                }
             }
         }
 
-        XCTAssertEqual(offenders, [], "these name the former toolkit outside _old/")
+        XCTAssertEqual(offenders, [], "these name a host in code every host runs")
+    }
+
+    /// Every Swift module the MAUI host compiles is compiled with the MAUI
+    /// condition - the library and the application alike, on every platform -
+    /// so no block under `#if MAUI` is left out of one of its builds.
+    func testEveryMauiSwiftBuildDefinesTheMauiCondition() throws {
+        let scripts = Fixtures.repository.appendingPathComponent(".scripts/Maui")
+
+        // Each command of a script on one line: a shell line continued with a
+        // backslash, and a PowerShell one with a backtick, joined back up.
+        func commands(_ name: String) throws -> [String] {
+            try String(contentsOf: scripts.appendingPathComponent(name), encoding: .utf8)
+                .replacingOccurrences(of: "\\\n", with: " ")
+                .replacingOccurrences(of: "`\n", with: " ")
+                .components(separatedBy: "\n")
+        }
+
+        // SwiftPM compiles the library and the application in one build.
+        for name in ["build-android.sh", "build-linux.sh"] {
+            let builds = try commands(name).filter { $0.contains("\"$SWIFT_BIN\" build") }
+            XCTAssertFalse(builds.isEmpty, "\(name) runs no swift build")
+            for build in builds {
+                XCTAssertTrue(build.contains("-Xswiftc -DMAUI"), "\(name) builds without MAUI: \(build)")
+            }
+        }
+
+        // swiftc compiles each module with one set of arguments.
+        let apple = try String(
+            contentsOf: scripts.appendingPathComponent("build-apple.sh"), encoding: .utf8)
+        let compileArgs = apple.components(separatedBy: "COMPILE_ARGS=(").dropFirst().first?
+            .components(separatedBy: "\n)").first ?? ""
+        XCTAssertTrue(compileArgs.contains("-D MAUI"), "build-apple.sh compiles without MAUI")
+        XCTAssertTrue(apple.contains("swiftc \"${COMPILE_ARGS[@]}\""))
+
+        let windows = try commands("build-windows.ps1")
+            .filter { $0.contains("& swiftc") && $0.contains(" -c ") }
+        XCTAssertEqual(windows.count, 1, "build-windows.ps1 has one compile step")
+        XCTAssertTrue(windows.allSatisfy { $0.contains("-D MAUI") }, "build-windows.ps1 compiles without MAUI")
     }
 
     func testGalleryOwnsItsAcceptanceTests() {

@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="apps/Gallery/Platforms/Maui/Gallery.csproj" />
+  <Project Path="apps/HelloWorld/Platforms/Maui/HelloWorld.csproj" />
+  <Project Path="lib/StateUI.Maui/Sources/StateUI.Maui.csproj" />
+  <Project Path="lib/StateUI.Maui/Linux/StateUI.Maui.Linux.csproj" />
+  <Project Path="lib/StateUI.Maui/Tests/StateUI.Maui.Tests.csproj" />
+  <Project Path="lib/StateUI.Maui/Template/StateUI.Maui.Template.csproj" />
+</Solution>

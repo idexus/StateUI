@@ -5,7 +5,7 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-repository_dir="$(cd "$script_dir/.." && pwd)"
+repository_dir="$(cd "$script_dir/../.." && pwd)"
 gallery_dir="$repository_dir/apps/Gallery"
 configuration="${1:-debug}"
 product="GalleryAppKit"

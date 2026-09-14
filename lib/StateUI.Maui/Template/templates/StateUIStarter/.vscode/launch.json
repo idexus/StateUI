@@ -1,0 +1,200 @@
+{
+  // Debugging this application, one host at a time.
+  //
+  // WHICH CONFIGURATION TO USE:
+  //
+//#if (AppKit)
+  //   macOS, AppKit host                -> "Debug app (AppKit)"
+//#endif
+  //   MAUI, any platform, C# only       -> "Debug app (C#)"
+  //   MAUI, any platform, Release build -> "Launch app (Release)"
+  //   MAUI, iOS Simulator, Swift        -> "Debug app (Swift)"
+  //   MAUI, Windows, Swift              -> "Debug app (Swift)"
+  //   MAUI, Mac Catalyst, C# + Swift    -> "Debug app (C# + Swift, Mac Catalyst)"
+  //   MAUI, Linux                       -> "Debug app (Linux)", "Debug app (Swift, Linux)",
+  //                                        "Launch app (Release, Linux)"
+  //
+//#if (AppKit)
+  // The AppKit launches build Platforms/AppKit with SwiftPM and start it from
+  // the application's root, which is where it reads Resources/ from.
+  //
+//#endif
+  // The MAUI launches follow the pickers: the status bar says which simulator,
+  // emulator or device, and .scripts/Maui/StateUI.targets compiles Sources/ for
+  // that platform as part of building Platforms/Maui/StateUIStarter.csproj.
+  //
+  // Swift debugging needs the process to be reachable by LLDB ON THIS MACHINE:
+  // Mac Catalyst, the iOS Simulator, Windows and Linux qualify. A physical
+  // device or an Android emulator does not - that would need lldb-server there
+  // and a port forward.
+  //
+  // LINUX HAS LAUNCHES OF ITS OWN. The "maui" type is the MAUI extension's,
+  // which wants a workload, a device picker and a platform head; the Linux head
+  // is a plain net10.0 executable, so its C# launches are ordinary coreclr
+  // ones, and its Swift launch LAUNCHES rather than attaches because Ubuntu
+  // and Debian ship `kernel.yama.ptrace_scope = 1`.
+  //
+  // THE PICKER'S ORDER IS `presentation.order`, not the order in this file.
+  "version": "0.2.0",
+  "configurations": [
+//#if (AppKit)
+    {
+      "name": "Debug app (AppKit)",
+      "type": "lldb-dap",
+      "request": "launch",
+      "preLaunchTask": "Build app (AppKit, Debug)",
+      "program": "${workspaceFolder}/.build/debug/StateUIStarterAppKit",
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false,
+      "presentation": { "group": "1 AppKit", "order": 1 }
+    },
+    {
+      "name": "Release app (AppKit)",
+      "type": "lldb-dap",
+      "request": "launch",
+      "preLaunchTask": "Build app (AppKit, Release)",
+      "program": "${workspaceFolder}/.build/release/StateUIStarterAppKit",
+      "cwd": "${workspaceFolder}",
+      "stopOnEntry": false,
+      "presentation": { "group": "1 AppKit", "order": 2 }
+    },
+//#endif
+    {
+      // Every MAUI platform and every device, and it NAMES NO PROJECT - which
+      // is what makes it follow the pickers. "type": "maui", not "dotnet": the
+      // C# type requires a projectPath and would pin the launch to it however
+      // the pickers are set.
+      //
+      // Cannot step into Swift - that is what the compound below adds.
+      "name": "Debug app (C#)",
+      "type": "maui",
+      "request": "launch",
+      "presentation": { "group": "2 MAUI", "order": 1 }
+    },
+    {
+      // The same launch against the RELEASE build, Swift compiled with -O by
+      // the same targets. For seeing what would ship, not for breakpoints.
+      //
+      // "configuration" is read only while
+      // "maui.configuration.useLaunchJsonConfigurations" is on, which
+      // settings.json does; otherwise the extension builds Debug.
+      //
+      // ON WINDOWS THE PROGRAM IS SPELLED OUT: the extension works out the
+      // build and the executable in two places and only the first reads the
+      // configuration, so without it a Release build is looked for in
+      // bin/Debug. The path carries no architecture because the project sets
+      // AppendRuntimeIdentifierToOutputPath to false for Windows.
+      "name": "Launch app (Release)",
+      "type": "maui",
+      "request": "launch",
+      "configuration": "Release",
+      "windows": {
+        "program": "${workspaceFolder}/Platforms/Maui/bin/Release/net10.0-windows10.0.19041.0/StateUIStarter.exe"
+      },
+      "presentation": { "group": "2 MAUI", "order": 2 }
+    },
+    {
+      // RECOMMENDED FOR THE iOS SIMULATOR. The preLaunchTask builds the app,
+      // launches it WITHOUT a debugger and waits for the process; this session
+      // then attaches. A stopped app is killed by the simulator's watchdog, and
+      // a C# debugger starting at the same moment makes that near-certain.
+      // The app is stopped when this connects - press Continue.
+      "name": "Debug app (Swift)",
+      "type": "lldb-dap",
+      "request": "attach",
+      "stopOnEntry": false,
+      "preLaunchTask": "Run app (no debugger)",
+      "attachCommands": [
+        "process attach --name StateUIStarter"
+      ],
+      // LLDB on Windows matches a process name WITH its extension.
+      "windows": {
+        "attachCommands": [
+          "process attach --name StateUIStarter.exe"
+        ]
+      },
+      "presentation": { "group": "2 MAUI", "order": 3 }
+    },
+    {
+      // The Swift side, attaching to an app the C# session started - the
+      // second half of the Mac Catalyst compound. By NAME, because a compound
+      // has no PID to pass between sessions. No --continue: lldb-dap expects
+      // the process STOPPED when attachCommands finish.
+      "name": "Attach Swift debugger",
+      "type": "lldb-dap",
+      "request": "attach",
+      "stopOnEntry": false,
+      "preLaunchTask": "Wait for app startup",
+      "attachCommands": [
+        "process attach --name StateUIStarter"
+      ],
+      "windows": {
+        "attachCommands": [
+          "process attach --name StateUIStarter.exe"
+        ]
+      },
+      "presentation": { "group": "2 MAUI", "order": 5 }
+    },
+    {
+      // LINUX'S F5, the C# side: a plain net10.0 executable, so an ordinary
+      // coreclr launch. cwd is the output directory, where the Swift runtime
+      // and the artwork sit beside the executable.
+      "name": "Debug app (Linux)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build app (Linux)",
+      "program": "${workspaceFolder}/Platforms/Maui/bin/Debug/net10.0/StateUIStarter",
+      "args": [],
+      "cwd": "${workspaceFolder}/Platforms/Maui/bin/Debug/net10.0",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "presentation": { "group": "2 MAUI", "order": 6 }
+    },
+    {
+      // Linux's Release run, both halves optimized - its own entry because no
+      // extension reads a "configuration" field here.
+      "name": "Launch app (Release, Linux)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build app (Release, Linux)",
+      "program": "${workspaceFolder}/Platforms/Maui/bin/Release/net10.0/StateUIStarter",
+      "args": [],
+      "cwd": "${workspaceFolder}/Platforms/Maui/bin/Release/net10.0",
+      "console": "internalConsole",
+      "stopAtEntry": false,
+      "presentation": { "group": "2 MAUI", "order": 7 }
+    },
+    {
+      // The Swift side on Linux LAUNCHES: Yama permits ptrace only from a
+      // process's own ancestor, and launching makes lldb the app's parent.
+      // One debugger - C# breakpoints do not bind in this session.
+      "name": "Debug app (Swift, Linux)",
+      "type": "lldb-dap",
+      "request": "launch",
+      "preLaunchTask": "Build app (Linux)",
+      "program": "${workspaceFolder}/Platforms/Maui/bin/Debug/net10.0/StateUIStarter",
+      "cwd": "${workspaceFolder}/Platforms/Maui/bin/Debug/net10.0",
+      "stopOnEntry": false,
+      "presentation": { "group": "2 MAUI", "order": 8 }
+    }
+  ],
+  "compounds": [
+    {
+      // Both debuggers against one MAUI process: C# starts the app, Swift
+      // attaches. The ORDER matters - macOS gives execution control to one
+      // debugger at a time, so the second to arrive can attach and never stop.
+      // The sessions stay separate: F11 in C# does not step into Swift.
+      //
+      // MAC CATALYST. Not Windows, which allows a process one native debugger;
+      // not the iOS Simulator, whose watchdog kills an app stopped by the
+      // attach - "Debug app (Swift)" is the answer there.
+      "name": "Debug app (C# + Swift, Mac Catalyst)",
+      "configurations": [
+        "Debug app (C#)",
+        "Attach Swift debugger"
+      ],
+      "stopAll": true,
+      "presentation": { "group": "2 MAUI", "order": 4 }
+    }
+  ]
+}

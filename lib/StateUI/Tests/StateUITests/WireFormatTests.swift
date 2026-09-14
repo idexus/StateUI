@@ -130,6 +130,111 @@ final class WireFormatTests: XCTestCase {
         XCTAssertEqual(wrong, [])
     }
 
+    /// Every name the Swift side can send is a member on the MAUI host's side,
+    /// spelled the same.
+    ///
+    /// The one guard that reads both languages, and the only thing that can:
+    /// a name leaves here as a token and arrives there as a lookup, so a name
+    /// with no member on the far side is not a compile error anywhere - it is
+    /// a property that quietly does nothing, or an act that answers "unknown
+    /// command" to a handler that was awaiting it. The host maps a name to a
+    /// member by camelCasing the member, capitalizing it for a node type.
+    func testEveryTokenHasAMemberOnTheOtherSide() throws {
+        let vocabularies = [
+            ("NodeType", "Protocol/SwiftNodeType.cs"),
+            ("Prop", "Protocol/SwiftProp.cs"),
+            ("Event", "Protocol/SwiftEvent.cs"),
+            ("Act", "Protocol/SwiftAct.cs"),
+        ]
+
+        let host = try Fixtures.mauiSources()
+        var missing: [String] = []
+        var checked = 0
+
+        for (vocabulary, file) in vocabularies {
+            let declared = try tokens().filter { $0.vocabulary == vocabulary }.map(\.member)
+            XCTAssertFalse(declared.isEmpty, "no \(vocabulary) was read from Core/Tokens.swift")
+
+            guard let enumeration = host.first(where: { $0.path.hasSuffix(file) })?.text else {
+                XCTFail("\(file) was not found in the MAUI host")
+                continue
+            }
+
+            // A member is a line of the shape `Focus = 16,`. Reading the
+            // ASSIGNMENT is what keeps a `<summary>` naming a method from
+            // counting as a declaration.
+            let members = Set(
+                enumeration.split(separator: "\n")
+                    .map { $0.trimmed }
+                    .filter { $0.contains(" = ") && $0.hasSuffix(",") }
+                    .compactMap { $0.split(separator: " ").first.map(String.init) })
+
+            checked += declared.count
+            missing += declared
+                .filter { !members.contains($0.capitalizedFirst) }
+                .map { "\(vocabulary).\($0)" }
+        }
+
+        XCTAssertGreaterThan(checked, 300, "the scan read almost nothing")
+        XCTAssertEqual(missing, [], "declared in Core/Tokens.swift with no member in the MAUI host")
+    }
+
+    /// Every act the MAUI host has a MEMBER for also has an ARM in `Perform`.
+    /// A member with no arm falls to the application's registry and then
+    /// answers "unknown command" to a handler awaiting a name the LIBRARY
+    /// ships, and nothing in either language failed to compile.
+    func testEveryActMemberHasAnArmInPerform() throws {
+        let host = try Fixtures.mauiSources()
+
+        guard let enumeration = host.first(where: { $0.path.hasSuffix("Protocol/SwiftAct.cs") })?.text,
+              let session = host.first(where: { $0.path.hasSuffix("Rendering/StateUISession.cs") })?.text
+        else {
+            return XCTFail("SwiftAct.cs or StateUISession.cs was not found in the MAUI host")
+        }
+
+        let members = enumeration.split(separator: "\n")
+            .map { $0.trimmed }
+            .filter { $0.contains(" = ") && $0.hasSuffix(",") }
+            .compactMap { $0.split(separator: " ").first.map(String.init) }
+            .filter { $0 != "None" }
+
+        XCTAssertGreaterThan(members.count, 10, "too few members to be reading the right file")
+        XCTAssertEqual(
+            members.filter { !session.contains("case SwiftAct.\($0):") }, [],
+            "members of SwiftAct with no `case` in StateUISession.Perform")
+    }
+
+    /// A placement crosses as a RUN OF DOUBLES with no field markers on it -
+    /// the host reads it by stride - so the two sides' idea of how many
+    /// numbers a view takes is the whole of that contract. The shade's absence
+    /// is the one number an opacity cannot be, so the host's threshold sits
+    /// strictly between what this side writes for "no shade" and the nought a
+    /// view wearing none of one answers.
+    func testThePlacementStrideIsTheSameOnBothSides() throws {
+        guard let channels = try Fixtures.mauiSources()
+            .first(where: { $0.path.hasSuffix("Rendering/MotionTargets.cs") })?.text
+        else {
+            return XCTFail("MotionTargets.cs was not found in the MAUI host")
+        }
+
+        func number(_ declaration: String) -> Double? {
+            guard let line = channels.split(separator: "\n").map({ $0.trimmed })
+                .first(where: { $0.hasPrefix(declaration) })
+            else { return nil }
+
+            return Double(line.drop(while: { $0 != "=" }).dropFirst()
+                .prefix(while: { $0 != ";" }).trimmed)
+        }
+
+        XCTAssertEqual(number("internal const int Fields"), Double(PackedPlacement.fields))
+
+        let threshold = try XCTUnwrap(
+            number("internal const double Unshaded"), "MotionTargets.cs names no shade threshold")
+
+        XCTAssertGreaterThan(threshold, PackedPlacement.unshaded)
+        XCTAssertLessThan(threshold, 0)
+    }
+
     private func tokens() throws -> [(vocabulary: String, member: String, spelling: String)] {
         let text = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),

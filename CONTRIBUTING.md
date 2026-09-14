@@ -65,7 +65,7 @@ swift test --package-path apps/Gallery
 Build the native Gallery bundle:
 
 ```bash
-.scripts/build-gallery-appkit.sh debug
+.scripts/AppKit/build-gallery-appkit.sh debug
 ```
 
 Run one application build at a time. Concurrent application builds share Swift

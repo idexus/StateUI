@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Paweł Krzywdziński",
+  "classifications": [ "MAUI", "Swift", "Android", "iOS", "macOS", "Windows", "Linux" ],
+  "identity": "StateUI.Maui.App.CSharp",
+  "name": "StateUI MAUI App",
+  "description": "An application whose user interface is written in Swift: one page, a counter, a MAUI head for every MAUI platform and, with --appkit, a native macOS head beside it.",
+  "shortName": "stateui-maui",
+  "defaultName": "StateUIApp",
+  "preferNameDirectory": true,
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+
+  "//sourceName": [
+    "Every occurrence of StateUIStarter becomes the name given to -n, in file",
+    "names as well as in the files themselves. The token is deliberately not",
+    "'StateUIApp': .scripts/Maui/StateUI.targets is full of $(StateUIApp...)",
+    "properties, and they are the build's own, not this application's."
+  ],
+  "sourceName": "StateUIStarter",
+
+  "symbols": {
+    "//applicationId": [
+      "The bundle identifier is lower case on every platform, so the name has to",
+      "arrive here in that form as well - com.example.stateuistarter becomes",
+      "com.example.mynewapp."
+    ],
+    "applicationId": {
+      "type": "derived",
+      "valueSource": "name",
+      "valueTransform": "lowerCaseInvariant",
+      "replaces": "stateuistarter"
+    },
+    "StateUIPath": {
+      "type": "parameter",
+      "datatype": "text",
+      "defaultValue": "",
+      "replaces": "STATEUI_CHECKOUT",
+      "description": "An absolute path to a StateUI checkout to build against instead of the published packages - both halves, Swift and C#. Required for --appkit."
+    },
+    "AppKit": {
+      "type": "parameter",
+      "datatype": "bool",
+      "defaultValue": "false",
+      "description": "Adds a native macOS head, Platforms/AppKit, beside the MAUI one. The AppKit host comes from a StateUI checkout, so this needs --stateui-path."
+    },
+    "UseCheckout": {
+      "type": "computed",
+      "value": "(StateUIPath != \"\")"
+    }
+  },
+
+  "SpecialCustomOperations": {
+    "**/*.swift": {
+      "operations": [
+        {
+          "type": "conditional",
+          "configuration": {
+            "style": "line",
+            "token": "//"
+          }
+        }
+      ]
+    }
+  },
+
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "//": "Build products, in case the template was ever built in place.",
+          "exclude": [
+            "**/bin/**",
+            "**/obj/**",
+            "**/.build/**",
+            "**/.vs/**",
+            "**/*.user",
+            "**/.DS_Store"
+          ]
+        },
+        {
+          "//": "The AppKit head, only when asked for.",
+          "condition": "(!AppKit)",
+          "exclude": [ "Platforms/AppKit/**" ]
+        },
+        {
+          "//": [
+            "THE BUILD SCRIPTS ARE COPIED BYTE FOR BYTE. The templating engine",
+            "EVALUATES MSBuild Condition attributes in the files it writes: measured",
+            "on StateUI.targets, it took the <Error> guards that say a Swift build",
+            "produced no native library with it. Nothing under .scripts/ carries the",
+            "application's name, so there is nothing to replace there."
+          ],
+          "copyOnly": [ ".scripts/**" ]
+        }
+      ]
+    }
+  ]
+}

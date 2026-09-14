@@ -63,7 +63,7 @@ Public API declarations provide the focused reference beside the code.
 Build the native Gallery application:
 
 ```bash
-.scripts/build-gallery-appkit.sh debug
+.scripts/AppKit/build-gallery-appkit.sh debug
 ```
 
 Run every active suite:

@@ -19,6 +19,12 @@ artifacts/
 # The archive contains sources only; generated state remains ignored anywhere.
 /_old/**/Package.resolved
 
+# The template ships the SAME build scripts the apps here use, copied in as
+# StateUI.Maui.Template builds. Ignored rather than committed so the copy cannot
+# go stale against .scripts/Maui/, which is the original.
+/lib/StateUI.Maui/Template/templates/*/.scripts/
+/lib/StateUI.Maui/Template/templates/*/Package.resolved
+
 CLAUDE.md
 CLAUDE.md.lnk
 AGENTS.md

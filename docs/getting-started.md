@@ -25,7 +25,7 @@ swift build --package-path apps/HelloWorld --product HelloWorldAppKit
 Build the signed Gallery bundle with its resources and icon:
 
 ```bash
-.scripts/build-gallery-appkit.sh debug
+.scripts/AppKit/build-gallery-appkit.sh debug
 ```
 
 VS Code also exposes Debug and Release F5 configurations for both

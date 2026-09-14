@@ -1,4 +1,14 @@
 {
+  // Tests, builds and cleans for both hosts.
+  //
+  // The MAUI tasks are for manual use as well as for the launches: "Debug app
+  // (C#)" builds through the MAUI extension, which respects the device picker,
+  // and the Swift side is compiled for that platform as part of the build by
+  // .scripts/Maui/StateUI.targets.
+  //
+  // -nodeReuse:false on every dotnet build: MSBuild's workers outlive the build
+  // and hold the task terminal's handles, so a task used before a debug session
+  // would never report that it finished.
   "version": "2.0.0",
   "tasks": [
     {
@@ -20,6 +30,15 @@
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
+      "label": "Test StateUI.Maui",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["test", "${workspaceFolder}/lib/StateUI.Maui/Tests"],
+      "problemMatcher": "$msCompile",
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
       "label": "Test Gallery",
       "type": "shell",
       "command": "swift",
@@ -37,9 +56,20 @@
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
+      // After a deliberate change to the wire or to a control's modifiers:
+      // rewrites lib/StateUI/Tests/Fixtures from what the Swift side now
+      // produces, then checks the C# host against it. Read the diff.
+      "label": "Test (update wire fixtures)",
+      "type": "shell",
+      "command": "STATEUI_UPDATE_FIXTURES=1 swift test --package-path ${workspaceFolder} && dotnet test ${workspaceFolder}/lib/StateUI.Maui/Tests",
+      "problemMatcher": [],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
       "label": "Build Gallery (AppKit, Debug)",
       "type": "shell",
-      "command": "${workspaceFolder}/.scripts/build-gallery-appkit.sh",
+      "command": "${workspaceFolder}/.scripts/AppKit/build-gallery-appkit.sh",
       "args": ["debug"],
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
@@ -47,7 +77,7 @@
     {
       "label": "Build Gallery (AppKit, Release)",
       "type": "shell",
-      "command": "${workspaceFolder}/.scripts/build-gallery-appkit.sh",
+      "command": "${workspaceFolder}/.scripts/AppKit/build-gallery-appkit.sh",
       "args": ["release"],
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
@@ -83,6 +113,226 @@
       ],
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // The MAUI head AND its Swift modules, for the chosen target framework.
+      "label": "Build (debug)",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": "$msCompile",
+      "options": { "cwd": "${workspaceFolder}/apps/Gallery/Platforms/Maui" },
+      "args": ["build", "-c", "Debug", "-f", "${input:targetFramework}", "-nodeReuse:false"]
+    },
+    {
+      // The Linux head, the only framework a Linux host builds - nothing to
+      // pick. The preLaunchTask of "Debug app (Linux)".
+      "label": "Build app (Linux)",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": "$msCompile",
+      "args": [
+        "build",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/Gallery.csproj",
+        "-c",
+        "Debug",
+        "-nodeReuse:false"
+      ]
+    },
+    {
+      // The same head, optimized - Swift's configuration is MSBuild's, so -c
+      // Release compiles the Swift modules with -O as well.
+      "label": "Build app (Release, Linux)",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": "$msCompile",
+      "args": [
+        "build",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/Gallery.csproj",
+        "-c",
+        "Release",
+        "-nodeReuse:false"
+      ]
+    },
+    {
+      // Every resolved path and what actually exists - the first thing to run
+      // when an app reports a missing native library.
+      "label": "Diagnose native build",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/apps/Gallery/Platforms/Maui" },
+      "args": ["build", "-t:StateUIDiagnose", "-f", "${input:targetFramework}"]
+    },
+    {
+      // Builds and launches the MAUI app WITHOUT a debugger, then returns once
+      // the process exists: the preLaunchTask of "Debug app (Swift)".
+      "label": "Run app (no debugger)",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/.scripts/Maui" },
+      "osx": {
+        "command": "bash",
+        "args": ["run-app.sh", "${input:applePlatform}"]
+      },
+      "linux": {
+        "command": "bash",
+        "args": ["run-app.sh", "linux"]
+      },
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "run-app.ps1"]
+      }
+    },
+    {
+      // The same launch with the OPTIMIZED build. For Android, or for a
+      // Release build that follows the device picker, take "Launch app
+      // (Release)" in launch.json.
+      "label": "Run app (Release, no debugger)",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/.scripts/Maui" },
+      "osx": {
+        "command": "bash",
+        "args": ["run-app.sh", "${input:applePlatform}", "Release"]
+      },
+      "linux": {
+        "command": "bash",
+        "args": ["run-app.sh", "linux", "Release"]
+      },
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "run-app.ps1", "-Configuration", "Release"]
+      }
+    },
+    {
+      // Waits until the app process exists, for the attaching half of a
+      // compound. Polls rather than sleeping: no constant fits a cold build
+      // and a warm one.
+      "label": "Wait for app startup",
+      "type": "shell",
+      "problemMatcher": [],
+      "osx": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/.vscode/wait-for-app.sh"]
+      },
+      "linux": {
+        "command": "bash",
+        "args": ["${workspaceFolder}/.vscode/wait-for-app.sh"]
+      },
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/.vscode/wait-for-app.ps1"]
+      }
+    },
+    {
+      // Creates a new application in apps/, with a head for every host, from
+      // HelloWorld's shape. See .scripts/new-app.sh.
+      "label": "New app (in apps/)",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": { "cwd": "${workspaceFolder}/.scripts" },
+      "osx": {
+        "command": "bash",
+        "args": ["new-app.sh", "${input:newAppName}"]
+      },
+      "linux": {
+        "command": "bash",
+        "args": ["new-app.sh", "${input:newAppName}"]
+      },
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "new-app.ps1", "-Name", "${input:newAppName}"]
+      },
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // THE MAUI HEAD, WHOLE - obj/, bin/ and SwiftPM's .build/ go, every
+      // configuration and every framework at once. An edited Info.plist
+      // re-merges only when the obj/ that cached it is gone, and obj/ is per
+      // configuration AND per framework, so anything narrower leaves exactly
+      // the stale copy that is about to be run.
+      "label": "Clean app (everything)",
+      "type": "shell",
+      "command": "rm",
+      "problemMatcher": [],
+      "args": [
+        "-rf",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/obj",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/bin",
+        "${workspaceFolder}/apps/Gallery/.build"
+      ],
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/Platforms/Maui/obj','${workspaceFolder}/apps/Gallery/Platforms/Maui/bin','${workspaceFolder}/apps/Gallery/.build' -ErrorAction SilentlyContinue"]
+      },
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // AND THE LIBRARY: the MAUI host builds in lib/StateUI.Maui/Sources and
+      // its Linux platform in lib/StateUI.Maui/Linux, so a clean named after
+      // the app would rebuild one half against a copy of the other from a
+      // different moment - the shape that parks every await that crosses.
+      "label": "Clean all (app and library)",
+      "type": "shell",
+      "command": "rm",
+      "problemMatcher": [],
+      "args": [
+        "-rf",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/obj",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/bin",
+        "${workspaceFolder}/apps/Gallery/.build",
+        "${workspaceFolder}/lib/StateUI.Maui/Sources/obj",
+        "${workspaceFolder}/lib/StateUI.Maui/Sources/bin",
+        "${workspaceFolder}/lib/StateUI.Maui/Linux/obj",
+        "${workspaceFolder}/lib/StateUI.Maui/Linux/bin",
+        "${workspaceFolder}/.build"
+      ],
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/Platforms/Maui/obj','${workspaceFolder}/apps/Gallery/Platforms/Maui/bin','${workspaceFolder}/apps/Gallery/.build','${workspaceFolder}/lib/StateUI.Maui/Sources/obj','${workspaceFolder}/lib/StateUI.Maui/Sources/bin','${workspaceFolder}/lib/StateUI.Maui/Linux/obj','${workspaceFolder}/lib/StateUI.Maui/Linux/bin','${workspaceFolder}/.build' -ErrorAction SilentlyContinue"]
+      },
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // The native build products alone, after a build script changed: the
+      // targets compare timestamps against .swift sources, so a script change
+      // leaves the previous library in place.
+      "label": "Clean native artifacts",
+      "type": "shell",
+      "command": "rm",
+      "problemMatcher": [],
+      "args": ["-rf", "${workspaceFolder}/apps/Gallery/Platforms/Maui/obj/stateui"],
+      "windows": {
+        "command": "powershell",
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/Platforms/Maui/obj/stateui' -ErrorAction SilentlyContinue"]
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "targetFramework",
+      "type": "pickString",
+      "description": "Target framework to build",
+      "default": "net10.0-maccatalyst",
+      "options": [
+        "net10.0-maccatalyst",
+        "net10.0-ios",
+        "net10.0-android",
+        "net10.0-windows10.0.19041.0",
+        "net10.0"
+      ]
+    },
+    {
+      "id": "newAppName",
+      "type": "promptString",
+      "description": "Name of the new app project: letters and digits, starting with a letter (e.g. MyApp)"
+    },
+    {
+      "id": "applePlatform",
+      "type": "pickString",
+      "description": "Where to run the app",
+      "default": "ios",
+      "options": ["ios", "maccatalyst"]
     }
   ]
 }
