@@ -181,6 +181,12 @@ dispatched. Program writes never dispatch user events. Motion completion lands
 on the exact destination once, and an interrupted awaited journey answers that
 it did not reach its target.
 
+Each lifecycle phase a host reports - a scene's, a window's or a page's - is
+rendered before its next report, so the application sees every phase: a push
+that raises a page's `appearing` and `navigatedTo` in one native move reports
+them one render apart. A host may batch a reader's change with the reports it
+causes, never two phases into one render.
+
 ## Vocabulary ownership
 
 `HostContract` is the checked inventory for StateUI's built-in controls,

@@ -318,8 +318,9 @@ The host reports `WindowPhase` through the same session:
 | `.destroying` | the final notification before the window goes away |
 
 The exact path is platform-adaptive: a host reports only transitions that
-occur in its lifecycle. Repeating the phase already stored changes no state,
-and therefore triggers no extra reaction.
+occur in its lifecycle. Each phase it reports is rendered before its next
+report, so `.onChanged(window.phase)` sees every one. Repeating the phase
+already stored changes no state, and therefore triggers no extra reaction.
 
 ```swift quote
 .onChanged(window.phase) { oldPhase, newPhase in
@@ -407,7 +408,9 @@ struct EditorPage: ContentView {
 
 A navigation arrival normally reports `.appearing` and then `.navigatedTo`.
 A navigation departure reports `.navigatingFrom`, `.disappearing`, and then
-`.navigatedFrom`; a tab switch needs only disappearance and appearance. A host
+`.navigatedFrom`; a tab switch needs only disappearance and appearance. Each
+phase is rendered before the next report, so `.onChanged(page.phase)` sees
+every one - an arrival's `.appearing` as well as its `.navigatedTo`. A host
 does not invent navigation phases for a visibility change that was not a
 navigation move. As with windows, a duplicate report of the standing phase is
 a no-op.

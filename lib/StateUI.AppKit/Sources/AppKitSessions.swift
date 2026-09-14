@@ -283,10 +283,11 @@ final class AppKitSceneController {
               let handler = node?.handler(event)
         else { return }
 
+        let isPhase = [.activated, .deactivated, .stopped, .destroying].contains(event)
         if [.activated, .deactivated, .stopped].contains(event) {
             lastPhase = event
         }
-        host?.dispatch(handler, payload: payload)
+        host?.dispatch(handler, payload: payload, isPhase: isPhase)
     }
 
     func keep(name: String, value: HostValue) {
@@ -740,7 +741,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     func reportWindow(_ event: Event) {
         guard lastWindowEvent != event, let handler = node?.handler(event) else { return }
         lastWindowEvent = event
-        host?.dispatch(handler)
+        host?.dispatch(handler, isPhase: true)
     }
 
     func setSceneActive(_ active: Bool) {

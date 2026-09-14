@@ -151,6 +151,10 @@ final class AppKitRenderer: @unchecked Sendable {
         let handler: Int32
         let payload: [HostValue]
         let restorationIdentifier: String?
+
+        /// A phase report, rendered before the next report moves the phase
+        /// again.
+        var isPhase = false
     }
 
     private let resourceDirectory: URL?
@@ -176,6 +180,10 @@ final class AppKitRenderer: @unchecked Sendable {
     private var connectedInitialScene = false
     private var started = false
     private var synchronizingWindows = false
+
+    /// Whether the queue is being delivered. A render inside the delivery
+    /// queues what it raises behind what already waits, in order.
+    private var deliveringEvents = false
     private var readerTransactionDepth = 0
     private var readerTransactionChangedState = false
     private var queuedEvents: [QueuedEvent] = []
@@ -270,12 +278,13 @@ final class AppKitRenderer: @unchecked Sendable {
         return String(decoding: bytes[..<end].map(UInt8.init(bitPattern:)), as: UTF8.self)
     }
 
-    func dispatch(_ handler: Int32, payload: [HostValue] = []) {
+    func dispatch(_ handler: Int32, payload: [HostValue] = [], isPhase: Bool = false) {
         if synchronizingWindows || readerTransactionDepth > 0 {
             queuedEvents.append(QueuedEvent(
                 handler: handler,
                 payload: payload,
-                restorationIdentifier: nil))
+                restorationIdentifier: nil,
+                isPhase: isPhase))
             return
         }
 
@@ -292,11 +301,12 @@ final class AppKitRenderer: @unchecked Sendable {
     /// Page visibility can change while children are being reconciled; running
     /// Swift from inside that mutation would make the next render observe a
     /// half-old, half-new native tree.
-    func enqueue(_ handler: Int32, payload: [HostValue] = []) {
+    func enqueue(_ handler: Int32, payload: [HostValue] = [], isPhase: Bool = false) {
         queuedEvents.append(QueuedEvent(
             handler: handler,
             payload: payload,
-            restorationIdentifier: nil))
+            restorationIdentifier: nil,
+            isPhase: isPhase))
     }
 
     /// Commits a reader-driven page change and its lifecycle as one ordered
@@ -525,22 +535,30 @@ final class AppKitRenderer: @unchecked Sendable {
         refreshDisplayLink()
     }
 
+    /// Delivers what waits, in order. A phase is state the application
+    /// watches, so each phase report is rendered before the next report moves
+    /// the phase again: a push that reports a page's arrival and its
+    /// navigation in one native move still shows both.
     private func flushQueuedEvents() {
-        guard !queuedEvents.isEmpty else { return }
-        let events = queuedEvents
-        queuedEvents.removeAll(keepingCapacity: true)
+        guard !deliveringEvents, !queuedEvents.isEmpty else { return }
+        deliveringEvents = true
+        var restored: [String] = []
 
-        for event in events {
+        while !queuedEvents.isEmpty {
+            let event = queuedEvents.removeFirst()
             if let eventSink {
                 eventSink(event.handler, event.payload)
             } else {
                 _ = StateUIHost.dispatch(event.handler, payload: event.payload)
             }
+            if let identifier = event.restorationIdentifier { restored.append(identifier) }
+            if event.isPhase, eventSink == nil { pump() }
         }
 
+        deliveringEvents = false
         if eventSink == nil { pump() }
 
-        for identifier in events.compactMap(\.restorationIdentifier) {
+        for identifier in restored {
             declineRestorationIfUnclaimed(identifier)
         }
     }
@@ -1664,7 +1682,7 @@ final class MountedNode: NSObject {
 
     private func announce(_ event: Event) {
         guard let handler = events[event] else { return }
-        host?.enqueue(handler)
+        host?.enqueue(handler, isPhase: true)
     }
 
     /// What this arrangement shows while it is shown itself: a stack's top
