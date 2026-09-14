@@ -248,7 +248,9 @@ final class AppKitScrollViewTests: XCTestCase {
     /// A continuous (trackpad) scroll event with Core Graphics' own phase
     /// numbers: scroll phase 1 began, 2 changed, 4 ended; momentum phase 1
     /// began, 3 ended.
-    private func wheel(dy: Int32, dx: Int32, phase: Int64, momentum: Int64) throws -> NSEvent {
+    private func wheel(
+        dy: Int32, dx: Int32, phase: Int64, momentum: Int64, at seconds: Double? = nil
+    ) throws -> NSEvent {
         let event = try XCTUnwrap(CGEvent(
             scrollWheelEvent2Source: nil,
             units: .pixel,
@@ -259,6 +261,7 @@ final class AppKitScrollViewTests: XCTestCase {
         event.setIntegerValueField(.scrollWheelEventIsContinuous, value: 1)
         event.setIntegerValueField(try XCTUnwrap(CGEventField(rawValue: 99)), value: phase)
         event.setIntegerValueField(try XCTUnwrap(CGEventField(rawValue: 123)), value: momentum)
+        if let seconds { event.timestamp = CGEventTimestamp(seconds * 1_000_000_000) }
         return try XCTUnwrap(NSEvent(cgEvent: event))
     }
 
@@ -510,6 +513,71 @@ final class AppKitScrollViewTests: XCTestCase {
 
         XCTAssertEqual(scroller.contentView.bounds.origin.y, 120, accuracy: 0.5)
         XCTAssertEqual(scroller.programmaticMovesForTesting, moves, "the reader's own offset is not written back")
+    }
+
+    /// A strip 100 wide over 2000 of content, on a grid of 160.
+    @MainActor
+    private func snappingStrip() -> AppKitScrollView {
+        let scroll = AppKitScrollView()
+        scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 80)
+        scroll.setItems([AppKitLayoutItem(view: FixedScrollTestView(width: 2_000, height: 40))])
+        scroll.apply(
+            orientation: ScrollOrientation.horizontal.rawValue,
+            padding: NSEdgeInsets(),
+            verticalBarVisibility: 2,
+            horizontalBarVisibility: 0,
+            offset: nil,
+            snapInterval: 160,
+            snapFrom: 0,
+            momentum: 1,
+            snapsAtMost: 0)
+        scroll.layoutSubtreeIfNeeded()
+        return scroll
+    }
+
+    /// A release at 1250 points a second - 20 points every 16 ms, the content
+    /// moving on - and the first event of the momentum the platform starts.
+    private func trackpadThrow() throws -> [NSEvent] {
+        [
+            try wheel(dy: 0, dx: 0, phase: 1, momentum: 0, at: 1.000),
+            try wheel(dy: 0, dx: -20, phase: 2, momentum: 0, at: 1.016),
+            try wheel(dy: 0, dx: -20, phase: 2, momentum: 0, at: 1.032),
+            try wheel(dy: 0, dx: -20, phase: 2, momentum: 0, at: 1.048),
+            try wheel(dy: 0, dx: -20, phase: 2, momentum: 0, at: 1.064),
+            try wheel(dy: 0, dx: 0, phase: 4, momentum: 0, at: 1.070),
+            try wheel(dy: 0, dx: -30, phase: 0, momentum: 1, at: 1.080),
+        ]
+    }
+
+    /// A trackpad throw is aimed where the platform decides - the moment its
+    /// momentum begins - at the grid point the release was going for, half a
+    /// second of its speed on; the platform's own momentum after it moves
+    /// nothing. One movement, onto the grid.
+    @MainActor
+    func testATrackpadThrowIsAimedAtTheGridWhenItsMomentumBegins() throws {
+        let scroll = snappingStrip()
+        for event in try trackpadThrow() { scroll.scrollWheel(with: event) }
+
+        let released = scroll.offset.x
+        let expected = ((released + 625) / 160).rounded() * 160
+        XCTAssertEqual(scroll.aimedThrowForTesting?.x ?? -1, expected, accuracy: 0.5)
+
+        try scroll.scrollWheel(with: wheel(dy: 0, dx: -30, phase: 0, momentum: 2, at: 1.096))
+        XCTAssertEqual(scroll.aimedThrowForTesting?.x ?? -1, expected, accuracy: 0.5,
+                       "the platform's momentum does not move a throw of ours")
+    }
+
+    /// The reader outranks a movement of this side's own: a gesture that begins
+    /// while a throw is going to the grid stops it where it stands.
+    @MainActor
+    func testANewGestureStopsAThrowThatIsGoingToTheGrid() throws {
+        let scroll = snappingStrip()
+        for event in try trackpadThrow() { scroll.scrollWheel(with: event) }
+        XCTAssertNotNil(scroll.aimedThrowForTesting)
+
+        try scroll.scrollWheel(with: wheel(dy: 0, dx: 0, phase: 1, momentum: 0, at: 1.200))
+
+        XCTAssertNil(scroll.aimedThrowForTesting)
     }
 }
 

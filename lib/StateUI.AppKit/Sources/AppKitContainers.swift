@@ -1419,6 +1419,26 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     private var gestureScroller: WheelScroller?
     private var lastSnapItem: Int?
     private var stopWorkItem: DispatchWorkItem?
+    private var aimedThrow: NSPoint?
+
+    /// How far a released trackpad throw goes, in seconds of its release speed.
+    ///
+    /// Measured on a MacBook trackpad in the Gallery's ScrollView sample: across
+    /// nineteen throws AppKit's own momentum carried the content 0.41 to 0.64 of
+    /// the release speed's per-second distance, 0.5 in the middle. It is what the
+    /// platform's stop is predicted from when the momentum begins, which is where
+    /// the aim has to be taken - rounding after the platform has stopped is a
+    /// second movement, the content running past the grid and coming back.
+    private static let throwReach: CGFloat = 0.5
+
+    /// The last moving events of the gesture under way: when each came, and how
+    /// far it moved the content - what the release speed is read from.
+    private var throwSamples: [(time: TimeInterval, delta: NSPoint)] = []
+
+    /// Whether this scroller asked for a release to be aimed at all - a grid to
+    /// land on, or a throw to shorten. One that asked for neither keeps the
+    /// platform's own momentum untouched.
+    private var aimsReleases: Bool { snapInterval > 0 || momentum < 1 }
 
     var offset: NSPoint { reachable(contentView.bounds.origin) }
     var usesStackWrapperForTesting: Bool { usesStackWrapper }
@@ -1557,6 +1577,32 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
             return
         }
 
+        // A TRACKPAD THROW IS AIMED WHERE THE PLATFORM DECIDES: the moment its
+        // momentum begins, at the grid point the release was going for, and the
+        // platform's own momentum is not taken after it. AppKit offers no hook
+        // for where its deceleration would end, so the stop is predicted from
+        // the release speed - see `throwReach`.
+        if event.hasPreciseScrollingDeltas, aimsReleases {
+            if event.phase.contains(.began) || event.phase.contains(.mayBegin) {
+                throwSamples = []
+                // The reader outranks a movement of this side's own.
+                if aimedThrow != nil { stopAimedThrow() }
+            } else if event.phase.contains(.changed) {
+                throwSamples.append((
+                    event.timestamp,
+                    NSPoint(x: -event.scrollingDeltaX, y: -event.scrollingDeltaY)))
+                if throwSamples.count > 4 { throwSamples.removeFirst() }
+            }
+
+            if event.momentumPhase.contains(.began) {
+                aimThrow()
+                return
+            }
+            if aimedThrow != nil, !event.momentumPhase.isEmpty {
+                return
+            }
+        }
+
         guard !event.hasPreciseScrollingDeltas, snapInterval > 0 else {
             discreteWheelMovement = false
             super.scrollWheel(with: event)
@@ -1626,7 +1672,93 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
 
     @objc private func didEndLiveScroll(_ notification: Notification) {
         liveScrolling = false
-        settle(animated: true)
+        // A throw of this side's own ends the movement itself, where it lands.
+        if aimedThrow == nil { settle(animated: true) }
+    }
+
+    /// Sends a released throw to the grid point it was going for, as one
+    /// movement leaving at the release speed.
+    private func aimThrow() {
+        let current = offset
+        let first = throwSamples.first?.time ?? 0
+        let span = CGFloat((throwSamples.last?.time ?? first) - first)
+        let travelled = throwSamples.dropFirst().reduce(NSPoint.zero) {
+            NSPoint(x: $0.x + $1.delta.x, y: $0.y + $1.delta.y)
+        }
+        let velocity = span > 0 ? NSPoint(x: travelled.x / span, y: travelled.y / span) : .zero
+        throwSamples = []
+
+        var target = current
+        if orientation != .vertical {
+            target.x = aimed(present: current.x, start: movementStart.x, velocity: velocity.x)
+        }
+        if orientation != .horizontal {
+            target.y = aimed(present: current.y, start: movementStart.y, velocity: velocity.y)
+        }
+
+        glide(to: reachable(target), leavingAt: hypot(velocity.x, velocity.y))
+    }
+
+    /// Where one axis of a throw lands: its predicted stop, shortened by the
+    /// momentum the tree asked for, on the grid, and no further than the grid
+    /// allows one release to go.
+    private func aimed(present: CGFloat, start: CGFloat, velocity: CGFloat) -> CGFloat {
+        let destination = HostScrollMath.projectedDestination(
+            start: Double(start),
+            nativeDestination: Double(present + velocity * Self.throwReach),
+            momentum: Double(momentum))
+        guard snapInterval > 0 else { return CGFloat(destination) }
+
+        let snapped = HostScrollMath.snapPoint(
+            destination, interval: Double(snapInterval), from: Double(snapFrom))
+        return CGFloat(HostScrollMath.heldDestination(
+            snapped,
+            movementStart: Double(start),
+            interval: Double(snapInterval),
+            from: Double(snapFrom),
+            atMost: snapsAtMost))
+    }
+
+    /// Moves the content to `target` as this side's own movement: an ease-out
+    /// whose opening speed is the release speed - a quadratic leaves at twice
+    /// its average, so it takes twice the distance over that speed - held
+    /// between a quarter of a second and one, about as long as the platform's
+    /// own momentum ran where it was measured.
+    private func glide(to target: NSPoint, leavingAt speed: CGFloat) {
+        let current = contentView.bounds.origin
+        let distance = hypot(target.x - current.x, target.y - current.y)
+        if !movementActive { beginMovement() }
+        guard distance > 0.5 else {
+            aimedThrow = nil
+            finishMovement()
+            return
+        }
+
+        aimedThrow = target
+        settling = true
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = min(max(speed > 0 ? 2 * distance / speed : 0.3, 0.25), 1)
+            context.timingFunction = CAMediaTimingFunction(controlPoints: 0.25, 0.46, 0.45, 0.94)
+            contentView.animator().setBoundsOrigin(target)
+        } completionHandler: { [weak self] in
+            MainActor.assumeIsolated {
+                guard let self, self.aimedThrow == target else { return }
+                self.aimedThrow = nil
+                self.settling = false
+                self.finishMovement()
+            }
+        }
+    }
+
+    /// Stops a throw of this side's own where it stands.
+    private func stopAimedThrow() {
+        aimedThrow = nil
+        settling = false
+        let standing = contentView.bounds.origin
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0
+            contentView.animator().setBoundsOrigin(standing)
+        }
     }
 
     @objc private func clipBoundsChanged(_ notification: Notification) {
@@ -1813,6 +1945,9 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     func beginMovementForTesting() {
         beginMovement()
     }
+
+    /// Where a caught trackpad throw is going, while it is.
+    var aimedThrowForTesting: NSPoint? { aimedThrow }
 
     func moveAsReaderForTesting(to point: NSPoint) {
         move(to: point, asReader: true)
