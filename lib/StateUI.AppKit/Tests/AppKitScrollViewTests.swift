@@ -74,6 +74,7 @@ final class AppKitScrollViewTests: XCTestCase {
 
         scroll.beginMovementForTesting()
         scroll.moveAsReaderForTesting(to: NSPoint(x: 0, y: 210))
+        scroll.frame(now: 0)
 
         XCTAssertEqual(changes.count, 1)
         XCTAssertEqual(changes[0].0.y, 160, accuracy: 0.001)
@@ -288,6 +289,7 @@ final class AppKitScrollViewTests: XCTestCase {
         scroll.beginMovementForTesting()
         scroll.moveAsReaderForTesting(to: NSPoint(x: 460, y: 0))
         scroll.settleForTesting()
+        scroll.frame(now: 0)
 
         XCTAssertEqual(scroll.offset.x, 100, accuracy: 0.001)
         XCTAssertEqual(stopped, 1)
@@ -315,6 +317,7 @@ final class AppKitScrollViewTests: XCTestCase {
 
         XCTAssertTrue(scroll.stepDiscreteWheelForTesting(by: 1))
         scroll.settleForTesting()
+        scroll.frame(now: 0)
 
         XCTAssertEqual(scroll.offset.x, 100, accuracy: 0.001)
         XCTAssertEqual(stopped, 1)
@@ -351,7 +354,9 @@ final class AppKitScrollViewTests: XCTestCase {
         reports.removeAll()
         native.beginMovementForTesting()
         native.moveAsReaderForTesting(to: NSPoint(x: 120, y: 40))
+        renderer.displayFrameForTesting()
         native.settleForTesting()
+        renderer.displayFrameForTesting()
 
         XCTAssertEqual(reports.map(\.0), [10, 11, 12, 10, 13])
         XCTAssertEqual(reports[0].1, [.number(120)])
@@ -489,6 +494,7 @@ final class AppKitScrollViewTests: XCTestCase {
         let settled = Date(timeIntervalSinceNow: 1)
         while positions.values.last != 1, Date() < settled {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+            renderer.displayFrameForTesting()
             renderer.pump()
         }
 
@@ -509,10 +515,43 @@ final class AppKitScrollViewTests: XCTestCase {
 
         scroller.contentView.scroll(to: NSPoint(x: 0, y: 120))
         scroller.reflectScrolledClipView(scroller.contentView)
-        renderer.pump()
+        renderer.displayFrameForTesting()
 
         XCTAssertEqual(scroller.contentView.bounds.origin.y, 120, accuracy: 0.5)
         XCTAssertEqual(scroller.programmaticMovesForTesting, moves, "the reader's own offset is not written back")
+    }
+
+    /// What the platform's scroller reports while it moves is taken on the next
+    /// display frame, once, and the frame clock runs for as long as the
+    /// scroller moves. AppKit moves the clip view from inside its own frame
+    /// step; a render there holds that step's frame, and the scroll events
+    /// behind it arrive merged into one jump.
+    @MainActor
+    func testWhatAMovingScrollerReportsIsTakenOnTheNextDisplayFrame() throws {
+        let renderer = AppKitRenderer.running { BoundStrip() }
+        defer { renderer.closeForTesting() }
+        let scroller = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
+        let reading = try XCTUnwrap(renderer.nativeViews(AppKitLabelView.self).first)
+        scroller.window?.contentView?.layoutSubtreeIfNeeded()
+        XCTAssertFalse(renderer.displayLinkRunningForTesting, "a still page keeps no clock")
+
+        NotificationCenter.default.post(name: NSScrollView.willStartLiveScrollNotification, object: scroller)
+        let renders = renderer.windowSynchronizationCountForTesting
+        for y: CGFloat in [40, 80, 120] {
+            scroller.contentView.scroll(to: NSPoint(x: 0, y: y))
+            scroller.reflectScrolledClipView(scroller.contentView)
+        }
+
+        XCTAssertEqual(reading.stringValue, "0 down", "nothing is taken inside the platform's scroll step")
+        XCTAssertTrue(renderer.displayLinkRunningForTesting, "a moving scroller holds the frame clock")
+
+        renderer.displayFrameForTesting()
+        XCTAssertEqual(reading.stringValue, "120 down")
+        XCTAssertEqual(renderer.windowSynchronizationCountForTesting, renders + 1, "one render for the frame")
+
+        NotificationCenter.default.post(name: NSScrollView.didEndLiveScrollNotification, object: scroller)
+        renderer.displayFrameForTesting()
+        XCTAssertFalse(renderer.displayLinkRunningForTesting, "a scroller that stands lets the clock go")
     }
 
     /// A strip 100 wide over 2000 of content, on a grid of 160.

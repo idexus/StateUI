@@ -175,6 +175,10 @@ final class AppKitRenderer: @unchecked Sendable {
     private var sceneOrder: [ElementId] = []
     private var displayLink: CADisplayLink?
     private weak var displayWindow: NSWindow?
+
+    /// The scrollers moving or waiting to report, each given the display's
+    /// frames until it stands and has said everything.
+    private let framedScrollers = NSHashTable<AppKitScrollView>.weakObjects()
     private var cycleContinues = false
     private var doorbellStarted = false
     private var connectedInitialScene = false
@@ -347,6 +351,13 @@ final class AppKitRenderer: @unchecked Sendable {
     func settleReaderWrite(_ changedState: Bool) {
         guard changedState, readerTransactionDepth == 0 else { return }
         if eventSink == nil { pump() }
+    }
+
+    /// Keeps the display's frames coming for `scroller` until it stands and
+    /// has said everything - see `AppKitScrollView.frame(now:)`.
+    fileprivate func requestFrames(for scroller: AppKitScrollView) {
+        framedScrollers.add(scroller)
+        refreshDisplayLink()
     }
 
     func openPlatformScene() {
@@ -917,6 +928,12 @@ final class AppKitRenderer: @unchecked Sendable {
         refreshDisplayLink()
     }
 
+    func displayFrameForTesting() {
+        displayFrame(now: clock())
+    }
+
+    var displayLinkRunningForTesting: Bool { displayLink.map { !$0.isPaused } ?? false }
+
     func applyStateForTesting(_ state: Int32, value: HostStateValue) {
         let impact = root?.applyState(state, value: value) ?? []
         if impact.contains(.windowShell) { synchronizeWindows() }
@@ -952,10 +969,32 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     @objc private func displayTick(_ link: CADisplayLink) {
-        advanceCycle(now: link.timestamp * 1_000)
+        displayFrame(now: link.timestamp * 1_000)
+    }
 
-        if StateUIHost.needsRender {
+    /// One frame of the display's clock: everything moving advances, and what
+    /// it changed is rendered once.
+    private func displayFrame(now: Double) {
+        frameScrollers(now: now)
+        advanceCycle(now: now)
+
+        if eventSink == nil, StateUIHost.needsRender {
             pump()
+        }
+    }
+
+    /// Lets every moving scroller say what the frame saw it do, all of them as
+    /// one reader transaction; a scroller that stands and has said everything
+    /// lets the clock go.
+    private func frameScrollers(now: Double) {
+        let scrollers = framedScrollers.allObjects
+        guard !scrollers.isEmpty else { return }
+
+        performReaderTransaction {
+            for scroller in scrollers {
+                scroller.frame(now: now)
+                if !scroller.wantsFrames { framedScrollers.remove(scroller) }
+            }
         }
     }
 
@@ -1108,7 +1147,8 @@ final class AppKitRenderer: @unchecked Sendable {
             cycleContinues
                 || motion.isActive
                 || propertyMotion.isActive
-                || StateUIHost.cyclesPending)
+                || StateUIHost.cyclesPending
+                || framedScrollers.anyObject != nil)
     }
 }
 
@@ -2187,6 +2227,10 @@ final class MountedNode: NSObject {
                 self?.changedSnapItem(to: item)
             }
             scroll.onScrollStopped = { [weak self] in self?.scrollStopped() }
+            scroll.onFramesWanted = { [weak self, weak scroll] in
+                guard let scroll else { return }
+                self?.host?.requestFrames(for: scroll)
+            }
             return scroll
 
         case .label:

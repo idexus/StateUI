@@ -1395,6 +1395,10 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     var onSnapItemChanged: ((Int) -> Void)?
     var onScrollStopped: (() -> Void)?
 
+    /// Asks for the display's frames: the scroller is moving or has something
+    /// to say, and it says it only on a frame - see `frame(now:)`.
+    var onFramesWanted: (() -> Void)?
+
     private(set) var orientation = ScrollOrientation.vertical
     private(set) var padding = NSEdgeInsets()
     private var verticalBarVisibility: Int32 = 0
@@ -1418,6 +1422,15 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     private var discreteWheelMovement = false
     private var gestureScroller: WheelScroller?
     private var lastSnapItem: Int?
+
+    /// Something the scroller says on a display frame.
+    private enum Report {
+        case moved(from: NSPoint, to: NSPoint)
+        case stopped
+    }
+
+    /// What the scroller has to say on the display's next frame, in order.
+    private var reports: [Report] = []
     private var stopWorkItem: DispatchWorkItem?
     private var aimedThrow: NSPoint?
 
@@ -1780,6 +1793,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         movementStart = offset
         movementActive = true
         movementChanged = false
+        onFramesWanted?()
     }
 
     /// A coarse wheel is a discrete command, not a short drag. On a snap grid
@@ -1812,11 +1826,20 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         return true
     }
 
+    /// A move of the reader's, kept for the display's next frame. AppKit moves
+    /// the clip view from inside its own frame step, and a report rendered
+    /// there holds that frame: the scroll events behind it then arrive merged
+    /// into one jump. A move joins the move before it, so a frame reports
+    /// where the scroller went rather than every step it took.
     private func readerMoved(from old: NSPoint, to new: NSPoint) {
         guard old != new else { return }
         movementChanged = true
-        onOffsetChanged?(old, new)
-        reportSnapItem(at: new)
+        if case .moved(let from, _)? = reports.last {
+            reports[reports.count - 1] = .moved(from: from, to: new)
+        } else {
+            reports.append(.moved(from: old, to: new))
+        }
+        onFramesWanted?()
     }
 
     /// How many times something other than the reader moved the scroller.
@@ -1905,9 +1928,33 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     private func finishMovement() {
         guard movementActive else { return }
         movementActive = false
-        if movementChanged { onScrollStopped?() }
+        if movementChanged {
+            reports.append(.stopped)
+            onFramesWanted?()
+        }
         movementChanged = false
         discreteWheelMovement = false
+    }
+
+    /// Whether the scroller needs the display's frames: it is moving, or it
+    /// has something to say.
+    var wantsFrames: Bool { movementActive || !reports.isEmpty }
+
+    /// One frame of the display's clock. What the scroller has to say is said
+    /// here and nowhere else, in order: where it went, the item it is nearest,
+    /// and that it came to rest.
+    func frame(now: Double) {
+        let said = reports
+        reports = []
+        for report in said {
+            switch report {
+            case .moved(let from, let to):
+                onOffsetChanged?(from, to)
+                reportSnapItem(at: to)
+            case .stopped:
+                onScrollStopped?()
+            }
+        }
     }
 
     private func reportSnapItem(at point: NSPoint) {
