@@ -228,4 +228,8 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     }
 }
 
+extension AppKitTextFieldView: AppKitAccessibilityPresenting {
+    var presentedControl: NSView { textField }
+}
+
 #endif

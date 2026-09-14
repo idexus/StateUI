@@ -1164,10 +1164,10 @@ final class MountedNode: NSObject {
     private var pinchRecognizer: AppKitPinchRecognizer?
     private var pointerRecognizer: AppKitPointerRecognizer?
     private var accessibilityDefaults: (
-        target: NSAccessibilityProtocol,
         isElement: Bool,
         role: NSAccessibility.Role?
     )?
+    private var accessibilityThroughCell: Bool?
     private var accessibilityChildrenSuppressed = false
     private var panFromX: Double = 0
     private var panFromY: Double = 0
@@ -2337,8 +2337,6 @@ final class MountedNode: NSObject {
                 ignores || value(.letsInputThrough)?.bool == true,
                 cascades: ignores)
         }
-        applyAccessibility(to: view)
-
         if !(view is AppKitBorderView) && !(view is AppKitColorBoxView) {
             let background = color(.background)
             view.wantsLayer = true
@@ -2729,6 +2727,9 @@ final class MountedNode: NSObject {
         }
 
         drawing?.own = drawingTransform()
+        // Last, so the words meet the control as configured above - a text
+        // field may just have swapped in a password field.
+        applyAccessibility(to: view)
     }
 
     /// The view's own drawing transform. `scale` multiplies both axes on
@@ -2872,15 +2873,13 @@ final class MountedNode: NSObject {
     /// Applies StateUI's semantic surface without replacing the native
     /// control's ordinary role or participation when the author says nothing.
     private func applyAccessibility(to view: NSView) {
+        let target = accessibilityTarget(of: view)
         if accessibilityDefaults == nil {
-            let target = Self.accessibilityTarget(of: view)
             accessibilityDefaults = (
-                target: target,
                 isElement: target.isAccessibilityElement(),
                 role: target.accessibilityRole())
         }
         guard let defaults = accessibilityDefaults else { return }
-        let target = defaults.target
 
         target.setAccessibilityIdentifier(string(.automationId))
         target.setAccessibilityLabel(string(.semanticDescription))
@@ -2917,16 +2916,25 @@ final class MountedNode: NSObject {
         }
     }
 
-    /// The object assistive technology meets for `view`. AppKit presents a
-    /// cell-based control - a button, a slider, a stepper - through its cell:
-    /// the cell is the element and the view is not, so words written on the
-    /// view would reach nobody, and making the view the element would hide the
-    /// control's own role. Anything else is met as the view itself.
-    private static func accessibilityTarget(of view: NSView) -> NSAccessibilityProtocol {
-        if let cell = (view as? NSControl)?.cell, cell.isAccessibilityElement() {
+    /// The object assistive technology meets for `view`: the native control a
+    /// wrapping view presents in its place (`AppKitAccessibilityPresenting`),
+    /// or the view itself - and for a control AppKit presents through its
+    /// cell, a button, a slider or a stepper, that cell. The cell is the
+    /// element there and the view is not, so words written on the view would
+    /// reach nobody, and making the view the element would hide the control's
+    /// own role. Whether it is the cell is decided once, before any authored
+    /// word moves it; the control is looked up each time, because a wrapper
+    /// may replace it - a text field becoming a password field.
+    private func accessibilityTarget(of view: NSView) -> NSAccessibilityProtocol {
+        let control = (view as? AppKitAccessibilityPresenting)?.presentedControl ?? view
+        let cell = (control as? NSControl)?.cell
+        if accessibilityThroughCell == nil {
+            accessibilityThroughCell = cell?.isAccessibilityElement() == true
+        }
+        if accessibilityThroughCell == true, let cell {
             return cell
         }
-        return view
+        return control
     }
 
     private var presentableViews: [NSView] {

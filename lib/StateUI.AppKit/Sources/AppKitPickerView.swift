@@ -217,4 +217,8 @@ private final class AppKitPickerPlaceholder: NSTextField {
     override func hitTest(_ point: NSPoint) -> NSView? { nil }
 }
 
+extension AppKitPickerView: AppKitAccessibilityPresenting {
+    var presentedControl: NSView { button }
+}
+
 #endif

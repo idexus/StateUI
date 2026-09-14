@@ -159,8 +159,66 @@ final class AppKitAccessibilityTests: XCTestCase {
         XCTAssertEqual(favourite.label, "Add to favourites")
     }
 
+    @MainActor
+    func testAWrappedControlCarriesItsWordsOnTheControlItWraps() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        func described(_ identifier: String, _ type: NodeType, _ words: String) -> HostPatch {
+            var patch = HostPatch(id: .manual(identifier), type: type)
+            patch.properties = [
+                .automationId: .string(identifier),
+                .semanticDescription: .string(words),
+            ]
+            return patch
+        }
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([
+            described("picker.size", .picker, "Size"),
+            described("entry.name", .textField, "Name"),
+            described("editor.notes", .textEditor, "Notes"),
+        ])
+
+        renderer.applyForTesting(tree(stack))
+
+        let stackView = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
+        let expected: [(identifier: String, role: NSAccessibility.Role, words: String)] = [
+            ("picker.size", .popUpButton, "Size"),
+            ("entry.name", .textField, "Name"),
+            ("editor.notes", .textArea, "Notes"),
+        ]
+        for control in expected {
+            let element = try XCTUnwrap(
+                presented(control.identifier, under: stackView), control.identifier)
+            XCTAssertEqual(element.role, control.role, control.identifier)
+            XCTAssertEqual(element.label, control.words, control.identifier)
+        }
+    }
+
+    @MainActor
+    func testAPasswordFieldKeepsItsWordsWhenItsNativeFieldIsReplaced() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        var entry = HostPatch(id: .manual("entry"), type: .textField)
+        entry.properties = [
+            .text: .string(""),
+            .automationId: .string("entry.password"),
+            .semanticDescription: .string("Password"),
+        ]
+        renderer.applyForTesting(tree(entry))
+
+        var secure = HostPatch(id: .manual("entry"), type: .textField)
+        secure.properties[.isPassword] = .bool(true)
+        renderer.applyForTesting(changedTree(secure))
+
+        let field = try XCTUnwrap(renderer.viewForTesting(id: .manual("entry")))
+        let element = try XCTUnwrap(presented("entry.password", under: field))
+        XCTAssertEqual(element.role, .textField)
+        XCTAssertEqual(element.label, "Password")
+    }
+
     /// The element AppKit presents to assistive technology under `view` with
-    /// this identifier - a view, or the cell a control is presented through.
+    /// this identifier - a view, or the cell a control is presented through -
+    /// however deep AppKit nests it.
     @MainActor
     private func presented(
         _ identifier: String,
@@ -170,8 +228,13 @@ final class AppKitAccessibilityTests: XCTestCase {
             if let cell = child as? NSCell, cell.accessibilityIdentifier() == identifier {
                 return (cell.accessibilityRole(), cell.accessibilityLabel())
             }
-            if let element = child as? NSView, element.accessibilityIdentifier() == identifier {
-                return (element.accessibilityRole(), element.accessibilityLabel())
+            if let element = child as? NSView {
+                if element.accessibilityIdentifier() == identifier {
+                    return (element.accessibilityRole(), element.accessibilityLabel())
+                }
+                if let found = presented(identifier, under: element) {
+                    return found
+                }
             }
         }
         return nil

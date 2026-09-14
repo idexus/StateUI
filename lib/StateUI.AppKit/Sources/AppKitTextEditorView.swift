@@ -210,4 +210,8 @@ private final class AppKitTextEditorPlaceholder: NSTextField {
     override func hitTest(_ point: NSPoint) -> NSView? { nil }
 }
 
+extension AppKitTextEditorView: AppKitAccessibilityPresenting {
+    var presentedControl: NSView { textView }
+}
+
 #endif
