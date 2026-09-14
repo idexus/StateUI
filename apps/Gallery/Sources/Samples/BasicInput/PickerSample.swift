@@ -56,8 +56,8 @@ struct PickerSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Picker(Self.sizes)
-                .automationId("picker.size")
-                .semanticDescription("Size")
+                .accessibilityIdentifier("picker.size")
+                .accessibilityLabel("Size")
                 .onSelectedIndexChanged { _ in changes += 1 }
                 .selectedIndex($size)
                 .title("Size")

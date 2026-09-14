@@ -186,7 +186,7 @@ final class InspectionTests: XCTestCase {
     /// button says for itself, in walk order.
     private func words(in patch: HostPatch) -> [String] {
         let text = patch.type == .label || patch.type == .button ? patch.props[.text]?.string : nil
-        let own = [text, patch.props[.semanticDescription]?.string].compactMap { $0 }
+        let own = [text, patch.props[.accessibilityLabel]?.string].compactMap { $0 }
 
         return own + patch.children.flatMap { words(in: $0) }
     }

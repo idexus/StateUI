@@ -147,8 +147,8 @@ struct RefreshViewSample: SampleContent, ExampleContent {
                 // reads off - the flag is put there as the view is created - and
                 // refuses to be flipped.
                 Switch($enabled)
-                    .automationId("refreshView.enabled")
-                    .semanticDescription("Pull to refresh")
+                    .accessibilityIdentifier("refreshView.enabled")
+                    .accessibilityLabel("Pull to refresh")
                     .isEnabled(pulls)
 
                 // WHERE THE PLATFORM HAS NO PULL, a mouse needs another way

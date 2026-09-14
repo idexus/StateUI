@@ -401,13 +401,13 @@ extension VisualElement {
 extension PropertyContainer {
     /// A stable name that automation finds this by.
     ///
-    ///     Button("Save").automationId("save")
-    ///     ToolbarItem("Home").automationId("chrome.home")
+    ///     Button("Save").accessibilityIdentifier("save")
+    ///     ToolbarItem("Home").accessibilityIdentifier("chrome.home")
     ///
     /// Nothing shows it and no screen reader says it: it is the handle a UI
     /// test, a script or an agent driving the application asks the platform's
     /// own automation for, where the alternative is a coordinate read off a
-    /// picture. What a READER is told is `.semanticDescription`.
+    /// picture. What a READER is told is `.accessibilityLabel`.
     ///
     /// On this tier because a toolbar item and a menu entry carry one as much
     /// as a view does - so the button in a page's bar can be named. The three
@@ -417,7 +417,7 @@ extension PropertyContainer {
     /// Keep it stable across renders and unique on the page: an id that moves
     /// with the state is an id nothing can wait for, and two things sharing
     /// one leave the driver to guess.
-    public func automationId(_ value: String) -> Modified { setValue(.automationId, .string(value)) }
+    public func accessibilityIdentifier(_ value: String) -> Modified { setValue(.accessibilityIdentifier, .string(value)) }
 }
 
 extension PropertyContainer where Modified == Self {
@@ -919,13 +919,13 @@ extension VisualElementProperties {
     // test, a script or an agent driving the application from outside.
     //
     // They are two different jobs and they do not stand in for one another.
-    // `.automationId` is a handle nothing reads out; the other three are read
+    // `.accessibilityIdentifier` is a handle nothing reads out; the other three are read
     // out and are no use to a driver, a description being prose that changes
     // with the language the reader chose.
 
     /// What a screen reader says this view IS.
     ///
-    ///     Button(icon: "bin.png").semanticDescription("Delete")
+    ///     Button(icon: "bin.png").accessibilityLabel("Delete")
     ///
     /// A control whose meaning is carried by a picture, a colour or where it
     /// sits says nothing at all to a reader who cannot see it, and this is what
@@ -933,32 +933,32 @@ extension VisualElementProperties {
     /// those, so a description written on one REPLACES them rather than adding
     /// to them - which is why the ones worth writing are on the controls that
     /// have no words of their own.
-    public func semanticDescription(_ value: String) -> Modified { setValue(.semanticDescription, .string(value)) }
+    public func accessibilityLabel(_ value: String) -> Modified { setValue(.accessibilityLabel, .string(value)) }
 
     /// What a screen reader says will HAPPEN, after it has said what the view is.
     ///
     ///     Switch($lit)
-    ///         .semanticDescription("Ceiling light")
-    ///         .semanticHint("Turns the light on and off")
+    ///         .accessibilityLabel("Ceiling light")
+    ///         .accessibilityHint("Turns the light on and off")
     ///
     /// The description names the control and this says what using it does, so
     /// a hint on a view nobody can act on is a sentence read out for nothing.
-    public func semanticHint(_ value: String) -> Modified { setValue(.semanticHint, .string(value)) }
+    public func accessibilityHint(_ value: String) -> Modified { setValue(.accessibilityHint, .string(value)) }
 
-    /// Whether a screen reader can reach this view at all.
+    /// Whether a screen reader skips this view.
     ///
-    ///     ColorBox(.silver).automationIsInAccessibleTree(false)
+    ///     ColorBox(.silver).isAccessibilityHidden(true)
     ///
     /// Decoration is what this is for: a rule, a shadow, a picture that repeats
     /// what the words beside it already say. A reader moves through a page one
     /// thing at a time, so a view that says nothing is a stop that wastes their
-    /// time - and taking it out of the tree is how it stops being one.
+    /// time - and hiding it is how it stops being one.
     ///
     /// Left unsaid the platform decides, which is the right answer nearly
     /// always: a view with words is reachable and a plain container is not.
-    /// Say `true` where a platform has left something out, and never on a view
-    /// the reader has to be able to act on.
-    public func automationIsInAccessibleTree(_ value: Bool) -> Modified { setValue(.automationIsInAccessibleTree, .bool(value)) }
+    /// Say `false` where a platform has left something out, and never hide a
+    /// view the reader has to be able to act on.
+    public func isAccessibilityHidden(_ value: Bool) -> Modified { setValue(.isAccessibilityHidden, .bool(value)) }
 
     /// Whether taking this view out takes everything inside it too.
     ///
@@ -973,12 +973,12 @@ extension VisualElementProperties {
 
     /// That this view is a HEADING, and how deep.
     ///
-    ///     Label("Settings").fontSize(24).semanticHeadingLevel(.level1)
+    ///     Label("Settings").fontSize(24).accessibilityHeadingLevel(.level1)
     ///
     /// A reader who cannot see the page moves through it by its headings, which
     /// is what makes a long page navigable at all. Drawing a Label big says
     /// nothing about that: a heading is what this says it is.
-    public func semanticHeadingLevel(_ value: SemanticHeadingLevel) -> Modified { setValue(.semanticHeadingLevel, value.propValue) }
+    public func accessibilityHeadingLevel(_ value: HeadingLevel) -> Modified { setValue(.accessibilityHeadingLevel, value.propValue) }
 }
 
 // MARK: - What the control knows and this side does not

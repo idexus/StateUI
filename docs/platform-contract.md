@@ -285,7 +285,7 @@ individual control already uses that member.
 | drawing order | `zIndex` | — | — | — | — | — | — |
 | planar transform | `rotation`, `scale`, `scaleX`, `scaleY`, `translationX`, `translationY` | — | — | — | — | — | — |
 | spatial transform and pivot | `rotationX`, `rotationY`, `pivotX`, `pivotY` | — | — | — | — | — | — |
-| accessibility | `automationId`, `automationIsInAccessibleTree`, `automationExcludedWithChildren`, `semanticDescription`, `semanticHint`, `semanticHeadingLevel` | ✅ | — | — | — | — | — |
+| accessibility | `accessibilityIdentifier`, `isAccessibilityHidden`, `automationExcludedWithChildren`, `accessibilityLabel`, `accessibilityHint`, `accessibilityHeadingLevel` | ✅ | — | — | — | — | — |
 | frame feed/event | `frame`, `frameChanged` | ✅ | — | — | — | — | — |
 | focus feed and event | `isFocused`, `isFocusedChanged` | — | — | — | — | — | — |
 | tap | `tapCount`, `onTapped` (`tapped`) | ✅ | — | — | — | — | — |
@@ -412,9 +412,10 @@ host status.
 
 ### Properties
 
-`absoluteLayoutBounds`, `absoluteLayoutProportions`, `address`, `allowDrop`,
-`aspect`, `automationExcludedWithChildren`, `automationId`,
-`automationIsInAccessibleTree`, `avoidsSafeArea`, `backButtonTitle`,
+`absoluteLayoutBounds`, `absoluteLayoutProportions`,
+`accessibilityHeadingLevel`, `accessibilityHint`, `accessibilityIdentifier`,
+`accessibilityLabel`, `address`, `allowDrop`, `aspect`,
+`automationExcludedWithChildren`, `avoidsSafeArea`, `backButtonTitle`,
 `background`, `barBackgroundColor`, `barForegroundColor`, `borderColor`,
 `borderWidth`, `cancelButtonColor`, `canDrag`, `characterSpacing`,
 `clipsContent`, `color`, `columns`, `columnSpacing`, `content`, `cornerRadius`,
@@ -426,24 +427,23 @@ host status.
 `hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollBarVisibility`,
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
-`inputPurpose`, `isAnimating`, `isDestructive`, `isEnabled`, `isMaximizable`,
-`isMinimizable`, `isOn`, `isOpaque`, `isOpen`, `isPassword`, `isReadOnly`,
-`isRefreshEnabled`, `isRefreshing`, `isRunning`, `isScrollEnabled`,
-`isSidebarVisible`, `isSpellCheckEnabled`, `isTextPredictionEnabled`,
-`isTrafficEnabled`, `isVisible`, `isZoomEnabled`, `label`, `layoutDirection`,
-`letsInputThrough`, `lineBreak`, `lineHeight`, `location`, `mapType`, `margin`,
-`maximum`, `maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`,
-`maximumTrackColor`, `maximumVisible`, `maximumWidth`, `minimum`,
-`minimumDate`, `minimumHeight`, `minimumTrackColor`, `minimumWidth`, `mode`,
-`name`, `offColor`, `onColor`, `opacity`, `options`, `orientation`, `padding`,
-`panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
-`placeholder`, `placeholderColor`, `placement`, `points`, `position`,
-`priority`, `progress`, `progressColor`, `refreshColor`, `region`,
+`inputPurpose`, `isAccessibilityHidden`, `isAnimating`, `isDestructive`,
+`isEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpaque`, `isOpen`,
+`isPassword`, `isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isRunning`,
+`isScrollEnabled`, `isSidebarVisible`, `isSpellCheckEnabled`,
+`isTextPredictionEnabled`, `isTrafficEnabled`, `isVisible`, `isZoomEnabled`,
+`label`, `layoutDirection`, `letsInputThrough`, `lineBreak`, `lineHeight`,
+`location`, `mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`,
+`maximumLength`, `maximumLines`, `maximumTrackColor`, `maximumVisible`,
+`maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`, `minimumTrackColor`,
+`minimumWidth`, `mode`, `name`, `offColor`, `onColor`, `opacity`, `options`,
+`orientation`, `padding`, `panTouchCount`, `panXChannel`, `panYChannel`,
+`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`, `points`,
+`position`, `priority`, `progress`, `progressColor`, `refreshColor`, `region`,
 `renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
 `rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollMomentum`, `scrollOffset`,
 `scrollStep`, `searchIconColor`, `selectedIndex`, `selectedIndicatorColor`,
-`selectionLength`, `semanticDescription`, `semanticHeadingLevel`,
-`semanticHint`, `shape`, `showsClearButton`, `showsUserLocation`, `side`,
+`selectionLength`, `shape`, `showsClearButton`, `showsUserLocation`, `side`,
 `snapFrom`, `snapInterval`, `snapsAtMost`, `source`, `spacing`, `step`,
 `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`,
 `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`, `subtitle`,

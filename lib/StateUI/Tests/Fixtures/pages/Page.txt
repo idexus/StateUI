@@ -15,7 +15,7 @@ Page 1 arranged(4)
       text: string "stack title"
   ToolbarItems 5 arranged(1)
     ToolbarItem 6
-      automationId: string "bar.save"
+      accessibilityIdentifier: string "bar.save"
       icon: string "mark.png"
       isDestructive: true
       isEnabled: false

@@ -148,8 +148,8 @@ private struct IdentityRow: ContentView {
                 .verticalAlignment(.center)
 
             TextField()
-                .automationId("identity.typed")
-                .semanticDescription("Anything typed here")
+                .accessibilityIdentifier("identity.typed")
+                .accessibilityLabel("Anything typed here")
                 .placeholder("type here")
                 .horizontalAlignment(.fill)
 

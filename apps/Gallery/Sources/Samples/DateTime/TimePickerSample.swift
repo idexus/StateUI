@@ -55,8 +55,8 @@ struct TimePickerSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             TimePicker($alarm)
-                .automationId("timePicker.alarm")
-                .semanticDescription("Alarm")
+                .accessibilityIdentifier("timePicker.alarm")
+                .accessibilityLabel("Alarm")
                 .format("t")
 
             Label("Alarm at \(alarm.text)")
@@ -85,8 +85,8 @@ struct TimePickerSample: SampleContent, ExampleContent {
             SectionTitle("One-way, written back by hand")
 
             TimePicker()
-                .automationId("timePicker.alarm.oneWay")
-                .semanticDescription("Alarm, written back by hand")
+                .accessibilityIdentifier("timePicker.alarm.oneWay")
+                .accessibilityLabel("Alarm, written back by hand")
                 .time(alarm)
                 .format("t")
                 .onTimeChanged { time in

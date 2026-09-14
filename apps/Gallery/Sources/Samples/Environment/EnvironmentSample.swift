@@ -34,8 +34,8 @@ private struct NameEditor: ContentView {
 
     var content: any View {
         TextField(session.$name)
-            .automationId("environment.name")
-            .semanticDescription("Signed-in name")
+            .accessibilityIdentifier("environment.name")
+            .accessibilityLabel("Signed-in name")
             .placeholder("Signed-in name")
     }
 }

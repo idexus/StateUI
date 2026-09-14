@@ -80,8 +80,8 @@ struct TextFieldSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             TextField($name)
-                .automationId("entry.name")
-                .semanticDescription("Name")
+                .accessibilityIdentifier("entry.name")
+                .accessibilityLabel("Name")
                 .placeholder("Type your name")
                 .showsClearButton(true)
                 .isFocused($editing)
@@ -104,8 +104,8 @@ struct TextFieldSample: SampleContent, ExampleContent {
             // underline and its next-word guesses only get in the way, and
             // the caret can be put where the reader did not.
             TextField($code)
-                .automationId("entry.code")
-                .semanticDescription("Serial number")
+                .accessibilityIdentifier("entry.code")
+                .accessibilityLabel("Serial number")
                 .placeholder("a serial number")
                 .isSpellCheckEnabled(false)
                 .isTextPredictionEnabled(false)
@@ -124,13 +124,13 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .onClicked { selectAll.toggle() }
 
             TextField("read only")
-                .automationId("entry.readOnly")
-                .semanticDescription("A field that cannot be typed in")
+                .accessibilityIdentifier("entry.readOnly")
+                .accessibilityLabel("A field that cannot be typed in")
                 .isReadOnly(true)
 
             TextField()
-                .automationId("entry.password")
-                .semanticDescription("Password")
+                .accessibilityIdentifier("entry.password")
+                .accessibilityLabel("Password")
                 .placeholder("a password")
                 .isPassword(true)
                 .returnKey(.done)
@@ -138,8 +138,8 @@ struct TextFieldSample: SampleContent, ExampleContent {
             // The keyboard the platform brings up, a cap on the length, and
             // what the return key does when it is pressed.
             TextField($email)
-                .automationId("entry.email")
-                .semanticDescription("Email address")
+                .accessibilityIdentifier("entry.email")
+                .accessibilityLabel("Email address")
                 .placeholder("an address, capped at 20")
                 .inputPurpose(.email)
                 .maximumLength(20)

@@ -127,7 +127,7 @@ struct FileRow: ContentView {
 }
 ```
 
-`.id` is internal tree identity. `.automationId` is a stable external handle
+`.id` is internal tree identity. `.accessibilityIdentifier` is a stable external handle
 for platform automation. `.aim` lets an action reach a current element. These
 three names solve different problems and do not replace one another.
 

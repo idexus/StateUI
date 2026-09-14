@@ -65,8 +65,8 @@ struct BuilderSample: SampleContent, ExampleContent {
 
             HStack {
                 Switch($signedIn)
-                    .automationId("builder.signedIn")
-                    .semanticDescription("Signed in")
+                    .accessibilityIdentifier("builder.signedIn")
+                    .accessibilityLabel("Signed in")
 
                 Label("Signed in")
                     .verticalAlignment(.center)
@@ -79,19 +79,19 @@ struct BuilderSample: SampleContent, ExampleContent {
             }
 
             TextField($note)
-                .automationId("builder.note")
-                .semanticDescription("Note")
+                .accessibilityIdentifier("builder.note")
+                .accessibilityLabel("Note")
                 .placeholder("Type here, then flip the switch")
 
             if editing {
                 TextField("name")
-                    .automationId("builder.name")
-                    .semanticDescription("Name")
+                    .accessibilityIdentifier("builder.name")
+                    .accessibilityLabel("Name")
                     .placeholder("name")
             } else {
                 TextField("nickname")
-                    .automationId("builder.nickname")
-                    .semanticDescription("Nickname")
+                    .accessibilityIdentifier("builder.nickname")
+                    .accessibilityLabel("Nickname")
                     .placeholder("nickname")
             }
 

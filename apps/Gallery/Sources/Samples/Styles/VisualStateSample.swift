@@ -124,8 +124,8 @@ struct VisualStateSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
 
                 Switch($enabled)
-                    .automationId("visual-states.enabled")
-                    .semanticDescription("Enabled")
+                    .accessibilityIdentifier("visual-states.enabled")
+                    .accessibilityLabel("Enabled")
             }
             .spacing(12)
             .horizontalAlignment(.center)

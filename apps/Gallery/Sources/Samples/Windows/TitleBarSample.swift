@@ -83,14 +83,14 @@ struct TitleBarSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             TextField(bar.$subtitle)
-                .automationId("titleBar.subtitle")
-                .semanticDescription("Subtitle for the window")
+                .accessibilityIdentifier("titleBar.subtitle")
+                .accessibilityLabel("Subtitle for the window")
                 .placeholder("Window subtitle")
 
             HStack {
                 Switch(bar.$showsSurprise)
-                    .automationId("titleBar.surprise")
-                    .semanticDescription("Show a title bar action")
+                    .accessibilityIdentifier("titleBar.surprise")
+                    .accessibilityLabel("Show a title bar action")
 
                 Label("Show a trailing action")
                     .verticalAlignment(.center)

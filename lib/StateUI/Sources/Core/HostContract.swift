@@ -105,8 +105,8 @@
     public static let properties: [Prop: HostPropertyOwner] = table([
         (.native, [
             .allowDrop, .pivotX, .pivotY, .aspect,
-            .automationExcludedWithChildren, .automationId,
-            .automationIsInAccessibleTree, .growsWithText, .background,
+            .automationExcludedWithChildren, .accessibilityIdentifier,
+            .isAccessibilityHidden, .growsWithText, .background,
             .borderColor, .borderWidth, .canDrag,
             .characterSpacing, .color,
             .cornerRadius, .cursorPosition, .date, .dragText, .layoutDirection,
@@ -124,8 +124,8 @@
             .padding, .placeholder, .placeholderColor, .progress,
             .progressColor, .renderTransform, .rotation, .rotationX, .rotationY,
             .scale, .scaleX, .scaleY, .scrollMomentum, .scrollStep,
-            .selectedIndex, .selectionLength, .semanticDescription,
-            .semanticHeadingLevel, .semanticHint, .snapFrom, .snapInterval,
+            .selectedIndex, .selectionLength, .accessibilityLabel,
+            .accessibilityHeadingLevel, .accessibilityHint, .snapFrom, .snapInterval,
             .snapsAtMost, .source, .spacing, .text, .textColor,
             .textDecorations, .textCase, .thumbColor, .time, .title,
             .titleColor, .translationX, .translationY, .value,

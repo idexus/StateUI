@@ -58,8 +58,8 @@ struct SliderSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             Slider($volume)
-                .automationId("slider.volume")
-                .semanticDescription("Volume")
+                .accessibilityIdentifier("slider.volume")
+                .accessibilityLabel("Volume")
                 .minimum(0)
                 .maximum(100)
                 .isEnabled(soundOn)
@@ -77,8 +77,8 @@ struct SliderSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
 
                 Switch($soundOn)
-                    .automationId("slider.sound")
-                    .semanticDescription("Sound on")
+                    .accessibilityIdentifier("slider.sound")
+                    .accessibilityLabel("Sound on")
                     .onColor(Palette.accent)
             }
             .spacing(12)
@@ -87,8 +87,8 @@ struct SliderSample: SampleContent, ExampleContent {
             SectionTitle("A picture for the thumb")
 
             Slider($volume)
-                .automationId("slider.volume.thumb")
-                .semanticDescription("Volume, with a picture for the thumb")
+                .accessibilityIdentifier("slider.volume.thumb")
+                .accessibilityLabel("Volume, with a picture for the thumb")
                 .minimum(0)
                 .maximum(100)
                 .minimumTrackColor(Palette.accent)

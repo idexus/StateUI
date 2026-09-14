@@ -148,8 +148,8 @@ struct PersistentStateSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
 
             TextField($who)
-                .automationId("persistent-state.who")
-                .semanticDescription("Your name")
+                .accessibilityIdentifier("persistent-state.who")
+                .accessibilityLabel("Your name")
                 .placeholder("Your name")
 
             Label(who.isEmpty ? "Welcome back" : "Welcome back, \(who)")

@@ -92,8 +92,8 @@ struct SearchSample: SampleContent, ExampleContent {
         // tree, handed the same `@State` the content reads.
         .onCreated {
             page.titleView = SearchField($query)
-                .automationId("search.query")
-                .semanticDescription("Search the list")
+                .accessibilityIdentifier("search.query")
+                .accessibilityLabel("Search the list")
                 .placeholder("Search the list")
                 .textColor(Palette.text)
                 .placeholderColor(Palette.subtle)

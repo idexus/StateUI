@@ -186,8 +186,8 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
             HStack {
                 Switch($addFirst)
-                    .automationId("toolbar.addFirst")
-                    .semanticDescription("Add asks first")
+                    .accessibilityIdentifier("toolbar.addFirst")
+                    .accessibilityLabel("Add asks first")
 
                 Label(addFirst
                     ? "Add asks first - `.priority(0)`, against Save's 1"

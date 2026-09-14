@@ -483,6 +483,44 @@ final class HostContractTests: XCTestCase {
     /// a caption - on a button, a menu or toolbar item, a page's tab - with its
     /// `iconPosition` and `iconSpacing`, and `Button(icon:)` when there is no
     /// caption at all.
+    func testAccessibilityWordsShareOneFamily() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+
+        XCTAssertTrue(properties.isSuperset(of: [
+            "accessibilityIdentifier", "accessibilityLabel", "accessibilityHint",
+            "accessibilityHeadingLevel", "isAccessibilityHidden",
+        ]))
+        XCTAssertTrue(
+            properties.isDisjoint(with: [
+                "automationId", "semanticDescription", "semanticHint", "semanticHeadingLevel",
+                "automationIsInAccessibleTree",
+            ]),
+            "one accessibility concept keeps two prefixes")
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        var everything = ""
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            everything += source
+            for former in [
+                "func automationId(", "func semanticDescription(", "func semanticHint(",
+                "func semanticHeadingLevel(", "func automationIsInAccessibleTree(",
+                "enum SemanticHeadingLevel",
+            ] {
+                XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
+            }
+        }
+        XCTAssertTrue(everything.contains("public enum HeadingLevel"))
+        XCTAssertTrue(everything.contains("public func isAccessibilityHidden(_ value: Bool)"))
+    }
+
     func testTypesSpeakInPlainWords() throws {
         let tokenSource = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),

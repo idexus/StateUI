@@ -173,8 +173,8 @@ struct PositionIndicatorSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
 
             Stepper($cap)
-                .automationId("positionIndicator.cap")
-                .semanticDescription("How many dots")
+                .accessibilityIdentifier("positionIndicator.cap")
+                .accessibilityLabel("How many dots")
                 .minimum(4)
                 .maximum(12)
                 .horizontalAlignment(.center)

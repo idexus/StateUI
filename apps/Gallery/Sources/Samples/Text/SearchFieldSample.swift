@@ -57,8 +57,8 @@ struct SearchFieldSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             SearchField($query)
-                .automationId("searchBar.query")
-                .semanticDescription("Search the list")
+                .accessibilityIdentifier("searchBar.query")
+                .accessibilityLabel("Search the list")
                 .placeholder("Search the list")
                 .onSubmitted { searched = query }
 
@@ -81,8 +81,8 @@ struct SearchFieldSample: SampleContent, ExampleContent {
             SectionTitle("The magnifier and the clear button")
 
             SearchField($query)
-                .automationId("searchBar.query.styled")
-                .semanticDescription("Search the list, coloured")
+                .accessibilityIdentifier("searchBar.query.styled")
+                .accessibilityLabel("Search the list, coloured")
                 .placeholder("Search the list")
                 .searchIconColor(Palette.accent)
                 .cancelButtonColor(Palette.accent)

@@ -79,14 +79,14 @@ struct AimSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             TextField($text)
-                .automationId("aim.first")
-                .semanticDescription("The first field")
+                .accessibilityIdentifier("aim.first")
+                .accessibilityLabel("The first field")
                 .placeholder("The first field")
                 .aim(field)
 
             TextField()
-                .automationId("aim.second")
-                .semanticDescription("The second field")
+                .accessibilityIdentifier("aim.second")
+                .accessibilityLabel("The second field")
                 .placeholder("The second field")
                 .aim(note)
 

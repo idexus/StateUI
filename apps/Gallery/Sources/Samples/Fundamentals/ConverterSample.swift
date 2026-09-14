@@ -116,8 +116,8 @@ struct ConverterSample: SampleContent, ExampleContent {
         VStack {
             row("1 · the source, 0 to 1") {
                 Slider($volume)
-                    .automationId("converters.volume")
-                    .semanticDescription("Volume, 0 to 1")
+                    .accessibilityIdentifier("converters.volume")
+                    .accessibilityLabel("Volume, 0 to 1")
                     .minimum(0)
                     .maximum(1)
                     .minimumTrackColor(Palette.accent)
@@ -126,8 +126,8 @@ struct ConverterSample: SampleContent, ExampleContent {
 
             row("2 · the same state in percent") {
                 Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })
-                    .automationId("converters.volume.percent")
-                    .semanticDescription("Volume, in percent")
+                    .accessibilityIdentifier("converters.volume.percent")
+                    .accessibilityLabel("Volume, in percent")
                     .minimum(0)
                     .maximum(100)
                     .minimumTrackColor(Palette.subtle)
@@ -148,8 +148,8 @@ struct ConverterSample: SampleContent, ExampleContent {
                     // stepper can reach is whole in both scales and the two
                     // captions can never disagree.
                     Stepper($celsius)
-                        .automationId("converters.celsius")
-                        .semanticDescription("Celsius")
+                        .accessibilityIdentifier("converters.celsius")
+                        .accessibilityLabel("Celsius")
                         .step(5)
                         .minimum(-20)
                         .maximum(60)
@@ -160,8 +160,8 @@ struct ConverterSample: SampleContent, ExampleContent {
                 .spacing(10)
                 HStack {
                     Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
-                        .automationId("converters.fahrenheit")
-                        .semanticDescription("Fahrenheit")
+                        .accessibilityIdentifier("converters.fahrenheit")
+                        .accessibilityLabel("Fahrenheit")
                         .step(9)
                         .minimum(-4)
                         .maximum(140)
@@ -175,13 +175,13 @@ struct ConverterSample: SampleContent, ExampleContent {
 
             row("5 · two states into one") {
                 Slider($width)
-                    .automationId("converters.width")
-                    .semanticDescription("Width")
+                    .accessibilityIdentifier("converters.width")
+                    .accessibilityLabel("Width")
                     .minimum(20)
                     .maximum(200)
                 Slider($height)
-                    .automationId("converters.height")
-                    .semanticDescription("Height")
+                    .accessibilityIdentifier("converters.height")
+                    .accessibilityLabel("Height")
                     .minimum(20)
                     .maximum(200)
                 Label()
@@ -192,8 +192,8 @@ struct ConverterSample: SampleContent, ExampleContent {
 
             row("6 · a field is handed the state") {
                 TextField($named)
-                    .automationId("converters.named")
-                    .semanticDescription("A name for it")
+                    .accessibilityIdentifier("converters.named")
+                    .accessibilityLabel("A name for it")
                     .placeholder("Call it something")
                 DebugInfoLabel()
             }

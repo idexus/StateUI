@@ -59,8 +59,8 @@ struct TextEditorSample: SampleContent, ExampleContent {
                         .textColor(Palette.subtle)
 
                     TextEditor($draft)
-                        .automationId("editor.notes")
-                        .semanticDescription("Notes")
+                        .accessibilityIdentifier("editor.notes")
+                        .accessibilityLabel("Notes")
                         .placeholder("Anything worth remembering")
                         .height(110)
                 }
@@ -72,8 +72,8 @@ struct TextEditorSample: SampleContent, ExampleContent {
                         .textColor(Palette.subtle)
 
                     TextEditor($draft)
-                        .automationId("editor.notes.growsWithText")
-                        .semanticDescription("Notes, sized by the text")
+                        .accessibilityIdentifier("editor.notes.growsWithText")
+                        .accessibilityLabel("Notes, sized by the text")
                         .placeholder("The same text, sized by it")
                         .growsWithText(true)
                 }

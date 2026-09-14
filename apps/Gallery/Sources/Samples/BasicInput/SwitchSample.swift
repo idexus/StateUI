@@ -42,8 +42,8 @@ struct SwitchSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
 
                 Switch($soundOn)
-                    .automationId("switch.sound")
-                    .semanticDescription("Sound on")
+                    .accessibilityIdentifier("switch.sound")
+                    .accessibilityLabel("Sound on")
                     .onColor(Palette.accent)
                     .offColor(Palette.outline)
                     .onToggled { on in said = on ? "thrown on" : "thrown off" }

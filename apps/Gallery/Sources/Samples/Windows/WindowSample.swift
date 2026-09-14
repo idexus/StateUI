@@ -74,13 +74,13 @@ struct WindowSample: SampleContent, ExampleContent {
                     renames += 1
                     window.title = "Gallery \(renames)"
                 }
-                .automationId("window.rename")
+                .accessibilityIdentifier("window.rename")
 
                 action("Move to 80, 80") {
                     window.x = 80
                     window.y = 80
                 }
-                .automationId("window.move")
+                .accessibilityIdentifier("window.move")
             }
             .spacing(10)
 
@@ -89,13 +89,13 @@ struct WindowSample: SampleContent, ExampleContent {
                     window.width = 900
                     window.height = 650
                 }
-                .automationId("window.compact")
+                .accessibilityIdentifier("window.compact")
 
                 action("1100 × 800") {
                     window.width = 1100
                     window.height = 800
                 }
-                .automationId("window.regular")
+                .accessibilityIdentifier("window.regular")
             }
             .spacing(10)
 
@@ -132,8 +132,8 @@ struct WindowSample: SampleContent, ExampleContent {
     private func option(_ title: String, id: String, value: Binding<Bool>) -> any View {
         HStack {
             Switch(value)
-                .automationId(id)
-                .semanticDescription(title)
+                .accessibilityIdentifier(id)
+                .accessibilityLabel(title)
             Label(title).verticalAlignment(.center)
         }
         .spacing(8)

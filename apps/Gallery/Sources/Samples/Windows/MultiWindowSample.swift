@@ -189,14 +189,14 @@ struct MultiWindowSample: SampleContent, ExampleContent {
                 .cornerRadius(8)
                 .padding(20, 10)
                 .horizontalAlignment(.center)
-                .automationId("scene.open")
+                .accessibilityIdentifier("scene.open")
                 .onClicked { await openAnother() }
 
             Button("Close this gallery")
                 .fontSize(13)
                 .padding(14, 6)
                 .horizontalAlignment(.center)
-                .automationId("scene.close")
+                .accessibilityIdentifier("scene.close")
                 .onClicked { await closeThis() }
         }
         .spacing(12)
@@ -229,7 +229,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .textColor(.white)
             .cornerRadius(8)
             .padding(20, 8)
-            .automationId(handle("window.open", caption))
+            .accessibilityIdentifier(handle("window.open", caption))
             .onClicked { await open(type, caption) }
     }
 
@@ -238,7 +238,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
         Button(caption)
             .fontSize(13)
             .padding(14, 6)
-            .automationId(handle("window.close", caption))
+            .accessibilityIdentifier(handle("window.close", caption))
             .onClicked { await close(type, caption) }
     }
 
@@ -283,7 +283,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             .textColor(.white)
             .cornerRadius(8)
             .padding(16, 8)
-            .automationId("window.open.swatch.\(number)")
+            .accessibilityIdentifier("window.open.swatch.\(number)")
             .onClicked { await openSwatch(number) }
     }
 

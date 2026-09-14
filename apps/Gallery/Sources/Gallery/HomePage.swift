@@ -598,9 +598,9 @@ private struct GroupFace: ContentView {
         // platform. The card says which group it is, and what its summary
         // says, which is what a reader who cannot see the picture goes by and
         // what a script asks for by name. Handle.swift has the rule.
-        .automationId(handle("group", title))
-        .semanticDescription(title)
-        .semanticHint(summary)
+        .accessibilityIdentifier(handle("group", title))
+        .accessibilityLabel(title)
+        .accessibilityHint(summary)
         .strokeWidth(0)
         .shape(.roundedRectangle(16))
     }

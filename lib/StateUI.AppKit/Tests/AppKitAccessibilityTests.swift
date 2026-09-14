@@ -15,10 +15,10 @@ final class AppKitAccessibilityTests: XCTestCase {
         var label = HostPatch(id: .manual("heading"), type: .label)
         label.properties = [
             .text: .string("Visible title"),
-            .automationId: .string("semantics.heading"),
-            .semanticDescription: .string("Accessible title"),
-            .semanticHint: .string("Opens the section"),
-            .semanticHeadingLevel: .enumeration(2),
+            .accessibilityIdentifier: .string("semantics.heading"),
+            .accessibilityLabel: .string("Accessible title"),
+            .accessibilityHint: .string("Opens the section"),
+            .accessibilityHeadingLevel: .enumeration(2),
         ]
 
         renderer.applyForTesting(tree(label))
@@ -47,22 +47,22 @@ final class AppKitAccessibilityTests: XCTestCase {
         defer { renderer.closeForTesting() }
         var box = HostPatch(id: .manual("box"), type: .colorBox)
         box.properties = [
-            .automationId: .string("decoration"),
-            .semanticDescription: .string("Temporary"),
-            .semanticHint: .string("Temporary hint"),
-            .semanticHeadingLevel: .enumeration(1),
-            .automationIsInAccessibleTree: .bool(true),
+            .accessibilityIdentifier: .string("decoration"),
+            .accessibilityLabel: .string("Temporary"),
+            .accessibilityHint: .string("Temporary hint"),
+            .accessibilityHeadingLevel: .enumeration(1),
+            .isAccessibilityHidden: .bool(false),
         ]
         renderer.applyForTesting(tree(box))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
 
         var cleared = HostPatch(id: .manual("box"), type: .colorBox)
         cleared.clearedProperties = [
-            .automationId,
-            .semanticDescription,
-            .semanticHint,
-            .semanticHeadingLevel,
-            .automationIsInAccessibleTree,
+            .accessibilityIdentifier,
+            .accessibilityLabel,
+            .accessibilityHint,
+            .accessibilityHeadingLevel,
+            .isAccessibilityHidden,
         ]
         renderer.applyForTesting(changedTree(cleared))
 
@@ -81,8 +81,8 @@ final class AppKitAccessibilityTests: XCTestCase {
         child.properties[.text] = .string("Skipped child")
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.properties = [
-            .semanticDescription: .string("Skipped panel"),
-            .automationIsInAccessibleTree: .bool(true),
+            .accessibilityLabel: .string("Skipped panel"),
+            .isAccessibilityHidden: .bool(false),
             .automationExcludedWithChildren: .bool(true),
         ]
         stack.children = .arranged([child])
@@ -106,7 +106,7 @@ final class AppKitAccessibilityTests: XCTestCase {
         caption.properties[.text] = .string("Motion")
         caption.events = .replace([.tapped: 301])
         var card = HostPatch(id: .manual("card"), type: .vStack)
-        card.properties[.semanticDescription] = .string("Motion sample")
+        card.properties[.accessibilityLabel] = .string("Motion sample")
         card.events = .replace([.tapped: 300])
         card.children = .arranged([caption])
 
@@ -136,13 +136,13 @@ final class AppKitAccessibilityTests: XCTestCase {
         var captioned = HostPatch(id: .manual("captioned"), type: .button)
         captioned.properties = [
             .text: .string("Save"),
-            .automationId: .string("save"),
+            .accessibilityIdentifier: .string("save"),
         ]
         var described = HostPatch(id: .manual("described"), type: .button)
         described.properties = [
             .icon: .string("favourite.png"),
-            .automationId: .string("semantics.described"),
-            .semanticDescription: .string("Add to favourites"),
+            .accessibilityIdentifier: .string("semantics.described"),
+            .accessibilityLabel: .string("Add to favourites"),
         ]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([captioned, described])
@@ -166,8 +166,8 @@ final class AppKitAccessibilityTests: XCTestCase {
         func described(_ identifier: String, _ type: NodeType, _ words: String) -> HostPatch {
             var patch = HostPatch(id: .manual(identifier), type: type)
             patch.properties = [
-                .automationId: .string(identifier),
-                .semanticDescription: .string(words),
+                .accessibilityIdentifier: .string(identifier),
+                .accessibilityLabel: .string(words),
             ]
             return patch
         }
@@ -201,8 +201,8 @@ final class AppKitAccessibilityTests: XCTestCase {
         var entry = HostPatch(id: .manual("entry"), type: .textField)
         entry.properties = [
             .text: .string(""),
-            .automationId: .string("entry.password"),
-            .semanticDescription: .string("Password"),
+            .accessibilityIdentifier: .string("entry.password"),
+            .accessibilityLabel: .string("Password"),
         ]
         renderer.applyForTesting(tree(entry))
 
@@ -214,6 +214,30 @@ final class AppKitAccessibilityTests: XCTestCase {
         let element = try XCTUnwrap(presented("entry.password", under: field))
         XCTAssertEqual(element.role, .textField)
         XCTAssertEqual(element.label, "Password")
+    }
+
+    @MainActor
+    func testAHiddenViewIsNoElementAndAnUnhiddenContainerIsOne() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        var hidden = HostPatch(id: .manual("hidden"), type: .colorBox)
+        hidden.properties = [
+            .accessibilityLabel: .string("Decoration"),
+            .isAccessibilityHidden: .bool(true),
+        ]
+        var shown = HostPatch(id: .manual("shown"), type: .vStack)
+        shown.properties[.isAccessibilityHidden] = .bool(false)
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([hidden, shown])
+
+        renderer.applyForTesting(tree(stack))
+
+        // Words would make the box an element; hiding it wins.
+        let hiddenView = try XCTUnwrap(renderer.viewForTesting(id: .manual("hidden")))
+        XCTAssertFalse(hiddenView.isAccessibilityElement())
+        // A plain container is none by itself; saying it is not hidden brings it in.
+        let shownView = try XCTUnwrap(renderer.viewForTesting(id: .manual("shown")))
+        XCTAssertTrue(shownView.isAccessibilityElement())
     }
 
     /// The element AppKit presents to assistive technology under `view` with

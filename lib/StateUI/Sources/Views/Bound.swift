@@ -1110,14 +1110,14 @@ extension VisualElement {
         journey(.pivotY, by: state)
     }
 
-    /// `automationId`, handed on as `$x`: the host writes the words, and
+    /// `accessibilityIdentifier`, handed on as `$x`: the host writes the words, and
     /// handing it on reads nothing - a write renders only a body that reads the
     /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func automationId(_ state: Binding<String>) -> Modified {
-        words(.automationId, by: state)
+    public func accessibilityIdentifier(_ state: Binding<String>) -> Modified {
+        words(.accessibilityIdentifier, by: state)
     }
 
     /// `automationExcludedWithChildren`, handed on as `$x`: the host sets it as
@@ -1130,14 +1130,14 @@ extension VisualElement {
         plain(.automationExcludedWithChildren, by: state)
     }
 
-    /// `automationIsInAccessibleTree`, handed on as `$x`: the host sets it as
+    /// `isAccessibilityHidden`, handed on as `$x`: the host sets it as
     /// it is, and handing it on reads nothing - a write renders only a body
     /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func automationIsInAccessibleTree(_ state: Binding<Bool>) -> Modified {
-        plain(.automationIsInAccessibleTree, by: state)
+    public func isAccessibilityHidden(_ state: Binding<Bool>) -> Modified {
+        plain(.isAccessibilityHidden, by: state)
     }
 
     /// `background`, handed on as `$x`: the host walks it there under the
@@ -1308,34 +1308,34 @@ extension VisualElement {
         journey(.scaleY, by: state)
     }
 
-    /// `semanticDescription`, handed on as `$x`: the host writes the words, and
+    /// `accessibilityLabel`, handed on as `$x`: the host writes the words, and
     /// handing it on reads nothing - a write renders only a body that reads the
     /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func semanticDescription(_ state: Binding<String>) -> Modified {
-        words(.semanticDescription, by: state)
+    public func accessibilityLabel(_ state: Binding<String>) -> Modified {
+        words(.accessibilityLabel, by: state)
     }
 
-    /// `semanticHeadingLevel`, handed on as `$x`: the host sets the member it
+    /// `accessibilityHeadingLevel`, handed on as `$x`: the host sets the member it
     /// names, and handing it on reads nothing - a write renders only a body
     /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func semanticHeadingLevel(_ state: Binding<SemanticHeadingLevel>) -> Modified {
-        plain(.semanticHeadingLevel, by: state)
+    public func accessibilityHeadingLevel(_ state: Binding<HeadingLevel>) -> Modified {
+        plain(.accessibilityHeadingLevel, by: state)
     }
 
-    /// `semanticHint`, handed on as `$x`: the host writes the words, and
+    /// `accessibilityHint`, handed on as `$x`: the host writes the words, and
     /// handing it on reads nothing - a write renders only a body that reads the
     /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func semanticHint(_ state: Binding<String>) -> Modified {
-        words(.semanticHint, by: state)
+    public func accessibilityHint(_ state: Binding<String>) -> Modified {
+        words(.accessibilityHint, by: state)
     }
 
     /// `translationX`, handed on as `$x`: the host walks it there under the

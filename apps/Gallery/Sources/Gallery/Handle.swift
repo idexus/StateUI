@@ -2,7 +2,7 @@
 
 import StateUI
 
-/// The gallery's rule for `.automationId`: a ROLE and the caption the reader
+/// The gallery's rule for `.accessibilityIdentifier`: a ROLE and the caption the reader
 /// can see, joined with a dot - `handle("switch", "Runs sideways")` is
 /// `switch.runs.sideways`.
 ///

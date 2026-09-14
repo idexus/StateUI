@@ -106,8 +106,8 @@ struct StateSample: SampleContent, ExampleContent {
                         DebugInfoLabel()
 
                         TextField($name)
-                            .automationId("state.name")
-                            .semanticDescription("Name")
+                            .accessibilityIdentifier("state.name")
+                            .accessibilityLabel("Name")
                             .placeholder("And the same for text")
 
                         Label(name.isEmpty ? "Hello, stranger" : "Hello, \(name)!")

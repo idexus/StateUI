@@ -120,8 +120,8 @@ struct FrameReaderSample: SampleContent, ExampleContent {
             .background(Palette.selected)
 
             Slider($width)
-                .automationId("frameReader.width")
-                .semanticDescription("Width")
+                .accessibilityIdentifier("frameReader.width")
+                .accessibilityLabel("Width")
                 .minimum(140)
                 .maximum(340)
 

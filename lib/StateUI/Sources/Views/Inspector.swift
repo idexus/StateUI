@@ -211,7 +211,7 @@ extension ToolbarItem {
     public static func inspector(_ scene: SceneSession) -> ToolbarItem {
         ToolbarItem("ⓘ")
             .id("stateui.inspector")
-            .automationId("stateui.inspector")
+            .accessibilityIdentifier("stateui.inspector")
             .onClicked { Inspector.toggle(in: scene) }
     }
 }
@@ -235,8 +235,8 @@ public struct InspectorButton: ContentView {
             .textColor(Look.subtle)
             .background(.transparent)
             .padding(10, 2)
-            .automationId("stateui.inspector")
-            .semanticDescription("Inspector")
+            .accessibilityIdentifier("stateui.inspector")
+            .accessibilityLabel("Inspector")
             .onClicked { Inspector.toggle(in: scene) }
     }
 }
@@ -899,8 +899,8 @@ enum Look {
         .width(28)
         .height(24)
         .background(.transparent)
-        .semanticDescription(words)
-        .automationId("stateui.inspector.\(words.lowercased())")
+        .accessibilityLabel(words)
+        .accessibilityIdentifier("stateui.inspector.\(words.lowercased())")
         .onTapped { run() }
     }
 

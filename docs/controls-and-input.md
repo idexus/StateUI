@@ -220,7 +220,7 @@ purpose, it goes in the initializer: `Button(icon:)`. Beside a caption it is the
 
 ```swift
 Button(icon: "trash.png")
-    .semanticDescription("Delete")
+    .accessibilityLabel("Delete")
 
 Button("Surprise me")
     .icon("nav_surprise.png")
@@ -232,7 +232,7 @@ Button("Surprise me")
 follows the layout direction. A button with only an icon is the same control as
 one with a caption - the same border, corner radius and pressed state - with
 `aspect` for how its picture fills it. A picture alone gives it no name for a
-screen reader, so it carries a `semanticDescription`.
+screen reader, so it carries a `accessibilityLabel`.
 
 ## Provisional native surfaces
 

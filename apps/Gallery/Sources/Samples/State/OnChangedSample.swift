@@ -54,8 +54,8 @@ struct OnChangedSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
 
             Slider($celsius)
-                .automationId("onChanged.celsius")
-                .semanticDescription("Celsius")
+                .accessibilityIdentifier("onChanged.celsius")
+                .accessibilityLabel("Celsius")
                 .minimum(-10)
                 .maximum(40)
 

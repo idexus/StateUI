@@ -87,8 +87,8 @@ struct SplitViewSample: SampleContent, ExampleContent {
 
             HStack {
                 Switch(nav.$listsHiddenRow)
-                    .automationId("splitview.hiddenRow")
-                    .semanticDescription("Show the row that is not in the list")
+                    .accessibilityIdentifier("splitview.hiddenRow")
+                    .accessibilityLabel("Show the row that is not in the list")
 
                 Label(nav.listsHiddenRow
                     ? "The menu lists \"Not in the list\""

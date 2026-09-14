@@ -36,7 +36,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 // this control has no name at all.
                 Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                     .style("IconButton")
-                    .automationId("semantics.bare")
+                    .accessibilityIdentifier("semantics.bare")
                     .onClicked { taps += 1 }
 
                 // The same button, saying what it is and what using it does.
@@ -53,7 +53,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             // Read as a heading: somewhere a reader jumping through the page
             // can land.
             Label("A heading, and drawn the same")
-                .semanticHeadingLevel(.level1)
+                .accessibilityHeadingLevel(.level1)
 
             // Said out loud, now, whatever the reader was on. An ACT, because
             // it is something that happens at a moment rather than a value a
@@ -81,18 +81,18 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
             ColorBox(Palette.outline)
                 .height(1)
-                .automationIsInAccessibleTree(false)
+                .isAccessibilityHidden(true)
         }
 
         private var describedButton: any View {
             let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
                 .style("IconButton")
-                .automationId("semantics.described")
+                .accessibilityIdentifier("semantics.described")
                 .onClicked { taps += 1 }
 
             return described
-                ? button.semanticDescription("Add to favourites")
-                    .semanticHint("Puts this item on your list")
+                ? button.accessibilityLabel("Add to favourites")
+                    .accessibilityHint("Puts this item on your list")
                 : button
         }
         """
@@ -105,7 +105,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 VStack {
                     Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                         .style("IconButton")
-                        .automationId("semantics.bare")
+                        .accessibilityIdentifier("semantics.bare")
                         .aspect(.fit)
                         .width(64)
                         .height(64)
@@ -167,14 +167,14 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 Label("A heading, and drawn the same")
                     .fontSize(20)
                     .fontAttributes(.bold)
-                    .semanticHeadingLevel(.level1)
+                    .accessibilityHeadingLevel(.level1)
             }
             .spacing(4)
 
             SectionTitle("Said out loud")
 
             Button("Announce the count")
-                .automationId("semantics.announce")
+                .accessibilityIdentifier("semantics.announce")
                 .fontSize(13)
                 .padding(16, 6)
                 .horizontalAlignment(.center)
@@ -229,7 +229,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             // A rule is decoration: a stop that would waste the reader's time.
             ColorBox(Palette.outline)
                 .height(1)
-                .automationIsInAccessibleTree(false)
+                .isAccessibilityHidden(true)
         }
         .spacing(12)
     }
@@ -242,7 +242,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
     private var describedButton: any View {
         let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
             .style("IconButton")
-            .automationId("semantics.described")
+            .accessibilityIdentifier("semantics.described")
             .aspect(.fit)
             .width(64)
             .height(64)
@@ -252,17 +252,17 @@ struct SemanticsSample: SampleContent, ExampleContent {
             .onClicked { taps += 1 }
 
         return described
-            ? button.semanticDescription(Self.says).semanticHint(Self.hint)
+            ? button.accessibilityLabel(Self.says).accessibilityHint(Self.hint)
             : button
     }
 
     var notes: Element? {
         VStack {
             Label("Two jobs, four modifiers, and they do not stand in for one another. "
-                + "`.semanticDescription` and `.semanticHint` are what a screen reader "
+                + "`.accessibilityLabel` and `.accessibilityHint` are what a screen reader "
                 + "SAYS: the first names the control, the second says what using it does. "
-                + "`.semanticHeadingLevel` marks a view as a heading, which is how a "
-                + "reader moves through a long page. `.automationId` is a handle nobody "
+                + "`.accessibilityHeadingLevel` marks a view as a heading, which is how a "
+                + "reader moves through a long page. `.accessibilityIdentifier` is a handle nobody "
                 + "hears - it is what a UI test, a script or an agent driving the "
                 + "application asks the platform to find.")
                 .fontSize(12)

@@ -35,7 +35,7 @@ extension ToolbarItem {
             // sample that does not go through the sidebar - so it is the handle
             // a script reaches for most. `.id` is the DIFFER's identity and
             // never leaves this side; this is the platform's own.
-            .automationId("chrome.home")
+            .accessibilityIdentifier("chrome.home")
             .icon("nav_home_dark.png")
             .onClicked { nav.home() }
     }

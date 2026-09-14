@@ -67,7 +67,7 @@ defines which directions are recognized.
 A view that answers a tap is a button to assistive technology. The platform's
 accessibility press runs the same handler a tap runs, so a screen reader or an
 automation script activates the row without a pointer. Give such a view a
-`semanticDescription` so the button has a name.
+`accessibilityLabel` so the button has a name.
 
 ### Pan and pinch
 
@@ -249,19 +249,19 @@ Accessibility modifiers describe meaning, not test-only metadata:
 
 ```swift
 Label("Order total")
-    .semanticDescription("Order total: 42 euros")
-    .semanticHint("Updates after the cart changes")
-    .semanticHeadingLevel(.level1)
-    .automationId("checkout.total")
+    .accessibilityLabel("Order total: 42 euros")
+    .accessibilityHint("Updates after the cart changes")
+    .accessibilityHeadingLevel(.level1)
+    .accessibilityIdentifier("checkout.total")
 ```
 
-`semanticDescription` states what the element is, `semanticHint` explains the
+`accessibilityLabel` states what the element is, `accessibilityHint` explains the
 result of interacting with it, and heading level describes document structure.
-Use `automationIsInAccessibleTree` and
+Use `isAccessibilityHidden` and
 `automationExcludedWithChildren` to control exposure only when the composed
 semantics require it.
 
-`automationId` is an external stable identifier for UI automation. It is not
+`accessibilityIdentifier` is an external stable identifier for UI automation. It is not
 the tree's `.id`, and assigning one does not change StateUI identity.
 
 Announce an important asynchronous change that has no visible focused element:

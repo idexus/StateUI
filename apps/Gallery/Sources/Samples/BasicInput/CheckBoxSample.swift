@@ -53,8 +53,8 @@ struct CheckBoxSample: SampleContent, ExampleContent {
 
             HStack {
                 CheckBox($agreed)
-                    .automationId("checkBox.agreed")
-                    .semanticDescription("Agreed")
+                    .accessibilityIdentifier("checkBox.agreed")
+                    .accessibilityLabel("Agreed")
                     .color(Palette.accent)
 
                 Label("I have read the terms")
@@ -73,8 +73,8 @@ struct CheckBoxSample: SampleContent, ExampleContent {
                 let (index, name) = pair
                 return HStack {
                     CheckBox(extras[index])
-                        .automationId("checkBox.extra.\(index)")
-                        .semanticDescription(name)
+                        .accessibilityIdentifier("checkBox.extra.\(index)")
+                        .accessibilityLabel(name)
                         .color(Palette.accent)
                         .onToggled { ticked in extras[index] = ticked }
 

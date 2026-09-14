@@ -295,12 +295,12 @@ public enum LayoutDirection: Int32, Sendable {
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// How deep a heading is - what `.semanticHeadingLevel` takes.
+/// How deep a heading is - what `.accessibilityHeadingLevel` takes.
 ///
 /// A reader who cannot see the page moves through it by its headings, and the
 /// level is what tells them whether the next one starts a section or sits
 /// inside the one they are in.
-public enum SemanticHeadingLevel: Int32, Sendable {
+public enum HeadingLevel: Int32, Sendable {
     /// Ordinary content, however large it happens to be drawn. The default.
     case none = 0
 
@@ -577,7 +577,7 @@ extension LineCap: StateChoice {}
 extension LineJoin: StateChoice {}
 extension ReturnKey: StateChoice {}
 extension SafeArea: StateChoice {}
-extension SemanticHeadingLevel: StateChoice {}
+extension HeadingLevel: StateChoice {}
 extension ScrollBarVisibility: StateChoice {}
 extension ScrollOrientation: StateChoice {}
 extension TextAlignment: StateChoice {}

@@ -1864,8 +1864,8 @@ final class MountedNode: NSObject {
         .progressColor, .barBackgroundColor, .barForegroundColor,
         .drawable, .value, .progress, .scrollOffset, .isOn, .isEnabled,
         .ignoresInput, .letsInputThrough,
-        .automationId, .automationIsInAccessibleTree, .automationExcludedWithChildren,
-        .semanticDescription, .semanticHint, .semanticHeadingLevel,
+        .accessibilityIdentifier, .isAccessibilityHidden, .automationExcludedWithChildren,
+        .accessibilityLabel, .accessibilityHint, .accessibilityHeadingLevel,
     ]
 
     /// Only properties whose native presentation lives outside the mounted
@@ -2875,9 +2875,9 @@ final class MountedNode: NSObject {
         }
         guard let defaults = accessibilityDefaults else { return }
 
-        target.setAccessibilityIdentifier(string(.automationId))
-        target.setAccessibilityLabel(string(.semanticDescription))
-        target.setAccessibilityHelp(string(.semanticHint))
+        target.setAccessibilityIdentifier(string(.accessibilityIdentifier))
+        target.setAccessibilityLabel(string(.accessibilityLabel))
+        target.setAccessibilityHelp(string(.accessibilityHint))
 
         let excludesChildren = value(.automationExcludedWithChildren)?.bool == true
         if excludesChildren {
@@ -2888,14 +2888,15 @@ final class MountedNode: NSObject {
             accessibilityChildrenSuppressed = false
         }
 
-        let headingLevel = max(0, enumeration(.semanticHeadingLevel) ?? 0)
-        let carriesSemantics = string(.semanticDescription) != nil
-            || string(.semanticHint) != nil
+        let headingLevel = max(0, enumeration(.accessibilityHeadingLevel) ?? 0)
+        let carriesSemantics = string(.accessibilityLabel) != nil
+            || string(.accessibilityHint) != nil
             || headingLevel > 0
         // An element that answers a tap is a button to assistive technology,
         // pressed by the handler a click runs. See `AppKitHitTestView`.
         let pressable = events[.tapped] != nil && view is AppKitHitTestView
-        let authoredElement = value(.automationIsInAccessibleTree)?.bool
+        // The author says whether the view is hidden; an element is the opposite.
+        let authoredElement = value(.isAccessibilityHidden)?.bool.map { !$0 }
         target.setAccessibilityElement(
             excludesChildren
                 ? false
@@ -2986,7 +2987,7 @@ final class MountedNode: NSObject {
         platformMenuItem = item
         item.title = string(.text) ?? ""
         item.isEnabled = value(.isEnabled)?.bool ?? true
-        item.setAccessibilityIdentifier(string(.automationId))
+        item.setAccessibilityIdentifier(string(.accessibilityIdentifier))
         item.image = string(.icon).flatMap { image(named: $0) }
 
         if value(.isDestructive)?.bool == true {

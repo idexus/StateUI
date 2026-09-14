@@ -61,14 +61,14 @@ struct KeyboardSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             TextField($name)
-                .automationId("keyboard.name")
-                .semanticDescription("Name")
+                .accessibilityIdentifier("keyboard.name")
+                .accessibilityLabel("Name")
                 .placeholder("Name")
                 .aim(first)
 
             TextField($note)
-                .automationId("keyboard.note")
-                .semanticDescription("Note")
+                .accessibilityIdentifier("keyboard.note")
+                .accessibilityLabel("Note")
                 .placeholder("Note")
 
             HStack {

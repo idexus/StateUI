@@ -123,8 +123,8 @@ private struct Knob: ContentView {
     var content: any View {
         VStack {
             Slider($level)
-                .automationId("bindingReader.level")
-                .semanticDescription("Level")
+                .accessibilityIdentifier("bindingReader.level")
+                .accessibilityLabel("Level")
                 .motion(.eased(600, .cubicOut))
 
             HStack {

@@ -57,7 +57,7 @@ struct ModalSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Button("Present native modal")
-                .automationId("modal.present")
+                .accessibilityIdentifier("modal.present")
                 .background(Palette.accent)
                 .textColor(.white)
                 .cornerRadius(8)

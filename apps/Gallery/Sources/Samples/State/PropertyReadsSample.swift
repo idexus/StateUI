@@ -67,7 +67,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
         VStack {
             VStack {
                 Button("Another visit")
-                    .automationId("propertyReads.visit")
+                    .accessibilityIdentifier("propertyReads.visit")
                     .fontSize(13)
                     .background(Palette.accent)
                     .textColor(.white)
@@ -89,8 +89,8 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
 
             VStack {
                 TextField(profile.$name)
-                    .automationId("propertyReads.name")
-                    .semanticDescription("Name")
+                    .accessibilityIdentifier("propertyReads.name")
+                    .accessibilityLabel("Name")
                     .placeholder("Type a name")
             }
 

@@ -52,8 +52,8 @@ struct ProgressBarSample: SampleContent, ExampleContent {
                 .height(8)
 
             Stepper($done)
-                .automationId("progressBar.done")
-                .semanticDescription("Work done")
+                .accessibilityIdentifier("progressBar.done")
+                .accessibilityLabel("Work done")
                 .minimum(0)
                 .maximum(steps)
                 .step(1)

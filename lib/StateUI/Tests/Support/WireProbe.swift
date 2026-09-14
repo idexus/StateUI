@@ -634,8 +634,8 @@ public enum WireProbe {
             return spelled(member, as: SafeArea.self)
         case Prop.layoutDirection.name:
             return spelled(member, as: LayoutDirection.self)
-        case Prop.semanticHeadingLevel.name:
-            return spelled(member, as: SemanticHeadingLevel.self)
+        case Prop.accessibilityHeadingLevel.name:
+            return spelled(member, as: HeadingLevel.self)
 
         // The inputs.
         case Prop.inputPurpose.name:

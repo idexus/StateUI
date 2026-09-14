@@ -86,7 +86,7 @@ private func headings(in node: Node) -> [String] {
     func walk(_ node: Node) {
         let node = node.built
 
-        if node.props[.semanticHeadingLevel] != nil, let text = node.props["text"]?.string {
+        if node.props[.accessibilityHeadingLevel] != nil, let text = node.props["text"]?.string {
             found.append(text)
         }
 
@@ -102,7 +102,7 @@ private func headingSize(_ text: String, in node: Node) -> Double {
     func find(_ node: Node) -> Double? {
         let node = node.built
 
-        if node.props[.semanticHeadingLevel] != nil, node.props["text"]?.string == text {
+        if node.props[.accessibilityHeadingLevel] != nil, node.props["text"]?.string == text {
             return node.props["fontSize"]?.number ?? 0
         }
 
@@ -860,8 +860,8 @@ final class CatalogTests: XCTestCase {
     /// modifiers are the subject and leaving them out would show nothing.
     func testNoSamplesListingCarriesItsSemantics() {
         let modifiers = [
-            ".automationId(", ".semanticDescription(",
-            ".semanticHint(", ".semanticHeadingLevel(",
+            ".accessibilityIdentifier(", ".accessibilityLabel(",
+            ".accessibilityHint(", ".accessibilityHeadingLevel(",
         ]
 
         for group in catalog().groups {

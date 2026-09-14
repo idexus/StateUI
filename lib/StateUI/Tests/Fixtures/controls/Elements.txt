@@ -54,9 +54,11 @@ VStack 1 arranged(3)
   Label 3
     absoluteLayoutBounds: numbers 0,0,120,40
     absoluteLayoutProportions: enum size(12)
+    accessibilityHeadingLevel: enum level2(2)
+    accessibilityHint: string "Everything every view can be told"
+    accessibilityIdentifier: string "tiers"
+    accessibilityLabel: string "The shared tier"
     automationExcludedWithChildren: false
-    automationId: string "tiers"
-    automationIsInAccessibleTree: true
     characterSpacing: number 1.5
     fontAttributes: enum bold(1)
     fontAutoScalingEnabled: false
@@ -67,12 +69,10 @@ VStack 1 arranged(3)
     gridRow: number 1
     gridRowSpan: number 3
     horizontalTextAlignment: enum center(1)
+    isAccessibilityHidden: false
     padding: numbers 8,4,8,4
     panXChannel: number 3
     panYChannel: number 3
-    semanticDescription: string "The shared tier"
-    semanticHeadingLevel: enum level2(2)
-    semanticHint: string "Everything every view can be told"
     text: string "Tiers"
     textCase: enum uppercase(3)
     textColor: color FFB22222

@@ -35,8 +35,8 @@ private struct NoteRow: ContentView {
             DebugInfoLabel()
 
             TextField(basket.$note)
-                .automationId("stateClass.note")
-                .semanticDescription("A note on the basket")
+                .accessibilityIdentifier("stateClass.note")
+                .accessibilityLabel("A note on the basket")
                 .placeholder("A note on the basket")
 
             Label(basket.note.isEmpty ? "No note yet" : "Note: \(basket.note)")

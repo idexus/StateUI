@@ -107,8 +107,8 @@ struct PacedStateSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Fade")
-                    .automationId("paced.fade")
-                    .semanticDescription("Fade the box out")
+                    .accessibilityIdentifier("paced.fade")
+                    .accessibilityLabel("Fade the box out")
                     .fontSize(13)
                     .background(Palette.accent)
                     .textColor(.white)
@@ -117,8 +117,8 @@ struct PacedStateSample: SampleContent, ExampleContent {
                     .onClicked { try await $fade.journey.move(to: 0.1, .eased(2000, .cubicOut)) }
 
                 Button("Back")
-                    .automationId("paced.back")
-                    .semanticDescription("Bring the box back")
+                    .accessibilityIdentifier("paced.back")
+                    .accessibilityLabel("Bring the box back")
                     .fontSize(13)
                     .borderColor(Palette.outline)
                     .borderWidth(1)

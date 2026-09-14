@@ -111,8 +111,8 @@ struct StyleSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
 
                 Switch($enabled)
-                    .automationId("styles.enabled")
-                    .semanticDescription("Enabled")
+                    .accessibilityIdentifier("styles.enabled")
+                    .accessibilityLabel("Enabled")
             }
             .spacing(12)
             .horizontalAlignment(.center)

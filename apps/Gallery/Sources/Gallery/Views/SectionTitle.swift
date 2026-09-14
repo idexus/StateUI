@@ -18,7 +18,7 @@ struct SectionTitle: ContentView {
             // A HEADING IS WHAT THIS SAYS IT IS, not what it is drawn like:
             // a reader moving through a long sample page by its headings
             // lands on these, and on nothing that merely looks bold.
-            .semanticHeadingLevel(.level2)
+            .accessibilityHeadingLevel(.level2)
             .fontSize(13)
             .fontAttributes(.bold)
             .textColor(Palette.subtle)
@@ -39,7 +39,7 @@ struct ExampleTitle: ContentView {
 
     var content: any View {
         Label(text)
-            .semanticHeadingLevel(.level2)
+            .accessibilityHeadingLevel(.level2)
             .fontSize(17)
             .fontAttributes(.bold)
             .textColor(Palette.accent)

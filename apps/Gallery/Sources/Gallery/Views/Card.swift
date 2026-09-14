@@ -121,9 +121,9 @@ struct Card: ContentView {
         // together. So the card says what it is and where it goes, and the
         // handle is worked out from the title rather than written per card -
         // see Handle.swift.
-        .automationId(handle("card", title))
-        .semanticDescription(title)
-        .semanticHint(summary)
+        .accessibilityIdentifier(handle("card", title))
+        .accessibilityLabel(title)
+        .accessibilityHint(summary)
         .scale($dip)
         // The press, said back: a Border with a TapGestureRecognizer draws
         // nothing on its own, unlike a Button, so without this a tap shows

@@ -556,11 +556,11 @@ final class ControlTests: XCTestCase {
                         .verticalTextAlignment(.end)
                         // What the view says about itself: a handle for a
                         // driver, and three things a screen reader says.
-                        .automationId("tiers")
-                        .semanticDescription("The shared tier")
-                        .semanticHint("Everything every view can be told")
-                        .semanticHeadingLevel(.level2)
-                        .automationIsInAccessibleTree(true)
+                        .accessibilityIdentifier("tiers")
+                        .accessibilityLabel("The shared tier")
+                        .accessibilityHint("Everything every view can be told")
+                        .accessibilityHeadingLevel(.level2)
+                        .isAccessibilityHidden(false)
                         .automationExcludedWithChildren(false)
                         .gridRow(1)
                         .gridColumn(2)

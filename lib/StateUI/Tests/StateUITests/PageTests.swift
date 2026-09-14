@@ -50,7 +50,7 @@ private struct EveryPropertyPage: ContentView {
             // is covered, there being no control fixture for either.
             page.toolbarItems = [
                 ToolbarItem("Save")
-                    .automationId("bar.save")
+                    .accessibilityIdentifier("bar.save")
                     .icon(ImageSource("mark.png"))
                     .placement(.overflow)
                     .priority(2)

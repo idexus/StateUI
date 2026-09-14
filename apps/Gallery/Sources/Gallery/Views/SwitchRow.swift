@@ -37,8 +37,8 @@ struct SwitchRow: ContentView {
                 // ties the two together on its own: a reader who cannot see
                 // the row is handed a switch with no name. The same words say
                 // it, and the handle is worked out from them - Handle.swift.
-                .automationId(handle("switch", text))
-                .semanticDescription(text)
+                .accessibilityIdentifier(handle("switch", text))
+                .accessibilityLabel(text)
                 .verticalAlignment(.center)
                 // WINDOWS GIVES A SWITCH A MINIMUM WIDTH OF ITS OWN - room for
                 // the On/Off words its template can show - and charges it
