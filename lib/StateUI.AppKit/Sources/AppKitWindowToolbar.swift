@@ -210,24 +210,18 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         }
 
         if itemIdentifier == Self.tabs, let tabs {
-            let pictured = tabs.titles.allSatisfy(\.isEmpty) && tabs.images.contains { $0 != nil }
-            let group = pictured
-                ? NSToolbarItemGroup(
-                    itemIdentifier: itemIdentifier,
-                    images: tabs.images.map { $0 ?? NSImage() },
-                    selectionMode: .selectOne,
-                    labels: tabs.titles,
-                    target: self,
-                    action: #selector(performTab(_:)))
-                : NSToolbarItemGroup(
-                    itemIdentifier: itemIdentifier,
-                    titles: tabs.titles,
-                    selectionMode: .selectOne,
-                    labels: tabs.titles,
-                    target: self,
-                    action: #selector(performTab(_:)))
-            configure(group)
-            return group
+            let control = NSSegmentedControl(
+                labels: tabs.titles,
+                trackingMode: .selectOne,
+                target: self,
+                action: #selector(performTab(_:)))
+            for (index, image) in tabs.images.enumerated() {
+                control.setImage(image.map(Self.template), forSegment: index)
+            }
+            let item = NSToolbarItem(itemIdentifier: itemIdentifier)
+            item.view = control
+            configure(item)
+            return item
         }
 
         let item = itemIdentifier == Self.overflow
@@ -240,8 +234,9 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     private func configure(_ item: NSToolbarItem) {
         let identifier = item.itemIdentifier
 
-        if identifier == Self.tabs, let group = item as? NSToolbarItemGroup {
-            group.selectedIndex = tabs?.selected ?? -1
+        if identifier == Self.tabs, let control = item.view as? NSSegmentedControl {
+            control.selectedSegment = tabs?.selected ?? -1
+            item.menuFormRepresentation = tabsMenu()
             return
         }
 
@@ -295,12 +290,55 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         actions[sender.itemIdentifier]?.perform()
     }
 
-    /// The reader chose a tab in the toolbar's group.
-    @objc private func performTab(_ sender: Any?) {
-        guard let group = toolbar.items.first(where: { $0.itemIdentifier == Self.tabs })
-            as? NSToolbarItemGroup
-        else { return }
-        tabs?.select(group.selectedIndex)
+    /// The tabs as a menu, for a toolbar with no room for their control.
+    private func tabsMenu() -> NSMenuItem? {
+        guard let tabs else { return nil }
+        let menu = NSMenu()
+        for (index, title) in tabs.titles.enumerated() {
+            let entry = NSMenuItem(
+                title: title,
+                action: #selector(performTabMenu(_:)),
+                keyEquivalent: "")
+            entry.target = self
+            entry.tag = index
+            entry.image = tabs.images[index].map(Self.template)
+            entry.state = index == tabs.selected ? .on : .off
+            menu.addItem(entry)
+        }
+        let item = NSMenuItem(
+            title: tabs.titles.indices.contains(tabs.selected) ? tabs.titles[tabs.selected] : "",
+            action: nil,
+            keyEquivalent: "")
+        item.submenu = menu
+        return item
+    }
+
+    /// How tall a tab's glyph stands beside a label in the system font.
+    static let tabGlyphHeight = (NSFont.systemFontSize * 1.25).rounded()
+
+    /// A tab's picture as the toolbar draws a glyph beside its label: a
+    /// template the system tints, so the chosen tab and the others follow the
+    /// control's state, at a glyph's height. The tab's own picture is left as
+    /// it is.
+    private static func template(_ image: NSImage) -> NSImage {
+        guard let copy = image.copy() as? NSImage else { return image }
+        copy.isTemplate = true
+        if image.size.height > 0 {
+            copy.size = NSSize(
+                width: image.size.width * tabGlyphHeight / image.size.height,
+                height: tabGlyphHeight)
+        }
+        return copy
+    }
+
+    /// The reader chose a tab on the toolbar's control.
+    @objc private func performTab(_ sender: NSSegmentedControl) {
+        tabs?.select(sender.selectedSegment)
+    }
+
+    /// The reader chose a tab in the control's menu form.
+    @objc private func performTabMenu(_ sender: NSMenuItem) {
+        tabs?.select(sender.tag)
     }
 
     @objc private func performOverflow(_ sender: NSMenuItem) {

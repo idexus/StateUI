@@ -189,7 +189,7 @@ final class AppKitPageTests: XCTestCase {
     }
 
     /// A tabbed view on the window's page path puts its selector in the
-    /// window's toolbar - one select-one group of its tabs, centred, showing
+    /// window's toolbar - one select-one segmented control, centred, showing
     /// the selection - and none on its content, where nothing is painted.
     /// Choosing in the toolbar is the reader choosing.
     @MainActor
@@ -211,11 +211,13 @@ final class AppKitPageTests: XCTestCase {
         reported.removeAll()
 
         let toolbar = try XCTUnwrap(renderer.windowsForTesting.first?.toolbarForTesting)
-        let group = try XCTUnwrap(
-            toolbar.itemForTesting(AppKitWindowToolbar.tabs) as? NSToolbarItemGroup)
-        XCTAssertEqual(group.selectionMode, .selectOne)
-        XCTAssertEqual(group.subitems.map(\.label), ["Home", "Browse"])
-        XCTAssertEqual(group.selectedIndex, 0)
+        let control = try XCTUnwrap(
+            toolbar.itemForTesting(AppKitWindowToolbar.tabs)?.view as? NSSegmentedControl)
+        XCTAssertEqual(control.trackingMode, .selectOne)
+        XCTAssertEqual(
+            (0..<control.segmentCount).map { control.label(forSegment: $0) },
+            ["Home", "Browse"])
+        XCTAssertEqual(control.selectedSegment, 0)
         XCTAssertEqual(toolbar.toolbar.centeredItemIdentifiers, [AppKitWindowToolbar.tabs])
 
         let tabs = try XCTUnwrap(
@@ -230,8 +232,8 @@ final class AppKitPageTests: XCTestCase {
 
         renderer.applyForTesting(tree(tabbed(pages, selected: 1, changed: 9)))
         let shown = try XCTUnwrap(
-            toolbar.itemForTesting(AppKitWindowToolbar.tabs) as? NSToolbarItemGroup)
-        XCTAssertEqual(shown.selectedIndex, 1)
+            toolbar.itemForTesting(AppKitWindowToolbar.tabs)?.view as? NSSegmentedControl)
+        XCTAssertEqual(shown.selectedSegment, 1)
     }
 
     /// A tabbed view in a tab of another is a native tab view with its tabs on
@@ -268,26 +270,36 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(reported.last?.1, [.number(1)])
     }
 
-    /// A tab is named in text, or pictured when no tab of the view has a
-    /// title - never both, the platform's rule for one selector.
+    /// Each tab of a window's tabbed view shows its picture beside its title
+    /// on the toolbar's control, as a template the system tints with the
+    /// control's state; the tab's own picture is left as it is.
     @MainActor
-    func testATabbedViewNamesItsTabsInTextOrInPicturesNeverBoth() {
-        let picture = NSImage(size: NSSize(width: 16, height: 16))
-        let tabs = AppKitTabbedView(frame: .zero)
+    func testAToolbarTabShowsItsPictureBesideItsTitle() throws {
+        let picture = NSImage(size: NSSize(width: 48, height: 48))
+        let toolbar = AppKitWindowToolbar(windowIdentifier: "picture-tabs")
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 600, height: 400),
+            styleMask: [.titled],
+            backing: .buffered,
+            defer: true)
+        window.isReleasedWhenClosed = false
+        window.toolbar = toolbar.toolbar
+        defer { window.close() }
 
-        _ = tabs.setItems([
-            AppKitTabItem(layout: AppKitLayoutItem(view: NSView()), title: "Home", image: picture),
-            AppKitTabItem(layout: AppKitLayoutItem(view: NSView()), title: nil, image: picture),
-        ], requestedIndex: 0)
-        XCTAssertEqual(tabs.segments.map(\.title), ["Home", ""])
-        XCTAssertTrue(tabs.segments.allSatisfy { $0.image == nil })
+        toolbar.apply(AppKitWindowChrome(tabs: AppKitToolbarTabs(
+            titles: ["Home", "Browse"],
+            images: [picture, nil],
+            selected: 0,
+            select: { _ in })))
 
-        _ = tabs.setItems([
-            AppKitTabItem(layout: AppKitLayoutItem(view: NSView()), title: nil, image: picture),
-            AppKitTabItem(layout: AppKitLayoutItem(view: NSView()), title: "", image: picture),
-        ], requestedIndex: 0)
-        XCTAssertEqual(tabs.segments.map(\.title), ["", ""])
-        XCTAssertTrue(tabs.segments.allSatisfy { $0.image === picture })
+        let control = try XCTUnwrap(
+            toolbar.itemForTesting(AppKitWindowToolbar.tabs)?.view as? NSSegmentedControl)
+        XCTAssertEqual(control.label(forSegment: 0), "Home")
+        XCTAssertEqual(control.image(forSegment: 0)?.isTemplate, true)
+        XCTAssertEqual(control.image(forSegment: 0)?.size.height, AppKitWindowToolbar.tabGlyphHeight)
+        XCTAssertNil(control.image(forSegment: 1))
+        XCTAssertFalse(picture.isTemplate)
+        XCTAssertEqual(picture.size, NSSize(width: 48, height: 48))
     }
 
     @MainActor

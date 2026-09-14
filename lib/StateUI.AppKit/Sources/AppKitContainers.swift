@@ -690,10 +690,9 @@ struct AppKitTabItem {
 ///
 /// Where the window's toolbar serves the tabbed view, the tab view shows no
 /// tabs and no border, and the toolbar's group chooses; anywhere else its tabs
-/// stand on the top edge of its content, as a Mac tab view's do. A tab is
-/// named in text, or pictured when no tab of the view has a title - never
-/// both, the platform's rule for one selector. The tab view is the system's,
-/// and nothing is painted on it.
+/// stand on the top edge of its content, as a Mac tab view's do. In the
+/// toolbar each tab shows its picture beside its title. The tab view is the
+/// system's, and nothing is painted on it.
 @MainActor
 final class AppKitTabbedView: AppKitHitTestView, NSTabViewDelegate {
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
@@ -766,11 +765,9 @@ final class AppKitTabbedView: AppKitHitTestView, NSTabViewDelegate {
         onSelection?(previous, next)
     }
 
-    /// What each tab shows in a selector: its title, or - when no tab of the
-    /// view has one - its picture.
+    /// What each tab shows in a selector: its title and its picture.
     var segments: [(title: String, image: NSImage?)] {
-        let titled = items.contains { !($0.title ?? "").isEmpty }
-        return items.map { titled ? ($0.title ?? "", nil) : ("", $0.image) }
+        items.map { ($0.title ?? "", $0.image) }
     }
 
     func tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) {
