@@ -1,10 +1,12 @@
 # StateUI
 
+**Native interfaces, written in Swift.**
+
 [![Tests](https://github.com/idexus/StateUI/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/tests.yml?query=branch%3Amain)
 
-StateUI describes native interfaces in Swift. Swift owns the UI tree, identity,
-state, diffing, and motion; a thin host applies sparse patches to controls from
-its platform toolkit.
+StateUI describes an application's interface in Swift. Swift owns the UI tree,
+identity, state, diffing, and motion; a thin host applies sparse patches to
+controls from its platform toolkit.
 
 AppKit is the active host. UIKit, Android Views, WinUI 3, and GTK 4 follow the
 same host contract. Web DOM/CSS comes after the native contract is settled.
