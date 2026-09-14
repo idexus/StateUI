@@ -63,6 +63,26 @@ final class AppKitCanvasViewTests: XCTestCase {
         XCTAssertEqual(image.colorAt(x: 2, y: 2)?.alphaComponent ?? 0, 0, accuracy: 0.01)
     }
 
+    /// A canvas draws inside its own frame, as a canvas does on every other
+    /// platform: an instruction that reaches past the edge is cut there, not
+    /// painted over whatever stands beside the canvas.
+    @MainActor
+    func testADrawingIsCutAtTheCanvasEdge() throws {
+        let element = Canvas {
+            Draw.fillColor(.red)
+            Draw.fillRectangle(x: 0, y: 0, width: 80, height: 20)
+        }
+        let view = AppKitCanvasView()
+        view.frame = NSRect(x: 0, y: 0, width: 20, height: 20)
+        view.apply(try XCTUnwrap(element.node.props[.drawable]))
+
+        let image = try bitmap(of: view, width: 80)
+
+        XCTAssertGreaterThan(image.colorAt(x: 10, y: 10)?.redComponent ?? 0, 0.9, "inside")
+        XCTAssertEqual(
+            image.colorAt(x: 50, y: 10)?.alphaComponent ?? 1, 0, accuracy: 0.01, "past the edge")
+    }
+
     @MainActor
     func testPointerPhasesReportCanvasCoordinatesExactlyOnce() {
         let view = AppKitCanvasView()
@@ -116,10 +136,10 @@ final class AppKitCanvasViewTests: XCTestCase {
     }
 
     @MainActor
-    private func bitmap(of view: NSView) throws -> NSBitmapImageRep {
+    private func bitmap(of view: NSView, width: Int? = nil) throws -> NSBitmapImageRep {
         let image = NSBitmapImageRep(
             bitmapDataPlanes: nil,
-            pixelsWide: Int(view.bounds.width),
+            pixelsWide: width ?? Int(view.bounds.width),
             pixelsHigh: Int(view.bounds.height),
             bitsPerSample: 8,
             samplesPerPixel: 4,

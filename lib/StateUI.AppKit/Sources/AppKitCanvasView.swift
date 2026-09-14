@@ -95,6 +95,11 @@ final class AppKitCanvasView: AppKitHitTestView {
         super.draw(dirtyRect)
         guard let context = NSGraphicsContext.current else { return }
 
+        // A canvas draws inside its own frame, as it does on every other
+        // platform. A view is not clipped to its bounds, so an instruction
+        // reaching past the edge would paint over the views beside it.
+        bounds.clip()
+
         var state = State()
         var states: [State] = []
         var nativeSaveDepth = 0
