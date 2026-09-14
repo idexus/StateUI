@@ -355,6 +355,79 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(reports[1].1, [.number(40)])
         XCTAssertEqual(reports.last?.1, [])
     }
+
+    /// A vertical scroller's bar visibility reaches its native scroller:
+    /// `.never` takes the bar away, `.always` keeps it from hiding, and a
+    /// scroller that says neither leaves AppKit to show and hide it.
+    @MainActor
+    func testAVerticalScrollersBarVisibilityReachesItsNativeScroller() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                ScrollView { Label("Default") }
+                ScrollView { Label("Never") }.verticalScrollBarVisibility(.never)
+                ScrollView { Label("Always") }.verticalScrollBarVisibility(.always)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let scrollers = renderer.nativeViews(AppKitScrollView.self)
+
+        XCTAssertEqual(scrollers.map { $0.hasVerticalScroller }, [true, false, true])
+        XCTAssertEqual(scrollers.map { $0.autohidesScrollers }, [true, true, false])
+    }
+
+    /// A horizontal scroller's bar visibility reaches its native scroller
+    /// the same way.
+    @MainActor
+    func testAHorizontalScrollersBarVisibilityReachesItsNativeScroller() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                ScrollView { Label("Default") }
+                    .orientation(.horizontal)
+                ScrollView { Label("Never") }
+                    .orientation(.horizontal)
+                    .horizontalScrollBarVisibility(.never)
+                ScrollView { Label("Always") }
+                    .orientation(.horizontal)
+                    .horizontalScrollBarVisibility(.always)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let scrollers = renderer.nativeViews(AppKitScrollView.self)
+
+        XCTAssertEqual(scrollers.map { $0.hasHorizontalScroller }, [true, false, true])
+        XCTAssertEqual(scrollers.map { $0.autohidesScrollers }, [true, true, false])
+    }
+
+    /// A released scroll carries the scroller's momentum fraction of the way
+    /// the reader sent it: all of it by default, half of it for a momentum
+    /// of one half.
+    @MainActor
+    func testAScrollersMomentumScalesWhereAReleaseComesToRest() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                ScrollView { ColorBox(.red).height(1_000) }
+                    .width(100)
+                    .height(100)
+                ScrollView { ColorBox(.red).height(1_000) }
+                    .momentum(0.5)
+                    .width(100)
+                    .height(100)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let scrollers = renderer.nativeViews(AppKitScrollView.self)
+
+        let rests = scrollers.map { scroller -> CGFloat in
+            scroller.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
+            scroller.layoutSubtreeIfNeeded()
+            scroller.beginMovementForTesting()
+            scroller.moveAsReaderForTesting(to: NSPoint(x: 0, y: 300))
+            scroller.settleForTesting()
+            return scroller.offset.y
+        }
+
+        XCTAssertEqual(rests, [300, 150])
+    }
 }
 
 @MainActor

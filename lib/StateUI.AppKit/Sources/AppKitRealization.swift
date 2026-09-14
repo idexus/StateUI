@@ -89,6 +89,7 @@ enum AppKitRealization {
         .partial("ActivityIndicator", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by `Border`."),
         .complete("ActivityIndicator", "isRunning"),
         .complete("Border", "accessibilityIdentifier"),
+        .complete("Border", "background"),
         .complete("Button", "accessibilityIdentifier"),
         .partial("Button", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by `Border`."),
         .complete("Button", "borderColor"),

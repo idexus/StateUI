@@ -325,7 +325,7 @@ Every control, and every part an application, its windows and its pages are made
 | [ActivityIndicator](controls/ActivityIndicator.md) | 65 | 21 ✅ · 2 ✅* |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | 65 | 21 ✅ · 2 ✅* |  |  |  |  |  |
 | [ColorBox](controls/ColorBox.md) | 65 | 22 ✅ · 1 ✅* |  |  |  |  |  |
-| [Border](controls/Border.md) | 72 | 20 ✅ · 1 ✅* |  |  |  |  |  |
+| [Border](controls/Border.md) | 72 | 21 ✅ · 1 ✅* |  |  |  |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 71 |  |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 68 | 22 ✅ · 2 ✅* |  |  |  |  |  |
 | [HStack](controls/HStack.md) | 68 | 22 ✅ · 2 ✅* |  |  |  |  |  |

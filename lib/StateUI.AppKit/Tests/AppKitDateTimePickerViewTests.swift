@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) @testable import StateUI
 @testable import StateUIAppKit
 import XCTest
 
@@ -85,6 +86,55 @@ final class AppKitDateTimePickerViewTests: XCTestCase {
         picker.changeForTesting(to: [2026, 9, 15])
 
         XCTAssertEqual(reports, [[2026, 9, 15]])
+    }
+
+    /// The day a reader picks reaches the page's `onDateChanged`.
+    @MainActor
+    func testADayTheReaderPicksReachesTheDateHandler() throws {
+        let days = Received<CalendarDate>()
+        let renderer = AppKitRenderer.running {
+            DatePicker(CalendarDate(year: 2026, month: 8, day: 2))
+                .onDateChanged { days.values.append($0) }
+        }
+        defer { renderer.closeForTesting() }
+        let picker = try XCTUnwrap(renderer.nativeViews(AppKitDateTimePickerView.self).first)
+
+        picker.changeForTesting(to: [2026, 9, 15])
+
+        XCTAssertEqual(days.values, [CalendarDate(year: 2026, month: 9, day: 15)])
+    }
+
+    /// The time a reader picks reaches the page's `onTimeChanged`.
+    @MainActor
+    func testATimeTheReaderPicksReachesTheTimeHandler() throws {
+        let times = Received<ClockTime>()
+        let renderer = AppKitRenderer.running {
+            TimePicker(ClockTime(hour: 7, minute: 30))
+                .onTimeChanged { times.values.append($0) }
+        }
+        defer { renderer.closeForTesting() }
+        let picker = try XCTUnwrap(renderer.nativeViews(AppKitDateTimePickerView.self).first)
+
+        picker.changeForTesting(to: [21, 5, 0])
+
+        XCTAssertEqual(times.values, [ClockTime(hour: 21, minute: 5)])
+    }
+
+    /// A date picker's earliest and latest day bound its native calendar,
+    /// and the day it shows is held between them.
+    @MainActor
+    func testADatePickersRangeBoundsItsNativeCalendar() throws {
+        let renderer = AppKitRenderer.running {
+            DatePicker(CalendarDate(year: 2027, month: 1, day: 1))
+                .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
+                .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
+        }
+        defer { renderer.closeForTesting() }
+        let picker = try XCTUnwrap(renderer.nativeViews(AppKitDateTimePickerView.self).first)
+
+        XCTAssertEqual(picker.minimumLanesForTesting, [2020, 1, 1])
+        XCTAssertEqual(picker.maximumLanesForTesting, [2026, 12, 31])
+        XCTAssertEqual(picker.valueLanesForTesting, [2026, 12, 31])
     }
 }
 

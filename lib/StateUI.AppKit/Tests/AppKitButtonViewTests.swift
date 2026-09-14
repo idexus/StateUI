@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) @testable import StateUI
 @testable import StateUIAppKit
 import XCTest
 
@@ -69,6 +70,50 @@ final class AppKitButtonViewTests: XCTestCase {
         button.clickForTesting()
 
         XCTAssertEqual(events, ["pressed", "clicked", "released"])
+    }
+
+    /// The side of its caption an icon stands on reaches the native button.
+    /// Leading and trailing are AppKit's own sides of a line, which follow
+    /// the layout direction.
+    @MainActor
+    func testAButtonsIconPositionComesThroughTheHost() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Button("Leading").icon("save.png").iconPosition(.leading)
+                Button("Top").icon("save.png").iconPosition(.top)
+                Button("Trailing").icon("save.png").iconPosition(.trailing)
+                Button("Bottom").icon("save.png").iconPosition(.bottom)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let buttons = renderer.nativeViews(AppKitButtonView.self)
+
+        XCTAssertEqual(
+            buttons.map { $0.imagePosition },
+            [.imageLeading, .imageAbove, .imageTrailing, .imageBelow])
+    }
+
+    /// What happens to a caption too long for its button reaches the native
+    /// cell.
+    @MainActor
+    func testAButtonsLineBreakReachesItsNativeCell() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Button("Clip").lineBreak(.noWrap)
+                Button("Words").lineBreak(.wordWrap)
+                Button("Characters").lineBreak(.characterWrap)
+                Button("Head").lineBreak(.headTruncation)
+                Button("Tail").lineBreak(.tailTruncation)
+                Button("Middle").lineBreak(.middleTruncation)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let buttons = renderer.nativeViews(AppKitButtonView.self)
+
+        XCTAssertEqual(buttons.map { $0.cell?.lineBreakMode }, [
+            .byClipping, .byWordWrapping, .byCharWrapping,
+            .byTruncatingHead, .byTruncatingTail, .byTruncatingMiddle,
+        ])
     }
 }
 

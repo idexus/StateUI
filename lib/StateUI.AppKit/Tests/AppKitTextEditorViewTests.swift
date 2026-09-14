@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) @testable import StateUI
 @testable import StateUIAppKit
 import XCTest
 
@@ -60,6 +61,55 @@ final class AppKitTextEditorViewTests: XCTestCase {
 
         XCTAssertEqual(editor.textView.string, "reade")
         XCTAssertEqual(texts, ["reade"])
+    }
+
+    /// An editor's font family reaches its native text view.
+    @MainActor
+    func testATextEditorsFontFamilyComesThroughTheHost() throws {
+        let renderer = AppKitRenderer.running { TextEditor("Ada").fontFamily("Menlo") }
+        defer { renderer.closeForTesting() }
+        let editor = try XCTUnwrap(renderer.nativeViews(AppKitTextEditorView.self).first)
+
+        XCTAssertEqual(editor.textView.font?.familyName, "Menlo")
+    }
+
+    /// A read-only editor cannot be changed, and an editor's spell check and
+    /// word prediction reach its native text view. An editor that says
+    /// nothing keeps all three on.
+    @MainActor
+    func testATextEditorsEditingSettingsComeThroughTheHost() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                TextEditor("Plain")
+                TextEditor("Set")
+                    .isReadOnly(true)
+                    .isSpellCheckEnabled(false)
+                    .isTextPredictionEnabled(false)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let texts = renderer.nativeViews(AppKitTextEditorView.self).map { $0.textView }
+
+        XCTAssertEqual(texts.map { $0.isEditable }, [true, false])
+        XCTAssertEqual(texts.map { $0.isContinuousSpellCheckingEnabled }, [true, false])
+        XCTAssertEqual(texts.map { $0.isAutomaticTextCompletionEnabled }, [true, false])
+    }
+
+    /// What a reader types reaches the page's `onTextChanged` handler, the
+    /// editor's whole text each time.
+    @MainActor
+    func testTypingInATextEditorReachesItsTextHandler() throws {
+        let texts = Received<String>()
+        let renderer = AppKitRenderer.running {
+            TextEditor("").onTextChanged { texts.values.append($0) }
+        }
+        defer { renderer.closeForTesting() }
+        let editor = try XCTUnwrap(renderer.nativeViews(AppKitTextEditorView.self).first)
+
+        editor.typeForTesting("a")
+        editor.typeForTesting("ab")
+
+        XCTAssertEqual(texts.values, ["a", "ab"])
     }
 
     @MainActor

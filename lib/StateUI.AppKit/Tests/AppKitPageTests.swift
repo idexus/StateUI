@@ -905,6 +905,83 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(reported.last?.1, [.number(1)])
         XCTAssertEqual(window.modalCountForTesting, 1)
     }
+
+    /// A page that takes its way back away offers none in the window's
+    /// toolbar, where the page beneath it offered one.
+    @MainActor
+    func testAPageWithoutABackButtonOffersNoWayBack() throws {
+        let path = State(wrappedValue: [ChromeRoute]())
+        let renderer = AppKitRenderer.running {
+            NavigationStack(path.projectedValue) {
+                Label("Root")
+            } destination: { route in
+                ChromePage(route: route)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
+
+        path.wrappedValue = [.plain]
+        renderer.pump()
+        XCTAssertNotNil(toolbar.itemForTesting(AppKitWindowToolbar.back), "an ordinary page")
+
+        path.wrappedValue = [.plain, .withoutBackButton]
+        renderer.pump()
+        XCTAssertNil(toolbar.itemForTesting(AppKitWindowToolbar.back))
+    }
+
+    /// A page without a navigation bar puts neither its way back nor its
+    /// actions in the window's toolbar, where the page beneath it showed
+    /// both.
+    @MainActor
+    func testAPageWithoutANavigationBarKeepsItsWayBackAndActionsOutOfTheToolbar() throws {
+        let path = State(wrappedValue: [ChromeRoute]())
+        let renderer = AppKitRenderer.running {
+            NavigationStack(path.projectedValue) {
+                Label("Root")
+            } destination: { route in
+                ChromePage(route: route)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
+
+        path.wrappedValue = [.plain]
+        renderer.pump()
+        XCTAssertNotNil(toolbar.itemForTesting(AppKitWindowToolbar.back), "an ordinary page")
+        XCTAssertEqual(toolbar.actionTitlesForTesting, ["Save"], "an ordinary page")
+
+        path.wrappedValue = [.plain, .withoutNavigationBar]
+        renderer.pump()
+        XCTAssertNil(toolbar.itemForTesting(AppKitWindowToolbar.back))
+        XCTAssertEqual(toolbar.actionTitlesForTesting, [])
+    }
+}
+
+/// What a pushed page asks of the navigation furniture above it.
+private enum ChromeRoute: Hashable {
+    case plain
+    case withoutBackButton
+    case withoutNavigationBar
+}
+
+/// A pushed page that offers one action and, for its route, takes its way
+/// back or its whole navigation bar away - written through its session as
+/// it comes in.
+private struct ChromePage: ContentView {
+    @Environment private var page: PageSession
+    let route: ChromeRoute
+
+    var content: any View {
+        Label("Pushed").onCreated {
+            page.toolbarItems = [ToolbarItem("Save")]
+            switch route {
+            case .plain: break
+            case .withoutBackButton: page.hasBackButton = false
+            case .withoutNavigationBar: page.hasNavigationBar = false
+            }
+        }
+    }
 }
 
 private extension AppKitPageTests {

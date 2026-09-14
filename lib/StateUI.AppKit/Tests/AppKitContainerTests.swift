@@ -300,6 +300,37 @@ final class AppKitContainerTests: XCTestCase {
         })
     }
 
+    /// A border paints its own background, a colour and a gradient brush
+    /// alike: the colour fills it, and the gradient runs from its first stop
+    /// at its start to its last at its end.
+    @MainActor
+    func testABorderDrawsItsColourAndGradientBackgrounds() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Border().background(.red)
+                Border().background(.linearGradient(
+                    [GradientStop(.red, 0), GradientStop(.blue, 1)],
+                    startPoint: Point(0, 0),
+                    endPoint: Point(1, 0)))
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let borders = renderer.nativeViews(AppKitBorderView.self)
+        XCTAssertEqual(borders.count, 2)
+        guard borders.count == 2 else { return }
+        for border in borders { border.frame = NSRect(x: 0, y: 0, width: 40, height: 20) }
+
+        let colour = try bitmap(of: borders[0])
+        let gradient = try bitmap(of: borders[1])
+
+        let middle = try XCTUnwrap(colour.colorAt(x: 20, y: 10))
+        XCTAssertGreaterThan(middle.redComponent, 0.9)
+        XCTAssertLessThan(middle.blueComponent, 0.1)
+        let start = try XCTUnwrap(gradient.colorAt(x: 2, y: 10))
+        let end = try XCTUnwrap(gradient.colorAt(x: 37, y: 10))
+        XCTAssertGreaterThan(start.redComponent, start.blueComponent)
+        XCTAssertGreaterThan(end.blueComponent, end.redComponent)
+    }
 }
 
 #endif

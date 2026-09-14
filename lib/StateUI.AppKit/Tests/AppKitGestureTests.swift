@@ -125,6 +125,33 @@ final class AppKitGestureTests: XCTestCase {
 
         XCTAssertEqual(reports, [[.enumeration(2)]])
     }
+
+    /// A pan asked of one pointer is recognised and reaches its handler. A
+    /// pan asked of two leaves the view no active pan recogniser: AppKit
+    /// recognises a one-pointer drag only, so it cannot honour that count.
+    @MainActor
+    func testOnlyAOnePointerPanIsRecognised() throws {
+        let totals = Received<Double>()
+        let renderer = AppKitRenderer.running {
+            VStack {
+                ColorBox(.red).onPanUpdated(touchCount: 1) { totals.values.append($0.totalX) }
+                ColorBox(.blue).onPanUpdated(touchCount: 2) { totals.values.append($0.totalX) }
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let boxes = renderer.nativeViews(AppKitColorBoxView.self)
+        XCTAssertEqual(boxes.count, 2)
+        guard boxes.count == 2 else { return }
+        let onePointer = boxes[0].gestureRecognizers.compactMap { $0 as? AppKitPanRecognizer }
+        let twoPointers = boxes[1].gestureRecognizers.compactMap { $0 as? AppKitPanRecognizer }
+
+        XCTAssertEqual(onePointer.map { $0.isEnabled }, [true])
+        XCTAssertFalse(twoPointers.contains { $0.isEnabled })
+
+        onePointer.first?.emitForTesting(.running, total: NSPoint(x: 8, y: 5))
+
+        XCTAssertEqual(totals.values, [8])
+    }
 }
 
 #endif

@@ -29,7 +29,7 @@ A host's column is what that host declares it realizes - AppKit's is `AppKitReal
 | [ActivityIndicator](ActivityIndicator.md) | 65 | 21 ✅ · 2 ✅* |  |  |  |  |  |
 | [ProgressBar](ProgressBar.md) | 65 | 21 ✅ · 2 ✅* |  |  |  |  |  |
 | [ColorBox](ColorBox.md) | 65 | 22 ✅ · 1 ✅* |  |  |  |  |  |
-| [Border](Border.md) | 72 | 20 ✅ · 1 ✅* |  |  |  |  |  |
+| [Border](Border.md) | 72 | 21 ✅ · 1 ✅* |  |  |  |  |  |
 | [PositionIndicator](PositionIndicator.md) | 71 |  |  |  |  |  |  |
 | [VStack](VStack.md) | 68 | 22 ✅ · 2 ✅* |  |  |  |  |  |
 | [HStack](HStack.md) | 68 | 22 ✅ · 2 ✅* |  |  |  |  |  |

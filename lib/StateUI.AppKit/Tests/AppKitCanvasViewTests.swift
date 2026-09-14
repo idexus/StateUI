@@ -134,29 +134,6 @@ final class AppKitCanvasViewTests: XCTestCase {
             [.numbers([3, 4])], [.numbers([5, 6])], [.numbers([7, 8])],
         ])
     }
-
-    @MainActor
-    private func bitmap(of view: NSView, width: Int? = nil) throws -> NSBitmapImageRep {
-        let image = NSBitmapImageRep(
-            bitmapDataPlanes: nil,
-            pixelsWide: width ?? Int(view.bounds.width),
-            pixelsHigh: Int(view.bounds.height),
-            bitsPerSample: 8,
-            samplesPerPixel: 4,
-            hasAlpha: true,
-            isPlanar: false,
-            colorSpaceName: .deviceRGB,
-            bytesPerRow: 0,
-            bitsPerPixel: 0)
-        let bitmap = try XCTUnwrap(image)
-        let context = try XCTUnwrap(NSGraphicsContext(bitmapImageRep: bitmap))
-        NSGraphicsContext.saveGraphicsState()
-        NSGraphicsContext.current = context
-        view.draw(view.bounds)
-        context.flushGraphics()
-        NSGraphicsContext.restoreGraphicsState()
-        return bitmap
-    }
 }
 
 #endif

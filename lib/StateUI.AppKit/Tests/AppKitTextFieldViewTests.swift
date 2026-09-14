@@ -116,6 +116,76 @@ final class AppKitTextFieldViewTests: XCTestCase {
         XCTAssertTrue(reports.isEmpty)
     }
 
+    /// A field's font family reaches its native field.
+    @MainActor
+    func testATextFieldsFontFamilyComesThroughTheHost() throws {
+        let renderer = AppKitRenderer.running { TextField("Ada").fontFamily("Menlo") }
+        defer { renderer.closeForTesting() }
+        let field = try XCTUnwrap(renderer.nativeViews(AppKitTextFieldView.self).first)
+
+        XCTAssertEqual(field.textField.font?.familyName, "Menlo")
+    }
+
+    /// A read-only field keeps its text selectable and unchangeable, and a
+    /// field's spell check and word prediction reach the native field and
+    /// the editor the reader types into. A field that says nothing keeps
+    /// all three on.
+    @MainActor
+    func testATextFieldsEditingSettingsComeThroughTheHost() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                TextField("Plain")
+                TextField("Kept").isReadOnly(true)
+                TextField("Checked").isSpellCheckEnabled(true)
+                TextField("Unchecked").isSpellCheckEnabled(false).isTextPredictionEnabled(false)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let fields = renderer.nativeViews(AppKitTextFieldView.self).map { $0.textField }
+        XCTAssertEqual(fields.count, 4)
+        guard fields.count == 4 else { return }
+
+        XCTAssertEqual(fields.map { $0.isEditable }, [true, false, true, true])
+        XCTAssertTrue(fields[1].isSelectable)
+        XCTAssertEqual(
+            fields.map { $0.isAutomaticTextCompletionEnabled }, [true, true, true, false])
+        XCTAssertTrue(try editorChecksSpelling(whileTypingIn: fields[0]))
+        XCTAssertTrue(try editorChecksSpelling(whileTypingIn: fields[2]))
+        XCTAssertFalse(try editorChecksSpelling(whileTypingIn: fields[3]))
+    }
+
+    /// Return in a field reaches the page's `onSubmitted`.
+    @MainActor
+    func testReturnInATextFieldReachesItsSubmitHandler() throws {
+        let submitted = Received<String>()
+        let renderer = AppKitRenderer.running {
+            TextField("Ada").onSubmitted { submitted.values.append("submitted") }
+        }
+        defer { renderer.closeForTesting() }
+        let field = try XCTUnwrap(renderer.nativeViews(AppKitTextFieldView.self).first)
+
+        try pressReturn(in: field.textField)
+
+        XCTAssertEqual(submitted.values, ["submitted"])
+    }
+
+    /// What a reader types reaches the page's `onTextChanged` handler, the
+    /// field's whole text each time.
+    @MainActor
+    func testTypingInATextFieldReachesItsTextHandler() throws {
+        let texts = Received<String>()
+        let renderer = AppKitRenderer.running {
+            TextField("").onTextChanged { texts.values.append($0) }
+        }
+        defer { renderer.closeForTesting() }
+        let field = try XCTUnwrap(renderer.nativeViews(AppKitTextFieldView.self).first)
+
+        field.typeForTesting("a")
+        field.typeForTesting("ad")
+
+        XCTAssertEqual(texts.values, ["a", "ad"])
+    }
+
     @MainActor
     private func apply(
         _ view: AppKitTextFieldView,

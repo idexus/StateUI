@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) @testable import StateUI
 @testable import StateUIAppKit
 import XCTest
 
@@ -73,6 +74,76 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         XCTAssertEqual(search.stringValue, "read")
         XCTAssertEqual(texts, ["read"])
         XCTAssertEqual(submits, 1)
+    }
+
+    /// A search field's font family reaches its native field.
+    @MainActor
+    func testASearchFieldsFontFamilyComesThroughTheHost() throws {
+        let renderer = AppKitRenderer.running { SearchField("Ada").fontFamily("Menlo") }
+        defer { renderer.closeForTesting() }
+        let search = try XCTUnwrap(renderer.nativeViews(AppKitSearchFieldView.self).first)
+
+        XCTAssertEqual(search.font?.familyName, "Menlo")
+    }
+
+    /// A read-only search field keeps its text selectable and unchangeable,
+    /// and its spell check and word prediction reach the native field and the
+    /// editor the reader types into. A field that says nothing keeps all
+    /// three on.
+    @MainActor
+    func testASearchFieldsEditingSettingsComeThroughTheHost() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                SearchField("Plain")
+                SearchField("Kept").isReadOnly(true)
+                SearchField("Checked").isSpellCheckEnabled(true)
+                SearchField("Unchecked").isSpellCheckEnabled(false).isTextPredictionEnabled(false)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let fields = renderer.nativeViews(AppKitSearchFieldView.self)
+        XCTAssertEqual(fields.count, 4)
+        guard fields.count == 4 else { return }
+
+        XCTAssertEqual(fields.map { $0.isEditable }, [true, false, true, true])
+        XCTAssertTrue(fields[1].isSelectable)
+        XCTAssertEqual(
+            fields.map { $0.isAutomaticTextCompletionEnabled }, [true, true, true, false])
+        XCTAssertTrue(try editorChecksSpelling(whileTypingIn: fields[0]))
+        XCTAssertTrue(try editorChecksSpelling(whileTypingIn: fields[2]))
+        XCTAssertFalse(try editorChecksSpelling(whileTypingIn: fields[3]))
+    }
+
+    /// Return in a search field reaches the page's `onSubmitted`.
+    @MainActor
+    func testReturnInASearchFieldReachesItsSubmitHandler() throws {
+        let submitted = Received<String>()
+        let renderer = AppKitRenderer.running {
+            SearchField("Ada").onSubmitted { submitted.values.append("submitted") }
+        }
+        defer { renderer.closeForTesting() }
+        let search = try XCTUnwrap(renderer.nativeViews(AppKitSearchFieldView.self).first)
+
+        try pressReturn(in: search)
+
+        XCTAssertEqual(submitted.values, ["submitted"])
+    }
+
+    /// What a reader types reaches the page's `onTextChanged` handler, the
+    /// field's whole text each time.
+    @MainActor
+    func testTypingInASearchFieldReachesItsTextHandler() throws {
+        let texts = Received<String>()
+        let renderer = AppKitRenderer.running {
+            SearchField("").onTextChanged { texts.values.append($0) }
+        }
+        defer { renderer.closeForTesting() }
+        let search = try XCTUnwrap(renderer.nativeViews(AppKitSearchFieldView.self).first)
+
+        search.typeForTesting("a")
+        search.typeForTesting("ad")
+
+        XCTAssertEqual(texts.values, ["a", "ad"])
     }
 }
 

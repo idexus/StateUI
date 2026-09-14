@@ -177,6 +177,45 @@ final class AppKitLabelViewTests: XCTestCase {
 
         XCTAssertEqual(view.fittingContentSize(width: 100).height, 60, accuracy: 1)
     }
+
+    /// A label's font family reaches its native text.
+    @MainActor
+    func testALabelsFontFamilyComesThroughTheHost() throws {
+        let renderer = AppKitRenderer.running { Label("Ada").fontFamily("Menlo") }
+        defer { renderer.closeForTesting() }
+        let label = try XCTUnwrap(renderer.nativeViews(AppKitLabelView.self).first)
+
+        let font = label.attributedStringValue.attribute(.font, at: 0, effectiveRange: nil)
+        XCTAssertEqual((font as? NSFont)?.familyName, "Menlo")
+    }
+
+    /// A label's line break and line count reach its native text: a clip or
+    /// a cut shows one line whatever the count, and a wrap shows the count it
+    /// was given. A label that says neither wraps without a limit.
+    @MainActor
+    func testALabelsLineBreakAndMaximumLinesReachItsNativeText() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Label("Plain")
+                Label("Clip").lineBreak(.noWrap).maximumLines(3)
+                Label("Words").lineBreak(.wordWrap).maximumLines(3)
+                Label("Characters").lineBreak(.characterWrap).maximumLines(3)
+                Label("Head").lineBreak(.headTruncation).maximumLines(3)
+                Label("Tail").lineBreak(.tailTruncation).maximumLines(3)
+                Label("Middle").lineBreak(.middleTruncation).maximumLines(3)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let texts = renderer.nativeViews(AppKitLabelView.self).map {
+            $0.subviews.compactMap { $0 as? NSTextField }.first
+        }
+
+        XCTAssertEqual(texts.map { $0?.lineBreakMode }, [
+            .byWordWrapping, .byClipping, .byWordWrapping, .byCharWrapping,
+            .byTruncatingHead, .byTruncatingTail, .byTruncatingMiddle,
+        ])
+        XCTAssertEqual(texts.map { $0?.maximumNumberOfLines }, [0, 1, 3, 3, 1, 1, 1])
+    }
 }
 
 #endif

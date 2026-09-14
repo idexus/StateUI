@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) @testable import StateUI
 @testable import StateUIAppKit
 import XCTest
 
@@ -86,6 +87,26 @@ final class AppKitSliderViewTests: XCTestCase {
         view.endDrag()
 
         XCTAssertEqual(events, ["start", "complete"])
+    }
+
+    /// Grabbing the thumb and letting it go reach the page's drag handlers,
+    /// each as it happens.
+    @MainActor
+    func testAReadersDragReachesTheSlidersDragHandlers() throws {
+        let moments = Received<String>()
+        let renderer = AppKitRenderer.running {
+            Slider(0.5)
+                .onDragStarted { moments.values.append("started") }
+                .onDragCompleted { moments.values.append("completed") }
+        }
+        defer { renderer.closeForTesting() }
+        let slider = try XCTUnwrap(renderer.nativeViews(AppKitSliderView.self).first)
+
+        slider.beginDrag()
+        XCTAssertEqual(moments.values, ["started"])
+        slider.endDrag()
+
+        XCTAssertEqual(moments.values, ["started", "completed"])
     }
 }
 

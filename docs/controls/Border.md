@@ -48,7 +48,7 @@ A control backed by a node, and drawn.
 | `accessibilityHint` | property | ✅ |  |  |  |  |  |  |
 | `accessibilityLabel` | property | ✅ |  |  |  |  |  |  |
 | `automationExcludedWithChildren` | property | ✅ |  |  |  |  |  |  |
-| `background` | property |  |  |  |  |  |  |  |
+| `background` | property | ✅ |  |  |  |  |  |  |
 | `frame` | property | ✅ |  |  |  |  |  |  |
 | `height` | property |  |  |  |  |  |  |  |
 | `ignoresInput` | property |  |  |  |  |  |  |  |

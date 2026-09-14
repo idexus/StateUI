@@ -166,16 +166,27 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         }
     }
 
+    /// What opens a picker's menu in a test, in place of the pop-up button's
+    /// click: the native menu's tracking holds the run loop until a reader
+    /// ends it. Taken when the opening is scheduled, so an opening that runs
+    /// late still reaches the test that asked for it.
+    static var opensMenuForTesting: ((AppKitPickerView) -> Void)?
+
     private func presentRequestedMenuIfPossible() {
         guard requestedOpen, window != nil, !menuOpen, !openingScheduled else { return }
         openingScheduled = true
+        let opensForTesting = Self.opensMenuForTesting
 
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }
             self.openingScheduled = false
             guard self.requestedOpen, self.window != nil, !self.menuOpen else { return }
             self.suppressLifecycle = true
-            self.button.performClick(nil)
+            if let opensForTesting {
+                opensForTesting(self)
+            } else {
+                self.button.performClick(nil)
+            }
         }
     }
 

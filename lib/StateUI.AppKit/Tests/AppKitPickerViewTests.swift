@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) @testable import StateUI
 @testable import StateUIAppKit
 import XCTest
 
@@ -123,6 +124,64 @@ final class AppKitPickerViewTests: XCTestCase {
         picker.menuDidClose(menu)
 
         XCTAssertEqual(events, ["opened", "closed"])
+    }
+
+    /// The captions a picker offers become its native items, whether its
+    /// initializer or its modifier gave them.
+    @MainActor
+    func testAPickersOptionsComeThroughTheHost() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Picker(["Small", "Medium", "Large"])
+                Picker().options(["One", "Two"])
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let pickers = renderer.nativeViews(AppKitPickerView.self)
+
+        XCTAssertEqual(
+            pickers.map { $0.itemTitles }, [["Small", "Medium", "Large"], ["One", "Two"]])
+    }
+
+    /// The item a reader chooses reaches the page's `onSelectedIndexChanged`
+    /// as its index.
+    @MainActor
+    func testTheReadersChoiceReachesThePickersHandler() throws {
+        let chosen = Received<Int>()
+        let renderer = AppKitRenderer.running {
+            Picker(["Small", "Medium", "Large"])
+                .onSelectedIndexChanged { chosen.values.append($0) }
+        }
+        defer { renderer.closeForTesting() }
+        let picker = try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first)
+
+        picker.chooseForTesting(index: 2)
+
+        XCTAssertEqual(chosen.values, [2])
+    }
+
+    /// A picker told to open asks its native menu to open, once it stands in a
+    /// window. The test stands in for the pop-up button's click, whose menu
+    /// tracking would hold the run loop until a reader ended it.
+    @MainActor
+    func testAPickerToldToOpenOpensItsNativeMenu() throws {
+        var opened: [AppKitPickerView] = []
+        AppKitPickerView.opensMenuForTesting = { opened.append($0) }
+        defer { AppKitPickerView.opensMenuForTesting = nil }
+
+        let renderer = AppKitRenderer.running {
+            Picker(["Small", "Medium", "Large"]).isOpen(true)
+        }
+        defer { renderer.closeForTesting() }
+        let picker = try XCTUnwrap(renderer.nativeViews(AppKitPickerView.self).first)
+
+        let deadline = Date(timeIntervalSinceNow: 1)
+        while opened.isEmpty, Date() < deadline {
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
+        }
+
+        XCTAssertEqual(opened.count, 1)
+        XCTAssertTrue(opened.first === picker)
     }
 }
 
