@@ -217,17 +217,17 @@ structure. Otherwise the host snaps to the destination.
 Shape controls are retained native drawing surfaces with a shared shape
 vocabulary:
 
-- `Rectangle`, `RoundRectangle`, and `Ellipse`;
+- `Rectangle` and `Ellipse`;
 - `Line`;
 - `Path` with path data;
 - `Polygon` and `Polyline` with `Point` values.
 
 Common shape modifiers include fill, stroke, stroke width and dash
 settings, aspect, and `renderTransform`. Geometry-specific modifiers such as a
-rectangle radius or line endpoints remain on the matching shape.
+rectangle's corner radius or line endpoints remain on the matching shape.
 
 ```swift
-RoundRectangle()
+Rectangle()
     .cornerRadius(14)
     .fill(.linearGradient(
         [GradientStop(.cornflowerBlue, 0), GradientStop(.indigo, 1)],

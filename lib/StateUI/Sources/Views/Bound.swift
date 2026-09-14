@@ -705,22 +705,14 @@ extension RadioButton {
 // MARK: - Rectangle
 
 extension Rectangle {
-    /// `radiusX`, handed on as `$x`: the host sets it as it is, and handing it
-    /// on reads nothing - a write renders only a body that reads the state.
+    /// `cornerRadius`, handed on as `$x`: the host sets it as it is, and
+    /// handing it on reads nothing - a write renders only a body that reads the
+    /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func radiusX(_ state: Binding<Double>) -> Modified {
-        plain(.radiusX, by: state)
-    }
-
-    /// `radiusY`, handed on as `$x`: the host sets it as it is, and handing it
-    /// on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func radiusY(_ state: Binding<Double>) -> Modified {
-        plain(.radiusY, by: state)
+    public func cornerRadius(_ state: Binding<Double>) -> Modified {
+        plain(.cornerRadius, by: state)
     }
 }
 

@@ -1509,7 +1509,7 @@ extension StackBaseProperties {
 
 // MARK: - Shape
 //
-// Rectangle, RoundRectangle, Ellipse, Line, Path, Polygon and Polyline share
+// Rectangle, Ellipse, Line, Path, Polygon and Polyline share
 // one drawing vocabulary. It is a tier here exactly as the font properties are,
 // and is checked once by the Elements fixture rather than once per shape.
 

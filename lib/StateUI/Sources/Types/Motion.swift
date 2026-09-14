@@ -234,8 +234,7 @@ public struct MotionValues: OptionSet, Sendable {
     public static let height = MotionValues(rawValue: 1 << 3)
 
     /// Both dimensions, plus the lengths its own shape is drawn with:
-    /// `.cornerRadius`, `.strokeWidth`, `.borderWidth`, `.radiusX` and
-    /// `.radiusY`.
+    /// `.cornerRadius`, `.strokeWidth` and `.borderWidth`.
     public static let size: MotionValues = [.width, .height]
 
     /// Where it SITS: host-arranged placement and `.translationX` or

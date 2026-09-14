@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A rectangle, drawn as a shape.
+/// A rectangle, drawn as a shape - with square corners, or rounded ones.
 ///
 ///     Rectangle()
 ///         .fill(.cornflowerBlue)
-///         .radiusX(8)
-///         .radiusY(8)
+///         .cornerRadius(8)
 ///         .height(60)
 ///
 /// A `ColorBox` says the same thing in one line and takes one colour; this is the
@@ -33,17 +32,27 @@ public struct Rectangle: Shape, RectangleProperties {
 public protocol RectangleProperties: PropertyContainer {}
 
 extension RectangleProperties {
-    /// How far the corners are rounded ACROSS, in device units. 0 - the
-    /// default - is a square corner.
-    ///
-    /// A corner is rounded by the two radii together, so write `radiusY`
-    /// beside it - the same number for a circular corner.
-    public func radiusX(_ value: Double) -> Modified { setValue(.radiusX, .number(value)) }
+    /// The same radius on all four corners, in device units. 0 - the default -
+    /// is a square corner.
+    public func cornerRadius(_ value: Double) -> Modified {
+        setValue(.cornerRadius, .number(value))
+    }
 
-    /// And DOWN. Equal to `radiusX` for a circular
-    /// corner; different for an elliptical one.
+    /// One corner at a time, each in device units.
     ///
-    /// Both radii round ALL FOUR corners the same way. `RoundRectangle` is the
-    /// shape that names the corners one at a time.
-    public func radiusY(_ value: Double) -> Modified { setValue(.radiusY, .number(value)) }
+    ///     Rectangle()
+    ///         .cornerRadius(topLeft: 16, topRight: 16, bottomLeft: 0, bottomRight: 0)
+    ///         .fill(.whiteSmoke)
+    ///
+    /// A card rounded along the top and flush along the bottom, which is what
+    /// naming them separately is for. The labels are required, so there is no
+    /// order to remember at the call site.
+    public func cornerRadius(
+        topLeft: Double,
+        topRight: Double,
+        bottomLeft: Double,
+        bottomRight: Double
+    ) -> Modified {
+        setValue(.cornerRadius, .numbers([topLeft, topRight, bottomLeft, bottomRight]))
+    }
 }

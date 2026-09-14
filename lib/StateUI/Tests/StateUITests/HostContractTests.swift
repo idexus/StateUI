@@ -195,7 +195,7 @@ final class HostContractTests: XCTestCase {
         for type in [
             NodeType.checkBox, .ellipse, .grid,
             .positionIndicator, .line, .path, .polygon, .polyline, .radioButton,
-            .rectangle, .refreshView, .roundRectangle, .swipeView,
+            .rectangle, .refreshView, .swipeView,
         ] {
             XCTAssertEqual(HostContract.controls[type], .stateUI)
         }
@@ -483,6 +483,39 @@ final class HostContractTests: XCTestCase {
     /// a caption - on a button, a menu or toolbar item, a page's tab - with its
     /// `iconPosition` and `iconSpacing`, and `Button(icon:)` when there is no
     /// caption at all.
+    func testARoundedRectangleIsARectangle() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let controls = declaredNames(of: "NodeType", in: tokenSource)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+
+        XCTAssertFalse(controls.contains("RoundRectangle"), "a rounded rectangle is a second rectangle")
+        XCTAssertTrue(
+            properties.isDisjoint(with: ["radiusX", "radiusY"]),
+            "a rectangle's corners keep a second name")
+
+        let rectangle = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Views/Rectangle.swift"),
+            encoding: .utf8)
+        XCTAssertTrue(rectangle.contains("public func cornerRadius(_ value: Double) -> Modified"))
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            for former in [
+                "struct RoundRectangle:", "protocol RoundRectangleProperties",
+                "func radiusX(", "func radiusY(",
+            ] {
+                XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
+            }
+        }
+    }
+
     func testBordersShapesAndDrawingSpeakInPlainWords() throws {
         let tokenSource = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),

@@ -7,7 +7,6 @@ import AppKit
 
 enum AppKitShapeKind {
     case rectangle
-    case roundRectangle
     case ellipse
     case line
     case path
@@ -16,8 +15,7 @@ enum AppKitShapeKind {
 }
 
 enum AppKitShapeGeometry {
-    case rectangle(radiusX: CGFloat, radiusY: CGFloat)
-    case roundRectangle(AppKitCornerRadii)
+    case rectangle(AppKitCornerRadii)
     case ellipse
     case line(x1: CGFloat, y1: CGFloat, x2: CGFloat, y2: CGFloat)
     case path(String)
@@ -46,8 +44,7 @@ final class AppKitShapeView: AppKitHitTestView {
     init(kind: AppKitShapeKind) {
         self.kind = kind
         switch kind {
-        case .rectangle: geometry = .rectangle(radiusX: 0, radiusY: 0)
-        case .roundRectangle: geometry = .roundRectangle(AppKitCornerRadii())
+        case .rectangle: geometry = .rectangle(AppKitCornerRadii())
         case .ellipse: geometry = .ellipse
         case .line: geometry = .line(x1: 0, y1: 0, x2: 0, y2: 0)
         case .path: geometry = .path("")
@@ -104,15 +101,7 @@ final class AppKitShapeView: AppKitHitTestView {
         let stretchesAuthoredGeometry: Bool
 
         switch geometry {
-        case .rectangle(let radiusX, let radiusY):
-            let rect = bounds.insetBy(dx: thickness / 2, dy: thickness / 2)
-            path = NSBezierPath(
-                roundedRect: rect,
-                xRadius: max(0, radiusX),
-                yRadius: max(0, radiusY))
-            stretchesAuthoredGeometry = false
-
-        case .roundRectangle(let radii):
+        case .rectangle(let radii):
             let rect = bounds.insetBy(dx: thickness / 2, dy: thickness / 2)
             path = NSBezierPath(cgPath: radii.path(in: rect))
             stretchesAuthoredGeometry = false

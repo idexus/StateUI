@@ -88,7 +88,7 @@
         (.stateUI, [
             .checkBox, .ellipse, .grid,
             .positionIndicator, .line, .path, .polygon, .polyline, .radioButton,
-            .rectangle, .refreshView, .roundRectangle, .swipeView,
+            .rectangle, .refreshView, .swipeView,
         ]),
         (.structure, [
             .application, .composed, .content, .contextMenu, .spans,
@@ -150,7 +150,7 @@
             .gridRow, .gridRowSpan, .groupName, .hideSingle, .indicatorColor,
             .indicatorSize, .indicatorsShape, .isRefreshEnabled,
             .isRefreshing, .maximumVisible, .mode, .points,
-            .position, .radiusX, .radiusY, .refreshColor, .rows,
+            .position, .refreshColor, .rows,
             .rowSpacing, .selectedIndicatorColor, .side, .stroke,
             .strokeDashPattern, .strokeDashOffset, .strokeLineCap,
             .strokeLineJoin, .strokeMiterLimit, .shape, .strokeWidth,

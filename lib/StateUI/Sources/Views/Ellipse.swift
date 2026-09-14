@@ -10,11 +10,12 @@
 ///
 /// An ellipse IS its bounds, so it declares nothing of its own: the fill, the
 /// stroke and the dash pattern all come from the shape tier in Elements.swift.
-/// An outline needs a `.stroke`; the thickness defaults to 1, so
+/// An outline needs a `.stroke`; the width defaults to 1, so
 /// `.strokeWidth` is for a heavier or a finer one.
 ///
 /// A round avatar or a status dot is this control sized square. For a rounded
-/// RECTANGLE, use `RoundRectangle`, or a `Border` with a `.shape`.
+/// RECTANGLE, use a `Rectangle` with a `cornerRadius`, or a `Border` with a
+/// `.shape`.
 public struct Ellipse: Shape {
     /// The node this control describes.
     public var node: Node

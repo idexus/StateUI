@@ -84,7 +84,7 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `ProgressBar` | native primitive | ✅ | — | — | — | — | — |
 | `ActivityIndicator` | native primitive | ✅ | — | — | — | — | — |
 | `Canvas` | native drawing primitive | ✅ | — | — | — | — | — |
-| `Rectangle` / `RoundRectangle` / `Ellipse` | StateUI-owned drawing contract | ✅ | — | — | — | — | — |
+| `Rectangle` / `Ellipse` | StateUI-owned drawing contract | ✅ | — | — | — | — | — |
 | `Line` / `Path` / `Polygon` / `Polyline` | StateUI-owned drawing contract | ✅ | — | — | — | — | — |
 | `PositionIndicator` | StateUI-owned composition | — | — | — | — | — | — |
 | `RefreshView` | StateUI-owned interaction | — | — | — | — | — | — |
@@ -173,7 +173,7 @@ may still choose another class that preserves the same contract.
 | `ProgressBar` | `NSProgressIndicator` bar | `UIProgressView` | `GtkProgressBar` | horizontal `ProgressBar` | `ProgressBar` | `<progress>` |
 | `ActivityIndicator` | spinning `NSProgressIndicator` | `UIActivityIndicatorView` | `GtkSpinner` | indeterminate `ProgressBar` | `ProgressRing` | indeterminate `<progress>` |
 | `Canvas` | custom `NSView` drawing | `UIView` `draw(_:)` | `GtkDrawingArea` | `View` `onDraw(Canvas)` | Win2D `CanvasControl` (?) | `<canvas>` |
-| `Rectangle` / `RoundRectangle` / `Ellipse` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `GskPath` in a snapshot | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | inline SVG |
+| `Rectangle` / `Ellipse` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `GskPath` in a snapshot | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | inline SVG |
 | `Line` / `Path` / `Polygon` / `Polyline` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `GskPath` in a snapshot | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | inline SVG |
 | `PositionIndicator` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
 | `RefreshView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
@@ -369,8 +369,7 @@ token in parentheses.
 | `ActivityIndicator` | properties | `color` | — | — | — | — | — | — |
 | `Canvas` | properties/events | `drawable`, `onPressed` (`pressed`), `onDragged` (`dragged`), `onReleased` (`released`) | ✅ | — | — | — | — | — |
 | shapes | properties | `fill`, `stroke`, `strokeWidth`, `strokeDashPattern`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `aspect`, `renderTransform` | — | — | — | — | — | — |
-| `Rectangle` | properties | `radiusX`, `radiusY` | — | — | — | — | — | — |
-| `RoundRectangle` | properties | `cornerRadius` | — | — | — | — | — | — |
+| `Rectangle` | properties | `cornerRadius` | — | — | — | — | — | — |
 | `Line` | properties | `x1`, `y1`, `x2`, `y2` | ✅ | — | — | — | — | — |
 | `Path` | properties | `data` | ✅ | — | — | — | — | — |
 | `Polygon` / `Polyline` | properties | `points`, `fillRule` | ✅ | — | — | — | — | — |
@@ -405,11 +404,11 @@ host status.
 `Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `ModalStack`,
 `NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`, `Polygon`,
 `Polyline`, `PositionIndicator`, `ProgressBar`, `RadioButton`, `Rectangle`,
-`RefreshView`, `RoundRectangle`, `Scene`, `ScrollView`, `SearchField`,
-`Setters`, `Slider`, `Span`, `Spans`, `SplitView`, `Stepper`, `SwipeAction`,
-`SwipeActions`, `SwipeView`, `Switch`, `TabbedView`, `TextEditor`, `TextField`,
-`TimePicker`, `TitleBar`, `TitleView`, `ToolbarItem`, `ToolbarItems`,
-`TrailingContent`, `VisualState`, `VStack`, `WebView`, `Window`.
+`RefreshView`, `Scene`, `ScrollView`, `SearchField`, `Setters`, `Slider`,
+`Span`, `Spans`, `SplitView`, `Stepper`, `SwipeAction`, `SwipeActions`,
+`SwipeView`, `Switch`, `TabbedView`, `TextEditor`, `TextField`, `TimePicker`,
+`TitleBar`, `TitleView`, `ToolbarItem`, `ToolbarItems`, `TrailingContent`,
+`VisualState`, `VStack`, `WebView`, `Window`.
 
 ### Properties
 
@@ -439,18 +438,17 @@ host status.
 `name`, `numberOfTapsRequired`, `offColor`, `onColor`, `opacity`, `options`,
 `orientation`, `padding`, `panTouchCount`, `panXChannel`, `panYChannel`,
 `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`, `points`,
-`position`, `priority`, `progress`, `progressColor`, `radiusX`, `radiusY`,
-`refreshColor`, `region`, `renderTransform`, `returnKey`, `rotation`,
-`rotationX`, `rotationY`, `rows`, `rowSpacing`, `safeAreaEdges`, `scale`,
-`scaleX`, `scaleY`, `scrollMomentum`, `scrollOffset`, `scrollStep`,
-`searchIconColor`, `selectedIndex`, `selectedIndicatorColor`,
-`selectionLength`, `semanticDescription`, `semanticHeadingLevel`,
-`semanticHint`, `shape`, `showsClearButton`, `showsUserLocation`, `side`,
-`snapFrom`, `snapInterval`, `snapsAtMost`, `source`, `spacing`, `step`,
-`stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`,
-`strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`, `subtitle`,
-`swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `text`,
-`textCase`, `textColor`, `textDecorations`, `textType`, `threshold`,
+`position`, `priority`, `progress`, `progressColor`, `refreshColor`, `region`,
+`renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
+`rowSpacing`, `safeAreaEdges`, `scale`, `scaleX`, `scaleY`, `scrollMomentum`,
+`scrollOffset`, `scrollStep`, `searchIconColor`, `selectedIndex`,
+`selectedIndicatorColor`, `selectionLength`, `semanticDescription`,
+`semanticHeadingLevel`, `semanticHint`, `shape`, `showsClearButton`,
+`showsUserLocation`, `side`, `snapFrom`, `snapInterval`, `snapsAtMost`,
+`source`, `spacing`, `step`, `stroke`, `strokeDashOffset`, `strokeDashPattern`,
+`strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`,
+`subtitle`, `swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`,
+`text`, `textCase`, `textColor`, `textDecorations`, `textType`, `threshold`,
 `thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`,
 `translationX`, `translationY`, `type`, `userAgent`, `value`,
 `verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,

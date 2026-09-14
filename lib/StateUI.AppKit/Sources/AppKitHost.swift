@@ -2298,8 +2298,6 @@ final class MountedNode: NSObject {
         case .rectangle:
             return AppKitShapeView(kind: .rectangle)
 
-        case .roundRectangle:
-            return AppKitShapeView(kind: .roundRectangle)
 
         case .ellipse:
             return AppKitShapeView(kind: .ellipse)
@@ -2625,11 +2623,7 @@ final class MountedNode: NSObject {
         if let shape = view as? AppKitShapeView {
             let geometry: AppKitShapeGeometry = switch type {
             case .rectangle:
-                .rectangle(
-                    radiusX: max(0, number(.radiusX).map { CGFloat($0) } ?? 0),
-                    radiusY: max(0, number(.radiusY).map { CGFloat($0) } ?? 0))
-            case .roundRectangle:
-                .roundRectangle(AppKitCornerRadii(value(.cornerRadius)))
+                .rectangle(AppKitCornerRadii(value(.cornerRadius)))
             case .ellipse:
                 .ellipse
             case .line:
@@ -3232,7 +3226,7 @@ final class MountedNode: NSObject {
             return .number(0)
         case .strokeWidth:
             return .number(1)
-        case .strokeDashOffset, .radiusX, .radiusY, .x1, .y1, .x2, .y2:
+        case .strokeDashOffset, .x1, .y1, .x2, .y2:
             return .number(0)
         case .strokeMiterLimit:
             return .number(10)

@@ -48,7 +48,7 @@ extension BorderProperties {
     ///
     /// This is where a rounded corner comes from on anything without a
     /// `cornerRadius` of its own: a Button, a RadioButton, a ColorBox and a
-    /// RoundRectangle carry one, and everything else is wrapped in a Border.
+    /// Rectangle carry one, and everything else is wrapped in a Border.
     public func shape(_ value: BorderShape) -> Modified {
         setValue(.shape, value.propValue)
     }

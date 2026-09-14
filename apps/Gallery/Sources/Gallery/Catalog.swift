@@ -179,7 +179,7 @@ final class Catalog {
             SampleGroup(
                 route: "shapes",
                 title: "Shapes",
-                summary: "Outlines, gradients and a canvas - seven shapes, brushes on any "
+                summary: "Outlines, gradients and a canvas - six shapes, brushes on any "
                     + "view at all, and drawing instructions the host carries out.",
                 icon: ImageSource(light: "nav_shapes.png", dark: "nav_shapes_dark.png"),
                 card: ImageSource("cat_shapes.png"),

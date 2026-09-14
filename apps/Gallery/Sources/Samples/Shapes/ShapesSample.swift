@@ -1,12 +1,12 @@
 import StateUI
 
-/// Seven outlines, filled and stroked - with dashes, joins and a fill rule.
+/// Six outlines, filled and stroked - with dashes, joins and a fill rule.
 struct ShapesSample: SampleContent, ExampleContent {
     @State private var rule = FillRule.evenOdd
 
     static let id = "shapes"
     static let title = "Shapes"
-    static let summary = "Seven native outlines sharing one deterministic shape vocabulary."
+    static let summary = "Six native outlines sharing one deterministic shape vocabulary."
 
     static let code = """
         @State private var rule = FillRule.evenOdd
@@ -30,12 +30,11 @@ struct ShapesSample: SampleContent, ExampleContent {
 
                 Rectangle()
                     .fill(Palette.accent)
-                    .radiusX(14)
-                    .radiusY(14)
+                    .cornerRadius(14)
                     .width(56)
                     .height(56)
 
-                RoundRectangle()
+                Rectangle()
                     .fill(Palette.accent)
                     .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
                     .width(56)
@@ -89,7 +88,7 @@ struct ShapesSample: SampleContent, ExampleContent {
             }
 
             // The same dashes twice, half a pattern apart: the offset, like
-            // the pattern itself, is counted in stroke thicknesses.
+            // the pattern itself, is counted in stroke widths.
             VStack {
                 Line()
                     .x1(0).y1(4)
@@ -114,7 +113,7 @@ struct ShapesSample: SampleContent, ExampleContent {
 
             // The same sharp corner twice. A miter join carries the two outer
             // edges on until they cross, and the limit is how long that join
-            // may be, in stroke thicknesses; past it the point is cut flat.
+            // may be, in stroke widths; past it the point is cut flat.
             HStack {
                 Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
                     .stroke(Palette.accent)
@@ -165,12 +164,11 @@ struct ShapesSample: SampleContent, ExampleContent {
 
                 Rectangle()
                     .fill(Palette.accent)
-                    .radiusX(14)
-                    .radiusY(14)
+                    .cornerRadius(14)
                     .width(56)
                     .height(56)
 
-                RoundRectangle()
+                Rectangle()
                     .fill(Palette.accent)
                     .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
                     .width(56)
@@ -299,11 +297,11 @@ struct ShapesSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("Fill, stroke and everything about the stroke form one `Shape` protocol, "
-                + "shared by all seven outlines and every native host. A shape with no "
-                + "stroke thickness draws no outline and one with no fill has no inside - a "
+                + "shared by all six outlines and every native host. A shape with no "
+                + "stroke width draws no outline and one with no fill has no inside - a "
                 + "`Line` has only the first, as there is nothing to fill. A `Rectangle` "
-                + "rounds its corners with `radiusX` and `radiusY`, the same on all four; a "
-                + "`RoundRectangle` names each corner separately.")
+                + "rounds its corners with `cornerRadius`: one number for all four, or "
+                + "each corner by name.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -314,8 +312,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Dashes and their offset are counted in stroke thicknesses: `[3, 2]` at "
-                + "thickness 4 repeats every 20 points, so the lower line's offset of 2.5 "
+            Label("Dashes and their offset are counted in stroke widths: `[3, 2]` at "
+                + "width 4 repeats every 20 points, so the lower line's offset of 2.5 "
                 + "shifts it half a pattern and its dashes stand under the upper line's gaps. "
                 + "A miter join carries the two outer edges on until they cross, and the "
                 + "miter limit is how long that join may be, in the same units. The Vs' "

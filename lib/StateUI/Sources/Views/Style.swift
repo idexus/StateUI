@@ -899,7 +899,6 @@ extension StyleBag: ProgressBarProperties where Target == ProgressBar {}
 extension StyleBag: RadioButtonProperties where Target == RadioButton {}
 extension StyleBag: RectangleProperties where Target == Rectangle {}
 extension StyleBag: RefreshViewProperties where Target == RefreshView {}
-extension StyleBag: RoundRectangleProperties where Target == RoundRectangle {}
 extension StyleBag: ScrollViewProperties where Target == ScrollView {}
 extension StyleBag: SearchFieldProperties where Target == SearchField {}
 extension StyleBag: SliderProperties where Target == Slider {}
@@ -944,7 +943,6 @@ extension AbsoluteLayout: StyleTarget {}
 extension RefreshView: StyleTarget {}
 extension SwipeView: StyleTarget {}
 extension Rectangle: StyleTarget {}
-extension RoundRectangle: StyleTarget {}
 extension Ellipse: StyleTarget {}
 extension Line: StyleTarget {}
 extension Path: StyleTarget {}

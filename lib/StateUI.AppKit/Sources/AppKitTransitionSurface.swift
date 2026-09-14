@@ -80,9 +80,6 @@ enum AppKitTransitionSurface {
             return titleBarProperties.contains(property)
 
         case .rectangle:
-            return rectangleProperties.contains(property)
-
-        case .roundRectangle:
             return property == .cornerRadius
 
         case .line:
@@ -104,12 +101,12 @@ enum AppKitTransitionSurface {
         .checkBox, .datePicker, .textEditor, .ellipse, .textField, .canvas,
         .grid, .hStack, .image, .label, .line,
         .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
-        .rectangle, .roundRectangle, .scrollView, .searchField, .slider,
+        .rectangle, .scrollView, .searchField, .slider,
         .stepper, .switch, .timePicker, .vStack,
     ]
 
     private static let shapeTypes: Set<NodeType> = [
-        .ellipse, .line, .path, .polygon, .polyline, .rectangle, .roundRectangle,
+        .ellipse, .line, .path, .polygon, .polyline, .rectangle,
     ]
 
     private static let sharedViewProperties: Set<Prop> = [
@@ -174,8 +171,6 @@ enum AppKitTransitionSurface {
         .fill, .stroke, .strokeWidth, .strokeDashOffset, .strokeMiterLimit,
         .renderTransform,
     ]
-
-    private static let rectangleProperties: Set<Prop> = [.radiusX, .radiusY]
 
     private static let lineProperties: Set<Prop> = [.x1, .y1, .x2, .y2]
 

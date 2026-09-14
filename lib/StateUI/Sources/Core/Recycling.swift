@@ -50,7 +50,7 @@ enum Recycling {
         .checkBox, .ellipse, .spans, .grid,
         .hStack, .image, .positionIndicator, .label,
         .line, .path, .polygon, .polyline, .progressBar, .radioButton,
-        .rectangle, .roundRectangle, .slider, .span, .stepper, .switch,
+        .rectangle, .slider, .span, .stepper, .switch,
         .vStack,
     ]
 

@@ -28,7 +28,7 @@ struct BrushSample: SampleContent, ExampleContent {
             // The gradient's end is read here, so moving it builds this closure.
             DebugInfoLabel()
 
-            RoundRectangle()
+            Rectangle()
                 .cornerRadius(12)
                 .fill(.linearGradient(
                     Self.stops,
@@ -85,7 +85,7 @@ struct BrushSample: SampleContent, ExampleContent {
 
             SectionTitle("Along a line")
 
-            RoundRectangle()
+            Rectangle()
                 .cornerRadius(12)
                 .fill(.linearGradient(
                     Self.stops,

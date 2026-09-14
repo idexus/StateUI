@@ -438,11 +438,6 @@ final class ControlTests: XCTestCase {
             // Elements case below; each of these carries only its own.
             ControlCase("Rectangle", source: "Rectangle.swift",
                 Rectangle()
-                    .radiusX(8)
-                    .radiusY(4)),
-
-            ControlCase("RoundRectangle", source: "RoundRectangle.swift",
-                RoundRectangle()
                     .cornerRadius(topLeft: 16, topRight: 16, bottomLeft: 0, bottomRight: 0)),
 
             ControlCase("Ellipse", source: "Ellipse.swift", Ellipse()),

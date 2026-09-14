@@ -38,7 +38,7 @@ final class BrushTests: XCTestCase {
         let renders = Renders()
 
         func tree(diagonal: Bool) -> Node {
-            RoundRectangle()
+            Rectangle()
                 .fill(.linearGradient(
                     [GradientStop(.gold, 0), GradientStop(.tomato, 1)],
                     startPoint: Point(0, 0),

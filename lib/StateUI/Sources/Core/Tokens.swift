@@ -157,7 +157,7 @@ extension Prop {
 
         // The lengths a view's own shape is drawn with go with its size: they
         // are how big it is, said about its corners and its outline.
-        for property in [Prop.cornerRadius, .strokeWidth, .borderWidth, .radiusX, .radiusY] {
+        for property in [Prop.cornerRadius, .strokeWidth, .borderWidth] {
             kinds[property] = .size
         }
 
@@ -391,7 +391,6 @@ public extension NodeType {
     static let radioButton = NodeType("RadioButton")
     static let rectangle = NodeType("Rectangle")
     static let refreshView = NodeType("RefreshView")
-    static let roundRectangle = NodeType("RoundRectangle")
     static let scene = NodeType("Scene")
     static let scrollView = NodeType("ScrollView")
     static let searchField = NodeType("SearchField")
@@ -556,8 +555,6 @@ public extension Prop {
     static let priority = Prop("priority")
     static let progress = Prop("progress")
     static let progressColor = Prop("progressColor")
-    static let radiusX = Prop("radiusX")
-    static let radiusY = Prop("radiusY")
     static let refreshColor = Prop("refreshColor")
     static let region = Prop("region")
     static let renderTransform = Prop("renderTransform")
