@@ -483,6 +483,40 @@ final class HostContractTests: XCTestCase {
     /// a caption - on a button, a menu or toolbar item, a page's tab - with its
     /// `iconPosition` and `iconSpacing`, and `Button(icon:)` when there is no
     /// caption at all.
+    func testEventsNameWhatHappened() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let events = declaredNames(of: "Event", in: tokenSource)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+
+        XCTAssertTrue(events.isSuperset(of: [
+            "dateChanged", "timeChanged", "refreshRequested", "pinClicked", "pinDetailsClicked",
+        ]))
+        XCTAssertTrue(
+            events.isDisjoint(with: [
+                "dateSelected", "timeSelected", "refreshing", "markerClicked", "infoWindowClicked",
+            ]),
+            "an event keeps a name that says how it happened rather than what happened")
+        XCTAssertTrue(properties.contains("tapCount"))
+        XCTAssertFalse(properties.contains("numberOfTapsRequired"), "a double tap keeps a second name")
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            for former in [
+                "func onDateSelected(", "func onTimeSelected(", "func onRefreshing(",
+                "func onMarkerClicked(", "func onInfoWindowClicked(", "numberOfTapsRequired:",
+            ] {
+                XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
+            }
+        }
+    }
+
     func testARoundedRectangleIsARectangle() throws {
         let tokenSource = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),

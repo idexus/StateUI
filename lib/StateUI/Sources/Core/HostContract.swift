@@ -159,7 +159,7 @@
         (.structure, [
             .absoluteLayoutBounds, .absoluteLayoutProportions, .content,
             .currentPage, .drawable, .frame, .group, .options,
-            .name, .numberOfTapsRequired, .panTouchCount, .panXChannel,
+            .name, .tapCount, .panTouchCount, .panXChannel,
             .panYChannel, .scrollOffset, .style, .swipeDirection, .swipeThreshold,
             .windowType, .windowValue, .x, .y,
         ]),
@@ -173,7 +173,7 @@
     public static let events: [Event: HostEventOwner] = table([
         (.native, [
             .canGoBackChanged, .canGoForwardChanged, .clicked, .closed,
-            .submitted, .dateSelected, .dragCompleted, .dragged,
+            .submitted, .dateChanged, .dragCompleted, .dragged,
             .dragLeave, .dragOver, .dragStarted, .dragStarting, .drop,
             .dropCompleted, .frameChanged,
             .isFocusedChanged, .navigated, .navigating, .opened, .panUpdated,
@@ -181,7 +181,7 @@
             .pointerPressed, .pointerReleased, .pressed, .processTerminated,
             .released, .scrollStopped, .scrollXChanged, .scrollYChanged,
             .selectedIndexChanged, .snapItemChanged,
-            .swiped, .tapped, .textChanged, .timeSelected,
+            .swiped, .tapped, .textChanged, .timeChanged,
             .toggled, .valueChanged,
         ]),
         (.adaptive, [
@@ -192,10 +192,10 @@
             .windowRestored,
         ]),
         (.stateUI, [
-            .isRefreshingChanged, .refreshing,
+            .isRefreshingChanged, .refreshRequested,
             .swipeChanging, .swipeEnded, .swipeStarted, .visualStateChanged,
         ]),
-        (.provider, [.infoWindowClicked, .mapClicked, .markerClicked]),
+        (.provider, [.pinDetailsClicked, .mapClicked, .pinClicked]),
     ])
 
     private static func table<Key: Hashable, Owner>(

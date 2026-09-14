@@ -17,7 +17,6 @@ VStack 1 arranged(3)
   maximumWidth: number 400
   minimumHeight: number 25
   minimumWidth: number 50
-  numberOfTapsRequired: number 2
   opacity: number 0.5
   padding: numbers 24,16,24,16
   panTouchCount: number 1
@@ -33,6 +32,7 @@ VStack 1 arranged(3)
   spacing: number 12
   swipeDirection: enum left|up(6)
   swipeThreshold: number 60
+  tapCount: number 2
   translationX: number 10
   translationY: number 20
   verticalAlignment: enum fill(3)

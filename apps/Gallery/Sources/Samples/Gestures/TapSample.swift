@@ -34,7 +34,7 @@ struct TapSample: SampleContent, ExampleContent {
             }
             .stroke(Palette.outline)
             .shape(.roundedRectangle(10))
-            .onTapped(numberOfTapsRequired: 2) { taps = 0 }
+            .onTapped(count: 2) { taps = 0 }
 
             Label("Tapped \\(taps) time(s)")
         }
@@ -64,7 +64,7 @@ struct TapSample: SampleContent, ExampleContent {
             .stroke(Palette.outline)
             .strokeWidth(1)
             .shape(.roundedRectangle(10))
-            .onTapped(numberOfTapsRequired: 2) { taps = 0 }
+            .onTapped(count: 2) { taps = 0 }
 
             Label("Tapped \(taps) time(s)")
                 .fontSize(17)

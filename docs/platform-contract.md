@@ -288,7 +288,7 @@ individual control already uses that member.
 | accessibility | `automationId`, `automationIsInAccessibleTree`, `automationExcludedWithChildren`, `semanticDescription`, `semanticHint`, `semanticHeadingLevel` | ✅ | — | — | — | — | — |
 | frame feed/event | `frame`, `frameChanged` | ✅ | — | — | — | — | — |
 | focus feed and event | `isFocused`, `isFocusedChanged` | — | — | — | — | — | — |
-| tap | `numberOfTapsRequired`, `onTapped` (`tapped`) | ✅ | — | — | — | — | — |
+| tap | `tapCount`, `onTapped` (`tapped`) | ✅ | — | — | — | — | — |
 | swipe gesture | `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`) | ✅ | — | — | — | — | — |
 | pan and pinch | `panXChannel`, `panYChannel`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `onPinchUpdated` (`pinchUpdated`) | ✅ | — | — | — | — | — |
 | pointer | `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`) | ✅ | — | — | — | — | — |
@@ -349,11 +349,11 @@ token in parentheses.
 | `Picker` | handlers | `onSelectedIndexChanged` (`selectedIndexChanged`), `onOpened` (`opened`), `onClosed` (`closed`) | ✅ | — | — | — | — | — |
 | `DatePicker` | properties | `date`, `minimumDate`, `maximumDate` | ✅ | — | — | — | — | — |
 | `DatePicker` | properties | `format`, `isOpen` | — | — | — | — | — | — |
-| `DatePicker` | handlers | `onDateSelected` (`dateSelected`) | ✅ | — | — | — | — | — |
+| `DatePicker` | handlers | `onDateChanged` (`dateChanged`) | ✅ | — | — | — | — | — |
 | `DatePicker` | handlers | `onOpened` (`opened`), `onClosed` (`closed`) | — | — | — | — | — | — |
 | `TimePicker` | properties | `time` | ✅ | — | — | — | — | — |
 | `TimePicker` | properties | `format`, `isOpen` | — | — | — | — | — | — |
-| `TimePicker` | handlers | `onTimeSelected` (`timeSelected`) | ✅ | — | — | — | — | — |
+| `TimePicker` | handlers | `onTimeChanged` (`timeChanged`) | ✅ | — | — | — | — | — |
 | `TimePicker` | handlers | `onOpened` (`opened`), `onClosed` (`closed`) | — | — | — | — | — | — |
 | `Switch` | properties/events | two-way `isOn`, `onToggled` (`toggled`) | ✅ | — | — | — | — | — |
 | `Switch` | properties | `onColor`, `offColor`, `thumbColor` | — | — | — | — | — | — |
@@ -374,14 +374,14 @@ token in parentheses.
 | `Path` | properties | `data` | ✅ | — | — | — | — | — |
 | `Polygon` / `Polyline` | properties | `points`, `fillRule` | ✅ | — | — | — | — | — |
 | `PositionIndicator` | properties | `count`, `position`, `indicatorColor`, `selectedIndicatorColor`, `indicatorSize`, `maximumVisible`, `indicatorsShape`, `hideSingle` | — | — | — | — | — | — |
-| `RefreshView` | properties/events | two-way `isRefreshing`, `isRefreshEnabled`, `refreshColor`, `onRefreshing` (`refreshing`) | — | — | — | — | — | — |
+| `RefreshView` | properties/events | two-way `isRefreshing`, `isRefreshEnabled`, `refreshColor`, `onRefreshRequested` (`refreshRequested`) | — | — | — | — | — | — |
 | `SwipeView` | properties/events | `threshold`, item `side`, `swipeBehaviorOnInvoked`, `onSwipeStarted` (`swipeStarted`), `onSwipeChanging` (`swipeChanging`), `onSwipeEnded` (`swipeEnded`) | — | — | — | — | — | — |
 | `SwipeAction` | properties/events | `text`, `icon`, `background`, `isDestructive`, `isEnabled`, `isVisible`, `onClicked` (`clicked`) | — | — | — | — | — | — |
 | `RefreshView` | state event | `isRefreshingChanged` | — | — | — | — | — | — |
 | `WebView` | properties/events | `source`, `userAgent`, `canGoBackChanged`, `canGoForwardChanged` | — | — | — | — | — | — |
 | `WebView` | handlers | `onNavigating` (`navigating`), `onNavigated` (`navigated`), `onProcessTerminated` (`processTerminated`) | — | — | — | — | — | — |
 | `Map` / `Pin` | provider properties | `region`, `mapType`, `isScrollEnabled`, `isZoomEnabled`, `isTrafficEnabled`, `showsUserLocation`, pin `label`, `address`, `location`, `type` | — | — | — | — | — | — |
-| `Map` / `Pin` | provider handlers | `mapClicked`, `markerClicked`, `infoWindowClicked` | — | — | — | — | — | — |
+| `Map` / `Pin` | provider handlers | `mapClicked`, `pinClicked`, `pinDetailsClicked` | — | — | — | — | — | — |
 | host metadata | structural/adaptive | `content`, `group`, `mode`, `name`, `style`, `isOpaque`, `scrollStep`, `textType`, `visualStateChanged` | — | — | — | — | — | — |
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,
@@ -435,10 +435,10 @@ host status.
 `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`,
 `maximumTrackColor`, `maximumVisible`, `maximumWidth`, `minimum`,
 `minimumDate`, `minimumHeight`, `minimumTrackColor`, `minimumWidth`, `mode`,
-`name`, `numberOfTapsRequired`, `offColor`, `onColor`, `opacity`, `options`,
-`orientation`, `padding`, `panTouchCount`, `panXChannel`, `panYChannel`,
-`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`, `points`,
-`position`, `priority`, `progress`, `progressColor`, `refreshColor`, `region`,
+`name`, `offColor`, `onColor`, `opacity`, `options`, `orientation`, `padding`,
+`panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
+`placeholder`, `placeholderColor`, `placement`, `points`, `position`,
+`priority`, `progress`, `progressColor`, `refreshColor`, `region`,
 `renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
 `rowSpacing`, `safeAreaEdges`, `scale`, `scaleX`, `scaleY`, `scrollMomentum`,
 `scrollOffset`, `scrollStep`, `searchIconColor`, `selectedIndex`,
@@ -448,8 +448,8 @@ host status.
 `source`, `spacing`, `step`, `stroke`, `strokeDashOffset`, `strokeDashPattern`,
 `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`,
 `subtitle`, `swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`,
-`text`, `textCase`, `textColor`, `textDecorations`, `textType`, `threshold`,
-`thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`,
+`tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `textType`,
+`threshold`, `thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`,
 `translationX`, `translationY`, `type`, `userAgent`, `value`,
 `verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
 `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
@@ -458,16 +458,17 @@ host status.
 ### Events
 
 `activated`, `appearing`, `canGoBackChanged`, `canGoForwardChanged`, `clicked`,
-`closed`, `created`, `currentPageChanged`, `dateSelected`, `deactivated`,
+`closed`, `created`, `currentPageChanged`, `dateChanged`, `deactivated`,
 `destroying`, `disappearing`, `dragCompleted`, `dragged`, `dragLeave`,
 `dragOver`, `dragStarted`, `dragStarting`, `drop`, `dropCompleted`,
-`frameChanged`, `infoWindowClicked`, `isFocusedChanged`, `isRefreshingChanged`,
-`isSidebarVisibleChanged`, `mapClicked`, `markerClicked`, `modalPopped`,
-`navigated`, `navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`,
-`opened`, `panUpdated`, `pinchUpdated`, `pointerEntered`, `pointerExited`,
-`pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`, `pressed`,
-`processTerminated`, `refreshing`, `released`, `resumed`, `scrollStopped`,
-`scrollXChanged`, `scrollYChanged`, `selectedIndexChanged`, `snapItemChanged`,
-`stopped`, `submitted`, `swipeChanging`, `swiped`, `swipeEnded`,
-`swipeStarted`, `tapped`, `textChanged`, `timeSelected`, `toggled`,
-`valueChanged`, `visualStateChanged`, `windowClosed`, `windowRestored`.
+`frameChanged`, `isFocusedChanged`, `isRefreshingChanged`,
+`isSidebarVisibleChanged`, `mapClicked`, `modalPopped`, `navigated`,
+`navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`, `opened`,
+`panUpdated`, `pinchUpdated`, `pinClicked`, `pinDetailsClicked`,
+`pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
+`pointerReleased`, `popped`, `pressed`, `processTerminated`,
+`refreshRequested`, `released`, `resumed`, `scrollStopped`, `scrollXChanged`,
+`scrollYChanged`, `selectedIndexChanged`, `snapItemChanged`, `stopped`,
+`submitted`, `swipeChanging`, `swiped`, `swipeEnded`, `swipeStarted`, `tapped`,
+`textChanged`, `timeChanged`, `toggled`, `valueChanged`, `visualStateChanged`,
+`windowClosed`, `windowRestored`.

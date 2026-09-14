@@ -43,7 +43,7 @@ extension RefreshViewProperties {
 ///             VStack { … }
 ///         }
 ///     }
-///     .onRefreshing {
+///     .onRefreshRequested {
 ///         try await reload()
 ///         refreshing = false
 ///     }
@@ -66,7 +66,7 @@ public struct RefreshView: View, RefreshViewProperties {
     }
 
     /// A refreshable view around what the closure describes. One-way: the pull
-    /// goes nowhere without `.onRefreshing`.
+    /// goes nowhere without `.onRefreshRequested`.
     /// The closure is kept and run when the differ describes the view.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
         node = Node(type: .refreshView)
@@ -101,7 +101,7 @@ public struct RefreshView: View, RefreshViewProperties {
     ///
     /// Where the work goes, and where `isRefreshing` is cleared once it is done.
     /// Runs after a binding's write, if there is one.
-    public func onRefreshing(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.refreshing, handler)
+    public func onRefreshRequested(_ handler: @escaping EventHandler) -> Self {
+        addHandler(.refreshRequested, handler)
     }
 }

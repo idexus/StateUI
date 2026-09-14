@@ -59,7 +59,7 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable {
         self.init(year: year, month: month, day: day)
     }
 
-    /// Reads the three numbers a dateSelected payload carries - year, month,
+    /// Reads the three numbers a dateChanged payload carries - year, month,
     /// day. Nil for anything else, so a report that will not read leaves the
     /// handler alone.
     init?(_ value: PropValue?) {

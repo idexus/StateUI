@@ -1117,15 +1117,17 @@ extension View {
         addHandler(.tapped, handler)
     }
 
-    /// The same, for a double tap or more.
+    /// The same, for a double tap or more: `count` taps in a row.
+    ///
+    ///     Label("Reset").onTapped(count: 2) { taps = 0 }
     public func onTapped(
-        numberOfTapsRequired: Int,
+        count: Int,
         _ handler: @escaping EventHandler
     ) -> Modified {
         // Both changes in one `modified`, because chaining would return
         // `Modified.Modified` and nothing here can promise that is `Modified`.
         modified {
-            $0.props[.numberOfTapsRequired] = .number(Double(numberOfTapsRequired))
+            $0.props[.tapCount] = .number(Double(count))
             $0.addHandler(.tapped, handler)
         }
     }

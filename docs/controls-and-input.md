@@ -244,7 +244,7 @@ host. Their presence in the Swift module is not a support claim:
 | --- | --- |
 | `WebView` | URL or inline-HTML source; back/forward capability feeds; navigation reports; aimed back, forward, reload, and script actions |
 | `Map` | provider-owned native map; initial region in the declaration; pins and tap reports; later region changes through an aim |
-| `RefreshView` | one scrollable child; a pull writes `true` before `onRefreshing`; application work clears the two-way refreshing state |
+| `RefreshView` | one scrollable child; a pull writes `true` before `onRefreshRequested`; application work clears the two-way refreshing state |
 | `SwipeView` | one content view; directional action collections; reveal or execute behavior; started, changing, and ended reports |
 | `PositionIndicator` | display-only count and current position with native indicator appearance |
 

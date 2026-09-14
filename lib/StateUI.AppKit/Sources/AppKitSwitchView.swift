@@ -46,7 +46,7 @@ final class AppKitSwitchView: NSSwitch {
 /// A native checkbox with the same one-report boundary as the switch.
 @MainActor
 final class AppKitCheckBoxView: NSButton {
-    var onCheckedChanged: ((Bool) -> Void)?
+    var onToggled: ((Bool) -> Void)?
     private var applying = false
 
     override init(frame frameRect: NSRect) {
@@ -76,7 +76,7 @@ final class AppKitCheckBoxView: NSButton {
 
     @objc private func changed(_ sender: NSButton) {
         guard !applying else { return }
-        onCheckedChanged?(state == .on)
+        onToggled?(state == .on)
     }
 
     func toggleForTesting() {

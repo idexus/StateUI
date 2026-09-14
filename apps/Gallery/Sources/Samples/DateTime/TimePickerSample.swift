@@ -39,14 +39,14 @@ struct TimePickerSample: SampleContent, ExampleContent {
             TimePicker()
                 .time(alarm)
                 .format("t")
-                .onTimeSelected { time in
+                .onTimeChanged { time in
                     alarm = time
                     picks += 1
                 }
 
             Label(picks == 0
-                ? "onTimeSelected has not fired"
-                : "onTimeSelected: \\(alarm.text), \\(picks) so far")
+                ? "onTimeChanged has not fired"
+                : "onTimeChanged: \\(alarm.text), \\(picks) so far")
         }
         """
 
@@ -89,14 +89,14 @@ struct TimePickerSample: SampleContent, ExampleContent {
                 .semanticDescription("Alarm, written back by hand")
                 .time(alarm)
                 .format("t")
-                .onTimeSelected { time in
+                .onTimeChanged { time in
                     alarm = time
                     picks += 1
                 }
 
             Label(picks == 0
-                ? "onTimeSelected has not fired"
-                : "onTimeSelected: \(alarm.text), \(picks) so far")
+                ? "onTimeChanged has not fired"
+                : "onTimeChanged: \(alarm.text), \(picks) so far")
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
         }
@@ -116,7 +116,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
             Label("`TimePicker()` says nothing about a time, so `.time` is what puts one "
                 + "in the field - the form a `Style<TimePicker>` or a picker built "
                 + "elsewhere has to use. Nothing comes back on its own either: the "
-                + "`alarm = time` in `onTimeSelected` is exactly the write the binding "
+                + "`alarm = time` in `onTimeChanged` is exactly the write the binding "
                 + "above makes for you, which is why both fields move together.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

@@ -5,4 +5,4 @@ DatePicker 1
   isOpen: false
   maximumDate: numbers 2026,12,31
   minimumDate: numbers 2026,1,1
-  on closed=1 dateSelected=2 opened=3
+  on closed=1 dateChanged=2 opened=3

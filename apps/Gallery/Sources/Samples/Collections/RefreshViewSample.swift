@@ -57,7 +57,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
             }
             .isRefreshEnabled(enabled)
             .gridRow(0)
-            .onRefreshing {
+            .onRefreshRequested {
                 // Nothing else clears it: the pull sets it, and the work is
                 // what says it is over.
                 refill()
@@ -130,7 +130,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
             .isRefreshEnabled(enabled)
             .refreshColor(Palette.accent)
             .gridRow(0)
-            .onRefreshing {
+            .onRefreshRequested {
                 // Nothing else clears it: the spinner shows for as long as the
                 // flag is true, and the work is what says it is over.
                 refill()
@@ -154,7 +154,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
                 // WHERE THE PLATFORM HAS NO PULL, a mouse needs another way
                 // in - and it is the one a desktop app writes: set the flag,
                 // do the work, clear it. A write made in Swift raises no
-                // handler, so this cannot lean on .onRefreshing.
+                // handler, so this cannot lean on .onRefreshRequested.
                 if !pulls {
                     Button("Refresh now").onClicked {
                         refreshing = true
@@ -201,7 +201,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
             Label("Where this sample offers no pull, the button beside the switch does "
                 + "what a desktop app writes anyway: set the flag, do the work, clear it. "
                 + "A write made in Swift raises no handler, so the button runs the work "
-                + "itself rather than waiting for `.onRefreshing`.")
+                + "itself rather than waiting for `.onRefreshRequested`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -49,7 +49,7 @@ extension TimePickerProperties {
 ///         .format("t")
 ///
 /// Given a binding it shows the time and writes back whatever is chosen; given
-/// a plain `ClockTime` it shows that, and `.onTimeSelected` is how the choice
+/// a plain `ClockTime` it shows that, and `.onTimeChanged` is how the choice
 /// gets anywhere.
 ///
 /// The time is a `ClockTime` rather than a Foundation value - see that type for
@@ -69,7 +69,7 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
     }
 
     /// A picker showing `time`. One-way: what is chosen goes nowhere without
-    /// `.onTimeSelected`.
+    /// `.onTimeChanged`.
     public init(_ time: ClockTime) {
         node = Node(type: .timePicker, props: [.time: time.propValue])
     }
@@ -104,7 +104,7 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
     /// - Returns: the control, wearing and reporting that time.
     public func time(_ value: Binding<ClockTime>) -> Modified {
         value.image == nil
-            ? described(.time, value, on: .timeSelected)
+            ? described(.time, value, on: .timeChanged)
             : plain(.time, by: value, mode: .inOut)
     }
 
@@ -114,8 +114,8 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
 
     /// Fires when a time is chosen, with the new one. Runs after a binding's
     /// write, if there is one.
-    public func onTimeSelected(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
-        addHandler(.timeSelected) {
+    public func onTimeChanged(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
+        addHandler(.timeChanged) {
             if let time = ClockTime(EventBuffer.current.value()) {
                 try await handler(time)
             }

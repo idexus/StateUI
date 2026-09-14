@@ -24,8 +24,8 @@ final class AppKitTapRecognizer: NSClickGestureRecognizer {
 
     /// Applies a valid native click count; StateUI treats zero and negative
     /// counts as one tap rather than creating a recognizer that cannot fire.
-    func apply(numberOfTapsRequired: Int) {
-        numberOfClicksRequired = max(1, numberOfTapsRequired)
+    func apply(tapCount: Int) {
+        numberOfClicksRequired = max(1, tapCount)
     }
 
     @objc private func recognized(_ sender: NSClickGestureRecognizer) {

@@ -6,6 +6,6 @@ Application 1 moves over 200ms cubicOut arranged(1)
         VStack 3 arranged(2)
           DatePicker 4
             driven date<-1 inOut plain
-            on dateSelected=1
+            on dateChanged=1
           TimePicker 5
             driven time<-2 inOut plain

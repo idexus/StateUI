@@ -3,4 +3,4 @@ TimePicker 1
   format: string "t"
   isOpen: false
   time: numbers 21,5,30
-  on closed=1 opened=2 timeSelected=3
+  on closed=1 opened=2 timeChanged=3

@@ -189,7 +189,7 @@ final class DrivenWireTests: XCTestCase {
 
         try check(
             message(VStack {
-                DatePicker(due.projectedValue).onDateSelected { _ in }
+                DatePicker(due.projectedValue).onDateChanged { _ in }
                 TimePicker(alarm.projectedValue)
             }.body),
             against: "state-picked")

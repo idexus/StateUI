@@ -86,7 +86,7 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
         self.init(hour: hour, minute: minute)
     }
 
-    /// Reads the three numbers a timeSelected payload carries - hour, minute,
+    /// Reads the three numbers a timeChanged payload carries - hour, minute,
     /// second. Nil for anything else, so a report that will not read leaves
     /// the handler alone. A picker keeps no milliseconds, so none arrive.
     init?(_ value: PropValue?) {

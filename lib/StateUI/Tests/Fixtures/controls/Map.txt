@@ -12,7 +12,7 @@ Map 1 arranged(2)
     label: string "Royal Castle"
     location: numbers 52.2479,21.0155
     type: enum place(1)
-    on infoWindowClicked=2 markerClicked=3
+    on pinClicked=2 pinDetailsClicked=3
   Pin 3
     label: string "Lazienki Park"
     location: numbers 52.2151,21.0355

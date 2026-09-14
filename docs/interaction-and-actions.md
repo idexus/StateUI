@@ -60,7 +60,7 @@ Border {
 }
 ```
 
-Use `onTapped(numberOfTapsRequired:_:)` for a double or higher tap. A swipe
+Use `onTapped(count:_:)` for a double or higher tap. A swipe
 handler receives one dominant `SwipeDirection`; the option set on the modifier
 defines which directions are recognized.
 

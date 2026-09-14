@@ -134,7 +134,7 @@ final class GestureTests: XCTestCase {
             ColorBox()
                 .onSwiped(direction: [.up, .down], threshold: 40) { _ in }
                 .onPanUpdated(touchCount: 2) { _ in }
-                .onTapped(numberOfTapsRequired: 2) {}
+                .onTapped(count: 2) {}
                 .body)
 
         // The bits this library numbers them with - up 4, down 8 - as the one
@@ -142,7 +142,7 @@ final class GestureTests: XCTestCase {
         XCTAssertEqual(patch.props["swipeDirection"], .enumeration(12))
         XCTAssertEqual(patch.props["swipeThreshold"], .number(40))
         XCTAssertEqual(patch.props["panTouchCount"], .number(2))
-        XCTAssertEqual(patch.props["numberOfTapsRequired"], .number(2))
+        XCTAssertEqual(patch.props["tapCount"], .number(2))
     }
 
     /// A swipe that listens for nothing recognizes nothing, so the default is

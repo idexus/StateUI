@@ -78,7 +78,7 @@ public struct DatePicker: View, TextStyleElement, FontElement, DatePickerPropert
     }
 
     /// A picker showing `date`. One-way: what is chosen goes nowhere without
-    /// `.onDateSelected`.
+    /// `.onDateChanged`.
     public init(_ date: CalendarDate) {
         node = Node(type: .datePicker, props: [.date: date.propValue])
     }
@@ -113,7 +113,7 @@ public struct DatePicker: View, TextStyleElement, FontElement, DatePickerPropert
     /// - Returns: the control, wearing and reporting that day.
     public func date(_ value: Binding<CalendarDate>) -> Modified {
         value.image == nil
-            ? described(.date, value, on: .dateSelected)
+            ? described(.date, value, on: .dateChanged)
             : plain(.date, by: value, mode: .inOut)
     }
 
@@ -123,8 +123,8 @@ public struct DatePicker: View, TextStyleElement, FontElement, DatePickerPropert
 
     /// Fires when a date is chosen. Runs after a binding's write, if there is
     /// one.
-    public func onDateSelected(_ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
-        addHandler(.dateSelected) {
+    public func onDateChanged(_ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
+        addHandler(.dateChanged) {
             if let date = CalendarDate(EventBuffer.current.value()) {
                 try await handler(date)
             }

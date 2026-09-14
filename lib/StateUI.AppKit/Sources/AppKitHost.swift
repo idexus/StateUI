@@ -2240,7 +2240,7 @@ final class MountedNode: NSObject {
 
         case .checkBox:
             let checkBox = AppKitCheckBoxView()
-            checkBox.onCheckedChanged = { [weak self] in
+            checkBox.onToggled = { [weak self] in
                 self?.changedBoolean($0, property: .isOn, event: .toggled)
             }
             return checkBox
@@ -2265,14 +2265,14 @@ final class MountedNode: NSObject {
         case .datePicker:
             let picker = AppKitDateTimePickerView(mode: .date)
             picker.onValueChanged = { [weak self] in
-                self?.changedLanes($0, property: .date, event: .dateSelected)
+                self?.changedLanes($0, property: .date, event: .dateChanged)
             }
             return picker
 
         case .timePicker:
             let picker = AppKitDateTimePickerView(mode: .time)
             picker.onValueChanged = { [weak self] in
-                self?.changedLanes($0, property: .time, event: .timeSelected)
+                self?.changedLanes($0, property: .time, event: .timeChanged)
             }
             return picker
 
@@ -3468,7 +3468,7 @@ final class MountedNode: NSObject {
                 view.addGestureRecognizer(recognizer)
             }
 
-            recognizer.apply(numberOfTapsRequired: whole(.numberOfTapsRequired) ?? 1)
+            recognizer.apply(tapCount: whole(.tapCount) ?? 1)
         } else if let recognizer = tapRecognizer {
             view.removeGestureRecognizer(recognizer)
             tapRecognizer = nil

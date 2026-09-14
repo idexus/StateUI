@@ -45,7 +45,7 @@ extension MapProperties {
 ///             Pin("Royal Castle")
 ///                 .address("Plac Zamkowy 4")
 ///                 .location(latitude: 52.2479, longitude: 21.0155)
-///                 .onMarkerClicked { chosen = "castle" }
+///                 .onPinClicked { chosen = "castle" }
 ///         }
 ///
 /// The map PANS, so it wants room of its own - a grid row, a page that holds
@@ -95,7 +95,7 @@ public struct Map: View, MapProperties {
 
     // MARK: The pins
 
-    /// The markers on it, replacing whatever was pinned before.
+    /// The pins on it, replacing whatever was pinned before.
     ///
     /// A `Pin` is not a view - a label, an address and a point, nothing to lay
     /// out - so it takes none of the modifiers a view has and belongs here and
@@ -124,15 +124,15 @@ public struct Map: View, MapProperties {
     }
 }
 
-/// A marker on the map.
+/// A pin on the map.
 ///
 ///     Pin("Royal Castle")
 ///         .address("Plac Zamkowy 4")
 ///         .location(latitude: 52.2479, longitude: 21.0155)
 ///
-/// Tapping the marker shows its label and address in the platform's own
-/// callout; `.onMarkerClicked` is the tap on the marker, `.onInfoWindowClicked`
-/// the tap on that callout.
+/// Tapping the pin shows its label and address in the platform's own
+/// callout; `.onPinClicked` is the tap on the pin, `.onPinDetailsClicked`
+/// the tap on that callout - its details.
 public struct Pin: Element {
     /// The node this pin describes.
     public var node: Node
@@ -176,20 +176,20 @@ public struct Pin: Element {
         return copy
     }
 
-    /// Fires when the marker is tapped. OBSERVING only: a handler here runs a
+    /// Fires when the pin is tapped. OBSERVING only: a handler here runs a
     /// boundary away, after the platform has already decided whether the
     /// callout opens, so it cannot keep the callout shut.
-    public func onMarkerClicked(_ handler: @escaping EventHandler) -> Self {
+    public func onPinClicked(_ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.node.addHandler(.markerClicked, handler)
+        copy.node.addHandler(.pinClicked, handler)
         return copy
     }
 
-    /// Fires when the callout above the marker is tapped - the place a
-    /// navigation usually goes.
-    public func onInfoWindowClicked(_ handler: @escaping EventHandler) -> Self {
+    /// Fires when the callout above the pin - its details - is tapped: the
+    /// place a navigation usually goes.
+    public func onPinDetailsClicked(_ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.node.addHandler(.infoWindowClicked, handler)
+        copy.node.addHandler(.pinDetailsClicked, handler)
         return copy
     }
 }

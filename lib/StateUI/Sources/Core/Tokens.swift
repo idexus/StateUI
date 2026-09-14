@@ -126,7 +126,7 @@ extension Prop {
     /// Every host has to agree with this list: a property added on one side
     /// without the other is otherwise found only on a screen.
     static let notCleared: Set<Prop> = [
-        .numberOfTapsRequired, .swipeDirection, .swipeThreshold, .panTouchCount,
+        .tapCount, .swipeDirection, .swipeThreshold, .panTouchCount,
         .dragText, .canDrag, .allowDrop,
         .options,
         .selectedIndex, .currentPage,
@@ -218,7 +218,7 @@ extension Prop {
         .count, .currentPage, .cursorPosition, .selectionLength, .maximumLength, .maximumLines,
         .gridColumn, .gridColumnSpan, .gridRow, .gridRowSpan, .zIndex,
         .placement, .priority, .position, .selectedIndex,
-        .numberOfTapsRequired, .panTouchCount, .maximumVisible,
+        .tapCount, .panTouchCount, .maximumVisible,
         .snapsAtMost, .snapInterval, .snapFrom, .scrollMomentum, .scrollStep,
         .step, .minimum, .maximum, .swipeThreshold,
         .points, .strokeDashPattern, .region, .location,
@@ -532,7 +532,6 @@ public extension Prop {
     static let backButtonTitle = Prop("backButtonTitle")
     static let hasBackButton = Prop("hasBackButton")
     static let hasNavigationBar = Prop("hasNavigationBar")
-    static let numberOfTapsRequired = Prop("numberOfTapsRequired")
     static let offColor = Prop("offColor")
     static let onColor = Prop("onColor")
     static let opacity = Prop("opacity")
@@ -600,6 +599,7 @@ public extension Prop {
     static let swipeBehaviorOnInvoked = Prop("swipeBehaviorOnInvoked")
     static let swipeDirection = Prop("swipeDirection")
     static let swipeThreshold = Prop("swipeThreshold")
+    static let tapCount = Prop("tapCount")
     static let text = Prop("text")
     static let textColor = Prop("textColor")
     static let textDecorations = Prop("textDecorations")
@@ -639,10 +639,13 @@ public extension Event {
     static let canGoForwardChanged = Event("canGoForwardChanged")
     static let clicked = Event("clicked")
     static let closed = Event("closed")
+    static let dateChanged = Event("dateChanged")
+    static let pinClicked = Event("pinClicked")
+    static let pinDetailsClicked = Event("pinDetailsClicked")
+    static let refreshRequested = Event("refreshRequested")
     static let submitted = Event("submitted")
     static let created = Event("created")
     static let currentPageChanged = Event("currentPageChanged")
-    static let dateSelected = Event("dateSelected")
     static let deactivated = Event("deactivated")
     static let destroying = Event("destroying")
     static let disappearing = Event("disappearing")
@@ -655,12 +658,10 @@ public extension Event {
     static let drop = Event("drop")
     static let dropCompleted = Event("dropCompleted")
     static let frameChanged = Event("frameChanged")
-    static let infoWindowClicked = Event("infoWindowClicked")
     static let isFocusedChanged = Event("isFocusedChanged")
     static let isSidebarVisibleChanged = Event("isSidebarVisibleChanged")
     static let isRefreshingChanged = Event("isRefreshingChanged")
     static let mapClicked = Event("mapClicked")
-    static let markerClicked = Event("markerClicked")
     static let modalPopped = Event("modalPopped")
     static let navigated = Event("navigated")
     static let navigatedFrom = Event("navigatedFrom")
@@ -678,7 +679,6 @@ public extension Event {
     static let popped = Event("popped")
     static let pressed = Event("pressed")
     static let processTerminated = Event("processTerminated")
-    static let refreshing = Event("refreshing")
     static let released = Event("released")
     static let resumed = Event("resumed")
     static let scrollStopped = Event("scrollStopped")
@@ -693,7 +693,7 @@ public extension Event {
     static let swipeStarted = Event("swipeStarted")
     static let tapped = Event("tapped")
     static let textChanged = Event("textChanged")
-    static let timeSelected = Event("timeSelected")
+    static let timeChanged = Event("timeChanged")
     static let toggled = Event("toggled")
     static let valueChanged = Event("valueChanged")
     static let visualStateChanged = Event("visualStateChanged")

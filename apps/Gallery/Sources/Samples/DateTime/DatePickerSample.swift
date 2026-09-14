@@ -24,7 +24,7 @@ struct DatePickerSample: SampleContent, ExampleContent {
                 .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
                 .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))
                 .format("D")
-                .onDateSelected { date in
+                .onDateChanged { date in
                     chosen = date.text
                     picks += 1
                 }
@@ -32,8 +32,8 @@ struct DatePickerSample: SampleContent, ExampleContent {
             Label("Due \\(due.text)")
 
             Label(picks == 0
-                ? "onDateSelected has not fired"
-                : "onDateSelected: \\(chosen), \\(picks) so far")
+                ? "onDateChanged has not fired"
+                : "onDateChanged: \\(chosen), \\(picks) so far")
 
             // A day written from the TREE is not a pick: the field moves and
             // the count stays where it is.
@@ -52,7 +52,7 @@ struct DatePickerSample: SampleContent, ExampleContent {
                 .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
                 .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))
                 .format("D")
-                .onDateSelected { date in
+                .onDateChanged { date in
                     chosen = date.text
                     picks += 1
                 }
@@ -62,8 +62,8 @@ struct DatePickerSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             Label(picks == 0
-                ? "onDateSelected has not fired"
-                : "onDateSelected: \(chosen), \(picks) so far")
+                ? "onDateChanged has not fired"
+                : "onDateChanged: \(chosen), \(picks) so far")
                 .fontSize(13)
                 .horizontalTextAlignment(.center)
 
@@ -79,7 +79,7 @@ struct DatePickerSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("The binding and the event are two halves of one choice: `$due` takes "
-                + "the chosen day into state, and `onDateSelected` runs after that write "
+                + "the chosen day into state, and `onDateChanged` runs after that write "
                 + "with the same day - which is where anything beyond holding the value "
                 + "belongs. The button writes `due` from the tree instead, and the count "
                 + "stays put: the event answers the READER picking a day and nothing "

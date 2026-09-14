@@ -171,7 +171,7 @@ final class ControlTests: XCTestCase {
                     .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
                     .format("D")
                     .isOpen(false)
-                    .onDateSelected { _ in }
+                    .onDateChanged { _ in }
                     .onOpened {}
                     .onClosed {}),
 
@@ -180,7 +180,7 @@ final class ControlTests: XCTestCase {
                     .time(ClockTime(hour: 21, minute: 5, second: 30))
                     .format("t")
                     .isOpen(false)
-                    .onTimeSelected { _ in }
+                    .onTimeChanged { _ in }
                     .onOpened {}
                     .onClosed {}),
 
@@ -355,8 +355,8 @@ final class ControlTests: XCTestCase {
                             .address("Plac Zamkowy 4")
                             .type(.place)
                             .location(latitude: 52.2479, longitude: 21.0155)
-                            .onMarkerClicked {}
-                            .onInfoWindowClicked {}
+                            .onPinClicked {}
+                            .onPinDetailsClicked {}
 
                         Pin("Second")
                             .label("Lazienki Park")
@@ -404,7 +404,7 @@ final class ControlTests: XCTestCase {
                 .isRefreshing(true)
                 .refreshColor(.cornflowerBlue)
                 .isRefreshEnabled(true)
-                .onRefreshing {}),
+                .onRefreshRequested {}),
 
             // Both halves of a swipe: the view, and the items each side reveals.
             // SwipeAction is not a control of its own - it is an action the swipe
@@ -628,7 +628,7 @@ final class ControlTests: XCTestCase {
                 // Every gesture StateUI has, on one view - which is legal, and the
                 // only way to check that each recognizer is asked for on its
                 // own terms.
-                .onTapped(numberOfTapsRequired: 2) {}
+                .onTapped(count: 2) {}
                 .onSwiped(direction: [.left, .up], threshold: 60) { _ in }
                 .onPanUpdated(touchCount: 1) { _ in }
                 .onPinchUpdated { _ in }
@@ -996,7 +996,7 @@ final class ControlTests: XCTestCase {
     /// A time of day READS AND WRITES its text form, which is a convenience for
     /// an author and not the form it travels in: on the wire it is its numbers,
     /// for the reason a date is - a formatter would mean ICU. The wire rule is
-    /// `testATwoWayInputWritesBackWhatArrives`, which fires `timeSelected` with
+    /// `testATwoWayInputWritesBackWhatArrives`, which fires `timeChanged` with
     /// three numbers, and `fixtures/controls/TimePicker`.
     func testATimeOfDayReadsAndWritesItsTextForm() {
         XCTAssertEqual(ClockTime(hour: 9, minute: 5).text, "09:05:00")
@@ -1127,11 +1127,11 @@ final class ControlTests: XCTestCase {
         seen = []
         let pin = renders.render(
             Pin("Office")
-                .onMarkerClicked { seen.append("first") }
-                .onMarkerClicked { seen.append("second") }
+                .onPinClicked { seen.append("first") }
+                .onPinClicked { seen.append("second") }
                 .body)
 
-        renders.fire(handler(pin, "markerClicked"))
+        renders.fire(handler(pin, "pinClicked"))
 
         XCTAssertEqual(seen, ["first", "second"])
     }
@@ -1206,8 +1206,8 @@ final class ControlTests: XCTestCase {
         renders.fire(handler(patch.children[1], "selectedIndexChanged"), with: [.number(1)])
         renders.fire(handler(patch.children[2], "textChanged"), with: [.string("Ada")])
         renders.fire(handler(patch.child("editor"), "textChanged"), with: [.string("Notes")])
-        renders.fire(handler(patch.child("date"), "dateSelected"), with: [.numbers([2026, 8, 2])])
-        renders.fire(handler(patch.child("time"), "timeSelected"), with: [.numbers([9, 30, 0])])
+        renders.fire(handler(patch.child("date"), "dateChanged"), with: [.numbers([2026, 8, 2])])
+        renders.fire(handler(patch.child("time"), "timeChanged"), with: [.numbers([9, 30, 0])])
 
         XCTAssertTrue(on, "the report went back through the closure")
         XCTAssertEqual(room.wrappedValue.width, 1, "and through the part")

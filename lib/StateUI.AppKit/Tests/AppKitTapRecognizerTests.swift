@@ -10,7 +10,7 @@ final class AppKitTapRecognizerTests: XCTestCase {
     func testATapUsesTheRequestedNativeClickCount() {
         let recognizer = AppKitTapRecognizer {}
 
-        recognizer.apply(numberOfTapsRequired: 2)
+        recognizer.apply(tapCount: 2)
 
         XCTAssertEqual(recognizer.numberOfClicksRequired, 2)
     }
@@ -19,7 +19,7 @@ final class AppKitTapRecognizerTests: XCTestCase {
     func testAnInvalidTapCountStillDescribesOneTap() {
         let recognizer = AppKitTapRecognizer {}
 
-        recognizer.apply(numberOfTapsRequired: 0)
+        recognizer.apply(tapCount: 0)
 
         XCTAssertEqual(recognizer.numberOfClicksRequired, 1)
     }

@@ -38,7 +38,7 @@ final class AppKitSwitchViewTests: XCTestCase {
     func testCheckBoxSeparatesStateWritesFromReaderWrites() {
         let checkBox = AppKitCheckBoxView()
         var reports: [Bool] = []
-        checkBox.onCheckedChanged = { reports.append($0) }
+        checkBox.onToggled = { reports.append($0) }
 
         checkBox.apply(checked: true, enabled: false, color: .systemPurple)
         XCTAssertTrue(reports.isEmpty)

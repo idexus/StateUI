@@ -4,6 +4,6 @@ RefreshView 1 arranged(1)
   isRefreshing: true
   refreshColor: color FF6495ED
   driven isRefreshing<-2 inOut plain
-  on refreshing=1
+  on refreshRequested=1
   Label 2
     text: string "Pull me"
