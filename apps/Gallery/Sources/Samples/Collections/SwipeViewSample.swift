@@ -50,9 +50,9 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 }
                 // Revealed by swiping RIGHT: they come from the left edge.
                 .leftItems {
-                    SwipeItem(starred.contains(row) ? "Unstar" : "Star")
+                    SwipeAction(starred.contains(row) ? "Unstar" : "Star")
                         .background(.gold)
-                        .onInvoked {
+                        .onClicked {
                             if starred.contains(row) {
                                 starred.remove(row)
                             } else {
@@ -64,10 +64,10 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 }
                 // A full swipe runs the first item with no tap at all.
                 .rightItems(mode: .execute) {
-                    SwipeItem("Delete")
+                    SwipeAction("Delete")
                         .background(.firebrick)
                         .isDestructive(true)
-                        .onInvoked {
+                        .onClicked {
                             rows.removeAll { $0 == row }
                             starred.remove(row)
                             lastAct = "Deleted \\(row)"
@@ -76,7 +76,7 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 // Anything short of this springs back, which is what
                 // onSwipeEnded reports as isOpen == false.
                 .threshold(needed)
-                // The swipe ITSELF, where onInvoked is one ITEM being chosen -
+                // The swipe ITSELF, where onClicked is one ITEM being chosen -
                 // reported while the finger is still moving.
                 .onSwipeStarted { _ in travel = "swiping" }
                 .onSwipeChanging { change in
@@ -101,17 +101,17 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 .background(Palette.surface)
             }
             .topItems {
-                SwipeItem("Archive")
+                SwipeAction("Archive")
                     .background(.steelBlue)
-                    .onInvoked {
+                    .onClicked {
                         archived = true
                         lastAct = "Archived the card"
                     }
             }
             .bottomItems {
-                SwipeItem("Restore")
+                SwipeAction("Restore")
                     .background(.forestGreen)
-                    .onInvoked {
+                    .onClicked {
                         archived = false
                         lastAct = "Restored the card"
                     }
@@ -167,9 +167,9 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 }
                 // Revealed by swiping RIGHT: they come from the left-hand edge.
                 .leftItems {
-                    SwipeItem(starred.contains(row) ? "Unstar" : "Star")
+                    SwipeAction(starred.contains(row) ? "Unstar" : "Star")
                         .background(.gold)
-                        .onInvoked {
+                        .onClicked {
                             if starred.contains(row) {
                                 starred.remove(row)
                             } else {
@@ -182,10 +182,10 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 // A full swipe runs the first item with no tap at all, which is
                 // what .execute is for.
                 .rightItems(mode: .execute) {
-                    SwipeItem("Delete")
+                    SwipeAction("Delete")
                         .background(.firebrick)
                         .isDestructive(true)
-                        .onInvoked {
+                        .onClicked {
                             rows.removeAll { $0 == row }
                             starred.remove(row)
                             lastAct = "Deleted \(row)"
@@ -195,7 +195,7 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 // Anything short of the threshold springs back, which is what
                 // onSwipeEnded reports as isOpen == false.
                 .threshold(needed)
-                // The swipe ITSELF, where onInvoked is one ITEM being
+                // The swipe ITSELF, where onClicked is one ITEM being
                 // chosen - reported while the finger is still moving.
                 .onSwipeStarted { _ in travel = "swiping" }
                 .onSwipeChanging { change in
@@ -230,17 +230,17 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 .background(Palette.surface)
             }
             .topItems {
-                SwipeItem("Archive")
+                SwipeAction("Archive")
                     .background(.steelBlue)
-                    .onInvoked {
+                    .onClicked {
                         archived = true
                         lastAct = "Archived the card"
                     }
             }
             .bottomItems {
-                SwipeItem("Restore")
+                SwipeAction("Restore")
                     .background(.forestGreen)
-                    .onInvoked {
+                    .onClicked {
                         archived = false
                         lastAct = "Restored the card"
                     }
@@ -287,8 +287,8 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Label("The three swipe reports are about the SWIPE - it began, it has moved "
-                + "this far, it ended open or sprang back - where an item's `onInvoked` is "
-                + "about one item being chosen. The items are NOT views: a `SwipeItem` has "
+                + "this far, it ended open or sprang back - where an item's `onClicked` is "
+                + "about one item being chosen. The items are NOT views: a `SwipeAction` has "
                 + "a caption, a picture, a colour and something to run, and no layout of "
                 + "its own - so it takes its own modifiers and belongs in one of the four "
                 + "collections and nowhere else.")

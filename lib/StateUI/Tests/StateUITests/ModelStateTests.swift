@@ -230,7 +230,7 @@ final class ModelStateTests: XCTestCase {
         XCTAssertEqual(cart.$fade.journey.value, 1, "and a journey to read")
 
         renders.render(stack([
-            Reader { _ in holder.builds += 1; _ = BoxView().opacity(cart.$fade) }.body,
+            Reader { _ in holder.builds += 1; _ = ColorBox().opacity(cart.$fade) }.body,
         ], id: "root"))
         settled()
 

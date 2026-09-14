@@ -1,4 +1,4 @@
-generation 1 names +29
+generation 1 names +28
 Page 1 arranged(4)
   backButtonTitle: string "Back"
   background: color FFF5F5F5
@@ -23,19 +23,19 @@ Page 1 arranged(4)
       priority: number 2
       text: string "Save"
       on clicked=6
-  MenuBarItems 7 arranged(1)
-    MenuBarItem 8 arranged(3)
+  MenuBar 7 arranged(1)
+    Menu 8 arranged(3)
       isEnabled: true
       text: string "File"
-      MenuFlyoutItem 9
+      MenuItem 9
         iconImageSource: string "mark.png"
         isDestructive: true
         isEnabled: false
         text: string "Open"
         on clicked=7
-      MenuFlyoutSubItem 10 arranged(1)
+      Menu 10 arranged(1)
         isEnabled: true
         text: string "Recent"
-        MenuFlyoutItem 11
+        MenuItem 11
           text: string "Notes.txt"
-      MenuFlyoutSeparator 12
+      MenuSeparator 12

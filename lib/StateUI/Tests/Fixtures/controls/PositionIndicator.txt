@@ -1,5 +1,5 @@
 generation 1 names +9
-IndicatorView 1
+PositionIndicator 1
   count: number 3
   hideSingle: false
   indicatorColor: color FFD3D3D3

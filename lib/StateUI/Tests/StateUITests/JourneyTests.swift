@@ -96,7 +96,7 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(journey.value, 0.2, "nobody walks it, so it is there")
         XCTAssertEqual(journey.destination, 0.2)
 
-        renders.render(BoxView().opacity(fade.projectedValue).body)
+        renders.render(ColorBox().opacity(fade.projectedValue).body)
 
         fade.wrappedValue = 0.9
 
@@ -176,7 +176,7 @@ final class JourneyTests: XCTestCase {
         let journey = ball.projectedValue.journey
         let renders = Renders()
 
-        renders.render(BoxView().translationY(ball.projectedValue).body)
+        renders.render(ColorBox().translationY(ball.projectedValue).body)
 
         ball.wrappedValue = 100
 
@@ -229,7 +229,7 @@ final class JourneyTests: XCTestCase {
         let binding = ball.projectedValue
         let renders = Renders()
 
-        renders.render(BoxView().translationY(binding).body)
+        renders.render(ColorBox().translationY(binding).body)
 
         let arrived = try await withThrowingTaskGroup(of: Bool?.self) { group in
             group.addTask { try await binding.journey.move(to: 50) }
@@ -275,7 +275,7 @@ final class JourneyTests: XCTestCase {
         let walking = fade.projectedValue.journey.convert { "at \(Int($0.value * 100))" }
         let going = fade.projectedValue.convert { "going to \(Int($0 * 100))" }
 
-        renders.render(BoxView().opacity(fade.projectedValue).body)
+        renders.render(ColorBox().opacity(fade.projectedValue).body)
 
         moved(fade.number, to: [0.5, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
 

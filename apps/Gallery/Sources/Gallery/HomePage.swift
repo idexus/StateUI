@@ -189,7 +189,7 @@ struct HomePage: ContentView {
                 // card rather than the card going transparent. It wears the
                 // card's own corners, which is why the view is the
                 // application's to give.
-                .shade(BoxView(Color("#000000")).cornerRadius(16))
+                .shade(ColorBox(Color("#000000")).cornerRadius(16))
                 // WHAT THE ROWS CAN SPARE, worn on the host's own frames. The
                 // state is written by the engine under this grid, so a page
                 // settling through half a dozen passes costs no render at all.

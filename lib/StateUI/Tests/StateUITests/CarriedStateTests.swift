@@ -509,7 +509,7 @@ final class CarriedStateTests: XCTestCase {
         let across = State(wrappedValue: 0.0)
         let down = State(wrappedValue: 0.0)
 
-        let node = BoxView(Color("#000000")).panX(across.projectedValue).panY(down.projectedValue).body
+        let node = ColorBox(Color("#000000")).panX(across.projectedValue).panY(down.projectedValue).body
 
         XCTAssertEqual(node.props[.panXChannel], .number(Double(across.number)))
         XCTAssertEqual(node.props[.panYChannel], .number(Double(down.number)))

@@ -339,7 +339,7 @@ public struct ScrollReader: ContentView {
                         let along = sideways > 0
 
                         PlacedLayout(Self.parts, id: \.self) { part in
-                            BoxView(Color("#00000000"))
+                            ColorBox(Color("#00000000"))
                                 .motion(.none)
                                 .tapping(part == Self.parts[1] ? tap : nil)
                                 // BOTH BOXES TAKE THE DRAG, and the second one
@@ -386,7 +386,7 @@ public struct ScrollReader: ContentView {
                                 motion: .none)
                         }
                     } else {
-                        BoxView(Color("#00000000"))
+                        ColorBox(Color("#00000000"))
                             .width(long)
                             .height(tall)
                             .motion(.none)
@@ -464,12 +464,12 @@ extension ScrollView {
     }
 }
 
-extension BoxView {
+extension ColorBox {
     /// The same for a DRAG, so a run can be turned by a pointer.
     ///
     /// - Parameter handler: what to run as the drag goes on, or nothing.
     /// - Returns: the box, answering a drag where one was asked for.
-    func dragging(_ handler: ValueEventHandler<PanUpdate>?) -> BoxView {
+    func dragging(_ handler: ValueEventHandler<PanUpdate>?) -> ColorBox {
         guard let handler else { return self }
 
         return onPanUpdated(handler)
@@ -480,7 +480,7 @@ extension BoxView {
     ///
     /// - Parameter handler: what to run when it is tapped, if anything.
     /// - Returns: the view.
-    func tapping(_ handler: EventHandler?) -> BoxView {
+    func tapping(_ handler: EventHandler?) -> ColorBox {
         handler.map { onTapped($0) } ?? self
     }
 }

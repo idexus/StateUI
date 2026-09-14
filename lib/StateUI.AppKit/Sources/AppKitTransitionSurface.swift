@@ -60,7 +60,7 @@ enum AppKitTransitionSurface {
         case .datePicker, .timePicker:
             return textControlProperties.contains(property)
 
-        case .boxView:
+        case .colorBox:
             return boxProperties.contains(property)
 
         case .checkBox:
@@ -90,7 +90,7 @@ enum AppKitTransitionSurface {
         case .line:
             return lineProperties.contains(property)
 
-        case .graphicsView:
+        case .canvas:
             return property == .drawable
 
         case .window:
@@ -102,8 +102,8 @@ enum AppKitTransitionSurface {
     }
 
     private static let nativeViewTypes: Set<NodeType> = [
-        .absoluteLayout, .activityIndicator, .border, .boxView, .button,
-        .checkBox, .datePicker, .textEditor, .ellipse, .textField, .graphicsView,
+        .absoluteLayout, .activityIndicator, .border, .colorBox, .button,
+        .checkBox, .datePicker, .textEditor, .ellipse, .textField, .canvas,
         .grid, .hStack, .image, .imageButton, .label, .line,
         .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .roundRectangle, .scrollView, .searchField, .slider,

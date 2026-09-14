@@ -438,7 +438,7 @@ value travels:
 @State var width = 80.0
 
 VStack {
-    BoxView(.cornflowerBlue)
+    ColorBox(.cornflowerBlue)
         .width($width)
         .height(24)
 
@@ -511,7 +511,7 @@ struct SpringDot: ContentView {
 
     var content: any View {
         VStack {
-            BoxView(.cornflowerBlue)
+            ColorBox(.cornflowerBlue)
                 .width(28)
                 .height(28)
                 .translationY($y)

@@ -81,7 +81,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
             Button(shade == .quiet ? "quiet" : "bold")
                 .onClicked { shade = shade == .quiet ? .bold : .quiet }
 
-            BoxView()
+            ColorBox()
                 .color(shade == .bold ? Palette.accent : Palette.surface)
         }
         """
@@ -173,7 +173,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
             }
             .spacing(12)
 
-            BoxView()
+            ColorBox()
                 .height(48)
                 .color(shade == .bold ? Palette.accent : Palette.surface)
                 .cornerRadius(8)

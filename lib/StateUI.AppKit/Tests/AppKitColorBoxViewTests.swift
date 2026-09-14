@@ -7,10 +7,10 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-final class AppKitBoxViewTests: XCTestCase {
+final class AppKitColorBoxViewTests: XCTestCase {
     @MainActor
     func testAUniformRadiusReachesEveryCorner() {
-        let view = AppKitBoxView()
+        let view = AppKitColorBoxView()
 
         view.apply(background: .systemYellow, fill: .systemRed, cornerRadius: .number(6))
 
@@ -23,7 +23,7 @@ final class AppKitBoxViewTests: XCTestCase {
 
     @MainActor
     func testFourRadiiKeepStateUIsCornerOrder() {
-        let view = AppKitBoxView()
+        let view = AppKitColorBoxView()
 
         view.apply(background: nil, fill: nil, cornerRadius: .numbers([1, 2, 3, 4]))
 
@@ -36,7 +36,7 @@ final class AppKitBoxViewTests: XCTestCase {
 
     @MainActor
     func testInvalidRadiiBecomeSquareCorners() {
-        let view = AppKitBoxView()
+        let view = AppKitColorBoxView()
 
         view.apply(
             background: nil,

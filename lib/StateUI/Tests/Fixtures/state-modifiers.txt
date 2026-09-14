@@ -18,5 +18,5 @@ Application 1 moves over 200ms cubicOut arranged(1)
           TextField 8
             text: string ""
             driven placeholderColor<-2 inOut property
-          BoxView 9
+          ColorBox 9
             driven color<-2 inOut property

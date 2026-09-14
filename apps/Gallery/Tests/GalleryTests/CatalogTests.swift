@@ -1520,7 +1520,7 @@ final class CatalogTests: XCTestCase {
 
         walk(page)
 
-        XCTAssertEqual(carriers, ["BoxView"],
+        XCTAssertEqual(carriers, ["ColorBox"],
                        "the home page's gallery is opened by a tap on the run")
     }
 

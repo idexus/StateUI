@@ -150,7 +150,7 @@ final class DrivenWireTests: XCTestCase {
         let entry = TextField("").placeholderColor(colour.projectedValue)
 
         // And the one modifier that is a control's own rather than a tier's.
-        let box = BoxView().color(colour.projectedValue)
+        let box = ColorBox().color(colour.projectedValue)
 
         try check(
             message(VStack { border; shape; button; entry; box }.spacing(number.projectedValue).body),
@@ -220,7 +220,7 @@ final class DrivenWireTests: XCTestCase {
         try check(
             message(VStack {
                 Slider().value(level.projectedValue)
-                BoxView().width(level.projectedValue)
+                ColorBox().width(level.projectedValue)
             }.body),
             against: "state-shared")
     }
@@ -239,7 +239,7 @@ final class DrivenWireTests: XCTestCase {
         try check(
             message(
                 PlacedLayout(["a", "b"], id: \.self) { Label($0) }
-                    .shade(BoxView(.black))
+                    .shade(ColorBox(.black))
                     .placement(run.projectedValue)
                     .frame(room.projectedValue)
                     .body),

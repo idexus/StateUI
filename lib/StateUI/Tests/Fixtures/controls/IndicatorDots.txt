@@ -1,5 +1,5 @@
 generation 1 names +4
-IndicatorView 1 arranged(3)
+PositionIndicator 1 arranged(3)
   position: number 1
   Label "one"
     text: string "*"

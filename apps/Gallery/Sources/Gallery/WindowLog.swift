@@ -36,7 +36,7 @@ struct WindowPhaseLog: ContentView {
     @Environment private var window: WindowSession
 
     var content: any View {
-        BoxView(Color("#00000000"))
+        ColorBox(Color("#00000000"))
             .width(0)
             .height(0)
             .ignoresInput(true)

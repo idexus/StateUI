@@ -74,7 +74,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             // margin(2x, 2y, 0, 0) shifts a centred view by (x, y).
             ForEach(Array(Self.marks.enumerated()), id: \\.offset) { pair in
                 let (x, y, wide, tall) = pair.element
-                return BoxView(Palette.outline)
+                return ColorBox(Palette.outline)
                     .width(wide)
                     .height(tall)
                     .margin(2 * x, 2 * y, 0, 0)
@@ -174,7 +174,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             _ angle: Binding<Double>,
             length: Double, width: Double, color: Color
         ) -> some View {
-            BoxView(color)
+            ColorBox(color)
                 .rotation(angle)
                 .width(width)
                 .height(length)
@@ -210,7 +210,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
             ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                 let (x, y, wide, tall) = pair.element
-                return BoxView(Palette.outline)
+                return ColorBox(Palette.outline)
                     .width(wide)
                     .height(tall)
                     .margin(2 * x, 2 * y, 0, 0)
@@ -349,7 +349,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         _ angle: Binding<Double>,
         length: Double, width: Double, color: Color
     ) -> some View {
-        BoxView(color)
+        ColorBox(color)
             .rotation(angle)
             .width(width)
             .height(length)

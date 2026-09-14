@@ -24,7 +24,7 @@ final class ResourceTests: XCTestCase {
         "Label", "Button", "ImageButton", "TextField", "TextEditor", "Picker",
         "DatePicker", "TimePicker", "SearchField", "Switch", "CheckBox",
         "RadioButton", "Slider", "ActivityIndicator", "ProgressBar",
-        "IndicatorView", "RefreshView", "Image", "BoxView", "Border",
+        "PositionIndicator", "RefreshView", "Image", "ColorBox", "Border",
         "Grid", "ScrollView", "VStack", "HStack",
     ]
 

@@ -59,20 +59,20 @@ private struct EveryPropertyPage: ContentView {
                     .onClicked {},
             ]
 
-            page.menuBarItems = [
-                MenuBarItem("File") {
-                    MenuFlyoutItem("Open")
+            page.menuBar = [
+                Menu("File") {
+                    MenuItem("Open")
                         .iconImageSource(ImageSource("mark.png"))
                         .isDestructive(true)
                         .isEnabled(false)
                         .onClicked {}
 
-                    MenuFlyoutSubItem("Recent") {
-                        MenuFlyoutItem("Notes.txt")
+                    Menu("Recent") {
+                        MenuItem("Notes.txt")
                     }
                     .isEnabled(true)
 
-                    MenuFlyoutSeparator()
+                    MenuSeparator()
                 }
                 .isEnabled(true),
             ]
@@ -128,7 +128,7 @@ private struct KnobPage: ContentView {
         page.titleView = Label(on ? "on" : "off")
 
         page.toolbarItems = [ToolbarItem(on ? "On" : "Off")]
-        page.menuBarItems = [MenuBarItem(on ? "On" : "Off") { MenuFlyoutItem("Open") }]
+        page.menuBar = [Menu(on ? "On" : "Off") { MenuItem("Open") }]
     }
 }
 
@@ -445,7 +445,7 @@ final class PageTests: XCTestCase {
 
         XCTAssertEqual(
             slots,
-            ["Label", "TitleView", "ToolbarItems", "MenuBarItems"],
+            ["Label", "TitleView", "ToolbarItems", "MenuBar"],
             "the content first, then one node per slot, in a fixed order")
     }
 

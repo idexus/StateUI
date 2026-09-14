@@ -351,7 +351,7 @@ public enum ScrollBarVisibility: Int32, Sendable {
 
 /// The outline a Border draws, and the shape its own background is painted to
 /// - which is where a rounded corner comes from on anything but a Button or a
-/// BoxView. What `.strokeShape` takes.
+/// ColorBox. What `.strokeShape` takes.
 ///
 ///     Border { … }.strokeShape(.roundRectangle(12))
 ///
@@ -526,7 +526,7 @@ public enum FillRule: Int32, Sendable {
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// What one dot of an IndicatorView is drawn as.
+/// What one dot of a PositionIndicator is drawn as.
 public enum IndicatorShape: Int32, Sendable {
     /// A dot. The default.
     case circle = 0

@@ -6,5 +6,5 @@ Application 1 moves over 200ms cubicOut arranged(1)
         VStack 3 arranged(2)
           Slider 4
             driven value<-1 inOut property
-          BoxView 5
+          ColorBox 5
             driven width<-1 inOut property

@@ -210,7 +210,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 // and a second engine over the SAME two values, at the foot of
                 // the room and taking no touches.
                 PlacedLayout(cards, id: \\.name) { _ in
-                    BoxView(Palette.text)
+                    ColorBox(Palette.text)
                         .cornerRadius(3)
                 }
                 .placement($dots)
@@ -272,7 +272,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             }
             // One view, drawn over every card and wearing the card's own
             // corners - which is why it is the application's to give.
-            .shade(BoxView(Color("#000000")).cornerRadius(16))
+            .shade(ColorBox(Color("#000000")).cornerRadius(16))
             .placement($ring)
             .frame($room)
             .engine(following: $scrolled, $dragged, $room) { _ in
@@ -363,7 +363,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         Grid {
             Grid {
                 // THE BOARD, under everything.
-                BoxView(Palette.raised)
+                ColorBox(Palette.raised)
                     .cornerRadius(14)
 
                 // THE CARDS, and what moves them - the whole of the example.
@@ -418,7 +418,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 // of its own, because a phone on its side has no height to
                 // spare for one.
                 PlacedLayout(Self.cards, id: \.name) { _ in
-                    BoxView(Palette.text)
+                    ColorBox(Palette.text)
                         .cornerRadius(3)
                 }
                 .placement($dots)
@@ -487,7 +487,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn over
         // every card, wearing the card's own corners - which is why it is the
         // application's to give and not the library's to draw.
-        .shade(BoxView(Color("#000000")).cornerRadius(16))
+        .shade(ColorBox(Color("#000000")).cornerRadius(16))
         .placement($ring)
         .frame($room)
         // THE WHOLE LAYOUT, run on the display's own frames whenever one of

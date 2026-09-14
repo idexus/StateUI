@@ -65,13 +65,4 @@ public struct ToolbarItem: Element, MenuItemElement {
     /// Lower values appear first. Items with equal priority retain source
     /// order, so one collection always produces one deterministic arrangement.
     public func priority(_ value: Int) -> Self { setValue(.priority, .number(Double(value))) }
-
-    /// What it does. A second `.onClicked` runs beside the first, like every
-    /// typed event modifier.
-    ///
-    /// Written here rather than on `MenuItemElement` because a `SwipeItem` is
-    /// answered by `Invoked` instead - see that protocol.
-    public func onClicked(_ handler: @escaping EventHandler) -> Self {
-        modified { $0.addHandler(.clicked, handler) }
-    }
 }

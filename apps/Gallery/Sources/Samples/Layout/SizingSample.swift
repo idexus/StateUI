@@ -9,29 +9,29 @@ struct SizingSample: SampleContent, ExampleContent {
     static let code = """
         VStack {
             // A request, not an instruction: the layout has the last word.
-            BoxView(Palette.accent)
+            ColorBox(Palette.accent)
                 .width(120)
                 .height(24)
 
             // Filling the width, but never past 200.
-            BoxView(Palette.accent)
+            ColorBox(Palette.accent)
                 .height(24)
                 .maximumWidth(200)
 
             // Filling the width, but never squeezed below 160.
-            BoxView(Palette.accent)
+            ColorBox(Palette.accent)
                 .height(24)
                 .minimumWidth(160)
 
             // The same ceiling on the other axis, against the same request
             // without it: 80 asked for on the left, 32 allowed on the right.
             HStack {
-                BoxView(Palette.outline)
+                ColorBox(Palette.outline)
                     .width(60)
                     .height(80)
                     .verticalAlignment(.start)
 
-                BoxView(Palette.accent)
+                ColorBox(Palette.accent)
                     .width(60)
                     .height(80)
                     .maximumHeight(32)
@@ -41,7 +41,7 @@ struct SizingSample: SampleContent, ExampleContent {
 
             // A child drawn past the layout's edge, cut off at it.
             VStack {
-                BoxView(Palette.accent)
+                ColorBox(Palette.accent)
                     .height(24)
                     .translationX(60)
             }
@@ -50,7 +50,7 @@ struct SizingSample: SampleContent, ExampleContent {
 
             // The same child in the same layout, and nothing cut off.
             VStack {
-                BoxView(Palette.accent)
+                ColorBox(Palette.accent)
                     .height(24)
                     .translationX(60)
             }
@@ -62,24 +62,24 @@ struct SizingSample: SampleContent, ExampleContent {
     var content: any View {
         VStack {
             row("width(120)",
-                BoxView(Palette.accent).width(120).height(24))
+                ColorBox(Palette.accent).width(120).height(24))
 
             row("maximumWidth(200)",
-                BoxView(Palette.accent).height(24).maximumWidth(200))
+                ColorBox(Palette.accent).height(24).maximumWidth(200))
 
             row("minimumWidth(160)",
-                BoxView(Palette.accent).height(24).minimumWidth(160))
+                ColorBox(Palette.accent).height(24).minimumWidth(160))
 
             // The pair is the point: both ask for 80 high, and only the one
             // without a ceiling on it is allowed to have it.
             row("height(80), then the same with maximumHeight(32)",
                 HStack {
-                    BoxView(Palette.outline)
+                    ColorBox(Palette.outline)
                         .width(60)
                         .height(80)
                         .verticalAlignment(.start)
 
-                    BoxView(Palette.accent)
+                    ColorBox(Palette.accent)
                         .width(60)
                         .height(80)
                         .maximumHeight(32)
@@ -89,7 +89,7 @@ struct SizingSample: SampleContent, ExampleContent {
 
             row("clipsContent(true)",
                 VStack {
-                    BoxView(Palette.accent)
+                    ColorBox(Palette.accent)
                         .height(24)
                         .translationX(60)
                 }
@@ -98,7 +98,7 @@ struct SizingSample: SampleContent, ExampleContent {
 
             row("clipsContent(false)",
                 VStack {
-                    BoxView(Palette.accent)
+                    ColorBox(Palette.accent)
                         .height(24)
                         .translationX(60)
                 }

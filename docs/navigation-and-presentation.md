@@ -216,13 +216,13 @@ composition where the application owns the surface.
 Desktop menu bars are also stored on `PageSession`:
 
 ```swift quote
-page.menuBarItems = [
-    MenuBarItem("File") {
-        MenuFlyoutItem("Save").onClicked { try await save() }
-        MenuFlyoutSeparator()
-        MenuFlyoutSubItem("Recent") {
+page.menuBar = [
+    Menu("File") {
+        MenuItem("Save").onClicked { try await save() }
+        MenuSeparator()
+        Menu("Recent") {
             ForEach(recent) { file in
-                MenuFlyoutItem(file.name)
+                MenuItem(file.name)
                     .id(file.id)
                     .onClicked { open(file) }
             }
@@ -237,8 +237,8 @@ The same item vocabulary can be attached to any view as a context menu:
 ```swift quote
 Label(document.title)
     .contextMenu {
-        MenuFlyoutItem("Duplicate").onClicked { duplicate(document) }
-        MenuFlyoutItem("Delete")
+        MenuItem("Duplicate").onClicked { duplicate(document) }
+        MenuItem("Delete")
             .isDestructive(true)
             .onClicked { delete(document) }
     }

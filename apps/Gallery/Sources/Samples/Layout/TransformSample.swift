@@ -95,8 +95,8 @@ struct TransformSample: SampleContent, ExampleContent {
             .spacing(44)
         }
 
-        func box(_ colour: Color) -> BoxView {
-            BoxView(colour)
+        func box(_ colour: Color) -> ColorBox {
+            ColorBox(colour)
                 .width(44)
                 .height(44)
         }
@@ -218,8 +218,8 @@ struct TransformSample: SampleContent, ExampleContent {
     ///
     /// - Parameter colour: which family this square belongs to.
     /// - Returns: the square, ready to be transformed.
-    private func box(_ colour: Color) -> BoxView {
-        BoxView(colour)
+    private func box(_ colour: Color) -> ColorBox {
+        ColorBox(colour)
             .width(44)
             .height(44)
     }

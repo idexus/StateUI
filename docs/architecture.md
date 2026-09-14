@@ -110,7 +110,7 @@ struct Level: ContentView {
     var content: any View {
         VStack {
             Slider($level)
-            BoxView(.cornflowerBlue).scaleX($level)
+            ColorBox(.cornflowerBlue).scaleX($level)
             Label($level.convert { "\(Int($0 * 100))%" })
         }
     }
@@ -220,7 +220,7 @@ struct ResizingPanel: ContentView {
 
     var content: any View {
         VStack {
-            BoxView(.cornflowerBlue)
+            ColorBox(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
                 .motion(.spring(response: 320))
@@ -263,7 +263,7 @@ struct FallingDot: ContentView {
     @State(motion: .custom) private var y = 0.0
 
     var content: any View {
-        BoxView(.cornflowerBlue)
+        ColorBox(.cornflowerBlue)
             .translationY($y)
             .engine(following: $y) { cycle in
                 let journey = $y.journey

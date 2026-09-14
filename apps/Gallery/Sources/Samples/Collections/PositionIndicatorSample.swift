@@ -1,12 +1,12 @@
 import StateUI
 
 /// Dots marking a place in a sequence: their shape, their cap and a lone one.
-struct IndicatorViewSample: SampleContent, ExampleContent {
+struct PositionIndicatorSample: SampleContent, ExampleContent {
     @State private var step = 0
     @State private var cap = 5.0
 
-    static let id = "indicatorView"
-    static let title = "IndicatorView"
+    static let id = "positionIndicator"
+    static let title = "PositionIndicator"
     static let summary = "A place in a sequence, drawn as dots - with or without a run of cards."
 
     static let code = """
@@ -22,13 +22,13 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
 
             Label(Self.steps[step])
 
-            IndicatorView()
+            PositionIndicator()
                 .count(Self.steps.count)
                 .position(step)
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
 
-            IndicatorView()
+            PositionIndicator()
                 .count(Self.steps.count)
                 .position(step)
                 .indicatorsShape(.square)
@@ -51,7 +51,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
             // time.
             Label("Twelve items, maximumVisible(12)")
 
-            IndicatorView()
+            PositionIndicator()
                 .count(12)
                 .position(step)
                 .maximumVisible(12)
@@ -60,7 +60,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
 
             Label("The same twelve, maximumVisible(\\(Int(cap)))")
 
-            IndicatorView()
+            PositionIndicator()
                 .count(12)
                 .position(step)
                 .maximumVisible(Int(cap))
@@ -78,7 +78,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 VStack {
                     Label("hideSingle(true)")
 
-                    IndicatorView()
+                    PositionIndicator()
                         .count(1)
                         .position(0)
                         .hideSingle(true)
@@ -89,7 +89,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 VStack {
                     Label("hideSingle(false)")
 
-                    IndicatorView()
+                    PositionIndicator()
                         .count(1)
                         .position(0)
                         .hideSingle(false)
@@ -111,14 +111,14 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .fontAttributes(.bold)
                 .horizontalTextAlignment(.center)
 
-            IndicatorView()
+            PositionIndicator()
                 .count(Self.steps.count)
                 .position(step)
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
                 .horizontalAlignment(.center)
 
-            IndicatorView()
+            PositionIndicator()
                 .count(Self.steps.count)
                 .position(step)
                 .indicatorsShape(.square)
@@ -151,7 +151,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
                 .horizontalAlignment(.center)
 
-            IndicatorView()
+            PositionIndicator()
                 .count(12)
                 .position(step)
                 .maximumVisible(12)
@@ -164,7 +164,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
                 .horizontalAlignment(.center)
 
-            IndicatorView()
+            PositionIndicator()
                 .count(12)
                 .position(step)
                 .maximumVisible(Int(cap))
@@ -173,7 +173,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
 
             Stepper($cap)
-                .automationId("indicatorView.cap")
+                .automationId("positionIndicator.cap")
                 .semanticDescription("How many dots")
                 .minimum(4)
                 .maximum(12)
@@ -189,7 +189,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
 
-                    IndicatorView()
+                    PositionIndicator()
                         .count(1)
                         .position(0)
                         .hideSingle(true)
@@ -205,7 +205,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                         .textColor(Palette.subtle)
                         .horizontalTextAlignment(.center)
 
-                    IndicatorView()
+                    PositionIndicator()
                         .count(1)
                         .position(0)
                         .hideSingle(false)
@@ -224,7 +224,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("The usual home for one is under a GalleryView. Both take a `position`, so "
-                + "one @State joins them - which is also what makes an IndicatorView useful "
+                + "one @State joins them - which is also what makes a PositionIndicator useful "
                 + "on its own, as above.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

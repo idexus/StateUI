@@ -32,7 +32,7 @@ final class AppKitMeasurementTests: XCTestCase {
         scroll.layoutSubtreeIfNeeded()
         let measuredBeforeMotion = code.nativeMeasurementCountForTesting
 
-        var growing = HostPatch(id: .manual("box"), type: .boxView)
+        var growing = HostPatch(id: .manual("box"), type: .colorBox)
         growing.properties[.width] = .number(300)
         growing.transitions[.width] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(path(to: growing))
@@ -51,7 +51,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var card = HostPatch(id: .manual("card"), type: .boxView)
+        var card = HostPatch(id: .manual("card"), type: .colorBox)
         card.properties[.width] = .number(120)
         card.properties[.height] = .number(60)
         card.driven = .replace([
@@ -195,7 +195,7 @@ final class AppKitMeasurementTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var card = HostPatch(id: .manual("card"), type: .boxView)
+        var card = HostPatch(id: .manual("card"), type: .colorBox)
         card.properties[.opacity] = .number(1)
         var layout = HostPatch(id: .manual("layout"), type: .absoluteLayout)
         layout.driven = .replace([
@@ -213,7 +213,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let placed = try XCTUnwrap(nativeCard.layer).affineTransform()
         XCTAssertEqual(placed.b, sin(30 * .pi / 180), accuracy: 0.001)
 
-        var fading = HostPatch(id: .manual("card"), type: .boxView)
+        var fading = HostPatch(id: .manual("card"), type: .colorBox)
         fading.properties[.opacity] = .number(0.4)
         fading.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         var path = HostPatch(id: .manual("layout"), type: .absoluteLayout)
@@ -277,7 +277,7 @@ final class AppKitMeasurementTests: XCTestCase {
             return node
         }
 
-        var box = HostPatch(id: .manual("box"), type: .boxView)
+        var box = HostPatch(id: .manual("box"), type: .colorBox)
         box.properties[.width] = .number(120)
         box.properties[.height] = .number(56)
         box.properties[.horizontalAlignment] = .enumeration(Alignment.start.rawValue)

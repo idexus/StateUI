@@ -112,7 +112,7 @@ final class AppKitViewDrawingTests: XCTestCase {
     }
 
     private func box(id: String = "box", rotation: Double) -> HostPatch {
-        var box = HostPatch(id: .manual(id), type: .boxView)
+        var box = HostPatch(id: .manual(id), type: .colorBox)
         box.properties[.rotation] = .number(rotation)
         box.properties[.width] = .number(100)
         box.properties[.height] = .number(60)

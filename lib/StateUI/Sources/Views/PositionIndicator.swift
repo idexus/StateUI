@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// IndicatorView's own properties - the half a `Style<IndicatorView>` shares with the
+/// PositionIndicator's own properties - the half a `Style<PositionIndicator>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
 /// makes the same modifiers compile on both.
-public protocol IndicatorViewProperties: PropertyContainer {}
+public protocol PositionIndicatorProperties: PropertyContainer {}
 
-extension IndicatorViewProperties {
+extension PositionIndicatorProperties {
     /// How many dots there are.
     ///
-    /// The other way to say it is `IndicatorView(items) { … }`, which counts
+    /// The other way to say it is `PositionIndicator(items) { … }`, which counts
     /// its items itself - one or the other, never both.
     public func count(_ value: Int) -> Modified {
         setValue(.count, .number(Double(value)))
@@ -18,7 +18,7 @@ extension IndicatorViewProperties {
 
     /// Which one is the current one, counting from 0.
     ///
-    /// Told to it rather than read from it: nothing about an IndicatorView is
+    /// Told to it rather than read from it: nothing about a PositionIndicator is
     /// the reader's to change, so there is no binding overload here - a
     /// gallery's `position($shown)` is what writes, and this reads the same
     /// state.
@@ -61,7 +61,7 @@ extension IndicatorViewProperties {
 /// The row of dots under a run of cards, saying how many there are and which
 /// one is showing.
 ///
-///     IndicatorView()
+///     PositionIndicator()
 ///         .count(cards.count)
 ///         .position(shown)
 ///         .indicatorColor(.lightGray)
@@ -70,21 +70,21 @@ extension IndicatorViewProperties {
 /// It is joined to a `GalleryView` by SHARED STATE rather than by naming one:
 /// `GalleryView { … }.position($shown)` writes that state as the reader swipes,
 /// and `.position(shown)` here reads the same value back. Which is also what
-/// makes an IndicatorView useful on its own - a wizard, a stepper, anything
+/// makes a PositionIndicator useful on its own - a wizard, a stepper, anything
 /// with a place in a sequence.
-public struct IndicatorView: View, IndicatorViewProperties {
+public struct PositionIndicator: View, PositionIndicatorProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<IndicatorView>` is written against.
+    /// An empty one - what a `Style<PositionIndicator>` is written against.
     public init() {
-        node = Node(type: .indicatorView)
+        node = Node(type: .positionIndicator)
     }
 
     /// Each dot is described as a view of its own and built from the supplied
     /// content closure.
     ///
-    ///     IndicatorView(cards) { _ in
+    ///     PositionIndicator(cards) { _ in
     ///         Image("diamond.png")
     ///     }
     ///     .position(shown)
@@ -94,7 +94,7 @@ public struct IndicatorView: View, IndicatorViewProperties {
         _ items: Items,
         content: (Items.Element) -> Element
     ) {
-        node = Node(type: .indicatorView, children: items.map { content($0).body })
+        node = Node(type: .positionIndicator, children: items.map { content($0).body })
     }
 
 }

@@ -9,7 +9,7 @@
 ///         .radiusY(8)
 ///         .height(60)
 ///
-/// A `BoxView` says the same thing in one line and takes one colour; this is the
+/// A `ColorBox` says the same thing in one line and takes one colour; this is the
 /// shape, so it takes a Brush, an outline and everything else the shape tier
 /// declares.
 ///

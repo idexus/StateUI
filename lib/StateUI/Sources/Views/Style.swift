@@ -130,7 +130,7 @@ extension VisualState where Target: VisualElement {
     /// While the control is the chosen one.
     ///
     /// Nothing in `VisualElement` drives this: it is entered by whatever does
-    /// the choosing - an `IndicatorView`'s dots, where it draws them from
+    /// the choosing - a `PositionIndicator`'s dots, where it draws them from
     /// views.
     public static var selected: Self { Self("Selected") }
 
@@ -884,17 +884,17 @@ extension StyleBag: InputViewProperties where Target: InputView {}
 
 extension StyleBag: ActivityIndicatorProperties where Target == ActivityIndicator {}
 extension StyleBag: BorderProperties where Target == Border {}
-extension StyleBag: BoxViewProperties where Target == BoxView {}
+extension StyleBag: ColorBoxProperties where Target == ColorBox {}
 extension StyleBag: ButtonProperties where Target == Button {}
 extension StyleBag: CheckBoxProperties where Target == CheckBox {}
 extension StyleBag: DatePickerProperties where Target == DatePicker {}
 extension StyleBag: TextEditorProperties where Target == TextEditor {}
 extension StyleBag: TextFieldProperties where Target == TextField {}
-extension StyleBag: GraphicsViewProperties where Target == GraphicsView {}
+extension StyleBag: CanvasProperties where Target == Canvas {}
 extension StyleBag: GridProperties where Target == Grid {}
 extension StyleBag: ImageProperties where Target == Image {}
 extension StyleBag: ImageButtonProperties where Target == ImageButton {}
-extension StyleBag: IndicatorViewProperties where Target == IndicatorView {}
+extension StyleBag: PositionIndicatorProperties where Target == PositionIndicator {}
 extension StyleBag: LabelProperties where Target == Label {}
 extension StyleBag: LineProperties where Target == Line {}
 extension StyleBag: MapProperties where Target == Map {}
@@ -942,7 +942,7 @@ extension ActivityIndicator: StyleTarget {}
 extension ProgressBar: StyleTarget {}
 extension Image: StyleTarget {}
 extension ImageButton: StyleTarget {}
-extension BoxView: StyleTarget {}
+extension ColorBox: StyleTarget {}
 extension Border: StyleTarget {}
 extension Grid: StyleTarget {}
 extension ScrollView: StyleTarget {}
@@ -958,12 +958,12 @@ extension Line: StyleTarget {}
 extension Path: StyleTarget {}
 extension Polygon: StyleTarget {}
 extension Polyline: StyleTarget {}
-extension GraphicsView: StyleTarget {}
-extension IndicatorView: StyleTarget {}
+extension Canvas: StyleTarget {}
+extension PositionIndicator: StyleTarget {}
 extension WebView: StyleTarget {}
 extension Map: StyleTarget {}
 extension TitleBar: StyleTarget {}
 
-// A SwipeItem is NOT one, and cannot be: it is a menu item rather than a view,
+// A SwipeAction is NOT one, and cannot be: it is a menu item rather than a view,
 // so it has none of the properties a style would set and no VisualElement to
 // hang one on. See Views/SwipeView.swift.

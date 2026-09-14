@@ -154,7 +154,7 @@ final class Catalog {
                     Sample(ScrollViewSample()),
                     Sample(SizingSample()),
                     Sample(BorderSample()),
-                    Sample(BoxViewSample()),
+                    Sample(ColorBoxSample()),
                     Sample(TransformSample()),
                     Sample(LayoutDirectionSample()),
                     Sample(FrameReaderSample()),
@@ -186,7 +186,7 @@ final class Catalog {
                 samples: [
                     Sample(ShapesSample()),
                     Sample(BrushSample()),
-                    Sample(GraphicsViewSample()),
+                    Sample(CanvasSample()),
                 ]),
 
             SampleGroup(
@@ -199,7 +199,7 @@ final class Catalog {
                     Sample(SwipeViewSample()),
                     Sample(RefreshViewSample()),
                     Sample(GalleryViewSample()),
-                    Sample(IndicatorViewSample()),
+                    Sample(PositionIndicatorSample()),
                 ]),
 
             SampleGroup(

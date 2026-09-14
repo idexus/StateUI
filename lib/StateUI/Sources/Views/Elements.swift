@@ -446,7 +446,7 @@ extension BindableObject {
     /// do not cover yet - beside whatever is there, with the VALUES the event
     /// carried.
     ///
-    ///     BoxView()
+    ///     ColorBox()
     ///         .onPinchUpdated { … }
     ///         .onEvent(.pinchUpdated) { payload in
     ///             log.append(payload.value(1)?.number ?? 0)   // the scale
@@ -947,7 +947,7 @@ extension VisualElementProperties {
 
     /// Whether a screen reader can reach this view at all.
     ///
-    ///     BoxView(.silver).automationIsInAccessibleTree(false)
+    ///     ColorBox(.silver).automationIsInAccessibleTree(false)
     ///
     /// Decoration is what this is for: a rule, a shadow, a picture that repeats
     /// what the words beside it already say. A reader moves through a page one
@@ -1058,13 +1058,13 @@ extension View {
     ///
     ///     Label(item.name)
     ///         .contextMenu {
-    ///             MenuFlyoutItem("Rename").onClicked { rename(item) }
-    ///             MenuFlyoutSeparator()
-    ///             MenuFlyoutItem("Delete").isDestructive(true).onClicked { remove(item) }
+    ///             MenuItem("Rename").onClicked { rename(item) }
+    ///             MenuSeparator()
+    ///             MenuItem("Delete").isDestructive(true).onClicked { remove(item) }
     ///         }
     ///
-    /// The same entries a menu bar takes - `MenuFlyoutItem`, `MenuFlyoutSubItem`
-    /// and `MenuFlyoutSeparator` - attached to a view instead of to a page.
+    /// The same entries a menu bar takes - `MenuItem`, `Menu`
+    /// and `MenuSeparator` - attached to a view instead of to a page.
     ///
     /// Context menus are a desktop interaction. A host with no native context
     /// menu interaction leaves this modifier inert, so do not put the only way
@@ -1170,7 +1170,7 @@ extension View {
     ///
     ///     @State private var turn = 0.0
     ///
-    ///     BoxView(.transparent).panX($turn)
+    ///     ColorBox(.transparent).panX($turn)
     ///
     /// The same distance `onPanUpdated` reports, taken off the path that
     /// builds the interface: nothing is described when it moves, and what
@@ -1191,7 +1191,7 @@ extension View {
     /// Writes how far the view has been dragged DOWN into a driven state, which
     /// describes nothing again.
     ///
-    ///     BoxView(.transparent).panY($turn)
+    ///     ColorBox(.transparent).panY($turn)
     ///
     /// See `panX(_:)` for what that means and what it costs.
     ///
@@ -1204,7 +1204,7 @@ extension View {
     /// Runs as the view is dragged, from the moment it starts until it is let
     /// go.
     ///
-    ///     BoxView(.cornflowerBlue)
+    ///     ColorBox(.cornflowerBlue)
     ///         .translationX(offsetX)
     ///         .onPanUpdated { pan in
     ///             if pan.status == .running { offsetX = pan.totalX }

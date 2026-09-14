@@ -937,7 +937,7 @@ public final class HostStorage: @unchecked Sendable, NamedState {
 ///
 ///     @State private var fade = 1.0
 ///
-///     BoxView().opacity($fade)
+///     ColorBox().opacity($fade)
 ///
 ///     fade = 0.2                                         // the destination: the host walks the box there
 ///     try await $fade.journey.move(to: 0.2, .eased(400, .cubicOut))   // the same, awaited

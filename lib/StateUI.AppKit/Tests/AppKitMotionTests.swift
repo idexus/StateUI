@@ -17,7 +17,7 @@ final class AppKitMotionTests: XCTestCase {
 
         XCTAssertFalse(AppKitTransitionSurface.presents(.rotationX, on: .label))
         XCTAssertFalse(AppKitTransitionSurface.presents(.value, on: .stepper))
-        XCTAssertFalse(AppKitTransitionSurface.presents(.opacity, on: .indicatorView))
+        XCTAssertFalse(AppKitTransitionSurface.presents(.opacity, on: .positionIndicator))
         XCTAssertFalse(AppKitTransitionSurface.presents(Prop("custom"), on: .label))
     }
 
@@ -224,11 +224,11 @@ final class AppKitMotionTests: XCTestCase {
             return windowTree(window)
         }
 
-        var initialBox = HostPatch(id: .manual("box"), type: .boxView)
+        var initialBox = HostPatch(id: .manual("box"), type: .colorBox)
         initialBox.properties[.width] = .number(120)
         renderer.applyForTesting(tree(children: .arranged([initialBox])))
 
-        var changedBox = HostPatch(id: .manual("box"), type: .boxView)
+        var changedBox = HostPatch(id: .manual("box"), type: .colorBox)
         changedBox.properties[.width] = .number(300)
         changedBox.transitions[.width] = HostTransition(
             motion: .eased(200, .linear))
@@ -253,11 +253,11 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var initial = HostPatch(id: .manual("box"), type: .boxView)
+        var initial = HostPatch(id: .manual("box"), type: .colorBox)
         initial.properties[.width] = .number(120)
         renderer.applyForTesting(initial)
 
-        var changed = HostPatch(id: .manual("box"), type: .boxView)
+        var changed = HostPatch(id: .manual("box"), type: .colorBox)
         changed.properties[.width] = .number(300)
         changed.transitions[.width] = HostTransition(
             motion: .eased(200, .linear))
@@ -285,7 +285,7 @@ final class AppKitMotionTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         func child(_ id: String, state: Int32) -> HostPatch {
-            var child = HostPatch(id: .manual(id), type: .boxView)
+            var child = HostPatch(id: .manual(id), type: .colorBox)
             child.properties[.height] = .number(40)
             child.driven = .replace([
                 .height: HostStateBinding(
@@ -365,7 +365,7 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var content = HostPatch(id: .manual("content"), type: .boxView)
+        var content = HostPatch(id: .manual("content"), type: .colorBox)
         content.properties[.width] = .number(100)
         content.properties[.height] = .number(500)
         var initial = HostPatch(id: .manual("scroll"), type: .scrollView)
@@ -686,11 +686,11 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var initial = HostPatch(id: .manual("box"), type: .boxView)
+        var initial = HostPatch(id: .manual("box"), type: .colorBox)
         initial.properties[.cornerRadius] = .numbers([0, 10, 20, 30])
         renderer.applyForTesting(initial)
 
-        var changed = HostPatch(id: .manual("box"), type: .boxView)
+        var changed = HostPatch(id: .manual("box"), type: .colorBox)
         changed.properties[.cornerRadius] = .numbers([20, 30, 40, 50])
         changed.transitions[.cornerRadius] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(changed)
@@ -698,7 +698,7 @@ final class AppKitMotionTests: XCTestCase {
         now = 100
         renderer.advanceMotionsForTesting()
         let box = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("box")) as? AppKitBoxView)
+            renderer.viewForTesting(id: .manual("box")) as? AppKitColorBoxView)
         XCTAssertEqual(
             box.cornerRadii,
             AppKitCornerRadii(topLeft: 10, topRight: 20, bottomLeft: 30, bottomRight: 40))
@@ -714,15 +714,15 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(HostPatch(id: .manual("box"), type: .boxView))
+        renderer.applyForTesting(HostPatch(id: .manual("box"), type: .colorBox))
 
-        var changed = HostPatch(id: .manual("box"), type: .boxView)
+        var changed = HostPatch(id: .manual("box"), type: .colorBox)
         changed.properties[.cornerRadius] = .numbers([10, 20, 30, 40])
         changed.transitions[.cornerRadius] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(changed)
 
         let box = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("box")) as? AppKitBoxView)
+            renderer.viewForTesting(id: .manual("box")) as? AppKitColorBoxView)
         XCTAssertEqual(box.cornerRadii, AppKitCornerRadii())
 
         now = 100

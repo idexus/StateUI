@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What a GraphicsView draws, as a list of instructions.
+// What a Canvas draws, as a list of instructions.
 //
 // Drawing code is a closure, and a closure is the one thing this boundary
 // cannot carry. So a drawing travels as what that code calls: one record per
@@ -24,7 +24,7 @@
 //
 // The theme is picked in the differ, as it is everywhere else: a colour
 // written `Color(light:dark:)` goes into the record as both halves, and the
-// differ picks the half as it builds the GraphicsView, which is built again
+// differ picks the half as it builds the Canvas, which is built again
 // when the system flips - see Types/Color.swift.
 
 /// One instruction for the canvas. Written with `Draw`, never by hand.
@@ -93,7 +93,7 @@ public struct DrawCommand: Equatable, Sendable {
 }
 
 /// Collects the instructions written as consecutive statements into a drawing
-/// - what a `GraphicsView`'s closure is built with.
+/// - what a `Canvas`'s closure is built with.
 ///
 /// Unlike `ViewBuilder`, this one has a `buildArray`, so a plain `for` loop
 /// inside a drawing compiles: a chart draws a bar per value that way.
@@ -171,7 +171,7 @@ public enum VerticalAlignment: Int32, Sendable {
 
 /// Everything a drawing can tell the canvas to do.
 ///
-///     GraphicsView {
+///     Canvas {
 ///         Draw.fillColor(.cornflowerBlue)
 ///         Draw.fillRoundedRectangle(x: 0, y: 0, width: 120, height: 40, cornerRadius: 8)
 ///

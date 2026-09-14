@@ -21,7 +21,7 @@ final class GestureTests: XCTestCase {
         var points: [Point] = []
 
         let patch = renders.render(
-            BoxView(.cornflowerBlue)
+            ColorBox(.cornflowerBlue)
                 .onSwiped { swipes.append($0) }
                 .onPanUpdated { pans.append($0) }
                 .onPinchUpdated { pinches.append($0) }
@@ -64,7 +64,7 @@ final class GestureTests: XCTestCase {
         let renders = Renders()
         var pans = 0
 
-        let patch = renders.render(BoxView().onPanUpdated { _ in pans += 1 }.body)
+        let patch = renders.render(ColorBox().onPanUpdated { _ in pans += 1 }.body)
         let id = patch.events?["panUpdated"] ?? -1
 
         renders.fire(id, with: [.enumeration(GestureStatus.running.rawValue), .number(12.5)])
@@ -88,7 +88,7 @@ final class GestureTests: XCTestCase {
         let renders = Renders()
         var swipes = 0
 
-        let patch = renders.render(BoxView().onSwiped { _ in swipes += 1 }.body)
+        let patch = renders.render(ColorBox().onSwiped { _ in swipes += 1 }.body)
         let id = patch.events?["swiped"] ?? -1
 
         // A direction sent as a plain number, and a payload with nothing in it.
@@ -114,7 +114,7 @@ final class GestureTests: XCTestCase {
         let renders = Renders()
         var swipes: [SwipeDirection] = []
 
-        let patch = renders.render(BoxView().onSwiped { swipes.append($0) }.body)
+        let patch = renders.render(ColorBox().onSwiped { swipes.append($0) }.body)
         let id = patch.events?["swiped"] ?? -1
 
         // What the platform sent, and the same thing spelled tidily.
@@ -131,7 +131,7 @@ final class GestureTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            BoxView()
+            ColorBox()
                 .onSwiped(direction: [.up, .down], threshold: 40) { _ in }
                 .onPanUpdated(touchCount: 2) { _ in }
                 .onTapped(numberOfTapsRequired: 2) {}
@@ -149,7 +149,7 @@ final class GestureTests: XCTestCase {
     /// every direction rather than none.
     func testAViewListensForEveryDirectionUnlessItSaysOtherwise() {
         let renders = Renders()
-        let patch = renders.render(BoxView().onSwiped { _ in }.body)
+        let patch = renders.render(ColorBox().onSwiped { _ in }.body)
 
         XCTAssertEqual(patch.props["swipeDirection"], .enumeration(15), "every bit there is")
         XCTAssertNil(patch.props["swipeThreshold"], "a threshold nobody set is not sent")
@@ -167,7 +167,7 @@ final class GestureTests: XCTestCase {
         var raw: [[PropValue]] = []
 
         let patch = renders.render(
-            BoxView()
+            ColorBox()
                 .onPinchUpdated { _ in typed += 1 }
                 .onEvent(.pinchUpdated) { raw.append($0) }
                 .body)
@@ -198,7 +198,7 @@ final class GestureTests: XCTestCase {
         var second = 0
 
         let patch = renders.render(
-            BoxView()
+            ColorBox()
                 .onTapped { first += 1 }
                 .onTapped { second += 1 }
                 .body)

@@ -8,10 +8,10 @@ Application 1 moves over 200ms cubicOut arranged(1)
           Grid "a" arranged(2)
             Label 4
               text: string "a"
-            BoxView 5
+            ColorBox 5
               color: color FF000000
           Grid "b" arranged(2)
             Label 6
               text: string "b"
-            BoxView 7
+            ColorBox 7
               color: color FF000000

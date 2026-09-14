@@ -49,7 +49,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 VStack {
                     HStack {
                         ForEach(Array(bars.enumerated()), id: \\.offset) { bar in
-                            BoxView(Palette.onAccent)
+                            ColorBox(Palette.onAccent)
                                 .translationY(bar.element)
                                 .width(14)
                                 .height(46)
@@ -145,7 +145,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 VStack {
                     HStack {
                         ForEach(Array(bars.enumerated()), id: \.offset) { bar in
-                            BoxView(Palette.onAccent)
+                            ColorBox(Palette.onAccent)
                                 .translationY(bar.element)
                                 .width(14)
                                 .height(46)

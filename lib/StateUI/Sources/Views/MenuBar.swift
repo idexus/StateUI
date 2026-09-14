@@ -6,33 +6,40 @@
 // the top of the screen on a Mac, under the title bar on Windows. A phone has no
 // menu bar and shows none of it.
 
-/// One menu on the menu bar.
+/// A menu: a caption and the entries it opens - on the menu bar, or one level
+/// down inside another menu.
 ///
-///     page.menuBarItems = [
-///         MenuBarItem("File") {
-///             MenuFlyoutItem("New").onClicked { create() }
-///             MenuFlyoutSeparator()
-///             MenuFlyoutItem("Close").onClicked { close() }
+///     page.menuBar = [
+///         Menu("File") {
+///             MenuItem("New").onClicked { create() }
+///             Menu("Recent") {
+///                 ForEach(recent) { file in
+///                     MenuItem(file).onClicked { open(file) }
+///                 }
+///             }
+///             MenuSeparator()
+///             MenuItem("Close").onClicked { close() }
 ///         },
 ///     ]
 ///
 /// Not a view: a menu has a caption and entries, no layout of its own, and it
 /// belongs to a PAGE rather than sitting in one - written into the page's
 /// session, and written again when what it lists moves.
-public struct MenuBarItem: Element {
+public struct Menu: Element {
     /// The node this menu describes.
     public var node: Node
 
     /// A menu captioned `text`, holding whatever the closure lists.
     ///
-    /// What goes inside is a `MenuFlyoutItem`, a `MenuFlyoutSubItem` or a
-    /// `MenuFlyoutSeparator`, with an `if` or a `ForEach` among them.
+    /// What goes inside is a `MenuItem`, a `Menu` or a `MenuSeparator`, with an
+    /// `if` or a `ForEach` among them.
     ///
-    /// - Parameter text: the caption on the bar - "File", "Edit", "View".
+    /// - Parameter text: the caption - "File", "Edit", "View" on the bar, or the
+    ///   row that opens it inside another menu.
     /// - Parameter items: the entries, in the order they are written.
     public init(_ text: String, @MenuBuilder items: () -> [Element]) {
         node = Node(
-            type: .menuBarItem,
+            type: .menu,
             props: [.text: .string(text)],
             children: items().map { $0.body })
     }
@@ -59,17 +66,17 @@ public struct MenuBarItem: Element {
 
 /// One entry in a menu.
 ///
-///     MenuFlyoutItem("Save")
+///     MenuItem("Save")
 ///         .iconImageSource("nav_media.png")
 ///         .onClicked { save() }
-public struct MenuFlyoutItem: Element, MenuItemElement {
+public struct MenuItem: Element, MenuItemElement {
     /// The node this entry describes.
     public var node: Node
 
     /// An entry captioned `text`. Give it an `.onClicked`: an entry that does
     /// nothing is one that looks broken.
     public init(_ text: String) {
-        node = Node(type: .menuFlyoutItem, props: [.text: .string(text)])
+        node = Node(type: .menuItem, props: [.text: .string(text)])
     }
 
     /// The node, as every element answers it.
@@ -82,83 +89,29 @@ public struct MenuFlyoutItem: Element, MenuItemElement {
         modified { $0.id = String(describing: value) }
     }
 
-    // `text`, `iconImageSource`, `isDestructive` and `isEnabled` are shared
-    // with the toolbar and swipe items and live on MenuItemElement, which this
-    // conforms to.
-
-    /// What it does. A second `.onClicked` runs beside the first, like every
-    /// typed event modifier.
-    ///
-    /// Written here rather than on `MenuItemElement` because a `SwipeItem` is
-    /// answered by `onInvoked` instead - see that protocol.
-    public func onClicked(_ handler: @escaping EventHandler) -> Self {
-        modified { $0.addHandler(.clicked, handler) }
-    }
-}
-
-/// A menu inside a menu.
-///
-///     MenuFlyoutSubItem("Recent") {
-///         ForEach(recent) { file in
-///             MenuFlyoutItem(file).onClicked { open(file) }
-///         }
-///     }
-public struct MenuFlyoutSubItem: Element {
-    /// The node this submenu describes.
-    public var node: Node
-
-    /// A submenu captioned `text`, holding whatever the closure lists.
-    ///
-    /// The same entries a `MenuBarItem` holds, one level in - a submenu may
-    /// hold a submenu.
-    ///
-    /// - Parameter text: the caption of the row that opens it.
-    /// - Parameter items: the entries, in the order they are written.
-    public init(_ text: String, @MenuBuilder items: () -> [Element]) {
-        node = Node(
-            type: .menuFlyoutSubItem,
-            props: [.text: .string(text)],
-            children: items().map { $0.body })
-    }
-
-    /// The node, as every element answers it.
-    public var body: Node { node }
-
-    /// Who this submenu is, among the menu's others - what keeps it matched to
-    /// itself when the entries around it come and go. One with no id is matched
-    /// by its POSITION in the menu.
-    public func id(_ value: some Hashable) -> Self {
-        var copy = self
-        copy.node.id = String(describing: value)
-        return copy
-    }
-
-    /// Whether it opens at all.
-    public func isEnabled(_ value: Bool) -> Self {
-        var copy = self
-        copy.node.props[.isEnabled] = .bool(value)
-        return copy
-    }
+    // `text`, `iconImageSource`, `isDestructive`, `isEnabled` and `onClicked`
+    // are shared with the toolbar item and the swipe action and live on
+    // MenuItemElement, which this conforms to.
 }
 
 /// A line between entries, grouping the ones above it apart from the ones
 /// below.
 ///
-///     MenuBarItem("File") {
-///         MenuFlyoutItem("New").onClicked { create() }
-///         MenuFlyoutSeparator()
-///         MenuFlyoutItem("Close").onClicked { close() }
+///     Menu("File") {
+///         MenuItem("New").onClicked { create() }
+///         MenuSeparator()
+///         MenuItem("Close").onClicked { close() }
 ///     }
 ///
 /// It has no caption and nothing to click; the platform draws whatever a
 /// separator looks like there.
-public struct MenuFlyoutSeparator: Element {
+public struct MenuSeparator: Element {
     /// The node this separator describes.
     public var node: Node
 
     /// A line.
     public init() {
-        node = Node(type: .menuFlyoutSeparator)
+        node = Node(type: .menuSeparator)
     }
 
     /// The node, as every element answers it.
@@ -175,11 +128,11 @@ public struct MenuFlyoutSeparator: Element {
 
 /// Collects the entries of a menu written as consecutive statements.
 ///
-///     MenuBarItem("View") {
-///         MenuFlyoutItem("Zoom in").onClicked { zoom(+1) }
+///     Menu("View") {
+///         MenuItem("Zoom in").onClicked { zoom(+1) }
 ///
 ///         if canReset {
-///             MenuFlyoutItem("Actual size").onClicked { zoom(0) }
+///             MenuItem("Actual size").onClicked { zoom(0) }
 ///         }
 ///     }
 ///

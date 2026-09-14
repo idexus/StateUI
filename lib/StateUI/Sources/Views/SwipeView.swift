@@ -25,16 +25,16 @@ extension SwipeViewProperties {
 ///         }
 ///     }
 ///     .rightItems(mode: .execute) {
-///         SwipeItem("Delete")
+///         SwipeAction("Delete")
 ///             .background(.firebrick)
-///             .onInvoked { items.removeAll { $0 == item } }
+///             .onClicked { items.removeAll { $0 == item } }
 ///     }
 ///
 /// A row in a list is what this is for: it holds one view and reveals a set of
 /// items on each side of it, and `.execute` runs the first item on a full swipe
 /// with no tap at all.
 ///
-/// The items are NOT views - a `SwipeItem` is a menu item, which is a caption,
+/// The items are NOT views - a `SwipeAction` is a menu item, which is a caption,
 /// a picture and something to run - so they are written with their own
 /// modifiers and go nowhere else in the tree.
 public struct SwipeView: View, SwipeViewProperties {
@@ -58,7 +58,7 @@ public struct SwipeView: View, SwipeViewProperties {
 
     // MARK: The swipe itself
     //
-    // Three reports about the SWIPE, where `SwipeItem.onInvoked` is about one
+    // Three reports about the SWIPE, where `SwipeAction.onClicked` is about one
     // item being chosen. A row that has to answer while the finger is still
     // moving - a background that darkens as the items come out - listens here.
 
@@ -168,11 +168,11 @@ public struct SwipeView: View, SwipeViewProperties {
         var copy = self
 
         copy.node.children.removeAll {
-            $0.type == .swipeItems && $0.props[.side] == side.propValue
+            $0.type == .swipeActions && $0.props[.side] == side.propValue
         }
 
         copy.node.children.append(Node(
-            type: .swipeItems,
+            type: .swipeActions,
             props: [
                 .side: side.propValue,
                 .mode: mode.propValue,
@@ -210,31 +210,30 @@ enum SwipeSide: Int32, Sendable {
 
 /// One thing a swipe reveals - a menu item.
 ///
-///     SwipeItem("Favourite")
+///     SwipeAction("Favourite")
 ///         .iconImageSource("nav_media.png")
 ///         .background(.gold)
-///         .onInvoked { favourites.insert(item) }
+///         .onClicked { favourites.insert(item) }
 ///
 /// Not a view: it has a caption, a picture, a colour behind it and something to
 /// run, and no layout of its own. So it takes none of the modifiers a view has,
 /// and it belongs inside one of a SwipeView's four collections and nowhere else.
-public struct SwipeItem: Element, MenuItemElement {
+public struct SwipeAction: Element, MenuItemElement {
     /// The node this item describes.
     public var node: Node
 
-    /// An item captioned `text`. Give it an `.onInvoked` - an item that does
+    /// An item captioned `text`. Give it an `.onClicked` - an item that does
     /// nothing is one that looks broken.
     public init(_ text: String) {
-        node = Node(type: .swipeItem, props: [.text: .string(text)])
+        node = Node(type: .swipeAction, props: [.text: .string(text)])
     }
 
     /// The node this item describes.
     public var body: Node { node }
 
-    // `text`, `iconImageSource`, `isDestructive` and `isEnabled` are every menu
-    // item's and live on MenuItemElement, which this conforms to. What is left
-    // here is what a SWIPE item alone has - and `onInvoked`, which is why
-    // `onClicked` is not on that protocol.
+    // `text`, `iconImageSource`, `isDestructive`, `isEnabled` and `onClicked`
+    // are every menu item's and live on MenuItemElement, which this conforms
+    // to. What is left here is what a SWIPE action alone has.
 
     /// What is drawn behind it, which is how one item is told from the next.
     public func background(_ value: Color) -> Self {
@@ -245,13 +244,6 @@ public struct SwipeItem: Element, MenuItemElement {
     /// out without the set being written twice.
     public func isVisible(_ value: Bool) -> Self {
         setValue(.isVisible, .bool(value))
-    }
-
-    /// What it does - run when the item is tapped, or by the swipe itself under
-    /// `.execute`. A second `.onInvoked` runs beside the first, like every
-    /// typed event modifier.
-    public func onInvoked(_ handler: @escaping EventHandler) -> Self {
-        modified { $0.addHandler(.invoked, handler) }
     }
 }
 

@@ -258,7 +258,7 @@ final class AppKitContainerTests: XCTestCase {
         for (container, origin) in expected {
             let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
-            var box = HostPatch(id: .manual("box"), type: .boxView)
+            var box = HostPatch(id: .manual("box"), type: .colorBox)
             box.properties = [.width: .number(44), .height: .number(20)]
             var layout = HostPatch(id: .manual("layout"), type: container)
             layout.children = .arranged([box])

@@ -9,10 +9,10 @@ import AppKit
 /// order. The command list is decoded before drawing, so malformed records are
 /// skipped outside AppKit's draw pass and every redraw sees one immutable plan.
 @MainActor
-final class AppKitGraphicsView: AppKitHitTestView {
-    var onStartInteraction: ((NSPoint) -> Void)?
-    var onDragInteraction: ((NSPoint) -> Void)?
-    var onEndInteraction: ((NSPoint) -> Void)?
+final class AppKitCanvasView: AppKitHitTestView {
+    var onPressed: ((NSPoint) -> Void)?
+    var onDragged: ((NSPoint) -> Void)?
+    var onReleased: ((NSPoint) -> Void)?
 
     private enum Command {
         case fillColor(NSColor)
@@ -203,21 +203,21 @@ final class AppKitGraphicsView: AppKitHitTestView {
     }
 
     override func mouseDown(with event: NSEvent) {
-        onStartInteraction?(convert(event.locationInWindow, from: nil))
+        onPressed?(convert(event.locationInWindow, from: nil))
     }
 
     override func mouseDragged(with event: NSEvent) {
-        onDragInteraction?(convert(event.locationInWindow, from: nil))
+        onDragged?(convert(event.locationInWindow, from: nil))
     }
 
     override func mouseUp(with event: NSEvent) {
-        onEndInteraction?(convert(event.locationInWindow, from: nil))
+        onReleased?(convert(event.locationInWindow, from: nil))
     }
 
     var commandKindsForTesting: [Int32] { commands.map(\.kind) }
-    func startInteractionForTesting(at point: NSPoint) { onStartInteraction?(point) }
-    func dragInteractionForTesting(at point: NSPoint) { onDragInteraction?(point) }
-    func endInteractionForTesting(at point: NSPoint) { onEndInteraction?(point) }
+    func pressForTesting(at point: NSPoint) { onPressed?(point) }
+    func dragForTesting(at point: NSPoint) { onDragged?(point) }
+    func releaseForTesting(at point: NSPoint) { onReleased?(point) }
 
     private func decode(_ value: HostValue?) -> [Command] {
         guard let records = value?.values else { return [] }

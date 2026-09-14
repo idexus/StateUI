@@ -76,8 +76,8 @@
     /// The owner of every `NodeType` declared by StateUI.
     public static let controls: [NodeType: HostControlOwner] = table([
         (.native, [
-            .absoluteLayout, .activityIndicator, .border, .boxView, .button,
-            .datePicker, .textEditor, .textField, .graphicsView,
+            .absoluteLayout, .activityIndicator, .border, .colorBox, .button,
+            .datePicker, .textEditor, .textField, .canvas,
             .hStack, .image, .label, .picker,
             .progressBar, .scrollView, .searchField, .slider, .stepper, .switch,
             .timePicker, .vStack, .webView,
@@ -87,15 +87,15 @@
         ]),
         (.stateUI, [
             .checkBox, .ellipse, .grid, .imageButton,
-            .indicatorView, .line, .path, .polygon, .polyline, .radioButton,
+            .positionIndicator, .line, .path, .polygon, .polyline, .radioButton,
             .rectangle, .refreshView, .roundRectangle, .swipeView,
         ]),
         (.structure, [
             .application, .composed, .content, .contextMenu, .spans,
-            .leadingContent, .menuBarItem, .menuBarItems, .menuFlyoutItem,
-            .menuFlyoutSeparator, .menuFlyoutSubItem, .modalStack,
-            .titleView, .overlay, .scene, .setters, .span, .swipeItem,
-            .swipeItems, .toolbarItem, .toolbarItems, .trailingContent,
+            .leadingContent, .menu, .menuBar, .menuItem,
+            .menuSeparator, .modalStack,
+            .titleView, .overlay, .scene, .setters, .span, .swipeAction,
+            .swipeActions, .toolbarItem, .toolbarItems, .trailingContent,
             .visualState, .window,
         ]),
         (.provider, [.map, .pin]),
@@ -173,15 +173,15 @@
     public static let events: [Event: HostEventOwner] = table([
         (.native, [
             .canGoBackChanged, .canGoForwardChanged, .clicked, .closed,
-            .submitted, .dateSelected, .dragCompleted, .dragInteraction,
+            .submitted, .dateSelected, .dragCompleted, .dragged,
             .dragLeave, .dragOver, .dragStarted, .dragStarting, .drop,
-            .dropCompleted, .endInteraction, .frameChanged,
+            .dropCompleted, .frameChanged,
             .isFocusedChanged, .navigated, .navigating, .opened, .panUpdated,
             .pinchUpdated, .pointerEntered, .pointerExited, .pointerMoved,
             .pointerPressed, .pointerReleased, .pressed, .processTerminated,
             .released, .scrollStopped, .scrollXChanged, .scrollYChanged,
             .selectedIndexChanged, .snapItemChanged,
-            .startInteraction, .swiped, .tapped, .textChanged, .timeSelected,
+            .swiped, .tapped, .textChanged, .timeSelected,
             .toggled, .valueChanged,
         ]),
         (.adaptive, [
@@ -192,7 +192,7 @@
             .windowRestored,
         ]),
         (.stateUI, [
-            .checkedChanged, .invoked, .isRefreshingChanged, .refreshing,
+            .checkedChanged, .isRefreshingChanged, .refreshing,
             .swipeChanging, .swipeEnded, .swipeStarted, .visualStateChanged,
         ]),
         (.provider, [.infoWindowClicked, .mapClicked, .markerClicked]),

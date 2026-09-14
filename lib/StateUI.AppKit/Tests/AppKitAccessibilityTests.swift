@@ -37,7 +37,7 @@ final class AppKitAccessibilityTests: XCTestCase {
 
     @MainActor
     func testClearingAuthoredSemanticsRestoresTheNativeDefaults() throws {
-        let untouched = AppKitBoxView()
+        let untouched = AppKitColorBoxView()
         let originalIdentifier = untouched.accessibilityIdentifier()
         let originalLabel = untouched.accessibilityLabel()
         let originalHelp = untouched.accessibilityHelp()
@@ -45,7 +45,7 @@ final class AppKitAccessibilityTests: XCTestCase {
         let originalElement = untouched.isAccessibilityElement()
         let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var box = HostPatch(id: .manual("box"), type: .boxView)
+        var box = HostPatch(id: .manual("box"), type: .colorBox)
         box.properties = [
             .automationId: .string("decoration"),
             .semanticDescription: .string("Temporary"),
@@ -56,7 +56,7 @@ final class AppKitAccessibilityTests: XCTestCase {
         renderer.applyForTesting(tree(box))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
 
-        var cleared = HostPatch(id: .manual("box"), type: .boxView)
+        var cleared = HostPatch(id: .manual("box"), type: .colorBox)
         cleared.clearedProperties = [
             .automationId,
             .semanticDescription,

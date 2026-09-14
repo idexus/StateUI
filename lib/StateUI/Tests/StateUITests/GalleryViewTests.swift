@@ -385,7 +385,7 @@ final class GalleryViewTests: XCTestCase {
 
         let shaded = settled {
             self.gallery(5)
-                .shade(BoxView(Color("#000000")).cornerRadius(16))
+                .shade(ColorBox(Color("#000000")).cornerRadius(16))
                 .body
         }
 
@@ -434,7 +434,7 @@ final class GalleryViewTests: XCTestCase {
             return (opacity, shade)
         }
 
-        let mask = BoxView(Color("#000000")).cornerRadius(16)
+        let mask = ColorBox(Color("#000000")).cornerRadius(16)
 
         let whole = farCard { $0.shade(mask) }
         let half = farCard { $0.shade(mask, amount: 0.5) }
@@ -459,7 +459,7 @@ final class GalleryViewTests: XCTestCase {
         func shade(of amount: Double) -> Double {
             placements(settled {
                 self.gallery(5)
-                    .shade(BoxView(Color("#000000")), amount: amount)
+                    .shade(ColorBox(Color("#000000")), amount: amount)
                     .body
             }).last?.shade ?? -1
         }
@@ -489,7 +489,7 @@ final class GalleryViewTests: XCTestCase {
 
         XCTAssertGreaterThan(travel, 0, "a run of cards is snapped to its cards")
         XCTAssertEqual(
-            find(.boxView, in: showing.patch)?.props[.width],
+            find(.colorBox, in: showing.patch)?.props[.width],
             .number(352 + (3 * travel)),
             "the content is the room plus one card's travel per card past the first")
 
@@ -606,7 +606,7 @@ final class GalleryViewTests: XCTestCase {
     /// The box a tap is answered on, if the gallery laid one.
     private func tappable(in patch: HostPatch) -> HostPatch? {
         func walk(_ node: HostPatch) -> HostPatch? {
-            if node.type == .boxView, node.events?[.tapped] != nil { return node }
+            if node.type == .colorBox, node.events?[.tapped] != nil { return node }
 
             for child in node.children {
                 if let found = walk(child) { return found }
@@ -721,7 +721,7 @@ final class GalleryViewTests: XCTestCase {
             """)
 
         let shaded = placements(
-            laid(Renders(), { self.gallery(3).shade(BoxView(.black)).body }).first)
+            laid(Renders(), { self.gallery(3).shade(ColorBox(.black)).body }).first)
 
         XCTAssertEqual(shaded.first?.shade, 0, "the card in front wears none of it")
         XCTAssertTrue((shaded.last?.shade ?? -1) > 0, "and a card behind it wears some")

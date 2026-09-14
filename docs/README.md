@@ -36,7 +36,7 @@ usable platform promise.
 - [Controls and input](controls-and-input.md) explains control initializers,
   modifiers, two-way input, text, selection, focus, and control events.
 - [Styles and drawing](styles-and-drawing.md) covers style resolution, themes,
-  visual states, images, brushes, shapes, and `GraphicsView`.
+  visual states, images, brushes, shapes, and `Canvas`.
 - [Interaction and actions](interaction-and-actions.md) covers gestures,
   accessibility, `@Aim`, dialogs, and host actions.
 - [Composition and identity](composition-and-identity.md) covers composed

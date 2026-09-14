@@ -36,12 +36,12 @@ struct DrivenSample: SampleContent, ExampleContent {
             let law = slowly ? "1600 ms, cubicInOut" : "350 ms, cubicOut"
 
             Grid {
-                BoxView()
+                ColorBox()
                     .color($tint)
                     .height(6)
                     .verticalAlignment(.center)
 
-                BoxView()
+                ColorBox()
                     .color(Palette.brand)
                     .width(20)
                     .height(20)
@@ -91,13 +91,13 @@ struct DrivenSample: SampleContent, ExampleContent {
 
             Border {
                 Grid {
-                    BoxView()
+                    ColorBox()
                         .color($tint)
                         .height(6)
                         .cornerRadius(3)
                         .verticalAlignment(.center)
 
-                    BoxView()
+                    ColorBox()
                         .color(Palette.brand)
                         .width(20)
                         .height(20)

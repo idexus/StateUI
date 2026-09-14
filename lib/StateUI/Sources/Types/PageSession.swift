@@ -177,12 +177,12 @@ public final class PageSession {
 
     /// The menus active while this page is showing on a host with a menu bar.
     ///
-    ///     page.menuBarItems = [
-    ///         MenuBarItem("File") {
-    ///             MenuFlyoutItem("New").onClicked { documents.append(Document()) }
+    ///     page.menuBar = [
+    ///         Menu("File") {
+    ///             MenuItem("New").onClicked { documents.append(Document()) }
     ///         }
     ///     ]
-    @State public var menuBarItems: [MenuBarItem] = []
+    @State public var menuBar: [Menu] = []
 
     /// A fresh session - what every content page is given as it is first
     /// built, and what a test or one branch provides as a fake with
@@ -223,8 +223,8 @@ public final class PageSession {
             slots.append(Node(type: .toolbarItems, children: toolbarItems.map { $0.body }))
         }
 
-        if !menuBarItems.isEmpty {
-            slots.append(Node(type: .menuBarItems, children: menuBarItems.map { $0.body }))
+        if !menuBar.isEmpty {
+            slots.append(Node(type: .menuBar, children: menuBar.map { $0.body }))
         }
 
         return slots

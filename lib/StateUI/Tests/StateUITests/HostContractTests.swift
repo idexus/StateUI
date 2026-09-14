@@ -194,7 +194,7 @@ final class HostContractTests: XCTestCase {
     func testDerivedLayoutsAndControlsBelongToStateUI() {
         for type in [
             NodeType.checkBox, .ellipse, .grid, .imageButton,
-            .indicatorView, .line, .path, .polygon, .polyline, .radioButton,
+            .positionIndicator, .line, .path, .polygon, .polyline, .radioButton,
             .rectangle, .refreshView, .roundRectangle, .swipeView,
         ] {
             XCTAssertEqual(HostContract.controls[type], .stateUI)
@@ -210,7 +210,7 @@ final class HostContractTests: XCTestCase {
 
     func testProtocolNodesRemainStructural() {
         for type in [
-            NodeType.application, .scene, .window, .overlay, .swipeItem,
+            NodeType.application, .scene, .window, .overlay, .swipeAction,
         ] {
             XCTAssertEqual(HostContract.controls[type], .structure)
         }
@@ -360,6 +360,52 @@ final class HostContractTests: XCTestCase {
             for control in ["Entry", "Editor", "SearchBar"] {
                 XCTAssertFalse(source.contains("struct \(control):"), "\(file) still declares \(control)")
             }
+        }
+    }
+
+    /// Every control speaks in plain words: a box of colour is a `ColorBox`, a
+    /// drawing surface a `Canvas`, the dots beside a carousel a
+    /// `PositionIndicator`, what a swipe reveals a `SwipeAction`, and a menu is
+    /// a `Menu` at any depth - on the bar or inside another - holding
+    /// `MenuItem`s and `MenuSeparator`s.
+    func testControlsSpeakInPlainWords() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let controls = declaredNames(of: "NodeType", in: tokenSource)
+        let events = declaredNames(of: "Event", in: tokenSource)
+        let former = [
+            "BoxView", "GraphicsView", "IndicatorView", "SwipeItem", "SwipeItems",
+            "MenuBarItem", "MenuBarItems", "MenuFlyoutItem", "MenuFlyoutSubItem",
+            "MenuFlyoutSeparator",
+        ]
+
+        XCTAssertTrue(controls.isSuperset(of: [
+            "ColorBox", "Canvas", "PositionIndicator", "SwipeAction", "SwipeActions",
+            "Menu", "MenuBar", "MenuItem", "MenuSeparator",
+        ]))
+        XCTAssertTrue(controls.isDisjoint(with: former), "a control keeps its former name")
+        XCTAssertTrue(events.contains("dragged"))
+        XCTAssertTrue(
+            events.isDisjoint(with: [
+                "startInteraction", "dragInteraction", "endInteraction", "invoked",
+            ]),
+            "a canvas or a swipe action keeps a former event")
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            for control in former {
+                XCTAssertFalse(source.contains("struct \(control):"), "\(file) still declares \(control)")
+            }
+            for name in ["onStartInteraction", "onDragInteraction", "onEndInteraction", "onInvoked"] {
+                XCTAssertFalse(source.contains("func \(name)("), "\(file) still declares .\(name)")
+            }
+            XCTAssertFalse(source.contains("var menuBarItems"), "\(file) still keeps menuBarItems")
         }
     }
 

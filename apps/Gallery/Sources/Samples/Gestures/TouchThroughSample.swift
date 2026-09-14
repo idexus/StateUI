@@ -26,7 +26,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
 
             Grid {
                 // Underneath, and still reachable.
-                BoxView(Palette.accent)
+                ColorBox(Palette.accent)
                     .height(120)
                     .onTapped { below += 1 }
 
@@ -63,7 +63,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Grid {
-                BoxView(Palette.accent)
+                ColorBox(Palette.accent)
                     .height(120)
                     .onTapped { below += 1 }
 

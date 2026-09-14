@@ -205,7 +205,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
     ///
     ///     PlacedLayout(cards, id: \.name) { face($0) }
     ///         .placement($run)
-    ///         .shade(BoxView(.black).cornerRadius(14))
+    ///         .shade(ColorBox(.black).cornerRadius(14))
     ///
     /// One view, built once and drawn over every placed view - so it is a
     /// SHAPE rather than a picture: a shade with the wrong corners shows its

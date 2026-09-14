@@ -373,7 +373,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// goes. This library's own.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
-    ///         .shade(BoxView(Color("#000000")).cornerRadius(14))
+    ///         .shade(ColorBox(Color("#000000")).cornerRadius(14))
     ///
     /// A run of cards puts its far cards behind the one in front, and there are
     /// two ways to say so. Fading is the one this does without: a card faded to
@@ -403,7 +403,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// (as far as the shape says). This library's own.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
-    ///         .shade(BoxView(Color("#000000")).cornerRadius(14))
+    ///         .shade(ColorBox(Color("#000000")).cornerRadius(14))
     ///         .fading(0)
     ///
     /// The whole of what the shape says, unless the gallery was also given a
@@ -999,7 +999,7 @@ private struct Turning: ContentView {
     var content: any View {
         let position = at()
 
-        return BoxView(Color("#00000000"))
+        return ColorBox(Color("#00000000"))
             .width(0)
             .height(0)
             .ignoresInput(true)

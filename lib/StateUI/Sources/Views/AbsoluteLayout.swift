@@ -4,7 +4,7 @@
 /// Puts each child exactly where it is told, and nowhere else.
 ///
 ///     AbsoluteLayout {
-///         BoxView(.cornflowerBlue)
+///         ColorBox(.cornflowerBlue)
 ///             .absoluteLayoutBounds(Rect(0, 0, 1, 1))
 ///             .absoluteLayoutFlags(.all)
 ///

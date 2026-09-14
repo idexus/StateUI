@@ -17,13 +17,13 @@ final class AppKitContextMenuTests: XCTestCase {
             eventSink: { reports.append(($0, $1)) })
         defer { renderer.closeForTesting() }
 
-        var duplicate = HostPatch(id: .manual("duplicate"), type: .menuFlyoutItem)
+        var duplicate = HostPatch(id: .manual("duplicate"), type: .menuItem)
         duplicate.properties[.text] = .string("Duplicate")
         duplicate.events = .replace([.clicked: 40])
-        let separator = HostPatch(id: .manual("separator"), type: .menuFlyoutSeparator)
-        var top = HostPatch(id: .manual("top"), type: .menuFlyoutItem)
+        let separator = HostPatch(id: .manual("separator"), type: .menuSeparator)
+        var top = HostPatch(id: .manual("top"), type: .menuItem)
         top.properties[.text] = .string("To the top")
-        var move = HostPatch(id: .manual("move"), type: .menuFlyoutSubItem)
+        var move = HostPatch(id: .manual("move"), type: .menu)
         move.properties[.text] = .string("Move")
         move.children = .arranged([top])
         var menu = HostPatch(id: .manual("context"), type: .contextMenu)
@@ -52,7 +52,7 @@ final class AppKitContextMenuTests: XCTestCase {
             eventSink: { handler, _ in reports.append(handler) })
         defer { renderer.closeForTesting() }
 
-        var originalItem = HostPatch(id: .manual("item"), type: .menuFlyoutItem)
+        var originalItem = HostPatch(id: .manual("item"), type: .menuItem)
         originalItem.properties[.text] = .string("Rename")
         originalItem.events = .replace([.clicked: 50])
         var originalMenu = HostPatch(id: .manual("context"), type: .contextMenu)
@@ -65,7 +65,7 @@ final class AppKitContextMenuTests: XCTestCase {
         let nativeMenu = try XCTUnwrap(native.menu)
         let nativeItem = try XCTUnwrap(nativeMenu.items.first)
 
-        var changedItem = HostPatch(id: .manual("item"), type: .menuFlyoutItem)
+        var changedItem = HostPatch(id: .manual("item"), type: .menuItem)
         changedItem.properties[.text] = .string("Remove")
         changedItem.events = .replace([.clicked: 51])
         var changedMenu = HostPatch(id: .manual("context"), type: .contextMenu)

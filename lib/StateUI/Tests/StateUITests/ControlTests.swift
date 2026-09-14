@@ -250,8 +250,8 @@ final class ControlTests: XCTestCase {
                     .progress(0.4)
                     .progressColor(.cornflowerBlue)),
 
-            ControlCase("BoxView", source: "BoxView.swift",
-                BoxView(.cornflowerBlue)
+            ControlCase("ColorBox", source: "ColorBox.swift",
+                ColorBox(.cornflowerBlue)
                     .cornerRadius(8)),
 
             ControlCase("Border", source: "Border.swift",
@@ -269,8 +269,8 @@ final class ControlTests: XCTestCase {
                 .strokeLineJoin(.bevel)
                 .strokeMiterLimit(4)),
 
-            ControlCase("IndicatorView", source: "IndicatorView.swift",
-                IndicatorView()
+            ControlCase("PositionIndicator", source: "PositionIndicator.swift",
+                PositionIndicator()
                     .count(3)
                     .position(1)
                     .indicatorColor(.lightGray)
@@ -282,8 +282,8 @@ final class ControlTests: XCTestCase {
 
             // The dots as VIEWS - the second shape the same control takes:
             // the items run the template here, and the host counts them itself.
-            ControlCase("IndicatorDots", source: "IndicatorView.swift",
-                IndicatorView(["one", "two", "three"]) { name in
+            ControlCase("IndicatorDots", source: "PositionIndicator.swift",
+                PositionIndicator(["one", "two", "three"]) { name in
                     Label("*").id(name)
                 }
                 .position(1)),
@@ -315,7 +315,7 @@ final class ControlTests: XCTestCase {
 
             ControlCase("AbsoluteLayout", source: "AbsoluteLayout.swift",
                 AbsoluteLayout {
-                    BoxView(.cornflowerBlue)
+                    ColorBox(.cornflowerBlue)
                         .absoluteLayoutBounds(Rect(0, 0, 1, 0.5))
                         .absoluteLayoutFlags(.all)
 
@@ -410,7 +410,7 @@ final class ControlTests: XCTestCase {
                 .onRefreshing {}),
 
             // Both halves of a swipe: the view, and the items each side reveals.
-            // SwipeItem is not a control of its own - it is an action the swipe
+            // SwipeAction is not a control of its own - it is an action the swipe
             // reveals - so this case is where its modifiers are exercised as
             // well.
             ControlCase("SwipeView", source: "SwipeView.swift",
@@ -422,19 +422,19 @@ final class ControlTests: XCTestCase {
                 .onSwipeChanging { _ in }
                 .onSwipeEnded { _ in }
                 .leftItems {
-                    SwipeItem("Favourite")
+                    SwipeAction("Favourite")
                         .iconImageSource("tab_list.png")
                         .background(.gold)
                         .isDestructive(false)
                         .isEnabled(true)
                         .isVisible(true)
-                        .onInvoked {}
+                        .onClicked {}
                 }
                 .rightItems(mode: .execute, swipeBehaviorOnInvoked: .close) {
-                    SwipeItem("Remove")
+                    SwipeAction("Remove")
                         .text("Delete")
                         .background(.firebrick)
-                        .onInvoked {}
+                        .onClicked {}
                 }),
 
             // The shapes. What they share is the Shape tier, covered once by the
@@ -477,8 +477,8 @@ final class ControlTests: XCTestCase {
 
             // A canvas, and the instructions it draws - every one of them, since
             // the format they travel in is read in one place by a host.
-            ControlCase("GraphicsView", source: "GraphicsView.swift",
-                GraphicsView {
+            ControlCase("Canvas", source: "Canvas.swift",
+                Canvas {
                     Draw.fillColor(.cornflowerBlue)
                     Draw.strokeColor(Color(light: .black, dark: .white))
                     Draw.strokeSize(2)
@@ -515,9 +515,9 @@ final class ControlTests: XCTestCase {
                     Draw.scale(sx: 2, sy: 2)
                     Draw.restoreState()
                 }
-                .onStartInteraction { _ in }
-                .onDragInteraction { _ in }
-                .onEndInteraction { _ in }),
+                .onPressed { _ in }
+                .onDragged { _ in }
+                .onReleased { _ in }),
 
             // The protocol tiers, once, on the three controls it takes to reach all
             // of them: a stack for spacing and padding, a label for text, font and
@@ -1116,7 +1116,7 @@ final class ControlTests: XCTestCase {
     /// event modifier by hand: one that ASSIGNED the handler would let a
     /// second silently replace the first while "every typed event modifier
     /// composes" stood written on Button. A ToolbarItem and a Pin
-    /// stand for the family - MenuFlyoutItem and SwipeItem are the same two
+    /// stand for the family - MenuItem and SwipeAction are the same two
     /// lines.
     func testASecondHandlerOnAnItemRunsBesideTheFirst() {
         var seen: [String] = []

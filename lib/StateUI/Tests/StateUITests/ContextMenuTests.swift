@@ -32,9 +32,9 @@ final class ContextMenuTests: XCTestCase {
             Label("two")
         }
         .contextMenu {
-            MenuFlyoutItem("Rename")
-            MenuFlyoutSeparator()
-            MenuFlyoutSubItem("Move") { MenuFlyoutItem("Up") }
+            MenuItem("Rename")
+            MenuSeparator()
+            Menu("Move") { MenuItem("Up") }
         }
         .body.built
 
@@ -46,7 +46,7 @@ final class ContextMenuTests: XCTestCase {
         let flyout = try XCTUnwrap(node.children.last)
 
         XCTAssertEqual(flyout.children.map { $0.type },
-                       ["MenuFlyoutItem", "MenuFlyoutSeparator", "MenuFlyoutSubItem"])
+                       ["MenuItem", "MenuSeparator", "Menu"])
         XCTAssertEqual(flyout.children.first?.props["text"], .string("Rename"))
         XCTAssertEqual(flyout.children.last?.children.first?.props["text"], .string("Up"))
     }
@@ -59,7 +59,7 @@ final class ContextMenuTests: XCTestCase {
     /// nothing and said nothing.
     func testAMenuOnAComposedViewReachesWhatItIsMadeOf() throws {
         let node = Card()
-            .contextMenu { MenuFlyoutItem("Rename") }
+            .contextMenu { MenuItem("Rename") }
             .body.built
 
         XCTAssertEqual(node.type, "VStack")
@@ -68,7 +68,7 @@ final class ContextMenuTests: XCTestCase {
 
     /// A leaf takes one too: any view can carry a menu.
     func testALeafViewTakesAMenu() throws {
-        let flyout = try XCTUnwrap(menu(Label("row").contextMenu { MenuFlyoutItem("Copy") }))
+        let flyout = try XCTUnwrap(menu(Label("row").contextMenu { MenuItem("Copy") }))
 
         XCTAssertEqual(flyout.children.count, 1)
     }
@@ -83,8 +83,8 @@ final class ContextMenuTests: XCTestCase {
                 Label("row")
             }
             .contextMenu {
-                MenuFlyoutItem("Rename")
-                MenuFlyoutItem(caption)
+                MenuItem("Rename")
+                MenuItem(caption)
             }
             .body
         }
@@ -106,10 +106,10 @@ final class ContextMenuTests: XCTestCase {
         func tree(_ deletable: Bool) -> Node {
             Label("row")
                 .contextMenu {
-                    MenuFlyoutItem("Rename")
+                    MenuItem("Rename")
 
                     if deletable {
-                        MenuFlyoutItem("Delete")
+                        MenuItem("Delete")
                     }
                 }
                 .body
@@ -135,7 +135,7 @@ final class ContextMenuTests: XCTestCase {
             VStack {
                 Label("one")
             }
-            .contextMenu { MenuFlyoutItem("Copy") }
+            .contextMenu { MenuItem("Copy") }
             .body)
 
         XCTAssertTrue(patch.arranged)

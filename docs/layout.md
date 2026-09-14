@@ -52,7 +52,7 @@ rectangle, so it changes the drawing without changing measurement or
 arrangement:
 
 ```swift
-BoxView(.cornflowerBlue)
+ColorBox(.cornflowerBlue)
     .width(80)
     .height(80)
     .transform(.rotate(15).scale(1.1).translate(20, 0))
@@ -158,7 +158,7 @@ being described frame by frame.
 
 ```swift
 AbsoluteLayout {
-    BoxView(.cornflowerBlue)
+    ColorBox(.cornflowerBlue)
         .absoluteLayoutBounds(Rect(0.5, 0.5, 120, 60))
         .absoluteLayoutFlags(.positionProportional)
 }

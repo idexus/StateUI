@@ -724,7 +724,7 @@ final class StyleTests: XCTestCase {
     private struct Tinted: ContentView {
         let tint: Binding<Color>
 
-        var content: any View { BoxView().background(tint) }
+        var content: any View { ColorBox().background(tint) }
     }
 
     /// Counts how often the closure writing a label runs.
@@ -861,7 +861,7 @@ final class StyleTests: XCTestCase {
                 Renders().render(item.body).props["iconImageSource"], .string("tab_list_dark.png"))
         }
 
-        let menu = MenuFlyoutItem("Reset").iconImageSource("menu_reset.png")
+        let menu = MenuItem("Reset").iconImageSource("menu_reset.png")
 
         XCTAssertEqual(menu.node.props["iconImageSource"], .string("menu_reset.png"))
     }

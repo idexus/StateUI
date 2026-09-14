@@ -59,7 +59,7 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `ModalStack` | structure | ✅ | — | — | — | — | — |
 | `Overlay` | structure | ✅ | — | — | — | — | — |
 | `TitleBar` | adaptive shell | ✅ | — | — | — | — | — |
-| `ContextMenu`, `MenuBarItems`, `MenuBarItem`, `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem` | structure | ✅ | — | — | — | — | — |
+| `ContextMenu`, `MenuBar`, `Menu`, `MenuItem`, `MenuSeparator` | structure | ✅ | — | — | — | — | — |
 | `ToolbarItems` / `ToolbarItem` | structure | ✅ | — | — | — | — | — |
 | `AbsoluteLayout` | native primitive | ✅ | — | — | — | — | — |
 | `VStack` / `HStack` | native primitive | ✅ | — | — | — | — | — |
@@ -70,7 +70,7 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `Button` | native primitive | ✅ | — | — | — | — | — |
 | `ImageButton` | StateUI-owned composition contract | ✅ | — | — | — | — | — |
 | `Image` | native primitive | ✅ | — | — | — | — | — |
-| `BoxView` | native primitive | ✅ | — | — | — | — | — |
+| `ColorBox` | native primitive | ✅ | — | — | — | — | — |
 | `TextField` | native primitive | ✅ | — | — | — | — | — |
 | `TextEditor` | native primitive | ✅ | — | — | — | — | — |
 | `SearchField` | native primitive | ✅ | — | — | — | — | — |
@@ -84,13 +84,13 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `Stepper` | native primitive | ✅ | — | — | — | — | — |
 | `ProgressBar` | native primitive | ✅ | — | — | — | — | — |
 | `ActivityIndicator` | native primitive | ✅ | — | — | — | — | — |
-| `GraphicsView` | native drawing primitive | ✅ | — | — | — | — | — |
+| `Canvas` | native drawing primitive | ✅ | — | — | — | — | — |
 | `Rectangle` / `RoundRectangle` / `Ellipse` | StateUI-owned drawing contract | ✅ | — | — | — | — | — |
 | `Line` / `Path` / `Polygon` / `Polyline` | StateUI-owned drawing contract | ✅ | — | — | — | — | — |
-| `IndicatorView` | StateUI-owned composition | — | — | — | — | — | — |
+| `PositionIndicator` | StateUI-owned composition | — | — | — | — | — | — |
 | `RefreshView` | StateUI-owned interaction | — | — | — | — | — | — |
 | `SwipeView` | StateUI-owned interaction | — | — | — | — | — | — |
-| `SwipeItems` / `SwipeItem` | structure | — | — | — | — | — | — |
+| `SwipeActions` / `SwipeAction` | structure | — | — | — | — | — | — |
 | `WebView` | native primitive | — | — | — | — | — | — |
 | `Map` / `Pin` | optional provider | — | — | — | — | — | — |
 | `ItemsView` (planned) | native primitive | — | — | — | — | — | — |
@@ -149,7 +149,7 @@ may still choose another class that preserves the same contract.
 | `ModalStack` | sheet `NSWindow` | `present(_:animated:)` | modal `GtkWindow`; libadwaita `AdwDialog` | full-screen `Dialog` (?) | `ContentDialog` (?) | `<dialog>` with `showModal()` |
 | `Overlay` | pass-through `NSView` above the page | pass-through `UIView` above the page | `GtkOverlay` | top child of a `FrameLayout` | top layer of a root `Grid` | positioned element above the page |
 | `TitleBar` | slots in `NSToolbar`; title in a trailing `NSTitlebarAccessoryViewController` | — | `GtkHeaderBar` | — | `TitleBar` | — |
-| `ContextMenu`, `MenuBarItems`, `MenuBarItem`, `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction` | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | `PopupMenu` / `MenuItem`; no menu bar | `MenuFlyout` / `MenuBar` | ARIA `menu` / `menubar` (?) |
+| `ContextMenu`, `MenuBar`, `Menu`, `MenuItem`, `MenuSeparator` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction` | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | `PopupMenu` / `MenuItem`; no menu bar | `MenuFlyout` / `MenuBar` | ARIA `menu` / `menubar` (?) |
 | `ToolbarItems` / `ToolbarItem` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItem` | `GtkButton` in `GtkHeaderBar` | `Toolbar` `MenuItem` | `CommandBar` `AppBarButton` | `<button>` in an ARIA `toolbar` |
 | `AbsoluteLayout` | custom `NSView` | custom `UIView` | `GtkFixed` | custom `ViewGroup` | `Canvas` | `position: absolute` |
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | `GtkBox` | custom `ViewGroup` | `StackPanel` | flexbox |
@@ -160,7 +160,7 @@ may still choose another class that preserves the same contract.
 | `Button` | `NSButton` | `UIButton` | `GtkButton` | `Button` | `Button` | `<button>` |
 | `ImageButton` | `NSButton` with an image | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
 | `Image` | `NSImageView` | `UIImageView` | `GtkPicture` | `ImageView` | `Image` | `<img>` |
-| `BoxView` | custom `NSView` drawing | `UIView` + `CALayer` | custom `GtkWidget` snapshot | `View` + `GradientDrawable` | `Border` | `<div>` |
+| `ColorBox` | custom `NSView` drawing | `UIView` + `CALayer` | custom `GtkWidget` snapshot | `View` + `GradientDrawable` | `Border` | `<div>` |
 | `TextField` | `NSTextField` / `NSSecureTextField` | `UITextField` | `GtkEntry` / `GtkPasswordEntry` | `EditText` | `TextBox` / `PasswordBox` | `<input>` |
 | `TextEditor` | `NSTextView` in an `NSScrollView` | `UITextView` | `GtkTextView` | multi-line `EditText` | multi-line `TextBox` | `<textarea>` |
 | `SearchField` | `NSSearchField` | `UISearchBar` | `GtkSearchEntry` | `SearchView` | `AutoSuggestBox` | `<input type=search>` |
@@ -174,13 +174,13 @@ may still choose another class that preserves the same contract.
 | `Stepper` | `NSStepper` | `UIStepper` | `GtkSpinButton` | custom `NumberPicker`-based view | `NumberBox` | `<input type=number>` |
 | `ProgressBar` | `NSProgressIndicator` bar | `UIProgressView` | `GtkProgressBar` | horizontal `ProgressBar` | `ProgressBar` | `<progress>` |
 | `ActivityIndicator` | spinning `NSProgressIndicator` | `UIActivityIndicatorView` | `GtkSpinner` | indeterminate `ProgressBar` | `ProgressRing` | indeterminate `<progress>` |
-| `GraphicsView` | custom `NSView` drawing | `UIView` `draw(_:)` | `GtkDrawingArea` | `View` `onDraw(Canvas)` | Win2D `CanvasControl` (?) | `<canvas>` |
+| `Canvas` | custom `NSView` drawing | `UIView` `draw(_:)` | `GtkDrawingArea` | `View` `onDraw(Canvas)` | Win2D `CanvasControl` (?) | `<canvas>` |
 | `Rectangle` / `RoundRectangle` / `Ellipse` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `GskPath` in a snapshot | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | inline SVG |
 | `Line` / `Path` / `Polygon` / `Polyline` | `NSView` drawing `NSBezierPath` | `UIView` drawing `UIBezierPath` | `GskPath` in a snapshot | `View` drawing `Path` | `Microsoft.UI.Xaml.Shapes` | inline SVG |
-| `IndicatorView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
+| `PositionIndicator` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
 | `RefreshView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
 | `SwipeView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
-| `SwipeItems` / `SwipeItem` | structure | structure | structure | structure | structure | structure |
+| `SwipeActions` / `SwipeAction` | structure | structure | structure | structure | structure | structure |
 | `WebView` | `WKWebView` | `WKWebView` | WebKitGTK `WebKitWebView` | `WebView` | `WebView2` | `<iframe>` (?) |
 | `Map` / `Pin` | `MKMapView` / `MKAnnotation` | `MKMapView` / `MKAnnotation` | libshumate `ShumateMap` / `ShumateMarker` | Google Play services `MapView` / `Marker` (?) | `MapControl` (?) | — |
 | `ItemsView` (planned) | `NSCollectionView` / `NSTableView` | `UICollectionView` | `GtkListView` / `GtkGridView` | AndroidX `RecyclerView` | `ItemsView` | semantic list or grid |
@@ -208,8 +208,8 @@ These surfaces lack an honest native counterpart on at least one target:
 - `TimePicker`: GTK 4 has no time picker.
 - `Switch`: Web has no switch element.
 - `ActivityIndicator`: Web has no spinner; an indeterminate `<progress>` draws a bar.
-- `GraphicsView`: WinUI 3 has no immediate-mode canvas without Win2D.
-- `IndicatorView`: AppKit, Android Views, and Web have no page indicator.
+- `Canvas`: WinUI 3 has no immediate-mode canvas without Win2D.
+- `PositionIndicator`: AppKit, Android Views, and Web have no page indicator.
 - `RefreshView`: AppKit, GTK 4, and Web have no pull-to-refresh control.
 - `SwipeView`: AppKit, UIKit, GTK 4, Android Views, and Web have no standalone swipe-action container.
 - `WebView`: GTK 4 depends on WebKitGTK; Web cannot observe navigation or set a user agent in a cross-origin `<iframe>`.
@@ -338,7 +338,7 @@ token in parentheses.
 | `ImageButton` | properties | `source`, `aspect`, `padding`, `borderColor`, `borderWidth`, `cornerRadius` | ✅ | — | — | — | — | — |
 | `ImageButton` | handlers | `onClicked` (`clicked`), `onPressed` (`pressed`), `onReleased` (`released`) | ✅ | — | — | — | — | — |
 | `Image` | properties | `source`, `aspect`, `isAnimationPlaying` | ✅ | — | — | — | — | — |
-| `BoxView` | properties | `color`, `cornerRadius` | ✅ | — | — | — | — | — |
+| `ColorBox` | properties | `color`, `cornerRadius` | ✅ | — | — | — | — | — |
 | text inputs | properties | two-way `text`, `placeholder`, `placeholderColor`, `textColor`, `fontSize`, `fontFamily`, `fontAttributes`, `horizontalTextAlignment`, `isReadOnly`, `maximumLength`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `cursorPosition`, `selectionLength` | ✅ | — | — | — | — | — |
 | text inputs | properties | `inputPurpose`, `verticalTextAlignment`, `characterSpacing`, `textCase`, `fontAutoScalingEnabled` | — | — | — | — | — | — |
 | text inputs | handlers | `onTextChanged` (`textChanged`) | ✅ | — | — | — | — | — |
@@ -370,17 +370,17 @@ token in parentheses.
 | `ProgressBar` | properties | `progressColor` | — | — | — | — | — | — |
 | `ActivityIndicator` | properties | `isRunning` | ✅ | — | — | — | — | — |
 | `ActivityIndicator` | properties | `color` | — | — | — | — | — | — |
-| `GraphicsView` | properties/events | `drawable`, `onStartInteraction` (`startInteraction`), `onDragInteraction` (`dragInteraction`), `onEndInteraction` (`endInteraction`) | ✅ | — | — | — | — | — |
+| `Canvas` | properties/events | `drawable`, `onPressed` (`pressed`), `onDragged` (`dragged`), `onReleased` (`released`) | ✅ | — | — | — | — | — |
 | shapes | properties | `fill`, `stroke`, `strokeThickness`, `strokeDashArray`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `aspect`, `renderTransform` | — | — | — | — | — | — |
 | `Rectangle` | properties | `radiusX`, `radiusY` | — | — | — | — | — | — |
 | `RoundRectangle` | properties | `cornerRadius` | — | — | — | — | — | — |
 | `Line` | properties | `x1`, `y1`, `x2`, `y2` | ✅ | — | — | — | — | — |
 | `Path` | properties | `data` | ✅ | — | — | — | — | — |
 | `Polygon` / `Polyline` | properties | `points`, `fillRule` | ✅ | — | — | — | — | — |
-| `IndicatorView` | properties | `count`, `position`, `indicatorColor`, `selectedIndicatorColor`, `indicatorSize`, `maximumVisible`, `indicatorsShape`, `hideSingle` | — | — | — | — | — | — |
+| `PositionIndicator` | properties | `count`, `position`, `indicatorColor`, `selectedIndicatorColor`, `indicatorSize`, `maximumVisible`, `indicatorsShape`, `hideSingle` | — | — | — | — | — | — |
 | `RefreshView` | properties/events | two-way `isRefreshing`, `isRefreshEnabled`, `refreshColor`, `onRefreshing` (`refreshing`) | — | — | — | — | — | — |
 | `SwipeView` | properties/events | `threshold`, item `side`, `swipeBehaviorOnInvoked`, `onSwipeStarted` (`swipeStarted`), `onSwipeChanging` (`swipeChanging`), `onSwipeEnded` (`swipeEnded`) | — | — | — | — | — | — |
-| `SwipeItem` | properties/events | `text`, `iconImageSource`, `background`, `isDestructive`, `isEnabled`, `isVisible`, `onInvoked` (`invoked`) | — | — | — | — | — | — |
+| `SwipeAction` | properties/events | `text`, `iconImageSource`, `background`, `isDestructive`, `isEnabled`, `isVisible`, `onClicked` (`clicked`) | — | — | — | — | — | — |
 | `RefreshView` | state event | `isRefreshingChanged` | — | — | — | — | — | — |
 | `WebView` | properties/events | `source`, `userAgent`, `canGoBackChanged`, `canGoForwardChanged` | — | — | — | — | — | — |
 | `WebView` | handlers | `onNavigating` (`navigating`), `onNavigated` (`navigated`), `onProcessTerminated` (`processTerminated`) | — | — | — | — | — | — |
@@ -402,18 +402,18 @@ host status.
 
 ### Controls and structural nodes
 
-`AbsoluteLayout`, `ActivityIndicator`, `Application`, `Border`, `BoxView`,
-`Button`, `CheckBox`, `Composed`, `Content`, `ContextMenu`, `DatePicker`,
-`Ellipse`, `GraphicsView`, `Grid`, `HStack`, `Image`, `ImageButton`,
-`IndicatorView`, `Label`, `LeadingContent`, `Line`, `Map`, `MenuBarItem`,
-`MenuBarItems`, `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem`,
-`ModalStack`, `NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`,
-`Polygon`, `Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`,
-`RefreshView`, `RoundRectangle`, `Scene`, `ScrollView`, `SearchField`,
-`Setters`, `Slider`, `Span`, `Spans`, `SplitView`, `Stepper`, `SwipeItem`,
-`SwipeItems`, `SwipeView`, `Switch`, `TabbedView`, `TextEditor`, `TextField`,
-`TimePicker`, `TitleBar`, `TitleView`, `ToolbarItem`, `ToolbarItems`,
-`TrailingContent`, `VisualState`, `VStack`, `WebView`, `Window`.
+`AbsoluteLayout`, `ActivityIndicator`, `Application`, `Border`, `Button`,
+`Canvas`, `CheckBox`, `ColorBox`, `Composed`, `Content`, `ContextMenu`,
+`DatePicker`, `Ellipse`, `Grid`, `HStack`, `Image`, `ImageButton`, `Label`,
+`LeadingContent`, `Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`,
+`MenuSeparator`, `ModalStack`, `NavigationStack`, `Overlay`, `Page`, `Path`,
+`Picker`, `Pin`, `Polygon`, `Polyline`, `PositionIndicator`, `ProgressBar`,
+`RadioButton`, `Rectangle`, `RefreshView`, `RoundRectangle`, `Scene`,
+`ScrollView`, `SearchField`, `Setters`, `Slider`, `Span`, `Spans`, `SplitView`,
+`Stepper`, `SwipeAction`, `SwipeActions`, `SwipeView`, `Switch`, `TabbedView`,
+`TextEditor`, `TextField`, `TimePicker`, `TitleBar`, `TitleView`,
+`ToolbarItem`, `ToolbarItems`, `TrailingContent`, `VisualState`, `VStack`,
+`WebView`, `Window`.
 
 ### Properties
 
@@ -467,16 +467,15 @@ host status.
 `activated`, `appearing`, `canGoBackChanged`, `canGoForwardChanged`,
 `checkedChanged`, `clicked`, `closed`, `created`, `currentPageChanged`,
 `dateSelected`, `deactivated`, `destroying`, `disappearing`, `dragCompleted`,
-`dragInteraction`, `dragLeave`, `dragOver`, `dragStarted`, `dragStarting`,
-`drop`, `dropCompleted`, `endInteraction`, `frameChanged`, `infoWindowClicked`,
-`invoked`, `isFocusedChanged`, `isRefreshingChanged`,
-`isSidebarVisibleChanged`, `mapClicked`, `markerClicked`, `modalPopped`,
-`navigated`, `navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`,
-`opened`, `panUpdated`, `pinchUpdated`, `pointerEntered`, `pointerExited`,
-`pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`, `pressed`,
-`processTerminated`, `refreshing`, `released`, `resumed`, `scrollStopped`,
-`scrollXChanged`, `scrollYChanged`, `selectedIndexChanged`, `snapItemChanged`,
-`startInteraction`, `stopped`, `submitted`, `swipeChanging`, `swiped`,
-`swipeEnded`, `swipeStarted`, `tapped`, `textChanged`, `timeSelected`,
-`toggled`, `valueChanged`, `visualStateChanged`, `windowClosed`,
-`windowRestored`.
+`dragged`, `dragLeave`, `dragOver`, `dragStarted`, `dragStarting`, `drop`,
+`dropCompleted`, `frameChanged`, `infoWindowClicked`, `isFocusedChanged`,
+`isRefreshingChanged`, `isSidebarVisibleChanged`, `mapClicked`,
+`markerClicked`, `modalPopped`, `navigated`, `navigatedFrom`, `navigatedTo`,
+`navigating`, `navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`,
+`pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
+`pointerReleased`, `popped`, `pressed`, `processTerminated`, `refreshing`,
+`released`, `resumed`, `scrollStopped`, `scrollXChanged`, `scrollYChanged`,
+`selectedIndexChanged`, `snapItemChanged`, `stopped`, `submitted`,
+`swipeChanging`, `swiped`, `swipeEnded`, `swipeStarted`, `tapped`,
+`textChanged`, `timeSelected`, `toggled`, `valueChanged`, `visualStateChanged`,
+`windowClosed`, `windowRestored`.

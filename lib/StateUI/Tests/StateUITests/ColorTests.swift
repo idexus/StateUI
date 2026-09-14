@@ -102,7 +102,7 @@ final class ColorTests: XCTestCase {
     /// its half as the element holding the drawing is built.
     func testADrawingWritesEachColourAsItsFourChannels() {
         func drawn() -> PropValue? {
-            GraphicsView { Draw.fillColor(Color(light: Color("#6495ED"), dark: .black)) }
+            Canvas { Draw.fillColor(Color(light: Color("#6495ED"), dark: .black)) }
                 .body.props[.drawable]?.resolvingTheme()
         }
 

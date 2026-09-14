@@ -77,7 +77,7 @@ final class ElementReleaseTests: XCTestCase {
         XCTAssertTrue(released { renders in
             let fade = State(1.0)
 
-            renders.render(stack([BoxView().opacity(fade.projectedValue).body], id: "root"))
+            renders.render(stack([ColorBox().opacity(fade.projectedValue).body], id: "root"))
             return fade.storage
         })
     }

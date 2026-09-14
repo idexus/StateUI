@@ -46,7 +46,7 @@ struct MotionSample: SampleContent, ExampleContent {
             // the rest.
             DebugInfoLabel()
 
-            BoxView()
+            ColorBox()
                 .color(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(wide ? 120 : 60)
@@ -54,7 +54,7 @@ struct MotionSample: SampleContent, ExampleContent {
                 .motion(Self.law(law))
 
             // The same panel, told to stay still. `.motion` is per view.
-            BoxView()
+            ColorBox()
                 .color(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(wide ? 120 : 60)
@@ -64,7 +64,7 @@ struct MotionSample: SampleContent, ExampleContent {
             // And the same panel again, with a rule: everything travels
             // EXCEPT how big it is, which arrives. The last rule that names a
             // value is the one that answers for it.
-            BoxView()
+            ColorBox()
                 .color(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(wide ? 120 : 60)
@@ -117,7 +117,7 @@ struct MotionSample: SampleContent, ExampleContent {
 
     /// One panel, either travelling at the chosen law or arriving at once.
     private func panel(travels: Bool) -> any View {
-        BoxView()
+        ColorBox()
             .color(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
             .height(wide ? 110 : 56)
@@ -128,7 +128,7 @@ struct MotionSample: SampleContent, ExampleContent {
 
     /// The same panel with a RULE: everything travels except how big it is.
     private func sized() -> any View {
-        BoxView()
+        ColorBox()
             .color(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
             .height(wide ? 110 : 56)

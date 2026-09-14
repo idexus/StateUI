@@ -3,16 +3,16 @@
 
 // A host-native rectangle primitive.
 
-/// A box's own properties - the half a `Style<BoxView>` shares with the
+/// A box's own properties - the half a `Style<ColorBox>` shares with the
 /// control, beside what its tiers already carry. The control conforms on
 /// the element side and the style on the property side, which is what
 /// makes the same modifiers compile on both.
-public protocol BoxViewProperties: PropertyContainer {}
+public protocol ColorBoxProperties: PropertyContainer {}
 
-extension BoxViewProperties {
+extension ColorBoxProperties {
     /// What the rectangle is filled with.
     ///
-    /// Not `.background`: a BoxView carries both, and this is the one it
+    /// Not `.background`: a ColorBox carries both, and this is the one it
     /// draws - the background is a second surface behind it, which the corner
     /// radius does not round and which need not share the box's transform.
     /// A rotated box that carries both shows the background standing still
@@ -32,7 +32,7 @@ extension BoxViewProperties {
 
     /// One corner at a time, in StateUI's declared order.
     ///
-    ///     BoxView().cornerRadius(topLeft: 16, topRight: 16, bottomLeft: 0, bottomRight: 0)
+    ///     ColorBox().cornerRadius(topLeft: 16, topRight: 16, bottomLeft: 0, bottomRight: 0)
     ///
     /// - Parameters:
     ///   - topLeft: the top left corner.
@@ -51,7 +51,7 @@ extension BoxViewProperties {
 
 /// A host-native rectangle of colour.
 ///
-///     BoxView()
+///     ColorBox()
 ///         .color(.cornflowerBlue)
 ///         .cornerRadius(8)
 ///         .height(40)
@@ -59,19 +59,19 @@ extension BoxViewProperties {
 /// The simplest thing a host draws: a divider, a bar of a chart, a placeholder,
 /// or a deliberate piece of empty space. It has no content and no children -
 /// for a coloured area around something, use a `Border`.
-public struct BoxView: View, BoxViewProperties {
+public struct ColorBox: View, ColorBoxProperties {
     /// The node this control describes.
     public var node: Node
 
-    /// An empty one - what a `Style<BoxView>` is written against.
+    /// An empty one - what a `Style<ColorBox>` is written against.
     public init() {
-        node = Node(type: .boxView)
+        node = Node(type: .colorBox)
     }
 
     /// A rectangle drawn in `color`. Sized by `.width` and
     /// `.height`, or by the room the layout gives it.
     public init(_ color: Color) {
-        node = Node(type: .boxView, props: [.color: color.propValue])
+        node = Node(type: .colorBox, props: [.color: color.propValue])
     }
 
 }

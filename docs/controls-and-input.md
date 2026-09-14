@@ -13,7 +13,7 @@ The value that gives a control its purpose belongs in its initializer:
 Label("Account")
 Button("Save")
 Image("avatar.png")
-BoxView(.cornflowerBlue)
+ColorBox(.cornflowerBlue)
 ```
 
 Optional capabilities are modifiers:
@@ -72,7 +72,7 @@ hands the state channel to the host instead:
 @State var volume = 0.5
 
 Slider($volume)
-BoxView(.cornflowerBlue).scaleX($volume)
+ColorBox(.cornflowerBlue).scaleX($volume)
 ```
 
 Passing `$volume` does not make the body a reader. Native input and program
@@ -225,7 +225,7 @@ host. Their presence in the Swift module is not a support claim:
 | `Map` | provider-owned native map; initial region in the declaration; pins and tap reports; later region changes through an aim |
 | `RefreshView` | one scrollable child; a pull writes `true` before `onRefreshing`; application work clears the two-way refreshing state |
 | `SwipeView` | one content view; directional action collections; reveal or execute behavior; started, changing, and ended reports |
-| `IndicatorView` | display-only count and current position with native indicator appearance |
+| `PositionIndicator` | display-only count and current position with native indicator appearance |
 
 `Map` is provider-owned because credentials, map engines, permissions, and
 feature sets are not one base-platform primitive. The other candidates enter

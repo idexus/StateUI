@@ -99,7 +99,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 // the movement.
                 DebugInfoLabel()
 
-                IndicatorView()
+                PositionIndicator()
                     .count(cards.count)
                     .position(shown)
 
@@ -143,7 +143,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             // depth is a shade drawn OVER the card. It wears the card's own
             // corners, which is why the view is the application's to give.
             // `.fading(_:)` says how much fade is left beside it.
-            return run.shade(BoxView(Color("#000000")).cornerRadius(16))
+            return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
         }
 
         private func face(_ card: Card) -> any View {
@@ -166,7 +166,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         // over, which a stack cannot give a child - and a gallery wants it all.
         Grid {
             Grid {
-                BoxView(Palette.raised)
+                ColorBox(Palette.raised)
                     .cornerRadius(14)
 
                 gallery
@@ -194,7 +194,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 // the movement.
                 DebugInfoLabel()
 
-                IndicatorView()
+                PositionIndicator()
                     .count(Self.cards.count)
                     .position(shown)
                     .indicatorColor(Palette.outline)
@@ -263,7 +263,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
 
         guard shaded else { return run }
 
-        return run.shade(BoxView(Color("#000000")).cornerRadius(16))
+        return run.shade(ColorBox(Color("#000000")).cornerRadius(16))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where
@@ -306,7 +306,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 + "the cards take a drag of their own. `.position($shown)` is which "
                 + "one, written as the reader moves and glided to when it is assigned - "
                 + "which is what Back and Next do. The dots under the cards are an "
-                + "`IndicatorView` reading the same `@State`: neither control names the "
+                + "`PositionIndicator` reading the same `@State`: neither control names the "
                 + "other, and one number joins them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -320,7 +320,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Shaded` is `.shade(BoxView(Color(\"#000000\")).cornerRadius(16))`: "
+            Label("`Shaded` is `.shade(ColorBox(Color(\"#000000\")).cornerRadius(16))`: "
                 + "the cards away from the middle are DARKENED by a view drawn over them "
                 + "rather than faded. Turn it off and watch a far card go transparent - "
                 + "what shows through is the card behind it. The shade is a view because "

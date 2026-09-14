@@ -7,10 +7,10 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-final class AppKitGraphicsViewTests: XCTestCase {
+final class AppKitCanvasViewTests: XCTestCase {
     @MainActor
     func testEveryDrawingCommandDecodesInAuthoredOrder() throws {
-        let element = GraphicsView {
+        let element = Canvas {
             Draw.fillColor(.red)
             Draw.strokeColor(.blue)
             Draw.fontColor(.white)
@@ -40,7 +40,7 @@ final class AppKitGraphicsViewTests: XCTestCase {
             Draw.restoreState()
         }
         let value = try XCTUnwrap(element.node.props[.drawable])
-        let view = AppKitGraphicsView()
+        let view = AppKitCanvasView()
 
         view.apply(value)
 
@@ -49,11 +49,11 @@ final class AppKitGraphicsViewTests: XCTestCase {
 
     @MainActor
     func testFillCommandsRenderIntoTheNativeBitmap() throws {
-        let element = GraphicsView {
+        let element = Canvas {
             Draw.fillColor(.red)
             Draw.fillRectangle(x: 10, y: 10, width: 20, height: 20)
         }
-        let view = AppKitGraphicsView()
+        let view = AppKitCanvasView()
         view.frame = NSRect(x: 0, y: 0, width: 40, height: 40)
         view.apply(try XCTUnwrap(element.node.props[.drawable]))
 
@@ -65,15 +65,15 @@ final class AppKitGraphicsViewTests: XCTestCase {
 
     @MainActor
     func testPointerPhasesReportCanvasCoordinatesExactlyOnce() {
-        let view = AppKitGraphicsView()
+        let view = AppKitCanvasView()
         var reports: [(Int, NSPoint)] = []
-        view.onStartInteraction = { reports.append((0, $0)) }
-        view.onDragInteraction = { reports.append((1, $0)) }
-        view.onEndInteraction = { reports.append((2, $0)) }
+        view.onPressed = { reports.append((0, $0)) }
+        view.onDragged = { reports.append((1, $0)) }
+        view.onReleased = { reports.append((2, $0)) }
 
-        view.startInteractionForTesting(at: NSPoint(x: 2, y: 3))
-        view.dragInteractionForTesting(at: NSPoint(x: 5, y: 7))
-        view.endInteractionForTesting(at: NSPoint(x: 11, y: 13))
+        view.pressForTesting(at: NSPoint(x: 2, y: 3))
+        view.dragForTesting(at: NSPoint(x: 5, y: 7))
+        view.releaseForTesting(at: NSPoint(x: 11, y: 13))
 
         XCTAssertEqual(reports.map(\.0), [0, 1, 2])
         XCTAssertEqual(reports.map(\.1), [
@@ -89,24 +89,24 @@ final class AppKitGraphicsViewTests: XCTestCase {
             presentsWindows: false,
             eventSink: { reports.append(($0, $1)) })
         defer { renderer.closeForTesting() }
-        let element = GraphicsView {
+        let element = Canvas {
             Draw.fillColor(.blue)
             Draw.fillEllipse(x: 0, y: 0, width: 20, height: 20)
         }
-        var canvas = HostPatch(id: .manual("canvas"), type: .graphicsView)
+        var canvas = HostPatch(id: .manual("canvas"), type: .canvas)
         canvas.properties[.drawable] = try XCTUnwrap(element.node.props[.drawable])
         canvas.events = .replace([
-            .startInteraction: 10,
-            .dragInteraction: 11,
-            .endInteraction: 12,
+            .pressed: 10,
+            .dragged: 11,
+            .released: 12,
         ])
 
         renderer.applyForTesting(tree(canvas))
         let native = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("canvas")) as? AppKitGraphicsView)
-        native.startInteractionForTesting(at: NSPoint(x: 3, y: 4))
-        native.dragInteractionForTesting(at: NSPoint(x: 5, y: 6))
-        native.endInteractionForTesting(at: NSPoint(x: 7, y: 8))
+            renderer.viewForTesting(id: .manual("canvas")) as? AppKitCanvasView)
+        native.pressForTesting(at: NSPoint(x: 3, y: 4))
+        native.dragForTesting(at: NSPoint(x: 5, y: 6))
+        native.releaseForTesting(at: NSPoint(x: 7, y: 8))
 
         XCTAssertEqual(native.commandKindsForTesting, [0, 14])
         XCTAssertEqual(reports.map(\.0), [10, 11, 12])

@@ -45,7 +45,7 @@ struct PanSample: SampleContent, ExampleContent {
             // A fixed box for it to move inside, so the layout does not follow
             // the view about.
             Border {
-                BoxView(Palette.accent)
+                ColorBox(Palette.accent)
                     .width(64)
                     .height(64)
                     // DRIVEN, both of them.
@@ -112,7 +112,7 @@ struct PanSample: SampleContent, ExampleContent {
             // A fixed box for it to move inside, so the layout does not follow
             // the view about.
             Border {
-                BoxView(Palette.accent)
+                ColorBox(Palette.accent)
                     .cornerRadius(10)
                     .width(64)
                     .height(64)

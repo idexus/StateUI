@@ -151,7 +151,7 @@ private struct LayerCost: ExampleContent {
                 let began = ContinuousClock.now
 
                 ForEach(Array(0 ..< leaves), id: \\.self) { _ in
-                    BoxView().width(7).height(7)
+                    ColorBox().width(7).height(7)
                 }
 
                 Label("Counter \\(counter)")
@@ -167,7 +167,7 @@ private struct LayerCost: ExampleContent {
                 let began = ContinuousClock.now
 
                 ForEach(Array(0 ..< leaves), id: \\.self) { _ in
-                    BoxView().width(7).height(7)
+                    ColorBox().width(7).height(7)
                 }
 
                 Label($counter.convert { "Counter \\($0)" })
@@ -274,7 +274,7 @@ private struct Described: ContentView {
             let began = ContinuousClock.now
 
             ForEach(Array(0 ..< leaves), id: \.self) { index in
-                BoxView()
+                ColorBox()
                     .width(7)
                     .height(14)
                     .cornerRadius(2)
@@ -312,7 +312,7 @@ private struct Channelled: ContentView {
             let began = ContinuousClock.now
 
             ForEach(Array(0 ..< leaves), id: \.self) { index in
-                BoxView()
+                ColorBox()
                     .width(7)
                     .height(14)
                     .cornerRadius(2)

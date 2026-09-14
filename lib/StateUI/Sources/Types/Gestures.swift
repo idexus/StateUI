@@ -155,7 +155,7 @@ extension Array where Element == Point {
 
 /// One report from a pan - what `.onPanUpdated` hands its handler.
 ///
-///     BoxView(.cornflowerBlue)
+///     ColorBox(.cornflowerBlue)
 ///         .translationX(offsetX)
 ///         .onPanUpdated { pan in
 ///             if pan.status == .running { offsetX = pan.totalX }

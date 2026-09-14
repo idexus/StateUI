@@ -18,7 +18,7 @@ struct AbsoluteLayoutSample: SampleContent, ExampleContent {
 
                 // 1 by 1 with .all means "as big as the layout", whatever the
                 // layout turns out to be.
-                BoxView(Palette.outline)
+                ColorBox(Palette.outline)
                     .absoluteLayoutBounds(Rect(0, 0, 1, 1))
                     .absoluteLayoutFlags(.all)
 
@@ -75,7 +75,7 @@ struct AbsoluteLayoutSample: SampleContent, ExampleContent {
             AbsoluteLayout {
                 // The whole area, as a fraction of it: 1 by 1 with .all means
                 // "as big as the layout", whatever the layout turns out to be.
-                BoxView(Palette.outline)
+                ColorBox(Palette.outline)
                     .absoluteLayoutBounds(Rect(0, 0, 1, 1))
                     .absoluteLayoutFlags(.all)
 

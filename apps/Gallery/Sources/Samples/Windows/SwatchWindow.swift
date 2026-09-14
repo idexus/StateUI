@@ -25,7 +25,7 @@ struct SwatchPage: ContentView {
 
     var content: any View {
         VStack {
-            BoxView()
+            ColorBox()
                 .color(SwatchPage.colour(of: number))
                 .height(150)
                 .cornerRadius(12)

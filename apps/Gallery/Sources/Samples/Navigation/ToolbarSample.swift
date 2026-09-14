@@ -62,19 +62,19 @@ struct ToolbarSample: SampleContent, ExampleContent {
             ]
         }
 
-        private var menus: [MenuBarItem] {
+        private var menus: [Menu] {
             [
-                MenuBarItem("File") {
-                    MenuFlyoutItem("Save")
+                Menu("File") {
+                    MenuItem("Save")
                         .id("save")
                         .onClicked { saved += 1 }
 
-                    MenuFlyoutSeparator()
+                    MenuSeparator()
                         .id("line")
 
-                    MenuFlyoutSubItem("Recent") {
+                    Menu("Recent") {
                         ForEach(recent) { file in
-                            MenuFlyoutItem(file)
+                            MenuItem(file)
                                 .id(file)
                                 .onClicked { recent.removeAll { $0 == file } }
                         }
@@ -106,11 +106,11 @@ struct ToolbarSample: SampleContent, ExampleContent {
             .onCreated {
                 chrome = page.toolbarItems      // what the page put there first
                 page.toolbarItems = items + chrome
-                page.menuBarItems = menus
+                page.menuBar = menus
             }
             .onChanged(addFirst) { page.toolbarItems = items + chrome }
             .onChanged(saved) { page.toolbarItems = items + chrome }
-            .onChanged(recent) { page.menuBarItems = menus }
+            .onChanged(recent) { page.menuBar = menus }
         }
         """
 
@@ -143,19 +143,19 @@ struct ToolbarSample: SampleContent, ExampleContent {
     }
 
     /// And the desktop menu bar's File menu.
-    private var menus: [MenuBarItem] {
+    private var menus: [Menu] {
         [
-            MenuBarItem("File") {
-                MenuFlyoutItem("Save")
+            Menu("File") {
+                MenuItem("Save")
                     .id("save")
                     .onClicked { saved += 1 }
 
-                MenuFlyoutSeparator()
+                MenuSeparator()
                     .id("line")
 
-                MenuFlyoutSubItem("Recent") {
+                Menu("Recent") {
                     ForEach(recent) { file in
-                        MenuFlyoutItem(file)
+                        MenuItem(file)
                             .id(file)
                             .onClicked { recent.removeAll { $0 == file } }
                     }
@@ -204,14 +204,14 @@ struct ToolbarSample: SampleContent, ExampleContent {
         .onCreated {
             chrome = page.toolbarItems
             page.toolbarItems = items + chrome
-            page.menuBarItems = menus
+            page.menuBar = menus
         }
         // What they say follows the state, so they are written again when it
         // moves: `saved` decides whether Clear can be pressed, `addFirst` the
         // priorities, `recent` the submenu.
         .onChanged(addFirst) { page.toolbarItems = items + chrome }
         .onChanged(saved) { page.toolbarItems = items + chrome }
-        .onChanged(recent) { page.menuBarItems = menus }
+        .onChanged(recent) { page.menuBar = menus }
     }
 
     var notes: Element? {

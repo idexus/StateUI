@@ -37,18 +37,18 @@ private struct BarredPage: ContentView {
                     .isDestructive(true),
             ]
 
-            page.menuBarItems = [
-                MenuBarItem("File") {
-                    MenuFlyoutItem("New")
+            page.menuBar = [
+                Menu("File") {
+                    MenuItem("New")
                         .id("new")
                         .text("New")
                         .iconImageSource("nav_media.png")
                         .isDestructive(false)
                         .isEnabled(true)
                         .onClicked {}
-                    MenuFlyoutSeparator().id("sep")
-                    MenuFlyoutSubItem("Recent") {
-                        MenuFlyoutItem("a.txt").id("a")
+                    MenuSeparator().id("sep")
+                    Menu("Recent") {
+                        MenuItem("a.txt").id("a")
                     }
                     .id("recent")
                     .isEnabled(true)
@@ -73,7 +73,7 @@ final class PageBarTests: XCTestCase {
     func testAPagePutsItsToolbarAndMenusBesideItsContent() throws {
         let page = Self.arrived()
 
-        XCTAssertEqual(page.children.map { $0.type }, ["Label", "ToolbarItems", "MenuBarItems"])
+        XCTAssertEqual(page.children.map { $0.type }, ["Label", "ToolbarItems", "MenuBar"])
 
         let toolbar = try XCTUnwrap(page.children.first { $0.type == "ToolbarItems" })
         XCTAssertEqual(toolbar.children.map { $0.id }, [.manual("save"), .manual("delete")])
@@ -82,12 +82,12 @@ final class PageBarTests: XCTestCase {
                        "ToolbarItemOrder.Secondary")
         XCTAssertNotNil(toolbar.children[0].events?["clicked"])
 
-        let menus = try XCTUnwrap(page.children.first { $0.type == "MenuBarItems" })
+        let menus = try XCTUnwrap(page.children.first { $0.type == "MenuBar" })
         let file = menus.children[0]
 
-        XCTAssertEqual(file.type, "MenuBarItem")
+        XCTAssertEqual(file.type, "Menu")
         XCTAssertEqual(file.children.map { $0.type },
-                       ["MenuFlyoutItem", "MenuFlyoutSeparator", "MenuFlyoutSubItem"])
+                       ["MenuItem", "MenuSeparator", "Menu"])
         XCTAssertEqual(file.children[2].children[0].props["text"], .string("a.txt"))
     }
 

@@ -356,7 +356,7 @@ told what it is by modifier.
 | `backButtonTitle` | short title supplied by this page for the page pushed above it |
 | `titleView` | an authored view replacing the navigation title |
 | `toolbarItems` | actions in the page toolbar |
-| `menuBarItems` | menus active while the page is visible on a platform with a menu bar |
+| `menuBar` | menus active while the page is visible on a platform with a menu bar |
 
 Every optional value starts as `nil`, which leaves that choice with the host.
 The toolbar and menu collections start empty.

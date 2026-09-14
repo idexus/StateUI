@@ -17,7 +17,7 @@ struct StatusBadge: ContentView {
 
     var content: any View {
         HStack {
-            BoxView(ready ? .green : .gray)
+            ColorBox(ready ? .green : .gray)
                 .width(8)
                 .height(8)
             Label(title)

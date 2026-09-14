@@ -25,11 +25,11 @@ struct PinchSample: SampleContent, ExampleContent {
             // pinch makes builds this closure.
             DebugInfoLabel()
 
-            // The recognizer is on the Border; the BoxView inside it is what
+            // The recognizer is on the Border; the ColorBox inside it is what
             // moves. Putting both on one view is what stops a pinch after its
             // first report.
             Border {
-                BoxView(Palette.accent)
+                ColorBox(Palette.accent)
                     .width(80)
                     .height(80)
                     .horizontalAlignment(.center)
@@ -76,11 +76,11 @@ struct PinchSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            // The recognizer is on the Border; the BoxView inside it is what
+            // The recognizer is on the Border; the ColorBox inside it is what
             // moves. Putting both on one view is what stops a pinch after its
             // first report - see the notes.
             Border {
-                BoxView(Palette.accent)
+                ColorBox(Palette.accent)
                     .cornerRadius(10)
                     .width(80)
                     .height(80)
@@ -163,7 +163,7 @@ struct PinchSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The pinch is heard on the Border, and the BoxView inside it is what "
+            Label("The pinch is heard on the Border, and the ColorBox inside it is what "
                 + "scales: a view that transforms itself while a gesture runs can cancel "
                 + "its own recognizer, and the pinch stops after its first report.")
                 .fontSize(12)

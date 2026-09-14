@@ -26,14 +26,14 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                 let (index, item) = pair
                 return Label(item)
                     .contextMenu {
-                        MenuFlyoutItem("Duplicate")
+                        MenuItem("Duplicate")
                             .onClicked {
                                 items.insert(item + " copy", at: index + 1)
                                 chosen = "duplicated \\(item)"
                             }
 
-                        MenuFlyoutSubItem("Move") {
-                            MenuFlyoutItem("To the top")
+                        Menu("Move") {
+                            MenuItem("To the top")
                                 .isEnabled(index > 0)
                                 .onClicked {
                                     items.remove(at: index)
@@ -42,9 +42,9 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                                 }
                         }
 
-                        MenuFlyoutSeparator()
+                        MenuSeparator()
 
-                        MenuFlyoutItem("Remove")
+                        MenuItem("Remove")
                             .isDestructive(true)
                             .onClicked {
                                 items.remove(at: index)
@@ -75,14 +75,14 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                         .padding(14, 10)
                         .background(Palette.raised)
                         .contextMenu {
-                            MenuFlyoutItem("Duplicate")
+                            MenuItem("Duplicate")
                                 .onClicked {
                                     items.insert(item + " copy", at: index + 1)
                                     chosen = "duplicated \(item)"
                                 }
 
-                            MenuFlyoutSubItem("Move") {
-                                MenuFlyoutItem("To the top")
+                            Menu("Move") {
+                                MenuItem("To the top")
                                     .isEnabled(index > 0)
                                     .onClicked {
                                         items.remove(at: index)
@@ -91,9 +91,9 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                                     }
                             }
 
-                            MenuFlyoutSeparator()
+                            MenuSeparator()
 
-                            MenuFlyoutItem("Remove")
+                            MenuItem("Remove")
                                 .isDestructive(true)
                                 .onClicked {
                                     items.remove(at: index)

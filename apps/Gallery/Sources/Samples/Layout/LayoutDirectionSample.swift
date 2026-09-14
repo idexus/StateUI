@@ -10,7 +10,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
         VStack {
             // Left to right, whatever the view above says.
             HStack {
-                BoxView(Palette.accent).width(60).height(20)
+                ColorBox(Palette.accent).width(60).height(20)
                 Label("First")
                 Label("Second")
             }
@@ -18,7 +18,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
 
             // Mirrored: the row fills from the right, and the text with it.
             HStack {
-                BoxView(Palette.accent).width(60).height(20)
+                ColorBox(Palette.accent).width(60).height(20)
                 Label("First")
                 Label("Second")
             }
@@ -27,7 +27,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
             // The default: whatever the view above says, which is why an
             // application usually says it once, high up.
             HStack {
-                BoxView(Palette.accent).width(60).height(20)
+                ColorBox(Palette.accent).width(60).height(20)
                 Label("First")
                 Label("Second")
             }
@@ -70,7 +70,7 @@ struct LayoutDirectionSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             HStack {
-                BoxView(Palette.accent)
+                ColorBox(Palette.accent)
                     .width(60)
                     .height(20)
 

@@ -115,7 +115,7 @@ struct AppKitCornerRadii: Equatable {
 
 /// AppKit's native drawing surface for StateUI's rectangle primitive.
 @MainActor
-final class AppKitBoxView: AppKitHitTestView {
+final class AppKitColorBoxView: AppKitHitTestView {
     private(set) var backgroundColor = NSColor.clear
     private(set) var fillColor = NSColor.clear
     private(set) var cornerRadii = AppKitCornerRadii()

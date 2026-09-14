@@ -43,12 +43,12 @@ enum Recycling {
     /// - `RefreshView` - the spinner the platform is running.
     /// - `WebView`, `Map` - a whole browser and a whole map, each with a
     ///   history and a region of its own.
-    /// - `GraphicsView` - the drawing is a property, the surface it is cached
+    /// - `Canvas` - the drawing is a property, the surface it is cached
     ///   on is not.
     static let poolable: Set<NodeType> = [
-        .absoluteLayout, .activityIndicator, .border, .boxView, .button,
+        .absoluteLayout, .activityIndicator, .border, .colorBox, .button,
         .checkBox, .ellipse, .spans, .grid,
-        .hStack, .image, .imageButton, .indicatorView, .label,
+        .hStack, .image, .imageButton, .positionIndicator, .label,
         .line, .path, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .roundRectangle, .slider, .span, .stepper, .switch,
         .vStack,

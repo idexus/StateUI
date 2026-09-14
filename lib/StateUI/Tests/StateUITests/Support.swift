@@ -526,8 +526,8 @@ enum Fixtures {
 
     /// Node types described under Views/ that are not VIEWS.
     ///
-    /// A SwipeItem is an action a swipe reveals - a caption, a picture and
-    /// something to run - and SwipeItems is the collection holding them.
+    /// A SwipeAction is an action a swipe reveals - a caption, a picture and
+    /// something to run - and SwipeActions is the collection holding them.
     /// Neither can be built on its own, placed anywhere else, or styled, so
     /// neither has a fixture of its own nor a StyleTarget conformance. They are
     /// described in SwipeView.swift because that is the only place they appear,
@@ -542,7 +542,7 @@ enum Fixtures {
     /// A Span is one run of text inside a Label - text and a font, and no
     /// opacity, no margin, no size - so it can neither be built alone nor
     /// styled. Spans is the collection holding the runs, exactly as
-    /// SwipeItems holds swipe items. Both are exercised by the Label case,
+    /// SwipeActions holds swipe items. Both are exercised by the Label case,
     /// which builds them.
     ///
     /// The alternative would be leaving SwipeView.swift out of the scan
@@ -557,10 +557,10 @@ enum Fixtures {
     /// cannot be built alone or styled, and its modifiers are exercised by the
     /// Map case, which builds both.
     static let notViews: Set<String> = [
-        "SwipeItem", "SwipeItems",
+        "SwipeAction", "SwipeActions",
         "Spans", "Span",
-        "ToolbarItem", "MenuBarItem",
-        "MenuFlyoutItem", "MenuFlyoutSubItem", "MenuFlyoutSeparator",
+        "ToolbarItem", "Menu",
+        "MenuItem", "MenuSeparator",
         "ContextMenu",
         "Pin",
     ]

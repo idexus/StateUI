@@ -1,9 +1,9 @@
 import StateUI
 
 /// A canvas drawn from state, and one drawn from a finger.
-struct GraphicsViewSample: SampleContent {
-    static let id = "graphicsView"
-    static let title = "GraphicsView"
+struct CanvasSample: SampleContent {
+    static let id = "canvas"
+    static let title = "Canvas"
     static let summary = "A canvas: the drawing instructions travel, and the host draws them."
 
     // A drag is a gesture, and a scroller would claim it before the canvas
@@ -30,7 +30,7 @@ private struct FollowsState: ExampleContent {
                     // one builds this closure - which is what redraws it.
                     DebugInfoLabel()
 
-                    GraphicsView {
+                    Canvas {
                         for (index, value) in bars.enumerated() {
                             let height = value * 90
                             let x = Double(index) * 44
@@ -60,7 +60,7 @@ private struct FollowsState: ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            GraphicsView {
+            Canvas {
                 for (index, value) in bars.enumerated() {
                     let height = value * 90
                     let x = Double(index) * 44
@@ -112,7 +112,7 @@ private struct FollowsAFinger: ExampleContent {
                     // finger makes builds this closure and draws again.
                     DebugInfoLabel()
 
-                    GraphicsView {
+                    Canvas {
                         Draw.strokeColor(Palette.outline)
                         Draw.strokeSize(1)
                         Draw.drawRoundedRectangle(
@@ -124,9 +124,9 @@ private struct FollowsAFinger: ExampleContent {
                         }
                     }
                     .height(120)
-                    .onStartInteraction { trail = [$0] }
-                    .onDragInteraction { trail = Array((trail + [$0]).suffix(120)) }
-                    .onEndInteraction { _ in }
+                    .onPressed { trail = [$0] }
+                    .onDragged { trail = Array((trail + [$0]).suffix(120)) }
+                    .onReleased { _ in }
 
                     Button("Clear")
                         .isEnabled(!trail.isEmpty)
@@ -140,7 +140,7 @@ private struct FollowsAFinger: ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            GraphicsView {
+            Canvas {
                 Draw.strokeColor(Palette.outline)
                 Draw.strokeSize(1)
                 Draw.drawRoundedRectangle(x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
@@ -151,9 +151,9 @@ private struct FollowsAFinger: ExampleContent {
                 }
             }
             .height(120)
-            .onStartInteraction { trail = [$0] }
-            .onDragInteraction { trail = Array((trail + [$0]).suffix(120)) }
-            .onEndInteraction { _ in }
+            .onPressed { trail = [$0] }
+            .onDragged { trail = Array((trail + [$0]).suffix(120)) }
+            .onReleased { _ in }
 
             Button("Clear")
                 .fontSize(13)

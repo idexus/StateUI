@@ -113,13 +113,13 @@ final class AppKitWindowContentTests: XCTestCase {
     }
 
     private func tree(withOverlay: Bool) -> HostPatch {
-        let body = HostPatch(id: .manual("body"), type: .boxView)
+        let body = HostPatch(id: .manual("body"), type: .colorBox)
         var page = HostPatch(id: .manual("page"), type: .page)
         page.children = .arranged([body])
 
         var window = HostPatch(id: .manual("window"), type: .window)
         if withOverlay {
-            var panel = HostPatch(id: .manual("panel"), type: .boxView)
+            var panel = HostPatch(id: .manual("panel"), type: .colorBox)
             panel.properties[.width] = .number(60)
             panel.properties[.horizontalAlignment] = .enumeration(2)
             var overlay = HostPatch(id: .manual("overlay"), type: .overlay)
@@ -137,7 +137,7 @@ final class AppKitWindowContentTests: XCTestCase {
     }
 
     private func tree(overlay: HostPatch) -> HostPatch {
-        let body = HostPatch(id: .manual("body"), type: .boxView)
+        let body = HostPatch(id: .manual("body"), type: .colorBox)
         var page = HostPatch(id: .manual("page"), type: .page)
         page.children = .arranged([body])
         var window = HostPatch(id: .manual("window"), type: .window)

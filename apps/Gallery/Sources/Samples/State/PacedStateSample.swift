@@ -44,7 +44,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             }
             .samples($fade, into: $shown, .every(100))
 
-            BoxView()
+            ColorBox()
                 .height(60)
                 .opacity($fade)
 
@@ -99,7 +99,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             .background(Palette.surface)
             .samples($fade, into: $shown, .every(100))
 
-            BoxView()
+            ColorBox()
                 .height(60)
                 .cornerRadius(8)
                 .color(Palette.accent)

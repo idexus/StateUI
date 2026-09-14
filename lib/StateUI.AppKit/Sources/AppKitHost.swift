@@ -1668,7 +1668,7 @@ final class MountedNode: NSObject {
     }
 
     var pageMenuItems: [NSMenuItem] {
-        visiblePage?.slot(.menuBarItems)?.children.compactMap { $0.nativeMenuItem } ?? []
+        visiblePage?.slot(.menuBar)?.children.compactMap { $0.nativeMenuItem } ?? []
     }
 
     /// Makes this page tree visible or hidden, reporting phases only after the
@@ -2082,7 +2082,7 @@ final class MountedNode: NSObject {
         host?.dispatch(handler, payload: payload)
     }
 
-    private func graphicsInteraction(_ event: Event, at point: NSPoint) {
+    private func canvasPointer(_ event: Event, at point: NSPoint) {
         guard let handler = events[event] else { return }
         host?.dispatch(handler, payload: [.numbers([Double(point.x), Double(point.y)])])
     }
@@ -2146,9 +2146,9 @@ final class MountedNode: NSObject {
             return page
 
         case .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
-             .titleView, .toolbarItems, .menuBarItems, .contextMenu,
-             .menuBarItem, .menuFlyoutItem, .menuFlyoutSubItem,
-             .menuFlyoutSeparator, .spans, .span:
+             .titleView, .toolbarItems, .menuBar, .contextMenu,
+             .menu, .menuItem,
+             .menuSeparator, .spans, .span:
             return nil
 
         case .navigationStack:
@@ -2275,24 +2275,24 @@ final class MountedNode: NSObject {
             }
             return picker
 
-        case .boxView:
-            return AppKitBoxView()
+        case .colorBox:
+            return AppKitColorBoxView()
 
         case .image:
             return AppKitImageView()
 
-        case .graphicsView:
-            let graphics = AppKitGraphicsView()
-            graphics.onStartInteraction = { [weak self] point in
-                self?.graphicsInteraction(.startInteraction, at: point)
+        case .canvas:
+            let canvas = AppKitCanvasView()
+            canvas.onPressed = { [weak self] point in
+                self?.canvasPointer(.pressed, at: point)
             }
-            graphics.onDragInteraction = { [weak self] point in
-                self?.graphicsInteraction(.dragInteraction, at: point)
+            canvas.onDragged = { [weak self] point in
+                self?.canvasPointer(.dragged, at: point)
             }
-            graphics.onEndInteraction = { [weak self] point in
-                self?.graphicsInteraction(.endInteraction, at: point)
+            canvas.onReleased = { [weak self] point in
+                self?.canvasPointer(.released, at: point)
             }
-            return graphics
+            return canvas
 
         case .rectangle:
             return AppKitShapeView(kind: .rectangle)
@@ -2338,7 +2338,7 @@ final class MountedNode: NSObject {
         }
         applyAccessibility(to: view)
 
-        if !(view is AppKitBorderView) && !(view is AppKitBoxView) {
+        if !(view is AppKitBorderView) && !(view is AppKitColorBoxView) {
             let background = color(.background)
             view.wantsLayer = true
             view.layer?.backgroundColor = background?.cgColor
@@ -2607,7 +2607,7 @@ final class MountedNode: NSObject {
                 enabled: value(.isEnabled)?.bool ?? true)
         }
 
-        if let box = view as? AppKitBoxView {
+        if let box = view as? AppKitColorBoxView {
             box.apply(
                 background: color(.background),
                 fill: color(.color),
@@ -2662,7 +2662,7 @@ final class MountedNode: NSObject {
                 geometry: geometry)
         }
 
-        if let canvas = view as? AppKitGraphicsView {
+        if let canvas = view as? AppKitCanvasView {
             canvas.apply(value(.drawable))
         }
 
@@ -2955,16 +2955,14 @@ final class MountedNode: NSObject {
     }
 
     private var nativeMenuItem: NSMenuItem? {
-        if type == .menuFlyoutSeparator {
+        if type == .menuSeparator {
             if let platformMenuItem { return platformMenuItem }
             let item = NSMenuItem.separator()
             platformMenuItem = item
             return item
         }
 
-        guard type == .menuBarItem || type == .menuFlyoutItem
-                || type == .menuFlyoutSubItem
-        else { return nil }
+        guard type == .menu || type == .menuItem else { return nil }
 
         let item = platformMenuItem ?? NSMenuItem()
         platformMenuItem = item
@@ -2981,7 +2979,7 @@ final class MountedNode: NSObject {
             item.attributedTitle = NSAttributedString(string: item.title)
         }
 
-        if type == .menuFlyoutItem {
+        if type == .menuItem {
             item.target = self
             item.action = #selector(clicked(_:))
             item.submenu = nil

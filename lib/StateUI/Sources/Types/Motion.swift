@@ -102,7 +102,7 @@ public struct Motion: Equatable, Sendable {
     ///
     ///     @State(motion: .custom) private var ball = 0.0
     ///
-    ///     BoxView()
+    ///     ColorBox()
     ///         .translationY($ball)
     ///         .engine(following: $ball) { cycle in
     ///             let journey = $ball.journey

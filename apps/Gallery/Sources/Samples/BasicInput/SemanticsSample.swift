@@ -78,7 +78,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             }
             .automationExcludedWithChildren(true)
 
-            BoxView(Palette.outline)
+            ColorBox(Palette.outline)
                 .height(1)
                 .automationIsInAccessibleTree(false)
         }
@@ -224,7 +224,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             .horizontalAlignment(.center)
 
             // A rule is decoration: a stop that would waste the reader's time.
-            BoxView(Palette.outline)
+            ColorBox(Palette.outline)
                 .height(1)
                 .automationIsInAccessibleTree(false)
         }

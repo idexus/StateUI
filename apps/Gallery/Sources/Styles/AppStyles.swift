@@ -13,7 +13,7 @@
 //   - No font family. The gallery ships no fonts, and naming a family that is
 //     not installed is a way to get a different font on every platform.
 //   - Nothing a Style cannot NAME: a shadow is a property of the view that
-//     casts it, a SwipeItem is not a style target, a page's appearance is its
+//     casts it, a SwipeAction is not a style target, a page's appearance is its
 //     `PageSession`'s, and the bars of NavigationStack and TabbedView are
 //     written on the arrangement itself - see MainWindow.detail.
 
@@ -290,7 +290,7 @@ enum AppStyles {
                     .progressColor(Palette.disabled)
                 }
 
-            Style<IndicatorView>()
+            Style<PositionIndicator>()
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
 
@@ -332,12 +332,12 @@ enum AppStyles {
                 .strokeShape(.roundRectangle(14))
                 .strokeThickness(1)
 
-            // COLOUR, not background: a BoxView draws its colour, and a
+            // COLOUR, not background: a ColorBox draws its colour, and a
             // background is a second square behind that one - which Android
             // does not turn with the view, so a rotated box would show it
             // standing still underneath. The gallery's clock hands are the
             // ones that showed it.
-            Style<BoxView>()
+            Style<ColorBox>()
                 .color(Palette.accent)
         }
     }

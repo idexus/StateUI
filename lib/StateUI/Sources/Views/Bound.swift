@@ -133,9 +133,9 @@ extension BorderElement where Self: VisualElement {
     }
 }
 
-// MARK: - BoxView
+// MARK: - ColorBox
 
-extension BoxView {
+extension ColorBox {
     /// `color`, handed on as `$x`: the host walks it there under the element's
     /// law, and handing it on reads nothing - a write renders only a body that
     /// reads the state.
@@ -334,9 +334,9 @@ extension ImageElement where Self: VisualElement {
 
 }
 
-// MARK: - IndicatorView
+// MARK: - PositionIndicator
 
-extension IndicatorView {
+extension PositionIndicator {
     /// `count`, handed on as `$x`: the host sets it as it is, and handing it on
     /// reads nothing - a write renders only a body that reads the state.
     ///

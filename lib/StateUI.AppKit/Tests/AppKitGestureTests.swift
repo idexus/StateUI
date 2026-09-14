@@ -16,7 +16,7 @@ final class AppKitGestureTests: XCTestCase {
             presentsWindows: false,
             eventSink: { reports.append(($0, $1)) })
         defer { renderer.closeForTesting() }
-        var box = HostPatch(id: .manual("box"), type: .boxView)
+        var box = HostPatch(id: .manual("box"), type: .colorBox)
         box.events = .replace([
             .panUpdated: 10,
             .pinchUpdated: 11,
@@ -65,7 +65,7 @@ final class AppKitGestureTests: XCTestCase {
         differ.motion = .standard
         let rendered = differ.reconcile(
             nil,
-            with: BoxView(.transparent).panX(across.projectedValue).body,
+            with: ColorBox(.transparent).panX(across.projectedValue).body,
             changed: [])
         let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
@@ -84,7 +84,7 @@ final class AppKitGestureTests: XCTestCase {
     func testRemovingPointerEventsDetachesTheNativeRecognizer() throws {
         let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
-        var box = HostPatch(id: .manual("box"), type: .boxView)
+        var box = HostPatch(id: .manual("box"), type: .colorBox)
         box.events = .replace([.pointerEntered: 20])
         renderer.applyForTesting(tree(box))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
@@ -92,7 +92,7 @@ final class AppKitGestureTests: XCTestCase {
             native.gestureRecognizers.compactMap { $0 as? AppKitPointerRecognizer }.count,
             1)
 
-        var changed = HostPatch(id: .manual("box"), type: .boxView)
+        var changed = HostPatch(id: .manual("box"), type: .colorBox)
         changed.events = .replace([:])
         renderer.applyForTesting(changedTree(changed))
 
@@ -108,7 +108,7 @@ final class AppKitGestureTests: XCTestCase {
             presentsWindows: false,
             eventSink: { _, payload in reports.append(payload) })
         defer { renderer.closeForTesting() }
-        var box = HostPatch(id: .manual("box"), type: .boxView)
+        var box = HostPatch(id: .manual("box"), type: .colorBox)
         box.properties = [
             .swipeDirection: .enumeration(3),
             .swipeThreshold: .number(50),

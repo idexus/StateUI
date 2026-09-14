@@ -240,13 +240,13 @@ The host maps this description to its native path and paint types. Path data
 and fill rules are StateUI values; platform path objects do not cross the
 boundary.
 
-## GraphicsView
+## Canvas
 
-`GraphicsView` is the escape hatch for retained, command-based 2D drawing. Its
+`Canvas` is the escape hatch for retained, command-based 2D drawing. Its
 drawing closure produces a deterministic list of `DrawCommand` values:
 
 ```swift
-GraphicsView {
+Canvas {
     Draw.fillColor(.cornflowerBlue)
     Draw.fillRoundedRectangle(
         x: 0,
@@ -274,11 +274,11 @@ change the state used by later drawing commands. `saveState` and
 `restoreState` bound temporary transform or paint changes.
 
 The interaction handlers report points in the canvas's own coordinate space:
-`onStartInteraction`, `onDragInteraction`, and `onEndInteraction`. A state
+`onPressed`, `onDragged`, and `onReleased`. A state
 change that alters the command list rebuilds the drawing description; a host
 may animate compatible command values without rebuilding the application tree.
 
-`GraphicsView` is for drawing content, not for recreating standard controls.
+`Canvas` is for drawing content, not for recreating standard controls.
 Use accepted controls whenever native input, focus, selection, or accessibility
 semantics already exist.
 

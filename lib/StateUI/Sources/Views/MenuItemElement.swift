@@ -7,8 +7,9 @@
 // all: none of the layout tier in Elements.swift applies to one and none of
 // this applies to a view.
 
-/// The four properties a toolbar item, a menu entry and a swipe item all
-/// share: `text`, `iconImageSource`, `isDestructive` and `isEnabled`.
+/// What a toolbar item, a menu entry and a swipe action all share: `text`,
+/// `iconImageSource`, `isDestructive`, `isEnabled` - and `onClicked`, what
+/// choosing one does.
 ///
 /// Written on the item, in any order, before or after its own modifiers:
 ///
@@ -17,20 +18,10 @@
 ///         .isDestructive(true)
 ///         .onClicked { delete() }
 ///
-/// `MenuBarItem` deliberately stays outside this tier: a menu on the bar has a
-/// caption and entries and is never clicked, so its `isEnabled` remains its own
-/// property beside that structure.
-///
-/// `MenuFlyoutSubItem` deliberately stays outside it too. A submenu has text,
-/// enabled state, and nested entries; publishing icon or destructive policy on
-/// it would describe a capability the native host contract does not apply.
-///
-/// `Clicked` IS a MenuItem event and is deliberately NOT here, for the same
-/// measured reason: a `SwipeItem` is answered by `Invoked`, which is the event
-/// the renderer subscribes on one and the only one a swipe raises. So
-/// `onClicked` stays written on the two items that raise it. Four modifiers
-/// shared and one copied twice is the honest split; putting the fifth here
-/// would give a swipe item a handler nothing ever calls.
+/// `Menu` deliberately stays outside this tier: a menu has a caption and
+/// entries and is never clicked, so its `isEnabled` remains its own property
+/// beside that structure, and an icon or a destructive look on it would
+/// describe a capability the native host contract does not apply.
 public protocol MenuItemElement: PropertyContainer {}
 
 extension MenuItemElement {
@@ -57,5 +48,14 @@ extension MenuItemElement {
     /// the reader still knows that the action exists.
     public func isEnabled(_ value: Bool) -> Modified {
         setValue(.isEnabled, .bool(value))
+    }
+}
+
+extension MenuItemElement where Modified == Self {
+    /// What it does - run when the item is chosen: clicked, tapped, or, for a
+    /// swipe action under `.execute`, swiped all the way. A second
+    /// `.onClicked` runs beside the first, like every typed event modifier.
+    public func onClicked(_ handler: @escaping EventHandler) -> Self {
+        modified { $0.addHandler(.clicked, handler) }
     }
 }
