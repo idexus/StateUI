@@ -1461,8 +1461,11 @@ final class MountedNode: NSObject {
 
         var impact: AppKitPresentationImpact = .content
         // An element without a native view - a span, a formatted string - is
-        // drawn by the nearest ancestor that has one, which arranges again.
-        if view == nil || !properties.isDisjoint(with: Self.arrangedProperties) {
+        // drawn by the nearest ancestor that has one, which arranges again. A
+        // layout's own placement run moves its children inside the room it
+        // already has, so it arranges the layout and not its parent.
+        let arranged = properties.subtracting(ownPlacementRun)
+        if view == nil || !arranged.isDisjoint(with: Self.arrangedProperties) {
             impact.insert(.arrangement)
         }
         if needsWindowSynchronization(for: properties) {
@@ -2318,10 +2321,17 @@ final class MountedNode: NSObject {
         }
     }
 
+    /// The layout's own placement run, where a state drives one: the room's
+    /// arithmetic over the children, which moves them without changing what
+    /// the layout measures - a run is not part of its natural size.
+    private var ownPlacementRun: Set<Prop> {
+        driven[.absoluteLayoutBounds]?.kind == .placement ? [.absoluteLayoutBounds] : []
+    }
+
     private func applyProperties(changed: Set<Prop>) {
         guard let view else { return }
 
-        if !changed.isSubset(of: Self.unmeasuredProperties) {
+        if !changed.subtracting(ownPlacementRun).isSubset(of: Self.unmeasuredProperties) {
             view.invalidateMeasurements()
         }
 

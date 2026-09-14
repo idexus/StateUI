@@ -232,6 +232,50 @@ final class AppKitMeasurementTests: XCTestCase {
             try XCTUnwrap(nativeCard.layer).affineTransform().b, placed.b, accuracy: 0.001)
     }
 
+    /// A placing layout's run moves its children and nothing else: the run is
+    /// the layout's own arithmetic over the room it was given, so a frame of it
+    /// neither measures the page again nor arranges the layout's parent - what a
+    /// run of cards turned by the hand does on every frame.
+    @MainActor
+    func testAPlacementRunFrameMovesItsChildrenAndMeasuresNothingElse() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var card = HostPatch(id: .manual("card"), type: .colorBox)
+        card.properties[.opacity] = .number(1)
+        var layout = HostPatch(id: .manual("layout"), type: .absoluteLayout)
+        layout.properties[.height] = .number(120)
+        layout.driven = .replace([
+            .absoluteLayoutBounds: HostStateBinding(state: 96, mode: .out, kind: .placement),
+        ])
+        layout.children = .arranged([card])
+        var caption = HostPatch(id: .manual("caption"), type: .label)
+        caption.properties[.text] = .string("The card in front")
+        var outer = HostPatch(id: .manual("outer"), type: .vStack)
+        outer.children = .arranged([layout, caption])
+        renderer.applyForTesting(outer)
+        renderer.applyStateForTesting(96, value: PlacedRun([Placement(Rect(0, 0, 100, 60))]).carried)
+
+        let nativeOuter = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("outer")) as? AppKitStackView)
+        let nativeCaption = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("caption")) as? AppKitLabelView)
+        let nativeCard = try XCTUnwrap(renderer.viewForTesting(id: .manual("card")))
+        nativeOuter.frame = NSRect(x: 0, y: 0, width: 400, height: 300)
+        nativeOuter.layoutSubtreeIfNeeded()
+        let arrangements = nativeOuter.arrangementCountForTesting
+        let measurements = nativeCaption.nativeMeasurementCountForTesting
+
+        renderer.applyStateForTesting(96, value: PlacedRun([Placement(Rect(80, 20, 100, 60))]).carried)
+        nativeOuter.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(nativeCard.frame.origin.x, 80, accuracy: 0.001, "the run moved the card")
+        XCTAssertEqual(nativeOuter.arrangementCountForTesting, arrangements, "the layout's parent arranged nothing")
+        XCTAssertEqual(
+            nativeCaption.nativeMeasurementCountForTesting, measurements,
+            "nothing beside the layout was measured again")
+    }
+
     /// The containers from the page scroller down to the moving box, in the
     /// order a sparse patch walks them.
     private let route: [(String, NodeType)] = [
