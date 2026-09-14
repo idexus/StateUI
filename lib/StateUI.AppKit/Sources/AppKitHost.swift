@@ -1857,11 +1857,10 @@ final class MountedNode: NSObject {
         .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY,
         .pivotX, .pivotY,
         .background, .color, .textColor, .placeholderColor,
-        .titleColor, .borderColor, .stroke, .fill, .strokeWidth,
+        .tint, .borderColor, .stroke, .fill, .strokeWidth,
         .strokeDashPattern, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
         .strokeMiterLimit, .shape, .cornerRadius, .renderTransform,
-        .minimumTrackColor, .maximumTrackColor, .thumbColor, .onColor, .offColor,
-        .progressColor, .barBackgroundColor, .barForegroundColor,
+        .barBackgroundColor, .barForegroundColor,
         .drawable, .value, .progress, .scrollOffset, .isOn, .isEnabled,
         .ignoresInput, .letsInputThrough,
         .accessibilityIdentifier, .isAccessibilityHidden, .automationExcludedWithChildren,
@@ -2529,7 +2528,7 @@ final class MountedNode: NSObject {
                 writeValue: changed.contains(.value) && attachedValue != nil,
                 minimum: number(.minimum) ?? 0,
                 maximum: number(.maximum) ?? 1,
-                minimumTrackColor: color(.minimumTrackColor),
+                tint: color(.tint),
                 enabled: value(.isEnabled)?.bool ?? true)
         }
 
@@ -2548,7 +2547,7 @@ final class MountedNode: NSObject {
             checkBox.apply(
                 checked: value(.isOn)?.bool ?? false,
                 enabled: value(.isEnabled)?.bool ?? true,
-                color: color(.color))
+                tint: color(.tint))
         }
         if let radio = view as? AppKitRadioButtonView {
             radio.apply(
@@ -2577,7 +2576,7 @@ final class MountedNode: NSObject {
                 title: string(.title),
                 font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
                 textColor: color(.textColor) ?? .controlTextColor,
-                titleColor: color(.titleColor),
+                tint: color(.tint),
                 alignment: textAlignment(enumeration(.horizontalTextAlignment)),
                 enabled: value(.isEnabled)?.bool ?? true,
                 open: value(.isOpen)?.bool ?? false,
@@ -3614,9 +3613,7 @@ final class MountedNode: NSObject {
 
     private static let colorProperties: Set<Prop> = [
         .background, .barBackgroundColor, .barForegroundColor, .borderColor, .color,
-        .indicatorColor, .maximumTrackColor, .minimumTrackColor,
-        .offColor, .onColor, .placeholderColor, .progressColor, .refreshColor,
-        .selectedIndicatorColor, .textColor, .thumbColor, .titleColor,
+        .indicatorColor, .placeholderColor, .selectedIndicatorColor, .textColor, .tint,
     ]
 
     private static let pageTypes: Set<NodeType> = [

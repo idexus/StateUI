@@ -120,7 +120,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                     .accessibilityLabel("Volume")
                     .minimum(0)
                     .maximum(1)
-                    .minimumTrackColor(Palette.subtle)
+                    .tint(Palette.subtle)
 
                 button("Send the top one") {
                     volume = volume < 0.5 ? 1 : 0
@@ -150,7 +150,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                     .accessibilityLabel("Level")
                     .minimum(0)
                     .maximum(1)
-                    .minimumTrackColor(Palette.accent)
+                    .tint(Palette.accent)
 
                 button("Send the bottom one") {
                     try await $level.journey.move(to: level < 0.5 ? 1 : 0,

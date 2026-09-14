@@ -16,17 +16,6 @@ extension SearchFieldProperties {
     public func returnKey(_ value: ReturnKey) -> Modified {
         setValue(.returnKey, value.propValue)
     }
-
-    /// The colour of the button that empties the box - the one the platform
-    /// draws inside the field once there is something to clear.
-    public func cancelButtonColor(_ value: Color) -> Modified {
-        setValue(.cancelButtonColor, value.propValue)
-    }
-
-    /// The colour of the magnifier drawn at the front of the field.
-    public func searchIconColor(_ value: Color) -> Modified {
-        setValue(.searchIconColor, value.propValue)
-    }
 }
 
 /// A text field with a search button on the keyboard.
@@ -45,7 +34,7 @@ extension SearchFieldProperties {
 /// Given a binding the field shows the value and writes every edit back; given a
 /// plain string it shows that, and `.onTextChanged` is how what is typed gets
 /// anywhere.
-public struct SearchField: InputView, TextElement, FontElement, TextAlignmentElement,
+public struct SearchField: InputView, TextElement, FontElement, TextAlignmentElement, TintElement,
     SearchFieldProperties
 {
     /// The node this control describes.

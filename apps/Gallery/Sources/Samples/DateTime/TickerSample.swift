@@ -61,7 +61,7 @@ struct TickerSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             ProgressBar(remaining)
-                .progressColor(Palette.accent)
+                .tint(Palette.accent)
 
             HStack {
                 Button(ticker.isRunning ? "Stop" : "Start")

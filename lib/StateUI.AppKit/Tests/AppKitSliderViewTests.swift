@@ -16,7 +16,7 @@ final class AppKitSliderViewTests: XCTestCase {
             writeValue: true,
             minimum: 20,
             maximum: 80,
-            minimumTrackColor: .systemBlue,
+            tint: .systemBlue,
             enabled: false)
 
         XCTAssertEqual(view.minValue, 20)
@@ -36,7 +36,7 @@ final class AppKitSliderViewTests: XCTestCase {
             writeValue: true,
             minimum: 80,
             maximum: 20,
-            minimumTrackColor: nil,
+            tint: nil,
             enabled: true)
 
         XCTAssertEqual(view.minValue, 20)
@@ -66,7 +66,7 @@ final class AppKitSliderViewTests: XCTestCase {
             writeValue: true,
             minimum: 0,
             maximum: 1,
-            minimumTrackColor: nil,
+            tint: nil,
             enabled: true)
 
         view.doubleValue = 0.625

@@ -96,7 +96,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             ProgressBar(total == 0 ? 0 : Double(remaining) / Double(total))
-                .progressColor(Palette.accent)
+                .tint(Palette.accent)
 
             HStack {
                 Button(running ? "Stop" : "Start")

@@ -17,13 +17,6 @@ extension ActivityIndicatorProperties {
     public func isRunning(_ value: Bool) -> Modified {
         setValue(.isRunning, .bool(value))
     }
-
-    /// What colour it spins in.
-    ///
-    /// Not `.background`, which paints the square the spinner sits in.
-    public func color(_ value: Color) -> Modified {
-        setValue(.color, value.propValue)
-    }
 }
 
 /// The spinner shown while something is happening that has no measurable
@@ -32,7 +25,7 @@ extension ActivityIndicatorProperties {
 ///     @State private var loading = false
 ///     …
 ///     ActivityIndicator(loading)
-///         .color(.firebrick)
+///         .tint(.firebrick)
 ///
 /// For work whose progress CAN be measured, use a `ProgressBar` instead: a
 /// spinner says "wait", a bar says "how much longer".
@@ -40,7 +33,7 @@ extension ActivityIndicatorProperties {
 /// It takes no TWO-WAY binding, unlike the inputs: there is nothing here for
 /// the reader to change, so a state handed to `.isRunning($loading)` only ever
 /// travels outwards.
-public struct ActivityIndicator: View, ActivityIndicatorProperties {
+public struct ActivityIndicator: View, TintElement, ActivityIndicatorProperties {
     /// The node this control describes.
     public var node: Node
 

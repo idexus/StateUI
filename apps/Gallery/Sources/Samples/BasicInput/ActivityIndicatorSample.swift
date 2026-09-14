@@ -33,7 +33,7 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ActivityIndicator(loading)
-                .color(Palette.accent)
+                .tint(Palette.accent)
                 .height(48)
 
             HStack {
@@ -44,7 +44,7 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
                 Switch($loading)
                     .accessibilityIdentifier("activityIndicator.loading")
                     .accessibilityLabel("Loading")
-                    .onColor(Palette.accent)
+                    .tint(Palette.accent)
             }
             .spacing(12)
             .horizontalAlignment(.center)

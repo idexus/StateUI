@@ -18,30 +18,12 @@ extension SwitchProperties {
     public func isOn(_ value: Bool) -> Modified {
         setValue(.isOn, .bool(value))
     }
-
-    /// The colour of the track while it is ON.
-    public func onColor(_ value: Color) -> Modified {
-        setValue(.onColor, value.propValue)
-    }
-
-    /// The colour of the track while it is OFF.
-    ///
-    /// Left unwritten it is the platform's own, which is what most switches
-    /// want - the off track is what tells one platform's switch from another's.
-    public func offColor(_ value: Color) -> Modified {
-        setValue(.offColor, value.propValue)
-    }
-
-    /// The colour of the knob that slides, whichever way it is thrown.
-    public func thumbColor(_ value: Color) -> Modified {
-        setValue(.thumbColor, value.propValue)
-    }
 }
 
 /// An on/off toggle.
 ///
 ///     Switch($soundOn)
-///         .onColor(.green)
+///         .tint(.green)
 ///
 /// Given a binding it shows the value and writes every flip back. Given a plain
 /// `Bool` - or nothing plus `.isOn(_:)` - it shows that and reports
@@ -49,7 +31,7 @@ extension SwitchProperties {
 ///
 /// A `CheckBox` asks the same question in the shape a form uses; a
 /// `RadioButton` is what to reach for once there are more than two answers.
-public struct Switch: View, SwitchProperties {
+public struct Switch: View, TintElement, SwitchProperties {
     /// The node this control describes.
     public var node: Node
 

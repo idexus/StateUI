@@ -865,6 +865,7 @@ extension StyleBag: PaddingElement where Target: PaddingElement {}
 extension StyleBag: TextStyleElement where Target: TextStyleElement {}
 extension StyleBag: TextElement where Target: TextElement {}
 extension StyleBag: FontElement where Target: FontElement {}
+extension StyleBag: TintElement where Target: TintElement {}
 extension StyleBag: TextAlignmentElement where Target: TextAlignmentElement {}
 extension StyleBag: LineHeightElement where Target: LineHeightElement {}
 extension StyleBag: DecorableTextElement where Target: DecorableTextElement {}

@@ -184,14 +184,12 @@ enum AppStyles {
 
             Style<Picker>()
                 .textColor(Palette.text)
-                .titleColor(Palette.subtle)
                 .background(.transparent)
                 .fontSize(15)
                 .minimumHeight(44)
                 .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
-                    .titleColor(Palette.disabled)
                 }
 
             Style<DatePicker>()
@@ -222,7 +220,7 @@ enum AppStyles {
             Style<SearchField>()
                 .textColor(Palette.text)
                 .placeholderColor(Palette.subtle)
-                .cancelButtonColor(Palette.accent)
+                .tint(Palette.accent)
                 .fontSize(15)
                 .minimumHeight(formFactor == .desktop ? 0 : 44)
                 .minimumWidth(44)
@@ -237,26 +235,17 @@ enum AppStyles {
             // point of having one: whatever is chosen, anywhere, is orange.
 
             Style<Switch>()
-                .onColor(Palette.accent)
-                .thumbColor(AppColors.white)
+                .tint(Palette.accent)
                 .visualState(.disabled) { $0
-                    .onColor(Palette.disabled)
-                    .thumbColor(Palette.disabled)
-                }
-                .visualState(.on) { $0
-                    .onColor(Palette.accent)
-                    .thumbColor(AppColors.white)
-                }
-                .visualState(.off) { $0
-                    .thumbColor(Color(light: AppColors.white, dark: AppColors.inkMutedDark))
+                    .tint(Palette.disabled)
                 }
 
             Style<CheckBox>()
-                .color(Palette.accent)
+                .tint(Palette.accent)
                 .minimumHeight(44)
                 .minimumWidth(44)
                 .visualState(.disabled) { $0
-                    .color(Palette.disabled)
+                    .tint(Palette.disabled)
                 }
 
             Style<RadioButton>()
@@ -270,24 +259,20 @@ enum AppStyles {
                 }
 
             Style<Slider>()
-                .minimumTrackColor(Palette.accent)
-                .maximumTrackColor(Palette.outline)
-                .thumbColor(Palette.accent)
+                .tint(Palette.accent)
                 .visualState(.disabled) { $0
-                    .minimumTrackColor(Palette.disabled)
-                    .maximumTrackColor(Palette.outline)
-                    .thumbColor(Palette.disabled)
+                    .tint(Palette.disabled)
                 }
 
             // MARK: Progress and indicators
 
             Style<ActivityIndicator>()
-                .color(Palette.accent)
+                .tint(Palette.accent)
 
             Style<ProgressBar>()
-                .progressColor(Palette.accent)
+                .tint(Palette.accent)
                 .visualState(.disabled) { $0
-                    .progressColor(Palette.disabled)
+                    .tint(Palette.disabled)
                 }
 
             Style<PositionIndicator>()
@@ -295,7 +280,7 @@ enum AppStyles {
                 .selectedIndicatorColor(Palette.accent)
 
             Style<RefreshView>()
-                .refreshColor(Palette.accent)
+                .tint(Palette.accent)
 
             // MARK: The menu's rows
             //

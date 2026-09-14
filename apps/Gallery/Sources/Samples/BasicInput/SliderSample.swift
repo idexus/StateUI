@@ -37,15 +37,6 @@ struct SliderSample: SampleContent, ExampleContent {
 
                 Switch($soundOn)
             }
-
-            // The same value with a picture for a thumb, asked for by the
-            // name the build gives the file - and one per theme, since the
-            // artwork has to read on both.
-            Slider($volume)
-                .minimum(0)
-                .maximum(100)
-                .thumbImageSource(
-                    ImageSource(light: "nav_gestures.png", dark: "nav_gestures_dark.png"))
         }
         """
 
@@ -63,7 +54,7 @@ struct SliderSample: SampleContent, ExampleContent {
                 .minimum(0)
                 .maximum(100)
                 .isEnabled(soundOn)
-                .minimumTrackColor(Palette.accent)
+                .tint(Palette.accent)
                 .onDragStarted { dragging = true }
                 .onDragCompleted { dragging = false }
 
@@ -79,21 +70,10 @@ struct SliderSample: SampleContent, ExampleContent {
                 Switch($soundOn)
                     .accessibilityIdentifier("slider.sound")
                     .accessibilityLabel("Sound on")
-                    .onColor(Palette.accent)
+                    .tint(Palette.accent)
             }
             .spacing(12)
             .horizontalAlignment(.center)
-
-            SectionTitle("A picture for the thumb")
-
-            Slider($volume)
-                .accessibilityIdentifier("slider.volume.thumb")
-                .accessibilityLabel("Volume, with a picture for the thumb")
-                .minimum(0)
-                .maximum(100)
-                .minimumTrackColor(Palette.accent)
-                .thumbImageSource(
-                    ImageSource(light: "nav_gestures.png", dark: "nav_gestures_dark.png"))
         }
         .spacing(12)
     }
@@ -109,21 +89,6 @@ struct SliderSample: SampleContent, ExampleContent {
 
             Label("The value crosses the boundary as its own bits - nothing is formatted or "
                 + "parsed on the way, so no locale can touch it.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The same value, dragged by a hand: `thumbImageSource` REPLACES the "
-                + "platform's thumb rather than tinting it, so a `thumbColor` written "
-                + "beside it paints nothing. Both sliders hold `volume`, so either one "
-                + "moves the other.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Label("The name is the file in Resources/Images as the build leaves it - "
-                + "nav_gestures.svg is asked for as nav_gestures.png - and there is no "
-                + "size beside it, so how big the thumb draws is how big the artwork is. "
-                + "A picture that must read on both themes is two files, exactly as it "
-                + "is for an Image.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

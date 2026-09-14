@@ -66,11 +66,11 @@ final class AppKitCheckBoxView: NSButton {
         fatalError("AppKitCheckBoxView is created in code")
     }
 
-    func apply(checked: Bool, enabled: Bool, color: NSColor?) {
+    func apply(checked: Bool, enabled: Bool, tint: NSColor?) {
         applying = true
         state = checked ? .on : .off
         isEnabled = enabled
-        contentTintColor = color
+        contentTintColor = tint
         applying = false
     }
 

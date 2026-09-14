@@ -82,7 +82,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         title: String?,
         font: NSFont,
         textColor: NSColor,
-        titleColor: NSColor?,
+        tint: NSColor?,
         alignment: NSTextAlignment,
         enabled: Bool,
         open: Bool,
@@ -101,6 +101,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         button.font = font
         button.alignment = alignment
         button.isEnabled = enabled
+        button.contentTintColor = tint
         styleItems(font: font, color: textColor, alignment: alignment)
 
         if writeSelection || itemsChanged {
@@ -115,7 +116,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
 
         placeholder.stringValue = title ?? ""
         placeholder.font = font
-        placeholder.textColor = titleColor ?? textColor
+        placeholder.textColor = .placeholderTextColor
         placeholder.alignment = alignment
         updatePlaceholder()
         applying = false
@@ -198,6 +199,8 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
             onClosed?()
         }
     }
+
+    var contentTintForTesting: NSColor? { button.contentTintColor }
 
     func chooseForTesting(index: Int) {
         if sourceItems.indices.contains(index) {

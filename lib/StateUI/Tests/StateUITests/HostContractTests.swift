@@ -483,6 +483,37 @@ final class HostContractTests: XCTestCase {
     /// a caption - on a button, a menu or toolbar item, a page's tab - with its
     /// `iconPosition` and `iconSpacing`, and `Button(icon:)` when there is no
     /// caption at all.
+    func testAControlHasOneAccentColour() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+
+        XCTAssertTrue(properties.contains("tint"))
+        XCTAssertTrue(properties.contains("color"), "a ColorBox keeps its colour")
+        XCTAssertTrue(
+            properties.isDisjoint(with: [
+                "onColor", "offColor", "thumbColor", "thumbImageSource", "minimumTrackColor",
+                "maximumTrackColor", "progressColor", "refreshColor", "titleColor",
+                "cancelButtonColor", "searchIconColor",
+            ]),
+            "a control keeps a colour of its own beside its accent")
+
+        for (file, control) in [
+            ("Views/Switch.swift", "Switch"), ("Views/Slider.swift", "Slider"),
+            ("Views/ProgressBar.swift", "ProgressBar"),
+            ("Views/ActivityIndicator.swift", "ActivityIndicator"),
+            ("Views/CheckBox.swift", "CheckBox"), ("Views/Picker.swift", "Picker"),
+            ("Views/SearchField.swift", "SearchField"), ("Views/RefreshView.swift", "RefreshView"),
+        ] {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            XCTAssertTrue(source.contains("TintElement"), "\(control) takes no tint")
+            XCTAssertFalse(source.contains("public func color("), "\(control) keeps a colour beside its tint")
+        }
+    }
+
     func testAccessibilityWordsShareOneFamily() throws {
         let tokenSource = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),

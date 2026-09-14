@@ -44,8 +44,7 @@ struct SwitchSample: SampleContent, ExampleContent {
                 Switch($soundOn)
                     .accessibilityIdentifier("switch.sound")
                     .accessibilityLabel("Sound on")
-                    .onColor(Palette.accent)
-                    .offColor(Palette.outline)
+                    .tint(Palette.accent)
                     .onToggled { on in said = on ? "thrown on" : "thrown off" }
             }
             .spacing(12)

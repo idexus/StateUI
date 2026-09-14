@@ -15,14 +15,6 @@ extension ProgressBarProperties {
     public func progress(_ value: Double) -> Modified {
         setValue(.progress, .number(value))
     }
-
-    /// What the FILLED part of the bar is painted.
-    ///
-    /// The track behind it is `.background`, from `VisualElement` - the
-    /// two are set separately.
-    public func progressColor(_ value: Color) -> Modified {
-        setValue(.progressColor, value.propValue)
-    }
 }
 
 /// How far along something is, from 0 to 1.
@@ -30,7 +22,7 @@ extension ProgressBarProperties {
 ///     @State private var done = 0.0
 ///
 ///     ProgressBar(done)
-///         .progressColor(.firebrick)
+///         .tint(.firebrick)
 ///
 /// A FRACTION, not a percentage and not a count: 0.4 is four tenths of the way
 /// through, whatever the work is measured in - so a job counting files divides
@@ -41,7 +33,7 @@ extension ProgressBarProperties {
 /// reader's to change, so the value only ever goes one way - written into the
 /// `@State` it is built from, or handed on as `.progress($done)`, which the
 /// host walks there.
-public struct ProgressBar: View, ProgressBarProperties {
+public struct ProgressBar: View, TintElement, ProgressBarProperties {
     /// The node this control describes.
     public var node: Node
 

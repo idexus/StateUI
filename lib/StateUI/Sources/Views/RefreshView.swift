@@ -22,11 +22,6 @@ extension RefreshViewProperties {
         setValue(.isRefreshing, .bool(value))
     }
 
-    /// The colour of the spinner.
-    public func refreshColor(_ value: Color) -> Modified {
-        setValue(.refreshColor, value.propValue)
-    }
-
     /// Whether a pull does anything at all - which is how refreshing is turned
     /// off without the view being taken away.
     public func isRefreshEnabled(_ value: Bool) -> Modified {
@@ -56,7 +51,7 @@ extension RefreshViewProperties {
 /// It goes AROUND the scroller rather than inside one - a RefreshView holds a
 /// single scrollable view, and a pull is a gesture that scroller would
 /// otherwise claim.
-public struct RefreshView: View, RefreshViewProperties {
+public struct RefreshView: View, TintElement, RefreshViewProperties {
     /// The node this control describes.
     public var node: Node
 

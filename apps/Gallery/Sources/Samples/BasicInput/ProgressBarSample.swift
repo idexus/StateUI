@@ -48,7 +48,7 @@ struct ProgressBarSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             ProgressBar(done / steps)
-                .progressColor(Palette.accent)
+                .tint(Palette.accent)
                 .height(8)
 
             Stepper($done)
@@ -63,7 +63,7 @@ struct ProgressBarSample: SampleContent, ExampleContent {
 
             ProgressBar()
                 .progress(1 - done / steps)
-                .progressColor(Palette.subtle)
+                .tint(Palette.subtle)
                 .height(8)
 
         }

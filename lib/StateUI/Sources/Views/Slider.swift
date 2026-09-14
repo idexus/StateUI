@@ -27,30 +27,6 @@ extension SliderProperties {
     public func maximum(_ value: Double) -> Modified {
         setValue(.maximum, .number(value))
     }
-
-    /// The colour of the track BEHIND the thumb - the part already covered.
-    public func minimumTrackColor(_ value: Color) -> Modified {
-        setValue(.minimumTrackColor, value.propValue)
-    }
-
-    /// The colour of the track AHEAD of the thumb - the part still to go.
-    public func maximumTrackColor(_ value: Color) -> Modified {
-        setValue(.maximumTrackColor, value.propValue)
-    }
-
-    /// The colour of the thumb itself, the part that is dragged.
-    public func thumbColor(_ value: Color) -> Modified {
-        setValue(.thumbColor, value.propValue)
-    }
-
-    /// A picture in place of the platform's thumb, named from the app's image
-    /// resources.
-    ///
-    /// It REPLACES the thumb rather than tinting it, so `thumbColor` beside it
-    /// paints nothing.
-    public func thumbImageSource(_ value: ImageSource) -> Modified {
-        setValue(.thumbImageSource, value.propValue)
-    }
 }
 
 /// A value picked by dragging a thumb along a native track.
@@ -63,7 +39,7 @@ extension SliderProperties {
 /// number it shows that, and `.onValueChanged` is how the drag gets anywhere.
 ///
 /// The range is 0 to 1 until `.minimum` and `.maximum` say otherwise.
-public struct Slider: View, SliderProperties {
+public struct Slider: View, TintElement, SliderProperties {
     /// The node this control describes.
     public var node: Node
 

@@ -158,7 +158,7 @@ final class ControlTests: XCTestCase {
                 Picker(["Small", "Medium", "Large"])
                     .selectedIndex(1)
                     .title("Size")
-                    .titleColor(.gray)
+                    .tint(.gray)
                     .isOpen(false)
                     .onSelectedIndexChanged { _ in }
                     .onOpened {}
@@ -187,15 +187,13 @@ final class ControlTests: XCTestCase {
             ControlCase("Switch", source: "Switch.swift",
                 Switch(true)
                     .isOn(true)
-                    .onColor(.green)
-                    .offColor(.lightGray)
-                    .thumbColor(.white)
+                    .tint(.green)
                     .onToggled { _ in }),
 
             ControlCase("CheckBox", source: "CheckBox.swift",
                 CheckBox(true)
                     .isOn(true)
-                    .color(.firebrick)
+                    .tint(.firebrick)
                     .onToggled { _ in }),
 
             ControlCase("RadioButton", source: "RadioButton.swift",
@@ -213,10 +211,7 @@ final class ControlTests: XCTestCase {
                 Slider(40)
                     .minimum(0)
                     .maximum(100)
-                    .minimumTrackColor(.cornflowerBlue)
-                    .maximumTrackColor(.lightGray)
-                    .thumbColor(.white)
-                    .thumbImageSource("thumb.png")
+                    .tint(.cornflowerBlue)
                     .onValueChanged { _ in }
                     .onDragStarted {}
                     .onDragCompleted {}),
@@ -232,20 +227,19 @@ final class ControlTests: XCTestCase {
             ControlCase("SearchField", source: "SearchField.swift",
                 SearchField("al")
                     .returnKey(.search)
-                    .cancelButtonColor(.gray)
-                    .searchIconColor(.cornflowerBlue)
+                    .tint(.gray)
                     .onTextChanged { _ in }
                     .onSubmitted {}),
 
             ControlCase("ActivityIndicator", source: "ActivityIndicator.swift",
                 ActivityIndicator(true)
                     .isRunning(true)
-                    .color(.cornflowerBlue)),
+                    .tint(.cornflowerBlue)),
 
             ControlCase("ProgressBar", source: "ProgressBar.swift",
                 ProgressBar(0.4)
                     .progress(0.4)
-                    .progressColor(.cornflowerBlue)),
+                    .tint(.cornflowerBlue)),
 
             ControlCase("ColorBox", source: "ColorBox.swift",
                 ColorBox(.cornflowerBlue)
@@ -402,7 +396,7 @@ final class ControlTests: XCTestCase {
                     Label("Pull me")
                 }
                 .isRefreshing(true)
-                .refreshColor(.cornflowerBlue)
+                .tint(.cornflowerBlue)
                 .isRefreshEnabled(true)
                 .onRefreshRequested {}),
 
@@ -774,7 +768,7 @@ final class ControlTests: XCTestCase {
             "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
             "background", "fill", "stroke", "icon", "icon",
-            "icon", "thumbImageSource", "maximumDate",
+            "icon", "maximumDate",
             "minimumDate", "strokeDashPattern", "points", "options", "columns",
             "rows", "shape", "renderTransform", "transform", "motion", "id",
             "assign", "absoluteLayoutBounds",

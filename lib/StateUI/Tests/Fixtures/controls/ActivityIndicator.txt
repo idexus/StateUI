@@ -1,4 +1,4 @@
 generation 1 names +3
 ActivityIndicator 1
-  color: color FF6495ED
   isRunning: true
+  tint: color FF6495ED

@@ -32,12 +32,12 @@ final class AppKitSliderView: NSSlider {
         writeValue: Bool,
         minimum: Double,
         maximum: Double,
-        minimumTrackColor: NSColor?,
+        tint: NSColor?,
         enabled: Bool
     ) {
         minValue = min(minimum, maximum)
         maxValue = max(minimum, maximum)
-        trackFillColor = minimumTrackColor
+        trackFillColor = tint
         isEnabled = enabled
 
         if writeValue, let value {

@@ -121,7 +121,7 @@ struct ReaderSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Value")
                 .minimum(0)
                 .maximum(1)
-                .minimumTrackColor(Palette.accent)
+                .tint(Palette.accent)
 
             HStack {
                 button("+10%") { value = min(1, value + 0.1) }
@@ -142,7 +142,7 @@ struct ReaderSample: SampleContent, ExampleContent {
                     .accessibilityLabel("Value, handed on as a binding")
                     .minimum(0)
                     .maximum(1)
-                    .minimumTrackColor(Palette.subtle)
+                    .tint(Palette.subtle)
                 DebugInfoLabel()
             }
 
@@ -291,7 +291,7 @@ private struct Holding: ContentView {
                     .accessibilityLabel("Value, in a child that only hands it on")
                     .minimum(0)
                     .maximum(1)
-                    .minimumTrackColor(Palette.subtle)
+                    .tint(Palette.subtle)
                 DebugInfoLabel()
             }
             .spacing(4)

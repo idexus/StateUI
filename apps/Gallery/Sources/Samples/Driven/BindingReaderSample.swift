@@ -161,7 +161,7 @@ private struct ReadingMeter: ContentView {
         return VStack {
             ProgressBar()
                 .progress(level)
-                .progressColor(Palette.accent)
+                .tint(Palette.accent)
 
             Label("a bar that reads the value — \(count)")
                 .fontSize(12)

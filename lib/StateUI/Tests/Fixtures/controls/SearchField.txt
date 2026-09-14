@@ -1,7 +1,6 @@
-generation 1 names +7
+generation 1 names +6
 SearchField 1
-  cancelButtonColor: color FF808080
   returnKey: enum search(4)
-  searchIconColor: color FF6495ED
   text: string "al"
+  tint: color FF808080
   on submitted=1 textChanged=2

@@ -15,11 +15,6 @@ extension CheckBoxProperties {
     public func isOn(_ value: Bool) -> Modified {
         setValue(.isOn, .bool(value))
     }
-
-    /// What colour the tick and the box around it are drawn in.
-    public func color(_ value: Color) -> Modified {
-        setValue(.color, value.propValue)
-    }
 }
 
 /// A box that is ticked or not.
@@ -27,7 +22,7 @@ extension CheckBoxProperties {
 ///     @State private var agreed = false
 ///     …
 ///     HStack {
-///         CheckBox($agreed).color(.firebrick)
+///         CheckBox($agreed).tint(.firebrick)
 ///         Label("I agree").verticalAlignment(.center)
 ///     }
 ///
@@ -37,7 +32,7 @@ extension CheckBoxProperties {
 ///
 /// No caption of its own - a CheckBox is the box and nothing else. Put a
 /// Label beside it, as above.
-public struct CheckBox: View, CheckBoxProperties {
+public struct CheckBox: View, TintElement, CheckBoxProperties {
     /// The node this control describes.
     public var node: Node
 

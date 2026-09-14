@@ -40,13 +40,13 @@ final class AppKitSwitchViewTests: XCTestCase {
         var reports: [Bool] = []
         checkBox.onToggled = { reports.append($0) }
 
-        checkBox.apply(checked: true, enabled: false, color: .systemPurple)
+        checkBox.apply(checked: true, enabled: false, tint: .systemPurple)
         XCTAssertTrue(reports.isEmpty)
         XCTAssertEqual(checkBox.state, .on)
         XCTAssertFalse(checkBox.isEnabled)
         XCTAssertEqual(checkBox.contentTintColor, .systemPurple)
 
-        checkBox.apply(checked: false, enabled: true, color: nil)
+        checkBox.apply(checked: false, enabled: true, tint: nil)
         checkBox.toggleForTesting()
         XCTAssertEqual(reports, [true])
     }

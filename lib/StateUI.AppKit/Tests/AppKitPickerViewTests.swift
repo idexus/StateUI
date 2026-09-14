@@ -18,7 +18,7 @@ final class AppKitPickerViewTests: XCTestCase {
             title: "Size",
             font: .systemFont(ofSize: 15),
             textColor: .systemPurple,
-            titleColor: .secondaryLabelColor,
+            tint: .systemOrange,
             alignment: .center,
             enabled: false,
             open: false,
@@ -29,6 +29,7 @@ final class AppKitPickerViewTests: XCTestCase {
         XCTAssertEqual(picker.titleOfSelectedItem, "Medium")
         XCTAssertEqual(picker.font?.pointSize, 15)
         XCTAssertFalse(picker.isEnabled)
+        XCTAssertEqual(picker.contentTintForTesting, .systemOrange)
     }
 
     @MainActor
@@ -42,7 +43,7 @@ final class AppKitPickerViewTests: XCTestCase {
             title: "Choose",
             font: .systemFont(ofSize: 13),
             textColor: .labelColor,
-            titleColor: .secondaryLabelColor,
+            tint: .systemOrange,
             alignment: .natural,
             enabled: true,
             open: false,
@@ -66,7 +67,7 @@ final class AppKitPickerViewTests: XCTestCase {
             title: nil,
             font: .systemFont(ofSize: 13),
             textColor: .labelColor,
-            titleColor: nil,
+            tint: nil,
             alignment: .natural,
             enabled: true,
             open: false,
@@ -87,7 +88,7 @@ final class AppKitPickerViewTests: XCTestCase {
             title: nil,
             font: .systemFont(ofSize: 13),
             textColor: .labelColor,
-            titleColor: nil,
+            tint: nil,
             alignment: .natural,
             enabled: true,
             open: false,
@@ -100,7 +101,7 @@ final class AppKitPickerViewTests: XCTestCase {
             title: "Choose",
             font: .systemFont(ofSize: 13),
             textColor: .labelColor,
-            titleColor: nil,
+            tint: nil,
             alignment: .natural,
             enabled: true,
             open: false,

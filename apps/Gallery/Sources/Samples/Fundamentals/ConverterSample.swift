@@ -120,7 +120,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                     .accessibilityLabel("Volume, 0 to 1")
                     .minimum(0)
                     .maximum(1)
-                    .minimumTrackColor(Palette.accent)
+                    .tint(Palette.accent)
                 DebugInfoLabel()
             }
 
@@ -130,7 +130,7 @@ struct ConverterSample: SampleContent, ExampleContent {
                     .accessibilityLabel("Volume, in percent")
                     .minimum(0)
                     .maximum(100)
-                    .minimumTrackColor(Palette.subtle)
+                    .tint(Palette.subtle)
                 DebugInfoLabel()
             }
 

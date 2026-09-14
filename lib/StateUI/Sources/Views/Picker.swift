@@ -36,14 +36,6 @@ extension PickerProperties {
     public func title(_ value: String) -> Modified {
         setValue(.title, .string(value))
     }
-
-    /// The colour of that `title`.
-    ///
-    /// Not the colour of the chosen item - `.textColor` is that one, from
-    /// `TextStyleElement`.
-    public func titleColor(_ value: Color) -> Modified {
-        setValue(.titleColor, value.propValue)
-    }
 }
 
 /// One choice out of a list.
@@ -63,7 +55,8 @@ extension PickerProperties {
 ///
 /// `TextStyleElement` rather than `TextElement`: the field displays either a
 /// chosen item or its title, so there is no independent `.text()` value.
-public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement, PickerProperties {
+public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement, TintElement,
+    PickerProperties {
     /// The node this control describes.
     public var node: Node
 

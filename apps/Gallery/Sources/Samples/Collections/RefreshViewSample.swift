@@ -128,7 +128,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
                 }
             }
             .isRefreshEnabled(enabled)
-            .refreshColor(Palette.accent)
+            .tint(Palette.accent)
             .gridRow(0)
             .onRefreshRequested {
                 // Nothing else clears it: the spinner shows for as long as the

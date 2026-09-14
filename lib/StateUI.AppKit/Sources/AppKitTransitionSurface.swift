@@ -62,7 +62,7 @@ enum AppKitTransitionSurface {
             return boxProperties.contains(property)
 
         case .checkBox:
-            return property == .color
+            return property == .tint
 
         case .slider:
             return sliderProperties.contains(property)
@@ -153,11 +153,11 @@ enum AppKitTransitionSurface {
 
     private static let radioProperties: Set<Prop> = [.padding, .fontSize, .textColor]
 
-    private static let pickerProperties: Set<Prop> = [.fontSize, .textColor, .titleColor]
+    private static let pickerProperties: Set<Prop> = [.fontSize, .textColor, .tint]
 
     private static let boxProperties: Set<Prop> = [.color, .cornerRadius]
 
-    private static let sliderProperties: Set<Prop> = [.value, .minimumTrackColor]
+    private static let sliderProperties: Set<Prop> = [.value, .tint]
 
     private static let navigationProperties: Set<Prop> = [
         .barBackgroundColor, .barForegroundColor,

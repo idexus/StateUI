@@ -33,13 +33,11 @@ struct SearchFieldSample: SampleContent, ExampleContent {
                 ? "Type to narrow the list, then press the keyboard's search key."
                 : "Searched for: \\(searched)")
 
-            // The same query again, with the platform's two icons tinted -
-            // the magnifier at the front and the button that empties the
-            // field.
+            // The same query again, in the accent - where the platform lets
+            // an application tint a search field.
             SearchField($query)
                 .placeholder("Search the list")
-                .searchIconColor(Palette.accent)
-                .cancelButtonColor(Palette.accent)
+                .tint(Palette.accent)
         }
 
         /// What the query matches, or everything when there is no query.
@@ -78,14 +76,13 @@ struct SearchFieldSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            SectionTitle("The magnifier and the clear button")
+            SectionTitle("In the accent")
 
             SearchField($query)
                 .accessibilityIdentifier("searchBar.query.styled")
                 .accessibilityLabel("Search the list, coloured")
                 .placeholder("Search the list")
-                .searchIconColor(Palette.accent)
-                .cancelButtonColor(Palette.accent)
+                .tint(Palette.accent)
         }
         .spacing(12)
     }

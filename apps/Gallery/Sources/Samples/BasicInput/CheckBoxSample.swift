@@ -55,7 +55,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
                 CheckBox($agreed)
                     .accessibilityIdentifier("checkBox.agreed")
                     .accessibilityLabel("Agreed")
-                    .color(Palette.accent)
+                    .tint(Palette.accent)
 
                 Label("I have read the terms")
                     .fontSize(15)
@@ -75,7 +75,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
                     CheckBox(extras[index])
                         .accessibilityIdentifier("checkBox.extra.\(index)")
                         .accessibilityLabel(name)
-                        .color(Palette.accent)
+                        .tint(Palette.accent)
                         .onToggled { ticked in extras[index] = ticked }
 
                     Label(name)

@@ -343,9 +343,9 @@ token in parentheses.
 | `TextField` | properties | `returnKey`, `showsClearButton` | — | — | — | — | — | — |
 | `TextField` | handlers | `onSubmitted` (`submitted`) | ✅ | — | — | — | — | — |
 | `TextEditor` | properties | `growsWithText` | ✅ | — | — | — | — | — |
-| `SearchField` | properties | `returnKey`, `cancelButtonColor`, `searchIconColor` | — | — | — | — | — | — |
+| `SearchField` | properties | `returnKey`, `tint` | — | — | — | — | — | — |
 | `SearchField` | handlers | `onSubmitted` (`submitted`) | ✅ | — | — | — | — | — |
-| `Picker` | properties | `options`, `selectedIndex`, `title`, `titleColor`, `isOpen` | ✅ | — | — | — | — | — |
+| `Picker` | properties | `options`, `selectedIndex`, `title`, `tint`, `isOpen` | ✅ | — | — | — | — | — |
 | `Picker` | handlers | `onSelectedIndexChanged` (`selectedIndexChanged`), `onOpened` (`opened`), `onClosed` (`closed`) | ✅ | — | — | — | — | — |
 | `DatePicker` | properties | `date`, `minimumDate`, `maximumDate` | ✅ | — | — | — | — | — |
 | `DatePicker` | properties | `format`, `isOpen` | — | — | — | — | — | — |
@@ -356,17 +356,16 @@ token in parentheses.
 | `TimePicker` | handlers | `onTimeChanged` (`timeChanged`) | ✅ | — | — | — | — | — |
 | `TimePicker` | handlers | `onOpened` (`opened`), `onClosed` (`closed`) | — | — | — | — | — | — |
 | `Switch` | properties/events | two-way `isOn`, `onToggled` (`toggled`) | ✅ | — | — | — | — | — |
-| `Switch` | properties | `onColor`, `offColor`, `thumbColor` | — | — | — | — | — | — |
-| `CheckBox` | properties/events | two-way `isOn`, `color`, `onToggled` (`toggled`) | ✅ | — | — | — | — | — |
+| `Switch` | properties | `tint` | — | — | — | — | — | — |
+| `CheckBox` | properties/events | two-way `isOn`, `tint`, `onToggled` (`toggled`) | ✅ | — | — | — | — | — |
 | `RadioButton` | properties/events | `text`, two-way `isOn`, `groupName`, `onToggled` (`toggled`) | ✅ | — | — | — | — | — |
-| `Slider` | properties | two-way `value`, `minimum`, `maximum`, `minimumTrackColor` | ✅ | — | — | — | — | — |
-| `Slider` | properties | `maximumTrackColor`, `thumbColor`, `thumbImageSource` | — | — | — | — | — | — |
+| `Slider` | properties | two-way `value`, `minimum`, `maximum`, `tint` | ✅ | — | — | — | — | — |
 | `Slider` | handlers | `onValueChanged` (`valueChanged`), `onDragStarted` (`dragStarted`), `onDragCompleted` (`dragCompleted`) | ✅ | — | — | — | — | — |
 | `Stepper` | properties/events | two-way `value`, `minimum`, `maximum`, `step`, `onValueChanged` (`valueChanged`) | ✅ | — | — | — | — | — |
 | `ProgressBar` | properties | `progress` | ✅ | — | — | — | — | — |
-| `ProgressBar` | properties | `progressColor` | — | — | — | — | — | — |
+| `ProgressBar` | properties | `tint` | — | — | — | — | — | — |
 | `ActivityIndicator` | properties | `isRunning` | ✅ | — | — | — | — | — |
-| `ActivityIndicator` | properties | `color` | — | — | — | — | — | — |
+| `ActivityIndicator` | properties | `tint` | — | — | — | — | — | — |
 | `Canvas` | properties/events | `drawable`, `onPressed` (`pressed`), `onDragged` (`dragged`), `onReleased` (`released`) | ✅ | — | — | — | — | — |
 | shapes | properties | `fill`, `stroke`, `strokeWidth`, `strokeDashPattern`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `aspect`, `renderTransform` | — | — | — | — | — | — |
 | `Rectangle` | properties | `cornerRadius` | — | — | — | — | — | — |
@@ -374,7 +373,7 @@ token in parentheses.
 | `Path` | properties | `data` | ✅ | — | — | — | — | — |
 | `Polygon` / `Polyline` | properties | `points`, `fillRule` | ✅ | — | — | — | — | — |
 | `PositionIndicator` | properties | `count`, `position`, `indicatorColor`, `selectedIndicatorColor`, `indicatorSize`, `maximumVisible`, `indicatorsShape`, `hideSingle` | — | — | — | — | — | — |
-| `RefreshView` | properties/events | two-way `isRefreshing`, `isRefreshEnabled`, `refreshColor`, `onRefreshRequested` (`refreshRequested`) | — | — | — | — | — | — |
+| `RefreshView` | properties/events | two-way `isRefreshing`, `isRefreshEnabled`, `tint`, `onRefreshRequested` (`refreshRequested`) | — | — | — | — | — | — |
 | `SwipeView` | properties/events | `threshold`, item `side`, `swipeBehaviorOnInvoked`, `onSwipeStarted` (`swipeStarted`), `onSwipeChanging` (`swipeChanging`), `onSwipeEnded` (`swipeEnded`) | — | — | — | — | — | — |
 | `SwipeAction` | properties/events | `text`, `icon`, `background`, `isDestructive`, `isEnabled`, `isVisible`, `onClicked` (`clicked`) | — | — | — | — | — | — |
 | `RefreshView` | state event | `isRefreshingChanged` | — | — | — | — | — | — |
@@ -417,14 +416,14 @@ host status.
 `accessibilityLabel`, `address`, `allowDrop`, `aspect`,
 `automationExcludedWithChildren`, `avoidsSafeArea`, `backButtonTitle`,
 `background`, `barBackgroundColor`, `barForegroundColor`, `borderColor`,
-`borderWidth`, `cancelButtonColor`, `canDrag`, `characterSpacing`,
-`clipsContent`, `color`, `columns`, `columnSpacing`, `content`, `cornerRadius`,
-`count`, `currentPage`, `cursorPosition`, `data`, `date`, `dragText`,
-`drawable`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
-`fontAutoScalingEnabled`, `fontFamily`, `fontSize`, `format`, `frame`,
-`gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `group`, `groupName`,
-`growsWithText`, `hasBackButton`, `hasNavigationBar`, `height`, `hideSingle`,
-`hidesWhenInactive`, `horizontalAlignment`, `horizontalScrollBarVisibility`,
+`borderWidth`, `canDrag`, `characterSpacing`, `clipsContent`, `color`,
+`columns`, `columnSpacing`, `content`, `cornerRadius`, `count`, `currentPage`,
+`cursorPosition`, `data`, `date`, `dragText`, `drawable`, `fill`, `fillRule`,
+`floatsOnTop`, `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`,
+`fontSize`, `format`, `frame`, `gridColumn`, `gridColumnSpan`, `gridRow`,
+`gridRowSpan`, `group`, `groupName`, `growsWithText`, `hasBackButton`,
+`hasNavigationBar`, `height`, `hideSingle`, `hidesWhenInactive`,
+`horizontalAlignment`, `horizontalScrollBarVisibility`,
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
 `inputPurpose`, `isAccessibilityHidden`, `isAnimating`, `isDestructive`,
@@ -434,26 +433,24 @@ host status.
 `isTextPredictionEnabled`, `isTrafficEnabled`, `isVisible`, `isZoomEnabled`,
 `label`, `layoutDirection`, `letsInputThrough`, `lineBreak`, `lineHeight`,
 `location`, `mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`,
-`maximumLength`, `maximumLines`, `maximumTrackColor`, `maximumVisible`,
-`maximumWidth`, `minimum`, `minimumDate`, `minimumHeight`, `minimumTrackColor`,
-`minimumWidth`, `mode`, `name`, `offColor`, `onColor`, `opacity`, `options`,
-`orientation`, `padding`, `panTouchCount`, `panXChannel`, `panYChannel`,
-`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `placement`, `points`,
-`position`, `priority`, `progress`, `progressColor`, `refreshColor`, `region`,
+`maximumLength`, `maximumLines`, `maximumVisible`, `maximumWidth`, `minimum`,
+`minimumDate`, `minimumHeight`, `minimumWidth`, `mode`, `name`, `opacity`,
+`options`, `orientation`, `padding`, `panTouchCount`, `panXChannel`,
+`panYChannel`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`,
+`placement`, `points`, `position`, `priority`, `progress`, `region`,
 `renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
 `rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollMomentum`, `scrollOffset`,
-`scrollStep`, `searchIconColor`, `selectedIndex`, `selectedIndicatorColor`,
-`selectionLength`, `shape`, `showsClearButton`, `showsUserLocation`, `side`,
-`snapFrom`, `snapInterval`, `snapsAtMost`, `source`, `spacing`, `step`,
-`stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`,
-`strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`, `subtitle`,
+`scrollStep`, `selectedIndex`, `selectedIndicatorColor`, `selectionLength`,
+`shape`, `showsClearButton`, `showsUserLocation`, `side`, `snapFrom`,
+`snapInterval`, `snapsAtMost`, `source`, `spacing`, `step`, `stroke`,
+`strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`,
+`strokeMiterLimit`, `strokeWidth`, `style`, `subtitle`,
 `swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `tapCount`,
 `text`, `textCase`, `textColor`, `textDecorations`, `textType`, `threshold`,
-`thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`,
-`translationX`, `translationY`, `type`, `userAgent`, `value`,
-`verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
-`width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
-`zIndex`.
+`time`, `tint`, `title`, `translationX`, `translationY`, `type`, `userAgent`,
+`value`, `verticalAlignment`, `verticalScrollBarVisibility`,
+`verticalTextAlignment`, `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`,
+`y`, `y1`, `y2`, `zIndex`.
 
 ### Events
 

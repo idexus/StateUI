@@ -25,15 +25,6 @@
 // MARK: - ActivityIndicator
 
 extension ActivityIndicator {
-    /// `color`, handed on as `$x`: the host walks it there under the element's
-    /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func color(_ state: Binding<Color>) -> Modified {
-        journey(.color, by: state)
-    }
 
     /// `isRunning`, handed on as `$x`: the host sets it as it is, and handing
     /// it on reads nothing - a write renders only a body that reads the state.
@@ -351,7 +342,6 @@ extension ImageElement where Self: VisualElement {
     public func aspect(_ state: Binding<Aspect>) -> Modified {
         plain(.aspect, by: state)
     }
-
 }
 
 // MARK: - PositionIndicator
@@ -528,7 +518,6 @@ extension Label {
     public func maximumLines(_ state: Binding<Int>) -> Modified {
         plain(.maximumLines, by: state)
     }
-
 }
 
 // MARK: - Layout
@@ -636,20 +625,6 @@ extension PaddingElement where Self: VisualElement {
     }
 }
 
-// MARK: - Picker
-
-extension Picker {
-    /// `titleColor`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func titleColor(_ state: Binding<Color>) -> Modified {
-        journey(.titleColor, by: state)
-    }
-}
-
 // MARK: - Polygon
 
 extension Polygon {
@@ -675,16 +650,6 @@ extension ProgressBar {
     /// - Returns: the element, with the property carried from that state.
     public func progress(_ state: Binding<Double>) -> Modified {
         journey(.progress, by: state)
-    }
-
-    /// `progressColor`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func progressColor(_ state: Binding<Color>) -> Modified {
-        journey(.progressColor, by: state)
     }
 }
 
@@ -728,16 +693,6 @@ extension RefreshView {
     public func isRefreshEnabled(_ state: Binding<Bool>) -> Modified {
         plain(.isRefreshEnabled, by: state)
     }
-
-    /// `refreshColor`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func refreshColor(_ state: Binding<Color>) -> Modified {
-        journey(.refreshColor, by: state)
-    }
 }
 
 // MARK: - ScrollView
@@ -771,30 +726,6 @@ extension ScrollView {
     /// - Returns: the element, with the property carried from that state.
     public func verticalScrollBarVisibility(_ state: Binding<ScrollBarVisibility>) -> Modified {
         plain(.verticalScrollBarVisibility, by: state)
-    }
-}
-
-// MARK: - SearchField
-
-extension SearchField {
-    /// `cancelButtonColor`, handed on as `$x`: the host walks it there under
-    /// the element's law, and handing it on reads nothing - a write renders
-    /// only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func cancelButtonColor(_ state: Binding<Color>) -> Modified {
-        journey(.cancelButtonColor, by: state)
-    }
-
-    /// `searchIconColor`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func searchIconColor(_ state: Binding<Color>) -> Modified {
-        journey(.searchIconColor, by: state)
     }
 }
 
@@ -854,16 +785,6 @@ extension Slider {
         plain(.maximum, by: state)
     }
 
-    /// `maximumTrackColor`, handed on as `$x`: the host walks it there under
-    /// the element's law, and handing it on reads nothing - a write renders
-    /// only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func maximumTrackColor(_ state: Binding<Color>) -> Modified {
-        journey(.maximumTrackColor, by: state)
-    }
-
     /// `minimum`, handed on as `$x`: the host sets it as it is, and handing it
     /// on reads nothing - a write renders only a body that reads the state.
     ///
@@ -871,26 +792,6 @@ extension Slider {
     /// - Returns: the element, with the property carried from that state.
     public func minimum(_ state: Binding<Double>) -> Modified {
         plain(.minimum, by: state)
-    }
-
-    /// `minimumTrackColor`, handed on as `$x`: the host walks it there under
-    /// the element's law, and handing it on reads nothing - a write renders
-    /// only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func minimumTrackColor(_ state: Binding<Color>) -> Modified {
-        journey(.minimumTrackColor, by: state)
-    }
-
-    /// `thumbColor`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func thumbColor(_ state: Binding<Color>) -> Modified {
-        journey(.thumbColor, by: state)
     }
 }
 
@@ -931,30 +832,6 @@ extension SwipeView {
     /// - Returns: the element, with the property carried from that state.
     public func threshold(_ state: Binding<Double>) -> Modified {
         plain(.threshold, by: state)
-    }
-}
-
-// MARK: - Switch
-
-extension Switch {
-    /// `offColor`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func offColor(_ state: Binding<Color>) -> Modified {
-        journey(.offColor, by: state)
-    }
-
-    /// `onColor`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
-    public func onColor(_ state: Binding<Color>) -> Modified {
-        journey(.onColor, by: state)
     }
 }
 
@@ -1003,6 +880,20 @@ extension TextStyleElement where Self: VisualElement {
     /// - Returns: the element, with the property carried from that state.
     public func textColor(_ state: Binding<Color>) -> Modified {
         journey(.textColor, by: state)
+    }
+}
+
+// MARK: - TintElement
+
+extension TintElement where Self: VisualElement {
+    /// `tint`, handed on as `$x`: the host walks it there under the element's
+    /// law, and handing it on reads nothing - a write renders only a body that
+    /// reads the state.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func tint(_ state: Binding<Color>) -> Modified {
+        journey(.tint, by: state)
     }
 }
 
