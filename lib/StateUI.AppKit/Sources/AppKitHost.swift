@@ -1175,9 +1175,7 @@ final class MountedNode: NSObject {
     private func apply(_ patch: HostPatch, adopting: Bool) {
         guard let host else { return }
 
-        let previousNavigationTop = type == .navigationStack ? children.last : nil
-        let previousTab = type == .tabbedView ? selectedTab : nil
-        let previousSidebarVisibility = type == .splitView ? sidebarIsVisible : false
+        let previousShown = shownChildren
         var changed: Set<Prop>
 
         if adopting {
@@ -1296,9 +1294,8 @@ final class MountedNode: NSObject {
         configureGestures()
         arrangeChildren()
         configureFrameObservation()
-        reconcileNavigationPresentation(from: previousNavigationTop)
-        reconcileTabPresentation(from: previousTab)
-        reconcileSidebarVisibility(from: previousSidebarVisibility)
+        reconcilePresentation(from: previousShown)
+        reportTabFallback()
     }
 
     /// Reconciles a complete child arrangement. Ordinary children match by
@@ -1617,24 +1614,45 @@ final class MountedNode: NSObject {
         host?.enqueue(handler)
     }
 
-    private func reconcileNavigationPresentation(from previous: MountedNode?) {
-        guard type == .navigationStack, pagePresented else { return }
-        let current = children.last
-        guard previous !== current else { return }
-
-        previous?.setPagePresented(false, reason: .navigation)
-        current?.setPagePresented(true, reason: .navigation)
+    /// What this arrangement shows while it is shown itself: a stack's top
+    /// page, a tabbed view's selected tab, a split view's detail and - while
+    /// it shows - its sidebar. Nothing, for anything else.
+    private var shownChildren: [MountedNode] {
+        switch type {
+        case .navigationStack:
+            return children.last.map { [$0] } ?? []
+        case .tabbedView:
+            return selectedTab.map { [$0] } ?? []
+        case .splitView:
+            let detail = Array(children.dropFirst().prefix(1))
+            return sidebarIsVisible ? detail + children.prefix(1) : detail
+        default:
+            return []
+        }
     }
 
-    private func reconcileTabPresentation(from previous: MountedNode?) {
-        guard type == .tabbedView else { return }
-        let current = selectedTab
+    /// Moves presentation to follow a change of the arrangement - a push or a
+    /// pop, another tab, the sidebar showing or hiding, or a shown child
+    /// replaced outright: what stopped showing leaves first, then what started
+    /// showing arrives. On a stack that is a navigation; anywhere else it is a
+    /// change of what is visible.
+    private func reconcilePresentation(from previous: [MountedNode]) {
+        guard pagePresented else { return }
+        let current = shownChildren
+        let reason: AppKitPagePresentationReason =
+            type == .navigationStack ? .navigation : .appearance
 
-        if pagePresented, previous !== current {
-            previous?.setPagePresented(false, reason: .appearance)
-            current?.setPagePresented(true, reason: .appearance)
+        for child in previous where !current.contains(where: { $0 === child }) {
+            child.setPagePresented(false, reason: reason)
         }
+        for child in current where !previous.contains(where: { $0 === child }) {
+            child.setPagePresented(true, reason: reason)
+        }
+    }
 
+    /// Reports the tab a tabbed view fell back to when its selected tab went
+    /// away.
+    private func reportTabFallback() {
         if let fallback = pendingTabFallback,
            let handler = events[.currentPageChanged] {
             host?.enqueue(handler, payload: [.number(Double(fallback))])
@@ -1653,15 +1671,6 @@ final class MountedNode: NSObject {
             return split.isEffectivelyPresented
         }
         return value(.isSidebarVisible)?.bool == true
-    }
-
-    private func reconcileSidebarVisibility(from previous: Bool) {
-        guard type == .splitView else { return }
-        let current = sidebarIsVisible
-
-        if pagePresented, previous != current {
-            children.first?.setPagePresented(current, reason: .appearance)
-        }
     }
 
     func takeCreatedHandlers() -> [Int32] {

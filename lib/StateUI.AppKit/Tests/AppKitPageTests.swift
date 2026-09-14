@@ -282,6 +282,65 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(reported.map(\.0), [101])
     }
 
+    /// A split view whose detail is REPLACED - a stack giving way to a tabbed
+    /// view, the way a section changes its arrangement - presents the new
+    /// tree: the old detail's page leaves, the selected tab's page arrives,
+    /// and a push on that tab's stack reports its phases.
+    @MainActor
+    func testAReplacedSplitDetailIsPresented() {
+        var reported: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reported.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(flyout(
+            presented: false,
+            menu: page("menu", events: 100),
+            detail: navigation([page("home", events: 200)]))))
+        reported.removeAll()
+
+        renderer.applyForTesting(tree(flyout(
+            presented: false,
+            menu: page("menu", events: 100),
+            detail: tabbed([navigation([page("tab", events: 300)])], selected: 0))))
+        XCTAssertEqual(reported.map(\.0), [201, 300])
+
+        reported.removeAll()
+        renderer.applyForTesting(tree(flyout(
+            presented: false,
+            menu: page("menu", events: 100),
+            detail: tabbed([navigation([
+                page("tab", events: 300),
+                page("level", events: 400),
+            ])], selected: 0))))
+        XCTAssertEqual(reported.map(\.0), [303, 301, 304, 400, 402])
+    }
+
+    /// The same for the sidebar: one replaced while it shows is presented.
+    @MainActor
+    func testAReplacedVisibleSidebarIsPresented() {
+        var reported: [(Int32, [HostValue])] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { reported.append(($0, $1)) })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: page("menu", events: 100),
+            detail: page("detail", events: 200))))
+        reported.removeAll()
+
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: page("sections", events: 500),
+            detail: page("detail", events: 200))))
+        XCTAssertEqual(reported.map(\.0), [101, 500])
+    }
+
     @MainActor
     func testReaderFlyoutToggleReportsItsSettledValueOnce() throws {
         var reported: [(Int32, [HostValue])] = []
