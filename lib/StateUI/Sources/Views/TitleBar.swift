@@ -51,7 +51,7 @@ extension TitleBarProperties {
 ///     TitleBar("Notes")
 ///         .trailingContent {
 ///             if showsAccount {
-///                 ImageButton("account.png")
+///                 Button(icon: "account.png")
 ///             }
 ///         }
 ///
@@ -77,7 +77,7 @@ public struct TitleBar: View, TitleBarProperties {
     ///
     ///     TitleBar("Notes")
     ///         .leadingContent {
-    ///             ImageButton("menu.png").onClicked { showsPane.toggle() }
+    ///             Button(icon: "menu.png").onClicked { showsPane.toggle() }
     ///         }
     ///
     /// A closure producing nothing empties the slot, which is what an `if` in

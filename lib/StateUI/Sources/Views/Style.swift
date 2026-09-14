@@ -143,12 +143,6 @@ extension VisualState where Target == Button {
     public static var pressed: Self { Self("Pressed") }
 }
 
-/// An ImageButton is held down - the same state, on the other button.
-extension VisualState where Target == ImageButton {
-    /// While the button is held down.
-    public static var pressed: Self { Self("Pressed") }
-}
-
 /// A Switch says which way it is.
 extension VisualState where Target == Switch {
     /// While `isOn` is true.
@@ -893,7 +887,6 @@ extension StyleBag: TextFieldProperties where Target == TextField {}
 extension StyleBag: CanvasProperties where Target == Canvas {}
 extension StyleBag: GridProperties where Target == Grid {}
 extension StyleBag: ImageProperties where Target == Image {}
-extension StyleBag: ImageButtonProperties where Target == ImageButton {}
 extension StyleBag: PositionIndicatorProperties where Target == PositionIndicator {}
 extension StyleBag: LabelProperties where Target == Label {}
 extension StyleBag: LineProperties where Target == Line {}
@@ -941,7 +934,6 @@ extension SearchField: StyleTarget {}
 extension ActivityIndicator: StyleTarget {}
 extension ProgressBar: StyleTarget {}
 extension Image: StyleTarget {}
-extension ImageButton: StyleTarget {}
 extension ColorBox: StyleTarget {}
 extension Border: StyleTarget {}
 extension Grid: StyleTarget {}

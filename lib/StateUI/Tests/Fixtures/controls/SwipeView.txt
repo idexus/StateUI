@@ -10,7 +10,7 @@ SwipeView 1 arranged(3)
     swipeBehaviorOnInvoked: enum auto(0)
     SwipeAction 4
       background: color FFFFD700
-      iconImageSource: string "tab_list.png"
+      icon: string "tab_list.png"
       isDestructive: false
       isEnabled: true
       isVisible: true

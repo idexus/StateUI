@@ -13,30 +13,30 @@ extension ButtonProperties {
         setValue(.lineBreak, value.propValue)
     }
 
-    /// A picture beside the caption - a file among the application's image
-    /// resources, by name; see `Image`.
+    /// The picture beside the caption - a file among the application's image
+    /// resources, by name; see `Image`. A button with an icon and no caption is
+    /// `Button(icon:)`.
     ///
-    ///     Button("Surprise me").imageSource("nav_surprise.png")
-    ///
-    /// Where it sits and how far it stands off the words is
-    /// `.contentLayout(_:spacing:)`. A button with a picture and NO caption is
-    /// an `ImageButton`, and that is the control to use for one.
-    public func imageSource(_ value: ImageSource) -> Modified {
-        setValue(.imageSource, value.propValue)
+    ///     Button("Surprise me").icon("nav_surprise.png")
+    public func icon(_ value: ImageSource) -> Modified {
+        setValue(.icon, value.propValue)
     }
 
-    /// Which side of the caption the picture is on, and the gap between them.
+    /// Which side of the caption the icon stands on. `.leading`, the default,
+    /// is the side a line of text starts from, so it follows the layout
+    /// direction.
     ///
     ///     Button("Surprise me")
-    ///         .imageSource("nav_surprise.png")
-    ///         .contentLayout(.left, spacing: 8)
-    ///
-    /// It travels as the two parts it is - which side, then the gap - and the
-    /// host places the picture from them.
-    ///
-    /// - Parameter spacing: The gap in device units, 10 unless said.
-    public func contentLayout(_ position: ButtonContentPosition, spacing: Double = 10) -> Modified {
-        setValue(.contentLayout, .values([position.propValue, .number(spacing)]))
+    ///         .icon("nav_surprise.png")
+    ///         .iconPosition(.leading)
+    ///         .iconSpacing(8)
+    public func iconPosition(_ value: IconPosition) -> Modified {
+        setValue(.iconPosition, value.propValue)
+    }
+
+    /// The gap between the icon and the caption, in device units.
+    public func iconSpacing(_ value: Double) -> Modified {
+        setValue(.iconSpacing, .number(value))
     }
 }
 
@@ -56,7 +56,7 @@ extension ButtonProperties {
 /// A handler may `await`: it runs on this library's own main thread and the
 /// interface goes on being described while it is suspended, so
 /// `.onClicked { items = try await load() }` needs nothing around it.
-public struct Button: View, TextElement, FontElement, PaddingElement, BorderElement,
+public struct Button: View, TextElement, FontElement, PaddingElement, BorderElement, ImageElement,
     ButtonProperties {
     /// The node this control describes.
     public var node: Node
@@ -64,6 +64,18 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
     /// An empty one - what a `Style<Button>` is written against.
     public init() {
         node = Node(type: .button)
+    }
+
+    /// A button whose content is an icon, with no caption: the picture is what
+    /// gives it its purpose.
+    ///
+    ///     Button(icon: "trash.png")
+    ///     Button(icon: ImageSource(light: "trash.png", dark: "trash_dark.png"))
+    ///
+    /// The same button as one with a caption - the same border, corner radius
+    /// and pressed state - with `.aspect` for how its picture fills it.
+    public init(icon: ImageSource) {
+        node = Node(type: .button, props: [.icon: icon.propValue])
     }
 
     /// A button captioned `text`.
@@ -106,15 +118,15 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
 ///
 /// Its numbers are this wire's own - the rule at the head of
 /// Types/Enums.swift, which every closed vocabulary on this wire follows.
-public enum ButtonContentPosition: Int32, Sendable {
-    /// Before the words - the default.
-    case left = 0
+public enum IconPosition: Int32, Sendable {
+    /// Before the words, on the side a line starts from - the default.
+    case leading = 0
 
     /// Above them.
     case top = 1
 
-    /// After them.
-    case right = 2
+    /// After them, on the side a line ends.
+    case trailing = 2
 
     /// Below them.
     case bottom = 3

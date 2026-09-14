@@ -147,7 +147,7 @@ enum AppStyles {
                     .background(Palette.outline)
                 }
 
-            Style<ImageButton>()
+            Style<Button>("IconButton")
                 .opacity(1)
                 .borderColor(.transparent)
                 .borderWidth(0)

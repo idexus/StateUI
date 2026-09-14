@@ -12,6 +12,7 @@ The value that gives a control its purpose belongs in its initializer:
 ```swift
 Label("Account")
 Button("Save")
+Button(icon: "trash.png")
 Image("avatar.png")
 ColorBox(.cornflowerBlue)
 ```
@@ -210,8 +211,28 @@ belongs in the application boundary; see [Environment](environment.md).
 ## Images and media providers
 
 `ImageSource` names an application resource and can choose light and dark
-variants. `Image` and `ImageButton` consume it without exposing a platform
+variants. `Image` and a button's `icon` consume it without exposing a platform
 image type.
+
+A button carries a picture in one of two ways. When the picture is its whole
+purpose, it goes in the initializer: `Button(icon:)`. Beside a caption it is the
+`icon` modifier, placed by `iconPosition` and set apart by `iconSpacing`:
+
+```swift
+Button(icon: "trash.png")
+    .semanticDescription("Delete")
+
+Button("Surprise me")
+    .icon("nav_surprise.png")
+    .iconPosition(.leading)
+    .iconSpacing(8)
+```
+
+`.leading`, the default, is the side a line of text starts from, so the icon
+follows the layout direction. A button with only an icon is the same control as
+one with a caption - the same border, corner radius and pressed state - with
+`aspect` for how its picture fills it. A picture alone gives it no name for a
+screen reader, so it carries a `semanticDescription`.
 
 ## Provisional native surfaces
 

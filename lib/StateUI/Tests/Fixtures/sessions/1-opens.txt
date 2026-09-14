@@ -12,7 +12,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
           title: string "Home"
           on popped=8
           Page "root" arranged(1)
-            iconImageSource: string "home.png"
+            icon: string "home.png"
             title: string "Home"
             on appearing=9 disappearing=10 navigatedFrom=11 navigatedTo=12 navigatingFrom=13
             VStack 3 arranged(3)
@@ -31,7 +31,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
                 text: string "themed"
                 textColor: color FF000000
         Page "settings" arranged(1)
-          iconImageSource: string "settings.png"
+          icon: string "settings.png"
           title: string "Settings"
           on appearing=15 disappearing=16 navigatedFrom=17 navigatedTo=18 navigatingFrom=19
           VStack 7 arranged(2)

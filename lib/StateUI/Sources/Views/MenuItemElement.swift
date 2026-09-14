@@ -8,13 +8,13 @@
 // this applies to a view.
 
 /// What a toolbar item, a menu entry and a swipe action all share: `text`,
-/// `iconImageSource`, `isDestructive`, `isEnabled` - and `onClicked`, what
+/// `icon`, `isDestructive`, `isEnabled` - and `onClicked`, what
 /// choosing one does.
 ///
 /// Written on the item, in any order, before or after its own modifiers:
 ///
 ///     ToolbarItem("Delete")
-///         .iconImageSource("trash.png")
+///         .icon("trash.png")
 ///         .isDestructive(true)
 ///         .onClicked { delete() }
 ///
@@ -31,8 +31,8 @@ extension MenuItemElement {
     }
 
     /// The picture on it, resolved from the application's image resources.
-    public func iconImageSource(_ value: ImageSource) -> Modified {
-        setValue(.iconImageSource, value.propValue)
+    public func icon(_ value: ImageSource) -> Modified {
+        setValue(.icon, value.propValue)
     }
 
     /// Whether the platform draws it as a destructive action, so deletion and

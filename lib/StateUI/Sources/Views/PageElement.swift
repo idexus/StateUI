@@ -20,7 +20,7 @@
 ///                 HomePage()
 ///             } destination: { … }
 ///             .title("Home")                    // the tab's caption
-///             .iconImageSource("house.png")     // and its picture
+///             .icon("house.png")     // and its picture
 ///
 ///         case .settings:
 ///             SettingsPage()                    // a written page writes
@@ -51,8 +51,8 @@ extension PageElement {
     /// A tab's icon, in practice: it is what a TabbedView draws above or beside
     /// the caption. A page that is not shown as an item of something else has
     /// nowhere to draw it, and platforms ignore it there.
-    public func iconImageSource(_ value: ImageSource) -> Modified {
-        setValue(.iconImageSource, value.propValue)
+    public func icon(_ value: ImageSource) -> Modified {
+        setValue(.icon, value.propValue)
     }
 
 }

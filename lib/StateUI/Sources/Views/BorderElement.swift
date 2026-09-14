@@ -7,12 +7,12 @@
 // BarElement.swift gives: Elements.swift is the tier every VIEW shares,
 // exactly, and `testTheSharedTierIsCoveredOnce` checks its properties against
 // one fixture built from a stack and a label. A border is not every view's -
-// three controls have one - so it is a tier of its own, beside them rather
+// two controls have one - so it is a tier of its own, beside them rather
 // than among them.
 
-/// The outline of a control that draws one - the tier `Button`,
-/// `ImageButton` and `RadioButton` all wear, and the one place the three
-/// properties that paint an outline are declared.
+/// The outline of a control that draws one - the tier `Button` and
+/// `RadioButton` wear, and the one place the three properties that paint an
+/// outline are declared.
 ///
 ///     Button("Save")
 ///         .borderColor(.cornflowerBlue)

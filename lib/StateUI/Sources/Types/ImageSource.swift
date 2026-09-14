@@ -16,7 +16,7 @@
 /// A picture, by file name.
 ///
 ///     Image("tab_list.png")
-///     ToolbarItem("Media").iconImageSource("tab_list.png")
+///     ToolbarItem("Media").icon("tab_list.png")
 ///     Image(light: "tab_list.png", dark: "tab_list_dark.png")
 ///
 /// A file in the application's `Resources/Images`, by name. An SVG is asked
@@ -50,7 +50,7 @@ public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral {
     }
 
     /// What lets every one-picture call site stay a plain string:
-    /// `Image("tab_list.png")`, `.iconImageSource("tab_list.png")`.
+    /// `Image("tab_list.png")`, `.icon("tab_list.png")`.
     public init(stringLiteral value: String) {
         self.init(value)
     }

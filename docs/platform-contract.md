@@ -68,7 +68,6 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `Border` | native primitive | — | — | — | — | — | — |
 | `Label` / `Spans` / `Span` | native primitive / structure | ✅ | — | — | — | — | — |
 | `Button` | native primitive | ✅ | — | — | — | — | — |
-| `ImageButton` | StateUI-owned composition contract | ✅ | — | — | — | — | — |
 | `Image` | native primitive | ✅ | — | — | — | — | — |
 | `ColorBox` | native primitive | ✅ | — | — | — | — | — |
 | `TextField` | native primitive | ✅ | — | — | — | — | — |
@@ -158,7 +157,6 @@ may still choose another class that preserves the same contract.
 | `Border` | custom `NSView` drawing `NSBezierPath` | `UIView` + `CAShapeLayer` | custom `GtkWidget` snapshot | `FrameLayout` + `GradientDrawable` | `Border` | `<div>` + CSS `border` |
 | `Label` / `Spans` / `Span` | `NSTextField` label; `NSAttributedString` runs | `UILabel`; `NSAttributedString` runs | `GtkLabel`; `PangoAttrList` runs | `TextView`; `SpannableString` spans | `TextBlock`; `Run` inlines | text element; `<span>` runs |
 | `Button` | `NSButton` | `UIButton` | `GtkButton` | `Button` | `Button` | `<button>` |
-| `ImageButton` | `NSButton` with an image | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
 | `Image` | `NSImageView` | `UIImageView` | `GtkPicture` | `ImageView` | `Image` | `<img>` |
 | `ColorBox` | custom `NSView` drawing | `UIView` + `CALayer` | custom `GtkWidget` snapshot | `View` + `GradientDrawable` | `Border` | `<div>` |
 | `TextField` | `NSTextField` / `NSSecureTextField` | `UITextField` | `GtkEntry` / `GtkPasswordEntry` | `EditText` | `TextBox` / `PasswordBox` | `<input>` |
@@ -309,7 +307,7 @@ token in parentheses.
 | `WindowGroup` / `Window` | session metadata | `windowType`, `windowValue`, `autoHide`, `floatsOnTop` | ✅ | — | — | — | — | — |
 | `Window` | handlers | `created`, `activated`, `deactivated`, `stopped`, `resumed`, `destroying` | ✅ | — | — | — | — | — |
 | `Scene` | handlers | `activated`, `deactivated`, `stopped`, `destroying`, `windowClosed`, `windowRestored` | ✅ | — | — | — | — | — |
-| `Page` | properties | `title`, `iconImageSource`, `padding`, `background`, `backButtonTitle`, `hasBackButton`, `hasNavigationBar`, `titleView`, toolbar and menu slots | ✅ | — | — | — | — | — |
+| `Page` | properties | `title`, `icon`, `padding`, `background`, `backButtonTitle`, `hasBackButton`, `hasNavigationBar`, `titleView`, toolbar and menu slots | ✅ | — | — | — | — | — |
 | `Page` | handlers | `appearing`, `disappearing`, `navigatingFrom`, `navigatedFrom`, `navigatedTo` | ✅ | — | — | — | — | — |
 | `NavigationStack` | state | bound path and committed native back (`popped`) | ✅ | — | — | — | — | — |
 | `NavigationStack` | properties | `barBackgroundColor` | ✅ | — | — | — | — | — |
@@ -319,8 +317,8 @@ token in parentheses.
 | `SplitView` | state/events | bound `isSidebarVisible` (`isSidebarVisibleChanged`) | ✅ | — | — | — | — | — |
 | `SplitView` | native presentation | adaptive native pane and native platform affordances | ✅ | — | — | — | — | — |
 | `ModalStack` | state/events | bound modal stack (`modalPopped`) | ✅ | — | — | — | — | — |
-| menu items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled` | ✅ | — | — | — | — | — |
-| toolbar items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled`, `placement`, `priority` | ✅ | — | — | — | — | — |
+| menu items | properties | `text`, `icon`, `isDestructive`, `isEnabled` | ✅ | — | — | — | — | — |
+| toolbar items | properties | `text`, `icon`, `isDestructive`, `isEnabled`, `placement`, `priority` | ✅ | — | — | — | — | — |
 | menu / toolbar items | handlers | `onClicked` (`clicked`) | ✅ | — | — | — | — | — |
 | `TitleBar` | properties/slots | `title`, `subtitle`, `icon`, `foregroundColor`, `background`, leading/content/trailing slots | ✅ | — | — | — | — | — |
 | stack layouts | properties | `padding`, `spacing` | ✅ | — | — | — | — | — |
@@ -333,10 +331,9 @@ token in parentheses.
 | `Border` | properties | `strokeDashArray`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit` | — | — | — | — | — | — |
 | `Label` / `TextSpan` | properties | `text`, `textColor`, `characterSpacing`, `textCase`, `fontSize`, `fontFamily`, `fontAttributes`, `lineBreak`, `lineHeight`, `maximumLines`, `textDecorations`, `spans` | ✅ | — | — | — | — | — |
 | `Label` | properties | `horizontalTextAlignment`, `verticalTextAlignment`, `padding` | ✅ | — | — | — | — | — |
-| `Button` | properties | `text`, `imageSource`, `contentLayout`, `lineBreak`, `padding`, `borderColor`, `borderWidth`, `cornerRadius` | ✅ | — | — | — | — | — |
+| `Button` | properties | `text`, `icon`, `iconPosition`, `aspect`, `lineBreak`, `padding`, `borderColor`, `borderWidth`, `cornerRadius` | ✅ | — | — | — | — | — |
+| `Button` | properties | `iconSpacing` | — | — | — | — | — | — |
 | `Button` | handlers | `onClicked` (`clicked`), `onPressed` (`pressed`), `onReleased` (`released`) | ✅ | — | — | — | — | — |
-| `ImageButton` | properties | `source`, `aspect`, `padding`, `borderColor`, `borderWidth`, `cornerRadius` | ✅ | — | — | — | — | — |
-| `ImageButton` | handlers | `onClicked` (`clicked`), `onPressed` (`pressed`), `onReleased` (`released`) | ✅ | — | — | — | — | — |
 | `Image` | properties | `source`, `aspect`, `isAnimating` | ✅ | — | — | — | — | — |
 | `ColorBox` | properties | `color`, `cornerRadius` | ✅ | — | — | — | — | — |
 | text inputs | properties | two-way `text`, `placeholder`, `placeholderColor`, `textColor`, `fontSize`, `fontFamily`, `fontAttributes`, `horizontalTextAlignment`, `isReadOnly`, `maximumLength`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `cursorPosition`, `selectionLength` | ✅ | — | — | — | — | — |
@@ -380,7 +377,7 @@ token in parentheses.
 | `PositionIndicator` | properties | `count`, `position`, `indicatorColor`, `selectedIndicatorColor`, `indicatorSize`, `maximumVisible`, `indicatorsShape`, `hideSingle` | — | — | — | — | — | — |
 | `RefreshView` | properties/events | two-way `isRefreshing`, `isRefreshEnabled`, `refreshColor`, `onRefreshing` (`refreshing`) | — | — | — | — | — | — |
 | `SwipeView` | properties/events | `threshold`, item `side`, `swipeBehaviorOnInvoked`, `onSwipeStarted` (`swipeStarted`), `onSwipeChanging` (`swipeChanging`), `onSwipeEnded` (`swipeEnded`) | — | — | — | — | — | — |
-| `SwipeAction` | properties/events | `text`, `iconImageSource`, `background`, `isDestructive`, `isEnabled`, `isVisible`, `onClicked` (`clicked`) | — | — | — | — | — | — |
+| `SwipeAction` | properties/events | `text`, `icon`, `background`, `isDestructive`, `isEnabled`, `isVisible`, `onClicked` (`clicked`) | — | — | — | — | — | — |
 | `RefreshView` | state event | `isRefreshingChanged` | — | — | — | — | — | — |
 | `WebView` | properties/events | `source`, `userAgent`, `canGoBackChanged`, `canGoForwardChanged` | — | — | — | — | — | — |
 | `WebView` | handlers | `onNavigating` (`navigating`), `onNavigated` (`navigated`), `onProcessTerminated` (`processTerminated`) | — | — | — | — | — | — |
@@ -404,16 +401,15 @@ host status.
 
 `AbsoluteLayout`, `ActivityIndicator`, `Application`, `Border`, `Button`,
 `Canvas`, `CheckBox`, `ColorBox`, `Composed`, `Content`, `ContextMenu`,
-`DatePicker`, `Ellipse`, `Grid`, `HStack`, `Image`, `ImageButton`, `Label`,
-`LeadingContent`, `Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`,
-`MenuSeparator`, `ModalStack`, `NavigationStack`, `Overlay`, `Page`, `Path`,
-`Picker`, `Pin`, `Polygon`, `Polyline`, `PositionIndicator`, `ProgressBar`,
-`RadioButton`, `Rectangle`, `RefreshView`, `RoundRectangle`, `Scene`,
-`ScrollView`, `SearchField`, `Setters`, `Slider`, `Span`, `Spans`, `SplitView`,
-`Stepper`, `SwipeAction`, `SwipeActions`, `SwipeView`, `Switch`, `TabbedView`,
-`TextEditor`, `TextField`, `TimePicker`, `TitleBar`, `TitleView`,
-`ToolbarItem`, `ToolbarItems`, `TrailingContent`, `VisualState`, `VStack`,
-`WebView`, `Window`.
+`DatePicker`, `Ellipse`, `Grid`, `HStack`, `Image`, `Label`, `LeadingContent`,
+`Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `ModalStack`,
+`NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`, `Polygon`,
+`Polyline`, `PositionIndicator`, `ProgressBar`, `RadioButton`, `Rectangle`,
+`RefreshView`, `RoundRectangle`, `Scene`, `ScrollView`, `SearchField`,
+`Setters`, `Slider`, `Span`, `Spans`, `SplitView`, `Stepper`, `SwipeAction`,
+`SwipeActions`, `SwipeView`, `Switch`, `TabbedView`, `TextEditor`, `TextField`,
+`TimePicker`, `TitleBar`, `TitleView`, `ToolbarItem`, `ToolbarItems`,
+`TrailingContent`, `VisualState`, `VStack`, `WebView`, `Window`.
 
 ### Properties
 
@@ -422,15 +418,15 @@ host status.
 `automationIsInAccessibleTree`, `backButtonTitle`, `background`,
 `barBackgroundColor`, `barTextColor`, `borderColor`, `borderWidth`,
 `cancelButtonColor`, `canDrag`, `characterSpacing`, `clipsContent`, `color`,
-`columns`, `columnSpacing`, `content`, `contentLayout`, `cornerRadius`,
-`count`, `currentPage`, `cursorPosition`, `data`, `date`, `dragText`,
-`drawable`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
-`fontAutoScalingEnabled`, `fontFamily`, `fontSize`, `foregroundColor`,
-`format`, `frame`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`,
-`group`, `groupName`, `growsWithText`, `hasBackButton`, `hasNavigationBar`,
-`height`, `hideSingle`, `horizontalAlignment`, `horizontalScrollBarVisibility`,
-`horizontalTextAlignment`, `icon`, `iconImageSource`, `ignoresInput`,
-`imageSource`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
+`columns`, `columnSpacing`, `content`, `cornerRadius`, `count`, `currentPage`,
+`cursorPosition`, `data`, `date`, `dragText`, `drawable`, `fill`, `fillRule`,
+`floatsOnTop`, `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`,
+`fontSize`, `foregroundColor`, `format`, `frame`, `gridColumn`,
+`gridColumnSpan`, `gridRow`, `gridRowSpan`, `group`, `groupName`,
+`growsWithText`, `hasBackButton`, `hasNavigationBar`, `height`, `hideSingle`,
+`horizontalAlignment`, `horizontalScrollBarVisibility`,
+`horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
+`ignoresInput`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
 `inputPurpose`, `isAnimating`, `isDestructive`, `isEnabled`, `isMaximizable`,
 `isMinimizable`, `isOn`, `isOpaque`, `isOpen`, `isPassword`, `isReadOnly`,
 `isRefreshEnabled`, `isRefreshing`, `isRunning`, `isScrollEnabled`,

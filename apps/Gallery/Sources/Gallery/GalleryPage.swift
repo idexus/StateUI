@@ -34,7 +34,7 @@ extension PageSession {
         toolbarItems = [
             .inspector(scene)
                 .text("Inspector")
-                .iconImageSource("nav_inspect_dark.png"),
+                .icon("nav_inspect_dark.png"),
         ] + (nav.map { [.home($0)] } ?? [])
 
         // Tinted rather than white, which is what lets a card lift off it with

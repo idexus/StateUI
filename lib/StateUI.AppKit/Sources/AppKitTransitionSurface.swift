@@ -45,8 +45,6 @@ enum AppKitTransitionSurface {
         case .button:
             return buttonProperties.contains(property)
 
-        case .imageButton:
-            return imageButtonProperties.contains(property)
 
         case .textField, .textEditor, .searchField:
             return fieldProperties.contains(property)
@@ -104,7 +102,7 @@ enum AppKitTransitionSurface {
     private static let nativeViewTypes: Set<NodeType> = [
         .absoluteLayout, .activityIndicator, .border, .colorBox, .button,
         .checkBox, .datePicker, .textEditor, .ellipse, .textField, .canvas,
-        .grid, .hStack, .image, .imageButton, .label, .line,
+        .grid, .hStack, .image, .label, .line,
         .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .roundRectangle, .scrollView, .searchField, .slider,
         .stepper, .switch, .timePicker, .vStack,
@@ -151,9 +149,6 @@ enum AppKitTransitionSurface {
         .padding, .fontSize, .textColor, .borderColor, .borderWidth, .cornerRadius,
     ]
 
-    private static let imageButtonProperties: Set<Prop> = [
-        .padding, .borderColor, .borderWidth, .cornerRadius,
-    ]
 
     private static let fieldProperties: Set<Prop> = [
         .fontSize, .textColor, .placeholderColor,

@@ -3,7 +3,7 @@ import StateUI
 /// The other tab: a plain page, and the one that writes the selection.
 ///
 /// A tab is nothing but a page in a list, so this one says its own caption
-/// and its own picture through its session's `title` and `iconImageSource`.
+/// and its own picture through its session's `title` and `icon`.
 /// Its button is `nav.tab = .stack`: the selection is a binding of the
 /// gallery's own type, so moving the tabs from code is an assignment.
 struct SecondTabPage: ContentView {
@@ -44,7 +44,7 @@ struct SecondTabPage: ContentView {
         }
         .onCreated {
             page.gallery("Second", scene: scene, nav: nav)
-            page.iconImageSource = ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png")
+            page.icon = ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png")
         }
     }
 }

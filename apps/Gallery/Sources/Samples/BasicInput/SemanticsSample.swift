@@ -34,7 +34,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
             HStack {
                 // A picture and nothing else. To anybody not looking at it,
                 // this control has no name at all.
-                ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
+                Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    .style("IconButton")
                     .automationId("semantics.bare")
                     .onClicked { taps += 1 }
 
@@ -84,7 +85,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
         }
 
         private var describedButton: any View {
-            let button = ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
+            let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                .style("IconButton")
                 .automationId("semantics.described")
                 .onClicked { taps += 1 }
 
@@ -101,7 +103,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
             HStack {
                 VStack {
-                    ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
+                    Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                        .style("IconButton")
                         .automationId("semantics.bare")
                         .aspect(.fit)
                         .width(64)
@@ -237,7 +240,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
     /// makes a modifier written under a condition cost the property and not
     /// the control.
     private var describedButton: any View {
-        let button = ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
+        let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+            .style("IconButton")
             .automationId("semantics.described")
             .aspect(.fit)
             .width(64)

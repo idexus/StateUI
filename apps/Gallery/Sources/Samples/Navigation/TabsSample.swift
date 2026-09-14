@@ -47,7 +47,7 @@ struct TabsSample: SampleContent, ExampleContent {
                     page(for: route, path: $tabsPath)
                 }
                 .title("Stack")
-                .iconImageSource(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
+                .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
 
             case .second:
                 SecondTabPage(nav: nav)

@@ -850,20 +850,20 @@ final class StyleTests: XCTestCase {
     /// still the differ that picks which one is shown.
     func testAPagesPictureIsWrittenAsBothAndShownAsOne() {
         let item = ToolbarItem("Save")
-            .iconImageSource(ImageSource(light: "tab_list.png", dark: "tab_list_dark.png"))
+            .icon(ImageSource(light: "tab_list.png", dark: "tab_list_dark.png"))
 
         XCTAssertEqual(
-            item.node.props["iconImageSource"],
+            item.node.props["icon"],
             .themed(light: .string("tab_list.png"), dark: .string("tab_list_dark.png")))
 
         withTheme(.dark) {
             XCTAssertEqual(
-                Renders().render(item.body).props["iconImageSource"], .string("tab_list_dark.png"))
+                Renders().render(item.body).props["icon"], .string("tab_list_dark.png"))
         }
 
-        let menu = MenuItem("Reset").iconImageSource("menu_reset.png")
+        let menu = MenuItem("Reset").icon("menu_reset.png")
 
-        XCTAssertEqual(menu.node.props["iconImageSource"], .string("menu_reset.png"))
+        XCTAssertEqual(menu.node.props["icon"], .string("menu_reset.png"))
     }
 
     // MARK: - Asking for one

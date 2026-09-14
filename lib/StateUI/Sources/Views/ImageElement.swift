@@ -7,11 +7,11 @@
 // tier every VIEW shares and is checked against one fixture, and only two
 // controls show a picture.
 
-/// The artwork half shared by `Image` and `ImageButton`.
+/// The artwork half shared by `Image` and `Button`.
 ///
-/// The picture ITSELF is not here. Both controls take it in their initializer,
-/// because it is the value that gives either one its purpose, and this library
-/// puts that in the initializer and everything else on a modifier.
+/// The picture ITSELF is not here. `Image(_:)` and `Button(icon:)` take it in
+/// their initializer, because there it is the value that gives the control its
+/// purpose; beside a caption it is a button's `.icon(_:)`.
 public protocol ImageElement: PropertyContainer {}
 
 extension ImageElement {
@@ -19,7 +19,7 @@ extension ImageElement {
     /// and filling every corner.
     ///
     /// `.fit` shows the whole picture and leaves empty room on two sides;
-    /// `.fill` fills the room and crops what will not fit. `.fill`
+    /// `.fill` fills the room and crops what will not fit. `.stretch`
     /// stretches, which distorts, and `.center` draws the picture at its own
     /// size in the middle, scaling nothing.
     public func aspect(_ value: Aspect) -> Modified {

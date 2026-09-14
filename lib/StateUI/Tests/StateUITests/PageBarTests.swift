@@ -26,7 +26,7 @@ private struct BarredPage: ContentView {
                 ToolbarItem("Save")
                     .id("save")
                     .text("Save")
-                    .iconImageSource("nav_media.png")
+                    .icon("nav_media.png")
                     .priority(1)
                     .isEnabled(true)
                     .onClicked {},
@@ -42,7 +42,7 @@ private struct BarredPage: ContentView {
                     MenuItem("New")
                         .id("new")
                         .text("New")
-                        .iconImageSource("nav_media.png")
+                        .icon("nav_media.png")
                         .isDestructive(false)
                         .isEnabled(true)
                         .onClicked {}

@@ -211,7 +211,7 @@ enum SwipeSide: Int32, Sendable {
 /// One thing a swipe reveals - a menu item.
 ///
 ///     SwipeAction("Favourite")
-///         .iconImageSource("nav_media.png")
+///         .icon("nav_media.png")
 ///         .background(.gold)
 ///         .onClicked { favourites.insert(item) }
 ///
@@ -231,7 +231,7 @@ public struct SwipeAction: Element, MenuItemElement {
     /// The node this item describes.
     public var body: Node { node }
 
-    // `text`, `iconImageSource`, `isDestructive`, `isEnabled` and `onClicked`
+    // `text`, `icon`, `isDestructive`, `isEnabled` and `onClicked`
     // are every menu item's and live on MenuItemElement, which this conforms
     // to. What is left here is what a SWIPE action alone has.
 

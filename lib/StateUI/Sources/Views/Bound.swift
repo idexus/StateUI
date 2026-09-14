@@ -163,6 +163,26 @@ extension ColorBox {
 // MARK: - Button
 
 extension Button {
+    /// `iconPosition`, handed on as `$x`: the host sets the member it names,
+    /// and handing it on reads nothing - a write renders only a body that reads
+    /// the state.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func iconPosition(_ state: Binding<IconPosition>) -> Modified {
+        plain(.iconPosition, by: state)
+    }
+
+    /// `iconSpacing`, handed on as `$x`: the host walks it there under the
+    /// element's law, and handing it on reads nothing - a write renders only a
+    /// body that reads the state.
+    ///
+    /// - Parameter state: the state the property is read from.
+    /// - Returns: the element, with the property carried from that state.
+    public func iconSpacing(_ state: Binding<Double>) -> Modified {
+        journey(.iconSpacing, by: state)
+    }
+
     /// `lineBreak`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
     /// the state.

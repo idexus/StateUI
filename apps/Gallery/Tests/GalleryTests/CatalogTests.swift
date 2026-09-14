@@ -1254,7 +1254,7 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(stack.type, "NavigationStack")
         XCTAssertEqual(stack.props["title"], .string("Stack"))
-        XCTAssertNotNil(stack.props["iconImageSource"], "a tab with no picture")
+        XCTAssertNotNil(stack.props["icon"], "a tab with no picture")
 
         // A written page's caption and picture are its SESSION's, written as
         // it comes in - so they are read off the message that brings it.
@@ -1264,7 +1264,7 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(tabbed.type, "TabbedView")
         XCTAssertEqual(prop(second, .title), .string("Second"))
-        XCTAssertNotNil(prop(second, .iconImageSource))
+        XCTAssertNotNil(prop(second, .icon))
     }
 
     /// Each tab keeps its own place because the ARRAYS are separate - which is

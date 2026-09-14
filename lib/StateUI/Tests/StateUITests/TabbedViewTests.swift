@@ -27,7 +27,7 @@ private struct TabPage: ContentView {
     var content: any View {
         ModifiedContent(node: label("\(tab)")).onCreated {
             page.title = "\(tab)"
-            page.iconImageSource = ImageSource("\(tab).png")
+            page.icon = ImageSource("\(tab).png")
         }
     }
 }
@@ -67,7 +67,7 @@ final class TabbedViewTests: XCTestCase {
         let patch = Renders().settled(tabs(selection.projectedValue).body)
 
         XCTAssertEqual(patch.children.first?.props["title"], .string("home"))
-        XCTAssertEqual(patch.children.first?.props["iconImageSource"],
+        XCTAssertEqual(patch.children.first?.props["icon"],
                        ImageSource("home.png").propValue)
     }
 
@@ -166,7 +166,7 @@ final class TabbedViewTests: XCTestCase {
                 TabPage(tab: .browse)
             }
             .title("Home")
-            .iconImageSource("house.png")
+            .icon("house.png")
         }
         .selection(selection.projectedValue)
         .body
@@ -177,7 +177,7 @@ final class TabbedViewTests: XCTestCase {
         XCTAssertEqual(stack.type, "NavigationStack")
         XCTAssertEqual(stack.id, "home", "the tab names the page in it")
         XCTAssertEqual(stack.props["title"], .string("Home"))
-        XCTAssertEqual(stack.props["iconImageSource"], ImageSource("house.png").propValue)
+        XCTAssertEqual(stack.props["icon"], ImageSource("house.png").propValue)
         XCTAssertEqual(stack.children.count, 2, "the root and the one route")
     }
 
@@ -244,7 +244,7 @@ final class TabbedViewTests: XCTestCase {
                     TabPage(tab: .browse)
                 }
                 .title("Home")
-                .iconImageSource("house.png")
+                .icon("house.png")
 
             default:
                 return TabPage(tab: tab)

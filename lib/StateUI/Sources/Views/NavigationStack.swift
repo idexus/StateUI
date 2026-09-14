@@ -149,7 +149,7 @@
 ///   the page on top carries all of that.
 ///
 /// What IS on it: the bar's flat background and foreground tint;
-/// `PageElement`'s `.title` and `.iconImageSource`, which name the whole stack
+/// `PageElement`'s `.title` and `.icon`, which name the whole stack
 /// where another container presents it; and `.onCreated`, `.onDestroying` and
 /// `.onChanged`, as on anything bindable. The title on the bar belongs to the
 /// top page.

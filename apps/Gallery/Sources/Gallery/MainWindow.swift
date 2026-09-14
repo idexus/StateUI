@@ -213,7 +213,7 @@ struct MainWindow: Window {
                 // measured, and it is where the first live run showed no icons
                 // at all.
                 .title("Stack")
-                .iconImageSource(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
+                .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
                 .barBackgroundColor(style.accent.color)
                 .barTextColor(Palette.onBrand)
 
@@ -262,8 +262,9 @@ private struct ChromeEnd: ContentView {
         HStack {
             if bar.showsSurprise {
                 Button("Surprise me")
-                    .imageSource("nav_surprise_chrome.png")
-                    .contentLayout(.left, spacing: 5)
+                    .icon("nav_surprise_chrome.png")
+                    .iconPosition(.leading)
+                    .iconSpacing(5)
                     .style("ChromeChip")
                     .verticalAlignment(.center)
                     .onClicked { nav.surprise(from: catalog, on: device.idiom) }

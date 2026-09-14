@@ -925,7 +925,7 @@ extension VisualElementProperties {
 
     /// What a screen reader says this view IS.
     ///
-    ///     ImageButton("bin.png").semanticDescription("Delete")
+    ///     Button(icon: "bin.png").semanticDescription("Delete")
     ///
     /// A control whose meaning is carried by a picture, a colour or where it
     /// sits says nothing at all to a reader who cannot see it, and this is what

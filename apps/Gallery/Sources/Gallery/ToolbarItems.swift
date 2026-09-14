@@ -36,7 +36,7 @@ extension ToolbarItem {
             // a script reaches for most. `.id` is the DIFFER's identity and
             // never leaves this side; this is the platform's own.
             .automationId("chrome.home")
-            .iconImageSource("nav_home_dark.png")
+            .icon("nav_home_dark.png")
             .onClicked { nav.home() }
     }
 

@@ -47,7 +47,7 @@ struct TabsExtraPage: ContentView {
         }
         .onCreated {
             page.gallery("Extra \(number)", scene: scene, nav: nav)
-            page.iconImageSource = ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png")
+            page.icon = ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png")
         }
     }
 }

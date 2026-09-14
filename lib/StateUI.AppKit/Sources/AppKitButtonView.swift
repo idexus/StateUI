@@ -4,7 +4,7 @@
 #if os(macOS)
 import AppKit
 
-/// A native AppKit button shared by StateUI's text and image-only controls.
+/// The native AppKit button behind StateUI's `Button` - a caption, an icon or both.
 @MainActor
 final class AppKitButtonView: NSButton {
     var onPressed: (() -> Void)?

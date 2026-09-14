@@ -348,7 +348,7 @@ told what it is by modifier.
 | --- | --- |
 | `phase` | the page's current visibility or navigation phase |
 | `title` | navigation title and the caption when the page is used as an item |
-| `iconImageSource` | the page's representative image, commonly a tab icon |
+| `icon` | the page's representative image, commonly a tab icon |
 | `padding` | space between the page edge and its content |
 | `background` | flat color behind the page |
 | `hasNavigationBar` | whether a containing navigation stack shows its bar for this page |

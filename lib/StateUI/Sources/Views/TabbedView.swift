@@ -67,13 +67,13 @@
 ///             Label("Nothing due.")
 ///                 .onCreated {
 ///                     page.title = "Today"                   // the caption
-///                     page.iconImageSource = "today.png"     // and the icon
+///                     page.icon = "today.png"     // and the icon
 ///                 }
 ///         }
 ///     }
 ///
 /// **A tab's caption and icon come from its PAGE**, through `title` and
-/// `iconImageSource`. A page the
+/// `icon`. A page the
 /// library constructs - a `NavigationStack` inside a tab, which is the ordinary
 /// shape of a tabbed application - is given them by modifier instead:
 ///

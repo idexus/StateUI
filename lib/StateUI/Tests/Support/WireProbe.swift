@@ -626,6 +626,8 @@ public enum WireProbe {
             return spelled(member, as: TextCase.self)
         case Prop.aspect.name:
             return spelled(member, as: Aspect.self)
+        case Prop.iconPosition.name:
+            return spelled(member, as: IconPosition.self)
         case Prop.type.name:
             return spelled(member, as: PinType.self)
         case Prop.safeAreaEdges.name:

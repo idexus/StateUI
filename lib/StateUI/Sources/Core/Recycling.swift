@@ -48,7 +48,7 @@ enum Recycling {
     static let poolable: Set<NodeType> = [
         .absoluteLayout, .activityIndicator, .border, .colorBox, .button,
         .checkBox, .ellipse, .spans, .grid,
-        .hStack, .image, .imageButton, .positionIndicator, .label,
+        .hStack, .image, .positionIndicator, .label,
         .line, .path, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .roundRectangle, .slider, .span, .stepper, .switch,
         .vStack,

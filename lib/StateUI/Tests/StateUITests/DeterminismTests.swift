@@ -73,7 +73,7 @@ private struct HomePage: ContentView {
         .spacing(12)
         .onCreated {
             page.title = "Home"
-            page.iconImageSource = ImageSource("home.png")
+            page.icon = ImageSource("home.png")
         }
     }
 }
@@ -95,7 +95,7 @@ private struct SettingsPage: ContentView {
         }
         .onCreated {
             page.title = "Settings"
-            page.iconImageSource = ImageSource("settings.png")
+            page.icon = ImageSource("settings.png")
         }
     }
 }

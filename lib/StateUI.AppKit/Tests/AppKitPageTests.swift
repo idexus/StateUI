@@ -770,7 +770,7 @@ final class AppKitPageTests: XCTestCase {
                 .isEnabled: .bool(enabled),
                 .isDestructive: .bool(destructive),
             ]
-            if let icon { item.properties[.iconImageSource] = .string(icon) }
+            if let icon { item.properties[.icon] = .string(icon) }
             return item
         }
 

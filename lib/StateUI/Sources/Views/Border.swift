@@ -47,9 +47,8 @@ extension BorderProperties {
     ///         .strokeThickness(0)
     ///
     /// This is where a rounded corner comes from on anything without a
-    /// `cornerRadius` of its own: a Button, an ImageButton, a RadioButton, a
-    /// ColorBox and a RoundRectangle carry one, and everything else is wrapped
-    /// in a Border.
+    /// `cornerRadius` of its own: a Button, a RadioButton, a ColorBox and a
+    /// RoundRectangle carry one, and everything else is wrapped in a Border.
     public func strokeShape(_ value: StrokeShape) -> Modified {
         setValue(.strokeShape, value.propValue)
     }
@@ -111,10 +110,10 @@ extension BorderProperties {
 /// `.background` and a `.strokeShape`, and the background follows the
 /// shape whether or not the outline is drawn.
 ///
-/// Not to be confused with `BorderElement`, the outline a Button, an
-/// ImageButton and a RadioButton each draw around themselves - three flat
-/// properties on the control, where this is a view of its own with a brush, a
-/// shape and a dash pattern. See Views/BorderElement.swift.
+/// Not to be confused with `BorderElement`, the outline a Button and a
+/// RadioButton each draw around themselves - three flat properties on the
+/// control, where this is a view of its own with a brush, a shape and a dash
+/// pattern. See Views/BorderElement.swift.
 public struct Border: View, PaddingElement, BorderProperties {
     /// The node this control describes.
     public var node: Node

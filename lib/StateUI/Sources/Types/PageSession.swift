@@ -113,12 +113,12 @@ public final class PageSession {
 
     /// The picture that stands for the page.
     ///
-    ///     page.iconImageSource = "house.png"
+    ///     page.icon = "house.png"
     ///
     /// A tab's icon, in practice - a `TabbedView` draws it above or beside the
     /// caption. A page that is not shown as an item of something else has
     /// nowhere to draw it, and platforms ignore it there.
-    @State public var iconImageSource: ImageSource? = nil
+    @State public var icon: ImageSource? = nil
 
     /// The space kept between the page's edge and its content.
     ///
@@ -197,7 +197,7 @@ public final class PageSession {
         var props: [Prop: PropValue] = [:]
 
         props[.title] = title.map { .string($0) }
-        props[.iconImageSource] = iconImageSource?.propValue
+        props[.icon] = icon?.propValue
         props[.padding] = padding?.propValue
         props[.background] = background?.propValue
         props[.hasNavigationBar] = hasNavigationBar.map { .bool($0) }

@@ -35,7 +35,7 @@ private struct EveryPropertyPage: ContentView {
         Label("content").onCreated {
             // The page's own.
             page.title = "Everything"
-            page.iconImageSource = ImageSource("tab.png")
+            page.icon = ImageSource("tab.png")
             page.padding = Thickness(4, 8, 12, 16)
             page.background = .whiteSmoke
 
@@ -51,7 +51,7 @@ private struct EveryPropertyPage: ContentView {
             page.toolbarItems = [
                 ToolbarItem("Save")
                     .automationId("bar.save")
-                    .iconImageSource(ImageSource("mark.png"))
+                    .icon(ImageSource("mark.png"))
                     .placement(.overflow)
                     .priority(2)
                     .isDestructive(true)
@@ -62,7 +62,7 @@ private struct EveryPropertyPage: ContentView {
             page.menuBar = [
                 Menu("File") {
                     MenuItem("Open")
-                        .iconImageSource(ImageSource("mark.png"))
+                        .icon(ImageSource("mark.png"))
                         .isDestructive(true)
                         .isEnabled(false)
                         .onClicked {}
@@ -118,7 +118,7 @@ private struct KnobPage: ContentView {
     /// Writes every property of the page's session, each to one of two values.
     private func dress(_ on: Bool) {
         page.title = on ? "On" : "Off"
-        page.iconImageSource = ImageSource(on ? "on.png" : "off.png")
+        page.icon = ImageSource(on ? "on.png" : "off.png")
         page.padding = Thickness(on ? 8 : 4)
         page.background = on ? .red : .whiteSmoke
 
@@ -404,7 +404,7 @@ final class PageTests: XCTestCase {
                 EveryPropertyPage()
             }
             .title("Home")
-            .iconImageSource("house.png")
+            .icon("house.png")
             .body
             .built
             .props

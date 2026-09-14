@@ -123,11 +123,17 @@ final class ControlTests: XCTestCase {
                     .borderWidth(1)
                     .cornerRadius(8)
                     .lineBreak(.noWrap)
-                    .imageSource("tab_list.png")
-                    .contentLayout(.left, spacing: 8)
+                    .icon("tab_list.png")
+                    .iconPosition(.leading)
+                    .iconSpacing(8)
                     .onClicked {}
                     .onPressed {}
                     .onReleased {}),
+
+            ControlCase("IconButton", source: "Button.swift",
+                Button(icon: "tab_list.png")
+                    .aspect(.fit)
+                    .onClicked {}),
 
             ControlCase("TextField", source: "TextField.swift",
                 TextField("Ada")
@@ -147,15 +153,6 @@ final class ControlTests: XCTestCase {
                     .aspect(.fill)
                     .isAnimating(true)),
 
-            ControlCase("ImageButton", source: "ImageButton.swift",
-                ImageButton("tab_list.png")
-                    .aspect(.fit)
-                    .borderColor(.gray)
-                    .borderWidth(1)
-                    .cornerRadius(8)
-                    .onClicked {}
-                    .onPressed {}
-                    .onReleased {}),
 
             ControlCase("Picker", source: "Picker.swift",
                 Picker(["Small", "Medium", "Large"])
@@ -423,7 +420,7 @@ final class ControlTests: XCTestCase {
                 .onSwipeEnded { _ in }
                 .leftItems {
                     SwipeAction("Favourite")
-                        .iconImageSource("tab_list.png")
+                        .icon("tab_list.png")
                         .background(.gold)
                         .isDestructive(false)
                         .isEnabled(true)
@@ -781,8 +778,8 @@ final class ControlTests: XCTestCase {
             // Named rather than valued.
             "style", "fontFamily", "groupName", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
-            "background", "fill", "stroke", "icon", "iconImageSource",
-            "imageSource", "thumbImageSource", "maximumDate",
+            "background", "fill", "stroke", "icon", "icon",
+            "icon", "thumbImageSource", "maximumDate",
             "minimumDate", "strokeDashArray", "points", "options", "columns",
             "rows", "strokeShape", "renderTransform", "transform", "motion", "id",
             "assign", "absoluteLayoutBounds",

@@ -568,6 +568,7 @@ extension Aspect: StateChoice {}
 extension FillRule: StateChoice {}
 extension LayoutDirection: StateChoice {}
 extension FontAttributes: StateChoice {}
+extension IconPosition: StateChoice {}
 extension IndicatorShape: StateChoice {}
 extension InputPurpose: StateChoice {}
 extension Alignment: StateChoice {}

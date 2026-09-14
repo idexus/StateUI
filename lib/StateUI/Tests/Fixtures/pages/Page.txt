@@ -4,7 +4,7 @@ Page 1 arranged(4)
   background: color FFF5F5F5
   hasBackButton: false
   hasNavigationBar: false
-  iconImageSource: string "tab.png"
+  icon: string "tab.png"
   padding: numbers 4,8,12,16
   title: string "Everything"
   on appearing=1 disappearing=2 navigatedFrom=3 navigatedTo=4 navigatingFrom=5
@@ -16,7 +16,7 @@ Page 1 arranged(4)
   ToolbarItems 5 arranged(1)
     ToolbarItem 6
       automationId: string "bar.save"
-      iconImageSource: string "mark.png"
+      icon: string "mark.png"
       isDestructive: true
       isEnabled: false
       placement: enum overflow(2)
@@ -28,7 +28,7 @@ Page 1 arranged(4)
       isEnabled: true
       text: string "File"
       MenuItem 9
-        iconImageSource: string "mark.png"
+        icon: string "mark.png"
         isDestructive: true
         isEnabled: false
         text: string "Open"

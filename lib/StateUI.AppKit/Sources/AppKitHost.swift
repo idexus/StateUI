@@ -1653,7 +1653,7 @@ final class MountedNode: NSObject {
             (overflows: item.enumeration(.placement) == 2, action: AppKitToolbarAction(
                 identifier: NSToolbarItem.Identifier("StateUI.action.\(item.mount)"),
                 title: item.string(.text) ?? "",
-                image: item.image(.iconImageSource),
+                image: item.image(.icon),
                 isEnabled: item.bool(.isEnabled) ?? true,
                 perform: { [weak item] in item?.clicked(nil) }))
         }
@@ -2189,7 +2189,7 @@ final class MountedNode: NSObject {
         case .label:
             return AppKitLabelView()
 
-        case .button, .imageButton:
+        case .button:
             let button = AppKitButtonView()
             button.onClicked = { [weak self] in self?.clicked(nil) }
             button.onPressed = { [weak self] in self?.pressed() }
@@ -2357,7 +2357,7 @@ final class MountedNode: NSObject {
                 string: button.title,
                 attributes: [.font: buttonFont, .foregroundColor: foreground])
 
-            button.image = string(.iconImageSource).flatMap { image(named: $0) }
+            button.image = string(.icon).flatMap { image(named: $0) }
             button.imagePosition = button.image == nil
                 ? .noImage
                 : (button.title.isEmpty ? .imageOnly : .imageLeading)
@@ -2370,14 +2370,14 @@ final class MountedNode: NSObject {
         }
 
         if let button = view as? AppKitButtonView {
-            let imageName = type == .imageButton ? string(.source) : string(.imageSource)
+            let caption = string(.text) ?? ""
             let foreground = value(.isDestructive)?.bool == true
                 ? NSColor.systemRed
                 : (color(.textColor) ?? .controlTextColor)
             button.apply(
-                text: type == .imageButton ? "" : (string(.text) ?? ""),
-                image: imageName.flatMap { image(named: $0) },
-                imagePosition: buttonImagePosition(imageOnly: type == .imageButton),
+                text: caption,
+                image: string(.icon).flatMap { image(named: $0) },
+                imagePosition: buttonImagePosition(imageOnly: caption.isEmpty),
                 imageScaling: imageScaling(enumeration(.aspect)),
                 font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
                 textColor: foreground,
@@ -2806,7 +2806,7 @@ final class MountedNode: NSObject {
                 return AppKitTabItem(
                     layout: layout,
                     title: child.string(.title),
-                    image: child.string(.iconImageSource).flatMap { image(named: $0) })
+                    image: child.string(.icon).flatMap { image(named: $0) })
             }
             tabs.onSelection = { [weak self] previous, selected in
                 self?.selectTab(from: previous, to: selected)
@@ -2969,7 +2969,7 @@ final class MountedNode: NSObject {
         item.title = string(.text) ?? ""
         item.isEnabled = value(.isEnabled)?.bool ?? true
         item.setAccessibilityIdentifier(string(.automationId))
-        item.image = string(.iconImageSource).flatMap { image(named: $0) }
+        item.image = string(.icon).flatMap { image(named: $0) }
 
         if value(.isDestructive)?.bool == true {
             item.attributedTitle = NSAttributedString(
@@ -3338,7 +3338,7 @@ final class MountedNode: NSObject {
 
     private func buttonImagePosition(imageOnly: Bool) -> NSControl.ImagePosition {
         guard !imageOnly else { return .imageOnly }
-        let position = value(.contentLayout)?.values?.first?.enumeration
+        let position = enumeration(.iconPosition)
 
         switch position {
         case 1: return .imageAbove

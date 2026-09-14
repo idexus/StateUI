@@ -67,7 +67,7 @@ public struct Menu: Element {
 /// One entry in a menu.
 ///
 ///     MenuItem("Save")
-///         .iconImageSource("nav_media.png")
+///         .icon("nav_media.png")
 ///         .onClicked { save() }
 public struct MenuItem: Element, MenuItemElement {
     /// The node this entry describes.
@@ -89,7 +89,7 @@ public struct MenuItem: Element, MenuItemElement {
         modified { $0.id = String(describing: value) }
     }
 
-    // `text`, `iconImageSource`, `isDestructive`, `isEnabled` and `onClicked`
+    // `text`, `icon`, `isDestructive`, `isEnabled` and `onClicked`
     // are shared with the toolbar item and the swipe action and live on
     // MenuItemElement, which this conforms to.
 }

@@ -53,7 +53,7 @@ public struct ToolbarItem: Element, MenuItemElement {
         return copy
     }
 
-    // `text`, `iconImageSource`, `isDestructive` and `isEnabled` are MenuItem's
+    // `text`, `icon`, `isDestructive` and `isEnabled` are MenuItem's
     // and live on MenuItemElement, which this conforms to. What is left here is
     // what a TOOLBAR item alone has.
 

@@ -1,13 +1,13 @@
 import StateUI
 
-/// Two buttons whose captions are pictures, each drawn once per theme.
-struct ImageButtonSample: SampleContent, ExampleContent {
+/// Two buttons whose content is an icon, each drawn once per theme.
+struct IconButtonSample: SampleContent, ExampleContent {
     @State private var taps = 0
     @State private var pressed = false
 
-    static let id = "imageButton"
-    static let title = "ImageButton"
-    static let summary = "A button whose caption is a picture - with a border, a corner radius and a pressed state."
+    static let id = "iconButton"
+    static let title = "Icon button"
+    static let summary = "A button whose content is an icon - with a border, a corner radius and a pressed state."
 
     static let code = """
         @State private var taps = 0
@@ -18,7 +18,8 @@ struct ImageButtonSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             HStack {
-                ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
+                Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    .style("IconButton")
                     .aspect(.fit)
                     .width(64)
                     .height(64)
@@ -29,7 +30,8 @@ struct ImageButtonSample: SampleContent, ExampleContent {
                     .onPressed { pressed = true }
                     .onReleased { pressed = false }
 
-                ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
+                Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                    .style("IconButton")
                     .aspect(.fit)
                     .width(64)
                     .height(64)
@@ -46,7 +48,8 @@ struct ImageButtonSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             HStack {
-                ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
+                Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    .style("IconButton")
                     .aspect(.fit)
                     .width(64)
                     .height(64)
@@ -58,7 +61,8 @@ struct ImageButtonSample: SampleContent, ExampleContent {
                     .onPressed { pressed = true }
                     .onReleased { pressed = false }
 
-                ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
+                Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                    .style("IconButton")
                     .aspect(.fit)
                     .width(64)
                     .height(64)

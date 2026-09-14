@@ -193,7 +193,7 @@ final class HostContractTests: XCTestCase {
 
     func testDerivedLayoutsAndControlsBelongToStateUI() {
         for type in [
-            NodeType.checkBox, .ellipse, .grid, .imageButton,
+            NodeType.checkBox, .ellipse, .grid,
             .positionIndicator, .line, .path, .polygon, .polyline, .radioButton,
             .rectangle, .refreshView, .roundRectangle, .swipeView,
         ] {
@@ -474,6 +474,44 @@ final class HostContractTests: XCTestCase {
                 contentsOf: Fixtures.sources.appendingPathComponent(file),
                 encoding: .utf8)
             for former in ["enum Stretch", "Binding<Stretch>", "aspectFit", "aspectFill", "uniformToFill"] {
+                XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
+            }
+        }
+    }
+
+    /// A button with an icon is a `Button`: one `icon` for the picture beside
+    /// a caption - on a button, a menu or toolbar item, a page's tab - with its
+    /// `iconPosition` and `iconSpacing`, and `Button(icon:)` when there is no
+    /// caption at all.
+    func testAButtonWithAnIconIsAButton() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let controls = declaredNames(of: "NodeType", in: tokenSource)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+
+        XCTAssertFalse(controls.contains("ImageButton"), "an image button is a second button")
+        XCTAssertTrue(properties.isSuperset(of: ["icon", "iconPosition", "iconSpacing"]))
+        XCTAssertTrue(
+            properties.isDisjoint(with: ["imageSource", "iconImageSource", "contentLayout"]),
+            "a picture beside a caption keeps a second name")
+
+        let button = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Views/Button.swift"),
+            encoding: .utf8)
+        XCTAssertTrue(button.contains("public init(icon: ImageSource)"))
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            for former in [
+                "struct ImageButton:", "func imageSource(", "func iconImageSource(",
+                "func contentLayout(", "enum ButtonContentPosition", "var iconImageSource",
+            ] {
                 XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
             }
         }
