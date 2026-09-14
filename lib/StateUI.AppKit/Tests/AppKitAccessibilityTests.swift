@@ -128,6 +128,54 @@ final class AppKitAccessibilityTests: XCTestCase {
         XCTAssertNotEqual(nativeCard.accessibilityRole(), .button)
         XCTAssertEqual(reports, [300, 301])
     }
+
+    @MainActor
+    func testAButtonIsAButtonToAssistiveTechnologyWithOrWithoutAuthoredWords() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        var captioned = HostPatch(id: .manual("captioned"), type: .button)
+        captioned.properties = [
+            .text: .string("Save"),
+            .automationId: .string("save"),
+        ]
+        var described = HostPatch(id: .manual("described"), type: .button)
+        described.properties = [
+            .icon: .string("favourite.png"),
+            .automationId: .string("semantics.described"),
+            .semanticDescription: .string("Add to favourites"),
+        ]
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([captioned, described])
+
+        renderer.applyForTesting(tree(stack))
+
+        // What assistive technology meets is what AppKit presents under the
+        // stack - for a button, its cell - not whichever view the host made.
+        let stackView = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
+        let save = try XCTUnwrap(presented("save", under: stackView))
+        XCTAssertEqual(save.role, .button)
+        let favourite = try XCTUnwrap(presented("semantics.described", under: stackView))
+        XCTAssertEqual(favourite.role, .button)
+        XCTAssertEqual(favourite.label, "Add to favourites")
+    }
+
+    /// The element AppKit presents to assistive technology under `view` with
+    /// this identifier - a view, or the cell a control is presented through.
+    @MainActor
+    private func presented(
+        _ identifier: String,
+        under view: NSView
+    ) -> (role: NSAccessibility.Role?, label: String?)? {
+        for child in view.accessibilityChildren() ?? [] {
+            if let cell = child as? NSCell, cell.accessibilityIdentifier() == identifier {
+                return (cell.accessibilityRole(), cell.accessibilityLabel())
+            }
+            if let element = child as? NSView, element.accessibilityIdentifier() == identifier {
+                return (element.accessibilityRole(), element.accessibilityLabel())
+            }
+        }
+        return nil
+    }
 }
 
 #endif

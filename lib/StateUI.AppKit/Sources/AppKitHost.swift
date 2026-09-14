@@ -1164,6 +1164,7 @@ final class MountedNode: NSObject {
     private var pinchRecognizer: AppKitPinchRecognizer?
     private var pointerRecognizer: AppKitPointerRecognizer?
     private var accessibilityDefaults: (
+        target: NSAccessibilityProtocol,
         isElement: Bool,
         role: NSAccessibility.Role?
     )?
@@ -2872,15 +2873,18 @@ final class MountedNode: NSObject {
     /// control's ordinary role or participation when the author says nothing.
     private func applyAccessibility(to view: NSView) {
         if accessibilityDefaults == nil {
+            let target = Self.accessibilityTarget(of: view)
             accessibilityDefaults = (
-                isElement: view.isAccessibilityElement(),
-                role: view.accessibilityRole())
+                target: target,
+                isElement: target.isAccessibilityElement(),
+                role: target.accessibilityRole())
         }
         guard let defaults = accessibilityDefaults else { return }
+        let target = defaults.target
 
-        view.setAccessibilityIdentifier(string(.automationId))
-        view.setAccessibilityLabel(string(.semanticDescription))
-        view.setAccessibilityHelp(string(.semanticHint))
+        target.setAccessibilityIdentifier(string(.automationId))
+        target.setAccessibilityLabel(string(.semanticDescription))
+        target.setAccessibilityHelp(string(.semanticHint))
 
         let excludesChildren = value(.automationExcludedWithChildren)?.bool == true
         if excludesChildren {
@@ -2899,18 +2903,30 @@ final class MountedNode: NSObject {
         // pressed by the handler a click runs. See `AppKitHitTestView`.
         let pressable = events[.tapped] != nil && view is AppKitHitTestView
         let authoredElement = value(.automationIsInAccessibleTree)?.bool
-        view.setAccessibilityElement(
+        target.setAccessibilityElement(
             excludesChildren
                 ? false
                 : (authoredElement ?? (carriesSemantics || pressable ? true : defaults.isElement)))
 
         if #available(macOS 26.0, *), headingLevel > 0 {
-            view.setAccessibilityRole(NSAccessibility.Role(rawValue: "AXHeading"))
+            target.setAccessibilityRole(NSAccessibility.Role(rawValue: "AXHeading"))
         } else if pressable {
-            view.setAccessibilityRole(.button)
+            target.setAccessibilityRole(.button)
         } else {
-            view.setAccessibilityRole(defaults.role)
+            target.setAccessibilityRole(defaults.role)
         }
+    }
+
+    /// The object assistive technology meets for `view`. AppKit presents a
+    /// cell-based control - a button, a slider, a stepper - through its cell:
+    /// the cell is the element and the view is not, so words written on the
+    /// view would reach nobody, and making the view the element would hide the
+    /// control's own role. Anything else is met as the view itself.
+    private static func accessibilityTarget(of view: NSView) -> NSAccessibilityProtocol {
+        if let cell = (view as? NSControl)?.cell, cell.isAccessibilityElement() {
+            return cell
+        }
+        return view
     }
 
     private var presentableViews: [NSView] {
