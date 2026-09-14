@@ -90,7 +90,7 @@ struct MenuRow: Element {
                 .fontAttributes(chosen ? .bold : .none)
         }
         .style("MenuRow")
-        .backgroundColor(chosen ? Palette.selected : .transparent)
+        .background(chosen ? Palette.selected : .transparent)
         // A row of the menu is a stack with a tap on it, which no platform
         // reads as a control: the picture and the caption are two views, and
         // nothing says they act together. Handle.swift has the rule.

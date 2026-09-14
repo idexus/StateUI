@@ -115,7 +115,7 @@ enum AppKitTransitionSurface {
     ]
 
     private static let sharedViewProperties: Set<Prop> = [
-        .opacity, .backgroundColor,
+        .opacity, .background,
         .width, .height,
         .minimumWidth, .minimumHeight,
         .maximumWidth, .maximumHeight,
@@ -124,7 +124,7 @@ enum AppKitTransitionSurface {
     ]
 
     private static let contentPageProperties: Set<Prop> = [
-        .backgroundColor, .padding,
+        .background, .padding,
     ]
 
     private static let borderProperties: Set<Prop> = [
@@ -142,7 +142,7 @@ enum AppKitTransitionSurface {
     ]
 
     private static let spanProperties: Set<Prop> = [
-        .backgroundColor, .fontSize, .textColor, .characterSpacing, .lineHeight,
+        .background, .fontSize, .textColor, .characterSpacing, .lineHeight,
     ]
 
     private static let textControlProperties: Set<Prop> = [.fontSize, .textColor]
@@ -172,7 +172,7 @@ enum AppKitTransitionSurface {
     ]
 
     private static let titleBarProperties: Set<Prop> = [
-        .backgroundColor, .foregroundColor,
+        .background, .foregroundColor,
     ]
 
     private static let shapeProperties: Set<Prop> = [

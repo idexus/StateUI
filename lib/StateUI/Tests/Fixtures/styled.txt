@@ -14,7 +14,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
             text: string "Body text"
             textColor: color FF212121
           Button 6 arranged(2)
-            backgroundColor: color FF512BD4
+            background: color FF512BD4
             cornerRadius: number 8
             isEnabled: false
             minimumHeight: number 44
@@ -28,7 +28,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
               group: name "CommonStates"
               name: name "Disabled"
               Setters 9
-                backgroundColor: color FFC8C8C8
+                background: color FFC8C8C8
                 textColor: color FF141414
           Border 10 arranged(1)
             stroke: values [enum 1, color FFC8C8C8]

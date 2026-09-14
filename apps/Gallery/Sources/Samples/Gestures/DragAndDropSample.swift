@@ -64,7 +64,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             .stroke(over ? Palette.accent : Palette.outline)
             .strokeThickness(over ? 2 : 1)
             .strokeShape(.roundRectangle(10))
-            .backgroundColor(over ? Palette.selected : Palette.raised)
+            .background(over ? Palette.selected : Palette.raised)
             .onDragOver { over = true }
             .onDragLeave { over = false }
             // A drop is not a leave, so the light comes down here too.
@@ -134,7 +134,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             .stroke(over ? Palette.accent : Palette.outline)
             .strokeThickness(over ? 2 : 1)
             .strokeShape(.roundRectangle(10))
-            .backgroundColor(over ? Palette.selected : Palette.raised)
+            .background(over ? Palette.selected : Palette.raised)
             .onDragOver { over = true }
             .onDragLeave { over = false }
             // A drop is not a leave, so the light comes down here too.

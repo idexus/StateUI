@@ -59,7 +59,7 @@ final class AppKitLabelViewTests: XCTestCase {
         var second = HostPatch(id: .manual("second"), type: .span)
         second.properties = [
             .text: .string("counter"),
-            .backgroundColor: .color(red: 240, green: 230, blue: 140, alpha: 255),
+            .background: .color(red: 240, green: 230, blue: 140, alpha: 255),
             .textTransform: .enumeration(TextTransform.uppercase.rawValue),
         ]
         var formatted = HostPatch(id: .manual("formatted"), type: .formattedString)

@@ -88,7 +88,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
                     }
                     .columnDefinitions(.star, .auto)
                     .padding(14, 6)
-                    .backgroundColor(Palette.raised)
+                    .background(Palette.raised)
                     .height(46)
                     .isVisible(!gone.contains(row) && !atOnce.contains(row))
                     // The other half of the sample: a row told to travel at no

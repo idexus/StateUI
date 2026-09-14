@@ -59,7 +59,7 @@ private struct GridPlacement: ExampleContent {
             var content: any View {
                 Label(text)
                     .textColor(.white)
-                    .backgroundColor(Color.fromArgb(color))
+                    .background(Color.fromArgb(color))
                     .padding(8)
             }
         }
@@ -195,7 +195,7 @@ private struct GridCell: ContentView {
         Label(text)
             .fontSize(12)
             .textColor(.white)
-            .backgroundColor(Color.fromArgb(color))
+            .background(Color.fromArgb(color))
             .padding(8)
             .horizontalTextAlignment(.center)
             .verticalTextAlignment(.center)

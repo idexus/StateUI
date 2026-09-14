@@ -30,7 +30,7 @@ final class WireFormatTests: XCTestCase {
         let node = Node(type: "Label", props: [
             "text": .string("hi"),
             "fontSize": .number(20),
-            "backgroundColor": Color.white.propValue,
+            "background": Color.white.propValue,
         ])
 
         let keys = message(node).root.props.map(\.key)

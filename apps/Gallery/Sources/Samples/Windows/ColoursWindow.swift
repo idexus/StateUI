@@ -28,7 +28,7 @@ struct ColoursPage: ContentView {
                 Button(style.accent == accent ? "✓  \(accent.name)" : accent.name)
                     .fontSize(15)
                     .textColor(.white)
-                    .backgroundColor(accent.color)
+                    .background(accent.color)
                     .cornerRadius(8)
                     .padding(14, 8)
                     .onClicked { style.accent = accent }

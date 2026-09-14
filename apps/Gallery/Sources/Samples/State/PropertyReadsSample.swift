@@ -69,7 +69,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
                 Button("Another visit")
                     .automationId("propertyReads.visit")
                     .fontSize(13)
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .textColor(.white)
                     .cornerRadius(8)
                     .padding(20, 10)
@@ -85,7 +85,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .backgroundColor(Palette.surface)
+            .background(Palette.surface)
 
             VStack {
                 Entry(profile.$name)
@@ -103,7 +103,7 @@ struct PropertyReadsSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .backgroundColor(Palette.surface)
+            .background(Palette.surface)
         }
         .spacing(14)
     }

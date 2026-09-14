@@ -128,7 +128,7 @@ struct StateClassSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Add")
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .textColor(.white)
                     .cornerRadius(8)
                     .padding(20, 10)
@@ -137,7 +137,7 @@ struct StateClassSample: SampleContent, ExampleContent {
                 Button("Remove")
                     .borderColor(Palette.outline)
                     .borderWidth(1)
-                    .backgroundColor(.transparent)
+                    .background(.transparent)
                     .textColor(Palette.subtle)
                     .cornerRadius(8)
                     .padding(20, 10)
@@ -152,7 +152,7 @@ struct StateClassSample: SampleContent, ExampleContent {
             Button("Tap a plain property (\(basket.plainTaps))")
                 .borderColor(Palette.outline)
                 .borderWidth(1)
-                .backgroundColor(.transparent)
+                .background(.transparent)
                 .textColor(Palette.subtle)
                 .cornerRadius(8)
                 .padding(20, 10)

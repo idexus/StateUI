@@ -158,7 +158,7 @@ final class DeterminismTests: XCTestCase {
 
         let styles = StyleSheet {
             Style<Label>().fontSize(14).textColor(Color(light: .black, dark: .white))
-            Style<Button>().backgroundColor(Color.fromArgb("#512BD4")).textColor(.white)
+            Style<Button>().background(Color.fromArgb("#512BD4")).textColor(.white)
         }
 
         // The APPLICATION over its scene and the scene over its window, which is
@@ -277,7 +277,7 @@ final class DeterminismTests: XCTestCase {
             (.text, .string("hello")),
             (.fontSize, .number(20)),
             (.textColor, Color.fromArgb("#512BD4").propValue),
-            (.backgroundColor, Color.white.propValue),
+            (.background, Color.white.propValue),
             (.opacity, .number(0.5)),
             (.margin, .numbers([1, 2, 3, 4])),
             (.padding, .numbers([4, 3, 2, 1])),
@@ -374,7 +374,7 @@ final class DeterminismTests: XCTestCase {
         func panel(_ opacity: Double, _ colour: String) -> Node {
             Border { Label("x") }
                 .opacity(opacity)
-                .backgroundColor(Color(colour))
+                .background(Color(colour))
                 .id("panel")
                 .body
         }

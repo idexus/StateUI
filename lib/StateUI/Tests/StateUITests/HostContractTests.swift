@@ -256,8 +256,9 @@ final class HostContractTests: XCTestCase {
     /// Every view speaks in plain words: the size it asks for is its width and
     /// height, how it sits in its space is its alignment, and what it does with
     /// input, direction, clipping, its pivot and its context menu is said the
-    /// way a reader says it. The spellings they replaced do not return, and
-    /// neither do the size read-backs - a frame report says where a view is.
+    /// way a reader says it; its background is one property, a colour or a
+    /// gradient. The spellings they replaced do not return, and neither do the
+    /// size read-backs - a frame report says where a view is.
     func testEveryViewSpeaksInPlainWords() throws {
         let tokenSource = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
@@ -269,7 +270,7 @@ final class HostContractTests: XCTestCase {
             "widthRequest", "heightRequest", "minimumWidthRequest", "minimumHeightRequest",
             "maximumWidthRequest", "maximumHeightRequest", "horizontalOptions",
             "verticalOptions", "inputTransparent", "cascadeInputTransparent",
-            "flowDirection", "isClippedToBounds", "anchorX", "anchorY",
+            "flowDirection", "isClippedToBounds", "anchorX", "anchorY", "backgroundColor",
         ]
 
         XCTAssertTrue(properties.isSuperset(of: [
@@ -286,7 +287,10 @@ final class HostContractTests: XCTestCase {
         XCTAssertTrue(controls.contains("ContextMenu"))
         XCTAssertFalse(controls.contains("ContextFlyout"), "the context menu keeps its former name")
 
-        for file in ["Views/Elements.swift", "Views/Bound.swift", "Types/Enums.swift"] {
+        for file in [
+            "Views/Elements.swift", "Views/Bound.swift", "Views/Label.swift",
+            "Views/SwipeView.swift", "Types/Enums.swift", "Types/PageSession.swift",
+        ] {
             let source = try String(
                 contentsOf: Fixtures.sources.appendingPathComponent(file),
                 encoding: .utf8)
@@ -296,6 +300,9 @@ final class HostContractTests: XCTestCase {
             for type in ["LayoutOptions", "FlowDirection"] {
                 XCTAssertFalse(source.contains("enum \(type)"), "\(file) still declares \(type)")
             }
+            XCTAssertFalse(
+                source.contains("public var backgroundColor"),
+                "\(file) still keeps a second background beside `background`")
         }
     }
 

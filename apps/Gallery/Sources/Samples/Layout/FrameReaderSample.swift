@@ -52,7 +52,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
                 .onFrameChanged(in: .safeArea) { safe = $0 }
             }
             .padding(16)
-            .backgroundColor(Palette.selected)
+            .background(Palette.selected)
 
             Slider($width)
                 .minimum(140)
@@ -106,7 +106,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
                 // describes it.
                 .width($width)
                 .height(120)
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .horizontalAlignment(.center)
                 // Reporting is a modifier on ANY view - one handler per
                 // space. Nothing is measured unless something asks: a view
@@ -117,7 +117,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
             }
             .spacing(8)
             .padding(16)
-            .backgroundColor(Palette.selected)
+            .background(Palette.selected)
 
             Slider($width)
                 .automationId("frameReader.width")

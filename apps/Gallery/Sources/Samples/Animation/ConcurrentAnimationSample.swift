@@ -62,7 +62,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                         .opacity($breath)
                 }
             }
-            .backgroundColor($wash)
+            .background($wash)
 
             HStack {
                 Button("Play").onClicked {
@@ -165,7 +165,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 .spacing(4)
                 .padding(16)
             }
-            .backgroundColor($wash)
+            .background($wash)
             .stroke(.transparent)
             .strokeShape(.roundRectangle(12))
 

@@ -15,7 +15,7 @@
 // is allowed can be written" a compiler rule rather than a convention:
 //
 //     PropertyContainer            what holds property VALUES - controls and styles
-//     ├── VisualElementProperties  opacity, isVisible, backgroundColor, size…
+//     ├── VisualElementProperties  opacity, isVisible, background, size…
 //     │   └── ViewProperties       margin, options, grid and absolute placement
 //     │       ├── LayoutProperties safeAreaEdges
 //     │       │   └── StackBaseProperties  spacing
@@ -794,12 +794,14 @@ extension VisualElementProperties {
     /// How opaque the view is, from 0 to 1.
     public func opacity(_ value: Double) -> Modified { setValue(.opacity, .number(value)) }
 
-    /// What is drawn behind the view.
+    /// What is drawn behind the view: a colour here, or a brush when one
+    /// colour will not do. It is ONE property whichever it carries, and a
+    /// view's own background replaces the one its style gives it.
     ///
     /// A `Color(light:dark:)` here carries both halves; the differ picks the
     /// one the theme asks for as it builds the view, so a theme change builds
     /// again exactly the views wearing a pair.
-    public func backgroundColor(_ value: Color) -> Modified { setValue(.backgroundColor, value.propValue) }
+    public func background(_ value: Color) -> Modified { setValue(.background, value.propValue) }
 
     /// What is drawn behind the view, when one colour will not do.
     ///
@@ -808,8 +810,8 @@ extension VisualElementProperties {
     ///         GradientStop(.indigo, 1),
     ///     ]))
     ///
-    /// `.backgroundColor` is one colour, and this is a gradient. A view given
-    /// both draws the brush.
+    /// The same property as a colour background: a view given both draws the
+    /// one it was given last.
     public func background(_ value: Brush) -> Modified { setValue(.background, value.propValue) }
 
     /// How wide the view asks to be, in device units. A REQUEST: the layout has

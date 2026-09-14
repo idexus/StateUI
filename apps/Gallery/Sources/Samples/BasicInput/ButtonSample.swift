@@ -22,7 +22,7 @@ struct ButtonSample: SampleContent, ExampleContent {
             Label("Clicked \\(counter) time(s)")
 
             Button("Outlined")
-                .backgroundColor(.transparent)
+                .background(.transparent)
                 .borderColor(Palette.accent)
                 .borderWidth(1)
                 .onClicked { counter += 1 }
@@ -37,7 +37,7 @@ struct ButtonSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Button("Increment")
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)
@@ -49,7 +49,7 @@ struct ButtonSample: SampleContent, ExampleContent {
                 .horizontalTextAlignment(.center)
 
             Button("Outlined")
-                .backgroundColor(.transparent)
+                .background(.transparent)
                 .textColor(Palette.accent)
                 .borderColor(Palette.accent)
                 .borderWidth(1)

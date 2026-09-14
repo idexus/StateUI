@@ -83,7 +83,7 @@ struct NavigationSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Button("Push a page")
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)

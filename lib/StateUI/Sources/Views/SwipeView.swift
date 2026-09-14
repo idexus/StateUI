@@ -26,7 +26,7 @@ extension SwipeViewProperties {
 ///     }
 ///     .rightItems(mode: .execute) {
 ///         SwipeItem("Delete")
-///             .backgroundColor(.firebrick)
+///             .background(.firebrick)
 ///             .onInvoked { items.removeAll { $0 == item } }
 ///     }
 ///
@@ -212,7 +212,7 @@ enum SwipeSide: Int32, Sendable {
 ///
 ///     SwipeItem("Favourite")
 ///         .iconImageSource("nav_media.png")
-///         .backgroundColor(.gold)
+///         .background(.gold)
 ///         .onInvoked { favourites.insert(item) }
 ///
 /// Not a view: it has a caption, a picture, a colour behind it and something to
@@ -237,8 +237,8 @@ public struct SwipeItem: Element, MenuItemElement {
     // `onClicked` is not on that protocol.
 
     /// What is drawn behind it, which is how one item is told from the next.
-    public func backgroundColor(_ value: Color) -> Self {
-        setValue(.backgroundColor, value.propValue)
+    public func background(_ value: Color) -> Self {
+        setValue(.background, value.propValue)
     }
 
     /// Whether it is revealed at all - which is how one item of a set is left

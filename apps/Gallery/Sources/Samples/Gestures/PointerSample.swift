@@ -44,7 +44,7 @@ struct PointerSample: SampleContent, ExampleContent {
         .stroke(hovering ? Palette.accent : Palette.outline)
         .strokeThickness(hovering ? 2 : 1)
         .strokeShape(.roundRectangle(10))
-        .backgroundColor(pressing ? Palette.selected : Palette.raised)
+        .background(pressing ? Palette.selected : Palette.raised)
         .onPointerEntered { hovering = true; last = "entered" }
         .onPointerMoved { point in
             pointer = point
@@ -92,7 +92,7 @@ struct PointerSample: SampleContent, ExampleContent {
         .stroke(hovering ? Palette.accent : Palette.outline)
         .strokeThickness(hovering ? 2 : 1)
         .strokeShape(.roundRectangle(10))
-        .backgroundColor(pressing ? Palette.selected : Palette.raised)
+        .background(pressing ? Palette.selected : Palette.raised)
         .onPointerEntered { hovering = true; last = "entered" }
         .onPointerMoved { point in
             pointer = point

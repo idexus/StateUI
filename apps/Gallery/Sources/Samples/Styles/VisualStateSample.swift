@@ -38,9 +38,9 @@ struct VisualStateSample: SampleContent, ExampleContent {
             Button(enabled ? "Hold me" : "Disabled")
                 .isEnabled(enabled)
                 .scale($press)
-                .visualState(.pressed) { $0.backgroundColor(Palette.brand) }
+                .visualState(.pressed) { $0.background(Palette.brand) }
                 .visualState(.disabled) { $0
-                    .backgroundColor(Palette.outline)
+                    .background(Palette.outline)
                     .textColor(Palette.disabled)
                 }
                 // The colour is a setter and the engine carries it at the
@@ -59,7 +59,7 @@ struct VisualStateSample: SampleContent, ExampleContent {
             Button(enabled ? "Hold me too" : "Disabled")
                 .isEnabled(enabled)
                 .motion(.none)
-                .visualState(.pressed) { $0.backgroundColor(Palette.brand) }
+                .visualState(.pressed) { $0.background(Palette.brand) }
                 .onClicked { presses += 1 }
 
             Switch($enabled)
@@ -70,11 +70,11 @@ struct VisualStateSample: SampleContent, ExampleContent {
             // .unchecked rather than .normal.
             RadioButton("Ready")
                 .isChecked($ready)
-                .visualState(.checked) { $0.backgroundColor(Palette.selected) }
+                .visualState(.checked) { $0.background(Palette.selected) }
 
             RadioButton("Busy")
                 .isChecked($busy)
-                .visualState(.checked) { $0.backgroundColor(Palette.selected) }
+                .visualState(.checked) { $0.background(Palette.selected) }
         }
         """
 
@@ -91,9 +91,9 @@ struct VisualStateSample: SampleContent, ExampleContent {
                 Button(enabled ? "Hold me" : "Disabled")
                     .isEnabled(enabled)
                     .scale($press)
-                    .visualState(.pressed) { $0.backgroundColor(Palette.brand) }
+                    .visualState(.pressed) { $0.background(Palette.brand) }
                     .visualState(.disabled) { $0
-                        .backgroundColor(Palette.outline)
+                        .background(Palette.outline)
                         .textColor(Palette.disabled)
                     }
                     .onVisualStateChanged { state in
@@ -108,9 +108,9 @@ struct VisualStateSample: SampleContent, ExampleContent {
                     // the control's own motion, and this is what none looks
                     // like.
                     .motion(.none)
-                    .visualState(.pressed) { $0.backgroundColor(Palette.brand) }
+                    .visualState(.pressed) { $0.background(Palette.brand) }
                     .visualState(.disabled) { $0
-                        .backgroundColor(Palette.outline)
+                        .background(Palette.outline)
                         .textColor(Palette.disabled)
                     }
                     .onClicked { presses += 1 }
@@ -139,11 +139,11 @@ struct VisualStateSample: SampleContent, ExampleContent {
 
             RadioButton("Ready")
                 .isChecked($ready)
-                .visualState(.checked) { $0.backgroundColor(Palette.selected) }
+                .visualState(.checked) { $0.background(Palette.selected) }
 
             RadioButton("Busy")
                 .isChecked($busy)
-                .visualState(.checked) { $0.backgroundColor(Palette.selected) }
+                .visualState(.checked) { $0.background(Palette.selected) }
         }
         .spacing(12)
     }

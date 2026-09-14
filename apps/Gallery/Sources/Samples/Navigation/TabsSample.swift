@@ -84,7 +84,7 @@ struct TabsSample: SampleContent, ExampleContent {
     var content: any View {
         VStack {
             Button("Open the tabs")
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)

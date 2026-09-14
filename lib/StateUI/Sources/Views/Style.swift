@@ -190,12 +190,12 @@ extension RadioButton {
 ///
 ///     Style<Button>()
 ///         .textColor(.white)
-///         .backgroundColor(AppColors.primary)
+///         .background(AppColors.primary)
 ///         .cornerRadius(8)
 ///         .padding(14, 10)
 ///         .visualState(.disabled) { $0
 ///             .textColor(AppColors.gray950)
-///             .backgroundColor(AppColors.gray200)
+///             .background(AppColors.gray200)
 ///         }
 ///
 /// The style itself takes the modifiers, and it conforms to the property half
@@ -279,8 +279,8 @@ extension StyleBag where Context == StyleBase {
     /// What changes while a control of this type is in a state.
     ///
     ///     Style<Button>()
-    ///         .backgroundColor(.cornflowerBlue)
-    ///         .visualState(.disabled) { $0.backgroundColor(.gray) }
+    ///         .background(.cornflowerBlue)
+    ///         .visualState(.disabled) { $0.background(.gray) }
     ///
     /// The closure's `$0` is the same property surface the style has - and
     /// nothing more: a `visualState` inside a `visualState` does not compile,
@@ -637,7 +637,7 @@ public enum StyleBuilder {
 ///
 ///     application.styles = StyleSheet {
 ///         Style<Label>().textColor(AppColors.text)
-///         Style<Button>("Danger").backgroundColor(.firebrick)
+///         Style<Button>("Danger").background(.firebrick)
 ///     }
 ///
 /// The top of the tree reads it, so a sheet written again restyles every

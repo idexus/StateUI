@@ -61,7 +61,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Border()
-                .backgroundColor(Palette.raised)
+                .background(Palette.raised)
                 .stroke(Palette.outline)
                 .strokeShape(.roundRectangle(110))
                 .width(220)
@@ -87,7 +87,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             hand($sAngle, length: 96, width: 2, color: Palette.accent)
 
             Border()
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .strokeShape(.roundRectangle(6))
                 .width(12)
                 .height(12)
@@ -199,7 +199,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             Border()
-                .backgroundColor(Palette.raised)
+                .background(Palette.raised)
                 .stroke(Palette.outline)
                 .strokeThickness(2)
                 .strokeShape(.roundRectangle(110))
@@ -223,7 +223,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             hand($sAngle, length: 96, width: 2, color: Palette.accent)
 
             Border()
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .stroke(.transparent)
                 .strokeShape(.roundRectangle(6))
                 .width(12)

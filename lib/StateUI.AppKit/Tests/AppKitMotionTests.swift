@@ -12,7 +12,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertTrue(AppKitTransitionSurface.presents(.padding, on: .page))
         XCTAssertTrue(AppKitTransitionSurface.presents(.renderTransform, on: .line))
         XCTAssertTrue(AppKitTransitionSurface.presents(.x, on: .window))
-        XCTAssertTrue(AppKitTransitionSurface.presents(.backgroundColor, on: .titleBar))
+        XCTAssertTrue(AppKitTransitionSurface.presents(.background, on: .titleBar))
         XCTAssertTrue(AppKitTransitionSurface.presents(.foregroundColor, on: .titleBar))
 
         XCTAssertFalse(AppKitTransitionSurface.presents(.rotationX, on: .label))
@@ -1000,6 +1000,38 @@ final class AppKitMotionTests: XCTestCase {
 
         XCTAssertNil(engine.presentedValue(for: key))
         XCTAssertFalse(engine.isActive)
+    }
+
+    /// `background` is one property whichever it carries: two colours on it
+    /// move as colours, and a colour never blends into a brush.
+    @MainActor
+    func testAColourBackgroundMovesAsAColourAndSnapsToABrush() {
+        let engine = AppKitPropertyMotionEngine()
+        let colour = AppKitPropertyMotionKey(mount: 1, property: .background)
+        let black = HostValue.color(red: 0, green: 0, blue: 0, alpha: 255)
+
+        engine.receive(
+            key: colour,
+            standing: black,
+            target: .color(red: 255, green: 255, blue: 255, alpha: 255),
+            transition: HostTransition(motion: .eased(200, .linear)),
+            now: 0,
+            reducesMotion: false)
+
+        engine.advance(now: 100)
+        XCTAssertEqual(engine.takeOutputs().last?.value,
+                       .color(red: 128, green: 128, blue: 128, alpha: 255))
+
+        let brush = AppKitPropertyMotionKey(mount: 2, property: .background)
+        engine.receive(
+            key: brush,
+            standing: black,
+            target: .values([.enumeration(1), .color(red: 255, green: 0, blue: 0, alpha: 255)]),
+            transition: HostTransition(motion: .eased(200, .linear)),
+            now: 100,
+            reducesMotion: false)
+
+        XCTAssertNil(engine.presentedValue(for: brush))
     }
 
     func testAnEasedMotionIsAFunctionOfElapsedTime() {

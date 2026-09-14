@@ -184,7 +184,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
             SectionTitle("Another gallery")
 
             Button("Open another gallery")
-                .backgroundColor(style.accent.color)
+                .background(style.accent.color)
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)
@@ -225,7 +225,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// The button that opens one of the gallery's windows.
     private func opens(_ caption: String, _ type: WindowType) -> any View {
         Button(caption)
-            .backgroundColor(style.accent.color)
+            .background(style.accent.color)
             .textColor(.white)
             .cornerRadius(8)
             .padding(20, 8)
@@ -279,7 +279,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// The button that opens one swatch's window.
     private func swatch(_ number: Int) -> any View {
         Button("Swatch \(number)")
-            .backgroundColor(SwatchPage.colour(of: number))
+            .background(SwatchPage.colour(of: number))
             .textColor(.white)
             .cornerRadius(8)
             .padding(16, 8)

@@ -35,7 +35,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                     .fontSize($captionSize)
                     .textColor($captionColor)
             }
-            .backgroundColor($panelColor)
+            .background($panelColor)
             .padding($panelPadding)
             .height($panelHeight)
 
@@ -87,9 +87,9 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                 }
-                .backgroundColor(AppColors.violetLight)
+                .background(AppColors.violetLight)
             }
-            .backgroundColor($panelColor)
+            .background($panelColor)
             .padding($panelPadding)
             .height($panelHeight)
             .stroke(.transparent)

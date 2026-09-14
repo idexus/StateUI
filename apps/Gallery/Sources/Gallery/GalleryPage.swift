@@ -39,6 +39,6 @@ extension PageSession {
 
         // Tinted rather than white, which is what lets a card lift off it with
         // a fill instead of a shadow - see `Palette.surface`.
-        backgroundColor = Palette.surface
+        background = Palette.surface
     }
 }

@@ -129,7 +129,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Press")
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .cornerRadius(8)
                     .padding(20, 10)
                     .onClicked { visits += 1 }
@@ -137,7 +137,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                 Button("Start over")
                     .borderColor(Palette.outline)
                     .borderWidth(1)
-                    .backgroundColor(.transparent)
+                    .background(.transparent)
                     .textColor(Palette.subtle)
                     .cornerRadius(8)
                     .padding(20, 10)
@@ -165,7 +165,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                 Button(shade == .quiet ? "quiet" : "bold")
                     .borderColor(Palette.outline)
                     .borderWidth(1)
-                    .backgroundColor(.transparent)
+                    .background(.transparent)
                     .textColor(Palette.subtle)
                     .cornerRadius(8)
                     .padding(16, 8)

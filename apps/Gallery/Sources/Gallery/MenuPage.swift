@@ -61,7 +61,7 @@ struct MenuPage: ContentView {
 
             // The image hosts use for the pane's navigation affordance.
             page.iconImageSource = "nav_menu_dark.png"
-            page.backgroundColor = Palette.surface
+            page.background = Palette.surface
 
         }
     }

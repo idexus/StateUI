@@ -32,7 +32,7 @@ enum AppStyles {
 
             Style<Label>()
                 .textColor(Palette.text)
-                .backgroundColor(.transparent)
+                .background(.transparent)
                 .fontSize(15)                
 
             // A page's own name for itself. Tight tracking, because a large
@@ -64,7 +64,7 @@ enum AppStyles {
 
             Style<Button>()
                 .textColor(Palette.onAccent)
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .fontSize(14)
                 .fontAttributes(.bold)
                 .borderWidth(0)
@@ -74,7 +74,7 @@ enum AppStyles {
                 .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
-                    .backgroundColor(Palette.outline)
+                    .background(Palette.outline)
                 }
 
             // A button that lives in the WINDOW's chrome rather than on a
@@ -107,7 +107,7 @@ enum AppStyles {
             // dropped: a title bar is a desktop, and a mouse is not a thumb.
             Style<Button>("ChromeChip")
                 .textColor(AppColors.windowYellow)
-                .backgroundColor(.transparent)
+                .background(.transparent)
                 .fontSize(13)
                 .fontAttributes(.bold)
                 .borderWidth(0)
@@ -134,7 +134,7 @@ enum AppStyles {
             // everything it needs - the ChromeChip rule again.
             Style<Button>("RowChip")
                 .textColor(Palette.onAccent)
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .fontSize(13)
                 .fontAttributes(.bold)
                 .borderWidth(0)
@@ -144,7 +144,7 @@ enum AppStyles {
                 .minimumWidth(0)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
-                    .backgroundColor(Palette.outline)
+                    .background(Palette.outline)
                 }
 
             Style<ImageButton>()
@@ -162,7 +162,7 @@ enum AppStyles {
 
             Style<Entry>()
                 .textColor(Palette.text)
-                .backgroundColor(.transparent)
+                .background(.transparent)
                 .placeholderColor(Palette.subtle)
                 .fontSize(15)
                 .minimumHeight(44)
@@ -173,7 +173,7 @@ enum AppStyles {
 
             Style<Editor>()
                 .textColor(Palette.text)
-                .backgroundColor(.transparent)
+                .background(.transparent)
                 .placeholderColor(Palette.subtle)
                 .fontSize(15)
                 .minimumHeight(44)
@@ -185,7 +185,7 @@ enum AppStyles {
             Style<Picker>()
                 .textColor(Palette.text)
                 .titleColor(Palette.subtle)
-                .backgroundColor(.transparent)
+                .background(.transparent)
                 .fontSize(15)
                 .minimumHeight(44)
                 .minimumWidth(44)
@@ -196,7 +196,7 @@ enum AppStyles {
 
             Style<DatePicker>()
                 .textColor(Palette.text)
-                .backgroundColor(.transparent)
+                .background(.transparent)
                 .fontSize(15)
                 .minimumHeight(44)
                 .minimumWidth(44)
@@ -206,7 +206,7 @@ enum AppStyles {
 
             Style<TimePicker>()
                 .textColor(Palette.text)
-                .backgroundColor(.transparent)
+                .background(.transparent)
                 .fontSize(15)
                 .minimumHeight(44)
                 .minimumWidth(44)
@@ -214,7 +214,7 @@ enum AppStyles {
                     .textColor(Palette.disabled)
                 }
 
-            // NO backgroundColor: a search field keeps the platform's own
+            // NO background: a search field keeps the platform's own
             // look on a coloured surface, and that look is the host's. The
             // 44-point floor is a TOUCH screen's: on a desktop it shows as a
             // dead band under the field - a mouse is not a thumb, the
@@ -260,7 +260,7 @@ enum AppStyles {
                 }
 
             Style<RadioButton>()
-                .backgroundColor(.transparent)
+                .background(.transparent)
                 .textColor(Palette.text)
                 .fontSize(15)
                 .minimumHeight(44)
@@ -309,7 +309,7 @@ enum AppStyles {
             Style<HStack>("MenuRow")
                 .spacing(14)
                 .padding(18, 13)
-                .backgroundColor(.transparent)
+                .background(.transparent)
 
             Style<Label>("MenuRowText")
                 .fontSize(16)
@@ -323,22 +323,16 @@ enum AppStyles {
             // both themes and on every platform. A shadow would need a colour
             // that works on both, and there is no such colour.
             //
-            // backgroundColor, NOT background. Where both are set the host
-            // fills with the brush, and a view's own value beats a style
-            // setter of the SAME property only - so a brush here, in a style
-            // every Border gets, would hide the colour of every panel that
-            // sets its own, the animated one included.
-            //
-            // A view that wants a GRADIENT still says `.background(…)` and
-            // wins, because the brush is what the host fills with. That is
-            // what the home page's panel does.
+            // A colour here is one property with the view's own background,
+            // so a panel that sets its own - a colour, or a gradient like the
+            // home page's - replaces this one, the animated panel included.
             Style<Border>()
-                .backgroundColor(Palette.raised)
+                .background(Palette.raised)
                 .stroke(Palette.outline)
                 .strokeShape(.roundRectangle(14))
                 .strokeThickness(1)
 
-            // COLOUR, not backgroundColor: a BoxView draws its colour, and a
+            // COLOUR, not background: a BoxView draws its colour, and a
             // background is a second square behind that one - which Android
             // does not turn with the view, so a rotated box would show it
             // standing still underneath. The gallery's clock hands are the

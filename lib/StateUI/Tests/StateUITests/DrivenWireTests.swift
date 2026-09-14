@@ -116,7 +116,7 @@ final class DrivenWireTests: XCTestCase {
                 .characterSpacing(number.projectedValue)
         }
         .opacity(number.projectedValue)
-        .backgroundColor(colour.projectedValue)
+        .background(colour.projectedValue)
         .width(number.projectedValue)
         .height(number.projectedValue)
         .minimumWidth(number.projectedValue)

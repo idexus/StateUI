@@ -110,7 +110,7 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .height(28)
             }
             .padding(16)
-            .backgroundColor(Palette.surface)
+            .background(Palette.surface)
             .stroke(.transparent)
             .strokeShape(.roundRectangle(12))
             .horizontalAlignment(.center)

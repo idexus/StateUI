@@ -546,7 +546,7 @@ private struct Steps: ContentView {
         Button(caption)
             .fontSize(18)
             .textColor(Palette.subtle)
-            .backgroundColor(.transparent)
+            .background(.transparent)
             .borderColor(Palette.outline)
             .borderWidth(1)
             .cornerRadius(8)
@@ -582,7 +582,7 @@ private struct GroupFace: ContentView {
                         .lineBreakMode(.tailTruncation)
                         .padding(12, 10)
                 }
-                .backgroundColor(Color("#B3000000"))
+                .background(Color("#B3000000"))
                 .verticalAlignment(.end)
             }
             // THE PICTURE IS CUT AT THE CARD'S EDGE, and this is a platform

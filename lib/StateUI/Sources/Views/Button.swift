@@ -45,7 +45,7 @@ extension ButtonProperties {
 ///     @State private var counter = 0
 ///     …
 ///     Button("Increment")
-///         .backgroundColor(.cornflowerBlue)
+///         .background(.cornflowerBlue)
 ///         .cornerRadius(8)
 ///         .onClicked { counter += 1 }
 ///

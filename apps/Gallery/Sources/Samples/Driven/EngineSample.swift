@@ -104,7 +104,7 @@ struct EngineSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.center)
             }
             .padding(24, 16)
-            .backgroundColor(Palette.surface)
+            .background(Palette.surface)
             .stroke(.transparent)
             .strokeShape(.roundRectangle(12))
             .horizontalAlignment(.center)

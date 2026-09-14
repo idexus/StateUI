@@ -71,7 +71,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .backgroundColor(Palette.surface)
+            .background(Palette.surface)
 
             // THE JOURNEY. This closure reads where the value IS, and the host
             // writes that lane every frame - so it is built again on every one
@@ -84,7 +84,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .backgroundColor(Palette.surface)
+            .background(Palette.surface)
 
             // A READING, ten times a second, into an ordinary state. Same
             // number, a tenth of the builds.
@@ -96,7 +96,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             }
             .spacing(4)
             .padding(14)
-            .backgroundColor(Palette.surface)
+            .background(Palette.surface)
             .samples($fade, into: $shown, .every(100))
 
             BoxView()
@@ -110,7 +110,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
                     .automationId("paced.fade")
                     .semanticDescription("Fade the box out")
                     .fontSize(13)
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .textColor(.white)
                     .cornerRadius(8)
                     .padding(20, 10)
@@ -122,7 +122,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
                     .fontSize(13)
                     .borderColor(Palette.outline)
                     .borderWidth(1)
-                    .backgroundColor(.transparent)
+                    .background(.transparent)
                     .textColor(Palette.subtle)
                     .cornerRadius(8)
                     .padding(20, 10)

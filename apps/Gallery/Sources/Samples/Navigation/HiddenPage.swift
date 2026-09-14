@@ -31,7 +31,7 @@ struct HiddenPage: ContentView {
                     .textColor(Palette.subtle)
 
                 Button("Back to the Navigation samples")
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .textColor(.white)
                     .cornerRadius(8)
                     .padding(20, 10)

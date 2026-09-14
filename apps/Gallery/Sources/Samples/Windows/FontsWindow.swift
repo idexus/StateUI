@@ -33,7 +33,7 @@ struct FontsPage: ContentView {
                 let button = Button(family.isEmpty ? "The platform's own" : family)
                     .fontSize(15)
                     .textColor(chosen ? .white : Palette.text)
-                    .backgroundColor(chosen ? style.accent.color : .transparent)
+                    .background(chosen ? style.accent.color : .transparent)
                     .borderColor(Palette.subtle)
                     .borderWidth(chosen ? 0 : 1)
                     .cornerRadius(8)

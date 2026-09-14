@@ -1,7 +1,7 @@
-generation 1 names +101
+generation 1 names +100
 VStack 1 arranged(3)
   allowDrop: true
-  backgroundColor: color FFF5F5F5
+  background: color FFF5F5F5
   canDrag: true
   clipsContent: true
   dragText: string "Alpha"

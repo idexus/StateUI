@@ -129,7 +129,7 @@ private struct Knob: ContentView {
 
             HStack {
                 Button("Full")
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .cornerRadius(8)
                     .padding(16, 8)
                     .onClicked { level = 1 }
@@ -137,7 +137,7 @@ private struct Knob: ContentView {
                 Button("Empty")
                     .borderColor(Palette.outline)
                     .borderWidth(1)
-                    .backgroundColor(.transparent)
+                    .background(.transparent)
                     .textColor(Palette.subtle)
                     .cornerRadius(8)
                     .padding(16, 8)

@@ -19,12 +19,12 @@ enum HandbookStyles {
 
             Style<Button>("Primary")
                 .textColor(.white)
-                .backgroundColor(.cornflowerBlue)
+                .background(.cornflowerBlue)
                 .cornerRadius(8)
 
             Style<Button>("Danger")
                 .basedOn("Primary")
-                .backgroundColor(.firebrick)
+                .background(.firebrick)
         }
     }
 }
@@ -108,10 +108,10 @@ semantic state:
 
 ```swift
 Style<Button>()
-    .backgroundColor(.cornflowerBlue)
+    .background(.cornflowerBlue)
     .visualState(.disabled) { state in
         state
-            .backgroundColor(.gray)
+            .background(.gray)
             .textColor(.darkGray)
     }
     .visualState(.pressed) { state in
@@ -145,7 +145,7 @@ and property, so a local change does not erase unrelated style setters:
 ```swift
 Button("Save")
     .visualState(.pressed) { state in
-        state.backgroundColor(.steelBlue)
+        state.background(.steelBlue)
     }
 ```
 
@@ -182,8 +182,8 @@ matrix before relying on a state on a target.
 
 ## Flat colors and brushes
 
-`backgroundColor` and a brush-valued `background` are different capabilities.
-A brush can be solid, linear, or radial:
+`background` takes one colour or a brush, and it is one property whichever
+it carries. A brush can be solid, linear, or radial:
 
 ```swift
 let wash = Brush.linearGradient(

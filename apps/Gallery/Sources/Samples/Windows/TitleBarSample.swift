@@ -42,7 +42,7 @@ struct TitleBarSample: SampleContent, ExampleContent {
                     .subtitle(titleBar.subtitle)
                     .icon("stateui_mark.png")
                     .foregroundColor(.white)
-                    .backgroundColor(.cornflowerBlue)
+                    .background(.cornflowerBlue)
                     .leadingContent { Button("Sidebar") }
                     .content { SearchBar("Search") }
                     .trailingContent {

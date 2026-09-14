@@ -97,7 +97,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Grow")
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .cornerRadius(8)
                     .padding(16, 8)
                     .onClicked {
@@ -105,7 +105,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
                     }
 
                 Button("Shrink")
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .cornerRadius(8)
                     .padding(16, 8)
                     .onClicked {
@@ -115,7 +115,7 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
                 Button("Stop")
                     .borderColor(Palette.outline)
                     .borderWidth(1)
-                    .backgroundColor(.transparent)
+                    .background(.transparent)
                     .textColor(Palette.subtle)
                     .cornerRadius(8)
                     .padding(16, 8)

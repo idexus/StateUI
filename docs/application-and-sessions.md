@@ -350,7 +350,7 @@ told what it is by modifier.
 | `title` | navigation title and the caption when the page is used as an item |
 | `iconImageSource` | the page's representative image, commonly a tab icon |
 | `padding` | space between the page edge and its content |
-| `backgroundColor` | flat color behind the page |
+| `background` | flat color behind the page |
 | `hasNavigationBar` | whether a containing navigation stack shows its bar for this page |
 | `hasBackButton` | whether that bar offers its native back affordance |
 | `backButtonTitle` | short title supplied by this page for the page pushed above it |
@@ -432,12 +432,12 @@ window.titleBar = TitleBar("Notes")
     .leadingContent { Button("Sidebar") }
     .content { SearchBar($query) }
     .trailingContent { Button("Account") }
-    .backgroundColor(.cornflowerBlue)
+    .background(.cornflowerBlue)
 ```
 
 The initializer supplies the title. `subtitle`, `icon`, and
 `foregroundColor` supply title-area values; ordinary view modifiers such as
-`backgroundColor` style the bar itself. The leading, center, and trailing
+`background` style the bar itself. The leading, center, and trailing
 closures are identified child subtrees, so controls in them keep ordinary
 state, events, and identity. Returning no child removes that slot; use a
 layout inside a slot when it contains several controls.

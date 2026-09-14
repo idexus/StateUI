@@ -270,8 +270,7 @@ individual control already uses that member.
 | core reactions | `onCreated`, `onDestroying`, `onChanged`, `samples`, `engine` | — | — | — | — | — | — |
 | motion selection | `motion`, `MotionValues`, `MotionLanes` | — | — | — | — | — | — |
 | visibility and opacity | `isVisible`, `opacity` | — | — | — | — | — | — |
-| flat background | `backgroundColor` | — | — | — | — | — | — |
-| brush background on every view | `background` | — | — | — | — | — | — |
+| background, a colour or a brush, on every view | `background` | — | — | — | — | — | — |
 | enabled state on every eligible view | `isEnabled` | — | — | — | — | — | — |
 | hit testing on every eligible view | `ignoresInput`, `letsInputThrough` | — | — | — | — | — | — |
 | layout direction | `layoutDirection` | — | — | — | — | — | — |
@@ -302,7 +301,7 @@ token in parentheses.
 | `WindowGroup` / `Window` | session metadata | `windowType`, `windowValue`, `autoHide`, `floatsOnTop` | ✅ | — | — | — | — | — |
 | `Window` | handlers | `created`, `activated`, `deactivated`, `stopped`, `resumed`, `destroying` | ✅ | — | — | — | — | — |
 | `Scene` | handlers | `activated`, `deactivated`, `stopped`, `destroying`, `windowClosed`, `windowRestored` | ✅ | — | — | — | — | — |
-| `Page` | properties | `title`, `iconImageSource`, `padding`, `backgroundColor`, `backButtonTitle`, `hasBackButton`, `hasNavigationBar`, `titleView`, toolbar and menu slots | ✅ | — | — | — | — | — |
+| `Page` | properties | `title`, `iconImageSource`, `padding`, `background`, `backButtonTitle`, `hasBackButton`, `hasNavigationBar`, `titleView`, toolbar and menu slots | ✅ | — | — | — | — | — |
 | `Page` | handlers | `appearing`, `disappearing`, `navigatingFrom`, `navigatedFrom`, `navigatedTo` | ✅ | — | — | — | — | — |
 | `NavigationStack` | state | bound path and committed native back (`popped`) | ✅ | — | — | — | — | — |
 | `NavigationStack` | properties | `barBackgroundColor` | ✅ | — | — | — | — | — |
@@ -315,14 +314,14 @@ token in parentheses.
 | menu items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled` | ✅ | — | — | — | — | — |
 | toolbar items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled`, `order`, `priority` | ✅ | — | — | — | — | — |
 | menu / toolbar items | handlers | `onClicked` (`clicked`) | ✅ | — | — | — | — | — |
-| `TitleBar` | properties/slots | `title`, `subtitle`, `icon`, `foregroundColor`, `backgroundColor`, leading/content/trailing slots | ✅ | — | — | — | — | — |
+| `TitleBar` | properties/slots | `title`, `subtitle`, `icon`, `foregroundColor`, `background`, leading/content/trailing slots | ✅ | — | — | — | — | — |
 | stack layouts | properties | `padding`, `spacing` | ✅ | — | — | — | — | — |
 | `Grid` | properties | `rowDefinitions`, `columnDefinitions`, `rowSpacing`, `columnSpacing`, child `gridRow`, `gridColumn`, `gridRowSpan`, `gridColumnSpan` | — | — | — | — | — | — |
 | `AbsoluteLayout` | properties | child `absoluteLayoutBounds`, `absoluteLayoutFlags` | — | — | — | — | — | — |
 | layouts | properties | `clipsContent`, `safeAreaEdges` | — | — | — | — | — | — |
 | `ScrollView` | properties | `orientation`, `verticalScrollBarVisibility`, `horizontalScrollBarVisibility`, `scroll`, `snapInterval`, `snapFrom`, `snapsAtMost`, `scrollMomentum` | ✅ | — | — | — | — | — |
 | `ScrollView` | events | `scrollXChanged`, `scrollYChanged`, `snapItemChanged`, `onScrollStopped` (`scrollStopped`) | ✅ | — | — | — | — | — |
-| `Border` | properties | `stroke`, `strokeThickness`, `strokeShape`, `background`, `backgroundColor` | — | — | — | — | — | — |
+| `Border` | properties | `stroke`, `strokeThickness`, `strokeShape`, `background` | — | — | — | — | — | — |
 | `Border` | properties | `strokeDashArray`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit` | — | — | — | — | — | — |
 | `Label` / `TextSpan` | properties | `text`, `textColor`, `characterSpacing`, `textTransform`, `fontSize`, `fontFamily`, `fontAttributes`, `lineBreakMode`, `lineHeight`, `maxLines`, `textDecorations`, formatted text | ✅ | — | — | — | — | — |
 | `Label` | properties | `horizontalTextAlignment`, `verticalTextAlignment`, `padding` | ✅ | — | — | — | — | — |
@@ -373,7 +372,7 @@ token in parentheses.
 | `IndicatorView` | properties | `count`, `position`, `indicatorColor`, `selectedIndicatorColor`, `indicatorSize`, `maximumVisible`, `indicatorsShape`, `hideSingle` | — | — | — | — | — | — |
 | `RefreshView` | properties/events | two-way `isRefreshing`, `isRefreshEnabled`, `refreshColor`, `onRefreshing` (`refreshing`) | — | — | — | — | — | — |
 | `SwipeView` | properties/events | `threshold`, item `side`, `swipeBehaviorOnInvoked`, `onSwipeStarted` (`swipeStarted`), `onSwipeChanging` (`swipeChanging`), `onSwipeEnded` (`swipeEnded`) | — | — | — | — | — | — |
-| `SwipeItem` | properties/events | `text`, `iconImageSource`, `backgroundColor`, `isDestructive`, `isEnabled`, `isVisible`, `onInvoked` (`invoked`) | — | — | — | — | — | — |
+| `SwipeItem` | properties/events | `text`, `iconImageSource`, `background`, `isDestructive`, `isEnabled`, `isVisible`, `onInvoked` (`invoked`) | — | — | — | — | — | — |
 | `RefreshView` | state event | `isRefreshingChanged` | — | — | — | — | — | — |
 | `WebView` | properties/events | `source`, `userAgent`, `canGoBackChanged`, `canGoForwardChanged` | — | — | — | — | — | — |
 | `WebView` | handlers | `onNavigating` (`navigating`), `onNavigated` (`navigated`), `onProcessTerminated` (`processTerminated`) | — | — | — | — | — | — |
@@ -413,44 +412,44 @@ host status.
 `absoluteLayoutBounds`, `absoluteLayoutFlags`, `address`, `allowDrop`,
 `aspect`, `autoHide`, `automationExcludedWithChildren`, `automationId`,
 `automationIsInAccessibleTree`, `autoSize`, `backButtonTitle`, `background`,
-`backgroundColor`, `barBackgroundColor`, `barTextColor`, `borderColor`,
-`borderWidth`, `cancelButtonColor`, `canDrag`, `characterSpacing`,
-`clearButtonVisibility`, `clipsContent`, `color`, `columnDefinitions`,
-`columnSpacing`, `content`, `contentLayout`, `cornerRadius`, `count`,
-`currentPage`, `cursorPosition`, `data`, `date`, `dragText`, `drawable`,
-`fill`, `fillRule`, `floatsOnTop`, `fontAttributes`, `fontAutoScalingEnabled`,
-`fontFamily`, `fontSize`, `foregroundColor`, `format`, `frame`, `gridColumn`,
-`gridColumnSpan`, `gridRow`, `gridRowSpan`, `group`, `groupName`,
-`hasBackButton`, `hasNavigationBar`, `height`, `hideSingle`,
-`horizontalAlignment`, `horizontalScrollBarVisibility`,
-`horizontalTextAlignment`, `icon`, `iconImageSource`, `ignoresInput`,
-`imageSource`, `increment`, `indicatorColor`, `indicatorSize`,
-`indicatorsShape`, `isAnimationPlaying`, `isChecked`, `isDestructive`,
-`isEnabled`, `isMaximizable`, `isMinimizable`, `isOpaque`, `isOpen`,
-`isPassword`, `isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isRunning`,
-`isScrollEnabled`, `isShowingUser`, `isSidebarVisible`, `isSpellCheckEnabled`,
-`isTextPredictionEnabled`, `isToggled`, `isTrafficEnabled`, `isVisible`,
-`isZoomEnabled`, `itemsSource`, `keyboard`, `label`, `layoutDirection`,
-`letsInputThrough`, `lineBreakMode`, `lineHeight`, `location`, `mapType`,
-`margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumTrackColor`,
-`maximumVisible`, `maximumWidth`, `maxLength`, `maxLines`, `minimum`,
-`minimumDate`, `minimumHeight`, `minimumTrackColor`, `minimumWidth`, `mode`,
-`name`, `numberOfTapsRequired`, `offColor`, `onColor`, `opacity`, `order`,
-`orientation`, `padding`, `panTouchCount`, `panXChannel`, `panYChannel`,
-`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,
-`priority`, `progress`, `progressColor`, `radiusX`, `radiusY`, `refreshColor`,
-`region`, `renderTransform`, `returnType`, `rotation`, `rotationX`,
-`rotationY`, `rowDefinitions`, `rowSpacing`, `safeAreaEdges`, `scale`,
-`scaleX`, `scaleY`, `scroll`, `scrollMomentum`, `scrollStep`,
-`searchIconColor`, `selectedIndex`, `selectedIndicatorColor`,
-`selectionLength`, `semanticDescription`, `semanticHeadingLevel`,
-`semanticHint`, `side`, `snapFrom`, `snapInterval`, `snapsAtMost`, `source`,
-`spacing`, `stroke`, `strokeDashArray`, `strokeDashOffset`, `strokeLineCap`,
-`strokeLineJoin`, `strokeMiterLimit`, `strokeShape`, `strokeThickness`,
-`style`, `subtitle`, `swipeBehaviorOnInvoked`, `swipeDirection`,
-`swipeThreshold`, `text`, `textColor`, `textDecorations`, `textTransform`,
-`textType`, `threshold`, `thumbColor`, `thumbImageSource`, `time`, `title`,
-`titleColor`, `translationX`, `translationY`, `type`, `userAgent`, `value`,
+`barBackgroundColor`, `barTextColor`, `borderColor`, `borderWidth`,
+`cancelButtonColor`, `canDrag`, `characterSpacing`, `clearButtonVisibility`,
+`clipsContent`, `color`, `columnDefinitions`, `columnSpacing`, `content`,
+`contentLayout`, `cornerRadius`, `count`, `currentPage`, `cursorPosition`,
+`data`, `date`, `dragText`, `drawable`, `fill`, `fillRule`, `floatsOnTop`,
+`fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`, `fontSize`,
+`foregroundColor`, `format`, `frame`, `gridColumn`, `gridColumnSpan`,
+`gridRow`, `gridRowSpan`, `group`, `groupName`, `hasBackButton`,
+`hasNavigationBar`, `height`, `hideSingle`, `horizontalAlignment`,
+`horizontalScrollBarVisibility`, `horizontalTextAlignment`, `icon`,
+`iconImageSource`, `ignoresInput`, `imageSource`, `increment`,
+`indicatorColor`, `indicatorSize`, `indicatorsShape`, `isAnimationPlaying`,
+`isChecked`, `isDestructive`, `isEnabled`, `isMaximizable`, `isMinimizable`,
+`isOpaque`, `isOpen`, `isPassword`, `isReadOnly`, `isRefreshEnabled`,
+`isRefreshing`, `isRunning`, `isScrollEnabled`, `isShowingUser`,
+`isSidebarVisible`, `isSpellCheckEnabled`, `isTextPredictionEnabled`,
+`isToggled`, `isTrafficEnabled`, `isVisible`, `isZoomEnabled`, `itemsSource`,
+`keyboard`, `label`, `layoutDirection`, `letsInputThrough`, `lineBreakMode`,
+`lineHeight`, `location`, `mapType`, `margin`, `maximum`, `maximumDate`,
+`maximumHeight`, `maximumTrackColor`, `maximumVisible`, `maximumWidth`,
+`maxLength`, `maxLines`, `minimum`, `minimumDate`, `minimumHeight`,
+`minimumTrackColor`, `minimumWidth`, `mode`, `name`, `numberOfTapsRequired`,
+`offColor`, `onColor`, `opacity`, `order`, `orientation`, `padding`,
+`panTouchCount`, `panXChannel`, `panYChannel`, `pivotX`, `pivotY`,
+`placeholder`, `placeholderColor`, `points`, `position`, `priority`,
+`progress`, `progressColor`, `radiusX`, `radiusY`, `refreshColor`, `region`,
+`renderTransform`, `returnType`, `rotation`, `rotationX`, `rotationY`,
+`rowDefinitions`, `rowSpacing`, `safeAreaEdges`, `scale`, `scaleX`, `scaleY`,
+`scroll`, `scrollMomentum`, `scrollStep`, `searchIconColor`, `selectedIndex`,
+`selectedIndicatorColor`, `selectionLength`, `semanticDescription`,
+`semanticHeadingLevel`, `semanticHint`, `side`, `snapFrom`, `snapInterval`,
+`snapsAtMost`, `source`, `spacing`, `stroke`, `strokeDashArray`,
+`strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`,
+`strokeShape`, `strokeThickness`, `style`, `subtitle`,
+`swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `text`,
+`textColor`, `textDecorations`, `textTransform`, `textType`, `threshold`,
+`thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`,
+`translationX`, `translationY`, `type`, `userAgent`, `value`,
 `verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
 `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
 `zIndex`.

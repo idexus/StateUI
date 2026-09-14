@@ -53,7 +53,7 @@ struct Badge: ContentView {
     var content: any View {
         Label("New")
             .textColor(.white)
-            .backgroundColor(color)
+            .background(color)
     }
 
     func color(_ value: Color) -> Self {

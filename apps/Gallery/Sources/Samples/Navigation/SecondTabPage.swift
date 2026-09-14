@@ -25,7 +25,7 @@ struct SecondTabPage: ContentView {
                     .fontAttributes(.bold)
 
                 Button("Show the first tab")
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .textColor(.white)
                     .cornerRadius(8)
                     .padding(20, 10)

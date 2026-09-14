@@ -154,7 +154,7 @@ private struct LifetimeCard: ContentView {
         Button("Card \(number) · tapped \(taps)")
             .fontSize(15)
             .textColor(.white)
-            .backgroundColor(Palette.accent)
+            .background(Palette.accent)
             .cornerRadius(10)
             .padding(20, 12)
             .horizontalAlignment(.center)

@@ -601,14 +601,14 @@ final class CarriedStateTests: XCTestCase {
     }
 
     /// A rule naming COLOURS answers a driven colour, which the property alone
-    /// cannot say - `backgroundColor` is in no group, and what puts it in one
+    /// cannot say - `background` is in no group, and what puts it in one
     /// is the value it carries.
     func testARuleNamingColoursAnswersADrivenColour() {
         let tint = State(wrappedValue: Color("#102030"))
         let renders = Renders()
 
         renders.render(Label("x").motion(.none).motion(.eased(640, .cubicIn), .colour)
-            .backgroundColor(tint.projectedValue).id("one").body)
+            .background(tint.projectedValue).id("one").body)
 
         XCTAssertEqual(
             standing(tint.number, as: JourneyLanes<Color>.self)?.motion,

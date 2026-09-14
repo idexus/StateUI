@@ -252,7 +252,7 @@ private extension AppKitTitleBarTests {
         bar.properties[.icon] = .string("notes.png")
         bar.properties[.foregroundColor] = .color(
             red: foreground.0, green: foreground.1, blue: foreground.2, alpha: 255)
-        bar.properties[.backgroundColor] = .color(
+        bar.properties[.background] = .color(
             red: background.0, green: background.1, blue: background.2, alpha: 255)
         bar.children = .arranged([leadingSlot, centerSlot, trailingSlot])
         return bar

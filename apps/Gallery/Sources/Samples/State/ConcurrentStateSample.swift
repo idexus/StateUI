@@ -99,7 +99,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
             Button(running ? "Counting…" : "Count from 200 tasks at once")
                 .fontSize(14)
                 .fontAttributes(.bold)
-                .backgroundColor(running ? Palette.disabled : Palette.accent)
+                .background(running ? Palette.disabled : Palette.accent)
                 .textColor(Palette.onAccent)
                 .cornerRadius(10)
                 .padding(22, 12)

@@ -36,7 +36,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                 VStack {
                     Label("tap the child")
                         .textColor(Palette.onBrand)
-                        .backgroundColor(Palette.brand)
+                        .background(Palette.brand)
                         .padding(14, 8)
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
@@ -73,7 +73,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                     // can be told apart by eye - and aimed at separately.
                     Label("tap the child")
                         .textColor(Palette.onBrand)
-                        .backgroundColor(Palette.brand)
+                        .background(Palette.brand)
                         .padding(24, 12)
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)

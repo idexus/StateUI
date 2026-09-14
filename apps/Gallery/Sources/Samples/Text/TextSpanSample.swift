@@ -37,7 +37,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
                     TextSpan("out")
                         .fontAttributes(.bold)
                         .textColor(Palette.onAccent)
-                        .backgroundColor(Palette.accent)
+                        .background(Palette.accent)
                 }
 
             // A loop is the usual way - one run per token, which is how the
@@ -87,7 +87,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
                         .fontSize(17)
                         .fontAttributes(.bold)
                         .textColor(Palette.onAccent)
-                        .backgroundColor(Palette.accent)
+                        .background(Palette.accent)
                 }
 
             Label()

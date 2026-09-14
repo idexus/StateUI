@@ -92,7 +92,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                             .verticalAlignment(.center)
                     }
                     .padding(Thickness(12, 8, 12, 8))
-                    .backgroundColor(Palette.raised)
+                    .background(Palette.raised)
                     .strokeThickness(0)
                     .height(40)
                 }
@@ -145,7 +145,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .verticalAlignment(.center)
         }
-        .backgroundColor(colour)
+        .background(colour)
         .opacity(faded ? 0.55 : 1)
         .strokeThickness(0)
         .gridColumn(column)

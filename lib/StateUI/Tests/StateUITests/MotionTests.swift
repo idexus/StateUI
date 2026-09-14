@@ -46,11 +46,11 @@ final class MotionTests: XCTestCase {
     func testAColourTravels() {
         let renders = Renders()
 
-        renders.render(Border { Label("x") }.backgroundColor(Color("#000000")).id("b").body)
+        renders.render(Border { Label("x") }.background(Color("#000000")).id("b").body)
         let patch = renders.render(
-            Border { Label("x") }.backgroundColor(Color("#FFFFFF")).id("b").body)
+            Border { Label("x") }.background(Color("#FFFFFF")).id("b").body)
 
-        XCTAssertNotNil(patch.transitions[.backgroundColor])
+        XCTAssertNotNil(patch.transitions[.background])
     }
 
     func testEdgesTravel() {
@@ -268,7 +268,7 @@ final class MotionTests: XCTestCase {
 
         func button(_ still: Bool) -> Node {
             let base = Button("Save")
-                .visualState(.disabled) { $0.backgroundColor(Color("#CCCCCC")) }
+                .visualState(.disabled) { $0.background(Color("#CCCCCC")) }
 
             return (still ? base.motion(.none) : base).id("b").body
         }
@@ -293,7 +293,7 @@ final class MotionTests: XCTestCase {
         func panel(_ width: Double, _ colour: Color) -> Node {
             Border { Label("x") }
                 .width(width)
-                .backgroundColor(colour)
+                .background(colour)
                 .motion(.none, .size)
                 .id("p")
                 .body
@@ -304,7 +304,7 @@ final class MotionTests: XCTestCase {
 
         XCTAssertEqual(patch.props[.width], .number(300))
         XCTAssertNil(patch.transitions[.width], "the size arrives")
-        XCTAssertNotNil(patch.transitions[.backgroundColor], "the colour still travels")
+        XCTAssertNotNil(patch.transitions[.background], "the colour still travels")
     }
 
     /// And a rule may say a motion rather than none.

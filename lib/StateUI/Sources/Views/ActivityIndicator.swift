@@ -20,7 +20,7 @@ extension ActivityIndicatorProperties {
 
     /// What colour it spins in.
     ///
-    /// Not `.backgroundColor`, which paints the square the spinner sits in.
+    /// Not `.background`, which paints the square the spinner sits in.
     public func color(_ value: Color) -> Modified {
         setValue(.color, value.propValue)
     }

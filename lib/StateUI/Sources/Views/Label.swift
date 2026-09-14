@@ -119,7 +119,7 @@ public struct TextSpan: BindableObject, TextElement, FontElement,
     }
 
     /// What is drawn behind this run - a highlight over part of a line.
-    public func backgroundColor(_ value: Color) -> Self {
-        setValue(.backgroundColor, value.propValue)
+    public func background(_ value: Color) -> Self {
+        setValue(.background, value.propValue)
     }
 }

@@ -13,7 +13,7 @@ private func tileStrip() -> ScrollView {
                     .verticalAlignment(.center)
                     .width(140)
                     .height(100)
-                    .backgroundColor(Palette.surface)
+                    .background(Palette.surface)
             }
         }
         .spacing(20)

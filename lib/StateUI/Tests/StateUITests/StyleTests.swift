@@ -80,9 +80,9 @@ final class StyleTests: XCTestCase {
 
     func testAVisualStateIsASetterBagOfItsOwn() throws {
         let states = Style<Switch>()
-            .backgroundColor(.white)
-            .visualState(.disabled) { $0.backgroundColor(.gray) }
-            .visualState(.on, group: "SwitchStates") { $0.backgroundColor(.green) }
+            .background(.white)
+            .visualState(.disabled) { $0.background(.gray) }
+            .visualState(.on, group: "SwitchStates") { $0.background(.green) }
             .erased
             .states
 
@@ -96,7 +96,7 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(states.last?.props["group"], .name("SwitchStates"))
 
         let setters = try XCTUnwrap(disabled.children.first { $0.type == "Setters" })
-        XCTAssertEqual(setters.props["backgroundColor"], Color("#808080").propValue)
+        XCTAssertEqual(setters.props["background"], Color("#808080").propValue)
     }
 
     /// A control starts in the FIRST state its group declares, so a style that
@@ -120,7 +120,7 @@ final class StyleTests: XCTestCase {
     func testAStyleThatWroteItsOwnNormalKeepsIt() {
         let states = Style<Button>()
             .textColor(.white)
-            .visualState(.normal) { $0.backgroundColor(.transparent) }
+            .visualState(.normal) { $0.background(.transparent) }
             .visualState(.disabled) { $0.textColor(.gray) }
             .erased
             .states
@@ -134,7 +134,7 @@ final class StyleTests: XCTestCase {
     func testTheRestingStateStandsFirstWhereverItWasWritten() {
         let states = Style<Button>()
             .visualState(.disabled) { $0.textColor(.gray) }
-            .visualState(.normal) { $0.backgroundColor(.transparent) }
+            .visualState(.normal) { $0.background(.transparent) }
             .erased
             .states
 
@@ -196,9 +196,9 @@ final class StyleTests: XCTestCase {
     /// once, the resting state first, and a second writing winning.
     func testAControlsStatesAreArrangedTheWayAStylesAre() {
         let node = Switch()
-            .visualState(.on) { $0.backgroundColor(.green) }
-            .visualState(.off) { $0.backgroundColor(.gray) }
-            .visualState(.on) { $0.backgroundColor(.white) }
+            .visualState(.on) { $0.background(.green) }
+            .visualState(.off) { $0.background(.gray) }
+            .visualState(.on) { $0.background(.white) }
             .node
 
         let states = node.children.filter { $0.type == "VisualState" }
@@ -208,7 +208,7 @@ final class StyleTests: XCTestCase {
             [.name("Normal"), .name("On"), .name("Off")])
         XCTAssertEqual(
             states.last(where: { $0.props["name"] == .name("On") })?
-                .children.first { $0.type == "Setters" }?.props["backgroundColor"],
+                .children.first { $0.type == "Setters" }?.props["background"],
             Color("#FFFFFF").propValue)
     }
 
@@ -239,7 +239,7 @@ final class StyleTests: XCTestCase {
 
         renders.render(
             Button("Save")
-                .visualState(.disabled) { $0.textColor(.red).backgroundColor(.blue) }
+                .visualState(.disabled) { $0.textColor(.red).background(.blue) }
                 .body)
 
         let patch = renders.render(
@@ -253,7 +253,7 @@ final class StyleTests: XCTestCase {
 
         let setters = try XCTUnwrap(clearing(patch), "the setter that went away is named somewhere")
 
-        XCTAssertEqual(setters.cleared, ["backgroundColor"])
+        XCTAssertEqual(setters.cleared, ["background"])
         XCTAssertFalse(setters.replace, "the setters stay, with what is left in them")
         XCTAssertTrue(setters.props.isEmpty, "the colour that stayed says nothing")
     }
@@ -279,7 +279,7 @@ final class StyleTests: XCTestCase {
     /// And it leaves a state that was already written exactly as it was.
     func testAListenerLeavesAStateThatWasWrittenAlone() throws {
         let node = Button("Save")
-            .visualState(.pressed) { $0.backgroundColor(.green) }
+            .visualState(.pressed) { $0.background(.green) }
             .onVisualStateChanged(.pressed, .disabled) { _ in }
             .node
 
@@ -290,7 +290,7 @@ final class StyleTests: XCTestCase {
             states.map { $0.props["name"] },
             [.name("Normal"), .name("Pressed"), .name("Disabled")])
         XCTAssertEqual(
-            pressed.children.first { $0.type == "Setters" }?.props["backgroundColor"],
+            pressed.children.first { $0.type == "Setters" }?.props["background"],
             Color("#008000").propValue)
     }
 
@@ -503,7 +503,7 @@ final class StyleTests: XCTestCase {
         let sheet = StyleSheet {
             Style<Button>().visualState(.disabled) { $0
                 .textColor(.gray)
-                .backgroundColor(.white)
+                .background(.white)
             }
         }
 
@@ -518,14 +518,14 @@ final class StyleTests: XCTestCase {
         let setters = try XCTUnwrap(disabled.children.first { $0.type == "Setters" })
 
         XCTAssertEqual(setters.props["textColor"], Color("#FF0000").propValue, "the control's own")
-        XCTAssertEqual(setters.props["backgroundColor"], Color("#FFFFFF").propValue, "and the style's rest")
+        XCTAssertEqual(setters.props["background"], Color("#FFFFFF").propValue, "and the style's rest")
     }
 
     /// Which is what lets a control HEAR a state its style paints: the listener
     /// declares an empty state, and an empty state changes nothing.
     func testDeclaringAStateToHearItKeepsWhatTheStylePaints() throws {
         let sheet = StyleSheet {
-            Style<Button>().visualState(.pressed) { $0.backgroundColor(.green) }
+            Style<Button>().visualState(.pressed) { $0.background(.green) }
         }
 
         let patch = Renders().render(
@@ -536,7 +536,7 @@ final class StyleTests: XCTestCase {
             patch.children.first { $0.props["name"] == .name("Pressed") })
 
         XCTAssertEqual(
-            pressed.children.first { $0.type == "Setters" }?.props["backgroundColor"],
+            pressed.children.first { $0.type == "Setters" }?.props["background"],
             Color("#008000").propValue)
     }
 
@@ -549,7 +549,7 @@ final class StyleTests: XCTestCase {
 
         let patch = Renders().render(
             Switch(true)
-                .visualState(.on, group: "SwitchStates") { $0.backgroundColor(.green) }
+                .visualState(.on, group: "SwitchStates") { $0.background(.green) }
                 .body,
             styles: sheet)
 
@@ -724,7 +724,7 @@ final class StyleTests: XCTestCase {
     private struct Tinted: ContentView {
         let tint: Binding<Color>
 
-        var content: any View { BoxView().backgroundColor(tint) }
+        var content: any View { BoxView().background(tint) }
     }
 
     /// Counts how often the closure writing a label runs.
@@ -1002,14 +1002,14 @@ final class StyleTests: XCTestCase {
 
             Style<Button>()
                 .textColor(.white)
-                .backgroundColor(Color.fromArgb("#512BD4"))
+                .background(Color.fromArgb("#512BD4"))
                 .cornerRadius(8)
                 .padding(14, 10)
                 .minimumHeight(44)
                 .visualState(.disabled) { $0
                     .textColor(Color(light: Color.fromArgb("#141414"),
                                      dark: Color.fromArgb("#C8C8C8")))
-                    .backgroundColor(Color.fromArgb("#C8C8C8"))
+                    .background(Color.fromArgb("#C8C8C8"))
                 }
 
             Style<Border>()

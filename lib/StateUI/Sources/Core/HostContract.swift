@@ -107,7 +107,7 @@
             .allowDrop, .pivotX, .pivotY, .aspect,
             .automationExcludedWithChildren, .automationId,
             .automationIsInAccessibleTree, .autoSize, .background,
-            .backgroundColor, .borderColor, .borderWidth, .canDrag,
+            .borderColor, .borderWidth, .canDrag,
             .characterSpacing, .color,
             .cornerRadius, .cursorPosition, .date, .dragText, .layoutDirection,
             .fontAttributes, .fontFamily, .fontSize, .format, .height,

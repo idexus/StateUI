@@ -50,8 +50,8 @@ public struct GradientStop: Equatable, Sendable {
 ///         GradientStop(.indigo, 1),
 ///     ], startPoint: Point(0, 0), endPoint: Point(1, 1)))
 ///
-/// A brush is where a gradient goes: `.backgroundColor` takes one colour, and
-/// `.background` takes one of these.
+/// A brush is where a gradient goes: `.background` takes one colour or one of
+/// these.
 public struct Brush: Equatable, Sendable {
     /// Which of the three brushes this is, as the number that crosses - a
     /// closed vocabulary, so it rides its member rather than a spelling. The
@@ -85,8 +85,7 @@ public struct Brush: Equatable, Sendable {
 
     /// One colour, everywhere.
     ///
-    /// The same thing `.backgroundColor` sets, said as a brush - which is what
-    /// a property typed `Brush` wants.
+    /// A colour said as a brush, for a property that takes only a brush.
     public static func solidColor(_ color: Color) -> Brush {
         Brush(.solidColor, stops: [GradientStop(color, 0)])
     }

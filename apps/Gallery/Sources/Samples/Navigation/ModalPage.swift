@@ -27,7 +27,7 @@ struct ModalPage: ContentView {
                 .horizontalTextAlignment(.center)
 
             Button("Close")
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)
@@ -50,7 +50,7 @@ struct ModalPage: ContentView {
         .verticalAlignment(.center)
         .onCreated {
             page.title = "Presented"
-            page.backgroundColor = Palette.surface
+            page.background = Palette.surface
         }
     }
 }

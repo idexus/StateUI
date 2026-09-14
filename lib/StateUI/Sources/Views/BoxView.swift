@@ -12,7 +12,7 @@ public protocol BoxViewProperties: PropertyContainer {}
 extension BoxViewProperties {
     /// What the rectangle is filled with.
     ///
-    /// Not `.backgroundColor`: a BoxView carries both, and this is the one it
+    /// Not `.background`: a BoxView carries both, and this is the one it
     /// draws - the background is a second surface behind it, which the corner
     /// radius does not round and which need not share the box's transform.
     /// A rotated box that carries both shows the background standing still

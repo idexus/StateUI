@@ -46,12 +46,12 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                     .strokeShape(.roundRectangle(8))
                     // The items are revealed BEHIND the content, so a row that
                     // does not paint itself shows them through.
-                    .backgroundColor(Palette.surface)
+                    .background(Palette.surface)
                 }
                 // Revealed by swiping RIGHT: they come from the left edge.
                 .leftItems {
                     SwipeItem(starred.contains(row) ? "Unstar" : "Star")
-                        .backgroundColor(.gold)
+                        .background(.gold)
                         .onInvoked {
                             if starred.contains(row) {
                                 starred.remove(row)
@@ -65,7 +65,7 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 // A full swipe runs the first item with no tap at all.
                 .rightItems(mode: .execute) {
                     SwipeItem("Delete")
-                        .backgroundColor(.firebrick)
+                        .background(.firebrick)
                         .isDestructive(true)
                         .onInvoked {
                             rows.removeAll { $0 == row }
@@ -98,11 +98,11 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 }
                 .stroke(Palette.outline)
                 .strokeShape(.roundRectangle(8))
-                .backgroundColor(Palette.surface)
+                .background(Palette.surface)
             }
             .topItems {
                 SwipeItem("Archive")
-                    .backgroundColor(.steelBlue)
+                    .background(.steelBlue)
                     .onInvoked {
                         archived = true
                         lastAct = "Archived the card"
@@ -110,7 +110,7 @@ struct SwipeViewSample: SampleContent, ExampleContent {
             }
             .bottomItems {
                 SwipeItem("Restore")
-                    .backgroundColor(.forestGreen)
+                    .background(.forestGreen)
                     .onInvoked {
                         archived = false
                         lastAct = "Restored the card"
@@ -163,12 +163,12 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                     .strokeShape(.roundRectangle(8))
                     // The items are revealed BEHIND the content, so a row that
                     // does not paint itself shows them through.
-                    .backgroundColor(Palette.surface)
+                    .background(Palette.surface)
                 }
                 // Revealed by swiping RIGHT: they come from the left-hand edge.
                 .leftItems {
                     SwipeItem(starred.contains(row) ? "Unstar" : "Star")
-                        .backgroundColor(.gold)
+                        .background(.gold)
                         .onInvoked {
                             if starred.contains(row) {
                                 starred.remove(row)
@@ -183,7 +183,7 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 // what .execute is for.
                 .rightItems(mode: .execute) {
                     SwipeItem("Delete")
-                        .backgroundColor(.firebrick)
+                        .background(.firebrick)
                         .isDestructive(true)
                         .onInvoked {
                             rows.removeAll { $0 == row }
@@ -227,11 +227,11 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                 .stroke(Palette.outline)
                 .strokeThickness(1)
                 .strokeShape(.roundRectangle(8))
-                .backgroundColor(Palette.surface)
+                .background(Palette.surface)
             }
             .topItems {
                 SwipeItem("Archive")
-                    .backgroundColor(.steelBlue)
+                    .background(.steelBlue)
                     .onInvoked {
                         archived = true
                         lastAct = "Archived the card"
@@ -239,7 +239,7 @@ struct SwipeViewSample: SampleContent, ExampleContent {
             }
             .bottomItems {
                 SwipeItem("Restore")
-                    .backgroundColor(.forestGreen)
+                    .background(.forestGreen)
                     .onInvoked {
                         archived = false
                         lastAct = "Restored the card"

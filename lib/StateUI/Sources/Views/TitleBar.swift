@@ -17,7 +17,7 @@ extension TitleBarProperties {
 
     /// Sets the color of the authored title and subtitle.
     ///
-    /// Use `backgroundColor(_:)` for the title area's background.
+    /// Use `background(_:)` for the title area's background.
     public func foregroundColor(_ value: Color) -> Modified {
         setValue(.foregroundColor, value.propValue)
     }

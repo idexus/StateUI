@@ -73,7 +73,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                     return Label(item)
                         .fontSize(16)
                         .padding(14, 10)
-                        .backgroundColor(Palette.raised)
+                        .background(Palette.raised)
                         .contextMenu {
                             MenuFlyoutItem("Duplicate")
                                 .onClicked {

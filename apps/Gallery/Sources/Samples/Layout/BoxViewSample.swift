@@ -70,7 +70,7 @@ struct BoxViewSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         Label("A BoxView draws the colour its initializer takes, which is its `.color`. "
-            + "`.backgroundColor` is a second surface behind it that the corner radius "
+            + "`.background` is a second surface behind it that the corner radius "
             + "does not round. A one-pixel BoxView is also the usual divider.")
             .fontSize(12)
             .textColor(Palette.subtle)

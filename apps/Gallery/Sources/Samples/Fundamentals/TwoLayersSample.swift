@@ -57,7 +57,7 @@ private struct LayerRows: ExampleContent {
 
             Button("+1")
                 .fontSize(14)
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .textColor(Palette.onAccent)
                 .cornerRadius(8)
                 .padding(22, 10)
@@ -201,7 +201,7 @@ private struct LayerCost: ExampleContent {
             HStack {
                 Button("+1")
                     .fontSize(13)
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .textColor(Palette.onAccent)
                     .cornerRadius(8)
                     .padding(18, 8)
@@ -212,7 +212,7 @@ private struct LayerCost: ExampleContent {
                     .fontSize(13)
                     .borderColor(Palette.outline)
                     .borderWidth(1)
-                    .backgroundColor(.transparent)
+                    .background(.transparent)
                     .textColor(Palette.subtle)
                     .cornerRadius(8)
                     .padding(18, 8)

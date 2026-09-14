@@ -24,12 +24,12 @@ struct StyleSample: SampleContent, ExampleContent {
         application.styles = StyleSheet {
             Style<Button>()
                 .textColor(Palette.onAccent)
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .cornerRadius(10)
                 .padding(16, 11)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
-                    .backgroundColor(Palette.outline)
+                    .background(Palette.outline)
                 }
 
             Style<Label>("Headline")

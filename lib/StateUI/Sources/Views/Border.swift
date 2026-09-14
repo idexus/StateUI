@@ -42,7 +42,7 @@ extension BorderProperties {
     /// background is painted to.
     ///
     ///     Border { … }
-    ///         .backgroundColor(.cornflowerBlue)
+    ///         .background(.cornflowerBlue)
     ///         .strokeShape(.roundRectangle(12))
     ///         .strokeThickness(0)
     ///
@@ -108,7 +108,7 @@ extension BorderProperties {
 /// `.margin` is the room outside the outline.
 ///
 /// This is the general way to round a corner: give the border a
-/// `.backgroundColor` and a `.strokeShape`, and the background follows the
+/// `.background` and a `.strokeShape`, and the background follows the
 /// shape whether or not the outline is drawn.
 ///
 /// Not to be confused with `BorderElement`, the outline a Button, an

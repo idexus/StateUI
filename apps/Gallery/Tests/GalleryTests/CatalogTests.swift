@@ -1082,7 +1082,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(prop(bar, .subtitle), .string("Shared"))
         XCTAssertEqual(prop(bar, .icon), .string("stateui_mark.png"))
         XCTAssertNotNil(prop(bar, .foregroundColor))
-        XCTAssertNotNil(prop(bar, .backgroundColor))
+        XCTAssertNotNil(prop(bar, .background))
         XCTAssertNil(
             bar.children.first { $0.type == "LeadingContent" },
             "the flyout's own native toggle opens the menu; the bar authors no second one")

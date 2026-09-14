@@ -44,7 +44,7 @@ struct ItemPage: ContentView {
         }
         .padding(24)
         .margin(24)
-        .backgroundColor(Palette.surface)
+        .background(Palette.surface)
         .stroke(.transparent)
         .strokeShape(.roundRectangle(12))
         .verticalAlignment(.center)

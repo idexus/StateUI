@@ -105,7 +105,7 @@ final class ControlTests: XCTestCase {
                     .formattedText {
                         TextSpan("let ")
                             .textColor(.purple)
-                            .backgroundColor(.whiteSmoke)
+                            .background(.whiteSmoke)
                             .fontSize(13)
                             .fontFamily("Menlo")
                             .fontAttributes(.bold)
@@ -425,7 +425,7 @@ final class ControlTests: XCTestCase {
                 .leftItems {
                     SwipeItem("Favourite")
                         .iconImageSource("tab_list.png")
-                        .backgroundColor(.gold)
+                        .background(.gold)
                         .isDestructive(false)
                         .isEnabled(true)
                         .isVisible(true)
@@ -434,7 +434,7 @@ final class ControlTests: XCTestCase {
                 .rightItems(mode: .execute, swipeBehaviorOnInvoked: .close) {
                     SwipeItem("Remove")
                         .text("Delete")
-                        .backgroundColor(.firebrick)
+                        .background(.firebrick)
                         .onInvoked {}
                 }),
 
@@ -616,7 +616,7 @@ final class ControlTests: XCTestCase {
                 .ignoresInput(false)
                 .layoutDirection(.rightToLeft)
                 .opacity(0.5)
-                .backgroundColor(.whiteSmoke)
+                .background(.whiteSmoke)
                 .width(200)
                 .height(100)
                 .minimumWidth(50)

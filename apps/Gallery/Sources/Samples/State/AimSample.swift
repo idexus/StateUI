@@ -92,7 +92,7 @@ struct AimSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Focus the first")
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .cornerRadius(8)
                     .padding(14, 8)
                     .onClicked {
@@ -101,7 +101,7 @@ struct AimSample: SampleContent, ExampleContent {
                     }
 
                 Button("Focus the second")
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .cornerRadius(8)
                     .padding(14, 8)
                     .onClicked {
@@ -112,7 +112,7 @@ struct AimSample: SampleContent, ExampleContent {
                 Button("Let go")
                     .borderColor(Palette.outline)
                     .borderWidth(1)
-                    .backgroundColor(.transparent)
+                    .background(.transparent)
                     .textColor(Palette.subtle)
                     .cornerRadius(8)
                     .padding(14, 8)

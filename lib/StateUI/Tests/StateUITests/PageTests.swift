@@ -37,7 +37,7 @@ private struct EveryPropertyPage: ContentView {
             page.title = "Everything"
             page.iconImageSource = ImageSource("tab.png")
             page.padding = Thickness(4, 8, 12, 16)
-            page.backgroundColor = .whiteSmoke
+            page.background = .whiteSmoke
 
             // What it asks of a NavigationStack.
             page.hasNavigationBar = false
@@ -120,7 +120,7 @@ private struct KnobPage: ContentView {
         page.title = on ? "On" : "Off"
         page.iconImageSource = ImageSource(on ? "on.png" : "off.png")
         page.padding = Thickness(on ? 8 : 4)
-        page.backgroundColor = on ? .red : .whiteSmoke
+        page.background = on ? .red : .whiteSmoke
 
         page.hasNavigationBar = on
         page.hasBackButton = on
@@ -233,16 +233,16 @@ final class PageTests: XCTestCase {
     /// on it its own.
     func testWhatIsWrittenOnAViewStaysOnTheView() {
         let written: [any View] = [
-            Plain().backgroundColor(.red),
-            Label("plain").backgroundColor(.red),
+            Plain().background(.red),
+            Label("plain").background(.red),
         ]
 
         for view in written {
             let page = Node.page(view).built
 
             XCTAssertEqual(page.type, .page)
-            XCTAssertNil(page.props[.backgroundColor], "the page's colour is its session's")
-            XCTAssertEqual(page.children.first?.props[.backgroundColor], Color.red.propValue)
+            XCTAssertNil(page.props[.background], "the page's colour is its session's")
+            XCTAssertEqual(page.children.first?.props[.background], Color.red.propValue)
         }
     }
 
@@ -451,7 +451,7 @@ final class PageTests: XCTestCase {
 
     // MARK: - What the values look like
 
-    /// A page's own properties are its own: `backgroundColor` is the PAGE's,
+    /// A page's own properties are its own: `background` is the PAGE's,
     /// where the bar above it takes `barBackgroundColor` on the arrangement -
     /// two different things, and one name if either were shortened.
     func testAPageCarriesItsOwnProperties() {
@@ -459,7 +459,7 @@ final class PageTests: XCTestCase {
 
         XCTAssertEqual(page.props["title"], .string("Everything"))
         XCTAssertEqual(page.props["padding"], .numbers([4, 8, 12, 16]))
-        XCTAssertEqual(page.props["backgroundColor"], Color("#F5F5F5").propValue)
+        XCTAssertEqual(page.props["background"], Color("#F5F5F5").propValue)
     }
 
     /// What a page asks of the stack it is on travels with the page, apart

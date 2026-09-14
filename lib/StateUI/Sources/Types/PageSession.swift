@@ -129,7 +129,7 @@ public final class PageSession {
     ///
     /// The PAGE's own - the bar above it is the arrangement's, and takes
     /// `barBackgroundColor` there.
-    @State public var backgroundColor: Color? = nil
+    @State public var background: Color? = nil
 
     // What this page asks of the NAVIGATION STACK it is on. The colours of
     // the BAR belong to the NavigationStack rather than to a page on it - see
@@ -199,7 +199,7 @@ public final class PageSession {
         props[.title] = title.map { .string($0) }
         props[.iconImageSource] = iconImageSource?.propValue
         props[.padding] = padding?.propValue
-        props[.backgroundColor] = backgroundColor?.propValue
+        props[.background] = background?.propValue
         props[.hasNavigationBar] = hasNavigationBar.map { .bool($0) }
         props[.hasBackButton] = hasBackButton.map { .bool($0) }
         props[.backButtonTitle] = backButtonTitle.map { .string($0) }

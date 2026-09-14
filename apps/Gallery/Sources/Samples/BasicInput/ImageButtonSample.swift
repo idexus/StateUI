@@ -63,7 +63,7 @@ struct ImageButtonSample: SampleContent, ExampleContent {
                     .width(64)
                     .height(64)
                     .padding(12)
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .cornerRadius(32)
                     .onClicked { taps += 1 }
             }

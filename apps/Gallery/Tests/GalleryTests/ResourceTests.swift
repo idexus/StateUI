@@ -142,7 +142,7 @@ final class ResourceTests: XCTestCase {
         let on = drawn(chosen: true)
         let off = drawn(chosen: false)
 
-        XCTAssertNotEqual(on.props["backgroundColor"], off.props["backgroundColor"],
+        XCTAssertNotEqual(on.props["background"], off.props["background"],
                           "the row you are on looks like every other row")
 
         let onText = on.children.first { $0.props["text"] == .string("Layout") }

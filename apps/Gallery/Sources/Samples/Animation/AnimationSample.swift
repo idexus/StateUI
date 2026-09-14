@@ -45,7 +45,7 @@ struct AnimationSample: SampleContent, ExampleContent {
             .translationX($shift)
             .scale($scale)
             .rotation($angle)
-            .backgroundColor(Palette.brand)
+            .background(Palette.brand)
 
             Picker(Self.curves)
                 .selectedIndex($curve)
@@ -120,7 +120,7 @@ struct AnimationSample: SampleContent, ExampleContent {
             .translationX($shift)
             .scale($scale)
             .rotation($angle)
-            .backgroundColor(Palette.brand)
+            .background(Palette.brand)
             .stroke(Palette.accent)
             .strokeShape(.roundRectangle(32))
             .horizontalAlignment(.center)

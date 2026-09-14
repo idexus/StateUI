@@ -140,7 +140,7 @@ extension BoxView {
     /// law, and handing it on reads nothing - a write renders only a body that
     /// reads the state.
     ///
-    /// Not `.backgroundColor`, for the reason `color(_:)` gives: the
+    /// Not `.background`, for the reason `color(_:)` gives: the
     /// background is a second square behind the one a box draws.
     ///
     /// - Parameter state: the state the property is read from.
@@ -1128,14 +1128,14 @@ extension VisualElement {
         plain(.automationIsInAccessibleTree, by: state)
     }
 
-    /// `backgroundColor`, handed on as `$x`: the host walks it there under the
+    /// `background`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
     /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func backgroundColor(_ state: Binding<Color>) -> Modified {
-        journey(.backgroundColor, by: state)
+    public func background(_ state: Binding<Color>) -> Modified {
+        journey(.background, by: state)
     }
 
     /// `layoutDirection`, handed on as `$x`: the host sets the member it names,

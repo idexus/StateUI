@@ -18,7 +18,7 @@ extension ProgressBarProperties {
 
     /// What the FILLED part of the bar is painted.
     ///
-    /// The track behind it is `.backgroundColor`, from `VisualElement` - the
+    /// The track behind it is `.background`, from `VisualElement` - the
     /// two are set separately.
     public func progressColor(_ value: Color) -> Modified {
         setValue(.progressColor, value.propValue)

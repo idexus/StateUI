@@ -103,7 +103,7 @@ struct ImageSample: SampleContent, ExampleContent {
                         .aspect(.aspectFit)
                         .width(120)
                         .height(60)
-                        .backgroundColor(Palette.surface)
+                        .background(Palette.surface)
 
                     Label(".aspect(.aspectFit)")
                         .fontSize(11)
@@ -117,7 +117,7 @@ struct ImageSample: SampleContent, ExampleContent {
                         .aspect(.aspectFill)
                         .width(120)
                         .height(60)
-                        .backgroundColor(Palette.surface)
+                        .background(Palette.surface)
 
                     Label(".aspect(.aspectFill)")
                         .fontSize(11)

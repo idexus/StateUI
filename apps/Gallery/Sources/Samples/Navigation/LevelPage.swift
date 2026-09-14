@@ -63,7 +63,7 @@ struct LevelPage: ContentView {
                 .horizontalTextAlignment(.center)
 
             Button("Deeper")
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)

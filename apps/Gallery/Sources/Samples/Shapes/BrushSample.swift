@@ -144,8 +144,8 @@ struct BrushSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.backgroundColor` is one colour and `.background` is a brush; a view "
-                + "given both draws the brush.")
+            Label("`.background` takes one colour or a brush; it is one property, so a "
+                + "view given both draws the one it was given last.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

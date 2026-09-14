@@ -236,7 +236,7 @@ struct MainWindow: Window {
         TitleBar("StateUI")
             .subtitle(bar.subtitle)
             .icon("stateui_mark.png")
-            .backgroundColor(style.accent.color)
+            .background(style.accent.color)
             .foregroundColor(Palette.onBrand)
             .trailingContent {
                 ChromeEnd(bar: bar, nav: nav, catalog: catalog)

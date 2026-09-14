@@ -225,7 +225,7 @@ private struct AppKitMotionValuePlan {
         var destination: [Double] = []
 
         if let property, Self.brushProperties.contains(property),
-           (!Self.isValidBrush(source) || !Self.isValidBrush(target)) {
+           !Self.isPaint(source) || !Self.isPaint(target) {
             return nil
         }
 
@@ -339,6 +339,12 @@ private struct AppKitMotionValuePlan {
         default:
             return target
         }
+    }
+
+    /// What a brush property carries: one colour or a well-formed brush.
+    /// Motion runs only between two of the same shape.
+    private static func isPaint(_ value: HostValue) -> Bool {
+        value.color != nil || isValidBrush(value)
     }
 
     private static func isValidBrush(_ value: HostValue) -> Bool {

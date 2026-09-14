@@ -22,7 +22,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
                 text: string "Count: 0"
                 textColor: color FF000000
               Button 5
-                backgroundColor: color FF512BD4
+                background: color FF512BD4
                 text: string "Open"
                 textColor: color FFFFFFFF
                 on clicked=14

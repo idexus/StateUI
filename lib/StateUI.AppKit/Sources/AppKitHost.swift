@@ -1843,7 +1843,7 @@ final class MountedNode: NSObject {
         .opacity, .translationX, .translationY,
         .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY,
         .pivotX, .pivotY,
-        .backgroundColor, .background, .color, .textColor, .placeholderColor,
+        .background, .color, .textColor, .placeholderColor,
         .titleColor, .borderColor, .stroke, .fill, .strokeThickness,
         .strokeDashArray, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
         .strokeMiterLimit, .strokeShape, .cornerRadius, .renderTransform,
@@ -2333,7 +2333,7 @@ final class MountedNode: NSObject {
         applyAccessibility(to: view)
 
         if !(view is AppKitBorderView) && !(view is AppKitBoxView) {
-            let background = color(.backgroundColor)
+            let background = color(.background)
             view.wantsLayer = true
             view.layer?.backgroundColor = background?.cgColor
         }
@@ -2356,7 +2356,7 @@ final class MountedNode: NSObject {
                 ? .noImage
                 : (button.title.isEmpty ? .imageOnly : .imageLeading)
 
-            let background = color(.backgroundColor)
+            let background = color(.background)
             button.isBordered = background == nil
             button.wantsLayer = background != nil
             button.layer?.backgroundColor = background?.cgColor
@@ -2375,7 +2375,7 @@ final class MountedNode: NSObject {
                 imageScaling: imageScaling(enumeration(.aspect)),
                 font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
                 textColor: foreground,
-                backgroundColor: color(.backgroundColor),
+                backgroundColor: color(.background),
                 borderColor: color(.borderColor),
                 borderWidth: value(.borderWidth)?.number ?? 0,
                 cornerRadius: value(.cornerRadius)?.number ?? 0,
@@ -2450,7 +2450,7 @@ final class MountedNode: NSObject {
                 placeholder: string(.placeholder),
                 placeholderColor: color(.placeholderColor),
                 foregroundColor: color(.textColor) ?? .controlTextColor,
-                backgroundColor: color(.backgroundColor),
+                backgroundColor: color(.background),
                 font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
                 horizontalAlignment: enumeration(.horizontalTextAlignment),
                 enabled: value(.isEnabled)?.bool ?? true,
@@ -2474,7 +2474,7 @@ final class MountedNode: NSObject {
                 placeholder: string(.placeholder),
                 placeholderColor: color(.placeholderColor),
                 foregroundColor: color(.textColor) ?? .controlTextColor,
-                backgroundColor: color(.backgroundColor),
+                backgroundColor: color(.background),
                 font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
                 horizontalAlignment: enumeration(.horizontalTextAlignment),
                 enabled: value(.isEnabled)?.bool ?? true,
@@ -2498,7 +2498,7 @@ final class MountedNode: NSObject {
                 placeholder: string(.placeholder),
                 placeholderColor: color(.placeholderColor),
                 foregroundColor: color(.textColor) ?? .controlTextColor,
-                backgroundColor: color(.backgroundColor),
+                backgroundColor: color(.background),
                 font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
                 horizontalAlignment: enumeration(.horizontalTextAlignment),
                 enabled: value(.isEnabled)?.bool ?? true,
@@ -2603,14 +2603,14 @@ final class MountedNode: NSObject {
 
         if let box = view as? AppKitBoxView {
             box.apply(
-                background: color(.backgroundColor),
+                background: color(.background),
                 fill: color(.color),
                 cornerRadius: value(.cornerRadius))
         }
 
         if let border = view as? AppKitBorderView {
             border.apply(
-                backgroundColor: color(.backgroundColor),
+                backgroundColor: color(.background),
                 background: value(.background),
                 stroke: value(.stroke),
                 strokeWidth: value(.strokeThickness)?.number,
@@ -3104,7 +3104,7 @@ final class MountedNode: NSObject {
                 .kern: spacing,
             ]
 
-            if run !== self, let background = run.color(.backgroundColor) {
+            if run !== self, let background = run.color(.background) {
                 attributes[.backgroundColor] = background
             }
             if decorations & 1 == 1 {
@@ -3586,7 +3586,7 @@ final class MountedNode: NSObject {
     }
 
     private static let colorProperties: Set<Prop> = [
-        .backgroundColor, .barBackgroundColor, .barTextColor, .borderColor, .color,
+        .background, .barBackgroundColor, .barTextColor, .borderColor, .color,
         .foregroundColor, .indicatorColor, .maximumTrackColor, .minimumTrackColor,
         .offColor, .onColor, .placeholderColor, .progressColor, .refreshColor,
         .selectedIndicatorColor, .textColor, .thumbColor, .titleColor,

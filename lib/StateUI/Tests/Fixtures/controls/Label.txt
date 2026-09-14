@@ -7,7 +7,7 @@ Label 1 arranged(1)
   textDecorations: enum underline|strikethrough(3)
   FormattedString 2 arranged(2)
     Span 3
-      backgroundColor: color FFF5F5F5
+      background: color FFF5F5F5
       characterSpacing: number 0.5
       fontAttributes: enum bold(1)
       fontAutoScalingEnabled: false

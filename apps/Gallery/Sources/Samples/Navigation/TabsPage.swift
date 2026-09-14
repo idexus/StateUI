@@ -33,7 +33,7 @@ struct TabsPage: ContentView {
                     .textColor(Palette.subtle)
 
                 Button("Push a page onto this tab")
-                    .backgroundColor(Palette.accent)
+                    .background(Palette.accent)
                     .textColor(.white)
                     .cornerRadius(8)
                     .padding(20, 10)

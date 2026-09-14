@@ -58,7 +58,7 @@ struct ModalSample: SampleContent, ExampleContent {
 
             Button("Present native modal")
                 .automationId("modal.present")
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)

@@ -233,7 +233,7 @@ public struct InspectorButton: ContentView {
         Button("ⓘ")
             .fontSize(16)
             .textColor(Look.subtle)
-            .backgroundColor(.transparent)
+            .background(.transparent)
             .padding(10, 2)
             .automationId("stateui.inspector")
             .semanticDescription("Inspector")
@@ -406,7 +406,7 @@ struct InspectorPanel: ContentView {
                 InspectorView(scene: scene, place: place, wide: wide)
             }
         }
-        .backgroundColor(Look.ground)
+        .background(Look.ground)
         .stroke(Look.edge)
         .strokeThickness(1)
         .strokeShape(.roundRectangle(14))
@@ -448,7 +448,7 @@ struct InspectorPage: ContentView {
     var content: any View {
         InspectorView(scene: scene, place: .window, wide: true)
             .onCreated {
-                page.backgroundColor = Look.ground
+                page.background = Look.ground
                 window.title = "Inspector"
                 window.width = 900           // the renders and the one chosen, side by side
                 window.height = 760          // a tree of some depth
@@ -810,7 +810,7 @@ private struct Row: ContentView {
         }
         .spacing(1)
         .padding(8, 4)
-        .backgroundColor(chosen ? Look.chosen : .transparent)
+        .background(chosen ? Look.chosen : .transparent)
     }
 }
 
@@ -864,7 +864,7 @@ enum Look {
         Button(caption)
             .fontSize(12)
             .textColor(ink)
-            .backgroundColor(.transparent)
+            .background(.transparent)
             .borderColor(edge)
             .borderWidth(1)
             .cornerRadius(7)
@@ -898,7 +898,7 @@ enum Look {
         }
         .width(28)
         .height(24)
-        .backgroundColor(.transparent)
+        .background(.transparent)
         .semanticDescription(words)
         .automationId("stateui.inspector.\(words.lowercased())")
         .onTapped { run() }

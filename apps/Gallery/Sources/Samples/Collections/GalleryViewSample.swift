@@ -281,7 +281,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .textColor(Palette.onBrand)
                     .lineBreakMode(.tailTruncation)
                     .padding(12, 10)
-                    .backgroundColor(Color("#B3000000"))
+                    .background(Color("#B3000000"))
                     .verticalAlignment(.end)
             }
             .clipsContent(true)

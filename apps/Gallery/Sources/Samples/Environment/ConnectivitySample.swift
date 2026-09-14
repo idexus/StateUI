@@ -59,7 +59,7 @@ struct ConnectivitySample: SampleContent, ExampleContent {
 
             Button("Save to the cloud")
                 .isEnabled(connectivity.networkAccess == .internet)
-                .backgroundColor(Palette.accent)
+                .background(Palette.accent)
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)

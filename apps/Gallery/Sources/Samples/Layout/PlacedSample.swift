@@ -538,7 +538,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .spacing(1)
                 // A dark strip under the words, so a caption reads over a
                 // picture of any colour.
-                .backgroundColor(Color("#B3000000"))
+                .background(Color("#B3000000"))
                 .verticalAlignment(.end)
             }
             // THE PICTURE IS CUT AT THE CARD'S EDGE, and this is a platform
