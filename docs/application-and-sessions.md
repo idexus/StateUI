@@ -343,10 +343,10 @@ the `ContentPage` instances they present each have their own session.
 | `iconImageSource` | the page's representative image, commonly a tab icon |
 | `padding` | space between the page edge and its content |
 | `backgroundColor` | flat color behind the page |
-| `navigationPageHasNavigationBar` | whether a containing navigation stack shows its bar for this page |
-| `navigationPageHasBackButton` | whether that bar offers its native back affordance |
-| `navigationPageBackButtonTitle` | short title supplied by this page for the page pushed above it |
-| `navigationPageTitleView` | an authored view replacing the navigation title |
+| `hasNavigationBar` | whether a containing navigation stack shows its bar for this page |
+| `hasBackButton` | whether that bar offers its native back affordance |
+| `backButtonTitle` | short title supplied by this page for the page pushed above it |
+| `titleView` | an authored view replacing the navigation title |
 | `toolbarItems` | actions in the page toolbar |
 | `menuBarItems` | menus active while the page is visible on a platform with a menu bar |
 
@@ -355,7 +355,7 @@ The toolbar and menu collections start empty.
 
 The back-button title belongs to the page being returned to, not the page
 currently on top. Hiding the native back button hides that affordance; it is
-not a cross-platform navigation lock. `navigationPageTitleView`, toolbar
+not a cross-platform navigation lock. `titleView`, toolbar
 items, and menu items are ordinary identified subtrees built where their
 native surface presents them. Modal presentation is adaptive: each host uses
 its platform's native presentation for pages in `WindowSession.modalStack`.
@@ -363,7 +363,7 @@ its platform's native presentation for pages in `WindowSession.modalStack`.
 Page content remains compositional. An image behind content is an `Image` in
 the page tree, safe-area participation is a layout property, and input is
 released explicitly with `Aim.unfocus()` or `SoftInput.hide()`. A custom title,
-including an image, belongs in `navigationPageTitleView`; bar foreground color
+including an image, belongs in `titleView`; bar foreground color
 belongs to the containing page arrangement.
 
 Set stable page furniture when the content element is created and update it

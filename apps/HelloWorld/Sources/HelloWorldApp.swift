@@ -25,8 +25,8 @@ struct HelloWorldApp: Application {
 ///
 /// Everything on screen is described in Swift and materialized by the selected
 /// host as native controls. The page it opens is MainPage.swift beside this
-/// file - and where an app wants a stack, tabs or a menu, a `NavigationPage`,
-/// a `TabbedPage` or a `FlyoutPage` goes in `page` instead, each over state
+/// file - and where an app wants a stack, tabs or a menu, a `NavigationStack`,
+/// a `TabbedView` or a `SplitView` goes in `page` instead, each over state
 /// this window owns. The sample app in the StateUI repository is written that
 /// way throughout.
 struct MainWindow: Window {

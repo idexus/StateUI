@@ -1,7 +1,7 @@
 generation 1 names +21
 Window 1 arranged(2)
   on activated=1 created=2 deactivated=3 destroying=4 modalPopped=20 resumed=5 stopped=6
-  NavigationPage 2 arranged(2)
+  NavigationStack 2 arranged(2)
     title: string "Diary"
     on popped=7
     ContentPage "root" arranged(1)

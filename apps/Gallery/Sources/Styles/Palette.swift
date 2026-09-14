@@ -44,7 +44,7 @@ enum Palette {
     static let onBrand = AppColors.white
 
     /// Violet into orange: the two halves of what this library is, in one
-    /// mark. The gallery's signature, and deliberately RARE - the flyout header
+    /// mark. The gallery's signature, and deliberately RARE - the sidebar header
     /// and the home page's title, and nothing else. A gradient on every surface
     /// is a gradient that says nothing.
     ///
@@ -82,7 +82,7 @@ enum Palette {
     /// Outlines, dividers, the edge of a card.
     static let outline = Color(light: AppColors.line, dark: AppColors.lineDark)
 
-    /// Behind the thing you are on - the flyout's current row. A violet wash,
+    /// Behind the thing you are on - the sidebar's current row. A violet wash,
     /// deliberately well clear of both the page and a card: "which page is
     /// this" has to be answerable at a glance, and a step of two or three
     /// points reads as nothing on a dark screen at low brightness.

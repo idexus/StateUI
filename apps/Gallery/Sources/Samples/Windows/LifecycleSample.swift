@@ -28,7 +28,7 @@ struct LifecycleSample: SampleContent {
             let log: WindowLog
 
             var page: any Page {
-                FlyoutPage($menuOpen) { MenuPage() } detail: { HomePage() }
+                SplitView($menuOpen) { MenuPage() } detail: { HomePage() }
                     .onCreated { log.note("created") }
                     .onChanged(window.phase) { log.note("\\(window.phase)") }
             }

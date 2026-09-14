@@ -170,7 +170,7 @@ extension PageElement {
     /// Runs something when `value` is not what it was last render. The same as
     /// a view's `onChanged`.
     ///
-    ///     FlyoutPage($open) { … } detail: { … }
+    ///     SplitView($open) { … } detail: { … }
     ///         .onChanged(window.phase) { log(window.phase) }
     ///
     /// - Parameters:

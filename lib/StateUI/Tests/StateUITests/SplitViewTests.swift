@@ -3,11 +3,11 @@
 
 // The flyout, as Swift describes it.
 //
-// A FlyoutPage puts two pages on the wire - the pane and the page under it,
+// A SplitView puts two pages on the wire - the pane and the page under it,
 // each wearing the identity of its half - and whether the pane is showing as
 // one property. Coming back there is one report, and it says what is true now.
 //
-// What the renderer does with it is next door, in the C# FlyoutPageTests.
+// What the renderer does with it is next door, in the C# SplitViewTests.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -52,15 +52,15 @@ private struct DetailPage: ContentPage {
 private func flyout(
     _ menu: Binding<Bool>,
     _ section: Binding<String>
-) -> FlyoutPage {
-    FlyoutPage(menu) {
+) -> SplitView {
+    SplitView(menu) {
         MenuPage(section: section, menu: menu)
     } detail: {
         DetailPage(section: section.wrappedValue)
     }
 }
 
-final class FlyoutPageTests: XCTestCase {
+final class SplitViewTests: XCTestCase {
     // MARK: - What goes out
 
     /// Two children, each wearing the identity of its half - so a patch about
@@ -71,8 +71,8 @@ final class FlyoutPageTests: XCTestCase {
 
         let patch = Renders().settled(flyout(menu.projectedValue, section.projectedValue).body)
 
-        XCTAssertEqual(patch.type, "FlyoutPage")
-        XCTAssertEqual(patch.children.map { $0.id }, [.manual("flyout"), .manual("detail")])
+        XCTAssertEqual(patch.type, "SplitView")
+        XCTAssertEqual(patch.children.map { $0.id }, [.manual("sidebar"), .manual("detail")])
         XCTAssertEqual(patch.children.map { $0.props["title"] },
                        [.string("Sections"), .string("today")])
     }
@@ -85,7 +85,7 @@ final class FlyoutPageTests: XCTestCase {
 
         let node = flyout(menu.projectedValue, section.projectedValue).body.built
 
-        XCTAssertEqual(node.props["isPresented"], .bool(true))
+        XCTAssertEqual(node.props["isSidebarVisible"], .bool(true))
     }
 
     /// Opening it from code is assigning the binding, and what goes out is one
@@ -100,7 +100,7 @@ final class FlyoutPageTests: XCTestCase {
         menu.wrappedValue = true
         let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
-        XCTAssertEqual(patch.props["isPresented"], .bool(true))
+        XCTAssertEqual(patch.props["isSidebarVisible"], .bool(true))
         XCTAssertTrue(patch.children.isEmpty)
     }
 
@@ -114,7 +114,7 @@ final class FlyoutPageTests: XCTestCase {
 
         let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
-        let archive = patch.child("flyout")?.children.first?.children.last
+        let archive = patch.child("sidebar")?.children.first?.children.last
         XCTAssertTrue(renders.fire(archive?.events?["clicked"] ?? -1))
 
         XCTAssertEqual(section.wrappedValue, "archive")
@@ -124,7 +124,7 @@ final class FlyoutPageTests: XCTestCase {
         // and the pane is no longer showing.
         let next = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
-        XCTAssertEqual(next.props["isPresented"], .bool(false))
+        XCTAssertEqual(next.props["isSidebarVisible"], .bool(false))
         XCTAssertEqual(next.child("detail")?.props["title"], .string("archive"))
     }
 
@@ -137,10 +137,10 @@ final class FlyoutPageTests: XCTestCase {
         let section = State<String>("today")
         let path = State<[Int]>([1])
 
-        let tree = FlyoutPage(menu.projectedValue) {
+        let tree = SplitView(menu.projectedValue) {
             MenuPage(section: section.projectedValue, menu: menu.projectedValue)
         } detail: {
-            NavigationPage(path.projectedValue) {
+            NavigationStack(path.projectedValue) {
                 DetailPage(section: "today")
             } destination: { depth in
                 DetailPage(section: "level \(depth)")
@@ -157,7 +157,7 @@ final class FlyoutPageTests: XCTestCase {
         try Fixtures.check(
             bytes,
             sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
-            against: "pages/FlyoutPage")
+            against: "pages/SplitView")
     }
 
     // MARK: - What comes back
@@ -171,7 +171,7 @@ final class FlyoutPageTests: XCTestCase {
 
         let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
-        XCTAssertTrue(renders.fire(patch.events?["isPresentedChanged"] ?? -1, with: [.bool(true)]))
+        XCTAssertTrue(renders.fire(patch.events?["isSidebarVisibleChanged"] ?? -1, with: [.bool(true)]))
         XCTAssertTrue(menu.wrappedValue)
     }
 
@@ -184,7 +184,7 @@ final class FlyoutPageTests: XCTestCase {
 
         let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
-        XCTAssertTrue(renders.fire(patch.events?["isPresentedChanged"] ?? -1, with: [.bool(true)]))
+        XCTAssertTrue(renders.fire(patch.events?["isSidebarVisibleChanged"] ?? -1, with: [.bool(true)]))
 
         XCTAssertTrue(menu.wrappedValue)
         XCTAssertTrue(renders.settled(flyout(menu.projectedValue, section.projectedValue).body).isEmpty,
@@ -199,7 +199,7 @@ final class FlyoutPageTests: XCTestCase {
 
         let patch = renders.settled(flyout(menu.projectedValue, section.projectedValue).body)
 
-        XCTAssertTrue(renders.fire(patch.events?["isPresentedChanged"] ?? -1,
+        XCTAssertTrue(renders.fire(patch.events?["isSidebarVisibleChanged"] ?? -1,
                                    with: [.string("true")]))
         XCTAssertFalse(menu.wrappedValue)
     }

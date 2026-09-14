@@ -4,7 +4,7 @@ import StateUI
 
 /// Tabs inside a page.
 ///
-/// This is a small choice strip inside one page, not a `TabbedPage` containing
+/// This is a small choice strip inside one page, not a `TabbedView` containing
 /// whole pages. It reports which title was tapped and the caller decides what
 /// that means.
 struct Tabs: ContentView {
@@ -27,7 +27,7 @@ struct Tabs: ContentView {
     /// tab writes it back to whoever lent it.
     ///
     /// A modifier because every choice in the library is one - `Picker`'s
-    /// `selectedIndex` and `TabbedPage`'s selection follow the same rule. A
+    /// `selectedIndex` and `TabbedView`'s selection follow the same rule. A
     /// strip without a binding draws no chosen title and reports nothing.
     func selection(_ binding: Binding<Int>) -> Self {
         var copy = self

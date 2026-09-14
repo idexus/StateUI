@@ -86,7 +86,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var home = page("home", title: "Home")
-        home.properties[.navigationPageBackButtonTitle] = .string("Start")
+        home.properties[.backButtonTitle] = .string("Start")
         renderer.applyForTesting(tree(navigation([
             home,
             page("details", title: "Details"),
@@ -189,7 +189,7 @@ final class AppKitPageTests: XCTestCase {
     }
 
     @MainActor
-    func testTabbedPageAppliesAndClearsItsFlatBarBackground() throws {
+    func testTabbedViewAppliesAndClearsItsFlatBarBackground() throws {
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
@@ -299,7 +299,7 @@ final class AppKitPageTests: XCTestCase {
         reported.removeAll()
 
         let flyout = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("flyout")) as? AppKitFlyoutView)
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         flyout.toggleForTesting()
 
         XCTAssertEqual(reported.map(\.0), [100, 9])
@@ -323,7 +323,7 @@ final class AppKitPageTests: XCTestCase {
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let content = try XCTUnwrap(controller.window?.contentView)
         let flyout = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("flyout")) as? AppKitFlyoutView)
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         let split = flyout.splitController
         let toolbar = controller.toolbarForTesting
         content.layoutSubtreeIfNeeded()
@@ -359,7 +359,7 @@ final class AppKitPageTests: XCTestCase {
             detail: page("detail", events: 200),
             changed: 9), width: 900))
         let flyout = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("flyout")) as? AppKitFlyoutView)
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
         XCTAssertTrue(flyout.isEffectivelyPresentedForTesting)
         reported.removeAll()
@@ -388,7 +388,7 @@ final class AppKitPageTests: XCTestCase {
             changed: 9), width: 900))
 
         let flyout = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("flyout")) as? AppKitFlyoutView)
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
 
         XCTAssertTrue(flyout.isEffectivelyPresentedForTesting)
@@ -407,7 +407,7 @@ final class AppKitPageTests: XCTestCase {
 
         var title = HostPatch(id: .manual("title-label"), type: .label)
         title.properties[.text] = .string("Search title")
-        var titleSlot = HostPatch(id: .manual("title-slot"), type: .navigationPageTitleView)
+        var titleSlot = HostPatch(id: .manual("title-slot"), type: .titleView)
         titleSlot.children = .arranged([title])
 
         var save = HostPatch(id: .manual("save"), type: .toolbarItem)
@@ -637,7 +637,7 @@ private extension AppKitPageTests {
     }
 
     func navigation(_ pages: [HostPatch], popped: Int32 = 900) -> HostPatch {
-        var navigation = HostPatch(id: .manual("navigation"), type: .navigationPage)
+        var navigation = HostPatch(id: .manual("navigation"), type: .navigationStack)
         navigation.events = .replace([.popped: popped])
         navigation.children = .arranged(pages)
         return navigation
@@ -648,7 +648,7 @@ private extension AppKitPageTests {
         selected: Int,
         changed: Int32 = 901
     ) -> HostPatch {
-        var tabs = HostPatch(id: .manual("tabs"), type: .tabbedPage)
+        var tabs = HostPatch(id: .manual("tabs"), type: .tabbedView)
         tabs.properties[.currentPage] = .number(Double(selected))
         tabs.events = .replace([.currentPageChanged: changed])
         tabs.children = .arranged(pages)
@@ -661,9 +661,9 @@ private extension AppKitPageTests {
         detail: HostPatch,
         changed: Int32 = 902
     ) -> HostPatch {
-        var flyout = HostPatch(id: .manual("flyout"), type: .flyoutPage)
-        flyout.properties[.isPresented] = .bool(presented)
-        flyout.events = .replace([.isPresentedChanged: changed])
+        var flyout = HostPatch(id: .manual("flyout"), type: .splitView)
+        flyout.properties[.isSidebarVisible] = .bool(presented)
+        flyout.events = .replace([.isSidebarVisibleChanged: changed])
         flyout.children = .arranged([menu, detail])
         return flyout
     }

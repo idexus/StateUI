@@ -30,7 +30,7 @@ struct NavigationSample: SampleContent {
         let catalog: Catalog
         let nav: Navigation
 
-        NavigationPage($path) {
+        NavigationStack($path) {
             HomePage(catalog: catalog, nav: nav)
         } destination: { route in
             switch route {

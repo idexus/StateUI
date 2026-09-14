@@ -589,7 +589,7 @@ extension VisualElement {
     /// value means one thing wherever identity is given:
     ///
     ///     Label(file.name).id(file)   // the item itself
-    ///     Label(tab.title).id(tab)    // the same enum a TabbedPage uses
+    ///     Label(tab.title).id(tab)    // the same enum a TabbedView uses
     ///
     /// The trap is a type that describes itself with LESS than it holds: the
     /// text comes from `String(describing:)`, so a `CustomStringConvertible`
@@ -1487,7 +1487,7 @@ extension LayoutProperties {
     /// iOS is where it shows; the other platforms have no unsafe strip and
     /// ignore it. THE TRAP this answers, measured on an iPhone: an iOS
     /// layout defaults to `.container` and MAUI applies the inset at ARRANGE
-    /// time only, so a flyout pane's header pushes its content below the
+    /// time only, so a sidebar's header pushes its content below the
     /// status bar while its MEASURED height knows nothing of it - the bottom
     /// of the header is clipped by exactly the safe-area inset. `.none` on
     /// the header is the answer: the content sits where the padding says and

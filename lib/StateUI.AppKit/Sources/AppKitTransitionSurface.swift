@@ -72,10 +72,10 @@ enum AppKitTransitionSurface {
         case .progressBar:
             return property == .progress
 
-        case .navigationPage:
+        case .navigationStack:
             return navigationProperties.contains(property)
 
-        case .tabbedPage:
+        case .tabbedView:
             return property == .barBackgroundColor
 
         case .titleBar:

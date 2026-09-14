@@ -181,7 +181,7 @@ final class LifetimeTests: XCTestCase {
         let renders = Renders()
 
         renders.render(
-            NavigationPage(path.projectedValue) {
+            NavigationStack(path.projectedValue) {
                 LifetimePage()
             } destination: { _ in
                 LifetimePage()

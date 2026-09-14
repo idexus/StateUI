@@ -28,15 +28,15 @@ struct HiddenPage: ContentPage {
 
                 Label("This is an ordinary section - `nav.open(.hidden)` reaches it like "
                     + "any other. What the menu does is draw a row for it only when the "
-                    + "Flyout sample's switch says so, and a list that is a view needs "
+                    + "Split view sample's switch says so, and a list that is a view needs "
                     + "nothing more than an `if` to say that.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
 
-                Label("The bar above is the NavigationPage's, like every other bar in this "
+                Label("The bar above is the NavigationStack's, like every other bar in this "
                     + "app: a stack's bar belongs to the stack, so its colours are set "
                     + "once where the stack is written. What a PAGE may still ask of it is "
-                    + "whether it is there at all - `navigationPageHasNavigationBar`.")
+                    + "whether it is there at all - `hasNavigationBar`.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
 

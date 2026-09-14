@@ -916,12 +916,12 @@ final class CatalogTests: XCTestCase {
 
         let flyout = try XCTUnwrap(window.children.first)
 
-        XCTAssertEqual(flyout.type, "FlyoutPage")
-        XCTAssertEqual(flyout.props["isPresented"], .bool(false))
-        XCTAssertNotNil(flyout.events["isPresentedChanged"],
+        XCTAssertEqual(flyout.type, "SplitView")
+        XCTAssertEqual(flyout.props["isSidebarVisible"], .bool(false))
+        XCTAssertNotNil(flyout.events["isSidebarVisibleChanged"],
                         "a native presentation change would not reach the binding")
 
-        XCTAssertEqual(flyout.children.compactMap { $0.id }, ["flyout", "detail"])
+        XCTAssertEqual(flyout.children.compactMap { $0.id }, ["sidebar", "detail"])
 
         let pane = try XCTUnwrap(flyout.children.first).built
 
@@ -937,7 +937,7 @@ final class CatalogTests: XCTestCase {
 
         let detail = try XCTUnwrap(flyout.children.last).built
 
-        XCTAssertEqual(detail.type, "NavigationPage")
+        XCTAssertEqual(detail.type, "NavigationStack")
         XCTAssertNotNil(detail.props["barBackgroundColor"], "the bar is left to the platform")
         XCTAssertNotNil(detail.props["barTextColor"])
         XCTAssertNotNil(detail.events["popped"], "a back gesture would not reach the path")
@@ -1134,15 +1134,15 @@ final class CatalogTests: XCTestCase {
     /// flyout items and reached by a route.
     ///
     /// The first tab holds a whole navigation stack, and its caption and picture
-    /// are the STACK's - measured, and where the first live run of TabbedPage
+    /// are the STACK's - measured, and where the first live run of TabbedView
     /// showed no icons at all.
-    func testTheTabsSectionIsATabbedPageWithAStackInsideIt() throws {
+    func testTheTabsSectionIsATabbedViewWithAStackInsideIt() throws {
         let place = Place()
         place.section.wrappedValue = .tabs
 
         let detail = window(place.nav).detail().body
 
-        XCTAssertEqual(detail.type, "TabbedPage")
+        XCTAssertEqual(detail.type, "TabbedView")
         XCTAssertEqual(detail.props["currentPage"], .number(0))
         XCTAssertNotNil(detail.events["currentPageChanged"],
                         "a tab tapped - or swiped, on Android - would not reach the binding")
@@ -1150,7 +1150,7 @@ final class CatalogTests: XCTestCase {
 
         let stack = try XCTUnwrap(detail.children.first)
 
-        XCTAssertEqual(stack.type, "NavigationPage")
+        XCTAssertEqual(stack.type, "NavigationStack")
         XCTAssertEqual(stack.props["title"], .string("Stack"))
         XCTAssertNotNil(stack.props["iconImageSource"], "a tab with no picture")
 
@@ -1160,7 +1160,7 @@ final class CatalogTests: XCTestCase {
         let tabbed = try XCTUnwrap(shown.children.first?.children.last)
         let second = try XCTUnwrap(tabbed.children.last)
 
-        XCTAssertEqual(tabbed.type, "TabbedPage")
+        XCTAssertEqual(tabbed.type, "TabbedView")
         XCTAssertEqual(prop(second, .title), .string("Second"))
         XCTAssertNotNil(prop(second, .iconImageSource))
     }
@@ -1245,7 +1245,7 @@ final class CatalogTests: XCTestCase {
 
         for (index, child) in detail.children.enumerated() {
             // The first tab is a stack, so the page to read is its root.
-            let page = child.type == "NavigationPage"
+            let page = child.type == "NavigationStack"
                 ? try XCTUnwrap(child.children.first).built
                 : child.built
 

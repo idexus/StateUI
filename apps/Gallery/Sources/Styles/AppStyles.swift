@@ -18,7 +18,7 @@
 //   - Only what a Style can NAME. The template also styles Shadow (not a
 //     control - `.shadow` is a property of the view that casts it), SwipeItem
 //     (not a StyleTarget), Page (a protocol you declare, whose appearance is
-//     its `PageSession`'s), and NavigationPage and TabbedPage, whose bar is
+//     its `PageSession`'s), and NavigationStack and TabbedView, whose bar is
 //     written on the arrangement itself - see MainWindow.detail. TitleBar is
 //     commented out in the template itself.
 

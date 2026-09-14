@@ -1,23 +1,23 @@
 import StateUI
 
-/// A native flyout whose menu is an ordinary StateUI page.
-struct FlyoutSample: SampleContent {
+/// A native split view whose sidebar is an ordinary StateUI page.
+struct SplitViewSample: SampleContent {
     /// Where the gallery is: this sample opens and closes the menu, and sends
     /// the reader to the section the menu does not always list.
     let nav: Navigation
 
-    static let id = "flyout"
-    static let title = "Flyout and menu"
+    static let id = "splitview"
+    static let title = "Split view and menu"
     static let summary = "The menu you are looking at is a page, and every row in it is a view."
 
     static let code = """
         // The arrangement, in Gallery/MainWindow.swift - over the gallery's
         // own `Navigation`, a class of states:
-        FlyoutPage(nav.$menuOpen) {
+        SplitView(nav.$menuOpen) {
             MenuPage(catalog: catalog, nav: nav, log: log,
                      listsHiddenRow: nav.listsHiddenRow)
         } detail: {
-            NavigationPage(nav.$path) {
+            NavigationStack(nav.$path) {
                 root()
             } destination: { route in
                 page(for: route, path: nav.$path)
@@ -92,7 +92,7 @@ struct FlyoutSample: SampleContent {
 
             HStack {
                 Switch(nav.$listsHiddenRow)
-                    .automationId("flyout.hiddenRow")
+                    .automationId("splitview.hiddenRow")
                     .semanticDescription("Show the row that is not in the list")
 
                 Label(nav.listsHiddenRow
@@ -118,7 +118,7 @@ struct FlyoutSample: SampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`FlyoutPage($menuOpen)` is two-way. The native host adapts the pane; "
+            Label("`SplitView($menuOpen)` is two-way. The native host adapts the pane; "
                 + "when it keeps both sides visible, the binding settles on `true`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

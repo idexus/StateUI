@@ -74,7 +74,7 @@ private struct TestWindow: Window {
     var page: any Page {
         guard let path else { return HomePage(sheets: sheets) }
 
-        return NavigationPage(path) {
+        return NavigationStack(path) {
             HomePage(sheets: sheets)
         } destination: { _ in
             HomePage(sheets: sheets)

@@ -53,9 +53,9 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `Application` / `Scene` | structure | ✅ | — | — | — | — | — |
 | `Window` | structure | ✅ | — | — | — | — | — |
 | `ContentPage` | adaptive shell | ✅ | — | — | — | — | — |
-| `NavigationPage` | adaptive shell | ✅ | — | — | — | — | — |
-| `TabbedPage` | adaptive shell | ✅ | — | — | — | — | — |
-| `FlyoutPage` | adaptive shell | ✅ | — | — | — | — | — |
+| `NavigationStack` | adaptive shell | ✅ | — | — | — | — | — |
+| `TabbedView` | adaptive shell | ✅ | — | — | — | — | — |
+| `SplitView` | adaptive shell | ✅ | — | — | — | — | — |
 | `ModalStack` | structure | ✅ | — | — | — | — | — |
 | `Overlay` | structure | ✅ | — | — | — | — | — |
 | `TitleBar` | adaptive shell | ✅ | — | — | — | — | — |
@@ -94,13 +94,13 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `WebView` | native primitive | — | — | — | — | — | — |
 | `Map` / `Pin` | optional provider | — | — | — | — | — | — |
 | `ItemsView` (planned) | native primitive | — | — | — | — | — | — |
-| `Content`, `LeadingContent`, `TrailingContent`, `NavigationPageTitleView` | structure | — | — | — | — | — | — |
+| `Content`, `LeadingContent`, `TrailingContent`, `TitleView` | structure | — | — | — | — | — | — |
 | `Setters`, `VisualState`, `Composed` | structure resolved by StateUI | — | — | — | — | — | — |
 
-The AppKit flyout uses `NSSplitViewController`.
+The AppKit split view uses `NSSplitViewController`.
 
 Page arrangements expose an optional flat `barBackgroundColor`. A
-`NavigationPage` additionally exposes `barTextColor` for its title and native
+`NavigationStack` additionally exposes `barTextColor` for its title and native
 action affordances. A tab selector keeps the toolkit's selected and unselected
 appearance. An unwritten background retains the native material; StateUI does
 not ask a host to rasterize an arbitrary brush into page chrome.
@@ -135,9 +135,9 @@ may still choose another class that preserves the same contract.
 | `Application` / `Scene` | `NSApplication` / structure | `UIApplication` / `UIWindowScene` | `GtkApplication` / structure | `Application` / structure | `Application` / structure | `document` / structure |
 | `Window` | `NSWindow` | `UIWindow` | `GtkApplicationWindow` | `Activity` | `Window` | browser `window` |
 | `ContentPage` | custom `NSView` | `UIViewController` | custom `GtkWidget` | custom `ViewGroup` | `Page` | `<section>` |
-| `NavigationPage` | custom `NSView` stack; title, back and actions in the window's `NSToolbar` | `UINavigationController` | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` | custom `ViewGroup` stack + `Toolbar` | `Frame` | History API |
-| `TabbedPage` | `NSSegmentedControl` over a custom `NSView` | `UITabBarController` | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` | Material Components `BottomNavigationView` (?) | `NavigationView` with a top pane | ARIA `tablist` |
-| `FlyoutPage` | `NSSplitViewController` | `UISplitViewController` | `GtkPaned`; libadwaita `AdwOverlaySplitView` | AndroidX `DrawerLayout` | `SplitView` | `<aside>` |
+| `NavigationStack` | custom `NSView` stack; title, back and actions in the window's `NSToolbar` | `UINavigationController` | `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView` | custom `ViewGroup` stack + `Toolbar` | `Frame` | History API |
+| `TabbedView` | `NSSegmentedControl` over a custom `NSView` | `UITabBarController` | `GtkStack` + `GtkStackSwitcher`; libadwaita `AdwViewStack` | Material Components `BottomNavigationView` (?) | `NavigationView` with a top pane | ARIA `tablist` |
+| `SplitView` | `NSSplitViewController` | `UISplitViewController` | `GtkPaned`; libadwaita `AdwOverlaySplitView` | AndroidX `DrawerLayout` | `SplitView` | `<aside>` |
 | `ModalStack` | sheet `NSWindow` | `present(_:animated:)` | modal `GtkWindow`; libadwaita `AdwDialog` | full-screen `Dialog` (?) | `ContentDialog` (?) | `<dialog>` with `showModal()` |
 | `Overlay` | pass-through `NSView` above the page | pass-through `UIView` above the page | `GtkOverlay` | top child of a `FrameLayout` | top layer of a root `Grid` | positioned element above the page |
 | `TitleBar` | slots in `NSToolbar`; title in a trailing `NSTitlebarAccessoryViewController` | — | `GtkHeaderBar` | — | `TitleBar` | — |
@@ -176,7 +176,7 @@ may still choose another class that preserves the same contract.
 | `WebView` | `WKWebView` | `WKWebView` | WebKitGTK `WebKitWebView` | `WebView` | `WebView2` | `<iframe>` (?) |
 | `Map` / `Pin` | `MKMapView` / `MKAnnotation` | `MKMapView` / `MKAnnotation` | libshumate `ShumateMap` / `ShumateMarker` | Google Play services `MapView` / `Marker` (?) | `MapControl` (?) | — |
 | `ItemsView` (planned) | `NSCollectionView` / `NSTableView` | `UICollectionView` | `GtkListView` / `GtkGridView` | AndroidX `RecyclerView` | `ItemsView` | semantic list or grid |
-| `Content`, `LeadingContent`, `TrailingContent`, `NavigationPageTitleView` | structure | structure | structure | structure | structure | structure |
+| `Content`, `LeadingContent`, `TrailingContent`, `TitleView` | structure | structure | structure | structure | structure | structure |
 | `Setters`, `VisualState`, `Composed` | structure | structure | structure | structure | structure | structure |
 
 ### Completeness
@@ -187,9 +187,9 @@ adds one row without a host token.
 
 These surfaces lack an honest native counterpart on at least one target:
 
-- `NavigationPage`: Android Views and GTK 4 without libadwaita have no page-stack control.
-- `TabbedPage`: Android Views has no framework tab bar; Web has no tab element.
-- `FlyoutPage`: Android Views depends on AndroidX `DrawerLayout`; Web has no native pane.
+- `NavigationStack`: Android Views and GTK 4 without libadwaita have no page-stack control.
+- `TabbedView`: Android Views has no framework tab bar; Web has no tab element.
+- `SplitView`: Android Views depends on AndroidX `DrawerLayout`; Web has no native pane.
 - `ModalStack`: Android Views has no modal page presentation; WinUI 3 shows one `ContentDialog` at a time.
 - `TitleBar`: UIKit, Android Views, and Web have no window title bar.
 - Menus: Android Views has no menu bar; Web has no native menu element.
@@ -302,15 +302,15 @@ token in parentheses.
 | `WindowGroup` / `Window` | session metadata | `windowType`, `windowValue`, `autoHide`, `floatsOnTop` | ✅ | — | — | — | — | — |
 | `Window` | handlers | `created`, `activated`, `deactivated`, `stopped`, `resumed`, `destroying` | ✅ | — | — | — | — | — |
 | `Scene` | handlers | `activated`, `deactivated`, `stopped`, `destroying`, `windowClosed`, `windowRestored` | ✅ | — | — | — | — | — |
-| `ContentPage` | properties | `title`, `iconImageSource`, `padding`, `backgroundColor`, `navigationPageBackButtonTitle`, `navigationPageHasBackButton`, `navigationPageHasNavigationBar`, `navigationPageTitleView`, toolbar and menu slots | ✅ | — | — | — | — | — |
+| `ContentPage` | properties | `title`, `iconImageSource`, `padding`, `backgroundColor`, `backButtonTitle`, `hasBackButton`, `hasNavigationBar`, `titleView`, toolbar and menu slots | ✅ | — | — | — | — | — |
 | `ContentPage` | handlers | `appearing`, `disappearing`, `navigatingFrom`, `navigatedFrom`, `navigatedTo` | ✅ | — | — | — | — | — |
-| `NavigationPage` | state | bound path and committed native back (`popped`) | ✅ | — | — | — | — | — |
-| `NavigationPage` | properties | `barBackgroundColor` | ✅ | — | — | — | — | — |
-| `NavigationPage` | properties | `barTextColor` | ✅ | — | — | — | — | — |
-| `TabbedPage` | state/events | bound `currentPage` (`currentPageChanged`) | ✅ | — | — | — | — | — |
-| `TabbedPage` | properties | `barBackgroundColor`; native selected/unselected appearance | ✅ | — | — | — | — | — |
-| `FlyoutPage` | state/events | bound `isPresented` (`isPresentedChanged`) | ✅ | — | — | — | — | — |
-| `FlyoutPage` | native presentation | adaptive native pane and native platform affordances | ✅ | — | — | — | — | — |
+| `NavigationStack` | state | bound path and committed native back (`popped`) | ✅ | — | — | — | — | — |
+| `NavigationStack` | properties | `barBackgroundColor` | ✅ | — | — | — | — | — |
+| `NavigationStack` | properties | `barTextColor` | ✅ | — | — | — | — | — |
+| `TabbedView` | state/events | bound `currentPage` (`currentPageChanged`) | ✅ | — | — | — | — | — |
+| `TabbedView` | properties | `barBackgroundColor`; native selected/unselected appearance | ✅ | — | — | — | — | — |
+| `SplitView` | state/events | bound `isSidebarVisible` (`isSidebarVisibleChanged`) | ✅ | — | — | — | — | — |
+| `SplitView` | native presentation | adaptive native pane and native platform affordances | ✅ | — | — | — | — | — |
 | `ModalStack` | state/events | bound modal stack (`modalPopped`) | ✅ | — | — | — | — | — |
 | menu items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled` | ✅ | — | — | — | — | — |
 | toolbar items | properties | `text`, `iconImageSource`, `isDestructive`, `isEnabled`, `order`, `priority` | ✅ | — | — | — | — | — |
@@ -397,15 +397,15 @@ host status.
 
 `AbsoluteLayout`, `ActivityIndicator`, `Application`, `Border`, `BoxView`,
 `Button`, `CheckBox`, `Content`, `ContentPage`, `ContextFlyout`, `DatePicker`,
-`Editor`, `Ellipse`, `Entry`, `FlyoutPage`, `FormattedString`, `GraphicsView`,
+`Editor`, `Ellipse`, `Entry`, `SplitView`, `FormattedString`, `GraphicsView`,
 `Grid`, `HStack`, `Image`, `ImageButton`, `IndicatorView`,
 `Label`, `LeadingContent`, `Line`, `Map`, `MenuBarItem`, `MenuBarItems`,
 `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem`, `ModalStack`,
-`NavigationPage`, `NavigationPageTitleView`, `Overlay`, `Path`, `Picker`, `Pin`,
+`NavigationStack`, `TitleView`, `Overlay`, `Path`, `Picker`, `Pin`,
 `Polygon`, `Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`, `RefreshView`,
 `RoundRectangle`, `Scene`, `ScrollView`, `SearchBar`, `Setters`, `Slider`,
 `Span`, `Stepper`, `SwipeItem`, `SwipeItems`, `SwipeView`, `Switch`,
-`TabbedPage`, `TimePicker`, `TitleBar`, `ToolbarItem`, `ToolbarItems`,
+`TabbedView`, `TimePicker`, `TitleBar`, `ToolbarItem`, `ToolbarItems`,
 `TrailingContent`, `VStack`, `VisualState`, `WebView`, `Window`,
 `Composed`.
 
@@ -429,7 +429,7 @@ host status.
 `increment`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
 `inputTransparent`, `isAnimationPlaying`, `isChecked`, `isClippedToBounds`,
 `isDestructive`, `isEnabled`, `isMaximizable`,
-`isMinimizable`, `isOpaque`, `isOpen`, `isPassword`, `isPresented`,
+`isMinimizable`, `isOpaque`, `isOpen`, `isPassword`, `isSidebarVisible`,
 `isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isRunning`,
 `isScrollEnabled`, `isShowingUser`, `isSpellCheckEnabled`,
 `isTextPredictionEnabled`, `isToggled`, `isTrafficEnabled`, `isVisible`,
@@ -439,8 +439,8 @@ host status.
 `maximumWidth`, `maximumWidthRequest`, `maxLength`, `maxLines`, `minimum`,
 `minimumDate`, `minimumHeight`, `minimumHeightRequest`, `minimumTrackColor`,
 `minimumWidth`, `minimumWidthRequest`, `mode`, `name`,
-`navigationPageBackButtonTitle`, `navigationPageHasBackButton`,
-`navigationPageHasNavigationBar`, `numberOfTapsRequired`, `offColor`,
+`backButtonTitle`, `hasBackButton`,
+`hasNavigationBar`, `numberOfTapsRequired`, `offColor`,
 `onColor`, `opacity`, `order`, `orientation`, `padding`, `panTouchCount`,
 `panXChannel`, `panYChannel`, `placeholder`, `placeholderColor`, `points`,
 `position`, `priority`, `progress`, `progressColor`, `radiusX`, `radiusY`,
@@ -468,7 +468,7 @@ host status.
 `disappearing`, `dragCompleted`, `dragInteraction`, `dragLeave`, `dragOver`,
 `dragStarted`, `dragStarting`, `drop`, `dropCompleted`, `endInteraction`,
 `frameChanged`, `heightChanged`, `infoWindowClicked`, `invoked`,
-`isFocusedChanged`, `isPresentedChanged`, `isRefreshingChanged`, `mapClicked`,
+`isFocusedChanged`, `isSidebarVisibleChanged`, `isRefreshingChanged`, `mapClicked`,
 `markerClicked`, `modalPopped`, `navigated`, `navigatedFrom`, `navigatedTo`,
 `navigating`, `navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`, `pointerEntered`,
 `pointerExited`, `pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`,

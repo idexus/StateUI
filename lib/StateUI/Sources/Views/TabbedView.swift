@@ -3,7 +3,7 @@
 
 // The tabs, owned by Swift.
 //
-// A TabbedPage holds several pages and draws a native selector to move between
+// A TabbedView holds several pages and draws a native selector to move between
 // them. WHICH tabs there are is an array the author holds, of the author's own
 // type; WHICH ONE is showing is a binding of that same type. So the two
 // questions a tab bar can be asked have answers on this side, and the host is
@@ -14,7 +14,7 @@
 //
 //     @State private var tab: Tab = .home
 //
-//     TabbedPage(Tab.allCases) { tab in
+//     TabbedView(Tab.allCases) { tab in
 //         switch tab {
 //         case .home:     HomePage()
 //         case .browse:   BrowsePage()
@@ -26,7 +26,7 @@
 // Switching tabs from code is `tab = .settings`. Switching them with a finger
 // is the host reporting which page became current, and the binding being
 // written to match - the same protocol a completed pop follows in
-// Views/NavigationPage.swift, and the same one a flyout's `isPresented`
+// Views/NavigationStack.swift, and the same one a split view's `isSidebarVisible`
 // follows.
 //
 // The tabs are a COLLECTION rather than a builder of pages, and that is what
@@ -50,7 +50,7 @@
 ///         @State private var tab: Tab = .today
 ///
 ///         var page: any Page {
-///             TabbedPage(Tab.allCases) { tab in
+///             TabbedView(Tab.allCases) { tab in
 ///                 switch tab {
 ///                 case .today:    TodayPage()
 ///                 case .settings: SettingsPage(tab: $tab)
@@ -74,13 +74,13 @@
 ///
 /// **A tab's caption and icon come from its PAGE**, through `title` and
 /// `iconImageSource`. A page the
-/// library constructs - a `NavigationPage` inside a tab, which is the ordinary
+/// library constructs - a `NavigationStack` inside a tab, which is the ordinary
 /// shape of a tabbed application - is given them by modifier instead:
 ///
-///     TabbedPage(Tab.allCases) { tab in
+///     TabbedView(Tab.allCases) { tab in
 ///         switch tab {
 ///         case .home:
-///             NavigationPage($homePath) {
+///             NavigationStack($homePath) {
 ///                 HomePage(path: $homePath)
 ///             } destination: { route in … }
 ///             .title("Home")
@@ -108,7 +108,7 @@
 /// **A tab must be a VALUE, and distinct values must READ differently**, since
 /// a page's identity here is `String(describing:)` of its tab - the rule
 /// `ForEach` states as "items must be DISTINCT within their parent", and the
-/// one `NavigationPage` states for a route. A repeated tab is two tabs sharing
+/// one `NavigationStack` states for a route. A repeated tab is two tabs sharing
 /// one page.
 ///
 /// Position is NOT part of a tab's identity, which is the one place this
@@ -126,7 +126,7 @@
 ///   thing - which is what passing an array and a closure already is.
 /// - `CurrentPage` as a readable property. The bound selection answers it on
 ///   this side, before the host has drawn anything.
-public struct TabbedPage: Page, BarElement, PageElement {
+public struct TabbedView: Page, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
 
@@ -136,7 +136,7 @@ public struct TabbedPage: Page, BarElement, PageElement {
     /// The tabs, kept as they were given so `selection` can find the one it
     /// names and name back the one a finger chose.
     ///
-    /// `AnyHashable` because a TabbedPage is not generic: the author's own
+    /// `AnyHashable` because a TabbedView is not generic: the author's own
     /// type is known to the initializer alone. The box is opened again in
     /// `selection`, whose binding says which type to expect.
     private let tabs: [AnyHashable]
@@ -160,18 +160,18 @@ public struct TabbedPage: Page, BarElement, PageElement {
         self.tabs = ordered.map { AnyHashable($0) }
 
         node = Node(
-            type: .tabbedPage,
+            type: .tabbedView,
             children: ordered.map { tab in
                 Self.identified(destination(tab).body, as: String(describing: tab))
             })
     }
 
     /// Which tab is showing, borrowed two-way. A tab the reader chooses is
-    /// written here. MAUI: TabbedPage.CurrentPage.
+    /// written here. MAUI: TabbedView.CurrentPage.
     ///
     ///     @State private var tab: Tab = .home
     ///
-    ///     TabbedPage(Tab.allCases) { tab in
+    ///     TabbedView(Tab.allCases) { tab in
     ///         switch tab {
     ///         case .home:     HomePage()
     ///         case .settings: SettingsPage(tab: $tab)
@@ -185,7 +185,7 @@ public struct TabbedPage: Page, BarElement, PageElement {
     ///
     /// - Parameter binding: the tab that is showing, of the same type the tabs
     ///   are.
-    public func selection<Tab: Hashable>(_ binding: Binding<Tab>) -> TabbedPage {
+    public func selection<Tab: Hashable>(_ binding: Binding<Tab>) -> TabbedView {
         var copy = self
         let ordered = tabs
 

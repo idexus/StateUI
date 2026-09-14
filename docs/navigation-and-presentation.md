@@ -7,7 +7,7 @@ bindings.
 
 ## Navigation stack
 
-`NavigationPage` renders a root page plus one destination for every element of
+`NavigationStack` renders a root page plus one destination for every element of
 a typed path:
 
 ```swift quote
@@ -20,7 +20,7 @@ struct MainWindow: Window {
     @State private var path: [Route] = []
 
     var page: any Page {
-        NavigationPage($path) {
+        NavigationStack($path) {
             HomePage(path: $path)
         } destination: { route in
             switch route {
@@ -50,7 +50,7 @@ only its value can read where it is, but cannot navigate on its owner's behalf.
 
 ## Tabs
 
-`TabbedPage` is built from a distinct collection of application values. A
+`TabbedView` is built from a distinct collection of application values. A
 selection binding says which one is showing:
 
 ```swift quote
@@ -60,7 +60,7 @@ enum Tab: Hashable, CaseIterable {
 
 @State private var selected = Tab.notes
 
-TabbedPage(Tab.allCases) { tab in
+TabbedView(Tab.allCases) { tab in
     switch tab {
     case .notes: NotesPage()
     case .search: SearchPage()
@@ -75,32 +75,33 @@ into that same binding. Tab identity is the tab value, not its position, so
 reordering distinct values retains their pages. Repeating a tab value would
 claim one identity twice and is invalid application data.
 
-A tab can contain its own `NavigationPage` and path. That arrangement keeps a
+A tab can contain its own `NavigationStack` and path. That arrangement keeps a
 separate stack per tab because each path belongs to the application's state,
 not to the tab host.
 
-## Flyout
+## Split view
 
-`FlyoutPage` owns two pages and a two-way presentation binding:
+`SplitView` owns two pages - a sidebar and a detail - and a two-way binding
+saying whether the sidebar shows:
 
 ```swift quote
 @State private var menuOpen = false
 
-FlyoutPage($menuOpen, flyout: {
-    MenuPage(isPresented: $menuOpen)
+SplitView($menuOpen, sidebar: {
+    MenuPage(isSidebarVisible: $menuOpen)
 }, detail: {
     MainPage()
 })
 ```
 
-The flyout is a page, so its header, rows, and actions are composed from the
+The sidebar is a page, so its header, rows, and actions are composed from the
 same controls as any other page. StateUI does not require a special menu-item
-model. A committed native open or dismiss gesture writes `menuOpen`; assigning
-the state presents or dismisses it.
+model. A committed native show or hide writes `menuOpen`; assigning the state
+shows or hides the sidebar.
 
 The host adapts presentation to the available space. The state contract stays
 the same whether the two pages are temporarily overlaid or persistently side
-by side. On AppKit the flyout is a sidebar running the window's full height
+by side. On AppKit the sidebar runs the window's full height
 beside the detail, shown and hidden by the system sidebar button in the
 window's toolbar; a window wide enough for both panes opens with the sidebar
 shown, and after that the reader and the binding decide.
@@ -143,7 +144,7 @@ A written `ContentPage` changes its `PageSession`. Container pages created by
 StateUI use modifiers because they have no independent content-page session:
 
 ```swift quote
-NavigationPage($settingsPath) {
+NavigationStack($settingsPath) {
     SettingsHome(path: $settingsPath)
 } destination: { route in
     SettingsDestination(route: route)
@@ -163,7 +164,7 @@ A view such as `SearchBar` can occupy the current page's navigation title slot:
 @State private var query = ""
 
 .onCreated {
-    page.navigationPageTitleView = SearchBar($query)
+    page.titleView = SearchBar($query)
         .placeholder("Search")
 }
 ```
@@ -197,7 +198,7 @@ On AppKit a page's furniture is its window's toolbar: the top page's title
 names the window, the way back is the system's back item, primary actions are
 toolbar items, and secondary ones sit in the toolbar's overflow menu.
 
-Page arrangements accept a flat `barBackgroundColor`. A `NavigationPage` also
+Page arrangements accept a flat `barBackgroundColor`. A `NavigationStack` also
 accepts `barTextColor` for its title and native action affordances. Native tab
 selectors retain their selected and unselected state appearance. Leaving the
 background unwritten preserves the platform's material, and a platform whose

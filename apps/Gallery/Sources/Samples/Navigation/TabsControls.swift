@@ -109,7 +109,7 @@ struct TabsControls: ContentView {
             .onClicked(act)
     }
 
-    /// What `TabbedPage.selection` writes for this selection - the same line the
+    /// What `TabbedView.selection` writes for this selection - the same line the
     /// library runs, repeated here so that the number is on screen.
     ///
     /// A property is sent only when its VALUE changed, so a move that leaves

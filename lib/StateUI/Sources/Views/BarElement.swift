@@ -25,7 +25,7 @@ public protocol BarElement: PropertyContainer {}
 extension BarElement {
     /// What the bar is painted, in one flat colour.
     ///
-    ///     NavigationPage($path) {
+    ///     NavigationStack($path) {
     ///         HomePage()
     ///     } destination: { route in
     ///         DetailPage(route)

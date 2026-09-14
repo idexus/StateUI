@@ -1175,9 +1175,9 @@ final class MountedNode: NSObject {
     private func apply(_ patch: HostPatch, adopting: Bool) {
         guard let host else { return }
 
-        let previousNavigationTop = type == .navigationPage ? children.last : nil
-        let previousTab = type == .tabbedPage ? selectedTab : nil
-        let previousFlyoutPresentation = type == .flyoutPage ? flyoutIsVisible : false
+        let previousNavigationTop = type == .navigationStack ? children.last : nil
+        let previousTab = type == .tabbedView ? selectedTab : nil
+        let previousSidebarVisibility = type == .splitView ? sidebarIsVisible : false
         var changed: Set<Prop>
 
         if adopting {
@@ -1298,7 +1298,7 @@ final class MountedNode: NSObject {
         configureFrameObservation()
         reconcileNavigationPresentation(from: previousNavigationTop)
         reconcileTabPresentation(from: previousTab)
-        reconcileFlyoutPresentation(from: previousFlyoutPresentation)
+        reconcileSidebarVisibility(from: previousSidebarVisibility)
     }
 
     /// Reconciles a complete child arrangement. Ordinary children match by
@@ -1488,11 +1488,11 @@ final class MountedNode: NSObject {
         switch type {
         case .contentPage:
             return self
-        case .navigationPage:
+        case .navigationStack:
             return children.last?.visibleContentPage
-        case .tabbedPage:
+        case .tabbedView:
             return selectedTab?.visibleContentPage
-        case .flyoutPage:
+        case .splitView:
             return children.dropFirst().first?.visibleContentPage
         default:
             return pageNode?.visibleContentPage
@@ -1501,36 +1501,36 @@ final class MountedNode: NSObject {
 
     /// The native navigation container currently surrounding the visible
     /// content, if this page arrangement has one.
-    var visibleNavigationPage: MountedNode? {
+    var visibleNavigationStack: MountedNode? {
         switch type {
-        case .navigationPage:
+        case .navigationStack:
             return self
-        case .tabbedPage:
-            return selectedTab?.visibleNavigationPage
-        case .flyoutPage:
-            return children.dropFirst().first?.visibleNavigationPage
+        case .tabbedView:
+            return selectedTab?.visibleNavigationStack
+        case .splitView:
+            return children.dropFirst().first?.visibleNavigationStack
         default:
-            return pageNode?.visibleNavigationPage
+            return pageNode?.visibleNavigationStack
         }
     }
 
     /// The native split view controller of a split page.
     var sidebarController: NSSplitViewController? {
-        (view as? AppKitFlyoutView)?.splitController
+        (view as? AppKitSplitView)?.splitController
     }
 
     /// The way back the visible navigation stack offers, while its top page
     /// can go back.
     var visibleBackAction: AppKitToolbarAction? {
-        guard let navigation = visibleNavigationPage,
+        guard let navigation = visibleNavigationStack,
               navigation.children.count > 1,
               let top = navigation.children.last,
-              top.bool(.navigationPageHasNavigationBar) ?? true,
-              top.bool(.navigationPageHasBackButton) ?? true
+              top.bool(.hasNavigationBar) ?? true,
+              top.bool(.hasBackButton) ?? true
         else { return nil }
 
         let previous = navigation.children[navigation.children.count - 2]
-        let title = previous.string(.navigationPageBackButtonTitle) ?? "Back"
+        let title = previous.string(.backButtonTitle) ?? "Back"
         return AppKitToolbarAction(
             identifier: AppKitWindowToolbar.back,
             title: title,
@@ -1544,7 +1544,7 @@ final class MountedNode: NSObject {
     /// that hides its navigation furniture puts none of them in the toolbar.
     var visibleToolbarActions: (primary: [AppKitToolbarAction], overflow: [AppKitToolbarAction]) {
         guard let page = visibleContentPage,
-              page.bool(.navigationPageHasNavigationBar) ?? true,
+              page.bool(.hasNavigationBar) ?? true,
               let items = page.slot(.toolbarItems)?.children
         else { return ([], []) }
 
@@ -1568,7 +1568,7 @@ final class MountedNode: NSObject {
 
     /// The view the visible page shows in place of its title.
     var visibleTitleView: NSView? {
-        visibleContentPage?.slot(.navigationPageTitleView)?.presentableViews.first
+        visibleContentPage?.slot(.titleView)?.presentableViews.first
     }
 
     var pageMenuItems: [NSMenuItem] {
@@ -1592,18 +1592,18 @@ final class MountedNode: NSObject {
                 if reason == .navigation { announce(.navigatedFrom) }
             }
 
-        case .navigationPage:
+        case .navigationStack:
             children.last?.setPagePresented(
                 presented,
                 reason: reason == .window && presented ? .navigation
                     : (reason == .window ? .appearance : reason))
 
-        case .tabbedPage:
+        case .tabbedView:
             selectedTab?.setPagePresented(presented, reason: .appearance)
 
-        case .flyoutPage:
+        case .splitView:
             children.dropFirst().first?.setPagePresented(presented, reason: .appearance)
-            if flyoutIsVisible {
+            if sidebarIsVisible {
                 children.first?.setPagePresented(presented, reason: .appearance)
             }
 
@@ -1618,7 +1618,7 @@ final class MountedNode: NSObject {
     }
 
     private func reconcileNavigationPresentation(from previous: MountedNode?) {
-        guard type == .navigationPage, pagePresented else { return }
+        guard type == .navigationStack, pagePresented else { return }
         let current = children.last
         guard previous !== current else { return }
 
@@ -1627,7 +1627,7 @@ final class MountedNode: NSObject {
     }
 
     private func reconcileTabPresentation(from previous: MountedNode?) {
-        guard type == .tabbedPage else { return }
+        guard type == .tabbedView else { return }
         let current = selectedTab
 
         if pagePresented, previous !== current {
@@ -1648,16 +1648,16 @@ final class MountedNode: NSObject {
         return children[min(max(requested, 0), children.count - 1)]
     }
 
-    private var flyoutIsVisible: Bool {
-        if let flyout = view as? AppKitFlyoutView {
-            return flyout.isEffectivelyPresented
+    private var sidebarIsVisible: Bool {
+        if let split = view as? AppKitSplitView {
+            return split.isEffectivelyPresented
         }
-        return value(.isPresented)?.bool == true
+        return value(.isSidebarVisible)?.bool == true
     }
 
-    private func reconcileFlyoutPresentation(from previous: Bool) {
-        guard type == .flyoutPage else { return }
-        let current = flyoutIsVisible
+    private func reconcileSidebarVisibility(from previous: Bool) {
+        guard type == .splitView else { return }
+        let current = sidebarIsVisible
 
         if pagePresented, previous != current {
             children.first?.setPagePresented(current, reason: .appearance)
@@ -1765,7 +1765,7 @@ final class MountedNode: NSObject {
     /// display link's frame is drawn.
     private func needsWindowSynchronization(for properties: Set<Prop>) -> Bool {
         guard !properties.isEmpty else { return false }
-        return type == .window || type == .titleBar || type == .navigationPage
+        return type == .window || type == .titleBar || type == .navigationStack
     }
 
     @objc private func clicked(_ sender: Any?) {
@@ -2043,19 +2043,19 @@ final class MountedNode: NSObject {
             return page
 
         case .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
-             .navigationPageTitleView, .toolbarItems, .menuBarItems, .contextFlyout,
+             .titleView, .toolbarItems, .menuBarItems, .contextFlyout,
              .menuBarItem, .menuFlyoutItem, .menuFlyoutSubItem,
              .menuFlyoutSeparator, .formattedString, .span:
             return nil
 
-        case .navigationPage:
+        case .navigationStack:
             return AppKitNavigationView()
 
-        case .tabbedPage:
+        case .tabbedView:
             return AppKitTabbedView()
 
-        case .flyoutPage:
-            return AppKitFlyoutView()
+        case .splitView:
+            return AppKitSplitView()
 
         case .grid:
             return AppKitGridView()
@@ -2298,11 +2298,11 @@ final class MountedNode: NSObject {
             tabs.applyBar(backgroundColor: color(.barBackgroundColor))
         }
 
-        if let flyout = view as? AppKitFlyoutView {
-            flyout.onPresentationChanged = { [weak self] presented in
-                self?.changeFlyoutPresentation(to: presented)
+        if let split = view as? AppKitSplitView {
+            split.onPresentationChanged = { [weak self] presented in
+                self?.changeSidebarVisibility(to: presented)
             }
-            flyout.apply(presented: value(.isPresented)?.bool ?? false)
+            split.apply(presented: value(.isSidebarVisible)?.bool ?? false)
         }
 
         if let grid = view as? AppKitGridView {
@@ -2690,8 +2690,8 @@ final class MountedNode: NSObject {
             return
         }
 
-        if let flyout = view as? AppKitFlyoutView {
-            flyout.setItems(items)
+        if let split = view as? AppKitSplitView {
+            split.setItems(items)
             return
         }
 
@@ -2925,7 +2925,7 @@ final class MountedNode: NSObject {
     }
 
     private func popNavigation() {
-        guard type == .navigationPage, children.count > 1,
+        guard type == .navigationStack, children.count > 1,
               let handler = events[.popped]
         else { return }
 
@@ -2933,7 +2933,7 @@ final class MountedNode: NSObject {
     }
 
     private func selectTab(from previous: Int, to selected: Int) {
-        guard type == .tabbedPage, children.indices.contains(selected) else { return }
+        guard type == .tabbedView, children.indices.contains(selected) else { return }
 
         if pagePresented {
             if children.indices.contains(previous) {
@@ -2945,14 +2945,14 @@ final class MountedNode: NSObject {
         host?.commit(events[.currentPageChanged], payload: [.number(Double(selected))])
     }
 
-    private func changeFlyoutPresentation(to presented: Bool) {
-        guard type == .flyoutPage else { return }
+    private func changeSidebarVisibility(to presented: Bool) {
+        guard type == .splitView else { return }
 
         if pagePresented {
             children.first?.setPagePresented(presented, reason: .appearance)
         }
 
-        host?.commit(events[.isPresentedChanged], payload: [.bool(presented)])
+        host?.commit(events[.isSidebarVisibleChanged], payload: [.bool(presented)])
     }
 
     private func enumeration(_ property: Prop) -> Int32? {
@@ -3494,7 +3494,7 @@ final class MountedNode: NSObject {
     ]
 
     private static let pageTypes: Set<NodeType> = [
-        .contentPage, .navigationPage, .tabbedPage, .flyoutPage,
+        .contentPage, .navigationStack, .tabbedView, .splitView,
     ]
 
     /// Several visible windows' worth, but never an unbounded history of rows.
@@ -3504,7 +3504,7 @@ final class MountedNode: NSObject {
         .allowDrop, .autoHide, .canDrag, .floatsOnTop, .inputTransparent,
         .isAnimationPlaying, .isChecked, .isClippedToBounds, .isDestructive,
         .isEnabled, .isMaximizable, .isMinimizable,
-        .isOpaque, .isOpen, .isPassword, .isPresented, .isReadOnly,
+        .isOpaque, .isOpen, .isPassword, .isSidebarVisible, .isReadOnly,
         .isRefreshEnabled, .isRefreshing, .isRunning, .isScrollEnabled,
         .isShowingUser, .isSpellCheckEnabled, .isTextPredictionEnabled,
         .isToggled, .isTrafficEnabled, .isVisible, .isZoomEnabled,

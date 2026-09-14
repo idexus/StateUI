@@ -2,7 +2,7 @@
 
 import StateUI
 
-/// The gallery's flyout - and it is an ordinary page.
+/// The gallery's sidebar - and it is an ordinary page.
 ///
 /// That is the whole point of it. A `ContentPage` with a gradient at the top,
 /// some rows in the middle and a line at the bottom - and a row is a view with
@@ -23,7 +23,7 @@ struct MenuPage: ContentPage {
     /// at the foot of this page as the window's phase moves.
     let log: WindowLog
 
-    /// Whether the row that is hidden by default is listed - the Flyout sample
+    /// Whether the row that is hidden by default is listed - the Split view sample
     /// writes it, and here it is an `if` around the row.
     let listsHiddenRow: Bool
 

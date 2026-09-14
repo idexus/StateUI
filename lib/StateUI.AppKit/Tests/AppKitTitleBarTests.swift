@@ -176,7 +176,7 @@ final class AppKitTitleBarTests: XCTestCase {
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let flyout = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("flyout")) as? AppKitFlyoutView)
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         let scroll = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
         content.layoutSubtreeIfNeeded()
@@ -266,7 +266,7 @@ private extension AppKitTitleBarTests {
         page.properties[.title] = .string("Page")
         page.children = .arranged([label])
 
-        var navigation = HostPatch(id: .manual("navigation"), type: .navigationPage)
+        var navigation = HostPatch(id: .manual("navigation"), type: .navigationStack)
         navigation.children = .arranged([page])
 
         var window = HostPatch(id: .manual("window"), type: .window)
@@ -294,7 +294,7 @@ private extension AppKitTitleBarTests {
         var page = HostPatch(id: .manual("page"), type: .contentPage)
         page.properties[.title] = .string("Page")
         page.children = .arranged([scroll])
-        var navigation = HostPatch(id: .manual("navigation"), type: .navigationPage)
+        var navigation = HostPatch(id: .manual("navigation"), type: .navigationStack)
         navigation.children = .arranged([page])
 
         var menuLabel = HostPatch(id: .manual("menu-label"), type: .label)
@@ -302,7 +302,7 @@ private extension AppKitTitleBarTests {
         var menu = HostPatch(id: .manual("menu"), type: .contentPage)
         menu.children = .arranged([menuLabel])
 
-        var flyout = HostPatch(id: .manual("flyout"), type: .flyoutPage)
+        var flyout = HostPatch(id: .manual("flyout"), type: .splitView)
         flyout.children = .arranged([menu, navigation])
 
         var window = HostPatch(id: .manual("window"), type: .window)

@@ -4,7 +4,7 @@ import StateUI
 ///
 /// It also shows what a PAGE can still ask of the stack it is on, the bar
 /// itself belonging to the arrangement. Those requests are written into the
-/// page session and carry the `navigationPage` prefix that names their owner.
+/// page session and carry the `navigationStack` prefix that names their owner.
 struct LevelPage: ContentPage {
     /// The gallery this page is in - the scene its inspector button opens.
     @Environment var scene: SceneSession
@@ -101,7 +101,7 @@ struct LevelPage: ContentPage {
             // What the back button says on the page ABOVE this one - written on
             // the page you would go BACK TO, which is iOS's model. Android and
             // Windows draw an arrow with nowhere to put words and ignore it.
-            page.navigationPageBackButtonTitle = "Level \(level)"
+            page.backButtonTitle = "Level \(level)"
         }
         // What this page sees of its own life, one count per moment. Appearing
         // and disappearing answer visibility; the other three answer a move.

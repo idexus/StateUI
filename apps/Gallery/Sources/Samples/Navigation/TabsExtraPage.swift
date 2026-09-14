@@ -31,7 +31,7 @@ struct TabsExtraPage: ContentPage {
                     .fontAttributes(.bold)
 
                 Label("`DemoTab.extra(\(number))` is an ordinary value in an ordinary "
-                    + "array, and the page you are reading is what the TabbedPage's "
+                    + "array, and the page you are reading is what the TabbedView's "
                     + "closure answered for it. Adding a tab is `tabs.append`; there is "
                     + "no tab type, no template and nothing to register.")
                     .fontSize(13)

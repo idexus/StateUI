@@ -123,7 +123,7 @@ public struct ModalStack {
     ///
     /// Neither half is enough, exactly as on a navigation stack - depth alone
     /// would hand a page's `@State` to whatever replaced it, and the value alone
-    /// cannot tell two identical sheets apart. See `NavigationPage`, where the
+    /// cannot tell two identical sheets apart. See `NavigationStack`, where the
     /// same decision is written out at length.
     private static func identity(depth: Int, sheet: some Hashable) -> String {
         "\(depth)/\(String(describing: sheet))"

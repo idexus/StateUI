@@ -25,7 +25,7 @@ struct SecondTabPage: ContentPage {
                 Label("A tab is a page in a list, so this page says what its tab is "
                     + "called and what its picture is - `title` and `iconImageSource`, "
                     + "from its page session. The tab beside it holds a whole "
-                    + "NavigationPage, so that stack supplies its caption and image.")
+                    + "NavigationStack, so that stack supplies its caption and image.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
 

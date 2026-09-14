@@ -1,9 +1,9 @@
 // The button every page of the gallery carries.
 //
 // The MENU button is not here, and its absence is the lesson: a ToolbarItem is
-// a TRAILING item on every platform, and a flyout that opens from the left with
+// a TRAILING item on every platform, and a sidebar that opens from the left with
 // its button in the right corner reads as the wrong thing entirely. The gallery
-// puts none on the bar: the native navigation surface owns a leading flyout
+// puts none on the bar: the native navigation surface owns a leading sidebar
 // toggle on the root and gives that slot to the back button on pushed pages.
 
 import StateUI
@@ -32,7 +32,7 @@ extension ToolbarItem {
         ToolbarItem("Home")
             .id("home")
             // THE ONE CONTROL ON EVERY PAGE, and the only way back from a
-            // sample that does not go through the flyout - so it is the handle
+            // sample that does not go through the sidebar - so it is the handle
             // a script reaches for most. `.id` is the DIFFER's identity and
             // never leaves this side; this is the platform's own.
             .automationId("chrome.home")

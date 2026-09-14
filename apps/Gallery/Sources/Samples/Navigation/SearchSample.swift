@@ -47,7 +47,7 @@ struct SearchSample: SampleContent {
             }
             // The title view belongs to the page session, like toolbar items.
             .onCreated {
-                page.navigationPageTitleView = SearchBar($query)
+                page.titleView = SearchBar($query)
                     .placeholder("Search the list")
                     .backgroundColor(Palette.surface)
                     .heightRequest(38)
@@ -99,7 +99,7 @@ struct SearchSample: SampleContent {
         // The box goes in the page's title slot. It is an ordinary view in the
         // tree, handed the same `@State` the content reads.
         .onCreated {
-            page.navigationPageTitleView = SearchBar($query)
+            page.titleView = SearchBar($query)
                 .automationId("search.query")
                 .semanticDescription("Search the list")
                 .placeholder("Search the list")
@@ -113,7 +113,7 @@ struct SearchSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The box is a `SearchBar` handed to `NavigationPage.TitleView`, which "
+            Label("The box is a `SearchBar` handed to `NavigationStack.TitleView`, which "
                 + "is the bar's title slot - so it sits where this page's title would; the "
                 + "page a match pushes wears its own. The suggestions are rows this page "
                 + "draws from its own state, which is why they can look like the app and "

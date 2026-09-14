@@ -257,7 +257,7 @@ remain StateUI compositions over the smallest accepted primitives.
 
 Same-process Swift hosts consume `HostRender` directly. Wire carries the same
 contract to a host that cannot share Swift runtime types. The current format is
-version 13 and every multibyte number is little-endian.
+version 14 and every multibyte number is little-endian.
 
 A render starts with this envelope:
 

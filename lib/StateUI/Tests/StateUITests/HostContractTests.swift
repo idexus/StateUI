@@ -61,10 +61,10 @@ final class HostContractTests: XCTestCase {
             contentsOf: Fixtures.sources.appendingPathComponent("Views/BarElement.swift"),
             encoding: .utf8)
         let navigationSource = try String(
-            contentsOf: Fixtures.sources.appendingPathComponent("Views/NavigationPage.swift"),
+            contentsOf: Fixtures.sources.appendingPathComponent("Views/NavigationStack.swift"),
             encoding: .utf8)
         let tabSource = try String(
-            contentsOf: Fixtures.sources.appendingPathComponent("Views/TabbedPage.swift"),
+            contentsOf: Fixtures.sources.appendingPathComponent("Views/TabbedView.swift"),
             encoding: .utf8)
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
@@ -88,7 +88,7 @@ final class HostContractTests: XCTestCase {
             contentsOf: Fixtures.sources.appendingPathComponent("Types/Enums.swift"),
             encoding: .utf8)
         let flyoutSource = try String(
-            contentsOf: Fixtures.sources.appendingPathComponent("Views/FlyoutPage.swift"),
+            contentsOf: Fixtures.sources.appendingPathComponent("Views/SplitView.swift"),
             encoding: .utf8)
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
@@ -118,6 +118,42 @@ final class HostContractTests: XCTestCase {
             "legacy stack names remain in the host contract")
         for name in formerNames {
             XCTAssertFalse(stackSource.contains(name), "\(name) remains in the public API")
+        }
+    }
+
+    /// The arrangements carry StateUI's own names from application source
+    /// through the typed host boundary: a navigation stack, a tabbed view, a
+    /// split view with a sidebar. The page-shaped spellings they replaced do
+    /// not return.
+    func testArrangementVocabularyUsesThePublicStateUISpellings() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let controls = declaredNames(of: "NodeType", in: tokenSource)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+        let events = declaredNames(of: "Event", in: tokenSource)
+        let formerTypes = ["NavigationPage", "TabbedPage", "FlyoutPage"]
+
+        XCTAssertTrue(controls.isSuperset(of: [
+            "NavigationStack", "TabbedView", "SplitView", "TitleView",
+        ]))
+        XCTAssertTrue(
+            controls.isDisjoint(with: Set(formerTypes + ["NavigationPageTitleView"])),
+            "page-shaped arrangement names remain in the host contract")
+        XCTAssertTrue(
+            properties.isDisjoint(with: [
+                "isPresented", "navigationPageBackButtonTitle",
+                "navigationPageHasBackButton", "navigationPageHasNavigationBar",
+            ]),
+            "page-shaped arrangement properties remain in the host contract")
+        XCTAssertFalse(events.contains("isPresentedChanged"))
+
+        for (path, text) in try Fixtures.allSources() {
+            for former in formerTypes {
+                XCTAssertFalse(
+                    text.contains("struct \(former)"),
+                    "\(former) is declared again in \(path)")
+            }
         }
     }
 

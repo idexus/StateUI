@@ -64,7 +64,7 @@ public enum CoordinateSpace: Sendable {
     /// notch AND whatever bar was drawn above the page, so a view at the
     /// very top of its page's content reads zero, on every platform. The
     /// origin is the page's own corner plus the insets the platform still
-    /// charges it - a flyout header reaching behind the status bar is charged
+    /// charges it - a sidebar header reaching behind the status bar is charged
     /// that bar, a page parked below the navigation bar is charged nothing.
     /// Headlessly - a test, with no platform to be safe from - this agrees
     /// with `.global`.

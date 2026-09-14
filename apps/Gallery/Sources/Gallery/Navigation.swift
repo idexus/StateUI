@@ -1,8 +1,8 @@
 // Where a gallery is, and every move it can make.
 //
 // This file is the gallery's whole navigation model, and there is nothing in the
-// library like it - deliberately. A `NavigationPage` takes an ARRAY the author
-// holds; a `FlyoutPage` takes a `Bool`; a `TabbedPage` takes a value of the
+// library like it - deliberately. A `NavigationStack` takes an ARRAY the author
+// holds; a `SplitView` takes a `Bool`; a `TabbedView` takes a value of the
 // author's own type. What is in those, what the moves are called and what a move
 // means are this application's business, so they are written here.
 //
@@ -25,11 +25,11 @@ enum Section: Hashable {
     /// promises a page on the stack and a back button then honours that move.
     case home
 
-    /// The page the menu lists only when it is told to - see `FlyoutSample`.
+    /// The page the menu lists only when it is told to - see `SplitViewSample`.
     case hidden
 
     /// The tabs demonstration, which is the one section arranged as a
-    /// `TabbedPage` rather than as a stack. See `MainWindow.detail`.
+    /// `TabbedView` rather than as a stack. See `MainWindow.detail`.
     case tabs
 }
 
@@ -107,7 +107,7 @@ enum Sheet: Hashable {
 /// every window of it. Each property has its own readers: a page that reads
 /// `nav.path` is built again when the path moves and a menu row that reads
 /// `nav.section` when the section does - and `nav.$path` is the state itself,
-/// handed to the `NavigationPage` that shows it. A second gallery holds a
+/// handed to the `NavigationStack` that shows it. A second gallery holds a
 /// `Navigation` of its own.
 ///
 /// Every move is a plain assignment. Navigation is state this side owns, so no
@@ -119,7 +119,7 @@ final class Navigation {
 
     /// What is pushed on top of it, deepest last. A platform back gesture
     /// truncates this by itself: the host reports the depth that SURVIVED and
-    /// `NavigationPage` writes it back through `$path`, so this array is never
+    /// `NavigationStack` writes it back through `$path`, so this array is never
     /// a stale copy of where the reader is.
     @State var path: [Route] = []
 
@@ -132,7 +132,7 @@ final class Navigation {
     var menuOverlays = true
 
     /// Whether the menu lists the row that is hidden by default - see
-    /// `FlyoutSample`, which is where the switch that writes it lives.
+    /// `SplitViewSample`, which is where the switch that writes it lives.
     @State var listsHiddenRow = false
 
     /// What is presented over all of it, innermost first. Usually empty, and
@@ -141,13 +141,13 @@ final class Navigation {
     @State var sheets: [Sheet] = []
 
     /// The tabs the demonstration is showing, in order - the LIST a
-    /// `TabbedPage` is built over, held as state so that the reader can change
+    /// `TabbedView` is built over, held as state so that the reader can change
     /// it while a tab is selected. See `TabsControls`.
     @State var tabs: [DemoTab] = DemoTab.opening
 
     /// Which of them is showing. The tabs write it when the reader taps one,
     /// and the gallery writes it to move them from code - the same state both
-    /// ways, which is what `TabbedPage.selection` is.
+    /// ways, which is what `TabbedView.selection` is.
     @State var tab: DemoTab = .stack
 
     /// What the stack tab has pushed - its own array, which is what makes each
@@ -192,7 +192,7 @@ final class Navigation {
     /// `LevelPage` - because the gallery has two stacks, the main one and the
     /// one inside a tab, and "back" means the one the page is a member of. The
     /// platform's own back button needs none of this: the host reports the depth
-    /// that survived and `NavigationPage` truncates the right array itself.
+    /// that survived and `NavigationStack` truncates the right array itself.
     func push(_ route: Route) {
         path.append(route)
     }
@@ -236,7 +236,7 @@ final class Navigation {
 
     /// Adds a tab at the END, numbered past whatever is already there.
     ///
-    /// The selected tab keeps its index, so `TabbedPage.selection` writes the
+    /// The selected tab keeps its index, so `TabbedView.selection` writes the
     /// same number as last render and the differ sends NO selection at all -
     /// which is the case a tab list has to survive.
     func addTab(showing: DemoTab) {
@@ -296,7 +296,7 @@ final class Navigation {
     }
 
     /// Writes the one line `TabsControls` prints, working out what the move put
-    /// on the wire the same way `TabbedPage.selection` does.
+    /// on the wire the same way `TabbedView.selection` does.
     private func noteTabMove(_ what: String, was: [DemoTab], showing: DemoTab) {
         let before = was.firstIndex(of: showing)
         let after = tabs.firstIndex(of: showing)

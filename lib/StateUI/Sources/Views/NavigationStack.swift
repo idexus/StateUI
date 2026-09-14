@@ -10,7 +10,7 @@
 //
 //     @State private var path: [Route] = []
 //
-//     NavigationPage($path) {
+//     NavigationStack($path) {
 //         HomePage()
 //     } destination: { route in
 //         switch route {
@@ -45,7 +45,7 @@
 ///         @State private var path: [Route] = []
 ///
 ///         var page: any Page {
-///             NavigationPage($path) {
+///             NavigationStack($path) {
 ///                 HomePage(path: $path)
 ///             } destination: { route in
 ///                 switch route {
@@ -101,7 +101,7 @@
 ///         let router: Router
 ///
 ///         var page: any Page {
-///             NavigationPage(router.$path) {
+///             NavigationStack(router.$path) {
 ///                 RoutedHomePage()
 ///             } destination: { … }
 ///         }
@@ -145,7 +145,7 @@
 ///   holding it uses `.onChanged(path) { … }` and observes every committed
 ///   arrival and departure as state.
 /// - The page's own look - a padding, a background, a safe-area inset. A
-///   NavigationPage draws nothing but its bar and whatever page is on top, so
+///   NavigationStack draws nothing but its bar and whatever page is on top, so
 ///   the page on top carries all of that.
 ///
 /// What IS on it: the bar's flat background and foreground tint;
@@ -154,7 +154,7 @@
 /// presents it; and `PageElement`'s `.onCreated` and `.onDestroying`, run as
 /// the stack enters the tree and leaves it. The title on the bar belongs to
 /// the top page.
-public struct NavigationPage: Page, BarElement, PageElement {
+public struct NavigationStack: Page, BarElement, PageElement {
     /// The node this page describes.
     public var node: Node
 
@@ -179,7 +179,7 @@ public struct NavigationPage: Page, BarElement, PageElement {
                 Self.identified(destination(route).body, as: Self.identity(depth: depth, route: route)))
         }
 
-        node = Node(type: .navigationPage, children: children)
+        node = Node(type: .navigationStack, children: children)
 
         // The platform's own way back - the arrow, the swipe, Android's system
         // gesture - arrives here, and only once it has COMMITTED: an
@@ -228,7 +228,7 @@ public struct NavigationPage: Page, BarElement, PageElement {
     /// the rule is the better one anyway: identity on a stack is what pairs a
     /// pop report with the page it popped, so it belongs to the mechanism. An
     /// ARRANGED list of pages is the one thing in this library identified this
-    /// way, and `TabbedPage` and `ModalStack` do it to theirs too.
+    /// way, and `TabbedView` and `ModalStack` do it to theirs too.
     private static func identified(_ node: Node, as identity: String) -> Node {
         var copy = node
         copy.id = identity
@@ -236,10 +236,10 @@ public struct NavigationPage: Page, BarElement, PageElement {
     }
 }
 
-extension NavigationPage {
+extension NavigationStack {
     /// The colour of the navigation title and native navigation and toolbar
     /// affordances. Destructive actions retain the platform's warning colour.
-    public func barTextColor(_ value: Color) -> NavigationPage {
+    public func barTextColor(_ value: Color) -> NavigationStack {
         setValue(.barTextColor, value.propValue)
     }
 }

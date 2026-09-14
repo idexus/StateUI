@@ -5,7 +5,7 @@ import StateUI
 /// What this is, and every group there is.
 ///
 /// The one page that names the whole catalog, so a reader who has never seen the
-/// library can find the control they came for without opening the flyout. The
+/// library can find the control they came for without opening the sidebar. The
 /// groups are a GALLERY: one card each, swiped through, and the card in the
 /// middle says underneath what is in it and opens when it is tapped.
 ///

@@ -572,10 +572,10 @@ enum Fixtures {
     /// of its own; Elements.swift and ViewBuilder.swift describe no type at
     /// all.
     ///
-    /// NavigationPage.swift and TabbedPage.swift are the same kind of thing: a
+    /// NavigationStack.swift and TabbedView.swift are the same kind of thing: a
     /// PAGE arranges other pages, so there is no control to build one on and
     /// nothing about it can be styled - what they do is a stack and a set of
-    /// tabs, and NavigationPageTests and TabbedPageTests are where those are
+    /// tabs, and NavigationStackTests and TabbedViewTests are where those are
     /// checked, on both sides. ModalStack.swift arranges pages too, over the
     /// window rather than inside it.
     ///
@@ -591,7 +591,7 @@ enum Fixtures {
         let views = sources.appendingPathComponent("Views")
         let skipped: Set = [
             "Application.swift", "Style.swift", "ViewBuilder.swift",
-            "NavigationPage.swift", "TabbedPage.swift", "FlyoutPage.swift",
+            "NavigationStack.swift", "TabbedView.swift", "SplitView.swift",
             "ModalStack.swift",
         ]
 

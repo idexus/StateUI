@@ -318,7 +318,7 @@ and any windows opened from its declared `WindowGroup`s. Activation,
 restoration, focus, hiding, and closure are mapped to those sessions while
 StateUI retains deterministic state and tree ownership.
 
-Navigation paths, tab selections, flyout presentation, and modal stacks are
+Navigation paths, tab selections, sidebar visibility, and modal stacks are
 state. A control method is invoked through an `@Aim`; an aim identifies a
 control and is not state.
 

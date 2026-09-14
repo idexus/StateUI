@@ -3,12 +3,12 @@
 
 // The tabs, as Swift describes them.
 //
-// A TabbedPage puts its tabs on the wire as its ARRANGED children - one page
+// A TabbedView puts its tabs on the wire as its ARRANGED children - one page
 // per tab, in order - and which one is showing as an INDEX into that same list.
 // That is the whole protocol going out. Coming back there is one report - which
 // page became current - and it writes the bound selection.
 //
-// What the renderer does with it is next door, in the C# TabbedPageTests.
+// What the renderer does with it is next door, in the C# TabbedViewTests.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -38,14 +38,14 @@ private struct TabPage: ContentPage {
 private func tabs(
     _ selection: Binding<Tab>,
     _ offered: [Tab] = Tab.allCases
-) -> TabbedPage {
-    TabbedPage(offered) { tab in
+) -> TabbedView {
+    TabbedView(offered) { tab in
         TabPage(tab: tab)
     }
     .selection(selection.projectedValue)
 }
 
-final class TabbedPageTests: XCTestCase {
+final class TabbedViewTests: XCTestCase {
     // MARK: - What goes out
 
     /// The tabs ARE the children, in order, each identified by its own value -
@@ -54,7 +54,7 @@ final class TabbedPageTests: XCTestCase {
         let selection = State<Tab>(.home)
         let patch = Renders().settled(tabs(selection.projectedValue).body)
 
-        XCTAssertEqual(patch.type, "TabbedPage")
+        XCTAssertEqual(patch.type, "TabbedView")
         XCTAssertEqual(patch.children.map { $0.id },
                        [.manual("home"), .manual("browse"), .manual("settings")])
         XCTAssertEqual(patch.children.map { $0.props["title"] },
@@ -145,7 +145,7 @@ final class TabbedPageTests: XCTestCase {
     }
 
     /// And a tab bar with nothing in it is describable - an application whose
-    /// tabs are loaded starts there, and MAUI's own TabbedPage is empty until
+    /// tabs are loaded starts there, and MAUI's own TabbedView is empty until
     /// something is put in it.
     func testATabBarCanBeEmpty() {
         let selection = State<Tab>(.home)
@@ -162,8 +162,8 @@ final class TabbedPageTests: XCTestCase {
         let selection = State<Tab>(.home)
         let path = State<[Int]>([1])
 
-        let node = TabbedPage([Tab.home]) { _ in
-            NavigationPage(path.projectedValue) {
+        let node = TabbedView([Tab.home]) { _ in
+            NavigationStack(path.projectedValue) {
                 TabPage(tab: .home)
             } destination: { _ in
                 TabPage(tab: .browse)
@@ -177,7 +177,7 @@ final class TabbedPageTests: XCTestCase {
 
         let stack = node.children[0].built
 
-        XCTAssertEqual(stack.type, "NavigationPage")
+        XCTAssertEqual(stack.type, "NavigationStack")
         XCTAssertEqual(stack.id, "home", "the tab names the page in it")
         XCTAssertEqual(stack.props["title"], .string("Home"))
         XCTAssertEqual(stack.props["iconImageSource"], ImageSource("house.png").propValue)
@@ -205,7 +205,7 @@ final class TabbedPageTests: XCTestCase {
     /// has no control fixture, so this is where a modifier of its own is
     /// covered - and it reads the SOURCE, so a property added tomorrow and
     /// written nowhere names itself here.
-    func testEveryTabbedPageModifierIsExercised() throws {
+    func testEveryTabbedViewModifierIsExercised() throws {
         let selection = State<Tab>(.home)
 
         let sent = Set(
@@ -217,11 +217,11 @@ final class TabbedPageTests: XCTestCase {
                 .keys
                 .map(\.name))
 
-        let declared = try Fixtures.propertyKeys(in: "TabbedPage.swift")
+        let declared = try Fixtures.propertyKeys(in: "TabbedView.swift")
         let missing = declared.subtracting(sent).sorted()
 
         XCTAssertTrue(missing.isEmpty, """
-            TabbedPage.swift declares \(missing.joined(separator: ", ")), which \
+            TabbedView.swift declares \(missing.joined(separator: ", ")), which \
             this test does not write.
 
             A page has no control fixture - add the modifier here and exercise \
@@ -238,10 +238,10 @@ final class TabbedPageTests: XCTestCase {
         let selection = State<Tab>(.settings)
         let path = State<[Int]>([])
 
-        let tree = TabbedPage([Tab.home, .settings]) { tab in
+        let tree = TabbedView([Tab.home, .settings]) { tab in
             switch tab {
             case .home:
-                return NavigationPage(path.projectedValue) {
+                return NavigationStack(path.projectedValue) {
                     TabPage(tab: .home)
                 } destination: { _ in
                     TabPage(tab: .browse)
@@ -264,7 +264,7 @@ final class TabbedPageTests: XCTestCase {
         try Fixtures.check(
             bytes,
             sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
-            against: "pages/TabbedPage")
+            against: "pages/TabbedView")
     }
 
     // MARK: - What comes back
@@ -336,7 +336,7 @@ final class TabbedPageTests: XCTestCase {
     /// This is what `Picker` without `selectedIndex` already does: the control
     /// remains usable without reporting its current choice into state.
     func testTabsWithoutASelectionDescribeThemselvesAndReportNothing() {
-        let node = TabbedPage(Tab.allCases) { TabPage(tab: $0) }.body.built
+        let node = TabbedView(Tab.allCases) { TabPage(tab: $0) }.body.built
 
         XCTAssertEqual(node.children.map { $0.id }, ["home", "browse", "settings"])
         XCTAssertNil(node.props["currentPage"], "nothing says which tab is showing")
@@ -355,7 +355,7 @@ final class TabbedPageTests: XCTestCase {
         let selection = State<String>("home")
         let renders = Renders()
 
-        let page = TabbedPage(Tab.allCases) { TabPage(tab: $0) }
+        let page = TabbedView(Tab.allCases) { TabPage(tab: $0) }
             .selection(selection.projectedValue)
 
         let patch = renders.settled(page.body)

@@ -94,7 +94,7 @@ private struct QueryPage: ContentPage {
         Label(query)
             .onCreated {
                 page.title = "Results: \(query)"
-                page.navigationPageTitleView = SearchBar($query).placeholder("Type here")
+                page.titleView = SearchBar($query).placeholder("Type here")
             }
             .onChanged(query) { page.title = "Results: \(query)" }
     }
@@ -358,7 +358,7 @@ final class StateTests: XCTestCase {
         let renders = Renders()
 
         let first = renders.settled(QueryPage().body)
-        let slot = first.children.first { $0.type == "NavigationPageTitleView" }
+        let slot = first.children.first { $0.type == "TitleView" }
         let search = slot?.children.first
         let number = search?.driven?[.text]?.state
 

@@ -5,7 +5,7 @@ import StateUI
 /// of its own.
 ///
 /// A window is where an application says what a screenful IS, so everything
-/// about the way the gallery moves lives here: the flyout holding the menu and
+/// about the way the gallery moves lives here: the split view holding the menu and
 /// the section, the stack the sections push onto, the tabs that one section is
 /// arranged as, and the modal stack over all of it. `GalleryScene` next door is
 /// then what it should be - the gallery's state, and the windows built from it.
@@ -53,10 +53,10 @@ struct MainWindow: Window {
 
     // MARK: - What the reader is looking at
 
-    /// THE ARRANGEMENT, and it is three ordinary values: a flyout holding two
+    /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
     /// pages, a stack holding an array, a set of tabs holding a selection.
     var page: any Page {
-        FlyoutPage(nav.$menuOpen) {
+        SplitView(nav.$menuOpen) {
             MenuPage(
                 catalog: catalog,
                 nav: nav,
@@ -90,7 +90,7 @@ struct MainWindow: Window {
             }
 
             // What is over all of it: a second arranged list on the window,
-            // holding the pages presented over the flyout, the stack and the
+            // holding the pages presented over the split view, the stack and the
             // bars alike. Written once - it reads the array as the window
             // builds - and empty almost always: presenting is
             // `sheets.append`, and a sheet the reader drags down truncates
@@ -115,13 +115,13 @@ struct MainWindow: Window {
         }
     }
 
-    /// The other half of the flyout: the section, arranged the way that section
+    /// The other half of the split view: the section, arranged the way that section
     /// wants to be.
     ///
-    /// Almost always a STACK - a `NavigationPage` over the path, with the
+    /// Almost always a STACK - a `NavigationStack` over the path, with the
     /// section's own page underneath. The tabs demonstration is the exception,
     /// and it is the reason this is a function rather than one expression: a
-    /// `TabbedPage` is a page like any other, so a section may simply be one -
+    /// `TabbedView` is a page like any other, so a section may simply be one -
     /// and a stack may sit inside a tab, because pages nest without a rule
     /// about which may hold which.
     func detail() -> Page {
@@ -129,7 +129,7 @@ struct MainWindow: Window {
             return tabs()
         }
 
-        return NavigationPage(nav.$path) {
+        return NavigationStack(nav.$path) {
             root()
         } destination: { route in
             page(for: route, path: nav.$path)
@@ -194,16 +194,16 @@ struct MainWindow: Window {
         }
     }
 
-    /// The one section that is not a stack: a `TabbedPage` over the author's own
+    /// The one section that is not a stack: a `TabbedView` over the author's own
     /// enum, with a stack inside the first tab.
     ///
     /// Its own flat bar background. The native selector owns the distinction
     /// between selected and unselected tabs.
     func tabs() -> Page {
-        TabbedPage(nav.tabs) { which in
+        TabbedView(nav.tabs) { which in
             switch which {
             case .stack:
-                return NavigationPage(nav.$tabsPath) {
+                return NavigationStack(nav.$tabsPath) {
                     TabsPage(nav: nav, path: nav.$tabsPath)
                 } destination: { route in
                     page(for: route, path: nav.$tabsPath)

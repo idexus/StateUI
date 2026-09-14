@@ -2,8 +2,8 @@ generation 2
 Application 1
   Scene "1"
     Window "main"
-      TabbedPage 2
-        NavigationPage "home" arranged(2)
+      TabbedView 2
+        NavigationStack "home" arranged(2)
           ContentPage "root"
           ContentPage "0/detail("one")" arranged(1)
             title: string "one"

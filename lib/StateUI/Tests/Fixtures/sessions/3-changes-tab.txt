@@ -2,5 +2,5 @@ generation 3
 Application 1
   Scene "1"
     Window "main"
-      TabbedPage 2
+      TabbedView 2
         currentPage: number 1

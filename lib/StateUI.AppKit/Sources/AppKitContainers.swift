@@ -814,7 +814,7 @@ final class AppKitTabbedView: AppKitHitTestView {
     }
 }
 
-/// AppKit's split presentation of a flyout: the flyout page in a native
+/// AppKit's presentation of a split view: the sidebar page in a native
 /// sidebar, the detail page beside it.
 ///
 /// The split view spans the whole window, under the title bar and toolbar, so
@@ -825,7 +825,7 @@ final class AppKitTabbedView: AppKitHitTestView {
 /// is that a window wide enough for both panes opens with it shown; after
 /// that, the reader and the application decide.
 @MainActor
-final class AppKitFlyoutView: AppKitHitTestView {
+final class AppKitSplitView: AppKitHitTestView {
     var onPresentationChanged: ((Bool) -> Void)?
 
     /// The native split view controller the window's toolbar toggles.
@@ -879,7 +879,7 @@ final class AppKitFlyoutView: AppKitHitTestView {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("AppKitFlyoutView is created in code")
+        fatalError("AppKitSplitView is created in code")
     }
 
     override var isFlipped: Bool { true }

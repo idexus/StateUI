@@ -1,9 +1,9 @@
 generation 1 names +16
-TabbedPage 1 arranged(2)
+TabbedView 1 arranged(2)
   barBackgroundColor: color FF512BD4
   currentPage: number 1
   on currentPageChanged=1
-  NavigationPage "home" arranged(1)
+  NavigationStack "home" arranged(1)
     iconImageSource: string "house.png"
     title: string "Home"
     on popped=2

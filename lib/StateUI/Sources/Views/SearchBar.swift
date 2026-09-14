@@ -41,7 +41,7 @@ extension SearchBarProperties {
 /// cancel button, and the keyboard's return key searches.
 ///
 /// It goes wherever a view goes - in the page's content, or ON the navigation
-/// bar as that page's `navigationPageTitleView`, which is what an application
+/// bar as that page's `titleView`, which is what an application
 /// writes when it wants the bar to do the searching.
 ///
 /// Given a binding the field shows the value and writes every edit back; given a

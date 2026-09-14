@@ -97,8 +97,8 @@ public enum PagePhase: Sendable {
 /// the native host to choose its default. See `ApplicationSession` for what a
 /// session is.
 ///
-/// A page the library CONSTRUCTS - a `NavigationPage`, a `TabbedPage`, a
-/// `FlyoutPage` - has none: it is a value, told what it is by modifier, from
+/// A page the library CONSTRUCTS - a `NavigationStack`, a `TabbedView`, a
+/// `SplitView` - has none: it is a value, told what it is by modifier, from
 /// `PageElement`.
 public final class PageSession {
     /// Where the page stands in its life right now. Starts `.created`.
@@ -115,7 +115,7 @@ public final class PageSession {
     ///
     ///     page.iconImageSource = "house.png"
     ///
-    /// A tab's icon, in practice - a `TabbedPage` draws it above or beside the
+    /// A tab's icon, in practice - a `TabbedView` draws it above or beside the
     /// caption. A page that is not shown as an item of something else has
     /// nowhere to draw it, and platforms ignore it there.
     @State public var iconImageSource: ImageSource? = nil
@@ -133,37 +133,37 @@ public final class PageSession {
 
     // What this page asks of the NAVIGATION STACK it is on. Attached
     // properties, so each carries the class that declares it -
-    // `NavigationPage.HasNavigationBar` is `navigationPageHasNavigationBar`.
-    // The colours of the BAR belong to the NavigationPage rather than to a
+    // `NavigationStack.HasNavigationBar` is `hasNavigationBar`.
+    // The colours of the BAR belong to the NavigationStack rather than to a
     // page on it - see `barBackgroundColor` in Views/BarElement.swift.
 
     /// Whether the navigation bar is shown while this page is on top.
     ///
-    ///     page.navigationPageHasNavigationBar = false    // a splash page
-    @State public var navigationPageHasNavigationBar: Bool? = nil
+    ///     page.hasNavigationBar = false    // a splash page
+    @State public var hasNavigationBar: Bool? = nil
 
     /// Whether the way back is offered while this page is on top - false for a
     /// page the reader must finish rather than leave.
     ///
     /// It controls the navigation stack's own back affordances. It is not a
     /// cross-platform lock against every system-level way of leaving a page.
-    @State public var navigationPageHasBackButton: Bool? = nil
+    @State public var hasBackButton: Bool? = nil
 
     /// What the back button reads while the page ABOVE this one is on top.
     ///
     /// Written on the page the reader would go BACK TO, never on the one they
     /// are looking at. Hosts whose back affordance has no text ignore it.
-    @State public var navigationPageBackButtonTitle: String? = nil
+    @State public var backButtonTitle: String? = nil
 
     /// A view on the bar, in place of the title.
     ///
-    ///     page.navigationPageTitleView = SearchBar($query)
+    ///     page.titleView = SearchBar($query)
     ///
     /// A view rather than a handler: whatever is written here is an ordinary
     /// part of the tree, built where the bar is - a composed view there reads
     /// the state it shows as it builds, and a binding handed to a control
     /// keeps it live.
-    @State public var navigationPageTitleView: (any View)? = nil
+    @State public var titleView: (any View)? = nil
 
     /// The actions in the page's navigation bar or native toolbar.
     ///
@@ -202,9 +202,9 @@ public final class PageSession {
         props[.iconImageSource] = iconImageSource?.propValue
         props[.padding] = padding?.propValue
         props[.backgroundColor] = backgroundColor?.propValue
-        props[.navigationPageHasNavigationBar] = navigationPageHasNavigationBar.map { .bool($0) }
-        props[.navigationPageHasBackButton] = navigationPageHasBackButton.map { .bool($0) }
-        props[.navigationPageBackButtonTitle] = navigationPageBackButtonTitle.map { .string($0) }
+        props[.hasNavigationBar] = hasNavigationBar.map { .bool($0) }
+        props[.hasBackButton] = hasBackButton.map { .bool($0) }
+        props[.backButtonTitle] = backButtonTitle.map { .string($0) }
         return props
     }
 
@@ -214,8 +214,8 @@ public final class PageSession {
     var slots: [Node] {
         var slots: [Node] = []
 
-        if let titleView = navigationPageTitleView {
-            slots.append(Node(type: .navigationPageTitleView, children: [titleView.body]))
+        if let titleView = titleView {
+            slots.append(Node(type: .titleView, children: [titleView.body]))
         }
 
         // Collections rather than one node each, for the reason a SwipeView's

@@ -2,7 +2,7 @@ import StateUI
 
 /// The first tab of the tabs demonstration - the one holding a stack of its own.
 ///
-/// It is the ROOT of a `NavigationPage` that lives inside a `TabbedPage`. All
+/// It is the ROOT of a `NavigationStack` that lives inside a `TabbedView`. All
 /// three of those are pages, and pages nest - so a tab holding a stack needs no
 /// permission from anything, and the stack it holds is its own array.
 struct TabsPage: ContentPage {
@@ -23,18 +23,18 @@ struct TabsPage: ContentPage {
             VStack {
                 SectionTitle("A SECTION ARRANGED AS TABS")
 
-                Label("A TabbedPage of two")
+                Label("A TabbedView of two")
                     .fontSize(26)
                     .fontAttributes(.bold)
 
-                Label("The row of tabs is a TabbedPage, and it is the DETAIL of the same "
-                    + "flyout every other section is shown in. Nothing about this page "
+                Label("The row of tabs is a TabbedView, and it is the DETAIL of the same "
+                    + "split view every other section is shown in. Nothing about this page "
                     + "says so: what arranges it is which section `nav.section` holds - "
                     + "`.tabs`, which the Tabs sample's button sets.")
                     .fontSize(13)
                     .textColor(Palette.subtle)
 
-                Label("This tab holds a NavigationPage over a path of its own. Push a page, "
+                Label("This tab holds a NavigationStack over a path of its own. Push a page, "
                     + "change tabs, come back - it is still on top, because the two stacks "
                     + "are two arrays and nothing in the library decides that.")
                     .fontSize(13)

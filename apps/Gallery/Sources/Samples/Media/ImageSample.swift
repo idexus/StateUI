@@ -93,7 +93,7 @@ struct ImageSample: SampleContent {
             .spacing(16)
             .horizontalOptions(.center)
 
-            Label("These are the flyout's own icons: SVGs in Resources/Images, declared "
+            Label("These are the sidebar's own icons: SVGs in Resources/Images, declared "
                 + "once with <MauiImage Include=\"Resources/Images/*.svg\" />.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

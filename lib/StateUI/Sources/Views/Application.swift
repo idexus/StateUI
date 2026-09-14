@@ -109,15 +109,15 @@ public protocol Application {
 /// and its `Windows` names them - the main one, and the groups beside
 /// it. A window alone is a scene of one window, `var scene: any Scene {
 /// MainWindow() }`. The ARRANGEMENT belongs here too: a window's `page` is
-/// where a `NavigationPage` over a path, a `TabbedPage` over a selection or a
-/// `FlyoutPage` over a menu is written, so which windows a scene has open and
+/// where a `NavigationStack` over a path, a `TabbedView` over a selection or a
+/// `SplitView` over a menu is written, so which windows a scene has open and
 /// how each of them moves are one declaration apiece. What reaches everything
 /// in a window is offered above it - `.environment(_:)` on the scene the
 /// application declares, or on the scene's `Windows` for every window of the
 /// scene - and what reaches a branch, on a view in it.
 public protocol Window: Element, Scene {
-    /// What the window shows - a `NavigationPage` for an app that pushes and
-    /// pops, a `TabbedPage` for tabs, a `FlyoutPage` for a menu beside the page,
+    /// What the window shows - a `NavigationStack` for an app that pushes and
+    /// pops, a `TabbedView` for tabs, a `SplitView` for a menu beside the page,
     /// a `ContentPage` for one screen.
     ///
     /// The only thing a window must say - read as the window is built, and
@@ -227,8 +227,8 @@ extension Node {
 /// There are TWO KINDS, and the difference is who writes the type. A page an
 /// author WRITES conforms to `ContentPage`: it declares its content, and what
 /// it IS - its title, its buttons - is its `PageSession`'s state. A page an
-/// author CONSTRUCTS is a value this library declares - `NavigationPage($path)
-/// { … }`, `TabbedPage(tabs) { … }`, `FlyoutPage($open) { … }` - and a
+/// author CONSTRUCTS is a value this library declares - `NavigationStack($path)
+/// { … }`, `TabbedView(tabs) { … }`, `SplitView($open) { … }` - and a
 /// constructor's result is told what it is by MODIFIER: `.title("Stack")`,
 /// from `PageElement`.
 ///
@@ -256,9 +256,9 @@ public protocol Page: Element {}
 /// page arrives with its title and its buttons. A page also says what it asks
 /// of the CONTAINER showing it, written on the page itself through the same
 /// session:
-/// `page.navigationPageHasNavigationBar = false`. What the BAR looks like is
+/// `page.hasNavigationBar = false`. What the BAR looks like is
 /// not a page's at all: it belongs to the arrangement drawing it - see
-/// `barBackgroundColor` on `NavigationPage` and `TabbedPage`.
+/// `barBackgroundColor` on `NavigationStack` and `TabbedView`.
 public protocol ContentPage: Page {
     /// What the page shows. One view - put a layout here for more than one.
     ///

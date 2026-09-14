@@ -39,11 +39,11 @@ private struct EveryPropertyPage: ContentPage {
             page.padding = Thickness(4, 8, 12, 16)
             page.backgroundColor = .whiteSmoke
 
-            // What it asks of a NavigationPage.
-            page.navigationPageHasNavigationBar = false
-            page.navigationPageHasBackButton = false
-            page.navigationPageBackButtonTitle = "Back"
-            page.navigationPageTitleView = Label("stack title")
+            // What it asks of a NavigationStack.
+            page.hasNavigationBar = false
+            page.hasBackButton = false
+            page.backButtonTitle = "Back"
+            page.titleView = Label("stack title")
 
             // What hangs off it either way, each saying everything ITS type
             // can say - a page is the only place a toolbar item or a menu entry
@@ -122,10 +122,10 @@ private struct KnobPage: ContentPage {
         page.padding = Thickness(on ? 8 : 4)
         page.backgroundColor = on ? .red : .whiteSmoke
 
-        page.navigationPageHasNavigationBar = on
-        page.navigationPageHasBackButton = on
-        page.navigationPageBackButtonTitle = on ? "Back" : "Return"
-        page.navigationPageTitleView = Label(on ? "on" : "off")
+        page.hasNavigationBar = on
+        page.hasBackButton = on
+        page.backButtonTitle = on ? "Back" : "Return"
+        page.titleView = Label(on ? "on" : "off")
 
         page.toolbarItems = [ToolbarItem(on ? "On" : "Off")]
         page.menuBarItems = [MenuBarItem(on ? "On" : "Off") { MenuFlyoutItem("Open") }]
@@ -279,7 +279,7 @@ final class PageTests: XCTestCase {
         let path = State<[Int]>([])
 
         let sent = Set(
-            NavigationPage(path.projectedValue) { EveryPropertyPage() } destination: { _ in
+            NavigationStack(path.projectedValue) { EveryPropertyPage() } destination: { _ in
                 EveryPropertyPage()
             }
             .title("Home")
@@ -305,7 +305,7 @@ final class PageTests: XCTestCase {
         let path = State<[Int]>([])
 
         let written = Self.arrived(EveryPropertyPage()).props[.title]
-        let constructed = NavigationPage(path.projectedValue) { EveryPropertyPage() }
+        let constructed = NavigationStack(path.projectedValue) { EveryPropertyPage() }
             destination: { _ in EveryPropertyPage() }
             .title("Everything")
             .body
@@ -324,7 +324,7 @@ final class PageTests: XCTestCase {
 
         XCTAssertEqual(
             slots,
-            ["Label", "NavigationPageTitleView", "ToolbarItems", "MenuBarItems"],
+            ["Label", "TitleView", "ToolbarItems", "MenuBarItems"],
             "the content first, then one node per slot, in a fixed order")
     }
 
@@ -347,10 +347,10 @@ final class PageTests: XCTestCase {
     func testAPageCarriesTheStacksAttachedPropertiesUnderItsName() {
         let page = Self.arrived(EveryPropertyPage())
 
-        XCTAssertEqual(page.props["navigationPageHasNavigationBar"], .bool(false))
+        XCTAssertEqual(page.props["hasNavigationBar"], .bool(false))
 
-        XCTAssertEqual(page.props["navigationPageHasBackButton"], .bool(false))
-        XCTAssertEqual(page.props["navigationPageBackButtonTitle"], .string("Back"))
+        XCTAssertEqual(page.props["hasBackButton"], .bool(false))
+        XCTAssertEqual(page.props["backButtonTitle"], .string("Back"))
     }
 
     /// A page that says nothing sends nothing, leaving native defaults intact.
@@ -387,8 +387,8 @@ final class PageTests: XCTestCase {
 
     /// What a page's patch carries of its session, under the name each is
     /// declared by: its own properties, and each slot hanging off it as a node
-    /// named for the property it rides - `NavigationPageTitleView` for
-    /// `navigationPageTitleView`.
+    /// named for the property it rides - `TitleView` for
+    /// `titleView`.
     private static func carried(by patch: HostPatch) -> Set<String> {
         let slots = patch.children.map { child -> String in
             let name = child.type.name

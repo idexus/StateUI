@@ -11,9 +11,9 @@ extension PageSession {
     ///         .onCreated { page.gallery("Level 2", scene: scene, nav: nav) }
     ///
     /// Said once here instead of on every page. **What is NOT here is the
-    /// bar**: a `NavigationPage` owns its bar, so its appearance is written
+    /// bar**: a `NavigationStack` owns its bar, so its appearance is written
     /// once in `MainWindow.detail`. What a
-    /// PAGE can still ask of the stack it is on is the `navigationPage`
+    /// PAGE can still ask of the stack it is on is the `navigationStack`
     /// properties - whether there is a bar at all, whether there is a way back,
     /// what the back button reads - and `LevelPage` shows those.
     ///

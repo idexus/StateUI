@@ -2,7 +2,7 @@ import StateUI
 
 /// A native tab arrangement and the selection binding that says which tab is showing.
 ///
-/// The example is not on this page, and it cannot be: a `TabbedPage` is a PAGE,
+/// The example is not on this page, and it cannot be: a `TabbedView` is a PAGE,
 /// so the honest demonstration is for a section of the gallery to be one. What
 /// is here is the button that goes there, and the code that arranges it.
 struct TabsSample: SampleContent {
@@ -33,13 +33,13 @@ struct TabsSample: SampleContent {
         // The tabs are a collection of YOUR type and the selection is a
         // binding of it - not an index somebody has to keep in step. The
         // choice is a modifier, the way every other choice here is.
-        TabbedPage(tabs) { which in
+        TabbedView(tabs) { which in
             switch which {
             case .stack:
                 // A tab may hold a whole stack of its own. Its caption and
                 // its picture are the TAB PAGE's - the stack's here, not
                 // those of the page inside it.
-                NavigationPage($tabsPath) {
+                NavigationStack($tabsPath) {
                     TabsPage(nav: nav, path: $tabsPath)
                 } destination: { route in
                     // The same closure the main stack uses, told which
@@ -96,9 +96,9 @@ struct TabsSample: SampleContent {
 
     var notes: Element? {
         VStack {
-            Label("A TabbedPage is a page, so a section of this gallery simply IS one: "
+            Label("A TabbedView is a page, so a section of this gallery simply IS one: "
                 + "the button above opens a section that arranges its pages as tabs "
-                + "rather than as a stack. Every other section is a NavigationPage.")
+                + "rather than as a stack. Every other section is a NavigationStack.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -115,7 +115,7 @@ struct TabsSample: SampleContent {
                 .textColor(Palette.subtle)
 
             Label("Each tab keeps its own place because the ARRAYS are separate: the first "
-                + "tab holds a NavigationPage over a path of its own. Push a page there, "
+                + "tab holds a NavigationStack over a path of its own. Push a page there, "
                 + "change tabs and come back - the page is still on top, and nothing in "
                 + "the library decided that.")
                 .fontSize(12)

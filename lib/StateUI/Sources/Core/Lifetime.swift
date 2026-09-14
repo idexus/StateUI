@@ -66,7 +66,7 @@ extension PageElement {
     /// Runs something once, when the page is first described - the render that
     /// brings it into the tree. The same as a view's `onCreated`.
     ///
-    ///     FlyoutPage($open) { … } detail: { … }
+    ///     SplitView($open) { … } detail: { … }
     ///         .onCreated { window.title = "Gallery" }
     ///
     /// - Parameter handler: what to run.

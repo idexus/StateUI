@@ -237,7 +237,7 @@ final class Catalog {
             SampleGroup(
                 route: "navigation",
                 title: "Navigation",
-                summary: "Moving between pages - the stack, the tabs and the flyout; a "
+                summary: "Moving between pages - the stack, the tabs and the split view; a "
                     + "modal, an alert, a toolbar and a menu over them; and a search "
                     + "field in the navigation bar.",
                 icon: ImageSource(light: "nav_shell.png", dark: "nav_shell_dark.png"),
@@ -245,7 +245,7 @@ final class Catalog {
                 samples: [
                     Sample(NavigationSample(nav: nav)),
                     Sample(TabsSample(nav: nav)),
-                    Sample(FlyoutSample(nav: nav)),
+                    Sample(SplitViewSample(nav: nav)),
                     Sample(ModalSample(nav: nav)),
                     Sample(DialogsSample()),
                     Sample(ToolbarSample()),

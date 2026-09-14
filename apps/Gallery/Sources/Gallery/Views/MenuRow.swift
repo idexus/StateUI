@@ -4,7 +4,7 @@ import StateUI
 
 /// A picture, a caption, and somewhere to go.
 ///
-/// An ordinary view with a tap on it - which is the whole of what a flyout row
+/// An ordinary view with a tap on it - which is the whole of what a sidebar row
 /// is. The application knows which row is the chosen one because it holds the
 /// answer: `nav.showing(...)`, read while the row is being built, so the look
 /// of a chosen row is two ordinary values written on top of its style.

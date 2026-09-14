@@ -1,16 +1,16 @@
 generation 1 names +29
 ContentPage 1 arranged(4)
+  backButtonTitle: string "Back"
   backgroundColor: color FFF5F5F5
+  hasBackButton: false
+  hasNavigationBar: false
   iconImageSource: string "tab.png"
-  navigationPageBackButtonTitle: string "Back"
-  navigationPageHasBackButton: false
-  navigationPageHasNavigationBar: false
   padding: numbers 4,8,12,16
   title: string "Everything"
   on appearing=1 disappearing=2 navigatedFrom=3 navigatedTo=4 navigatingFrom=5
   Label 2
     text: string "content"
-  NavigationPageTitleView 3 arranged(1)
+  TitleView 3 arranged(1)
     Label 4
       text: string "stack title"
   ToolbarItems 5 arranged(1)
