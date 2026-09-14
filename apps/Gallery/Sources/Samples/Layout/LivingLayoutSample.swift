@@ -93,7 +93,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                     }
                     .padding(Thickness(12, 8, 12, 8))
                     .background(Palette.raised)
-                    .strokeThickness(0)
+                    .strokeWidth(0)
                     .height(40)
                 }
             }
@@ -147,7 +147,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
         }
         .background(colour)
         .opacity(faded ? 0.55 : 1)
-        .strokeThickness(0)
+        .strokeWidth(0)
         .gridColumn(column)
     }
 

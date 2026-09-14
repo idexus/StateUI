@@ -68,8 +68,8 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             .width($width)
             .height(28)
             .background(.solidColor(Palette.accent))
-            .strokeShape(.roundRectangle(8))
-            .strokeThickness(0)
+            .shape(.roundedRectangle(8))
+            .strokeWidth(0)
             .horizontalAlignment(.start)
 
             Label()
@@ -91,8 +91,8 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             .width($width.journey.convert { abs($0.destination - $0.value) })
             .height(10)
             .background(.solidColor(Palette.subtle))
-            .strokeShape(.roundRectangle(5))
-            .strokeThickness(0)
+            .shape(.roundedRectangle(5))
+            .strokeWidth(0)
             .horizontalAlignment(.start)
 
             HStack {

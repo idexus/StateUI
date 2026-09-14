@@ -1857,9 +1857,9 @@ final class MountedNode: NSObject {
         .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY,
         .pivotX, .pivotY,
         .background, .color, .textColor, .placeholderColor,
-        .titleColor, .borderColor, .stroke, .fill, .strokeThickness,
-        .strokeDashArray, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
-        .strokeMiterLimit, .strokeShape, .cornerRadius, .renderTransform,
+        .titleColor, .borderColor, .stroke, .fill, .strokeWidth,
+        .strokeDashPattern, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
+        .strokeMiterLimit, .shape, .cornerRadius, .renderTransform,
         .minimumTrackColor, .maximumTrackColor, .thumbColor, .onColor, .offColor,
         .progressColor, .barBackgroundColor, .barTextColor, .foregroundColor,
         .drawable, .value, .progress, .scrollOffset, .isOn, .isEnabled,
@@ -2618,8 +2618,8 @@ final class MountedNode: NSObject {
                 backgroundColor: color(.background),
                 background: value(.background),
                 stroke: value(.stroke),
-                strokeWidth: value(.strokeThickness)?.number,
-                strokeShape: value(.strokeShape))
+                strokeWidth: value(.strokeWidth)?.number,
+                shape: value(.shape))
         }
 
         if let shape = view as? AppKitShapeView {
@@ -2650,8 +2650,8 @@ final class MountedNode: NSObject {
             shape.apply(
                 fill: value(.fill),
                 stroke: value(.stroke),
-                thickness: number(.strokeThickness) ?? 1,
-                dash: value(.strokeDashArray)?.numbers ?? [],
+                thickness: number(.strokeWidth) ?? 1,
+                dash: value(.strokeDashPattern)?.numbers ?? [],
                 dashOffset: number(.strokeDashOffset) ?? 0,
                 lineCap: enumeration(.strokeLineCap) ?? 0,
                 lineJoin: enumeration(.strokeLineJoin) ?? 0,
@@ -3230,7 +3230,7 @@ final class MountedNode: NSObject {
             return .numbers([0, 0, 0, 0])
         case .spacing, .rowSpacing, .columnSpacing:
             return .number(0)
-        case .strokeThickness:
+        case .strokeWidth:
             return .number(1)
         case .strokeDashOffset, .radiusX, .radiusY, .x1, .y1, .x2, .y2:
             return .number(0)

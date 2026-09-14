@@ -25,7 +25,7 @@ struct TapSample: SampleContent, ExampleContent {
                     .padding(24)
             }
             .stroke(Palette.accent)
-            .strokeShape(.roundRectangle(10))
+            .shape(.roundedRectangle(10))
             .onTapped { taps += 1 }
 
             Border {
@@ -33,7 +33,7 @@ struct TapSample: SampleContent, ExampleContent {
                     .padding(24)
             }
             .stroke(Palette.outline)
-            .strokeShape(.roundRectangle(10))
+            .shape(.roundedRectangle(10))
             .onTapped(numberOfTapsRequired: 2) { taps = 0 }
 
             Label("Tapped \\(taps) time(s)")
@@ -51,8 +51,8 @@ struct TapSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .stroke(Palette.accent)
-            .strokeThickness(1)
-            .strokeShape(.roundRectangle(10))
+            .strokeWidth(1)
+            .shape(.roundedRectangle(10))
             .onTapped { taps += 1 }
 
             Border {
@@ -62,8 +62,8 @@ struct TapSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .stroke(Palette.outline)
-            .strokeThickness(1)
-            .strokeShape(.roundRectangle(10))
+            .strokeWidth(1)
+            .shape(.roundedRectangle(10))
             .onTapped(numberOfTapsRequired: 2) { taps = 0 }
 
             Label("Tapped \(taps) time(s)")

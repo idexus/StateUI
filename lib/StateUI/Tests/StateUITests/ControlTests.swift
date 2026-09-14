@@ -256,11 +256,11 @@ final class ControlTests: XCTestCase {
                     Label("Inside")
                 }
                 .stroke(.lightGray)
-                .strokeThickness(1)
-                .strokeShape(.roundRectangle(12))
+                .strokeWidth(1)
+                .shape(.roundedRectangle(12))
                 // The rest of the stroke set, which a Border declares of its
                 // own beside the identical set on Shape.
-                .strokeDashArray([6, 3])
+                .strokeDashPattern([6, 3])
                 .strokeDashOffset(2)
                 .strokeLineCap(.round)
                 .strokeLineJoin(.bevel)
@@ -478,8 +478,8 @@ final class ControlTests: XCTestCase {
                 Canvas {
                     Draw.fillColor(.cornflowerBlue)
                     Draw.strokeColor(Color(light: .black, dark: .white))
-                    Draw.strokeSize(2)
-                    Draw.fontColor(.white)
+                    Draw.strokeWidth(2)
+                    Draw.textColor(.white)
                     Draw.fontSize(14)
                     Draw.alpha(0.9)
 
@@ -502,9 +502,9 @@ final class ControlTests: XCTestCase {
 
                     // A comma in the text: the string carries its own length,
                     // so it is text and never a separator.
-                    Draw.drawString(
+                    Draw.drawText(
                         "Hello, world", x: 10, y: 20, width: 80, height: 16,
-                        horizontalAlignment: .center, verticalAlignment: .bottom)
+                        horizontalAlignment: .center, verticalAlignment: .end)
 
                     Draw.saveState()
                     Draw.translate(dx: 4, dy: 4)
@@ -535,8 +535,8 @@ final class ControlTests: XCTestCase {
                             GradientStop(.gold, 0),
                             GradientStop(.tomato, 1),
                         ], startPoint: Point(0, 0), endPoint: Point(1, 1)))
-                        .strokeThickness(2)
-                        .strokeDashArray([4, 2])
+                        .strokeWidth(2)
+                        .strokeDashPattern([4, 2])
                         .strokeDashOffset(1)
                         .strokeLineCap(.round)
                         .strokeLineJoin(.bevel)
@@ -780,8 +780,8 @@ final class ControlTests: XCTestCase {
             // A value the host cannot be handed whole.
             "background", "fill", "stroke", "icon", "icon",
             "icon", "thumbImageSource", "maximumDate",
-            "minimumDate", "strokeDashArray", "points", "options", "columns",
-            "rows", "strokeShape", "renderTransform", "transform", "motion", "id",
+            "minimumDate", "strokeDashPattern", "points", "options", "columns",
+            "rows", "shape", "renderTransform", "transform", "motion", "id",
             "assign", "absoluteLayoutBounds",
             // Tiers no view wears.
             "barBackgroundColor", "barTextColor", "isScrollEnabled", "isZoomEnabled",

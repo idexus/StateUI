@@ -52,8 +52,8 @@ struct BrushSample: SampleContent, ExampleContent {
                 Label("A stroke is a brush too")
                     .padding(16, 10)
             }
-            .strokeThickness(4)
-            .strokeShape(.roundRectangle(10))
+            .strokeWidth(4)
+            .shape(.roundedRectangle(10))
             .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
 
             // Not a shape at all: `.background` takes a brush, so any view can
@@ -118,8 +118,8 @@ struct BrushSample: SampleContent, ExampleContent {
                     .fontSize(14)
                     .padding(16, 10)
             }
-            .strokeThickness(4)
-            .strokeShape(.roundRectangle(10))
+            .strokeWidth(4)
+            .shape(.roundedRectangle(10))
             .stroke(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Point(1, 0)))
 
             VStack {

@@ -327,8 +327,8 @@ token in parentheses.
 | layouts | properties | `clipsContent`, `safeAreaEdges` | — | — | — | — | — | — |
 | `ScrollView` | properties | `orientation`, `verticalScrollBarVisibility`, `horizontalScrollBarVisibility`, `scrollOffset`, `snapInterval`, `snapFrom`, `snapsAtMost`, `scrollMomentum` | ✅ | — | — | — | — | — |
 | `ScrollView` | events | `scrollXChanged`, `scrollYChanged`, `snapItemChanged`, `onScrollStopped` (`scrollStopped`) | ✅ | — | — | — | — | — |
-| `Border` | properties | `stroke`, `strokeThickness`, `strokeShape`, `background` | — | — | — | — | — | — |
-| `Border` | properties | `strokeDashArray`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit` | — | — | — | — | — | — |
+| `Border` | properties | `stroke`, `strokeWidth`, `shape`, `background` | — | — | — | — | — | — |
+| `Border` | properties | `strokeDashPattern`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit` | — | — | — | — | — | — |
 | `Label` / `TextSpan` | properties | `text`, `textColor`, `characterSpacing`, `textCase`, `fontSize`, `fontFamily`, `fontAttributes`, `lineBreak`, `lineHeight`, `maximumLines`, `textDecorations`, `spans` | ✅ | — | — | — | — | — |
 | `Label` | properties | `horizontalTextAlignment`, `verticalTextAlignment`, `padding` | ✅ | — | — | — | — | — |
 | `Button` | properties | `text`, `icon`, `iconPosition`, `aspect`, `lineBreak`, `padding`, `borderColor`, `borderWidth`, `cornerRadius` | ✅ | — | — | — | — | — |
@@ -368,7 +368,7 @@ token in parentheses.
 | `ActivityIndicator` | properties | `isRunning` | ✅ | — | — | — | — | — |
 | `ActivityIndicator` | properties | `color` | — | — | — | — | — | — |
 | `Canvas` | properties/events | `drawable`, `onPressed` (`pressed`), `onDragged` (`dragged`), `onReleased` (`released`) | ✅ | — | — | — | — | — |
-| shapes | properties | `fill`, `stroke`, `strokeThickness`, `strokeDashArray`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `aspect`, `renderTransform` | — | — | — | — | — | — |
+| shapes | properties | `fill`, `stroke`, `strokeWidth`, `strokeDashPattern`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `aspect`, `renderTransform` | — | — | — | — | — | — |
 | `Rectangle` | properties | `radiusX`, `radiusY` | — | — | — | — | — | — |
 | `RoundRectangle` | properties | `cornerRadius` | — | — | — | — | — | — |
 | `Line` | properties | `x1`, `y1`, `x2`, `y2` | ✅ | — | — | — | — | — |
@@ -445,10 +445,10 @@ host status.
 `scaleX`, `scaleY`, `scrollMomentum`, `scrollOffset`, `scrollStep`,
 `searchIconColor`, `selectedIndex`, `selectedIndicatorColor`,
 `selectionLength`, `semanticDescription`, `semanticHeadingLevel`,
-`semanticHint`, `showsClearButton`, `showsUserLocation`, `side`, `snapFrom`,
-`snapInterval`, `snapsAtMost`, `source`, `spacing`, `step`, `stroke`,
-`strokeDashArray`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`,
-`strokeMiterLimit`, `strokeShape`, `strokeThickness`, `style`, `subtitle`,
+`semanticHint`, `shape`, `showsClearButton`, `showsUserLocation`, `side`,
+`snapFrom`, `snapInterval`, `snapsAtMost`, `source`, `spacing`, `step`,
+`stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`,
+`strokeLineJoin`, `strokeMiterLimit`, `strokeWidth`, `style`, `subtitle`,
 `swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `text`,
 `textCase`, `textColor`, `textDecorations`, `textType`, `threshold`,
 `thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`,

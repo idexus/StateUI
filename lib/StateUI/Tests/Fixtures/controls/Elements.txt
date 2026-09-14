@@ -45,12 +45,12 @@ VStack 1 arranged(3)
     fill: values [enum 3, numbers 0.3,0.3,0.8, number 0, color FFFFFFFF, number 1, color FF4682B4]
     renderTransform: values [number 1.5, number 0.375, number -0.25, number 0.9375, number 6, number 7]
     stroke: values [enum 2, numbers 0,0,1,1, number 0, color FFFFD700, number 1, color FFFF6347]
-    strokeDashArray: numbers 4,2
     strokeDashOffset: number 1
+    strokeDashPattern: numbers 4,2
     strokeLineCap: enum round(1)
     strokeLineJoin: enum bevel(1)
     strokeMiterLimit: number 4
-    strokeThickness: number 2
+    strokeWidth: number 2
   Label 3
     absoluteLayoutBounds: numbers 0,0,120,40
     absoluteLayoutProportions: enum size(12)

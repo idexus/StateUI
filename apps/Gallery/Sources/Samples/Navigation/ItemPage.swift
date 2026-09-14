@@ -46,7 +46,7 @@ struct ItemPage: ContentView {
         .margin(24)
         .background(Palette.surface)
         .stroke(.transparent)
-        .strokeShape(.roundRectangle(12))
+        .shape(.roundedRectangle(12))
         .verticalAlignment(.center)
         .onCreated {
             page.gallery(item.isEmpty ? "Item" : item, scene: scene, nav: nav)

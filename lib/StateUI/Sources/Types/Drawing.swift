@@ -41,8 +41,8 @@ public struct DrawCommand: Equatable, Sendable {
         // What the canvas draws with.
         case fillColor = 0
         case strokeColor = 1
-        case fontColor = 2
-        case strokeSize = 3
+        case textColor = 2
+        case strokeWidth = 3
         case fontSize = 4
         case alpha = 5
 
@@ -62,7 +62,7 @@ public struct DrawCommand: Equatable, Sendable {
         case fillPath = 16
 
         // Text.
-        case drawString = 17
+        case drawText = 17
 
         // Where the canvas draws.
         case translate = 18
@@ -136,48 +136,15 @@ public enum DrawingBuilder {
     }
 }
 
-/// Where a piece of text sits across the box it is drawn in - what
-/// `Draw.drawString` takes for `horizontalAlignment:`.
-///
-/// Numbered by this library, like every other vocabulary here: see the head
-/// of Types/Enums.swift.
-public enum HorizontalAlignment: Int32, Sendable {
-    /// Against the left edge of the box.
-    case left = 0
-
-    /// In the middle of it.
-    case center = 1
-
-    /// Against the right edge.
-    case right = 2
-
-    /// Spread out to fill the width - which does nothing to a single word.
-    case justified = 3
-}
-
-/// And where it sits down the box - `Draw.drawString`'s `verticalAlignment:`.
-///
-/// Numbered by this library, exactly as `HorizontalAlignment` is.
-public enum VerticalAlignment: Int32, Sendable {
-    /// Against the top of the box.
-    case top = 0
-
-    /// In the middle of it.
-    case center = 1
-
-    /// Against the bottom.
-    case bottom = 2
-}
-
 /// Everything a drawing can tell the canvas to do.
 ///
 ///     Canvas {
 ///         Draw.fillColor(.cornflowerBlue)
 ///         Draw.fillRoundedRectangle(x: 0, y: 0, width: 120, height: 40, cornerRadius: 8)
 ///
-///         Draw.fontColor(.white)
+///         Draw.textColor(.white)
 ///         Draw.fontSize(14)
-///         Draw.drawString(
+///         Draw.drawText(
 ///             "Hello",
 ///             x: 0, y: 0, width: 120, height: 40,
 ///             horizontalAlignment: .center, verticalAlignment: .center)
@@ -199,14 +166,14 @@ public enum Draw {
         DrawCommand(.strokeColor, [value.propValue])
     }
 
-    /// The colour `drawString` writes in.
-    public static func fontColor(_ value: Color) -> DrawCommand {
-        DrawCommand(.fontColor, [value.propValue])
+    /// The colour `drawText` writes in.
+    public static func textColor(_ value: Color) -> DrawCommand {
+        DrawCommand(.textColor, [value.propValue])
     }
 
-    /// How thick that outline is, in device units.
-    public static func strokeSize(_ value: Double) -> DrawCommand {
-        DrawCommand(.strokeSize, [.number(value)])
+    /// How wide that outline is, in device units.
+    public static func strokeWidth(_ value: Double) -> DrawCommand {
+        DrawCommand(.strokeWidth, [.number(value)])
     }
 
     /// How big it writes.
@@ -379,7 +346,7 @@ public enum Draw {
 
     /// A piece of text, inside a box.
     ///
-    ///     Draw.drawString("42", x: 0, y: 100, width: 32, height: 16,
+    ///     Draw.drawText("42", x: 0, y: 100, width: 32, height: 16,
     ///                     horizontalAlignment: .center)
     ///
     /// Text goes in a BOX rather than at a point: the box is what the two
@@ -391,18 +358,21 @@ public enum Draw {
     ///   - y: its top edge - not the baseline.
     ///   - width: how wide the box is. Text that does not fit is clipped.
     ///   - height: how tall.
-    ///   - horizontalAlignment: where the text sits across the box.
-    ///   - verticalAlignment: and down it.
-    public static func drawString(
+    ///   - horizontalAlignment: where the text sits across the box - `.start`
+    ///     against its left edge, `.end` against its right: a canvas draws in
+    ///     its own coordinates, not in a reading direction.
+    ///   - verticalAlignment: and down it - `.start` at the top, `.end` at the
+    ///     bottom.
+    public static func drawText(
         _ text: String,
         x: Double,
         y: Double,
         width: Double,
         height: Double,
-        horizontalAlignment: HorizontalAlignment = .left,
-        verticalAlignment: VerticalAlignment = .top
+        horizontalAlignment: TextAlignment = .start,
+        verticalAlignment: TextAlignment = .start
     ) -> DrawCommand {
-        DrawCommand(.drawString, [
+        DrawCommand(.drawText, [
             .number(x), .number(y), .number(width), .number(height),
             .enumeration(horizontalAlignment.rawValue), .enumeration(verticalAlignment.rawValue),
             .string(text),

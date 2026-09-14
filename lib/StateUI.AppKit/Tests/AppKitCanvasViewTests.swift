@@ -13,8 +13,8 @@ final class AppKitCanvasViewTests: XCTestCase {
         let element = Canvas {
             Draw.fillColor(.red)
             Draw.strokeColor(.blue)
-            Draw.fontColor(.white)
-            Draw.strokeSize(2)
+            Draw.textColor(.white)
+            Draw.strokeWidth(2)
             Draw.fontSize(14)
             Draw.alpha(0.8)
             Draw.drawLine(x1: 0, y1: 0, x2: 10, y2: 10)
@@ -32,7 +32,7 @@ final class AppKitCanvasViewTests: XCTestCase {
                 x: 0, y: 0, width: 10, height: 10,
                 startAngle: 0, endAngle: 90, clockwise: true)
             Draw.fillPath("M0 0 L10 0 L10 10 Z")
-            Draw.drawString("text", x: 0, y: 0, width: 20, height: 10)
+            Draw.drawText("text", x: 0, y: 0, width: 20, height: 10)
             Draw.translate(dx: 2, dy: 3)
             Draw.rotate(30)
             Draw.scale(sx: 2, sy: 2)

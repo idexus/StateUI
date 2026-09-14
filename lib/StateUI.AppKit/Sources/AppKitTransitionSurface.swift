@@ -126,7 +126,7 @@ enum AppKitTransitionSurface {
     ]
 
     private static let borderProperties: Set<Prop> = [
-        .padding, .background, .stroke, .strokeThickness, .strokeShape,
+        .padding, .background, .stroke, .strokeWidth, .shape,
     ]
 
     private static let stackProperties: Set<Prop> = [.padding, .spacing]
@@ -171,7 +171,7 @@ enum AppKitTransitionSurface {
     ]
 
     private static let shapeProperties: Set<Prop> = [
-        .fill, .stroke, .strokeThickness, .strokeDashOffset, .strokeMiterLimit,
+        .fill, .stroke, .strokeWidth, .strokeDashOffset, .strokeMiterLimit,
         .renderTransform,
     ]
 

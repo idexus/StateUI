@@ -34,7 +34,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                             .padding(12, 8)
                     }
                     .stroke(Palette.accent)
-                    .strokeShape(.roundRectangle(8))
+                    .shape(.roundedRectangle(8))
                     // What travels is decided before the drag starts: a
                     // native drag session needs its payload at once.
                     .draggable(text: item)
@@ -62,8 +62,8 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             // Lit while something is over it and dark again once it leaves,
             // which is what the two events are for.
             .stroke(over ? Palette.accent : Palette.outline)
-            .strokeThickness(over ? 2 : 1)
-            .strokeShape(.roundRectangle(10))
+            .strokeWidth(over ? 2 : 1)
+            .shape(.roundedRectangle(10))
             .background(over ? Palette.selected : Palette.raised)
             .onDragOver { over = true }
             .onDragLeave { over = false }
@@ -93,8 +93,8 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                             .padding(12, 8)
                     }
                     .stroke(Palette.accent)
-                    .strokeThickness(1)
-                    .strokeShape(.roundRectangle(8))
+                    .strokeWidth(1)
+                    .shape(.roundedRectangle(8))
                     .draggable(text: item)
                     // The view that was DRAGGED hears when its own drag ends,
                     // wherever it ended.
@@ -132,8 +132,8 @@ struct DragAndDropSample: SampleContent, ExampleContent {
             // Lit while something is over it and dark again once it leaves,
             // which is what the two events are for.
             .stroke(over ? Palette.accent : Palette.outline)
-            .strokeThickness(over ? 2 : 1)
-            .strokeShape(.roundRectangle(10))
+            .strokeWidth(over ? 2 : 1)
+            .shape(.roundedRectangle(10))
             .background(over ? Palette.selected : Palette.raised)
             .onDragOver { over = true }
             .onDragLeave { over = false }

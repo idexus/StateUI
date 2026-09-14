@@ -159,8 +159,8 @@ struct HomePage: ContentView {
                 }
                 .background(Palette.identity)
                 .stroke(.transparent)
-                .strokeThickness(0)
-                .strokeShape(.roundRectangle(18))
+                .strokeWidth(0)
+                .shape(.roundedRectangle(18))
 
                 SectionTitle("\(catalog.sampleCount(on: device.idiom)) SAMPLES "
                     + "IN \(groups.count) GROUPS")
@@ -601,7 +601,7 @@ private struct GroupFace: ContentView {
         .automationId(handle("group", title))
         .semanticDescription(title)
         .semanticHint(summary)
-        .strokeThickness(0)
-        .strokeShape(.roundRectangle(16))
+        .strokeWidth(0)
+        .shape(.roundedRectangle(16))
     }
 }

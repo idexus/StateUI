@@ -31,9 +31,9 @@ Application 1 moves over 200ms cubicOut arranged(1)
                 background: color FFC8C8C8
                 textColor: color FF141414
           Border 10 arranged(1)
+            shape: values [enum 1, number 12]
             stroke: values [enum 1, color FFC8C8C8]
-            strokeShape: values [enum 1, number 12]
-            strokeThickness: number 1
+            strokeWidth: number 1
             Label 11
               fontSize: number 14
               text: string "in a border"

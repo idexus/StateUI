@@ -351,20 +351,20 @@ public enum ScrollBarVisibility: Int32, Sendable {
 
 /// The outline a Border draws, and the shape its own background is painted to
 /// - which is where a rounded corner comes from on anything but a Button or a
-/// ColorBox. What `.strokeShape` takes.
+/// ColorBox. What `.shape` takes.
 ///
-///     Border { … }.strokeShape(.roundRectangle(12))
+///     Border { … }.shape(.roundedRectangle(12))
 ///
 /// A shape can carry a number of its own, so this travels as a typed value
 /// list whose first element is the KIND and whose rest is what that kind is
-/// made of - `.roundRectangle(12)` as `[1, 12]`. The kinds are numbered by
+/// made of - `.roundedRectangle(12)` as `[1, 12]`. The kinds are numbered by
 /// this library like everything else here.
-public enum StrokeShape: Sendable {
+public enum BorderShape: Sendable {
     /// Square corners.
     case rectangle
 
     /// Rounded corners, by this many device units.
-    case roundRectangle(Double)
+    case roundedRectangle(Double)
 
     /// An oval filling the border's bounds.
     case ellipse
@@ -373,7 +373,7 @@ public enum StrokeShape: Sendable {
     /// so the host reads its number rather than its name.
     enum Kind: Int32, Sendable {
         case rectangle = 0
-        case roundRectangle = 1
+        case roundedRectangle = 1
         case ellipse = 2
     }
 
@@ -382,8 +382,8 @@ public enum StrokeShape: Sendable {
         switch self {
         case .rectangle:
             return .values([.enumeration(Kind.rectangle.rawValue)])
-        case .roundRectangle(let radius):
-            return .values([.enumeration(Kind.roundRectangle.rawValue), .number(radius)])
+        case .roundedRectangle(let radius):
+            return .values([.enumeration(Kind.roundedRectangle.rawValue), .number(radius)])
         case .ellipse:
             return .values([.enumeration(Kind.ellipse.rawValue)])
         }
@@ -464,7 +464,7 @@ public enum SwipeBehaviorOnInvoked: Int32, Sendable {
 }
 
 /// How the end of an open line is drawn.
-public enum PenLineCap: Int32, Sendable {
+public enum LineCap: Int32, Sendable {
     /// Cut off square at the end point. The default.
     case flat = 0
 
@@ -479,7 +479,7 @@ public enum PenLineCap: Int32, Sendable {
 }
 
 /// How two segments of a line meet.
-public enum PenLineJoin: Int32, Sendable {
+public enum LineJoin: Int32, Sendable {
     /// A sharp corner, as far out as the two edges reach. The default.
     case miter = 0
 
@@ -573,8 +573,8 @@ extension IndicatorShape: StateChoice {}
 extension InputPurpose: StateChoice {}
 extension Alignment: StateChoice {}
 extension LineBreak: StateChoice {}
-extension PenLineCap: StateChoice {}
-extension PenLineJoin: StateChoice {}
+extension LineCap: StateChoice {}
+extension LineJoin: StateChoice {}
 extension ReturnKey: StateChoice {}
 extension SafeAreaRegions: StateChoice {}
 extension SemanticHeadingLevel: StateChoice {}

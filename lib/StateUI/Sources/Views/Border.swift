@@ -11,10 +11,10 @@ extension BorderProperties {
     /// What the outline is painted with - any `Brush`, a gradient included.
     ///
     ///     Border { … }
-    ///         .strokeThickness(3)
+    ///         .strokeWidth(3)
     ///         .stroke(.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]))
     ///
-    /// It draws nothing without a `strokeThickness` above 0.
+    /// It draws nothing without a `strokeWidth` above 0.
     public func stroke(_ value: Brush) -> Modified {
         setValue(.stroke, value.propValue)
     }
@@ -29,13 +29,13 @@ extension BorderProperties {
         stroke(.solidColor(value))
     }
 
-    /// How thick the stroke is drawn, in device units - 1 unless said.
+    /// How wide the stroke is drawn, in device units - 1 unless said.
     ///
-    /// A thickness of 0 draws no outline however the stroke is painted - which
+    /// A width of 0 draws no outline however the stroke is painted - which
     /// is how a Border is used for its SHAPE alone, as the rounded corners on a
     /// coloured card.
-    public func strokeThickness(_ value: Double) -> Modified {
-        setValue(.strokeThickness, .number(value))
+    public func strokeWidth(_ value: Double) -> Modified {
+        setValue(.strokeWidth, .number(value))
     }
 
     /// The shape the outline follows, and the shape the border's own
@@ -43,31 +43,31 @@ extension BorderProperties {
     ///
     ///     Border { … }
     ///         .background(.cornflowerBlue)
-    ///         .strokeShape(.roundRectangle(12))
-    ///         .strokeThickness(0)
+    ///         .shape(.roundedRectangle(12))
+    ///         .strokeWidth(0)
     ///
     /// This is where a rounded corner comes from on anything without a
     /// `cornerRadius` of its own: a Button, a RadioButton, a ColorBox and a
     /// RoundRectangle carry one, and everything else is wrapped in a Border.
-    public func strokeShape(_ value: StrokeShape) -> Modified {
-        setValue(.strokeShape, value.propValue)
+    public func shape(_ value: BorderShape) -> Modified {
+        setValue(.shape, value.propValue)
     }
 
     // The rest of the stroke, which a Border carries as fully as a Shape does.
     // Written HERE rather than shared with the shape tier, because that tier
     // also carries `fill`, `renderTransform` and an `aspect` - a drawn
     // figure's, and none of them a Border's. The properties on the wire are
-    // the same ones; `stroke` and `strokeThickness` above are this same pair
+    // the same ones; `stroke` and `strokeWidth` above are this same pair
     // said twice.
 
     /// The dashes and the gaps between them, in multiples of the stroke
-    /// thickness.
+    /// width.
     ///
     ///     Border { … }
-    ///         .strokeThickness(2)
-    ///         .strokeDashArray([4, 2])
-    public func strokeDashArray(_ value: [Double]) -> Modified {
-        setValue(.strokeDashArray, .numbers(value))
+    ///         .strokeWidth(2)
+    ///         .strokeDashPattern([4, 2])
+    public func strokeDashPattern(_ value: [Double]) -> Modified {
+        setValue(.strokeDashPattern, .numbers(value))
     }
 
     /// How far into the dash pattern the outline starts.
@@ -77,12 +77,12 @@ extension BorderProperties {
 
     /// How the ends of each dash are drawn - and nothing at all on an outline
     /// with no dashes, a closed shape having no ends.
-    public func strokeLineCap(_ value: PenLineCap) -> Modified {
+    public func strokeLineCap(_ value: LineCap) -> Modified {
         setValue(.strokeLineCap, value.propValue)
     }
 
     /// How the outline turns a corner of the stroke shape.
-    public func strokeLineJoin(_ value: PenLineJoin) -> Modified {
+    public func strokeLineJoin(_ value: LineJoin) -> Modified {
         setValue(.strokeLineJoin, value.propValue)
     }
 
@@ -100,14 +100,14 @@ extension BorderProperties {
 ///     }
 ///     .padding(16)
 ///     .stroke(.lightGray)
-///     .strokeThickness(1)
-///     .strokeShape(.roundRectangle(12))
+///     .strokeWidth(1)
+///     .shape(.roundedRectangle(12))
 ///
 /// The `.padding` is the room between the outline and what is inside it; the
 /// `.margin` is the room outside the outline.
 ///
 /// This is the general way to round a corner: give the border a
-/// `.background` and a `.strokeShape`, and the background follows the
+/// `.background` and a `.shape`, and the background follows the
 /// shape whether or not the outline is drawn.
 ///
 /// Not to be confused with `BorderElement`, the outline a Button and a

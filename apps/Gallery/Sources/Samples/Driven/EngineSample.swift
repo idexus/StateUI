@@ -106,7 +106,7 @@ struct EngineSample: SampleContent, ExampleContent {
             .padding(24, 16)
             .background(Palette.surface)
             .stroke(.transparent)
-            .strokeShape(.roundRectangle(12))
+            .shape(.roundedRectangle(12))
             .horizontalAlignment(.center)
 
             Label("Lap: \(lap)")

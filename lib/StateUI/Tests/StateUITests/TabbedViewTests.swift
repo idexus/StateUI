@@ -189,7 +189,7 @@ final class TabbedViewTests: XCTestCase {
         let selection = State<Tab>(.home)
 
         let node = tabs(selection.projectedValue)
-            .barBackgroundColor(Color.fromArgb("#512BD4"))
+            .barBackgroundColor(Color("#512BD4"))
             .body
             .built
 
@@ -251,7 +251,7 @@ final class TabbedViewTests: XCTestCase {
             }
         }
         .selection(selection.projectedValue)
-        .barBackgroundColor(Color.fromArgb("#512BD4"))
+        .barBackgroundColor(Color("#512BD4"))
         .body
 
         // As the message that brings the tabs carries them - with the caption

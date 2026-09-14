@@ -59,7 +59,7 @@ private struct GridPlacement: ExampleContent {
             var content: any View {
                 Label(text)
                     .textColor(.white)
-                    .background(Color.fromArgb(color))
+                    .background(Color(color))
                     .padding(8)
             }
         }
@@ -135,11 +135,11 @@ private struct SharedCell: ExampleContent {
             // and zIndex decides which is drawn on top - the higher number is
             // nearer the front. Left alone, the one written LAST wins.
             Grid {
-                ColorBox(Color.fromArgb("#E53935"))
+                ColorBox(Color("#E53935"))
                     .horizontalAlignment(.start)
                     .zIndex(redInFront ? 1 : 0)
 
-                ColorBox(Color.fromArgb("#1E88E5"))
+                ColorBox(Color("#1E88E5"))
                     .horizontalAlignment(.end)
                     .zIndex(redInFront ? 0 : 1)
             }
@@ -153,13 +153,13 @@ private struct SharedCell: ExampleContent {
             // Nothing stops two children claiming the same cell - they simply
             // overlap, and `zIndex` is what decides which is drawn on top.
             Grid {
-                ColorBox(Color.fromArgb("#E53935"))
+                ColorBox(Color("#E53935"))
                     .width(150)
                     .height(70)
                     .horizontalAlignment(.start)
                     .zIndex(redInFront ? 1 : 0)
 
-                ColorBox(Color.fromArgb("#1E88E5"))
+                ColorBox(Color("#1E88E5"))
                     .width(150)
                     .height(70)
                     .horizontalAlignment(.end)
@@ -195,7 +195,7 @@ private struct GridCell: ContentView {
         Label(text)
             .fontSize(12)
             .textColor(.white)
-            .background(Color.fromArgb(color))
+            .background(Color(color))
             .padding(8)
             .horizontalTextAlignment(.center)
             .verticalTextAlignment(.center)

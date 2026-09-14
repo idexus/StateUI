@@ -157,7 +157,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 }
                 .clipsContent(true)
             }
-            .strokeShape(.roundRectangle(16))
+            .shape(.roundedRectangle(16))
         }
         """
 
@@ -286,8 +286,8 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             }
             .clipsContent(true)
         }
-        .strokeThickness(0)
-        .strokeShape(.roundRectangle(16))
+        .strokeWidth(0)
+        .shape(.roundedRectangle(16))
     }
 
     var notes: Element? {

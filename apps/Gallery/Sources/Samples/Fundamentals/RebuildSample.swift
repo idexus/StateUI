@@ -126,8 +126,8 @@ private struct RebuildPanel: ContentView {
             .padding(14, 12)
         }
         .stroke(Palette.outline)
-        .strokeThickness(1)
-        .strokeShape(.roundRectangle(10))
+        .strokeWidth(1)
+        .shape(.roundedRectangle(10))
         .background(Palette.raised)
     }
 }

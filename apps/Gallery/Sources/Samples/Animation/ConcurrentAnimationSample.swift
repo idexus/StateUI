@@ -167,7 +167,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
             }
             .background($wash)
             .stroke(.transparent)
-            .strokeShape(.roundRectangle(12))
+            .shape(.roundedRectangle(12))
 
             HStack {
                 button("Play") {

@@ -152,8 +152,8 @@
             .isRefreshing, .maximumVisible, .mode, .points,
             .position, .radiusX, .radiusY, .refreshColor, .rows,
             .rowSpacing, .selectedIndicatorColor, .side, .stroke,
-            .strokeDashArray, .strokeDashOffset, .strokeLineCap,
-            .strokeLineJoin, .strokeMiterLimit, .strokeShape, .strokeThickness,
+            .strokeDashPattern, .strokeDashOffset, .strokeLineCap,
+            .strokeLineJoin, .strokeMiterLimit, .shape, .strokeWidth,
             .swipeBehaviorOnInvoked, .threshold, .x1, .x2, .y1, .y2,
         ]),
         (.structure, [

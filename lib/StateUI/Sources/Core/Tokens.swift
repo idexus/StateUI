@@ -157,7 +157,7 @@ extension Prop {
 
         // The lengths a view's own shape is drawn with go with its size: they
         // are how big it is, said about its corners and its outline.
-        for property in [Prop.cornerRadius, .strokeThickness, .borderWidth, .radiusX, .radiusY] {
+        for property in [Prop.cornerRadius, .strokeWidth, .borderWidth, .radiusX, .radiusY] {
             kinds[property] = .size
         }
 
@@ -221,7 +221,7 @@ extension Prop {
         .numberOfTapsRequired, .panTouchCount, .maximumVisible,
         .snapsAtMost, .snapInterval, .snapFrom, .scrollMomentum, .scrollStep,
         .step, .minimum, .maximum, .swipeThreshold,
-        .points, .strokeDashArray, .region, .location,
+        .points, .strokeDashPattern, .region, .location,
         .absoluteLayoutBounds, .absoluteLayoutProportions,
         .scrollOffset,
         .panXChannel, .panYChannel,
@@ -440,6 +440,7 @@ public extension Prop {
     static let cancelButtonColor = Prop("cancelButtonColor")
     static let canDrag = Prop("canDrag")
     static let characterSpacing = Prop("characterSpacing")
+    static let shape = Prop("shape")
     static let showsClearButton = Prop("showsClearButton")
     static let color = Prop("color")
     static let columns = Prop("columns")
@@ -591,13 +592,12 @@ public extension Prop {
     static let source = Prop("source")
     static let spacing = Prop("spacing")
     static let stroke = Prop("stroke")
-    static let strokeDashArray = Prop("strokeDashArray")
     static let strokeDashOffset = Prop("strokeDashOffset")
+    static let strokeDashPattern = Prop("strokeDashPattern")
     static let strokeLineCap = Prop("strokeLineCap")
     static let strokeLineJoin = Prop("strokeLineJoin")
     static let strokeMiterLimit = Prop("strokeMiterLimit")
-    static let strokeShape = Prop("strokeShape")
-    static let strokeThickness = Prop("strokeThickness")
+    static let strokeWidth = Prop("strokeWidth")
     static let style = Prop("style")
     static let subtitle = Prop("subtitle")
     static let swipeBehaviorOnInvoked = Prop("swipeBehaviorOnInvoked")

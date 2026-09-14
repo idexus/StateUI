@@ -81,7 +81,7 @@ public struct WebView: View, WebViewProperties {
 
     /// Which of the two things a source is, as the number that crosses.
     ///
-    /// Numbered by this library, the way a `StrokeShape`'s kinds are: a closed
+    /// Numbered by this library, the way a `BorderShape`'s kinds are: a closed
     /// vocabulary rides the wire as a number.
     enum SourceKind: Int32, Sendable {
         /// A page fetched from an address.

@@ -329,8 +329,8 @@ enum AppStyles {
             Style<Border>()
                 .background(Palette.raised)
                 .stroke(Palette.outline)
-                .strokeShape(.roundRectangle(14))
-                .strokeThickness(1)
+                .shape(.roundedRectangle(14))
+                .strokeWidth(1)
 
             // COLOUR, not background: a ColorBox draws its colour, and a
             // background is a second square behind that one - which Android

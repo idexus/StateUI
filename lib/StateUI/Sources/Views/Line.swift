@@ -8,7 +8,7 @@
 ///         .x1(0).y1(0)
 ///         .x2(240).y2(0)
 ///         .stroke(.lightGray)
-///         .strokeThickness(1)
+///         .strokeWidth(1)
 ///
 /// A line with no stroke draws nothing: it has no inside for `fill` to paint.
 ///

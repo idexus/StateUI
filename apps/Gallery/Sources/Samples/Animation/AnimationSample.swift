@@ -122,7 +122,7 @@ struct AnimationSample: SampleContent, ExampleContent {
             .rotation($angle)
             .background(Palette.brand)
             .stroke(Palette.accent)
-            .strokeShape(.roundRectangle(32))
+            .shape(.roundedRectangle(32))
             .horizontalAlignment(.center)
 
             Picker(Self.curves)

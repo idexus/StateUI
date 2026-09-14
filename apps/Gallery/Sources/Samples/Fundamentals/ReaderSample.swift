@@ -166,7 +166,7 @@ struct ReaderSample: SampleContent, ExampleContent {
                     .spacing(4)
                 }
                 .padding(8)
-                .strokeShape(.roundRectangle(6))
+                .shape(.roundedRectangle(6))
                 .stroke(Palette.outline)
             }
 
@@ -231,7 +231,7 @@ struct ReaderSample: SampleContent, ExampleContent {
             .spacing(6)
         }
         .padding(10)
-        .strokeShape(.roundRectangle(8))
+        .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
     }
 
@@ -267,7 +267,7 @@ private struct Reading: ContentView {
             .spacing(4)
         }
         .padding(10)
-        .strokeShape(.roundRectangle(8))
+        .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
     }
 
@@ -297,7 +297,7 @@ private struct Holding: ContentView {
             .spacing(4)
         }
         .padding(10)
-        .strokeShape(.roundRectangle(8))
+        .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
     }
 }
@@ -323,7 +323,7 @@ private struct Pulsed: ContentView {
             .spacing(4)
         }
         .padding(10)
-        .strokeShape(.roundRectangle(8))
+        .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
         .engine(following: $pulses) { _ in
             said = "pulses · \(pulses)"

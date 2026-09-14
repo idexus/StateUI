@@ -64,7 +64,7 @@ extension Border {
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func strokeLineCap(_ state: Binding<PenLineCap>) -> Modified {
+    public func strokeLineCap(_ state: Binding<LineCap>) -> Modified {
         plain(.strokeLineCap, by: state)
     }
 
@@ -74,7 +74,7 @@ extension Border {
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func strokeLineJoin(_ state: Binding<PenLineJoin>) -> Modified {
+    public func strokeLineJoin(_ state: Binding<LineJoin>) -> Modified {
         plain(.strokeLineJoin, by: state)
     }
 
@@ -88,14 +88,14 @@ extension Border {
         journey(.strokeMiterLimit, by: state)
     }
 
-    /// `strokeThickness`, handed on as `$x`: the host walks it there under the
+    /// `strokeWidth`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
     /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func strokeThickness(_ state: Binding<Double>) -> Modified {
-        journey(.strokeThickness, by: state)
+    public func strokeWidth(_ state: Binding<Double>) -> Modified {
+        journey(.strokeWidth, by: state)
     }
 }
 
@@ -839,14 +839,14 @@ extension Shape {
         journey(.strokeMiterLimit, by: state)
     }
 
-    /// `strokeThickness`, handed on as `$x`: the host walks it there under the
+    /// `strokeWidth`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
     /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func strokeThickness(_ state: Binding<Double>) -> Modified {
-        journey(.strokeThickness, by: state)
+    public func strokeWidth(_ state: Binding<Double>) -> Modified {
+        journey(.strokeWidth, by: state)
     }
 }
 

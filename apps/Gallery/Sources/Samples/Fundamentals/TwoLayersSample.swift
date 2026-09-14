@@ -114,7 +114,7 @@ private struct LayerRows: ExampleContent {
             .spacing(6)
         }
         .padding(10)
-        .strokeShape(.roundRectangle(8))
+        .shape(.roundedRectangle(8))
         .stroke(Palette.outline)
     }
 }

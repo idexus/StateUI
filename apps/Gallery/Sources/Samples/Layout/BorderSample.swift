@@ -13,24 +13,24 @@ struct BorderSample: SampleContent, ExampleContent {
                     .padding(16)
             }
             .stroke(Palette.outline)
-            .strokeThickness(1)
-            .strokeShape(.roundRectangle(12))
+            .strokeWidth(1)
+            .shape(.roundedRectangle(12))
 
             Border {
                 Label("Square, thicker, coloured")
                     .padding(16)
             }
             .stroke(Palette.accent)
-            .strokeThickness(3)
-            .strokeShape(.rectangle)
+            .strokeWidth(3)
+            .shape(.rectangle)
 
             Border {
                 Label("Ellipse")
                     .padding(24)
             }
             .stroke(Palette.accent)
-            .strokeThickness(1)
-            .strokeShape(.ellipse)
+            .strokeWidth(1)
+            .shape(.ellipse)
         }
         """
 
@@ -43,8 +43,8 @@ struct BorderSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .stroke(Palette.outline)
-            .strokeThickness(1)
-            .strokeShape(.roundRectangle(12))
+            .strokeWidth(1)
+            .shape(.roundedRectangle(12))
 
             Border {
                 Label("Square, thicker, coloured")
@@ -53,8 +53,8 @@ struct BorderSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .stroke(Palette.accent)
-            .strokeThickness(3)
-            .strokeShape(.rectangle)
+            .strokeWidth(3)
+            .shape(.rectangle)
 
             Border {
                 Label("Ellipse")
@@ -63,14 +63,14 @@ struct BorderSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .stroke(Palette.accent)
-            .strokeThickness(1)
-            .strokeShape(.ellipse)
+            .strokeWidth(1)
+            .shape(.ellipse)
         }
         .spacing(12)
     }
 
     var notes: Element? {
-        Label("The shape is `.rectangle`, `.roundRectangle(radius)` or `.ellipse`, and the "
+        Label("The shape is `.rectangle`, `.roundedRectangle(radius)` or `.ellipse`, and the "
             + "border's own background is painted to it.")
             .fontSize(12)
             .textColor(Palette.subtle)

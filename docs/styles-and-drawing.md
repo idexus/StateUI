@@ -80,11 +80,13 @@ driven bindings are not style values.
 let surface = Color(light: .white, dark: Color("#18181B"))
 let accent = Color("#5B5BD6")
 let translucent = Color("#805B5BD6")
+let sameTranslucent = Color(red: 91, green: 91, blue: 214, alpha: 128)
 ```
 
-Hex input accepts `#RGB`, `#ARGB`, `#RRGGBB`, or `#AARRGGBB`. Named colors are
-static members checked by the compiler. `Color.fromRgb` and `fromRgba` accept
-integer channels from 0 through 255.
+Hex input accepts `#RGB`, `#ARGB`, `#RRGGBB`, or `#AARRGGBB`, the alpha first
+when it is written. Named colors are static members checked by the compiler.
+`Color(red:green:blue:alpha:)` takes whole-number channels from 0 through 255;
+the alpha is 255, opaque, unless it is given.
 
 `ImageSource` follows the same theme rule:
 
@@ -220,7 +222,7 @@ vocabulary:
 - `Path` with path data;
 - `Polygon` and `Polyline` with `Point` values.
 
-Common shape modifiers include fill, stroke, stroke thickness and dash
+Common shape modifiers include fill, stroke, stroke width and dash
 settings, aspect, and `renderTransform`. Geometry-specific modifiers such as a
 rectangle radius or line endpoints remain on the matching shape.
 
@@ -232,7 +234,7 @@ RoundRectangle()
         startPoint: Point(0, 0),
         endPoint: Point(1, 0)))
     .stroke(.solidColor(.white))
-    .strokeThickness(2)
+    .strokeWidth(2)
     .height(80)
 ```
 
@@ -255,9 +257,9 @@ Canvas {
         height: 48,
         cornerRadius: 8)
 
-    Draw.fontColor(.white)
+    Draw.textColor(.white)
     Draw.fontSize(15)
-    Draw.drawString(
+    Draw.drawText(
         "Ready",
         x: 0,
         y: 0,

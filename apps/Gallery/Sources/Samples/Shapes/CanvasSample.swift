@@ -40,9 +40,9 @@ private struct FollowsState: ExampleContent {
                                 x: x, y: 100 - height, width: 32, height: height,
                                 cornerRadius: 4)
 
-                            Draw.fontColor(Palette.text)
+                            Draw.textColor(Palette.text)
                             Draw.fontSize(11)
-                            Draw.drawString(
+                            Draw.drawText(
                                 "\\(Int(value * 100))", x: x, y: 104, width: 32, height: 14,
                                 horizontalAlignment: .center)
                         }
@@ -69,9 +69,9 @@ private struct FollowsState: ExampleContent {
                     Draw.fillRoundedRectangle(
                         x: x, y: 100 - height, width: 32, height: height, cornerRadius: 4)
 
-                    Draw.fontColor(Palette.text)
+                    Draw.textColor(Palette.text)
                     Draw.fontSize(11)
-                    Draw.drawString(
+                    Draw.drawText(
                         "\(Int(value * 100))", x: x, y: 104, width: 32, height: 14,
                         horizontalAlignment: .center)
                 }
@@ -114,7 +114,7 @@ private struct FollowsAFinger: ExampleContent {
 
                     Canvas {
                         Draw.strokeColor(Palette.outline)
-                        Draw.strokeSize(1)
+                        Draw.strokeWidth(1)
                         Draw.drawRoundedRectangle(
                             x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
 
@@ -142,7 +142,7 @@ private struct FollowsAFinger: ExampleContent {
 
             Canvas {
                 Draw.strokeColor(Palette.outline)
-                Draw.strokeSize(1)
+                Draw.strokeWidth(1)
                 Draw.drawRoundedRectangle(x: 1, y: 1, width: 300, height: 118, cornerRadius: 8)
 
                 Draw.fillColor(Palette.accent)

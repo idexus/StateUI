@@ -11,7 +11,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
               text: string "words"
               driven characterSpacing<-1 inOut property fontSize<-1 inOut property textColor<-2 inOut property
           Rectangle 6
-            driven strokeDashOffset<-1 inOut property strokeMiterLimit<-1 inOut property strokeThickness<-1 inOut property
+            driven strokeDashOffset<-1 inOut property strokeMiterLimit<-1 inOut property strokeWidth<-1 inOut property
           Button 7
             text: string "press"
             driven borderColor<-2 inOut property borderWidth<-1 inOut property

@@ -353,7 +353,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 // on the grid, which is a layout and has edges to cut at.
                 .clipsContent(true)
             }
-            .strokeShape(.roundRectangle(16))
+            .shape(.roundedRectangle(16))
         }
         """
 
@@ -549,8 +549,8 @@ struct PlacedSample: SampleContent, ExampleContent {
             // edges to cut at.
             .clipsContent(true)
         }
-        .strokeThickness(0)
-        .strokeShape(.roundRectangle(16))
+        .strokeWidth(0)
+        .shape(.roundedRectangle(16))
     }
 
     /// How big the cards are in THIS room, as a multiple of the size above -

@@ -137,8 +137,8 @@ struct PanSample: SampleContent, ExampleContent {
                     }
             }
             .stroke(Palette.outline)
-            .strokeThickness(1)
-            .strokeShape(.roundRectangle(10))
+            .strokeWidth(1)
+            .shape(.roundedRectangle(10))
             .height(200)
 
             Label()

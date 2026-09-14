@@ -171,7 +171,7 @@ final class NavigationStackTests: XCTestCase {
         let path = State<[Route]>([])
 
         let node = stack(path.projectedValue)
-            .barBackgroundColor(Color.fromArgb("#512BD4"))
+            .barBackgroundColor(Color("#512BD4"))
             .barTextColor(.white)
             .body
             .built
@@ -229,7 +229,7 @@ final class NavigationStackTests: XCTestCase {
             case .level(let depth): DressedDestination(depth: depth)
             }
         }
-        .barBackgroundColor(Color.fromArgb("#512BD4"))
+        .barBackgroundColor(Color("#512BD4"))
         .barTextColor(.white)
         .body
 

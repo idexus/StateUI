@@ -59,7 +59,7 @@ struct AbsoluteLayoutSample: SampleContent, ExampleContent {
             var content: any View {
                 Label(text)
                     .textColor(.white)
-                    .background(Color.fromArgb(color))
+                    .background(Color(color))
                     .padding(10, 6)
             }
         }
@@ -140,7 +140,7 @@ private struct Marker: ContentView {
         Label(text)
             .fontSize(12)
             .textColor(.white)
-            .background(Color.fromArgb(color))
+            .background(Color(color))
             .padding(10, 6)
     }
 }

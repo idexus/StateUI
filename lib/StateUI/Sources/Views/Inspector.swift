@@ -408,8 +408,8 @@ struct InspectorPanel: ContentView {
         }
         .background(Look.ground)
         .stroke(Look.edge)
-        .strokeThickness(1)
-        .strokeShape(.roundRectangle(14))
+        .strokeWidth(1)
+        .shape(.roundedRectangle(14))
         .margin(8)
 
         if place == .side {
@@ -888,7 +888,7 @@ enum Look {
         Grid {
             Path(picture)
                 .stroke(ink)
-                .strokeThickness(1.5)
+                .strokeWidth(1.5)
                 .strokeLineCap(.round)
                 .width(12)
                 .height(12)

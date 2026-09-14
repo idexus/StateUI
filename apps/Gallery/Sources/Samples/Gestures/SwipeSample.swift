@@ -28,7 +28,7 @@ struct SwipeSample: SampleContent, ExampleContent {
                     .padding(32)
             }
             .stroke(Palette.accent)
-            .strokeShape(.roundRectangle(10))
+            .shape(.roundedRectangle(10))
             // A recognizer that listens for nothing recognizes nothing, so
             // `direction` defaults to every way.
             .onSwiped { direction in
@@ -42,7 +42,7 @@ struct SwipeSample: SampleContent, ExampleContent {
                     .padding(32)
             }
             .stroke(Palette.accent)
-            .strokeShape(.roundRectangle(10))
+            .shape(.roundedRectangle(10))
             // Narrowed: two of the four ways, and a finger that must travel
             // 150 device units before anything fires.
             .onSwiped(direction: [.left, .right], threshold: 150) { direction in
@@ -74,8 +74,8 @@ struct SwipeSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .stroke(Palette.accent)
-            .strokeThickness(1)
-            .strokeShape(.roundRectangle(10))
+            .strokeWidth(1)
+            .shape(.roundedRectangle(10))
             .onSwiped { direction in
                 swipe = Self.name(of: direction)
             }
@@ -91,8 +91,8 @@ struct SwipeSample: SampleContent, ExampleContent {
                     .horizontalTextAlignment(.center)
             }
             .stroke(Palette.accent)
-            .strokeThickness(1)
-            .strokeShape(.roundRectangle(10))
+            .strokeWidth(1)
+            .shape(.roundedRectangle(10))
             // Narrowed: two of the four ways, and a finger that must travel
             // 150 device units before anything fires.
             .onSwiped(direction: [.left, .right], threshold: 150) { direction in

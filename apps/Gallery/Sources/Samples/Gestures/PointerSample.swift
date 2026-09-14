@@ -42,8 +42,8 @@ struct PointerSample: SampleContent, ExampleContent {
         // The box reacts, so its look is part of what it says: the outline is
         // the hover, the fill is the button held down.
         .stroke(hovering ? Palette.accent : Palette.outline)
-        .strokeThickness(hovering ? 2 : 1)
-        .strokeShape(.roundRectangle(10))
+        .strokeWidth(hovering ? 2 : 1)
+        .shape(.roundedRectangle(10))
         .background(pressing ? Palette.selected : Palette.raised)
         .onPointerEntered { hovering = true; last = "entered" }
         .onPointerMoved { point in
@@ -90,8 +90,8 @@ struct PointerSample: SampleContent, ExampleContent {
         // The box reacts, so its look is part of what it says: the outline is
         // the hover, the fill is the button held down.
         .stroke(hovering ? Palette.accent : Palette.outline)
-        .strokeThickness(hovering ? 2 : 1)
-        .strokeShape(.roundRectangle(10))
+        .strokeWidth(hovering ? 2 : 1)
+        .shape(.roundedRectangle(10))
         .background(pressing ? Palette.selected : Palette.raised)
         .onPointerEntered { hovering = true; last = "entered" }
         .onPointerMoved { point in

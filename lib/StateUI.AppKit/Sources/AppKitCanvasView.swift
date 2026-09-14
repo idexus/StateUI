@@ -17,8 +17,8 @@ final class AppKitCanvasView: AppKitHitTestView {
     private enum Command {
         case fillColor(NSColor)
         case strokeColor(NSColor)
-        case fontColor(NSColor)
-        case strokeSize(CGFloat)
+        case textColor(NSColor)
+        case strokeWidth(CGFloat)
         case fontSize(CGFloat)
         case alpha(CGFloat)
         case drawLine([CGFloat])
@@ -32,7 +32,7 @@ final class AppKitCanvasView: AppKitHitTestView {
         case fillEllipse([CGFloat])
         case fillArc([CGFloat], clockwise: Bool)
         case fillPath(String)
-        case drawString(
+        case drawText(
             text: String,
             rect: NSRect,
             horizontal: Int32,
@@ -47,8 +47,8 @@ final class AppKitCanvasView: AppKitHitTestView {
             switch self {
             case .fillColor: 0
             case .strokeColor: 1
-            case .fontColor: 2
-            case .strokeSize: 3
+            case .textColor: 2
+            case .strokeWidth: 3
             case .fontSize: 4
             case .alpha: 5
             case .drawLine: 6
@@ -62,7 +62,7 @@ final class AppKitCanvasView: AppKitHitTestView {
             case .fillEllipse: 14
             case .fillArc: 15
             case .fillPath: 16
-            case .drawString: 17
+            case .drawText: 17
             case .translate: 18
             case .rotate: 19
             case .scale: 20
@@ -76,7 +76,7 @@ final class AppKitCanvasView: AppKitHitTestView {
         var fill = NSColor.black
         var stroke = NSColor.black
         var font = NSColor.black
-        var strokeSize: CGFloat = 1
+        var strokeWidth: CGFloat = 1
         var fontSize = NSFont.systemFontSize
         var alpha: CGFloat = 1
     }
@@ -108,8 +108,8 @@ final class AppKitCanvasView: AppKitHitTestView {
             switch command {
             case .fillColor(let color): state.fill = color
             case .strokeColor(let color): state.stroke = color
-            case .fontColor(let color): state.font = color
-            case .strokeSize(let size): state.strokeSize = max(0, size)
+            case .textColor(let color): state.font = color
+            case .strokeWidth(let size): state.strokeWidth = max(0, size)
             case .fontSize(let size): state.fontSize = max(0, size)
             case .alpha(let alpha): state.alpha = min(max(alpha, 0), 1)
 
@@ -171,7 +171,7 @@ final class AppKitCanvasView: AppKitHitTestView {
                 path.windingRule = .nonZero
                 fill(path, state: state)
 
-            case .drawString(let text, let rectangle, let horizontal, let vertical):
+            case .drawText(let text, let rectangle, let horizontal, let vertical):
                 draw(
                     text: text,
                     in: rectangle,
@@ -234,8 +234,8 @@ final class AppKitCanvasView: AppKitHitTestView {
             switch kind {
             case 0: return color(record, at: 1).map(Command.fillColor)
             case 1: return color(record, at: 1).map(Command.strokeColor)
-            case 2: return color(record, at: 1).map(Command.fontColor)
-            case 3: return numbers(record, at: 1, count: 1).map { .strokeSize($0[0]) }
+            case 2: return color(record, at: 1).map(Command.textColor)
+            case 3: return numbers(record, at: 1, count: 1).map { .strokeWidth($0[0]) }
             case 4: return numbers(record, at: 1, count: 1).map { .fontSize($0[0]) }
             case 5: return numbers(record, at: 1, count: 1).map { .alpha($0[0]) }
             case 6: return numbers(record, at: 1, count: 4).map(Command.drawLine)
@@ -266,7 +266,7 @@ final class AppKitCanvasView: AppKitHitTestView {
                       let vertical = record.value(6)?.enumeration,
                       let text = record.value(7)?.string
                 else { return nil }
-                return .drawString(
+                return .drawText(
                     text: text,
                     rect: rect(values),
                     horizontal: horizontal,
@@ -308,9 +308,9 @@ final class AppKitCanvasView: AppKitHitTestView {
     }
 
     private func stroke(_ path: NSBezierPath, state: State) {
-        guard state.strokeSize > 0 else { return }
+        guard state.strokeWidth > 0 else { return }
         state.stroke.withAlphaComponent(state.stroke.alphaComponent * state.alpha).setStroke()
-        path.lineWidth = state.strokeSize
+        path.lineWidth = state.strokeWidth
         path.stroke()
     }
 
@@ -330,7 +330,6 @@ final class AppKitCanvasView: AppKitHitTestView {
         paragraph.alignment = switch horizontal {
         case 1: .center
         case 2: .right
-        case 3: .justified
         default: .left
         }
         let attributes: [NSAttributedString.Key: Any] = [

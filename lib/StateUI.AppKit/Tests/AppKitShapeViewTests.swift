@@ -18,8 +18,8 @@ final class AppKitShapeViewTests: XCTestCase {
             thickness: 4,
             dash: [3, 2],
             dashOffset: 2.5,
-            lineCap: PenLineCap.round.rawValue,
-            lineJoin: PenLineJoin.miter.rawValue,
+            lineCap: LineCap.round.rawValue,
+            lineJoin: LineJoin.miter.rawValue,
             miterLimit: 10,
             aspect: Aspect.center.rawValue,
             renderTransform: nil,
@@ -140,8 +140,8 @@ final class AppKitShapeViewTests: XCTestCase {
         line.properties[.y1] = .number(2)
         line.properties[.x2] = .number(41)
         line.properties[.y2] = .number(22)
-        line.properties[.strokeThickness] = .number(3)
-        line.properties[.strokeDashArray] = .numbers([2, 1])
+        line.properties[.strokeWidth] = .number(3)
+        line.properties[.strokeDashPattern] = .numbers([2, 1])
         line.properties[.aspect] = .enumeration(Aspect.center.rawValue)
         renderer.applyForTesting(tree(line))
 

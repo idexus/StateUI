@@ -23,8 +23,8 @@ struct CodeBlock: ContentView {
             .verticalScrollBarVisibility(.never)
         }
         .stroke(Palette.outline)
-        .strokeThickness(1)
-        .strokeShape(.roundRectangle(8))
+        .strokeWidth(1)
+        .shape(.roundedRectangle(8))
     }
 
     /// How large the code is drawn, in points.

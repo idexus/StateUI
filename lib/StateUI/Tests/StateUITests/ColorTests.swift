@@ -53,15 +53,15 @@ final class ColorTests: XCTestCase {
     /// of writing one from reading as a change and being sent again.
     func testTwoSpellingsOfOneColourAreOneValue() {
         XCTAssertEqual(Color("#ff0000"), Color.red)
-        XCTAssertEqual(Color.fromRgb(255, 0, 0), Color.red)
-        XCTAssertEqual(Color.fromRgba(255, 0, 0, 255), Color.red)
-        XCTAssertNotEqual(Color.fromRgba(255, 0, 0, 128), Color.red)
+        XCTAssertEqual(Color(red: 255, green: 0, blue: 0), Color.red)
+        XCTAssertEqual(Color(red: 255, green: 0, blue: 0, alpha: 255), Color.red)
+        XCTAssertNotEqual(Color(red: 255, green: 0, blue: 0, alpha: 128), Color.red)
     }
 
     /// A channel outside 0-255 is held to it rather than wrapping - which is
     /// what an Int argument makes possible in the first place.
     func testAChannelOutsideItsRangeIsHeldToIt() {
-        XCTAssertEqual(Color.fromRgb(-20, 300, 0), Color("#00FF00"))
+        XCTAssertEqual(Color(red: -20, green: 300, blue: 0), Color("#00FF00"))
     }
 
     // MARK: - What crosses

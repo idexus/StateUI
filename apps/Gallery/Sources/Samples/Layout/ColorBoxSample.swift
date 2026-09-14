@@ -23,7 +23,7 @@ struct ColorBoxSample: SampleContent, ExampleContent {
                     .width(44)
                     .height(44)
 
-                ColorBox(Color.fromArgb("#E53935"))
+                ColorBox(Color("#E53935"))
                     .cornerRadius(10)
                     .opacity(0.4)
                     .width(44)
@@ -53,7 +53,7 @@ struct ColorBoxSample: SampleContent, ExampleContent {
                     .width(44)
                     .height(44)
 
-                ColorBox(Color.fromArgb("#E53935"))
+                ColorBox(Color("#E53935"))
                     .cornerRadius(10)
                     .opacity(0.4)
                     .width(44)

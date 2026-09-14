@@ -12,7 +12,7 @@ extension CanvasProperties {
     ///
     ///     .drawable {
     ///         Draw.strokeColor(.firebrick)
-    ///         Draw.strokeSize(2)
+    ///         Draw.strokeWidth(2)
     ///         Draw.drawLine(x1: 0, y1: 0, x2: 120, y2: 0)
     ///     }
     ///
@@ -30,9 +30,9 @@ extension CanvasProperties {
 ///         Draw.fillColor(.cornflowerBlue)
 ///         Draw.fillRoundedRectangle(x: 0, y: 0, width: 160, height: 48, cornerRadius: 8)
 ///
-///         Draw.fontColor(.white)
+///         Draw.textColor(.white)
 ///         Draw.fontSize(15)
-///         Draw.drawString(
+///         Draw.drawText(
 ///             "Drawn, not built",
 ///             x: 0, y: 0, width: 160, height: 48,
 ///             horizontalAlignment: .center, verticalAlignment: .center)

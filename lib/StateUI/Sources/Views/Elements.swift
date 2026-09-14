@@ -1558,8 +1558,8 @@ extension ShapeProperties {
     /// `.stroke()` on its own draws a one-unit line,
     /// and a thickness on its own draws nothing, there being no stroke to draw
     /// it with.
-    public func strokeThickness(_ value: Double) -> Modified {
-        setValue(.strokeThickness, .number(value))
+    public func strokeWidth(_ value: Double) -> Modified {
+        setValue(.strokeWidth, .number(value))
     }
 
     /// The dashes and the gaps between them, in multiples of the stroke
@@ -1567,10 +1567,10 @@ extension ShapeProperties {
     ///
     ///     Line().x2(240)
     ///         .stroke(.lightGray)
-    ///         .strokeThickness(2)
-    ///         .strokeDashArray([4, 2])   // 8 units of dash, 4 of gap
-    public func strokeDashArray(_ value: [Double]) -> Modified {
-        setValue(.strokeDashArray, .numbers(value))
+    ///         .strokeWidth(2)
+    ///         .strokeDashPattern([4, 2])   // 8 units of dash, 4 of gap
+    public func strokeDashPattern(_ value: [Double]) -> Modified {
+        setValue(.strokeDashPattern, .numbers(value))
     }
 
     /// How far into the dash pattern the line starts.
@@ -1579,12 +1579,12 @@ extension ShapeProperties {
     }
 
     /// How the ends of an open line are drawn.
-    public func strokeLineCap(_ value: PenLineCap) -> Modified {
+    public func strokeLineCap(_ value: LineCap) -> Modified {
         setValue(.strokeLineCap, value.propValue)
     }
 
     /// How two segments meet at a corner.
-    public func strokeLineJoin(_ value: PenLineJoin) -> Modified {
+    public func strokeLineJoin(_ value: LineJoin) -> Modified {
         setValue(.strokeLineJoin, value.propValue)
     }
 

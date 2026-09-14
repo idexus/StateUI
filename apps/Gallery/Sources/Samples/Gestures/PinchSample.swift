@@ -89,8 +89,8 @@ struct PinchSample: SampleContent, ExampleContent {
                     .scale(pinch)
             }
             .stroke(Palette.outline)
-            .strokeThickness(1)
-            .strokeShape(.roundRectangle(10))
+            .strokeWidth(1)
+            .shape(.roundedRectangle(10))
             .height(220)
             .onPinchUpdated { update in
                 reports += 1

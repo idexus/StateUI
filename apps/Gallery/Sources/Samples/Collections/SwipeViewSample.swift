@@ -43,7 +43,7 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                             .padding(14, 12)
                     }
                     .stroke(Palette.outline)
-                    .strokeShape(.roundRectangle(8))
+                    .shape(.roundedRectangle(8))
                     // The items are revealed BEHIND the content, so a row that
                     // does not paint itself shows them through.
                     .background(Palette.surface)
@@ -97,7 +97,7 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                         .padding(14, 12)
                 }
                 .stroke(Palette.outline)
-                .strokeShape(.roundRectangle(8))
+                .shape(.roundedRectangle(8))
                 .background(Palette.surface)
             }
             .topItems {
@@ -159,8 +159,8 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                         .padding(14, 12)
                     }
                     .stroke(Palette.outline)
-                    .strokeThickness(1)
-                    .strokeShape(.roundRectangle(8))
+                    .strokeWidth(1)
+                    .shape(.roundedRectangle(8))
                     // The items are revealed BEHIND the content, so a row that
                     // does not paint itself shows them through.
                     .background(Palette.surface)
@@ -225,8 +225,8 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
                 }
                 .stroke(Palette.outline)
-                .strokeThickness(1)
-                .strokeShape(.roundRectangle(8))
+                .strokeWidth(1)
+                .shape(.roundedRectangle(8))
                 .background(Palette.surface)
             }
             .topItems {

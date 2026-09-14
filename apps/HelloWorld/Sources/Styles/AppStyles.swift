@@ -19,7 +19,7 @@ enum AppStyles {
 
             Style<Button>()
                 .textColor(.white)
-                .background(Color(light: Color.fromArgb("#512BD4"), dark: Color.fromArgb("#7B5CE0")))
+                .background(Color(light: Color("#512BD4"), dark: Color("#7B5CE0")))
                 .fontSize(14)
                 .fontAttributes(.bold)
                 .cornerRadius(10)

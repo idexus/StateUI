@@ -3,8 +3,8 @@
 
 // A colour, held as what it IS: four channels.
 //
-// It is written as hex - `Color("#512BD4")`, `Color.fromArgb("#512BD4")` - as
-// channels - `Color.fromRgb(81, 43, 212)` - or by name, camelCased: `.red`,
+// It is written as hex - `Color("#512BD4")` - as channels -
+// `Color(red: 81, green: 43, blue: 212)` - or by name, camelCased: `.red`,
 // `.lightGray`, `.cornflowerBlue`.
 //
 // The parser is THIS side's, it reads hex and nothing else, and what crosses
@@ -61,16 +61,8 @@ public struct Color: Equatable, Sendable {
     /// the element wearing the colour is built - see `propValue`.
     let dark: Rgba?
 
-    /// A colour from the four channels, for a value coming BACK from the host
-    /// - where a stopped journey says how far it had walked. No dark half: what
-    /// the host reports is what is on the screen, which is one colour.
-    init(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8) {
-        light = Rgba(red: red, green: green, blue: blue, alpha: alpha)
-        dark = nil
-    }
-
     /// A colour from hex: "#RGB", "#ARGB", "#RRGGBB" or "#AARRGGBB", with or
-    /// without the leading `#`. `Color.fromArgb` says the same thing.
+    /// without the leading `#` - the alpha, when it is written, first.
     ///
     /// Hex and nothing else - a colour NAME is `Color.red` and its kin, which
     /// the compiler checks where a string could not. Anything else traps
@@ -107,31 +99,21 @@ public struct Color: Equatable, Sendable {
         self.dark = dark
     }
 
-    /// A colour from hex - "#RGB", "#ARGB", "#RRGGBB" or "#AARRGGBB".
+    /// A colour from its channels: red, green and blue, each 0-255, and an
+    /// alpha from 0, invisible, to 255, opaque - the default.
     ///
-    /// The same thing as `Color("#512BD4")`, under a name that says where the
-    /// alpha goes: first. Traps on anything that is not hex, as that
-    /// initializer does.
-    public static func fromArgb(_ hex: String) -> Color {
-        Color(hex)
-    }
-
-    /// Red, green and blue, each 0-255, fully opaque.
+    ///     Color(red: 81, green: 43, blue: 212)
+    ///     Color(red: 81, green: 43, blue: 212, alpha: 128)
     ///
-    ///     Color.fromRgb(81, 43, 212)
-    ///
-    /// A value outside 0-255 is held to the range rather than refused.
-    public static func fromRgb(_ red: Int, _ green: Int, _ blue: Int) -> Color {
-        fromRgba(red, green, blue, 255)
-    }
-
-    /// The same with an alpha, 0 being invisible and 255 opaque.
-    public static func fromRgba(_ red: Int, _ green: Int, _ blue: Int, _ alpha: Int) -> Color {
-        Color(Rgba(
-            red: channel(red),
-            green: channel(green),
-            blue: channel(blue),
-            alpha: channel(alpha)))
+    /// Whole numbers, as a channel holds them, so a fraction is refused where
+    /// it is written. A value outside 0-255 is held to the range rather than
+    /// refused.
+    public init(red: Int, green: Int, blue: Int, alpha: Int = 255) {
+        self.init(Rgba(
+            red: Color.channel(red),
+            green: Color.channel(green),
+            blue: Color.channel(blue),
+            alpha: Color.channel(alpha)))
     }
 
     /// The colour under the wire's own colour tag - four bytes, which colours
@@ -225,7 +207,7 @@ public struct Color: Equatable, Sendable {
 // MARK: - Named colors
 //
 // The named colours that come up in practice, each with its CSS name and
-// value. Anything else is one `Color.fromArgb("#…")` away - the full CSS list
+// value. Anything else is one `Color("#…")` away - the full CSS list
 // is 140 names, and repeating all of them here would be noise.
 
 extension Color {

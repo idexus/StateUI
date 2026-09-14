@@ -214,11 +214,11 @@ extension Color: StateValue {
             UInt8(min(max((value * 255).rounded(), 0), 255))
         }
 
-        self.init(
+        self.init(Rgba(
             red: channel(lanes[0]),
             green: channel(lanes[1]),
             blue: channel(lanes[2]),
-            alpha: channel(lanes[3]))
+            alpha: channel(lanes[3])))
     }
 
     /// Four.

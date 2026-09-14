@@ -908,17 +908,17 @@ final class AppKitMotionTests: XCTestCase {
 
         var initial = HostPatch(id: .manual("line"), type: .line)
         initial.properties[.aspect] = .enumeration(Aspect.center.rawValue)
-        initial.properties[.strokeDashArray] = .numbers([1, 1])
+        initial.properties[.strokeDashPattern] = .numbers([1, 1])
         renderer.applyForTesting(initial)
 
         var changed = HostPatch(id: .manual("line"), type: .line)
         changed.properties[.x2] = .number(20)
         changed.properties[.y2] = .number(10)
-        changed.properties[.strokeThickness] = .number(3)
+        changed.properties[.strokeWidth] = .number(3)
         changed.properties[.strokeDashOffset] = .number(3)
         changed.properties[.strokeMiterLimit] = .number(4)
         for property in [
-            Prop.x2, .y2, .strokeThickness, .strokeDashOffset, .strokeMiterLimit,
+            Prop.x2, .y2, .strokeWidth, .strokeDashOffset, .strokeMiterLimit,
         ] {
             changed.transitions[property] = HostTransition(motion: .eased(200, .linear))
         }

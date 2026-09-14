@@ -29,16 +29,16 @@ enum AppColors {
     // MARK: Swift
 
     /// Swift's own orange, exactly. For where nothing has to be read on it.
-    static let swiftOrange = Color.fromArgb("#F05138")
+    static let swiftOrange = Color("#F05138")
 
     /// The same hue, deep enough that white text on it passes WCAG AA (4.8:1).
     /// The interactive colour in the light theme.
-    static let swiftOrangeDeep = Color.fromArgb("#CE3F1C")
+    static let swiftOrangeDeep = Color("#CE3F1C")
 
     /// The same hue lifted for a dark background, where full-strength orange is
     /// heavy. White text on it measures 2.3:1 - `Palette.onAccent` says why the
     /// caption stays white regardless.
-    static let swiftOrangeLight = Color.fromArgb("#FF8A6B")
+    static let swiftOrangeLight = Color("#FF8A6B")
 
     /// The yellow the WINDOW ITSELF is painted with - read off a running
     /// window's minimise button on macOS, which is exactly this. The chrome's
@@ -50,22 +50,22 @@ enum AppColors {
     ///
     /// ONE SVG CARRIES THIS HEX BY HAND - `nav_surprise_chrome.svg` - because
     /// artwork cannot read a palette. Change it here and change it there.
-    static let windowYellow = Color.fromArgb("#FAC800")
+    static let windowYellow = Color("#FAC800")
 
     /// A warm amber - the light half of the colour the Transforms sample marks
     /// a size with.
-    static let amber = Color.fromArgb("#FF9E4F")
+    static let amber = Color("#FF9E4F")
 
     // MARK: Violet
 
     /// The brand violet - the bars, and the ground the accent stands on.
-    static let violet = Color.fromArgb("#512BD4")
+    static let violet = Color("#512BD4")
 
     /// The cool end of the identity gradient.
-    static let violetDeep = Color.fromArgb("#3A1BA0")
+    static let violetDeep = Color("#3A1BA0")
 
     /// The violet lifted for a dark background.
-    static let violetLight = Color.fromArgb("#A78BFA")
+    static let violetLight = Color("#A78BFA")
 
     // MARK: Neutrals, light theme
     //
@@ -73,57 +73,57 @@ enum AppColors {
     // greys; beside a true grey they do not.
 
     /// Body text: near-black, violet-tinted.
-    static let ink = Color.fromArgb("#14121C")
+    static let ink = Color("#14121C")
 
     /// Anything secondary. 6.3:1 on the page behind it.
-    static let inkMuted = Color.fromArgb("#5D5872")
+    static let inkMuted = Color("#5D5872")
 
     /// Outlines and dividers.
-    static let line = Color.fromArgb("#E5E1F0")
+    static let line = Color("#E5E1F0")
 
     /// The page. Tinted rather than white, which is what lets a white card LIFT
     /// off it without a shadow.
-    static let surface = Color.fromArgb("#F7F5FC")
+    static let surface = Color("#F7F5FC")
 
     /// A card, a code block - anything sitting on the page.
-    static let raised = Color.fromArgb("#FFFFFF")
+    static let raised = Color("#FFFFFF")
 
     /// Text and controls that are not available.
-    static let muted = Color.fromArgb("#B4AEC6")
+    static let muted = Color("#B4AEC6")
 
     /// The row you are on: a violet wash, well clear of both the page and a
     /// card, because "which page is this" has to be answerable at a glance.
-    static let selected = Color.fromArgb("#EBE6F9")
+    static let selected = Color("#EBE6F9")
 
     // MARK: Neutrals, dark theme
 
     /// Body text in the dark.
-    static let inkDark = Color.fromArgb("#F4F2FA")
+    static let inkDark = Color("#F4F2FA")
 
     /// Anything secondary, in the dark. 7.1:1 on the page behind it.
-    static let inkMutedDark = Color.fromArgb("#A09AB4")
+    static let inkMutedDark = Color("#A09AB4")
 
     /// Outlines and dividers, in the dark.
-    static let lineDark = Color.fromArgb("#2C2838")
+    static let lineDark = Color("#2C2838")
 
     /// The page in the dark: violet-black rather than grey-black.
-    static let surfaceDark = Color.fromArgb("#0D0B14")
+    static let surfaceDark = Color("#0D0B14")
 
     /// A card in the dark, one step up from the page.
-    static let raisedDark = Color.fromArgb("#17141F")
+    static let raisedDark = Color("#17141F")
 
     /// Not available, in the dark.
-    static let mutedDark = Color.fromArgb("#4A4459")
+    static let mutedDark = Color("#4A4459")
 
     /// The row you are on, in the dark. Lifted well past a card - a step of two
     /// or three points reads as nothing on a screen at low brightness.
-    static let selectedDark = Color.fromArgb("#2A2340")
+    static let selectedDark = Color("#2A2340")
 
     // MARK: Absolutes
 
     /// White, for text on the bar and on the accent.
-    static let white = Color.fromArgb("#FFFFFF")
+    static let white = Color("#FFFFFF")
 
     /// Black, for the few places that mean it.
-    static let black = Color.fromArgb("#000000")
+    static let black = Color("#000000")
 }

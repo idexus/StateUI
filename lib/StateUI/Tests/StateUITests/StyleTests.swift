@@ -594,7 +594,7 @@ final class StyleTests: XCTestCase {
     /// pair - and the element wearing it is built with the half the theme
     /// says. One sheet, made once, serves both themes.
     func testAColourWithADarkHalfIsWrittenAsBothAndBuiltAsOne() {
-        let themed = Color(light: .white, dark: Color.fromArgb("#1f1f1f"))
+        let themed = Color(light: .white, dark: Color("#1f1f1f"))
         let sheet = StyleSheet { Style<Label>().textColor(themed) }
 
         XCTAssertEqual(
@@ -989,7 +989,7 @@ final class StyleTests: XCTestCase {
 
         let sheet = StyleSheet {
             Style<Label>()
-                .textColor(Color(light: Color.fromArgb("#212121"), dark: .white))
+                .textColor(Color(light: Color("#212121"), dark: .white))
                 .fontSize(14)
 
             Style<Label>("Body").fontSize(16)
@@ -1002,20 +1002,20 @@ final class StyleTests: XCTestCase {
 
             Style<Button>()
                 .textColor(.white)
-                .background(Color.fromArgb("#512BD4"))
+                .background(Color("#512BD4"))
                 .cornerRadius(8)
                 .padding(14, 10)
                 .minimumHeight(44)
                 .visualState(.disabled) { $0
-                    .textColor(Color(light: Color.fromArgb("#141414"),
-                                     dark: Color.fromArgb("#C8C8C8")))
-                    .background(Color.fromArgb("#C8C8C8"))
+                    .textColor(Color(light: Color("#141414"),
+                                     dark: Color("#C8C8C8")))
+                    .background(Color("#C8C8C8"))
                 }
 
             Style<Border>()
-                .stroke(Color.fromArgb("#C8C8C8"))
-                .strokeThickness(1)
-                .strokeShape(.roundRectangle(12))
+                .stroke(Color("#C8C8C8"))
+                .strokeWidth(1)
+                .shape(.roundedRectangle(12))
         }
 
         var main = Node(type: "Window", children: [

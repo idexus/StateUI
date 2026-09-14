@@ -1909,12 +1909,12 @@ final class AppKitBorderView: AppKitSingleChildView {
         background: HostValue?,
         stroke: HostValue?,
         strokeWidth: Double?,
-        strokeShape: HostValue?
+        shape: HostValue?
     ) {
         fill = AppKitBrush(background) ?? AppKitBrush(color: backgroundColor)
         self.stroke = AppKitBrush(stroke) ?? AppKitBrush()
         self.strokeWidth = max(0, strokeWidth ?? 1)
-        shape = AppKitBorderShape(strokeShape)
+        self.shape = AppKitBorderShape(shape)
         needsDisplay = true
     }
 

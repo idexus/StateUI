@@ -137,7 +137,7 @@ final class DrivenWireTests: XCTestCase {
         .padding(inset.projectedValue)
 
         let shape = Rectangle()
-            .strokeThickness(number.projectedValue)
+            .strokeWidth(number.projectedValue)
             .strokeDashOffset(number.projectedValue)
             .strokeMiterLimit(number.projectedValue)
 

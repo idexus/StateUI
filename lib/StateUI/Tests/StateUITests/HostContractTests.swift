@@ -483,6 +483,43 @@ final class HostContractTests: XCTestCase {
     /// a caption - on a button, a menu or toolbar item, a page's tab - with its
     /// `iconPosition` and `iconSpacing`, and `Button(icon:)` when there is no
     /// caption at all.
+    func testBordersShapesAndDrawingSpeakInPlainWords() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+
+        XCTAssertTrue(properties.isSuperset(of: ["strokeWidth", "shape", "strokeDashPattern"]))
+        XCTAssertTrue(
+            properties.isDisjoint(with: ["strokeThickness", "strokeShape", "strokeDashArray"]),
+            "a line's width, a border's shape or a dash pattern keeps a second name")
+
+        let color = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Types/Color.swift"),
+            encoding: .utf8)
+        XCTAssertTrue(
+            color.contains("public init(red: Int, green: Int, blue: Int, alpha: Int = 255)"),
+            "a colour from its channels is Color(red:green:blue:alpha:)")
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            for former in [
+                "func strokeThickness(", "func strokeShape(", "func strokeDashArray(",
+                "enum StrokeShape", "case roundRectangle(", "enum PenLineCap", "enum PenLineJoin",
+                "func fontColor(", "func strokeSize(", "func drawString(",
+                "enum HorizontalAlignment", "enum VerticalAlignment",
+                "func fromArgb(", "func fromRgb(", "func fromRgba(",
+            ] {
+                XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
+            }
+        }
+    }
+
     func testAButtonWithAnIconIsAButton() throws {
         let tokenSource = try String(
             contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),

@@ -50,11 +50,11 @@ struct StateSample: SampleContent, ExampleContent {
                     }
                 }
                 .stroke(Palette.accent)
-                .strokeShape(.roundRectangle(10))
+                .shape(.roundedRectangle(10))
             }
         }
         .stroke(Palette.accent)
-        .strokeShape(.roundRectangle(12))
+        .shape(.roundedRectangle(12))
         """
 
     var content: any View {
@@ -118,15 +118,15 @@ struct StateSample: SampleContent, ExampleContent {
                 }
                 .padding(14)
                 .stroke(Palette.accent)
-                .strokeThickness(1)
-                .strokeShape(.roundRectangle(10))
+                .strokeWidth(1)
+                .shape(.roundedRectangle(10))
             }
             .spacing(14)
         }
         .padding(14)
         .stroke(Palette.accent)
-        .strokeThickness(1)
-        .strokeShape(.roundRectangle(12))
+        .strokeWidth(1)
+        .shape(.roundedRectangle(12))
     }
 
     var notes: Element? {

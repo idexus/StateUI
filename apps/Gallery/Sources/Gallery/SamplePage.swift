@@ -126,7 +126,7 @@ struct SamplePage: ContentView {
             }
         }
         .stroke(Palette.outline)
-        .strokeThickness(1)
-        .strokeShape(.roundRectangle(10))
+        .strokeWidth(1)
+        .shape(.roundedRectangle(10))
     }
 }
