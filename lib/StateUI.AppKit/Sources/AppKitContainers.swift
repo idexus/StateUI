@@ -1904,7 +1904,8 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
     }
 }
 
-/// A border that clips its background and outline to the requested shape.
+/// A border that clips its background, its outline and what it holds to the
+/// requested shape.
 @MainActor
 final class AppKitBorderView: AppKitSingleChildView {
     private var fill = AppKitBrush()
@@ -1923,7 +1924,37 @@ final class AppKitBorderView: AppKitSingleChildView {
         self.stroke = AppKitBrush(stroke) ?? AppKitBrush()
         self.strokeWidth = max(0, strokeWidth ?? 1)
         self.shape = AppKitBorderShape(shape)
+        clipToShape()
         needsDisplay = true
+    }
+
+    override func layout() {
+        super.layout()
+        clipToShape()
+    }
+
+    /// What the border holds is cut to its shape - a picture in a rounded card
+    /// has rounded corners - on the border's own layer, so the compositor clips
+    /// the views inside as well as the border's own drawing.
+    private func clipToShape() {
+        wantsLayer = true
+        clipsToBounds = true
+        guard let layer else { return }
+
+        switch shape {
+        case .rectangle:
+            layer.cornerRadius = 0
+            layer.mask = nil
+        case .rounded(let radius):
+            layer.cornerRadius = min(radius, min(bounds.width, bounds.height) / 2)
+            layer.mask = nil
+        case .ellipse:
+            layer.cornerRadius = 0
+            let mask = layer.mask as? CAShapeLayer ?? CAShapeLayer()
+            mask.frame = layer.bounds
+            mask.path = CGPath(ellipseIn: layer.bounds, transform: nil)
+            layer.mask = mask
+        }
     }
 
     override func draw(_ dirtyRect: NSRect) {

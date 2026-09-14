@@ -331,6 +331,36 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertGreaterThan(start.redComponent, start.blueComponent)
         XCTAssertGreaterThan(end.blueComponent, end.redComponent)
     }
+
+    /// A border cuts what it holds to its shape, on a layer of its own: a
+    /// picture in a rounded card has rounded corners, as the card does, and one
+    /// in an ellipse is cut by its outline.
+    @MainActor
+    func testABorderClipsWhatItHoldsToItsShape() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Border { ColorBox(Color("#FF0000")) }.shape(.roundedRectangle(16)).width(100).height(100)
+                Border { ColorBox(Color("#FF0000")) }.shape(.ellipse).width(100).height(60)
+                Border { ColorBox(Color("#FF0000")) }.width(100).height(40)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let borders = renderer.nativeViews(AppKitBorderView.self)
+        XCTAssertEqual(borders.count, 3)
+        borders.first?.window?.contentView?.layoutSubtreeIfNeeded()
+
+        let rounded = try XCTUnwrap(borders[0].layer, "the border clips on a layer of its own")
+        XCTAssertTrue(rounded.masksToBounds, "what the border holds is clipped")
+        XCTAssertEqual(rounded.cornerRadius, 16)
+
+        let ellipse = try XCTUnwrap(borders[1].layer)
+        let outline = try XCTUnwrap(ellipse.mask as? CAShapeLayer, "an ellipse cuts by its outline")
+        XCTAssertEqual(outline.path?.boundingBox, CGRect(x: 0, y: 0, width: 100, height: 60))
+
+        let plain = try XCTUnwrap(borders[2].layer)
+        XCTAssertTrue(plain.masksToBounds, "a rectangle clips to its bounds")
+        XCTAssertEqual(plain.cornerRadius, 0)
+    }
 }
 
 #endif
