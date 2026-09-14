@@ -18,8 +18,8 @@ extension ImageElement {
     /// How the picture fills the space - the choice between showing all of it
     /// and filling every corner.
     ///
-    /// `.aspectFit` shows the whole picture and leaves empty room on two sides;
-    /// `.aspectFill` fills the room and crops what will not fit. `.fill`
+    /// `.fit` shows the whole picture and leaves empty room on two sides;
+    /// `.fill` fills the room and crops what will not fit. `.fill`
     /// stretches, which distorts, and `.center` draws the picture at its own
     /// size in the middle, scaling nothing.
     public func aspect(_ value: Aspect) -> Modified {

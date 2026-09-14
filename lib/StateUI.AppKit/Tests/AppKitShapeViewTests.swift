@@ -11,7 +11,7 @@ final class AppKitShapeViewTests: XCTestCase {
     @MainActor
     func testLineKeepsAuthoredPointsAndScalesItsDashUnitsByStrokeWidth() {
         let view = AppKitShapeView(kind: .line)
-        view.frame = NSRect(x: 0, y: 0, width: 80, height: 40)
+        view.frame = NSRect(x: 0, y: 0, width: 72, height: 33)
         view.apply(
             fill: nil,
             stroke: brush(.cornflowerBlue),
@@ -21,7 +21,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineCap: PenLineCap.round.rawValue,
             lineJoin: PenLineJoin.miter.rawValue,
             miterLimit: 10,
-            aspect: Stretch.none.rawValue,
+            aspect: Aspect.center.rawValue,
             renderTransform: nil,
             geometry: .line(x1: 2, y1: 3, x2: 70, y2: 30))
 
@@ -46,7 +46,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineCap: 0,
             lineJoin: 0,
             miterLimit: 10,
-            aspect: Stretch.none.rawValue,
+            aspect: Aspect.center.rawValue,
             renderTransform: nil,
             geometry: .points([0, 0, 40, 0, 20, 30], fillRule: FillRule.evenOdd.rawValue))
 
@@ -59,7 +59,7 @@ final class AppKitShapeViewTests: XCTestCase {
     }
 
     @MainActor
-    func testUniformStretchCentersGeometryWithoutChangingItsProportions() {
+    func testAFittedShapeIsCentredWithoutChangingItsProportions() {
         let view = AppKitShapeView(kind: .polyline)
         view.apply(
             fill: nil,
@@ -70,7 +70,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineCap: 0,
             lineJoin: 0,
             miterLimit: 10,
-            aspect: Stretch.uniform.rawValue,
+            aspect: Aspect.fit.rawValue,
             renderTransform: nil,
             geometry: .points([0, 0, 100, 50], fillRule: FillRule.nonzero.rawValue))
 
@@ -92,7 +92,7 @@ final class AppKitShapeViewTests: XCTestCase {
             lineCap: 0,
             lineJoin: 0,
             miterLimit: 10,
-            aspect: Stretch.none.rawValue,
+            aspect: Aspect.center.rawValue,
             renderTransform: nil,
             geometry: .path("M 0 40 L 20 0 C 25 5 35 5 40 40 Z"))
 
@@ -116,11 +116,11 @@ final class AppKitShapeViewTests: XCTestCase {
             lineCap: 0,
             lineJoin: 0,
             miterLimit: 10,
-            aspect: Stretch.none.rawValue,
+            aspect: Aspect.center.rawValue,
             renderTransform: nil,
             geometry: .path("M 0 20 A 20 20 0 0 1 40 20"))
 
-        let path = view.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 40))
+        let path = view.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 20))
         let curves = (0..<path.elementCount)
             .map { path.element(at: $0) }
             .filter { $0.type == .cubicCurveTo }
@@ -142,12 +142,12 @@ final class AppKitShapeViewTests: XCTestCase {
         line.properties[.y2] = .number(22)
         line.properties[.strokeThickness] = .number(3)
         line.properties[.strokeDashArray] = .numbers([2, 1])
-        line.properties[.aspect] = .enumeration(Stretch.none.rawValue)
+        line.properties[.aspect] = .enumeration(Aspect.center.rawValue)
         renderer.applyForTesting(tree(line))
 
         let native = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("line")) as? AppKitShapeView)
-        let path = native.pathForTesting(in: NSRect(x: 0, y: 0, width: 50, height: 30))
+        let path = native.pathForTesting(in: NSRect(x: 0, y: 0, width: 42, height: 24))
 
         XCTAssertEqual(path.element(at: 0).points.first, NSPoint(x: 1, y: 2))
         XCTAssertEqual(path.element(at: 1).points.first, NSPoint(x: 41, y: 22))
@@ -164,7 +164,7 @@ final class AppKitShapeViewTests: XCTestCase {
         line.properties[.y1] = .number(2)
         line.properties[.x2] = .number(21)
         line.properties[.y2] = .number(12)
-        line.properties[.aspect] = .enumeration(Stretch.none.rawValue)
+        line.properties[.aspect] = .enumeration(Aspect.center.rawValue)
         line.properties[.renderTransform] = .values([
             .number(1), .number(0), .number(0),
             .number(1), .number(10), .number(20),
@@ -173,7 +173,7 @@ final class AppKitShapeViewTests: XCTestCase {
 
         let native = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("line")) as? AppKitShapeView)
-        let path = native.pathForTesting(in: NSRect(x: 0, y: 0, width: 50, height: 30))
+        let path = native.pathForTesting(in: NSRect(x: 0, y: 0, width: 22, height: 14))
 
         XCTAssertEqual(path.element(at: 0).points.first, NSPoint(x: 11, y: 22))
         XCTAssertEqual(path.element(at: 1).points.first, NSPoint(x: 31, y: 32))

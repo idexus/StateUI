@@ -572,7 +572,7 @@ private struct GroupFace: ContentView {
         Border {
             Grid {
                 Image(picture)
-                    .aspect(.aspectFill)
+                    .aspect(.fill)
 
                 Grid {
                     Label(title)

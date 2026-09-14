@@ -19,7 +19,7 @@ extension ImageButtonProperties {
 /// A button that is a picture, with no caption at all.
 ///
 ///     ImageButton("nav_media.png")
-///         .aspect(.aspectFit)
+///         .aspect(.fit)
 ///         .padding(12)
 ///         .onClicked { shown.toggle() }
 ///

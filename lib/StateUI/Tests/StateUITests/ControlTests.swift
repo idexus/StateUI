@@ -144,12 +144,12 @@ final class ControlTests: XCTestCase {
 
             ControlCase("Image", source: "Image.swift",
                 Image("tab_list.png")
-                    .aspect(.aspectFill)
+                    .aspect(.fill)
                     .isAnimating(true)),
 
             ControlCase("ImageButton", source: "ImageButton.swift",
                 ImageButton("tab_list.png")
-                    .aspect(.aspectFit)
+                    .aspect(.fit)
                     .borderColor(.gray)
                     .borderWidth(1)
                     .cornerRadius(8)
@@ -544,7 +544,7 @@ final class ControlTests: XCTestCase {
                         .strokeLineCap(.round)
                         .strokeLineJoin(.bevel)
                         .strokeMiterLimit(4)
-                        .aspect(.uniformToFill)
+                        .aspect(.fill)
                         // The one transform, on the geometry: a matrix with a
                         // lean in it exercises the part only a geometry draws.
                         .renderTransform(Self.leaned)

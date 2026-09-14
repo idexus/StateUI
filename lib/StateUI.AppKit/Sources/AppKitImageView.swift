@@ -10,7 +10,7 @@ import StateUI
 final class AppKitImageView: AppKitHitTestView {
     private let imageView = NSImageView()
 
-    private(set) var aspect: Aspect = .aspectFit
+    private(set) var aspect: Aspect = .fit
 
     var image: NSImage? { imageView.image }
     var animationPlaying: Bool { imageView.animates }
@@ -52,17 +52,17 @@ final class AppKitImageView: AppKitHitTestView {
         super.layout()
 
         switch aspect {
-        case .aspectFit:
+        case .fit:
             imageView.frame = bounds
             imageView.imageScaling = .scaleProportionallyUpOrDown
 
-        case .aspectFill:
-            imageView.frame = Self.aspectFillFrame(
+        case .fill:
+            imageView.frame = Self.fillFrame(
                 imageSize: imageView.image?.size ?? .zero,
                 bounds: bounds)
             imageView.imageScaling = .scaleProportionallyUpOrDown
 
-        case .fill:
+        case .stretch:
             imageView.frame = bounds
             imageView.imageScaling = .scaleAxesIndependently
 
@@ -72,7 +72,7 @@ final class AppKitImageView: AppKitHitTestView {
         }
     }
 
-    private static func aspectFillFrame(imageSize: NSSize, bounds: NSRect) -> NSRect {
+    private static func fillFrame(imageSize: NSSize, bounds: NSRect) -> NSRect {
         guard imageSize.width > 0, imageSize.height > 0,
               bounds.width > 0, bounds.height > 0 else {
             return bounds

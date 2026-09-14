@@ -1594,9 +1594,10 @@ extension ShapeProperties {
         setValue(.strokeMiterLimit, .number(value))
     }
 
-    /// What the shape does with the room it is given. This is a `Stretch`, not
-    /// the `Aspect` an Image has, despite the property name.
-    public func aspect(_ value: Stretch) -> Modified { setValue(.aspect, value.propValue) }
+    /// What the shape does with the room it is given - the `Aspect` an Image
+    /// takes too. `.fit`, the default, scales the drawing to fit and keeps its
+    /// proportions; `.center` keeps the size its own numbers say.
+    public func aspect(_ value: Aspect) -> Modified { setValue(.aspect, value.propValue) }
 }
 
 // MARK: - InputView

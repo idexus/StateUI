@@ -254,20 +254,20 @@ public enum PinType: Int32, Sendable {
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// How a picture fills the space an `Image` was given, when the two are not
-/// the same shape.
+/// How a picture or a shape fills the room it was given, when the two are not
+/// the same shape - what `.aspect` takes on an `Image` and on a shape alike.
 ///
 /// Something has to give: the space, the edges, or the proportions.
 public enum Aspect: Int32, Sendable {
     /// Fits it all in, keeping the proportions - so there may be space at the
     /// sides. The default.
-    case aspectFit = 0
+    case fit = 0
 
-    /// Fills the space, keeping the proportions - so the picture may be cropped.
-    case aspectFill = 1
+    /// Covers the room, keeping the proportions - so the edges may be cut off.
+    case fill = 1
 
-    /// Fills the space, proportions and all - so the picture may be stretched.
-    case fill = 2
+    /// Fills the room, proportions and all - so it may be stretched.
+    case stretch = 2
 
     /// Drawn at its own size, in the middle.
     case center = 3
@@ -492,27 +492,6 @@ public enum PenLineJoin: Int32, Sendable {
     var propValue: PropValue { .enumeration(rawValue) }
 }
 
-/// What a shape does with the room it is given - what `.aspect` takes on a
-/// shape. An Image's `.aspect` takes `Aspect` instead.
-public enum Stretch: Int32, Sendable {
-    /// Drawn at the size its own numbers say, whatever room there is.
-    case none = 0
-
-    /// Stretched to fill the room, in both directions independently - a circle
-    /// becomes an oval.
-    case fill = 1
-
-    /// Scaled to fit the room, keeping its proportions. The default for a
-    /// Path.
-    case uniform = 2
-
-    /// Scaled to cover the room, keeping its proportions, clipping what does not
-    /// fit.
-    case uniformToFill = 3
-
-    var propValue: PropValue { .enumeration(rawValue) }
-}
-
 /// Which parts of a self-crossing outline count as inside it.
 public enum FillRule: Int32, Sendable {
     /// Inside where a ray out of the shape crosses an odd number of edges - so
@@ -600,7 +579,6 @@ extension SafeAreaRegions: StateChoice {}
 extension SemanticHeadingLevel: StateChoice {}
 extension ScrollBarVisibility: StateChoice {}
 extension ScrollOrientation: StateChoice {}
-extension Stretch: StateChoice {}
 extension TextAlignment: StateChoice {}
 extension TextDecorations: StateChoice {}
 extension TextCase: StateChoice {}

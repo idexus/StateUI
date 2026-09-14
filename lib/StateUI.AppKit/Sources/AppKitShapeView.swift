@@ -39,7 +39,7 @@ final class AppKitShapeView: AppKitHitTestView {
     private var lineCap: Int32 = 0
     private var lineJoin: Int32 = 0
     private var miterLimit: CGFloat = 10
-    private var aspect: Int32 = 2
+    private var aspect: Int32 = 0
     private var renderTransform = CGAffineTransform.identity
     private var geometry: AppKitShapeGeometry
 
@@ -141,8 +141,11 @@ final class AppKitShapeView: AppKitHitTestView {
         configureStroke(on: path)
         guard stretchesAuthoredGeometry else { return path }
 
-        let transformed = applying(renderTransform, to: path)
-        return applyingStretch(to: transformed, in: bounds)
+        // The aspect places the authored drawing in the room, and the render
+        // transform then moves what was drawn - as a transform moves a view
+        // after its layout - so a translation shows under every aspect.
+        let placed = applyingAspect(to: path, in: bounds)
+        return applying(renderTransform, to: placed)
     }
 
     var dashPatternForTesting: [CGFloat] { dash.map { $0 * thickness } }
@@ -432,8 +435,12 @@ final class AppKitShapeView: AppKitHitTestView {
         return result
     }
 
-    private func applyingStretch(to path: NSBezierPath, in target: NSRect) -> NSBezierPath {
-        guard aspect != 0, path.elementCount > 0 else { return path }
+    /// Places the authored geometry in the room by the shape's `Aspect`, always
+    /// centred: `fit` (0) scales it to fit keeping its proportions, `fill` (1)
+    /// to cover, `stretch` (2) each axis on its own, and `center` (3) keeps the
+    /// size its own numbers say.
+    private func applyingAspect(to path: NSBezierPath, in target: NSRect) -> NSBezierPath {
+        guard path.elementCount > 0 else { return path }
         let source = path.bounds
         guard source.width > 0 || source.height > 0 else { return path }
 
@@ -442,10 +449,13 @@ final class AppKitShapeView: AppKitHitTestView {
         let scaleX: CGFloat
         let scaleY: CGFloat
         switch aspect {
-        case 1:
+        case 2:
             scaleX = source.width > 0 ? widthRatio : 1
             scaleY = source.height > 0 ? heightRatio : 1
         case 3:
+            scaleX = 1
+            scaleY = 1
+        case 1:
             let scale = max(
                 source.width > 0 ? widthRatio : 0,
                 source.height > 0 ? heightRatio : 0)

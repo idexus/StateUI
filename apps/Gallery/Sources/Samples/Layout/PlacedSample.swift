@@ -340,7 +340,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             Border {
                 Grid {
                     Image(ImageSource(card.art))
-                        .aspect(.aspectFill)
+                        .aspect(.fill)
 
                     VStack {
                         Label(card.name)
@@ -517,7 +517,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         Border {
             Grid {
                 Image(ImageSource(card.art))
-                    .aspect(.aspectFill)
+                    .aspect(.fill)
 
                 VStack {
                     // ONE LINE, whatever the card's width: a caption that

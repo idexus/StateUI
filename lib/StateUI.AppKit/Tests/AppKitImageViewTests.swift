@@ -9,12 +9,12 @@ import XCTest
 
 final class AppKitImageViewTests: XCTestCase {
     @MainActor
-    func testAspectFillCoversAndCentersWithoutDistortingTheImage() {
+    func testFillCoversAndCentresWithoutDistortingTheImage() {
         let view = AppKitImageView()
         view.frame = NSRect(x: 0, y: 0, width: 120, height: 60)
         view.apply(
             image: NSImage(size: NSSize(width: 100, height: 100)),
-            aspect: .aspectFill,
+            aspect: .fill,
             animationPlaying: false)
 
         view.layoutSubtreeIfNeeded()
@@ -32,12 +32,12 @@ final class AppKitImageViewTests: XCTestCase {
         let view = AppKitImageView()
         view.frame = NSRect(x: 0, y: 0, width: 60, height: 60)
 
-        view.apply(image: image, aspect: .aspectFit, animationPlaying: false)
+        view.apply(image: image, aspect: .fit, animationPlaying: false)
         view.layoutSubtreeIfNeeded()
         XCTAssertEqual(view.renderedImageFrame, view.bounds)
         XCTAssertEqual(view.nativeImageScaling, .scaleProportionallyUpOrDown)
 
-        view.apply(image: image, aspect: .fill, animationPlaying: false)
+        view.apply(image: image, aspect: .stretch, animationPlaying: false)
         view.layoutSubtreeIfNeeded()
         XCTAssertEqual(view.renderedImageFrame, view.bounds)
         XCTAssertEqual(view.nativeImageScaling, .scaleAxesIndependently)
@@ -53,13 +53,13 @@ final class AppKitImageViewTests: XCTestCase {
         let image = NSImage(size: NSSize(width: 42, height: 24))
         let view = AppKitImageView()
 
-        view.apply(image: image, aspect: .aspectFit, animationPlaying: true)
+        view.apply(image: image, aspect: .fit, animationPlaying: true)
 
         XCTAssertTrue(view.image === image)
         XCTAssertTrue(view.animationPlaying)
         XCTAssertEqual(view.intrinsicContentSize, image.size)
 
-        view.apply(image: nil, aspect: .aspectFit, animationPlaying: false)
+        view.apply(image: nil, aspect: .fit, animationPlaying: false)
 
         XCTAssertNil(view.image)
         XCTAssertFalse(view.animationPlaying)
@@ -95,7 +95,7 @@ final class AppKitImageViewTests: XCTestCase {
         var picture = HostPatch(id: .manual("picture"), type: .image)
         picture.properties = [
             .source: .string("picture.png"),
-            .aspect: .enumeration(Aspect.aspectFill.rawValue),
+            .aspect: .enumeration(Aspect.fill.rawValue),
             .isAnimating: .bool(true),
         ]
 
@@ -104,7 +104,7 @@ final class AppKitImageViewTests: XCTestCase {
         let native = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("picture")) as? AppKitImageView)
         XCTAssertNotNil(native.image)
-        XCTAssertEqual(native.aspect, .aspectFill)
+        XCTAssertEqual(native.aspect, .fill)
         XCTAssertTrue(native.animationPlaying)
     }
 }

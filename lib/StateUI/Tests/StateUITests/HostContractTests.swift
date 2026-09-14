@@ -455,6 +455,30 @@ final class HostContractTests: XCTestCase {
         }
     }
 
+    /// An image and a shape fill their room in one vocabulary: `.aspect(.fit)`,
+    /// `.fill`, `.stretch` or `.center` - no second enum for shapes and no case
+    /// that repeats its type.
+    func testAspectIsOneWordForImagesAndShapes() throws {
+        let enums = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Types/Enums.swift"),
+            encoding: .utf8)
+        for aspect in ["case fit = 0", "case fill = 1", "case stretch = 2", "case center = 3"] {
+            XCTAssertTrue(enums.contains(aspect), "Aspect does not declare `\(aspect)`")
+        }
+
+        let files = try FileManager.default
+            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .filter { $0.hasSuffix(".swift") }
+        for file in files {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            for former in ["enum Stretch", "Binding<Stretch>", "aspectFit", "aspectFill", "uniformToFill"] {
+                XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
+            }
+        }
+    }
+
     private func declaredNames(of vocabulary: String, in source: String) -> Set<String> {
         let marker = "= \(vocabulary)(\""
 

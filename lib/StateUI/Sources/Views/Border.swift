@@ -56,7 +56,7 @@ extension BorderProperties {
 
     // The rest of the stroke, which a Border carries as fully as a Shape does.
     // Written HERE rather than shared with the shape tier, because that tier
-    // also carries `fill`, `renderTransform` and a `Stretch` aspect - a drawn
+    // also carries `fill`, `renderTransform` and an `aspect` - a drawn
     // figure's, and none of them a Border's. The properties on the wire are
     // the same ones; `stroke` and `strokeThickness` above are this same pair
     // said twice.

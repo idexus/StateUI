@@ -605,20 +605,14 @@ public enum WireProbe {
     /// spellings come out of the library's enums, which is what keeps the two
     /// from ever disagreeing about a name.
     ///
-    /// Nil where the probe cannot honestly answer, and all three cases are
-    /// meant to print the bare number:
+    /// Nil where the probe cannot honestly answer, and both cases are meant to
+    /// print the bare number:
     ///
     ///   - a key that is not listed - an application's own vocabulary, or one
     ///     added to the library and not to this table, which is what
     ///     `testEveryEnumerationInASidecarIsSpelled` exists to catch;
     ///   - a member number the vocabulary does not have, which is a bug worth
     ///     seeing as a number;
-    ///   - `aspect`, which is `Aspect` on an image and `Stretch` on a shape.
-    ///     Two vocabularies, both numbered from 0, and the key alone cannot
-    ///     part them - so it prints `enum 2` rather than a spelling that would
-    ///     be wrong half the time. (`position` is the near miss that IS
-    ///     answerable: a gallery's position is a plain number and never gets
-    ///     here.)
     private static func spelling(of member: Int32, under key: String) -> String? {
         switch key {
         // The view tiers and the text mixins.
@@ -630,6 +624,8 @@ public enum WireProbe {
             return spelled(member, as: LineBreak.self)
         case Prop.textCase.name:
             return spelled(member, as: TextCase.self)
+        case Prop.aspect.name:
+            return spelled(member, as: Aspect.self)
         case Prop.type.name:
             return spelled(member, as: PinType.self)
         case Prop.safeAreaEdges.name:

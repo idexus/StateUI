@@ -795,7 +795,7 @@ extension Shape {
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func aspect(_ state: Binding<Stretch>) -> Modified {
+    public func aspect(_ state: Binding<Aspect>) -> Modified {
         plain(.aspect, by: state)
     }
 

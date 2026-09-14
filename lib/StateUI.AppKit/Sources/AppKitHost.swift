@@ -2657,7 +2657,7 @@ final class MountedNode: NSObject {
                 lineCap: enumeration(.strokeLineCap) ?? 0,
                 lineJoin: enumeration(.strokeLineJoin) ?? 0,
                 miterLimit: number(.strokeMiterLimit) ?? 10,
-                aspect: enumeration(.aspect) ?? 2,
+                aspect: enumeration(.aspect) ?? 0,
                 renderTransform: transformComponents(.renderTransform),
                 geometry: geometry)
         }
@@ -3357,7 +3357,7 @@ final class MountedNode: NSObject {
     }
 
     private func imageAspect(_ value: Int32?) -> Aspect {
-        value.flatMap(Aspect.init(rawValue:)) ?? .aspectFit
+        value.flatMap(Aspect.init(rawValue:)) ?? .fit
     }
 
     private func lineBreakMode(_ mode: Int32?) -> NSLineBreakMode {

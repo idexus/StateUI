@@ -94,7 +94,7 @@ final class DocumentationTests: XCTestCase {
     /// EVERY CASE OF A PUBLIC ENUM, which the check above cannot see: a case
     /// carries no `public` of its own, it inherits the enum's.
     ///
-    /// Every case gets a `///` of its own - `.aspectFit` against `.aspectFill`
+    /// Every case gets a `///` of its own - `.fit` against `.fill`
     /// is exactly the choice a list of bare names cannot help with. A case on
     /// the same line as others (`case a, b`) is one declaration and needs one
     /// comment.

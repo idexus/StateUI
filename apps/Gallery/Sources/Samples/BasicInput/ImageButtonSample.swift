@@ -19,7 +19,7 @@ struct ImageButtonSample: SampleContent, ExampleContent {
 
             HStack {
                 ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
-                    .aspect(.aspectFit)
+                    .aspect(.fit)
                     .width(64)
                     .height(64)
                     .borderColor(Palette.outline)
@@ -30,7 +30,7 @@ struct ImageButtonSample: SampleContent, ExampleContent {
                     .onReleased { pressed = false }
 
                 ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
-                    .aspect(.aspectFit)
+                    .aspect(.fit)
                     .width(64)
                     .height(64)
                     .cornerRadius(32)
@@ -47,7 +47,7 @@ struct ImageButtonSample: SampleContent, ExampleContent {
 
             HStack {
                 ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
-                    .aspect(.aspectFit)
+                    .aspect(.fit)
                     .width(64)
                     .height(64)
                     .padding(12)
@@ -59,7 +59,7 @@ struct ImageButtonSample: SampleContent, ExampleContent {
                     .onReleased { pressed = false }
 
                 ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
-                    .aspect(.aspectFit)
+                    .aspect(.fit)
                     .width(64)
                     .height(64)
                     .padding(12)

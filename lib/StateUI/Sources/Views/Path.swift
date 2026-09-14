@@ -5,13 +5,13 @@
 ///
 ///     Path("M 0,40 L 20,0 L 40,40 Z")
 ///         .fill(.gold)
-///         .aspect(.uniform)
+///         .aspect(.fit)
 ///
 /// `M` moves, `L` draws a line, `C` a curve, `A` an arc and `Z` closes the
 /// figure. The numbers are device units in the path's OWN space, and `.aspect`
 /// says what happens to that space in the room the layout gives it - a path
-/// drawn 40 wide fills a 200-wide cell under `.uniform` and stays 40 under
-/// `.none`.
+/// drawn 40 wide fills a 200-wide cell under `.fit` and stays 40 under
+/// `.center`.
 ///
 /// The data crosses as SVG text and the shared host parser normalizes it to
 /// absolute move, line, curve, arc and close commands. Native backends then

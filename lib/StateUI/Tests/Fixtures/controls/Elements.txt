@@ -40,7 +40,7 @@ VStack 1 arranged(3)
   zIndex: number 3
   on dragLeave=1 dragOver=2 dragStarting=3 drop=4 dropCompleted=5 panUpdated=6 pinchUpdated=7 pointerEntered=8 pointerExited=9 pointerMoved=10 pointerPressed=11 pointerReleased=12 swiped=13 tapped=14
   Ellipse 2
-    aspect: enum 3
+    aspect: enum fill(1)
     background: values [enum 1, color FFF5F5F5]
     fill: values [enum 3, numbers 0.3,0.3,0.8, number 0, color FFFFFFFF, number 1, color FF4682B4]
     renderTransform: values [number 1.5, number 0.375, number -0.25, number 0.9375, number 6, number 7]

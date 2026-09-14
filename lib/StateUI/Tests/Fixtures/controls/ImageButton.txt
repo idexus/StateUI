@@ -1,6 +1,6 @@
 generation 1 names +9
 ImageButton 1
-  aspect: enum 0
+  aspect: enum fit(0)
   borderColor: color FF808080
   borderWidth: number 1
   cornerRadius: number 8

@@ -871,7 +871,7 @@ final class AppKitMotionTests: XCTestCase {
         initial.properties[.y1] = .number(2)
         initial.properties[.x2] = .number(21)
         initial.properties[.y2] = .number(12)
-        initial.properties[.aspect] = .enumeration(Stretch.none.rawValue)
+        initial.properties[.aspect] = .enumeration(Aspect.center.rawValue)
         renderer.applyForTesting(initial)
 
         var changed = HostPatch(id: .manual("line"), type: .line)
@@ -881,17 +881,17 @@ final class AppKitMotionTests: XCTestCase {
 
         let shape = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("line")) as? AppKitShapeView)
-        var path = shape.pathForTesting(in: NSRect(x: 0, y: 0, width: 50, height: 30))
+        var path = shape.pathForTesting(in: NSRect(x: 0, y: 0, width: 22, height: 14))
         XCTAssertEqual(path.bounds.origin, NSPoint(x: 1, y: 2))
 
         now = 100
         renderer.advanceMotionsForTesting()
-        path = shape.pathForTesting(in: NSRect(x: 0, y: 0, width: 50, height: 30))
+        path = shape.pathForTesting(in: NSRect(x: 0, y: 0, width: 22, height: 14))
         XCTAssertEqual(path.bounds.origin, NSPoint(x: 6, y: 12))
 
         now = 200
         renderer.advanceMotionsForTesting()
-        path = shape.pathForTesting(in: NSRect(x: 0, y: 0, width: 50, height: 30))
+        path = shape.pathForTesting(in: NSRect(x: 0, y: 0, width: 22, height: 14))
         XCTAssertEqual(path.bounds.origin, NSPoint(x: 11, y: 22))
         XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
     }
@@ -907,7 +907,7 @@ final class AppKitMotionTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var initial = HostPatch(id: .manual("line"), type: .line)
-        initial.properties[.aspect] = .enumeration(Stretch.none.rawValue)
+        initial.properties[.aspect] = .enumeration(Aspect.center.rawValue)
         initial.properties[.strokeDashArray] = .numbers([1, 1])
         renderer.applyForTesting(initial)
 
@@ -926,7 +926,7 @@ final class AppKitMotionTests: XCTestCase {
 
         let line = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("line")) as? AppKitShapeView)
-        var path = line.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 20))
+        var path = line.pathForTesting(in: NSRect(x: 0, y: 0, width: 10, height: 5))
         XCTAssertEqual(path.bounds, .zero)
         XCTAssertEqual(path.lineWidth, 1, accuracy: 0.000_001)
         XCTAssertEqual(path.miterLimit, 10, accuracy: 0.000_001)
@@ -934,7 +934,7 @@ final class AppKitMotionTests: XCTestCase {
 
         now = 100
         renderer.advanceMotionsForTesting()
-        path = line.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 20))
+        path = line.pathForTesting(in: NSRect(x: 0, y: 0, width: 10, height: 5))
         XCTAssertEqual(path.bounds, NSRect(x: 0, y: 0, width: 10, height: 5))
         XCTAssertEqual(path.lineWidth, 2, accuracy: 0.000_001)
         XCTAssertEqual(path.miterLimit, 7, accuracy: 0.000_001)

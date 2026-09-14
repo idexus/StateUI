@@ -150,7 +150,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             Border {
                 Grid {
                     Image(ImageSource(card.art))
-                        .aspect(.aspectFill)
+                        .aspect(.fill)
 
                     Label(card.name)
                         .verticalAlignment(.end)
@@ -273,7 +273,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         Border {
             Grid {
                 Image(ImageSource(card.art))
-                    .aspect(.aspectFill)
+                    .aspect(.fill)
 
                 Label(card.name)
                     .fontSize(18)

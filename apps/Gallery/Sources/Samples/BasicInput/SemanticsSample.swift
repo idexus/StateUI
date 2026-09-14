@@ -103,7 +103,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 VStack {
                     ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
                         .automationId("semantics.bare")
-                        .aspect(.aspectFit)
+                        .aspect(.fit)
                         .width(64)
                         .height(64)
                         .borderColor(Palette.outline)
@@ -239,7 +239,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
     private var describedButton: any View {
         let button = ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
             .automationId("semantics.described")
-            .aspect(.aspectFit)
+            .aspect(.fit)
             .width(64)
             .height(64)
             .borderColor(Palette.outline)
