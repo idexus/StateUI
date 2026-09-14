@@ -72,8 +72,8 @@ struct TransformSample: SampleContent, ExampleContent {
                 // middle, which is what an anchor moves.
                 box(Family.turn)
                     .rotation(transformed ? 20 : 0)
-                    .anchorX(0)
-                    .anchorY(0)
+                    .pivotX(0)
+                    .pivotY(0)
             }
 
             // A WIDER GAP than the rows above: a scaled box is drawn outside
@@ -97,8 +97,8 @@ struct TransformSample: SampleContent, ExampleContent {
 
         func box(_ colour: Color) -> BoxView {
             BoxView(colour)
-                .widthRequest(44)
-                .heightRequest(44)
+                .width(44)
+                .height(44)
         }
 
         /// One colour per family, so the three rows read apart at a glance.
@@ -126,12 +126,12 @@ struct TransformSample: SampleContent, ExampleContent {
                 Label(transformed ? "every transform on" : "plain squares")
                     .fontSize(12)
                     .textColor(Palette.subtle)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 DebugInfoLabel()
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             // The same two parts in both chains; only the order differs, so
             // the only thing the row shows is that order is what a chain MEANS.
@@ -147,7 +147,7 @@ struct TransformSample: SampleContent, ExampleContent {
                     "move, then rotate")
             }
             .spacing(44)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             HStack {
                 piece(box(Family.turn).rotation(transformed ? 20 : 0), "rotation")
@@ -156,12 +156,12 @@ struct TransformSample: SampleContent, ExampleContent {
                 piece(
                     box(Family.turn)
                         .rotation(transformed ? 20 : 0)
-                        .anchorX(0)
-                        .anchorY(0),
+                        .pivotX(0)
+                        .pivotY(0),
                     "anchor 0,0")
             }
             .spacing(24)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             // The same square and the same factor three times, so the only
             // thing the row shows is which axis each modifier reaches - and a
@@ -173,7 +173,7 @@ struct TransformSample: SampleContent, ExampleContent {
                 piece(box(Family.size).scaleY(transformed ? 1.6 : 1), "scaleY")
             }
             .spacing(44)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
         }
         .spacing(22)
     }
@@ -220,8 +220,8 @@ struct TransformSample: SampleContent, ExampleContent {
     /// - Returns: the square, ready to be transformed.
     private func box(_ colour: Color) -> BoxView {
         BoxView(colour)
-            .widthRequest(44)
-            .heightRequest(44)
+            .width(44)
+            .height(44)
     }
 
     /// One piece with its caption, so a row reads as labelled examples rather

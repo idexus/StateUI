@@ -265,9 +265,9 @@ public protocol Walked: StateValue {}
 /// A CHOICE the host can be handed as a channel: an alignment, a keyboard, a
 /// line break, a set of flags. This library's own.
 ///
-///     @State private var side = LayoutOptions.start
+///     @State private var side = Alignment.start
 ///
-///     Label("Where am I?").horizontalOptions($side)
+///     Label("Where am I?").horizontalAlignment($side)
 ///
 ///     side = .center                  // the host moves it; nothing is rebuilt
 ///

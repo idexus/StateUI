@@ -19,7 +19,7 @@ struct SwitchSample: SampleContent, ExampleContent {
 
             HStack {
                 Label("Sound")
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 Switch($soundOn)
                     // Runs beside the binding's write-back, carrying what the
@@ -39,7 +39,7 @@ struct SwitchSample: SampleContent, ExampleContent {
             HStack {
                 Label("Sound")
                     .fontSize(16)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 Switch($soundOn)
                     .automationId("switch.sound")
@@ -49,7 +49,7 @@ struct SwitchSample: SampleContent, ExampleContent {
                     .onToggled { on in said = on ? "thrown on" : "thrown off" }
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             Label(soundOn ? "on" : "off")
                 .fontSize(15)

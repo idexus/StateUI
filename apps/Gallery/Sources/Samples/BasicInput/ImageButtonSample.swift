@@ -20,8 +20,8 @@ struct ImageButtonSample: SampleContent, ExampleContent {
             HStack {
                 ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
                     .aspect(.aspectFit)
-                    .widthRequest(64)
-                    .heightRequest(64)
+                    .width(64)
+                    .height(64)
                     .borderColor(Palette.outline)
                     .borderWidth(1)
                     .cornerRadius(12)
@@ -31,8 +31,8 @@ struct ImageButtonSample: SampleContent, ExampleContent {
 
                 ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
                     .aspect(.aspectFit)
-                    .widthRequest(64)
-                    .heightRequest(64)
+                    .width(64)
+                    .height(64)
                     .cornerRadius(32)
                     .onClicked { taps += 1 }
             }
@@ -48,8 +48,8 @@ struct ImageButtonSample: SampleContent, ExampleContent {
             HStack {
                 ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
                     .aspect(.aspectFit)
-                    .widthRequest(64)
-                    .heightRequest(64)
+                    .width(64)
+                    .height(64)
                     .padding(12)
                     .borderColor(Palette.outline)
                     .borderWidth(1)
@@ -60,19 +60,19 @@ struct ImageButtonSample: SampleContent, ExampleContent {
 
                 ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
                     .aspect(.aspectFit)
-                    .widthRequest(64)
-                    .heightRequest(64)
+                    .width(64)
+                    .height(64)
                     .padding(12)
                     .backgroundColor(Palette.accent)
                     .cornerRadius(32)
                     .onClicked { taps += 1 }
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             Label(pressed ? "Held down" : "Tapped \(taps) time\(taps == 1 ? "" : "s")")
                 .fontSize(14)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
         }
         .spacing(12)
     }

@@ -54,7 +54,7 @@ extension BoxViewProperties {
 ///     BoxView()
 ///         .color(.cornflowerBlue)
 ///         .cornerRadius(8)
-///         .heightRequest(40)
+///         .height(40)
 ///
 /// The simplest thing a host draws: a divider, a bar of a chart, a placeholder,
 /// or a deliberate piece of empty space. It has no content and no children -
@@ -68,8 +68,8 @@ public struct BoxView: View, BoxViewProperties {
         node = Node(type: .boxView)
     }
 
-    /// A rectangle drawn in `color`. Sized by `.widthRequest` and
-    /// `.heightRequest`, or by the room the layout gives it.
+    /// A rectangle drawn in `color`. Sized by `.width` and
+    /// `.height`, or by the room the layout gives it.
     public init(_ color: Color) {
         node = Node(type: .boxView, props: [.color: color.propValue])
     }

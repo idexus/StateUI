@@ -17,7 +17,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
             backgroundColor: color FF512BD4
             cornerRadius: number 8
             isEnabled: false
-            minimumHeightRequest: number 44
+            minimumHeight: number 44
             padding: numbers 14,10,14,10
             text: string "Save"
             textColor: color FFFFFFFF

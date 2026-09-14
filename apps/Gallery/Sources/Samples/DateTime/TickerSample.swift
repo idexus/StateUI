@@ -75,7 +75,7 @@ struct TickerSample: SampleContent, ExampleContent {
                     .onClicked { ticker.reset() }
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             HStack {
                 ForEach([10, 30, 60]) { length in
@@ -89,7 +89,7 @@ struct TickerSample: SampleContent, ExampleContent {
                 }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
         }
         .spacing(12)
         .onDestroying { ticker.stop() }

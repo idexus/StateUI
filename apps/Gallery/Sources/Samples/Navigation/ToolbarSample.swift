@@ -193,7 +193,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     ? "Add asks first - `.priority(0)`, against Save's 1"
                     : "Save asks first - `.priority(0)`, against Add's 1")
                     .fontSize(14)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
             }
             .spacing(10)
         }

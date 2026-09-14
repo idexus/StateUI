@@ -418,7 +418,7 @@ extension Node {
             // body ends on, which is the element the host holds.
             node.engines += written.engines
 
-            // And the same for a SLOT written on the view - a `.contextFlyout`,
+            // And the same for a SLOT written on the view - a `.contextMenu`,
             // which is a child rather than a property. Appended, so what the
             // view is made of keeps the positions it was built with. Without
             // this the modifier compiles, renders nothing and says nothing,

@@ -116,7 +116,7 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                         lastAct = "Restored the card"
                     }
             }
-            .heightRequest(90)
+            .height(90)
 
             Label(rows.isEmpty ? "Every row deleted" : lastAct)
 
@@ -147,13 +147,13 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                         HStack {
                             Label(starred.contains(row) ? "★ \(row)" : row)
                                 .fontSize(15)
-                                .verticalOptions(.center)
+                                .verticalAlignment(.center)
 
                             Label("threshold \(Int(needed))")
                                 .fontSize(12)
                                 .textColor(Palette.subtle)
-                                .horizontalOptions(.end)
-                                .verticalOptions(.center)
+                                .horizontalAlignment(.end)
+                                .verticalAlignment(.center)
                         }
                         .spacing(12)
                         .padding(14, 12)
@@ -222,7 +222,7 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                     }
                     .spacing(4)
                     .padding(14, 12)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
                 }
                 .stroke(Palette.outline)
                 .strokeThickness(1)
@@ -245,22 +245,22 @@ struct SwipeViewSample: SampleContent, ExampleContent {
                         lastAct = "Restored the card"
                     }
             }
-            .heightRequest(90)
+            .height(90)
 
             Label(rows.isEmpty ? "Every row deleted" : lastAct)
                 .fontSize(13)
                 .textColor(Palette.subtle)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             Label(travel)
                 .fontSize(12)
                 .textColor(Palette.subtle)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             Button("Put them back")
                 .fontSize(13)
                 .padding(16, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .isEnabled(rows.count < 3)
                 .onClicked {
                     rows = ["Alpha", "Beta", "Gamma"]

@@ -14,7 +14,7 @@ extension ScrollViewProperties {
     /// `.neither` is for a scroller with NOTHING to scroll - an emptied list.
     /// Told that, a scroller goes back to the beginning and cannot be moved
     /// again from either side - so one merely being stopped under the reader
-    /// keeps its way and says `.inputTransparent(true)` instead, which stops
+    /// keeps its way and says `.ignoresInput(true)` instead, which stops
     /// the hand and leaves the scroller where it stands.
     public func orientation(_ value: ScrollOrientation) -> Modified {
         setValue(.orientation, value.propValue)

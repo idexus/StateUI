@@ -1,28 +1,28 @@
 generation 1 names +101
 VStack 1 arranged(3)
   allowDrop: true
-  anchorX: number 0.25
-  anchorY: number 0.75
   backgroundColor: color FFF5F5F5
   canDrag: true
-  cascadeInputTransparent: false
+  clipsContent: true
   dragText: string "Alpha"
-  flowDirection: enum rightToLeft(2)
-  heightRequest: number 100
-  horizontalOptions: enum center(1)
-  inputTransparent: false
-  isClippedToBounds: true
+  height: number 100
+  horizontalAlignment: enum center(1)
+  ignoresInput: false
   isEnabled: false
   isVisible: true
+  layoutDirection: enum rightToLeft(2)
+  letsInputThrough: true
   margin: numbers 4,8,4,8
-  maximumHeightRequest: number 300
-  maximumWidthRequest: number 400
-  minimumHeightRequest: number 25
-  minimumWidthRequest: number 50
+  maximumHeight: number 300
+  maximumWidth: number 400
+  minimumHeight: number 25
+  minimumWidth: number 50
   numberOfTapsRequired: number 2
   opacity: number 0.5
   padding: numbers 24,16,24,16
   panTouchCount: number 1
+  pivotX: number 0.25
+  pivotY: number 0.75
   rotation: number 15
   rotationX: number 30
   rotationY: number 45
@@ -35,8 +35,8 @@ VStack 1 arranged(3)
   swipeThreshold: number 60
   translationX: number 10
   translationY: number 20
-  verticalOptions: enum fill(3)
-  widthRequest: number 200
+  verticalAlignment: enum fill(3)
+  width: number 200
   zIndex: number 3
   on dragLeave=1 dragOver=2 dragStarting=3 drop=4 dropCompleted=5 panUpdated=6 pinchUpdated=7 pointerEntered=8 pointerExited=9 pointerMoved=10 pointerPressed=11 pointerReleased=12 swiped=13 tapped=14
   Ellipse 2

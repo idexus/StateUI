@@ -22,7 +22,7 @@ struct SectionTitle: ContentView {
             .fontSize(13)
             .fontAttributes(.bold)
             .textColor(Palette.subtle)
-            .verticalOptions(.center)
+            .verticalAlignment(.center)
     }
 }
 
@@ -43,7 +43,7 @@ struct ExampleTitle: ContentView {
             .fontSize(17)
             .fontAttributes(.bold)
             .textColor(Palette.accent)
-            .verticalOptions(.center)
+            .verticalAlignment(.center)
     }
 }
 
@@ -69,8 +69,8 @@ struct WarningMark: ContentView {
 
     var content: any View {
         Image("warning.png")
-            .widthRequest(side)
-            .heightRequest(side)
-            .verticalOptions(.center)
+            .width(side)
+            .height(side)
+            .verticalAlignment(.center)
     }
 }

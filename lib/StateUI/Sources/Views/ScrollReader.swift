@@ -284,7 +284,7 @@ public struct ScrollReader: ContentView {
             Grid {
                 content()
             }
-            .inputTransparent(true)
+            .ignoresInput(true)
 
             FrameReader { room in
                 ScrollView {
@@ -387,8 +387,8 @@ public struct ScrollReader: ContentView {
                         }
                     } else {
                         BoxView(Color("#00000000"))
-                            .widthRequest(long)
-                            .heightRequest(tall)
+                            .width(long)
+                            .height(tall)
                             .motion(.none)
                             .tapping(tap)
                             .dragging(drag)

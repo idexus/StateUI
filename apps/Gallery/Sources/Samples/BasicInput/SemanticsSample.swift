@@ -79,7 +79,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             .automationExcludedWithChildren(true)
 
             BoxView(Palette.outline)
-                .heightRequest(1)
+                .height(1)
                 .automationIsInAccessibleTree(false)
         }
 
@@ -104,8 +104,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     ImageButton(light: "nav_media.png", dark: "nav_media_dark.png")
                         .automationId("semantics.bare")
                         .aspect(.aspectFit)
-                        .widthRequest(64)
-                        .heightRequest(64)
+                        .width(64)
+                        .height(64)
                         .borderColor(Palette.outline)
                         .borderWidth(1)
                         .cornerRadius(12)
@@ -123,7 +123,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                         .horizontalTextAlignment(.center)
                 }
                 .spacing(4)
-                .widthRequest(150)
+                .width(150)
 
                 VStack {
                     describedButton
@@ -140,17 +140,17 @@ struct SemanticsSample: SampleContent, ExampleContent {
                         .horizontalTextAlignment(.center)
                 }
                 .spacing(4)
-                .widthRequest(150)
+                .width(150)
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             Label("Tapped \(taps) time\(taps == 1 ? "" : "s")")
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
 
             SwitchRow("Describe the second button", $described)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             SectionTitle("A heading is what this says it is")
 
@@ -174,7 +174,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 .automationId("semantics.announce")
                 .fontSize(13)
                 .padding(16, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked {
                     let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
                     try await SemanticScreenReader.announce(words)
@@ -221,11 +221,11 @@ struct SemanticsSample: SampleContent, ExampleContent {
                 .automationExcludedWithChildren(true)
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             // A rule is decoration: a stop that would waste the reader's time.
             BoxView(Palette.outline)
-                .heightRequest(1)
+                .height(1)
                 .automationIsInAccessibleTree(false)
         }
         .spacing(12)
@@ -240,8 +240,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
         let button = ImageButton(light: "nav_layout.png", dark: "nav_layout_dark.png")
             .automationId("semantics.described")
             .aspect(.aspectFit)
-            .widthRequest(64)
-            .heightRequest(64)
+            .width(64)
+            .height(64)
             .borderColor(Palette.outline)
             .borderWidth(1)
             .cornerRadius(12)

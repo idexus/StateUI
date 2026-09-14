@@ -118,7 +118,7 @@ private struct WebBrowserPart: ExampleContent {
                     .onClicked { try await browser.reload() }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
             .gridRow(0)
 
             // The browser takes the STAR row - as tall as the window leaves -
@@ -151,7 +151,7 @@ private struct WebBrowserPart: ExampleContent {
 
             Button("Title?")
                 .padding(14, 8)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked {
                     answer = try await browser.evaluateJavaScript("document.title")
                 }

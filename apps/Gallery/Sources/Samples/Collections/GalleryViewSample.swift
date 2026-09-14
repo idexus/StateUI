@@ -153,9 +153,9 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                         .aspect(.aspectFill)
 
                     Label(card.name)
-                        .verticalOptions(.end)
+                        .verticalAlignment(.end)
                 }
-                .isClippedToBounds(true)
+                .clipsContent(true)
             }
             .strokeShape(.roundRectangle(16))
         }
@@ -180,7 +180,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             // The cards stay ON the board: one mid-crossing between two shapes,
             // or turned far out in a small room, is cut at the board's edge
             // rather than painted over the page.
-            .isClippedToBounds(true)
+            .clipsContent(true)
 
             // A LIVE READING, so it stays with the example rather than going to
             // the notes: the position binding is written as the run moves - and
@@ -199,7 +199,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .position(shown)
                     .indicatorColor(Palette.outline)
                     .selectedIndicatorColor(Palette.accent)
-                    .horizontalOptions(.center)
+                    .horizontalAlignment(.center)
 
                 Label("\(Self.cards[min(max(shown, 0), Self.cards.count - 1)].name) · "
                     + "card \(shown + 1) of \(Self.cards.count) · \(opened)")
@@ -216,7 +216,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 // one is drawn cut short until something else makes it measure
                 // again.
                 Button(Self.shapes[shape].1)
-                    .widthRequest(88)
+                    .width(88)
                     .margin(4, 0)
                     .onClicked { shape = (shape + 1) % Self.shapes.count }
 
@@ -240,7 +240,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .margin(4, 0)
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
             .gridRow(2)
         }
         .rowDefinitions(.star, .auto, .auto)
@@ -282,9 +282,9 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .lineBreakMode(.tailTruncation)
                     .padding(12, 10)
                     .backgroundColor(Color("#B3000000"))
-                    .verticalOptions(.end)
+                    .verticalAlignment(.end)
             }
-            .isClippedToBounds(true)
+            .clipsContent(true)
         }
         .strokeThickness(0)
         .strokeShape(.roundRectangle(16))

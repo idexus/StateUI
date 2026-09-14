@@ -120,7 +120,7 @@ struct EntrySample: SampleContent, ExampleContent {
             Button(selectAll ? "Clear the selection" : "Select the lot")
                 .fontSize(13)
                 .padding(16, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { selectAll.toggle() }
 
             Entry("read only")

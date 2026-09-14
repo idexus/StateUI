@@ -622,8 +622,8 @@ public enum WireProbe {
     private static func spelling(of member: Int32, under key: String) -> String? {
         switch key {
         // The view tiers and the text mixins.
-        case Prop.horizontalOptions.name, Prop.verticalOptions.name:
-            return spelled(member, as: LayoutOptions.self)
+        case Prop.horizontalAlignment.name, Prop.verticalAlignment.name:
+            return spelled(member, as: Alignment.self)
         case Prop.horizontalTextAlignment.name, Prop.verticalTextAlignment.name:
             return spelled(member, as: TextAlignment.self)
         case Prop.lineBreakMode.name:
@@ -634,8 +634,8 @@ public enum WireProbe {
             return spelled(member, as: PinType.self)
         case Prop.safeAreaEdges.name:
             return spelled(member, as: SafeAreaRegions.self)
-        case Prop.flowDirection.name:
-            return spelled(member, as: FlowDirection.self)
+        case Prop.layoutDirection.name:
+            return spelled(member, as: LayoutDirection.self)
         case Prop.semanticHeadingLevel.name:
             return spelled(member, as: SemanticHeadingLevel.self)
 

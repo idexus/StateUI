@@ -418,22 +418,19 @@ struct InspectorPanel: ContentView {
             return Grid { panel.gridRow(1).gridColumn(1) }
                 .rowDefinitions(.absolute(Look.bar), .star)
                 .columnDefinitions(.star, .absolute(Look.side))
-                .inputTransparent(true)
-                .cascadeInputTransparent(false)
+                .letsInputThrough(true)
         }
 
         if collapsed {
             // One line along the bottom, as tall as what it says.
             return Grid { panel.gridRow(1) }
                 .rowDefinitions(.star, .auto)
-                .inputTransparent(true)
-                .cascadeInputTransparent(false)
+                .letsInputThrough(true)
         }
 
         return Grid { panel.gridRow(1) }
             .rowDefinitions(.star(wide ? 1.25 : 1), .star(1))
-            .inputTransparent(true)
-            .cascadeInputTransparent(false)
+            .letsInputThrough(true)
     }
 }
 
@@ -628,7 +625,7 @@ struct InspectorView: ContentView {
                 Look.icon(Look.folding, "Collapse") { model.fold(scene) }
                 Look.icon(Look.closing, "Close", close)
             }
-            .verticalOptions(.start)
+            .verticalAlignment(.start)
             .gridColumn(1)
         }
         .columnDefinitions(.star, .auto)
@@ -671,7 +668,7 @@ struct InspectorView: ContentView {
             return Label("Choose a render to see what it built.")
                 .fontSize(12)
                 .textColor(Look.subtle)
-                .verticalOptions(.start)
+                .verticalAlignment(.start)
         }
 
         let entries = pass.entries.filter { $0.scene == scene }
@@ -688,7 +685,7 @@ struct InspectorView: ContentView {
                         .fontSize(13)
                         .fontAttributes(.bold)
                         .textColor(Look.ink)
-                        .verticalOptions(.center)
+                        .verticalAlignment(.center)
                 }
                 .spacing(8)
 
@@ -763,7 +760,7 @@ struct InspectorStrip: ContentView {
                         .margin(8, 4)
                 }
             }
-            .verticalOptions(.center)
+            .verticalAlignment(.center)
             .gridColumn(0)
 
             HStack {
@@ -774,7 +771,7 @@ struct InspectorStrip: ContentView {
                     }
                 }
             }
-            .verticalOptions(.center)
+            .verticalAlignment(.center)
             .gridColumn(1)
         }
         .columnDefinitions(.star, .auto)
@@ -839,7 +836,7 @@ private struct Branch: ContentView {
             .textColor(colour)
             .lineBreakMode(.tailTruncation)
             .padding(Double(entry.depth) * 12 + 6, 2)
-            .horizontalOptions(.start)
+            .horizontalAlignment(.start)
     }
 }
 
@@ -893,14 +890,14 @@ enum Look {
                 .stroke(ink)
                 .strokeThickness(1.5)
                 .strokeLineCap(.round)
-                .widthRequest(12)
-                .heightRequest(12)
-                .horizontalOptions(.center)
-                .verticalOptions(.center)
-                .inputTransparent(true)
+                .width(12)
+                .height(12)
+                .horizontalAlignment(.center)
+                .verticalAlignment(.center)
+                .ignoresInput(true)
         }
-        .widthRequest(28)
-        .heightRequest(24)
+        .width(28)
+        .height(24)
         .backgroundColor(.transparent)
         .semanticDescription(words)
         .automationId("stateui.inspector.\(words.lowercased())")

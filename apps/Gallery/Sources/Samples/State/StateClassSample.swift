@@ -145,7 +145,7 @@ struct StateClassSample: SampleContent, ExampleContent {
                     .onClicked { basket.items.removeLast() }
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             NoteRow(basket: $basket)
 

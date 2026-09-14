@@ -102,12 +102,12 @@ struct HostTimeSample: SampleContent, ExampleContent {
                 HStack {
                     Label(clock.0)
                         .fontSize(14)
-                        .horizontalOptions(.start)
+                        .horizontalAlignment(.start)
 
                     Label(clock.1)
                         .fontSize(14)
                         .textColor(Palette.accent)
-                        .horizontalOptions(.end)
+                        .horizontalAlignment(.end)
                         .horizontalTextAlignment(.end)
                 }
                 .spacing(12)
@@ -116,7 +116,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
             Button("Read again")
                 .fontSize(13)
                 .padding(16, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { try await read() }
         }
         .spacing(10)

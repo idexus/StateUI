@@ -10,9 +10,9 @@ private func tileStrip() -> ScrollView {
                 Label("Tile \(tile)")
                     .fontSize(13)
                     .horizontalTextAlignment(.center)
-                    .verticalOptions(.center)
-                    .widthRequest(140)
-                    .heightRequest(100)
+                    .verticalAlignment(.center)
+                    .width(140)
+                    .height(100)
                     .backgroundColor(Palette.surface)
             }
         }
@@ -84,7 +84,7 @@ private struct DescribedOffset: ContentView {
                 .gridRow(2)
 
             DebugInfoLabel()
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .horizontalTextAlignment(.center)
                 .gridRow(3)
 
@@ -126,7 +126,7 @@ private struct PacedOffset: ContentView {
                 .gridRow(2)
 
             DebugInfoLabel()
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .horizontalTextAlignment(.center)
                 .gridRow(3)
 
@@ -163,7 +163,7 @@ private struct DrivenOffset: ContentView {
                 .gridRow(2)
 
             DebugInfoLabel()
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .horizontalTextAlignment(.center)
                 .gridRow(3)
 
@@ -364,7 +364,7 @@ private struct OffsetStrips: ExampleContent {
                     .onClicked { try await move(to: 240) }
             }
             .spacing(16)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
             .gridRow(1)
         }
         .rowDefinitions(.star, .auto)
@@ -438,8 +438,8 @@ private struct GridStrips: ExampleContent {
                 HStack {
                     ForEach(1...40) { tile in
                         Label("Tile \\(tile)")
-                            .widthRequest(140)
-                            .heightRequest(100)
+                            .width(140)
+                            .height(100)
                     }
                 }
                 .spacing(20)
@@ -473,7 +473,7 @@ private struct GridStrips: ExampleContent {
                 }
                 .rowDefinitions(.auto, .auto, .auto, .auto, .auto)
                 .rowSpacing(10)
-                .verticalOptions(.center)
+                .verticalAlignment(.center)
             }
         }
         """
@@ -518,7 +518,7 @@ private struct GridStrips: ExampleContent {
         .rowSpacing(10)
         // The bands are as tall as they need to be, so the pair sits in the
         // middle of whatever height the window gave the cell.
-        .verticalOptions(.center)
+        .verticalAlignment(.center)
     }
 
     var notes: Element? {
@@ -566,7 +566,7 @@ private struct ThrowStrips: ExampleContent {
                 }
                 .rowDefinitions(.auto, .auto, .auto, .auto)
                 .rowSpacing(10)
-                .verticalOptions(.center)
+                .verticalAlignment(.center)
             }
         }
         """
@@ -598,7 +598,7 @@ private struct ThrowStrips: ExampleContent {
         }
         .rowDefinitions(.auto, .auto, .auto, .auto)
         .rowSpacing(10)
-        .verticalOptions(.center)
+        .verticalAlignment(.center)
     }
 
     var notes: Element? {

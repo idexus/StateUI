@@ -94,7 +94,7 @@ private struct GridPlacement: ExampleContent {
             // Changing a definition patches the grid in place: the cells keep
             // their controls and only the column widths move.
             SwitchRow("Second column twice as wide", $wideSecondColumn)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
         }
         .spacing(12)
     }
@@ -136,11 +136,11 @@ private struct SharedCell: ExampleContent {
             // nearer the front. Left alone, the one written LAST wins.
             Grid {
                 BoxView(Color.fromArgb("#E53935"))
-                    .horizontalOptions(.start)
+                    .horizontalAlignment(.start)
                     .zIndex(redInFront ? 1 : 0)
 
                 BoxView(Color.fromArgb("#1E88E5"))
-                    .horizontalOptions(.end)
+                    .horizontalAlignment(.end)
                     .zIndex(redInFront ? 0 : 1)
             }
 
@@ -154,23 +154,23 @@ private struct SharedCell: ExampleContent {
             // overlap, and `zIndex` is what decides which is drawn on top.
             Grid {
                 BoxView(Color.fromArgb("#E53935"))
-                    .widthRequest(150)
-                    .heightRequest(70)
-                    .horizontalOptions(.start)
+                    .width(150)
+                    .height(70)
+                    .horizontalAlignment(.start)
                     .zIndex(redInFront ? 1 : 0)
 
                 BoxView(Color.fromArgb("#1E88E5"))
-                    .widthRequest(150)
-                    .heightRequest(70)
-                    .horizontalOptions(.end)
+                    .width(150)
+                    .height(70)
+                    .horizontalAlignment(.end)
                     .zIndex(redInFront ? 0 : 1)
             }
-            .heightRequest(70)
-            .maximumWidthRequest(240)
-            .horizontalOptions(.center)
+            .height(70)
+            .maximumWidth(240)
+            .horizontalAlignment(.center)
 
             SwitchRow("Red in front", $redInFront)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
         }
         .spacing(12)
     }

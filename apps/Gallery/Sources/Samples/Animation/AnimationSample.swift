@@ -123,7 +123,7 @@ struct AnimationSample: SampleContent, ExampleContent {
             .backgroundColor(Palette.brand)
             .stroke(Palette.accent)
             .strokeShape(.roundRectangle(32))
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             Picker(Self.curves)
                 .automationId("animation.curve")
@@ -164,7 +164,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                 }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             // Whichever of them is moving; a state standing still is
             // unaffected. Each stop leaves the value where it had got to, so
@@ -175,7 +175,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                 $scale.journey.stop()
                 $angle.journey.stop()
             }
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
         }
         .spacing(12)
     }

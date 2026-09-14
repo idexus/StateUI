@@ -30,7 +30,7 @@ struct SwitchRow: ContentView {
         HStack {
             Label(text)
                 .fontSize(13)
-                .verticalOptions(.center)
+                .verticalAlignment(.center)
 
             Switch(value)
                 // The caption is a Label BESIDE the switch, and no platform
@@ -39,7 +39,7 @@ struct SwitchRow: ContentView {
                 // it, and the handle is worked out from them - Handle.swift.
                 .automationId(handle("switch", text))
                 .semanticDescription(text)
-                .verticalOptions(.center)
+                .verticalAlignment(.center)
                 // WINDOWS GIVES A SWITCH A MINIMUM WIDTH OF ITS OWN - room for
                 // the On/Off words its template can show - and charges it
                 // whether or not anything is written there: measured at 154
@@ -48,7 +48,7 @@ struct SwitchRow: ContentView {
                 // window loses the last of them. Nothing is taken away
                 // elsewhere: every other platform already measures a switch at
                 // what it draws.
-                .minimumWidthRequest(0)
+                .minimumWidth(0)
         }
         .spacing(8)
     }

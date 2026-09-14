@@ -10,20 +10,20 @@ struct ImageSample: SampleContent, ExampleContent {
         VStack {
             HStack {
                 Image(light: "nav_home.png", dark: "nav_home_dark.png")
-                    .widthRequest(48)
-                    .heightRequest(48)
+                    .width(48)
+                    .height(48)
 
                 Image(light: "nav_layout.png", dark: "nav_layout_dark.png")
-                    .widthRequest(48)
-                    .heightRequest(48)
+                    .width(48)
+                    .height(48)
 
                 Image(light: "nav_input.png", dark: "nav_input_dark.png")
-                    .widthRequest(48)
-                    .heightRequest(48)
+                    .width(48)
+                    .height(48)
 
                 Image(light: "nav_shell.png", dark: "nav_shell_dark.png")
-                    .widthRequest(48)
-                    .heightRequest(48)
+                    .width(48)
+                    .height(48)
             }
 
             // The same square picture in the same wide box, so the only thing
@@ -33,8 +33,8 @@ struct ImageSample: SampleContent, ExampleContent {
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
                         .aspect(.aspectFit)
-                        .widthRequest(120)
-                        .heightRequest(60)
+                        .width(120)
+                        .height(60)
 
                     Label(".aspect(.aspectFit)")
                 }
@@ -42,8 +42,8 @@ struct ImageSample: SampleContent, ExampleContent {
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
                         .aspect(.aspectFill)
-                        .widthRequest(120)
-                        .heightRequest(60)
+                        .width(120)
+                        .height(60)
 
                     Label(".aspect(.aspectFill)")
                 }
@@ -53,20 +53,20 @@ struct ImageSample: SampleContent, ExampleContent {
             // has no tint, so what changes is the SOURCE.
             HStack {
                 Image("nav_gestures.png")
-                    .widthRequest(32)
-                    .heightRequest(32)
+                    .width(32)
+                    .height(32)
 
                 Label("black artwork, always")
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
             }
 
             HStack {
                 Image(light: "nav_gestures.png", dark: "nav_gestures_dark.png")
-                    .widthRequest(32)
-                    .heightRequest(32)
+                    .width(32)
+                    .height(32)
 
                 Label("one per theme - switch the system between light and dark")
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
             }
         }
         """
@@ -75,23 +75,23 @@ struct ImageSample: SampleContent, ExampleContent {
         VStack {
             HStack {
                 Image(light: "nav_home.png", dark: "nav_home_dark.png")
-                    .widthRequest(48)
-                    .heightRequest(48)
+                    .width(48)
+                    .height(48)
 
                 Image(light: "nav_layout.png", dark: "nav_layout_dark.png")
-                    .widthRequest(48)
-                    .heightRequest(48)
+                    .width(48)
+                    .height(48)
 
                 Image(light: "nav_input.png", dark: "nav_input_dark.png")
-                    .widthRequest(48)
-                    .heightRequest(48)
+                    .width(48)
+                    .height(48)
 
                 Image(light: "nav_shell.png", dark: "nav_shell_dark.png")
-                    .widthRequest(48)
-                    .heightRequest(48)
+                    .width(48)
+                    .height(48)
             }
             .spacing(16)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             SectionTitle("Fit or fill")
 
@@ -101,8 +101,8 @@ struct ImageSample: SampleContent, ExampleContent {
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
                         .aspect(.aspectFit)
-                        .widthRequest(120)
-                        .heightRequest(60)
+                        .width(120)
+                        .height(60)
                         .backgroundColor(Palette.surface)
 
                     Label(".aspect(.aspectFit)")
@@ -115,8 +115,8 @@ struct ImageSample: SampleContent, ExampleContent {
                 VStack {
                     Image(light: "nav_media.png", dark: "nav_media_dark.png")
                         .aspect(.aspectFill)
-                        .widthRequest(120)
-                        .heightRequest(60)
+                        .width(120)
+                        .height(60)
                         .backgroundColor(Palette.surface)
 
                     Label(".aspect(.aspectFill)")
@@ -127,7 +127,7 @@ struct ImageSample: SampleContent, ExampleContent {
                 .spacing(4)
             }
             .spacing(16)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             SectionTitle("One per theme")
 
@@ -137,23 +137,23 @@ struct ImageSample: SampleContent, ExampleContent {
             // view again with the other file.
             HStack {
                 Image("nav_gestures.png")
-                    .widthRequest(32)
-                    .heightRequest(32)
+                    .width(32)
+                    .height(32)
 
                 Label("black artwork, always")
                     .fontSize(13)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
             }
             .spacing(12)
 
             HStack {
                 Image(light: "nav_gestures.png", dark: "nav_gestures_dark.png")
-                    .widthRequest(32)
-                    .heightRequest(32)
+                    .width(32)
+                    .height(32)
 
                 Label("one per theme - switch the system between light and dark")
                     .fontSize(13)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
             }
             .spacing(12)
         }

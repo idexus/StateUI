@@ -7,4 +7,4 @@ Application 1 moves over 200ms cubicOut arranged(1)
           Slider 4
             driven value<-1 inOut property
           BoxView 5
-            driven widthRequest<-1 inOut property
+            driven width<-1 inOut property

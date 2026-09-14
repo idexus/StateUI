@@ -235,7 +235,7 @@ The same item vocabulary can be attached to any view as a context menu:
 
 ```swift quote
 Label(document.title)
-    .contextFlyout {
+    .contextMenu {
         MenuFlyoutItem("Duplicate").onClicked { duplicate(document) }
         MenuFlyoutItem("Delete")
             .isDestructive(true)

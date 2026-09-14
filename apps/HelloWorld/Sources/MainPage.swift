@@ -15,26 +15,26 @@ struct MainPage: ContentView {
     var content: any View {
         VStack {
             Image("stateui_tile.png")
-                .heightRequest(120)
-                .horizontalOptions(.center)
+                .height(120)
+                .horizontalAlignment(.center)
 
             Label(name.isEmpty ? "Hello, StateUI!" : "Hello, \(name)!")
                 .fontSize(28)
                 .fontAttributes(.bold)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             Entry($name)
                 .placeholder("Type your name")
                 .maxLength(40)
-                .widthRequest(240)
+                .width(240)
 
             Button(count == 0 ? "Click me" : "Clicked \(count) time\(count == 1 ? "" : "s")")
                 .onClicked { count += 1 }
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .margin(20)
         }
         .spacing(16)
-        .verticalOptions(.center)
+        .verticalAlignment(.center)
         .padding(30)
         .onCreated { page.title = "HelloWorld" }
     }

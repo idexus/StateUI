@@ -225,12 +225,12 @@ public struct MotionValues: OptionSet, Sendable {
     /// colour added to this library later is in here the day it arrives.
     public static let colour = MotionValues(rawValue: 1 << 1)
 
-    /// How wide it is: `.widthRequest`, `.minimumWidthRequest`,
-    /// `.maximumWidthRequest` and `.width`.
+    /// How wide it is: `.width`, `.minimumWidth`,
+    /// `.maximumWidth` and `.width`.
     public static let width = MotionValues(rawValue: 1 << 2)
 
-    /// How tall it is: `.heightRequest`, `.minimumHeightRequest`,
-    /// `.maximumHeightRequest` and `.height`.
+    /// How tall it is: `.height`, `.minimumHeight`,
+    /// `.maximumHeight` and `.height`.
     public static let height = MotionValues(rawValue: 1 << 3)
 
     /// Both dimensions, plus the lengths its own shape is drawn with:
@@ -244,7 +244,7 @@ public struct MotionValues: OptionSet, Sendable {
 
     /// How it is turned and how big it is DRAWN, which is not how big it is:
     /// `.scale`, `.scaleX`, `.scaleY`, `.rotation`, `.rotationX`, `.rotationY`,
-    /// `.anchorX` and `.anchorY`.
+    /// `.pivotX` and `.pivotY`.
     public static let transform = MotionValues(rawValue: 1 << 5)
 
     /// The room it keeps around and inside itself: `.padding`, `.margin`,

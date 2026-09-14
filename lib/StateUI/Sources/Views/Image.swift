@@ -25,7 +25,7 @@ extension ImageProperties {
 ///
 ///     Image("tab_list.png")
 ///         .aspect(.aspectFit)
-///         .heightRequest(20)
+///         .height(20)
 ///
 /// The name is a file among the application's image resources, and artwork
 /// kept as an SVG is asked for by its PNG name: `tab_list.svg` is asked for as

@@ -7,13 +7,13 @@
 ///         .fill(.cornflowerBlue)
 ///         .radiusX(8)
 ///         .radiusY(8)
-///         .heightRequest(60)
+///         .height(60)
 ///
 /// A `BoxView` says the same thing in one line and takes one colour; this is the
 /// shape, so it takes a Brush, an outline and everything else the shape tier
 /// declares.
 ///
-/// It has no size of its own: give it a `heightRequest`, a `widthRequest` or a
+/// It has no size of its own: give it a `height`, a `width` or a
 /// layout that stretches it, or it draws nothing.
 public struct Rectangle: Shape, RectangleProperties {
     /// The node this control describes.

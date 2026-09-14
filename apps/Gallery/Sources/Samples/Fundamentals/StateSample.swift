@@ -94,7 +94,7 @@ struct StateSample: SampleContent, ExampleContent {
                         .onClicked { counter = 0 }
                 }
                 .spacing(12)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
                 Border {
                     VStack {

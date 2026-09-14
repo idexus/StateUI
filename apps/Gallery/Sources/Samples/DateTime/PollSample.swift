@@ -88,12 +88,12 @@ struct PollSample: SampleContent, ExampleContent {
 
             ActivityIndicator(checking)
                 .color(Palette.accent)
-                .heightRequest(28)
+                .height(28)
 
             Button(poll.isRunning || checking ? "Stop" : "Start")
                 .fontSize(13)
                 .padding(20, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked {
                     if poll.isRunning || checking {
                         poll.stop()

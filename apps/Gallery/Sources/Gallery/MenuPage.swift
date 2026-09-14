@@ -71,9 +71,9 @@ struct MenuPage: ContentView {
     private var header: any View {
         VStack {
             Image("stateui_mark.png")
-                .widthRequest(51)
-                .heightRequest(51)
-                .horizontalOptions(.start)
+                .width(51)
+                .height(51)
+                .horizontalAlignment(.start)
 
             Label("StateUI")
                 .fontSize(24)

@@ -185,10 +185,10 @@ extension HostPlacement {
     public var scaleY: Double
 
     /// The pivot's horizontal position, from 0 at the left edge to 1 at the right.
-    public var anchorX: Double
+    public var pivotX: Double
 
     /// The pivot's vertical position, from 0 at the top edge to 1 at the bottom.
-    public var anchorY: Double
+    public var pivotY: Double
 
     /// A drawing transform; every part left out draws the view as laid out.
     public init(
@@ -199,8 +199,8 @@ extension HostPlacement {
         rotationY: Double = 0,
         scaleX: Double = 1,
         scaleY: Double = 1,
-        anchorX: Double = 0.5,
-        anchorY: Double = 0.5
+        pivotX: Double = 0.5,
+        pivotY: Double = 0.5
     ) {
         self.translationX = translationX
         self.translationY = translationY
@@ -209,8 +209,8 @@ extension HostPlacement {
         self.rotationY = rotationY
         self.scaleX = scaleX
         self.scaleY = scaleY
-        self.anchorX = anchorX
-        self.anchorY = anchorY
+        self.pivotX = pivotX
+        self.pivotY = pivotY
     }
 
     /// The view drawn exactly where its layout put it.
@@ -230,8 +230,8 @@ extension HostPlacement {
     /// The transform as one matrix, for a view of the given size, in the
     /// view's own space: the origin at its top left corner.
     public func matrix(width: Double, height: Double) -> HostMatrix {
-        let pivotX = anchorX * width
-        let pivotY = anchorY * height
+        let pivotX = pivotX * width
+        let pivotY = pivotY * height
         let tips = rotationX != 0 || rotationY != 0
 
         return HostMatrix.translation(-pivotX, -pivotY)

@@ -35,7 +35,7 @@ struct HiddenPage: ContentView {
                     .textColor(.white)
                     .cornerRadius(8)
                     .padding(20, 10)
-                    .horizontalOptions(.center)
+                    .horizontalAlignment(.center)
                     .onClicked { nav.openGroup("navigation") }
             }
             .spacing(14)

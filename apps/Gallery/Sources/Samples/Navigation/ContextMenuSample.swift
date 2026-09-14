@@ -25,7 +25,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
             ForEach(Array(items.enumerated()), id: \\.offset) { pair in
                 let (index, item) = pair
                 return Label(item)
-                    .contextFlyout {
+                    .contextMenu {
                         MenuFlyoutItem("Duplicate")
                             .onClicked {
                                 items.insert(item + " copy", at: index + 1)
@@ -74,7 +74,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                         .fontSize(16)
                         .padding(14, 10)
                         .backgroundColor(Palette.raised)
-                        .contextFlyout {
+                        .contextMenu {
                             MenuFlyoutItem("Duplicate")
                                 .onClicked {
                                     items.insert(item + " copy", at: index + 1)
@@ -110,7 +110,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
 
             Button("Start again")
                 .padding(20, 10)
-                .horizontalOptions(.start)
+                .horizontalAlignment(.start)
                 .onClicked {
                     items = ["Alpha", "Beta", "Gamma"]
                     chosen = "nothing yet"

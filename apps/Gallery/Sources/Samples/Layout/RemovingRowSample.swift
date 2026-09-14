@@ -77,7 +77,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
                     Grid {
                         Label(row)
                             .fontSize(15)
-                            .verticalOptions(.center)
+                            .verticalAlignment(.center)
                             .gridColumn(0)
 
                         Button("Delete")
@@ -89,7 +89,7 @@ struct RemovingRowSample: SampleContent, ExampleContent {
                     .columnDefinitions(.star, .auto)
                     .padding(14, 6)
                     .backgroundColor(Palette.raised)
-                    .heightRequest(46)
+                    .height(46)
                     .isVisible(!gone.contains(row) && !atOnce.contains(row))
                     // The other half of the sample: a row told to travel at no
                     // motion goes at once, and the stack still closes over it.

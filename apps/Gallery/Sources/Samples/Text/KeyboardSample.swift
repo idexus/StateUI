@@ -73,11 +73,11 @@ struct KeyboardSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Focus first")
-                    .horizontalOptions(.fill)
+                    .horizontalAlignment(.fill)
                     .onClicked { try await first.focus() }
 
                 Button("Unfocus first")
-                    .horizontalOptions(.fill)
+                    .horizontalAlignment(.fill)
                     .onClicked { try await first.unfocus() }
             }
             .spacing(8)

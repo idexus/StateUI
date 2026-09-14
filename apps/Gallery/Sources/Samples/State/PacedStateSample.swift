@@ -45,7 +45,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             .samples($fade, into: $shown, .every(100))
 
             BoxView()
-                .heightRequest(60)
+                .height(60)
                 .opacity($fade)
 
             HStack {
@@ -100,7 +100,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
             .samples($fade, into: $shown, .every(100))
 
             BoxView()
-                .heightRequest(60)
+                .height(60)
                 .cornerRadius(8)
                 .color(Palette.accent)
                 .opacity($fade)
@@ -129,7 +129,7 @@ struct PacedStateSample: SampleContent, ExampleContent {
                     .onClicked { try await $fade.journey.move(to: 1, .eased(2000, .cubicOut)) }
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
         }
         .spacing(12)
     }

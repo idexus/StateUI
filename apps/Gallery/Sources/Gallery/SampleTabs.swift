@@ -58,10 +58,10 @@ struct SampleTabPage: ContentView {
     var content: any View {
         FrameReader { frame in
             held
-                .heightRequest(frame.height)
-                .widthRequest(frame.width)
-                .verticalOptions(.start)
-                .horizontalOptions(.start)
+                .height(frame.height)
+                .width(frame.width)
+                .verticalAlignment(.start)
+                .horizontalAlignment(.start)
         }
         // Dressed as every page of the gallery is, and named for its tab: the
         // tab's caption, and the window's title while the tab is chosen. What
@@ -82,7 +82,7 @@ struct SampleTabPage: ContentView {
                 // An example that scrolls itself takes the whole cell; one
                 // that does not keeps its own height at the top.
                 SamplePage.boxed(sample.examples[index].view, fills: sample.fills)
-                    .verticalOptions(sample.fills ? .fill : .start)
+                    .verticalAlignment(sample.fills ? .fill : .start)
                     .gridRow(1)
             } else {
                 ScrollView {

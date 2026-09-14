@@ -31,7 +31,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
 
     /// A CHOICE: an enum the host sets as it stands. It crosses as the
     /// member's number and the host resolves it into the platform's own.
-    @State private var side = LayoutOptions.start
+    @State private var side = Alignment.start
 
     static let id = "boundProperties"
     static let title = "Every property by binding"
@@ -45,7 +45,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
         @State private var hint = "Type here"     // words: the host writes them
         @State private var choice = 1             // a choice: set and reported
         @State private var on = false             // a toggle: set and reported
-        @State private var side = LayoutOptions.start   // a member: the host sets it
+        @State private var side = Alignment.start   // a member: the host sets it
 
         VStack {
             // A JOURNEY. `size = 30` sends the font size there under the
@@ -96,7 +96,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             // A MEMBER: an alignment handed on as $side. The host sets it, and
             // `side = .end` moves the label without building anything.
             VStack {
-                Label("Where am I?").horizontalOptions($side)
+                Label("Where am I?").horizontalAlignment($side)
                 DebugInfoLabel()                            // stays at one
             }
             Button("Move me along").onClicked {
@@ -126,7 +126,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
                 button("Bigger") { size = min(40, size + 4) }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             row("2 · a colour the host walks - textColor($tint)") {
                 Label("Tinted words")
@@ -169,10 +169,10 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
 
             button("Choose L") { choice = 2 }
 
-            row("6 · a member the host sets - horizontalOptions($side)") {
+            row("6 · a member the host sets - horizontalAlignment($side)") {
                 Label("Where am I?")
                     .fontSize(15)
-                    .horizontalOptions($side)
+                    .horizontalAlignment($side)
                 DebugInfoLabel()
             }
 
@@ -184,7 +184,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
                 Switch($on)
                     .automationId("boundProperties.on")
                     .semanticDescription("On")
-                    .horizontalOptions(.start)
+                    .horizontalAlignment(.start)
                 Label(on ? "on" : "off")
                     .fontSize(15)
                 DebugInfoLabel()

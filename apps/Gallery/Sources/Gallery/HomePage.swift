@@ -139,9 +139,9 @@ struct HomePage: ContentView {
                 Border {
                     VStack {
                         Image("stateui_mark.png")
-                            .widthRequest(84)
-                            .heightRequest(84)
-                            .horizontalOptions(.start)
+                            .width(84)
+                            .height(84)
+                            .horizontalAlignment(.start)
 
                         Label("StateUI Gallery")
                             .fontSize(34)
@@ -166,7 +166,7 @@ struct HomePage: ContentView {
                     + "IN \(groups.count) GROUPS")
             }
             .spacing(14)
-            .verticalOptions(.start)
+            .verticalAlignment(.start)
             // A PHONE ON ITS SIDE has no height for a heading: the cards are
             // what the page is for, so they are what it keeps.
             .isVisible(wearing.heads)
@@ -193,7 +193,7 @@ struct HomePage: ContentView {
                 // WHAT THE ROWS CAN SPARE, worn on the host's own frames. The
                 // state is written by the engine under this grid, so a page
                 // settling through half a dozen passes costs no render at all.
-                .heightRequest($box)
+                .height($box)
 
                 // AND THE SAME RUN, A CARD AT A TIME, directly under the cards
                 // it steps. ON A DESKTOP ONLY: a finger has the run itself and
@@ -223,11 +223,11 @@ struct HomePage: ContentView {
                 // what changes between cards is how much of the block is
                 // empty underneath rather than how tall it is.
                 Caption(catalog: catalog, position: $chosen, idiom: device.idiom)
-                    .heightRequest(Self.caption)
-                    .verticalOptions(.start)
+                    .height(Self.caption)
+                    .verticalAlignment(.start)
             }
             .spacing(Self.gap)
-            .verticalOptions(.center)
+            .verticalAlignment(.center)
             .gridRow(1)
 
             // WHAT THIS IS, at the FOOT of the page and centred: the cards are
@@ -538,7 +538,7 @@ private struct Steps: ContentView {
             step("›", to: position + 1)
         }
         .spacing(10)
-        .horizontalOptions(.center)
+        .horizontalAlignment(.center)
     }
 
     /// One arrow: where it goes, and whether there is anything there.
@@ -583,7 +583,7 @@ private struct GroupFace: ContentView {
                         .padding(12, 10)
                 }
                 .backgroundColor(Color("#B3000000"))
-                .verticalOptions(.end)
+                .verticalAlignment(.end)
             }
             // THE PICTURE IS CUT AT THE CARD'S EDGE, and this is a platform
             // difference rather than a nicety: a Border clips what it holds on
@@ -591,7 +591,7 @@ private struct GroupFace: ContentView {
             // is painted at its own size all over the layout. The clip belongs
             // on the grid, which is a layout and therefore the thing that has
             // edges to cut at.
-            .isClippedToBounds(true)
+            .clipsContent(true)
         }
         // A CARD OF THE RUN IS A PICTURE WITH A CAPTION OVER IT, and the run
         // itself takes the touch - so nothing here is a control on any

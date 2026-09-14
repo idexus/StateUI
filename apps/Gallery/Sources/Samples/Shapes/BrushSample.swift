@@ -35,7 +35,7 @@ struct BrushSample: SampleContent, ExampleContent {
                     startPoint: Point(0, 0),
                     endPoint: Self.ends[end].point))
                 .aspect(.fill)        // a shape draws its path at its own size
-                .heightRequest(80)
+                .height(80)
 
             Button("endPoint: \\(Self.ends[end].name)")
                 .onClicked { end = (end + 1) % Self.ends.count }
@@ -45,8 +45,8 @@ struct BrushSample: SampleContent, ExampleContent {
                     [GradientStop(.white, 0), GradientStop(.steelBlue, 1)],
                     center: Point(0.35, 0.3),
                     radius: 0.75))
-                .widthRequest(96)
-                .heightRequest(96)
+                .width(96)
+                .height(96)
 
             Border {
                 Label("A stroke is a brush too")
@@ -92,12 +92,12 @@ struct BrushSample: SampleContent, ExampleContent {
                     startPoint: Point(0, 0),
                     endPoint: Self.ends[end].point))
                 .aspect(.fill)
-                .heightRequest(80)
+                .height(80)
 
             Button("endPoint: \(Self.ends[end].name)")
                 .fontSize(13)
                 .padding(16, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { end = (end + 1) % Self.ends.count }
 
             SectionTitle("Out from a point")
@@ -107,9 +107,9 @@ struct BrushSample: SampleContent, ExampleContent {
                     [GradientStop(.white, 0), GradientStop(.steelBlue, 1)],
                     center: Point(0.35, 0.3),
                     radius: 0.75))
-                .widthRequest(96)
-                .heightRequest(96)
-                .horizontalOptions(.center)
+                .width(96)
+                .height(96)
+                .horizontalAlignment(.center)
 
             SectionTitle("On a stroke and a background")
 

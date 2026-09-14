@@ -439,8 +439,8 @@ value travels:
 
 VStack {
     BoxView(.cornflowerBlue)
-        .widthRequest($width)
-        .heightRequest(24)
+        .width($width)
+        .height(24)
 
     Label($width.convert { "Target: \(Int($0))" })
     Label($width.journey.convert { journey in
@@ -512,8 +512,8 @@ struct SpringDot: ContentView {
     var content: any View {
         VStack {
             BoxView(.cornflowerBlue)
-                .widthRequest(28)
-                .heightRequest(28)
+                .width(28)
+                .height(28)
                 .translationY($y)
                 .engine(following: $y) { cycle in
                     let journey = $y.journey

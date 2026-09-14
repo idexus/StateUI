@@ -94,7 +94,7 @@ struct StyleSample: SampleContent, ExampleContent {
                 Button("Cancel")
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             // A style can say what a control looks like in a STATE: the
             // platform enters the state, and hearing that is what
@@ -102,20 +102,20 @@ struct StyleSample: SampleContent, ExampleContent {
             // sample.
             Button(enabled ? "Enabled" : "Disabled")
                 .isEnabled(enabled)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked {}
 
             HStack {
                 Label("Enabled")
                     .fontSize(14)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 Switch($enabled)
                     .automationId("styles.enabled")
                     .semanticDescription("Enabled")
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             SectionTitle("A style asked for by name")
 

@@ -23,8 +23,8 @@
 // its bits.
 
 /// Where a view sits in the space its layout gives it - what
-/// `.horizontalOptions` and `.verticalOptions` take.
-public enum LayoutOptions: Int32, Sendable {
+/// `.horizontalAlignment` and `.verticalAlignment` take.
+public enum Alignment: Int32, Sendable {
     /// At the near edge - the left, or the top - taking only the room it needs.
     case start = 0
 
@@ -74,7 +74,7 @@ public struct FontAttributes: OptionSet, Sendable {
 /// Where text sits inside the space its own control was given.
 ///
 /// What `.horizontalTextAlignment` and `.verticalTextAlignment` take. NOT
-/// `.horizontalOptions`, which moves the whole control inside its layout: a
+/// `.horizontalAlignment`, which moves the whole control inside its layout: a
 /// label centred with this one still occupies the same box.
 public enum TextAlignment: Int32, Sendable {
     /// Against the near edge - the left in a left-to-right language.
@@ -286,15 +286,15 @@ public enum Aspect: Int32, Sendable {
 }
 
 /// Which way a view lays its content out, and which edge it starts from -
-/// what `.flowDirection` takes.
+/// what `.layoutDirection` takes.
 ///
 /// The point of it is a language written right to left: a view told
 /// `.rightToLeft` mirrors its layout, so a stack fills from the right and a
 /// label's natural alignment moves with it.
-public enum FlowDirection: Int32, Sendable {
+public enum LayoutDirection: Int32, Sendable {
     /// Whatever the view above says, which is how a view inherits the
     /// application's. The default.
-    case matchParent = 0
+    case inherited = 0
 
     /// Left to right, whatever the view above says.
     case leftToRight = 1
@@ -610,11 +610,11 @@ extension Aspect: StateChoice {}
 extension ClearButtonVisibility: StateChoice {}
 extension EditorAutoSizeOption: StateChoice {}
 extension FillRule: StateChoice {}
-extension FlowDirection: StateChoice {}
+extension LayoutDirection: StateChoice {}
 extension FontAttributes: StateChoice {}
 extension IndicatorShape: StateChoice {}
 extension Keyboard: StateChoice {}
-extension LayoutOptions: StateChoice {}
+extension Alignment: StateChoice {}
 extension LineBreakMode: StateChoice {}
 extension PenLineCap: StateChoice {}
 extension PenLineJoin: StateChoice {}

@@ -1828,10 +1828,10 @@ final class MountedNode: NSObject {
     /// moves one of them makes the parent arrange again; no other frame
     /// arranges an ancestor.
     private static let arrangedProperties: Set<Prop> = [
-        .margin, .horizontalOptions, .verticalOptions,
-        .widthRequest, .heightRequest,
-        .minimumWidthRequest, .minimumHeightRequest,
-        .maximumWidthRequest, .maximumHeightRequest,
+        .margin, .horizontalAlignment, .verticalAlignment,
+        .width, .height,
+        .minimumWidth, .minimumHeight,
+        .maximumWidth, .maximumHeight,
         .gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan,
         .absoluteLayoutBounds, .absoluteLayoutFlags,
     ]
@@ -1842,7 +1842,7 @@ final class MountedNode: NSObject {
     private static let unmeasuredProperties: Set<Prop> = [
         .opacity, .translationX, .translationY,
         .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY,
-        .anchorX, .anchorY,
+        .pivotX, .pivotY,
         .backgroundColor, .background, .color, .textColor, .placeholderColor,
         .titleColor, .borderColor, .stroke, .fill, .strokeThickness,
         .strokeDashArray, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
@@ -1850,7 +1850,7 @@ final class MountedNode: NSObject {
         .minimumTrackColor, .maximumTrackColor, .thumbColor, .onColor, .offColor,
         .progressColor, .barBackgroundColor, .barTextColor, .foregroundColor,
         .drawable, .value, .progress, .scroll, .isToggled, .isChecked, .isEnabled,
-        .inputTransparent, .cascadeInputTransparent,
+        .ignoresInput, .letsInputThrough,
         .automationId, .automationIsInAccessibleTree, .automationExcludedWithChildren,
         .semanticDescription, .semanticHint, .semanticHeadingLevel,
     ]
@@ -2139,7 +2139,7 @@ final class MountedNode: NSObject {
             return page
 
         case .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
-             .titleView, .toolbarItems, .menuBarItems, .contextFlyout,
+             .titleView, .toolbarItems, .menuBarItems, .contextMenu,
              .menuBarItem, .menuFlyoutItem, .menuFlyoutSubItem,
              .menuFlyoutSeparator, .formattedString, .span:
             return nil
@@ -2324,9 +2324,11 @@ final class MountedNode: NSObject {
         view.isHidden = value(.isVisible)?.bool == false
         view.alphaValue = value(.opacity)?.number ?? 1
         if let hitTestView = view as? AppKitHitTestView {
+            // The whole view and its children, or only its own empty area.
+            let ignores = value(.ignoresInput)?.bool ?? false
             hitTestView.applyInputTransparency(
-                value(.inputTransparent)?.bool ?? false,
-                cascades: value(.cascadeInputTransparent)?.bool ?? true)
+                ignores || value(.letsInputThrough)?.bool == true,
+                cascades: ignores)
         }
         applyAccessibility(to: view)
 
@@ -2658,19 +2660,19 @@ final class MountedNode: NSObject {
             canvas.apply(value(.drawable))
         }
 
-        let minimumWidth = requested(.minimumWidthRequest)
-        let minimumHeight = requested(.minimumHeightRequest)
-        let maximumWidth = requested(.maximumWidthRequest).map { max($0, minimumWidth ?? 0) }
-        let maximumHeight = requested(.maximumHeightRequest).map { max($0, minimumHeight ?? 0) }
+        let minimumWidth = requested(.minimumWidth)
+        let minimumHeight = requested(.minimumHeight)
+        let maximumWidth = requested(.maximumWidth).map { max($0, minimumWidth ?? 0) }
+        let maximumHeight = requested(.maximumHeight).map { max($0, minimumHeight ?? 0) }
         widthConstraint = reconciledConstraint(
             widthConstraint,
-            value: requested(.widthRequest).map {
+            value: requested(.width).map {
                 appKitBoundedExtent($0, minimum: minimumWidth, maximum: maximumWidth)
             },
             make: { view.widthAnchor.constraint(equalToConstant: $0) })
         heightConstraint = reconciledConstraint(
             heightConstraint,
-            value: requested(.heightRequest).map {
+            value: requested(.height).map {
                 appKitBoundedExtent($0, minimum: minimumHeight, maximum: maximumHeight)
             },
             make: { view.heightAnchor.constraint(equalToConstant: $0) })
@@ -2734,8 +2736,8 @@ final class MountedNode: NSObject {
             rotationY: value(.rotationY)?.number ?? 0,
             scaleX: scale * (value(.scaleX)?.number ?? 1),
             scaleY: scale * (value(.scaleY)?.number ?? 1),
-            anchorX: value(.anchorX)?.number ?? 0.5,
-            anchorY: value(.anchorY)?.number ?? 0.5)
+            pivotX: value(.pivotX)?.number ?? 0.5,
+            pivotY: value(.pivotY)?.number ?? 0.5)
     }
 
     /// Keeps the native constraint identity stable while a host channel moves
@@ -2836,14 +2838,14 @@ final class MountedNode: NSObject {
         guard let view = presentableViews.first else { return nil }
         var item = AppKitLayoutItem(view: view)
         item.margin = insets(.margin)
-        item.horizontal = enumeration(.horizontalOptions) ?? 3
-        item.vertical = enumeration(.verticalOptions) ?? 3
-        item.width = requested(.widthRequest)
-        item.height = requested(.heightRequest)
-        item.minimumWidth = requested(.minimumWidthRequest)
-        item.minimumHeight = requested(.minimumHeightRequest)
-        item.maximumWidth = requested(.maximumWidthRequest)
-        item.maximumHeight = requested(.maximumHeightRequest)
+        item.horizontal = enumeration(.horizontalAlignment) ?? 3
+        item.vertical = enumeration(.verticalAlignment) ?? 3
+        item.width = requested(.width)
+        item.height = requested(.height)
+        item.minimumWidth = requested(.minimumWidth)
+        item.minimumHeight = requested(.minimumHeight)
+        item.maximumWidth = requested(.maximumWidth)
+        item.maximumHeight = requested(.maximumHeight)
         item.row = whole(.gridRow) ?? 0
         item.column = whole(.gridColumn) ?? 0
         item.rowSpan = max(whole(.gridRowSpan) ?? 1, 1)
@@ -2998,7 +3000,7 @@ final class MountedNode: NSObject {
     /// visual child in the native layout.
     private func configureContextMenu() {
         guard let view else { return }
-        guard let slot = slot(.contextFlyout) else {
+        guard let slot = slot(.contextMenu) else {
             view.menu = nil
             return
         }
@@ -3598,21 +3600,21 @@ final class MountedNode: NSObject {
     private static let recyclingCapacity = 32
 
     private static let booleanProperties: Set<Prop> = [
-        .allowDrop, .autoHide, .canDrag, .floatsOnTop, .inputTransparent,
-        .isAnimationPlaying, .isChecked, .isClippedToBounds, .isDestructive,
+        .allowDrop, .autoHide, .canDrag, .floatsOnTop, .ignoresInput,
+        .isAnimationPlaying, .isChecked, .clipsContent, .isDestructive,
         .isEnabled, .isMaximizable, .isMinimizable,
         .isOpaque, .isOpen, .isPassword, .isSidebarVisible, .isReadOnly,
         .isRefreshEnabled, .isRefreshing, .isRunning, .isScrollEnabled,
         .isShowingUser, .isSpellCheckEnabled, .isTextPredictionEnabled,
-        .isToggled, .isTrafficEnabled, .isVisible, .isZoomEnabled,
+        .isToggled, .isTrafficEnabled, .isVisible, .isZoomEnabled, .letsInputThrough,
     ]
 
     private static let enumerationProperties: Set<Prop> = [
-        .aspect, .clearButtonVisibility, .flowDirection, .fontAttributes,
-        .horizontalOptions, .horizontalScrollBarVisibility,
+        .aspect, .clearButtonVisibility, .layoutDirection, .fontAttributes,
+        .horizontalAlignment, .horizontalScrollBarVisibility,
         .horizontalTextAlignment, .keyboard,
         .lineBreakMode, .orientation, .returnType, .textDecorations, .textTransform,
-        .verticalOptions, .verticalScrollBarVisibility, .verticalTextAlignment,
+        .verticalAlignment, .verticalScrollBarVisibility, .verticalTextAlignment,
     ]
 }
 

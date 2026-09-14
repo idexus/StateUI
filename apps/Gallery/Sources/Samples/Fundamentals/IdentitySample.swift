@@ -55,12 +55,12 @@ struct IdentitySample: SampleContent, ExampleContent {
             var content: any View {
                 HStack {
                     Label(item)
-                        .widthRequest(90)
-                        .verticalOptions(.center)
+                        .width(90)
+                        .verticalAlignment(.center)
 
                     Entry()
                         .placeholder("type here")
-                        .horizontalOptions(.fill)
+                        .horizontalAlignment(.fill)
 
                     Button("Remove")
                         .onClicked {
@@ -144,14 +144,14 @@ private struct IdentityRow: ContentView {
         HStack {
             Label(item)
                 .fontSize(15)
-                .widthRequest(90)
-                .verticalOptions(.center)
+                .width(90)
+                .verticalAlignment(.center)
 
             Entry()
                 .automationId("identity.typed")
                 .semanticDescription("Anything typed here")
                 .placeholder("type here")
-                .horizontalOptions(.fill)
+                .horizontalAlignment(.fill)
 
             Button("Remove")
                 .fontSize(12)

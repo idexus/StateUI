@@ -6,7 +6,7 @@ Application 1 moves over 200ms cubicOut arranged(1)
         VStack 3 arranged(4)
           Label 4
             text: string "bound"
-            driven fontSize<-1 inOut property horizontalOptions<-2 out plain isVisible<-3 out plain
+            driven fontSize<-1 inOut property horizontalAlignment<-2 out plain isVisible<-3 out plain
           Entry 5
             driven placeholder<-4 out text
           Picker 6

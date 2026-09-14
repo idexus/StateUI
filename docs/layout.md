@@ -18,10 +18,10 @@ Every eligible view can state requested, minimum, and maximum dimensions:
 
 ```swift
 Label("Summary")
-    .widthRequest(240)
-    .minimumHeightRequest(44)
-    .horizontalOptions(.center)
-    .verticalOptions(.start)
+    .width(240)
+    .minimumHeight(44)
+    .horizontalAlignment(.center)
+    .verticalAlignment(.start)
     .margin(16, 8)
 ```
 
@@ -31,17 +31,17 @@ still decides the final rectangle.
 
 `margin` is outside a view. `padding` is inside controls and containers that
 own content padding. `Thickness` can be supplied as one value, horizontal and
-vertical values, or four edges. `horizontalOptions` and `verticalOptions`
+vertical values, or four edges. `horizontalAlignment` and `verticalAlignment`
 express start, center, end, or fill behavior in the slot assigned by the
 parent.
 
-An explicit size wins over `.fill`: a view with a `widthRequest` keeps that
+An explicit size wins over `.fill`: a view with a `width` keeps that
 width, bounded only by its own minimum and maximum, even in a slot that would
 stretch it. A filling view that stops short of its slot, because of an
 explicit size or a maximum, stands in the middle of the slot. Without either,
 `.fill` takes the whole slot.
 
-`flowDirection` changes semantic leading and trailing direction. `zIndex`
+`layoutDirection` changes semantic leading and trailing direction. `zIndex`
 orders overlapping siblings without changing their layout positions.
 
 ## Visual transforms
@@ -53,8 +53,8 @@ arrangement:
 
 ```swift
 BoxView(.cornflowerBlue)
-    .widthRequest(80)
-    .heightRequest(80)
+    .width(80)
+    .height(80)
     .transform(.rotate(15).scale(1.1).translate(20, 0))
 ```
 
@@ -85,7 +85,7 @@ there. This is distinct from `transform`, which moves the already drawn view
 about its center.
 
 Transforms are visual, not layout. They do not produce frame reports; changing
-an animated layout property such as `widthRequest` does because it changes the
+an animated layout property such as `width` does because it changes the
 settled rectangle. Host support for transform member groups remains explicit
 in the [platform matrix](platform-contract.md#shared-view-members).
 
@@ -162,7 +162,7 @@ AbsoluteLayout {
         .absoluteLayoutBounds(Rect(0.5, 0.5, 120, 60))
         .absoluteLayoutFlags(.positionProportional)
 }
-.heightRequest(240)
+.height(240)
 ```
 
 `AbsoluteLayoutFlags` says which coordinates and dimensions are proportional
@@ -389,7 +389,7 @@ measurements back into the same calculation.
 ## Safe areas and clipping
 
 `safeAreaEdges` states which edges participate in the host's safe-area
-integration. `isClippedToBounds` controls whether descendants may draw outside
+integration. `clipsContent` controls whether descendants may draw outside
 the assigned rectangle. Both are semantic requests and only count as available
 on a platform after the matrix records host tests for them.
 

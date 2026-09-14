@@ -46,7 +46,7 @@ struct StepperSample: SampleContent, ExampleContent {
                 .minimum(1)
                 .maximum(12)
                 .increment(1)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             SectionTitle("A bigger step")
 
@@ -56,7 +56,7 @@ struct StepperSample: SampleContent, ExampleContent {
                 .minimum(1)
                 .maximum(12)
                 .increment(5)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onValueChanged { value in servings = value }
         }
         .spacing(12)

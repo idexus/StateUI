@@ -138,7 +138,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                     }
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             HStack {
                 ForEach([10, 30, 60]) { length in
@@ -153,7 +153,7 @@ struct TaskSleepSample: SampleContent, ExampleContent {
                 }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
         }
         .spacing(12)
         .onDestroying { running = false }

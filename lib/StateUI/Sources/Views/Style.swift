@@ -550,7 +550,7 @@ extension VisualElement where Self: StyleTarget {
 
     /// Writes one state into the control's own list of them.
     ///
-    /// The states ride as CHILDREN of the control - the `.contextFlyout` shape,
+    /// The states ride as CHILDREN of the control - the `.contextMenu` shape,
     /// a modifier that writes a child rather than a property - appended after
     /// whatever the control lays out, which is where the host subtracts them.
     private func visualState(_ written: Node) -> Modified {

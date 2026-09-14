@@ -225,12 +225,12 @@ final class AppKitMotionTests: XCTestCase {
         }
 
         var initialBox = HostPatch(id: .manual("box"), type: .boxView)
-        initialBox.properties[.widthRequest] = .number(120)
+        initialBox.properties[.width] = .number(120)
         renderer.applyForTesting(tree(children: .arranged([initialBox])))
 
         var changedBox = HostPatch(id: .manual("box"), type: .boxView)
-        changedBox.properties[.widthRequest] = .number(300)
-        changedBox.transitions[.widthRequest] = HostTransition(
+        changedBox.properties[.width] = .number(300)
+        changedBox.transitions[.width] = HostTransition(
             motion: .eased(200, .linear))
         renderer.applyForTesting(tree(children: .changed([changedBox])))
         let synchronizationsBeforeFrame = renderer.windowSynchronizationCountForTesting
@@ -254,12 +254,12 @@ final class AppKitMotionTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var initial = HostPatch(id: .manual("box"), type: .boxView)
-        initial.properties[.widthRequest] = .number(120)
+        initial.properties[.width] = .number(120)
         renderer.applyForTesting(initial)
 
         var changed = HostPatch(id: .manual("box"), type: .boxView)
-        changed.properties[.widthRequest] = .number(300)
-        changed.transitions[.widthRequest] = HostTransition(
+        changed.properties[.width] = .number(300)
+        changed.transitions[.width] = HostTransition(
             motion: .eased(200, .linear))
         renderer.applyForTesting(changed)
 
@@ -286,9 +286,9 @@ final class AppKitMotionTests: XCTestCase {
 
         func child(_ id: String, state: Int32) -> HostPatch {
             var child = HostPatch(id: .manual(id), type: .boxView)
-            child.properties[.heightRequest] = .number(40)
+            child.properties[.height] = .number(40)
             child.driven = .replace([
-                .heightRequest: HostStateBinding(
+                .height: HostStateBinding(
                     state: state, mode: .inOut, kind: .property),
             ])
             return child
@@ -366,8 +366,8 @@ final class AppKitMotionTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var content = HostPatch(id: .manual("content"), type: .boxView)
-        content.properties[.widthRequest] = .number(100)
-        content.properties[.heightRequest] = .number(500)
+        content.properties[.width] = .number(100)
+        content.properties[.height] = .number(500)
         var initial = HostPatch(id: .manual("scroll"), type: .scrollView)
         initial.properties[.orientation] = .enumeration(ScrollOrientation.vertical.rawValue)
         initial.properties[.scroll] = .numbers([0, 0])

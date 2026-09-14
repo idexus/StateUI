@@ -43,7 +43,7 @@ struct MovingPanel: ContentView {
     var content: any View {
         VStack {
             BoxView(.cornflowerBlue)
-                .widthRequest(expanded ? 280 : 120)
+                .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
                 .motion(.spring(response: 280))
 

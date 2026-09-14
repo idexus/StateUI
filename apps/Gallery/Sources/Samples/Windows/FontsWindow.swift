@@ -47,7 +47,7 @@ struct FontsPage: ContentView {
             Button("Done")
                 .fontSize(13)
                 .padding(14, 6)
-                .horizontalOptions(.end)
+                .horizontalAlignment(.end)
                 .onClicked { try await window.close() }
         }
         .spacing(10)

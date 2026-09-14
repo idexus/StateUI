@@ -37,9 +37,9 @@ struct WindowPhaseLog: ContentView {
 
     var content: any View {
         BoxView(Color("#00000000"))
-            .widthRequest(0)
-            .heightRequest(0)
-            .inputTransparent(true)
+            .width(0)
+            .height(0)
+            .ignoresInput(true)
             .onChanged(window.phase) { log.note("\(window.phase)") }
     }
 }

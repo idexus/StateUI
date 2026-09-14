@@ -69,7 +69,7 @@ struct BuilderSample: SampleContent, ExampleContent {
                     .semanticDescription("Signed in")
 
                 Label("Signed in")
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
             }
             .spacing(12)
 
@@ -96,7 +96,7 @@ struct BuilderSample: SampleContent, ExampleContent {
             }
 
             SwitchRow("Editing", $editing)
-                .horizontalOptions(.start)
+                .horizontalAlignment(.start)
 
             ForEach(0..<5) { turn in
                 if turn == chosen {
@@ -107,7 +107,7 @@ struct BuilderSample: SampleContent, ExampleContent {
                     return Button("turn \(turn)")
                         .fontSize(13)
                         .padding(16, 6)
-                        .horizontalOptions(.start)
+                        .horizontalAlignment(.start)
                         .onClicked { chosen = turn }
                 }
             }

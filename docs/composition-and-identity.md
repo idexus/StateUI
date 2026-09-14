@@ -18,8 +18,8 @@ struct StatusBadge: ContentView {
     var content: any View {
         HStack {
             BoxView(ready ? .green : .gray)
-                .widthRequest(8)
-                .heightRequest(8)
+                .width(8)
+                .height(8)
             Label(title)
         }
         .spacing(8)

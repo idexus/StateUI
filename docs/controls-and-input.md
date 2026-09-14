@@ -47,12 +47,12 @@ The matrix is authoritative for the exact members and host evidence.
 view does not perform its action. On a container it disables interaction in
 the contained branch.
 
-`inputTransparent(true)` instead removes that view from hit testing so input
-can reach what is behind it. A layout's `cascadeInputTransparent` decides
-whether that transparency includes its children. Set it to `false` when an
-overlay background should pass input through while controls placed inside the
-overlay remain interactive. These are distinct accessibility and interaction
-semantics; consult the platform matrix before relying on their native mapping.
+`ignoresInput(true)` instead takes the view and everything in it out of hit
+testing, so input reaches what is behind it. A layout's `letsInputThrough(true)`
+takes only its own empty area out: input passes through an overlay's background
+while the controls placed inside it still answer. These are distinct
+accessibility and interaction semantics; consult the platform matrix before
+relying on their native mapping.
 
 ## Described and carried values
 

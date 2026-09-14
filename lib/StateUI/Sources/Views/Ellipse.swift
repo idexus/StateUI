@@ -5,8 +5,8 @@
 ///
 ///     Ellipse()
 ///         .fill(.tomato)
-///         .widthRequest(48)
-///         .heightRequest(48)
+///         .width(48)
+///         .height(48)
 ///
 /// An ellipse IS its bounds, so it declares nothing of its own: the fill, the
 /// stroke and the dash pattern all come from the shape tier in Elements.swift.

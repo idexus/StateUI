@@ -80,7 +80,7 @@ struct TimePickerSample: SampleContent, ExampleContent {
                     .onClicked { alarm = ClockTime(hour: 21, minute: 5) }
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             SectionTitle("One-way, written back by hand")
 

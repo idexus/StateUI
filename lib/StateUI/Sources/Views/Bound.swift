@@ -514,24 +514,24 @@ extension Label {
 // MARK: - Layout
 
 extension Layout {
-    /// `cascadeInputTransparent`, handed on as `$x`: the host sets it as it is,
+    /// `letsInputThrough`, handed on as `$x`: the host sets it as it is,
     /// and handing it on reads nothing - a write renders only a body that reads
     /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func cascadeInputTransparent(_ state: Binding<Bool>) -> Modified {
-        plain(.cascadeInputTransparent, by: state)
+    public func letsInputThrough(_ state: Binding<Bool>) -> Modified {
+        plain(.letsInputThrough, by: state)
     }
 
-    /// `isClippedToBounds`, handed on as `$x`: the host sets it as it is, and
+    /// `clipsContent`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
     /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func isClippedToBounds(_ state: Binding<Bool>) -> Modified {
-        plain(.isClippedToBounds, by: state)
+    public func clipsContent(_ state: Binding<Bool>) -> Modified {
+        plain(.clipsContent, by: state)
     }
 
     /// `safeAreaEdges`, handed on as `$x`: the host sets the member it names,
@@ -1044,14 +1044,14 @@ extension View {
         plain(.gridRowSpan, by: state)
     }
 
-    /// `horizontalOptions`, handed on as `$x`: the host sets the member it
+    /// `horizontalAlignment`, handed on as `$x`: the host sets the member it
     /// names, and handing it on reads nothing - a write renders only a body
     /// that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func horizontalOptions(_ state: Binding<LayoutOptions>) -> Modified {
-        plain(.horizontalOptions, by: state)
+    public func horizontalAlignment(_ state: Binding<Alignment>) -> Modified {
+        plain(.horizontalAlignment, by: state)
     }
 
     /// `margin`, handed on as `$x`: the host walks it there under the element's
@@ -1064,38 +1064,38 @@ extension View {
         journey(.margin, by: state)
     }
 
-    /// `verticalOptions`, handed on as `$x`: the host sets the member it names,
+    /// `verticalAlignment`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
     /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func verticalOptions(_ state: Binding<LayoutOptions>) -> Modified {
-        plain(.verticalOptions, by: state)
+    public func verticalAlignment(_ state: Binding<Alignment>) -> Modified {
+        plain(.verticalAlignment, by: state)
     }
 }
 
 // MARK: - VisualElement
 
 extension VisualElement {
-    /// `anchorX`, handed on as `$x`: the host walks it there under the
+    /// `pivotX`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
     /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func anchorX(_ state: Binding<Double>) -> Modified {
-        journey(.anchorX, by: state)
+    public func pivotX(_ state: Binding<Double>) -> Modified {
+        journey(.pivotX, by: state)
     }
 
-    /// `anchorY`, handed on as `$x`: the host walks it there under the
+    /// `pivotY`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
     /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func anchorY(_ state: Binding<Double>) -> Modified {
-        journey(.anchorY, by: state)
+    public func pivotY(_ state: Binding<Double>) -> Modified {
+        journey(.pivotY, by: state)
     }
 
     /// `automationId`, handed on as `$x`: the host writes the words, and
@@ -1138,34 +1138,34 @@ extension VisualElement {
         journey(.backgroundColor, by: state)
     }
 
-    /// `flowDirection`, handed on as `$x`: the host sets the member it names,
+    /// `layoutDirection`, handed on as `$x`: the host sets the member it names,
     /// and handing it on reads nothing - a write renders only a body that reads
     /// the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func flowDirection(_ state: Binding<FlowDirection>) -> Modified {
-        plain(.flowDirection, by: state)
+    public func layoutDirection(_ state: Binding<LayoutDirection>) -> Modified {
+        plain(.layoutDirection, by: state)
     }
 
-    /// `heightRequest`, handed on as `$x`: the host walks it there under the
+    /// `height`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
     /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func heightRequest(_ state: Binding<Double>) -> Modified {
-        journey(.heightRequest, by: state)
+    public func height(_ state: Binding<Double>) -> Modified {
+        journey(.height, by: state)
     }
 
-    /// `inputTransparent`, handed on as `$x`: the host sets it as it is, and
+    /// `ignoresInput`, handed on as `$x`: the host sets it as it is, and
     /// handing it on reads nothing - a write renders only a body that reads the
     /// state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func inputTransparent(_ state: Binding<Bool>) -> Modified {
-        plain(.inputTransparent, by: state)
+    public func ignoresInput(_ state: Binding<Bool>) -> Modified {
+        plain(.ignoresInput, by: state)
     }
 
     /// `isEnabled`, handed on as `$x`: the host sets it as it is, and handing
@@ -1186,44 +1186,44 @@ extension VisualElement {
         plain(.isVisible, by: state)
     }
 
-    /// `maximumHeightRequest`, handed on as `$x`: the host walks it there under
+    /// `maximumHeight`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
     /// only a body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func maximumHeightRequest(_ state: Binding<Double>) -> Modified {
-        journey(.maximumHeightRequest, by: state)
+    public func maximumHeight(_ state: Binding<Double>) -> Modified {
+        journey(.maximumHeight, by: state)
     }
 
-    /// `maximumWidthRequest`, handed on as `$x`: the host walks it there under
+    /// `maximumWidth`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
     /// only a body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func maximumWidthRequest(_ state: Binding<Double>) -> Modified {
-        journey(.maximumWidthRequest, by: state)
+    public func maximumWidth(_ state: Binding<Double>) -> Modified {
+        journey(.maximumWidth, by: state)
     }
 
-    /// `minimumHeightRequest`, handed on as `$x`: the host walks it there under
+    /// `minimumHeight`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
     /// only a body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func minimumHeightRequest(_ state: Binding<Double>) -> Modified {
-        journey(.minimumHeightRequest, by: state)
+    public func minimumHeight(_ state: Binding<Double>) -> Modified {
+        journey(.minimumHeight, by: state)
     }
 
-    /// `minimumWidthRequest`, handed on as `$x`: the host walks it there under
+    /// `minimumWidth`, handed on as `$x`: the host walks it there under
     /// the element's law, and handing it on reads nothing - a write renders
     /// only a body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func minimumWidthRequest(_ state: Binding<Double>) -> Modified {
-        journey(.minimumWidthRequest, by: state)
+    public func minimumWidth(_ state: Binding<Double>) -> Modified {
+        journey(.minimumWidth, by: state)
     }
 
     /// `opacity`, handed on as `$x`: the host walks it there under the
@@ -1346,14 +1346,14 @@ extension VisualElement {
         journey(.translationY, by: state)
     }
 
-    /// `widthRequest`, handed on as `$x`: the host walks it there under the
+    /// `width`, handed on as `$x`: the host walks it there under the
     /// element's law, and handing it on reads nothing - a write renders only a
     /// body that reads the state.
     ///
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
-    public func widthRequest(_ state: Binding<Double>) -> Modified {
-        journey(.widthRequest, by: state)
+    public func width(_ state: Binding<Double>) -> Modified {
+        journey(.width, by: state)
     }
 
     /// `zIndex`, handed on as `$x`: the host sets it as it is, and handing it

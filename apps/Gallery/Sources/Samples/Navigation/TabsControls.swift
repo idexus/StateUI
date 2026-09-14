@@ -78,17 +78,17 @@ struct TabsControls: ContentView {
                 .fontSize(13)
                 .fontFamily("Menlo")
                 .textColor(Palette.subtle)
-                .widthRequest(24)
+                .width(24)
 
             Label(tab.caption)
                 .fontSize(13)
                 .textColor(tab == nav.tab ? Palette.accent : Palette.text)
-                .widthRequest(90)
+                .width(90)
 
             Label(tab == nav.tab ? "◀ selected" : " ")
                 .fontSize(12)
                 .textColor(Palette.accent)
-                .widthRequest(80)
+                .width(80)
 
             if nav.tabs.count > 1 {
                 Button("close")
@@ -105,7 +105,7 @@ struct TabsControls: ContentView {
         Button(caption)
             .fontSize(13)
             .padding(16, 6)
-            .horizontalOptions(.start)
+            .horizontalAlignment(.start)
             .onClicked(act)
     }
 

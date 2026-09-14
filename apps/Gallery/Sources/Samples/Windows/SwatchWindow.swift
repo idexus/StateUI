@@ -27,13 +27,13 @@ struct SwatchPage: ContentView {
         VStack {
             BoxView()
                 .color(SwatchPage.colour(of: number))
-                .heightRequest(150)
+                .height(150)
                 .cornerRadius(12)
 
             Label("Swatch \(number)")
                 .fontSize(20)
                 .fontAttributes(.bold)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             HStack {
                 Button("Next")
@@ -47,7 +47,7 @@ struct SwatchPage: ContentView {
                     .onClicked { try await window.close() }
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
         }
         .spacing(14)
         .onCreated {

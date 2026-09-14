@@ -130,14 +130,14 @@ struct MultiWindowSample: SampleContent, ExampleContent {
                 opens("Colours", .colours)
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             HStack {
                 closes("Close fonts", .fonts)
                 closes("Close colours", .colours)
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             VStack {
                 DebugInfoLabel()
@@ -173,12 +173,12 @@ struct MultiWindowSample: SampleContent, ExampleContent {
                 swatch(3)
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             Button("Close swatch 2")
                 .fontSize(13)
                 .padding(14, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { await closeSwatch(2) }
 
             SectionTitle("Another gallery")
@@ -188,14 +188,14 @@ struct MultiWindowSample: SampleContent, ExampleContent {
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .automationId("scene.open")
                 .onClicked { await openAnother() }
 
             Button("Close this gallery")
                 .fontSize(13)
                 .padding(14, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .automationId("scene.close")
                 .onClicked { await closeThis() }
         }

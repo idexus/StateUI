@@ -37,7 +37,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
             }
             .backgroundColor($panelColor)
             .padding($panelPadding)
-            .heightRequest($panelHeight)
+            .height($panelHeight)
 
             Button("Colour").onClicked {
                 try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500))
@@ -84,14 +84,14 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                     Label("A property, carried")
                         .fontSize($captionSize)
                         .textColor($captionColor)
-                        .horizontalOptions(.center)
-                        .verticalOptions(.center)
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
                 }
                 .backgroundColor(AppColors.violetLight)
             }
             .backgroundColor($panelColor)
             .padding($panelPadding)
-            .heightRequest($panelHeight)
+            .height($panelHeight)
             .stroke(.transparent)
             .strokeShape(.roundRectangle(12))
 
@@ -117,7 +117,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                 }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             HStack {
                 button("Text size") {
@@ -139,7 +139,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                 }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
         }
         .spacing(12)
     }

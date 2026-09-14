@@ -1,37 +1,37 @@
 import StateUI
 
 /// One row laid out left to right, right to left, and as the view above says.
-struct FlowDirectionSample: SampleContent, ExampleContent {
-    static let id = "flowDirection"
-    static let title = "Flow direction"
+struct LayoutDirectionSample: SampleContent, ExampleContent {
+    static let id = "layoutDirection"
+    static let title = "Layout direction"
     static let summary = "Laying a view out for a language written right to left."
 
     static let code = """
         VStack {
             // Left to right, whatever the view above says.
             HStack {
-                BoxView(Palette.accent).widthRequest(60).heightRequest(20)
+                BoxView(Palette.accent).width(60).height(20)
                 Label("First")
                 Label("Second")
             }
-            .flowDirection(.leftToRight)
+            .layoutDirection(.leftToRight)
 
             // Mirrored: the row fills from the right, and the text with it.
             HStack {
-                BoxView(Palette.accent).widthRequest(60).heightRequest(20)
+                BoxView(Palette.accent).width(60).height(20)
                 Label("First")
                 Label("Second")
             }
-            .flowDirection(.rightToLeft)
+            .layoutDirection(.rightToLeft)
 
             // The default: whatever the view above says, which is why an
             // application usually says it once, high up.
             HStack {
-                BoxView(Palette.accent).widthRequest(60).heightRequest(20)
+                BoxView(Palette.accent).width(60).height(20)
                 Label("First")
                 Label("Second")
             }
-            .flowDirection(.matchParent)
+            .layoutDirection(.inherited)
         }
         """
 
@@ -39,7 +39,7 @@ struct FlowDirectionSample: SampleContent, ExampleContent {
         VStack {
             row("leftToRight", .leftToRight)
             row("rightToLeft", .rightToLeft)
-            row("matchParent", .matchParent)
+            row("inherited", .inherited)
         }
         .spacing(16)
     }
@@ -53,7 +53,7 @@ struct FlowDirectionSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("It is INHERITED. A view left at `.matchParent` - which is the default "
+            Label("It is INHERITED. A view left at `.inherited` - which is the default "
                 + "- takes whatever the view above it has, so an application usually says "
                 + "it once, high up, and everything below follows.")
                 .fontSize(12)
@@ -63,7 +63,7 @@ struct FlowDirectionSample: SampleContent, ExampleContent {
     }
 
     /// One row laid out each way, with the value that produced it.
-    private func row(_ caption: String, _ direction: FlowDirection) -> any View {
+    private func row(_ caption: String, _ direction: LayoutDirection) -> any View {
         VStack {
             Label(caption)
                 .fontSize(11)
@@ -71,14 +71,14 @@ struct FlowDirectionSample: SampleContent, ExampleContent {
 
             HStack {
                 BoxView(Palette.accent)
-                    .widthRequest(60)
-                    .heightRequest(20)
+                    .width(60)
+                    .height(20)
 
                 Label("First")
                 Label("Second")
             }
             .spacing(10)
-            .flowDirection(direction)
+            .layoutDirection(direction)
         }
         .spacing(6)
     }

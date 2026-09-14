@@ -33,7 +33,7 @@ struct SliderSample: SampleContent, ExampleContent {
 
             HStack {
                 Label("Sound")
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 Switch($soundOn)
             }
@@ -74,7 +74,7 @@ struct SliderSample: SampleContent, ExampleContent {
             HStack {
                 Label("Sound")
                     .fontSize(14)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 Switch($soundOn)
                     .automationId("slider.sound")
@@ -82,7 +82,7 @@ struct SliderSample: SampleContent, ExampleContent {
                     .onColor(Palette.accent)
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             SectionTitle("A picture for the thumb")
 

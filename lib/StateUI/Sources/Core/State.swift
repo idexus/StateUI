@@ -1539,9 +1539,9 @@ extension Binding {
     /// NOT done is a save: a measurement is not a setting, so a kept state
     /// (`persistentKey:`) landed here is not written to the store.
     ///
-    /// INTERNAL: what the library's own write-backs use - `.width($w)`,
-    /// `.height($h)` - where an author reaches for `.motion(.none)` on the
-    /// view or, on a journey, `$x.journey.snap(to:)`.
+    /// INTERNAL: what the library's own write-backs use - a reading the host
+    /// reports - where an author reaches for `.motion(.none)` on the view or,
+    /// on a journey, `$x.journey.snap(to:)`.
     ///
     /// - Parameter value: what landed.
     func land(_ value: Value) {

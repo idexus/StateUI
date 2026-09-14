@@ -253,6 +253,52 @@ final class HostContractTests: XCTestCase {
         XCTAssertTrue(document.contains("✅ means"), "platform contract does not define completion")
     }
 
+    /// Every view speaks in plain words: the size it asks for is its width and
+    /// height, how it sits in its space is its alignment, and what it does with
+    /// input, direction, clipping, its pivot and its context menu is said the
+    /// way a reader says it. The spellings they replaced do not return, and
+    /// neither do the size read-backs - a frame report says where a view is.
+    func testEveryViewSpeaksInPlainWords() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let controls = declaredNames(of: "NodeType", in: tokenSource)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+        let events = declaredNames(of: "Event", in: tokenSource)
+        let former = [
+            "widthRequest", "heightRequest", "minimumWidthRequest", "minimumHeightRequest",
+            "maximumWidthRequest", "maximumHeightRequest", "horizontalOptions",
+            "verticalOptions", "inputTransparent", "cascadeInputTransparent",
+            "flowDirection", "isClippedToBounds", "anchorX", "anchorY",
+        ]
+
+        XCTAssertTrue(properties.isSuperset(of: [
+            "width", "height", "minimumWidth", "minimumHeight", "maximumWidth",
+            "maximumHeight", "horizontalAlignment", "verticalAlignment", "ignoresInput",
+            "letsInputThrough", "layoutDirection", "clipsContent", "pivotX", "pivotY",
+        ]))
+        XCTAssertTrue(
+            properties.isDisjoint(with: former),
+            "a former view property remains in the host contract")
+        XCTAssertTrue(
+            events.isDisjoint(with: ["widthChanged", "heightChanged"]),
+            "a size read-back remains beside the frame report")
+        XCTAssertTrue(controls.contains("ContextMenu"))
+        XCTAssertFalse(controls.contains("ContextFlyout"), "the context menu keeps its former name")
+
+        for file in ["Views/Elements.swift", "Views/Bound.swift", "Types/Enums.swift"] {
+            let source = try String(
+                contentsOf: Fixtures.sources.appendingPathComponent(file),
+                encoding: .utf8)
+            for name in former + ["contextFlyout"] {
+                XCTAssertFalse(source.contains("func \(name)("), "\(file) still declares .\(name)")
+            }
+            for type in ["LayoutOptions", "FlowDirection"] {
+                XCTAssertFalse(source.contains("enum \(type)"), "\(file) still declares \(type)")
+            }
+        }
+    }
+
     private func declaredNames(of vocabulary: String, in source: String) -> Set<String> {
         let marker = "= \(vocabulary)(\""
 

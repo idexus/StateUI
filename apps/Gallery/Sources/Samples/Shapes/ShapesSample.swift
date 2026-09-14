@@ -25,26 +25,26 @@ struct ShapesSample: SampleContent, ExampleContent {
             HStack {
                 Rectangle()
                     .fill(Palette.accent)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 Rectangle()
                     .fill(Palette.accent)
                     .radiusX(14)
                     .radiusY(14)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 RoundRectangle()
                     .fill(Palette.accent)
                     .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 Ellipse()
                     .fill(Palette.accent)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
             }
 
             HStack {
@@ -54,8 +54,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .stroke(Palette.accent)
                     .strokeThickness(4)
                     .strokeLineCap(.round)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 Line()
                     .x1(0).y1(28)
@@ -63,15 +63,15 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .stroke(Palette.accent)
                     .strokeThickness(4)
                     .strokeDashArray([3, 2])
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 // The one shape that is whatever you can write down: SVG path
                 // syntax, normalized by StateUI for every native backend.
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 // A transform on the GEOMETRY, which is not what
                 // .transform does: a lean draws here, and the stroke
@@ -84,8 +84,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .stroke(Palette.accent)
                     .strokeThickness(4)
                     .strokeLineJoin(.round)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
             }
 
             // The same dashes twice, half a pattern apart: the offset, like
@@ -98,8 +98,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .strokeThickness(4)
                     .strokeDashArray([3, 2])
                     .strokeDashOffset(0)
-                    .widthRequest(200)
-                    .heightRequest(8)
+                    .width(200)
+                    .height(8)
 
                 Line()
                     .x1(0).y1(4)
@@ -108,8 +108,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .strokeThickness(4)
                     .strokeDashArray([3, 2])
                     .strokeDashOffset(2.5)
-                    .widthRequest(200)
-                    .heightRequest(8)
+                    .width(200)
+                    .height(8)
             }
 
             // The same sharp corner twice. A miter join carries the two outer
@@ -121,23 +121,23 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .strokeThickness(8)
                     .strokeLineJoin(.miter)
                     .strokeMiterLimit(10)
-                    .widthRequest(56)
-                    .heightRequest(72)
+                    .width(56)
+                    .height(72)
 
                 Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
                     .stroke(Palette.accent)
                     .strokeThickness(8)
                     .strokeLineJoin(.miter)
                     .strokeMiterLimit(1)
-                    .widthRequest(56)
-                    .heightRequest(72)
+                    .width(56)
+                    .height(72)
             }
 
             Polygon(Self.star)
                 .fill(Palette.accent)
                 .fillRule(rule)
-                .widthRequest(56)
-                .heightRequest(56)
+                .width(56)
+                .height(56)
 
             Button("fillRule: .\\(rule)")
                 .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
@@ -160,29 +160,29 @@ struct ShapesSample: SampleContent, ExampleContent {
             HStack {
                 Rectangle()
                     .fill(Palette.accent)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 Rectangle()
                     .fill(Palette.accent)
                     .radiusX(14)
                     .radiusY(14)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 RoundRectangle()
                     .fill(Palette.accent)
                     .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 Ellipse()
                     .fill(Palette.accent)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             SectionTitle("Stroked")
 
@@ -193,8 +193,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .stroke(Palette.accent)
                     .strokeThickness(4)
                     .strokeLineCap(.round)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 Line()
                     .x1(0).y1(28)
@@ -202,13 +202,13 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .stroke(Palette.accent)
                     .strokeThickness(4)
                     .strokeDashArray([3, 2])
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 // A transform on the GEOMETRY - the same ViewTransform
                 // every view takes, drawn whole: a lean draws here, and the
@@ -217,18 +217,18 @@ struct ShapesSample: SampleContent, ExampleContent {
                 Path("M 28,0 L 56,56 L 0,56 Z")
                     .fill(Palette.accent)
                     .renderTransform(.skew(20, 0))
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
 
                 Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
                     .stroke(Palette.accent)
                     .strokeThickness(4)
                     .strokeLineJoin(.round)
-                    .widthRequest(56)
-                    .heightRequest(56)
+                    .width(56)
+                    .height(56)
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             SectionTitle("Where the dashes start")
 
@@ -240,8 +240,8 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .strokeThickness(4)
                     .strokeDashArray([3, 2])
                     .strokeDashOffset(0)
-                    .widthRequest(200)
-                    .heightRequest(8)
+                    .width(200)
+                    .height(8)
 
                 Line()
                     .x1(0).y1(4)
@@ -250,11 +250,11 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .strokeThickness(4)
                     .strokeDashArray([3, 2])
                     .strokeDashOffset(2.5)
-                    .widthRequest(200)
-                    .heightRequest(8)
+                    .width(200)
+                    .height(8)
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             SectionTitle("How far a sharp corner reaches")
 
@@ -264,33 +264,33 @@ struct ShapesSample: SampleContent, ExampleContent {
                     .strokeThickness(8)
                     .strokeLineJoin(.miter)
                     .strokeMiterLimit(10)
-                    .widthRequest(56)
-                    .heightRequest(72)
+                    .width(56)
+                    .height(72)
 
                 Polyline([Point(10, 4), Point(28, 48), Point(46, 4)])
                     .stroke(Palette.accent)
                     .strokeThickness(8)
                     .strokeLineJoin(.miter)
                     .strokeMiterLimit(1)
-                    .widthRequest(56)
-                    .heightRequest(72)
+                    .width(56)
+                    .height(72)
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             SectionTitle("An outline that crosses itself")
 
             Polygon(Self.star)
                 .fill(Palette.accent)
                 .fillRule(rule)
-                .widthRequest(56)
-                .heightRequest(56)
-                .horizontalOptions(.center)
+                .width(56)
+                .height(56)
+                .horizontalAlignment(.center)
 
             Button("fillRule: .\(rule)")
                 .fontSize(13)
                 .padding(16, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { rule = rule == .evenOdd ? .nonzero : .evenOdd }
         }
         .spacing(12)

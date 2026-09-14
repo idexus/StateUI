@@ -156,7 +156,7 @@ final class Catalog {
                     Sample(BorderSample()),
                     Sample(BoxViewSample()),
                     Sample(TransformSample()),
-                    Sample(FlowDirectionSample()),
+                    Sample(LayoutDirectionSample()),
                     Sample(FrameReaderSample()),
                     Sample(LivingLayoutSample()),
                     Sample(RemovingRowSample()),

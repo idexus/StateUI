@@ -86,7 +86,7 @@ struct SameInputsSample: SampleContent, ExampleContent {
 
             Button("Count \(counter)")
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
             // CARRIED: built with a constant, reading nothing.

@@ -249,7 +249,7 @@ final class RecyclingTests: XCTestCase {
             self.run([1]) { number in
                 HStack {
                     Label("\(number)").fontSize(13).textColor(.red)
-                    BoxView().widthRequest(4)
+                    BoxView().width(4)
                 }
             }
         }
@@ -268,7 +268,7 @@ final class RecyclingTests: XCTestCase {
         // and the assertion above would pass while a session stopped writing
         // the same bytes in every run. A literal is what says the arithmetic
         // is this side's own. Change it only with the shape's own rules.
-        XCTAssertEqual(one, 14_648_408_153_201_338_238)
+        XCTAssertEqual(one, 14_180_716_690_568_337_537)
     }
 
 }

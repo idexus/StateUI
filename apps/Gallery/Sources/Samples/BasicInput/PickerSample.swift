@@ -67,7 +67,7 @@ struct PickerSample: SampleContent, ExampleContent {
 
             Button("Open the list")
                 .onClicked { showing = true }
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             Label(chosen)
                 .fontSize(17)

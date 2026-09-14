@@ -51,7 +51,7 @@ struct OnChangedSample: SampleContent, ExampleContent {
             Label("\(Int(celsius)) °C")
                 .fontSize(34)
                 .fontAttributes(.bold)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             Slider($celsius)
                 .automationId("onChanged.celsius")

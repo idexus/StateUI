@@ -59,7 +59,7 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `ModalStack` | structure | ✅ | — | — | — | — | — |
 | `Overlay` | structure | ✅ | — | — | — | — | — |
 | `TitleBar` | adaptive shell | ✅ | — | — | — | — | — |
-| `ContextFlyout`, `MenuBarItems`, `MenuBarItem`, `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem` | structure | ✅ | — | — | — | — | — |
+| `ContextMenu`, `MenuBarItems`, `MenuBarItem`, `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem` | structure | ✅ | — | — | — | — | — |
 | `ToolbarItems` / `ToolbarItem` | structure | ✅ | — | — | — | — | — |
 | `AbsoluteLayout` | native primitive | ✅ | — | — | — | — | — |
 | `VStack` / `HStack` | native primitive | ✅ | — | — | — | — | — |
@@ -141,7 +141,7 @@ may still choose another class that preserves the same contract.
 | `ModalStack` | sheet `NSWindow` | `present(_:animated:)` | modal `GtkWindow`; libadwaita `AdwDialog` | full-screen `Dialog` (?) | `ContentDialog` (?) | `<dialog>` with `showModal()` |
 | `Overlay` | pass-through `NSView` above the page | pass-through `UIView` above the page | `GtkOverlay` | top child of a `FrameLayout` | top layer of a root `Grid` | positioned element above the page |
 | `TitleBar` | slots in `NSToolbar`; title in a trailing `NSTitlebarAccessoryViewController` | — | `GtkHeaderBar` | — | `TitleBar` | — |
-| `ContextFlyout`, `MenuBarItems`, `MenuBarItem`, `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction` | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | `PopupMenu` / `MenuItem`; no menu bar | `MenuFlyout` / `MenuBar` | ARIA `menu` / `menubar` (?) |
+| `ContextMenu`, `MenuBarItems`, `MenuBarItem`, `MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction` | `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar` | `PopupMenu` / `MenuItem`; no menu bar | `MenuFlyout` / `MenuBar` | ARIA `menu` / `menubar` (?) |
 | `ToolbarItems` / `ToolbarItem` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItem` | `GtkButton` in `GtkHeaderBar` | `Toolbar` `MenuItem` | `CommandBar` `AppBarButton` | `<button>` in an ARIA `toolbar` |
 | `AbsoluteLayout` | custom `NSView` | custom `UIView` | `GtkFixed` | custom `ViewGroup` | `Canvas` | `position: absolute` |
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | `GtkBox` | custom `ViewGroup` | `StackPanel` | flexbox |
@@ -273,16 +273,16 @@ individual control already uses that member.
 | flat background | `backgroundColor` | — | — | — | — | — | — |
 | brush background on every view | `background` | — | — | — | — | — | — |
 | enabled state on every eligible view | `isEnabled` | — | — | — | — | — | — |
-| hit testing on every eligible view | `inputTransparent`, `cascadeInputTransparent` | — | — | — | — | — | — |
-| layout direction | `flowDirection` | — | — | — | — | — | — |
-| requested size | `widthRequest`, `heightRequest`, `minimumWidthRequest`, `minimumHeightRequest`, `maximumWidthRequest`, `maximumHeightRequest` | — | — | — | — | — | — |
-| parent placement | `margin`, `horizontalOptions`, `verticalOptions` | — | — | — | — | — | — |
+| hit testing on every eligible view | `ignoresInput`, `letsInputThrough` | — | — | — | — | — | — |
+| layout direction | `layoutDirection` | — | — | — | — | — | — |
+| requested size | `width`, `height`, `minimumWidth`, `minimumHeight`, `maximumWidth`, `maximumHeight` | — | — | — | — | — | — |
+| parent placement | `margin`, `horizontalAlignment`, `verticalAlignment` | — | — | — | — | — | — |
 | drawing order | `zIndex` | — | — | — | — | — | — |
 | planar transform | `rotation`, `scale`, `scaleX`, `scaleY`, `translationX`, `translationY` | — | — | — | — | — | — |
-| spatial transform and pivot | `rotationX`, `rotationY`, `anchorX`, `anchorY` | — | — | — | — | — | — |
+| spatial transform and pivot | `rotationX`, `rotationY`, `pivotX`, `pivotY` | — | — | — | — | — | — |
 | accessibility | `automationId`, `automationIsInAccessibleTree`, `automationExcludedWithChildren`, `semanticDescription`, `semanticHint`, `semanticHeadingLevel` | ✅ | — | — | — | — | — |
 | frame feed/event | `frame`, `frameChanged` | ✅ | — | — | — | — | — |
-| focus and size feeds/events | `isFocused`, `width`, `height`, `isFocusedChanged`, `widthChanged`, `heightChanged` | — | — | — | — | — | — |
+| focus feed and event | `isFocused`, `isFocusedChanged` | — | — | — | — | — | — |
 | tap | `numberOfTapsRequired`, `onTapped` (`tapped`) | ✅ | — | — | — | — | — |
 | swipe gesture | `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`) | ✅ | — | — | — | — | — |
 | pan and pinch | `panXChannel`, `panYChannel`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `onPinchUpdated` (`pinchUpdated`) | ✅ | — | — | — | — | — |
@@ -319,7 +319,7 @@ token in parentheses.
 | stack layouts | properties | `padding`, `spacing` | ✅ | — | — | — | — | — |
 | `Grid` | properties | `rowDefinitions`, `columnDefinitions`, `rowSpacing`, `columnSpacing`, child `gridRow`, `gridColumn`, `gridRowSpan`, `gridColumnSpan` | — | — | — | — | — | — |
 | `AbsoluteLayout` | properties | child `absoluteLayoutBounds`, `absoluteLayoutFlags` | — | — | — | — | — | — |
-| layouts | properties | `isClippedToBounds`, `safeAreaEdges` | — | — | — | — | — | — |
+| layouts | properties | `clipsContent`, `safeAreaEdges` | — | — | — | — | — | — |
 | `ScrollView` | properties | `orientation`, `verticalScrollBarVisibility`, `horizontalScrollBarVisibility`, `scroll`, `snapInterval`, `snapFrom`, `snapsAtMost`, `scrollMomentum` | ✅ | — | — | — | — | — |
 | `ScrollView` | events | `scrollXChanged`, `scrollYChanged`, `snapItemChanged`, `onScrollStopped` (`scrollStopped`) | ✅ | — | — | — | — | — |
 | `Border` | properties | `stroke`, `strokeThickness`, `strokeShape`, `background`, `backgroundColor` | — | — | — | — | — | — |
@@ -396,69 +396,64 @@ host status.
 ### Controls and structural nodes
 
 `AbsoluteLayout`, `ActivityIndicator`, `Application`, `Border`, `BoxView`,
-`Button`, `CheckBox`, `Composed`, `Content`, `ContextFlyout`, `DatePicker`,
+`Button`, `CheckBox`, `Composed`, `Content`, `ContextMenu`, `DatePicker`,
 `Editor`, `Ellipse`, `Entry`, `FormattedString`, `GraphicsView`, `Grid`,
-`HStack`, `Image`, `ImageButton`, `IndicatorView`, `Label`,
-`LeadingContent`, `Line`, `Map`, `MenuBarItem`, `MenuBarItems`,
-`MenuFlyoutItem`, `MenuFlyoutSeparator`, `MenuFlyoutSubItem`, `ModalStack`,
-`NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`, `Polygon`,
-`Polyline`, `ProgressBar`, `RadioButton`, `Rectangle`, `RefreshView`,
-`RoundRectangle`, `Scene`, `ScrollView`, `SearchBar`, `Setters`, `Slider`,
-`Span`, `SplitView`, `Stepper`, `SwipeItem`, `SwipeItems`, `SwipeView`,
-`Switch`, `TabbedView`, `TimePicker`, `TitleBar`, `TitleView`,
-`ToolbarItem`, `ToolbarItems`, `TrailingContent`, `VisualState`, `VStack`,
-`WebView`, `Window`.
+`HStack`, `Image`, `ImageButton`, `IndicatorView`, `Label`, `LeadingContent`,
+`Line`, `Map`, `MenuBarItem`, `MenuBarItems`, `MenuFlyoutItem`,
+`MenuFlyoutSeparator`, `MenuFlyoutSubItem`, `ModalStack`, `NavigationStack`,
+`Overlay`, `Page`, `Path`, `Picker`, `Pin`, `Polygon`, `Polyline`,
+`ProgressBar`, `RadioButton`, `Rectangle`, `RefreshView`, `RoundRectangle`,
+`Scene`, `ScrollView`, `SearchBar`, `Setters`, `Slider`, `Span`, `SplitView`,
+`Stepper`, `SwipeItem`, `SwipeItems`, `SwipeView`, `Switch`, `TabbedView`,
+`TimePicker`, `TitleBar`, `TitleView`, `ToolbarItem`, `ToolbarItems`,
+`TrailingContent`, `VisualState`, `VStack`, `WebView`, `Window`.
 
 ### Properties
 
 `absoluteLayoutBounds`, `absoluteLayoutFlags`, `address`, `allowDrop`,
-`anchorX`, `anchorY`, `aspect`, `automationExcludedWithChildren`,
-`automationId`, `automationIsInAccessibleTree`, `autoHide`, `autoSize`,
-`background`, `backgroundColor`, `barBackgroundColor`, `barTextColor`,
-`borderColor`, `borderWidth`,
-`cancelButtonColor`, `canDrag`, `cascadeInputTransparent`, `characterSpacing`,
-`clearButtonVisibility`, `color`, `columnDefinitions`, `columnSpacing`,
-`content`, `contentLayout`, `cornerRadius`, `count`, `currentPage`,
-`cursorPosition`, `data`, `date`, `dragText`, `drawable`, `fill`, `fillRule`,
-`floatsOnTop`, `flowDirection`, `fontAttributes`,
-`fontAutoScalingEnabled`, `fontFamily`, `fontSize`, `foregroundColor`, `format`,
-`frame`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `group`,
-`groupName`, `height`, `heightRequest`, `hideSingle`,
-`horizontalOptions`, `horizontalScrollBarVisibility`,
-`horizontalTextAlignment`, `icon`, `iconImageSource`, `imageSource`,
-`increment`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
-`inputTransparent`, `isAnimationPlaying`, `isChecked`, `isClippedToBounds`,
-`isDestructive`, `isEnabled`, `isMaximizable`,
-`isMinimizable`, `isOpaque`, `isOpen`, `isPassword`, `isSidebarVisible`,
-`isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isRunning`,
-`isScrollEnabled`, `isShowingUser`, `isSpellCheckEnabled`,
+`aspect`, `autoHide`, `automationExcludedWithChildren`, `automationId`,
+`automationIsInAccessibleTree`, `autoSize`, `backButtonTitle`, `background`,
+`backgroundColor`, `barBackgroundColor`, `barTextColor`, `borderColor`,
+`borderWidth`, `cancelButtonColor`, `canDrag`, `characterSpacing`,
+`clearButtonVisibility`, `clipsContent`, `color`, `columnDefinitions`,
+`columnSpacing`, `content`, `contentLayout`, `cornerRadius`, `count`,
+`currentPage`, `cursorPosition`, `data`, `date`, `dragText`, `drawable`,
+`fill`, `fillRule`, `floatsOnTop`, `fontAttributes`, `fontAutoScalingEnabled`,
+`fontFamily`, `fontSize`, `foregroundColor`, `format`, `frame`, `gridColumn`,
+`gridColumnSpan`, `gridRow`, `gridRowSpan`, `group`, `groupName`,
+`hasBackButton`, `hasNavigationBar`, `height`, `hideSingle`,
+`horizontalAlignment`, `horizontalScrollBarVisibility`,
+`horizontalTextAlignment`, `icon`, `iconImageSource`, `ignoresInput`,
+`imageSource`, `increment`, `indicatorColor`, `indicatorSize`,
+`indicatorsShape`, `isAnimationPlaying`, `isChecked`, `isDestructive`,
+`isEnabled`, `isMaximizable`, `isMinimizable`, `isOpaque`, `isOpen`,
+`isPassword`, `isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isRunning`,
+`isScrollEnabled`, `isShowingUser`, `isSidebarVisible`, `isSpellCheckEnabled`,
 `isTextPredictionEnabled`, `isToggled`, `isTrafficEnabled`, `isVisible`,
-`isZoomEnabled`, `itemsSource`, `keyboard`, `label`, `lineBreakMode`,
-`lineHeight`, `location`, `mapType`, `margin`, `maximum`, `maximumDate`,
-`maximumHeight`, `maximumHeightRequest`, `maximumTrackColor`, `maximumVisible`,
-`maximumWidth`, `maximumWidthRequest`, `maxLength`, `maxLines`, `minimum`,
-`minimumDate`, `minimumHeight`, `minimumHeightRequest`, `minimumTrackColor`,
-`minimumWidth`, `minimumWidthRequest`, `mode`, `name`,
-`backButtonTitle`, `hasBackButton`,
-`hasNavigationBar`, `numberOfTapsRequired`, `offColor`,
-`onColor`, `opacity`, `order`, `orientation`, `padding`, `panTouchCount`,
-`panXChannel`, `panYChannel`, `placeholder`, `placeholderColor`, `points`,
-`position`, `priority`, `progress`, `progressColor`, `radiusX`, `radiusY`,
-`refreshColor`, `region`, `renderTransform`, `returnType`, `rotation`,
-`rotationX`, `rotationY`, `rowDefinitions`, `rowSpacing`, `safeAreaEdges`,
-`scale`, `scaleX`, `scaleY`, `scrollMomentum`, `scroll`, `scrollStep`,
+`isZoomEnabled`, `itemsSource`, `keyboard`, `label`, `layoutDirection`,
+`letsInputThrough`, `lineBreakMode`, `lineHeight`, `location`, `mapType`,
+`margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumTrackColor`,
+`maximumVisible`, `maximumWidth`, `maxLength`, `maxLines`, `minimum`,
+`minimumDate`, `minimumHeight`, `minimumTrackColor`, `minimumWidth`, `mode`,
+`name`, `numberOfTapsRequired`, `offColor`, `onColor`, `opacity`, `order`,
+`orientation`, `padding`, `panTouchCount`, `panXChannel`, `panYChannel`,
+`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,
+`priority`, `progress`, `progressColor`, `radiusX`, `radiusY`, `refreshColor`,
+`region`, `renderTransform`, `returnType`, `rotation`, `rotationX`,
+`rotationY`, `rowDefinitions`, `rowSpacing`, `safeAreaEdges`, `scale`,
+`scaleX`, `scaleY`, `scroll`, `scrollMomentum`, `scrollStep`,
 `searchIconColor`, `selectedIndex`, `selectedIndicatorColor`,
-`selectionLength`, `semanticDescription`, `semanticHeadingLevel`, `semanticHint`,
-`side`, `snapFrom`, `snapInterval`, `snapsAtMost`, `source`, `spacing`, `stroke`,
-`strokeDashArray`, `strokeDashOffset`, `strokeLineCap`, `strokeLineJoin`,
-`strokeMiterLimit`, `strokeShape`, `strokeThickness`, `style`, `subtitle`,
-`swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `text`,
-`textColor`, `textDecorations`, `textTransform`, `textType`, `threshold`,
-`thumbColor`, `thumbImageSource`, `time`, `title`, `titleColor`, `translationX`,
-`translationY`, `type`, `userAgent`,
-`value`, `verticalOptions`, `verticalScrollBarVisibility`,
-`verticalTextAlignment`, `width`, `widthRequest`, `windowType`, `windowValue`,
-`x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.
+`selectionLength`, `semanticDescription`, `semanticHeadingLevel`,
+`semanticHint`, `side`, `snapFrom`, `snapInterval`, `snapsAtMost`, `source`,
+`spacing`, `stroke`, `strokeDashArray`, `strokeDashOffset`, `strokeLineCap`,
+`strokeLineJoin`, `strokeMiterLimit`, `strokeShape`, `strokeThickness`,
+`style`, `subtitle`, `swipeBehaviorOnInvoked`, `swipeDirection`,
+`swipeThreshold`, `text`, `textColor`, `textDecorations`, `textTransform`,
+`textType`, `threshold`, `thumbColor`, `thumbImageSource`, `time`, `title`,
+`titleColor`, `translationX`, `translationY`, `type`, `userAgent`, `value`,
+`verticalAlignment`, `verticalScrollBarVisibility`, `verticalTextAlignment`,
+`width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
+`zIndex`.
 
 ### Events
 
@@ -467,14 +462,14 @@ host status.
 `currentPageChanged`, `dateSelected`, `deactivated`, `destroying`,
 `disappearing`, `dragCompleted`, `dragInteraction`, `dragLeave`, `dragOver`,
 `dragStarted`, `dragStarting`, `drop`, `dropCompleted`, `endInteraction`,
-`frameChanged`, `heightChanged`, `infoWindowClicked`, `invoked`,
-`isFocusedChanged`, `isSidebarVisibleChanged`, `isRefreshingChanged`, `mapClicked`,
+`frameChanged`, `infoWindowClicked`, `invoked`, `isFocusedChanged`,
+`isRefreshingChanged`, `isSidebarVisibleChanged`, `mapClicked`,
 `markerClicked`, `modalPopped`, `navigated`, `navigatedFrom`, `navigatedTo`,
-`navigating`, `navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`, `pointerEntered`,
-`pointerExited`, `pointerMoved`, `pointerPressed`, `pointerReleased`, `popped`,
-`pressed`, `processTerminated`, `refreshing`, `released`, `resumed`,
-`scrollStopped`, `scrollXChanged`, `scrollYChanged`, `searchButtonPressed`,
-`selectedIndexChanged`, `snapItemChanged`, `startInteraction`, `stopped`,
-`swipeChanging`, `swipeEnded`, `swipeStarted`, `swiped`, `tapped`, `textChanged`,
-`timeSelected`, `toggled`, `valueChanged`, `visualStateChanged`, `widthChanged`,
-`windowClosed`, `windowRestored`.
+`navigating`, `navigatingFrom`, `opened`, `panUpdated`, `pinchUpdated`,
+`pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
+`pointerReleased`, `popped`, `pressed`, `processTerminated`, `refreshing`,
+`released`, `resumed`, `scrollStopped`, `scrollXChanged`, `scrollYChanged`,
+`searchButtonPressed`, `selectedIndexChanged`, `snapItemChanged`,
+`startInteraction`, `stopped`, `swipeChanging`, `swiped`, `swipeEnded`,
+`swipeStarted`, `tapped`, `textChanged`, `timeSelected`, `toggled`,
+`valueChanged`, `visualStateChanged`, `windowClosed`, `windowRestored`.

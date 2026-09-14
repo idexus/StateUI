@@ -39,7 +39,7 @@ struct TabsExtraPage: ContentView {
 
                 Button("Back to the Navigation samples")
                     .padding(20, 10)
-                    .horizontalOptions(.center)
+                    .horizontalAlignment(.center)
                     .onClicked { nav.openGroup("navigation") }
             }
             .spacing(14)

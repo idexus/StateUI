@@ -104,7 +104,7 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .cornerRadius(10)
                 .padding(22, 12)
                 .isEnabled(!running)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked {
                     running = true
                     total = 0

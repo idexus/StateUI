@@ -103,11 +103,11 @@ public struct Map: View, MapProperties {
     public func pins(@ViewBuilder _ content: () -> [Element]) -> Self {
         var copy = self
 
-        // The slot a `.contextFlyout` appended stays LAST, the rule every
+        // The slot a `.contextMenu` appended stays LAST, the rule every
         // slot-carrying list follows - so the pins go in front of it.
         copy.node.children.removeAll { $0.type == .pin }
-        let slots = copy.node.children.filter { $0.type == .contextFlyout }
-        copy.node.children.removeAll { $0.type == .contextFlyout }
+        let slots = copy.node.children.filter { $0.type == .contextMenu }
+        copy.node.children.removeAll { $0.type == .contextMenu }
         copy.node.children += content().map { $0.body } + slots
 
         return copy

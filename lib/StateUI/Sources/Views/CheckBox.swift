@@ -28,7 +28,7 @@ extension CheckBoxProperties {
 ///     …
 ///     HStack {
 ///         CheckBox($agreed).color(.firebrick)
-///         Label("I agree").verticalOptions(.center)
+///         Label("I agree").verticalAlignment(.center)
 ///     }
 ///
 /// Given a binding it shows what the binding holds and writes every tick back.

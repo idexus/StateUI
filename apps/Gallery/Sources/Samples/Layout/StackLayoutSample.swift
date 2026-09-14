@@ -24,16 +24,16 @@ struct StackLayoutSample: SampleContent, ExampleContent {
         // Where a child sits in the room its stack gives it.
         VStack {
             StackCell(text: "start")
-                .horizontalOptions(.start)
+                .horizontalAlignment(.start)
 
             StackCell(text: "center")
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             StackCell(text: "end")
-                .horizontalOptions(.end)
+                .horizontalAlignment(.end)
 
             StackCell(text: "fill")
-                .horizontalOptions(.fill)
+                .horizontalAlignment(.fill)
         }
         .spacing(8)
 
@@ -69,20 +69,20 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            SectionTitle("Layout options")
+            SectionTitle("Alignment")
 
             VStack {
                 StackCell(text: "start")
-                    .horizontalOptions(.start)
+                    .horizontalAlignment(.start)
 
                 StackCell(text: "center")
-                    .horizontalOptions(.center)
+                    .horizontalAlignment(.center)
 
                 StackCell(text: "end")
-                    .horizontalOptions(.end)
+                    .horizontalAlignment(.end)
 
                 StackCell(text: "fill")
-                    .horizontalOptions(.fill)
+                    .horizontalAlignment(.fill)
             }
             .spacing(8)
         }
@@ -90,7 +90,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
     }
 
     var notes: Element? {
-        Label("`.horizontalOptions` places a child across the room its stack gives it.")
+        Label("`.horizontalAlignment` places a child across the room its stack gives it.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

@@ -37,7 +37,7 @@ struct TabsPage: ContentView {
                     .textColor(.white)
                     .cornerRadius(8)
                     .padding(20, 10)
-                    .horizontalOptions(.center)
+                    .horizontalAlignment(.center)
                     .onClicked { path.append(.level(1)) }
 
                 Label("Depth here: \(path.count)")
@@ -53,7 +53,7 @@ struct TabsPage: ContentView {
                 // home from there.
                 Button("Back to the Navigation samples")
                     .padding(20, 10)
-                    .horizontalOptions(.center)
+                    .horizontalAlignment(.center)
                     .onClicked { nav.openGroup("navigation") }
             }
             .spacing(14)

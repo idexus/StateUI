@@ -215,7 +215,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 }
                 .placement($dots)
                 .frame($dotRoom)
-                .inputTransparent(true)
+                .ignoresInput(true)
                 .engine(following: $scrolled, $dragged, $dotRoom) { _ in
                     dots = PlacedRun(cards.indices.map { dot($0, cards.count) })
                 }
@@ -223,7 +223,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             .gridRow(0)
             // The cards stay inside this cell: one turned far out in a small
             // room is cut at its edge rather than painted over the page.
-            .isClippedToBounds(true)
+            .clipsContent(true)
 
             HStack {
                 // INSIDE these braces, because that is where `grabbing` is
@@ -346,12 +346,12 @@ struct PlacedSample: SampleContent, ExampleContent {
                         Label(card.name)
                         Label("Placed by arithmetic")
                     }
-                    .verticalOptions(.end)
+                    .verticalAlignment(.end)
                 }
                 // THE PICTURE IS CUT AT THE CARD'S EDGE: a Border clips what
                 // it holds on Apple and does not on Android, so the clip goes
                 // on the grid, which is a layout and has edges to cut at.
-                .isClippedToBounds(true)
+                .clipsContent(true)
             }
             .strokeShape(.roundRectangle(16))
         }
@@ -423,7 +423,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 }
                 .placement($dots)
                 .frame($dotRoom)
-                .inputTransparent(true)
+                .ignoresInput(true)
                 .engine(following: $scrolled, $dragged, $dotRoom) { _ in
                     dots = PlacedRun(Self.cards.indices.map { dot($0, Self.cards.count) })
                 }
@@ -431,7 +431,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             .gridRow(0)
             // The cards stay ON the board: one turned far out in a small room
             // is cut at the board's edge rather than painted over the page.
-            .isClippedToBounds(true)
+            .clipsContent(true)
 
             HStack {
                 // INSIDE these braces, because that is where `grabbing` is
@@ -471,7 +471,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                     .margin(4, 0)
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
             .gridRow(1)
         }
         .rowDefinitions(.star, .auto)
@@ -539,7 +539,7 @@ struct PlacedSample: SampleContent, ExampleContent {
                 // A dark strip under the words, so a caption reads over a
                 // picture of any colour.
                 .backgroundColor(Color("#B3000000"))
-                .verticalOptions(.end)
+                .verticalAlignment(.end)
             }
             // THE PICTURE IS CUT AT THE CARD'S EDGE, and this is a platform
             // difference rather than a nicety: a Border clips what it holds on
@@ -547,7 +547,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             // is painted at its own size all over the layout. The clip belongs
             // on the grid, which is a layout and therefore the thing that has
             // edges to cut at.
-            .isClippedToBounds(true)
+            .clipsContent(true)
         }
         .strokeThickness(0)
         .strokeShape(.roundRectangle(16))

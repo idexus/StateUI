@@ -46,8 +46,8 @@ struct PanSample: SampleContent, ExampleContent {
             // the view about.
             Border {
                 BoxView(Palette.accent)
-                    .widthRequest(64)
-                    .heightRequest(64)
+                    .width(64)
+                    .height(64)
                     // DRIVEN, both of them.
                     .translationX($liveX)
                     .translationY($liveY)
@@ -65,7 +65,7 @@ struct PanSample: SampleContent, ExampleContent {
                         }
                     }
             }
-            .heightRequest(200)
+            .height(200)
 
             // Two states into one conversion: the host works the words out
             // from where the box HAS GOT TO, on its own frames.
@@ -114,10 +114,10 @@ struct PanSample: SampleContent, ExampleContent {
             Border {
                 BoxView(Palette.accent)
                     .cornerRadius(10)
-                    .widthRequest(64)
-                    .heightRequest(64)
-                    .horizontalOptions(.center)
-                    .verticalOptions(.center)
+                    .width(64)
+                    .height(64)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
                     // DRIVEN, both of them: the host reads the translation off
                     // the state every frame, and no report renders anything.
                     .translationX($liveX)
@@ -139,7 +139,7 @@ struct PanSample: SampleContent, ExampleContent {
             .stroke(Palette.outline)
             .strokeThickness(1)
             .strokeShape(.roundRectangle(10))
-            .heightRequest(200)
+            .height(200)
 
             Label()
                 .text($liveX.journey.convert(with: $liveY.journey) { x, y in
@@ -153,7 +153,7 @@ struct PanSample: SampleContent, ExampleContent {
             Button("Put it back")
                 .fontSize(13)
                 .padding(16, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 // A SETPOINT, so the box TRAVELS home from wherever it was
                 // left - the same two states, written the other way.
                 .onClicked {

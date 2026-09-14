@@ -101,18 +101,18 @@ struct EngineSample: SampleContent, ExampleContent {
                     .fontSize(44)
                     .fontAttributes(.bold)
                     .horizontalTextAlignment(.center)
-                    .horizontalOptions(.center)
+                    .horizontalAlignment(.center)
             }
             .padding(24, 16)
             .backgroundColor(Palette.surface)
             .stroke(.transparent)
             .strokeShape(.roundRectangle(12))
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             Label("Lap: \(lap)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             HStack {
                 Button()
@@ -135,7 +135,7 @@ struct EngineSample: SampleContent, ExampleContent {
                 }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
         }
         .spacing(12)
         .engine(following: $running) { cycle in

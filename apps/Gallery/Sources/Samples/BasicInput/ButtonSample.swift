@@ -41,7 +41,7 @@ struct ButtonSample: SampleContent, ExampleContent {
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
             Label("Clicked \(counter) time(s)")
@@ -55,13 +55,13 @@ struct ButtonSample: SampleContent, ExampleContent {
                 .borderWidth(1)
                 .cornerRadius(8)
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
             Button("Disabled")
                 .isEnabled(false)
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
         }
         .spacing(12)
     }

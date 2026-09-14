@@ -17,11 +17,11 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ActivityIndicator(loading)
-                .heightRequest(48)
+                .height(48)
 
             HStack {
                 Label("Working")
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 Switch($loading)
             }
@@ -34,12 +34,12 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
 
             ActivityIndicator(loading)
                 .color(Palette.accent)
-                .heightRequest(48)
+                .height(48)
 
             HStack {
                 Label("Working")
                     .fontSize(14)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 Switch($loading)
                     .automationId("activityIndicator.loading")
@@ -47,7 +47,7 @@ struct ActivityIndicatorSample: SampleContent, ExampleContent {
                     .onColor(Palette.accent)
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
         }
         .spacing(12)

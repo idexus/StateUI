@@ -87,7 +87,7 @@ struct NavigationSample: SampleContent, ExampleContent {
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { nav.push(.level(1)) }
 
             // No act, no await, no question asked of the host: the answer is
@@ -100,7 +100,7 @@ struct NavigationSample: SampleContent, ExampleContent {
 
             Button("Go home, and count the visit")
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked {
                     nav.home()
                     arrivals += 1
@@ -112,7 +112,7 @@ struct NavigationSample: SampleContent, ExampleContent {
 
             Button("Empty the stack")
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { nav.path = [] }
         }
         .spacing(12)

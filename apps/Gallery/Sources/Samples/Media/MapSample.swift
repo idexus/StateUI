@@ -91,7 +91,7 @@ struct MapSample: SampleContent, ExampleContent {
                 .onMapClicked { location in
                     said = "map: \\(location.latitude), \\(location.longitude)"
                 }
-                .heightRequest(300)
+                .height(300)
 
             Label(said)
         }
@@ -126,7 +126,7 @@ struct MapSample: SampleContent, ExampleContent {
                     }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             HStack {
                 SwitchRow("Traffic", $traffic)
@@ -165,7 +165,7 @@ struct MapSample: SampleContent, ExampleContent {
                 .onMapClicked { location in
                     said = "map: \(rounded(location.latitude)), \(rounded(location.longitude))"
                 }
-                .heightRequest(300)
+                .height(300)
 
             Label(said)
                 .fontSize(12)

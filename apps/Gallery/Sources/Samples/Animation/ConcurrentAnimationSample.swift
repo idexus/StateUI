@@ -51,12 +51,12 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                         ForEach(Array(bars.enumerated()), id: \\.offset) { bar in
                             BoxView(Palette.onAccent)
                                 .translationY(bar.element)
-                                .widthRequest(14)
-                                .heightRequest(46)
-                                .verticalOptions(.end)
+                                .width(14)
+                                .height(46)
+                                .verticalAlignment(.end)
                         }
                     }
-                    .heightRequest(92)
+                    .height(92)
 
                     Label("in concert")
                         .opacity($breath)
@@ -147,14 +147,14 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                         ForEach(Array(bars.enumerated()), id: \.offset) { bar in
                             BoxView(Palette.onAccent)
                                 .translationY(bar.element)
-                                .widthRequest(14)
-                                .heightRequest(46)
-                                .verticalOptions(.end)
+                                .width(14)
+                                .height(46)
+                                .verticalAlignment(.end)
                         }
                     }
                     .spacing(10)
-                    .horizontalOptions(.center)
-                    .heightRequest(92)
+                    .horizontalAlignment(.center)
+                    .height(92)
 
                     Label("in concert")
                         .opacity($breath)
@@ -204,7 +204,7 @@ struct ConcurrentAnimationSample: SampleContent, ExampleContent {
                 .isEnabled(playing)
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
         }
         .onDestroying {
             playing = false

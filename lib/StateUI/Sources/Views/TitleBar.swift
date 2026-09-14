@@ -90,7 +90,7 @@ public struct TitleBar: View, TitleBarProperties {
     ///
     ///     TitleBar("Notes")
     ///         .content {
-    ///             SearchBar($query).widthRequest(320)
+    ///             SearchBar($query).width(320)
     ///         }
     ///
     /// A closure producing nothing empties the slot.
@@ -109,8 +109,8 @@ public struct TitleBar: View, TitleBarProperties {
     private func slot(_ type: NodeType, _ views: [Element]) -> Self {
         var copy = self
         copy.node.children.removeAll { $0.type == type }
-        let slots = copy.node.children.filter { $0.type == .contextFlyout }
-        copy.node.children.removeAll { $0.type == .contextFlyout }
+        let slots = copy.node.children.filter { $0.type == .contextMenu }
+        copy.node.children.removeAll { $0.type == .contextMenu }
 
         let filled = views.first.map { [Node(type: type, children: [$0.body])] } ?? []
 

@@ -3,7 +3,7 @@
 
 // A menu on the view itself.
 //
-// `.contextFlyout` is the first View-tier modifier that writes a CHILD rather
+// `.contextMenu` is the first View-tier modifier that writes a CHILD rather
 // than a property, and that is what these tests are mostly about: where the slot
 // lands, that it survives a composed view being expanded, and that a patch about
 // one entry carries that entry alone.
@@ -23,7 +23,7 @@ private struct Card: ContentView {
 
 final class ContextMenuTests: XCTestCase {
     private func menu(_ view: some View) -> Node? {
-        view.body.built.children.first { $0.type == "ContextFlyout" }
+        view.body.built.children.first { $0.type == "ContextMenu" }
     }
 
     func testAMenuTravelsAsASlotAfterTheViewsOwnChildren() throws {
@@ -31,7 +31,7 @@ final class ContextMenuTests: XCTestCase {
             Label("one")
             Label("two")
         }
-        .contextFlyout {
+        .contextMenu {
             MenuFlyoutItem("Rename")
             MenuFlyoutSeparator()
             MenuFlyoutSubItem("Move") { MenuFlyoutItem("Up") }
@@ -41,7 +41,7 @@ final class ContextMenuTests: XCTestCase {
         // The view's own children keep the positions the differ gave them, and
         // the slot is appended - the rule a group's header and footer follow.
         XCTAssertEqual(node.children.map { $0.type },
-                       ["Label", "Label", "ContextFlyout"])
+                       ["Label", "Label", "ContextMenu"])
 
         let flyout = try XCTUnwrap(node.children.last)
 
@@ -59,16 +59,16 @@ final class ContextMenuTests: XCTestCase {
     /// nothing and said nothing.
     func testAMenuOnAComposedViewReachesWhatItIsMadeOf() throws {
         let node = Card()
-            .contextFlyout { MenuFlyoutItem("Rename") }
+            .contextMenu { MenuFlyoutItem("Rename") }
             .body.built
 
         XCTAssertEqual(node.type, "VStack")
-        XCTAssertEqual(node.children.map { $0.type }, ["Label", "ContextFlyout"])
+        XCTAssertEqual(node.children.map { $0.type }, ["Label", "ContextMenu"])
     }
 
     /// A leaf takes one too: any view can carry a menu.
     func testALeafViewTakesAMenu() throws {
-        let flyout = try XCTUnwrap(menu(Label("row").contextFlyout { MenuFlyoutItem("Copy") }))
+        let flyout = try XCTUnwrap(menu(Label("row").contextMenu { MenuFlyoutItem("Copy") }))
 
         XCTAssertEqual(flyout.children.count, 1)
     }
@@ -82,7 +82,7 @@ final class ContextMenuTests: XCTestCase {
             VStack {
                 Label("row")
             }
-            .contextFlyout {
+            .contextMenu {
                 MenuFlyoutItem("Rename")
                 MenuFlyoutItem(caption)
             }
@@ -92,7 +92,7 @@ final class ContextMenuTests: XCTestCase {
         renders.render(tree("Delete"))
         let patch = renders.render(tree("Remove"))
 
-        let flyout = try XCTUnwrap(patch.children.first { $0.type == "ContextFlyout" })
+        let flyout = try XCTUnwrap(patch.children.first { $0.type == "ContextMenu" })
 
         XCTAssertFalse(flyout.arranged, "the arrangement did not change")
         XCTAssertEqual(flyout.children.count, 1, "the entry that did not change was sent too")
@@ -105,7 +105,7 @@ final class ContextMenuTests: XCTestCase {
 
         func tree(_ deletable: Bool) -> Node {
             Label("row")
-                .contextFlyout {
+                .contextMenu {
                     MenuFlyoutItem("Rename")
 
                     if deletable {
@@ -118,7 +118,7 @@ final class ContextMenuTests: XCTestCase {
         renders.render(tree(true))
         let patch = renders.render(tree(false))
 
-        let flyout = try XCTUnwrap(patch.children.first { $0.type == "ContextFlyout" })
+        let flyout = try XCTUnwrap(patch.children.first { $0.type == "ContextMenu" })
 
         XCTAssertTrue(flyout.arranged, "an entry left, so the whole list is said")
         XCTAssertEqual(flyout.children.count, 1, "the one entry left is all it lists")
@@ -135,7 +135,7 @@ final class ContextMenuTests: XCTestCase {
             VStack {
                 Label("one")
             }
-            .contextFlyout { MenuFlyoutItem("Copy") }
+            .contextMenu { MenuFlyoutItem("Copy") }
             .body)
 
         XCTAssertTrue(patch.arranged)

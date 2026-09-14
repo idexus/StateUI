@@ -22,7 +22,7 @@
 //   testEveryControlHasACase        a new control with no case fails HERE
 //   testTheSharedTierIsCoveredOnce  the protocol tiers, on one tree
 //
-// The tier modifiers - padding, margin, fontSize, horizontalOptions - are
+// The tier modifiers - padding, margin, fontSize, horizontalAlignment - are
 // deliberately NOT repeated per control. They live on protocols and are applied
 // by one shared host path, so covering them once per control would prove one
 // rule two dozen times. That is what the protocol tiers are for; the `Elements`
@@ -604,25 +604,25 @@ final class ControlTests: XCTestCase {
                 // The safe strip is the LAYOUT tier's one property of its own;
                 // the four-value form pins its full spelling on the wire.
                 .safeAreaEdges(.none, .softInput, .container, .all)
-                .isClippedToBounds(true)
-                .cascadeInputTransparent(false)
+                .clipsContent(true)
+                .letsInputThrough(true)
                 .style("Card")
                 .padding(24, 16, 24, 16)
                 .margin(4, 8, 4, 8)
-                .horizontalOptions(.center)
-                .verticalOptions(.fill)
+                .horizontalAlignment(.center)
+                .verticalAlignment(.fill)
                 .isVisible(true)
                 .isEnabled(false)
-                .inputTransparent(false)
-                .flowDirection(.rightToLeft)
+                .ignoresInput(false)
+                .layoutDirection(.rightToLeft)
                 .opacity(0.5)
                 .backgroundColor(.whiteSmoke)
-                .widthRequest(200)
-                .heightRequest(100)
-                .minimumWidthRequest(50)
-                .minimumHeightRequest(25)
-                .maximumWidthRequest(400)
-                .maximumHeightRequest(300)
+                .width(200)
+                .height(100)
+                .minimumWidth(50)
+                .minimumHeight(25)
+                .maximumWidth(400)
+                .maximumHeight(300)
                 .rotation(15)
                 .rotationX(30)
                 .rotationY(45)
@@ -631,8 +631,8 @@ final class ControlTests: XCTestCase {
                 .scaleY(3)
                 .translationX(10)
                 .translationY(20)
-                .anchorX(0.25)
-                .anchorY(0.75)
+                .pivotX(0.25)
+                .pivotY(0.75)
                 .zIndex(3)
                 // Every gesture StateUI has, on one view - which is legal, and the
                 // only way to check that each recognizer is asked for on its
@@ -753,7 +753,7 @@ final class ControlTests: XCTestCase {
 
     /// EVERY PROPERTY CAN BE HANDED A BINDING: for every value modifier -
     /// `fontSize(_ value: Double)`, `isVisible(_ value: Bool)`,
-    /// `horizontalOptions(_ value: LayoutOptions)` - there is a twin taking
+    /// `horizontalAlignment(_ value: Alignment)` - there is a twin taking
     /// `Binding<T>`, so a property whose value is decided somewhere else is
     /// never a reason to build the view again. Views/Bound.swift is generated
     /// from the value forms, and this is what keeps the two lists together: a

@@ -265,7 +265,7 @@ private struct ChromeEnd: ContentView {
                     .imageSource("nav_surprise_chrome.png")
                     .contentLayout(.left, spacing: 5)
                     .style("ChromeChip")
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
                     .onClicked { nav.surprise(from: catalog, on: device.idiom) }
             }
         }

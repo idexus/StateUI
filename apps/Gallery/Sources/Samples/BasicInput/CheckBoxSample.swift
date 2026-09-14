@@ -21,7 +21,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
                 CheckBox($agreed)
 
                 Label("I have read the terms")
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
             }
 
             Label(agreed ? "Ticked" : "Not ticked")
@@ -33,7 +33,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
                         .onCheckedChanged { ticked in extras[index] = ticked }
 
                     Label(name)
-                        .verticalOptions(.center)
+                        .verticalAlignment(.center)
                 }
                 .id(name)
             }
@@ -59,7 +59,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
 
                 Label("I have read the terms")
                     .fontSize(15)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
             }
             .spacing(4)
 
@@ -80,7 +80,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
 
                     Label(name)
                         .fontSize(15)
-                        .verticalOptions(.center)
+                        .verticalAlignment(.center)
                 }
                 .spacing(4)
                 .id(name)

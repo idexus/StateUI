@@ -116,7 +116,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .position(step)
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             IndicatorView()
                 .count(Self.steps.count)
@@ -124,7 +124,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .indicatorsShape(.square)
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             HStack {
                 Button("Back")
@@ -140,7 +140,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                     .onClicked { step += 1 }
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             // Twelve items twice, at two caps. `maximumVisible` is a ceiling
             // on the DOTS and not on the items: `count` is twelve in both
@@ -149,7 +149,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
             Label("Twelve items, maximumVisible(12)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             IndicatorView()
                 .count(12)
@@ -157,12 +157,12 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .maximumVisible(12)
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             Label("The same twelve, maximumVisible(\(Int(cap)))")
                 .fontSize(12)
                 .textColor(Palette.subtle)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             IndicatorView()
                 .count(12)
@@ -170,14 +170,14 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                 .maximumVisible(Int(cap))
                 .indicatorColor(Palette.outline)
                 .selectedIndicatorColor(Palette.accent)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             Stepper($cap)
                 .automationId("indicatorView.cap")
                 .semanticDescription("How many dots")
                 .minimum(4)
                 .maximum(12)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             // One item twice. `hideSingle` is true by default, so the
             // left-hand one draws NOTHING at all - a lone dot says nothing
@@ -195,7 +195,7 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                         .hideSingle(true)
                         .indicatorColor(Palette.outline)
                         .selectedIndicatorColor(Palette.accent)
-                        .horizontalOptions(.center)
+                        .horizontalAlignment(.center)
                 }
                 .spacing(6)
 
@@ -211,12 +211,12 @@ struct IndicatorViewSample: SampleContent, ExampleContent {
                         .hideSingle(false)
                         .indicatorColor(Palette.outline)
                         .selectedIndicatorColor(Palette.accent)
-                        .horizontalOptions(.center)
+                        .horizontalAlignment(.center)
                 }
                 .spacing(6)
             }
             .spacing(32)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
         }
         .spacing(12)
     }

@@ -64,10 +64,10 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 .backgroundColor(Palette.raised)
                 .stroke(Palette.outline)
                 .strokeShape(.roundRectangle(110))
-                .widthRequest(220)
-                .heightRequest(220)
-                .horizontalOptions(.center)
-                .verticalOptions(.center)
+                .width(220)
+                .height(220)
+                .horizontalAlignment(.center)
+                .verticalAlignment(.center)
 
             // The marks are laid out, not rotated: a quarter gets a bar,
             // the other hours a dot, each pushed off centre by margins -
@@ -75,11 +75,11 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             ForEach(Array(Self.marks.enumerated()), id: \\.offset) { pair in
                 let (x, y, wide, tall) = pair.element
                 return BoxView(Palette.outline)
-                    .widthRequest(wide)
-                    .heightRequest(tall)
+                    .width(wide)
+                    .height(tall)
                     .margin(2 * x, 2 * y, 0, 0)
-                    .horizontalOptions(.center)
-                    .verticalOptions(.center)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
             }
 
             hand($hAngle, length: 56, width: 6, color: Palette.text)
@@ -89,10 +89,10 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             Border()
                 .backgroundColor(Palette.accent)
                 .strokeShape(.roundRectangle(6))
-                .widthRequest(12)
-                .heightRequest(12)
-                .horizontalOptions(.center)
-                .verticalOptions(.center)
+                .width(12)
+                .height(12)
+                .horizontalAlignment(.center)
+                .verticalAlignment(.center)
         }
         .onCreated {
             // Each visit starts a loop of its own and retires the last. The
@@ -176,12 +176,12 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         ) -> some View {
             BoxView(color)
                 .rotation(angle)
-                .widthRequest(width)
-                .heightRequest(length)
+                .width(width)
+                .height(length)
                 .margin(0, 0, 0, length)
-                .anchorY(1)
-                .horizontalOptions(.center)
-                .verticalOptions(.center)
+                .pivotY(1)
+                .horizontalAlignment(.center)
+                .verticalAlignment(.center)
         }
 
         /// The forward distance to an angle within one turn, 0 up to but not
@@ -203,19 +203,19 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 .stroke(Palette.outline)
                 .strokeThickness(2)
                 .strokeShape(.roundRectangle(110))
-                .widthRequest(220)
-                .heightRequest(220)
-                .horizontalOptions(.center)
-                .verticalOptions(.center)
+                .width(220)
+                .height(220)
+                .horizontalAlignment(.center)
+                .verticalAlignment(.center)
 
             ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                 let (x, y, wide, tall) = pair.element
                 return BoxView(Palette.outline)
-                    .widthRequest(wide)
-                    .heightRequest(tall)
+                    .width(wide)
+                    .height(tall)
                     .margin(2 * x, 2 * y, 0, 0)
-                    .horizontalOptions(.center)
-                    .verticalOptions(.center)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
             }
 
             hand($hAngle, length: 56, width: 6, color: Palette.text)
@@ -226,12 +226,12 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 .backgroundColor(Palette.accent)
                 .stroke(.transparent)
                 .strokeShape(.roundRectangle(6))
-                .widthRequest(12)
-                .heightRequest(12)
-                .horizontalOptions(.center)
-                .verticalOptions(.center)
+                .width(12)
+                .height(12)
+                .horizontalAlignment(.center)
+                .verticalAlignment(.center)
         }
-        .horizontalOptions(.fill)
+        .horizontalAlignment(.fill)
         .onCreated {
             // Each visit starts a loop of its own and retires the last. The
             // hands come back at the angles the state kept, and the first
@@ -311,7 +311,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
             Label("Each hand is a box whose bottom sits at the face's centre - "
                 + "the bottom margin equals its length, so centring the margin "
-                + "box puts the foot on the middle - and anchorY(1) makes that "
+                + "box puts the foot on the middle - and pivotY(1) makes that "
                 + "foot the pivot.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -351,12 +351,12 @@ struct AnalogClockSample: SampleContent, ExampleContent {
     ) -> some View {
         BoxView(color)
             .rotation(angle)
-            .widthRequest(width)
-            .heightRequest(length)
+            .width(width)
+            .height(length)
             .margin(0, 0, 0, length)
-            .anchorY(1)
-            .horizontalOptions(.center)
-            .verticalOptions(.center)
+            .pivotY(1)
+            .horizontalAlignment(.center)
+            .verticalAlignment(.center)
     }
 }
 

@@ -489,7 +489,7 @@ final class GalleryViewTests: XCTestCase {
 
         XCTAssertGreaterThan(travel, 0, "a run of cards is snapped to its cards")
         XCTAssertEqual(
-            find(.boxView, in: showing.patch)?.props[.widthRequest],
+            find(.boxView, in: showing.patch)?.props[.width],
             .number(352 + (3 * travel)),
             "the content is the room plus one card's travel per card past the first")
 

@@ -73,7 +73,7 @@ final class DrivenWireTests: XCTestCase {
     /// from a plain number (`fontSize($size)`), a plain flag the host sets
     /// (`isVisible($shown)`), words (`placeholder($hint)`), a plain choice the
     /// host sets and reports (`selectedIndex($size)`, `isToggled($on)`), and a
-    /// MEMBER (`horizontalOptions($side)`), which crosses as its number and is
+    /// MEMBER (`horizontalAlignment($side)`), which crosses as its number and is
     /// resolved by the host into the platform's own member. A host is held to
     /// landing each of them.
     func testEveryShapeOfABoundPropertyIsWrittenDown() throws {
@@ -82,7 +82,7 @@ final class DrivenWireTests: XCTestCase {
         let hint = State(wrappedValue: "Type here")
         let choice = State(wrappedValue: 1)
         let on = State(wrappedValue: false)
-        let side = State(wrappedValue: LayoutOptions.center)
+        let side = State(wrappedValue: Alignment.center)
 
         try check(
             message(
@@ -90,7 +90,7 @@ final class DrivenWireTests: XCTestCase {
                     Label("bound")
                         .fontSize(size.projectedValue)
                         .isVisible(shown.projectedValue)
-                        .horizontalOptions(side.projectedValue)
+                        .horizontalAlignment(side.projectedValue)
                     Entry()
                         .placeholder(hint.projectedValue)
                     Picker(["S", "M", "L"])
@@ -117,12 +117,12 @@ final class DrivenWireTests: XCTestCase {
         }
         .opacity(number.projectedValue)
         .backgroundColor(colour.projectedValue)
-        .widthRequest(number.projectedValue)
-        .heightRequest(number.projectedValue)
-        .minimumWidthRequest(number.projectedValue)
-        .minimumHeightRequest(number.projectedValue)
-        .maximumWidthRequest(number.projectedValue)
-        .maximumHeightRequest(number.projectedValue)
+        .width(number.projectedValue)
+        .height(number.projectedValue)
+        .minimumWidth(number.projectedValue)
+        .minimumHeight(number.projectedValue)
+        .maximumWidth(number.projectedValue)
+        .maximumHeight(number.projectedValue)
         .rotation(number.projectedValue)
         .rotationX(number.projectedValue)
         .rotationY(number.projectedValue)
@@ -131,8 +131,8 @@ final class DrivenWireTests: XCTestCase {
         .scaleY(number.projectedValue)
         .translationX(number.projectedValue)
         .translationY(number.projectedValue)
-        .anchorX(number.projectedValue)
-        .anchorY(number.projectedValue)
+        .pivotX(number.projectedValue)
+        .pivotY(number.projectedValue)
         .margin(inset.projectedValue)
         .padding(inset.projectedValue)
 
@@ -220,7 +220,7 @@ final class DrivenWireTests: XCTestCase {
         try check(
             message(VStack {
                 Slider().value(level.projectedValue)
-                BoxView().widthRequest(level.projectedValue)
+                BoxView().width(level.projectedValue)
             }.body),
             against: "state-shared")
     }

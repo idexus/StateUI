@@ -30,13 +30,13 @@ struct PinchSample: SampleContent, ExampleContent {
             // first report.
             Border {
                 BoxView(Palette.accent)
-                    .widthRequest(80)
-                    .heightRequest(80)
-                    .horizontalOptions(.center)
-                    .verticalOptions(.center)
+                    .width(80)
+                    .height(80)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
                     .scale(pinch)
             }
-            .heightRequest(220)
+            .height(220)
             .onPinchUpdated { update in
                 reports += 1
 
@@ -82,16 +82,16 @@ struct PinchSample: SampleContent, ExampleContent {
             Border {
                 BoxView(Palette.accent)
                     .cornerRadius(10)
-                    .widthRequest(80)
-                    .heightRequest(80)
-                    .horizontalOptions(.center)
-                    .verticalOptions(.center)
+                    .width(80)
+                    .height(80)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
                     .scale(pinch)
             }
             .stroke(Palette.outline)
             .strokeThickness(1)
             .strokeShape(.roundRectangle(10))
-            .heightRequest(220)
+            .height(220)
             .onPinchUpdated { update in
                 reports += 1
 
@@ -138,7 +138,7 @@ struct PinchSample: SampleContent, ExampleContent {
             Button("Back to life size")
                 .fontSize(13)
                 .padding(16, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked {
                     pinch = 1
                     reports = 0

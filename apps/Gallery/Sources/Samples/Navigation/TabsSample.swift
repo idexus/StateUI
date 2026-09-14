@@ -88,7 +88,7 @@ struct TabsSample: SampleContent, ExampleContent {
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { nav.open(.tabs) }
         }
         .spacing(12)

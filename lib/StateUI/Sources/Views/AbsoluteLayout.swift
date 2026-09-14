@@ -12,7 +12,7 @@
 ///             .absoluteLayoutBounds(Rect(1, 1, AbsoluteLayout.autoSize, AbsoluteLayout.autoSize))
 ///             .absoluteLayoutFlags(.positionProportional)
 ///     }
-///     .heightRequest(160)
+///     .height(160)
 ///
 /// Where a child sits is written on the CHILD, with `.absoluteLayoutBounds(…)`
 /// and `.absoluteLayoutFlags(…)`. Those two modifiers are on `ViewProperties`,

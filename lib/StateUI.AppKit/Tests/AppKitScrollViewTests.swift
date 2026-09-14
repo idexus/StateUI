@@ -326,7 +326,7 @@ final class AppKitScrollViewTests: XCTestCase {
             eventSink: { reports.append(($0, $1)) })
         defer { renderer.closeForTesting() }
         var content = HostPatch(id: .manual("content"), type: .boxView)
-        content.properties = [.widthRequest: .number(500), .heightRequest: .number(500)]
+        content.properties = [.width: .number(500), .height: .number(500)]
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.properties = [
             .orientation: .enumeration(2),

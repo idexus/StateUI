@@ -42,7 +42,7 @@ enum AppStyles {
                 .fontSize(32)
                 .fontAttributes(.bold)
                 .characterSpacing(-0.5)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .horizontalTextAlignment(.center)
 
             // A PAIR, and the second is written from the first: everything
@@ -70,8 +70,8 @@ enum AppStyles {
                 .borderWidth(0)
                 .cornerRadius(10)                
                 .padding(16, 11)
-                .minimumHeightRequest(44)
-                .minimumWidthRequest(44)
+                .minimumHeight(44)
+                .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                     .backgroundColor(Palette.outline)
@@ -112,7 +112,7 @@ enum AppStyles {
                 .fontAttributes(.bold)
                 .borderWidth(0)
                 .padding(5, 0)
-                .heightRequest(26)
+                .height(26)
                 .visualState(.normal) { $0
                     .opacity(1)
                 }
@@ -140,8 +140,8 @@ enum AppStyles {
                 .borderWidth(0)
                 .cornerRadius(10)
                 .padding(14, 4)
-                .minimumHeightRequest(0)
-                .minimumWidthRequest(0)
+                .minimumHeight(0)
+                .minimumWidth(0)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                     .backgroundColor(Palette.outline)
@@ -152,8 +152,8 @@ enum AppStyles {
                 .borderColor(.transparent)
                 .borderWidth(0)
                 .cornerRadius(10)
-                .minimumHeightRequest(44)
-                .minimumWidthRequest(44)
+                .minimumHeight(44)
+                .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .opacity(0.4)
                 }
@@ -165,8 +165,8 @@ enum AppStyles {
                 .backgroundColor(.transparent)
                 .placeholderColor(Palette.subtle)
                 .fontSize(15)
-                .minimumHeightRequest(44)
-                .minimumWidthRequest(44)
+                .minimumHeight(44)
+                .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                 }
@@ -176,8 +176,8 @@ enum AppStyles {
                 .backgroundColor(.transparent)
                 .placeholderColor(Palette.subtle)
                 .fontSize(15)
-                .minimumHeightRequest(44)
-                .minimumWidthRequest(44)
+                .minimumHeight(44)
+                .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                 }
@@ -187,8 +187,8 @@ enum AppStyles {
                 .titleColor(Palette.subtle)
                 .backgroundColor(.transparent)
                 .fontSize(15)
-                .minimumHeightRequest(44)
-                .minimumWidthRequest(44)
+                .minimumHeight(44)
+                .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                     .titleColor(Palette.disabled)
@@ -198,8 +198,8 @@ enum AppStyles {
                 .textColor(Palette.text)
                 .backgroundColor(.transparent)
                 .fontSize(15)
-                .minimumHeightRequest(44)
-                .minimumWidthRequest(44)
+                .minimumHeight(44)
+                .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                 }
@@ -208,8 +208,8 @@ enum AppStyles {
                 .textColor(Palette.text)
                 .backgroundColor(.transparent)
                 .fontSize(15)
-                .minimumHeightRequest(44)
-                .minimumWidthRequest(44)
+                .minimumHeight(44)
+                .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                 }
@@ -224,8 +224,8 @@ enum AppStyles {
                 .placeholderColor(Palette.subtle)
                 .cancelButtonColor(Palette.accent)
                 .fontSize(15)
-                .minimumHeightRequest(idiom == .desktop ? 0 : 44)
-                .minimumWidthRequest(44)
+                .minimumHeight(idiom == .desktop ? 0 : 44)
+                .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                     .placeholderColor(Palette.disabled)
@@ -253,8 +253,8 @@ enum AppStyles {
 
             Style<CheckBox>()
                 .color(Palette.accent)
-                .minimumHeightRequest(44)
-                .minimumWidthRequest(44)
+                .minimumHeight(44)
+                .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .color(Palette.disabled)
                 }
@@ -263,8 +263,8 @@ enum AppStyles {
                 .backgroundColor(.transparent)
                 .textColor(Palette.text)
                 .fontSize(15)
-                .minimumHeightRequest(44)
-                .minimumWidthRequest(44)
+                .minimumHeight(44)
+                .minimumWidth(44)
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
                 }
@@ -313,7 +313,7 @@ enum AppStyles {
 
             Style<Label>("MenuRowText")
                 .fontSize(16)
-                .verticalOptions(.center)
+                .verticalAlignment(.center)
                 .textColor(Palette.subtle)
 
             // MARK: Shapes

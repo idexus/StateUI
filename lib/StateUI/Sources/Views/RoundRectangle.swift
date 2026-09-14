@@ -37,13 +37,13 @@ extension RoundRectangleProperties {
 ///     RoundRectangle()
 ///         .cornerRadius(12)
 ///         .fill(.whiteSmoke)
-///         .heightRequest(80)
+///         .height(80)
 ///
 /// `Rectangle` rounds its corners with `radiusX`/`radiusY`, which are the same
 /// for all four; this is the one that names them separately.
 ///
-/// Like every shape, it has no size of its own - a `heightRequest`, a
-/// `widthRequest` or a layout that stretches it is what gives it one.
+/// Like every shape, it has no size of its own - a `height`, a
+/// `width` or a layout that stretches it is what gives it one.
 public struct RoundRectangle: Shape, RoundRectangleProperties {
     /// The node this control describes.
     public var node: Node

@@ -292,7 +292,7 @@ final class MotionTests: XCTestCase {
 
         func panel(_ width: Double, _ colour: Color) -> Node {
             Border { Label("x") }
-                .widthRequest(width)
+                .width(width)
                 .backgroundColor(colour)
                 .motion(.none, .size)
                 .id("p")
@@ -302,8 +302,8 @@ final class MotionTests: XCTestCase {
         renders.render(panel(100, Color("#000000")))
         let patch = renders.render(panel(300, Color("#FFFFFF")))
 
-        XCTAssertEqual(patch.props[.widthRequest], .number(300))
-        XCTAssertNil(patch.transitions[.widthRequest], "the size arrives")
+        XCTAssertEqual(patch.props[.width], .number(300))
+        XCTAssertNil(patch.transitions[.width], "the size arrives")
         XCTAssertNotNil(patch.transitions[.backgroundColor], "the colour still travels")
     }
 
@@ -315,7 +315,7 @@ final class MotionTests: XCTestCase {
         func panel(_ fade: Double, _ width: Double) -> Node {
             Border { Label("x") }
                 .opacity(fade)
-                .widthRequest(width)
+                .width(width)
                 .motion(own, .opacity)
                 .id("p")
                 .body
@@ -325,7 +325,7 @@ final class MotionTests: XCTestCase {
         let patch = renders.render(panel(0.2, 300))
 
         XCTAssertEqual(patch.transitions[.opacity]?.motion, own)
-        XCTAssertEqual(patch.transitions[.widthRequest]?.motion, .standard,
+        XCTAssertEqual(patch.transitions[.width]?.motion, .standard,
                        "what no rule names travels the way everything else does")
     }
 
@@ -336,7 +336,7 @@ final class MotionTests: XCTestCase {
 
         func panel(_ width: Double) -> Node {
             Border { Label("x") }
-                .widthRequest(width)
+                .width(width)
                 .motion(.none, .size)
                 .motion(.eased(500), .width)
                 .id("p")
@@ -346,7 +346,7 @@ final class MotionTests: XCTestCase {
         renders.render(panel(100))
         let patch = renders.render(panel(300))
 
-        XCTAssertEqual(patch.transitions[.widthRequest]?.motion, .eased(500))
+        XCTAssertEqual(patch.transitions[.width]?.motion, .eased(500))
     }
 
     /// A LAYOUT says which parts of a child's place travel, since a place is

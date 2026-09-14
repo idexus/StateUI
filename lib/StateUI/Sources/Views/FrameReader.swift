@@ -30,7 +30,7 @@
 // crosses the boundary.
 //
 // NOTHING IS MEASURED UNLESS SOMETHING ASKS. A view without a handler is not
-// even subscribed - the rule `.width($w)` and `.height($h)` follow, because a
+// even subscribed - the rule every reported property follows, because a
 // frame moves at every measure and a standing subscription per control would
 // cost real work for an answer nobody wanted.
 //
@@ -47,7 +47,7 @@
 // listener hears nothing of a scroll that changed only the window origin.
 // What never reports: translate, rotate and scale are drawing TRANSFORMS, not
 // layout, so an animated translation reports nothing while an animated
-// `widthRequest` reports every step of the layout it causes.
+// `width` reports every step of the layout it causes.
 
 /// Which coordinates a measurement is answered in.
 public enum CoordinateSpace: Sendable {
@@ -87,7 +87,7 @@ extension View {
     ///
     /// **A TRANSFORM never reports.** `.translationX`, `.rotation` and
     /// `.scale` change what is drawn without moving the layout frame, so an
-    /// animated translation is silent here, while an animated `.widthRequest`
+    /// animated translation is silent here, while an animated `.width`
     /// reports every step of the layout it causes.
     ///
     /// - Parameters:
@@ -131,7 +131,7 @@ private final class LastFrame: @unchecked Sendable {
 ///
 ///     FrameReader { frame in
 ///         Label("half of \(Int(frame.width)) is \(Int(frame.width / 2))")
-///             .widthRequest(frame.width / 2)
+///             .width(frame.width / 2)
 ///     }
 ///
 /// Built on `.onFrameChanged`: the last measured frame lives in a `@State` on

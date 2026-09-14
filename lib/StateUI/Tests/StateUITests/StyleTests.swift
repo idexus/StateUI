@@ -213,7 +213,7 @@ final class StyleTests: XCTestCase {
     }
 
     /// And they are appended AFTER whatever the control lays out, which is where
-    /// a host subtracts them - the `.contextFlyout` rule.
+    /// a host subtracts them - the `.contextMenu` rule.
     func testAControlsStatesComeAfterWhatItLaysOut() {
         var node = VStack {
             Label("one")
@@ -1005,7 +1005,7 @@ final class StyleTests: XCTestCase {
                 .backgroundColor(Color.fromArgb("#512BD4"))
                 .cornerRadius(8)
                 .padding(14, 10)
-                .minimumHeightRequest(44)
+                .minimumHeight(44)
                 .visualState(.disabled) { $0
                     .textColor(Color(light: Color.fromArgb("#141414"),
                                      dark: Color.fromArgb("#C8C8C8")))

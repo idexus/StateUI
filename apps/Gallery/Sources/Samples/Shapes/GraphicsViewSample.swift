@@ -47,7 +47,7 @@ private struct FollowsState: ExampleContent {
                                 horizontalAlignment: .center)
                         }
                     }
-                    .heightRequest(120)
+                    .height(120)
 
                     Button("Different numbers")
                         .onClicked { bars = bars.map { _ in Double.random(in: 0.15...1) } }
@@ -76,12 +76,12 @@ private struct FollowsState: ExampleContent {
                         horizontalAlignment: .center)
                 }
             }
-            .heightRequest(120)
+            .height(120)
 
             Button("Different numbers")
                 .fontSize(13)
                 .padding(16, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { bars = bars.map { _ in Double.random(in: 0.15...1) } }
         }
         .spacing(12)
@@ -123,7 +123,7 @@ private struct FollowsAFinger: ExampleContent {
                             Draw.fillEllipse(x: point.x - 4, y: point.y - 4, width: 8, height: 8)
                         }
                     }
-                    .heightRequest(120)
+                    .height(120)
                     .onStartInteraction { trail = [$0] }
                     .onDragInteraction { trail = Array((trail + [$0]).suffix(120)) }
                     .onEndInteraction { _ in }
@@ -150,7 +150,7 @@ private struct FollowsAFinger: ExampleContent {
                     Draw.fillEllipse(x: point.x - 4, y: point.y - 4, width: 8, height: 8)
                 }
             }
-            .heightRequest(120)
+            .height(120)
             .onStartInteraction { trail = [$0] }
             .onDragInteraction { trail = Array((trail + [$0]).suffix(120)) }
             .onEndInteraction { _ in }
@@ -158,7 +158,7 @@ private struct FollowsAFinger: ExampleContent {
             Button("Clear")
                 .fontSize(13)
                 .padding(16, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .isEnabled(!trail.isEmpty)
                 .onClicked { trail = [] }
         }

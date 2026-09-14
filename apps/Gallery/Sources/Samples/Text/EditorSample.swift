@@ -24,7 +24,7 @@ struct EditorSample: SampleContent, ExampleContent {
 
                     Editor($draft)
                         .placeholder("Anything worth remembering")
-                        .heightRequest(110)
+                        .height(110)
                 }
 
                 VStack {
@@ -62,7 +62,7 @@ struct EditorSample: SampleContent, ExampleContent {
                         .automationId("editor.notes")
                         .semanticDescription("Notes")
                         .placeholder("Anything worth remembering")
-                        .heightRequest(110)
+                        .height(110)
                 }
                 .spacing(4)
 
@@ -78,7 +78,7 @@ struct EditorSample: SampleContent, ExampleContent {
                         .autoSize(.textChanges)
                 }
                 .spacing(4)
-                .verticalOptions(.start)
+                .verticalAlignment(.start)
                 .gridColumn(1)
             }
             .columnDefinitions(.star, .star)
@@ -92,7 +92,7 @@ struct EditorSample: SampleContent, ExampleContent {
             Button("Clear")
                 .fontSize(13)
                 .padding(16, 6)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .isEnabled(!draft.isEmpty)
                 .onClicked { draft = "" }
         }

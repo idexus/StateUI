@@ -63,7 +63,7 @@ struct ConnectivitySample: SampleContent, ExampleContent {
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
         }
         .spacing(10)
     }

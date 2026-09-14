@@ -1474,7 +1474,7 @@ final class CatalogTests: XCTestCase {
         var engines = 0
 
         func walk(_ node: Node) {
-            if node.driven[.heightRequest] != nil { heights.append(node.type.name) }
+            if node.driven[.height] != nil { heights.append(node.type.name) }
             if node.driven[.frame] != nil { rooms.append(node.type.name) }
             if node.driven[.opacity] != nil { fades.append(node.type.name) }
 

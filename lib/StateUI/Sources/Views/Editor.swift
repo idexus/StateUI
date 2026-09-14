@@ -27,7 +27,7 @@ extension EditorProperties {
 ///     …
 ///     Editor($notes)
 ///         .placeholder("Anything worth remembering")
-///         .heightRequest(120)
+///         .height(120)
 ///
 /// An `Entry` with room: the same two-way binding and the same handlers, over a
 /// field that wraps and keeps the newlines the reader types. Where an Entry

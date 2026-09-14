@@ -37,7 +37,7 @@ extension GraphicsViewProperties {
 ///             x: 0, y: 0, width: 160, height: 48,
 ///             horizontalAlignment: .center, verticalAlignment: .center)
 ///     }
-///     .heightRequest(48)
+///     .height(48)
 ///
 /// The drawing travels as DATA - its canvas calls, in order - because an
 /// object with a draw method is the one thing this boundary cannot carry; the

@@ -89,12 +89,12 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                     Border {
                         Label(name)
                             .fontSize(15)
-                            .verticalOptions(.center)
+                            .verticalAlignment(.center)
                     }
                     .padding(Thickness(12, 8, 12, 8))
                     .backgroundColor(Palette.raised)
                     .strokeThickness(0)
-                    .heightRequest(40)
+                    .height(40)
                 }
             }
             .spacing(6)
@@ -128,7 +128,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 .star(1),
                 wide ? .star(1) : .star(3))
             .columnSpacing(8)
-            .heightRequest(52)
+            .height(52)
 
             Button("Widen the other end").onClicked { wide.toggle() }
         }
@@ -142,8 +142,8 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
             Label(text)
                 .fontSize(13)
                 .textColor(Palette.onBrand)
-                .horizontalOptions(.center)
-                .verticalOptions(.center)
+                .horizontalAlignment(.center)
+                .verticalAlignment(.center)
         }
         .backgroundColor(colour)
         .opacity(faded ? 0.55 : 1)

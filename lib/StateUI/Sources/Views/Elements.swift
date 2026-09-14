@@ -776,20 +776,20 @@ extension VisualElementProperties {
     /// everything in it.
     public func isEnabled(_ value: Bool) -> Modified { setValue(.isEnabled, .bool(value)) }
 
-    /// Whether the view lets touches through to whatever is behind it. A view
-    /// that is `true` is not hit at all, and is not the same as one that is
-    /// disabled: a disabled view still takes the touch and does nothing with
-    /// it.
-    public func inputTransparent(_ value: Bool) -> Modified { setValue(.inputTransparent, .bool(value)) }
+    /// Whether the view and everything in it ignore input: a tap or a click
+    /// goes through to whatever is behind it. Not the same as disabled - a
+    /// disabled view still takes the touch and does nothing with it. A layout
+    /// whose children should still answer says `letsInputThrough` instead.
+    public func ignoresInput(_ value: Bool) -> Modified { setValue(.ignoresInput, .bool(value)) }
 
     /// Which way the view lays its content out - and, for a language written
     /// right to left, the edge everything starts from.
     ///
-    ///     VStack { … }.flowDirection(.rightToLeft)
+    ///     VStack { … }.layoutDirection(.rightToLeft)
     ///
-    /// It is INHERITED: a view left at `.matchParent` takes whatever the view
+    /// It is INHERITED: a view left at `.inherited` takes whatever the view
     /// above it has, so an application usually says it once at the top.
-    public func flowDirection(_ value: FlowDirection) -> Modified { setValue(.flowDirection, value.propValue) }
+    public func layoutDirection(_ value: LayoutDirection) -> Modified { setValue(.layoutDirection, value.propValue) }
 
     /// How opaque the view is, from 0 to 1.
     public func opacity(_ value: Double) -> Modified { setValue(.opacity, .number(value)) }
@@ -814,24 +814,24 @@ extension VisualElementProperties {
 
     /// How wide the view asks to be, in device units. A REQUEST: the layout has
     /// the last word.
-    public func widthRequest(_ value: Double) -> Modified { setValue(.widthRequest, .number(value)) }
+    public func width(_ value: Double) -> Modified { setValue(.width, .number(value)) }
 
     /// How tall the view asks to be.
-    public func heightRequest(_ value: Double) -> Modified { setValue(.heightRequest, .number(value)) }
+    public func height(_ value: Double) -> Modified { setValue(.height, .number(value)) }
 
     /// The width below which the view asks not to be squeezed.
-    public func minimumWidthRequest(_ value: Double) -> Modified { setValue(.minimumWidthRequest, .number(value)) }
+    public func minimumWidth(_ value: Double) -> Modified { setValue(.minimumWidth, .number(value)) }
 
     /// The height below which the view asks not to be squeezed.
-    public func minimumHeightRequest(_ value: Double) -> Modified { setValue(.minimumHeightRequest, .number(value)) }
+    public func minimumHeight(_ value: Double) -> Modified { setValue(.minimumHeight, .number(value)) }
 
     /// The width above which the view asks not to be stretched.
-    public func maximumWidthRequest(_ value: Double) -> Modified { setValue(.maximumWidthRequest, .number(value)) }
+    public func maximumWidth(_ value: Double) -> Modified { setValue(.maximumWidth, .number(value)) }
 
     /// The height above which the view asks not to be stretched.
-    public func maximumHeightRequest(_ value: Double) -> Modified { setValue(.maximumHeightRequest, .number(value)) }
+    public func maximumHeight(_ value: Double) -> Modified { setValue(.maximumHeight, .number(value)) }
 
-    /// Turns the view, in degrees clockwise, about its anchor.
+    /// Turns the view, in degrees clockwise, about its pivot.
     public func rotation(_ value: Double) -> Modified { setValue(.rotation, .number(value)) }
 
     /// How this view is moved, turned and sized - ONE transform, about the
@@ -884,7 +884,7 @@ extension VisualElementProperties {
     /// `cos(angle)`.
     public func rotationY(_ value: Double) -> Modified { setValue(.rotationY, .number(value)) }
 
-    /// Resizes the view about its anchor, 1 being its natural size. Drawing
+    /// Resizes the view about its pivot, 1 being its natural size. Drawing
     /// only - the space the layout gave it does not change.
     public func scale(_ value: Double) -> Modified { setValue(.scale, .number(value)) }
 
@@ -902,10 +902,10 @@ extension VisualElementProperties {
 
     /// Where rotation and scaling pivot, sideways: 0 the left edge, 1 the right,
     /// 0.5 the middle.
-    public func anchorX(_ value: Double) -> Modified { setValue(.anchorX, .number(value)) }
+    public func pivotX(_ value: Double) -> Modified { setValue(.pivotX, .number(value)) }
 
     /// The same, vertically: 0 the top edge, 1 the bottom.
-    public func anchorY(_ value: Double) -> Modified { setValue(.anchorY, .number(value)) }
+    public func pivotY(_ value: Double) -> Modified { setValue(.pivotY, .number(value)) }
 
     /// Who is drawn on top where views overlap, higher being nearer the front.
     public func zIndex(_ value: Int) -> Modified { setValue(.zIndex, .number(Double(value))) }
@@ -1004,28 +1004,6 @@ extension VisualElement {
         }
     }
 
-    /// The width a layout settled on. Read-only - `widthRequest` is what asks
-    /// for one.
-    public func width(_ binding: Binding<Double>) -> Modified {
-        addHandler(.widthChanged) {
-            if let width = EventBuffer.current.value()?.number {
-                // LANDED, like every reading this library writes back: a
-                // measurement is where the view IS, and a state the host walks
-                // as a journey must not be sent travelling towards it.
-                binding.land(width)
-            }
-        }
-    }
-
-    /// The height a layout settled on. Read-only - `heightRequest` is what
-    /// asks for one.
-    public func height(_ binding: Binding<Double>) -> Modified {
-        addHandler(.heightChanged) {
-            if let height = EventBuffer.current.value()?.number {
-                binding.land(height)
-            }
-        }
-    }
 }
 
 // MARK: - View
@@ -1062,14 +1040,14 @@ extension ViewProperties {
     /// How the view uses the width its parent offers - filling it, or sitting at
     /// one end of it.
     ///
-    ///     Button("Save").horizontalOptions(.center)
-    public func horizontalOptions(_ value: LayoutOptions) -> Modified {
-        setValue(.horizontalOptions, value.propValue)
+    ///     Button("Save").horizontalAlignment(.center)
+    public func horizontalAlignment(_ value: Alignment) -> Modified {
+        setValue(.horizontalAlignment, value.propValue)
     }
 
     /// The same, for the height.
-    public func verticalOptions(_ value: LayoutOptions) -> Modified {
-        setValue(.verticalOptions, value.propValue)
+    public func verticalAlignment(_ value: Alignment) -> Modified {
+        setValue(.verticalAlignment, value.propValue)
     }
 }
 
@@ -1077,7 +1055,7 @@ extension View {
     /// A menu on the view itself, opened with a right-click.
     ///
     ///     Label(item.name)
-    ///         .contextFlyout {
+    ///         .contextMenu {
     ///             MenuFlyoutItem("Rename").onClicked { rename(item) }
     ///             MenuFlyoutSeparator()
     ///             MenuFlyoutItem("Delete").isDestructive(true).onClicked { remove(item) }
@@ -1091,12 +1069,12 @@ extension View {
     /// to perform an essential action behind it.
     ///
     /// - Parameter items: the entries, in the order they are shown.
-    public func contextFlyout(@MenuBuilder _ items: () -> [Element]) -> Modified {
+    public func contextMenu(@MenuBuilder _ items: () -> [Element]) -> Modified {
         modified {
             // Appended, so the view's own children keep the positions the differ
             // gave them. The host reads it by TYPE and leaves it out of the
             // arrangement.
-            $0.children.append(Node(type: .contextFlyout, children: items().map { $0.body }))
+            $0.children.append(Node(type: .contextMenu, children: items().map { $0.body }))
         }
     }
 }
@@ -1439,17 +1417,20 @@ extension LayoutProperties {
     ///
     /// The trap is that this is about the LAYOUT's edges, while `.clip` on any
     /// view is about a shape given to that view.
-    public func isClippedToBounds(_ value: Bool) -> Modified {
-        setValue(.isClippedToBounds, .bool(value))
+    public func clipsContent(_ value: Bool) -> Modified {
+        setValue(.clipsContent, .bool(value))
     }
 
-    /// Whether `.inputTransparent` on this layout reaches its children too.
+    /// Whether the layout's own empty area lets input through to whatever is
+    /// behind it, while its children still answer - an overlay whose buttons
+    /// float over a page that stays in reach.
     ///
-    /// True - the default - means a transparent layout lets touches through
-    /// to whatever is behind the whole of it, children included. False lets the
-    /// children go on being touched while the layout's own background does not.
-    public func cascadeInputTransparent(_ value: Bool) -> Modified {
-        setValue(.cascadeInputTransparent, .bool(value))
+    ///     Grid { panel }.letsInputThrough(true)
+    ///
+    /// `.ignoresInput(true)` is the other half: the view and everything in it
+    /// let input through. Where both are set, `ignoresInput` wins.
+    public func letsInputThrough(_ value: Bool) -> Modified {
+        setValue(.letsInputThrough, .bool(value))
     }
 
     /// Which parts of the screen's UNSAFE strip - the notch, the bars, the

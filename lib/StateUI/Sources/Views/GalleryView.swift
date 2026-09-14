@@ -61,7 +61,7 @@ public enum GalleryStyle: Sendable, Equatable {
 /// faces. That is the SHAPE's, and keeping the two apart is what lets one run
 /// of cards wear three arrangements and travel between them.
 ///
-/// **It needs a bounded size**, as a scroller does: a `.heightRequest`, or a
+/// **It needs a bounded size**, as a scroller does: a `.height`, or a
 /// star row of a Grid. A gallery is a window onto a run of cards, and the cards
 /// are placed in whatever room it is given - a narrow window shows the same
 /// gallery smaller rather than three slivers of a large one.
@@ -1000,9 +1000,9 @@ private struct Turning: ContentView {
         let position = at()
 
         return BoxView(Color("#00000000"))
-            .widthRequest(0)
-            .heightRequest(0)
-            .inputTransparent(true)
+            .width(0)
+            .height(0)
+            .ignoresInput(true)
             .onChanged(position) { try await turned(position) }
             .onChanged(look) { try await wore() }
     }

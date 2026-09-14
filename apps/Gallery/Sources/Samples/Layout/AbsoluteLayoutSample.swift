@@ -34,7 +34,7 @@ struct AbsoluteLayoutSample: SampleContent, ExampleContent {
                     .absoluteLayoutBounds(bounds(x: 1, y: 1))
                     .absoluteLayoutFlags(flags)
             }
-            .heightRequest(180)
+            .height(180)
 
             SwitchRow("Position: proportional", $proportional)
         }
@@ -91,10 +91,10 @@ struct AbsoluteLayoutSample: SampleContent, ExampleContent {
                     .absoluteLayoutBounds(bounds(x: 1, y: 1))
                     .absoluteLayoutFlags(flags)
             }
-            .heightRequest(180)
+            .height(180)
 
             SwitchRow("Position: proportional", $proportional)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
         }
         .spacing(12)
     }

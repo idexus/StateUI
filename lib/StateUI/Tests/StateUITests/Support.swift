@@ -548,8 +548,8 @@ enum Fixtures {
     /// The alternative would be leaving SwipeView.swift out of the scan
     /// altogether, the way the page arrangements are - which would take the
     /// SwipeView with them.
-    /// ContextFlyout is the one written by a MODIFIER rather than by a type:
-    /// `.contextFlyout` on any view appends it. It is a menu, not a view - and
+    /// ContextMenu is the one written by a MODIFIER rather than by a type:
+    /// `.contextMenu` on any view appends it. It is a menu, not a view - and
     /// the entries in it are the menu bar's, already here. Covered by
     /// ContextMenuTests rather than by a control fixture, for the reason the
     /// toolbar's are: there is no control to build one on.
@@ -561,7 +561,7 @@ enum Fixtures {
         "FormattedString", "Span",
         "ToolbarItem", "MenuBarItem",
         "MenuFlyoutItem", "MenuFlyoutSubItem", "MenuFlyoutSeparator",
-        "ContextFlyout",
+        "ContextMenu",
         "Pin",
     ]
 

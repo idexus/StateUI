@@ -116,19 +116,19 @@ struct VisualStateSample: SampleContent, ExampleContent {
                     .onClicked { presses += 1 }
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             HStack {
                 Label("Enabled")
                     .fontSize(14)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 Switch($enabled)
                     .automationId("visual-states.enabled")
                     .semanticDescription("Enabled")
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             Label("entered \(entered) · pressed \(presses) times")
                 .fontSize(13)

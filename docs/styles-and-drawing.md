@@ -233,7 +233,7 @@ RoundRectangle()
         endPoint: Point(1, 0)))
     .stroke(.solidColor(.white))
     .strokeThickness(2)
-    .heightRequest(80)
+    .height(80)
 ```
 
 The host maps this description to its native path and paint types. Path data
@@ -266,7 +266,7 @@ GraphicsView {
         horizontalAlignment: .center,
         verticalAlignment: .center)
 }
-.heightRequest(48)
+.height(48)
 ```
 
 Commands execute in order. Color, stroke, font, alpha, and transform commands

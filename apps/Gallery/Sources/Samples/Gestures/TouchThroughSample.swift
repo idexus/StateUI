@@ -1,10 +1,11 @@
 import StateUI
 
-/// A view touches pass through to the one below, with or without its children.
+/// Input that goes through a view to the one below - past the view alone, or
+/// past its children too.
 struct TouchThroughSample: SampleContent, ExampleContent {
     static let id = "touchThrough"
     static let title = "Touch through"
-    static let summary = "A view that is not touched at all, and whether that reaches its children."
+    static let summary = "A layout that lets taps through to what is below, with or without its children."
 
     /// A gesture sample: a scroller would claim a drag before the example heard
     /// about it, so the page holds the example still.
@@ -12,12 +13,12 @@ struct TouchThroughSample: SampleContent, ExampleContent {
 
     @State private var below = 0
     @State private var child = 0
-    @State private var cascades = false
+    @State private var childrenToo = false
 
     static let code = """
         @State private var below = 0
         @State private var child = 0
-        @State private var cascades = false
+        @State private var childrenToo = false
 
         VStack {
             // Both counts are read here, so a tap on either builds this closure.
@@ -26,35 +27,30 @@ struct TouchThroughSample: SampleContent, ExampleContent {
             Grid {
                 // Underneath, and still reachable.
                 BoxView(Palette.accent)
-                    .heightRequest(120)
+                    .height(120)
                     .onTapped { below += 1 }
 
-                // On top, and touched THROUGH - so a tap on the padding around
-                // the label reaches the box below instead. False on the cascade
-                // is what keeps the label itself touchable.
+                // On top. Its own empty area lets taps through to the box below
+                // while the label inside still answers - or, with the switch on,
+                // the whole of it ignores input, the label included.
                 VStack {
-                    // The child wears its own colour and its own padding, so
-                    // what is the child and what is the transparent view around
-                    // it can be told apart by eye - and aimed at separately.
                     Label("tap the child")
                         .textColor(Palette.onBrand)
                         .backgroundColor(Palette.brand)
                         .padding(14, 8)
-                        .horizontalOptions(.center)
-                        .verticalOptions(.center)
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
                         .onTapped { child += 1 }
                 }
                 .padding(16)
-                .inputTransparent(true)
-                .cascadeInputTransparent(cascades)
+                .letsInputThrough(!childrenToo)
+                .ignoresInput(childrenToo)
             }
 
             Label("below \\(below)   child \\(child)")
 
             HStack {
-                // The whole of the difference: with the cascade ON the label
-                // stops counting too, and every tap reaches the box below.
-                SwitchRow("Touch through", $cascades)
+                SwitchRow("Children too", $childrenToo)
 
                 Button("Reset")
                     .onClicked { below = 0; child = 0 }
@@ -68,61 +64,57 @@ struct TouchThroughSample: SampleContent, ExampleContent {
 
             Grid {
                 BoxView(Palette.accent)
-                    .heightRequest(120)
+                    .height(120)
                     .onTapped { below += 1 }
 
                 VStack {
                     // The child wears its own colour and its own padding, so
-                    // what is the child and what is the transparent view around
-                    // it can be told apart by eye - and aimed at separately.
+                    // what is the child and what is the empty area around it
+                    // can be told apart by eye - and aimed at separately.
                     Label("tap the child")
                         .textColor(Palette.onBrand)
                         .backgroundColor(Palette.brand)
                         .padding(24, 12)
-                        .horizontalOptions(.center)
-                        .verticalOptions(.center)
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
                         .onTapped { child += 1 }
                 }
                 .padding(16)
-                .inputTransparent(true)
-                .cascadeInputTransparent(cascades)
+                .letsInputThrough(!childrenToo)
+                .ignoresInput(childrenToo)
             }
 
             Label("below \(below)   child \(child)")
                 .fontSize(13)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             HStack {
-                // The whole of the difference: with the cascade ON the label
-                // stops counting too, and every tap reaches the box below.
-                SwitchRow("Touch through", $cascades)
+                SwitchRow("Children too", $childrenToo)
 
                 Button("Reset")
                     .onClicked { below = 0; child = 0 }
             }
             .spacing(7)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
         }
         .spacing(12)
     }
 
     var notes: Element? {
         VStack {
-            Label("`inputTransparent` is not the same as being disabled. A DISABLED view "
-                + "still takes the touch and does nothing with it; a transparent one is "
-                + "not hit at all, so whatever is behind it hears the tap instead.")
+            Label("`letsInputThrough(true)` takes only a layout's own empty area out of "
+                + "hit testing: a tap there reaches the box below, and the label inside "
+                + "still counts. It is what an overlay over a page wants.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`cascadeInputTransparent` says whether a layout's transparency reaches "
-                + "its children. True lets everything through, the children included. "
-                + "False keeps the children touchable while the layout around them stops "
-                + "taking taps. The switch flips it.")
+            Label("`ignoresInput(true)` takes the view and everything in it out - with the "
+                + "switch on, the label stops counting too and every tap reaches the box.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A tap in the transparent area reaches the box below either way; the "
-                + "cascade decides whether the child hears one.")
+            Label("Neither is the same as disabled: a disabled view still takes the tap "
+                + "and does nothing with it, while these are not hit at all.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

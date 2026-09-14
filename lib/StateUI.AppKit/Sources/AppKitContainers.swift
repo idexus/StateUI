@@ -179,8 +179,8 @@ struct AppKitLayoutItem {
 /// automation reach it through the native accessibility press.
 @MainActor
 class AppKitHitTestView: NSView {
-    private var inputTransparent = false
-    private var cascadeInputTransparent = true
+    private var ignoresInput = false
+    private var transparencyReachesChildren = true
 
     /// What an accessibility press performs, while the element answers a tap.
     var pressAction: (() -> Void)?
@@ -192,17 +192,17 @@ class AppKitHitTestView: NSView {
     }
 
     func applyInputTransparency(_ transparent: Bool, cascades: Bool) {
-        inputTransparent = transparent
-        cascadeInputTransparent = cascades
+        ignoresInput = transparent
+        transparencyReachesChildren = cascades
     }
 
     var inputTransparencyForTesting: (transparent: Bool, cascades: Bool) {
-        (inputTransparent, cascadeInputTransparent)
+        (ignoresInput, transparencyReachesChildren)
     }
 
     override func hitTest(_ point: NSPoint) -> NSView? {
-        guard inputTransparent else { return super.hitTest(point) }
-        guard !cascadeInputTransparent else { return nil }
+        guard ignoresInput else { return super.hitTest(point) }
+        guard !transparencyReachesChildren else { return nil }
 
         let target = super.hitTest(point)
         return target === self ? nil : target

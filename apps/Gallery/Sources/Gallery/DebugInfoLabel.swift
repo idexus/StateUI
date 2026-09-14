@@ -31,9 +31,9 @@ func DebugInfoLabel() -> Label {
     Label(BuildCount.of(Label("").debugInfo()))
         .fontSize(12)
         .textColor(Palette.accent)
-        .horizontalOptions(.end)
+        .horizontalAlignment(.end)
         .horizontalTextAlignment(.end)
-        .inputTransparent(true)
+        .ignoresInput(true)
 }
 
 /// The build count on its own, without the view's name.

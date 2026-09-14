@@ -23,7 +23,7 @@ struct ProgressBarSample: SampleContent, ExampleContent {
             // A FRACTION, not a count: the division happens here, in Swift,
             // because that is where the numbers are.
             ProgressBar(done / steps)
-                .heightRequest(8)
+                .height(8)
 
             Stepper($done)
                 .minimum(0)
@@ -35,7 +35,7 @@ struct ProgressBarSample: SampleContent, ExampleContent {
             // move opposite ways.
             ProgressBar()
                 .progress(1 - done / steps)
-                .heightRequest(8)
+                .height(8)
         }
         """
 
@@ -49,7 +49,7 @@ struct ProgressBarSample: SampleContent, ExampleContent {
 
             ProgressBar(done / steps)
                 .progressColor(Palette.accent)
-                .heightRequest(8)
+                .height(8)
 
             Stepper($done)
                 .automationId("progressBar.done")
@@ -57,14 +57,14 @@ struct ProgressBarSample: SampleContent, ExampleContent {
                 .minimum(0)
                 .maximum(steps)
                 .increment(1)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             SectionTitle("The same property, as a modifier")
 
             ProgressBar()
                 .progress(1 - done / steps)
                 .progressColor(Palette.subtle)
-                .heightRequest(8)
+                .height(8)
 
         }
         .spacing(12)

@@ -173,7 +173,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                     .minimum(0)
                     .maximum(20)
                     .increment(1)
-                    .horizontalOptions(.start)
+                    .horizontalAlignment(.start)
 
                 button("Send the stepper to 12") {
                     try await $count.journey.move(to: 12, .eased(800, .cubicOut))

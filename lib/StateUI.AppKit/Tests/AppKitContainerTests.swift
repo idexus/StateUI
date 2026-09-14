@@ -126,8 +126,8 @@ final class AppKitContainerTests: XCTestCase {
         let binding = HostStateBinding(state: 71, mode: .inOut, kind: .property)
 
         var border = HostPatch(id: .manual("border"), type: .border)
-        border.properties[.heightRequest] = .number(90)
-        border.driven = .replace([.heightRequest: binding])
+        border.properties[.height] = .number(90)
+        border.driven = .replace([.height: binding])
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([border])
         renderer.applyForTesting(stack)
@@ -173,8 +173,8 @@ final class AppKitContainerTests: XCTestCase {
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties = [
             .text: .string("Measured by AppKit"),
-            .widthRequest: .number(-1),
-            .heightRequest: .number(-1),
+            .width: .number(-1),
+            .height: .number(-1),
         ]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
@@ -201,9 +201,9 @@ final class AppKitContainerTests: XCTestCase {
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties = [
             .text: .string("Bounded"),
-            .widthRequest: .number(200),
-            .minimumWidthRequest: .number(100),
-            .maximumWidthRequest: .number(120),
+            .width: .number(200),
+            .minimumWidth: .number(100),
+            .maximumWidth: .number(120),
         ]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
@@ -228,7 +228,7 @@ final class AppKitContainerTests: XCTestCase {
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties = [
             .text: .string("Maximum"),
-            .maximumWidthRequest: .number(80),
+            .maximumWidth: .number(80),
         ]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])
@@ -259,7 +259,7 @@ final class AppKitContainerTests: XCTestCase {
             let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var box = HostPatch(id: .manual("box"), type: .boxView)
-            box.properties = [.widthRequest: .number(44), .heightRequest: .number(20)]
+            box.properties = [.width: .number(44), .height: .number(20)]
             var layout = HostPatch(id: .manual("layout"), type: container)
             layout.children = .arranged([box])
             renderer.applyForTesting(tree(layout))
@@ -281,7 +281,7 @@ final class AppKitContainerTests: XCTestCase {
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties = [
             .text: .string("Minimum"),
-            .minimumHeightRequest: .number(44),
+            .minimumHeight: .number(44),
         ]
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged([label])

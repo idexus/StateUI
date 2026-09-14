@@ -45,7 +45,7 @@ struct SearchSample: SampleContent, ExampleContent {
                 page.titleView = SearchBar($query)
                     .placeholder("Search the list")
                     .backgroundColor(Palette.surface)
-                    .heightRequest(38)
+                    .height(38)
             }
         }
 
@@ -84,7 +84,7 @@ struct SearchSample: SampleContent, ExampleContent {
             Button("Clear the box")
                 .isEnabled(!query.isEmpty)
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { query = "" }
         }
         .spacing(12)
@@ -98,8 +98,8 @@ struct SearchSample: SampleContent, ExampleContent {
                 .textColor(Palette.text)
                 .placeholderColor(Palette.subtle)
                 .backgroundColor(Palette.surface)
-                .heightRequest(38)
-                .verticalOptions(.center)
+                .height(38)
+                .verticalAlignment(.center)
         }
     }
 

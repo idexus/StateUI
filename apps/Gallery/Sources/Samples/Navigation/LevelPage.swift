@@ -67,12 +67,12 @@ struct LevelPage: ContentView {
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { path.append(.level(level + 1)) }
 
             Button("Back")
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { path.removeLast() }
 
             Label("Go deeper and come back: the same page counts a second arrival.")

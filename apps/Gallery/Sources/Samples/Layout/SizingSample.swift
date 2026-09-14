@@ -10,100 +10,100 @@ struct SizingSample: SampleContent, ExampleContent {
         VStack {
             // A request, not an instruction: the layout has the last word.
             BoxView(Palette.accent)
-                .widthRequest(120)
-                .heightRequest(24)
+                .width(120)
+                .height(24)
 
             // Filling the width, but never past 200.
             BoxView(Palette.accent)
-                .heightRequest(24)
-                .maximumWidthRequest(200)
+                .height(24)
+                .maximumWidth(200)
 
             // Filling the width, but never squeezed below 160.
             BoxView(Palette.accent)
-                .heightRequest(24)
-                .minimumWidthRequest(160)
+                .height(24)
+                .minimumWidth(160)
 
             // The same ceiling on the other axis, against the same request
             // without it: 80 asked for on the left, 32 allowed on the right.
             HStack {
                 BoxView(Palette.outline)
-                    .widthRequest(60)
-                    .heightRequest(80)
-                    .verticalOptions(.start)
+                    .width(60)
+                    .height(80)
+                    .verticalAlignment(.start)
 
                 BoxView(Palette.accent)
-                    .widthRequest(60)
-                    .heightRequest(80)
-                    .maximumHeightRequest(32)
-                    .verticalOptions(.start)
+                    .width(60)
+                    .height(80)
+                    .maximumHeight(32)
+                    .verticalAlignment(.start)
             }
             .spacing(10)
 
             // A child drawn past the layout's edge, cut off at it.
             VStack {
                 BoxView(Palette.accent)
-                    .heightRequest(24)
+                    .height(24)
                     .translationX(60)
             }
-            .isClippedToBounds(true)
-            .widthRequest(120)
+            .clipsContent(true)
+            .width(120)
 
             // The same child in the same layout, and nothing cut off.
             VStack {
                 BoxView(Palette.accent)
-                    .heightRequest(24)
+                    .height(24)
                     .translationX(60)
             }
-            .isClippedToBounds(false)
-            .widthRequest(120)
+            .clipsContent(false)
+            .width(120)
         }
         """
 
     var content: any View {
         VStack {
-            row("widthRequest(120)",
-                BoxView(Palette.accent).widthRequest(120).heightRequest(24))
+            row("width(120)",
+                BoxView(Palette.accent).width(120).height(24))
 
-            row("maximumWidthRequest(200)",
-                BoxView(Palette.accent).heightRequest(24).maximumWidthRequest(200))
+            row("maximumWidth(200)",
+                BoxView(Palette.accent).height(24).maximumWidth(200))
 
-            row("minimumWidthRequest(160)",
-                BoxView(Palette.accent).heightRequest(24).minimumWidthRequest(160))
+            row("minimumWidth(160)",
+                BoxView(Palette.accent).height(24).minimumWidth(160))
 
             // The pair is the point: both ask for 80 high, and only the one
             // without a ceiling on it is allowed to have it.
-            row("heightRequest(80), then the same with maximumHeightRequest(32)",
+            row("height(80), then the same with maximumHeight(32)",
                 HStack {
                     BoxView(Palette.outline)
-                        .widthRequest(60)
-                        .heightRequest(80)
-                        .verticalOptions(.start)
+                        .width(60)
+                        .height(80)
+                        .verticalAlignment(.start)
 
                     BoxView(Palette.accent)
-                        .widthRequest(60)
-                        .heightRequest(80)
-                        .maximumHeightRequest(32)
-                        .verticalOptions(.start)
+                        .width(60)
+                        .height(80)
+                        .maximumHeight(32)
+                        .verticalAlignment(.start)
                 }
                 .spacing(10))
 
-            row("isClippedToBounds(true)",
+            row("clipsContent(true)",
                 VStack {
                     BoxView(Palette.accent)
-                        .heightRequest(24)
+                        .height(24)
                         .translationX(60)
                 }
-                .isClippedToBounds(true)
-                .widthRequest(120))
+                .clipsContent(true)
+                .width(120))
 
-            row("isClippedToBounds(false)",
+            row("clipsContent(false)",
                 VStack {
                     BoxView(Palette.accent)
-                        .heightRequest(24)
+                        .height(24)
                         .translationX(60)
                 }
-                .isClippedToBounds(false)
-                .widthRequest(120))
+                .clipsContent(false)
+                .width(120))
         }
         .spacing(14)
     }
@@ -116,14 +116,14 @@ struct SizingSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`maximumWidthRequest` and `maximumHeightRequest` are the ceiling: a "
+            Label("`maximumWidth` and `maximumHeight` are the ceiling: a "
                 + "view filling its parent stops growing there, and a view that ASKED for "
                 + "more than the ceiling gets the ceiling. The minimum pair are the floor, "
                 + "and stop it being squeezed.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`isClippedToBounds` is the LAYOUT's edge, and cuts off a child drawn "
+            Label("`clipsContent` is the LAYOUT's edge, and cuts off a child drawn "
                 + "past it - here by a translation. It is not the same as a shape given "
                 + "to one view.")
                 .fontSize(12)

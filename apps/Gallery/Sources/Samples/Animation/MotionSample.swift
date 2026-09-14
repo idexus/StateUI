@@ -48,16 +48,16 @@ struct MotionSample: SampleContent, ExampleContent {
 
             BoxView()
                 .color(warm ? Palette.accent : Palette.brand)
-                .widthRequest(wide ? 300 : 120)
-                .heightRequest(wide ? 120 : 60)
+                .width(wide ? 300 : 120)
+                .height(wide ? 120 : 60)
                 .cornerRadius(wide ? 32 : 8)
                 .motion(Self.law(law))
 
             // The same panel, told to stay still. `.motion` is per view.
             BoxView()
                 .color(warm ? Palette.accent : Palette.brand)
-                .widthRequest(wide ? 300 : 120)
-                .heightRequest(wide ? 120 : 60)
+                .width(wide ? 300 : 120)
+                .height(wide ? 120 : 60)
                 .cornerRadius(wide ? 32 : 8)
                 .motion(.none)
 
@@ -66,8 +66,8 @@ struct MotionSample: SampleContent, ExampleContent {
             // value is the one that answers for it.
             BoxView()
                 .color(warm ? Palette.accent : Palette.brand)
-                .widthRequest(wide ? 300 : 120)
-                .heightRequest(wide ? 120 : 60)
+                .width(wide ? 300 : 120)
+                .height(wide ? 120 : 60)
                 .cornerRadius(wide ? 32 : 8)
                 .motion(Self.law(law))
                 .motion(.none, .size)
@@ -119,10 +119,10 @@ struct MotionSample: SampleContent, ExampleContent {
     private func panel(travels: Bool) -> any View {
         BoxView()
             .color(warm ? Palette.accent : Palette.brand)
-            .widthRequest(wide ? 300 : 120)
-            .heightRequest(wide ? 110 : 56)
+            .width(wide ? 300 : 120)
+            .height(wide ? 110 : 56)
             .cornerRadius(wide ? 28 : 8)
-            .horizontalOptions(.start)
+            .horizontalAlignment(.start)
             .motion(travels ? Self.law(law) : .none)
     }
 
@@ -130,10 +130,10 @@ struct MotionSample: SampleContent, ExampleContent {
     private func sized() -> any View {
         BoxView()
             .color(warm ? Palette.accent : Palette.brand)
-            .widthRequest(wide ? 300 : 120)
-            .heightRequest(wide ? 110 : 56)
+            .width(wide ? 300 : 120)
+            .height(wide ? 110 : 56)
             .cornerRadius(wide ? 28 : 8)
-            .horizontalOptions(.start)
+            .horizontalAlignment(.start)
             .motion(Self.law(law))
             .motion(.none, .size)
     }

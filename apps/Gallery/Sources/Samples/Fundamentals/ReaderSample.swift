@@ -128,7 +128,7 @@ struct ReaderSample: SampleContent, ExampleContent {
                 button("Pulse") { pulses += 1 }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             row("1 · a get in this row's braces") {
                 Label("value · \(percent(value))")

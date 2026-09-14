@@ -33,8 +33,8 @@ final class AppKitMeasurementTests: XCTestCase {
         let measuredBeforeMotion = code.nativeMeasurementCountForTesting
 
         var growing = HostPatch(id: .manual("box"), type: .boxView)
-        growing.properties[.widthRequest] = .number(300)
-        growing.transitions[.widthRequest] = HostTransition(motion: .eased(200, .linear))
+        growing.properties[.width] = .number(300)
+        growing.transitions[.width] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(path(to: growing))
         scroll.layoutSubtreeIfNeeded()
 
@@ -52,8 +52,8 @@ final class AppKitMeasurementTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var card = HostPatch(id: .manual("card"), type: .boxView)
-        card.properties[.widthRequest] = .number(120)
-        card.properties[.heightRequest] = .number(60)
+        card.properties[.width] = .number(120)
+        card.properties[.height] = .number(60)
         card.driven = .replace([
             .translationX: HostStateBinding(state: 91, mode: .inOut, kind: .property),
         ])
@@ -278,14 +278,14 @@ final class AppKitMeasurementTests: XCTestCase {
         }
 
         var box = HostPatch(id: .manual("box"), type: .boxView)
-        box.properties[.widthRequest] = .number(120)
-        box.properties[.heightRequest] = .number(56)
-        box.properties[.horizontalOptions] = .enumeration(LayoutOptions.start.rawValue)
+        box.properties[.width] = .number(120)
+        box.properties[.height] = .number(56)
+        box.properties[.horizontalAlignment] = .enumeration(Alignment.start.rawValue)
         var button = HostPatch(id: .manual("size"), type: .button)
         button.properties[.text] = .string("Size")
 
         let listing = (1...80)
-            .map { "        let line\($0) = panel.widthRequest(wide ? 300 : 120) // \($0)" }
+            .map { "        let line\($0) = panel.width(wide ? 300 : 120) // \($0)" }
             .joined(separator: "\n")
 
         return node("page", .scrollView, [

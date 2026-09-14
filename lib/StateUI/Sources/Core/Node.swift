@@ -346,7 +346,7 @@ public struct Node {
     var key: String?
 
     /// The element's semantic properties, keyed by StateUI tokens such as
-    /// `.text`, `.fontSize` and `.horizontalOptions`.
+    /// `.text`, `.fontSize` and `.horizontalAlignment`.
     public var props: [Prop: PropValue]
 
     /// Nested nodes. Empty for leaf controls.

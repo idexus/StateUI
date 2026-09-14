@@ -60,7 +60,7 @@ struct RebuildSample: SampleContent, ExampleContent {
                     .onClicked { right += 1 }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             // TWO OF THEM, side by side, because the reading is only worth
             // anything against another: one panel answers and the other stands

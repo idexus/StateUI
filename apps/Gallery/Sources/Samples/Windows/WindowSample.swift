@@ -134,7 +134,7 @@ struct WindowSample: SampleContent, ExampleContent {
             Switch(value)
                 .automationId(id)
                 .semanticDescription(title)
-            Label(title).verticalOptions(.center)
+            Label(title).verticalAlignment(.center)
         }
         .spacing(8)
     }

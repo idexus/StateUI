@@ -116,9 +116,9 @@ enum AppKitTransitionSurface {
 
     private static let sharedViewProperties: Set<Prop> = [
         .opacity, .backgroundColor,
-        .widthRequest, .heightRequest,
-        .minimumWidthRequest, .minimumHeightRequest,
-        .maximumWidthRequest, .maximumHeightRequest,
+        .width, .height,
+        .minimumWidth, .minimumHeight,
+        .maximumWidth, .maximumHeight,
         .rotation, .scale, .scaleX, .scaleY, .translationX, .translationY,
         .margin,
     ]

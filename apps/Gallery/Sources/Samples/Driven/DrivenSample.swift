@@ -38,18 +38,18 @@ struct DrivenSample: SampleContent, ExampleContent {
             Grid {
                 BoxView()
                     .color($tint)
-                    .heightRequest(6)
-                    .verticalOptions(.center)
+                    .height(6)
+                    .verticalAlignment(.center)
 
                 BoxView()
                     .color(Palette.brand)
-                    .widthRequest(20)
-                    .heightRequest(20)
-                    .horizontalOptions(.start)
+                    .width(20)
+                    .height(20)
+                    .horizontalAlignment(.start)
                     .translationX($offset)
             }
-            .widthRequest(260)
-            .heightRequest(28)
+            .width(260)
+            .height(28)
 
             // A CONVERSION of the same driven value: the host works the words
             // out on its own frames, from where the marker HAS GOT TO, and
@@ -93,38 +93,38 @@ struct DrivenSample: SampleContent, ExampleContent {
                 Grid {
                     BoxView()
                         .color($tint)
-                        .heightRequest(6)
+                        .height(6)
                         .cornerRadius(3)
-                        .verticalOptions(.center)
+                        .verticalAlignment(.center)
 
                     BoxView()
                         .color(Palette.brand)
-                        .widthRequest(20)
-                        .heightRequest(20)
+                        .width(20)
+                        .height(20)
                         .cornerRadius(10)
-                        .horizontalOptions(.start)
-                        .verticalOptions(.center)
+                        .horizontalAlignment(.start)
+                        .verticalAlignment(.center)
                         .translationX($offset)
                 }
-                .widthRequest(260)
-                .heightRequest(28)
+                .width(260)
+                .height(28)
             }
             .padding(16)
             .backgroundColor(Palette.surface)
             .stroke(.transparent)
             .strokeShape(.roundRectangle(12))
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             Label()
                 .text($offset.journey.convert { "\(Int(($0.value / Self.run * 100).rounded()))%" })
                 .fontSize(28)
                 .fontAttributes(.bold)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             Label("Sent under \(law)")
                 .fontSize(12)
                 .textColor(Palette.subtle)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
 
             HStack {
                 button("Empty") { go(to: 0) }
@@ -132,7 +132,7 @@ struct DrivenSample: SampleContent, ExampleContent {
                 button("Full") { go(to: 1) }
             }
             .spacing(8)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             SwitchRow("Take the long way", $slowly)
         }

@@ -145,7 +145,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                     .onClicked { visits = 0 }
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             Entry($who)
                 .automationId("persistent-state.who")
@@ -160,7 +160,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
             // with, so anything else that opens the store can read it.
             HStack {
                 Label("Shade")
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 Button(shade == .quiet ? "quiet" : "bold")
                     .borderColor(Palette.outline)
@@ -174,7 +174,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
             .spacing(12)
 
             BoxView()
-                .heightRequest(48)
+                .height(48)
                 .color(shade == .bold ? Palette.accent : Palette.surface)
                 .cornerRadius(8)
         }

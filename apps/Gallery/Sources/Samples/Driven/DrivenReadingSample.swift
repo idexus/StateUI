@@ -25,8 +25,8 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
 
             // The bar: one driven property, and the host moves it.
             Border { }
-                .widthRequest($width)
-                .heightRequest(28)
+                .width($width)
+                .height(28)
 
             // The two readings, off ONE journey: `destination` is where the
             // value is going and `value` where it has got to.
@@ -38,8 +38,8 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             // is going and where it is - widest the moment a button is
             // pressed, and nought when the bar arrives.
             Border { }
-                .widthRequest($width.journey.convert { abs($0.destination - $0.value) })
-                .heightRequest(10)
+                .width($width.journey.convert { abs($0.destination - $0.value) })
+                .height(10)
 
             HStack {
                 Button("Grow").onClicked {
@@ -65,12 +65,12 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             Border {
                 Label("")
             }
-            .widthRequest($width)
-            .heightRequest(28)
+            .width($width)
+            .height(28)
             .background(.solidColor(Palette.accent))
             .strokeShape(.roundRectangle(8))
             .strokeThickness(0)
-            .horizontalOptions(.start)
+            .horizontalAlignment(.start)
 
             Label()
                 .text($width.journey.convert {
@@ -88,12 +88,12 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             Border {
                 Label("")
             }
-            .widthRequest($width.journey.convert { abs($0.destination - $0.value) })
-            .heightRequest(10)
+            .width($width.journey.convert { abs($0.destination - $0.value) })
+            .height(10)
             .background(.solidColor(Palette.subtle))
             .strokeShape(.roundRectangle(5))
             .strokeThickness(0)
-            .horizontalOptions(.start)
+            .horizontalAlignment(.start)
 
             HStack {
                 Button("Grow")

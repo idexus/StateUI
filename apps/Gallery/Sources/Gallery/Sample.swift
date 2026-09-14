@@ -50,7 +50,7 @@ protocol SampleContent {
     /// `GalleryView`, or WebView.
     ///
     /// Such an example needs a bounded height, and stating one in points is the
-    /// wrong way to bound it: a list of `.heightRequest(240)` shows the same
+    /// wrong way to bound it: a list of `.height(240)` shows the same
     /// four rows on a phone and on a 27-inch screen, with the rest of the page
     /// empty under it. Filling the cell instead makes the example as tall as
     /// there is room for, and the thing inside it already knows how to scroll.

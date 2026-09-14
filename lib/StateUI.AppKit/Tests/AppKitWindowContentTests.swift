@@ -72,15 +72,14 @@ final class AppKitWindowContentTests: XCTestCase {
         var action = HostPatch(id: .manual("action"), type: .button)
         action.properties = [
             .text: .string("Inspector action"),
-            .widthRequest: .number(120),
-            .heightRequest: .number(32),
-            .horizontalOptions: .enumeration(2),
-            .verticalOptions: .enumeration(2),
+            .width: .number(120),
+            .height: .number(32),
+            .horizontalAlignment: .enumeration(2),
+            .verticalAlignment: .enumeration(2),
         ]
         var panel = HostPatch(id: .manual("panel"), type: .grid)
         panel.properties = [
-            .inputTransparent: .bool(true),
-            .cascadeInputTransparent: .bool(false),
+            .letsInputThrough: .bool(true),
         ]
         panel.children = .arranged([action])
         var overlay = HostPatch(id: .manual("overlay"), type: .overlay)
@@ -121,8 +120,8 @@ final class AppKitWindowContentTests: XCTestCase {
         var window = HostPatch(id: .manual("window"), type: .window)
         if withOverlay {
             var panel = HostPatch(id: .manual("panel"), type: .boxView)
-            panel.properties[.widthRequest] = .number(60)
-            panel.properties[.horizontalOptions] = .enumeration(2)
+            panel.properties[.width] = .number(60)
+            panel.properties[.horizontalAlignment] = .enumeration(2)
             var overlay = HostPatch(id: .manual("overlay"), type: .overlay)
             overlay.children = .arranged([panel])
             window.children = .arranged([page, overlay])

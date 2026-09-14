@@ -37,7 +37,7 @@ struct ItemPage: ContentView {
 
                 Button("Back")
                     .padding(20, 10)
-                    .horizontalOptions(.center)
+                    .horizontalAlignment(.center)
                     .onClicked { path.removeLast() }
             }
             .spacing(16)
@@ -47,7 +47,7 @@ struct ItemPage: ContentView {
         .backgroundColor(Palette.surface)
         .stroke(.transparent)
         .strokeShape(.roundRectangle(12))
-        .verticalOptions(.center)
+        .verticalAlignment(.center)
         .onCreated {
             page.gallery(item.isEmpty ? "Item" : item, scene: scene, nav: nav)
         }

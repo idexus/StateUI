@@ -31,12 +31,12 @@ struct ModalPage: ContentView {
                 .textColor(.white)
                 .cornerRadius(8)
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { nav.dismiss() }
 
             Button("Present another")
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { nav.present(.page) }
 
             Label("Depth: \(nav.sheets.count)")
@@ -47,7 +47,7 @@ struct ModalPage: ContentView {
         }
         .spacing(16)
         .padding(24)
-        .verticalOptions(.center)
+        .verticalAlignment(.center)
         .onCreated {
             page.title = "Presented"
             page.backgroundColor = Palette.surface

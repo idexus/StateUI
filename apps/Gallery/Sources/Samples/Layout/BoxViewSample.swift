@@ -10,29 +10,29 @@ struct BoxViewSample: SampleContent, ExampleContent {
         VStack {
             HStack {
                 BoxView(Palette.accent)
-                    .widthRequest(44)
-                    .heightRequest(44)
+                    .width(44)
+                    .height(44)
 
                 BoxView(Palette.accent)
                     .cornerRadius(10)
-                    .widthRequest(44)
-                    .heightRequest(44)
+                    .width(44)
+                    .height(44)
 
                 BoxView(Palette.accent)
                     .cornerRadius(22)
-                    .widthRequest(44)
-                    .heightRequest(44)
+                    .width(44)
+                    .height(44)
 
                 BoxView(Color.fromArgb("#E53935"))
                     .cornerRadius(10)
                     .opacity(0.4)
-                    .widthRequest(44)
-                    .heightRequest(44)
+                    .width(44)
+                    .height(44)
             }
 
             // A one-pixel BoxView is also the usual divider.
             BoxView(Palette.outline)
-                .heightRequest(1)
+                .height(1)
         }
         """
 
@@ -40,30 +40,30 @@ struct BoxViewSample: SampleContent, ExampleContent {
         VStack {
             HStack {
                 BoxView(Palette.accent)
-                    .widthRequest(44)
-                    .heightRequest(44)
+                    .width(44)
+                    .height(44)
 
                 BoxView(Palette.accent)
                     .cornerRadius(10)
-                    .widthRequest(44)
-                    .heightRequest(44)
+                    .width(44)
+                    .height(44)
 
                 BoxView(Palette.accent)
                     .cornerRadius(22)
-                    .widthRequest(44)
-                    .heightRequest(44)
+                    .width(44)
+                    .height(44)
 
                 BoxView(Color.fromArgb("#E53935"))
                     .cornerRadius(10)
                     .opacity(0.4)
-                    .widthRequest(44)
-                    .heightRequest(44)
+                    .width(44)
+                    .height(44)
             }
             .spacing(12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             BoxView(Palette.outline)
-                .heightRequest(1)
+                .height(1)
         }
         .spacing(12)
     }

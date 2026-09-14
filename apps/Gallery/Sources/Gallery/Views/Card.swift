@@ -79,10 +79,10 @@ struct Card: ContentView {
         return Border {
             Grid {
                 Image(picture)
-                    .widthRequest(24)
-                    .heightRequest(24)
+                    .width(24)
+                    .height(24)
                     .isVisible(!picture.isEmpty)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 VStack {
                     Label(title)
@@ -96,14 +96,14 @@ struct Card: ContentView {
                 }
                 .gridColumn(1)
                 .spacing(2)
-                .horizontalOptions(.fill)
-                .verticalOptions(.center)
+                .horizontalAlignment(.fill)
+                .verticalAlignment(.center)
 
                 Label("›")
                     .gridColumn(2)
                     .fontSize(22)
                     .textColor(Palette.accent)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
             }
             .columnSpacing(14)
             // The TEXT is the star column. An Auto column measures a Label at

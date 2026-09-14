@@ -193,8 +193,8 @@ file name:
 
 ```swift
 Image("stateui_tile.png")
-    .heightRequest(120)
-    .horizontalOptions(.center)
+    .height(120)
+    .horizontalAlignment(.center)
 ```
 
 The native bundling script is responsible for copying those files and the app

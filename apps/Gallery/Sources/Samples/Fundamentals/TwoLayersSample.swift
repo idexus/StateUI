@@ -61,7 +61,7 @@ private struct LayerRows: ExampleContent {
                 .textColor(Palette.onAccent)
                 .cornerRadius(8)
                 .padding(22, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { counter += 1 }
 
             boxed("Layer one · a get") {
@@ -151,7 +151,7 @@ private struct LayerCost: ExampleContent {
                 let began = ContinuousClock.now
 
                 ForEach(Array(0 ..< leaves), id: \\.self) { _ in
-                    BoxView().widthRequest(7).heightRequest(7)
+                    BoxView().width(7).height(7)
                 }
 
                 Label("Counter \\(counter)")
@@ -167,7 +167,7 @@ private struct LayerCost: ExampleContent {
                 let began = ContinuousClock.now
 
                 ForEach(Array(0 ..< leaves), id: \\.self) { _ in
-                    BoxView().widthRequest(7).heightRequest(7)
+                    BoxView().width(7).height(7)
                 }
 
                 Label($counter.convert { "Counter \\($0)" })
@@ -219,7 +219,7 @@ private struct LayerCost: ExampleContent {
                     .onClicked { leaves = leaves == 25 ? 100 : leaves == 100 ? 400 : 25 }
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
 
             Label("Layer one · a get")
                 .fontSize(11)
@@ -275,8 +275,8 @@ private struct Described: ContentView {
 
             ForEach(Array(0 ..< leaves), id: \.self) { index in
                 BoxView()
-                    .widthRequest(7)
-                    .heightRequest(14)
+                    .width(7)
+                    .height(14)
                     .cornerRadius(2)
                     .color(Palette.outline)
                     .margin(1)
@@ -291,10 +291,10 @@ private struct Described: ContentView {
             Label(took(began, leaves))
                 .fontSize(12)
                 .textColor(Palette.accent)
-                .heightRequest(15)
+                .height(15)
 
             DebugInfoLabel()
-                .heightRequest(15)
+                .height(15)
         }
         .spacing(2)
     }
@@ -313,8 +313,8 @@ private struct Channelled: ContentView {
 
             ForEach(Array(0 ..< leaves), id: \.self) { index in
                 BoxView()
-                    .widthRequest(7)
-                    .heightRequest(14)
+                    .width(7)
+                    .height(14)
                     .cornerRadius(2)
                     .color(Palette.outline)
                     .margin(1)
@@ -329,10 +329,10 @@ private struct Channelled: ContentView {
             Label(took(began, leaves))
                 .fontSize(12)
                 .textColor(Palette.accent)
-                .heightRequest(15)
+                .height(15)
 
             DebugInfoLabel()
-                .heightRequest(15)
+                .height(15)
         }
         .spacing(2)
     }

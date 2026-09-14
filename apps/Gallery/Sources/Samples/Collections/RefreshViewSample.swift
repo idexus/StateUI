@@ -140,7 +140,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
                 Label("Pull enabled")
                     .fontSize(13)
                     .textColor(pulls ? Palette.text : Palette.subtle)
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
 
                 // A SWITCH ABOUT A GESTURE THE PLATFORM CANNOT MAKE offers a
                 // choice that changes nothing, so where there is no pull it
@@ -171,7 +171,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
                 }
             }
             .spacing(10)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
             .gridRow(1)
         }
         .rowDefinitions(.star, .auto)

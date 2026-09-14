@@ -157,7 +157,7 @@ private struct LifetimeCard: ContentView {
             .backgroundColor(Palette.accent)
             .cornerRadius(10)
             .padding(20, 12)
-            .horizontalOptions(.center)
+            .horizontalAlignment(.center)
             .onClicked { taps += 1 }
             .onCreated {
                 log.append("\(log.count + 1) · card \(number) created")

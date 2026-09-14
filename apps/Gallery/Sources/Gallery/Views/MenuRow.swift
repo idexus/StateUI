@@ -76,10 +76,10 @@ struct MenuRow: Element {
             // edge instead of after a gap - which is what a row somewhere
             // other than the menu wants. See the Search sample.
             Image(picture)
-                .widthRequest(20)
-                .heightRequest(20)
+                .width(20)
+                .height(20)
                 .isVisible(!picture.isEmpty)
-                .verticalOptions(.center)
+                .verticalAlignment(.center)
 
             // The style says what a row's caption is; the two lines under it
             // say what the CHOSEN one is. A control's own value wins over its

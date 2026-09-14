@@ -9,7 +9,7 @@ import XCTest
 final class HostDrawingTransformTests: XCTestCase {
     func testTheIdentityDrawsEveryPointWhereItIs() {
         XCTAssertEqual(HostDrawingTransform.identity.matrix(width: 100, height: 60), .identity)
-        XCTAssertTrue(HostDrawingTransform(anchorX: 0, anchorY: 1).isIdentity)
+        XCTAssertTrue(HostDrawingTransform(pivotX: 0, pivotY: 1).isIdentity)
     }
 
     func testARotationTurnsClockwiseAboutTheCentre() {
@@ -21,7 +21,7 @@ final class HostDrawingTransformTests: XCTestCase {
     }
 
     func testAnAnchorMovesThePivot() {
-        let matrix = HostDrawingTransform(rotation: 90, anchorX: 0, anchorY: 0)
+        let matrix = HostDrawingTransform(rotation: 90, pivotX: 0, pivotY: 0)
             .matrix(width: 100, height: 60)
 
         assert(matrix, draws: (0, 0), at: (0, 0))
@@ -62,7 +62,7 @@ final class HostDrawingTransformTests: XCTestCase {
     }
 
     func testMatricesComposeInTheOrderTheyApply() {
-        let turn = HostDrawingTransform(rotation: 90, anchorX: 0, anchorY: 0)
+        let turn = HostDrawingTransform(rotation: 90, pivotX: 0, pivotY: 0)
             .matrix(width: 100, height: 60)
         let move = HostDrawingTransform(translationX: 10).matrix(width: 100, height: 60)
 
@@ -76,8 +76,8 @@ final class HostDrawingTransformTests: XCTestCase {
         let drawing = try XCTUnwrap(placements.placements.first).drawing
 
         XCTAssertEqual(drawing.rotation, 30, accuracy: 1e-9)
-        XCTAssertEqual(drawing.anchorX, 0.5)
-        XCTAssertEqual(drawing.anchorY, 0.5)
+        XCTAssertEqual(drawing.pivotX, 0.5)
+        XCTAssertEqual(drawing.pivotY, 0.5)
     }
 
     private func assert(

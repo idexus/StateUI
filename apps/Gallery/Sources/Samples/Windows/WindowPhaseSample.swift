@@ -76,15 +76,15 @@ private struct PhaseRow: ContentView {
             Label(name)
                 .fontSize(13)
                 .textColor(Palette.subtle)
-                .widthRequest(110)
-                .verticalOptions(.center)
+                .width(110)
+                .verticalAlignment(.center)
 
             Label(value)
                 .fontSize(24)
                 .fontAttributes(.bold)
-                .verticalOptions(.center)
+                .verticalAlignment(.center)
         }
         .spacing(12)
-        .horizontalOptions(.center)
+        .horizontalAlignment(.center)
     }
 }

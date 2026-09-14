@@ -301,34 +301,32 @@ final class ChangesTests: XCTestCase {
     /// The one road an animation has INTO `.onChanged`, pinned end to end.
     ///
     /// An animation writes the CONTROL, never the tree, so a watch cannot see
-    /// it directly - but a property the tree LISTENS to (`.width($w)`,
-    /// `.height($h)`, `.scroll($offset)`) is reported back as it moves, the report
-    /// writes the binding, the binding writes the state, and the watch hears
-    /// the state: report by report while the animation runs, and the last
-    /// report carries the value it ended on. This test stands in for the host
-    /// exactly as a host behaves - a `widthChanged` report with the new
-    /// value - so what it pins is everything on this side of that report.
+    /// it directly - but a property the host REPORTS (a scroller's
+    /// `.scroll($offset)`) comes back as it moves: the host writes the state,
+    /// and the watch hears the state - report by report while the scroller
+    /// glides, and the last report carries the value it ended on. This test
+    /// stands in for the host exactly as a host behaves, with the write the
+    /// host makes, so what it pins is everything on this side of that write.
     func testAReportedPropertyReachesAWatchThroughItsBinding() {
         let renders = Renders()
         let log = Log()
-        let width = State(0.0)
+        let offset = State(Point.zero)
 
         func tree() -> Node {
             VStack {
-                Label("panel").width(width.projectedValue)
+                ScrollView { Label("long") }
+                    .scroll(offset.projectedValue)
             }
-            .onChanged(width.wrappedValue) { old, new in log.lines.append("\(old) -> \(new)") }
+            .onChanged(offset.wrappedValue) { old, new in log.lines.append("\(old.y) -> \(new.y)") }
             .body
         }
 
-        let patch = renders.render(tree())
-        let id = patch.children.first?.events?["widthChanged"] ?? -1
+        renders.render(tree())
 
-        // What the host sends when a layout - an animated one included -
-        // settles the width. The binding writes the state; nothing fires yet,
-        // because no render has compared anything.
-        renders.fire(id, with: [.number(250)])
-        XCTAssertEqual(width.wrappedValue, 250)
+        // What the host writes when a scroll - a gliding one included - moves
+        // the offset. Nothing fires yet: no render has compared anything.
+        slid(offset.number, to: Point(0, 250))
+        XCTAssertEqual(offset.wrappedValue.y, 250)
         XCTAssertTrue(log.lines.isEmpty, "the watch fired before any render compared")
 
         renders.render(tree())
@@ -341,58 +339,35 @@ final class ChangesTests: XCTestCase {
 
     /// A REPORT IS A WRITE: what the platform measured lands on the state, and
     /// whoever reads that state at build is asked for a render for it - a body
-    /// printing the width is built again once per report, and nobody else is.
+    /// printing the offset is built again once per report, and nobody else is.
     func testAReportedPropertyAsksItsReadersForARender() {
         let renders = Renders()
-        let width = State(0.0)
-        let reader = reading { _ = width.get() }
+        let offset = State(Point.zero)
+        let reader = reading { _ = offset.get() }
 
-        let patch = renders.render(VStack { Label("panel").width(width.projectedValue) }.body)
-        let id = patch.children.first?.events?["widthChanged"] ?? -1
+        renders.render(VStack { ScrollView { Label("long") }.scroll(offset.projectedValue) }.body)
 
         Renderer.shared.clearInvalidation()
-        renders.fire(id, with: [.number(250)])
+        slid(offset.number, to: Point(0, 250))
 
-        XCTAssertEqual(width.wrappedValue, 250)
-        XCTAssertTrue(Renderer.shared.needsRender, "the body that reads the width is asked")
+        XCTAssertEqual(offset.wrappedValue.y, 250)
+        XCTAssertTrue(Renderer.shared.needsRender, "the body that reads the offset is asked")
 
         _ = reader
         Renderer.shared.clearInvalidation()
     }
 
-    /// THE OTHER HALF OF EACH PAIR, which nothing named until a guard asked.
-    ///
-    /// `.width($w)` had a test and `.height($h)` did not, and the scroller's
-    /// offset had one on one axis and none on the other. A height is an EVENT
-    /// the handler writes into the binding; an offset is the HOST's own write
-    /// onto the image, said by the number the state was issued - so the second
-    /// half of that pair is a host write and not a fired event, and the offset
-    /// is ONE POINT, so a report carries both axes at once.
-    func testTheSecondHalfOfEachReportedPairReachesItsBinding() {
+    /// An offset is ONE POINT, so a report carries both axes at once - the
+    /// host's own write onto the image, said by the number the state was issued.
+    func testAnOffsetReportCarriesBothAxes() {
         let renders = Renders()
-        let height = State(0.0)
         let offset = State(Point.zero)
 
-        func tree() -> Node {
-            VStack {
-                Label("panel").height(height.projectedValue)
+        renders.render(VStack { ScrollView { Label("wide") }.scroll(offset.projectedValue) }.body)
+        slid(offset.number, to: Point(120, 40))
 
-                ScrollView {
-                    Label("wide")
-                }
-                .scroll(offset.projectedValue)
-            }
-            .body
-        }
-
-        let patch = renders.render(tree())
-        let panel = patch.children.first
-
-        renders.fire(panel?.events?["heightChanged"] ?? -1, with: [.number(64)])
-        slid(offset.number, to: Point(120, 0))
-
-        XCTAssertEqual(height.wrappedValue, 64, "a reported height did not reach its binding")
-        XCTAssertEqual(offset.wrappedValue.x, 120, "an offset the host wrote did not reach its state")
+        XCTAssertEqual(offset.wrappedValue.x, 120, "the horizontal half did not reach its state")
+        XCTAssertEqual(offset.wrappedValue.y, 40, "the vertical half did not reach its state")
 
         Renderer.shared.clearInvalidation()
     }

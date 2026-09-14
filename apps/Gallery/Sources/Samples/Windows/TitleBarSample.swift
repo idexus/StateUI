@@ -93,7 +93,7 @@ struct TitleBarSample: SampleContent, ExampleContent {
                     .semanticDescription("Show a title bar action")
 
                 Label("Show a trailing action")
-                    .verticalOptions(.center)
+                    .verticalAlignment(.center)
             }
             .spacing(8)
         }

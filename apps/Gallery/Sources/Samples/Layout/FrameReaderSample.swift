@@ -41,9 +41,9 @@ struct FrameReaderSample: SampleContent, ExampleContent {
                 }
                 // Driven: the host carries the width, and no render
                 // describes it.
-                .widthRequest($width)
-                .heightRequest(120)
-                .horizontalOptions(.center)
+                .width($width)
+                .height(120)
+                .horizontalAlignment(.center)
                 // Reporting is a modifier on ANY view - one handler per
                 // space. Nothing is measured unless something asks: a view
                 // without a handler is not even subscribed.
@@ -99,15 +99,15 @@ struct FrameReaderSample: SampleContent, ExampleContent {
                         .fontSize(22)
                         .fontAttributes(.bold)
                         .textColor(Palette.onAccent)
-                        .horizontalOptions(.center)
-                        .verticalOptions(.center)
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
                 }
                 // Driven: the host carries the width, and no render
                 // describes it.
-                .widthRequest($width)
-                .heightRequest(120)
+                .width($width)
+                .height(120)
                 .backgroundColor(Palette.accent)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 // Reporting is a modifier on ANY view - one handler per
                 // space. Nothing is measured unless something asks: a view
                 // without a handler is not even subscribed.
@@ -142,7 +142,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
 
             Button("Animate the width")
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked {
                     // Nothing is described: the host carries the width and the
                     // slider's thumb off the same state, and the frame reports
@@ -170,7 +170,7 @@ struct FrameReaderSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Label("The panel's width and the slider's thumb are one driven state - "
-                + "`.widthRequest($width)` and `Slider($width)` - so dragging the thumb "
+                + "`.width($width)` and `Slider($width)` - so dragging the thumb "
                 + "resizes the panel without the page being described for it, and the "
                 + "button moves that same state.")
                 .fontSize(12)

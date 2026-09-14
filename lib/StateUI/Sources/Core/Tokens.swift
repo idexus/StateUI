@@ -147,11 +147,11 @@ extension Prop {
     private static let kinds: [Prop: MotionValues] = {
         var kinds: [Prop: MotionValues] = [.opacity: .opacity]
 
-        for property in [Prop.widthRequest, .minimumWidthRequest, .maximumWidthRequest, .width] {
+        for property in [Prop.width, .minimumWidth, .maximumWidth] {
             kinds[property] = .width
         }
 
-        for property in [Prop.heightRequest, .minimumHeightRequest, .maximumHeightRequest, .height] {
+        for property in [Prop.height, .minimumHeight, .maximumHeight] {
             kinds[property] = .height
         }
 
@@ -166,7 +166,7 @@ extension Prop {
         }
 
         for property in [Prop.scale, .scaleX, .scaleY, .rotation, .rotationX, .rotationY,
-                         .anchorX, .anchorY] {
+                         .pivotX, .pivotY] {
             kinds[property] = .transform
         }
 
@@ -358,7 +358,7 @@ public extension NodeType {
     static let checkBox = NodeType("CheckBox")
     static let content = NodeType("Content")
     static let page = NodeType("Page")
-    static let contextFlyout = NodeType("ContextFlyout")
+    static let contextMenu = NodeType("ContextMenu")
     static let datePicker = NodeType("DatePicker")
     static let editor = NodeType("Editor")
     static let ellipse = NodeType("Ellipse")
@@ -426,8 +426,8 @@ public extension Prop {
     static let absoluteLayoutFlags = Prop("absoluteLayoutFlags")
     static let address = Prop("address")
     static let allowDrop = Prop("allowDrop")
-    static let anchorX = Prop("anchorX")
-    static let anchorY = Prop("anchorY")
+    static let pivotX = Prop("pivotX")
+    static let pivotY = Prop("pivotY")
     static let aspect = Prop("aspect")
     static let automationExcludedWithChildren = Prop("automationExcludedWithChildren")
     static let automationId = Prop("automationId")
@@ -442,7 +442,6 @@ public extension Prop {
     static let borderWidth = Prop("borderWidth")
     static let cancelButtonColor = Prop("cancelButtonColor")
     static let canDrag = Prop("canDrag")
-    static let cascadeInputTransparent = Prop("cascadeInputTransparent")
     static let characterSpacing = Prop("characterSpacing")
     static let clearButtonVisibility = Prop("clearButtonVisibility")
     static let color = Prop("color")
@@ -461,7 +460,8 @@ public extension Prop {
     static let fill = Prop("fill")
     static let fillRule = Prop("fillRule")
     static let floatsOnTop = Prop("floatsOnTop")
-    static let flowDirection = Prop("flowDirection")
+    static let layoutDirection = Prop("layoutDirection")
+    static let letsInputThrough = Prop("letsInputThrough")
     static let fontAttributes = Prop("fontAttributes")
     static let fontAutoScalingEnabled = Prop("fontAutoScalingEnabled")
     static let fontFamily = Prop("fontFamily")
@@ -476,9 +476,8 @@ public extension Prop {
     static let group = Prop("group")
     static let groupName = Prop("groupName")
     static let height = Prop("height")
-    static let heightRequest = Prop("heightRequest")
     static let hideSingle = Prop("hideSingle")
-    static let horizontalOptions = Prop("horizontalOptions")
+    static let horizontalAlignment = Prop("horizontalAlignment")
     static let horizontalScrollBarVisibility = Prop("horizontalScrollBarVisibility")
     static let horizontalTextAlignment = Prop("horizontalTextAlignment")
     static let icon = Prop("icon")
@@ -488,10 +487,10 @@ public extension Prop {
     static let indicatorColor = Prop("indicatorColor")
     static let indicatorSize = Prop("indicatorSize")
     static let indicatorsShape = Prop("indicatorsShape")
-    static let inputTransparent = Prop("inputTransparent")
+    static let ignoresInput = Prop("ignoresInput")
     static let isAnimationPlaying = Prop("isAnimationPlaying")
     static let isChecked = Prop("isChecked")
-    static let isClippedToBounds = Prop("isClippedToBounds")
+    static let clipsContent = Prop("clipsContent")
     static let isDestructive = Prop("isDestructive")
     static let isEnabled = Prop("isEnabled")
     static let isMaximizable = Prop("isMaximizable")
@@ -523,20 +522,16 @@ public extension Prop {
     static let maximum = Prop("maximum")
     static let maximumDate = Prop("maximumDate")
     static let maximumHeight = Prop("maximumHeight")
-    static let maximumHeightRequest = Prop("maximumHeightRequest")
     static let maximumTrackColor = Prop("maximumTrackColor")
     static let maximumVisible = Prop("maximumVisible")
     static let maximumWidth = Prop("maximumWidth")
-    static let maximumWidthRequest = Prop("maximumWidthRequest")
     static let maxLength = Prop("maxLength")
     static let maxLines = Prop("maxLines")
     static let minimum = Prop("minimum")
     static let minimumDate = Prop("minimumDate")
     static let minimumHeight = Prop("minimumHeight")
-    static let minimumHeightRequest = Prop("minimumHeightRequest")
     static let minimumTrackColor = Prop("minimumTrackColor")
     static let minimumWidth = Prop("minimumWidth")
-    static let minimumWidthRequest = Prop("minimumWidthRequest")
     static let mode = Prop("mode")
     static let name = Prop("name")
     static let backButtonTitle = Prop("backButtonTitle")
@@ -630,11 +625,10 @@ public extension Prop {
     static let userAgent = Prop("userAgent")
 
     static let value = Prop("value")
-    static let verticalOptions = Prop("verticalOptions")
+    static let verticalAlignment = Prop("verticalAlignment")
     static let verticalScrollBarVisibility = Prop("verticalScrollBarVisibility")
     static let verticalTextAlignment = Prop("verticalTextAlignment")
     static let width = Prop("width")
-    static let widthRequest = Prop("widthRequest")
     static let windowType = Prop("windowType")
     static let windowValue = Prop("windowValue")
     static let x = Prop("x")
@@ -671,7 +665,6 @@ public extension Event {
     static let dropCompleted = Event("dropCompleted")
     static let endInteraction = Event("endInteraction")
     static let frameChanged = Event("frameChanged")
-    static let heightChanged = Event("heightChanged")
     static let infoWindowClicked = Event("infoWindowClicked")
     static let invoked = Event("invoked")
     static let isFocusedChanged = Event("isFocusedChanged")
@@ -717,7 +710,6 @@ public extension Event {
     static let toggled = Event("toggled")
     static let valueChanged = Event("valueChanged")
     static let visualStateChanged = Event("visualStateChanged")
-    static let widthChanged = Event("widthChanged")
     static let windowClosed = Event("windowClosed")
     static let windowRestored = Event("windowRestored")
 }

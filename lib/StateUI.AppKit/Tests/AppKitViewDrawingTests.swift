@@ -30,8 +30,8 @@ final class AppKitViewDrawingTests: XCTestCase {
         let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var cornered = box(id: "cornered", rotation: 90)
-        cornered.properties[.anchorX] = .number(0)
-        cornered.properties[.anchorY] = .number(0)
+        cornered.properties[.pivotX] = .number(0)
+        cornered.properties[.pivotY] = .number(0)
         renderer.applyForTesting(tree(stack(box(rotation: 90), cornered)))
         let centred = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
         let turned = try XCTUnwrap(renderer.viewForTesting(id: .manual("cornered")))
@@ -114,8 +114,8 @@ final class AppKitViewDrawingTests: XCTestCase {
     private func box(id: String = "box", rotation: Double) -> HostPatch {
         var box = HostPatch(id: .manual(id), type: .boxView)
         box.properties[.rotation] = .number(rotation)
-        box.properties[.widthRequest] = .number(100)
-        box.properties[.heightRequest] = .number(60)
+        box.properties[.width] = .number(100)
+        box.properties[.height] = .number(60)
         return box
     }
 

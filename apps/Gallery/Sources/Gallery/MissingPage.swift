@@ -43,7 +43,7 @@ struct MissingPage: ContentView {
 
             Button("Back")
                 .padding(20, 10)
-                .horizontalOptions(.center)
+                .horizontalAlignment(.center)
                 .onClicked { path.removeLast() }
         }
         .spacing(16)
