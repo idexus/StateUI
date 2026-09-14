@@ -206,10 +206,11 @@ tabs on the top edge of its content.
 Page arrangements accept a flat `barBackgroundColor`. A `NavigationStack` also
 accepts `barTextColor` for its title and native action affordances. Native tab
 selectors retain their selected and unselected state appearance. Leaving the
-background unwritten preserves the platform's material, and a platform whose
-bar is a system material, as the AppKit toolbar is, keeps that material and
-draws its items in the system's colours. Gradients remain ordinary view
-composition where the application owns the surface.
+background unwritten preserves the platform's material. A written colour is
+painted where the bars stand - on AppKit the band the title bar and toolbar
+cover over the visible content, with the page's title in `barTextColor` on it -
+while the toolbar's own items keep the system's look. Gradients remain ordinary
+view composition where the application owns the surface.
 
 ## Menu bars and context menus
 
