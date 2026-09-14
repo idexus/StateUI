@@ -1,4 +1,6 @@
 using StateUI.Maui.Hosting;
+using StateUI.Maui.Protocol;
+using StateUI.Maui.Rendering;
 
 namespace Gallery;
 
@@ -13,6 +15,102 @@ public static class MauiProgram
         // backend and this library's answers to that backend's gaps, and
         // everywhere else it is MAUI's own UseMauiApp.
         builder.UseStateUIApp<App>();
+
+        // The gallery's own acts: C# functions registered under the names the
+        // Swift side declares as Act tokens - see
+        // Sources/Samples/Interop/CustomActsSample.swift. A performer is a
+        // plain or an async function, the two shapes Add takes.
+        StateUIActs.Add("Gallery.SetClipboard", async command =>
+        {
+            await Clipboard.Default.SetTextAsync(command.GetString(0) ?? "");
+            return [];
+        });
+
+        StateUIActs.Add("Gallery.ReadClipboard", async command =>
+            [SwiftWireValue.Of(await Clipboard.Default.GetTextAsync() ?? "")]);
+
+        StateUIActs.Add("Gallery.BatteryLevel", command =>
+            [
+                SwiftWireValue.Of(Battery.Default.ChargeLevel),
+                SwiftWireValue.Of(Battery.Default.State == BatteryState.Charging),
+            ]);
+
+        // An act aimed at a control: argument 0 is the control's identity, and
+        // TargetOf turns it back into the control - null once the control has
+        // left the screen, which is an ordinary answer.
+        StateUIActs.Add("Gallery.FlashRating", async command =>
+        {
+            if (StateUIActs.TargetOf(command) is RatingBar bar)
+            {
+                await bar.FadeToAsync(0.25, 120);
+                await bar.FadeToAsync(1, 120);
+            }
+
+            return [];
+        });
+
+        // The gallery's own pushes: events raised by name with no control
+        // behind them - see Sources/Samples/Interop/CustomEventsSample.swift.
+        // Safe from any thread, and a raise nobody hears is an ordinary
+        // answer, so the sources are wired unconditionally.
+        Battery.Default.BatteryInfoChanged += (_, e) =>
+            StateUIEvents.Raise("Gallery.BatteryChanged",
+                SwiftWireValue.Of(e.ChargeLevel),
+                SwiftWireValue.Of(e.State == BatteryState.Charging));
+
+        Connectivity.Current.ConnectivityChanged += (_, e) =>
+            StateUIEvents.Raise("Gallery.ConnectivityChanged",
+                SwiftWireValue.Of(e.NetworkAccess == NetworkAccess.Internet));
+
+        // The gallery's own control. `create` runs once per element and wires
+        // its events; `apply` runs on every message that touches it and reads
+        // only what arrived. The renderer applies what every view shares -
+        // margins, alignment, opacity, gestures - after it. See
+        // Sources/Samples/Interop/CustomControlSample.swift.
+        StateUIControls.Add("Gallery.TrafficLight",
+            create: raise =>
+            {
+                var light = new TrafficLight();
+                light.LampTapped += (_, index) =>
+                    raise(light, "lampTapped", SwiftWireValue.Of(index));
+                return light;
+            },
+            apply: (light, node) =>
+            {
+                if (node.GetEnumeration("signal") is int signal)
+                {
+                    light.Signal = signal;
+                }
+            });
+
+        // A container: `content` fills the control's one slot with the
+        // reconciled child, and is called only when the slot changes hands.
+        // `count` is a name the library also uses; declared here, it is the
+        // Badge's. See Sources/Samples/Interop/CustomContainerSample.swift.
+        StateUIControls.Add("Gallery.Badge",
+            create: _ => new Badge(),
+            properties: new Dictionary<string, BindableProperty>
+            {
+                ["count"] = Badge.CountProperty,
+            },
+            content: (badge, inner) => badge.Inner = inner);
+
+        // A DECLARED property: assigned by the renderer whenever a message
+        // carries it, set by a style, and walked from a state - what
+        // `.rating($stars)` and `$stars.journey.move(to:)` reach. See
+        // Sources/Samples/Interop/RatingBar.swift.
+        StateUIControls.Add("Gallery.RatingBar",
+            create: raise =>
+            {
+                var stars = new RatingBar();
+                stars.RatingChanged += (_, rating) =>
+                    raise(stars, "ratingChanged", SwiftWireValue.Of(rating));
+                return stars;
+            },
+            properties: new Dictionary<string, BindableProperty>
+            {
+                ["rating"] = RatingBar.RatingProperty,
+            });
 
         // The Map control's handlers - MAUI's own opt-in, kept out of
         // UseMauiApp so an application that shows no map registers none of

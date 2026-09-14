@@ -30,7 +30,7 @@ final class Catalog {
         bar: TitleBarState,
         log: WindowLog
     ) {
-        groups = [
+        var groups: [SampleGroup] = [
             SampleGroup(
                 route: "fundamentals",
                 title: "Fundamentals",
@@ -302,6 +302,30 @@ final class Catalog {
                     Sample(FoundationProbeSample()),
                 ]),
         ]
+
+        #if MAUI
+        // Calling C#, hearing from it, and controls the application registers
+        // with the C# host - each described like the library's own.
+        groups.append(
+            SampleGroup(
+                route: "interop",
+                title: "C# interop",
+                summary: "Calling C#, hearing from it, and controls the app registers - "
+                    + "described like the library's own.",
+                icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
+                card: ImageSource("cat_interop.png"),
+                samples: [
+                    Sample(CustomActsSample()),
+                    Sample(CustomEventsSample()),
+                    Sample(CustomControlSample()),
+                    Sample(CustomContainerSample()),
+                    Sample(CustomBindingSample()),
+                    Sample(CustomStyleSample()),
+                    Sample(CustomAnimationSample()),
+                ]))
+        #endif
+
+        self.groups = groups
     }
 
     /// How many samples a device of `formFactor` lists - the home page's count, so
