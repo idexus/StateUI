@@ -191,6 +191,14 @@ class AppKitHitTestView: NSView {
         return true
     }
 
+    /// An element that answers a tap takes the first click into an inactive
+    /// window, as a native control does, so a row opens wherever it is clicked
+    /// rather than only on its text. One that answers nothing leaves that click
+    /// to activate the window.
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
+        pressAction != nil || super.acceptsFirstMouse(for: event)
+    }
+
     func applyInputTransparency(_ transparent: Bool, cascades: Bool) {
         ignoresInput = transparent
         transparencyReachesChildren = cascades

@@ -152,6 +152,27 @@ final class AppKitGestureTests: XCTestCase {
 
         XCTAssertEqual(totals.values, [8])
     }
+
+    /// A view that answers a tap takes the first click into an inactive window,
+    /// as a native control does - so a row opens wherever it is clicked, not only
+    /// on its text. A view that answers nothing leaves that click to activate
+    /// the window.
+    @MainActor
+    func testAViewThatAnswersATapTakesTheFirstClick() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                HStack { Label("Fundamentals") }.onTapped {}
+                HStack { Label("Plain") }
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let stacks = renderer.nativeViews(AppKitStackView.self)
+        XCTAssertEqual(stacks.count, 3)
+
+        XCTAssertTrue(stacks[1].acceptsFirstMouse(for: nil), "the row that answers a tap")
+        XCTAssertFalse(stacks[2].acceptsFirstMouse(for: nil), "the row that answers nothing")
+        XCTAssertFalse(stacks[0].acceptsFirstMouse(for: nil), "the stack around them")
+    }
 }
 
 #endif
