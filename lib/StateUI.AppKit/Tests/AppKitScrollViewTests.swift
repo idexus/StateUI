@@ -492,6 +492,25 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(scroller.contentView.bounds.origin.x, 105.6, accuracy: 0.5)
         XCTAssertEqual(positions.values.last, 1)
     }
+
+    /// What the reader scrolled comes back as the state it wrote, and the
+    /// scroller is already there: it is not moved again, which mid-gesture is
+    /// the platform's own scroll interrupted on every report.
+    @MainActor
+    func testAReadersScrollIsNotWrittenBackToItsScroller() throws {
+        let renderer = AppKitRenderer.running { BoundStrip() }
+        defer { renderer.closeForTesting() }
+        let scroller = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
+        scroller.window?.contentView?.layoutSubtreeIfNeeded()
+        let moves = scroller.programmaticMovesForTesting
+
+        scroller.contentView.scroll(to: NSPoint(x: 0, y: 120))
+        scroller.reflectScrolledClipView(scroller.contentView)
+        renderer.pump()
+
+        XCTAssertEqual(scroller.contentView.bounds.origin.y, 120, accuracy: 0.5)
+        XCTAssertEqual(scroller.programmaticMovesForTesting, moves, "the reader's own offset is not written back")
+    }
 }
 
 @MainActor
@@ -534,4 +553,21 @@ private struct TappedRun: ContentView {
         .onTapped(within: { room in Rect(0, 0, 100, room.height) }) {}
     }
 }
+/// A tall strip whose offset a state carries, read back by a label.
+private struct BoundStrip: ContentView {
+    @State private var offset = Point.zero
+
+    var content: any View {
+        VStack {
+            ScrollView {
+                ColorBox(Color("#3366FF")).height(2_000)
+            }
+            .scrollOffset($offset)
+            .height(300)
+
+            Label("\(Int($offset.journey.value.y)) down")
+        }
+    }
+}
+
 #endif

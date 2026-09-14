@@ -1508,10 +1508,18 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         if self.orientation == .neither {
             pendingOffset = .zero
         } else if let offset, offset.x.isFinite, offset.y.isFinite {
-            pendingOffset = offset
-            if documentSurface.frame.width > 0, documentSurface.frame.height > 0 {
-                move(to: offset, asReader: false)
+            // An offset the scroller already stands at is not written again:
+            // the reader's own report comes back as the state it wrote, and
+            // moving the clip view to where it stands mid-gesture interrupts
+            // the platform's own scroll on every report.
+            if abs(offset.x - lastObservedOffset.x) < 0.5, abs(offset.y - lastObservedOffset.y) < 0.5 {
                 pendingOffset = nil
+            } else {
+                pendingOffset = offset
+                if documentSurface.frame.width > 0, documentSurface.frame.height > 0 {
+                    move(to: offset, asReader: false)
+                    pendingOffset = nil
+                }
             }
         }
         if pendingOffset != nil { needsLayout = true }
@@ -1626,8 +1634,12 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         let current = offset
         guard current != lastObservedOffset else { return }
         if !movementActive { beginMovement() }
-        readerMoved(from: lastObservedOffset, to: current)
+        // WHERE IT STANDS FIRST, then the report: the report runs the render
+        // that writes the state back, and that write is told apart from an
+        // application's by where the scroller already stands.
+        let previous = lastObservedOffset
         lastObservedOffset = current
+        readerMoved(from: previous, to: current)
         if !liveScrolling && !settling { scheduleRest() }
     }
 
@@ -1675,7 +1687,11 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         reportSnapItem(at: new)
     }
 
+    /// How many times something other than the reader moved the scroller.
+    private(set) var programmaticMovesForTesting = 0
+
     private func move(to requested: NSPoint, asReader: Bool) {
+        if !asReader { programmaticMovesForTesting += 1 }
         let old = offset
         let target = reachable(normalized(requested))
         applyingOffset = true
