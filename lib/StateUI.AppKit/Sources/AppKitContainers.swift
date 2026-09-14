@@ -576,7 +576,25 @@ final class AppKitWindowContentView: NSView {
     private var pageSpansTitleBar = false
     private let overlaySurface = AppKitOverlaySurfaceView()
 
+    /// The colour the window's bars are written in, painted over `barBand`.
+    /// Nil leaves the title bar and toolbar the system's material.
+    var barColor: NSColor? {
+        didSet { if barColor != oldValue { needsDisplay = true } }
+    }
+
+    /// The part of the window the title bar and toolbar cover.
+    var barBand: NSRect {
+        NSRect(x: 0, y: 0, width: bounds.width, height: max(0, safeAreaRect.minY))
+    }
+
     override var isFlipped: Bool { true }
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        guard let barColor else { return }
+        barColor.setFill()
+        barBand.fill()
+    }
 
     func set(page: NSView?, overlay: AppKitLayoutItem?, spansTitleBar: Bool = false) {
         if pageSpansTitleBar != spansTitleBar {
@@ -612,6 +630,34 @@ final class AppKitWindowContentView: NSView {
         page?.frame = pageSpansTitleBar ? bounds : safeAreaRect
         overlaySurface.frame = safeAreaRect
         overlaySurface.layoutSubtreeIfNeeded()
+        if barColor != nil { needsDisplay = true }
+    }
+}
+
+/// One pane of a split view. Its page keeps out of the part the window's title
+/// bar and toolbar cover, and a colour written for the bars paints that part.
+@MainActor
+final class AppKitPaneView: AppKitSingleChildView {
+    /// The colour the window's bars are written in, painted over `barBand`.
+    var barColor: NSColor? {
+        didSet { if barColor != oldValue { needsDisplay = true } }
+    }
+
+    /// The part of this pane the window's title bar and toolbar cover.
+    var barBand: NSRect {
+        NSRect(x: 0, y: 0, width: bounds.width, height: max(0, safeAreaRect.minY))
+    }
+
+    override func layout() {
+        super.layout()
+        if barColor != nil { needsDisplay = true }
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        super.draw(dirtyRect)
+        guard let barColor else { return }
+        barColor.setFill()
+        barBand.fill()
     }
 }
 
@@ -927,8 +973,8 @@ final class AppKitSplitView: AppKitHitTestView {
 
     private let sidebarController = NSViewController()
     private let detailController = NSViewController()
-    private let sidebarSurface = AppKitSingleChildView()
-    private let detailSurface = AppKitSingleChildView()
+    private let sidebarSurface = AppKitPaneView()
+    private let detailSurface = AppKitPaneView()
     private lazy var sidebarItem = NSSplitViewItem(
         sidebarWithViewController: sidebarController)
     private lazy var detailItem = NSSplitViewItem(
@@ -994,6 +1040,15 @@ final class AppKitSplitView: AppKitHitTestView {
             detailItem.addTopAlignedAccessoryViewController(accessory)
         }
     }
+
+    /// Paints the part of the detail the window's bars cover in the colour
+    /// written for them, or leaves it to the system's material.
+    func setDetailBarColor(_ color: NSColor?) {
+        detailSurface.barColor = color
+    }
+
+    var detailBarColorForTesting: NSColor? { detailSurface.barColor }
+    var sidebarBarColorForTesting: NSColor? { sidebarSurface.barColor }
 
     @available(macOS 26, *)
     var detailRowForTesting: NSView? {

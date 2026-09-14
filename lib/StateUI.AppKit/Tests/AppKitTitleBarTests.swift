@@ -17,7 +17,7 @@ final class AppKitTitleBarTests: XCTestCase {
             eventSink: { reported.append(($0, $1)) })
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(tree(titleBar()))
+        renderer.applyForTesting(tree(titleBar(background: nil)))
 
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let toolbar = try XCTUnwrap(window.toolbar)
@@ -43,7 +43,9 @@ final class AppKitTitleBarTests: XCTestCase {
 
     /// The title bar's own title is text at the trailing edge of the
     /// window's title bar, in the system's colours rather than a toolbar
-    /// control's glass, while the visible page names the window.
+    /// control's glass, while the visible page names the window. A foreground
+    /// with no background written keeps the system's colours: on the
+    /// toolbar's material it could vanish.
     @MainActor
     func testTitleBarTitleStandsAtTheTrailingEdgeInSystemColours() throws {
         let renderer = AppKitRenderer(
@@ -52,7 +54,7 @@ final class AppKitTitleBarTests: XCTestCase {
             eventSink: { _, _ in })
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(tree(titleBar(), windowTitle: "Workspace"))
+        renderer.applyForTesting(tree(titleBar(background: nil), windowTitle: "Workspace"))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let window = try XCTUnwrap(controller.window)
@@ -90,6 +92,31 @@ final class AppKitTitleBarTests: XCTestCase {
         XCTAssertTrue(window.titlebarAccessoryViewControllers.isEmpty)
         XCTAssertEqual(window.title, "Page")
         XCTAssertEqual(window.subtitle, "")
+        XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
+        XCTAssertFalse(window.titlebarAppearsTransparent)
+        XCTAssertNil((window.contentView as? AppKitWindowContentView)?.barColor)
+    }
+
+    /// A title bar that writes its background paints the band the title bar
+    /// and toolbar cover, and its own title takes its foreground there.
+    @MainActor
+    func testAWrittenTitleBarBackgroundPaintsTheBandAndColoursItsTitle() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(titleBar()))
+
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let window = try XCTUnwrap(controller.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        XCTAssertTrue(window.titlebarAppearsTransparent)
+        XCTAssertEqual(content.barColor, NSColor(
+            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+        XCTAssertEqual(controller.titleClusterForTesting.titleColorForTesting, NSColor(
+            srgbRed: 246 / 255, green: 244 / 255, blue: 1, alpha: 1))
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
     }
 
@@ -227,8 +254,8 @@ private extension AppKitTitleBarTests {
     func titleBar(
         title: String = "Notes",
         subtitle: String = "Personal",
-        background: (UInt8, UInt8, UInt8) = (54, 42, 86),
-        foreground: (UInt8, UInt8, UInt8) = (246, 244, 255)
+        background: (UInt8, UInt8, UInt8)? = (54, 42, 86),
+        foreground: (UInt8, UInt8, UInt8)? = (246, 244, 255)
     ) -> HostPatch {
         var leading = HostPatch(id: .manual("title-leading"), type: .button)
         leading.properties[.text] = .string("Leading")
@@ -250,10 +277,14 @@ private extension AppKitTitleBarTests {
         bar.properties[.title] = .string(title)
         bar.properties[.subtitle] = .string(subtitle)
         bar.properties[.icon] = .string("notes.png")
-        bar.properties[.foregroundColor] = .color(
-            red: foreground.0, green: foreground.1, blue: foreground.2, alpha: 255)
-        bar.properties[.background] = .color(
-            red: background.0, green: background.1, blue: background.2, alpha: 255)
+        if let foreground {
+            bar.properties[.foregroundColor] = .color(
+                red: foreground.0, green: foreground.1, blue: foreground.2, alpha: 255)
+        }
+        if let background {
+            bar.properties[.background] = .color(
+                red: background.0, green: background.1, blue: background.2, alpha: 255)
+        }
         bar.children = .arranged([leadingSlot, centerSlot, trailingSlot])
         return bar
     }

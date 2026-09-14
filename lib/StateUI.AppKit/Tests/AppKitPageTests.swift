@@ -108,8 +108,8 @@ final class AppKitPageTests: XCTestCase {
 
     /// The window's chrome is the system's: a unified toolbar over full-size
     /// content, the page in the safe area under it, and the native window
-    /// background. A bar colour is the platform's to adapt, and AppKit keeps
-    /// its toolbar's own material.
+    /// background. With no bar colour written, AppKit keeps its toolbar's own
+    /// material.
     @MainActor
     func testANavigationStackStandsUnderTheWindowsNativeToolbar() throws {
         let renderer = AppKitRenderer(
@@ -118,10 +118,7 @@ final class AppKitPageTests: XCTestCase {
             eventSink: { _, _ in })
         defer { renderer.closeForTesting() }
 
-        var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
-            red: 54, green: 42, blue: 86, alpha: 255)
-        renderer.applyForTesting(tree(stack))
+        renderer.applyForTesting(tree(navigation([page("home", title: "Home")])))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let window = try XCTUnwrap(controller.window)
@@ -138,6 +135,83 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(navigation.frame, content.safeAreaRect)
         XCTAssertTrue(navigation.topViewForTesting === renderer.viewForTesting(id: .manual("home")))
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
+        XCTAssertNil((content as? AppKitWindowContentView)?.barColor)
+    }
+
+    /// A written bar colour paints the band the title bar and toolbar cover
+    /// above the page, and the title bar lets it show. The window keeps its
+    /// own background, and a colour taken away gives the material back.
+    @MainActor
+    func testAWrittenBarColourPaintsTheBandAboveThePage() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        var stack = navigation([page("home", title: "Home")])
+        stack.properties[.barBackgroundColor] = .color(
+            red: 54, green: 42, blue: 86, alpha: 255)
+        renderer.applyForTesting(tree(stack))
+
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let window = try XCTUnwrap(controller.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        content.layoutSubtreeIfNeeded()
+        XCTAssertTrue(window.titlebarAppearsTransparent)
+        XCTAssertEqual(content.barColor, NSColor(
+            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+        XCTAssertGreaterThan(content.barBand.height, 0)
+        XCTAssertEqual(content.barBand, NSRect(
+            x: 0, y: 0, width: content.bounds.width, height: content.safeAreaRect.minY))
+        XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
+
+        // On the band the page's title is the bar's: white on a dark band
+        // when no foreground is written. The window keeps its name.
+        let toolbar = controller.toolbarForTesting
+        let title = try XCTUnwrap(
+            toolbar.itemForTesting(AppKitWindowToolbar.title)?.view as? NSTextField)
+        XCTAssertEqual(window.titleVisibility, .hidden)
+        XCTAssertEqual(window.title, "Home")
+        XCTAssertEqual(title.stringValue, "Home")
+        XCTAssertEqual(title.textColor, .white)
+
+        stack.properties[.barBackgroundColor] = .nothing
+        renderer.applyForTesting(tree(stack))
+        XCTAssertFalse(window.titlebarAppearsTransparent)
+        XCTAssertNil(content.barColor)
+        XCTAssertEqual(window.titleVisibility, .visible)
+        XCTAssertNil(toolbar.itemForTesting(AppKitWindowToolbar.title))
+    }
+
+    /// In a split view the band is the detail's: the pane under the bars
+    /// paints it, and the sidebar keeps its own glass.
+    @MainActor
+    func testAWrittenBarColourPaintsOnlyTheSplitDetailsBand() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        var stack = navigation([page("home", title: "Home")])
+        stack.properties[.barBackgroundColor] = .color(
+            red: 54, green: 42, blue: 86, alpha: 255)
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu"),
+            detail: stack)))
+
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let window = try XCTUnwrap(controller.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        let split = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
+        XCTAssertTrue(window.titlebarAppearsTransparent)
+        XCTAssertEqual(split.detailBarColorForTesting, NSColor(
+            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+        XCTAssertNil(split.sidebarBarColorForTesting)
+        XCTAssertNil(content.barColor, "the split view covers the window's own band")
     }
 
     @MainActor

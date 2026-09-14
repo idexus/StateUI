@@ -29,12 +29,14 @@ struct AppKitToolbarAction {
 /// The window controller composes it from the visible arrangement and an
 /// authored `TitleBar`, and the toolbar lays it out in one order: the
 /// sidebar toggle and the separator that tracks the sidebar, the way back,
-/// the title bar's leading content, the centre, the page's actions, native
-/// overflow, and the title bar's trailing content.
+/// the page's title where a painted band hides the system's, the title bar's
+/// leading content, the centre, the page's actions, native overflow, and the
+/// title bar's trailing content.
 @MainActor
 struct AppKitWindowChrome {
     var sidebar: NSSplitViewController?
     var back: AppKitToolbarAction?
+    var title: NSView?
     var leading: NSView?
     var center: NSView?
     var actions: [AppKitToolbarAction] = []
@@ -51,6 +53,7 @@ struct AppKitWindowChrome {
 @MainActor
 final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     static let back = NSToolbarItem.Identifier("StateUI.back")
+    static let title = NSToolbarItem.Identifier("StateUI.title")
     static let leading = NSToolbarItem.Identifier("StateUI.leading")
     static let center = NSToolbarItem.Identifier("StateUI.center")
     static let trailing = NSToolbarItem.Identifier("StateUI.trailing")
@@ -93,6 +96,10 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         if let back = chrome.back {
             nextIdentifiers.append(Self.back)
             nextActions[Self.back] = back
+        }
+        if let title = chrome.title {
+            nextIdentifiers.append(Self.title)
+            nextViews[Self.title] = title
         }
         if let leading = chrome.leading {
             nextIdentifiers.append(Self.leading)
@@ -262,7 +269,8 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
 }
 
 /// An authored title bar's own title: its mark, title and subtitle, standing
-/// at the trailing edge of the window's title bar in the system's colours.
+/// at the trailing edge of the window's title bar in the system's colours, or
+/// in the bar's foreground over a painted band.
 @MainActor
 final class AppKitTitleBarTitleView: NSStackView {
     private let iconView = NSImageView()
@@ -307,7 +315,9 @@ final class AppKitTitleBarTitleView: NSStackView {
         fatalError("AppKitTitleBarTitleView is created in code")
     }
 
-    func apply(title: String, subtitle: String, image: NSImage?) {
+    func apply(title: String, subtitle: String, image: NSImage?, foreground: NSColor?) {
+        titleLabel.textColor = foreground ?? .labelColor
+        subtitleLabel.textColor = foreground?.withAlphaComponent(0.8) ?? .secondaryLabelColor
         titleLabel.stringValue = title
         titleLabel.isHidden = title.isEmpty
         subtitleLabel.stringValue = subtitle

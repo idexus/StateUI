@@ -367,6 +367,14 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private weak var tabRowSplit: AppKitSplitView?
     private var titleAccessory: NSTitlebarAccessoryViewController?
     private let titleCluster = AppKitTitleBarTitleView()
+
+    /// The page's title where a painted band hides the system's own.
+    private let bandTitle: NSTextField = {
+        let label = NSTextField(labelWithString: "")
+        label.font = .systemFont(ofSize: 15, weight: .bold)
+        label.lineBreakMode = .byTruncatingTail
+        return label
+    }()
     private let content = AppKitWindowContentView()
     private let nativeContentMinSize: NSSize
     private let nativeContentMaxSize: NSSize
@@ -678,22 +686,42 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         let titleBar = node.children.first { $0.type == .titleBar }
         let page = node.visiblePage
         let titleView = node.visibleTitleView
+        let barColor = node.visibleBarBackground ?? titleBar?.color(.background)
         window.title = page?.string(.title) ?? node.string(.title) ?? "StateUI"
         window.subtitle = ""
-        // A page's title view stands in for its title: the window keeps its
-        // name for the system and shows the view instead.
-        window.titleVisibility = titleView == nil ? .visible : .hidden
+        // A page's title view stands in for its title, and over a painted band
+        // the title stands in the bar's foreground: either way the window
+        // keeps its name for the system and hides the one it would draw.
+        window.titleVisibility = titleView == nil && barColor == nil ? .visible : .hidden
+        let paintedTitle: NSView? = barColor.flatMap { band in
+            guard titleView == nil else { return nil }
+            bandTitle.stringValue = window.title
+            bandTitle.textColor = Self.foreground(
+                on: band,
+                written: node.visibleBarForeground ?? titleBar?.color(.foregroundColor))
+            bandTitle.sizeToFit()
+            return bandTitle
+        }
 
         let actions = node.visibleToolbarActions
         toolbar.apply(AppKitWindowChrome(
             sidebar: node.pageNode?.sidebarController,
             back: node.visibleBackAction,
+            title: paintedTitle,
             leading: titleBar?.firstView(in: .leadingContent),
             center: titleBar?.firstView(in: .content) ?? titleView,
             actions: actions.primary,
             overflow: actions.overflow,
             trailing: titleBar?.firstView(in: .trailingContent)))
-        synchronizeTitleAccessory(window, titleBar: titleBar)
+        synchronizeBar(window, color: barColor, split: node.pageNode?.view as? AppKitSplitView)
+        synchronizeTitleAccessory(
+            window,
+            titleBar: titleBar,
+            foreground: barColor.map { band in
+                Self.foreground(
+                    on: band,
+                    written: titleBar?.color(.foregroundColor) ?? node.visibleBarForeground)
+            })
         synchronizeTabRow(window, node.visibleWindowTabs)
         host?.pageMenusChanged(in: self)
     }
@@ -739,7 +767,34 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
     /// An authored title bar's own title stands at the trailing edge of the
     /// window's title bar, where it is text rather than a toolbar control.
-    private func synchronizeTitleAccessory(_ window: NSWindow, titleBar: MountedNode?) {
+    /// What stands on a painted band: the colour written for it, else white on
+    /// a dark band and black on a light one.
+    private static func foreground(on band: NSColor, written: NSColor?) -> NSColor {
+        if let written { return written }
+        guard let rgb = band.usingColorSpace(.sRGB) else { return .labelColor }
+        let luminance = 0.2126 * rgb.redComponent + 0.7152 * rgb.greenComponent
+            + 0.0722 * rgb.blueComponent
+        return luminance < 0.5 ? .white : .black
+    }
+
+    /// A colour written for the bars paints the band the title bar and
+    /// toolbar cover over the visible content - a split view's detail, else
+    /// the whole window - and the title bar lets it show. With none written,
+    /// the band is the system's material.
+    private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
+        window.titlebarAppearsTransparent = color != nil
+        content.barColor = split == nil ? color : nil
+        split?.setDetailBarColor(color)
+    }
+
+    /// An authored title bar's own title, at the trailing edge. It takes
+    /// `foreground` only over a painted band; on the system's material it
+    /// keeps the system's colours, where a written one could vanish.
+    private func synchronizeTitleAccessory(
+        _ window: NSWindow,
+        titleBar: MountedNode?,
+        foreground: NSColor?
+    ) {
         let title = titleBar?.string(.title)
         let subtitle = titleBar?.string(.subtitle)
         let icon = titleBar?.image(.icon)
@@ -752,7 +807,11 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
             return
         }
 
-        titleCluster.apply(title: title ?? "", subtitle: subtitle ?? "", image: icon)
+        titleCluster.apply(
+            title: title ?? "",
+            subtitle: subtitle ?? "",
+            image: icon,
+            foreground: foreground)
         // AppKit gives a trailing accessory the toolbar row's height and
         // centres it there; only the width is the cluster's own.
         let fitting = titleCluster.fittingSize

@@ -1538,6 +1538,18 @@ final class MountedNode: NSObject {
         }
     }
 
+    /// The colour written for the bars over the visible content: its
+    /// navigation stack's, else its tabbed view's.
+    var visibleBarBackground: NSColor? {
+        visibleNavigationStack?.color(.barBackgroundColor)
+            ?? visibleTabbedView?.color(.barBackgroundColor)
+    }
+
+    /// The colour written for what stands on those bars.
+    var visibleBarForeground: NSColor? {
+        visibleNavigationStack?.color(.barTextColor)
+    }
+
     /// The tabs the window shows beneath its toolbar - those of the tabbed
     /// view on the visible page path, where its tabs are the window's - and
     /// the split view whose detail it stands in, if any.

@@ -105,6 +105,14 @@ action affordances. A tab selector keeps the toolkit's selected and unselected
 appearance. An unwritten background retains the native material; StateUI does
 not ask a host to rasterize an arbitrary brush into page chrome.
 
+On AppKit a written bar colour paints the band the title bar and toolbar cover
+over the visible content - a split view's detail, the sidebar keeping its own
+glass - and an authored `TitleBar`'s `background` paints it where no
+arrangement writes one. Text on a painted band is the bar's: the page's title
+in `barTextColor`, the title bar's own title in its `foregroundColor`, each
+falling back to the other and then to white or black by the band's lightness.
+On the system's material both keep the system's colours.
+
 `ItemsView` is the reserved public name for the native virtualized collection.
 It presents identified items without constraining them to a list or grid. Its
 host adapters map to `NSCollectionView` or a strict one-column `NSTableView`,
