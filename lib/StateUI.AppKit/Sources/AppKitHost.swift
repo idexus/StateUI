@@ -3140,9 +3140,13 @@ final class MountedNode: NSObject {
         }
     }
 
+    /// The text a field shows from its state. The value this frame carries
+    /// comes first: a reader's report reaches the core's store only when its
+    /// jobs run, so reading the store here would write the field back one
+    /// keystroke behind the reader.
     private func attachedTextValue() -> String? {
         if let binding = driven[.text], binding.mode != .in,
-           case .text(let text)? = StateUIHost.value(for: binding) {
+           case .text(let text)? = drivenValues[.text] ?? StateUIHost.value(for: binding) {
             return text
         }
 

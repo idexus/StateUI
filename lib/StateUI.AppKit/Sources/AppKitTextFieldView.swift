@@ -211,6 +211,11 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         return index.utf16Offset(in: text)
     }
 
+    func typeForTesting(_ text: String) {
+        textField.stringValue = text
+        controlTextDidChange(Notification(name: NSControl.textDidChangeNotification))
+    }
+
     private func alignment(_ value: Int32?) -> NSTextAlignment {
         switch value {
         case 1:
