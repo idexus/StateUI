@@ -139,8 +139,9 @@ final class AppKitPageTests: XCTestCase {
     }
 
     /// A written bar colour paints the band the title bar and toolbar cover
-    /// above the page, and the title bar lets it show. The window keeps its
-    /// own background, and a colour taken away gives the material back.
+    /// above the page, and the title bar lets it show. The window wears it as
+    /// its background too, and a colour taken away gives the material and the
+    /// window's own background back.
     @MainActor
     func testAWrittenBarColourPaintsTheBandAboveThePage() throws {
         let renderer = AppKitRenderer(
@@ -164,7 +165,8 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertGreaterThan(content.barBand.height, 0)
         XCTAssertEqual(content.barBand, NSRect(
             x: 0, y: 0, width: content.bounds.width, height: content.safeAreaRect.minY))
-        XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
+        XCTAssertEqual(window.backgroundColor, NSColor(
+            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
 
         // On the band the page's title is the bar's: white on a dark band
         // when no foreground is written. The window keeps its name.
@@ -180,6 +182,7 @@ final class AppKitPageTests: XCTestCase {
         renderer.applyForTesting(tree(stack))
         XCTAssertFalse(window.titlebarAppearsTransparent)
         XCTAssertNil(content.barColor)
+        XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
         XCTAssertEqual(window.titleVisibility, .visible)
         XCTAssertNil(toolbar.itemForTesting(AppKitWindowToolbar.title))
     }
@@ -235,6 +238,41 @@ final class AppKitPageTests: XCTestCase {
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
         XCTAssertNil(split.sidebarBarColorForTesting)
         XCTAssertNil(content.barColor, "the split view covers the window's own band")
+    }
+
+    /// A written bar colour is the window's background too: on a Mac the title
+    /// bar, the toolbar and the window's background around a floating sidebar
+    /// are one surface, so the sidebar stands framed in the bars' colour - and
+    /// the window takes the system's background back when the colour goes.
+    @MainActor
+    func testAWrittenBarColourIsTheWindowsBackgroundToo() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        var stack = navigation([page("home", title: "Home")])
+        stack.properties[.barBackgroundColor] = .color(
+            red: 54, green: 42, blue: 86, alpha: 255)
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu"),
+            detail: stack)))
+
+        let painted = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        XCTAssertEqual(painted.backgroundColor, NSColor(
+            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+
+        stack.properties[.barBackgroundColor] = .nothing
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu"),
+            detail: stack)))
+
+        let plain = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        XCTAssertEqual(plain.backgroundColor, .windowBackgroundColor,
+                       "with no colour written the window is the system's")
     }
 
     @MainActor

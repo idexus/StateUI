@@ -788,8 +788,15 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     /// toolbar cover over the visible content - a split view's detail, else
     /// the whole window - and the title bar lets it show. With none written,
     /// the band is the system's material.
+    ///
+    /// The colour is the window's background too: on a Mac the title bar, the
+    /// toolbar and the window's background around a floating sidebar are one
+    /// surface, so the sidebar stands framed in the bars' colour, its glass
+    /// taking a tint of it. With none written the window keeps the system's.
     private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
         window.titlebarAppearsTransparent = color != nil
+        let background = color ?? .windowBackgroundColor
+        if window.backgroundColor != background { window.backgroundColor = background }
         content.barColor = split == nil ? color : nil
         split?.setDetailBarColor(color)
     }

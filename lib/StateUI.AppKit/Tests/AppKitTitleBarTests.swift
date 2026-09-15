@@ -98,7 +98,8 @@ final class AppKitTitleBarTests: XCTestCase {
     }
 
     /// A title bar that writes its background paints the band the title bar
-    /// and toolbar cover, and its own title takes its foreground there.
+    /// and toolbar cover and the window's background, and its own title
+    /// takes its foreground there.
     @MainActor
     func testAWrittenTitleBarBackgroundPaintsTheBandAndColoursItsTitle() throws {
         let renderer = AppKitRenderer(
@@ -117,7 +118,8 @@ final class AppKitTitleBarTests: XCTestCase {
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
         XCTAssertEqual(controller.titleClusterForTesting.titleColorForTesting, NSColor(
             srgbRed: 246 / 255, green: 244 / 255, blue: 1, alpha: 1))
-        XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
+        XCTAssertEqual(window.backgroundColor, NSColor(
+            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
     }
 
     @MainActor

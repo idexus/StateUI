@@ -113,9 +113,10 @@ appearance. An unwritten background retains the native material; StateUI does
 not ask a host to rasterize an arbitrary brush into page chrome.
 
 On AppKit a written bar colour paints the band the title bar and toolbar cover
-over the visible content - a split view's detail, the sidebar keeping its own
-glass - and an authored `TitleBar`'s `background` paints it where no
-arrangement writes one. Text on a painted band is the bar's: the page's title
+over the visible content - a split view's detail - and the window's
+background, which shows around a floating sidebar and through its glass; an
+authored `TitleBar`'s `background` paints both where no arrangement writes
+one. Text on a painted band is the bar's: the page's title
 in the arrangement's `barForegroundColor`, the title bar's own title in the
 title bar's, each falling back to the other and then to white or black by the band's lightness.
 On the system's material both keep the system's colours.
