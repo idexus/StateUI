@@ -411,10 +411,6 @@ public extension NodeType {
     static let visualState = NodeType("VisualState")
     static let webView = NodeType("WebView")
     static let window = NodeType("Window")
-
-    // The differ's placeholder for a composed view - expanded before anything
-    // is sent, so it never crosses the boundary. See Core/Stateful.swift.
-    static let composed = NodeType("Composed")
 }
 
 public extension Prop {
@@ -446,7 +442,6 @@ public extension Prop {
     static let color = Prop("color")
     static let columns = Prop("columns")
     static let columnSpacing = Prop("columnSpacing")
-    static let content = Prop("content")
     static let iconPosition = Prop("iconPosition")
     static let iconSpacing = Prop("iconSpacing")
     static let cornerRadius = Prop("cornerRadius")
@@ -493,7 +488,6 @@ public extension Prop {
     static let isMaximizable = Prop("isMaximizable")
     static let isMinimizable = Prop("isMinimizable")
     static let isTranslucent = Prop("isTranslucent")
-    static let isOpaque = Prop("isOpaque")
     static let isOpen = Prop("isOpen")
     static let isPassword = Prop("isPassword")
     static let isSidebarVisible = Prop("isSidebarVisible")
@@ -590,7 +584,6 @@ public extension Prop {
     static let textColor = Prop("textColor")
     static let textDecorations = Prop("textDecorations")
     static let textCase = Prop("textCase")
-    static let textType = Prop("textType")
     static let threshold = Prop("threshold")
     static let time = Prop("time")
     static let tint = Prop("tint")

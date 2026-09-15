@@ -494,3 +494,10 @@ extension Node {
         return node
     }
 }
+
+extension NodeType {
+    /// The differ's placeholder for a composed view. Expanded before anything
+    /// is sent, it never crosses the boundary: the library's own name, no part
+    /// of the host vocabulary.
+    static let composed = NodeType("Composed")
+}

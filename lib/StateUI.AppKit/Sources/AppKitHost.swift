@@ -3848,7 +3848,7 @@ final class MountedNode: NSObject {
         .allowDrop, .hidesWhenInactive, .canDrag, .floatsOnTop, .growsWithText, .ignoresInput,
         .isAnimating, .clipsContent, .isDestructive,
         .isEnabled, .isMaximizable, .isMinimizable, .isTranslucent,
-        .isOpaque, .isOpen, .isPassword, .isSidebarVisible, .isReadOnly,
+        .isOpen, .isPassword, .isSidebarVisible, .isReadOnly,
         .isRefreshEnabled, .isRefreshing, .isRunning, .isScrollEnabled,
         .showsUserLocation, .isSpellCheckEnabled, .isTextPredictionEnabled,
         .isOn, .isTrafficEnabled, .isVisible, .isZoomEnabled, .letsInputThrough,

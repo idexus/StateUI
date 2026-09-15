@@ -102,7 +102,7 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `Map` / `Pin` | optional provider | ✅* | — | — | — | — | — | — |
 | `ItemsView` | native primitive, planned; StateUI composition on MAUI | ✅ | — | — | — | — | — | — |
 | `Content`, `LeadingContent`, `TrailingContent`, `TitleView` | structure | ✅ | ✅ | — | — | — | — | — |
-| `Setters`, `VisualState`, `Composed` | structure resolved by StateUI | ✅ | — | — | — | — | — | — |
+| `Setters`, `VisualState` | structure resolved by StateUI | ✅ | — | — | — | — | — | — |
 
 The AppKit split view uses `NSSplitViewController`.
 
@@ -457,7 +457,7 @@ token in parentheses.
 | `WebView` | handlers | `onNavigating` (`navigating`), `onNavigated` (`navigated`), `onProcessTerminated` (`processTerminated`) | ✅ | — | — | — | — | — | — |
 | `Map` / `Pin` | provider properties | `region`, `mapType`, `isScrollEnabled`, `isZoomEnabled`, `isTrafficEnabled`, `showsUserLocation`, pin `label`, `address`, `location`, `type` | — | — | — | — | — | — | — |
 | `Map` / `Pin` | provider handlers | `mapClicked`, `pinClicked`, `pinDetailsClicked` | ✅* | — | — | — | — | — | — |
-| host metadata | structural/adaptive | `content`, `group`, `mode`, `name`, `style`, `isOpaque`, `textType`, `visualStateChanged` | — | — | — | — | — | — | — |
+| host metadata | structural/StateUI | `group`, `mode`, `name`, `style`, `visualStateChanged` | — | — | — | — | — | — | — |
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,
 a dominant input on its disabled axis passes to the nearest enclosing scroller.
@@ -474,7 +474,7 @@ host status.
 ### Controls and structural nodes
 
 `AbsoluteLayout`, `ActivityIndicator`, `Application`, `Border`, `Button`,
-`Canvas`, `CheckBox`, `ColorBox`, `Composed`, `Content`, `ContextMenu`,
+`Canvas`, `CheckBox`, `ColorBox`, `Content`, `ContextMenu`,
 `DatePicker`, `Ellipse`, `Grid`, `HStack`, `Image`, `Label`, `LeadingContent`,
 `Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `ModalStack`,
 `NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Pin`, `Polygon`,
@@ -493,7 +493,7 @@ host status.
 `automationExcludedWithChildren`, `avoidsSafeArea`, `backButtonTitle`,
 `background`, `barBackgroundColor`, `barForegroundColor`, `borderColor`,
 `borderWidth`, `canDrag`, `characterSpacing`, `clipsContent`, `color`,
-`columns`, `columnSpacing`, `content`, `cornerRadius`, `count`, `currentPage`,
+`columns`, `columnSpacing`, `cornerRadius`, `count`, `currentPage`,
 `cursorPosition`, `data`, `date`, `dragText`, `drawable`, `fill`, `fillRule`,
 `floatsOnTop`, `fontAttributes`, `fontAutoScalingEnabled`, `fontFamily`,
 `fontSize`, `format`, `frame`, `gridColumn`, `gridColumnSpan`, `gridRow`,
@@ -503,7 +503,7 @@ host status.
 `horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
 `ignoresInput`, `indicatorColor`, `indicatorSize`, `indicatorsShape`,
 `inputPurpose`, `isAccessibilityHidden`, `isAnimating`, `isDestructive`,
-`isEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpaque`, `isOpen`,
+`isEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`,
 `isPassword`, `isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isRunning`,
 `isScrollEnabled`, `isSidebarVisible`, `isSpellCheckEnabled`,
 `isTextPredictionEnabled`, `isTrafficEnabled`, `isVisible`, `isZoomEnabled`,
@@ -522,7 +522,7 @@ host status.
 `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`,
 `strokeMiterLimit`, `strokeWidth`, `style`, `subtitle`,
 `swipeBehaviorOnInvoked`, `swipeDirection`, `swipeThreshold`, `tapCount`,
-`text`, `textCase`, `textColor`, `textDecorations`, `textType`, `threshold`,
+`text`, `textCase`, `textColor`, `textDecorations`, `threshold`,
 `time`, `tint`, `title`, `translationX`, `translationY`, `type`, `userAgent`,
 `value`, `verticalAlignment`, `verticalScrollBarVisibility`,
 `verticalTextAlignment`, `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`,

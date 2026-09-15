@@ -216,6 +216,27 @@ final class HostContractTests: XCTestCase {
         }
     }
 
+    /// A token nothing writes is a promise no host keeps: `content`,
+    /// `isOpaque` and `textType` have no modifier and no realization, and are
+    /// no part of the vocabulary. `Composed`, the differ's placeholder for a
+    /// composed view, is expanded before anything is sent - the library's own
+    /// name, not the host's. None of them returns, here or in a host's mirror,
+    /// which the two-way token guard in `WireFormatTests` holds.
+    func testNoTokenPromisesWhatNothingWrites() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let controls = declaredNames(of: "NodeType", in: tokenSource)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+
+        XCTAssertTrue(
+            properties.isDisjoint(with: ["content", "isOpaque", "textType"]),
+            "a property nothing writes is back in the vocabulary: "
+                + properties.intersection(["content", "isOpaque", "textType"]).sorted().joined(separator: ", "))
+        XCTAssertFalse(controls.contains("Composed"), "the differ's placeholder is host vocabulary again")
+        XCTAssertNil(HostContract.controls[NodeType("Composed")], "the differ's placeholder has a host owner again")
+    }
+
     func testProviderSurfaceDoesNotBecomeABaseHostRequirement() {
         XCTAssertEqual(HostContract.controls[.map], .provider)
         XCTAssertEqual(HostContract.controls[.pin], .provider)

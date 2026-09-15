@@ -91,7 +91,7 @@
             .rectangle, .refreshView, .swipeView,
         ]),
         (.structure, [
-            .application, .composed, .content, .contextMenu, .spans,
+            .application, .content, .contextMenu, .spans,
             .leadingContent, .menu, .menuBar, .menuItem,
             .menuSeparator, .modalStack,
             .titleView, .overlay, .scene, .setters, .span, .swipeAction,
@@ -113,7 +113,7 @@
             .fontAttributes, .fontFamily, .fontSize, .format, .height,
             .horizontalAlignment, .horizontalTextAlignment,
             .step, .ignoresInput, .isAnimating, .letsInputThrough,
-            .clipsContent, .isEnabled, .isOpaque, .isOpen, .isPassword,
+            .clipsContent, .isEnabled, .isOpen, .isPassword,
             .isSidebarVisible, .isReadOnly, .isRunning, .isScrollEnabled,
             .isSpellCheckEnabled, .isTextPredictionEnabled, .isOn,
             .isVisible, .lineBreak, .lineHeight, .margin, .maximum,
@@ -141,7 +141,7 @@
             .backButtonTitle,
             .hasBackButton, .hasNavigationBar,
             .placement, .priority, .returnKey, .avoidsSafeArea,
-            .subtitle, .textType, .tint, .userAgent,
+            .subtitle, .tint, .userAgent,
             .verticalScrollBarVisibility,
         ]),
         (.stateUI, [
@@ -157,7 +157,7 @@
             .swipeBehaviorOnInvoked, .threshold, .x1, .x2, .y1, .y2,
         ]),
         (.structure, [
-            .absoluteLayoutBounds, .absoluteLayoutProportions, .content,
+            .absoluteLayoutBounds, .absoluteLayoutProportions,
             .currentPage, .drawable, .frame, .group, .options,
             .name, .tapCount, .panTouchCount, .panXChannel,
             .panYChannel, .scrollOffset, .style, .swipeDirection, .swipeThreshold,

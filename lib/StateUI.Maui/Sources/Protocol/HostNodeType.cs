@@ -97,7 +97,6 @@ internal enum HostNodeType : ushort
     VisualState = 65,
     WebView = 66,
     Window = 67,
-    Composed = 68,
     Overlay = 69,
     Scene = 70,
 }
