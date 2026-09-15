@@ -69,11 +69,10 @@ namespace StateUI.Maui.Rendering;
 public sealed class StateUIRenderer
 {
     /// <summary>
-    /// Where an event goes, and an awaited movement's answer. The host wires
-    /// this to the Swift side's dispatch, which finds the handler by id and
-    /// runs it - or, for a negative completion id, resumes what was waiting.
+    /// Where a handler is raised: held while a message is being applied, and
+    /// raised in order once it is in.
     /// </summary>
-    private readonly Action<int, byte[]?> _dispatch;
+    private readonly HandlerDispatch _handlers;
 
     /// <summary>
     /// What the renderer knows about a control it made.
@@ -536,6 +535,13 @@ public sealed class StateUIRenderer
     internal Suppressed Applying() => new(this);
 
     /// <summary>
+    /// Where the application's handlers are raised - held while a message is
+    /// being applied. Reachable so a session can hold them for the whole of a
+    /// render, and a test can watch them wait.
+    /// </summary>
+    internal HandlerDispatch Handlers => _handlers;
+
+    /// <summary>
     /// Whether a message is being applied right now - so a caller that would
     /// ask Swift to render can wait until it is not.
     /// </summary>
@@ -569,6 +575,7 @@ public sealed class StateUIRenderer
             _renderer = renderer;
             _was = renderer._rendering;
             renderer._rendering = true;
+            renderer._handlers.Hold();
 
             if (!_was)
             {
@@ -583,6 +590,7 @@ public sealed class StateUIRenderer
         public void Dispose()
         {
             _renderer._rendering = _was;
+            _renderer._handlers.Release();
         }
     }
 
@@ -618,7 +626,7 @@ public sealed class StateUIRenderer
             .Take(8)
             .Select(group => $"{group.Key} {group.Count()}"));
 
-        _dispatch = dispatch;
+        _handlers = new HandlerDispatch(dispatch);
 
         // A frame must not be drawn INSIDE an apply: writing a property there
         // is what makes a render there, which is a resync, which describes the
@@ -642,7 +650,7 @@ public sealed class StateUIRenderer
             _walker,
             () => Crossing,
             (waiter, whole) =>
-                _dispatch(waiter, WireCodec.WriteReply([HostValue.Of(whole)])));
+                _handlers.Raise(waiter, WireCodec.WriteReply([HostValue.Of(whole)])));
         _displayCycle = new DisplayCycle(_walker, _channels, () => Crossing)
         {
             Held = () => _rendering,
@@ -1900,7 +1908,7 @@ public sealed class StateUIRenderer
             && control.GetValue(ElementProperty) is RenderedElement element
             && element.Events?.TryGetValue(name, out int id) == true)
         {
-            _dispatch(id, payload);
+            _handlers.Raise(id, payload);
             return true;
         }
 
@@ -1950,7 +1958,7 @@ public sealed class StateUIRenderer
             && control.GetValue(ElementProperty) is RenderedElement element
             && element.Events?.TryGetValue(name, out int id) == true)
         {
-            _dispatch(id, WireCodec.WritePayload(HostValue.Of(value)));
+            _handlers.Raise(id, WireCodec.WritePayload(HostValue.Of(value)));
 
             return true;
         }
@@ -1991,7 +1999,7 @@ public sealed class StateUIRenderer
 
         if (element.OwnEvents?.TryGetValue(name, out int own) == true)
         {
-            _dispatch(own, WireCodec.WritePayload(payload));
+            _handlers.Raise(own, WireCodec.WritePayload(payload));
             return;
         }
 
@@ -1999,7 +2007,7 @@ public sealed class StateUIRenderer
             && raised != HostEvent.None
             && element.Events?.TryGetValue(raised, out int id) == true)
         {
-            _dispatch(id, WireCodec.WritePayload(payload));
+            _handlers.Raise(id, WireCodec.WritePayload(payload));
         }
     }
 
@@ -2013,12 +2021,7 @@ public sealed class StateUIRenderer
     /// <param name="payload">The values, in the order the handler reads them.</param>
     internal void Announce(int handler, params HostValue[] payload)
     {
-        if (_rendering)
-        {
-            return;
-        }
-
-        _dispatch(handler, payload.Length == 0 ? null : WireCodec.WritePayload(payload));
+        _handlers.Raise(handler, payload.Length == 0 ? null : WireCodec.WritePayload(payload));
     }
 
     /// <summary>

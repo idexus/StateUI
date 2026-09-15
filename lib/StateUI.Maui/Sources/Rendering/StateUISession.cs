@@ -512,6 +512,31 @@ internal sealed class StateUISession
     }
 
     /// <summary>
+    /// Renders one message with the application's handlers held until it is
+    /// in - see <see cref="RenderMessage"/>.
+    /// </summary>
+    /// <remarks>
+    /// THE HANDLERS WAIT FOR THE MESSAGE: one raised while it is being applied -
+    /// a journey landing, a window restored - is raised once it is in and its
+    /// generation claimed, so it neither runs inside the apply nor is lost to
+    /// it. See <see cref="HandlerDispatch"/>.
+    /// </remarks>
+    /// <param name="mayRetry">Whether a refused message may be asked for again whole.</param>
+    private void Render(bool mayRetry)
+    {
+        Renderer.Handlers.Hold();
+
+        try
+        {
+            RenderMessage(mayRetry);
+        }
+        finally
+        {
+            Renderer.Handlers.Release();
+        }
+    }
+
+    /// <summary>
     /// Asks Swift for the change since the last message applied in full, and
     /// applies it.
     /// </summary>
@@ -520,7 +545,7 @@ internal sealed class StateUISession
     /// with the whole tree. False on that second attempt, which is what makes it
     /// terminate.
     /// </param>
-    private void Render(bool mayRetry)
+    private void RenderMessage(bool mayRetry)
     {
         // Dropped as it is quoted, so that anything going wrong below leaves
         // this side asking for the whole tree rather than for a patch onto a
@@ -946,16 +971,12 @@ internal sealed class StateUISession
                 ReportAnEventNobodyHeard(handlerId);
             }
 
-            // Not while a message is being applied - a journey's completion
-            // can land here from INSIDE one, a snap over a walking property
-            // aborting it mid-apply. Rendering there is a resync against a
-            // generation the host has not finished taking, and it would kill
-            // every other walk in the air; the write has dirtied the tree,
-            // and the drain that follows the apply renders it a moment later.
-            if (!Renderer.Busy)
-            {
-                Pump();
-            }
+            // Never inside an apply: the handler dispatch holds whatever is
+            // raised while a message is being applied - a journey's
+            // completion, a snap over a walking property aborting it - until
+            // the message is in, so the render asked for here is one of its
+            // own rather than a resync against a generation not yet claimed.
+            Pump();
 
             // A NEGATIVE id is not an event: it is a completion, and what it
             // resumed is a handler whose next job does not exist yet. The
