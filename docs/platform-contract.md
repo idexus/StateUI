@@ -237,8 +237,8 @@ These surfaces lack an honest native counterpart on at least one target:
 | silent application writes | ✅ | ✅ | — | — | — | — | — |
 | host-driven Journey interpolation with eased and spring motion | — | ✅ | — | — | — | — | — |
 | host-driven Journey retargeting with standing velocity | — | ✅ | — | — | — | — | — |
-| sparse property transitions through `HostPatch.transitions` | ✅ | — | — | — | — | — | — |
-| layout motion through `HostPatch.motion` and `MotionLanes` | — | — | — | — | — | — | — |
+| sparse property transitions through `HostPatch.transitions` | ✅ | ✅ | — | — | — | — | — |
+| layout motion through `HostPatch.motion` and `MotionLanes` | ✅ | ✅ | — | — | — | — | — |
 | Journey completion and interruption | — | ✅ | — | — | — | — | — |
 | Journey stop and snap | — | — | — | — | — | — | — |
 | StateUI display-cycle engines | — | — | — | — | — | — | — |

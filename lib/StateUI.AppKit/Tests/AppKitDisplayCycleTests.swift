@@ -49,6 +49,7 @@ final class AppKitDisplayCycleTests: XCTestCase {
             walker: walker,
             stateChannels: channels,
             describedMotion: described,
+            layoutMotion: AppKitLayoutMotion(walker: walker, now: { 0 }, reducesMotion: { false }),
             reducesMotion: { false })
         let presenter = CountingPresenter()
         cycle.presenter = presenter
@@ -65,7 +66,7 @@ final class AppKitDisplayCycleTests: XCTestCase {
             key: AppKitDescribedKey(mount: 1, property: .opacity),
             standing: .number(0),
             target: .number(1),
-            transition: HostTransition(motion: .eased(400)),
+            motion: .eased(400),
             now: 0,
             reducesMotion: false)
         _ = channels.takeOutputs()

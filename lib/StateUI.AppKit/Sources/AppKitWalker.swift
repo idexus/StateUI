@@ -4,7 +4,8 @@
 #if os(macOS)
 @_spi(Host) import StateUI
 
-/// What a trip moves: a state's channel, or a property a patch described.
+/// What a trip moves: a state's channel, a property a patch described, or the
+/// place a layout gave an element.
 enum AppKitTripTarget: Hashable, Comparable {
     /// The channel of the state with this number.
     case state(Int32)
@@ -12,14 +13,25 @@ enum AppKitTripTarget: Hashable, Comparable {
     /// A property a patch described, on one mounted element.
     case described(AppKitDescribedKey)
 
+    /// The place a layout gave the mounted element with this identity.
+    case placed(UInt64)
+
     /// States first, by number; then described properties, by element and
-    /// property.
+    /// property; then places, by element.
     static func < (left: Self, right: Self) -> Bool {
         switch (left, right) {
         case (.state(let a), .state(let b)): return a < b
         case (.described(let a), .described(let b)): return a < b
-        case (.state, .described): return true
-        case (.described, .state): return false
+        case (.placed(let a), .placed(let b)): return a < b
+        default: return left.rank < right.rank
+        }
+    }
+
+    private var rank: Int {
+        switch self {
+        case .state: return 0
+        case .described: return 1
+        case .placed: return 2
         }
     }
 }
@@ -82,9 +94,9 @@ struct AppKitStep {
 
 /// The runtime's one walker: every trip, stepped together in target order.
 ///
-/// The state channels and a patch's described motion start, replace and halt
-/// their trips here and follow what each step makes of them; nothing else in
-/// the host walks a value.
+/// The state channels, a patch's described motion and the layouts' places
+/// start, replace and halt their trips here and follow what each step makes of
+/// them; nothing else in the host walks a value.
 @MainActor
 final class AppKitWalker {
     private var trips: [AppKitTripTarget: AppKitTrip] = [:]

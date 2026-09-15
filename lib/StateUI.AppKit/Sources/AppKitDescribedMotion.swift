@@ -48,14 +48,14 @@ final class AppKitDescribedMotion {
 
     /// Starts, retargets, or interrupts a property transition.
     ///
-    /// A missing transition is an explicit snap for a property present in the
+    /// A missing motion is an explicit snap for a property present in the
     /// sparse patch. An unrelated sparse patch never calls this method and
     /// therefore leaves the transition alone.
     func receive(
         key: AppKitDescribedKey,
         standing: HostValue?,
         target: HostValue?,
-        transition: HostTransition?,
+        motion: Motion?,
         now: Double,
         reducesMotion: Bool
     ) {
@@ -75,7 +75,7 @@ final class AppKitDescribedMotion {
 
         guard let source,
               let target,
-              let motion = transition?.motion,
+              let motion,
               !motion.isInherited,
               !motion.isCustom,
               motion.factor.isFinite,

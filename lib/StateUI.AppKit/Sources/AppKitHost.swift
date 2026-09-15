@@ -165,6 +165,7 @@ final class AppKitRenderer: @unchecked Sendable {
     private let walker: AppKitWalker
     private let stateChannels: AppKitStateChannels
     private let describedMotion: AppKitDescribedMotion
+    fileprivate let layoutMotion: AppKitLayoutMotion
     private let displayCycle: AppKitDisplayCycle
     private let images = NSCache<NSString, NSImage>()
     private let frameClock: AppKitFrameClock
@@ -214,20 +215,25 @@ final class AppKitRenderer: @unchecked Sendable {
         self.presentsWindows = presentsWindows
         self.eventSink = eventSink
         self.preferences = preferences
-        frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
+        let frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
+        self.frameClock = frameClock
         self.reducesMotion = reducesMotion
         let walker = AppKitWalker()
         self.walker = walker
         stateChannels = AppKitStateChannels(walker: walker)
         describedMotion = AppKitDescribedMotion(walker: walker)
+        layoutMotion = AppKitLayoutMotion(
+            walker: walker, now: frameClock.now, reducesMotion: reducesMotion)
         displayCycle = AppKitDisplayCycle(
             core: core,
             clock: frameClock,
             walker: walker,
             stateChannels: stateChannels,
             describedMotion: describedMotion,
+            layoutMotion: layoutMotion,
             reducesMotion: reducesMotion)
         frameClock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
+        layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
         displayCycle.presenter = self
     }
 
@@ -506,6 +512,7 @@ final class AppKitRenderer: @unchecked Sendable {
         baseline = rendered.generation
         stateChannels.retain(root?.propertyStates ?? [])
         describedMotion.retain(root?.describedKeys ?? [])
+        layoutMotion.retain(root?.mounts ?? [])
         displayCycle.presentStateChannels()
 
         let created = root?.takeCreatedHandlers() ?? []
@@ -910,6 +917,7 @@ final class AppKitRenderer: @unchecked Sendable {
         applyRoot(patch)
 
         describedMotion.retain(root?.describedKeys ?? [])
+        layoutMotion.retain(root?.mounts ?? [])
         synchronizeWindows()
         flushQueuedEvents()
     }
@@ -942,6 +950,8 @@ final class AppKitRenderer: @unchecked Sendable {
 
     var frameClockRunningForTesting: Bool { frameClock.isRunning }
 
+    var tripsMovingForTesting: Bool { walker.isMoving }
+
     func applyStateForTesting(_ state: Int32, value: HostStateValue) {
         let impact = root?.applyState(state, value: value) ?? []
         if impact.contains(.windowShell) { synchronizeWindows() }
@@ -961,6 +971,7 @@ final class AppKitRenderer: @unchecked Sendable {
         for window in restoredWindows.values { window.close() }
         restoredWindows.removeAll()
         describedMotion.retain([])
+        layoutMotion.retain([])
         frameClock.stop()
     }
 
@@ -1018,20 +1029,23 @@ final class AppKitRenderer: @unchecked Sendable {
         property: Prop,
         standing: HostValue?,
         target: HostValue?,
-        transition: HostTransition?
+        motion: Motion?
     ) {
         describedMotion.receive(
             key: AppKitDescribedKey(mount: mount, property: property),
             standing: standing,
             target: target,
-            transition: transition,
+            motion: motion,
             now: patchTime ?? frameClock.now(),
             reducesMotion: patchReducesMotion ?? reducesMotion())
         displayCycle.hold()
     }
 
-    fileprivate func removePropertyMotions(mount: UInt64) {
+    /// Drops the motions of an element being adopted - its described
+    /// properties' and its place's - so the adopted element arrives.
+    fileprivate func removeMotions(mount: UInt64) {
         describedMotion.remove(mount: mount)
+        layoutMotion.remove(mount: mount)
     }
 
     fileprivate func standingWindowValue(
@@ -1104,6 +1118,13 @@ final class MountedNode: NSObject {
     private var recycledChildren: [MountedNode] = []
     private var recycles = false
     private var shape: UInt64 = 0
+
+    /// How this element's children travel, as its patches said it; nil while
+    /// it says nothing of its own.
+    private var motion: HostLayoutMotion?
+
+    /// Whether this element's frame, or any frame under it, is read.
+    private var framesRead = false
     private var created = false
     private var widthConstraint: NSLayoutConstraint?
     private var heightConstraint: NSLayoutConstraint?
@@ -1186,7 +1207,7 @@ final class MountedNode: NSObject {
         })
 
         if adopting {
-            host.removePropertyMotions(mount: mount)
+            host.removeMotions(mount: mount)
             id = patch.id
         }
         type = patch.type
@@ -1234,6 +1255,12 @@ final class MountedNode: NSObject {
 
         if let recycles = patch.recycles { self.recycles = recycles }
         if let shape = patch.shape { self.shape = shape }
+        if let motion = patch.motion {
+            self.motion = motion
+            // The application says its own motion once, and every layout that
+            // says nothing of its own travels that way.
+            if type == .application { host.layoutMotion.applicationMotion = motion.motion }
+        }
         if !recycles { recycledChildren.removeAll(keepingCapacity: true) }
 
         switch patch.children {
@@ -1268,15 +1295,16 @@ final class MountedNode: NSObject {
                 property: property,
                 standing: standing[property],
                 target: resolvedValue(property),
-                transition: adopting || hasDrivenPresentation
+                motion: adopting || hasDrivenPresentation
                     || !AppKitTransitionSurface.presents(property, on: type)
                     ? nil
-                    : patch.transitions[property])
+                    : patch.transitions[property]?.motion)
         }
 
         applyProperties(changed: changed)
         configureContextMenu()
         configureGestures()
+        configureLayoutMotion()
         arrangeChildren()
         configureFrameObservation()
         reconcilePresentation(from: previousShown)
@@ -1391,11 +1419,64 @@ final class MountedNode: NSObject {
             AppKitDescribedKey(mount: self.mount, property: $0)
         })
 
+        // An element fading in as it joins a standing layout moves its
+        // opacity whether or not a patch ever named one.
+        if fadesIn {
+            keys.insert(AppKitDescribedKey(mount: mount, property: .opacity))
+        }
+
         for child in children {
             keys.formUnion(child.describedKeys)
         }
 
         return keys
+    }
+
+    /// Every mounted identity in this subtree.
+    var mounts: Set<UInt64> {
+        children.reduce(into: [mount]) { $0.formUnion($1.mounts) }
+    }
+
+    /// Hands a layout what its children travel under, and tells it a patch
+    /// reached it: its next arrangement places what the patch changed.
+    ///
+    /// Only a patch says so. A frame the display cycle presents arranges the
+    /// same children in a room that is moving, and they follow it.
+    private func configureLayoutMotion() {
+        framesRead = driven[.frame] != nil || events[.frameChanged] != nil
+            || children.contains { $0.framesRead }
+
+        guard let layout = view as? AppKitTravellingLayout else { return }
+        layout.layoutMotion = host?.layoutMotion
+        layout.motion = motion
+        layout.framesRead = framesRead
+        layout.patchArrived()
+    }
+
+    /// Whether this element can fade in as it joins a standing layout: its
+    /// view presents its opacity, and no state owns that opacity.
+    private var fadesIn: Bool {
+        view != nil && driven[.opacity] == nil
+            && AppKitTransitionSurface.presents(.opacity, on: type)
+    }
+
+    /// Fades this element in as it joins a layout that was already standing:
+    /// the other half of the children around it sliding to make room.
+    ///
+    /// Not an opacity already travelling: the patch that set it said how it
+    /// moves, and a fade over it would be a second answer for one value.
+    private func fadeIn(under motion: Motion) {
+        guard fadesIn, let host, let view,
+              host.presentedPropertyValue(mount: mount, property: .opacity) == nil
+        else { return }
+
+        host.receiveProperty(
+            mount: mount,
+            property: .opacity,
+            standing: .number(0),
+            target: resolvedValue(.opacity) ?? .number(1),
+            motion: motion)
+        view.alphaValue = value(.opacity)?.number ?? 1
     }
 
     /// Presents one frame in one walk: the states' images on the properties
@@ -2787,6 +2868,10 @@ final class MountedNode: NSObject {
         item.absoluteBounds = value(.absoluteLayoutBounds)?.numbers
         item.absoluteProportions = enumeration(.absoluteLayoutProportions) ?? 0
         item.drawing = presentableDrawing
+        item.mount = mount
+        if fadesIn {
+            item.fadeIn = { [weak self] motion in self?.fadeIn(under: motion) }
+        }
         return item
     }
 

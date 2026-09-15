@@ -89,6 +89,14 @@ struct AppKitLayoutItem {
     var absoluteBounds: [Double]?
     var absoluteProportions: Int32 = 0
 
+    /// The mounted identity of the element the view presents, which a place
+    /// on its way is filed under; 0 for a view no element presents.
+    var mount: UInt64 = 0
+
+    /// Fades the view in under a motion, as it joins a layout that was already
+    /// standing; nil for a view that simply appears.
+    var fadeIn: ((Motion) -> Void)?
+
     /// How the view is drawn over its frame, for a layout that places it.
     var drawing: AppKitViewDrawing?
 
@@ -219,7 +227,7 @@ class AppKitHitTestView: NSView {
 
 /// A native canvas for children with authored or engine-driven placement.
 @MainActor
-final class AppKitAbsoluteLayoutView: AppKitHitTestView {
+final class AppKitAbsoluteLayoutView: AppKitTravellingLayout {
     var placement: HostPlacementRun? {
         didSet { needsLayout = true }
     }
@@ -284,6 +292,7 @@ final class AppKitAbsoluteLayoutView: AppKitHitTestView {
             return
         }
 
+        beginArrangement()
         for item in items { drawUnplaced(item) }
         for item in items where !item.view.isHidden {
             let values = item.absoluteBounds ?? [0, 0, -1, -1]
@@ -304,7 +313,7 @@ final class AppKitAbsoluteLayoutView: AppKitHitTestView {
             if flags & 1 != 0 { x *= max(0, bounds.width - width) }
             if flags & 2 != 0 { y *= max(0, bounds.height - height) }
 
-            item.view.frame = NSRect(x: x, y: y, width: width, height: height)
+            place(item, at: NSRect(x: x, y: y, width: width, height: height))
         }
     }
 
@@ -350,7 +359,7 @@ final class AppKitAbsoluteLayoutView: AppKitHitTestView {
 
 /// A deterministic frame-based stack shared by horizontal and vertical stacks.
 @MainActor
-final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
+final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
     enum Axis {
         case horizontal
@@ -435,6 +444,7 @@ final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     override func layout() {
         super.layout()
 
+        beginArrangement()
         let content = bounds.inset(by: padding)
         var offset: CGFloat = axis == .vertical ? content.minY : content.minX
 
@@ -458,7 +468,7 @@ final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
                     start: content.minX + item.margin.left,
                     available: max(0, content.width - item.margin.left - item.margin.right))
                 let height = item.boundedHeight(natural.height)
-                item.view.frame = NSRect(x: x, y: offset, width: width, height: height)
+                place(item, at: NSRect(x: x, y: offset, width: width, height: height))
                 offset += height + item.margin.bottom + spacing
 
             case .horizontal:
@@ -476,7 +486,7 @@ final class AppKitStackView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
                     start: content.minY + item.margin.top,
                     available: max(0, content.height - item.margin.top - item.margin.bottom))
                 let width = item.boundedWidth(natural.width)
-                item.view.frame = NSRect(x: offset, y: y, width: width, height: height)
+                place(item, at: NSRect(x: offset, y: y, width: width, height: height))
                 offset += width + item.margin.right + spacing
             }
         }
@@ -1189,7 +1199,7 @@ struct AppKitGridLength: Equatable {
 
 /// AppKit's deterministic implementation of StateUI's row-and-column layout.
 @MainActor
-final class AppKitGridView: AppKitHitTestView {
+final class AppKitGridView: AppKitTravellingLayout {
     var rows: [AppKitGridLength] = [] {
         didSet { if rows != oldValue { invalidateMeasurements() } }
     }
@@ -1249,6 +1259,7 @@ final class AppKitGridView: AppKitHitTestView {
     override func layout() {
         super.layout()
 
+        beginArrangement()
         let content = bounds.inset(by: padding)
         let rowCount = max(rows.count, (items.map { $0.row + $0.rowSpan }.max() ?? 1))
         let columnCount = max(columns.count, (items.map { $0.column + $0.columnSpan }.max() ?? 1))
@@ -1296,7 +1307,7 @@ final class AppKitGridView: AppKitHitTestView {
                 minimum: item.minimumHeight,
                 maximum: item.maximumHeight)
 
-            item.view.frame = NSRect(
+            place(item, at: NSRect(
                 x: position(
                     option: item.horizontal,
                     extent: width,
@@ -1308,7 +1319,7 @@ final class AppKitGridView: AppKitHitTestView {
                     start: rowOrigins[row] + item.margin.top,
                     available: availableHeight),
                 width: width,
-                height: height)
+                height: height))
         }
     }
 

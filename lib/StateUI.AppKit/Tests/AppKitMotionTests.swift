@@ -963,7 +963,7 @@ final class AppKitMotionTests: XCTestCase {
             key: key,
             standing: source,
             target: target,
-            transition: HostTransition(motion: .eased(200, .linear)),
+            motion: .eased(200, .linear),
             now: 0,
             reducesMotion: false)
         XCTAssertEqual(described.presentedValue(for: key), source)
@@ -996,7 +996,7 @@ final class AppKitMotionTests: XCTestCase {
             key: key,
             standing: linear,
             target: solid,
-            transition: HostTransition(motion: .eased(200, .linear)),
+            motion: .eased(200, .linear),
             now: 0,
             reducesMotion: false)
 
@@ -1017,7 +1017,7 @@ final class AppKitMotionTests: XCTestCase {
             key: colour,
             standing: black,
             target: .color(red: 255, green: 255, blue: 255, alpha: 255),
-            transition: HostTransition(motion: .eased(200, .linear)),
+            motion: .eased(200, .linear),
             now: 0,
             reducesMotion: false)
 
@@ -1030,7 +1030,7 @@ final class AppKitMotionTests: XCTestCase {
             key: brush,
             standing: black,
             target: .values([.enumeration(1), .color(red: 255, green: 0, blue: 0, alpha: 255)]),
-            transition: HostTransition(motion: .eased(200, .linear)),
+            motion: .eased(200, .linear),
             now: 100,
             reducesMotion: false)
 

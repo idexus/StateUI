@@ -26,9 +26,9 @@ protocol AppKitFramePresenter: AnyObject {
 /// One frame of the display's clock, in the order every runtime keeps.
 ///
 /// (1) The reader's reports since the last frame are committed as one
-/// transaction. (2) The walker steps every trip; the state channels and the
-/// described motion follow it, and the channels' reports reach the core before
-/// its cycle. (3) The core's cycle runs, and the state channels wear its
+/// transaction. (2) The walker steps every trip; the state channels, the
+/// described motion and the layout motion follow it, and the channels' reports
+/// reach the core before its cycle. (3) The core's cycle runs, and the state channels wear its
 /// changes. (4) Everything the frame moved is presented in one walk, and then
 /// each finished journey is answered. (5) A render follows when the core needs
 /// one. (6) The frame clock stays held while anything still moves, and lets go
@@ -46,6 +46,7 @@ final class AppKitDisplayCycle {
     private let walker: AppKitWalker
     private let stateChannels: AppKitStateChannels
     private let describedMotion: AppKitDescribedMotion
+    private let layoutMotion: AppKitLayoutMotion
     private let reducesMotion: () -> Bool
 
     /// Whether the core's last cycle said it has more to do.
@@ -63,6 +64,7 @@ final class AppKitDisplayCycle {
         walker: AppKitWalker,
         stateChannels: AppKitStateChannels,
         describedMotion: AppKitDescribedMotion,
+        layoutMotion: AppKitLayoutMotion,
         reducesMotion: @escaping () -> Bool
     ) {
         self.core = core
@@ -70,6 +72,7 @@ final class AppKitDisplayCycle {
         self.walker = walker
         self.stateChannels = stateChannels
         self.describedMotion = describedMotion
+        self.layoutMotion = layoutMotion
         self.reducesMotion = reducesMotion
     }
 
@@ -129,11 +132,12 @@ final class AppKitDisplayCycle {
             || presenter?.wantsFrames == true
     }
 
-    /// Lets the state channels and the described motion follow a step, and
-    /// adds what they made of it to the frame's batch.
+    /// Lets the state channels, the described motion and the layout motion
+    /// follow a step, and adds what they made of it to the frame's batch.
     private func follow(_ steps: [AppKitStep]) {
         stateChannels.follow(steps)
         describedMotion.follow(steps)
+        layoutMotion.follow(steps)
         collectStateChannels()
 
         for output in describedMotion.takeOutputs() {

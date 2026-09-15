@@ -148,9 +148,9 @@ An omitted row or column is zero. An omitted span is one. Several children may
 occupy the same cell; they overlap and `zIndex` decides drawing order.
 
 Grid definitions are data. Changing a definition keeps child identities and
-rearranges the existing controls. When layout motion is enabled and verified
-by the host, the child rectangles travel under `HostLayoutMotion` rather than
-being described frame by frame.
+rearranges the existing controls, and each child rectangle travels to its new
+place under the grid's layout motion rather than being described frame by
+frame - see [Motion and journeys](motion-and-journeys.md).
 
 ## Absolute placement
 

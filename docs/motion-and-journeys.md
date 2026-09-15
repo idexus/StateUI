@@ -185,6 +185,19 @@ existing native child rectangle from its standing placement to the newly
 arranged rectangle. `.place`, `.width`, and `.height` rules decide which lanes
 travel. The Swift tree still sends only the final arrangement.
 
+Why a layout arranges decides whether its children travel. An arrangement a
+patch caused means the layout holds something different - a row inserted, a
+card grown - so its children travel, under the layout's own motion or, where it
+says nothing, the application's. A room that moves with no patch behind it - a
+window resized, a sidebar dragged - is followed exactly, and so is a layout
+whose own width changed: a child gliding after the reader's hand is late on
+every frame. A layout's first arrangement arrives. A size a child states for
+itself arrives while its place still travels. Where a frame under the layout is
+read - an `onFrameChanged` handler, a driven frame - every child arrives,
+because each step of a walk would report a room nobody chose. A child that
+joins a layout already standing fades in under the same law, unless a state
+owns its opacity.
+
 Visibility motion and layout motion are part of the cross-platform contract,
 but an application relies on them only where [Platform contract](platform-contract.md)
 shows verified host support.
