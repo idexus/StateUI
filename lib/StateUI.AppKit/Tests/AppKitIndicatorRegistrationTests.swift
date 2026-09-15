@@ -65,5 +65,33 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
 
         XCTAssertFalse(native.isSpinning)
     }
+
+    /// An indicator the tree describes as stopped - or does not describe at
+    /// all - starts when the tree says it runs and stops when it says it does
+    /// not: the round a poll draws, where the spinner is made still and is
+    /// started only for the work.
+    @MainActor
+    func testAnIndicatorMadeStillStartsWhenTheTreeSaysItRuns() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(tree(HostPatch(id: .manual("activity"), type: .activityIndicator)))
+
+        let native = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("activity")) as? AppKitActivityIndicatorView)
+        XCTAssertFalse(native.isSpinning, "nothing described, nothing spinning")
+
+        var checking = HostPatch(id: .manual("activity"), type: .activityIndicator)
+        checking.properties[.isRunning] = .bool(true)
+        renderer.applyForTesting(changedTree(checking))
+
+        XCTAssertTrue(native.isSpinning)
+
+        var done = HostPatch(id: .manual("activity"), type: .activityIndicator)
+        done.properties[.isRunning] = .bool(false)
+        renderer.applyForTesting(changedTree(done))
+
+        XCTAssertFalse(native.isSpinning)
+    }
 }
 #endif
