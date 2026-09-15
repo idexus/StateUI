@@ -79,7 +79,7 @@ Build the native Gallery application:
 ```
 
 The Gallery bundle is written to
-`apps/Gallery/.build/debug/GalleryAppKit.app`.
+`apps/Gallery/.build-appkit/debug/GalleryAppKit.app`.
 
 Build and start the Gallery with the MAUI host on Mac Catalyst (`ios` starts it
 in the iOS Simulator, `linux` on a Linux machine):
