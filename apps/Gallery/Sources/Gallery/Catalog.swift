@@ -30,6 +30,18 @@ final class Catalog {
         bar: TitleBarState,
         log: WindowLog
     ) {
+        var collections = [
+            Sample(SwipeViewSample()),
+            Sample(RefreshViewSample()),
+            Sample(GalleryViewSample()),
+            Sample(PositionIndicatorSample()),
+        ]
+
+        #if MAUI
+        // The MAUI host's list, compiled for that host alone.
+        collections.insert(Sample(ItemsViewSample()), at: 0)
+        #endif
+
         var groups: [SampleGroup] = [
             SampleGroup(
                 route: "fundamentals",
@@ -195,12 +207,7 @@ final class Catalog {
                 summary: "Swipe and refresh actions, cards, and position indicators.",
                 icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
                 card: ImageSource("cat_collections.png"),
-                samples: [
-                    Sample(SwipeViewSample()),
-                    Sample(RefreshViewSample()),
-                    Sample(GalleryViewSample()),
-                    Sample(PositionIndicatorSample()),
-                ]),
+                samples: collections),
 
             SampleGroup(
                 route: "gestures",

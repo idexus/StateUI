@@ -669,6 +669,221 @@ See [Persistent state](state-and-reactivity.md#persistent-state).
 for a page C# owns. A process renders one Swift tree, so it holds one
 `StateUIHost`, and never one beside a `StateUIWindow`.
 
+## Lists: `ItemsView`
+
+`ItemsView` is the MAUI host's list. It shows a collection of identified items
+in a scroller and describes only the items in view: however long the
+collection, the tree holds the items the reader can see and a margin of six
+slots either side. It is compiled for the MAUI host alone, so an application
+writes it under `#if MAUI`. The AppKit host has no `ItemsView`; there the type
+does not exist, and using it is a compile error.
+
+```swift
+#if MAUI
+struct Library: ContentView {
+    @State private var chosen: String?
+
+    let files = ["Notes.md", "Budget.numbers", "Trip.key", "Photos"]
+
+    var content: any View {
+        Grid {
+            ItemsView(files) { file in
+                Label(file)
+                    .padding(14, 10)
+                    .background(chosen == file ? .cornflowerBlue : .transparent)
+            }
+            .selection($chosen)
+        }
+        .rows(.fill)
+    }
+}
+#endif
+```
+
+`ItemsView` is a composition of controls every MAUI platform already renders: a
+`ScrollView` holding an `AbsoluteLayout` whose length is computed, with each
+item in view placed in it by arithmetic. Nothing about it crosses the Wire that
+a `ScrollView` and an `AbsoluteLayout` do not already carry. From the outside it
+is a scroller, so an act aimed at it takes an `Aim<ScrollView>`.
+
+The initializer is the item template, run for the items in view. An element is
+its item's identity, so elements are distinct; `ItemsView(files, id: \.path)`
+names the distinct part of elements that repeat or are not `Hashable` whole.
+
+A list is bounded across its axis, as any scroller is. A star row of a `Grid`,
+or a `.height`, bounds a list that runs down. In a bare stack a list is given
+the length of all its items, describes every one of them, and has nothing left
+to scroll.
+
+### Item length and orientation
+
+The list works out where each item sits instead of laying every item out, so it
+knows an item's length before it describes one. By default,
+`.itemSizing(.uniform)`, the first item placed is measured and its length
+answers for every item: the run is the count times one number, and a hundred
+thousand items cost what ten do. `.itemSize(_:)` states the length in device
+units instead, which also makes an item's offset arithmetic: item 500 of a list
+of `.itemSize(44)` starts at `500 * 44`.
+
+`.itemSizing(.individual)` measures every item, filed under its identity, for
+items whose lengths differ: a feed, a chat, a run of tags. The run is then
+worked out item by item, which suits tens or hundreds of items. An item that has
+never been in view has not been measured, and the run's length is an estimate
+until it has. The items before the reader have been measured, so nothing in view
+shifts as the rest of the run is worked out.
+
+```swift
+#if MAUI
+struct Tags: ContentView {
+    let tags = ["State", "Binding", "Journey", "Engine", "Motion", "Placement"]
+
+    var content: any View {
+        ItemsView(tags) { tag in
+            Label(tag).padding(14, 0)
+        }
+        .orientation(.horizontal)
+        .itemSizing(.individual)
+        .height(40)
+    }
+}
+#endif
+```
+
+`.orientation(.horizontal)` runs the list across with the same arithmetic on
+the other axis: an item takes the list's whole height, and its length is a
+width. A list turned round forgets every length it measured along the other
+axis and measures its slots again.
+
+### Headers, footers, and groups
+
+`.header(_:)` and `.footer(_:)` scroll with the items, before and after them.
+`.emptyView(_:)` stands between them while the list has nothing to place.
+
+`ItemsView(groups:)` takes an array of `ItemsGroup` values. A group's header and
+footer are slots in the same run as its items. Each kind is measured once for
+the whole list, so every group's header has one shape, and every footer
+another. A group given no footer has no footer slot, and its items close up.
+
+```swift
+#if MAUI
+struct Shelves: ContentView {
+    struct Shelf {
+        let name: String
+        let items: [String]
+    }
+
+    let shelves = [
+        Shelf(name: "Fruit", items: ["Apple", "Pear", "Plum"]),
+        Shelf(name: "Bakery", items: ["Rye loaf", "Bagel"]),
+    ]
+
+    var content: any View {
+        ItemsView(groups: shelves.map { shelf in
+            ItemsGroup(shelf.items) { item in Label(item) }
+                .id(shelf.name)
+                .header(Label(shelf.name))
+                .footer(Label("\(shelf.items.count) items"))
+        })
+    }
+}
+#endif
+```
+
+An item's identity is written under its group's `.id(_:)`, so two groups can
+hold equal elements. A group without an `id` is identified by its position.
+
+### Selection
+
+`.selection(_:)` takes a binding to the chosen identity, and the binding's type
+is the mode. With `Binding<Id?>` one item is chosen, and a tap on the chosen
+item clears it. With `Binding<Set<Id>>` each tap adds or removes the item
+tapped. A list without a selection answers no tap. How a chosen item looks is
+the template's: it reads the state the binding writes.
+
+### Loading at the end
+
+`.onEndReached(within:_:)` runs when the reader is within `within` items of the
+end, counted after the last item in view; a group's header and footer are not
+items. `0`, the default, runs as the last item comes into view. The question is
+asked when the slot at the top changes, and when the scroller or the run is
+measured, so a batch shorter than the view asks again until the list outgrows
+it. The handler runs more than once while the reader stays near the end, so it
+guards on what it has already asked for.
+
+```swift
+#if MAUI
+struct Feed: ContentView {
+    @State private var count = 30
+    @State private var loading = false
+
+    var content: any View {
+        ItemsView(0..<count) { number in
+            Label("Item \(number + 1)")
+        }
+        .onEndReached(within: 5) {
+            guard !loading else { return }
+
+            loading = true
+            try await Task.sleep(for: .milliseconds(400))
+            count += 30
+            loading = false
+        }
+    }
+}
+#endif
+```
+
+### Scrolling
+
+`.scrollOffset(_:)` carries the list's offset on a `Binding<Point>`, both ways:
+the host writes the reader's scrolling into it, and a write moves the list. The
+list's own arithmetic arrives rather than travels, and its scroller carries
+`Motion.none`, so a plain write is a jump and a journey with a law glides:
+
+```swift
+#if MAUI
+struct Numbers: ContentView {
+    @State private var offset = Point.zero
+
+    var content: any View {
+        VStack {
+            Button("Row 500").onClicked {
+                try await $offset.journey.move(to: Point(0, 500 * 44), .eased(300, .cubicOut))
+            }
+
+            ItemsView(0..<1_000) { number in
+                Label("Row \(number)")
+            }
+            .itemSize(44)
+            .scrollOffset($offset)
+            .height(400)
+        }
+    }
+}
+#endif
+```
+
+Scrolling renders nothing by itself. The offset is host-carried state, and the
+list follows it with an engine that writes which slot is at the top only when
+that slot changes. The list's body reads that slot and describes the new
+window: once per item crossed, never once per frame. `.aim(_:)` puts the
+scroller in an author's hands for an act.
+
+### What it costs
+
+An item that scrolls out of the window leaves the tree, and its own `@State`
+leaves with it. The host keeps the item's control and gives it to the next item
+of the same shape, but nothing of the item's state survives. What must outlive
+the window, such as a half-typed edit or whether an item is expanded, belongs
+in the page, keyed by the item.
+
+Items arrive; they do not travel. A control is handed from the item that left
+to the item that arrives, so a law on an item's root would walk the new item's
+contents across the screen while the reader scrolls. The list therefore writes
+`Motion.none` on each item's root unless the author wrote a law there. A law is
+per node and never inherited: what an author writes inside an item travels as
+the author says, and a law on the root is left alone.
+
 ## Linux
 
 Linux has no MAUI workload. Its head is a plain `net10.0` executable drawn by

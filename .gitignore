@@ -3,6 +3,7 @@ bin/
 obj/
 artifacts/
 .build/
+.build-maui/
 .vs/
 
 # Debug symbols

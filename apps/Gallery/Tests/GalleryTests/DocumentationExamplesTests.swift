@@ -242,6 +242,12 @@ final class DocumentationExamplesTests: XCTestCase {
     static func typecheck(_ file: URL, module: URL, sdk: String?) -> String? {
         var arguments = ["-typecheck", "-parse-as-library", "-I", module.path, file.path]
         if let sdk { arguments += ["-sdk", sdk] }
+        // The condition this test was compiled with reaches the listings too: a
+        // run under the MAUI condition checks the examples written for that
+        // host, which a plain run compiles out.
+        #if MAUI
+        arguments += ["-D", "MAUI"]
+        #endif
         // XCRUN ON A MAC, THE TOOL ITSELF EVERYWHERE ELSE. There is no
         // `/usr/bin/env` on Windows and Foundation's `Process` resolves
         // nothing itself - it opens exactly the path it is given - so a

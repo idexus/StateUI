@@ -27,6 +27,9 @@ jobs:
         run: swift --version
       - name: Test StateUI
         run: swift test
+      # Swift written for the MAUI host alone stands under `#if MAUI`.
+      - name: Test StateUI under the MAUI condition
+        run: swift test --scratch-path .build-maui -Xswiftc -DMAUI
 
   appkit:
     name: StateUI.AppKit
@@ -53,6 +56,9 @@ jobs:
         run: swift --version
       - name: Test Gallery
         run: swift test --package-path apps/Gallery
+      # The samples and the handbook's examples written for the MAUI host alone.
+      - name: Test Gallery under the MAUI condition
+        run: swift test --package-path apps/Gallery --scratch-path apps/Gallery/.build-maui -Xswiftc -DMAUI
 
   maui:
     name: StateUI.Maui

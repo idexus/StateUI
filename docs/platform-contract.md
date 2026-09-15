@@ -100,7 +100,7 @@ The core owns identity, state, diffing, and composition; the host is kept thin.
 | `SwipeActions` / `SwipeAction` | structure | — | — | — | — | — | — | — |
 | `WebView` | native primitive | ✅ | — | — | — | — | — | — |
 | `Map` / `Pin` | optional provider | — | — | — | — | — | — | — |
-| `ItemsView` (planned) | native primitive | — | — | — | — | — | — | — |
+| `ItemsView` | native primitive, planned; StateUI composition on MAUI | ✅ | — | — | — | — | — | — |
 | `Content`, `LeadingContent`, `TrailingContent`, `TitleView` | structure | — | — | — | — | — | — | — |
 | `Setters`, `VisualState`, `Composed` | structure resolved by StateUI | — | — | — | — | — | — | — |
 
@@ -120,15 +120,18 @@ in the arrangement's `barForegroundColor`, the title bar's own title in the
 title bar's, each falling back to the other and then to white or black by the band's lightness.
 On the system's material both keep the system's colours.
 
-`ItemsView` is the reserved public name for the native virtualized collection.
-It presents identified items without constraining them to a list or grid. Its
+`ItemsView` is the public name for the native virtualized collection. It
+presents identified items without constraining them to a list or grid. Its
 host adapters map to `NSCollectionView` or a strict one-column `NSTableView`,
 `UICollectionView`, `GtkListView` or `GtkGridView`, `RecyclerView`, WinUI
-`ItemsView`, and a semantic DOM list/grid. The control remains planned rather
-than part of the active host vocabulary until stable identity, native reuse,
-list/grid layout, selection, activation, accessibility, and programmatic
-scrolling form one complete contract. A platform receives ✅ only after that
-entire surface works through its native items control.
+`ItemsView`, and a semantic DOM list/grid. The native control remains planned
+rather than part of the active host vocabulary until stable identity, native
+reuse, list/grid layout, selection, activation, accessibility, and
+programmatic scrolling form one complete contract; a platform receives ✅ for
+it only after that entire surface works through its native items control. The
+MAUI host has `ItemsView` today as a StateUI composition compiled under
+`#if MAUI`, over `ScrollView` and `AbsoluteLayout` - see
+[MAUI host](maui-host.md#lists-itemsview).
 
 `ForEach`, `FrameReader`, `ScrollReader`, `PlacedLayout`, and `GalleryView` are
 StateUI compositions or readers rather than additional platform controls. The
@@ -190,14 +193,14 @@ may still choose another class that preserves the same contract.
 | `SwipeActions` / `SwipeAction` | `SwipeItems` / `SwipeItem` | structure | structure | structure | structure | structure | structure |
 | `WebView` | `WebView` | `WKWebView` | `WKWebView` | WebKitGTK `WebKitWebView` | `WebView` | `WebView2` | `<iframe>` (?) |
 | `Map` / `Pin` | `Map` / `Pin` | `MKMapView` / `MKAnnotation` | `MKMapView` / `MKAnnotation` | libshumate `ShumateMap` / `ShumateMarker` | Google Play services `MapView` / `Marker` (?) | `MapControl` (?) | — |
-| `ItemsView` (planned) | — | `NSCollectionView` / `NSTableView` | `UICollectionView` | `GtkListView` / `GtkGridView` | AndroidX `RecyclerView` | `ItemsView` | semantic list or grid |
+| `ItemsView` | composed by StateUI (`#if MAUI`) | `NSCollectionView` / `NSTableView` | `UICollectionView` | `GtkListView` / `GtkGridView` | AndroidX `RecyclerView` | `ItemsView` | semantic list or grid |
 | `Content`, `LeadingContent`, `TrailingContent`, `TitleView` | structure | structure | structure | structure | structure | structure | structure |
 | `Setters`, `VisualState`, `Composed` | structure | structure | structure | structure | structure | structure | structure |
 
 ### Completeness
 
 Every `NodeType` in `HostContract.controls` appears exactly once in the first
-column: its 67 built-in node types occupy 45 rows, and the planned `ItemsView`
+column: its 67 built-in node types occupy 45 rows, and `ItemsView`
 adds one row without a host token.
 
 These surfaces lack an honest native counterpart on at least one target:
