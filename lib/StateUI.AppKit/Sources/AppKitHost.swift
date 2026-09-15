@@ -441,8 +441,7 @@ final class AppKitRenderer: @unchecked Sendable {
 
         if readerTransactionDepth > 0 { readerTransactionChangedState = true }
 
-        root?.applyState(binding.state, value: value)
-        displayCycle.drain(now: frameClock.now())
+        displayCycle.drain(now: frameClock.now(), reported: [binding.state: value])
         return true
     }
 
@@ -450,7 +449,6 @@ final class AppKitRenderer: @unchecked Sendable {
     func take(_ value: [Double], through binding: HostStateBinding) -> Bool {
         guard stateChannels.take(value, through: binding) else { return false }
 
-        displayCycle.presentStateChannels()
         displayCycle.drain(now: frameClock.now())
         return true
     }
@@ -1064,17 +1062,8 @@ extension AppKitRenderer: AppKitFramePresenter {
         }
     }
 
-    func present(state: Int32, value: HostStateValue) {
-        root?.applyState(state, value: value)
-    }
-
-    func present(states: [Int32: HostStateValue]) {
-        let impact = root?.applyStates(states) ?? []
-        if impact.contains(.windowShell) { synchronizeWindows() }
-    }
-
-    func present(properties: [UInt64: Set<Prop>]) {
-        let impact = root?.applyPropertyMotion(properties) ?? []
+    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
+        let impact = root?.applyFrame(states: states, properties: properties) ?? []
         if impact.contains(.windowShell) { synchronizeWindows() }
     }
 
@@ -1409,15 +1398,28 @@ final class MountedNode: NSObject {
         return keys
     }
 
+    /// Presents one frame in one walk: the states' images on the properties
+    /// tied to them and the described properties that moved, each element's
+    /// together, and each ancestor arranged once.
     @discardableResult
-    func applyPropertyMotion(
-        _ propertiesByMount: [UInt64: Set<Prop>]
+    func applyFrame(
+        states valuesByState: [Int32: HostStateValue],
+        properties propertiesByMount: [UInt64: Set<Prop>]
     ) -> AppKitPresentationImpact {
-        let own = propertiesByMount[mount].map { presentFrame($0) } ?? []
+        var changed = propertiesByMount[mount] ?? []
+
+        for (property, binding) in driven where binding.mode != .in {
+            guard let value = valuesByState[binding.state] else { continue }
+            drivenValues[property] = value
+            changed.insert(property)
+        }
+
+        let own: AppKitPresentationImpact = changed.isEmpty ? [] : presentFrame(changed)
         var descendants: AppKitPresentationImpact = []
 
         for child in children {
-            descendants.formUnion(child.applyPropertyMotion(propertiesByMount))
+            descendants.formUnion(
+                child.applyFrame(states: valuesByState, properties: propertiesByMount))
         }
 
         return settleFrame(own, descendants: descendants)
@@ -1790,22 +1792,7 @@ final class MountedNode: NSObject {
     func applyStates(
         _ valuesByState: [Int32: HostStateValue]
     ) -> AppKitPresentationImpact {
-        let changed = Set<Prop>(driven.compactMap { property, binding in
-            guard binding.mode != .in, let value = valuesByState[binding.state] else {
-                return nil
-            }
-            drivenValues[property] = value
-            return property
-        })
-
-        let own: AppKitPresentationImpact = changed.isEmpty ? [] : presentFrame(changed)
-        var descendants: AppKitPresentationImpact = []
-
-        for child in children {
-            descendants.formUnion(child.applyStates(valuesByState))
-        }
-
-        return settleFrame(own, descendants: descendants)
+        applyFrame(states: valuesByState, properties: [:])
     }
 
     /// Properties a parent reads into its child's layout item. A frame that

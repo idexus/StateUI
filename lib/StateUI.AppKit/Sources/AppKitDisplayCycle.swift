@@ -14,14 +14,10 @@ protocol AppKitFramePresenter: AnyObject {
     /// one transaction.
     func commitReaderReports(now: Double)
 
-    /// Wears one state's image on every control tied to it.
-    func present(state: Int32, value: HostStateValue)
-
-    /// Wears states' images on every control tied to them.
-    func present(states: [Int32: HostStateValue])
-
-    /// Draws the described properties that moved, per mounted element.
-    func present(properties: [UInt64: Set<Prop>])
+    /// Presents one frame's batch in one walk of the mounted tree: the states'
+    /// images on every control tied to them, and the described properties
+    /// that moved, each element's together and each ancestor arranged once.
+    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>])
 
     /// Renders when the core has changed since the last render.
     func renderIfNeeded()
@@ -33,9 +29,10 @@ protocol AppKitFramePresenter: AnyObject {
 /// transaction. (2) The walker steps every trip; the state channels and the
 /// described motion follow it, and the channels' reports reach the core before
 /// its cycle. (3) The core's cycle runs, and the state channels wear its
-/// changes. (4) What moved is presented. (5) A render follows when the core
-/// needs one. (6) The frame clock stays held while anything still moves, and
-/// lets go only here, after a whole frame.
+/// changes. (4) Everything the frame moved is presented in one walk, and then
+/// each finished journey is answered. (5) A render follows when the core needs
+/// one. (6) The frame clock stays held while anything still moves, and lets go
+/// only here, after a whole frame.
 ///
 /// A reader's own change drains the cycle inline - steps (2) to (4) and (6) -
 /// so followers and engines move on the reader's frame.
@@ -53,6 +50,11 @@ final class AppKitDisplayCycle {
 
     /// Whether the core's last cycle said it has more to do.
     private var continues = false
+
+    /// The frame's batch: the states' images to wear, and the described
+    /// properties that moved, per mounted element.
+    private var states: [Int32: HostStateValue] = [:]
+    private var properties: [UInt64: Set<Prop>] = [:]
 
     /// A cycle over the runtime's elements, on `clock`.
     init(
@@ -78,20 +80,28 @@ final class AppKitDisplayCycle {
         presenter?.renderIfNeeded()
     }
 
-    /// Steps the trips, runs the core's cycle and presents what moved, then
-    /// holds the clock while anything still does.
-    func drain(now: Double) {
+    /// Steps the trips, runs the core's cycle and presents what moved in one
+    /// walk, then holds the clock while anything still does.
+    ///
+    /// - Parameters:
+    ///   - now: The frame clock's time.
+    ///   - reported: States a reader changed, worn by every other control tied
+    ///     to them in the same walk.
+    func drain(now: Double, reported: [Int32: HostStateValue] = [:]) {
+        states.merge(reported) { _, reported in reported }
+
         let reducesMotion = reducesMotion()
-        stepTrips(now: now, reducesMotion: reducesMotion)
+        follow(walker.step(now: now, reducesMotion: reducesMotion))
 
         let cycle = core.cycle(now: now, reducesMotion: reducesMotion)
 
         for change in cycle.changes {
+            states[change.state] = change.value
             stateChannels.receive(change, now: now, reducesMotion: reducesMotion)
-            presenter?.present(state: change.state, value: change.value)
         }
 
-        presentStateChannels()
+        collectStateChannels()
+        present()
 
         continues = cycle.continues
         hold()
@@ -99,46 +109,15 @@ final class AppKitDisplayCycle {
 
     /// Steps every trip to `now` and presents what the steps moved.
     func stepTrips(now: Double, reducesMotion: Bool) {
-        let steps = walker.step(now: now, reducesMotion: reducesMotion)
-        stateChannels.follow(steps)
-        describedMotion.follow(steps)
-        presentStateChannels()
-        presentDescribedMotion()
+        follow(walker.step(now: now, reducesMotion: reducesMotion))
+        present()
     }
 
-    /// Hands the state channels' journeys on: their reports to the core, their
-    /// values to every control tied to them, and each finished journey's
-    /// answer to whoever awaited it.
+    /// Presents the state channels' journeys on their own - after a render
+    /// has attached new channels.
     func presentStateChannels() {
-        var valuesByState: [Int32: HostStateValue] = [:]
-
-        for output in stateChannels.takeOutputs() {
-            valuesByState[output.state] = StateUIHost.value(of: output.journey)
-
-            if let report = output.report {
-                _ = core.report(output.journey, updating: report, through: output.binding)
-            }
-        }
-
-        if !valuesByState.isEmpty {
-            presenter?.present(states: valuesByState)
-        }
-
-        for completion in stateChannels.takeCompletions() {
-            _ = core.complete(completion.id, succeeded: completion.succeeded)
-        }
-    }
-
-    /// Draws the described properties the last step moved.
-    func presentDescribedMotion() {
-        var propertiesByMount: [UInt64: Set<Prop>] = [:]
-        for output in describedMotion.takeOutputs() {
-            propertiesByMount[output.key.mount, default: []].insert(output.key.property)
-        }
-
-        if !propertiesByMount.isEmpty {
-            presenter?.present(properties: propertiesByMount)
-        }
+        collectStateChannels()
+        present()
     }
 
     /// Holds the frame clock while anything still moves or owes a frame: a
@@ -148,6 +127,45 @@ final class AppKitDisplayCycle {
             || walker.isMoving
             || core.cyclesPending
             || presenter?.wantsFrames == true
+    }
+
+    /// Lets the state channels and the described motion follow a step, and
+    /// adds what they made of it to the frame's batch.
+    private func follow(_ steps: [AppKitStep]) {
+        stateChannels.follow(steps)
+        describedMotion.follow(steps)
+        collectStateChannels()
+
+        for output in describedMotion.takeOutputs() {
+            properties[output.key.mount, default: []].insert(output.key.property)
+        }
+    }
+
+    /// Takes the state channels' journeys into the batch, their reports to
+    /// the core at once.
+    private func collectStateChannels() {
+        for output in stateChannels.takeOutputs() {
+            states[output.state] = StateUIHost.value(of: output.journey)
+
+            if let report = output.report {
+                _ = core.report(output.journey, updating: report, through: output.binding)
+            }
+        }
+    }
+
+    /// Presents the batch in one walk, then answers every journey that
+    /// finished.
+    private func present() {
+        if !states.isEmpty || !properties.isEmpty {
+            presenter?.present(states: states, properties: properties)
+        }
+
+        states.removeAll(keepingCapacity: true)
+        properties.removeAll(keepingCapacity: true)
+
+        for completion in stateChannels.takeCompletions() {
+            _ = core.complete(completion.id, succeeded: completion.succeeded)
+        }
     }
 }
 #endif
