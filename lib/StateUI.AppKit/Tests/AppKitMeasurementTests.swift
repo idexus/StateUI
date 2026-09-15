@@ -39,7 +39,7 @@ final class AppKitMeasurementTests: XCTestCase {
         scroll.layoutSubtreeIfNeeded()
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         scroll.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(box.frame.width, 210, accuracy: 0.001)
@@ -156,13 +156,13 @@ final class AppKitMeasurementTests: XCTestCase {
         }
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         let midpoint = try redComponent()
         XCTAssertGreaterThan(midpoint, 0.1)
         XCTAssertLessThan(midpoint, 0.9)
 
         now = 200
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(try redComponent(), 1, accuracy: 0.001)
     }
 
@@ -225,7 +225,7 @@ final class AppKitMeasurementTests: XCTestCase {
         nativeLayout.layoutSubtreeIfNeeded()
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         nativeLayout.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(

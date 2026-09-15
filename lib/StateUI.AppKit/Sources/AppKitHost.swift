@@ -162,8 +162,8 @@ final class AppKitRenderer: @unchecked Sendable {
     private let eventSink: ((Int32, [HostValue]) -> Void)?
     private let preferences: UserDefaults
     private let core = AppKitCoreLink()
-    private let motion = AppKitMotionEngine()
-    private let propertyMotion = AppKitPropertyMotionEngine()
+    private let stateChannels = AppKitStateChannels()
+    private let describedMotion = AppKitDescribedMotion()
     private let images = NSCache<NSString, NSImage>()
     private let frameClock: AppKitFrameClock
     private let reducesMotion: () -> Bool
@@ -435,9 +435,9 @@ final class AppKitRenderer: @unchecked Sendable {
 
     @discardableResult
     func take(_ value: [Double], through binding: HostStateBinding) -> Bool {
-        guard motion.take(value, through: binding) else { return false }
+        guard stateChannels.take(value, through: binding) else { return false }
 
-        applyMotionOutputs()
+        presentStateChannels()
         advanceCycle(now: frameClock.now())
         return true
     }
@@ -493,9 +493,9 @@ final class AppKitRenderer: @unchecked Sendable {
         applyRoot(rendered.root)
 
         baseline = rendered.generation
-        motion.retain(root?.propertyStates ?? [])
-        propertyMotion.retain(root?.propertyMotionKeys ?? [])
-        applyMotionOutputs()
+        stateChannels.retain(root?.propertyStates ?? [])
+        describedMotion.retain(root?.describedKeys ?? [])
+        presentStateChannels()
 
         let created = root?.takeCreatedHandlers() ?? []
         if !created.isEmpty {
@@ -885,7 +885,7 @@ final class AppKitRenderer: @unchecked Sendable {
 
     var frameClockWindowForTesting: NSWindow? { frameClock.window }
 
-    var propertyMotionsActiveForTesting: Bool { propertyMotion.isActive }
+    var describedMotionActiveForTesting: Bool { describedMotion.isActive }
 
     func viewForTesting(id: ElementId) -> NSView? {
         root?.first(id: id)?.view
@@ -898,7 +898,7 @@ final class AppKitRenderer: @unchecked Sendable {
     func applyForTesting(_ patch: HostPatch) {
         applyRoot(patch)
 
-        propertyMotion.retain(root?.propertyMotionKeys ?? [])
+        describedMotion.retain(root?.describedKeys ?? [])
         synchronizeWindows()
         flushQueuedEvents()
     }
@@ -920,8 +920,8 @@ final class AppKitRenderer: @unchecked Sendable {
         }
     }
 
-    func advanceMotionsForTesting() {
-        advanceMotions(now: frameClock.now(), reducesMotion: reducesMotion())
+    func stepTripsForTesting() {
+        stepTrips(now: frameClock.now(), reducesMotion: reducesMotion())
         holdFrames()
     }
 
@@ -949,7 +949,7 @@ final class AppKitRenderer: @unchecked Sendable {
         sceneOrder.removeAll()
         for window in restoredWindows.values { window.close() }
         restoredWindows.removeAll()
-        propertyMotion.retain([])
+        describedMotion.retain([])
         frameClock.stop()
     }
 
@@ -981,33 +981,33 @@ final class AppKitRenderer: @unchecked Sendable {
 
     private func advanceCycle(now: Double) {
         let reducesMotion = reducesMotion()
-        advanceMotions(now: now, reducesMotion: reducesMotion)
+        stepTrips(now: now, reducesMotion: reducesMotion)
 
         let cycle = core.cycle(now: now, reducesMotion: reducesMotion)
 
         for change in cycle.changes {
-            motion.receive(change, now: now, reducesMotion: reducesMotion)
+            stateChannels.receive(change, now: now, reducesMotion: reducesMotion)
             root?.applyState(change.state, value: change.value)
         }
 
-        applyMotionOutputs()
+        presentStateChannels()
 
         cycleContinues = cycle.continues
         holdFrames()
     }
 
-    private func advanceMotions(now: Double, reducesMotion: Bool) {
-        motion.advance(now: now, reducesMotion: reducesMotion)
-        propertyMotion.advance(now: now, reducesMotion: reducesMotion)
-        applyMotionOutputs()
-        applyPropertyMotionOutputs()
+    private func stepTrips(now: Double, reducesMotion: Bool) {
+        stateChannels.advance(now: now, reducesMotion: reducesMotion)
+        describedMotion.advance(now: now, reducesMotion: reducesMotion)
+        presentStateChannels()
+        presentDescribedMotion()
     }
 
     fileprivate func presentedValue(
         for binding: HostStateBinding,
         from carried: HostStateValue
     ) -> HostStateValue {
-        motion.presentedValue(
+        stateChannels.presentedValue(
             for: binding,
             from: carried,
             now: frameClock.now(),
@@ -1047,7 +1047,7 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     fileprivate func presentedPropertyValue(mount: UInt64, property: Prop) -> HostValue? {
-        propertyMotion.presentedValue(for: AppKitPropertyMotionKey(
+        describedMotion.presentedValue(for: AppKitDescribedKey(
             mount: mount,
             property: property))
     }
@@ -1059,8 +1059,8 @@ final class AppKitRenderer: @unchecked Sendable {
         target: HostValue?,
         transition: HostTransition?
     ) {
-        propertyMotion.receive(
-            key: AppKitPropertyMotionKey(mount: mount, property: property),
+        describedMotion.receive(
+            key: AppKitDescribedKey(mount: mount, property: property),
             standing: standing,
             target: target,
             transition: transition,
@@ -1070,7 +1070,7 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     fileprivate func removePropertyMotions(mount: UInt64) {
-        propertyMotion.remove(mount: mount)
+        describedMotion.remove(mount: mount)
     }
 
     fileprivate func standingWindowValue(
@@ -1081,8 +1081,8 @@ final class AppKitRenderer: @unchecked Sendable {
             .standingValue(property)
     }
 
-    private func applyMotionOutputs() {
-        let outputs = motion.takeOutputs()
+    private func presentStateChannels() {
+        let outputs = stateChannels.takeOutputs()
         var valuesByState: [Int32: HostStateValue] = [:]
 
         for output in outputs {
@@ -1102,14 +1102,14 @@ final class AppKitRenderer: @unchecked Sendable {
             : (root?.applyStates(valuesByState) ?? [])
         if impact.contains(.windowShell) { synchronizeWindows() }
 
-        for completion in motion.takeCompletions() {
+        for completion in stateChannels.takeCompletions() {
             _ = core.complete(completion.id, succeeded: completion.succeeded)
         }
     }
 
-    private func applyPropertyMotionOutputs() {
+    private func presentDescribedMotion() {
         var propertiesByMount: [UInt64: Set<Prop>] = [:]
-        for output in propertyMotion.takeOutputs() {
+        for output in describedMotion.takeOutputs() {
             propertiesByMount[output.key.mount, default: []].insert(output.key.property)
         }
 
@@ -1124,8 +1124,8 @@ final class AppKitRenderer: @unchecked Sendable {
     /// trip, the core's cycle, a scroller moving or with a report to make.
     private func holdFrames() {
         frameClock.held = cycleContinues
-            || motion.isActive
-            || propertyMotion.isActive
+            || stateChannels.isActive
+            || describedMotion.isActive
             || core.cyclesPending
             || framedScrollers.anyObject != nil
     }
@@ -1443,15 +1443,15 @@ final class MountedNode: NSObject {
         return states
     }
 
-    var propertyMotionKeys: Set<AppKitPropertyMotionKey> {
+    var describedKeys: Set<AppKitDescribedKey> {
         var keys = Set(properties.keys.lazy.filter { property in
             self.driven[property].map { $0.mode == .in } ?? true
         }.map {
-            AppKitPropertyMotionKey(mount: self.mount, property: $0)
+            AppKitDescribedKey(mount: self.mount, property: $0)
         })
 
         for child in children {
-            keys.formUnion(child.propertyMotionKeys)
+            keys.formUnion(child.describedKeys)
         }
 
         return keys

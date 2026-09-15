@@ -42,19 +42,19 @@ final class AppKitMotionTests: XCTestCase {
 
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.25, accuracy: 0.000_001)
-        XCTAssertTrue(renderer.propertyMotionsActiveForTesting)
+        XCTAssertTrue(renderer.describedMotionActiveForTesting)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
         now = 200
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(label.alphaValue, 0.75, accuracy: 0.000_001)
-        XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
+        XCTAssertFalse(renderer.describedMotionActiveForTesting)
 
         now = 300
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(label.alphaValue, 0.75, accuracy: 0.000_001)
     }
 
@@ -79,7 +79,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(label.alphaValue, 1, accuracy: 0.000_001)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
     }
 
@@ -108,7 +108,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(transform.a, 1, accuracy: 0.000_001)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         transform = try XCTUnwrap(label.layer).affineTransform()
         XCTAssertEqual(transform.tx, 5, accuracy: 0.000_001)
         XCTAssertEqual(transform.a, 1.5, accuracy: 0.000_001)
@@ -142,7 +142,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(stack.spacing, 0, accuracy: 0.000_001)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(stack.padding.top, 20, accuracy: 0.000_001)
         XCTAssertEqual(stack.padding.left, 10, accuracy: 0.000_001)
         XCTAssertEqual(stack.padding.bottom, 40, accuracy: 0.000_001)
@@ -189,7 +189,7 @@ final class AppKitMotionTests: XCTestCase {
         let arrangementsBeforeFrame = stack.arrangementCountForTesting
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
 
         XCTAssertEqual(
             stack.arrangementCountForTesting - arrangementsBeforeFrame,
@@ -236,7 +236,7 @@ final class AppKitMotionTests: XCTestCase {
         let synchronizationsBeforeFrame = renderer.windowSynchronizationCountForTesting
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
 
         XCTAssertEqual(
             renderer.windowSynchronizationCountForTesting,
@@ -270,7 +270,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(standing.constant, 120, accuracy: 0.001)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
 
         let moving = try XCTUnwrap(box.constraints.first {
             $0.firstAttribute == .width && $0.relation == .equal
@@ -341,17 +341,17 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(moving)
 
         now = 50
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.25, accuracy: 0.000_001)
 
         var unrelated = HostPatch(id: .manual("label"), type: .label)
         unrelated.properties[.text] = .string("still moving")
         renderer.applyForTesting(unrelated)
-        XCTAssertTrue(renderer.propertyMotionsActiveForTesting)
+        XCTAssertTrue(renderer.describedMotionActiveForTesting)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
     }
 
@@ -390,7 +390,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(scroll.offset.y, 120, accuracy: 0.001)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(scroll.offset.y, 120, accuracy: 0.001)
     }
 
@@ -413,7 +413,7 @@ final class AppKitMotionTests: XCTestCase {
 
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 1, accuracy: 0.000_001)
-        XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
+        XCTAssertFalse(renderer.describedMotionActiveForTesting)
     }
 
     @MainActor
@@ -437,16 +437,16 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(changed)
 
         now = 50
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.25, accuracy: 0.000_001)
 
         reduced = true
         now = 60
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
 
         XCTAssertEqual(label.alphaValue, 1, accuracy: 0.000_001)
-        XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
+        XCTAssertFalse(renderer.describedMotionActiveForTesting)
     }
 
     @MainActor
@@ -469,7 +469,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(moving)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
@@ -477,10 +477,10 @@ final class AppKitMotionTests: XCTestCase {
         snapped.properties[.opacity] = .number(0.25)
         renderer.applyForTesting(snapped)
         XCTAssertEqual(label.alphaValue, 0.25, accuracy: 0.000_001)
-        XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
+        XCTAssertFalse(renderer.describedMotionActiveForTesting)
 
         now = 300
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(label.alphaValue, 0.25, accuracy: 0.000_001)
     }
 
@@ -504,7 +504,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(moving)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
@@ -512,10 +512,10 @@ final class AppKitMotionTests: XCTestCase {
         cleared.clearedProperties = [.opacity]
         renderer.applyForTesting(cleared)
         XCTAssertEqual(label.alphaValue, 1, accuracy: 0.000_001)
-        XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
+        XCTAssertFalse(renderer.describedMotionActiveForTesting)
 
         now = 300
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(label.alphaValue, 1, accuracy: 0.000_001)
     }
 
@@ -539,7 +539,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(first)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
@@ -550,13 +550,13 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
         now = 101
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertGreaterThan(label.alphaValue, 0.5)
 
         now = 300
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(label.alphaValue, 0.2, accuracy: 0.000_001)
-        XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
+        XCTAssertFalse(renderer.describedMotionActiveForTesting)
     }
 
     @MainActor
@@ -609,7 +609,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(changed)
 
         now = 50
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         let labels = renderer.viewsForTesting(id: .manual("same"))
         XCTAssertEqual(labels.count, 2)
         XCTAssertEqual(labels[0].alphaValue, 0.25, accuracy: 0.000_001)
@@ -637,12 +637,12 @@ final class AppKitMotionTests: XCTestCase {
         var moving = HostPatch(id: .manual("root"), type: .vStack)
         moving.children = .changed([movingLabel])
         renderer.applyForTesting(moving)
-        XCTAssertTrue(renderer.propertyMotionsActiveForTesting)
+        XCTAssertTrue(renderer.describedMotionActiveForTesting)
 
         var removed = HostPatch(id: .manual("root"), type: .vStack)
         removed.children = .arranged([])
         renderer.applyForTesting(removed)
-        XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
+        XCTAssertFalse(renderer.describedMotionActiveForTesting)
     }
 
     @MainActor
@@ -663,7 +663,7 @@ final class AppKitMotionTests: XCTestCase {
         moving.properties[.opacity] = .number(1)
         moving.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
         renderer.applyForTesting(moving)
-        XCTAssertTrue(renderer.propertyMotionsActiveForTesting)
+        XCTAssertTrue(renderer.describedMotionActiveForTesting)
 
         var replacement = HostPatch(id: .manual("label"), type: .label)
         replacement.replace = true
@@ -673,7 +673,7 @@ final class AppKitMotionTests: XCTestCase {
         let replaced = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertFalse(replaced === original)
         XCTAssertEqual(replaced.alphaValue, 0.4, accuracy: 0.000_001)
-        XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
+        XCTAssertFalse(renderer.describedMotionActiveForTesting)
     }
 
     @MainActor
@@ -696,7 +696,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(changed)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         let box = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("box")) as? AppKitColorBoxView)
         XCTAssertEqual(
@@ -726,7 +726,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(box.cornerRadii, AppKitCornerRadii())
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(
             box.cornerRadii,
             AppKitCornerRadii(topLeft: 5, topRight: 10, bottomLeft: 15, bottomRight: 20))
@@ -757,7 +757,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(slider.doubleValue, 0.8, accuracy: 0.000_001)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(slider.doubleValue, 0.9, accuracy: 0.000_001)
     }
 
@@ -785,7 +785,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(progress.doubleValue, 0, accuracy: 0.000_001)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(progress.doubleValue, 0.5, accuracy: 0.000_001)
     }
 
@@ -816,7 +816,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.height, 500, accuracy: 0.001)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.width, 900, accuracy: 0.001)
         XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.height, 500, accuracy: 0.001)
     }
@@ -844,7 +844,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(window.frame.maxY, standingTop, accuracy: 0.001)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         XCTAssertEqual(window.frame.minX, 200, accuracy: 0.001)
         XCTAssertEqual(window.frame.maxY, standingTop, accuracy: 0.001)
     }
@@ -885,15 +885,15 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(path.bounds.origin, NSPoint(x: 1, y: 2))
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         path = shape.pathForTesting(in: NSRect(x: 0, y: 0, width: 22, height: 14))
         XCTAssertEqual(path.bounds.origin, NSPoint(x: 6, y: 12))
 
         now = 200
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         path = shape.pathForTesting(in: NSRect(x: 0, y: 0, width: 22, height: 14))
         XCTAssertEqual(path.bounds.origin, NSPoint(x: 11, y: 22))
-        XCTAssertFalse(renderer.propertyMotionsActiveForTesting)
+        XCTAssertFalse(renderer.describedMotionActiveForTesting)
     }
 
     @MainActor
@@ -933,7 +933,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(line.dashPhaseForTesting, 0, accuracy: 0.000_001)
 
         now = 100
-        renderer.advanceMotionsForTesting()
+        renderer.stepTripsForTesting()
         path = line.pathForTesting(in: NSRect(x: 0, y: 0, width: 10, height: 5))
         XCTAssertEqual(path.bounds, NSRect(x: 0, y: 0, width: 10, height: 5))
         XCTAssertEqual(path.lineWidth, 2, accuracy: 0.000_001)
@@ -943,8 +943,8 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testAStructuredBrushMovesOnlyInsideItsStableShape() throws {
-        let engine = AppKitPropertyMotionEngine()
-        let key = AppKitPropertyMotionKey(mount: 1, property: .fill)
+        let described = AppKitDescribedMotion()
+        let key = AppKitDescribedKey(mount: 1, property: .fill)
         let source = HostValue.values([
             .enumeration(2),
             .numbers([0, 0, 1, 0]),
@@ -958,17 +958,17 @@ final class AppKitMotionTests: XCTestCase {
             .number(0.8), .color(red: 0, green: 0, blue: 255, alpha: 255),
         ])
 
-        engine.receive(
+        described.receive(
             key: key,
             standing: source,
             target: target,
             transition: HostTransition(motion: .eased(200, .linear)),
             now: 0,
             reducesMotion: false)
-        XCTAssertEqual(engine.presentedValue(for: key), source)
+        XCTAssertEqual(described.presentedValue(for: key), source)
 
-        engine.advance(now: 100)
-        XCTAssertEqual(engine.takeOutputs().last?.value, .values([
+        described.advance(now: 100)
+        XCTAssertEqual(described.takeOutputs().last?.value, .values([
             .enumeration(2),
             .numbers([0, 0.5, 1, 0.5]),
             .number(0.1), .color(red: 128, green: 0, blue: 0, alpha: 255),
@@ -978,8 +978,8 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testChangingAStructuredBrushShapeSnapsInsteadOfInventingAnIntermediate() {
-        let engine = AppKitPropertyMotionEngine()
-        let key = AppKitPropertyMotionKey(mount: 1, property: .fill)
+        let described = AppKitDescribedMotion()
+        let key = AppKitDescribedKey(mount: 1, property: .fill)
         let linear = HostValue.values([
             .enumeration(2),
             .numbers([0, 0, 1, 1]),
@@ -990,7 +990,7 @@ final class AppKitMotionTests: XCTestCase {
             .color(red: 255, green: 255, blue: 255, alpha: 255),
         ])
 
-        engine.receive(
+        described.receive(
             key: key,
             standing: linear,
             target: solid,
@@ -998,19 +998,19 @@ final class AppKitMotionTests: XCTestCase {
             now: 0,
             reducesMotion: false)
 
-        XCTAssertNil(engine.presentedValue(for: key))
-        XCTAssertFalse(engine.isActive)
+        XCTAssertNil(described.presentedValue(for: key))
+        XCTAssertFalse(described.isActive)
     }
 
     /// `background` is one property whichever it carries: two colours on it
     /// move as colours, and a colour never blends into a brush.
     @MainActor
     func testAColourBackgroundMovesAsAColourAndSnapsToABrush() {
-        let engine = AppKitPropertyMotionEngine()
-        let colour = AppKitPropertyMotionKey(mount: 1, property: .background)
+        let described = AppKitDescribedMotion()
+        let colour = AppKitDescribedKey(mount: 1, property: .background)
         let black = HostValue.color(red: 0, green: 0, blue: 0, alpha: 255)
 
-        engine.receive(
+        described.receive(
             key: colour,
             standing: black,
             target: .color(red: 255, green: 255, blue: 255, alpha: 255),
@@ -1018,12 +1018,12 @@ final class AppKitMotionTests: XCTestCase {
             now: 0,
             reducesMotion: false)
 
-        engine.advance(now: 100)
-        XCTAssertEqual(engine.takeOutputs().last?.value,
+        described.advance(now: 100)
+        XCTAssertEqual(described.takeOutputs().last?.value,
                        .color(red: 128, green: 128, blue: 128, alpha: 255))
 
-        let brush = AppKitPropertyMotionKey(mount: 2, property: .background)
-        engine.receive(
+        let brush = AppKitDescribedKey(mount: 2, property: .background)
+        described.receive(
             key: brush,
             standing: black,
             target: .values([.enumeration(1), .color(red: 255, green: 0, blue: 0, alpha: 255)]),
@@ -1031,12 +1031,12 @@ final class AppKitMotionTests: XCTestCase {
             now: 100,
             reducesMotion: false)
 
-        XCTAssertNil(engine.presentedValue(for: brush))
+        XCTAssertNil(described.presentedValue(for: brush))
     }
 
     @MainActor
     func testOneStateNumberOwnsOneChannelAcrossControls() throws {
-        let engine = AppKitMotionEngine()
+        let channels = AppKitStateChannels()
         let binding = HostStateBinding(state: 7, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -1047,14 +1047,14 @@ final class AppKitMotionTests: XCTestCase {
             stopped: 0)
         let carried = StateUIHost.value(of: journey)
 
-        _ = engine.presentedValue(
+        _ = channels.presentedValue(
             for: binding, from: carried, now: 0, reducesMotion: false)
-        _ = engine.presentedValue(
+        _ = channels.presentedValue(
             for: binding, from: carried, now: 0, reducesMotion: false)
-        XCTAssertEqual(engine.takeOutputs().count, 1, "the second wearer reuses the channel")
+        XCTAssertEqual(channels.takeOutputs().count, 1, "the second wearer reuses the channel")
 
-        engine.advance(now: 100)
-        let frame = try XCTUnwrap(engine.takeOutputs().last)
+        channels.advance(now: 100)
+        let frame = try XCTUnwrap(channels.takeOutputs().last)
 
         XCTAssertEqual(frame.state, 7)
         XCTAssertEqual(frame.journey.value[0], 0.875, accuracy: 0.000_001)
@@ -1063,7 +1063,7 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testRetargetingCarriesTheCurrentVelocityIntoTheNewMotion() throws {
-        let engine = AppKitMotionEngine()
+        let channels = AppKitStateChannels()
         let binding = HostStateBinding(state: 9, mode: .inOut, kind: .property)
         let first = HostJourney(
             value: [0],
@@ -1072,12 +1072,12 @@ final class AppKitMotionTests: XCTestCase {
             motion: .eased(200, .cubicOut),
             completion: nil,
             stopped: 0)
-        _ = engine.presentedValue(
+        _ = channels.presentedValue(
             for: binding,
             from: StateUIHost.value(of: first),
             now: 0,
             reducesMotion: false)
-        _ = engine.takeOutputs()
+        _ = channels.takeOutputs()
 
         let second = HostJourney(
             value: [0],
@@ -1086,7 +1086,7 @@ final class AppKitMotionTests: XCTestCase {
             motion: .eased(200, .linear),
             completion: nil,
             stopped: 0)
-        engine.receive(
+        channels.receive(
             HostStateChange(
                 state: 9,
                 changed: 1 << 1,
@@ -1094,18 +1094,18 @@ final class AppKitMotionTests: XCTestCase {
             now: 100,
             reducesMotion: false)
 
-        let aimed = try XCTUnwrap(engine.takeOutputs().last)
+        let aimed = try XCTUnwrap(channels.takeOutputs().last)
         XCTAssertEqual(aimed.journey.value[0], 0.875, accuracy: 0.000_001)
         XCTAssertEqual(aimed.journey.velocity[0], 3.75, accuracy: 0.01)
 
-        engine.advance(now: 101)
-        let next = try XCTUnwrap(engine.takeOutputs().last)
+        channels.advance(now: 101)
+        let next = try XCTUnwrap(channels.takeOutputs().last)
         XCTAssertGreaterThan(next.journey.value[0], aimed.journey.value[0])
     }
 
     @MainActor
     func testACompletedMotionReportsItsExactDestinationOnce() throws {
-        let engine = AppKitMotionEngine()
+        let channels = AppKitStateChannels()
         let binding = HostStateBinding(state: 11, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -1114,31 +1114,31 @@ final class AppKitMotionTests: XCTestCase {
             motion: .eased(100, .linear),
             completion: -23,
             stopped: 0)
-        _ = engine.presentedValue(
+        _ = channels.presentedValue(
             for: binding,
             from: StateUIHost.value(of: journey),
             now: 0,
             reducesMotion: false)
-        _ = engine.takeOutputs()
+        _ = channels.takeOutputs()
 
-        engine.advance(now: 100)
-        let landed = try XCTUnwrap(engine.takeOutputs().last)
+        channels.advance(now: 100)
+        let landed = try XCTUnwrap(channels.takeOutputs().last)
 
         XCTAssertEqual(landed.journey.value, [1])
         XCTAssertEqual(landed.journey.velocity, [0])
         XCTAssertEqual(landed.report, .position)
         XCTAssertEqual(
-            engine.takeCompletions(),
-            [AppKitMotionCompletion(id: -23, succeeded: true)])
+            channels.takeCompletions(),
+            [AppKitJourneyCompletion(id: -23, succeeded: true)])
 
-        engine.advance(now: 200)
-        XCTAssertTrue(engine.takeOutputs().isEmpty)
-        XCTAssertTrue(engine.takeCompletions().isEmpty)
+        channels.advance(now: 200)
+        XCTAssertTrue(channels.takeOutputs().isEmpty)
+        XCTAssertTrue(channels.takeCompletions().isEmpty)
     }
 
     @MainActor
     func testEnablingReducedMotionLandsAnActiveJourneyAndItsWaiter() throws {
-        let engine = AppKitMotionEngine()
+        let channels = AppKitStateChannels()
         let binding = HostStateBinding(state: 12, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -1147,29 +1147,29 @@ final class AppKitMotionTests: XCTestCase {
             motion: .eased(200, .linear),
             completion: -29,
             stopped: 0)
-        _ = engine.presentedValue(
+        _ = channels.presentedValue(
             for: binding,
             from: StateUIHost.value(of: journey),
             now: 0,
             reducesMotion: false)
-        _ = engine.takeOutputs()
+        _ = channels.takeOutputs()
 
-        engine.advance(now: 50, reducesMotion: true)
-        let landed = try XCTUnwrap(engine.takeOutputs().last)
+        channels.advance(now: 50, reducesMotion: true)
+        let landed = try XCTUnwrap(channels.takeOutputs().last)
 
         XCTAssertEqual(landed.journey.value, [1])
         XCTAssertEqual(landed.journey.destination, [1])
         XCTAssertEqual(landed.journey.velocity, [0])
         XCTAssertEqual(landed.report, .position)
         XCTAssertEqual(
-            engine.takeCompletions(),
-            [AppKitMotionCompletion(id: -29, succeeded: true)])
-        XCTAssertFalse(engine.isActive)
+            channels.takeCompletions(),
+            [AppKitJourneyCompletion(id: -29, succeeded: true)])
+        XCTAssertFalse(channels.isActive)
     }
 
     @MainActor
     func testAReaderTakesAnActiveJourneyAtItsOwnPosition() throws {
-        let engine = AppKitMotionEngine()
+        let channels = AppKitStateChannels()
         let binding = HostStateBinding(state: 13, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -1178,29 +1178,29 @@ final class AppKitMotionTests: XCTestCase {
             motion: .eased(200, .cubicOut),
             completion: -31,
             stopped: 0)
-        _ = engine.presentedValue(
+        _ = channels.presentedValue(
             for: binding,
             from: StateUIHost.value(of: journey),
             now: 0,
             reducesMotion: false)
-        _ = engine.takeOutputs()
+        _ = channels.takeOutputs()
 
-        XCTAssertTrue(engine.take([0.4], through: binding))
-        let taken = try XCTUnwrap(engine.takeOutputs().last)
+        XCTAssertTrue(channels.take([0.4], through: binding))
+        let taken = try XCTUnwrap(channels.takeOutputs().last)
 
         XCTAssertEqual(taken.journey.value, [0.4])
         XCTAssertEqual(taken.journey.destination, [0.4])
         XCTAssertEqual(taken.journey.velocity, [0])
         XCTAssertEqual(taken.report, .position)
-        XCTAssertFalse(engine.isActive)
+        XCTAssertFalse(channels.isActive)
         XCTAssertEqual(
-            engine.takeCompletions(),
-            [AppKitMotionCompletion(id: -31, succeeded: false)])
+            channels.takeCompletions(),
+            [AppKitJourneyCompletion(id: -31, succeeded: false)])
     }
 
     @MainActor
     func testAnOutputOnlyBindingCannotTakeItsJourney() {
-        let engine = AppKitMotionEngine()
+        let channels = AppKitStateChannels()
         let binding = HostStateBinding(state: 15, mode: .out, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -1209,21 +1209,21 @@ final class AppKitMotionTests: XCTestCase {
             motion: .eased(200, .linear),
             completion: nil,
             stopped: 0)
-        _ = engine.presentedValue(
+        _ = channels.presentedValue(
             for: binding,
             from: StateUIHost.value(of: journey),
             now: 0,
             reducesMotion: false)
-        _ = engine.takeOutputs()
+        _ = channels.takeOutputs()
 
-        XCTAssertFalse(engine.take([0.4], through: binding))
-        XCTAssertTrue(engine.isActive)
-        XCTAssertTrue(engine.takeOutputs().isEmpty)
+        XCTAssertFalse(channels.take([0.4], through: binding))
+        XCTAssertTrue(channels.isActive)
+        XCTAssertTrue(channels.takeOutputs().isEmpty)
     }
 
     @MainActor
     func testAStateSnapCancelsItsWaiterOnceWithoutRebookingIt() throws {
-        let engine = AppKitMotionEngine()
+        let channels = AppKitStateChannels()
         let binding = HostStateBinding(state: 17, mode: .inOut, kind: .property)
         let moving = HostJourney(
             value: [0],
@@ -1232,12 +1232,12 @@ final class AppKitMotionTests: XCTestCase {
             motion: .eased(100, .linear),
             completion: -41,
             stopped: 0)
-        _ = engine.presentedValue(
+        _ = channels.presentedValue(
             for: binding,
             from: StateUIHost.value(of: moving),
             now: 0,
             reducesMotion: false)
-        _ = engine.takeOutputs()
+        _ = channels.takeOutputs()
 
         let snapped = HostJourney(
             value: [0.25],
@@ -1246,7 +1246,7 @@ final class AppKitMotionTests: XCTestCase {
             motion: moving.motion,
             completion: -41,
             stopped: 0)
-        engine.receive(
+        channels.receive(
             HostStateChange(
                 state: 17,
                 changed: 0b11,
@@ -1254,24 +1254,24 @@ final class AppKitMotionTests: XCTestCase {
             now: 50,
             reducesMotion: false)
 
-        let applied = try XCTUnwrap(engine.takeOutputs().last)
+        let applied = try XCTUnwrap(channels.takeOutputs().last)
         XCTAssertEqual(applied.journey.value, [0.25])
         XCTAssertEqual(applied.journey.destination, [0.25])
         XCTAssertEqual(applied.journey.velocity, [0])
         XCTAssertEqual(applied.report, .position)
-        XCTAssertFalse(engine.isActive)
+        XCTAssertFalse(channels.isActive)
         XCTAssertEqual(
-            engine.takeCompletions(),
-            [AppKitMotionCompletion(id: -41, succeeded: false)])
+            channels.takeCompletions(),
+            [AppKitJourneyCompletion(id: -41, succeeded: false)])
 
-        engine.advance(now: 200)
-        XCTAssertTrue(engine.takeOutputs().isEmpty)
-        XCTAssertTrue(engine.takeCompletions().isEmpty)
+        channels.advance(now: 200)
+        XCTAssertTrue(channels.takeOutputs().isEmpty)
+        XCTAssertTrue(channels.takeCompletions().isEmpty)
     }
 
     @MainActor
     func testAnAwaitedRetargetOwnsItsNewCompletion() {
-        let engine = AppKitMotionEngine()
+        let channels = AppKitStateChannels()
         let binding = HostStateBinding(state: 19, mode: .inOut, kind: .property)
         let first = HostJourney(
             value: [0],
@@ -1280,12 +1280,12 @@ final class AppKitMotionTests: XCTestCase {
             motion: .eased(100, .linear),
             completion: -41,
             stopped: 0)
-        _ = engine.presentedValue(
+        _ = channels.presentedValue(
             for: binding,
             from: StateUIHost.value(of: first),
             now: 0,
             reducesMotion: false)
-        _ = engine.takeOutputs()
+        _ = channels.takeOutputs()
 
         let second = HostJourney(
             value: [0],
@@ -1294,7 +1294,7 @@ final class AppKitMotionTests: XCTestCase {
             motion: .eased(100, .linear),
             completion: -42,
             stopped: 0)
-        engine.receive(
+        channels.receive(
             HostStateChange(
                 state: 19,
                 changed: (1 << 1) | (1 << 6),
@@ -1303,13 +1303,13 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: false)
 
         XCTAssertEqual(
-            engine.takeCompletions(),
-            [AppKitMotionCompletion(id: -41, succeeded: false)])
+            channels.takeCompletions(),
+            [AppKitJourneyCompletion(id: -41, succeeded: false)])
 
-        engine.advance(now: 150)
+        channels.advance(now: 150)
         XCTAssertEqual(
-            engine.takeCompletions(),
-            [AppKitMotionCompletion(id: -42, succeeded: true)])
+            channels.takeCompletions(),
+            [AppKitJourneyCompletion(id: -42, succeeded: true)])
     }
 
     @MainActor
