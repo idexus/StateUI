@@ -125,8 +125,8 @@ public class PanTests
         pan.SendPanStarted(view, 0);
         pan.SendPan(view, 12.5, -3, 0);
 
-        Assert.Equal(12.5, host.Renderer.Cycle.Standing(5));
-        Assert.Equal(-3, host.Renderer.Cycle.Standing(6));
+        Assert.Equal(12.5, host.Renderer.Reports.Standing(5));
+        Assert.Equal(-3, host.Renderer.Reports.Standing(6));
     }
 
     [Fact]

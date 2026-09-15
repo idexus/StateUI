@@ -16,7 +16,7 @@ using StateUI.Maui.Rendering;
 
 namespace StateUI.Maui.Tests;
 
-public class StateCycleTests
+public class CarriedStateTests
 {
     private static byte[] Read(string name) => Fixtures.ReadBytes(name);
 
@@ -95,7 +95,7 @@ public class StateCycleTests
 
         Assert.Equal(0.5, border.Opacity);
 
-        StateAttachment attachment = Assert.Single(host.Renderer.Cycle.Registered(border).Values);
+        StateAttachment attachment = Assert.Single(host.Renderer.Channels.Registered(border).Values);
 
         Assert.Equal(1, attachment.Number);
         Assert.Equal(HostStateMode.InOut, attachment.Mode);
@@ -115,7 +115,7 @@ public class StateCycleTests
 
         Assert.Equal(
             [StackBase.SpacingProperty],
-            host.Renderer.Cycle.Registered(stack).Values.Select(attachment => attachment.Property));
+            host.Renderer.Channels.Registered(stack).Values.Select(attachment => attachment.Property));
 
         var border = (Border)stack.Children[0];
         var label = (Label)border.Content!;
@@ -124,14 +124,14 @@ public class StateCycleTests
         var entry = (Entry)stack.Children[3];
         var box = (BoxView)stack.Children[4];
 
-        Assert.Equal(20, host.Renderer.Cycle.Registered(border).Count);
-        Assert.Equal(3, host.Renderer.Cycle.Registered(label).Count);
-        Assert.Equal(3, host.Renderer.Cycle.Registered(shape).Count);
-        Assert.Equal(2, host.Renderer.Cycle.Registered(button).Count);
-        Assert.Single(host.Renderer.Cycle.Registered(entry));
+        Assert.Equal(20, host.Renderer.Channels.Registered(border).Count);
+        Assert.Equal(3, host.Renderer.Channels.Registered(label).Count);
+        Assert.Equal(3, host.Renderer.Channels.Registered(shape).Count);
+        Assert.Equal(2, host.Renderer.Channels.Registered(button).Count);
+        Assert.Single(host.Renderer.Channels.Registered(entry));
         Assert.Equal(
             [BoxView.ColorProperty],
-            host.Renderer.Cycle.Registered(box).Values.Select(attachment => attachment.Property));
+            host.Renderer.Channels.Registered(box).Values.Select(attachment => attachment.Property));
 
         // And every one of them resolved to a property rather than to nothing:
         // a token this side cannot resolve is an attachment that is never made.
@@ -139,7 +139,7 @@ public class StateCycleTests
                  { stack, border, label, shape, button, entry, box })
         {
             Assert.All(
-                host.Renderer.Cycle.Registered(view).Values,
+                host.Renderer.Channels.Registered(view).Values,
                 attachment => Assert.NotNull(attachment.Property));
         }
     }
@@ -154,7 +154,7 @@ public class StateCycleTests
         foreach (BindableObject view in new BindableObject[]
                  { (View)stack.Children[0], (View)stack.Children[1] })
         {
-            StateAttachment attachment = Assert.Single(host.Renderer.Cycle.Registered(view).Values);
+            StateAttachment attachment = Assert.Single(host.Renderer.Channels.Registered(view).Values);
 
             Assert.Equal(HostStateKind.Text, attachment.Kind);
             Assert.Equal(HostStateMode.Out, attachment.Mode);
@@ -179,9 +179,9 @@ public class StateCycleTests
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
 
         StateAttachment slider = Assert.Single(
-            host.Renderer.Cycle.Registered((View)stack.Children[0]).Values);
+            host.Renderer.Channels.Registered((View)stack.Children[0]).Values);
         StateAttachment stepper = Assert.Single(
-            host.Renderer.Cycle.Registered((View)stack.Children[1]).Values);
+            host.Renderer.Channels.Registered((View)stack.Children[1]).Values);
 
         Assert.Equal(HostStateMode.InOut, slider.Mode);
         Assert.Equal(Slider.ValueProperty, slider.Property);
@@ -213,8 +213,8 @@ public class StateCycleTests
 
         // Both ride ONE number, which is the whole point of the fixture.
         Assert.Equal(
-            host.Renderer.Cycle.Registered(slider).Values.Single().Number,
-            host.Renderer.Cycle.Registered(box).Values.Single().Number);
+            host.Renderer.Channels.Registered(slider).Values.Single().Number,
+            host.Renderer.Channels.Registered(box).Values.Single().Number);
 
         // What a finger looks like from here: the platform assigning the value
         // and raising its own change for it.
@@ -236,7 +236,7 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.25, setPoint: 0.25));
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -256,7 +256,7 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 22, setPoint: 22));   // a journey: a font size
         crossing.Whole[2] = Batch(2, ~0UL, BitConverter.GetBytes(2.0));       // a member: LayoutOptions.end
         crossing.Whole[3] = Batch(3, ~0UL, BitConverter.GetBytes(0.0));       // a flag: hidden
@@ -292,12 +292,12 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("bound.bin"));
         var toggle = Assert.IsType<Switch>(stack.Children[3]);
 
-        Assert.True(host.Renderer.Cycle.Reported(toggle, Switch.IsToggledProperty, 1));
+        Assert.True(host.Renderer.Reports.Reported(toggle, Switch.IsToggledProperty, 1));
 
         (int number, ulong mask, double[] lanes) = Told(crossing)!.Value;
 
@@ -306,7 +306,7 @@ public class StateCycleTests
         Assert.Equal([1.0], lanes);
 
         // A property nobody drives is nobody's report.
-        Assert.False(host.Renderer.Cycle.Reported(toggle, Switch.IsEnabledProperty, 0));
+        Assert.False(host.Renderer.Reports.Reported(toggle, Switch.IsEnabledProperty, 0));
     }
 
     /// <summary>
@@ -320,7 +320,7 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         static HostPatch Bound(HostNodeType type, int id) => new()
         {
@@ -358,7 +358,7 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
         var stepper = (Stepper)stack.Children[1];
@@ -385,7 +385,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
@@ -394,7 +394,7 @@ public class StateCycleTests
         crossing.Dirty = Batch(1, SetPoint, Lanes(
             value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)HostEasing.Linear));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
         clock.Tick(100);
 
         Assert.Equal(0.25, border.Opacity, 2);
@@ -402,7 +402,7 @@ public class StateCycleTests
         // And then written, which is a snap: the walk lets go and the value is
         // what was written, not what the curve was drawing.
         crossing.Dirty = Batch(1, Value, Lanes(value: 0.9, setPoint: 0));
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         Assert.Equal(0.9, border.Opacity, 6);
 
@@ -422,7 +422,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
@@ -430,7 +430,7 @@ public class StateCycleTests
         crossing.Dirty = Batch(1, SetPoint | (1UL << 6), Lanes(
             value: 1, setPoint: 0, law: 2, a: 200, b: (int)HostEasing.Linear, completion: -3));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         // FROM WHERE THE PLATFORM HAS IT, which is the stated 0.5 - the value
         // lane says where the number thinks it is, and a journey that is starting
@@ -457,7 +457,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
@@ -465,7 +465,7 @@ public class StateCycleTests
         crossing.Dirty = Batch(1, SetPoint | (1UL << 6), Lanes(
             value: 1, setPoint: 0, law: 2, a: 400, b: (int)HostEasing.Linear, completion: -4));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
         clock.Tick(100);
 
         double reached = border.Opacity;
@@ -473,7 +473,7 @@ public class StateCycleTests
         crossing.Dirty = Batch(1, Stopped, Lanes(
             value: reached, setPoint: 0, completion: -4, stopped: 1));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         Assert.Equal(reached, border.Opacity, 6);
         Assert.Contains(-4, host.Raw.Select(sent => sent.Id));
@@ -493,7 +493,7 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-text.bin"));
         var label = (Label)stack.Children[0];
@@ -508,7 +508,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, 1, Words("60%"));
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         Assert.Equal("60%", label.Text);
 
@@ -516,13 +516,13 @@ public class StateCycleTests
         label.MeasureInvalidated += (_, _) => measures++;
 
         crossing.Dirty = Batch(1, 1, Words("60%"));
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         // The same words are not written again, so nothing is re-measured.
         Assert.Equal(0, measures);
 
         crossing.Dirty = Batch(1, 1, Words("61%"));
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         Assert.Equal("61%", label.Text);
     }
@@ -540,15 +540,15 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
         host.ApplyMessage(Read("state-sink.bin"));
 
         crossing.Cycles.Clear();
-        host.Renderer.Cycle.Frame();
+        host.Renderer.DisplayCycle.Frame();
 
         Assert.Single(crossing.Cycles);
 
-        host.Renderer.Cycle.Run(CycleReason.Drained);
+        host.Renderer.DisplayCycle.Run(CycleReason.Drained);
 
         Assert.Equal(2, crossing.Cycles.Count);
     }
@@ -569,14 +569,14 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-text-two-way.bin"));
         var entry = Assert.IsType<Entry>(stack.Children[0]);
         var editor = Assert.IsType<Editor>(stack.Children[1]);
         var search = Assert.IsType<SearchBar>(stack.Children[2]);
 
-        Assert.True(host.Renderer.Cycle.Typed(entry, InputView.TextProperty, "Ada"));
+        Assert.True(host.Renderer.Reports.Typed(entry, InputView.TextProperty, "Ada"));
 
         byte[] last = crossing.Written[^1];
         var written = Assert.Single(StateBatch.Read(last.AsSpan()));
@@ -592,7 +592,7 @@ public class StateCycleTests
         // And a caption is written out, never reported.
         var labels = (VerticalStackLayout)host.ApplyMessage(Read("state-text.bin"));
 
-        Assert.False(host.Renderer.Cycle.Typed((Label)labels.Children[0], Label.TextProperty, "x"));
+        Assert.False(host.Renderer.Reports.Typed((Label)labels.Children[0], Label.TextProperty, "x"));
     }
 
     /// <summary>
@@ -607,7 +607,7 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-text-two-way.bin"));
         var entry = Assert.IsType<Entry>(stack.Children[0]);
@@ -617,7 +617,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, ~0UL, StateBatch.Words("xyz"));
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         Assert.Equal("xyz", entry.Text);
         Assert.Empty(host.Dispatched);
@@ -637,7 +637,7 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Plain(2026, 8, 2));
         crossing.Whole[2] = Batch(2, ~0UL, Plain(9, 30, 5));
 
@@ -650,7 +650,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, ~0UL, Plain(2026, 2, 31));
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         Assert.Equal(new DateTime(2026, 8, 2), picker.Date);
     }
@@ -666,13 +666,13 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-picked.bin"));
         var picker = Assert.IsType<DatePicker>(stack.Children[0]);
         var time = Assert.IsType<TimePicker>(stack.Children[1]);
 
-        Assert.True(host.Renderer.Cycle.Reported(picker, DatePicker.DateProperty, [2026, 9, 15]));
+        Assert.True(host.Renderer.Reports.Reported(picker, DatePicker.DateProperty, [2026, 9, 15]));
 
         (int number, ulong mask, double[] lanes) = Told(crossing)!.Value;
 
@@ -680,7 +680,7 @@ public class StateCycleTests
         Assert.Equal(0b111UL, mask);
         Assert.Equal([2026.0, 9, 15], lanes);
 
-        Assert.True(host.Renderer.Cycle.Reported(time, TimePicker.TimeProperty, [7, 45, 0]));
+        Assert.True(host.Renderer.Reports.Reported(time, TimePicker.TimeProperty, [7, 45, 0]));
         Assert.Equal(2, Told(crossing)!.Value.Number);
 
         host.Dispatched.Clear();
@@ -688,7 +688,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, ~0UL, Plain(2027, 1, 1));
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         Assert.Equal(new DateTime(2027, 1, 1), picker.Date);
         Assert.Empty(host.Dispatched);
@@ -752,7 +752,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
@@ -787,7 +787,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
@@ -795,11 +795,11 @@ public class StateCycleTests
         crossing.Dirty = Batch(1, SetPoint, Lanes(
             value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)HostEasing.Linear));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
         clock.Tick(100);
         crossing.Written.Clear();
 
-        StateChannel channel = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Channel!;
+        StateChannel channel = Assert.Single(host.Renderer.Channels.Registered(border).Values).Channel!;
 
         host.Renderer.Walker.Halt(channel, StateChannel.Slot, TripEnd.Here);
 
@@ -824,7 +824,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
@@ -832,11 +832,11 @@ public class StateCycleTests
         crossing.Dirty = Batch(1, SetPoint, Lanes(
             value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)HostEasing.Linear));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
         clock.Tick(100);
         crossing.Written.Clear();
 
-        StateChannel channel = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Channel!;
+        StateChannel channel = Assert.Single(host.Renderer.Channels.Registered(border).Values).Channel!;
 
         host.Renderer.Walker.Halt(channel, StateChannel.Slot, TripEnd.Nothing);
 
@@ -857,7 +857,7 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.8, setPoint: 0.8));
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -885,7 +885,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         // The law the application would have stated, which a harness handed
         // the view alone never sees.
@@ -901,7 +901,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, going);
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
         crossing.Whole[1] = Batch(1, ~0UL, going);
 
         clock.Tick(200);
@@ -934,7 +934,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
@@ -942,7 +942,7 @@ public class StateCycleTests
         crossing.Dirty = Batch(1, SetPoint, Lanes(
             value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)HostEasing.Linear));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
         clock.Tick(100);
 
         host.ApplyMessage(new HostPatch
@@ -956,7 +956,7 @@ public class StateCycleTests
         });
 
         // The number's channel is still carrying it.
-        StateChannel channel = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Channel!;
+        StateChannel channel = Assert.Single(host.Renderer.Channels.Registered(border).Values).Channel!;
 
         Assert.NotNull(host.Renderer.Walker.Moving(channel, StateChannel.Slot));
 
@@ -977,7 +977,7 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.3, setPoint: 0.3));
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -1010,7 +1010,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.4, setPoint: 0.4));
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -1044,11 +1044,11 @@ public class StateCycleTests
         var host = new Host();
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
-        Assert.Single(host.Renderer.Cycle.Registered(border));
+        Assert.Single(host.Renderer.Channels.Registered(border));
 
-        host.Renderer.Cycle.Detach(border);
+        host.Renderer.Channels.Detach(border);
 
-        Assert.Empty(host.Renderer.Cycle.Registered(border));
+        Assert.Empty(host.Renderer.Channels.Registered(border));
     }
 
     /// <summary>
@@ -1073,7 +1073,7 @@ public class StateCycleTests
         {
             var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
-            Assert.Single(host.Renderer.Cycle.Registered(border));
+            Assert.Single(host.Renderer.Channels.Registered(border));
 
             return new WeakReference(border);
         }
@@ -1128,7 +1128,7 @@ public class StateCycleTests
             ],
         });
 
-        StateAttachment attachment = Assert.Single(host.Renderer.Cycle.Registered(layout)).Value;
+        StateAttachment attachment = Assert.Single(host.Renderer.Channels.Registered(layout)).Value;
 
         Assert.NotNull(attachment.Released);
         Assert.Empty(Holds(attachment.Released, 3));
@@ -1188,7 +1188,7 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
         var slider = (Slider)stack.Children[0];
@@ -1199,7 +1199,7 @@ public class StateCycleTests
 
         try
         {
-            Assert.True(host.Renderer.Cycle.Reader(slider, Slider.ValueProperty, 0.75));
+            Assert.True(host.Renderer.Reports.Reader(slider, Slider.ValueProperty, 0.75));
         }
         finally
         {
@@ -1224,14 +1224,14 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
         var slider = (Slider)stack.Children[0];
 
         crossing.Written.Clear();
 
-        Assert.True(host.Renderer.Cycle.Reader(slider, Slider.ValueProperty, 0.75));
+        Assert.True(host.Renderer.Reports.Reader(slider, Slider.ValueProperty, 0.75));
 
         (int number, ulong mask, double[] lanes) = Assert.NotNull(Told(crossing));
 
@@ -1262,14 +1262,14 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
         var slider = (Slider)stack.Children[0];
 
         crossing.Written.Clear();
 
-        Assert.True(host.Renderer.Cycle.Reader(slider, Slider.ValueProperty, 0.75));
+        Assert.True(host.Renderer.Reports.Reader(slider, Slider.ValueProperty, 0.75));
 
         (_, _, double[] lanes) = Assert.NotNull(Told(crossing));
 
@@ -1290,7 +1290,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
         var slider = (Slider)stack.Children[0];
@@ -1300,7 +1300,7 @@ public class StateCycleTests
         crossing.Dirty = Batch(1, SetPoint, Lanes(
             value: 0, setPoint: 1, law: 2, a: 200, b: (int)HostEasing.Linear));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
         clock.Tick(100);
 
         Assert.Equal(0.5, slider.Value, 2);
@@ -1310,7 +1310,7 @@ public class StateCycleTests
         // reports; here the assignment stands in for it, and what is being
         // asserted is the frame AFTER - which would have carried the value on
         // to 1 had the finger not ended the walk.
-        Assert.True(host.Renderer.Cycle.Reader(slider, Slider.ValueProperty, 0.2));
+        Assert.True(host.Renderer.Reports.Reader(slider, Slider.ValueProperty, 0.2));
 
         slider.Value = 0.2;
         clock.Tick(100);
@@ -1337,7 +1337,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
         var slider = (Slider)stack.Children[0];
@@ -1356,7 +1356,7 @@ public class StateCycleTests
         crossing.Dirty = Batch(1, SetPoint, Lanes(
             value: 0, setPoint: 1, law: 2, a: 200, b: (int)HostEasing.Linear));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         clock.Tick(100);
         clock.Tick(150);
@@ -1386,7 +1386,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
         var slider = (Slider)stack.Children[0];
@@ -1397,7 +1397,7 @@ public class StateCycleTests
         crossing.Dirty = Batch(1, SetPoint, Lanes(
             value: 0, setPoint: 1, law: 2, a: 200, b: (int)HostEasing.Linear));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         clock.Tick(100);
         clock.Tick(150);
@@ -1422,13 +1422,13 @@ public class StateCycleTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
 
         crossing.Written.Clear();
 
-        Assert.False(host.Renderer.Cycle.Reader(
+        Assert.False(host.Renderer.Reports.Reader(
             new Slider(), Slider.ValueProperty, 0.75));
         Assert.Empty(crossing.Written);
     }
@@ -1442,17 +1442,17 @@ public class StateCycleTests
     [Fact]
     public void AValueThatMovedIsWhereItWasLastSaidToBe()
     {
-        StateCycle states = new Host().Renderer.Cycle;
+        CarriedReports reports = new Host().Renderer.Reports;
 
-        Assert.Equal(0, states.Standing(7));
+        Assert.Equal(0, reports.Standing(7));
 
-        states.Moved(7, 12.5);
-        Assert.Equal(12.5, states.Standing(7));
+        reports.Moved(7, 12.5);
+        Assert.Equal(12.5, reports.Standing(7));
 
-        states.Moved(7, -3);
-        Assert.Equal(-3, states.Standing(7));
+        reports.Moved(7, -3);
+        Assert.Equal(-3, reports.Standing(7));
 
-        Assert.Equal(0, states.Standing(8));
+        Assert.Equal(0, reports.Standing(8));
     }
 
     // ---- One state, one channel ---------------------------------------------
@@ -1477,7 +1477,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0, setPoint: 0));
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-shared.bin"));
@@ -1489,7 +1489,7 @@ public class StateCycleTests
         crossing.Dirty = Batch(1, SetPoint, Lanes(
             value: 0, setPoint: 1, law: 2, a: 200, b: (int)HostEasing.Linear));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         // ONE motion carries both.
         Assert.Equal(1, host.Renderer.Walker.Carrying);
@@ -1521,7 +1521,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
@@ -1530,7 +1530,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, going);
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
         crossing.Whole[1] = Batch(1, ~0UL, going);
 
         clock.Tick(100);
@@ -1573,7 +1573,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         ScrollView scroll = TiedScroller(host);
 
@@ -1615,7 +1615,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         ScrollView scroll = TiedScroller(host);
 
@@ -1658,7 +1658,7 @@ public class StateCycleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         ScrollView scroll = TiedScroller(host);
 
@@ -1745,7 +1745,7 @@ public class StateCycleTests
 
         ((IView)scroll).Arrange(new Rect(0, 0, 100, 300));
 
-        Assert.Single(host.Renderer.Cycle.Registered(scroll));
+        Assert.Single(host.Renderer.Channels.Registered(scroll));
 
         return scroll;
     }
@@ -1765,7 +1765,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(3, PointSetPoint, going);
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
         crossing.Whole[3] = Batch(3, ~0UL, going);
     }
 }

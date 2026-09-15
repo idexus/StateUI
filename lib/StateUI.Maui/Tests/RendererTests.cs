@@ -581,7 +581,7 @@ public class RendererTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Fixtures.ReadBytes("state-text-two-way.bin"));
         var entry = Assert.IsType<Entry>(stack.Children[0]);
@@ -630,7 +630,7 @@ public class RendererTests
             }
         });
 
-        renderer.Cycle.Crossing = crossing;
+        renderer.Crossing = crossing;
 
         // Past the application, scene, window and page, which a renderer is
         // never handed: it is given the view.

@@ -364,7 +364,7 @@ public sealed class StateUIRenderer
     /// <remarks>
     /// Written where the scroller is reconciled, before the attachment is made
     /// later in the same pass, and read by <c>ObserveScroll</c>, which makes
-    /// the scroller's movement for it. See <see cref="StateCycle"/>.
+    /// the scroller's movement for it. See <see cref="CarriedReports"/>.
     /// </remarks>
     internal static readonly BindableProperty ScrolledProperty =
         BindableProperty.CreateAttached(
@@ -638,34 +638,50 @@ public sealed class StateUIRenderer
         // cycle of the image, in and out. An awaited movement on a state answers
         // on one of the negative completion ids every act answers on, so it goes
         // out the door an act's reply goes out of.
-        _cycle = new StateCycle(
+        _channels = new StateChannels(
             _walker,
-            new NativeCycleCrossing(),
+            () => Crossing,
             (waiter, whole) =>
-                _dispatch(waiter, WireCodec.WriteReply([HostValue.Of(whole)])))
+                _dispatch(waiter, WireCodec.WriteReply([HostValue.Of(whole)])));
+        _displayCycle = new DisplayCycle(_walker, _channels, () => Crossing)
         {
             Held = () => _rendering,
         };
+        _reports = new CarriedReports(_walker, _channels, _displayCycle, () => Crossing);
+        _channels.Feeding = _reports.Feed;
 
-        _walker.Cycle = _cycle.Frame;
-        _walker.Idle = _cycle.Idle;
+        _walker.Cycle = _displayCycle.Frame;
+        _walker.Idle = _displayCycle.Idle;
 
         // The two seams the rest of the renderer reaches the states THROUGH,
         // rather than by holding one: a layout's arranger and the message's own
         // transitions are handed the walker and nothing else, and both have to
         // know whether something else owns a value before they write it.
-        _walker.Driven = _cycle.Drives;
-        _walker.Aimed = _cycle.Mirror;
+        _walker.Driven = _channels.Drives;
+        _walker.Aimed = _channels.Mirror;
     }
 
     /// <summary>
-    /// The image and its cycle - values both sides hold, moved on the
-    /// display's own frames by arithmetic that describes nothing. Reachable so
-    /// a test can wind it by hand.
+    /// The far end of the image - values both sides hold, moved on the
+    /// display's own frames by arithmetic that describes nothing - which the
+    /// state channels, the reports and the display cycle all read and write
+    /// through. Settable so a test can wind the whole cycle by hand, which an
+    /// application never needs to.
     /// </summary>
-    internal StateCycle Cycle => _cycle;
+    internal ICycleCrossing Crossing { get; set; } = new NativeCycleCrossing();
 
-    private readonly StateCycle _cycle;
+    /// <summary>The state channels, one per number a control wears. Reachable so a test can read them.</summary>
+    internal StateChannels Channels => _channels;
+
+    /// <summary>What the reader does to a carried value, onto its state. Reachable so a test can report.</summary>
+    internal CarriedReports Reports => _reports;
+
+    /// <summary>The display cycle over the image. Reachable so a test can wind it by hand.</summary>
+    internal DisplayCycle DisplayCycle => _displayCycle;
+
+    private readonly StateChannels _channels;
+    private readonly CarriedReports _reports;
+    private readonly DisplayCycle _displayCycle;
 
     /// <summary>
     /// What moves every value that is going somewhere - see
@@ -763,7 +779,7 @@ public sealed class StateUIRenderer
         // something: an absent field is a registration that stands.
         if (node.States is not null)
         {
-            _cycle.Register(view, node);
+            _channels.Register(view, node);
         }
 
         return view;
@@ -797,7 +813,7 @@ public sealed class StateUIRenderer
                 // ELSE HAS IT, and only to MAUI's default where nobody does -
                 // a modifier written conditionally is the tree letting go of a
                 // value, never the state beside it letting go too.
-                if (_cycle.Reland(target, property))
+                if (_channels.Reland(target, property))
                 {
                     continue;
                 }
@@ -1279,8 +1295,8 @@ public sealed class StateUIRenderer
 
                     if (e.StatusType == GestureStatus.Started)
                     {
-                        fromX = _cycle.Standing(across);
-                        fromY = _cycle.Standing(down);
+                        fromX = _reports.Standing(across);
+                        fromY = _reports.Standing(down);
                     }
 
                     // RUNNING REPORTS ONLY: started, completed and canceled
@@ -1292,12 +1308,12 @@ public sealed class StateUIRenderer
                     {
                         if (across != 0)
                         {
-                            _cycle.Moved(across, fromX + totalX);
+                            _reports.Moved(across, fromX + totalX);
                         }
 
                         if (down != 0)
                         {
-                            _cycle.Moved(down, fromY + totalY);
+                            _reports.Moved(down, fromY + totalY);
                         }
                     }
 
@@ -1709,7 +1725,7 @@ public sealed class StateUIRenderer
 
         if (channelled)
         {
-            movement.Slid = lanes => _cycle.Slid(scroll, lanes);
+            movement.Slid = lanes => _reports.Slid(scroll, lanes);
         }
 
         movement.Hook();
@@ -2036,7 +2052,7 @@ public sealed class StateUIRenderer
     {
         if (!_rendering && sender is BindableObject control)
         {
-            _cycle.Reported(control, property, lanes);
+            _reports.Reported(control, property, lanes);
         }
     }
 
@@ -2052,7 +2068,7 @@ public sealed class StateUIRenderer
 
         if (!_rendering && sender is BindableObject control)
         {
-            _cycle.Reader(control, property, value);
+            _reports.Reader(control, property, value);
         }
     }
 
@@ -3449,7 +3465,7 @@ public sealed class StateUIRenderer
         // which is what lets one property name reach all three.
         if (!_rendering && sender is InputView typed)
         {
-            _cycle.Typed(typed, InputView.TextProperty, text ?? "");
+            _reports.Typed(typed, InputView.TextProperty, text ?? "");
         }
 
         Raise(sender, HostEvent.TextChanged, text ?? "");
@@ -5324,7 +5340,7 @@ public sealed class StateUIRenderer
                 // where nothing else is carrying the property: one a number
                 // drives rests wherever its state says, which is a value this
                 // side cannot work out for itself and must ask for.
-                if (target is null && _cycle.Restate(view, property, spec))
+                if (target is null && _channels.Restate(view, property, spec))
                 {
                     continue;
                 }
@@ -5368,7 +5384,7 @@ public sealed class StateUIRenderer
     /// Set, and never taken back, where a view is first given an
     /// <c>.onFrameChanged</c> (<c>WatchFrame</c>) and where a layout that
     /// places its own children is fed its room by a driven frame state
-    /// (<c>StateCycle.Register</c>): a size an application MEASURES is a size
+    /// (<c>StateChannels.Register</c>): a size an application MEASURES is a size
     /// it works its interface out from, so walking one hands it a run of
     /// answers nobody chose - and where what it works out decides the room
     /// being walked, the two chase each other down. Read by the arranger, which
@@ -5442,13 +5458,13 @@ public sealed class StateUIRenderer
         // this one value, so a view whose opacity somebody else is carrying
         // has no fade to spare: it appears and goes at once, and the opacity
         // stays the number's the whole time.
-        bool driven = _cycle.Drives(view, VisualElement.OpacityProperty);
+        bool driven = _channels.Drives(view, VisualElement.OpacityProperty);
 
         if (spec.Instant || driven || view.GetValue(ElementProperty) is not RenderedElement)
         {
             _walker.Halt(view, VisualElement.OpacityProperty, TripEnd.Nothing);
 
-            if (!_cycle.Reland(view, VisualElement.OpacityProperty))
+            if (!_channels.Reland(view, VisualElement.OpacityProperty))
             {
                 view.Opacity = shown;
             }

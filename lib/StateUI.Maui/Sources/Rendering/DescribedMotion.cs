@@ -23,7 +23,7 @@ using StateUI.Maui.Protocol;
 /// in the middle of the walk says the same thing again. So there is no
 /// bookkeeping here at all - what a message names, the walker is aimed at, and
 /// the walk is the walker's business from that moment. A value somebody DOES
-/// await is a driven one, walked off its own image by <see cref="StateCycle"/>.
+/// await is a driven one, walked off its own image by <see cref="StateChannels"/>.
 /// </para>
 /// <para>
 /// A property that arrives with NO transition while a walk is under way on it

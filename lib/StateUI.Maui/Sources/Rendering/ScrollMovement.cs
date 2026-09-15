@@ -198,7 +198,7 @@ internal sealed class ScrollMovement
     /// <summary>
     /// Where a vouched-for offset report is handed on, when the tree gave this
     /// scroller a state to report into - the renderer points it at
-    /// <see cref="StateCycle.Slid"/>. Nothing when no number is set.
+    /// <see cref="CarriedReports.Slid"/>. Nothing when no number is set.
     /// </summary>
     internal Action<double[]>? Slid;
 
@@ -210,7 +210,7 @@ internal sealed class ScrollMovement
     /// the one place that knows a report from a relayout's clamp: a state fed
     /// raw reports drew the run at the start of every resize, and nothing
     /// could put those properties right - the tree does not know the host
-    /// wrote them. See <see cref="StateCycle"/>.
+    /// wrote them. See <see cref="CarriedReports"/>.
     /// </remarks>
     /// <param name="property">Which offset the report is about.</param>
     private void Told(string property)
@@ -575,7 +575,7 @@ internal sealed class ScrollMovement
                 // A REPORT THE GEOMETRY VOUCHES FOR is one a state may hear:
                 // the relayout's own clamps take the branch above and reach no
                 // number, and the offset the restore puts back arrives here with
-                // the geometry already settled. See StateCycle.
+                // the geometry already settled. See CarriedReports.
                 Told(e.PropertyName);
             }
 

@@ -11,9 +11,9 @@
 // element's law, resolved on this side because the host cannot read a motion
 // plan.
 //
-// The mechanism is in Core/StateValue.swift; the host's half - which runs the
-// cycle on the platform's own frames and writes the values onto the controls -
-// is StateUI.Runtime's StateCycle.cs.
+// The mechanism is in Core/StateValue.swift; the MAUI host's half - which runs
+// the cycle on the platform's own frames and writes the values onto the
+// controls - is its StateChannels, CarriedReports and DisplayCycle.
 
 import XCTest
 @_spi(Host) @testable import StateUI

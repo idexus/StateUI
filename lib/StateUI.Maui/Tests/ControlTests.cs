@@ -586,7 +586,7 @@ public class ControlTests
             // gives IsRefreshing no event, so the property itself reports, as
             // one lane under the state's number.
             var crossing = new HandCrossing();
-            host.Renderer.Cycle.Crossing = crossing;
+            host.Renderer.Crossing = crossing;
 
             refresh.IsRefreshing = false;
             Assert.NotEmpty(crossing.Written);

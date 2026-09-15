@@ -93,7 +93,7 @@ public class StatePlacementTests
         var host = new Host();
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        StateAttachment run = host.Renderer.Cycle.Registered(layout).Values
+        StateAttachment run = host.Renderer.Channels.Registered(layout).Values
             .Single(attachment => attachment.Kind == HostStateKind.Placement);
 
         Assert.Equal(HostStateMode.Out, run.Mode);
@@ -101,7 +101,7 @@ public class StatePlacementTests
 
         // And not one of the twelve is on a child: where the views go is the
         // number's to say, from the registration on.
-        Assert.Empty(host.Renderer.Cycle.Registered(first));
+        Assert.Empty(host.Renderer.Channels.Registered(first));
     }
 
     /// <summary>
@@ -114,11 +114,11 @@ public class StatePlacementTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         (AbsoluteLayout layout, _, _) = Placed(host);
 
-        StateAttachment room = host.Renderer.Cycle.Registered(layout).Values
+        StateAttachment room = host.Renderer.Channels.Registered(layout).Values
             .Single(attachment => attachment.Kind == HostStateKind.Feed);
 
         Assert.Equal(HostStateMode.In, room.Mode);
@@ -146,18 +146,18 @@ public class StatePlacementTests
         var crossing = new HandCrossing();
 
         host.Renderer.Walker.Clock = new HandFrameClock();
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, View second) = Placed(host);
 
-        int number = host.Renderer.Cycle.Registered(layout).Values
+        int number = host.Renderer.Channels.Registered(layout).Values
             .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(number, ~0UL, Run(
             0, 0, Place(10, 20, opacity: 0.5), Place(30, 40, rank: 1)));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         Assert.Equal(new Rect(10, 20, 100, 100), AbsoluteLayout.GetLayoutBounds(first));
         Assert.Equal(0.5, first.Opacity, 6);
@@ -176,18 +176,18 @@ public class StatePlacementTests
         var crossing = new HandCrossing();
 
         host.Renderer.Walker.Clock = new HandFrameClock();
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int number = host.Renderer.Cycle.Registered(layout).Values
+        int number = host.Renderer.Channels.Registered(layout).Values
             .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         void Wear(double x)
         {
             crossing.Answers = 1;
             crossing.Dirty = Batch(number, ~0UL, Run(0, 0, Place(x, 0), Place(0, 0)));
-            host.Renderer.Cycle.Run(CycleReason.Told);
+            host.Renderer.DisplayCycle.Run(CycleReason.Told);
         }
 
         Wear(10);
@@ -214,18 +214,18 @@ public class StatePlacementTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int number = host.Renderer.Cycle.Registered(layout).Values
+        int number = host.Renderer.Channels.Registered(layout).Values
             .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         void Wear(ulong mask, byte[] bytes)
         {
             crossing.Answers = 1;
             crossing.Dirty = Batch(number, mask, bytes);
-            host.Renderer.Cycle.Run(CycleReason.Told);
+            host.Renderer.DisplayCycle.Run(CycleReason.Told);
         }
 
         // Placed first, so there is somewhere to travel FROM.
@@ -257,18 +257,18 @@ public class StatePlacementTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int number = host.Renderer.Cycle.Registered(layout).Values
+        int number = host.Renderer.Channels.Registered(layout).Values
             .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         void Wear(double law, double millis, double x)
         {
             crossing.Answers = 1;
             crossing.Dirty = Batch(number, ~0UL, Run(law, millis, Place(x, 0), Place(0, 0)));
-            host.Renderer.Cycle.Run(CycleReason.Told);
+            host.Renderer.DisplayCycle.Run(CycleReason.Told);
         }
 
         Wear(0, 0, 0);
@@ -301,18 +301,18 @@ public class StatePlacementTests
         var crossing = new HandCrossing();
 
         host.Renderer.Walker.Clock = new HandFrameClock();
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int number = host.Renderer.Cycle.Registered(layout).Values
+        int number = host.Renderer.Channels.Registered(layout).Values
             .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         void Wear()
         {
             crossing.Answers = 1;
             crossing.Dirty = Batch(number, ~0UL, Run(0, 0, Place(10, 0), Place(0, 0)));
-            host.Renderer.Cycle.Run(CycleReason.Told);
+            host.Renderer.DisplayCycle.Run(CycleReason.Told);
         }
 
         Wear();
@@ -336,18 +336,18 @@ public class StatePlacementTests
         var crossing = new HandCrossing();
 
         host.Renderer.Walker.Clock = new HandFrameClock();
-        host.Renderer.Cycle.Crossing = crossing;
+        host.Renderer.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        int number = host.Renderer.Cycle.Registered(layout).Values
+        int number = host.Renderer.Channels.Registered(layout).Values
             .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(number, ~0UL, Run(
             0, 0, Place(0, 0, opacity: 0.8, shade: 0.6), Place(0, 0)));
 
-        host.Renderer.Cycle.Run(CycleReason.Told);
+        host.Renderer.DisplayCycle.Run(CycleReason.Told);
 
         var wrapper = (Microsoft.Maui.Controls.Layout)first;
 
