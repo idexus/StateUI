@@ -161,6 +161,7 @@ final class AppKitRenderer: @unchecked Sendable {
     private let presentsWindows: Bool
     private let eventSink: ((Int32, [HostValue]) -> Void)?
     private let preferences: UserDefaults
+    private let core = AppKitCoreLink()
     private let motion = AppKitMotionEngine()
     private let propertyMotion = AppKitPropertyMotionEngine()
     private let images = NSCache<NSString, NSImage>()
@@ -228,7 +229,7 @@ final class AppKitRenderer: @unchecked Sendable {
         configureEnvironment()
         let appearance = NSApplication.shared.effectiveAppearance
             .bestMatch(from: [.darkAqua, .aqua])
-        StateUIHost.setTheme(appearance == .darkAqua ? .dark : .light)
+        core.setTheme(appearance == .darkAqua ? .dark : .light)
         hydratePersistentState()
         if !connectedInitialScene {
             connectPlatformScene(restoring: [:])
@@ -242,7 +243,7 @@ final class AppKitRenderer: @unchecked Sendable {
         let process = ProcessInfo.processInfo
         let bundle = Bundle.main
 
-        StateUIHost.setDeviceInfo(HostDeviceInfo(
+        core.setDeviceInfo(HostDeviceInfo(
             formFactor: .desktop,
             platform: "macOS",
             model: machineModel(),
@@ -253,7 +254,7 @@ final class AppKitRenderer: @unchecked Sendable {
 
         if let screen = NSScreen.main {
             let scale = screen.backingScaleFactor
-            StateUIHost.setDisplayInfo(HostDisplayInfo(
+            core.setDisplayInfo(HostDisplayInfo(
                 width: screen.frame.width * scale,
                 height: screen.frame.height * scale,
                 density: scale,
@@ -262,7 +263,7 @@ final class AppKitRenderer: @unchecked Sendable {
                 refreshRate: Double(screen.maximumFramesPerSecond)))
         }
 
-        StateUIHost.setApplicationInfo(HostApplicationInfo(
+        core.setApplicationInfo(HostApplicationInfo(
             name: bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
                 ?? bundle.object(forInfoDictionaryKey: "CFBundleName") as? String
                 ?? process.processName,
@@ -297,7 +298,7 @@ final class AppKitRenderer: @unchecked Sendable {
             return
         }
 
-        _ = StateUIHost.dispatch(handler, payload: payload)
+        _ = core.dispatch(handler, payload: payload)
         pump()
     }
 
@@ -379,7 +380,7 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     func applicationBecameActive() {
-        StateUIHost.setApplicationPhase(.active)
+        core.setApplicationPhase(.active)
         if let activeWindow {
             activeWindow.scene?.report(.activated)
             arrangeOwnedWindows(for: activeWindow.scene)
@@ -390,14 +391,14 @@ final class AppKitRenderer: @unchecked Sendable {
 
     func applicationResignedActive() {
         guard !applicationIsHidden else { return }
-        StateUIHost.setApplicationPhase(.inactive)
+        core.setApplicationPhase(.inactive)
         activeWindow?.scene?.report(.deactivated)
         pump()
     }
 
     func applicationWasHidden() {
         applicationIsHidden = true
-        StateUIHost.setApplicationPhase(.background)
+        core.setApplicationPhase(.background)
 
         for scene in orderedScenes {
             scene.applicationWasHidden()
@@ -408,7 +409,7 @@ final class AppKitRenderer: @unchecked Sendable {
 
     func applicationWasUnhidden() {
         applicationIsHidden = false
-        StateUIHost.setApplicationPhase(.inactive)
+        core.setApplicationPhase(.inactive)
 
         for scene in orderedScenes {
             scene.applicationWasUnhidden()
@@ -418,13 +419,13 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     private func connectPlatformScene(restoring values: [String: HostValue]) {
-        StateUIHost.connectScene(restoring: values)
+        core.connectScene(restoring: values)
         connectedInitialScene = true
     }
 
     @discardableResult
     func report(_ value: HostStateValue, through binding: HostStateBinding) -> Bool {
-        guard StateUIHost.report(value, through: binding) else { return false }
+        guard core.report(value, through: binding) else { return false }
 
         if readerTransactionDepth > 0 { readerTransactionChangedState = true }
 
@@ -444,20 +445,20 @@ final class AppKitRenderer: @unchecked Sendable {
 
     /// Reads a numerical state named directly by a gesture channel.
     func standingGestureValue(state: Int32) -> Double? {
-        StateUIHost.gestureValue(state: state)
+        core.gestureValue(state: state)
     }
 
     @discardableResult
     func takeGestureValue(_ value: Double, state: Int32) -> Bool {
-        guard StateUIHost.moveGestureValue(value, state: state) else { return false }
+        guard core.moveGestureValue(value, state: state) else { return false }
         advanceCycle(now: clock())
         return true
     }
 
     func pump() {
-        _ = StateUIHost.runJobs()
+        _ = core.runJobs()
 
-        for call in StateUIHost.takeActCalls() {
+        for call in core.takeActCalls() {
             switch call.act {
             case .persistValue:
                 savePersistent(call)
@@ -475,20 +476,20 @@ final class AppKitRenderer: @unchecked Sendable {
                 let reason = "the AppKit host does not perform the act '\(call.act.name)'"
 
                 if let completion = call.completion {
-                    StateUIHost.fail(completion, reason: reason)
+                    core.fail(completion, reason: reason)
                 } else {
                     NSLog("StateUI AppKit: %@", reason)
                 }
             }
         }
 
-        if root != nil, StateUIHost.cyclesPending {
+        if root != nil, core.cyclesPending {
             advanceCycle(now: clock())
         }
 
-        guard root == nil || StateUIHost.needsRender else { return }
+        guard root == nil || core.needsRender else { return }
 
-        let rendered = StateUIHost.render(baseline: baseline)
+        let rendered = core.render(baseline: baseline)
 
         applyRoot(rendered.root)
 
@@ -500,7 +501,7 @@ final class AppKitRenderer: @unchecked Sendable {
         let created = root?.takeCreatedHandlers() ?? []
         if !created.isEmpty {
             for handler in created {
-                _ = StateUIHost.dispatch(handler)
+                _ = core.dispatch(handler)
             }
             pump()
             return
@@ -516,7 +517,7 @@ final class AppKitRenderer: @unchecked Sendable {
 
         DispatchQueue.global(qos: .userInteractive).async { [self] in
             while true {
-                _ = StateUIHost.waitForWork()
+                _ = core.waitForWork()
                 DispatchQueue.main.async { [self] in pump() }
             }
         }
@@ -572,7 +573,7 @@ final class AppKitRenderer: @unchecked Sendable {
             if let eventSink {
                 eventSink(event.handler, event.payload)
             } else {
-                _ = StateUIHost.dispatch(event.handler, payload: event.payload)
+                _ = core.dispatch(event.handler, payload: event.payload)
             }
             if let identifier = event.restorationIdentifier { restored.append(identifier) }
             if event.isPhase, eventSink == nil { pump() }
@@ -597,18 +598,18 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     func hydratePersistentState() {
-        guard StateUIHost.persistentStorage == .preferences else {
-            if !StateUIHost.persistentKeys.isEmpty {
+        guard core.persistentStorage == .preferences else {
+            if !core.persistentKeys.isEmpty {
                 NSLog(
                     "StateUI AppKit: no store is registered as %@; kept state uses its declared values",
-                    StateUIHost.persistentStorage.name)
+                    core.persistentStorage.name)
             }
             return
         }
 
         var restored: [String: HostValue] = [:]
 
-        for key in StateUIHost.persistentKeys {
+        for key in core.persistentKeys {
             guard preferences.object(forKey: key.name) != nil else { continue }
 
             switch key.kind {
@@ -623,14 +624,14 @@ final class AppKitRenderer: @unchecked Sendable {
             }
         }
 
-        StateUIHost.restorePersistent(restored)
+        core.restorePersistent(restored)
     }
 
     func savePersistent(_ call: HostActCall) {
-        guard StateUIHost.persistentStorage == .preferences,
+        guard core.persistentStorage == .preferences,
               call.arguments.count >= 2,
               let name = call.arguments[0].name,
-              let key = StateUIHost.persistentKeys.first(where: { $0.name == name })
+              let key = core.persistentKeys.first(where: { $0.name == name })
         else { return }
 
         let value = call.arguments[1]
@@ -745,7 +746,7 @@ final class AppKitRenderer: @unchecked Sendable {
             arrangeOwnedWindows(for: controller.scene)
         }
 
-        StateUIHost.setApplicationPhase(.active)
+        core.setApplicationPhase(.active)
     }
 
     func windowResignedKey(_ controller: AppKitWindowController) {
@@ -758,7 +759,7 @@ final class AppKitRenderer: @unchecked Sendable {
             else { return }
 
             controller.scene?.report(.deactivated)
-            StateUIHost.setApplicationPhase(.inactive)
+            core.setApplicationPhase(.inactive)
             self.pump()
         }
     }
@@ -798,7 +799,7 @@ final class AppKitRenderer: @unchecked Sendable {
                   !self.applicationIsHidden
             else { return }
 
-            StateUIHost.setApplicationPhase(.inactive)
+            core.setApplicationPhase(.inactive)
             self.pump()
         }
     }
@@ -981,7 +982,7 @@ final class AppKitRenderer: @unchecked Sendable {
         frameScrollers(now: now)
         advanceCycle(now: now)
 
-        if eventSink == nil, StateUIHost.needsRender {
+        if eventSink == nil, core.needsRender {
             pump()
         }
     }
@@ -1005,10 +1006,7 @@ final class AppKitRenderer: @unchecked Sendable {
         let reducesMotion = reducesMotion()
         advanceMotions(now: now, reducesMotion: reducesMotion)
 
-        let cycle = StateUIHost.cycle(
-            .display,
-            now: now,
-            reducesMotion: reducesMotion)
+        let cycle = core.cycle(now: now, reducesMotion: reducesMotion)
 
         for change in cycle.changes {
             motion.receive(change, now: now, reducesMotion: reducesMotion)
@@ -1115,7 +1113,7 @@ final class AppKitRenderer: @unchecked Sendable {
             valuesByState[output.state] = carried
 
             if let report = output.report {
-                _ = StateUIHost.report(
+                _ = core.report(
                     output.journey,
                     updating: report,
                     through: output.binding)
@@ -1128,7 +1126,7 @@ final class AppKitRenderer: @unchecked Sendable {
         if impact.contains(.windowShell) { synchronizeWindows() }
 
         for completion in motion.takeCompletions() {
-            _ = StateUIHost.complete(completion.id, succeeded: completion.succeeded)
+            _ = core.complete(completion.id, succeeded: completion.succeeded)
         }
     }
 
@@ -1150,7 +1148,7 @@ final class AppKitRenderer: @unchecked Sendable {
             cycleContinues
                 || motion.isActive
                 || propertyMotion.isActive
-                || StateUIHost.cyclesPending
+                || core.cyclesPending
                 || framedScrollers.anyObject != nil)
     }
 }
@@ -1176,6 +1174,7 @@ final class MountedNode: NSObject {
     private var drawing: AppKitViewDrawing?
 
     private weak var host: AppKitRenderer?
+    private let core = AppKitCoreLink()
     private weak var parent: MountedNode?
     private let mount: UInt64
     private var properties: [Prop: HostValue] = [:]
@@ -1311,7 +1310,7 @@ final class MountedNode: NSObject {
         }
 
         for (property, binding) in driven where binding.mode != .in {
-            drivenValues[property] = StateUIHost.value(for: binding)
+            drivenValues[property] = core.value(for: binding)
         }
 
         if let recycles = patch.recycles { self.recycles = recycles }
@@ -3179,7 +3178,7 @@ final class MountedNode: NSObject {
     /// keystroke behind the reader.
     private func attachedTextValue() -> String? {
         if let binding = driven[.text], binding.mode != .in,
-           case .text(let text)? = drivenValues[.text] ?? StateUIHost.value(for: binding) {
+           case .text(let text)? = drivenValues[.text] ?? core.value(for: binding) {
             return text
         }
 
@@ -3285,7 +3284,7 @@ final class MountedNode: NSObject {
             return properties[property]
         }
 
-        guard let state = drivenValues[property] ?? StateUIHost.value(for: binding) else {
+        guard let state = drivenValues[property] ?? core.value(for: binding) else {
             return properties[property]
         }
 
@@ -3357,7 +3356,7 @@ final class MountedNode: NSObject {
 
     private func placement(_ property: Prop) -> HostPlacementRun? {
         guard let binding = driven[property], binding.kind == .placement,
-              let carried = drivenValues[property] ?? StateUIHost.value(for: binding)
+              let carried = drivenValues[property] ?? core.value(for: binding)
         else { return nil }
 
         return StateUIHost.placements(from: carried)
