@@ -10,12 +10,13 @@ Declared in `lib/StateUI/Sources/Views/SplitView.swift`.
 
 ## SplitView's own members
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisibleChanged` | handler | ✅ |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `isSidebarVisibleChanged` | handler |  | ✅ |  |  |  |  |  |  |
 
 Realization:
 
+- **MAUI**: `FlyoutPage`
 - **AppKit**: `NSSplitViewController`
 - **UIKit**: `UISplitViewController`
 - **GTK 4**: `GtkPaned`; libadwaita `AdwOverlaySplitView`
@@ -27,15 +28,15 @@ Realization:
 
 Anything carrying property values, whether or not it is drawn - a control, a `Style`, a `TextSpan`.
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property |  |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property |  |  |  |  |  |  |  |  |
 
 ## From [PageElement](tiers/PageElement.md)
 
 The identity shown for a constructed container page.
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property |  |  |  |  |  |  |  |
-| `title` | property |  |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `icon` | property |  |  |  |  |  |  |  |  |
+| `title` | property |  |  |  |  |  |  |  |  |

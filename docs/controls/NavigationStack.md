@@ -10,13 +10,14 @@ Declared in `lib/StateUI/Sources/Views/NavigationStack.swift`.
 
 ## NavigationStack's own members
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barForegroundColor` | property | ✅ |  |  |  |  |  |  |
-| `popped` | handler | ✅ |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `barForegroundColor` | property |  | ✅ |  |  |  |  |  |  |
+| `popped` | handler |  | ✅ |  |  |  |  |  |  |
 
 Realization:
 
+- **MAUI**: `NavigationPage`
 - **AppKit**: custom `NSView` stack; title, back and actions in the window's `NSToolbar`
 - **UIKit**: `UINavigationController`
 - **GTK 4**: `GtkStack` + `GtkHeaderBar`; libadwaita `AdwNavigationView`
@@ -28,23 +29,23 @@ Realization:
 
 Anything carrying property values, whether or not it is drawn - a control, a `Style`, a `TextSpan`.
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property |  |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property |  |  |  |  |  |  |  |  |
 
 ## From [BarElement](tiers/BarElement.md)
 
 The bar over a stack or a set of tabs.
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property | ✅ |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `barBackgroundColor` | property |  | ✅ |  |  |  |  |  |  |
 
 ## From [PageElement](tiers/PageElement.md)
 
 The identity shown for a constructed container page.
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property |  |  |  |  |  |  |  |
-| `title` | property |  |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `icon` | property |  |  |  |  |  |  |  |  |
+| `title` | property |  |  |  |  |  |  |  |  |

@@ -10,23 +10,24 @@ Declared in `lib/StateUI/Sources/Views/Application.swift` and `lib/StateUI/Sourc
 
 ## Page's own members
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `appearing` | handler | ✅ |  |  |  |  |  |  |
-| `backButtonTitle` | property | ✅ |  |  |  |  |  |  |
-| `background` | property | ✅ |  |  |  |  |  |  |
-| `disappearing` | handler | ✅ |  |  |  |  |  |  |
-| `hasBackButton` | property | ✅ |  |  |  |  |  |  |
-| `hasNavigationBar` | property | ✅ |  |  |  |  |  |  |
-| `icon` | property | ✅ |  |  |  |  |  |  |
-| `navigatedFrom` | handler | ✅ |  |  |  |  |  |  |
-| `navigatedTo` | handler | ✅ |  |  |  |  |  |  |
-| `navigatingFrom` | handler | ✅ |  |  |  |  |  |  |
-| `padding` | property | ✅ |  |  |  |  |  |  |
-| `title` | property | ✅ |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `appearing` | handler |  | ✅ |  |  |  |  |  |  |
+| `backButtonTitle` | property |  | ✅ |  |  |  |  |  |  |
+| `background` | property |  | ✅ |  |  |  |  |  |  |
+| `disappearing` | handler |  | ✅ |  |  |  |  |  |  |
+| `hasBackButton` | property |  | ✅ |  |  |  |  |  |  |
+| `hasNavigationBar` | property |  | ✅ |  |  |  |  |  |  |
+| `icon` | property |  | ✅ |  |  |  |  |  |  |
+| `navigatedFrom` | handler |  | ✅ |  |  |  |  |  |  |
+| `navigatedTo` | handler |  | ✅ |  |  |  |  |  |  |
+| `navigatingFrom` | handler |  | ✅ |  |  |  |  |  |  |
+| `padding` | property |  | ✅ |  |  |  |  |  |  |
+| `title` | property |  | ✅ |  |  |  |  |  |  |
 
 Realization:
 
+- **MAUI**: `ContentPage`
 - **AppKit**: custom `NSView`
 - **UIKit**: `UIViewController`
 - **GTK 4**: custom `GtkWidget`

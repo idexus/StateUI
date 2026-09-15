@@ -10,17 +10,18 @@ Declared in `lib/StateUI/Sources/Views/Scene.swift` and `lib/StateUI/Sources/Cor
 
 ## Scene's own members
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | handler | ✅ |  |  |  |  |  |  |
-| `deactivated` | handler | ✅ |  |  |  |  |  |  |
-| `destroying` | handler | ✅ |  |  |  |  |  |  |
-| `stopped` | handler | ✅ |  |  |  |  |  |  |
-| `windowClosed` | handler | ✅ |  |  |  |  |  |  |
-| `windowRestored` | handler | ✅ |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `activated` | handler |  | ✅ |  |  |  |  |  |  |
+| `deactivated` | handler |  | ✅ |  |  |  |  |  |  |
+| `destroying` | handler |  | ✅ |  |  |  |  |  |  |
+| `stopped` | handler |  | ✅ |  |  |  |  |  |  |
+| `windowClosed` | handler |  | ✅ |  |  |  |  |  |  |
+| `windowRestored` | handler |  | ✅ |  |  |  |  |  |  |
 
 Realization:
 
+- **MAUI**: `Application` / structure
 - **AppKit**: `NSApplication` / structure
 - **UIKit**: `UIApplication` / `UIWindowScene`
 - **GTK 4**: `GtkApplication` / structure

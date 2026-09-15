@@ -26,7 +26,7 @@ final class ControlDictionaryTests: XCTestCase {
     }
 
     private static let folder = Fixtures.repository.appendingPathComponent("docs/controls")
-    private static let platforms = ["AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
+    private static let platforms = ["MAUI", "AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
 
     private func read(_ path: String) throws -> String {
         try String(contentsOf: Self.folder.appendingPathComponent(path), encoding: .utf8)

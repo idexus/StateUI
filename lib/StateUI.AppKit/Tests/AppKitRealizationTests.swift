@@ -56,20 +56,27 @@ final class AppKitRealizationTests: XCTestCase {
         line.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespaces) }
     }
 
-    /// Every row of every entry, with the tier its section comes from.
+    /// Every row of every entry, with the tier its section comes from. The
+    /// AppKit mark and the note are found by the table's header, whichever
+    /// hosts' columns stand beside them.
     private func rows() throws -> [Row] {
         var result: [Row] = []
         for entry in try entries() {
             var tier: String?
+            var appKit: Int?
+            var note: Int?
             for line in try read("\(entry).md").components(separatedBy: "\n") {
                 if line.hasPrefix("## From [") {
                     tier = String(line.dropFirst("## From [".count).prefix { $0 != "]" })
                 } else if line.hasPrefix("## ") {
                     tier = nil
-                } else if line.hasPrefix("| `") {
-                    // "", member, kind, AppKit, UIKit, GTK 4, Android Views, WinUI 3, Web, note, ""
+                } else if line.hasPrefix("| Member |") {
+                    let header = cells(line)
+                    appKit = header.firstIndex(of: "AppKit")
+                    note = header.firstIndex(of: "Notes")
+                } else if line.hasPrefix("| `"), let appKit, let note {
                     let row = cells(line)
-                    result.append(Row(entry: entry, tier: tier, member: token(row[1]), mark: row[3], note: row[9]))
+                    result.append(Row(entry: entry, tier: tier, member: token(row[1]), mark: row[appKit], note: row[note]))
                 }
             }
         }

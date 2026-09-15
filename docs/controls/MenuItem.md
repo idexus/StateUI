@@ -14,6 +14,7 @@ MenuItem declares no members of its own; everything it takes comes from the sect
 
 Realization:
 
+- **MAUI**: `MenuFlyout` / `MenuBarItem`
 - **AppKit**: `NSMenu` / `NSMenuItem`
 - **UIKit**: `UIMenu` / `UIAction`
 - **GTK 4**: `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar`
@@ -25,18 +26,18 @@ Realization:
 
 Anything carrying property values, whether or not it is drawn - a control, a `Style`, a `TextSpan`.
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property |  |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property |  |  |  |  |  |  |  |  |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
 What a toolbar item, a menu entry and a swipe action all share: `text`, `icon`, `isDestructive`, `isEnabled` - and `onClicked`, what choosing one does.
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | handler | ✅ |  |  |  |  |  |  |
-| `icon` | property | ✅ |  |  |  |  |  |  |
-| `isDestructive` | property | ✅ |  |  |  |  |  |  |
-| `isEnabled` | property | ✅ |  |  |  |  |  |  |
-| `text` | property | ✅ |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `onClicked` (`clicked`) | handler |  | ✅ |  |  |  |  |  |  |
+| `icon` | property |  | ✅ |  |  |  |  |  |  |
+| `isDestructive` | property |  | ✅ |  |  |  |  |  |  |
+| `isEnabled` | property |  | ✅ |  |  |  |  |  |  |
+| `text` | property |  | ✅ |  |  |  |  |  |  |

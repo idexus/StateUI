@@ -10,12 +10,13 @@ Declared in `lib/StateUI/Sources/Views/MenuBar.swift`.
 
 ## Menu's own members
 
-| Member | Kind | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isEnabled` | property |  |  |  |  |  |  |  |
+| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `isEnabled` | property |  |  |  |  |  |  |  |  |
 
 Realization:
 
+- **MAUI**: `MenuFlyout` / `MenuBarItem`
 - **AppKit**: `NSMenu` / `NSMenuItem`
 - **UIKit**: `UIMenu` / `UIAction`
 - **GTK 4**: `GMenu` in `GtkPopoverMenu` / `GtkPopoverMenuBar`

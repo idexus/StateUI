@@ -10,60 +10,60 @@ A host's column is what that host declares it realizes - AppKit's is `AppKitReal
 
 ## Controls
 
-| Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
-| --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Label](Label.md) | 78 | 34 ✅ · 2 ✅* |  |  |  |  |  |
-| [Button](Button.md) | 83 | 32 ✅ · 2 ✅* |  |  |  |  |  |
-| [TextField](TextField.md) | 87 | 37 ✅ · 2 ✅* |  |  |  |  |  |
-| [TextEditor](TextEditor.md) | 84 | 36 ✅ · 2 ✅* |  |  |  |  |  |
-| [SearchField](SearchField.md) | 86 | 36 ✅ · 2 ✅* |  |  |  |  |  |
-| [Image](Image.md) | 65 | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [Picker](Picker.md) | 79 | 28 ✅ · 2 ✅* |  |  |  |  |  |
-| [DatePicker](DatePicker.md) | 77 | 24 ✅ · 2 ✅* |  |  |  |  |  |
-| [TimePicker](TimePicker.md) | 75 | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [Switch](Switch.md) | 66 | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [CheckBox](CheckBox.md) | 66 | 23 ✅ · 2 ✅* |  |  |  |  |  |
-| [RadioButton](RadioButton.md) | 78 | 24 ✅ · 2 ✅* |  |  |  |  |  |
-| [Slider](Slider.md) | 70 | 27 ✅ · 2 ✅* |  |  |  |  |  |
-| [Stepper](Stepper.md) | 68 | 25 ✅ · 2 ✅* |  |  |  |  |  |
-| [ActivityIndicator](ActivityIndicator.md) | 65 | 21 ✅ · 2 ✅* |  |  |  |  |  |
-| [ProgressBar](ProgressBar.md) | 65 | 21 ✅ · 2 ✅* |  |  |  |  |  |
-| [ColorBox](ColorBox.md) | 65 | 22 ✅ · 1 ✅* |  |  |  |  |  |
-| [Border](Border.md) | 72 | 21 ✅ · 1 ✅* |  |  |  |  |  |
-| [PositionIndicator](PositionIndicator.md) | 71 |  |  |  |  |  |  |
-| [VStack](VStack.md) | 68 | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [HStack](HStack.md) | 68 | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [Grid](Grid.md) | 71 | 20 ✅ · 2 ✅* |  |  |  |  |  |
-| [AbsoluteLayout](AbsoluteLayout.md) | 67 | 20 ✅ · 2 ✅* |  |  |  |  |  |
-| [ScrollView](ScrollView.md) | 68 | 24 ✅ · 2 ✅* |  |  |  |  |  |
-| [RefreshView](RefreshView.md) | 67 |  |  |  |  |  |  |
-| [SwipeView](SwipeView.md) | 68 |  |  |  |  |  |  |
-| [Map](Map.md) | 75 |  |  |  |  |  |  |
-| [WebView](WebView.md) | 70 |  |  |  |  |  |  |
-| [TitleBar](TitleBar.md) | 66 | 23 ✅ · 2 ✅* |  |  |  |  |  |
-| [Canvas](Canvas.md) | 64 | 21 ✅ · 2 ✅* |  |  |  |  |  |
-| [Rectangle](Rectangle.md) | 74 | 20 ✅ · 2 ✅* |  |  |  |  |  |
-| [Ellipse](Ellipse.md) | 73 | 20 ✅ · 2 ✅* |  |  |  |  |  |
-| [Line](Line.md) | 77 | 24 ✅ · 2 ✅* |  |  |  |  |  |
-| [Path](Path.md) | 74 | 21 ✅ · 2 ✅* |  |  |  |  |  |
-| [Polygon](Polygon.md) | 75 | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [Polyline](Polyline.md) | 75 | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| Control | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
+| --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| [Label](Label.md) | 78 |  | 34 ✅ · 2 ✅* |  |  |  |  |  |
+| [Button](Button.md) | 83 |  | 32 ✅ · 2 ✅* |  |  |  |  |  |
+| [TextField](TextField.md) | 87 |  | 37 ✅ · 2 ✅* |  |  |  |  |  |
+| [TextEditor](TextEditor.md) | 84 |  | 36 ✅ · 2 ✅* |  |  |  |  |  |
+| [SearchField](SearchField.md) | 86 |  | 36 ✅ · 2 ✅* |  |  |  |  |  |
+| [Image](Image.md) | 65 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [Picker](Picker.md) | 79 |  | 28 ✅ · 2 ✅* |  |  |  |  |  |
+| [DatePicker](DatePicker.md) | 77 |  | 24 ✅ · 2 ✅* |  |  |  |  |  |
+| [TimePicker](TimePicker.md) | 75 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [Switch](Switch.md) | 66 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [CheckBox](CheckBox.md) | 66 |  | 23 ✅ · 2 ✅* |  |  |  |  |  |
+| [RadioButton](RadioButton.md) | 78 |  | 24 ✅ · 2 ✅* |  |  |  |  |  |
+| [Slider](Slider.md) | 70 |  | 27 ✅ · 2 ✅* |  |  |  |  |  |
+| [Stepper](Stepper.md) | 68 |  | 25 ✅ · 2 ✅* |  |  |  |  |  |
+| [ActivityIndicator](ActivityIndicator.md) | 65 |  | 21 ✅ · 2 ✅* |  |  |  |  |  |
+| [ProgressBar](ProgressBar.md) | 65 |  | 21 ✅ · 2 ✅* |  |  |  |  |  |
+| [ColorBox](ColorBox.md) | 65 |  | 22 ✅ · 1 ✅* |  |  |  |  |  |
+| [Border](Border.md) | 72 |  | 21 ✅ · 1 ✅* |  |  |  |  |  |
+| [PositionIndicator](PositionIndicator.md) | 71 |  |  |  |  |  |  |  |
+| [VStack](VStack.md) | 68 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [HStack](HStack.md) | 68 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [Grid](Grid.md) | 71 |  | 20 ✅ · 2 ✅* |  |  |  |  |  |
+| [AbsoluteLayout](AbsoluteLayout.md) | 67 |  | 20 ✅ · 2 ✅* |  |  |  |  |  |
+| [ScrollView](ScrollView.md) | 68 |  | 24 ✅ · 2 ✅* |  |  |  |  |  |
+| [RefreshView](RefreshView.md) | 67 |  |  |  |  |  |  |  |
+| [SwipeView](SwipeView.md) | 68 |  |  |  |  |  |  |  |
+| [Map](Map.md) | 75 |  |  |  |  |  |  |  |
+| [WebView](WebView.md) | 70 |  |  |  |  |  |  |  |
+| [TitleBar](TitleBar.md) | 66 |  | 23 ✅ · 2 ✅* |  |  |  |  |  |
+| [Canvas](Canvas.md) | 64 |  | 21 ✅ · 2 ✅* |  |  |  |  |  |
+| [Rectangle](Rectangle.md) | 74 |  | 20 ✅ · 2 ✅* |  |  |  |  |  |
+| [Ellipse](Ellipse.md) | 73 |  | 20 ✅ · 2 ✅* |  |  |  |  |  |
+| [Line](Line.md) | 77 |  | 24 ✅ · 2 ✅* |  |  |  |  |  |
+| [Path](Path.md) | 74 |  | 21 ✅ · 2 ✅* |  |  |  |  |  |
+| [Polygon](Polygon.md) | 75 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [Polyline](Polyline.md) | 75 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
 
 ## Application structure
 
 The scene, the window and the page an application is made of, the arrangements a page can be, and the entries of a page's toolbar and menus.
 
-| Part | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
-| --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Scene](Scene.md) | 6 | 6 ✅ |  |  |  |  |  |
-| [Window](Window.md) | 22 | 22 ✅ |  |  |  |  |  |
-| [Page](Page.md) | 12 | 12 ✅ |  |  |  |  |  |
-| [NavigationStack](NavigationStack.md) | 6 | 3 ✅ |  |  |  |  |  |
-| [TabbedView](TabbedView.md) | 6 | 3 ✅ |  |  |  |  |  |
-| [SplitView](SplitView.md) | 4 | 1 ✅ |  |  |  |  |  |
-| [ToolbarItem](ToolbarItem.md) | 8 | 7 ✅ |  |  |  |  |  |
-| [Menu](Menu.md) | 1 |  |  |  |  |  |  |
-| [MenuItem](MenuItem.md) | 6 | 5 ✅ |  |  |  |  |  |
+| Part | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
+| --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| [Scene](Scene.md) | 6 |  | 6 ✅ |  |  |  |  |  |
+| [Window](Window.md) | 22 |  | 22 ✅ |  |  |  |  |  |
+| [Page](Page.md) | 12 |  | 12 ✅ |  |  |  |  |  |
+| [NavigationStack](NavigationStack.md) | 6 |  | 3 ✅ |  |  |  |  |  |
+| [TabbedView](TabbedView.md) | 6 |  | 3 ✅ |  |  |  |  |  |
+| [SplitView](SplitView.md) | 4 |  | 1 ✅ |  |  |  |  |  |
+| [ToolbarItem](ToolbarItem.md) | 8 |  | 7 ✅ |  |  |  |  |  |
+| [Menu](Menu.md) | 1 |  |  |  |  |  |  |  |
+| [MenuItem](MenuItem.md) | 6 |  | 5 ✅ |  |  |  |  |  |
 
 ## Tiers
 

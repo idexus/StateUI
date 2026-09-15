@@ -29,7 +29,9 @@ OUT = os.path.join(DOCS, "controls")
 CONTRACT = os.path.join(DOCS, "platform-contract.md")
 APPKIT_REALIZATION = os.path.join(ROOT, "lib/StateUI.AppKit/Sources/AppKitRealization.swift")
 
-PLATFORMS = ["AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
+PLATFORMS = ["MAUI", "AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
+# The column written from AppKitRealization; every other column is kept as written.
+APPKIT = PLATFORMS.index("AppKit")
 CONTROLS = [
     "Label", "Button", "TextField", "TextEditor", "SearchField", "Image", "Picker", "DatePicker",
     "TimePicker", "Switch", "CheckBox", "RadioButton", "Slider", "Stepper", "ActivityIndicator",
@@ -214,35 +216,53 @@ def appkit_realization():
     return records, set(re.findall(r'"(\w+)"', block.group(1))) if block else set()
 
 
+def columns(line):
+    """A table row's cells, without its outer pipes."""
+    return [c.strip() for c in line.strip().strip("|").split("|")]
+
+
 def native_mapping():
+    """{surface: {platform: native class}}, read from the contract's mapping table by its header."""
     text = open(CONTRACT, encoding="utf-8").read().split("\n")
     start = next(i for i, l in enumerate(text) if l.startswith("## Native control mapping"))
-    mapping = {}
-    for line in text[start:]:
-        if line.startswith("## ") and not line.startswith("## Native control mapping"):
+    mapping, header = {}, None
+    for line in text[start + 1:]:
+        if line.startswith("## "):
             break
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) == 7 and cells[0].startswith("`"):
+        if not line.startswith("|"):
+            continue
+        cells = columns(line)
+        if header is None:
+            header = cells
+        elif cells[0].startswith("`"):
+            named = dict(zip(header[1:], cells[1:]))
             for name in re.findall(r"`(\w+)`", cells[0]):
-                mapping[name] = dict(zip(PLATFORMS, cells[1:]))
+                mapping[name] = {p: named.get(p, "") for p in PLATFORMS}
     return mapping
 
 
 def existing(path):
-    """Rows and realization lines already written, keyed so a regeneration keeps them."""
+    """Rows and realization lines already written, keyed so a regeneration keeps them.
+
+    A row's marks are read by its table's header, so a host's column added beside
+    the others keeps every mark already written, and reads as empty where a file
+    does not have it yet."""
     rows, realizations = {}, {}
     if not os.path.exists(path):
         return rows, realizations
-    section = None
+    section, header = None, []
     for line in open(path, encoding="utf-8").read().split("\n"):
         if line.startswith("## "):
             section = line
             continue
-        m = re.match(r"\| `(\w+)`(?: \(`(\w+)`\))? \| (\w+) \|(.*)\|\s*$", line)
-        if m:
+        if line.startswith("| Member |"):
+            header = columns(line)
+            continue
+        m = re.match(r"\| `(\w+)`(?: \(`(\w+)`\))? \| (\w+) \|", line)
+        if m and header:
             key = m.group(2) or m.group(1)
-            cells = [c.strip() for c in m.group(4).split("|")]
-            rows[key] = (cells[:len(PLATFORMS)], cells[len(PLATFORMS)] if len(cells) > len(PLATFORMS) else "")
+            named = dict(zip(header, columns(line)))
+            rows[key] = ([named.get(p, "") for p in PLATFORMS], named.get("Notes", ""))
         elif line.startswith("- **") and section:
             realizations.setdefault(section, []).append(line)
     return rows, realizations
@@ -286,7 +306,7 @@ def write():
             lines = [HEADER]
             for token in sorted(props | set(handlers)):
                 marks = (kept.get(token, ([], ""))[0] + [""] * len(PLATFORMS))[:len(PLATFORMS)]
-                marks[0], note = appkit(c, tier, token)
+                marks[APPKIT], note = appkit(c, tier, token)
                 total += 1
                 for k, p in enumerate(PLATFORMS):
                     if marks[k] == "✅":
@@ -309,9 +329,15 @@ def write():
             body += table(info["own"]["props"], info["own"]["handlers"], None)
         else:
             body += [f"{c} declares no members of its own; everything it takes comes from the sections below."]
-        realized = kept_realizations.get(own_heading) or [
-            f"- **{p}**: {native[c][p]}" if c in native and native[c][p] not in ("", "—")
-            else f"- **{p}**: no native counterpart is named yet." for p in PLATFORMS]
+        def realization(p):
+            return (f"- **{p}**: {native[c][p]}" if c in native and native[c][p] not in ("", "—")
+                    else f"- **{p}**: no native counterpart is named yet.")
+
+        realized = kept_realizations.get(own_heading) or [realization(p) for p in PLATFORMS]
+        # A host's line reaches a file written before the host had a column, in the host's place.
+        for k, p in enumerate(PLATFORMS):
+            if not any(line.startswith(f"- **{p}**:") for line in realized):
+                realized.insert(k, realization(p))
         body += ["", "Realization:", ""] + realized + [""]
         for t in info["tiers"]:
             heading = f"## From [{t}](tiers/{t}.md)"
