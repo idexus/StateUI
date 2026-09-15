@@ -1,8 +1,11 @@
+[![Tests](https://github.com/idexus/StateUI/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/tests.yml?query=branch%3Amain)
+[![iOS / Mac Catalyst](https://github.com/idexus/StateUI/actions/workflows/build-apple.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-apple.yml?query=branch%3Amain)
+[![Android](https://github.com/idexus/StateUI/actions/workflows/build-android.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-android.yml?query=branch%3Amain)
+[![Windows](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml?query=branch%3Amain)
+[![Linux](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml?query=branch%3Amain)
 # StateUI
 
-**Native interfaces, written in Swift.**
-
-[![Tests](https://github.com/idexus/StateUI/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/tests.yml?query=branch%3Amain)
+> **Native interfaces, written in Swift.**
 
 StateUI describes an application's interface in Swift. Swift owns the UI tree,
 identity, state, diffing, and motion; a thin host applies sparse patches to
@@ -12,6 +15,12 @@ Two hosts are active: AppKit, and .NET MAUI, which already runs StateUI
 applications on Android, iOS, Mac Catalyst, Windows, and Linux. UIKit, Android
 Views, WinUI 3, and GTK 4 follow the same host contract. Web DOM/CSS comes after
 the native contract is settled.
+
+| MAUI - Catalyst, iOS, Android, Windows, Linux | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| ✅ | ✅* | — | — | — | — | — |
+
+## In Code
 
 ```swift
 struct CounterPage: ContentView {
@@ -101,14 +110,11 @@ Every workflow runs on pushes and pull requests to `main` and `dev`.
 
 ### MAUI
 
-[![iOS / Mac Catalyst](https://github.com/idexus/StateUI/actions/workflows/build-apple.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-apple.yml?query=branch%3Amain)
-[![Android](https://github.com/idexus/StateUI/actions/workflows/build-android.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-android.yml?query=branch%3Amain)
-[![Windows](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-windows.yml?query=branch%3Amain)
-[![Linux](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml?query=branch%3Amain)
-
 `Tests` also runs the MAUI host's C# suite on Ubuntu. The four platform
 workflows build the Gallery's MAUI head, and the Windows and Linux workflows
 also run the StateUI and C# suites on those hosts.
+
+## License
 
 StateUI is licensed under the Apache License 2.0. See [LICENSE](LICENSE) and
 [NOTICE](NOTICE). Use of the StateUI name and mark is described in
