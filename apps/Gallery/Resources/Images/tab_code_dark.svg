@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- The dark twin of tab_code.svg: the same shape, drawn white. Edit both. -->
+  <!-- Angle brackets around a slash: the tab of a sample that shows its code. -->
+  <g fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 14 5 24l10 10"/>
+    <path d="M33 14l10 10-10 10"/>
+    <path d="M27 10 21 38"/>
+  </g>
+</svg>

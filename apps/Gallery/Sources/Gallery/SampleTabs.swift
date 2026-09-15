@@ -26,6 +26,16 @@ extension Sample {
             return "In Code"
         }
     }
+
+    /// What stands beside a tab's caption: an example working, or code.
+    func icon(of tab: SampleTab) -> ImageSource {
+        switch tab {
+        case .example:
+            return ImageSource(light: "tab_example.png", dark: "tab_example_dark.png")
+        case .code:
+            return ImageSource(light: "tab_code.png", dark: "tab_code_dark.png")
+        }
+    }
 }
 
 /// One tab of a sample whose examples hold the page still: the line saying
@@ -63,11 +73,15 @@ struct SampleTabPage: ContentView {
                 .verticalAlignment(.start)
                 .horizontalAlignment(.start)
         }
-        // Dressed as every page of the gallery is, and named for its tab: the
-        // tab's caption, and the window's title while the tab is chosen. What
-        // a sample adds to the bar it writes from its own `.onCreated`, which
-        // runs after this one, being further in.
-        .onCreated { page.gallery(sample.caption(of: tab), scene: scene, nav: nav) }
+        // Dressed as every page of the gallery is, and named and pictured for
+        // its tab: the tab's caption and icon, the caption the window's title
+        // while the tab is chosen. What a sample adds to the bar it writes
+        // from its own `.onCreated`, which runs after this one, being further
+        // in.
+        .onCreated {
+            page.gallery(sample.caption(of: tab), scene: scene, nav: nav)
+            page.icon = sample.icon(of: tab)
+        }
     }
 
     /// The line under the title over what the tab shows, in one cell that

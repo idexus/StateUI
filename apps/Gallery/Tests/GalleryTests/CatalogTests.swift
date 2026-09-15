@@ -984,16 +984,20 @@ final class CatalogTests: XCTestCase {
     }
 
     /// A sample whose examples hold the page still is shown as tabs - the
-    /// window's own - one per example, then the code. A sample that scrolls
-    /// is one page.
+    /// window's own - one per example, then the code, each named and pictured.
+    /// A sample that scrolls is one page.
     func testAHeldSampleIsShownAsTabs() throws {
         let held = try XCTUnwrap(catalog().groups.first { $0.route == "gestures" }?.samples.first)
         let scrolling = try XCTUnwrap(catalog().groups.flatMap(\.samples).first { $0.scrolls })
 
-        XCTAssertTrue(SamplePage.shown(held, nav: Place().nav) is TabbedView)
-        XCTAssertTrue(SamplePage.shown(scrolling, nav: Place().nav) is SamplePage)
+        XCTAssertTrue(SamplePage.shown(held, nav: Place().nav, bar: AppColors.violet) is TabbedView)
+        XCTAssertTrue(SamplePage.shown(scrolling, nav: Place().nav, bar: AppColors.violet) is SamplePage)
         XCTAssertEqual(held.tabs, [.example(0), .code])
         XCTAssertEqual(held.tabs.map(held.caption(of:)), ["Example", "In Code"])
+        XCTAssertEqual(held.tabs.map(held.icon(of:)), [
+            ImageSource(light: "tab_example.png", dark: "tab_example_dark.png"),
+            ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"),
+        ])
     }
 
     // MARK: - The arrangement built from it

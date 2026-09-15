@@ -196,7 +196,7 @@ struct MainWindow: Window {
                 return MissingPage(id: id, nav: nav, path: path)
             }
 
-            return SamplePage.shown(sample, nav: nav)
+            return SamplePage.shown(sample, nav: nav, bar: barColour)
 
         case .level(let level):
             return LevelPage(level: level, nav: nav, path: path)
@@ -209,8 +209,8 @@ struct MainWindow: Window {
     /// The one section that is not a stack: a `TabbedView` over the author's own
     /// enum, with a stack inside the first tab.
     ///
-    /// Its own flat bar background. The native selector owns the distinction
-    /// between selected and unselected tabs.
+    /// Its own flat bar background, which the native selector's selected and
+    /// unselected tabs read on.
     func tabs() -> any Page {
         TabbedView(nav.tabs) { which in
             switch which {
