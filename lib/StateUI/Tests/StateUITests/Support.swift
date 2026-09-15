@@ -265,9 +265,8 @@ func named<Target>(_ name: String, _ type: Target.Type) -> Aim<Target> {
 ///
 /// `resume()` schedules the rest of a handler rather than continuing it, and the
 /// job it produces arrives a moment later - so a test that reports an act as
-/// finished has to wait for it, exactly as a host keeps draining while
-/// `stateui_resumes_pending` says a resume is owed. Returns as soon as
-/// something ran.
+/// finished waits for it, where a host's doorbell rings as it lands. Returns
+/// as soon as something ran.
 @discardableResult
 func settle(timeout: TimeInterval = 2) async -> Int {
     let deadline = Date().addingTimeInterval(timeout)

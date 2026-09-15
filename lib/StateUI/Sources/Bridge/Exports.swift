@@ -422,9 +422,9 @@ public func stateui_connect_scene(_ bytes: UnsafePointer<UInt8>?, _ length: Int3
 /// Runs whatever a suspended handler has waiting, and returns how many jobs ran.
 ///
 /// This is where a handler comes back to life after an `await`. The host calls it
-/// on its UI thread, after reporting that an act has finished - the
-/// job a resume produces does not exist yet when the report returns, so a host
-/// that gets 0 should ask again on its next turn.
+/// on its UI thread at the start of every turn: the job a resume produces
+/// lands a moment after the resume is reported, and its landing wakes the
+/// host's doorbell (`stateui_wait_work`), whose turn runs it.
 ///
 /// Anything the handler does - a state write, another act - happens inside this
 /// call, so the host renders and drains the act queue afterwards exactly as
@@ -439,21 +439,9 @@ public func stateui_run_jobs() -> Int32 {
     Int32(stateUIRunJobs())
 }
 
-/// How many handlers have been told their act is over and have not come back yet.
-///
-/// The host reports an outcome, gets 0 from `stateui_run_jobs` because the
-/// resumed job does not exist yet, and needs to know whether to ask again. Above
-/// zero it is still owed work; at zero there is nothing to wait for. That turns a
-/// retry limit into a condition, which is the difference between a host that
-/// gives up too early under load and one that does not.
-@_cdecl("stateui_resumes_pending")
-public func stateui_resumes_pending() -> Int32 {
-    Int32(Renderer.shared.resumesPending)
-}
-
 /// Parks the calling thread until work lands, and returns how much is waiting
 /// - jobs in the queue, PLUS acts not yet taken, PLUS one for a tree a
-/// write from the pool left dirty - which can be 0, when another drain got
+/// write from the pool left dirty - which can be 0, when another turn got
 /// there first.
 ///
 /// This is how a job NO act produced still runs promptly: a `Task.sleep`
@@ -464,14 +452,14 @@ public func stateui_resumes_pending() -> Int32 {
 /// says it exists. The host gives this library a thread - one it CREATED, so
 /// its runtime has always known it, which is the whole of the attach trap in
 /// Core/MainThread.swift - and that thread spends its life parked here. When
-/// it returns, the host posts one drain onto its UI thread and calls back in.
+/// it returns, the host posts one turn onto its UI thread and calls back in.
 ///
 /// Nothing is ever run on this thread; it is a doorbell, not a worker.
 @_cdecl("stateui_wait_work")
 public func stateui_wait_work() -> Int32 {
     // A DIRTY TREE is work too. A write made inside something the host is
     // already driving - an event, a completed act, a handler running on
-    // `@MainThread` - is rendered by the drain that follows. A write a
+    // `@MainThread` - is rendered by the turn that follows. A write a
     // `Task.detached` or an `async let` child makes from the cooperative pool
     // queues NOTHING: no job, no act, only the dirty flag and the wake
     // `stateChanged` makes - so without the dirty tree in this count the wake
@@ -479,19 +467,6 @@ public func stateui_wait_work() -> Int32 {
     Int32(MainThreadExecutor.shared.waitForWork()
         + Renderer.shared.actCallsPending
         + (Renderer.shared.needsRender ? 1 : 0))
-}
-
-/// How many jobs are sitting in the queue, waiting for stateui_run_jobs.
-///
-/// The other half of what `stateui_resumes_pending` says. A handler suspended
-/// on its own child tasks - `async let` - resumes through a job that no
-/// completion accounting can see, since what it awaited was never a host
-/// act. Above zero there is work to run RIGHT NOW; the pending count says
-/// work is still coming. A host that polls only the second gives up exactly one
-/// job too early, which reads as an animation loop frozen mid-beat.
-@_cdecl("stateui_jobs_pending")
-public func stateui_jobs_pending() -> Int32 {
-    Int32(MainThreadExecutor.shared.pendingCount)
 }
 
 /// Tells this library what the host knows - one standard provider's values

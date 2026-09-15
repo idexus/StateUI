@@ -328,11 +328,11 @@ final class ActCallTests: XCTestCase {
         }
     }
 
-    // MARK: - What the host asks again on
+    // MARK: - What a resume owes
 
-    /// The host reports an outcome and then has to decide whether to keep
-    /// looking for the work that continues the handler. This is what it decides
-    /// on, through `stateui_resumes_pending`.
+    /// A resume is owed from the moment its outcome is reported until the
+    /// handler runs again - the job that continues it does not exist yet when
+    /// the report returns, and lands a moment later.
     ///
     /// Read as a difference rather than an absolute: the renderer is shared, so
     /// what this test can honestly say is what its own act did to the count.
@@ -351,11 +351,8 @@ final class ActCallTests: XCTestCase {
 
         XCTAssertEqual(Renderer.shared.resumesPending, owed + 1, """
             Reported, and the job that continues the handler does not exist yet - \
-            `resume()` schedules rather than continues, measured. This is the \
-            window the host asks again in, and this is how it knows to.
+            `resume()` schedules rather than continues, measured.
             """)
-        XCTAssertEqual(Int(stateui_resumes_pending()), owed + 1,
-                       "and that is what the export hands over")
 
         await settle()
 

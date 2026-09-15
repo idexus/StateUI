@@ -16,27 +16,24 @@ namespace StateUI.Maui.Rendering;
 /// An act about a view names it at argument 0 - by the number the differ gave
 /// it, or by the name its author wrote - and the view is found in the
 /// renderer's maps as they stand; one not being shown fails with that reason.
-/// What follows a reply - a pump for what it changed, a drain for the
-/// continuation it resumed - is the session's, handed in.
+/// A reply resumes its handler through the core's queue, where the job it
+/// continues in rings the pump's doorbell as it lands.
 /// </remarks>
 internal sealed class ActPerformer
 {
     private readonly IStateUITarget _target;
     private readonly StateUIRenderer _renderer;
     private readonly UiThread _uiThread;
-    private readonly Action _replied;
 
     /// <summary>A performer for the acts one session's application calls.</summary>
     /// <param name="target">What the session renders into, whose pages a dialog is shown on.</param>
     /// <param name="renderer">Whose maps an act's view is found in.</param>
     /// <param name="uiThread">What checks that a reply crosses on the thread MAUI draws on.</param>
-    /// <param name="replied">What follows a reply: the session's pump and drain.</param>
-    internal ActPerformer(IStateUITarget target, StateUIRenderer renderer, UiThread uiThread, Action replied)
+    internal ActPerformer(IStateUITarget target, StateUIRenderer renderer, UiThread uiThread)
     {
         _target = target;
         _renderer = renderer;
         _uiThread = uiThread;
-        _replied = replied;
     }
 
     /// <summary>
@@ -300,11 +297,6 @@ internal sealed class ActPerformer
                     : WireCodec.WriteFailure(failure);
 
                 Replies(id, reply);
-
-                // What follows is the session's: a pump for what the reply
-                // changed, and a drain for the continuation it resumed,
-                // which is not runnable yet.
-                _replied();
             }
         }
         catch (Exception ex)

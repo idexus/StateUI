@@ -38,6 +38,27 @@ public class PumpTests
         Assert.Equal(cycle, body.LastIndexOf("Cycle();", StringComparison.Ordinal));
     }
 
+    /// <summary>
+    /// A resumed handler comes back through the doorbell alone: the core rings
+    /// it for every job and act that lands, so nothing here looks for a resume
+    /// on a clock, and nothing asks the core how many are owed.
+    /// </summary>
+    [Fact]
+    public void AResumedHandlerComesBackThroughTheDoorbellAlone()
+    {
+        string sources = Beside("Sources");
+        string pump = File.ReadAllText(Path.Combine(sources, "Rendering", "Pump.cs"));
+        string link = File.ReadAllText(Path.Combine(sources, "Interop", "CoreLink.cs"));
+
+        Assert.False(
+            pump.Contains("DispatchDelayed", StringComparison.Ordinal),
+            "the pump looks for a resume on a clock");
+        Assert.False(
+            link.Contains("stateui_resumes_pending", StringComparison.Ordinal)
+                || link.Contains("stateui_jobs_pending", StringComparison.Ordinal),
+            "the core is asked how much it owes");
+    }
+
     /// <summary>The body of the member the signature opens, braces included.</summary>
     /// <param name="source">The file.</param>
     /// <param name="signature">The member's signature, as written.</param>

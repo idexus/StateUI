@@ -206,9 +206,9 @@ public final class Renderer: @unchecked Sendable {
     /// it is not an estimate: while it is above zero there is a handler that has
     /// been told its act is over and has not run a line since.
     ///
-    /// It exists because the job a resume produces does not exist yet when the
-    /// host reports the outcome - measured - so the host has to ask again, and
-    /// this is what tells it whether asking again is still worth anything.
+    /// The job a resume produces does not exist yet when the outcome is
+    /// reported - measured - and lands a moment later, waking the host's
+    /// doorbell; what waits on this count is a test, for a queue gone quiet.
     var resumesPending: Int { guarded.sync { resumes } }
 
     private init() {}

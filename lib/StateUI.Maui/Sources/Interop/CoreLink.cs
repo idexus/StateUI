@@ -338,53 +338,27 @@ internal static partial class CoreLink
     /// <c>Core/MainThread.swift</c>.
     /// </para>
     /// <para>
-    /// The job does not exist yet when the completion is reported, so a caller
-    /// that gets 0 should ask again on its next turn - see
-    /// <see cref="Rendering.Pump.DrainWhenTheResumeArrives"/>.
+    /// The job does not exist yet when the completion is reported: it lands a
+    /// moment later, and its landing rings the doorbell - see
+    /// <see cref="Rendering.Pump.StartDoorbell"/>.
     /// </para>
     /// </remarks>
     [LibraryImport(Lib, EntryPoint = "stateui_run_jobs")]
     internal static partial int RunJobs();
 
     /// <summary>
-    /// How many handlers have been told their act is over and have not come back
-    /// yet. Zero when there is nothing to wait for.
-    /// </summary>
-    /// <remarks>
-    /// What makes <see cref="Rendering.Pump.DrainWhenTheResumeArrives"/> a condition
-    /// rather than a guess: <see cref="RunJobs"/> returning 0 says only that the
-    /// work has not appeared, never whether it is coming.
-    /// </remarks>
-    [LibraryImport(Lib, EntryPoint = "stateui_resumes_pending")]
-    internal static partial int ResumesPending();
-
-    /// <summary>
-    /// How many jobs are sitting in Swift's queue right now, waiting for
-    /// <see cref="RunJobs"/>.
-    /// </summary>
-    /// <remarks>
-    /// The half <see cref="ResumesPending"/> cannot see: a handler suspended on
-    /// its own child tasks - <c>async let</c> - resumes through a job no
-    /// completion accounting covers, because what it awaited was never a host
-    /// act. Polling only the resume count gave up exactly one job too
-    /// early, which read as an animation loop frozen mid-beat.
-    /// </remarks>
-    [LibraryImport(Lib, EntryPoint = "stateui_jobs_pending")]
-    internal static partial int JobsPending();
-
-    /// <summary>
     /// Parks the calling thread inside Swift until work lands, and returns how
     /// much is waiting - jobs in its queue, plus acts not yet taken, plus
     /// one for a tree a write from the pool left dirty - possibly 0, when
-    /// another drain got there first.
+    /// another turn got there first.
     /// </summary>
     /// <remarks>
-    /// BLOCKS, by design - call it only from the thread the session dedicates
+    /// BLOCKS, by design - call it only from the thread the pump dedicates
     /// to it. That thread is created by .NET, which is the whole point: Mono
     /// deadlocks when native code enters managed from a thread it has never
     /// seen, so instead of Swift calling out, the host sends a thread IN to
-    /// wait. It is what lets a <c>Task.sleep</c> or an author's own task resume
-    /// promptly with no act in flight - see
+    /// wait. It is how every resumed handler comes back - after an act's reply,
+    /// a journey's answer, a <c>Task.sleep</c>, an author's own task - see
     /// <see cref="Rendering.Pump.StartDoorbell"/>.
     /// </remarks>
     [LibraryImport(Lib, EntryPoint = "stateui_wait_work")]

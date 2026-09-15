@@ -241,9 +241,9 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// The half of the queue's state `resumesPending` cannot see: a handler
     /// suspended on `async let` children resumes through a job that no
     /// completion accounting covers, because what it awaited was its own child
-    /// tasks rather than a host act. The host polls this beside
-    /// `stateui_resumes_pending`, so a job that lands after the counters read
-    /// zero is still collected.
+    /// tasks rather than a host act. What waits on it is a test, beside
+    /// `resumesPending`, for a queue gone quiet: a host is woken by each job
+    /// as it lands.
     var pendingCount: Int {
         guarded.sync { pending.count }
     }
@@ -251,8 +251,8 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
 
 /// Runs whatever the Swift side has waiting, on the caller's thread.
 ///
-/// The host calls this after reporting that an act has finished, because that is
-/// when a suspended handler has something to come back to. It is safe to call at
+/// The host calls this at the start of every turn - the one its doorbell posts
+/// when a job lands, and the one after an event. It is safe to call at
 /// any time and returns 0 when there is nothing to do.
 ///
 /// Available to a test standing in for a host, which is the only other caller.

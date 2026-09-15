@@ -93,9 +93,8 @@ internal sealed class StateUISession
     private readonly PatchIntake _intake = new();
 
     /// <summary>
-    /// Brings the core's work onto the thread MAUI draws on - the doorbell, the
-    /// drain after a resume, and each turn of jobs, a pending cycle, the render
-    /// and the acts.
+    /// Brings the core's work onto the thread MAUI draws on - the doorbell, and
+    /// each turn of jobs, a pending cycle, the render and the acts.
     /// </summary>
     private readonly Pump _pump;
 
@@ -122,7 +121,7 @@ internal sealed class StateUISession
     {
         _target = target;
         Renderer = new StateUIRenderer(OnEvent);
-        ActPerformer = new(target, Renderer, _uiThread, () => _pump!.Replied());
+        ActPerformer = new(target, Renderer, _uiThread);
         _pump = new Pump(target, _uiThread, _names, Renderer, ActPerformer, Render, () => _intake.Mounted);
     }
 
@@ -137,7 +136,7 @@ internal sealed class StateUISession
     {
         _target = target;
         Renderer = new StateUIRenderer(dispatch);
-        ActPerformer = new(target, Renderer, _uiThread, () => _pump!.Replied());
+        ActPerformer = new(target, Renderer, _uiThread);
         _pump = new Pump(target, _uiThread, _names, Renderer, ActPerformer, Render, () => _intake.Mounted);
     }
 
@@ -688,15 +687,6 @@ internal sealed class StateUISession
             // the message is in, so the render asked for here is one of its
             // own rather than a resync against a generation not yet claimed.
             _pump.Run();
-
-            // A NEGATIVE id is not an event: it is a completion, and what it
-            // resumed is a handler whose next job does not exist yet. The
-            // act path says the same thing in Pump.Replied; a journey's
-            // answer lands here instead, having queued no act.
-            if (handlerId < 0)
-            {
-                _pump.DrainWhenTheResumeArrives();
-            }
         }
         catch (Exception ex)
         {
