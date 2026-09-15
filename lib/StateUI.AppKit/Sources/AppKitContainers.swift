@@ -988,7 +988,6 @@ final class AppKitSplitView: AppKitHitTestView {
     private lazy var detailItem = NSSplitViewItem(
         viewController: detailController)
     private var requestedPresentation = false
-    private var applyingPresentation = false
     private var lastEffectivePresentation = false
     private var adapted = false
 
@@ -1012,9 +1011,9 @@ final class AppKitSplitView: AppKitHitTestView {
         splitController.view.translatesAutoresizingMaskIntoConstraints = true
         addSubview(splitController.view)
 
-        applyingPresentation = true
-        sidebarItem.isCollapsed = true
-        applyingPresentation = false
+        AppKitProgramWrite.perform {
+            sidebarItem.isCollapsed = true
+        }
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(splitViewResized(_:)),
@@ -1123,9 +1122,9 @@ final class AppKitSplitView: AppKitHitTestView {
             return
         }
 
-        applyingPresentation = true
-        sidebarItem.isCollapsed = !presented
-        applyingPresentation = false
+        AppKitProgramWrite.perform {
+            sidebarItem.isCollapsed = !presented
+        }
         lastEffectivePresentation = presented
 
         if reporting {
@@ -1134,7 +1133,7 @@ final class AppKitSplitView: AppKitHitTestView {
     }
 
     @objc private func splitViewResized(_ notification: Notification) {
-        guard !applyingPresentation else { return }
+        guard !AppKitProgramWrite.isWriting else { return }
         let presented = !sidebarItem.isCollapsed
         guard presented != lastEffectivePresentation else { return }
 
@@ -1408,7 +1407,6 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     private let documentSurface = AppKitScrollDocumentView()
     private let stackWrapper = AppKitStackView(axis: .vertical)
     private var usesStackWrapper = false
-    private var applyingOffset = false
     private var pendingOffset: NSPoint?
     private var lastObservedOffset = NSPoint.zero
     private var movementActive = false
@@ -1604,7 +1602,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     }
 
     @objc private func clipBoundsChanged(_ notification: Notification) {
-        guard !applyingOffset else { return }
+        guard !AppKitProgramWrite.isWriting else { return }
         let current = offset
         guard current != lastObservedOffset else { return }
         if !movementActive { beginMovement() }
@@ -1647,10 +1645,10 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         if !asReader { programmaticMovesForTesting += 1 }
         let old = offset
         let target = reachable(normalized(requested))
-        applyingOffset = true
-        contentView.scroll(to: target)
-        reflectScrolledClipView(contentView)
-        applyingOffset = false
+        AppKitProgramWrite.perform {
+            contentView.scroll(to: target)
+            reflectScrolledClipView(contentView)
+        }
         let current = offset
         lastObservedOffset = current
 

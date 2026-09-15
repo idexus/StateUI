@@ -8,7 +8,6 @@ import AppKit
 @MainActor
 final class AppKitSwitchView: NSSwitch {
     var onToggled: ((Bool) -> Void)?
-    private var applying = false
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -26,14 +25,14 @@ final class AppKitSwitchView: NSSwitch {
     }
 
     func apply(toggled: Bool, enabled: Bool) {
-        applying = true
-        state = toggled ? .on : .off
-        isEnabled = enabled
-        applying = false
+        AppKitProgramWrite.perform {
+            state = toggled ? .on : .off
+            isEnabled = enabled
+        }
     }
 
     @objc private func changed(_ sender: NSSwitch) {
-        guard !applying else { return }
+        guard !AppKitProgramWrite.isWriting else { return }
         onToggled?(state == .on)
     }
 
@@ -47,7 +46,6 @@ final class AppKitSwitchView: NSSwitch {
 @MainActor
 final class AppKitCheckBoxView: NSButton {
     var onToggled: ((Bool) -> Void)?
-    private var applying = false
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -67,15 +65,15 @@ final class AppKitCheckBoxView: NSButton {
     }
 
     func apply(checked: Bool, enabled: Bool, tint: NSColor?) {
-        applying = true
-        state = checked ? .on : .off
-        isEnabled = enabled
-        contentTintColor = tint
-        applying = false
+        AppKitProgramWrite.perform {
+            state = checked ? .on : .off
+            isEnabled = enabled
+            contentTintColor = tint
+        }
     }
 
     @objc private func changed(_ sender: NSButton) {
-        guard !applying else { return }
+        guard !AppKitProgramWrite.isWriting else { return }
         onToggled?(state == .on)
     }
 

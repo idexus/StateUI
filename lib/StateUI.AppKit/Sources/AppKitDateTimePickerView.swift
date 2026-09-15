@@ -20,7 +20,6 @@ final class AppKitDateTimePickerView: NSDatePicker {
 
     private let mode: AppKitDateTimePickerMode
     private var civilCalendar: Calendar
-    private var applying = false
 
     init(mode: AppKitDateTimePickerMode) {
         self.mode = mode
@@ -52,22 +51,22 @@ final class AppKitDateTimePickerView: NSDatePicker {
         textColor: NSColor,
         enabled: Bool
     ) {
-        applying = true
-        self.font = font
-        self.textColor = textColor
-        isEnabled = enabled
+        AppKitProgramWrite.perform {
+            self.font = font
+            self.textColor = textColor
+            isEnabled = enabled
 
-        if mode == .date {
-            applyDateRange(minimum: minimum, maximum: maximum)
-        } else {
-            minDate = nil
-            maxDate = nil
-        }
+            if mode == .date {
+                applyDateRange(minimum: minimum, maximum: maximum)
+            } else {
+                minDate = nil
+                maxDate = nil
+            }
 
-        if writeValue, let value, let native = nativeDate(from: value) {
-            dateValue = clamped(native)
+            if writeValue, let value, let native = nativeDate(from: value) {
+                dateValue = clamped(native)
+            }
         }
-        applying = false
     }
 
     private func applyDateRange(minimum: [Double]?, maximum: [Double]?) {
@@ -162,7 +161,7 @@ final class AppKitDateTimePickerView: NSDatePicker {
     }
 
     @objc private func changed(_ sender: NSDatePicker) {
-        guard !applying else { return }
+        guard !AppKitProgramWrite.isWriting else { return }
         onValueChanged?(lanes(from: dateValue))
     }
 

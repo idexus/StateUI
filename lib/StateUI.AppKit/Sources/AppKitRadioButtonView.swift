@@ -8,7 +8,6 @@ import AppKit
 @MainActor
 final class AppKitRadioButtonView: NSButton {
     var onSelected: (() -> Void)?
-    private var applying = false
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -33,25 +32,25 @@ final class AppKitRadioButtonView: NSButton {
         textColor: NSColor,
         enabled: Bool
     ) {
-        applying = true
-        state = checked ? .on : .off
-        title = text
-        self.font = font
-        attributedTitle = NSAttributedString(
-            string: text,
-            attributes: [.font: font, .foregroundColor: textColor])
-        isEnabled = enabled
-        applying = false
+        AppKitProgramWrite.perform {
+            state = checked ? .on : .off
+            title = text
+            self.font = font
+            attributedTitle = NSAttributedString(
+                string: text,
+                attributes: [.font: font, .foregroundColor: textColor])
+            isEnabled = enabled
+        }
     }
 
     func setCheckedFromGroup(_ checked: Bool) {
-        applying = true
-        state = checked ? .on : .off
-        applying = false
+        AppKitProgramWrite.perform {
+            state = checked ? .on : .off
+        }
     }
 
     @objc private func selected(_ sender: NSButton) {
-        guard !applying, state == .on else { return }
+        guard !AppKitProgramWrite.isWriting, state == .on else { return }
         onSelected?()
     }
 

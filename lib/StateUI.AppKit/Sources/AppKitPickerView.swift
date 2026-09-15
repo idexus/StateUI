@@ -17,7 +17,6 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
 
     private let button = NSPopUpButton(frame: .zero, pullsDown: false)
     private let placeholder = AppKitPickerPlaceholder()
-    private var applying = false
     private var requestedOpen = false
     private var menuOpen = false
     private var openingScheduled = false
@@ -88,38 +87,37 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         open: Bool,
         writeOpen: Bool
     ) {
-        applying = true
+        AppKitProgramWrite.perform {
+            let itemsChanged = sourceItems != items
+            sourceItems = items
+            if itemsChanged {
+                button.removeAllItems()
+                button.addItems(withTitles: items)
+                button.menu?.delegate = self
+            }
 
-        let itemsChanged = sourceItems != items
-        sourceItems = items
-        if itemsChanged {
-            button.removeAllItems()
-            button.addItems(withTitles: items)
-            button.menu?.delegate = self
-        }
+            button.font = font
+            button.alignment = alignment
+            button.isEnabled = enabled
+            button.contentTintColor = tint
+            styleItems(font: font, color: textColor, alignment: alignment)
 
-        button.font = font
-        button.alignment = alignment
-        button.isEnabled = enabled
-        button.contentTintColor = tint
-        styleItems(font: font, color: textColor, alignment: alignment)
-
-        if writeSelection || itemsChanged {
-            if items.indices.contains(selectedIndex) {
-                button.selectItem(at: selectedIndex)
-            } else {
+            if writeSelection || itemsChanged {
+                if items.indices.contains(selectedIndex) {
+                    button.selectItem(at: selectedIndex)
+                } else {
+                    button.select(nil)
+                }
+            } else if !items.indices.contains(button.indexOfSelectedItem) {
                 button.select(nil)
             }
-        } else if !items.indices.contains(button.indexOfSelectedItem) {
-            button.select(nil)
-        }
 
-        placeholder.stringValue = title ?? ""
-        placeholder.font = font
-        placeholder.textColor = .placeholderTextColor
-        placeholder.alignment = alignment
-        updatePlaceholder()
-        applying = false
+            placeholder.stringValue = title ?? ""
+            placeholder.font = font
+            placeholder.textColor = .placeholderTextColor
+            placeholder.alignment = alignment
+            updatePlaceholder()
+        }
 
         if writeOpen { setOpen(open) }
     }
@@ -191,7 +189,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
     }
 
     @objc private func changed(_ sender: NSPopUpButton) {
-        guard !applying else { return }
+        guard !AppKitProgramWrite.isWriting else { return }
         updatePlaceholder()
         onSelectionChanged?(button.indexOfSelectedItem)
     }
