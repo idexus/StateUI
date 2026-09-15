@@ -10,7 +10,7 @@
 // realizes the contract member by member.
 //
 //     enum TrafficLightContract: ElementContract {
-//         static let type: NodeType = "Gallery.TrafficLight"
+//         static let nodeType: NodeType = "Gallery.TrafficLight"
 //         static let tiers: [any Contract.Type] = [ViewContract.self]
 //
 //         static let signal = ElementProperty<Self, TrafficSignal>("signal")
@@ -88,7 +88,7 @@ extension Contract {
 /// it has, and which layer realizes it.
 ///
 ///     enum TrafficLightContract: ElementContract {
-///         static let type: NodeType = "Gallery.TrafficLight"
+///         static let nodeType: NodeType = "Gallery.TrafficLight"
 ///         static let tiers: [any Contract.Type] = [ViewContract.self]
 ///
 ///         static let signal = ElementProperty<Self, TrafficSignal>("signal")
@@ -109,7 +109,7 @@ extension Contract {
 /// member.
 public protocol ElementContract: Contract {
     /// The node type this contract declares.
-    static var type: NodeType { get }
+    static var nodeType: NodeType { get }
 
     /// Which layer realizes the element.
     static var layer: ElementLayer { get }
@@ -117,7 +117,7 @@ public protocol ElementContract: Contract {
 
 extension ElementContract {
     /// The node type's name.
-    public static var name: String { type.name }
+    public static var name: String { nodeType.name }
 
     /// An application's own element, realized by the application's hosts.
     public static var layer: ElementLayer { .provider }

@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What a page arrangement shows about itself: a title and a picture.
+/// What a page shows about itself where another container presents it as an
+/// item - a title and a picture. A page and an arrangement say them under the
+/// same keys, so both wear this tier, and it wears nothing: a page carries its
+/// title and its icon, and no other value an element carries.
 public enum PageElementContract: Contract {
     /// The tier's name.
     public static let name = "PageElement"
-
-    /// A page arrangement carries values in the tree.
-    public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
 
     /// The picture shown with the title - a tab's icon.
     public static let icon = ElementProperty<Self, ImageSource>("icon", layer: .adaptive)

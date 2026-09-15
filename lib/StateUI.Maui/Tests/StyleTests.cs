@@ -861,11 +861,15 @@ public class StyleTests
     /// </summary>
     /// <remarks>
     /// A Button draws its icon at the image's own size and declares no
-    /// aspect; the property reaches nothing on this host.
+    /// aspect; the property reaches nothing on this host. A window's
+    /// translucency is its platform's material, which this host draws nowhere
+    /// - it realizes no translucent window - so that property reaches nothing
+    /// here either.
     /// </remarks>
     private static readonly HashSet<string> MauiHasNoProperty =
     [
         "Button.aspect",
+        "Window.isTranslucent",
     ];
 
     /// <summary>

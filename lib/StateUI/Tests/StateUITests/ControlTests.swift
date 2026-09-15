@@ -888,6 +888,59 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(Self.propNames(in: tiers.node).intersection(declared), declared)
     }
 
+    /// EVERY PROPERTY OF EVERY CONTRACT IS CARRIED, read from the contracts
+    /// rather than from the sources. An element with cases carries each
+    /// property of its own in them - its fixtures are where a host's own tests
+    /// read it - and every property of every contract, a tier's and a
+    /// structure element's included, is carried by some fixture, described or
+    /// driven, or built by a test that reads it off the node.
+    func testEveryPropertyOfEveryContractIsCarried() throws {
+        let sidecars = try Fixtures.fixtureSidecars().joined(separator: "\n")
+        let tests = try Fixtures.testSources().map(\.text).joined(separator: "\n")
+        var carried: [String: Set<String>] = [:]
+        var missing: [String] = []
+
+        for control in Self.cases {
+            carried[control.node.type.name, default: []].formUnion(Self.carriedNames(in: control.node))
+        }
+
+        for contract in LibraryContracts.elements {
+            guard let names = carried[contract.nodeType.name] else { continue }
+
+            for member in contract.members where member is any PropertyMember && !names.contains(member.name) {
+                missing.append("\(contract.name).\(member.name) is in no case of its element")
+            }
+        }
+
+        for contract in LibraryContracts.all {
+            for member in contract.members
+            where member is any PropertyMember
+                && !sidecars.contains("  \(member.name): ") && !sidecars.contains(" \(member.name)<-")
+                && !tests.contains(".\(member.name)(") && !tests.contains("props[.\(member.name)]") {
+                missing.append("\(contract.name).\(member.name) is carried by no fixture and built by no test")
+            }
+        }
+
+        XCTAssertEqual(missing, [], """
+            A property no fixture carries is one a host can leave out without \
+            anything failing. Give the element's case the modifier, run with \
+            STATEUI_UPDATE_FIXTURES=1, and read the sidecar.
+            """)
+    }
+
+    /// Every property a tree describes and every one it drives, the root's
+    /// and its children's. Materialized first, as `propNames` is.
+    private static func carriedNames(in node: Node) -> Set<String> {
+        var node = node
+        node.materialize()
+
+        let own = Set(node.props.keys.map(\.name)).union(node.driven.keys.map(\.name))
+
+        return node.children.reduce(into: own) { names, child in
+            names.formUnion(carriedNames(in: child))
+        }
+    }
+
     // MARK: - Two-way inputs
 
     /// A binding is what a two-way input IS: the state handed to the host,

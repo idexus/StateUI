@@ -611,4 +611,18 @@ final class PageTests: XCTestCase {
             sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
             against: "pages/Page")
     }
+
+    /// The window is written down whole too: every property its session can
+    /// say, its handlers and the page it holds - so a host's own tests read a
+    /// window carrying all of it, as they read the page. Beside the page's,
+    /// under `pages/`, a window being no styleable control either.
+    func testTheWindowIsWrittenDown() throws {
+        let bytes = Wire.encode(
+            Renders().settled(EveryPropertyWindow.node), generation: 1, dictionary: WireDictionary())
+
+        try Fixtures.check(
+            bytes,
+            sidecar: WireProbe.dumpMessage(bytes, names: WireNames()),
+            against: "pages/Window")
+    }
 }

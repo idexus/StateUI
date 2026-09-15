@@ -20,7 +20,7 @@ final class ContractTests: XCTestCase {
     /// An element's contract names its node type, and its name is that type's;
     /// an application's element is realized by the application unless it says.
     func testAContractNamesItsElementAndItsMembers() {
-        XCTAssertEqual(LampContract.type, "Test.Lamp")
+        XCTAssertEqual(LampContract.nodeType, "Test.Lamp")
         XCTAssertEqual(LampContract.name, "Test.Lamp")
         XCTAssertEqual(LampContract.layer, .provider)
         XCTAssertTrue(LampContract.tiers.isEmpty)
@@ -369,7 +369,7 @@ final class ContractTests: XCTestCase {
 /// A lamp of the application's own, declared the way an application declares
 /// one.
 private enum LampContract: ElementContract {
-    static let type: NodeType = "Test.Lamp"
+    static let nodeType: NodeType = "Test.Lamp"
 
     static let signal = ElementProperty<Self, LampSignal>("signal")
     static let brightness = ElementProperty<Self, Double>("brightness")

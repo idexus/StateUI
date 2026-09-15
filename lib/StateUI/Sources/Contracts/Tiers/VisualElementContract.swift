@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What every drawn element has: its size and its bounds, how it is shown and
-/// turned, whether it answers input, and what a screen reader says about it.
+/// turned, whether it answers input and holds the keyboard focus, the visual
+/// states it enters, and what a screen reader says about it.
 public enum VisualElementContract: Contract {
     /// The tier's name.
     public static let name = "VisualElement"
@@ -30,6 +31,9 @@ public enum VisualElementContract: Contract {
     /// What is drawn behind the element: a colour, or a brush.
     public static let background = ElementProperty<Self, Background>(
         "background", layer: .native)
+
+    /// Gives the element the keyboard focus, answering whether it took it.
+    public static let focus = ElementAct<Self, Void, Bool>("focus")
 
     /// The frame the element settled on, fed by the host into a state.
     public static let frame = ElementProperty<Self, Rect>("frame", layer: .structure)
@@ -122,6 +126,13 @@ public enum VisualElementContract: Contract {
     public static let translationY = ElementProperty<Self, Double>(
         "translationY", layer: .native, moves: .place)
 
+    /// Takes the keyboard focus off the element.
+    public static let unfocus = ElementAct<Self, Void, Void>("unfocus")
+
+    /// The element entered one of its visual states, the one it names.
+    public static let visualStateChanged = ElementEvent<Self, String>(
+        "visualStateChanged", layer: .stateUI)
+
     /// The width the element asks for.
     public static let width = ElementProperty<Self, Double>(
         "width", layer: .native, moves: .width)
@@ -132,10 +143,10 @@ public enum VisualElementContract: Contract {
     /// The tier's own members.
     public static let members: [any ContractMember] = [
         accessibilityHeadingLevel, accessibilityHint, accessibilityLabel,
-        automationExcludedWithChildren, background, frame, height, ignoresInput,
+        automationExcludedWithChildren, background, focus, frame, height, ignoresInput,
         isAccessibilityHidden, isEnabled, isFocusedChanged, isVisible, layoutDirection,
         maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,
         rotation, rotationX, rotationY, scale, scaleX, scaleY, style, translationX,
-        translationY, width, zIndex,
+        translationY, unfocus, visualStateChanged, width, zIndex,
     ]
 }

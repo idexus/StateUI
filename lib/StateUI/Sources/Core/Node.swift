@@ -547,7 +547,7 @@ public struct Node {
         id: String? = nil,
         children: [Node] = []
     ) {
-        self.init(type: Declaration.type, id: id, children: children)
+        self.init(type: Declaration.nodeType, id: id, children: children)
     }
 }
 
