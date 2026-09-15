@@ -127,6 +127,10 @@ import Dispatch
     /// The registrations, by node type.
     private var entries: [NodeType: Entry] = [:]
 
+    /// The application's events these registrations raise - an element's own
+    /// are its registration's.
+    private var applicationEvents: Set<HostRealizedMember> = []
+
     /// An empty registry.
     public init() {}
 
@@ -151,6 +155,18 @@ import Dispatch
             make: { send in create(Raise(send)) },
             appliers: registration.appliers,
             members: registration.members)
+    }
+
+    /// An event of the application's - one no element raises - the host
+    /// raises through `StateUIHost.raise` or the export: recorded on the
+    /// application element, so the core knows the host reports it.
+    ///
+    ///     registry.raises(GalleryContract.batteryChanged)
+    ///
+    /// - Parameter event: the member, written with its contract.
+    public func raises<Owner: ApplicationTier, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        applicationEvents.insert(
+            HostRealizedMember(element: ApplicationContract.name, owner: Owner.name, member: event.name))
     }
 
     /// A view for a node type, made by its registration, its events handed to
@@ -194,7 +210,7 @@ import Dispatch
     public var realization: HostRealization {
         HostRealization(
             elements: Set(entries.keys.map(\.name)),
-            members: entries.values.reduce(into: []) { $0.formUnion($1.members) })
+            members: entries.values.reduce(into: applicationEvents) { $0.formUnion($1.members) })
     }
 }
 
@@ -257,5 +273,74 @@ enum HostRealizations {
     static var current: HostRealization {
         get { guarded.sync { told } }
         set { guarded.sync { told = newValue } }
+    }
+
+    /// What to say about a node type described for the first time: nothing
+    /// where the host realizes it, or has said nothing at all, and otherwise
+    /// that it does not - with the realized elements nearest in name, the
+    /// misspelling's likeliest meaning. The differ's placeholder never crosses
+    /// and is never said.
+    static func unrealized(_ type: NodeType) -> String? {
+        let realization = current
+
+        guard realization != HostRealization(), type != .composed,
+              !realization.elements.contains(type.name)
+        else { return nil }
+
+        return "the host realizes no `\(type.name)`" + nearMisses(type.name, among: realization.elements) + "."
+    }
+
+    /// What to say about an event of the application's a handler listens for:
+    /// nothing where the host raises it, or has said nothing at all, and
+    /// otherwise that it does not - with the events it raises nearest in name.
+    static func unraised(owner: String, event: String) -> String? {
+        let realization = current
+
+        guard realization != HostRealization(),
+              !realization.members.contains(where: { $0.owner == owner && $0.member == event })
+        else { return nil }
+
+        let raised = Set(realization.members.filter { $0.element == ApplicationContract.name }.map(\.member))
+
+        return "the host raises no `\(event)`" + nearMisses(event, among: raised) + ": the handler will not hear it."
+    }
+
+    /// " (nearest: `a`, `b`)" - the names at most a quarter of the name's
+    /// length away, two edits at least, closest first, three at most - or
+    /// nothing.
+    private static func nearMisses(_ name: String, among names: Set<String>) -> String {
+        let reach = max(2, name.count / 4)
+        let near = names
+            .map { (name: $0, edits: edits(from: name, to: $0)) }
+            .filter { $0.edits <= reach }
+            .sorted { ($0.edits, $0.name) < ($1.edits, $1.name) }
+            .prefix(3)
+            .map { "`\($0.name)`" }
+
+        return near.isEmpty ? "" : " (nearest: " + near.joined(separator: ", ") + ")"
+    }
+
+    /// How many single-character edits turn one name into the other.
+    private static func edits(from source: String, to target: String) -> Int {
+        let from = Array(source)
+        let to = Array(target)
+
+        guard !from.isEmpty else { return to.count }
+        guard !to.isEmpty else { return from.count }
+
+        var row = Array(0...to.count)
+
+        for i in 1...from.count {
+            var diagonal = row[0]
+            row[0] = i
+
+            for j in 1...to.count {
+                let above = row[j]
+                row[j] = Swift.min(above + 1, row[j - 1] + 1, diagonal + (from[i - 1] == to[j - 1] ? 0 : 1))
+                diagonal = above
+            }
+        }
+
+        return row[to.count]
     }
 }

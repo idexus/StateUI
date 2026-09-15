@@ -856,6 +856,12 @@ final class Differ {
         // Core/Lifetime.swift.
         if previous == nil {
             fired.append(contentsOf: node.created)
+
+            // A node type the host said it does not realize is said once,
+            // with the names it likely meant.
+            if let unrealized = HostRealizations.unrealized(node.type) {
+                complain(unrealized)
+            }
         }
 
         // Properties. Everything when there is nothing to compare against, only
