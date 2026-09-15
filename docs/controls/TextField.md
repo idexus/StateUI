@@ -86,7 +86,7 @@ A VisualElement a layout positions.
 | `onDragLeave` (`dragLeave`) | handler | ✅ |  |  |  |  |  |  |  |
 | `onDragOver` (`dragOver`) | handler | ✅ |  |  |  |  |  |  |  |
 | `dragStarting` | handler | ✅ |  |  |  |  |  |  |  |
-| `dragText` | property |  |  |  |  |  |  |  |  |
+| `dragText` | property | ✅ |  |  |  |  |  |  |  |
 | `onDrop` (`drop`) | handler | ✅ |  |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | handler | ✅ |  |  |  |  |  |  |  |
 | `onFrameChanged` (`frameChanged`) | handler | ✅ | ✅ |  |  |  |  |  |  |

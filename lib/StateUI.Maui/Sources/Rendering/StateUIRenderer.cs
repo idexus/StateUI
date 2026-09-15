@@ -1357,12 +1357,13 @@ public sealed class StateUIRenderer
 
                 // What travels is decided before the drag, not during it: MAUI
                 // wants the data package filled here and now, and this side
-                // could not be asked in time.
-                recognizer.DragStarting += (sender, e) =>
+                // could not be asked in time. MAUI raises the start with the
+                // VIEW as sender, so the text is read off this recognizer.
+                recognizer.DragStarting += (_, e) =>
                 {
-                    if (KeyOf(view) is not null && sender is DragGestureRecognizer source)
+                    if (KeyOf(view) is not null)
                     {
-                        e.Data.Text = source.GetValue(DragTextProperty) as string;
+                        e.Data.Text = recognizer.GetValue(DragTextProperty) as string;
                     }
 
                     Raise(view, SwiftEvent.DragStarting);

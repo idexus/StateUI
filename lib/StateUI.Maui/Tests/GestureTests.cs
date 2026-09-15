@@ -119,6 +119,27 @@ public class GestureTests
     }
 
     /// <summary>
+    /// A drag carries the text its view names. MAUI raises the start with the
+    /// VIEW as sender, not the recognizer, which is why the text is read off
+    /// the recognizer the view wears.
+    /// </summary>
+    [Fact]
+    public void ADragCarriesTheTextItsViewNames()
+    {
+        var host = new Host();
+
+        var view = (Border)host.Apply("""
+            {"id":"d","type":"Border","props":{"canDrag":true,"dragText":"Alpha"},
+             "events":{"dragStarting":1}}
+            """);
+        DragGestureRecognizer drag = Assert.Single(view.GestureRecognizers.OfType<DragGestureRecognizer>());
+
+        var starting = (DragStartingEventArgs)Send(drag, "SendDragStarting", view, null, null)!;
+
+        Assert.Equal("Alpha", starting.Data.Text);
+    }
+
+    /// <summary>
     /// A view that takes drops reports a drag over it, a drag leaving it, and
     /// the text of what landed on it.
     /// </summary>

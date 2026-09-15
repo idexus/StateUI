@@ -92,6 +92,7 @@ internal static class MauiRealization
         Complete("View", "dragLeave"),
         Complete("View", "dragOver"),
         Complete("View", "dragStarting"),
+        Complete("View", "dragText"),
         Complete("View", "drop"),
         Complete("View", "dropCompleted"),
         Complete("View", "frameChanged"),
