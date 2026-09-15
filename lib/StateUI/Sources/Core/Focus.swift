@@ -33,7 +33,7 @@ extension Aim {
     /// - Throws: `StateUIError` when no view of that id is being shown.
     @discardableResult
     public nonisolated(nonsending) func focus() async throws -> Bool {
-        try await stateUICall(.focus, [try target]).value()?.bool == true
+        try await call(VisualElementContract.focus)
     }
 
     /// Takes the focus off this view, which is what closes the keyboard it
@@ -46,7 +46,7 @@ extension Aim {
     ///
     /// - Throws: `StateUIError` when no view of that id is being shown.
     public nonisolated(nonsending) func unfocus() async throws {
-        try await stateUICall(.unfocus, [try target])
+        try await call(VisualElementContract.unfocus)
     }
 }
 
@@ -71,6 +71,6 @@ public enum OnScreenKeyboard {
     ///   means the keyboard was already down - an answer, not a failure.
     @discardableResult
     public static nonisolated(nonsending) func hide() async throws -> Bool {
-        try await stateUICall(.hideOnScreenKeyboard).value()?.bool == true
+        try await stateUICall(ApplicationContract.hideOnScreenKeyboard)
     }
 }

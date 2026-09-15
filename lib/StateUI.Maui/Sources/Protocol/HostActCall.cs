@@ -131,6 +131,13 @@ public sealed class HostActCall
     public IReadOnlyList<double>? GetNumbers(int index) =>
         At(index) is { Tag: HostValue.TagNumbers } value ? value.Numbers : null;
 
+    /// <summary>
+    /// An argument as a list of text, or null when there is none or it is
+    /// something else - what an action sheet's buttons travel as, one list.
+    /// </summary>
+    public IReadOnlyList<string>? GetStrings(int index) =>
+        At(index) is { Tag: HostValue.TagStrings } value ? value.Strings : null;
+
 
     /// <summary>The argument at an index, or null when there is none.</summary>
     private HostValue? At(int index) =>

@@ -122,9 +122,10 @@ final class ActCallWireTests: XCTestCase {
         }
     }
 
-    /// Title, cancel, destruction, then the buttons. An absent caption
-    /// crosses as the wire's own NOTHING, never as an empty
-    /// string: an empty string is a caption someone could have written.
+    /// Title, cancel, destruction, then the buttons as ONE argument - the list
+    /// of their captions, an argument being one value. An absent caption
+    /// crosses as the wire's own NOTHING, never as an empty string: an empty
+    /// string is a caption someone could have written.
     func testAChoiceOfActionsCrossesAsItsFixtureSays() async throws {
         try await check("ChooseAction") {
             _ = try await Dialogs.chooseAction(
@@ -247,5 +248,67 @@ final class ActCallWireTests: XCTestCase {
                 dictionary: WireDictionary()),
             sidecar: WireProbe.dump(acts),
             against: "act-calls/HandlerFailed")
+    }
+
+    /// What the screen reader is to say, and a handler waiting until it is
+    /// said.
+    func testAnAnnouncementCrossesAsItsFixtureSays() async throws {
+        try await check("Announce") {
+            try await ScreenReader.announce("5 results")
+        }
+    }
+
+    /// A kept value on its way to the store, as the renderer queues it at a
+    /// take: the key as a NAME, the value as it is, and nobody waiting.
+    func testAKeptValueCrossesAsItsFixtureSays() throws {
+        drain()
+        PersistentStore.shared.record(PersistentKey("com.example.theme", of: String.self), .string("dusk"))
+
+        let acts = WireProbe.decode(drain())
+        try Fixtures.check(
+            Wire.encode(
+                acts.map {
+                    ActCall(act: StateUI.Act($0.name), arguments: $0.arguments, completion: $0.completion)
+                },
+                dictionary: WireDictionary()),
+            sidecar: WireProbe.dump(acts),
+            against: "act-calls/PersistValue")
+    }
+
+    /// A scene's kept value on its way to the platform's record of that scene:
+    /// the scene and the key as NAMES, then the value, and nobody waiting -
+    /// the act `Scenes.takeSaves` queues, which SceneTests reads off a live
+    /// scene. Written with a fresh dictionary, so read back with fresh names:
+    /// the session's mirror learns only the session's numbers.
+    func testASceneValueCrossesAsItsFixtureSays() throws {
+        let call = ActCall(ApplicationContract.persistSceneValue, Name("2"), Name("shade"), PropValue.string("dusk"))
+        let bytes = Wire.encode([call], dictionary: WireDictionary())
+
+        try Fixtures.check(
+            bytes, sidecar: WireProbe.dump(WireProbe.decode(bytes, names: WireNames())),
+            against: "act-calls/PersistSceneValue")
+    }
+
+    /// EVERY ACT OF EVERY CONTRACT IS WRITTEN DOWN: a fixture here names it, so
+    /// a host's reader of the channel is held to its arguments. An act member
+    /// with none is one a host could read wrongly with every suite green.
+    func testEveryActOfEveryContractIsWrittenDown() throws {
+        let folder = Fixtures.directory.appendingPathComponent("act-calls")
+        var written: Set<String> = []
+
+        for file in try FileManager.default.contentsOfDirectory(atPath: folder.path) where file.hasSuffix(".txt") {
+            let sidecar = try String(contentsOf: folder.appendingPathComponent(file), encoding: .utf8)
+
+            if let act = sidecar.split(separator: "\n").first?.split(separator: " ").first {
+                written.insert(String(act))
+            }
+        }
+
+        let acts = LibraryContracts.all.flatMap { contract in
+            contract.members.filter { ($0 as? any DeclaredMember)?.facts.kind == .act }.map { $0.name }
+        }
+
+        XCTAssertGreaterThan(acts.count, 15, "the contracts declare almost no acts")
+        XCTAssertEqual(Set(acts).subtracting(written).sorted(), [], "an act no fixture writes down")
     }
 }

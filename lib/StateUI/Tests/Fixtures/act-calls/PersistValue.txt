@@ -1,0 +1,3 @@
+persistValue
+  name "com.example.theme"
+  string "dusk"

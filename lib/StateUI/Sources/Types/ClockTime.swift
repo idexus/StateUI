@@ -157,9 +157,9 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
     ///
     /// - Returns: the host's local time of day.
     public static nonisolated(nonsending) func now() async throws -> ClockTime {
-        let reply = try await stateUICall(.currentTime)
+        let numbers = try await stateUICall(ApplicationContract.currentTime)
 
-        guard let numbers = reply.value()?.numbers, numbers.count == 4 else {
+        guard numbers.count == 4 else {
             throw StateUIError(
                 message: "the host's reply does not read as a time of day. Usually "
                     + "a native library and a runtime built from different versions.")

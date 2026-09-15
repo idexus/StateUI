@@ -59,6 +59,21 @@ public final class WireNames {
         }
         return name
     }
+
+    /// Learns one announcement. A dictionary numbers a name once and never
+    /// renumbers it, so an id already known under ANOTHER name means two
+    /// dictionaries met here - a fixture's fresh numbering read with the
+    /// session's names - and every later act or key under that id would read
+    /// as the wrong one, in whichever test came next.
+    func learn(_ id: Int, _ name: String) {
+        if let known = names[id] {
+            precondition(
+                known == name,
+                "name #\(id) was announced as \(known), now as \(name) - "
+                    + "were a fresh WireDictionary's bytes read with the session's names?")
+        }
+        names[id] = name
+    }
 }
 
 /// One decoded act: what `ActCall` says, read back off the wire.
@@ -165,7 +180,7 @@ public enum WireProbe {
 
         for _ in 0..<u16() {
             let id = u16()
-            names.names[id] = string()
+            names.learn(id, string())
         }
 
         var acts: [WireAct] = []
@@ -402,7 +417,7 @@ public enum WireProbe {
 
         for _ in 0..<u16() {
             let id = u16()
-            names.names[id] = string()
+            names.learn(id, string())
         }
 
         let root = node()

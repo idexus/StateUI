@@ -2,5 +2,4 @@ chooseAction completion=-1
   string "Share via"
   string "Cancel"
   string "Delete"
-  string "Mail"
-  string "Message"
+  strings "Mail","Message"

@@ -457,10 +457,7 @@ final class Scenes: @unchecked Sendable {
     func takeSaves() -> [ActCall] {
         _list.storage.value.flatMap { record in
             record.takeWaiting().map {
-                ActCall(
-                    act: .persistSceneValue,
-                    arguments: [.name(record.id), .name($0.name), $0.value],
-                    completion: nil)
+                ActCall(ApplicationContract.persistSceneValue, Name(record.id), Name($0.name), $0.value)
             }
         }
     }

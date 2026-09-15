@@ -44,9 +44,7 @@ public enum Dialogs {
         message: String,
         cancel: String = "OK"
     ) async throws {
-        try await stateUICall(
-            .alert,
-            [.string(title), .string(message), .string(cancel)])
+        try await stateUICall(ApplicationContract.alert, title, message, cancel)
     }
 
     /// Asks the reader a yes-or-no question.
@@ -69,10 +67,7 @@ public enum Dialogs {
         accept: String,
         cancel: String
     ) async throws -> Bool {
-        try await stateUICall(
-            .confirm,
-            [.string(title), .string(message), .string(accept), .string(cancel)])
-            .value()?.bool == true
+        try await stateUICall(ApplicationContract.confirm, title, message, accept, cancel)
     }
 
     /// Offers the reader a list of things to do.
@@ -97,13 +92,7 @@ public enum Dialogs {
         destruction: String? = nil,
         buttons: [String]
     ) async throws -> String? {
-        chosen(try await stateUICall(
-            .chooseAction,
-            [
-                .string(title),
-                cancel.map { PropValue.string($0) } ?? .nothing,
-                destruction.map { PropValue.string($0) } ?? .nothing,
-            ] + buttons.map { .string($0) }))
+        try await stateUICall(ApplicationContract.chooseAction, title, cancel, destruction, buttons)
     }
 
     /// Asks the reader to type something. The arguments cross in the act's
@@ -134,22 +123,8 @@ public enum Dialogs {
         placeholder: String? = nil, initialValue: String = "",
         maximumLength: Int? = nil, inputPurpose: InputPurpose = .default
     ) async throws -> String? {
-        chosen(try await stateUICall(
-            .prompt,
-            [
-                .string(title), .string(message), .string(accept), .string(cancel),
-                placeholder.map { PropValue.string($0) } ?? .nothing,
-                maximumLength.map { PropValue.number(Double($0)) } ?? .nothing,
-                inputPurpose.propValue, .string(initialValue),
-            ]))
-    }
-
-    /// An answer that may be nothing: a choice crosses as one string value -
-    /// empty included, which is an accepted prompt with nothing typed - and a
-    /// dismissal crosses as the wire's own nothing, which reads as nil here.
-    /// One value either way, so the SHAPE of the reply says nothing about the
-    /// answer. See `Wire.decodeReply`.
-    private static func chosen(_ reply: [PropValue]) -> String? {
-        reply.value()?.string
+        try await stateUICall(
+            ApplicationContract.prompt, title, message, accept, cancel, placeholder, maximumLength,
+            inputPurpose, initialValue)
     }
 }

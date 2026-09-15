@@ -15,8 +15,9 @@
 // completion id of the continuation waiting for it. The host drains that queue
 // after the handler suspends, and performs the act against the real page.
 //
-// The act is a token from Core/Tokens.swift, whose comment says what the host
-// does for it. On the wire it travels as its number from the session's
+// The act is a member of a contract - the library's own are
+// ApplicationContract's and its elements' - whose documentation says what the
+// host does for it. On the wire it travels as its number from the session's
 // dictionary in Core/Wire.swift, announced by the first batch that uses it.
 //
 // WHY THE HANDLER SUSPENDS RATHER THAN TAKING A CLOSURE:
@@ -56,6 +57,18 @@ struct ActCall {
     var name: String { act.name }
 }
 
+extension ActCall {
+    /// An act the library sends with nobody waiting on its answer, its
+    /// arguments the values its member declares - so the declaration types
+    /// what the library queues, as it types what an application calls.
+    init<Owner: Contract, each Argument: HostRepresentable, Answer>(
+        _ act: ElementAct<Owner, (repeat each Argument), Answer>,
+        _ arguments: repeat each Argument
+    ) {
+        self.init(act: act.token, arguments: MemberValues.encode(repeat each arguments), completion: nil)
+    }
+}
+
 /// Something the host could not do.
 ///
 /// Carries the message the host reported, which is usually why the platform
@@ -76,10 +89,10 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
 /// Asks the host to perform an act - one the library ships, or a function the
 /// application registered with the host - and waits for it.
 ///
-/// The escape hatch behind the typed calls - `Dialogs.alert` is one line
-/// over this - and the way an application reaches its OWN host code: register a
-/// performer with the host under a name, declare the same name as an `Act`
-/// token, and call it like any act the library ships:
+/// The untyped road beside the typed calls - a token and a list of values -
+/// and a way an application reaches its OWN host code: register a performer
+/// with the host under a name, declare the same name as an `Act` token, and
+/// call it by that token:
 ///
 ///     extension Act {
 ///         static let batteryLevel = Act("Gallery.BatteryLevel")

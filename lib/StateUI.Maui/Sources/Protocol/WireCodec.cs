@@ -53,7 +53,9 @@ internal static partial class WireCodec
     /// open-vocabulary NAME rides the session's dictionary like a property key
     /// (<see cref="HostValue.TagName"/>), a value with parts rides as its
     /// parts, a colour is four bytes carrying one theme's half, and an absent
-    /// argument is <see cref="HostValue.TagNothing"/>. Every name is
+    /// argument is <see cref="HostValue.TagNothing"/>. An act's arguments are
+    /// the values its member declares, each one value - a list, an action
+    /// sheet's buttons, crosses as one. Every name is
     /// NUMBERED PER SESSION and announced by the message that first uses it.
     /// The arrangement
     /// is the children list itself - <see cref="HostPatch.Arranged"/> - order,
@@ -72,7 +74,7 @@ internal static partial class WireCodec
     /// ELSE: no walk of a described value is awaited, what is awaited being a
     /// driven value, which rides the states field.
     /// </summary>
-    internal const byte Version = 14;
+    internal const byte Version = 15;
 
     /// <summary>Reads a whole render message: the envelope, the names the
     /// message is the first to use, then the tree.</summary>

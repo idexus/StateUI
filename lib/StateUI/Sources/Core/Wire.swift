@@ -233,7 +233,7 @@ public enum Wire {
     /// first into every message on every channel this file lays out - the
     /// state batch, raw lanes with no value in it, carries none. Bumped only
     /// when the LAYOUT changes.
-    public static let version: UInt8 = 14
+    public static let version: UInt8 = 15
 
     // The tree message's field markers, one byte each, written only when the
     // field is present: a field that is not there did not change. Zero ends a

@@ -124,8 +124,9 @@ public class ActCallFixtureTests
     }
 
     /// <summary>
-    /// Title, cancel, destruction, then every button - the params array read
-    /// from position 3 to the end, exactly as Dialog() reads it.
+    /// Title, cancel, destruction, then the buttons as ONE argument - the list
+    /// of their captions, read with <see cref="HostActCall.GetStrings"/>
+    /// exactly as Dialog() reads it.
     /// </summary>
     [Fact]
     public void AChoiceOfActionsCarriesItsCaptionsThenTheButtons()
@@ -133,12 +134,11 @@ public class ActCallFixtureTests
         HostActCall call = One("ChooseAction");
 
         Assert.Equal("chooseAction", call.Name);
+        Assert.Equal(4, call.Arguments!.Count);
         Assert.Equal("Share via", call.GetString(0));
         Assert.Equal("Cancel", call.GetString(1));
         Assert.Equal("Delete", call.GetString(2));
-        Assert.Equal("Mail", call.GetString(3));
-        Assert.Equal("Message", call.GetString(4));
-        Assert.Equal(5, call.Arguments!.Count);
+        Assert.Equal(new[] { "Mail", "Message" }, call.GetStrings(3));
         Assert.True(call.Completion < 0, "someone is waiting for the choice");
     }
 
@@ -285,6 +285,51 @@ public class ActCallFixtureTests
         Assert.Null(call.Completion);
     }
 
+    /// <summary>What the screen reader is to say, and a handler waiting until it is said.</summary>
+    [Fact]
+    public void AnAnnouncementCarriesWhatToSay()
+    {
+        HostActCall call = One("Announce");
+
+        Assert.Equal("announce", call.Name);
+        Assert.Equal(1, call.Arguments!.Count);
+        Assert.Equal("5 results", call.GetString(0));
+        Assert.True(call.Completion < 0, "the handler waits until it is said");
+    }
+
+    /// <summary>
+    /// A kept value: its key as a NAME, which the store resolves, then the value
+    /// as it is - and nobody waits, the value being in Swift's own state already.
+    /// </summary>
+    [Fact]
+    public void AKeptValueCarriesItsKeyAsANameThenTheValue()
+    {
+        HostActCall call = One("PersistValue");
+
+        Assert.Equal("persistValue", call.Name);
+        Assert.Equal(2, call.Arguments!.Count);
+        Assert.Equal("com.example.theme", call.GetName(0));
+        Assert.Equal("dusk", call.GetString(1));
+        Assert.Null(call.Completion);
+    }
+
+    /// <summary>
+    /// A scene's kept value: the scene and the key as NAMES, then the value - and
+    /// nobody waits for this one either.
+    /// </summary>
+    [Fact]
+    public void ASceneValueCarriesTheSceneAndTheKeyAsNamesThenTheValue()
+    {
+        HostActCall call = One("PersistSceneValue");
+
+        Assert.Equal("persistSceneValue", call.Name);
+        Assert.Equal(3, call.Arguments!.Count);
+        Assert.Equal("2", call.GetName(0));
+        Assert.Equal("shade", call.GetName(1));
+        Assert.Equal("dusk", call.GetString(2));
+        Assert.Null(call.Completion);
+    }
+
     /// <summary>
     /// What the accessors answer for an index with no argument at it -
     /// including a negative one, which the tail-relative reads produce on an
@@ -391,9 +436,10 @@ public class ActCallFixtureTests
     /// </summary>
     private static readonly string[] ReadFixtures =
     [
-        "Alert", "ChooseAction", "Confirm",
+        "Alert", "Announce", "ChooseAction", "Confirm",
         "Prompt", "EvaluateJavaScript", "Focus", "FocusByNumber",
         "HandlerFailed", "HideOnScreenKeyboard", "LocalZone", "MoveToRegion", "Now",
+        "PersistSceneValue", "PersistValue",
         "Unfocus", "UtcOffset", "UtcOffsetToday",
         "WebViewGoBack", "WebViewGoForward", "WebViewReload",
     ];

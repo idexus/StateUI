@@ -29,13 +29,7 @@ public enum TimeZoneInfo {
     ///
     /// - Returns: the IANA identifier of the host's local time zone.
     public static nonisolated(nonsending) func local() async throws -> String {
-        guard let zone = try await stateUICall(.currentTimeZone).value()?.string else {
-            throw StateUIError(
-                message: "the host's reply does not read as a zone name. Usually "
-                    + "a native library and a runtime built from different versions.")
-        }
-
-        return zone
+        try await stateUICall(ApplicationContract.currentTimeZone)
     }
 
     /// How far a zone is from UTC on a given day.
@@ -65,19 +59,8 @@ public enum TimeZoneInfo {
         // Warsaw` is not a member of anything this side knows - and the
         // wire's own nothing when none is named, exactly as the day beside
         // it is for "today": an argument list has no such thing as a field
-        // left out, so absence has to be said out loud.
-        let reply = try await stateUICall(
-            .utcOffset,
-            [
-                zone.map { PropValue.string($0) } ?? .nothing,
-                date?.propValue ?? .nothing,
-            ])
-
-        guard let minutes = reply.value()?.int else {
-            throw StateUIError(
-                message: "the host's reply does not read as a number of minutes. Usually "
-                    + "a native library and a runtime built from different versions.")
-        }
+        // left out, so absence has to be said out loud, which a nil does.
+        let minutes = try await stateUICall(ApplicationContract.utcOffset, zone, date)
 
         return .seconds(minutes * 60)
     }

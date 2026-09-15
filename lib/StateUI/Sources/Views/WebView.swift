@@ -364,7 +364,7 @@ extension Aim where Target == WebView {
     /// - Throws: `StateUIError` when no view of that id is being shown, or
     ///   the view it names is not a WebView.
     public nonisolated(nonsending) func goBack() async throws {
-        try await stateUICall(.goBack, [try target])
+        try await call(WebViewContract.goBack)
     }
 
     /// Goes forward again, after going back.
@@ -372,7 +372,7 @@ extension Aim where Target == WebView {
     /// - Throws: `StateUIError` when no view of that id is being shown, or
     ///   the view it names is not a WebView.
     public nonisolated(nonsending) func goForward() async throws {
-        try await stateUICall(.goForward, [try target])
+        try await call(WebViewContract.goForward)
     }
 
     /// Fetches the current page again - and puts a view back on its feet after
@@ -381,7 +381,7 @@ extension Aim where Target == WebView {
     /// - Throws: `StateUIError` when no view of that id is being shown, or
     ///   the view it names is not a WebView.
     public nonisolated(nonsending) func reload() async throws {
-        try await stateUICall(.reload, [try target])
+        try await call(WebViewContract.reload)
     }
 
     /// Runs JavaScript in the page and answers what it evaluated to, as text.
@@ -394,7 +394,7 @@ extension Aim where Target == WebView {
     /// - Throws: `StateUIError` when no view of that id is being shown, or
     ///   the view it names is not a WebView.
     public nonisolated(nonsending) func evaluateJavaScript(_ script: String) async throws -> String {
-        try await stateUICall(.evaluateJavaScript, [try target, .string(script)])
-            .value()?.string ?? ""
+        let answer: String? = try await call(WebViewContract.evaluateJavaScript, script)
+        return answer ?? ""
     }
 }

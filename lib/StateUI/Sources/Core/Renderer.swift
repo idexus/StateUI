@@ -1187,6 +1187,15 @@ public final class Renderer: @unchecked Sendable {
         enqueue({ ActCall(act: act, arguments: arguments, completion: $0) }, completion)
     }
 
+    /// Queues an act of the library's that nobody waits on, its arguments the
+    /// values its member declares.
+    func send<Owner: Contract, each Argument: HostRepresentable, Answer>(
+        _ act: ElementAct<Owner, (repeat each Argument), Answer>,
+        _ arguments: repeat each Argument
+    ) {
+        send(act.token, MemberValues.encode(repeat each arguments), completion: nil)
+    }
+
     /// Queues an act for the host - see ActCall.swift.
     ///
     /// Callable from any thread: a child task started with `async let` sends
@@ -1276,7 +1285,7 @@ public final class Renderer: @unchecked Sendable {
     /// Goes out as an ordinary act, which means it reaches the host on the
     /// same path everything else does and needs nothing new on the boundary.
     func report(_ error: Error) {
-        send(.handlerFailed, [.string(String(describing: error))], completion: nil)
+        send(ApplicationContract.handlerFailed, String(describing: error))
     }
 
     /// Hands the queued acts to the host and forgets them - keeping a RECEIPT:
@@ -1315,7 +1324,7 @@ public final class Renderer: @unchecked Sendable {
         // not always coming: a kept state no view reads asks for none, and
         // its save must not wait for the next event to be taken.
         let saves = PersistentStore.shared.takeWaiting().map {
-            ActCall(act: .persistValue, arguments: [.name($0.name), $0.value], completion: nil)
+            ActCall(ApplicationContract.persistValue, Name($0.name), $0.value)
         }
 
         let queued = guarded.sync {

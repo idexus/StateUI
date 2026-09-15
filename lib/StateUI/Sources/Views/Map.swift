@@ -319,9 +319,7 @@ extension Aim where Target == Map {
         longitude: Double,
         radiusMeters: Double
     ) async throws {
-        try await stateUICall(.moveToRegion, [
-            try target, .number(latitude), .number(longitude), .number(radiusMeters),
-        ])
+        try await call(MapContract.moveToRegion, latitude, longitude, radiusMeters)
     }
 }
 

@@ -564,12 +564,9 @@ internal sealed class ActPerformer
                 // when they are absent, and read as null here without a
                 // sentinel in between: an empty string is a caption someone
                 // could have written, and telling the special ones apart would
-                // be the reader's job.
-                var buttons = new string[Math.Max(0, (call.Arguments?.Count ?? 3) - 3)];
-                for (int index = 0; index < buttons.Length; index++)
-                {
-                    buttons[index] = call.GetString(index + 3) ?? "";
-                }
+                // be the reader's job. The choices are ONE argument, the list
+                // of their captions in order.
+                string[] buttons = call.GetStrings(3) is { } captions ? [.. captions] : [];
 
                 string? pressed = await page.DisplayActionSheetAsync(
                     title,
