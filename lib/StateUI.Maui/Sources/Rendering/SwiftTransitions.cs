@@ -341,35 +341,4 @@ internal sealed class SwiftTransitions
     /// </summary>
     private static bool Fraction(BindableProperty property) =>
         property == VisualElement.OpacityProperty;
-
-    /// <summary>
-    /// The MAUI easing behind the member Swift sent.
-    /// </summary>
-    /// <remarks>
-    /// A translation by name rather than a cast, for the reason every closed
-    /// vocabulary is translated - the wire's numbers are ours, see
-    /// <c>Protocol/SwiftWireEnums.cs</c> - and one more besides: MAUI's
-    /// <see cref="Easing"/> is a class of STATIC INSTANCES, so there is no enum
-    /// on that side to cast to at all. A number this does not know is linear,
-    /// which is the same answer MAUI gives for a null easing.
-    /// </remarks>
-    /// <param name="member">The curve's number, as <see cref="SwiftEasing"/>.</param>
-    /// <returns>The easing to walk on.</returns>
-    public static Easing Read(int member)
-    {
-        return (SwiftEasing)member switch
-        {
-            SwiftEasing.SineOut => Easing.SinOut,
-            SwiftEasing.SineIn => Easing.SinIn,
-            SwiftEasing.SineInOut => Easing.SinInOut,
-            SwiftEasing.CubicIn => Easing.CubicIn,
-            SwiftEasing.CubicOut => Easing.CubicOut,
-            SwiftEasing.CubicInOut => Easing.CubicInOut,
-            SwiftEasing.BounceOut => Easing.BounceOut,
-            SwiftEasing.BounceIn => Easing.BounceIn,
-            SwiftEasing.SpringIn => Easing.SpringIn,
-            SwiftEasing.SpringOut => Easing.SpringOut,
-            _ => Easing.Linear,
-        };
-    }
 }

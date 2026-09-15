@@ -568,8 +568,7 @@ internal readonly record struct SwiftStateEntry(
 /// <param name="Easing">
 /// The curve it walks on, as the number the Swift <c>Easing</c> enum gives it -
 /// this repository's own, like every closed vocabulary on this wire, mirrored by
-/// <see cref="SwiftEasing"/> and translated onto a MAUI easing by
-/// <c>SwiftTransitions.Read</c>.
+/// <see cref="SwiftEasing"/> and walked by <c>MotionEasing</c>.
 /// </param>
 /// <param name="Factor">
 /// A spring's damping - the number that law needs beside its milliseconds.

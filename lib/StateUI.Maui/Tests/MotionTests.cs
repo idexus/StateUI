@@ -2169,7 +2169,7 @@ public class MotionTests
         Assert.Null(MotionProperty.ShapeOf(null));
     }
 
-    // ---- The easing table ---------------------------------------------------
+    // ---- The curves ---------------------------------------------------------
 
     /// <summary>
     /// Every member of the easing vocabulary, so a case added to the mirror
@@ -2185,19 +2185,21 @@ public class MotionTests
 
     [Theory]
     [MemberData(nameof(Easings))]
-    public void EveryEasingSwiftCanWriteHasAMauiOneBehindIt(int member)
+    public void EveryEasingSwiftCanWriteHasACurveBehindIt(int member)
     {
-        Easing easing = SwiftTransitions.Read(member);
+        // Whatever a curve does on the way, it starts and ends with the change.
+        Assert.Equal(0, MotionEasing.At(member, 0), 12);
+        Assert.Equal(1, MotionEasing.At(member, 1), 12);
 
-        // Named rather than merely non-null: every arm but linear has to be a
-        // DIFFERENT curve, or a missing case would read as a pass.
-        Assert.Equal(member == (int)SwiftEasing.Linear, ReferenceEquals(easing, Easing.Linear));
+        // And every arm but linear is a DIFFERENT curve, or a missing case
+        // would read as a pass.
+        Assert.Equal(member == (int)SwiftEasing.Linear, MotionEasing.At(member, 0.3) == 0.3);
     }
 
     /// <summary>
-    /// An easing member from a newer Swift side than this runtime is linear,
-    /// which is what MAUI does with a null one. The curve is a closed
-    /// vocabulary, so what arrives is the number both sides give the member.
+    /// An easing member from a newer Swift side than this runtime is the
+    /// straight line. The curve is a closed vocabulary, so what arrives is the
+    /// number both sides give the member.
     /// </summary>
     [Fact]
     public void AnEasingThisSideDoesNotKnowIsLinear()
@@ -2205,8 +2207,8 @@ public class MotionTests
         // 9999 rather than a null: an easing is a slot in the transition
         // record, always present, so the only way to be handed one this side
         // does not know is a Swift side that has grown a curve.
-        Assert.Same(Easing.Linear, SwiftTransitions.Read(9999));
-        Assert.Same(Easing.Linear, SwiftTransitions.Read(-1));
+        Assert.Equal(0.3, MotionEasing.At(9999, 0.3));
+        Assert.Equal(0.3, MotionEasing.At(-1, 0.3));
     }
 
     /// <summary>

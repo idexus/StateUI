@@ -83,6 +83,12 @@ internal readonly struct MotionSpec
 /// samples. That is what a retarget needs: the motion that replaces this one
 /// starts from the speed this one had, so the value bends instead of being cut.
 /// </para>
+/// <para>
+/// The laws are the core's: a line-by-line copy of the Swift
+/// <c>HostMotionLaw</c>, which every runtime walks with. <c>motion-laws.txt</c>,
+/// the core's trajectory table, is what proves the copy
+/// (<c>MotionLawTests</c>).
+/// </para>
 /// </remarks>
 internal static class MotionCurve
 {
@@ -128,7 +134,7 @@ internal static class MotionCurve
     /// </summary>
     /// <remarks>
     /// FROM REST it is exactly the curve the author asked for, evaluated as
-    /// MAUI's Easing evaluates it. With speed at the start it is a Hermite:
+    /// the core evaluates it. With speed at the start it is a Hermite:
     /// the same duration, beginning at the value and the speed the previous
     /// motion had reached, ending at the target at a standstill. So a target
     /// changed mid-walk bends the motion rather than cutting it, and a motion

@@ -1034,67 +1034,6 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertNil(engine.presentedValue(for: brush))
     }
 
-    func testAnEasedMotionIsAFunctionOfElapsedTime() {
-        let halfway = AppKitMotionCurve.sample(
-            motion: .eased(200, .cubicOut),
-            elapsed: 100,
-            from: [0],
-            destination: [1],
-            velocity: [0])
-        let landed = AppKitMotionCurve.sample(
-            motion: .eased(200, .cubicOut),
-            elapsed: 200,
-            from: [0],
-            destination: [1],
-            velocity: [0])
-
-        XCTAssertEqual(halfway.value[0], 0.875, accuracy: 0.000_001)
-        XCTAssertFalse(halfway.rested)
-        XCTAssertEqual(landed.value, [1])
-        XCTAssertEqual(landed.velocity, [0])
-        XCTAssertTrue(landed.rested)
-    }
-
-    func testASpringAnswersTheSameValueForTheSameInstant() {
-        let first = AppKitMotionCurve.sample(
-            motion: .spring(response: 260, damping: 0.8),
-            elapsed: 147,
-            from: [20, -4],
-            destination: [80, 10],
-            velocity: [0.03, -0.01])
-        let second = AppKitMotionCurve.sample(
-            motion: .spring(response: 260, damping: 0.8),
-            elapsed: 147,
-            from: [20, -4],
-            destination: [80, 10],
-            velocity: [0.03, -0.01])
-
-        XCTAssertEqual(first, second)
-        XCTAssertFalse(first.rested)
-    }
-
-    func testASpringRestsWhenStillAndNeverOutlivesItsSafetyLimit() {
-        let naturallyRested = AppKitMotionCurve.sample(
-            motion: .spring(response: 260, damping: 0.8),
-            elapsed: 3_000,
-            from: [0],
-            destination: [1],
-            velocity: [0])
-        let capped = AppKitMotionCurve.sample(
-            motion: .spring(response: 100_000, damping: 0.01),
-            elapsed: 10_000,
-            from: [0],
-            destination: [1],
-            velocity: [0])
-
-        XCTAssertEqual(naturallyRested.value, [1])
-        XCTAssertEqual(naturallyRested.velocity, [0])
-        XCTAssertTrue(naturallyRested.rested)
-        XCTAssertEqual(capped.value, [1])
-        XCTAssertEqual(capped.velocity, [0])
-        XCTAssertTrue(capped.rested)
-    }
-
     @MainActor
     func testOneStateNumberOwnsOneChannelAcrossControls() throws {
         let engine = AppKitMotionEngine()
