@@ -888,3 +888,82 @@ internal sealed class CountingCanvas : ICanvas
     public SizeF GetStringSize(string value, IFont font, float fontSize,
         HorizontalAlignment horizontalAlignment, VerticalAlignment verticalAlignment) => SizeF.Zero;
 }
+
+/// <summary>
+/// A handler standing where a platform's would, for the few reports MAUI makes
+/// only for a control a handler stands behind.
+/// </summary>
+/// <remarks>
+/// A picker raises Opened and Closed only once a handler answers for it, and a
+/// scroller arms its rest only where a context stands behind it - so a control
+/// with nothing under it never makes either report. This one draws nothing,
+/// measures nothing and answers no property: it is there so that MAUI raises
+/// what it raises on a device, and a test reads what the renderer made of it.
+/// </remarks>
+internal sealed class StandInHandler : IViewHandler
+{
+    private IView? _view;
+
+    public bool HasContainer { get; set; }
+
+    public object? ContainerView => null;
+
+    public object? PlatformView => null;
+
+    public IView? VirtualView => _view;
+
+    IElement? IElementHandler.VirtualView => _view;
+
+    public IMauiContext? MauiContext { get; } = new Context();
+
+    public Size GetDesiredSize(double widthConstraint, double heightConstraint) => Size.Zero;
+
+    public void PlatformArrange(Rect frame)
+    {
+    }
+
+    public void SetMauiContext(IMauiContext mauiContext)
+    {
+    }
+
+    public void SetVirtualView(IElement view) => _view = view as IView;
+
+    public void UpdateValue(string property)
+    {
+    }
+
+    public void Invoke(string command, object? args = null)
+    {
+    }
+
+    public void DisconnectHandler() => _view = null;
+
+    /// <summary>A context with nothing in it: all that is asked of one is that it is there.</summary>
+    private sealed class Context : IMauiContext
+    {
+        public IServiceProvider Services { get; } = new Nothing();
+
+        public IMauiHandlersFactory Handlers { get; } = new NoHandlers();
+    }
+
+    /// <summary>No services at all.</summary>
+    private sealed class Nothing : IServiceProvider
+    {
+        public object? GetService(Type serviceType) => null;
+    }
+
+    /// <summary>No handlers either: a stand-in makes none.</summary>
+    private sealed class NoHandlers : IMauiHandlersFactory
+    {
+        public Type? GetHandlerType(Type view) => null;
+
+        public IElementHandler? GetHandler(Type type) => null;
+
+        public IElementHandler? GetHandler<T>() where T : IElement => null;
+
+        public IMauiHandlersCollection GetCollection() =>
+            throw new NotSupportedException("a stand-in makes no handlers");
+
+        public object? GetService(Type serviceType) => null;
+    }
+}

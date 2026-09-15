@@ -107,6 +107,28 @@ public class PanTests
         Assert.Equal((5.0, 0.0), frame.Totals(Report(GestureStatus.Running, 5), 10, 0));
     }
 
+    /// <summary>
+    /// A pan given states to write into moves them: each value is where it
+    /// stood as the finger landed, plus the drag's total along its axis.
+    /// </summary>
+    [Fact]
+    public void APanMovesTheStatesItWasGiven()
+    {
+        var host = new Host();
+
+        var view = (Border)host.Apply("""
+            {"id":"p","type":"Border","props":{"panXChannel":5,"panYChannel":6}}
+            """);
+
+        var pan = (IPanGestureController)Assert.Single(view.GestureRecognizers.OfType<PanGestureRecognizer>());
+
+        pan.SendPanStarted(view, 0);
+        pan.SendPan(view, 12.5, -3, 0);
+
+        Assert.Equal(12.5, host.Renderer.Cycle.Standing(5));
+        Assert.Equal(-3, host.Renderer.Cycle.Standing(6));
+    }
+
     [Fact]
     public void TheRendererReportsAPanInTheOrderMauiDeclaresIt()
     {

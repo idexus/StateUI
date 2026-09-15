@@ -409,6 +409,31 @@ public class SceneTests
         Assert.Empty(heard.Reports);
     }
 
+    /// <summary>
+    /// A scene's main window put away - the application sent to the background
+    /// - is its scene stopped; coming back is the scene there again but not yet
+    /// in front.
+    /// </summary>
+    [Fact]
+    public void AStoppedMainWindowStopsItsScene()
+    {
+        Heard heard = new Heard().Apply(Tree(Scene(1, MainWindow(100, "Main"))));
+        IWindow main = heard.Application.Windows.First();
+
+        main.Created();
+        main.Activated();
+        main.Deactivated();
+        heard.Reports.Clear();
+
+        main.Stopped();
+
+        Assert.Equal([(16, (string?)null)], heard.Reports);
+
+        main.Resumed();
+
+        Assert.Equal([(16, (string?)null), (15, null)], heard.Reports);
+    }
+
     // ---- What the reader does ----------------------------------------------
 
     /// <summary>

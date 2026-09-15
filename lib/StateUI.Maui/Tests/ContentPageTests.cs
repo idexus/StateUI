@@ -165,6 +165,56 @@ public class ContentPageTests
     }
 
     /// <summary>
+    /// A move reports to the handlers the node named: the page being left that
+    /// it is being left and has been, the page come to that it was.
+    /// </summary>
+    /// <remarks>
+    /// MAUI raises the three once its platform handler has finished the
+    /// navigation, through senders it keeps internal - so they are reached by
+    /// name, and a MAUI that renames one fails here saying which.
+    /// </remarks>
+    [Fact]
+    public void AMoveReportsToTheHandlersTheNodeNamed()
+    {
+        (SwiftPages pages, Host host) = Renderer();
+
+        var page = Assert.IsType<ContentPage>(pages.Render(
+            null,
+            Host.Parse("""
+                {"id":1,"type":"Page","props":{"title":"Detail"},
+                 "events":{"navigatedTo":21,"navigatingFrom":22,"navigatedFrom":23},"arranged":true,
+                 "children":[{"id":2,"type":"Label","props":{"text":"detail"}}]}
+                """)));
+
+        var elsewhere = new ContentPage();
+
+        void Send(string sender, Type args, params object[] extra)
+        {
+            object moved = Activator.CreateInstance(
+                args,
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic,
+                null,
+                [elsewhere, NavigationType.Push],
+                null)!;
+
+            System.Reflection.MethodInfo? method = typeof(Page).GetMethod(
+                sender, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+            Assert.True(method is not null, $"MAUI's Page has no {sender} any more");
+            method!.Invoke(page, [moved, .. extra]);
+        }
+
+        Send("SendNavigatedTo", typeof(NavigatedToEventArgs));
+        Assert.Equal(21, host.Dispatched[^1].Id);
+
+        Send("SendNavigatingFrom", typeof(NavigatingFromEventArgs));
+        Assert.Equal(22, host.Dispatched[^1].Id);
+
+        Send("SendNavigatedFrom", typeof(NavigatedFromEventArgs), false);
+        Assert.Equal(23, host.Dispatched[^1].Id);
+    }
+
+    /// <summary>
     /// A page nobody listens to reports nothing - the subscription is made
     /// where the page is created, once, and the id is read at fire time, so an
     /// absent handler is an absent entry rather than an absent subscription.

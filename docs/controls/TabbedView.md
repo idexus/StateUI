@@ -12,8 +12,8 @@ Declared in `lib/StateUI/Sources/Views/TabbedView.swift`.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `currentPage` | property |  | ✅ |  |  |  |  |  |  |
-| `currentPageChanged` | handler |  | ✅ |  |  |  |  |  |  |
+| `currentPage` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `currentPageChanged` | handler | ✅ | ✅ |  |  |  |  |  |  |
 
 Realization:
 
@@ -31,7 +31,7 @@ Anything carrying property values, whether or not it is drawn - a control, a `St
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property |  |  |  |  |  |  |  |  |
+| `accessibilityIdentifier` | property |  | ✅ |  |  |  |  |  |  |
 
 ## From [BarElement](tiers/BarElement.md)
 
@@ -39,7 +39,7 @@ The bar over a stack or a set of tabs.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `barBackgroundColor` | property |  | ✅ |  |  |  |  |  |  |
+| `barBackgroundColor` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -47,5 +47,5 @@ The identity shown for a constructed container page.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property |  |  |  |  |  |  |  |  |
-| `title` | property |  |  |  |  |  |  |  |  |
+| `icon` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `title` | property | ✅ | ✅ |  |  |  |  |  |  |

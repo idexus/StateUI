@@ -12,13 +12,13 @@ Declared in `lib/StateUI/Sources/Views/WebView.swift`.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `canGoBackChanged` | handler |  |  |  |  |  |  |  |  |
-| `canGoForwardChanged` | handler |  |  |  |  |  |  |  |  |
-| `onNavigated` (`navigated`) | handler |  |  |  |  |  |  |  |  |
-| `onNavigating` (`navigating`) | handler |  |  |  |  |  |  |  |  |
-| `onProcessTerminated` (`processTerminated`) | handler |  |  |  |  |  |  |  |  |
-| `source` | property |  |  |  |  |  |  |  |  |
-| `userAgent` | property |  |  |  |  |  |  |  |  |
+| `canGoBackChanged` | handler | ✅ |  |  |  |  |  |  |  |
+| `canGoForwardChanged` | handler | ✅ |  |  |  |  |  |  |  |
+| `onNavigated` (`navigated`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onNavigating` (`navigating`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onProcessTerminated` (`processTerminated`) | handler | ✅ |  |  |  |  |  |  |  |
+| `source` | property | ✅ |  |  |  |  |  |  |  |
+| `userAgent` | property | ✅ |  |  |  |  |  |  |  |
 
 Realization:
 
@@ -36,7 +36,7 @@ Anything carrying property values, whether or not it is drawn - a control, a `St
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property |  |  |  |  |  |  |  |  |
+| `accessibilityIdentifier` | property | ✅ |  |  |  |  |  |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -44,37 +44,37 @@ A control backed by a node, and drawn.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property |  |  |  |  |  |  |  |  |
-| `accessibilityHint` | property |  |  |  |  |  |  |  |  |
-| `accessibilityLabel` | property |  |  |  |  |  |  |  |  |
-| `automationExcludedWithChildren` | property |  |  |  |  |  |  |  |  |
-| `background` | property |  |  |  |  |  |  |  |  |
-| `frame` | property |  |  |  |  |  |  |  |  |
-| `height` | property |  |  |  |  |  |  |  |  |
-| `ignoresInput` | property |  |  |  |  |  |  |  |  |
-| `isAccessibilityHidden` | property |  |  |  |  |  |  |  |  |
-| `isEnabled` | property |  |  |  |  |  |  |  |  |
-| `isFocusedChanged` | handler |  |  |  |  |  |  |  |  |
-| `isVisible` | property |  |  |  |  |  |  |  |  |
-| `layoutDirection` | property |  |  |  |  |  |  |  |  |
-| `maximumHeight` | property |  |  |  |  |  |  |  |  |
-| `maximumWidth` | property |  |  |  |  |  |  |  |  |
-| `minimumHeight` | property |  |  |  |  |  |  |  |  |
-| `minimumWidth` | property |  |  |  |  |  |  |  |  |
-| `opacity` | property |  |  |  |  |  |  |  |  |
-| `pivotX` | property |  |  |  |  |  |  |  |  |
-| `pivotY` | property |  |  |  |  |  |  |  |  |
-| `rotation` | property |  |  |  |  |  |  |  |  |
-| `rotationX` | property |  |  |  |  |  |  |  |  |
-| `rotationY` | property |  |  |  |  |  |  |  |  |
-| `scale` | property |  |  |  |  |  |  |  |  |
-| `scaleX` | property |  |  |  |  |  |  |  |  |
-| `scaleY` | property |  |  |  |  |  |  |  |  |
+| `accessibilityHeadingLevel` | property | ✅ |  |  |  |  |  |  |  |
+| `accessibilityHint` | property | ✅ |  |  |  |  |  |  |  |
+| `accessibilityLabel` | property | ✅ |  |  |  |  |  |  |  |
+| `automationExcludedWithChildren` | property | ✅ |  |  |  |  |  |  |  |
+| `background` | property | ✅ |  |  |  |  |  |  |  |
+| `frame` | property | ✅ |  |  |  |  |  |  |  |
+| `height` | property | ✅ |  |  |  |  |  |  |  |
+| `ignoresInput` | property | ✅ |  |  |  |  |  |  |  |
+| `isAccessibilityHidden` | property | ✅ |  |  |  |  |  |  |  |
+| `isEnabled` | property | ✅ |  |  |  |  |  |  |  |
+| `isFocusedChanged` | handler | ✅ |  |  |  |  |  |  |  |
+| `isVisible` | property | ✅ |  |  |  |  |  |  |  |
+| `layoutDirection` | property | ✅ |  |  |  |  |  |  |  |
+| `maximumHeight` | property | ✅ |  |  |  |  |  |  |  |
+| `maximumWidth` | property | ✅ |  |  |  |  |  |  |  |
+| `minimumHeight` | property | ✅ |  |  |  |  |  |  |  |
+| `minimumWidth` | property | ✅ |  |  |  |  |  |  |  |
+| `opacity` | property | ✅ |  |  |  |  |  |  |  |
+| `pivotX` | property | ✅ |  |  |  |  |  |  |  |
+| `pivotY` | property | ✅ |  |  |  |  |  |  |  |
+| `rotation` | property | ✅ |  |  |  |  |  |  |  |
+| `rotationX` | property | ✅ |  |  |  |  |  |  |  |
+| `rotationY` | property | ✅ |  |  |  |  |  |  |  |
+| `scale` | property | ✅ |  |  |  |  |  |  |  |
+| `scaleX` | property | ✅ |  |  |  |  |  |  |  |
+| `scaleY` | property | ✅ |  |  |  |  |  |  |  |
 | `style` | property |  |  |  |  |  |  |  |  |
-| `translationX` | property |  |  |  |  |  |  |  |  |
-| `translationY` | property |  |  |  |  |  |  |  |  |
-| `width` | property |  |  |  |  |  |  |  |  |
-| `zIndex` | property |  |  |  |  |  |  |  |  |
+| `translationX` | property | ✅ |  |  |  |  |  |  |  |
+| `translationY` | property | ✅ |  |  |  |  |  |  |  |
+| `width` | property | ✅ |  |  |  |  |  |  |  |
+| `zIndex` | property | ✅ |  |  |  |  |  |  |  |
 
 ## From [View](tiers/View.md)
 
@@ -82,34 +82,34 @@ A VisualElement a layout positions.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `absoluteLayoutBounds` | property |  |  |  |  |  |  |  |  |
-| `absoluteLayoutProportions` | property |  |  |  |  |  |  |  |  |
-| `allowDrop` | property |  |  |  |  |  |  |  |  |
-| `canDrag` | property |  |  |  |  |  |  |  |  |
-| `onDragLeave` (`dragLeave`) | handler |  |  |  |  |  |  |  |  |
-| `onDragOver` (`dragOver`) | handler |  |  |  |  |  |  |  |  |
-| `dragStarting` | handler |  |  |  |  |  |  |  |  |
+| `absoluteLayoutBounds` | property | ✅ |  |  |  |  |  |  |  |
+| `absoluteLayoutProportions` | property | ✅ |  |  |  |  |  |  |  |
+| `allowDrop` | property | ✅ |  |  |  |  |  |  |  |
+| `canDrag` | property | ✅ |  |  |  |  |  |  |  |
+| `onDragLeave` (`dragLeave`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onDragOver` (`dragOver`) | handler | ✅ |  |  |  |  |  |  |  |
+| `dragStarting` | handler | ✅ |  |  |  |  |  |  |  |
 | `dragText` | property |  |  |  |  |  |  |  |  |
-| `onDrop` (`drop`) | handler |  |  |  |  |  |  |  |  |
-| `onDropCompleted` (`dropCompleted`) | handler |  |  |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | handler |  |  |  |  |  |  |  |  |
-| `gridColumn` | property |  |  |  |  |  |  |  |  |
-| `gridColumnSpan` | property |  |  |  |  |  |  |  |  |
-| `gridRow` | property |  |  |  |  |  |  |  |  |
-| `gridRowSpan` | property |  |  |  |  |  |  |  |  |
-| `horizontalAlignment` | property |  |  |  |  |  |  |  |  |
-| `margin` | property |  |  |  |  |  |  |  |  |
-| `panTouchCount` | property |  |  |  |  |  |  |  |  |
-| `onPanUpdated` (`panUpdated`) | handler |  |  |  |  |  |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | handler |  |  |  |  |  |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | handler |  |  |  |  |  |  |  |  |
-| `onPointerExited` (`pointerExited`) | handler |  |  |  |  |  |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | handler |  |  |  |  |  |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | handler |  |  |  |  |  |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | handler |  |  |  |  |  |  |  |  |
-| `swipeDirection` | property |  |  |  |  |  |  |  |  |
-| `swipeThreshold` | property |  |  |  |  |  |  |  |  |
-| `onSwiped` (`swiped`) | handler |  |  |  |  |  |  |  |  |
-| `tapCount` | property |  |  |  |  |  |  |  |  |
-| `onTapped` (`tapped`) | handler |  |  |  |  |  |  |  |  |
-| `verticalAlignment` | property |  |  |  |  |  |  |  |  |
+| `onDrop` (`drop`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onDropCompleted` (`dropCompleted`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onFrameChanged` (`frameChanged`) | handler | ✅ |  |  |  |  |  |  |  |
+| `gridColumn` | property | ✅ |  |  |  |  |  |  |  |
+| `gridColumnSpan` | property | ✅ |  |  |  |  |  |  |  |
+| `gridRow` | property | ✅ |  |  |  |  |  |  |  |
+| `gridRowSpan` | property | ✅ |  |  |  |  |  |  |  |
+| `horizontalAlignment` | property | ✅ |  |  |  |  |  |  |  |
+| `margin` | property | ✅ |  |  |  |  |  |  |  |
+| `panTouchCount` | property | ✅ |  |  |  |  |  |  |  |
+| `onPanUpdated` (`panUpdated`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onPointerEntered` (`pointerEntered`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onPointerExited` (`pointerExited`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onPointerMoved` (`pointerMoved`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onPointerPressed` (`pointerPressed`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onPointerReleased` (`pointerReleased`) | handler | ✅ |  |  |  |  |  |  |  |
+| `swipeDirection` | property | ✅ |  |  |  |  |  |  |  |
+| `swipeThreshold` | property | ✅ |  |  |  |  |  |  |  |
+| `onSwiped` (`swiped`) | handler | ✅ |  |  |  |  |  |  |  |
+| `tapCount` | property | ✅ |  |  |  |  |  |  |  |
+| `onTapped` (`tapped`) | handler | ✅ |  |  |  |  |  |  |  |
+| `verticalAlignment` | property | ✅ |  |  |  |  |  |  |  |

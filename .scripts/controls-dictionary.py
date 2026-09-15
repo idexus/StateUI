@@ -11,9 +11,13 @@ members are what its source file declares; an entry sharing its file with
 another takes the blocks of its own type, and a part of the structure takes
 what SOURCES names - so a file always lists what the code declares.
 
-A host's column is what that host declares it realizes: the AppKit column and
-its notes are written from `AppKitRealization` in the AppKit host's sources. The
-other columns and every realization line already written are kept.
+A host's column is what that host declares it realizes: the AppKit column is
+written from `AppKitRealization` in the AppKit host's sources and the MAUI
+column from `MauiRealization` in the MAUI host's. A row has one Notes cell for
+every host: AppKit's note as written, then each other host's as
+"<host>: <note>", in the columns' order, joined by "; " - so every host's note
+survives a regeneration and every host's test reads its own part. The other
+columns and every realization line already written are kept.
 
     python3 .scripts/controls-dictionary.py
 """
@@ -28,10 +32,20 @@ DOCS = os.path.join(ROOT, "docs")
 OUT = os.path.join(DOCS, "controls")
 CONTRACT = os.path.join(DOCS, "platform-contract.md")
 APPKIT_REALIZATION = os.path.join(ROOT, "lib/StateUI.AppKit/Sources/AppKitRealization.swift")
+MAUI_REALIZATION = os.path.join(ROOT, "lib/StateUI.Maui/Sources/Rendering/MauiRealization.cs")
 
 PLATFORMS = ["MAUI", "AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
-# The column written from AppKitRealization; every other column is kept as written.
-APPKIT = PLATFORMS.index("AppKit")
+# A record's owner, member and what is missing, as both declarations write them.
+RECORD = r'\("(\w+)", "(\w+)"(?:, missing: "((?:[^"\\]|\\.)*)")?\)'
+# Each host whose column is written from its declaration: the file, how a record reads there, how
+# the entries it does not realize at all do, and how the entries it presents with no view of their own
+# do - no tier's record reaches those. Every other column is kept as written.
+DECLARED = OrderedDict([
+    ("AppKit", (APPKIT_REALIZATION, r"\.(complete|partial)" + RECORD,
+                r"static let unrealized: Set<String> = \[([^\]]*)\]",
+                r"static let viewless: Set<String> = \[([^\]]*)\]")),
+    ("MAUI", (MAUI_REALIZATION, r"\b(Complete|Partial)" + RECORD, r"Unrealized = \[([^\]]*)\]", None)),
+])
 CONTROLS = [
     "Label", "Button", "TextField", "TextEditor", "SearchField", "Image", "Picker", "DatePicker",
     "TimePicker", "Switch", "CheckBox", "RadioButton", "Slider", "Stepper", "ActivityIndicator",
@@ -206,14 +220,27 @@ def model():
     return entries, tiers
 
 
-def appkit_realization():
-    """({(owner, member): missing, or None when complete}, unrealized entries) - the AppKit host's records."""
-    text = uncommented(open(APPKIT_REALIZATION, encoding="utf-8").read())
+def realization(path, record, unrealized, viewless):
+    """({(owner, member): missing, or None when complete}, unrealized entries, viewless entries) - one
+    host's declaration."""
+    text = uncommented(open(path, encoding="utf-8").read())
     records = {}
-    for m in re.finditer(r'\.(complete|partial)\("(\w+)", "(\w+)"(?:, missing: "((?:[^"\\]|\\.)*)")?\)', text):
-        records[(m.group(2), m.group(3))] = m.group(4).replace('\\"', '"') if m.group(1) == "partial" else None
-    block = re.search(r"static let unrealized: Set<String> = \[([^\]]*)\]", text)
-    return records, set(re.findall(r'"(\w+)"', block.group(1))) if block else set()
+    for m in re.finditer(record, text):
+        records[(m.group(2), m.group(3))] = (m.group(4).replace('\\"', '"')
+                                             if m.group(1).lower() == "partial" else None)
+
+    def names(pattern):
+        block = re.search(pattern, text) if pattern else None
+        return set(re.findall(r'"(\w+)"', block.group(1))) if block else set()
+
+    return records, names(unrealized), names(viewless)
+
+
+def notes(parts):
+    """A row's one Notes cell: AppKit's note as written, then each other host's as "<host>: <note>", in
+    the columns' order, joined by "; "."""
+    order = ["AppKit"] + [p for p in PLATFORMS if p != "AppKit"]
+    return "; ".join(parts[p] if p == "AppKit" else f"{p}: {parts[p]}" for p in order if parts.get(p))
 
 
 def columns(line):
@@ -280,16 +307,18 @@ HEADER = ("| Member | Kind | " + " | ".join(PLATFORMS) + " | Notes |\n"
 
 def write():
     entries, tiers = model()
-    records, unrealized = appkit_realization()
+    declared = {host: realization(*source) for host, source in DECLARED.items()}
     native = native_mapping()
     os.makedirs(os.path.join(OUT, "tiers"), exist_ok=True)
     summary = OrderedDict()
 
-    def appkit(entry, tier, token):
-        """The AppKit mark and note: the entry's own record, else its tier's."""
+    def realized(host, entry, tier, token):
+        """A host's mark and note: the entry's own record, else its tier's - unless the host presents
+        the entry with no view of its own."""
+        records, unrealized, viewless = declared[host]
         if entry in unrealized:
             return "", ""
-        for owner in [entry] + ([tier] if tier else []):
+        for owner in [entry] + ([tier] if tier and entry not in viewless else []):
             if (owner, token) in records:
                 missing = records[(owner, token)]
                 return ("✅", "") if missing is None else ("✅*", missing)
@@ -306,39 +335,41 @@ def write():
             lines = [HEADER]
             for token in sorted(props | set(handlers)):
                 marks = (kept.get(token, ([], ""))[0] + [""] * len(PLATFORMS))[:len(PLATFORMS)]
-                marks[APPKIT], note = appkit(c, tier, token)
+                parts = {}
+                for host in DECLARED:
+                    marks[PLATFORMS.index(host)], parts[host] = realized(host, c, tier, token)
                 total += 1
                 for k, p in enumerate(PLATFORMS):
                     if marks[k] == "✅":
                         counts[p][0] += 1
                     elif marks[k] == "✅*":
                         counts[p][1] += 1
-                lines.append(row(token, handlers, marks, note))
+                lines.append(row(token, handlers, marks, notes(parts)))
             return lines
 
         paths = [f"`lib/StateUI/Sources/{s}`" for s in info["sources"]]
-        declared = paths[0] if len(paths) == 1 else ", ".join(paths[:-1]) + " and " + paths[-1]
+        declared_in = paths[0] if len(paths) == 1 else ", ".join(paths[:-1]) + " and " + paths[-1]
         inherits = ("Inherits: " + " · ".join(f"[{t}](tiers/{t}.md)" for t in info["tiers"]) if info["tiers"]
                     else "Inherits nothing: every member below is its own.")
         body = [f"# {c}", "", info["doc"], "", inherits, "",
                 f"Marks: {LEGEND}. See [the dictionary](README.md).", "",
-                f"Declared in {declared}.", ""]
+                f"Declared in {declared_in}.", ""]
         own_heading = f"## {c}'s own members"
         body += [own_heading, ""]
         if info["own"]["props"] or info["own"]["handlers"]:
             body += table(info["own"]["props"], info["own"]["handlers"], None)
         else:
             body += [f"{c} declares no members of its own; everything it takes comes from the sections below."]
-        def realization(p):
+        def realization_line(p):
             return (f"- **{p}**: {native[c][p]}" if c in native and native[c][p] not in ("", "—")
                     else f"- **{p}**: no native counterpart is named yet.")
 
-        realized = kept_realizations.get(own_heading) or [realization(p) for p in PLATFORMS]
+        realized_lines = kept_realizations.get(own_heading) or [realization_line(p) for p in PLATFORMS]
         # A host's line reaches a file written before the host had a column, in the host's place.
         for k, p in enumerate(PLATFORMS):
-            if not any(line.startswith(f"- **{p}**:") for line in realized):
-                realized.insert(k, realization(p))
-        body += ["", "Realization:", ""] + realized + [""]
+            if not any(line.startswith(f"- **{p}**:") for line in realized_lines):
+                realized_lines.insert(k, realization_line(p))
+        body += ["", "Realization:", ""] + realized_lines + [""]
         for t in info["tiers"]:
             heading = f"## From [{t}](tiers/{t}.md)"
             tier = tiers[t]
@@ -395,10 +426,12 @@ def write():
               "platform, because a host realizes the same inherited member differently on different controls - "
               "a background is a layer colour on a label and a path fill on a border.", "",
               f"Marks: {LEGEND}.", "",
-              "A host's column is what that host declares it realizes - AppKit's is `AppKitRealization`, in its "
-              "sources - and a realization records itself there in the same change. `ControlDictionaryTests` "
-              "fails when a file's members differ from the code, when a ✅* has no note, or when a file is "
-              "missing; `AppKitRealizationTests` fails when the AppKit column differs from the records. "
+              "A host's column is what that host declares it realizes - AppKit's is `AppKitRealization` and "
+              "MAUI's is `MauiRealization`, each in its host's sources - and a realization records itself there "
+              "in the same change. A row has one Notes cell for every host: AppKit's note as written, then each "
+              "other host's as `MAUI: …`, joined by `; `. `ControlDictionaryTests` fails when a file's members "
+              "differ from the code, when a ✅* has no note, or when a file is missing; `AppKitRealizationTests` "
+              "and `MauiRealizationTests` fail when their host's column or note differs from its records. "
               "`python3 .scripts/controls-dictionary.py` rewrites the member lists and the columns, keeping every "
               "realization line already written.", "",
               "## Controls", ""] + summary_table("", CONTROLS, "Control") + [

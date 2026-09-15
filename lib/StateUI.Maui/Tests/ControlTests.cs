@@ -179,10 +179,19 @@ public class ControlTests
             picker.SelectedIndex = 2;
             // closed(1), opened(2), selectedIndexChanged(3): a node numbers
             // its handlers in NAME order, which is what keeps the wire
-            // deterministic. The two the platform raises when its own list
-            // opens and shuts cannot be provoked without one - setting IsOpen
-            // does not raise them - so what is checked here is the property.
+            // deterministic.
             Assert.Equal((3, "2"), host.Dispatched[^1]);
+
+            // Its list opening and shutting, which MAUI reports only for a
+            // picker a handler stands behind - so one stands in for the
+            // platform's.
+            picker.Handler = new StandInHandler();
+
+            picker.IsOpen = true;
+            Assert.Equal((2, (string?)null), host.Dispatched[^1]);
+
+            picker.IsOpen = false;
+            Assert.Equal((1, (string?)null), host.Dispatched[^1]);
         },
 
         ["DatePicker"] = (host, view) =>
@@ -199,6 +208,16 @@ public class ControlTests
 
             picker.Date = new DateTime(2026, 9, 15);
             Assert.Equal((2, "[2026, 9, 15]"), host.Dispatched[^1]);
+
+            // closed(1), dateChanged(2), opened(3) - opening and shutting
+            // reported for a picker a handler stands behind, as on a device.
+            picker.Handler = new StandInHandler();
+
+            picker.IsOpen = true;
+            Assert.Equal((3, (string?)null), host.Dispatched[^1]);
+
+            picker.IsOpen = false;
+            Assert.Equal((1, (string?)null), host.Dispatched[^1]);
         },
 
         ["TimePicker"] = (host, view) =>
@@ -211,6 +230,15 @@ public class ControlTests
 
             picker.Time = new TimeSpan(7, 45, 0);
             Assert.Equal((3, "[7, 45, 0]"), host.Dispatched[^1]);
+
+            // closed(1), opened(2), timeChanged(3).
+            picker.Handler = new StandInHandler();
+
+            picker.IsOpen = true;
+            Assert.Equal((2, (string?)null), host.Dispatched[^1]);
+
+            picker.IsOpen = false;
+            Assert.Equal((1, (string?)null), host.Dispatched[^1]);
         },
 
         ["Switch"] = (host, view) =>
@@ -481,6 +509,11 @@ public class ControlTests
 
             castle.SendInfoWindowClick();
             Assert.Equal((3, (string?)null), host.Dispatched[^1]);
+
+            // And a tap on the map itself, where it landed - raised through
+            // IMap, which is what the platform's map calls.
+            ((Microsoft.Maui.Maps.IMap)map).Clicked(new Location(52.2297, 21.0122));
+            Assert.Equal((1, "[52.2297, 21.0122]"), host.Dispatched[^1]);
         },
 
         ["WebView"] = (host, view) =>
@@ -513,6 +546,11 @@ public class ControlTests
                 WebNavigationEvent.NewPage, web.Source, "https://example.com/a,b",
                 WebNavigationResult.Success));
             Assert.Equal((3, "enum 1, enum 3, \"https://example.com/a,b\""), host.Dispatched[^1]);
+
+            // And the platform's web process going away, raised through
+            // IWebView the way the platform raises it.
+            ((IWebView)web).ProcessTerminated(new WebProcessTerminatedEventArgs());
+            Assert.Equal((5, (string?)null), host.Dispatched[^1]);
         },
 
         ["TitleBar"] = (host, view) =>

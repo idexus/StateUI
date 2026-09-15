@@ -267,6 +267,24 @@ public class TabbedPageTests
     }
 
     /// <summary>
+    /// A tab bar is a page too, with a title and an icon of its own - what a
+    /// stack or a window holding it shows for it.
+    /// </summary>
+    [Fact]
+    public void ATabBarCarriesATitleAndAnIconOfItsOwn()
+    {
+        (SwiftPages pages, _) = Renderer();
+
+        var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
+            "{\"id\":1,\"type\":\"TabbedView\",\"arranged\":true,"
+            + "\"props\":{\"title\":\"Library\",\"icon\":\"shelf.png\"},"
+            + "\"children\":[" + TabAt("home", "Home") + "]}")));
+
+        Assert.Equal("Library", tabbed.Title);
+        Assert.Equal("shelf.png", (tabbed.IconImageSource as FileImageSource)?.File);
+    }
+
+    /// <summary>
     /// A tab bar with nothing in it builds - MAUI's own TabbedPage is empty
     /// until something is put in it, so an application whose tabs are loaded
     /// has somewhere to start.

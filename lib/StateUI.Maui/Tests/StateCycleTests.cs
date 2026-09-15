@@ -309,6 +309,70 @@ public class StateCycleTests
     }
 
     /// <summary>
+    /// A box ticked and a radio chosen are told to their plain state the way a
+    /// flipped switch is - through the control's own change, one lane under
+    /// the state's number.
+    /// </summary>
+    [Fact]
+    public void ATickedBoxAndAChosenRadioAreToldToTheirStates()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        static SwiftNode Bound(SwiftNodeType type, int id) => new()
+        {
+            Id = new SwiftId(id),
+            Type = type,
+            States = [new SwiftStateEntry(SwiftProp.IsOn, "isOn", 6, SwiftStateMode.InOut, SwiftStateKind.Plain)],
+        };
+
+        var box = (CheckBox)host.ApplyMessage(Bound(SwiftNodeType.CheckBox, 1));
+
+        box.IsChecked = true;
+
+        (int number, _, double[] lanes) = Told(crossing)!.Value;
+
+        Assert.Equal(6, number);
+        Assert.Equal([1.0], lanes);
+
+        var radio = (RadioButton)host.ApplyMessage(Bound(SwiftNodeType.RadioButton, 2));
+
+        radio.IsChecked = true;
+
+        (number, _, lanes) = Told(crossing)!.Value;
+
+        Assert.Equal(6, number);
+        Assert.Equal([1.0], lanes);
+    }
+
+    /// <summary>
+    /// A stepper the reader steps is told to its state through its own change,
+    /// the way a dragged slider is.
+    /// </summary>
+    [Fact]
+    public void ASteppedValueIsToldToItsState()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Cycle.Crossing = crossing;
+
+        var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
+        var stepper = (Stepper)stack.Children[1];
+
+        crossing.Written.Clear();
+
+        stepper.Value = 6;
+
+        (int number, _, double[] lanes) = Told(crossing)!.Value;
+
+        Assert.Equal(2, number);
+        Assert.Equal(6, lanes[0]);
+    }
+
+    /// <summary>
     /// A VALUE WRITTEN ON A DRIVEN STATE SNAPS: whatever was carrying the property lets
     /// go without a word, because the author has just written it.
     /// </summary>

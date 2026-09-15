@@ -611,6 +611,86 @@ public class RendererTests
         Assert.Single(host.Dispatched);
     }
 
+    /// <summary>
+    /// THE STATE HOLDS THE READER'S WORD WHEN THE HANDLER HEARS OF IT: the
+    /// report to the state is written before the event is raised, not merely
+    /// beside it.
+    /// </summary>
+    [Fact]
+    public void TheStateHoldsTheTypedWordWhenTheHandlerHearsOfIt()
+    {
+        var crossing = new HandCrossing();
+        List<int> writtenWhenHeard = [];
+
+        var renderer = new StateUIRenderer((id, _) =>
+        {
+            if (id >= 0)
+            {
+                writtenWhenHeard.Add(crossing.Written.Count);
+            }
+        });
+
+        renderer.Cycle.Crossing = crossing;
+
+        // Past the application, scene, window and page, which a renderer is
+        // never handed: it is given the view.
+        SwiftNode node = Host.Parse(Fixtures.ReadBytes("state-text-two-way.bin"));
+
+        while (node.Type is SwiftNodeType.Application or SwiftNodeType.Scene
+            or SwiftNodeType.Window or SwiftNodeType.Page)
+        {
+            node = node.Children![0];
+        }
+
+        var stack = (VerticalStackLayout)renderer.Render(null, node);
+        var entry = Assert.IsType<Entry>(stack.Children[0]);
+        int before = crossing.Written.Count;
+
+        entry.Text = "Ada";
+
+        Assert.Equal([before + 1], writtenWhenHeard);
+    }
+
+    /// <summary>
+    /// A refresh that starts or ends is reported to the handler that asked,
+    /// MAUI giving the flag no event of its own.
+    /// </summary>
+    [Fact]
+    public void ARefreshStartingAndEndingIsReportedWhenAsked()
+    {
+        var host = new Host();
+
+        var refresh = (RefreshView)host.Apply("""
+            {"id":"r","type":"RefreshView","events":{"isRefreshingChanged":4}}
+            """);
+
+        refresh.IsRefreshing = true;
+
+        Assert.Equal((4, "true"), host.Dispatched[^1]);
+
+        refresh.IsRefreshing = false;
+
+        Assert.Equal((4, "false"), host.Dispatched[^1]);
+    }
+
+    /// <summary>
+    /// A run's case, which the Label fixture's runs leave at the label's own.
+    /// </summary>
+    [Fact]
+    public void ARunTakesACaseOfItsOwn()
+    {
+        var host = new Host();
+
+        var label = (Label)host.Apply($$$"""
+            {"id":1,"type":"Label","arranged":true,"children":[
+              {"id":2,"type":"Spans","arranged":true,"children":[
+                {"id":3,"type":"Span","props":{"text":"loud",
+                 "textCase":{{{Host.Member(SwiftTextCase.Uppercase)}}}}}]}]}
+            """);
+
+        Assert.Equal(TextTransform.Uppercase, Assert.Single(label.FormattedText!.Spans).TextTransform);
+    }
+
     [Fact]
     public void TextTypedPastTheCapIsHeldToIt()
     {
@@ -1518,6 +1598,228 @@ public class RendererTests
         // No registry is not an answer: a renderer that read it as "no" would
         // draw the marker over every control before the app has a context.
         Assert.True(StateUIRenderer.CanBeMade(null, typeof(Microsoft.Maui.Controls.Maps.Map)));
+    }
+
+    /// <summary>
+    /// The font tier on every control that sets its text in type. MAUI
+    /// declares the font on each of these classes itself, so each has an arm of
+    /// its own here, and the Label the Elements fixture reads proves the
+    /// Label's arm alone.
+    /// </summary>
+    [Fact]
+    public void TheFontTierLandsOnEveryControlThatSetsType()
+    {
+        var host = new Host();
+        string font = $$$"""
+            "fontSize":17,"fontFamily":{"name":"OpenSansRegular"},
+            "fontAttributes":{{{Host.Member(SwiftFontAttributes.Italic)}}},
+            "fontAutoScalingEnabled":false
+            """;
+
+        string[] types =
+            ["Button", "TextField", "TextEditor", "SearchField", "Picker", "DatePicker", "TimePicker", "RadioButton"];
+
+        for (int at = 0; at < types.Length; at++)
+        {
+            var element = Assert.IsAssignableFrom<Microsoft.Maui.Controls.Internals.IFontElement>(
+                host.Apply($$$"""{"id":{{{at + 1}}},"type":"{{{types[at]}}}","props":{ {{{font}}} }}"""));
+
+            Assert.Equal(17, element.FontSize);
+            Assert.Equal("OpenSansRegular", element.FontFamily);
+            Assert.Equal(FontAttributes.Italic, element.FontAttributes);
+            Assert.False(element.FontAutoScalingEnabled);
+        }
+    }
+
+    /// <summary>
+    /// The text tier - a caption's colour, spacing and case - on the controls
+    /// whose reconcile writes it line by line, which neither the Elements
+    /// fixture's Label nor the four controls above read.
+    /// </summary>
+    [Fact]
+    public void TheTextTierLandsOnEveryControlWithACaption()
+    {
+        var host = new Host();
+        string text = $$$"""
+            "textColor":"#FF0000","characterSpacing":1.5,
+            "textCase":{{{Host.Member(SwiftTextCase.Lowercase)}}}
+            """;
+        Color red = Color.FromArgb("#FF0000");
+
+        var button = (Button)host.Apply($$$"""{"id":1,"type":"Button","props":{ {{{text}}} }}""");
+
+        Assert.Equal(red, button.TextColor);
+        Assert.Equal(1.5, button.CharacterSpacing);
+        Assert.Equal(TextTransform.Lowercase, button.TextTransform);
+
+        var field = (Entry)host.Apply($$$"""{"id":2,"type":"TextField","props":{ {{{text}}} }}""");
+
+        Assert.Equal(red, field.TextColor);
+        Assert.Equal(1.5, field.CharacterSpacing);
+        Assert.Equal(TextTransform.Lowercase, field.TextTransform);
+
+        var editor = (Editor)host.Apply($$$"""{"id":3,"type":"TextEditor","props":{ {{{text}}} }}""");
+
+        Assert.Equal(red, editor.TextColor);
+        Assert.Equal(1.5, editor.CharacterSpacing);
+        Assert.Equal(TextTransform.Lowercase, editor.TextTransform);
+
+        var search = (SearchBar)host.Apply($$$"""{"id":4,"type":"SearchField","props":{ {{{text}}} }}""");
+
+        Assert.Equal(red, search.TextColor);
+        Assert.Equal(1.5, search.CharacterSpacing);
+        Assert.Equal(TextTransform.Lowercase, search.TextTransform);
+    }
+
+    /// <summary>
+    /// And the two alignments on the fields the tests above leave out - a
+    /// single-line field and a search field.
+    /// </summary>
+    [Fact]
+    public void TheAlignmentTierLandsOnTheFieldsToo()
+    {
+        var host = new Host();
+        string aligned = $$$"""
+            "horizontalTextAlignment":{{{Host.Member(SwiftTextAlignment.End)}}},
+            "verticalTextAlignment":{{{Host.Member(SwiftTextAlignment.Center)}}}
+            """;
+
+        var field = (Entry)host.Apply($$$"""{"id":1,"type":"TextField","props":{ {{{aligned}}} }}""");
+
+        Assert.Equal(TextAlignment.End, field.HorizontalTextAlignment);
+        Assert.Equal(TextAlignment.Center, field.VerticalTextAlignment);
+
+        var search = (SearchBar)host.Apply($$$"""{"id":2,"type":"SearchField","props":{ {{{aligned}}} }}""");
+
+        Assert.Equal(TextAlignment.End, search.HorizontalTextAlignment);
+        Assert.Equal(TextAlignment.Center, search.VerticalTextAlignment);
+    }
+
+    /// <summary>
+    /// The space a control keeps inside itself, on every control that keeps
+    /// one: each writes it in its own reconcile, and the Elements fixture reads
+    /// only a Label's and a stack's.
+    /// </summary>
+    [Fact]
+    public void ThePaddingTierLandsOnEveryControlThatKeepsOne()
+    {
+        var host = new Host();
+        var inset = new Thickness(1, 2, 3, 4);
+
+        Assert.Equal(inset, ((Button)host.Apply("""{"id":1,"type":"Button","props":{"padding":[1,2,3,4]}}""")).Padding);
+        Assert.Equal(inset, ((RadioButton)host.Apply("""{"id":2,"type":"RadioButton","props":{"padding":[1,2,3,4]}}""")).Padding);
+        Assert.Equal(inset, ((Border)host.Apply("""{"id":3,"type":"Border","props":{"padding":[1,2,3,4]}}""")).Padding);
+        Assert.Equal(inset, ((Grid)host.Apply("""{"id":4,"type":"Grid","props":{"padding":[1,2,3,4]}}""")).Padding);
+        Assert.Equal(inset, ((AbsoluteLayout)host.Apply("""{"id":5,"type":"AbsoluteLayout","props":{"padding":[1,2,3,4]}}""")).Padding);
+        Assert.Equal(inset, ((ScrollView)host.Apply("""{"id":6,"type":"ScrollView","props":{"padding":[1,2,3,4]}}""")).Padding);
+        Assert.Equal(inset, ((HorizontalStackLayout)host.Apply("""{"id":7,"type":"HStack","props":{"padding":[1,2,3,4]}}""")).Padding);
+    }
+
+    /// <summary>
+    /// A value MAUI would hold by itself proves nothing about the one written:
+    /// where a control fixture carries a member's default - a field that is not
+    /// a password, a picker that is shut, a line from the origin - the member
+    /// is written here with a value MAUI never holds on its own.
+    /// </summary>
+    [Fact]
+    public void AValueMauiWouldNeverHoldByItselfIsTheOneWritten()
+    {
+        var host = new Host();
+
+        Assert.True(((Entry)host.Apply("""{"id":1,"type":"TextField","props":{"isPassword":true}}""")).IsPassword);
+
+        Assert.Equal(ReturnType.Go, ((SearchBar)host.Apply($$$"""
+            {"id":2,"type":"SearchField","props":{"returnKey":{{{Host.Member(SwiftReturnKey.Go)}}}}}
+            """)).ReturnType);
+
+        var button = (Button)host.Apply($$$"""
+            {"id":3,"type":"Button","props":{
+              "lineBreak":{{{Host.Member(SwiftLineBreak.WordWrap)}}},
+              "iconPosition":{{{Host.Member(SwiftIconPosition.Trailing)}}}}}
+            """);
+
+        Assert.Equal(LineBreakMode.WordWrap, button.LineBreakMode);
+        Assert.Equal(Button.ButtonContentLayout.ImagePosition.Right, button.ContentLayout.Position);
+
+        Assert.True(((Picker)host.Apply("""{"id":4,"type":"Picker","props":{"isOpen":true}}""")).IsOpen);
+        Assert.True(((DatePicker)host.Apply("""{"id":5,"type":"DatePicker","props":{"isOpen":true}}""")).IsOpen);
+
+        var time = (TimePicker)host.Apply("""{"id":6,"type":"TimePicker","props":{"isOpen":true,"format":"HH:mm"}}""");
+
+        Assert.True(time.IsOpen);
+        Assert.Equal("HH:mm", time.Format);
+
+        Assert.Equal(10, ((Slider)host.Apply("""{"id":7,"type":"Slider","props":{"maximum":100,"minimum":10}}""")).Minimum);
+        Assert.False(((RefreshView)host.Apply("""{"id":8,"type":"RefreshView","props":{"isRefreshEnabled":false}}""")).IsRefreshEnabled);
+        Assert.Equal(3, ((Border)host.Apply("""{"id":9,"type":"Border","props":{"strokeWidth":3}}""")).StrokeThickness);
+
+        var line = (SwiftLine)host.Apply("""{"id":10,"type":"Line","props":{"x1":4,"y1":6}}""");
+
+        Assert.Equal(4, line.X1);
+        Assert.Equal(6, line.Y1);
+
+        Assert.Equal(Microsoft.Maui.Controls.Shapes.FillRule.Nonzero, ((SwiftPolyline)host.Apply($$$"""
+            {"id":11,"type":"Polyline","props":{"fillRule":{{{Host.Member(SwiftFillRule.Nonzero)}}}}}
+            """)).FillRule);
+
+        Assert.Equal(LayoutOptions.Start, ((Label)host.Apply($$$"""
+            {"id":12,"type":"Label","props":{"verticalAlignment":{{{Host.Member(SwiftAlignment.Start)}}}}}
+            """)).VerticalOptions);
+
+        var map = (Microsoft.Maui.Controls.Maps.Map)host.Apply("""
+            {"id":13,"type":"Map","props":{
+              "isScrollEnabled":false,"isZoomEnabled":false,"isTrafficEnabled":true,"showsUserLocation":true}}
+            """);
+
+        Assert.False(map.IsScrollEnabled);
+        Assert.False(map.IsZoomEnabled);
+        Assert.True(map.IsTrafficEnabled);
+        Assert.True(map.IsShowingUser);
+
+        var swipe = (SwipeView)host.Apply($$$"""
+            {"id":14,"type":"SwipeView","children":[
+              {"id":15,"type":"Label","props":{"text":"Row"}},
+              {"id":16,"type":"SwipeActions","props":{"side":{{{Host.Member(SwiftSwipeSide.Right)}}}},
+               "arranged":true,"children":[
+                 {"id":17,"type":"SwipeAction",
+                  "props":{"text":"Delete","isVisible":false,"isEnabled":false,"isDestructive":true}}]}]}
+            """);
+
+        var delete = Assert.IsType<SwipeItem>(Assert.Single(swipe.RightItems));
+
+        Assert.False(delete.IsVisible);
+        Assert.False(delete.IsEnabled);
+        Assert.True(delete.IsDestructive);
+
+        var held = (Border)host.Apply("""{"id":18,"type":"Border","props":{"canDrag":false,"allowDrop":false}}""");
+
+        Assert.False(Assert.Single(held.GestureRecognizers.OfType<DragGestureRecognizer>()).CanDrag);
+        Assert.False(Assert.Single(held.GestureRecognizers.OfType<DropGestureRecognizer>()).AllowDrop);
+    }
+
+    /// <summary>
+    /// A background is a colour or a gradient on any view: a gradient lands on
+    /// MAUI's brush and a colour after it lets the brush go.
+    /// </summary>
+    [Fact]
+    public void ABackgroundTakesAGradientOnAnyView()
+    {
+        var host = new Host();
+
+        var label = (Label)host.Apply($$$"""
+            {"id":1,"type":"Label","props":{"background":[
+              {{{Host.Member(SwiftBrushKind.LinearGradient)}}},[0,0,1,0],0,"#FF0000",1,"#0000FF"
+            ]}}
+            """);
+
+        var gradient = Assert.IsType<LinearGradientBrush>(label.Background);
+
+        Assert.Equal([Colors.Red, Colors.Blue], gradient.GradientStops.Select(stop => stop.Color));
+
+        host.Apply("""{"id":1,"type":"Label","props":{"background":"#00FF00"}}""");
+
+        Assert.Equal(Color.FromArgb("#00FF00"), label.BackgroundColor);
+        Assert.IsNotType<LinearGradientBrush>(label.Background);
     }
 
     /// <summary>

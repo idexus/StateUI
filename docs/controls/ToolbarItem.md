@@ -12,8 +12,8 @@ Declared in `lib/StateUI/Sources/Views/ToolbarItem.swift`.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `placement` | property |  | ✅ |  |  |  |  |  |  |
-| `priority` | property |  | ✅ |  |  |  |  |  |  |
+| `placement` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `priority` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 Realization:
 
@@ -31,7 +31,7 @@ Anything carrying property values, whether or not it is drawn - a control, a `St
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property |  |  |  |  |  |  |  |  |
+| `accessibilityIdentifier` | property | ✅ |  |  |  |  |  |  |  |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
@@ -39,8 +39,8 @@ What a toolbar item, a menu entry and a swipe action all share: `text`, `icon`, 
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | handler |  | ✅ |  |  |  |  |  |  |
-| `icon` | property |  | ✅ |  |  |  |  |  |  |
-| `isDestructive` | property |  | ✅ |  |  |  |  |  |  |
-| `isEnabled` | property |  | ✅ |  |  |  |  |  |  |
-| `text` | property |  | ✅ |  |  |  |  |  |  |
+| `onClicked` (`clicked`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `icon` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `isDestructive` | property | ✅ |  |  |  |  |  |  |  |
+| `isEnabled` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `text` | property | ✅ | ✅ |  |  |  |  |  |  |

@@ -185,4 +185,39 @@ public class PageBarTests
 
         Assert.False(page.HideSoftInputOnTapped);
     }
+
+    /// <summary>
+    /// Whether an entry works and whether it destroys, on the toolbar, on the
+    /// menu bar, in a menu and on a submenu - written against MAUI's defaults,
+    /// which enable everything and destroy nothing.
+    /// </summary>
+    [Fact]
+    public void AnEntrySaysWhetherItWorksAndWhetherItDestroys()
+    {
+        ContentPage page = Page("""
+            {"id":5,"type":"Page","props":{"title":"Counter"},"children":[
+              {"id":6,"type":"Label","props":{"text":"one"}},
+              {"id":7,"type":"ToolbarItems","arranged":true,"children":[
+                {"id":"save","type":"ToolbarItem","props":{"text":"Save","isEnabled":false}}]},
+              {"id":8,"type":"MenuBar","arranged":true,"children":[
+                {"id":"file","type":"Menu","props":{"text":"File","isEnabled":false},"arranged":true,"children":[
+                  {"id":"erase","type":"MenuItem",
+                   "props":{"text":"Erase","isDestructive":true,"isEnabled":false}},
+                  {"id":"recent","type":"Menu","props":{"text":"Recent","isEnabled":false},
+                   "arranged":true,"children":[
+                    {"id":"a","type":"MenuItem","props":{"text":"a.txt"}}]}]}]}]}
+            """);
+
+        Assert.False(page.ToolbarItems[0].IsEnabled);
+
+        MenuBarItem file = Assert.Single(page.MenuBarItems);
+
+        Assert.False(file.IsEnabled);
+
+        var erase = Assert.IsType<MenuFlyoutItem>(file[0]);
+
+        Assert.True(erase.IsDestructive);
+        Assert.False(erase.IsEnabled);
+        Assert.False(Assert.IsType<MenuFlyoutSubItem>(file[1]).IsEnabled);
+    }
 }

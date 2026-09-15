@@ -184,6 +184,29 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertNil(toolbar.itemForTesting(AppKitWindowToolbar.title))
     }
 
+    /// On the band a navigation stack paints, the page's title stands in the
+    /// foreground the stack writes for its bars.
+    @MainActor
+    func testAWrittenBarForegroundColoursThePagesTitleOnTheBand() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        var stack = navigation([page("home", title: "Home")])
+        stack.properties[.barBackgroundColor] = .color(red: 54, green: 42, blue: 86, alpha: 255)
+        stack.properties[.barForegroundColor] = .color(red: 51, green: 179, blue: 230, alpha: 255)
+        renderer.applyForTesting(tree(stack))
+
+        let toolbar = try XCTUnwrap(renderer.windowsForTesting.first).toolbarForTesting
+        let title = try XCTUnwrap(
+            toolbar.itemForTesting(AppKitWindowToolbar.title)?.view as? NSTextField)
+        XCTAssertEqual(title.stringValue, "Home")
+        XCTAssertEqual(title.textColor, NSColor(
+            srgbRed: 51 / 255, green: 179 / 255, blue: 230 / 255, alpha: 1))
+    }
+
     /// In a split view the band is the detail's: the pane under the bars
     /// paints it, and the sidebar keeps its own glass.
     @MainActor
@@ -463,6 +486,106 @@ final class AppKitPageTests: XCTestCase {
         if #available(macOS 26, *) {
             XCTAssertEqual(control.borderShape, .capsule)
         }
+    }
+
+    /// A tab is named by the title and the icon of what it shows - a page,
+    /// or an arrangement of pages: its caption and its glyph.
+    @MainActor
+    func testATabIsNamedByTheTitleAndIconOfWhatItShows() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        var library = navigation([page("shelf", title: "Shelf", events: 100)])
+        library.properties[.title] = .string("Library")
+        library.properties[.icon] = .string("books.png")
+        var mail = flyout(
+            presented: true,
+            menu: page("folders", title: "Folders", events: 200),
+            detail: page("inbox", title: "Inbox", events: 300))
+        mail.properties[.title] = .string("Mail")
+        mail.properties[.icon] = .string("mail.png")
+        var more = tabbed(
+            [page("settings", title: "Settings", events: 400)],
+            selected: 0,
+            changed: 903,
+            id: "more")
+        more.properties[.title] = .string("More")
+        more.properties[.icon] = .string("more.png")
+        var home = page("home", title: "Home", events: 500)
+        home.properties[.icon] = .string("home.png")
+        renderer.applyForTesting(tree(tabbed([library, mail, more, home], selected: 3)))
+
+        let tabs = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("tabs")) as? AppKitTabbedView)
+        XCTAssertEqual(tabs.tabLabelsForTesting, ["Library", "Mail", "More", "Home"])
+        let row = try XCTUnwrap(renderer.windowsForTesting.first).tabRowForTesting.controlForTesting
+        XCTAssertEqual(
+            (0..<row.segmentCount).map { row.label(forSegment: $0) },
+            ["Library", "Mail", "More", "Home"])
+        XCTAssertEqual((0..<row.segmentCount).filter { row.image(forSegment: $0) != nil }, [0, 1, 2, 3])
+    }
+
+    /// A navigation stack, a tabbed view and a split view carry their
+    /// accessibility identifier on the native view that presents them.
+    @MainActor
+    func testAnArrangementCarriesItsAccessibilityIdentifier() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        var stack = navigation([page("shelf", title: "Shelf", events: 100)])
+        stack.properties[.accessibilityIdentifier] = .string("arrangement.stack")
+        var tabs = tabbed([stack], selected: 0)
+        tabs.properties[.accessibilityIdentifier] = .string("arrangement.tabs")
+        var split = flyout(
+            presented: true,
+            menu: page("folders", title: "Folders", events: 200),
+            detail: tabs)
+        split.properties[.accessibilityIdentifier] = .string("arrangement.split")
+        renderer.applyForTesting(tree(split))
+
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("navigation"))?.accessibilityIdentifier(),
+            "arrangement.stack")
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("tabs"))?.accessibilityIdentifier(),
+            "arrangement.tabs")
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("flyout"))?.accessibilityIdentifier(),
+            "arrangement.split")
+    }
+
+    /// A page keeps its padding around what it shows and paints its
+    /// background colour behind it.
+    @MainActor
+    func testAPagesPaddingAndBackgroundReachItsView() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        var padded = HostPatch(id: .manual("padded"), type: .page)
+        padded.properties = [
+            .padding: .numbers([10, 20, 30, 40]),
+            .background: .color(red: 51, green: 102, blue: 153, alpha: 255),
+        ]
+        padded.children = .arranged([HostPatch(id: .manual("content"), type: .colorBox)])
+        renderer.applyForTesting(tree(padded))
+
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("padded")))
+        let content = try XCTUnwrap(renderer.viewForTesting(id: .manual("content")))
+        native.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
+        native.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(content.frame, NSRect(
+            x: 10, y: 20, width: native.bounds.width - 40, height: native.bounds.height - 60))
+        assertChannels(channels(native.layer?.backgroundColor), [0.2, 0.4, 0.6, 1])
     }
 
     @MainActor

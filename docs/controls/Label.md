@@ -12,9 +12,9 @@ Declared in `lib/StateUI/Sources/Views/Label.swift`.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `background` | property |  | ✅* |  |  |  |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
-| `lineBreak` | property |  | ✅ |  |  |  |  |  |  |
-| `maximumLines` | property |  | ✅ |  |  |  |  |  |  |
+| `background` | property | ✅ | ✅* |  |  |  |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
+| `lineBreak` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `maximumLines` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 Realization:
 
@@ -32,7 +32,7 @@ Anything carrying property values, whether or not it is drawn - a control, a `St
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property |  | ✅ |  |  |  |  |  |  |
+| `accessibilityIdentifier` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
@@ -40,36 +40,36 @@ A control backed by a node, and drawn.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property |  | ✅ |  |  |  |  |  |  |
-| `accessibilityHint` | property |  | ✅ |  |  |  |  |  |  |
-| `accessibilityLabel` | property |  | ✅ |  |  |  |  |  |  |
-| `automationExcludedWithChildren` | property |  | ✅ |  |  |  |  |  |  |
-| `frame` | property |  | ✅ |  |  |  |  |  |  |
-| `height` | property |  |  |  |  |  |  |  |  |
-| `ignoresInput` | property |  |  |  |  |  |  |  |  |
-| `isAccessibilityHidden` | property |  | ✅ |  |  |  |  |  |  |
-| `isEnabled` | property |  |  |  |  |  |  |  |  |
-| `isFocusedChanged` | handler |  |  |  |  |  |  |  |  |
-| `isVisible` | property |  |  |  |  |  |  |  |  |
-| `layoutDirection` | property |  |  |  |  |  |  |  |  |
-| `maximumHeight` | property |  |  |  |  |  |  |  |  |
-| `maximumWidth` | property |  |  |  |  |  |  |  |  |
-| `minimumHeight` | property |  |  |  |  |  |  |  |  |
-| `minimumWidth` | property |  |  |  |  |  |  |  |  |
-| `opacity` | property |  |  |  |  |  |  |  |  |
-| `pivotX` | property |  |  |  |  |  |  |  |  |
-| `pivotY` | property |  |  |  |  |  |  |  |  |
-| `rotation` | property |  |  |  |  |  |  |  |  |
-| `rotationX` | property |  |  |  |  |  |  |  |  |
-| `rotationY` | property |  |  |  |  |  |  |  |  |
-| `scale` | property |  |  |  |  |  |  |  |  |
-| `scaleX` | property |  |  |  |  |  |  |  |  |
-| `scaleY` | property |  |  |  |  |  |  |  |  |
+| `accessibilityHeadingLevel` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `accessibilityHint` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `accessibilityLabel` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `automationExcludedWithChildren` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `frame` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `height` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `ignoresInput` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `isAccessibilityHidden` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `isEnabled` | property | ✅ |  |  |  |  |  |  |  |
+| `isFocusedChanged` | handler | ✅ |  |  |  |  |  |  |  |
+| `isVisible` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `layoutDirection` | property | ✅ |  |  |  |  |  |  |  |
+| `maximumHeight` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `maximumWidth` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `minimumHeight` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `minimumWidth` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `opacity` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `pivotX` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `pivotY` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `rotation` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `rotationX` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `rotationY` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `scale` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `scaleX` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `scaleY` | property | ✅ | ✅ |  |  |  |  |  |  |
 | `style` | property |  |  |  |  |  |  |  |  |
-| `translationX` | property |  |  |  |  |  |  |  |  |
-| `translationY` | property |  |  |  |  |  |  |  |  |
-| `width` | property |  |  |  |  |  |  |  |  |
-| `zIndex` | property |  |  |  |  |  |  |  |  |
+| `translationX` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `translationY` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `width` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `zIndex` | property | ✅ |  |  |  |  |  |  |  |
 
 ## From [View](tiers/View.md)
 
@@ -77,37 +77,37 @@ A VisualElement a layout positions.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `absoluteLayoutBounds` | property |  |  |  |  |  |  |  |  |
-| `absoluteLayoutProportions` | property |  |  |  |  |  |  |  |  |
-| `allowDrop` | property |  |  |  |  |  |  |  |  |
-| `canDrag` | property |  |  |  |  |  |  |  |  |
-| `onDragLeave` (`dragLeave`) | handler |  |  |  |  |  |  |  |  |
-| `onDragOver` (`dragOver`) | handler |  |  |  |  |  |  |  |  |
-| `dragStarting` | handler |  |  |  |  |  |  |  |  |
+| `absoluteLayoutBounds` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `absoluteLayoutProportions` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `allowDrop` | property | ✅ |  |  |  |  |  |  |  |
+| `canDrag` | property | ✅ |  |  |  |  |  |  |  |
+| `onDragLeave` (`dragLeave`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onDragOver` (`dragOver`) | handler | ✅ |  |  |  |  |  |  |  |
+| `dragStarting` | handler | ✅ |  |  |  |  |  |  |  |
 | `dragText` | property |  |  |  |  |  |  |  |  |
-| `onDrop` (`drop`) | handler |  |  |  |  |  |  |  |  |
-| `onDropCompleted` (`dropCompleted`) | handler |  |  |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | handler |  | ✅ |  |  |  |  |  |  |
-| `gridColumn` | property |  |  |  |  |  |  |  |  |
-| `gridColumnSpan` | property |  |  |  |  |  |  |  |  |
-| `gridRow` | property |  |  |  |  |  |  |  |  |
-| `gridRowSpan` | property |  |  |  |  |  |  |  |  |
-| `horizontalAlignment` | property |  |  |  |  |  |  |  |  |
-| `margin` | property |  |  |  |  |  |  |  |  |
-| `panTouchCount` | property |  | ✅* |  |  |  |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
-| `onPanUpdated` (`panUpdated`) | handler |  | ✅ |  |  |  |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | handler |  | ✅ |  |  |  |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | handler |  | ✅ |  |  |  |  |  |  |
-| `onPointerExited` (`pointerExited`) | handler |  | ✅ |  |  |  |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | handler |  | ✅ |  |  |  |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | handler |  | ✅ |  |  |  |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | handler |  | ✅ |  |  |  |  |  |  |
-| `swipeDirection` | property |  | ✅ |  |  |  |  |  |  |
-| `swipeThreshold` | property |  | ✅ |  |  |  |  |  |  |
-| `onSwiped` (`swiped`) | handler |  | ✅ |  |  |  |  |  |  |
-| `tapCount` | property |  | ✅ |  |  |  |  |  |  |
-| `onTapped` (`tapped`) | handler |  | ✅ |  |  |  |  |  |  |
-| `verticalAlignment` | property |  |  |  |  |  |  |  |  |
+| `onDrop` (`drop`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onDropCompleted` (`dropCompleted`) | handler | ✅ |  |  |  |  |  |  |  |
+| `onFrameChanged` (`frameChanged`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `gridColumn` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `gridColumnSpan` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `gridRow` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `gridRowSpan` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `horizontalAlignment` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `margin` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `panTouchCount` | property | ✅ | ✅* |  |  |  |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
+| `onPanUpdated` (`panUpdated`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `onPointerEntered` (`pointerEntered`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `onPointerExited` (`pointerExited`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `onPointerMoved` (`pointerMoved`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `onPointerPressed` (`pointerPressed`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `onPointerReleased` (`pointerReleased`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `swipeDirection` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `swipeThreshold` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `onSwiped` (`swiped`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `tapCount` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `onTapped` (`tapped`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `verticalAlignment` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
 
@@ -115,8 +115,8 @@ The tier for a control whose text IS a property: everything `TextStyleElement` h
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property |  | ✅ |  |  |  |  |  |  |
-| `textCase` | property |  | ✅ |  |  |  |  |  |  |
+| `text` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `textCase` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
@@ -124,8 +124,8 @@ The colour and letter spacing of a control's text, WITHOUT the text itself.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property |  | ✅ |  |  |  |  |  |  |
-| `textColor` | property |  | ✅ |  |  |  |  |  |  |
+| `characterSpacing` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `textColor` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -133,10 +133,10 @@ How the text of a control is set in type - its size, its family, its weight.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property |  | ✅ |  |  |  |  |  |  |
-| `fontAutoScalingEnabled` | property |  |  |  |  |  |  |  |  |
-| `fontFamily` | property |  | ✅ |  |  |  |  |  |  |
-| `fontSize` | property |  | ✅ |  |  |  |  |  |  |
+| `fontAttributes` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `fontAutoScalingEnabled` | property | ✅ |  |  |  |  |  |  |  |
+| `fontFamily` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `fontSize` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 
@@ -144,8 +144,8 @@ Where a control's text sits INSIDE the control.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property |  | ✅ |  |  |  |  |  |  |
-| `verticalTextAlignment` | property |  | ✅ |  |  |  |  |  |  |
+| `horizontalTextAlignment` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `verticalTextAlignment` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [LineHeightElement](tiers/LineHeightElement.md)
 
@@ -153,7 +153,7 @@ The height of a text line, relative to the font's own - the tier `Label` and `Te
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `lineHeight` | property |  | ✅ |  |  |  |  |  |  |
+| `lineHeight` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [DecorableTextElement](tiers/DecorableTextElement.md)
 
@@ -161,7 +161,7 @@ A line under the text, through it, or both - the tier `Label` and `TextSpan` bot
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `textDecorations` | property |  | ✅ |  |  |  |  |  |  |
+| `textDecorations` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 
@@ -169,4 +169,4 @@ The space a control keeps INSIDE itself, around its content.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property |  | ✅ |  |  |  |  |  |  |
+| `padding` | property | ✅ | ✅ |  |  |  |  |  |  |

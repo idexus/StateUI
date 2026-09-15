@@ -56,15 +56,32 @@ final class AppKitRealizationTests: XCTestCase {
         line.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespaces) }
     }
 
+    /// AppKit's part of a row's note. The one Notes cell is shared by every
+    /// host: AppKit's note stands first as written, and another host's follows
+    /// as "; <host>: …" - or opens the cell as "<host>: …" where AppKit has none.
+    private func appKitsPart(of note: String, hosts: [String]) -> String {
+        var end = note.endIndex
+        for host in hosts where host != "AppKit" {
+            if note.hasPrefix("\(host): ") {
+                return ""
+            }
+            if let range = note.range(of: "; \(host): "), range.lowerBound < end {
+                end = range.lowerBound
+            }
+        }
+        return String(note[..<end])
+    }
+
     /// Every row of every entry, with the tier its section comes from. The
     /// AppKit mark and the note are found by the table's header, whichever
-    /// hosts' columns stand beside them.
+    /// hosts' columns stand beside them, and the note is AppKit's part of it.
     private func rows() throws -> [Row] {
         var result: [Row] = []
         for entry in try entries() {
             var tier: String?
             var appKit: Int?
             var note: Int?
+            var hosts: [String] = []
             for line in try read("\(entry).md").components(separatedBy: "\n") {
                 if line.hasPrefix("## From [") {
                     tier = String(line.dropFirst("## From [".count).prefix { $0 != "]" })
@@ -74,9 +91,13 @@ final class AppKitRealizationTests: XCTestCase {
                     let header = cells(line)
                     appKit = header.firstIndex(of: "AppKit")
                     note = header.firstIndex(of: "Notes")
+                    if let kind = header.firstIndex(of: "Kind"), let note {
+                        hosts = Array(header[(kind + 1)..<note])
+                    }
                 } else if line.hasPrefix("| `"), let appKit, let note {
                     let row = cells(line)
-                    result.append(Row(entry: entry, tier: tier, member: token(row[1]), mark: row[appKit], note: row[note]))
+                    result.append(Row(entry: entry, tier: tier, member: token(row[1]), mark: row[appKit],
+                                      note: appKitsPart(of: row[note], hosts: hosts)))
                 }
             }
         }
@@ -93,7 +114,8 @@ final class AppKitRealizationTests: XCTestCase {
     private func expected(_ row: Row) -> (mark: String, note: String) {
         guard !AppKitRealization.unrealized.contains(row.entry) else { return ("", "") }
 
-        for owner in [row.entry] + [row.tier].compactMap({ $0 }) {
+        let tiers = AppKitRealization.viewless.contains(row.entry) ? [] : [row.tier].compactMap { $0 }
+        for owner in [row.entry] + tiers {
             switch AppKitRealization.records.first(where: { $0.owner == owner && $0.member == row.member }) {
             case .complete?: return ("✅", "")
             case .partial(_, _, let missing)?: return ("✅*", missing)
@@ -136,6 +158,9 @@ final class AppKitRealizationTests: XCTestCase {
         }
         for entry in AppKitRealization.unrealized {
             XCTAssertTrue(entries.contains(entry), "AppKitRealization.unrealized names \(entry), which docs/controls does not hold")
+        }
+        for entry in AppKitRealization.viewless {
+            XCTAssertTrue(entries.contains(entry), "AppKitRealization.viewless names \(entry), which docs/controls does not hold")
         }
     }
 

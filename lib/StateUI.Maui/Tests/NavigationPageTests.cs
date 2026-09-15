@@ -631,6 +631,7 @@ public class NavigationPageTests
         Assert.Equal([(7, "0")], host.Dispatched);
     }
 
+
     /// <summary>
     /// And a pop THIS side performed says nothing: Swift asked for it, so
     /// telling Swift about it would be an echo - the guard the flyout's binding

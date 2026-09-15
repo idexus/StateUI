@@ -12,12 +12,12 @@ Declared in `lib/StateUI/Sources/Views/Scene.swift` and `lib/StateUI/Sources/Cor
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | handler |  | ✅ |  |  |  |  |  |  |
-| `deactivated` | handler |  | ✅ |  |  |  |  |  |  |
-| `destroying` | handler |  | ✅ |  |  |  |  |  |  |
-| `stopped` | handler |  | ✅ |  |  |  |  |  |  |
-| `windowClosed` | handler |  | ✅ |  |  |  |  |  |  |
-| `windowRestored` | handler |  | ✅ |  |  |  |  |  |  |
+| `activated` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `deactivated` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `destroying` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `stopped` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `windowClosed` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `windowRestored` | handler | ✅ | ✅ |  |  |  |  |  |  |
 
 Realization:
 

@@ -12,7 +12,7 @@ Declared in `lib/StateUI/Sources/Views/SplitView.swift`.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisibleChanged` | handler |  | ✅ |  |  |  |  |  |  |
+| `isSidebarVisibleChanged` | handler | ✅ | ✅ |  |  |  |  |  |  |
 
 Realization:
 
@@ -30,7 +30,7 @@ Anything carrying property values, whether or not it is drawn - a control, a `St
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property |  |  |  |  |  |  |  |  |
+| `accessibilityIdentifier` | property |  | ✅ |  |  |  |  |  |  |
 
 ## From [PageElement](tiers/PageElement.md)
 
@@ -38,5 +38,5 @@ The identity shown for a constructed container page.
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `icon` | property |  |  |  |  |  |  |  |  |
-| `title` | property |  |  |  |  |  |  |  |  |
+| `icon` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `title` | property | ✅ | ✅ |  |  |  |  |  |  |

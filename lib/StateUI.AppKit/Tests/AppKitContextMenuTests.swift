@@ -85,6 +85,47 @@ final class AppKitContextMenuTests: XCTestCase {
         renderer.applyForTesting(changedTree(withoutMenu))
         XCTAssertNil(native.menu)
     }
+
+    /// An entry shows its icon, can be disabled, is drawn as destructive when
+    /// it is one, and carries its accessibility identifier; a menu is
+    /// disabled as a whole.
+    @MainActor
+    func testAnEntrysIconStateAndIdentifierReachItsNativeItem() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        var delete = HostPatch(id: .manual("delete"), type: .menuItem)
+        delete.properties = [
+            .text: .string("Delete"),
+            .icon: .string("trash.png"),
+            .isEnabled: .bool(false),
+            .isDestructive: .bool(true),
+            .accessibilityIdentifier: .string("menu.delete"),
+        ]
+        var top = HostPatch(id: .manual("top"), type: .menuItem)
+        top.properties[.text] = .string("To the top")
+        var move = HostPatch(id: .manual("move"), type: .menu)
+        move.properties = [.text: .string("Move"), .isEnabled: .bool(false)]
+        move.children = .arranged([top])
+        var menu = HostPatch(id: .manual("context"), type: .contextMenu)
+        menu.children = .arranged([delete, move])
+        var label = HostPatch(id: .manual("row"), type: .label)
+        label.properties[.text] = .string("Alpha")
+        label.children = .arranged([menu])
+
+        renderer.applyForTesting(tree(label))
+
+        let items = try XCTUnwrap(renderer.viewForTesting(id: .manual("row"))?.menu).items
+        XCTAssertEqual(items.map(\.title), ["Delete", "Move"])
+        guard items.count == 2 else { return }
+        XCTAssertNotNil(items[0].image)
+        XCTAssertFalse(items[0].isEnabled)
+        XCTAssertEqual(
+            items[0].attributedTitle?.attribute(.foregroundColor, at: 0, effectiveRange: nil)
+                as? NSColor,
+            .systemRed)
+        XCTAssertEqual(items[0].accessibilityIdentifier(), "menu.delete")
+        XCTAssertFalse(items[1].isEnabled)
+    }
 }
 
 #endif

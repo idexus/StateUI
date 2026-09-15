@@ -179,6 +179,166 @@ final class AppKitShapeViewTests: XCTestCase {
         XCTAssertEqual(path.element(at: 1).points.first, NSPoint(x: 31, y: 32))
     }
 
+    /// Every shape strokes as its properties say: the stroke's width, its dash
+    /// and the dash's offset, both in units of that width, its caps, its joins
+    /// and its miter limit.
+    @MainActor
+    func testHostPatchStrokesEveryShapeAsItsPropertiesSay() throws {
+        for (type, geometry) in Self.shapes {
+            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            defer { renderer.closeForTesting() }
+            var shape = HostPatch(id: .manual("shape"), type: type)
+            shape.properties = geometry.merging([
+                .strokeWidth: .number(2),
+                .strokeDashPattern: .numbers([3, 1]),
+                .strokeDashOffset: .number(0.5),
+                .strokeLineCap: .enumeration(LineCap.square.rawValue),
+                .strokeLineJoin: .enumeration(LineJoin.round.rawValue),
+                .strokeMiterLimit: .number(4),
+            ]) { $1 }
+            renderer.applyForTesting(tree(shape))
+
+            let native = try XCTUnwrap(
+                renderer.viewForTesting(id: .manual("shape")) as? AppKitShapeView, type.name)
+            let path = native.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 20))
+            XCTAssertEqual(path.lineWidth, 2, type.name)
+            XCTAssertEqual(path.lineCapStyle, .square, type.name)
+            XCTAssertEqual(path.lineJoinStyle, .round, type.name)
+            XCTAssertEqual(path.miterLimit, 4, type.name)
+            XCTAssertEqual(native.dashPatternForTesting, [6, 2], type.name)
+            XCTAssertEqual(native.dashPhaseForTesting, 1, type.name)
+        }
+    }
+
+    /// Every shape draws its fill inside its outline and its stroke along it,
+    /// each in its brush's colour. A line holds no area to fill.
+    @MainActor
+    func testEveryShapeDrawsItsFillAndItsStroke() throws {
+        for (type, geometry) in Self.shapes {
+            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            defer { renderer.closeForTesting() }
+            var shape = HostPatch(id: .manual("shape"), type: type)
+            shape.properties = geometry.merging([
+                .fill: brush(.red),
+                .stroke: brush(.blue),
+                .strokeWidth: .number(4),
+            ]) { $1 }
+            renderer.applyForTesting(tree(shape))
+
+            let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("shape")), type.name)
+            native.frame = NSRect(x: 0, y: 0, width: 40, height: 20)
+            let drawn = try bitmap(of: native)
+            let filled = pixels(in: drawn) { $0.redComponent > 0.8 && $0.blueComponent < 0.3 }
+            let stroked = pixels(in: drawn) { $0.blueComponent > 0.8 && $0.redComponent < 0.3 }
+            XCTAssertGreaterThan(stroked, 0, type.name)
+            if type == .line {
+                XCTAssertEqual(filled, 0, type.name)
+            } else {
+                XCTAssertGreaterThan(filled, 0, type.name)
+            }
+        }
+    }
+
+    /// A line, a path, a polygon and a polyline are drawn from their own
+    /// numbers: the aspect places that drawing in the room, the render
+    /// transform then moves what was drawn, and a fill rule reaches the
+    /// outline it applies to.
+    @MainActor
+    func testHostPatchPlacesAndMovesEveryAuthoredGeometry() throws {
+        let authored: [(NodeType, [Prop: HostValue])] = [
+            (.line, [.x1: .number(0), .y1: .number(0), .x2: .number(100), .y2: .number(50)]),
+            (.path, [.data: .string("M 0 0 L 100 50")]),
+            (.polygon, [
+                .points: .numbers([0, 0, 100, 0, 100, 50]),
+                .fillRule: .enumeration(FillRule.nonzero.rawValue),
+            ]),
+            (.polyline, [
+                .points: .numbers([0, 0, 100, 50]),
+                .fillRule: .enumeration(FillRule.nonzero.rawValue),
+            ]),
+        ]
+        let room = NSRect(x: 0, y: 0, width: 200, height: 200)
+
+        for (type, geometry) in authored {
+            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            defer { renderer.closeForTesting() }
+            var fitted = HostPatch(id: .manual("fitted"), type: type)
+            fitted.properties = geometry.merging([.aspect: .enumeration(Aspect.fit.rawValue)]) { $1 }
+            var moved = HostPatch(id: .manual("moved"), type: type)
+            moved.properties = geometry.merging([
+                .aspect: .enumeration(Aspect.stretch.rawValue),
+                .renderTransform: .values([
+                    .number(1), .number(0), .number(0),
+                    .number(1), .number(10), .number(20),
+                ]),
+            ]) { $1 }
+            var stack = HostPatch(id: .manual("stack"), type: .vStack)
+            stack.children = .arranged([fitted, moved])
+            renderer.applyForTesting(tree(stack))
+
+            let nativeFitted = try XCTUnwrap(
+                renderer.viewForTesting(id: .manual("fitted")) as? AppKitShapeView, type.name)
+            let nativeMoved = try XCTUnwrap(
+                renderer.viewForTesting(id: .manual("moved")) as? AppKitShapeView, type.name)
+            let fittedPath = nativeFitted.pathForTesting(in: room)
+            XCTAssertEqual(fittedPath.bounds, NSRect(x: 0, y: 50, width: 200, height: 100), type.name)
+            XCTAssertEqual(
+                nativeMoved.pathForTesting(in: room).bounds,
+                NSRect(x: 10, y: 20, width: 200, height: 200),
+                type.name)
+            if type == .polygon || type == .polyline {
+                XCTAssertEqual(fittedPath.windingRule, .nonZero, type.name)
+            }
+        }
+    }
+
+    /// A rectangle's corner radius rounds its outline; without one its
+    /// corners stay square.
+    @MainActor
+    func testARectanglesCornerRadiusRoundsItsOutline() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        var rounded = HostPatch(id: .manual("rounded"), type: .rectangle)
+        rounded.properties[.cornerRadius] = .number(8)
+        let square = HostPatch(id: .manual("square"), type: .rectangle)
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([rounded, square])
+        renderer.applyForTesting(tree(stack))
+
+        func curves(_ id: String) throws -> Int {
+            let native = try XCTUnwrap(
+                renderer.viewForTesting(id: .manual(id)) as? AppKitShapeView, id)
+            let path = native.pathForTesting(in: NSRect(x: 0, y: 0, width: 60, height: 40))
+            return (0..<path.elementCount).filter { path.element(at: $0).type == .cubicCurveTo }.count
+        }
+        XCTAssertGreaterThan(try curves("rounded"), 0)
+        XCTAssertEqual(try curves("square"), 0)
+    }
+
+    /// One of each shape, with a geometry filling a room of 40 by 20.
+    private static let shapes: [(NodeType, [Prop: HostValue])] = [
+        (.rectangle, [:]),
+        (.ellipse, [:]),
+        (.line, [.x1: .number(0), .y1: .number(10), .x2: .number(40), .y2: .number(10)]),
+        (.path, [.data: .string("M 0 0 L 40 0 L 40 20 L 0 20 Z")]),
+        (.polygon, [.points: .numbers([0, 0, 40, 0, 40, 20, 0, 20])]),
+        (.polyline, [.points: .numbers([0, 0, 40, 0, 40, 20, 0, 20])]),
+    ]
+
+    /// How many pixels of `bitmap` are ones `matches` accepts, among those
+    /// drawn at all.
+    private func pixels(in bitmap: NSBitmapImageRep, where matches: (NSColor) -> Bool) -> Int {
+        var count = 0
+        for x in 0..<bitmap.pixelsWide {
+            for y in 0..<bitmap.pixelsHigh {
+                if let colour = bitmap.colorAt(x: x, y: y), colour.alphaComponent > 0.8, matches(colour) {
+                    count += 1
+                }
+            }
+        }
+        return count
+    }
+
     private func brush(_ color: Color) -> HostValue {
         Brush.solidColor(color).propValue
     }

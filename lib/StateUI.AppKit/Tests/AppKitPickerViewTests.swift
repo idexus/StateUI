@@ -183,6 +183,30 @@ final class AppKitPickerViewTests: XCTestCase {
         XCTAssertEqual(opened.count, 1)
         XCTAssertTrue(opened.first === picker)
     }
+
+    /// Where a picker's text stands reaches its native pop-up button and each
+    /// of its items.
+    @MainActor
+    func testAPickersTextAlignmentComesThroughTheHost() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        var picker = HostPatch(id: .manual("picker"), type: .picker)
+        picker.properties = [
+            .options: .strings(["One", "Two"]),
+            .horizontalTextAlignment: .enumeration(TextAlignment.center.rawValue),
+        ]
+        renderer.applyForTesting(tree(picker))
+
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("picker")))
+        let button = try XCTUnwrap(native.subviews.compactMap { $0 as? NSPopUpButton }.first)
+        XCTAssertEqual(button.alignment, .center)
+        XCTAssertEqual(
+            button.itemArray.map {
+                ($0.attributedTitle?.attribute(.paragraphStyle, at: 0, effectiveRange: nil)
+                    as? NSParagraphStyle)?.alignment
+            },
+            [.center, .center])
+    }
 }
 
 #endif

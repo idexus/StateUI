@@ -99,6 +99,47 @@ final class AppKitViewDrawingTests: XCTestCase {
         }
     }
 
+    /// A view's translation moves it, its scales stretch it about its pivot -
+    /// `scale` on top of each axis' own - and a half turn about the vertical
+    /// or the horizontal axis mirrors it across that axis; its opacity reaches
+    /// the view.
+    @MainActor
+    func testEveryDrawingPropertyReachesTheViewsLayer() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        func drawnBox(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
+            var box = HostPatch(id: .manual(id), type: .colorBox)
+            box.properties = properties.merging([.width: .number(100), .height: .number(60)]) { $1 }
+            return box
+        }
+        renderer.applyForTesting(tree(stack(
+            drawnBox("moved", [.translationX: .number(10), .translationY: .number(20)]),
+            drawnBox("stretched", [.scaleX: .number(2), .scaleY: .number(3)]),
+            drawnBox("scaled", [.scale: .number(2), .scaleX: .number(1.5)]),
+            drawnBox("tipped", [.rotationY: .number(180)]),
+            drawnBox("tilted", [.rotationX: .number(180)]),
+            drawnBox("faded", [.opacity: .number(0.4)]))))
+        func native(_ id: String) throws -> NSView {
+            let view = try XCTUnwrap(renderer.viewForTesting(id: .manual(id)), id)
+            view.frame = NSRect(x: 0, y: 0, width: 100, height: 60)
+            return view
+        }
+
+        let moved = try native("moved")
+        assertPoint(try drawn(CGPoint(x: 0, y: 0), in: moved), CGPoint(x: 10, y: 20))
+        let stretched = try native("stretched")
+        assertPoint(try drawn(CGPoint(x: 0, y: 0), in: stretched), CGPoint(x: -50, y: -60))
+        assertPoint(try drawn(CGPoint(x: 100, y: 60), in: stretched), CGPoint(x: 150, y: 120))
+        let scaled = try native("scaled")
+        assertPoint(try drawn(CGPoint(x: 0, y: 0), in: scaled), CGPoint(x: -100, y: -30))
+        let tipped = try native("tipped")
+        assertPoint(try drawn(CGPoint(x: 0, y: 0), in: tipped), CGPoint(x: 100, y: 0))
+        let tilted = try native("tilted")
+        assertPoint(try drawn(CGPoint(x: 0, y: 0), in: tilted), CGPoint(x: 0, y: 60))
+        let faded = try native("faded")
+        XCTAssertEqual(faded.alphaValue, 0.4, accuracy: 0.0001)
+    }
+
     // MARK: - Helpers
 
     private func windowTree(page: HostPatch) -> HostPatch {

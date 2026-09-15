@@ -54,6 +54,28 @@ final class AppKitRadioButtonViewTests: XCTestCase {
         XCTAssertEqual(reports.map { $0.1.first?.bool }, [false, true])
     }
 
+    /// A radio button's caption follows its text case, and its padding is
+    /// kept around the native control.
+    @MainActor
+    func testARadioButtonsTextCaseAndPaddingComeThroughTheHost() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        var radio = HostPatch(id: .manual("radio"), type: .radioButton)
+        radio.properties = [
+            .text: .string("Medium"),
+            .textCase: .enumeration(TextCase.uppercase.rawValue),
+            .padding: .numbers([12, 6, 12, 6]),
+        ]
+        renderer.applyForTesting(tree(radio))
+
+        let native = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("radio")) as? AppKitRadioButtonView)
+        XCTAssertEqual(native.title, "MEDIUM")
+        let intrinsic = native.intrinsicContentSize
+        XCTAssertEqual(native.fittingSize.width, intrinsic.width + 24, accuracy: 0.5)
+        XCTAssertEqual(native.fittingSize.height, intrinsic.height + 12, accuracy: 0.5)
+    }
+
     private func applicationWithNamedRadios() -> HostPatch {
         var first = HostPatch(id: .manual("medium"), type: .radioButton)
         first.properties = [

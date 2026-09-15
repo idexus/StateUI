@@ -115,6 +115,53 @@ final class AppKitButtonViewTests: XCTestCase {
             .byTruncatingHead, .byTruncatingTail, .byTruncatingMiddle,
         ])
     }
+
+    /// A button keeps its padding around its caption and draws its outline
+    /// and corners as written. Its icon is stretched, stands at its own size,
+    /// or is fitted - which is also what a covering aspect does on a button.
+    @MainActor
+    func testAButtonsPaddingOutlineAndIconAspectComeThroughTheHost() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        func button(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
+            var button = HostPatch(id: .manual(id), type: .button)
+            button.properties = properties
+            return button
+        }
+        func icon(_ aspect: Aspect) -> [Prop: HostValue] {
+            [.icon: .string("save.png"), .aspect: .enumeration(aspect.rawValue)]
+        }
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([
+            button("padded", [
+                .text: .string("Save"),
+                .padding: .numbers([20, 10, 20, 10]),
+                .borderColor: .color(red: 255, green: 0, blue: 0, alpha: 255),
+                .borderWidth: .number(2),
+                .cornerRadius: .number(6),
+            ]),
+            button("stretched", icon(.stretch)),
+            button("centred", icon(.center)),
+            button("covering", icon(.fill)),
+        ])
+        renderer.applyForTesting(tree(stack))
+
+        let padded = try XCTUnwrap(renderer.viewForTesting(id: .manual("padded")) as? NSButton)
+        let intrinsic = padded.intrinsicContentSize
+        XCTAssertEqual(padded.fittingSize.width, intrinsic.width + 40, accuracy: 0.5)
+        XCTAssertEqual(padded.fittingSize.height, intrinsic.height + 20, accuracy: 0.5)
+        let outline = try XCTUnwrap(padded.layer)
+        assertChannels(channels(outline.borderColor), [1, 0, 0, 1])
+        XCTAssertEqual(outline.borderWidth, 2)
+        XCTAssertEqual(outline.cornerRadius, 6)
+
+        func scaling(_ id: String) -> NSImageScaling? {
+            (renderer.viewForTesting(id: .manual(id)) as? NSButton)?.imageScaling
+        }
+        XCTAssertEqual(scaling("stretched"), .scaleAxesIndependently)
+        XCTAssertEqual(scaling("centred"), .scaleNone)
+        XCTAssertEqual(scaling("covering"), .scaleProportionallyUpOrDown)
+    }
 }
 
 #endif

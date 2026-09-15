@@ -361,6 +361,251 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertTrue(plain.masksToBounds, "a rectangle clips to its bounds")
         XCTAssertEqual(plain.cornerRadius, 0)
     }
+
+    /// A child written invisible is hidden and takes no room: what follows it
+    /// in a stack stands where it would have stood.
+    @MainActor
+    func testAnInvisibleChildIsHiddenAndTakesNoRoom() throws {
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([
+            box("first", [.height: .number(10)]),
+            box("hidden", [.height: .number(10), .isVisible: .bool(false)]),
+            box("last", [.height: .number(10), .isVisible: .bool(true)]),
+        ])
+        let renderer = arranged(stack, in: NSSize(width: 100, height: 100))
+        defer { renderer.closeForTesting() }
+
+        let nativeStack = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
+        XCTAssertEqual(renderer.viewForTesting(id: .manual("hidden"))?.isHidden, true)
+        XCTAssertEqual(renderer.viewForTesting(id: .manual("last"))?.frame.minY, 10)
+        XCTAssertEqual(nativeStack.intrinsicContentSize.height, 20)
+    }
+
+    /// A stack stands each child inside the stack's padding, by the child's
+    /// margin and its alignment across the stack, with the stack's spacing
+    /// between the children.
+    @MainActor
+    func testAStackPlacesChildrenByMarginAlignmentPaddingAndSpacing() throws {
+        func sized(_ width: Double, _ properties: [Prop: HostValue]) -> [Prop: HostValue] {
+            properties.merging([.width: .number(width), .height: .number(10)]) { $1 }
+        }
+        var column = HostPatch(id: .manual("column"), type: .vStack)
+        column.properties = [.padding: .numbers([10, 8, 12, 6]), .spacing: .number(4)]
+        column.children = .arranged([
+            box("start", sized(30, [
+                .margin: .numbers([5, 2, 0, 3]),
+                .horizontalAlignment: .enumeration(Alignment.start.rawValue),
+            ])),
+            box("end", sized(30, [.horizontalAlignment: .enumeration(Alignment.end.rawValue)])),
+            box("center", sized(30, [.horizontalAlignment: .enumeration(Alignment.center.rawValue)])),
+        ])
+        var row = HostPatch(id: .manual("row"), type: .hStack)
+        row.properties[.padding] = .numbers([6, 4, 6, 4])
+        row.children = .arranged([
+            box("bottom", sized(10, [
+                .margin: .numbers([3, 0, 0, 0]),
+                .verticalAlignment: .enumeration(Alignment.end.rawValue),
+            ])),
+            box("middle", sized(10, [.verticalAlignment: .enumeration(Alignment.center.rawValue)])),
+        ])
+        let columnRenderer = arranged(column, in: NSSize(width: 200, height: 200))
+        defer { columnRenderer.closeForTesting() }
+        let rowRenderer = arranged(row, in: NSSize(width: 200, height: 100))
+        defer { rowRenderer.closeForTesting() }
+
+        XCTAssertEqual(
+            columnRenderer.viewForTesting(id: .manual("start"))?.frame,
+            NSRect(x: 15, y: 10, width: 30, height: 10))
+        XCTAssertEqual(
+            columnRenderer.viewForTesting(id: .manual("end"))?.frame,
+            NSRect(x: 158, y: 27, width: 30, height: 10))
+        XCTAssertEqual(
+            columnRenderer.viewForTesting(id: .manual("center"))?.frame,
+            NSRect(x: 84, y: 41, width: 30, height: 10))
+        XCTAssertEqual(
+            rowRenderer.viewForTesting(id: .manual("bottom"))?.frame,
+            NSRect(x: 9, y: 86, width: 10, height: 10))
+        XCTAssertEqual(
+            rowRenderer.viewForTesting(id: .manual("middle"))?.frame,
+            NSRect(x: 19, y: 45, width: 10, height: 10))
+    }
+
+    /// A child's minimum raises it where it would be smaller, and its maximum
+    /// stops it where it would fill.
+    @MainActor
+    func testAMinimumRaisesAndAMaximumStopsAStacksChild() throws {
+        var column = HostPatch(id: .manual("column"), type: .vStack)
+        column.children = .arranged([
+            box("raised", [
+                .height: .number(10),
+                .horizontalAlignment: .enumeration(Alignment.start.rawValue),
+                .minimumWidth: .number(50),
+            ]),
+            box("stopped", [.height: .number(10), .maximumWidth: .number(60)]),
+        ])
+        var row = HostPatch(id: .manual("row"), type: .hStack)
+        row.children = .arranged([
+            box("tall", [
+                .width: .number(10),
+                .verticalAlignment: .enumeration(Alignment.start.rawValue),
+                .minimumHeight: .number(40),
+            ]),
+            box("short", [.width: .number(10), .maximumHeight: .number(30)]),
+        ])
+        let columnRenderer = arranged(column, in: NSSize(width: 200, height: 200))
+        defer { columnRenderer.closeForTesting() }
+        let rowRenderer = arranged(row, in: NSSize(width: 200, height: 100))
+        defer { rowRenderer.closeForTesting() }
+
+        XCTAssertEqual(
+            columnRenderer.viewForTesting(id: .manual("raised"))?.frame,
+            NSRect(x: 0, y: 0, width: 50, height: 10))
+        XCTAssertEqual(
+            columnRenderer.viewForTesting(id: .manual("stopped"))?.frame,
+            NSRect(x: 70, y: 10, width: 60, height: 10))
+        XCTAssertEqual(
+            rowRenderer.viewForTesting(id: .manual("tall"))?.frame,
+            NSRect(x: 0, y: 0, width: 10, height: 40))
+        XCTAssertEqual(
+            rowRenderer.viewForTesting(id: .manual("short"))?.frame,
+            NSRect(x: 10, y: 35, width: 10, height: 30))
+    }
+
+    /// A grid gives its fixed tracks their size and shares what remains among
+    /// its proportional ones, keeps its spacing between the tracks and its
+    /// padding around them, and stands each child in the cells its row, its
+    /// column and its spans name.
+    @MainActor
+    func testAGridStandsEachChildInTheCellsItNames() throws {
+        func track(_ kind: Int32, _ value: Double) -> HostValue {
+            .values([.enumeration(kind), .number(value)])
+        }
+        func cell(_ id: String, row: Int, column: Int, rowSpan: Int = 1, columnSpan: Int = 1) -> HostPatch {
+            box(id, [
+                .gridRow: .number(Double(row)),
+                .gridColumn: .number(Double(column)),
+                .gridRowSpan: .number(Double(rowSpan)),
+                .gridColumnSpan: .number(Double(columnSpan)),
+            ])
+        }
+        var grid = HostPatch(id: .manual("grid"), type: .grid)
+        grid.properties = [
+            .rows: .values([track(0, 30), track(1, 1)]),
+            .columns: .values([track(0, 50), track(1, 1)]),
+            .rowSpacing: .number(5),
+            .columnSpacing: .number(10),
+            .padding: .numbers([4, 4, 4, 4]),
+        ]
+        grid.children = .arranged([
+            cell("corner", row: 0, column: 0),
+            cell("beside", row: 0, column: 1),
+            cell("across", row: 1, column: 0, columnSpan: 2),
+            cell("down", row: 0, column: 0, rowSpan: 2),
+        ])
+        let renderer = arranged(grid, in: NSSize(width: 200, height: 100))
+        defer { renderer.closeForTesting() }
+
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("corner"))?.frame,
+            NSRect(x: 4, y: 4, width: 50, height: 30))
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("beside"))?.frame,
+            NSRect(x: 64, y: 4, width: 132, height: 30))
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("across"))?.frame,
+            NSRect(x: 4, y: 39, width: 192, height: 57))
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("down"))?.frame,
+            NSRect(x: 4, y: 4, width: 50, height: 92))
+    }
+
+    /// An absolute layout stands a child at the bounds it gives, reading those
+    /// its proportions name as fractions of the layout's room.
+    @MainActor
+    func testAnAbsoluteLayoutStandsChildrenAtTheirBoundsAndProportions() throws {
+        var layout = HostPatch(id: .manual("layout"), type: .absoluteLayout)
+        layout.children = .arranged([
+            box("fixed", [.absoluteLayoutBounds: .numbers([10, 20, 30, 40])]),
+            box("proportional", [
+                .absoluteLayoutBounds: .numbers([0.5, 1, 0.25, 0.5]),
+                .absoluteLayoutProportions: .enumeration(AbsoluteLayoutProportions.all.rawValue),
+            ]),
+        ])
+        let renderer = arranged(layout, in: NSSize(width: 200, height: 100))
+        defer { renderer.closeForTesting() }
+
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("fixed"))?.frame,
+            NSRect(x: 10, y: 20, width: 30, height: 40))
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("proportional"))?.frame,
+            NSRect(x: 75, y: 50, width: 50, height: 50))
+    }
+
+    /// A border keeps its padding between its outline and what it holds, and
+    /// strokes its outline in its stroke's colour, as wide as its stroke width.
+    @MainActor
+    func testABorderPadsWhatItHoldsAndStrokesItsOutline() throws {
+        var border = HostPatch(id: .manual("border"), type: .border)
+        border.properties = [
+            .padding: .numbers([4, 6, 8, 10]),
+            .background: .color(red: 0, green: 0, blue: 255, alpha: 255),
+            .stroke: Brush.solidColor(Color("#FF0000")).propValue,
+            .strokeWidth: .number(6),
+        ]
+        border.children = .arranged([box("inside", [:])])
+        let renderer = arranged(border, in: NSSize(width: 100, height: 60))
+        defer { renderer.closeForTesting() }
+
+        XCTAssertEqual(
+            renderer.viewForTesting(id: .manual("inside"))?.frame,
+            NSRect(x: 4, y: 6, width: 88, height: 44))
+
+        let drawn = try bitmap(of: try XCTUnwrap(renderer.viewForTesting(id: .manual("border"))))
+        let outline = try XCTUnwrap(drawn.colorAt(x: 2, y: 30))
+        let within = try XCTUnwrap(drawn.colorAt(x: 10, y: 30))
+        XCTAssertGreaterThan(outline.redComponent, 0.9, "the stroke's colour at the edge")
+        XCTAssertLessThan(outline.blueComponent, 0.1)
+        XCTAssertGreaterThan(within.blueComponent, 0.9, "the background beyond the stroke's width")
+        XCTAssertLessThan(within.redComponent, 0.1)
+    }
+
+    /// A scroller keeps its padding around what it holds.
+    @MainActor
+    func testAScrollViewKeepsItsPaddingAroundWhatItHolds() throws {
+        var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
+        scroll.properties = [
+            .orientation: .enumeration(ScrollOrientation.horizontal.rawValue),
+            .padding: .numbers([5, 3, 11, 7]),
+        ]
+        scroll.children = .arranged([box("wide", [.width: .number(500), .height: .number(36)])])
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+        renderer.applyForTesting(tree(scroll))
+
+        let nativeScroll = try XCTUnwrap(renderer.viewForTesting(id: .manual("scroll")))
+        XCTAssertEqual(nativeScroll.intrinsicContentSize, NSSize(width: 516, height: 46))
+    }
+
+    // MARK: - Helpers
+
+    private func box(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
+        var box = HostPatch(id: .manual(id), type: .colorBox)
+        box.properties = properties
+        return box
+    }
+
+    /// A renderer showing `layout` arranged in a room of `size`.
+    @MainActor
+    private func arranged(_ layout: HostPatch, in size: NSSize) -> AppKitRenderer {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        renderer.applyForTesting(tree(layout))
+        if let native = renderer.viewForTesting(id: layout.id) {
+            native.frame = NSRect(origin: .zero, size: size)
+            native.layoutSubtreeIfNeeded()
+        }
+        return renderer
+    }
 }
 
 #endif

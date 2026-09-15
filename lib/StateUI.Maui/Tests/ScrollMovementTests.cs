@@ -114,4 +114,31 @@ public class ScrollMovementTests
 
         Assert.Empty(asked);
     }
+
+    /// <summary>
+    /// A movement of the reader's that comes to rest is reported, once, to the
+    /// handler the tree gave the scroller's rest.
+    /// </summary>
+    /// <remarks>
+    /// A scroller arms its rest only with a platform behind it, so a stand-in
+    /// handler is given; the offset moving is the report a platform raises as
+    /// the reader scrolls.
+    /// </remarks>
+    [Fact]
+    public void AMovementOfTheReadersThatComesToRestIsReported()
+    {
+        var host = new Host();
+
+        var scroll = (ScrollView)host.Apply("""
+            {"id":1,"type":"ScrollView","events":{"scrollStopped":7},"arranged":true,"children":[
+               {"id":2,"type":"ColorBox","props":{"width":100,"height":900}}]}
+            """);
+
+        scroll.Handler = new StandInHandler();
+        host.Dispatched.Clear();
+
+        ((IScrollViewController)scroll).SetScrolledPosition(0, 120);
+
+        Assert.Equal([(7, (string?)null)], host.Dispatched);
+    }
 }

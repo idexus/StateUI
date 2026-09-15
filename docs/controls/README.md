@@ -6,48 +6,48 @@ An entry's file opens with the members it declares itself, then one section per 
 
 Marks: ✅ realized by that host and covered by its tests · ✅* realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet.
 
-A host's column is what that host declares it realizes - AppKit's is `AppKitRealization`, in its sources - and a realization records itself there in the same change. `ControlDictionaryTests` fails when a file's members differ from the code, when a ✅* has no note, or when a file is missing; `AppKitRealizationTests` fails when the AppKit column differs from the records. `python3 .scripts/controls-dictionary.py` rewrites the member lists and the columns, keeping every realization line already written.
+A host's column is what that host declares it realizes - AppKit's is `AppKitRealization` and MAUI's is `MauiRealization`, each in its host's sources - and a realization records itself there in the same change. A row has one Notes cell for every host: AppKit's note as written, then each other host's as `MAUI: …`, joined by `; `. `ControlDictionaryTests` fails when a file's members differ from the code, when a ✅* has no note, or when a file is missing; `AppKitRealizationTests` and `MauiRealizationTests` fail when their host's column or note differs from its records. `python3 .scripts/controls-dictionary.py` rewrites the member lists and the columns, keeping every realization line already written.
 
 ## Controls
 
 | Control | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Label](Label.md) | 78 |  | 34 ✅ · 2 ✅* |  |  |  |  |  |
-| [Button](Button.md) | 83 |  | 32 ✅ · 2 ✅* |  |  |  |  |  |
-| [TextField](TextField.md) | 87 |  | 37 ✅ · 2 ✅* |  |  |  |  |  |
-| [TextEditor](TextEditor.md) | 84 |  | 36 ✅ · 2 ✅* |  |  |  |  |  |
-| [SearchField](SearchField.md) | 86 |  | 36 ✅ · 2 ✅* |  |  |  |  |  |
-| [Image](Image.md) | 65 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [Picker](Picker.md) | 79 |  | 28 ✅ · 2 ✅* |  |  |  |  |  |
-| [DatePicker](DatePicker.md) | 77 |  | 24 ✅ · 2 ✅* |  |  |  |  |  |
-| [TimePicker](TimePicker.md) | 75 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [Switch](Switch.md) | 66 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [CheckBox](CheckBox.md) | 66 |  | 23 ✅ · 2 ✅* |  |  |  |  |  |
-| [RadioButton](RadioButton.md) | 78 |  | 24 ✅ · 2 ✅* |  |  |  |  |  |
-| [Slider](Slider.md) | 70 |  | 27 ✅ · 2 ✅* |  |  |  |  |  |
-| [Stepper](Stepper.md) | 68 |  | 25 ✅ · 2 ✅* |  |  |  |  |  |
-| [ActivityIndicator](ActivityIndicator.md) | 65 |  | 21 ✅ · 2 ✅* |  |  |  |  |  |
-| [ProgressBar](ProgressBar.md) | 65 |  | 21 ✅ · 2 ✅* |  |  |  |  |  |
-| [ColorBox](ColorBox.md) | 65 |  | 22 ✅ · 1 ✅* |  |  |  |  |  |
-| [Border](Border.md) | 72 |  | 21 ✅ · 1 ✅* |  |  |  |  |  |
-| [PositionIndicator](PositionIndicator.md) | 71 |  |  |  |  |  |  |  |
-| [VStack](VStack.md) | 68 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [HStack](HStack.md) | 68 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [Grid](Grid.md) | 71 |  | 20 ✅ · 2 ✅* |  |  |  |  |  |
-| [AbsoluteLayout](AbsoluteLayout.md) | 67 |  | 20 ✅ · 2 ✅* |  |  |  |  |  |
-| [ScrollView](ScrollView.md) | 68 |  | 24 ✅ · 2 ✅* |  |  |  |  |  |
-| [RefreshView](RefreshView.md) | 67 |  |  |  |  |  |  |  |
-| [SwipeView](SwipeView.md) | 68 |  |  |  |  |  |  |  |
-| [Map](Map.md) | 75 |  |  |  |  |  |  |  |
-| [WebView](WebView.md) | 70 |  |  |  |  |  |  |  |
-| [TitleBar](TitleBar.md) | 66 |  | 23 ✅ · 2 ✅* |  |  |  |  |  |
-| [Canvas](Canvas.md) | 64 |  | 21 ✅ · 2 ✅* |  |  |  |  |  |
-| [Rectangle](Rectangle.md) | 74 |  | 20 ✅ · 2 ✅* |  |  |  |  |  |
-| [Ellipse](Ellipse.md) | 73 |  | 20 ✅ · 2 ✅* |  |  |  |  |  |
-| [Line](Line.md) | 77 |  | 24 ✅ · 2 ✅* |  |  |  |  |  |
-| [Path](Path.md) | 74 |  | 21 ✅ · 2 ✅* |  |  |  |  |  |
-| [Polygon](Polygon.md) | 75 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
-| [Polyline](Polyline.md) | 75 |  | 22 ✅ · 2 ✅* |  |  |  |  |  |
+| [Label](Label.md) | 78 | 76 ✅ | 62 ✅ · 2 ✅* |  |  |  |  |  |
+| [Button](Button.md) | 83 | 80 ✅ | 63 ✅ · 3 ✅* |  |  |  |  |  |
+| [TextField](TextField.md) | 87 | 85 ✅ | 65 ✅ · 2 ✅* |  |  |  |  |  |
+| [TextEditor](TextEditor.md) | 84 | 82 ✅ | 64 ✅ · 2 ✅* |  |  |  |  |  |
+| [SearchField](SearchField.md) | 86 | 84 ✅ | 64 ✅ · 2 ✅* |  |  |  |  |  |
+| [Image](Image.md) | 65 | 63 ✅ | 50 ✅ · 2 ✅* |  |  |  |  |  |
+| [Picker](Picker.md) | 79 | 77 ✅ | 61 ✅ · 2 ✅* |  |  |  |  |  |
+| [DatePicker](DatePicker.md) | 77 | 75 ✅ | 56 ✅ · 2 ✅* |  |  |  |  |  |
+| [TimePicker](TimePicker.md) | 75 | 73 ✅ | 54 ✅ · 2 ✅* |  |  |  |  |  |
+| [Switch](Switch.md) | 66 | 64 ✅ | 50 ✅ · 2 ✅* |  |  |  |  |  |
+| [CheckBox](CheckBox.md) | 66 | 64 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
+| [RadioButton](RadioButton.md) | 78 | 76 ✅ | 58 ✅ · 2 ✅* |  |  |  |  |  |
+| [Slider](Slider.md) | 70 | 68 ✅ | 55 ✅ · 2 ✅* |  |  |  |  |  |
+| [Stepper](Stepper.md) | 68 | 66 ✅ | 53 ✅ · 2 ✅* |  |  |  |  |  |
+| [ActivityIndicator](ActivityIndicator.md) | 65 | 63 ✅ | 48 ✅ · 2 ✅* |  |  |  |  |  |
+| [ProgressBar](ProgressBar.md) | 65 | 63 ✅ | 48 ✅ · 2 ✅* |  |  |  |  |  |
+| [ColorBox](ColorBox.md) | 65 | 63 ✅ | 50 ✅ · 2 ✅* |  |  |  |  |  |
+| [Border](Border.md) | 72 | 70 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
+| [PositionIndicator](PositionIndicator.md) | 71 | 69 ✅ |  |  |  |  |  |  |
+| [VStack](VStack.md) | 68 | 66 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
+| [HStack](HStack.md) | 68 | 66 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
+| [Grid](Grid.md) | 71 | 69 ✅ | 54 ✅ · 2 ✅* |  |  |  |  |  |
+| [AbsoluteLayout](AbsoluteLayout.md) | 67 | 65 ✅ | 49 ✅ · 2 ✅* |  |  |  |  |  |
+| [ScrollView](ScrollView.md) | 68 | 66 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
+| [RefreshView](RefreshView.md) | 67 | 65 ✅ |  |  |  |  |  |  |
+| [SwipeView](SwipeView.md) | 68 | 66 ✅ |  |  |  |  |  |  |
+| [Map](Map.md) | 75 | 61 ✅ · 12 ✅* |  |  |  |  |  |  |
+| [WebView](WebView.md) | 70 | 68 ✅ |  |  |  |  |  |  |
+| [TitleBar](TitleBar.md) | 66 | 64 ✅ | 3 ✅ · 1 ✅* |  |  |  |  |  |
+| [Canvas](Canvas.md) | 64 | 62 ✅ | 49 ✅ · 2 ✅* |  |  |  |  |  |
+| [Rectangle](Rectangle.md) | 74 | 72 ✅ | 56 ✅ · 3 ✅* |  |  |  |  |  |
+| [Ellipse](Ellipse.md) | 73 | 71 ✅ | 55 ✅ · 3 ✅* |  |  |  |  |  |
+| [Line](Line.md) | 77 | 75 ✅ | 61 ✅ · 3 ✅* |  |  |  |  |  |
+| [Path](Path.md) | 74 | 72 ✅ | 58 ✅ · 3 ✅* |  |  |  |  |  |
+| [Polygon](Polygon.md) | 75 | 73 ✅ | 59 ✅ · 3 ✅* |  |  |  |  |  |
+| [Polyline](Polyline.md) | 75 | 73 ✅ | 59 ✅ · 3 ✅* |  |  |  |  |  |
 
 ## Application structure
 
@@ -55,15 +55,15 @@ The scene, the window and the page an application is made of, the arrangements a
 
 | Part | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Scene](Scene.md) | 6 |  | 6 ✅ |  |  |  |  |  |
-| [Window](Window.md) | 22 |  | 22 ✅ |  |  |  |  |  |
-| [Page](Page.md) | 12 |  | 12 ✅ |  |  |  |  |  |
-| [NavigationStack](NavigationStack.md) | 6 |  | 3 ✅ |  |  |  |  |  |
-| [TabbedView](TabbedView.md) | 6 |  | 3 ✅ |  |  |  |  |  |
-| [SplitView](SplitView.md) | 4 |  | 1 ✅ |  |  |  |  |  |
-| [ToolbarItem](ToolbarItem.md) | 8 |  | 7 ✅ |  |  |  |  |  |
-| [Menu](Menu.md) | 1 |  |  |  |  |  |  |  |
-| [MenuItem](MenuItem.md) | 6 |  | 5 ✅ |  |  |  |  |  |
+| [Scene](Scene.md) | 6 | 6 ✅ | 6 ✅ |  |  |  |  |  |
+| [Window](Window.md) | 22 | 20 ✅ · 1 ✅* | 22 ✅ |  |  |  |  |  |
+| [Page](Page.md) | 12 | 12 ✅ | 12 ✅ |  |  |  |  |  |
+| [NavigationStack](NavigationStack.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |
+| [TabbedView](TabbedView.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |
+| [SplitView](SplitView.md) | 4 | 3 ✅ | 4 ✅ |  |  |  |  |  |
+| [ToolbarItem](ToolbarItem.md) | 8 | 8 ✅ | 6 ✅ |  |  |  |  |  |
+| [Menu](Menu.md) | 1 | 1 ✅ | 1 ✅ |  |  |  |  |  |
+| [MenuItem](MenuItem.md) | 6 | 5 ✅ | 5 ✅ · 1 ✅* |  |  |  |  |  |
 
 ## Tiers
 

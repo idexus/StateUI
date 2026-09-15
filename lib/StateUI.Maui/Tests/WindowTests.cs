@@ -23,6 +23,21 @@ public class WindowTests
 
     private static StateUIWindow Window(string json) => Apply(Host.Window(), json);
 
+    /// <summary>
+    /// Minimizing can be refused on its own, against MAUI's default, which
+    /// allows it.
+    /// </summary>
+    [Fact]
+    public void AWindowCanRefuseToBeMinimized()
+    {
+        StateUIWindow window = Window(Tree("""
+            "isMaximizable":true,"isMinimizable":false
+            """));
+
+        Assert.True(window.IsMaximizable);
+        Assert.False(window.IsMinimizable);
+    }
+
     /// <summary>A window carrying whatever properties are given, over one page.</summary>
     private static string Tree(string props) => $$$"""
         {"id":1,"type":"Window","props":{{{{props}}}},"arranged":true,"children":[

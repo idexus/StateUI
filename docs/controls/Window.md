@@ -12,28 +12,28 @@ Declared in `lib/StateUI/Sources/Views/Application.swift`, `lib/StateUI/Sources/
 
 | Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | handler |  | ✅ |  |  |  |  |  |  |
-| `created` | handler |  | ✅ |  |  |  |  |  |  |
-| `deactivated` | handler |  | ✅ |  |  |  |  |  |  |
-| `destroying` | handler |  | ✅ |  |  |  |  |  |  |
-| `floatsOnTop` | property |  | ✅ |  |  |  |  |  |  |
-| `height` | property |  | ✅ |  |  |  |  |  |  |
+| `activated` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `created` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `deactivated` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `destroying` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `floatsOnTop` | property | ✅* | ✅ |  |  |  |  |  | MAUI: Only Mac Catalyst keeps the window on top; Windows and Linux leave it among the others. |
+| `height` | property | ✅ | ✅ |  |  |  |  |  |  |
 | `hidesWhenInactive` | property |  | ✅ |  |  |  |  |  |  |
-| `isMaximizable` | property |  | ✅ |  |  |  |  |  |  |
-| `isMinimizable` | property |  | ✅ |  |  |  |  |  |  |
-| `maximumHeight` | property |  | ✅ |  |  |  |  |  |  |
-| `maximumWidth` | property |  | ✅ |  |  |  |  |  |  |
-| `minimumHeight` | property |  | ✅ |  |  |  |  |  |  |
-| `minimumWidth` | property |  | ✅ |  |  |  |  |  |  |
-| `modalPopped` | handler |  | ✅ |  |  |  |  |  |  |
-| `resumed` | handler |  | ✅ |  |  |  |  |  |  |
-| `stopped` | handler |  | ✅ |  |  |  |  |  |  |
-| `title` | property |  | ✅ |  |  |  |  |  |  |
-| `width` | property |  | ✅ |  |  |  |  |  |  |
-| `windowType` | property |  | ✅ |  |  |  |  |  |  |
-| `windowValue` | property |  | ✅ |  |  |  |  |  |  |
-| `x` | property |  | ✅ |  |  |  |  |  |  |
-| `y` | property |  | ✅ |  |  |  |  |  |  |
+| `isMaximizable` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `isMinimizable` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `maximumHeight` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `maximumWidth` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `minimumHeight` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `minimumWidth` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `modalPopped` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `resumed` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `stopped` | handler | ✅ | ✅ |  |  |  |  |  |  |
+| `title` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `width` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `windowType` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `windowValue` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `x` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `y` | property | ✅ | ✅ |  |  |  |  |  |  |
 
 Realization:
 

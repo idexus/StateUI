@@ -79,6 +79,22 @@ public class FlyoutPageTests
     }
 
     /// <summary>
+    /// The split layout is a page too, with a title and an icon of its own -
+    /// what a tab or a window holding it shows for it.
+    /// </summary>
+    [Fact]
+    public void AFlyoutCarriesATitleAndAnIconOfItsOwn()
+    {
+        (SwiftPages pages, _) = Renderer();
+
+        var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(
+            Flyout(extra: "\"title\":\"Mail\",\"icon\":\"mail.png\""))));
+
+        Assert.Equal("Mail", flyout.Title);
+        Assert.Equal("mail.png", (flyout.IconImageSource as FileImageSource)?.File);
+    }
+
+    /// <summary>
     /// A later message swaps a half without touching the other - and keeps the
     /// page it did not talk about, which is what identity is for.
     /// </summary>
