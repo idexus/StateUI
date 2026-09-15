@@ -560,6 +560,59 @@ internal static partial class WireCodec
     }
 
     /// <summary>
+    /// Serializes what this host realizes - the elements it makes a view for
+    /// and the members it realizes on each - said once, at start-up, through
+    /// <see cref="Interop.CoreLink.SetRealization"/>. The Swift side reads it
+    /// with <c>Wire.decodeRealization</c>.
+    /// </summary>
+    /// <remarks>
+    /// <code>
+    /// [version: U8][elements: U16] per element: [name: string]
+    /// [members: U16] per member: [element: string][owner: string][member: string]
+    /// </code>
+    /// <para>
+    /// Elements sorted by name and members by element, owner and member,
+    /// ordinally - the Swift side's order for these names - so one
+    /// realization is one run of bytes. Names in full: nothing has announced
+    /// a dictionary yet.
+    /// </para>
+    /// </remarks>
+    /// <param name="elements">The elements, by node type name.</param>
+    /// <param name="members">The members, each on its element, by its owner's name and its own.</param>
+    internal static byte[] WriteRealization(
+        IEnumerable<string> elements,
+        IEnumerable<(string Element, string Owner, string Member)> members)
+    {
+        string[] named = [.. elements.Distinct().Order(StringComparer.Ordinal)];
+        (string Element, string Owner, string Member)[] realized =
+        [
+            .. members.Distinct()
+                .OrderBy(member => member.Element, StringComparer.Ordinal)
+                .ThenBy(member => member.Owner, StringComparer.Ordinal)
+                .ThenBy(member => member.Member, StringComparer.Ordinal),
+        ];
+
+        var bytes = new List<byte>(64) { Version };
+        Write(bytes, Count16(named.Length, "realized elements"));
+
+        foreach (string element in named)
+        {
+            Write(bytes, element);
+        }
+
+        Write(bytes, Count16(realized.Length, "realized members"));
+
+        foreach ((string element, string owner, string member) in realized)
+        {
+            Write(bytes, element);
+            Write(bytes, owner);
+            Write(bytes, member);
+        }
+
+        return [.. bytes];
+    }
+
+    /// <summary>
     /// Serializes a standard-environment push: which provider the values are
     /// for - one byte, the closed vocabulary both sides of the repository
     /// spell, see <see cref="Rendering.StateUIEnvironment"/> - then the

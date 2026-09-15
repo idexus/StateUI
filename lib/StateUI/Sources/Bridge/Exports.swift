@@ -146,6 +146,28 @@ public func stateui_dispatch_host_event(
     return Int32(HostEvents.dispatch(event.name, event.payload))
 }
 
+/// Tells the core what the host realizes - the elements it makes a view for
+/// and the members it realizes on each - in the layout
+/// `Wire.encodeRealization` writes. Answers 0, or -1 for a buffer that would
+/// not read, which leaves what the core knew as it was.
+///
+/// The buffer is read before the call returns, so nothing is pinned past it
+/// and nothing is freed.
+@_cdecl("stateui_set_realization_wire")
+public func stateui_set_realization_wire(
+    _ bytes: UnsafePointer<UInt8>?,
+    _ length: Int32
+) -> Int32 {
+    let buffer: [UInt8] = bytes.map {
+        Array(UnsafeBufferPointer(start: $0, count: Int(length)))
+    } ?? []
+
+    guard let realization = Wire.decodeRealization(buffer) else { return -1 }
+
+    StateUIHost.setRealization(realization)
+    return 0
+}
+
 /// Hands over the acts queued since the last time, in the binary wire format
 /// (Core/Wire.swift), and forgets them. Writes the byte count into `length`
 /// and answers null for an empty queue - the common case, every pump,

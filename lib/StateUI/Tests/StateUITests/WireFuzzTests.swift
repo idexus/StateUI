@@ -38,6 +38,7 @@ final class WireFuzzTests: XCTestCase {
         ("decodeHostEvent", { Wire.decodeHostEvent($0) != nil }),
         ("decodeEnvironment", { Wire.decodeEnvironment($0) != nil }),
         ("decodePersistent", { Wire.decodePersistent($0) != nil }),
+        ("decodeRealization", { Wire.decodeRealization($0) != nil }),
     ]
 
     /// What a single byte is changed by: every bit, the low bit alone, and the
@@ -65,6 +66,8 @@ final class WireFuzzTests: XCTestCase {
                 read = { Wire.decodeEnvironment($0) != nil }
             } else if name.hasPrefix("reply") {
                 read = { Wire.decodeReply($0) != nil }
+            } else if name.hasPrefix("realization") {
+                read = { Wire.decodeRealization($0) != nil }
             } else {
                 read = { Wire.decodePayload($0) != nil }
             }

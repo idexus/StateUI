@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The four channels this runtime WRITES - an act's reply, an event's payload,
-// an event the host raised by name, and an environment push - held to the
-// fixtures under fixtures/payloads.
+// The channels this runtime WRITES - an act's reply, an event's payload, an
+// event the host raised by name, an environment push, and what it realizes -
+// held to the fixtures under fixtures/payloads.
 //
 // The direction is the reverse of every other fixture's: the Swift tests
 // author these bytes with the library's own value encoding, the Swift library
@@ -109,6 +109,25 @@ public class PayloadFixtureTests
     }
 
     /// <summary>
+    /// And what this host realizes - said once, at start-up, before any
+    /// message: its elements, then its members, each sorted whatever order
+    /// they were gathered in.
+    /// </summary>
+    [Fact]
+    public void TheRealizationMatchesItsFixture()
+    {
+        Matches(
+            WireCodec.WriteRealization(
+                ["Label", "Gallery.TrafficLight"],
+                [
+                    ("Label", "Label", "maximumLines"),
+                    ("Label", "FontElement", "fontSize"),
+                    ("Gallery.TrafficLight", "Gallery.TrafficLight", "lampTapped"),
+                ]),
+            "realization");
+    }
+
+    /// <summary>
     /// The writer is deterministic to the byte: the same values twice are the
     /// same bytes twice. Nothing about a payload may depend on when or where
     /// it was written - that is what lets a fixture BE the contract.
@@ -144,7 +163,7 @@ public class PayloadFixtureTests
         "environment-battery", "environment-locale", "event-frame",
         "event-navigated", "event-number", "event-pan", "event-selection",
         "event-selection-empty", "event-text", "event-toggle", "host-event",
-        "host-event-empty", "reply-bool", "reply-clock", "reply-failure",
+        "host-event-empty", "realization", "reply-bool", "reply-clock", "reply-failure",
         "reply-nothing", "reply-text", "reply-void",
     ];
 

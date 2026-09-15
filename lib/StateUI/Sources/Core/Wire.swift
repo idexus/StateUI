@@ -635,6 +635,67 @@ public enum Wire {
         return reader.atEnd ? found : nil
     }
 
+    /// What a host realizes - the elements it makes a view for and the members
+    /// it realizes on each - said once at start-up by a host across the Wire,
+    /// where a Swift host hands over its `Registry.realization`:
+    ///
+    ///   [version: U8][elements: U16] per element: [name: string]
+    ///   [members: U16] per member: [element: string][owner: string][member: string]
+    ///
+    /// Elements sorted by name and members by element, owner and member, so
+    /// one realization is one run of bytes. Names in full, as the persistent
+    /// keys are: nothing has announced a dictionary yet.
+    static func encodeRealization(_ realization: HostRealization) -> [UInt8] {
+        var out: [UInt8] = []
+        out.u8(version)
+        out.u16(count(realization.elements.count, of: "realized elements"))
+
+        for element in realization.elements.sorted() {
+            out.string(element)
+        }
+
+        let members = realization.members.sorted {
+            ($0.element, $0.owner, $0.member) < ($1.element, $1.owner, $1.member)
+        }
+        out.u16(count(members.count, of: "realized members"))
+
+        for member in members {
+            out.string(member.element)
+            out.string(member.owner)
+            out.string(member.member)
+        }
+
+        return out
+    }
+
+    /// Decodes what `encodeRealization` writes. Nil for a buffer that would
+    /// not read, which the caller answers with -1 so the host can say version
+    /// skew rather than nothing.
+    static func decodeRealization(_ bytes: [UInt8]) -> HostRealization? {
+        var reader = Reader(bytes)
+
+        guard reader.u8() == version, let elements = reader.u16() else { return nil }
+
+        var realization = HostRealization()
+
+        for _ in 0..<elements {
+            guard let name = reader.string() else { return nil }
+
+            realization.elements.insert(name)
+        }
+
+        guard let members = reader.u16() else { return nil }
+
+        for _ in 0..<members {
+            guard let element = reader.string(), let owner = reader.string(), let member = reader.string()
+            else { return nil }
+
+            realization.members.insert(HostRealizedMember(element: element, owner: owner, member: member))
+        }
+
+        return reader.atEnd ? realization : nil
+    }
+
     /// Decodes a standard-environment push - which provider, then the same
     /// counted value list every channel shares. The domain is one byte, not a
     /// name: the providers are a closed vocabulary both sides of this

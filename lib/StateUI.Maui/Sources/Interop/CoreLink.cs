@@ -107,6 +107,21 @@ internal static partial class CoreLink
     internal static partial int DispatchHostEvent(byte[] bytes, int length);
 
     /// <summary>
+    /// Tells the Swift side what this host realizes - the elements it makes a
+    /// view for and the members it realizes on each - in the layout the Swift
+    /// side's <c>Wire.encodeRealization</c> writes and
+    /// <see cref="Protocol.WireCodec.WriteRealization"/> writes here, both held
+    /// to <c>fixtures/payloads/realization.bin</c>. Answers 0, or -1 for a
+    /// buffer that would not read.
+    /// </summary>
+    /// <remarks>
+    /// The buffer is read before the call returns, so nothing is pinned past
+    /// it and nothing is freed.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_set_realization_wire")]
+    internal static partial int SetRealization(byte[] bytes, int length);
+
+    /// <summary>
     /// Takes the acts queued by the Swift side since the last call, in the
     /// binary wire format, and clears the queue. Writes the byte count into
     /// <paramref name="length"/> and returns <see cref="IntPtr.Zero"/> for an
