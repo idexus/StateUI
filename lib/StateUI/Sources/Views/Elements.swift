@@ -94,6 +94,66 @@ extension PropertyContainer {
         modified { $0.props[property] = value }
     }
 
+    /// Sets one of this element's properties to a value of the type its
+    /// contract declares.
+    ///
+    ///     func signal(_ value: TrafficSignal) -> Self {
+    ///         setValue(TrafficLightContract.signal, value)
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - property: the member, written with its contract.
+    ///   - value: what it holds.
+    /// - Returns: the element, with the value on it.
+    public func setValue<Owner: Contract, Value: HostRepresentable>(
+        _ property: ElementProperty<Owner, Value>,
+        _ value: Value
+    ) -> Modified {
+        setValue(property.token, value.propValue)
+    }
+
+    /// Drives one of this element's properties from a state the host carries,
+    /// the state's value being the type the contract declares - the typed
+    /// form of `setValue(_:on:mode:kind:)` over a token.
+    ///
+    /// - Parameters:
+    ///   - property: the member, written with its contract.
+    ///   - state: the whole state, `$x`.
+    ///   - mode: which way it crosses.
+    ///   - kind: which of the host's doors the value goes through.
+    /// - Returns: the element, with the registration on it.
+    public func setValue<Owner: Contract, Value: HostRepresentable & StateValue>(
+        _ property: ElementProperty<Owner, Value>,
+        on state: Binding<Value>,
+        mode: StateMode,
+        kind: StateKind
+    ) -> Modified {
+        setValue(property.token, on: state, mode: mode, kind: kind)
+    }
+
+    /// The same, for a value the host WALKS - through the `.property` door the
+    /// state is walked as a journey, so `$stars.journey.move(to: 5)` moves the
+    /// member the way it moves a Border's opacity.
+    ///
+    ///     func rating(_ state: Binding<Double>) -> Modified {
+    ///         setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - property: the member, written with its contract.
+    ///   - state: the whole state, `$x`.
+    ///   - mode: which way it crosses.
+    ///   - kind: which of the host's doors the value goes through.
+    /// - Returns: the element, with the registration on it.
+    public func setValue<Owner: Contract, Value: HostRepresentable & Walked>(
+        _ property: ElementProperty<Owner, Value>,
+        on state: Binding<Value>,
+        mode: StateMode,
+        kind: StateKind
+    ) -> Modified {
+        setValue(property.token, on: state, mode: mode, kind: kind)
+    }
+
     /// Writes the NUMBER of a carried state onto a property, which is how a
     /// drag is told where to report - `panX`, `panY`.
     ///
@@ -467,6 +527,101 @@ extension ModifiableElement {
     /// library does.
     public func onEvent(_ event: Event, _ handler: @escaping ValueEventHandler<[PropValue]>) -> Modified {
         addHandler(event) { try await handler(EventBuffer.current) }
+    }
+
+    /// Hears one of this element's events that carries nothing.
+    ///
+    ///     onEvent(TrafficLightContract.closed) { shown = false }
+    ///
+    /// Beside whatever handler is there already, never instead of it. An event
+    /// that arrives carrying anything is reported once and does not reach the
+    /// handler: what arrives is what the contract says.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: what runs.
+    /// - Returns: the element, with the handler on it.
+    public func onEvent<Owner: Contract>(
+        _ event: ElementEvent<Owner, Void>,
+        _ handler: @escaping EventHandler
+    ) -> Modified {
+        addHandler(event.token) {
+            guard MemberValues.carried(EventBuffer.current, by: event.name) != nil else { return }
+
+            try await handler()
+        }
+    }
+
+    /// Hears one of this element's events, its value handed over as the type
+    /// its contract declares.
+    ///
+    ///     func onLampTapped(_ handler: @escaping ValueEventHandler<Int>) -> Self {
+    ///         onEvent(TrafficLightContract.lampTapped, handler)
+    ///     }
+    ///
+    /// Beside whatever handler is there already, never instead of it. What
+    /// arrives is what the contract says or nothing: a payload with the value
+    /// missing, one too many, or one of another kind is reported once and does
+    /// not reach the handler.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: given the value.
+    /// - Returns: the element, with the handler on it.
+    public func onEvent<Owner: Contract, Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, Value>,
+        _ handler: @escaping ValueEventHandler<Value>
+    ) -> Modified {
+        addHandler(event.token) {
+            guard let value = MemberValues.carried(EventBuffer.current, by: event.name, as: Value.self)
+            else { return }
+
+            try await handler(value)
+        }
+    }
+
+    /// Hears one of this element's events that carries two values, handed
+    /// over as the types its contract declares, in its order.
+    ///
+    ///     onEvent(GaugeContract.dimmed) { level, lit in … }
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: given the values.
+    /// - Returns: the element, with the handler on it.
+    public func onEvent<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
+        _ event: ElementEvent<Owner, (First, Second)>,
+        _ handler: @escaping ValueEventHandler<First, Second>
+    ) -> Modified {
+        addHandler(event.token) {
+            guard let (first, second) = MemberValues.carried(
+                EventBuffer.current, by: event.name, as: First.self, Second.self)
+            else { return }
+
+            try await handler(first, second)
+        }
+    }
+
+    /// Hears one of this element's events that carries three values, handed
+    /// over as the types its contract declares, in its order.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: given the values.
+    /// - Returns: the element, with the handler on it.
+    public func onEvent<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third)>,
+        _ handler: @escaping ValueEventHandler<First, Second, Third>
+    ) -> Modified {
+        addHandler(event.token) {
+            guard let (first, second, third) = MemberValues.carried(
+                EventBuffer.current, by: event.name, as: First.self, Second.self, Third.self)
+            else { return }
+
+            try await handler(first, second, third)
+        }
     }
 
     /// Adds a handler to an event that may already have one - the typed form

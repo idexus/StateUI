@@ -137,3 +137,47 @@ public nonisolated(nonsending) func stateUICall(
 public func stateUISend(_ act: Act, _ arguments: [PropValue] = []) {
     Renderer.shared.send(act, arguments, completion: nil)
 }
+
+/// Performs an act of the application's - one with no control behind it -
+/// handing it arguments of the types its contract declares and answering with
+/// the values it declares.
+///
+///     let text = try await stateUICall(NotesContract.readClipboard)
+///     try await stateUICall(NotesContract.setClipboard, "note")
+///
+/// Throws `StateUIError` when the host could not perform it - including when
+/// no host act or registration answers its name - and when the answer is not
+/// what the contract declares. Resumes on the host's UI thread, which is where
+/// it was called from. An act of an element's own goes through the element's
+/// aim: `Aim.call`.
+///
+/// - Parameters:
+///   - act: the member, written with its contract.
+///   - arguments: its arguments, in the order the contract declares them.
+/// - Returns: the answer, as the contract declares it.
+@discardableResult
+public nonisolated(nonsending) func stateUICall<
+    Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
+>(
+    _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
+    _ arguments: repeat each Argument
+) async throws -> (repeat each Answer) {
+    let reply = try await Renderer.shared.call(act.token, MemberValues.encode(repeat each arguments))
+    return try MemberValues.answer(reply, of: act.name, as: repeat (each Answer).self)
+}
+
+/// Asks the host to perform an act of the application's without waiting for
+/// it - for an act whose outcome nothing depends on. What it answers, and
+/// whether it failed, reaches nothing here.
+///
+///     stateUISend(NotesContract.logEvent, "opened the sample")
+///
+/// - Parameters:
+///   - act: the member, written with its contract.
+///   - arguments: its arguments, in the order the contract declares them.
+public func stateUISend<Owner: ApplicationTier, each Argument: HostRepresentable, Answer>(
+    _ act: ElementAct<Owner, (repeat each Argument), Answer>,
+    _ arguments: repeat each Argument
+) {
+    Renderer.shared.send(act.token, MemberValues.encode(repeat each arguments), completion: nil)
+}

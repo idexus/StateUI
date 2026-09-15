@@ -103,6 +103,103 @@ public enum HostEvents {
         return HostEventSubscription(event: event, id: id)
     }
 
+    /// Subscribes a handler to an event of the application's - one no control
+    /// raises - that carries nothing.
+    ///
+    ///     let heard = HostEvents.on(NotesContract.memoryLow) { cache.removeAll() }
+    ///
+    /// A raise carrying anything is reported once and does not reach the
+    /// handler.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: what runs.
+    /// - Returns: the subscription, to `cancel()` when the listener leaves.
+    @discardableResult
+    public static func on<Owner: ApplicationTier>(
+        _ event: ElementEvent<Owner, Void>,
+        _ handler: @escaping EventHandler
+    ) -> HostEventSubscription {
+        on(event.token) { payload in
+            guard MemberValues.carried(payload, by: event.name) != nil else { return }
+
+            try await handler()
+        }
+    }
+
+    /// Subscribes a handler to an event of the application's that carries one
+    /// value, handed over as the type its contract declares.
+    ///
+    ///     let heard = HostEvents.on(NotesContract.connectivityChanged) { online in … }
+    ///
+    /// A raise of another shape - the value missing, one too many, or one of
+    /// another kind - is reported once and does not reach the handler.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: given the value.
+    /// - Returns: the subscription, to `cancel()` when the listener leaves.
+    @discardableResult
+    public static func on<Owner: ApplicationTier, Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, Value>,
+        _ handler: @escaping ValueEventHandler<Value>
+    ) -> HostEventSubscription {
+        on(event.token) { payload in
+            guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
+
+            try await handler(value)
+        }
+    }
+
+    /// Subscribes a handler to an event of the application's that carries two
+    /// values, handed over as the types its contract declares, in its order.
+    ///
+    ///     let heard = HostEvents.on(NotesContract.batteryChanged) { level, charging in
+    ///         battery = "\(Int(level * 100))%" + (charging ? ", charging" : "")
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: given the values.
+    /// - Returns: the subscription, to `cancel()` when the listener leaves.
+    @discardableResult
+    public static func on<Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable>(
+        _ event: ElementEvent<Owner, (First, Second)>,
+        _ handler: @escaping ValueEventHandler<First, Second>
+    ) -> HostEventSubscription {
+        on(event.token) { payload in
+            guard let (first, second) = MemberValues.carried(
+                payload, by: event.name, as: First.self, Second.self)
+            else { return }
+
+            try await handler(first, second)
+        }
+    }
+
+    /// Subscribes a handler to an event of the application's that carries
+    /// three values, handed over as the types its contract declares, in its
+    /// order.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: given the values.
+    /// - Returns: the subscription, to `cancel()` when the listener leaves.
+    @discardableResult
+    public static func on<
+        Owner: ApplicationTier, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third)>,
+        _ handler: @escaping ValueEventHandler<First, Second, Third>
+    ) -> HostEventSubscription {
+        on(event.token) { payload in
+            guard let (first, second, third) = MemberValues.carried(
+                payload, by: event.name, as: First.self, Second.self, Third.self)
+            else { return }
+
+            try await handler(first, second, third)
+        }
+    }
+
     /// Takes one subscription out - `HostEventSubscription.cancel`'s half.
     static func remove(_ event: Event, _ id: Int) {
         guarded.sync {

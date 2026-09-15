@@ -250,13 +250,15 @@ extension [PropValue] {
 /// escapes is reported to the host rather than lost - see Renderer.dispatch.
 public typealias EventHandler = nonisolated(nonsending) () async throws -> Void
 
-/// The same execution contract, for an event that carries a value.
+/// The same execution contract, for an event that carries values - one
+/// parameter for each, in the order the event declares them.
 ///
 ///     TextField("").onTextChanged { text in query = text }
+///     .onEvent(NotesContract.batteryChanged) { level, charging in … }
 ///
 /// The distinct name is required because Swift cannot overload type aliases by
-/// generic arity.
-public typealias ValueEventHandler<Value> = nonisolated(nonsending) (Value) async throws -> Void
+/// generic arity: an event with nothing to say takes an `EventHandler`.
+public typealias ValueEventHandler<each Value> = nonisolated(nonsending) (repeat each Value) async throws -> Void
 
 /// One element of the UI tree: its semantic type, properties, children and
 /// event handlers.
@@ -527,6 +529,25 @@ public struct Node {
         self.props = props
         self.children = children
         self.events = events
+    }
+
+    /// A node of an element's own type: how every element's view begins.
+    ///
+    ///     struct TrafficLight: View {
+    ///         var node = Node(contract: TrafficLightContract.self)
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - contract: the element's contract, which names its node type.
+    ///   - id: who this element is, when the author says so. Nil leaves it to
+    ///     be identified by where it was written.
+    ///   - children: the nodes under it, in order. Empty for a leaf control.
+    public init<Declaration: ElementContract>(
+        contract: Declaration.Type,
+        id: String? = nil,
+        children: [Node] = []
+    ) {
+        self.init(type: Declaration.type, id: id, children: children)
     }
 }
 

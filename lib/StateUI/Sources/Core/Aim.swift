@@ -168,6 +168,37 @@ public final class Aim<Target>: @unchecked Sendable, CustomStringConvertible {
     public var target: PropValue {
         get throws { try box.target }
     }
+
+    /// Performs an act of the aimed element's contract on it - the element
+    /// first, then the arguments the contract declares - and answers with the
+    /// values it declares.
+    ///
+    ///     extension Aim where Target == TrafficLight {
+    ///         func flash(times: Int) async throws {
+    ///             try await call(TrafficLightContract.flash, times)
+    ///         }
+    ///     }
+    ///
+    /// Throws where the aim is on no view or on two, where the host could not
+    /// perform the act, and where the answer is not what the contract
+    /// declares.
+    ///
+    /// - Parameters:
+    ///   - act: the member, written with its contract.
+    ///   - arguments: its arguments, in the order the contract declares them.
+    /// - Returns: the answer, as the contract declares it.
+    @discardableResult
+    public nonisolated(nonsending) func call<
+        Owner: Contract, each Argument: HostRepresentable, each Answer: HostRepresentable
+    >(
+        _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
+        _ arguments: repeat each Argument
+    ) async throws -> (repeat each Answer) {
+        let aimed = try target
+        let reply = try await Renderer.shared.call(
+            act.token, [aimed] + MemberValues.encode(repeat each arguments))
+        return try MemberValues.answer(reply, of: act.name, as: repeat (each Answer).self)
+    }
 }
 
 extension Aim: StateBox {
