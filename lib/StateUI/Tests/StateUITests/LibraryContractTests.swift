@@ -28,8 +28,7 @@ final class LibraryContractTests: XCTestCase {
                     contract: contract.name,
                     name: member.name,
                     facts: (member as? any DeclaredMember)?.facts
-                        ?? MemberFacts(kind: .act, layer: nil, travels: true, cleared: true,
-                                       moves: [], asName: false))
+                        ?? MemberFacts(kind: .act, layer: nil, travels: true, cleared: true, moves: []))
             }
         }
     }

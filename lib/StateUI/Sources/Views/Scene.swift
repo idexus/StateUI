@@ -308,7 +308,7 @@ public struct WindowGroup {
 /// an extension. The name is written down with every window the system may
 /// restore, so it belongs to the application and should not change between
 /// its versions.
-public struct WindowType: Hashable, Sendable, CustomStringConvertible {
+public struct WindowType: Hashable, Sendable, CustomStringConvertible, HostRepresentable {
     /// The name - what is written down with a window of this kind.
     public let name: String
 
@@ -321,6 +321,18 @@ public struct WindowType: Hashable, Sendable, CustomStringConvertible {
 
     /// The name, so an interpolated diagnostic prints it plainly.
     public var description: String { name }
+
+    /// The name, crossing as a name: a window's kind is words the application
+    /// chose, the same on every window of the kind.
+    public var propValue: PropValue { .name(name) }
+
+    /// A kind back from its name - nil for any other kind of value.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard case .name(let name) = propValue else { return nil }
+
+        self.init(name)
+    }
 
     /// The inspector that shows what every render costs and builds - see
     /// `DebugInspector`, which is its window.

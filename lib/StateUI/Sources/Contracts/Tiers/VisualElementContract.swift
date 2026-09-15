@@ -112,8 +112,7 @@ public enum VisualElementContract: Contract {
         "scaleY", layer: .native, moves: .transform)
 
     /// The keyed style the element wears, by its key.
-    public static let style = ElementProperty<Self, String>(
-        "style", layer: .structure, asName: true)
+    public static let style = ElementProperty<Self, Name>("style", layer: .structure)
 
     /// How far the element is moved across from where its layout put it.
     public static let translationX = ElementProperty<Self, Double>(

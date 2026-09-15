@@ -331,7 +331,7 @@ public enum ScrollBarVisibility: Int32, Sendable {
 /// list whose first element is the KIND and whose rest is what that kind is
 /// made of - `.roundedRectangle(12)` as `[1, 12]`. The kinds are numbered by
 /// this library like everything else here.
-public enum BorderShape: Sendable {
+public enum BorderShape: Equatable, Sendable, HostRepresentable {
     /// Square corners.
     case rectangle
 
@@ -350,7 +350,7 @@ public enum BorderShape: Sendable {
     }
 
     /// The kind, then what that kind is made of.
-    var propValue: PropValue {
+    public var propValue: PropValue {
         switch self {
         case .rectangle:
             return .values([.enumeration(Kind.rectangle.rawValue)])
@@ -358,6 +358,26 @@ public enum BorderShape: Sendable {
             return .values([.enumeration(Kind.roundedRectangle.rawValue), .number(radius)])
         case .ellipse:
             return .values([.enumeration(Kind.ellipse.rawValue)])
+        }
+    }
+
+    /// The shape a kind and its parts name - nil for anything else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard case .values(let parts) = propValue, case .enumeration(let number)? = parts.first,
+              let kind = Kind(rawValue: number)
+        else { return nil }
+
+        switch (kind, parts.count) {
+        case (.rectangle, 1):
+            self = .rectangle
+        case (.roundedRectangle, 2):
+            guard case .number(let radius) = parts[1] else { return nil }
+            self = .roundedRectangle(radius)
+        case (.ellipse, 1):
+            self = .ellipse
+        default:
+            return nil
         }
     }
 }

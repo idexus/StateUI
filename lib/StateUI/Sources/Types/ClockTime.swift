@@ -18,7 +18,7 @@
 /// comes BACK from a picker, so the two directions say the same thing. The
 /// host reads them as a length of time SINCE MIDNIGHT rather than a point on
 /// a clock.
-public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
+public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresentable {
     /// The hour, 0 to 23. Midnight is 0, and one in the afternoon is 13 - there
     /// is no am/pm here, that being a matter of `.format(…)`.
     public var hour: Int
@@ -86,12 +86,26 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
         self.init(hour: hour, minute: minute)
     }
 
-    /// Reads the three numbers a timeChanged payload carries - hour, minute,
-    /// second. Nil for anything else, so a report that will not read leaves
-    /// the handler alone. A picker keeps no milliseconds, so none arrive.
+    /// The time back from the three numbers a picker reports - hour, minute,
+    /// second, each the whole part of its number. Nil for anything else, a
+    /// number that is not one included, so a report that will not read
+    /// leaves the handler alone. A picker keeps no milliseconds, so none
+    /// arrive.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard let numbers = propValue.numbers, numbers.count == 3,
+              let hour = Int(exactly: numbers[0].rounded(.towardZero)),
+              let minute = Int(exactly: numbers[1].rounded(.towardZero)),
+              let second = Int(exactly: numbers[2].rounded(.towardZero))
+        else { return nil }
+
+        self.init(hour: hour, minute: minute, second: second)
+    }
+
+    /// The same, for a payload's value that may be missing.
     init?(_ value: PropValue?) {
-        guard let numbers = value?.numbers, numbers.count == 3 else { return nil }
-        self.init(hour: Int(numbers[0]), minute: Int(numbers[1]), second: Int(numbers[2]))
+        guard let value else { return nil }
+        self.init(propValue: value)
     }
 
     /// `09:30:00` - the time as a line of text, for putting one in a label:
@@ -109,7 +123,7 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable {
     /// same order, so nothing is formatted going out and parsed coming in.
     /// The millisecond does not go: a TimePicker neither shows nor keeps one,
     /// which is why a value that travels comes back with 0 there.
-    var propValue: PropValue {
+    public var propValue: PropValue {
         .numbers([Double(hour), Double(minute), Double(second)])
     }
 

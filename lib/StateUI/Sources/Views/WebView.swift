@@ -159,7 +159,7 @@ public struct WebView: View, WebViewProperties {
 /// toolkit's own numbers stay out of it: a toolkit release free to renumber
 /// its enum would otherwise have every report here read as a different
 /// reason, silently.
-public enum WebNavigationEvent: Int32, Sendable {
+public enum WebNavigationEvent: Int32, Sendable, HostRepresentable {
     /// No reason named - what the host answers for a reason it has no case
     /// for. Windows sends this for a view's FIRST navigation - the source it
     /// was given before its browser existed - so it is an ordinary answer
@@ -178,13 +178,20 @@ public enum WebNavigationEvent: Int32, Sendable {
     /// The same page, fetched again.
     case refresh = 4
 
-    /// Reads a payload's value - a member of a closed vocabulary, so
-    /// `.enumeration` and not a plain number. Nil for anything that is not
-    /// one, so a report of the wrong SHAPE still leaves the handler alone,
-    /// while a member this side has no case for reads as `.unknown`.
-    init?(_ value: PropValue?) {
-        guard let member = value?.enumeration else { return nil }
+    /// The member a number names - a closed vocabulary, so `.enumeration` and
+    /// not a plain number - and `.unknown` for a member this side has no case
+    /// for. Nil for anything that is not one, so a report of the wrong SHAPE
+    /// still leaves the handler alone.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard case .enumeration(let member) = propValue else { return nil }
         self = WebNavigationEvent(rawValue: member) ?? .unknown
+    }
+
+    /// The same, for a payload's value that may be missing.
+    init?(_ value: PropValue?) {
+        guard let value else { return nil }
+        self.init(propValue: value)
     }
 }
 
@@ -193,7 +200,7 @@ public enum WebNavigationEvent: Int32, Sendable {
 /// The numbers are THIS LIBRARY's and the host translates its toolkit's
 /// outcome onto the member that means the same, exactly as
 /// `WebNavigationEvent` above.
-public enum WebNavigationResult: Int32, Sendable {
+public enum WebNavigationResult: Int32, Sendable, HostRepresentable {
     /// No outcome named - and what the host answers for an outcome it has no
     /// case for. Read `.success` before treating a navigation as arrived;
     /// this is not it.
@@ -211,13 +218,20 @@ public enum WebNavigationResult: Int32, Sendable {
     /// It could not be fetched - no connection, no such host, an error page.
     case failure = 4
 
-    /// Reads a payload's value - a member of a closed vocabulary, so
-    /// `.enumeration` and not a plain number. Nil for anything that is not
-    /// one, so a report of the wrong SHAPE still leaves the handler alone,
-    /// while a member this side has no case for reads as `.unknown`.
-    init?(_ value: PropValue?) {
-        guard let member = value?.enumeration else { return nil }
+    /// The member a number names - a closed vocabulary, so `.enumeration` and
+    /// not a plain number - and `.unknown` for a member this side has no case
+    /// for. Nil for anything that is not one, so a report of the wrong SHAPE
+    /// still leaves the handler alone.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard case .enumeration(let member) = propValue else { return nil }
         self = WebNavigationResult(rawValue: member) ?? .unknown
+    }
+
+    /// The same, for a payload's value that may be missing.
+    init?(_ value: PropValue?) {
+        guard let value else { return nil }
+        self.init(propValue: value)
     }
 }
 
@@ -261,6 +275,72 @@ public struct WebNavigated: Equatable, Sendable {
         self.result = result
         self.event = event
         self.url = url
+    }
+}
+
+// MARK: - What it shows
+
+/// What a web view shows: a page fetched from an address, or a document
+/// written here.
+///
+///     WebView().source(html: "<h1>Offline</h1>")
+///
+/// The kind crosses in front of what it is made of, because a source is one
+/// of two things and the wire says which rather than leaving the host to tell
+/// them apart by shape: an address as the kind and the address, a document as
+/// the kind, the document and its base address or nothing - three values
+/// whether or not there is a base address, so the host reads the same three
+/// places every time.
+public enum WebViewSource: Equatable, Sendable, HostRepresentable {
+    /// A page fetched from an address.
+    case url(String)
+
+    /// A document written into the description itself, and the address its
+    /// relative links resolve against, where there is one.
+    case html(String, baseUrl: String?)
+
+    /// Which of the two a source is, as the number that crosses - numbered by
+    /// this library, the way a `BorderShape`'s kinds are.
+    private enum Kind: Int32 {
+        case url = 0
+        case html = 1
+    }
+
+    /// The kind, then what it is made of.
+    public var propValue: PropValue {
+        switch self {
+        case .url(let address):
+            .values([.enumeration(Kind.url.rawValue), .string(address)])
+        case .html(let document, let baseUrl):
+            .values([
+                .enumeration(Kind.html.rawValue), .string(document),
+                baseUrl.map { PropValue.string($0) } ?? .nothing,
+            ])
+        }
+    }
+
+    /// The source a kind and its parts name - nil for anything else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard case .values(let parts) = propValue, case .enumeration(let number)? = parts.first,
+              let kind = Kind(rawValue: number)
+        else { return nil }
+
+        switch (kind, parts.count) {
+        case (.url, 2):
+            guard case .string(let address) = parts[1] else { return nil }
+            self = .url(address)
+        case (.html, 3):
+            guard case .string(let document) = parts[1] else { return nil }
+
+            switch parts[2] {
+            case .string(let baseUrl): self = .html(document, baseUrl: baseUrl)
+            case .nothing: self = .html(document, baseUrl: nil)
+            default: return nil
+            }
+        default:
+            return nil
+        }
     }
 }
 

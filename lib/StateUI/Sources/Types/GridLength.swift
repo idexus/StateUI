@@ -8,17 +8,17 @@
 ///     Grid { … }
 ///         .rows(.auto, .fill, .proportional(2), .fixed(100))
 ///
-/// Three kinds: `.auto` fits the content, `.fill` shares what is left in
-/// proportion, and `.absolute` is device-independent units. The stars are
-/// settled last, out of whatever the auto and absolute rows leave.
+/// Three kinds: `.auto` fits the content, `.proportional` shares what is left
+/// in proportion, and `.fixed` is device units. The proportional rows are
+/// settled last, out of whatever the auto and fixed rows leave.
 ///
 /// It travels as the two PARTS it is - which kind, then the number that kind
 /// takes - and a list of them as a list of those.
-public enum GridLength: Sendable {
+public enum GridLength: Equatable, Sendable, HostRepresentable {
     /// As much as the content needs, and no more.
     case auto
 
-    /// A share of what is left over, in proportion to the other stars: two
+    /// A share of what is left over, in proportion to the other shares: two
     /// columns of `.fill` and `.proportional(2)` split it one to two.
     case proportional(Double)
 
@@ -42,7 +42,7 @@ public enum GridLength: Sendable {
     /// `.auto` carries a 1 rather than nothing, so every length crosses as the
     /// same two parts - a kind and a number - and a host reads each one the
     /// same way.
-    var propValue: PropValue {
+    public var propValue: PropValue {
         switch self {
         case .auto:
             return .values([.enumeration(Kind.auto.rawValue), .number(1)])
@@ -52,12 +52,19 @@ public enum GridLength: Sendable {
             return .values([.enumeration(Kind.fixed.rawValue), .number(length)])
         }
     }
-}
 
-extension Array where Element == GridLength {
-    /// The definitions, each as its own two parts - so the LIST itself says
-    /// how many rows or columns there are.
-    var propValue: PropValue {
-        .values(map { $0.propValue })
+    /// The length a kind and its number name - nil for anything else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard case .values(let parts) = propValue, parts.count == 2,
+              case .enumeration(let number) = parts[0], let kind = Kind(rawValue: number),
+              case .number(let amount) = parts[1]
+        else { return nil }
+
+        switch kind {
+        case .auto: self = .auto
+        case .proportional: self = .proportional(amount)
+        case .fixed: self = .fixed(amount)
+        }
     }
 }

@@ -197,7 +197,7 @@ public struct Pin: Element {
 /// How the world is drawn. Its numbers are this wire's own - the rule at the
 /// head of Types/Enums.swift, which every closed vocabulary on this wire
 /// follows.
-public enum MapType: Int32, Sendable {
+public enum MapType: Int32, Sendable, HostRepresentable {
     /// Roads and their names - the default.
     case street = 0
 
@@ -206,13 +206,11 @@ public enum MapType: Int32, Sendable {
 
     /// The photography with the roads drawn over it.
     case hybrid = 2
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// A point on the world, as an event reports one - the two values every map
 /// answer carries.
-public struct Location: Equatable, Sendable {
+public struct Location: Equatable, Sendable, HostRepresentable {
     /// Degrees north of the equator, negative south of it.
     public var latitude: Double
 
@@ -232,14 +230,63 @@ public struct Location: Equatable, Sendable {
         self.longitude = longitude
     }
 
-    /// Reads the pair a payload carries - one `numbers` value, latitude then
-    /// longitude. Nil for anything else, so a report that will not read
-    /// leaves the handler alone.
-    init?(_ value: PropValue?) {
-        guard let pair = value?.numbers, pair.count == 2 else { return nil }
+    /// The pair it crosses as - one `numbers` value, latitude then longitude.
+    public var propValue: PropValue { .numbers([latitude, longitude]) }
+
+    /// A place back from its pair - nil for anything else, so a report that
+    /// will not read leaves the handler alone.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard let pair = propValue.numbers, pair.count == 2 else { return nil }
 
         self.latitude = pair[0]
         self.longitude = pair[1]
+    }
+
+    /// The same, for a payload's value that may be missing.
+    init?(_ value: PropValue?) {
+        guard let value else { return nil }
+        self.init(propValue: value)
+    }
+}
+
+/// The part of the world a map shows: the region around a point.
+///
+///     Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
+///
+/// It crosses as its three numbers - latitude, longitude, and the radius in
+/// meters.
+public struct MapRegion: Equatable, Sendable, HostRepresentable {
+    /// Degrees north of the equator, negative south of it.
+    public var latitude: Double
+
+    /// Degrees east of Greenwich, negative west of it.
+    public var longitude: Double
+
+    /// Half the width of what is shown, in meters.
+    public var radiusMeters: Double
+
+    /// A region, by its centre and its radius.
+    ///
+    /// - Parameters:
+    ///   - latitude: degrees north of the equator, negative south.
+    ///   - longitude: degrees east of Greenwich, negative west.
+    ///   - radiusMeters: half the width of what is shown, in meters.
+    public init(latitude: Double, longitude: Double, radiusMeters: Double) {
+        self.latitude = latitude
+        self.longitude = longitude
+        self.radiusMeters = radiusMeters
+    }
+
+    /// Its three numbers, in order.
+    public var propValue: PropValue { .numbers([latitude, longitude, radiusMeters]) }
+
+    /// A region back from its three numbers - nil for anything else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard let numbers = propValue.numbers, numbers.count == 3 else { return nil }
+
+        self.init(latitude: numbers[0], longitude: numbers[1], radiusMeters: numbers[2])
     }
 }
 

@@ -192,7 +192,7 @@ public struct SwipeView: View, SwipeViewProperties {
 /// NOT `SwipeDirection`'s bits, however tempting: the left items are what a
 /// swipe to the RIGHT reveals, so the two vocabularies would agree on every
 /// name and disagree on every meaning.
-enum SwipeSide: Int32, Sendable {
+public enum SwipeSide: Int32, Sendable, HostRepresentable {
     /// What `leftItems` holds - revealed by swiping right.
     case left = 0
 
@@ -204,8 +204,6 @@ enum SwipeSide: Int32, Sendable {
 
     /// What `bottomItems` holds - revealed by swiping up.
     case bottom = 3
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// One thing a swipe reveals - a menu item.

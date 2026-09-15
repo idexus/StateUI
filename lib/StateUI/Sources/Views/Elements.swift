@@ -109,7 +109,7 @@ extension PropertyContainer {
         _ property: ElementProperty<Owner, Value>,
         _ value: Value
     ) -> Modified {
-        setValue(property.token, property.crossing(value))
+        setValue(property.token, value.propValue)
     }
 
     /// Drives one of this element's properties from a state the host carries,
@@ -937,7 +937,7 @@ extension VisualElement {
     /// wherever it is written - so it is a `.name` and not a `.string`. It
     /// never leaves this side in any case: `styled(_:with:)` resolves it and
     /// takes it off the node, the host having no dictionary to look one up in.
-    public func style(_ key: String) -> Modified { setValue(VisualElementContract.style, key) }
+    public func style(_ key: String) -> Modified { setValue(VisualElementContract.style, Name(key)) }
 }
 
 extension VisualElementProperties {

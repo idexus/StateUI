@@ -118,7 +118,7 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
 ///
 /// Its numbers are this wire's own - the rule at the head of
 /// Types/Enums.swift, which every closed vocabulary on this wire follows.
-public enum IconPosition: Int32, Sendable {
+public enum IconPosition: Int32, Sendable, HostRepresentable {
     /// Before the words, on the side a line starts from - the default.
     case leading = 0
 
@@ -130,6 +130,4 @@ public enum IconPosition: Int32, Sendable {
 
     /// Below them.
     case bottom = 3
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }

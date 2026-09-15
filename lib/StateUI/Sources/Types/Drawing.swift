@@ -85,10 +85,24 @@ public struct DrawCommand: Equatable, Sendable {
         self.arguments = arguments
     }
 
+}
+
+extension DrawCommand: HostRepresentable {
     /// The kind, then what that kind is called with - the record described at
     /// the top of the file.
-    var propValue: PropValue {
+    public var propValue: PropValue {
         .values([.enumeration(kind.rawValue)] + arguments)
+    }
+
+    /// The instruction a record names: its kind, then its arguments as they
+    /// are - nil where the first value is no kind this library draws.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard case .values(let parts) = propValue, case .enumeration(let number)? = parts.first,
+              let kind = Kind(rawValue: number)
+        else { return nil }
+
+        self.init(kind, Array(parts.dropFirst()))
     }
 }
 

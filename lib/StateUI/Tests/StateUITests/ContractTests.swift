@@ -81,15 +81,50 @@ final class ContractTests: XCTestCase {
         XCTAssertNil([String](propValue: .numbers([1])))
     }
 
-    /// Text that names something crosses as a name, never as prose.
-    func testATextThatNamesCrossesAsAName() {
+    /// A name crosses as a name, never as prose - the type decides: a style
+    /// key, a font family, a window's kind, a kept value's key alike.
+    func testANameCrossesAsAName() {
         let lamp = Lamp().setValue(VisualElementContract.style, "Card")
 
         XCTAssertEqual(lamp.node.props["style"], .name("Card"))
+        XCTAssertEqual(Name("Menlo").propValue, .name("Menlo"))
+        XCTAssertEqual(Name(propValue: .name("Menlo")), "Menlo")
+        XCTAssertNil(Name(propValue: .string("Menlo")), "prose is not a name")
+        XCTAssertEqual(WindowType("document").propValue, .name("document"))
     }
 
-    /// The two unions cross exactly as their parts do, and read back.
+    /// A shape, a grid's lengths, a web view's source and a drawing cross as
+    /// their kind and then what that kind is made of; a kind without its
+    /// parts, or one this library has none of, reads as no value.
+    func testAKindCrossesInFrontOfItsParts() {
+        XCTAssertEqual(BorderShape.roundedRectangle(12).propValue, .values([.enumeration(1), .number(12)]))
+        XCTAssertEqual(BorderShape.ellipse.propValue, .values([.enumeration(2)]))
+        XCTAssertEqual(
+            [GridLength.auto, .fixed(100)].propValue,
+            .values([.values([.enumeration(2), .number(1)]), .values([.enumeration(0), .number(100)])]))
+        XCTAssertEqual(
+            WebViewSource.url("https://example.com").propValue,
+            .values([.enumeration(0), .string("https://example.com")]))
+        XCTAssertEqual(
+            WebViewSource.html("<p>Hi</p>", baseUrl: nil).propValue,
+            .values([.enumeration(1), .string("<p>Hi</p>"), .nothing]))
+        XCTAssertEqual(
+            [Draw.fillColor(.gold)].propValue,
+            .values([.values([.enumeration(0), Color.gold.propValue])]))
+
+        XCTAssertNil(BorderShape(propValue: .values([.enumeration(1)])), "a rounded rectangle without its radius")
+        XCTAssertNil(GridLength(propValue: .values([.enumeration(9), .number(1)])), "a kind with no member")
+        XCTAssertNil(WebViewSource(propValue: .values([.enumeration(1), .string("<p/>")])), "two places, not three")
+    }
+
+    /// The unions cross exactly as their parts do, and read back.
     func testTheUnionsCrossAsTheirPartsDo() {
+        XCTAssertEqual(CornerRadius.uniform(8).propValue, .number(8))
+        XCTAssertEqual(
+            CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4).propValue,
+            .numbers([1, 2, 3, 4]))
+        XCTAssertEqual(MapRegion(latitude: 52, longitude: 21, radiusMeters: 1500).propValue, .numbers([52, 21, 1500]))
+
         let brush = Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)])
 
         XCTAssertEqual(Background.color(.tomato).propValue, Color.tomato.propValue)
@@ -107,28 +142,64 @@ final class ContractTests: XCTestCase {
             .edges(left: .none, top: .keyboard, right: .container, bottom: .all))
     }
 
-    /// Every value a tier holds comes back from its host form as itself.
-    func testAValueComesBackFromItsHostFormAsItself() {
-        func roundTrip<Value: HostRepresentable & Equatable>(_ value: Value, file: StaticString = #filePath,
-                                                             line: UInt = #line) {
-            XCTAssertEqual(Value(propValue: value.propValue), value, file: file, line: line)
+    /// Every value a member holds comes back from its host form as itself -
+    /// and every type a library property holds has a sample here, so a
+    /// property of a type with none fails.
+    func testEveryValueAMemberHoldsComesBackAsItself() {
+        func comesBack<Value: HostRepresentable & Equatable>(_ value: Value) -> Bool {
+            Value(propValue: value.propValue) == value
         }
 
-        roundTrip(Color.tomato)
-        roundTrip(Color(light: .white, dark: .black))
-        roundTrip(Brush.solidColor(.gold))
-        roundTrip(Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]))
-        roundTrip(Brush.radialGradient([GradientStop(.white, 0), GradientStop(.steelBlue, 1)], radius: 0.8))
-        roundTrip(Insets(1, 2, 3, 4))
-        roundTrip(Rect(1, 2, 3, 4))
-        roundTrip(Point(5, 6))
-        roundTrip(ImageSource("logo.png"))
-        roundTrip(ImageSource(light: "logo.png", dark: "logo_dark.png"))
-        roundTrip(ViewTransform.rotate(15).scaleX(1.2))
-        roundTrip(TextAlignment.center)
-        roundTrip(FontAttributes([.bold, .italic]))
-        roundTrip(SwipeDirection.all)
-        roundTrip(GesturePhase.running)
+        let samples: [any HostRepresentable & Equatable] = [
+            true, 3, 0.5, "text", Name("Card"),
+            Color.tomato, Color(light: .white, dark: .black),
+            Brush.solidColor(.gold),
+            Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]),
+            Brush.radialGradient([GradientStop(.white, 0), GradientStop(.steelBlue, 1)], radius: 0.8),
+            Background.color(.tomato), Background.brush(.linearGradient([GradientStop(.gold, 0)])),
+            Insets(1, 2, 3, 4), Rect(1, 2, 3, 4), Point(5, 6),
+            [Point(1, 2), Point(3, 4)] as [Point], [1, 2.5] as [Double], ["a", "b"] as [String],
+            ImageSource("logo.png"), ImageSource(light: "logo.png", dark: "logo_dark.png"),
+            ViewTransform.rotate(15).scaleX(1.2),
+            SafeAreaEdges.uniform(.all),
+            SafeAreaEdges.edges(left: .none, top: .container, right: .none, bottom: .container),
+            CornerRadius.uniform(8), CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4),
+            WebViewSource.url("https://example.com"), WebViewSource.html("<p/>", baseUrl: nil),
+            WebViewSource.html("<p/>", baseUrl: "https://example.com"),
+            MapRegion(latitude: 52.25, longitude: 21.01, radiusMeters: 1500),
+            Location(latitude: 52.25, longitude: 21.01),
+            CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
+            BorderShape.rectangle, BorderShape.roundedRectangle(12), BorderShape.ellipse,
+            [GridLength.auto, .proportional(2), .fixed(100)] as [GridLength],
+            [Draw.fillColor(.gold)] as [DrawCommand],
+            WindowType("document"),
+            FontAttributes([.bold, .italic]), TextDecorations(rawValue: 1),
+            AbsoluteLayoutProportions(rawValue: 3), SwipeDirection.all,
+            Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase(rawValue: 1)!,
+            InputPurpose(rawValue: 1)!, ReturnKey(rawValue: 1)!, ScrollOrientation(rawValue: 1)!,
+            PinType(rawValue: 1)!, Aspect(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
+            HeadingLevel(rawValue: 1)!, ScrollBarVisibility(rawValue: 1)!, SwipeMode(rawValue: 1)!,
+            SwipeBehaviorOnInvoked(rawValue: 1)!, LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
+            FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!,
+            SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, MapType(rawValue: 1)!, SwipeSide(rawValue: 1)!,
+            WebNavigationEvent(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.running,
+        ]
+
+        for sample in samples {
+            XCTAssertTrue(comesBack(sample), "\(sample) does not come back from \(sample.propValue) as itself")
+        }
+
+        let held = Set(samples.map { ObjectIdentifier(type(of: $0)) })
+        var missing: [String] = []
+
+        for contract in LibraryContracts.all {
+            for case let member as any PropertyMember in contract.members
+            where !held.contains(ObjectIdentifier(member.valueType)) {
+                missing.append("\(contract.name).\(member.name) holds \(member.valueType)")
+            }
+        }
+
+        XCTAssertEqual(missing, [], "a property holds a type with no sample here")
     }
 
     /// An optional value left off the end of a payload reads as nothing; a

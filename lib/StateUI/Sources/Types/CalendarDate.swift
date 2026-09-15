@@ -19,7 +19,7 @@
 /// It travels as those integers - year, month, day - which is also how it
 /// comes BACK from a picker, so the two directions say the same thing and
 /// nothing has to agree about which number is the month.
-public struct CalendarDate: Equatable, Hashable, Comparable, Sendable {
+public struct CalendarDate: Equatable, Hashable, Comparable, Sendable, HostRepresentable {
     /// The year, in full: 2026, not 26.
     public var year: Int
 
@@ -59,12 +59,25 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable {
         self.init(year: year, month: month, day: day)
     }
 
-    /// Reads the three numbers a dateChanged payload carries - year, month,
-    /// day. Nil for anything else, so a report that will not read leaves the
-    /// handler alone.
+    /// The day back from the three numbers a picker reports - year, month,
+    /// day, each the whole part of its number. Nil for anything else, a
+    /// number that is not one included, so a report that will not read
+    /// leaves the handler alone.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard let numbers = propValue.numbers, numbers.count == 3,
+              let year = Int(exactly: numbers[0].rounded(.towardZero)),
+              let month = Int(exactly: numbers[1].rounded(.towardZero)),
+              let day = Int(exactly: numbers[2].rounded(.towardZero))
+        else { return nil }
+
+        self.init(year: year, month: month, day: day)
+    }
+
+    /// The same, for a payload's value that may be missing.
     init?(_ value: PropValue?) {
-        guard let numbers = value?.numbers, numbers.count == 3 else { return nil }
-        self.init(year: Int(numbers[0]), month: Int(numbers[1]), day: Int(numbers[2]))
+        guard let value else { return nil }
+        self.init(propValue: value)
     }
 
     /// `2026-08-02` - the day as a line of text, for putting one in a label:
@@ -79,7 +92,7 @@ public struct CalendarDate: Equatable, Hashable, Comparable, Sendable {
 
     /// Year, month, day - the same three a picker reports back, in the same
     /// order, so nothing is formatted going out and parsed coming in.
-    var propValue: PropValue {
+    public var propValue: PropValue {
         .numbers([Double(year), Double(month), Double(day)])
     }
 

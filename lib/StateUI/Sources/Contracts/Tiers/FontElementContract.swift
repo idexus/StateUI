@@ -18,7 +18,7 @@ public enum FontElementContract: Contract {
         "fontAutoScalingEnabled", layer: .adaptive)
 
     /// The font family, by its name.
-    public static let fontFamily = ElementProperty<Self, String>("fontFamily", layer: .native, asName: true)
+    public static let fontFamily = ElementProperty<Self, Name>("fontFamily", layer: .native)
 
     /// The font size, in device units.
     public static let fontSize = ElementProperty<Self, Double>("fontSize", layer: .native, moves: .text)

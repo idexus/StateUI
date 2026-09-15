@@ -201,10 +201,6 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     /// alone cannot say.
     let moves: MotionValues
 
-    /// Whether its text is a NAME from an open vocabulary - a font family, a
-    /// style key, a radio group - rather than prose an author wrote.
-    let asName: Bool
-
     /// A property declared in `Owner`.
     ///
     /// - Parameters:
@@ -226,53 +222,10 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
         self.travels = travels
         self.cleared = cleared
         self.moves = moves
-        self.asName = false
     }
 
     /// The key the property crosses the boundary under.
     @_spi(Host) public var token: Prop { Prop(name) }
-
-    /// A value of this property, as it crosses: its own form, or a name where
-    /// the property holds one.
-    func crossing(_ value: Value) -> PropValue {
-        if asName, let text = value as? String {
-            return .name(text)
-        }
-
-        return value.propValue
-    }
-}
-
-extension ElementProperty where Value == String {
-    /// A property whose text is a NAME from an open vocabulary - a font family,
-    /// a style key, a radio group. It repeats across a tree and means the same
-    /// thing every time, so it crosses as a name, never as prose.
-    ///
-    ///     static let fontFamily = ElementProperty<Self, String>("fontFamily", layer: .native, asName: true)
-    ///
-    /// - Parameters:
-    ///   - name: its name - the name of the static member holding it.
-    ///   - layer: which layer realizes it; an application's own unless said.
-    ///   - travels: whether a change travels to the new value.
-    ///   - cleared: whether a value no longer described is put back to the
-    ///     control's default.
-    ///   - moves: which of a view's values it is, where the value cannot say.
-    ///   - asName: true, for the text a name.
-    public init(
-        _ name: String,
-        layer: ElementLayer = .provider,
-        travels: Bool = true,
-        cleared: Bool = true,
-        moves: MotionValues = [],
-        asName: Bool
-    ) {
-        self.name = name
-        self.layer = layer
-        self.travels = travels
-        self.cleared = cleared
-        self.moves = moves
-        self.asName = asName
-    }
 }
 
 /// An event an element reports: its name, and the types of what it carries.
@@ -673,8 +626,6 @@ struct MemberFacts: Equatable {
     /// Which of a view's values it is, where the value cannot say.
     let moves: MotionValues
 
-    /// Whether its text crosses as a name.
-    let asName: Bool
 }
 
 /// A member whose facts the library can read out of a list of members.
@@ -683,25 +634,34 @@ protocol DeclaredMember: ContractMember {
     var facts: MemberFacts { get }
 }
 
-extension ElementProperty: DeclaredMember {
+/// A property, read as the type of the value it holds - for the guard that
+/// holds every such type to its own round trip.
+protocol PropertyMember: DeclaredMember {
+    /// The type of the value the property holds.
+    var valueType: any HostRepresentable.Type { get }
+}
+
+extension ElementProperty: PropertyMember {
     /// A property's facts.
     var facts: MemberFacts {
-        MemberFacts(kind: .property, layer: layer, travels: travels, cleared: cleared,
-                    moves: moves, asName: asName)
+        MemberFacts(kind: .property, layer: layer, travels: travels, cleared: cleared, moves: moves)
     }
+
+    /// The type of the value it holds.
+    var valueType: any HostRepresentable.Type { Value.self }
 }
 
 extension ElementEvent: DeclaredMember {
     /// An event's facts: its layer, and nothing a property's value says.
     var facts: MemberFacts {
-        MemberFacts(kind: .event, layer: layer, travels: true, cleared: true, moves: [], asName: false)
+        MemberFacts(kind: .event, layer: layer, travels: true, cleared: true, moves: [])
     }
 }
 
 extension ElementAct: DeclaredMember {
     /// An act's facts: none a layer or a value says.
     var facts: MemberFacts {
-        MemberFacts(kind: .act, layer: nil, travels: true, cleared: true, moves: [], asName: false)
+        MemberFacts(kind: .act, layer: nil, travels: true, cleared: true, moves: [])
     }
 }
 
@@ -712,7 +672,7 @@ extension Node {
         _ property: ElementProperty<Owner, Value>,
         _ value: Value
     ) {
-        props[property.token] = property.crossing(value)
+        props[property.token] = value.propValue
     }
 
     /// Writes one member's value into this node, or leaves the member
@@ -722,7 +682,7 @@ extension Node {
         _ property: ElementProperty<Owner, Value>,
         _ value: Value?
     ) {
-        props[property.token] = value.map { property.crossing($0) }
+        props[property.token] = value?.propValue
     }
 }
 

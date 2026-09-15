@@ -23,7 +23,7 @@ extension FontElement {
     /// That alias is a NAME, not prose: it stands for a registered resource and
     /// repeats on every view using the font, so it rides the session's
     /// dictionary as a number rather than being spelled out per control.
-    public func fontFamily(_ value: String) -> Modified { setValue(FontElementContract.fontFamily, value) }
+    public func fontFamily(_ value: String) -> Modified { setValue(FontElementContract.fontFamily, Name(value)) }
 
     /// Bold, italic, or both.
     ///
