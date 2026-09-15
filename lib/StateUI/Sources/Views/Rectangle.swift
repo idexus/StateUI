@@ -21,7 +21,7 @@ public struct Rectangle: Shape, RectangleProperties {
     /// A rectangle with nothing set - which is also what a `Style<Rectangle>` is
     /// written against.
     public init() {
-        node = Node(type: .rectangle)
+        node = Node(contract: RectangleContract.self)
     }
 }
 
@@ -35,7 +35,7 @@ extension RectangleProperties {
     /// The same radius on all four corners, in device units. 0 - the default -
     /// is a square corner.
     public func cornerRadius(_ value: Double) -> Modified {
-        setValue(.cornerRadius, .number(value))
+        setValue(RectangleContract.cornerRadius, .uniform(value))
     }
 
     /// One corner at a time, each in device units.
@@ -53,6 +53,8 @@ extension RectangleProperties {
         bottomLeft: Double,
         bottomRight: Double
     ) -> Modified {
-        setValue(.cornerRadius, .numbers([topLeft, topRight, bottomLeft, bottomRight]))
+        setValue(
+            RectangleContract.cornerRadius,
+            .corners(topLeft: topLeft, topRight: topRight, bottomLeft: bottomLeft, bottomRight: bottomRight))
     }
 }

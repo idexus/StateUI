@@ -20,7 +20,7 @@ extension CanvasProperties {
     /// usually goes in its initializer instead, which takes the same closure -
     /// the drawing being what gives that view its purpose.
     public func drawable(@DrawingBuilder _ drawing: () -> [DrawCommand]) -> Modified {
-        setValue(.drawable, Canvas.value(drawing()))
+        setValue(CanvasContract.drawable, drawing())
     }
 }
 
@@ -53,12 +53,13 @@ public struct Canvas: View, CanvasProperties {
 
     /// An empty canvas - what a `Style<Canvas>` is written against.
     public init() {
-        node = Node(type: .canvas)
+        node = Node(contract: CanvasContract.self)
     }
 
     /// A canvas showing what the closure draws.
     public init(@DrawingBuilder _ drawing: () -> [DrawCommand]) {
-        node = Node(type: .canvas, props: [.drawable: Self.value(drawing())])
+        node = Node(contract: CanvasContract.self)
+        node.write(CanvasContract.drawable, drawing())
     }
 
     /// A finger went down, or a mouse button was pressed.
@@ -66,33 +67,17 @@ public struct Canvas: View, CanvasProperties {
     /// The point is in the canvas's own coordinates - the same ones the drawing
     /// instructions use, so what arrives can be drawn where it happened.
     public func onPressed(_ handler: @escaping ValueEventHandler<Point>) -> Self {
-        point(.pressed, handler)
+        onEvent(CanvasContract.pressed, handler)
     }
 
     /// It moved while still down, with where it is now - the canvas's own
     /// coordinates again.
     public func onDragged(_ handler: @escaping ValueEventHandler<Point>) -> Self {
-        point(.dragged, handler)
+        onEvent(CanvasContract.dragged, handler)
     }
 
     /// It was lifted, with where it left off.
     public func onReleased(_ handler: @escaping ValueEventHandler<Point>) -> Self {
-        point(.released, handler)
-    }
-
-    private func point(_ event: Event, _ handler: @escaping ValueEventHandler<Point>) -> Self {
-        addHandler(event) {
-            // A payload that will not parse leaves the handler alone, the way a
-            // gesture's does: half a point is worse than none.
-            if let point = EventBuffer.current.value().flatMap(Point.init(propValue:)) {
-                try await handler(point)
-            }
-        }
-    }
-
-    /// The drawing as one value: a list of records, each of them the list of
-    /// values one canvas call is - see Types/Drawing.swift.
-    fileprivate static func value(_ commands: [DrawCommand]) -> PropValue {
-        .values(commands.map { $0.propValue })
+        onEvent(CanvasContract.released, handler)
     }
 }

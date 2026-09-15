@@ -16,7 +16,7 @@ extension PolygonProperties {
     /// then fits to the room the layout gives it. They travel as the pairs
     /// themselves - x, y, x, y - which the host makes a `PointCollection` of.
     public func points(_ value: [Point]) -> Modified {
-        setValue(.points, value.propValue)
+        setValue(PolygonContract.points, value)
     }
 
     /// Which parts of a self-crossing outline count as inside it, and so get
@@ -26,7 +26,7 @@ extension PolygonProperties {
     /// The choice shows on a shape whose edges cross - a five-pointed star,
     /// where `.evenOdd` leaves the middle hollow and `.nonzero` fills it.
     public func fillRule(_ value: FillRule) -> Modified {
-        setValue(.fillRule, value.propValue)
+        setValue(PolygonContract.fillRule, value)
     }
 }
 
@@ -44,11 +44,12 @@ public struct Polygon: Shape, PolygonProperties {
     /// A polygon with no points yet - what a `Style<Polygon>` is written
     /// against.
     public init() {
-        node = Node(type: .polygon)
+        node = Node(contract: PolygonContract.self)
     }
 
     /// The corners, in order. The value that gives a polygon its purpose.
     public init(_ points: [Point]) {
-        node = Node(type: .polygon, props: [.points: points.propValue])
+        node = Node(contract: PolygonContract.self)
+        node.write(PolygonContract.points, points)
     }
 }

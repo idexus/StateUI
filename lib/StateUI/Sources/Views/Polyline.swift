@@ -17,7 +17,7 @@ extension PolylineProperties {
     /// then fits to the room the layout gives it. They travel as the pairs
     /// themselves - x, y, x, y - which the host makes a `PointCollection` of.
     public func points(_ value: [Point]) -> Modified {
-        setValue(.points, value.propValue)
+        setValue(PolylineContract.points, value)
     }
 
     /// Which parts of a self-crossing outline count as inside it, and so get
@@ -29,7 +29,7 @@ extension PolylineProperties {
     /// left undrawn. So this matters on a FILLED line whose path crosses
     /// itself, and nowhere else.
     public func fillRule(_ value: FillRule) -> Modified {
-        setValue(.fillRule, value.propValue)
+        setValue(PolylineContract.fillRule, value)
     }
 }
 
@@ -50,12 +50,13 @@ public struct Polyline: Shape, PolylineProperties {
     /// A polyline with no points yet - what a `Style<Polyline>` is written
     /// against.
     public init() {
-        node = Node(type: .polyline)
+        node = Node(contract: PolylineContract.self)
     }
 
     /// The points, in order. The value that gives a polyline its purpose.
     public init(_ points: [Point]) {
-        node = Node(type: .polyline, props: [.points: points.propValue])
+        node = Node(contract: PolylineContract.self)
+        node.write(PolylineContract.points, points)
     }
 
 }

@@ -23,7 +23,7 @@ public struct Line: Shape, LineProperties {
 
     /// A line with nothing set - what a `Style<Line>` is written against.
     public init() {
-        node = Node(type: .line)
+        node = Node(contract: LineContract.self)
     }
 }
 
@@ -35,14 +35,14 @@ public protocol LineProperties: PropertyContainer {}
 
 extension LineProperties {
     /// Where it starts, across.
-    public func x1(_ value: Double) -> Modified { setValue(.x1, .number(value)) }
+    public func x1(_ value: Double) -> Modified { setValue(LineContract.x1, value) }
 
     /// Where it starts, down.
-    public func y1(_ value: Double) -> Modified { setValue(.y1, .number(value)) }
+    public func y1(_ value: Double) -> Modified { setValue(LineContract.y1, value) }
 
     /// Where it ends, across.
-    public func x2(_ value: Double) -> Modified { setValue(.x2, .number(value)) }
+    public func x2(_ value: Double) -> Modified { setValue(LineContract.x2, value) }
 
     /// Where it ends, down.
-    public func y2(_ value: Double) -> Modified { setValue(.y2, .number(value)) }
+    public func y2(_ value: Double) -> Modified { setValue(LineContract.y2, value) }
 }

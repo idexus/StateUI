@@ -16,7 +16,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/CanvasContract.swift`.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `dragged` | event | `Point` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `onDragged` (`dragged`) | event | `Point` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `drawable` | property | `[DrawCommand]` | structure | ✅ | ✅ |  |  |  |  |  |  |
 | `onPressed` (`pressed`) | event | `Point` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `onReleased` (`released`) | event | `Point` | native | ✅ | ✅ |  |  |  |  |  |  |

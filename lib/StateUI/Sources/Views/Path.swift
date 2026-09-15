@@ -23,13 +23,14 @@ public struct Path: Shape, PathProperties {
 
     /// A path with no outline yet - what a `Style<Path>` is written against.
     public init() {
-        node = Node(type: .path)
+        node = Node(contract: PathContract.self)
     }
 
     /// The outline, in SVG path syntax - which is the value that gives a Path
     /// its purpose, so it goes in the initializer.
     public init(_ data: String) {
-        node = Node(type: .path, props: [.data: .string(data)])
+        node = Node(contract: PathContract.self)
+        node.write(PathContract.data, data)
     }
 }
 
@@ -45,5 +46,5 @@ extension PathProperties {
     /// The same value the initializer takes; write it here to give a
     /// `Style<Path>` an outline, or to swap one on a path that already has
     /// modifiers on it.
-    public func data(_ value: String) -> Modified { setValue(.data, .string(value)) }
+    public func data(_ value: String) -> Modified { setValue(PathContract.data, value) }
 }
