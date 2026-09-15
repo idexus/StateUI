@@ -9,7 +9,7 @@
 // that comes out is nobody's business - but that the only way this reader ever
 // fails is InvalidDataException. That is the one failure the two callers are
 // written to survive: `StateUISession.Render` says so to the reader, and
-// `PerformCommands` cashes the receipt so every act in an unreadable batch
+// `PerformActCalls` cashes the receipt so every act in an unreadable batch
 // fails back to the handler awaiting it. Anything else escaping a reader is a
 // failure mode nothing was designed against.
 //
@@ -31,13 +31,13 @@ public class WireFuzzTests
     private static readonly byte[] Changes = [0xFF, 0x01, 0x80];
 
     /// <summary>
-    /// The render fixtures: every `.bin` except the command batches, which are
+    /// The render fixtures: every `.bin` except the act batches, which are
     /// read by the other entry point, and the payloads, which this side writes.
     /// </summary>
     private static List<string> Messages() => Corpus(under: null);
 
-    /// <summary>The command batches, read by <see cref="SwiftWire.ReadCommands"/>.</summary>
-    private static List<string> Commands() => Corpus(under: "commands");
+    /// <summary>The act batches, read by <see cref="SwiftWire.ReadActCalls"/>.</summary>
+    private static List<string> ActCalls() => Corpus(under: "act-calls");
 
     private static List<string> Corpus(string? under)
     {
@@ -45,7 +45,7 @@ public class WireFuzzTests
             .EnumerateFiles(Fixtures.Directory, "*.bin", SearchOption.AllDirectories)
             .Select(path => Path.GetRelativePath(Fixtures.Directory, path).Replace('\\', '/'))
             .Where(name => under is null
-                ? !name.StartsWith("commands/") && !name.StartsWith("payloads/")
+                ? !name.StartsWith("act-calls/") && !name.StartsWith("payloads/")
                 : name.StartsWith(under + "/"))
             .OrderBy(name => name, StringComparer.Ordinal)
             .ToList();
@@ -241,13 +241,13 @@ public class WireFuzzTests
     }
 
     /// <summary>
-    /// The same two statements about a command batch, whose reader is the one
+    /// The same two statements about an act batch, whose reader is the one
     /// an awaiting handler is hanging off.
     /// </summary>
     [Fact]
-    public void EveryProperPrefixOfEveryCommandBatchIsRefused()
+    public void EveryProperPrefixOfEveryActBatchIsRefused()
     {
-        foreach (string name in Commands())
+        foreach (string name in ActCalls())
         {
             byte[] whole = Fixtures.ReadBytes(name);
 
@@ -256,7 +256,7 @@ public class WireFuzzTests
                 byte[] cut = whole.AsSpan(0, length).ToArray();
 
                 Refused(
-                    () => SwiftWire.ReadCommands(cut, new SwiftWireDictionary()),
+                    () => SwiftWire.ReadActCalls(cut, new SwiftWireDictionary()),
                     mustRefuse: true,
                     $"{name} cut to {length} of {whole.Length} bytes");
             }
@@ -264,9 +264,9 @@ public class WireFuzzTests
     }
 
     [Fact]
-    public void EverySingleByteChangeInEveryCommandBatchIsReadOrRefused()
+    public void EverySingleByteChangeInEveryActBatchIsReadOrRefused()
     {
-        foreach (string name in Commands())
+        foreach (string name in ActCalls())
         {
             byte[] whole = Fixtures.ReadBytes(name);
 
@@ -278,7 +278,7 @@ public class WireFuzzTests
                     changed[at] ^= change;
 
                     Refused(
-                        () => SwiftWire.ReadCommands(changed, new SwiftWireDictionary()),
+                        () => SwiftWire.ReadActCalls(changed, new SwiftWireDictionary()),
                         mustRefuse: false,
                         $"{name} with byte {at} of {whole.Length} changed by 0x{change:X2}");
                 }

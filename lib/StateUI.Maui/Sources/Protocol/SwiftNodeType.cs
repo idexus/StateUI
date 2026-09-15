@@ -14,7 +14,7 @@ namespace StateUI.Maui.Protocol;
 /// newer than this host, drawn as the red marker. Either way the SPELLING is
 /// still needed - to find the registration, and to name the type in the
 /// marker - so <c>SwiftNode.TypeName</c> keeps it, exactly as
-/// <c>SwiftCommand.Name</c> keeps an act's.
+/// <c>HostActCall.Name</c> keeps an act's.
 /// </para>
 /// <para>
 /// These numbers never cross the wire. A name travels as the number the

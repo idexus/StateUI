@@ -265,7 +265,7 @@ public struct Event: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
 /// (`.alert`), or an application's own registered function.
 ///
 /// The host performs what it has a case - or a registration - for; asking for
-/// anything else throws with the host's "unknown command" reason, which is
+/// anything else throws with the host's "unknown act" reason, which is
 /// what makes a misspelled name a reported failure rather than a silence.
 ///
 /// An application's own act shares this one flat vocabulary, and the library's

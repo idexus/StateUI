@@ -454,10 +454,10 @@ final class Scenes: @unchecked Sendable {
 
     /// Every key the open scenes have waiting to be kept, as the acts that
     /// keep them - scene by scene, in the order they opened.
-    func takeSaves() -> [Command] {
+    func takeSaves() -> [ActCall] {
         _list.storage.value.flatMap { record in
             record.takeWaiting().map {
-                Command(
+                ActCall(
                     act: .persistSceneValue,
                     arguments: [.name(record.id), .name($0.name), $0.value],
                     completion: nil)

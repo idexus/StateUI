@@ -714,7 +714,7 @@ public class SceneTests
 
         heard.Apply(Tree(Scene(1, MainWindow(100, "Main"))));
 
-        heard.Application.Keep(new SwiftCommand(
+        heard.Application.Keep(new HostActCall(
             SwiftAct.PersistSceneValue,
             "persistSceneValue",
             [Name("1"), Name("shade"), SwiftWireValue.Of("dusk")],

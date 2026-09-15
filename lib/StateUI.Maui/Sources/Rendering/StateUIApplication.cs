@@ -605,20 +605,20 @@ internal sealed class StateUIApplication : IStateUITarget
     /// what the system restores that scene by: the whole set is written each
     /// time, so what a restored session holds is what the scene held last.
     /// </remarks>
-    /// <param name="command">
+    /// <param name="call">
     /// The act: argument 0 the scene's number, 1 the key, 2 the value.
     /// </param>
-    internal void Keep(SwiftCommand command)
+    internal void Keep(HostActCall call)
     {
-        if (command.GetName(0) is not string id
-            || command.GetName(1) is not string name
-            || command.Arguments.Count < 3
+        if (call.GetName(0) is not string id
+            || call.GetName(1) is not string name
+            || call.Arguments.Count < 3
             || _scenes.Find(scene => scene.Id == id) is not SceneSlot scene)
         {
             return;
         }
 
-        scene.Kept[name] = command.Arguments[2];
+        scene.Kept[name] = call.Arguments[2];
 
         if (scene.Main is Slot main)
         {

@@ -324,8 +324,8 @@ public class PersistenceTests : IDisposable
 
     /// <summary>One save act, built the way the wire delivers it - the key as
     /// a NAME through the session's dictionary, which is what
-    /// <see cref="SwiftCommand.GetName"/> reads.</summary>
-    private static SwiftCommand Saving(string key, Action<List<byte>> value)
+    /// <see cref="HostActCall.GetName"/> reads.</summary>
+    private static HostActCall Saving(string key, Action<List<byte>> value)
     {
         List<byte> bytes = [SwiftWire.Version];
 
@@ -335,7 +335,7 @@ public class PersistenceTests : IDisposable
         bytes.AddRange([2, 0]);
         Str(bytes, key);                        // name #2, the key
 
-        bytes.AddRange([1, 0]);                 // one command
+        bytes.AddRange([1, 0]);                 // one act
         bytes.AddRange([1, 0]);                 // name #1
         bytes.AddRange([0, 0, 0, 0]);           // nobody is waiting
         bytes.Add(2);                           // two arguments
@@ -344,7 +344,7 @@ public class PersistenceTests : IDisposable
         bytes.AddRange([2, 0]);                 // name #2
         value(bytes);
 
-        return SwiftWire.ReadCommands([.. bytes], new SwiftWireDictionary()).Single();
+        return SwiftWire.ReadActCalls([.. bytes], new SwiftWireDictionary()).Single();
     }
 
     private static void Str(List<byte> bytes, string text)

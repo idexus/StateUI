@@ -426,7 +426,7 @@ internal static class SwiftValues
     }
 
     /// <summary>
-    /// The same lookup from the member's number itself - the shape a command
+    /// The same lookup from the member's number itself - the shape an act's
     /// argument carries it in, where a property carries it on a node.
     /// </summary>
     /// <remarks>

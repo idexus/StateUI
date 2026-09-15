@@ -35,7 +35,7 @@ namespace StateUI.Maui.Rendering;
 /// </para>
 /// <para>
 /// A number must also be FINITE, which is how the rest of the runtime reads one
-/// (<c>SwiftNode.GetNumber</c>, <c>SwiftCommand.GetDouble</c>), and a record with
+/// (<c>SwiftNode.GetNumber</c>, <c>HostActCall.GetDouble</c>), and a record with
 /// a non-finite argument is skipped whole rather than drawn with a 0 put in its
 /// place. An infinity says nothing about where to draw, and a substituted 0 would
 /// draw the shape at the origin instead.

@@ -4,21 +4,21 @@
 namespace StateUI.Maui.Protocol;
 
 /// <summary>
-/// One act the Swift side has asked the host to perform.
+/// One act the application called, for the host to perform - the mirror of
+/// the Swift <c>HostActCall</c>.
 /// </summary>
 /// <remarks>
 /// <para>
 /// The tree says what the interface is; this says what should HAPPEN. Swift can
 /// no more focus a field than it can create a Label - both are MAUI calls on
-/// MAUI objects - so it queues the request and the host performs it, which is the
+/// MAUI objects - so it queues the call and the host performs it, which is the
 /// same split the whole bridge is built on.
 /// </para>
 /// <para>
-/// <see cref="Name"/> is the MAUI method being asked for, camelCased, so the
-/// queue reads like the code it turns into: <c>displayAlertAsync</c> with three
-/// arguments. On the wire it travelled as a number from the session's
-/// dictionary - see <see cref="SwiftWireDictionary"/> - and was resolved back
-/// to the name here, so everything downstream still reads MAUI's own spelling.
+/// <see cref="Name"/> is the act's name as Swift spells it - <c>alert</c>, or
+/// an application's own <c>Gallery.BatteryLevel</c>. On the wire it travelled
+/// as a number from the session's dictionary - see
+/// <see cref="SwiftWireDictionary"/> - and was resolved back to the name here.
 /// </para>
 /// <para>
 /// An argument that is NOT THERE - a dialog with no destructive button, an
@@ -28,10 +28,10 @@ namespace StateUI.Maui.Protocol;
 /// indistinguishable from a value someone meant.
 /// </para>
 /// </remarks>
-public sealed class SwiftCommand
+public sealed class HostActCall
 {
-    /// <summary>Parsed off the wire by <see cref="SwiftWire.ReadCommands"/>.</summary>
-    internal SwiftCommand(
+    /// <summary>Parsed off the wire by <see cref="SwiftWire.ReadActCalls"/>.</summary>
+    internal HostActCall(
         SwiftAct act,
         string name,
         IReadOnlyList<SwiftWireValue> arguments,
@@ -51,14 +51,14 @@ public sealed class SwiftCommand
     public SwiftAct Act { get; }
 
     /// <summary>
-    /// The MAUI method being asked for, camelCased, e.g.
-    /// <c>displayAlertAsync</c> - the same spelling as <see cref="Act"/>'s
-    /// member. A name the host does not know is reported to the completion and
-    /// otherwise ignored.
+    /// The act's name as Swift spells it - <c>alert</c>, or an application's
+    /// own <c>Gallery.BatteryLevel</c>. A name this host has no arm and no
+    /// registration for fails back to a waiting caller, and is reported when
+    /// nobody waits.
     /// </summary>
     public string Name { get; }
 
-    /// <summary>Its arguments, in the order MAUI takes them.</summary>
+    /// <summary>Its arguments, in the order the act declares them.</summary>
     public IReadOnlyList<SwiftWireValue> Arguments { get; }
 
     /// <summary>

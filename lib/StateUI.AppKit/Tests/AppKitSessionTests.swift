@@ -328,7 +328,7 @@ final class AppKitSessionTests: XCTestCase {
         defer { renderer.closeForTesting() }
         renderer.applyForTesting(tree(scene("1", windows: [window("main")])))
 
-        renderer.keepSceneValue(HostCommand(
+        renderer.keepSceneValue(HostActCall(
             act: .persistSceneValue,
             arguments: [.name("1"), .name("shade"), .string("dusk")],
             completion: nil))
@@ -458,7 +458,7 @@ final class AppKitSessionTests: XCTestCase {
         renderer.hydratePersistentState()
         XCTAssertEqual(state.get(), "dark")
 
-        renderer.savePersistent(HostCommand(
+        renderer.savePersistent(HostActCall(
             act: .persistValue,
             arguments: [.name(key.name), .string("graphite")],
             completion: nil))

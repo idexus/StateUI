@@ -185,10 +185,10 @@ internal sealed class StateUISession
     /// <para>
     /// <b>One live session per process; the windows belong to that session.</b>
     /// The other side is a single <c>Renderer.shared</c> holding one tree, one
-    /// generation, one handler registry, one command queue and one wire
+    /// generation, one handler registry, one act queue and one wire
     /// dictionary. A second session here would quote a baseline against a tree
     /// it does not own, read name numbers it never heard announced (see
-    /// <see cref="_names"/>), and drain commands raised by the other one's
+    /// <see cref="_names"/>), and drain acts raised by the other one's
     /// handlers - all silently, since none of that is on the wire to check.
     /// </para>
     /// <para>
@@ -292,24 +292,24 @@ internal sealed class StateUISession
     /// Cleared again if the park ever stops, so that the next render sends
     /// another thread in. Without that the process would spend the rest of its
     /// life with the flag standing and no waker behind it, and everything a
-    /// handler awaits that is not a host command would resume only at the next
+    /// handler awaits that is not a host act would resume only at the next
     /// unrelated event.
     /// </remarks>
     private static bool _askerParked;
 
     /// <summary>
     /// Dedicates a thread to asking the moment Swift has work, which is what
-    /// lets a handler await something that is NOT a host command.
+    /// lets a handler await something that is NOT a host act.
     /// </summary>
     /// <remarks>
     /// <para>
     /// A resumed handler's job lands on Swift's queue, and the other thing that
     /// empties that queue is this side asking - after an event, after a
-    /// completed command. A job produced by anything else - a <c>Task.sleep</c>
+    /// completed act. A job produced by anything else - a <c>Task.sleep</c>
     /// coming due, a task an author started finishing, an <c>AsyncStream</c>
     /// yielding - lands when nothing is in flight, so without this thread it
     /// would sit there until the next unrelated event. With it, what a handler
-    /// awaits need not be a host command.
+    /// awaits need not be a host act.
     /// </para>
     /// <para>
     /// The thread spends its life inside <see cref="NativeMethods.WaitWork"/>;
@@ -372,7 +372,7 @@ internal sealed class StateUISession
 
                 Report(
                     "the thread that waits for Swift's work has stopped; a handler "
-                    + "awaiting something that is not a host command - Task.sleep, a "
+                    + "awaiting something that is not a host act - Task.sleep, a "
                     + "task's value - will now resume at the next event until a "
                     + "later render sends another thread in.", ex);
             }
@@ -402,7 +402,7 @@ internal sealed class StateUISession
         // See AskWheneverWorkLands.
         // And the process itself comes first: a session that is not the
         // live one has no tree to describe and no queue to drain - the
-        // commands below belong to whichever session owns the runtime.
+        // acts below belong to whichever session owns the runtime.
         if (!BecomeLive())
         {
             return;
@@ -411,7 +411,7 @@ internal sealed class StateUISession
         AskWheneverWorkLands();
 
         Render(mayRetry: true);
-        PerformCommands();
+        PerformActCalls();
         Cycled();
     }
 
@@ -805,7 +805,7 @@ internal sealed class StateUISession
     /// cannot answer. <c>ResumesPending</c> says a handler has been told its act
     /// is over and has not run a line since - but a handler suspended on its own
     /// child tasks (<c>async let</c>) resumes through a job no completion
-    /// accounting covers, because what it awaited was never a host command. So
+    /// accounting covers, because what it awaited was never a host act. So
     /// <c>JobsPending</c> is asked beside it: work that is coming, and work that
     /// is already there. Polling only the first gives up exactly one job too
     /// early - measured: the gallery's concurrent-animation loop froze mid-beat
@@ -858,7 +858,7 @@ internal sealed class StateUISession
                     // announced it is all there is. Two of those: an act
                     // queued from a plain Task, and a state WRITE made from a
                     // child task, which queues nothing at all. So
-                    // this pumps rather than only taking the commands - and
+                    // this pumps rather than only taking the acts - and
                     // a pump whose tree is clean renders nothing, so a quiet
                     // look stays quiet.
                     Pump();
@@ -1007,8 +1007,8 @@ internal sealed class StateUISession
 
             // A NEGATIVE id is not an event: it is a completion, and what it
             // resumed is a handler whose next job does not exist yet. The
-            // command path says the same thing one method down; a journey's
-            // answer lands here instead, having queued no command.
+            // act path says the same thing one method down; a journey's
+            // answer lands here instead, having queued no act.
             if (handlerId < 0)
             {
                 DrainWhenTheResumeArrives();
@@ -1249,20 +1249,20 @@ internal sealed class StateUISession
             Render(mayRetry: true);
         }
 
-        PerformCommands();
+        PerformActCalls();
         Cycled();
     }
 
     /// <summary>
     /// Takes what Swift queued and performs each act. Empty most of the time.
     /// </summary>
-    private void PerformCommands()
+    private void PerformActCalls()
     {
-        List<SwiftCommand>? commands;
+        List<HostActCall>? calls;
 
         try
         {
-            IntPtr buffer = NativeMethods.TakeCommandsWire(out int length);
+            IntPtr buffer = NativeMethods.TakeActCallsWire(out int length);
 
             if (buffer == IntPtr.Zero || length <= 0)
             {
@@ -1275,7 +1275,7 @@ internal sealed class StateUISession
                 // no copy, no transcoding, nothing materialized in between.
                 unsafe
                 {
-                    commands = SwiftWire.ReadCommands(
+                    calls = SwiftWire.ReadActCalls(
                         new ReadOnlySpan<byte>((void*)buffer, length), _names);
                 }
             }
@@ -1295,8 +1295,8 @@ internal sealed class StateUISession
             // dialog waits for the reader - so the failure is causal.
             try
             {
-                NativeMethods.FailTakenCommands(
-                    "the host could not read the command batch this act was in. " +
+                NativeMethods.FailTakenActCalls(
+                    "the host could not read the act batch this act was in. " +
                     "Usually a native library and a runtime built from different " +
                     "versions.");
             }
@@ -1308,28 +1308,28 @@ internal sealed class StateUISession
                 // names the parse failure.
             }
 
-            _target.Fail("The commands from Swift could not be read", ex);
+            _target.Fail("The acts from Swift could not be read", ex);
             return;
         }
 
-        if (commands is null)
+        if (calls is null)
         {
             return;
         }
 
-        Perform(commands);
+        Perform(calls);
     }
 
     /// <summary>
-    /// Performs a batch of acts - the loop <see cref="PerformCommands"/> ends
+    /// Performs a batch of acts - the loop <see cref="PerformActCalls"/> ends
     /// with, and the door a test comes in through.
     /// </summary>
     /// <remarks>
     /// <para>
     /// The take above is the half that needs a Swift runtime: it reads a native
     /// buffer and frees it. Everything an ACT does is on this side of that, so
-    /// splitting here is what lets a test hand the session commands read from a
-    /// `fixtures/commands/*.bin` - bytes SWIFT wrote - and watch the arms, the
+    /// splitting here is what lets a test hand the session acts read from a
+    /// `fixtures/act-calls/*.bin` - bytes SWIFT wrote - and watch the arms, the
     /// refusal sentences and the catch blocks run for real.
     /// </para>
     /// <para>
@@ -1339,12 +1339,12 @@ internal sealed class StateUISession
     /// reads the REPLY it recorded and lets the target's failures be.
     /// </para>
     /// </remarks>
-    /// <param name="commands">The batch, in the order Swift queued it.</param>
-    internal void Perform(IReadOnlyList<SwiftCommand> commands)
+    /// <param name="calls">The batch, in the order Swift queued it.</param>
+    internal void Perform(IReadOnlyList<HostActCall> calls)
     {
-        foreach (SwiftCommand command in commands)
+        foreach (HostActCall call in calls)
         {
-            Perform(command);
+            Perform(call);
         }
     }
 
@@ -1372,29 +1372,29 @@ internal sealed class StateUISession
     /// the awaiting Swift handler throws.
     /// </para>
     /// </remarks>
-    private async void Perform(SwiftCommand command)
+    private async void Perform(HostActCall call)
     {
         SwiftWireValue[] result = [];
         string? failure = null;
 
         try
         {
-            switch (command.Act)
+            switch (call.Act)
             {
                 case SwiftAct.Focus:
                 case SwiftAct.Unfocus:
-                    (result, failure) = Focus(command);
+                    (result, failure) = Focus(call);
                     break;
 
                 case SwiftAct.GoBack:
                 case SwiftAct.GoForward:
                 case SwiftAct.Reload:
                 case SwiftAct.EvaluateJavaScript:
-                    (result, failure) = await Web(command);
+                    (result, failure) = await Web(call);
                     break;
 
                 case SwiftAct.MoveToRegion:
-                    (result, failure) = MoveMap(command);
+                    (result, failure) = MoveMap(call);
                     break;
 
                 case SwiftAct.HideOnScreenKeyboard:
@@ -1408,7 +1408,7 @@ internal sealed class StateUISession
                 case SwiftAct.Confirm:
                 case SwiftAct.ChooseAction:
                 case SwiftAct.Prompt:
-                    (result, failure) = await Dialog(command);
+                    (result, failure) = await Dialog(call);
                     break;
 
                 case SwiftAct.Announce:
@@ -1417,7 +1417,7 @@ internal sealed class StateUISession
                     // what changed on its own - a search that finished, a row
                     // that went - and not for what the reader's own tap already
                     // said back to them.
-                    SemanticScreenReader.Default.Announce(command.GetString(0) ?? "");
+                    SemanticScreenReader.Default.Announce(call.GetString(0) ?? "");
                     result = [];
                     break;
 
@@ -1461,8 +1461,8 @@ internal sealed class StateUISession
                     // The day is its three numbers, and the wire's own nothing
                     // when none was asked for, so a day nobody named cannot be
                     // mistaken for one that failed to arrive.
-                    string? zoneId = command.GetString(0);
-                    IReadOnlyList<double>? day = command.GetNumbers(1);
+                    string? zoneId = call.GetString(0);
+                    IReadOnlyList<double>? day = call.GetNumbers(1);
 
                     TimeZoneInfo asked = string.IsNullOrEmpty(zoneId)
                         ? TimeZoneInfo.Local
@@ -1498,7 +1498,7 @@ internal sealed class StateUISession
                     // Nothing is waiting on this one: the value is already in
                     // Swift's own state, and the store is where it goes to
                     // survive the process.
-                    StateUIPersistence.Save(command);
+                    StateUIPersistence.Save(call);
                     break;
 
                 case SwiftAct.PersistSceneValue:
@@ -1506,7 +1506,7 @@ internal sealed class StateUISession
                     // scene's state already, and the platform keeps it WITH
                     // the scene, for the system to hand back when it restores
                     // that scene's window.
-                    (_target as StateUIApplication)?.Keep(command);
+                    (_target as StateUIApplication)?.Keep(call);
                     break;
 
                 case SwiftAct.HandlerFailed:
@@ -1518,7 +1518,7 @@ internal sealed class StateUISession
                     // Debug.WriteLine reaches logcat on Android and NOTHING on
                     // Apple without a debugger attached, which would leave a
                     // handler failing on a Mac silent.
-                    Report($"a handler failed: {command.GetString(0)}");
+                    Report($"a handler failed: {call.GetString(0)}");
                     break;
 
                 default:
@@ -1526,20 +1526,20 @@ internal sealed class StateUISession
                     // registered under this name performs it, and its values
                     // answer the Swift `try await` exactly as a library act's
                     // would. See StateUIActs.
-                    if (StateUIActs.Find(command.Name) is { } performer)
+                    if (StateUIActs.Find(call.Name) is { } performer)
                     {
-                        result = await performer(command);
+                        result = await performer(call);
                         break;
                     }
 
-                    failure = $"unknown command '{command.Name}'";
+                    failure = $"unknown act '{call.Name}'";
 
-                    // A command with a completion carries the failure to the
+                    // An act with a completion carries the failure to the
                     // Swift `try await` below; one WITHOUT would fail into
                     // silence - a version-skewed native library asking for an
                     // act this runtime has no case for - so it is reported
                     // here, the only place that will ever hear of it.
-                    if (command.Completion is null)
+                    if (call.Completion is null)
                     {
                         Report(failure);
                     }
@@ -1554,12 +1554,12 @@ internal sealed class StateUISession
 
         try
         {
-            if (command.Completion is int id)
+            if (call.Completion is int id)
             {
                 // The one chain whose thread an AWAIT decided: everything up to
                 // here came back through whatever context the awaited API
                 // resumed on, and what follows enters Swift.
-                _uiThread.Verify(_target.Dispatcher, "a completed command");
+                _uiThread.Verify(_target.Dispatcher, "a completed act");
 
                 byte[] reply = failure is null
                     ? SwiftWire.WriteReply(result)
@@ -1574,7 +1574,7 @@ internal sealed class StateUISession
         }
         catch (Exception ex)
         {
-            _target.Fail("Reporting a completed command failed", ex);
+            _target.Fail("Reporting a completed act failed", ex);
         }
     }
 
@@ -1603,18 +1603,18 @@ internal sealed class StateUISession
     /// Reads which view an act is about from its argument 0, or null when
     /// nothing usable is there.
     /// </summary>
-    /// <param name="command">The act.</param>
+    /// <param name="call">The act.</param>
     /// <returns>The target, or null when argument 0 is neither kind of id.</returns>
-    private static ActTarget? TargetOf(SwiftCommand command)
+    private static ActTarget? TargetOf(HostActCall call)
     {
-        if (command.GetString(0) is string name)
+        if (call.GetString(0) is string name)
         {
             return new ActTarget(name, ByIdentity: false);
         }
 
         // The differ's identities are integers, and the tracked map's keys are
         // their decimal spelling.
-        if (command.GetDouble(0) is double identity)
+        if (call.GetDouble(0) is double identity)
         {
             return new ActTarget(
                 ((long)identity).ToString(CultureInfo.InvariantCulture),
@@ -1644,10 +1644,10 @@ internal sealed class StateUISession
     /// because a performer written for one control tests for it with <c>is</c>,
     /// which reads better than comparing the name this side happens to use.
     /// </remarks>
-    /// <param name="command">The act, with the control's identity at 0.</param>
+    /// <param name="call">The act, with the control's identity at 0.</param>
     /// <returns>The control, or null when argument 0 names none on screen.</returns>
-    internal VisualElement? Aimed(SwiftCommand command) =>
-        TargetOf(command) is { } target && Find(target) is { } found ? found.View : null;
+    internal VisualElement? Aimed(HostActCall call) =>
+        TargetOf(call) is { } target && Find(target) is { } found ? found.View : null;
 
     /// <summary>
     /// Slides the Map the Swift side named to the region around a point -
@@ -1662,9 +1662,9 @@ internal sealed class StateUISession
     /// moved to a zero nobody asked for is the Atlantic, drawn perfectly.
     /// </remarks>
     /// <returns>What to report back, and why it could not be done.</returns>
-    private (SwiftWireValue[] Result, string? Failure) MoveMap(SwiftCommand command)
+    private (SwiftWireValue[] Result, string? Failure) MoveMap(HostActCall call)
     {
-        if (TargetOf(command) is not { } target)
+        if (TargetOf(call) is not { } target)
         {
             return ([], "a Map act has to say which view it is for");
         }
@@ -1679,9 +1679,9 @@ internal sealed class StateUISession
             return ([], $"the view {target.Label} is a {found.Type}, not a Map");
         }
 
-        if (command.GetDouble(1) is not double latitude
-            || command.GetDouble(2) is not double longitude
-            || command.GetDouble(3) is not double radius)
+        if (call.GetDouble(1) is not double latitude
+            || call.GetDouble(2) is not double longitude
+            || call.GetDouble(3) is not double radius)
         {
             return ([], "Map.MoveToRegion needs latitude, longitude and a radius "
                 + "in meters, and one of them is absent or not a number");
@@ -1703,9 +1703,9 @@ internal sealed class StateUISession
     /// history.
     /// </remarks>
     /// <returns>What to report back, and why it could not be done.</returns>
-    private async Task<(SwiftWireValue[] Result, string? Failure)> Web(SwiftCommand command)
+    private async Task<(SwiftWireValue[] Result, string? Failure)> Web(HostActCall call)
     {
-        if (TargetOf(command) is not { } target)
+        if (TargetOf(call) is not { } target)
         {
             return ([], "a WebView act has to say which view it is for");
         }
@@ -1720,7 +1720,7 @@ internal sealed class StateUISession
             return ([], $"the view {target.Label} is a {found.Type}, not a WebView");
         }
 
-        switch (command.Act)
+        switch (call.Act)
         {
             case SwiftAct.GoBack:
                 web.GoBack();
@@ -1737,7 +1737,7 @@ internal sealed class StateUISession
             default:
                 // What the script's last expression evaluated to, as the
                 // platform writes it - null when the page answered nothing.
-                string script = command.GetString(1) ?? "";
+                string script = call.GetString(1) ?? "";
                 return ([SwiftWireValue.Of(await web.EvaluateJavaScriptAsync(script) ?? "")], null);
         }
     }
@@ -1755,9 +1755,9 @@ internal sealed class StateUISession
     /// result.
     /// </remarks>
     /// <returns>What to report back, and why it could not be done.</returns>
-    private (SwiftWireValue[] Result, string? Failure) Focus(SwiftCommand command)
+    private (SwiftWireValue[] Result, string? Failure) Focus(HostActCall call)
     {
-        if (TargetOf(command) is not { } target)
+        if (TargetOf(call) is not { } target)
         {
             return ([], "a focus act has to say which view it is for");
         }
@@ -1767,7 +1767,7 @@ internal sealed class StateUISession
             return ([], $"there is no view {target.Label} on screen");
         }
 
-        if (command.Act == SwiftAct.Unfocus)
+        if (call.Act == SwiftAct.Unfocus)
         {
             found.View.Unfocus();
             return ([], null);
@@ -1784,7 +1784,7 @@ internal sealed class StateUISession
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The command names no page: a dialog belongs to whatever is showing -
+    /// The act names no page: a dialog belongs to whatever is showing -
     /// the modal top included - which only the host can know. The SoftInput
     /// reasoning, one act over.
     /// </para>
@@ -1804,7 +1804,7 @@ internal sealed class StateUISession
     /// </para>
     /// </remarks>
     /// <returns>What to report back, and why it could not be done.</returns>
-    private async Task<(SwiftWireValue[] Result, string? Failure)> Dialog(SwiftCommand command)
+    private async Task<(SwiftWireValue[] Result, string? Failure)> Dialog(HostActCall call)
     {
         if (SwiftFocus.Showing(Showing()) is not Page page)
         {
@@ -1816,21 +1816,21 @@ internal sealed class StateUISession
             return ([], "the page is not on screen, so a dialog would never return");
         }
 
-        string title = command.GetString(0) ?? "";
+        string title = call.GetString(0) ?? "";
 
-        switch (command.Act)
+        switch (call.Act)
         {
             case SwiftAct.Alert:
                 await page.DisplayAlertAsync(
-                    title, command.GetString(1) ?? "", command.GetString(2) ?? "OK");
+                    title, call.GetString(1) ?? "", call.GetString(2) ?? "OK");
                 return ([], null);
 
             case SwiftAct.Confirm:
                 bool accepted = await page.DisplayAlertAsync(
                     title,
-                    command.GetString(1) ?? "",
-                    command.GetString(2) ?? "OK",
-                    command.GetString(3) ?? "Cancel");
+                    call.GetString(1) ?? "",
+                    call.GetString(2) ?? "OK",
+                    call.GetString(3) ?? "Cancel");
                 return ([SwiftWireValue.Of(accepted)], null);
 
             case SwiftAct.ChooseAction:
@@ -1839,33 +1839,33 @@ internal sealed class StateUISession
                 // sentinel in between: an empty string is a caption someone
                 // could have written, and telling the special ones apart would
                 // be the reader's job.
-                var buttons = new string[Math.Max(0, (command.Arguments?.Count ?? 3) - 3)];
+                var buttons = new string[Math.Max(0, (call.Arguments?.Count ?? 3) - 3)];
                 for (int index = 0; index < buttons.Length; index++)
                 {
-                    buttons[index] = command.GetString(index + 3) ?? "";
+                    buttons[index] = call.GetString(index + 3) ?? "";
                 }
 
                 string? pressed = await page.DisplayActionSheetAsync(
                     title,
-                    command.GetString(1),
-                    command.GetString(2),
+                    call.GetString(1),
+                    call.GetString(2),
                     buttons);
                 return (Chosen(pressed), null);
 
             default:
                 string? typed = await page.DisplayPromptAsync(
                     title,
-                    command.GetString(1) ?? "",
-                    command.GetString(2) ?? "OK",
-                    command.GetString(3) ?? "Cancel",
-                    command.GetString(4),
+                    call.GetString(1) ?? "",
+                    call.GetString(2) ?? "OK",
+                    call.GetString(3) ?? "Cancel",
+                    call.GetString(4),
 
                     // -1 is MAUI's own "no limit" for this parameter, not a
                     // sentinel of ours: the wire says the length is not there
                     // and this is what MAUI wants to hear for that.
-                    command.GetInt(5) ?? -1,
-                    SwiftValues.KeyboardOf(command.GetEnumeration(6)) ?? Keyboard.Default,
-                    command.GetString(7) ?? "");
+                    call.GetInt(5) ?? -1,
+                    SwiftValues.KeyboardOf(call.GetEnumeration(6)) ?? Keyboard.Default,
+                    call.GetString(7) ?? "");
                 return (Chosen(typed), null);
         }
     }

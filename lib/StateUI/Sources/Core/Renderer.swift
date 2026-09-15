@@ -150,14 +150,14 @@ public final class Renderer: @unchecked Sendable {
     /// takes a render per step.
     static let settleLimit = 3
 
-    /// Guards the command queue, the completion registry and the counters
+    /// Guards the act queue, the completion registry and the counters
     /// beside them - everything `send` and `call` touch.
     ///
     /// They need a lock where nothing else here does because they are the one
     /// part of the renderer a CHILD TASK reaches. `async let` runs its child on
     /// the cooperative pool - that is Swift's design, a child task does not
     /// inherit the parent's actor - so two animations started with `async let`
-    /// call `send` from pool threads while the UI thread is taking commands and
+    /// call `send` from pool threads while the UI thread is taking acts and
     /// dispatching completions. Unguarded, that is a data race on this
     /// dictionary and array: a lost continuation on a good day, which reads as
     /// a handler frozen at its `await`, and corrupted memory on a bad one,
@@ -169,10 +169,10 @@ public final class Renderer: @unchecked Sendable {
     /// registry are always invoked outside the lock - `dispatch` resumes a
     /// continuation, and a resume that re-entered `send` would deadlock on a
     /// queue `sync` cannot re-enter.
-    private let guarded = DispatchQueue(label: "StateUI.Renderer.commands")
+    private let guarded = DispatchQueue(label: "StateUI.Renderer.acts")
 
-    /// Acts waiting for the host to collect them - see Command.swift.
-    private var commands: [Command] = []
+    /// Acts waiting for the host to collect them - see ActCall.swift.
+    private var actCalls: [ActCall] = []
 
     /// Continuations waiting for an act to finish.
     ///
@@ -187,10 +187,10 @@ public final class Renderer: @unchecked Sendable {
     private var completions: [Int: (Reply) -> Void] = [:]
     private var nextCompletionId = -1
 
-    /// The completion ids of the last batch `takeCommandsWire` handed out -
+    /// The completion ids of the last batch `takeActCallsWire` handed out -
     /// the take's RECEIPT, which is what lets a batch the host could not read
     /// be failed back by id. Behind `guarded`, like the registry it points
-    /// into. See `failTakenCommands`.
+    /// into. See `failTakenActCalls`.
     private var takenCompletions: [Int] = []
 
     /// How many resumes the host has reported that have not come back yet.
@@ -313,7 +313,7 @@ public final class Renderer: @unchecked Sendable {
     ///
     /// Naming the state is what lets the render that follows rebuild only the
     /// views whose build read it. Marks and wakes exactly as `setNeedsRender`
-    /// does - the wake is what makes a write with no job and no command
+    /// does - the wake is what makes a write with no job and no act
     /// behind it reach the screen before the next event, and `wakeArmed`
     /// folds a thousand of them inside one drain into one signal.
     ///
@@ -1225,14 +1225,14 @@ public final class Renderer: @unchecked Sendable {
     /// Queues an act - a token, whether the library's or an application's;
     /// the session dictionary numbers both the same way.
     func send(_ act: Act, _ arguments: [PropValue], completion: ((Reply) -> Void)?) {
-        enqueue({ Command(act: act, arguments: arguments, completion: $0) }, completion)
+        enqueue({ ActCall(act: act, arguments: arguments, completion: $0) }, completion)
     }
 
-    /// Queues an act for the host - see Command.swift.
+    /// Queues an act for the host - see ActCall.swift.
     ///
     /// Callable from any thread: a child task started with `async let` sends
     /// from the cooperative pool, which is why the registry is behind `guarded`.
-    private func enqueue(_ command: (Int?) -> Command, _ completion: ((Reply) -> Void)?) {
+    private func enqueue(_ make: (Int?) -> ActCall, _ completion: ((Reply) -> Void)?) {
         guarded.sync {
             var id: Int?
 
@@ -1242,12 +1242,12 @@ public final class Renderer: @unchecked Sendable {
                 nextCompletionId -= 1
             }
 
-            commands.append(command(id))
+            actCalls.append(make(id))
         }
 
         // The wake, outside the lock: an act queued from a plain `Task` runs
         // on the pool and lands no job on the executor, so nothing else would
-        // tell the host this command exists - it would sit in the queue until
+        // tell the host this act exists - it would sit in the queue until
         // the next event, a pressed card never coming back up. Coalesced by
         // the waker's own armed flag, so a burst of sends is one wake.
         MainThreadExecutor.shared.poke()
@@ -1256,13 +1256,13 @@ public final class Renderer: @unchecked Sendable {
     /// How many acts are queued and not yet taken.
     ///
     /// What `stateui_wait_work` adds to the job count, so a wake that
-    /// announced a COMMAND - `poke`, no job anywhere - still reads as work
+    /// announced an ACT - `poke`, no job anywhere - still reads as work
     /// to the host's parked thread.
-    var commandsPending: Int {
+    var actCallsPending: Int {
         // The saves a kept state has waiting count with the acts: a save IS an
         // act the moment it is taken, and nothing else says it is there. See
-        // `takeCommandsWire`.
-        guarded.sync { commands.count } + PersistentStore.shared.pending
+        // `takeActCallsWire`.
+        guarded.sync { actCalls.count } + PersistentStore.shared.pending
             + Scenes.shared.pendingSaves
     }
 
@@ -1314,7 +1314,7 @@ public final class Renderer: @unchecked Sendable {
     /// Reports a handler that threw, so that a failed `try await` is visible
     /// rather than lost.
     ///
-    /// Goes out as an ordinary command, which means it reaches the host on the
+    /// Goes out as an ordinary act, which means it reaches the host on the
     /// same path everything else does and needs nothing new on the boundary.
     func report(_ error: Error) {
         send(.handlerFailed, [.string(String(describing: error))], completion: nil)
@@ -1322,7 +1322,7 @@ public final class Renderer: @unchecked Sendable {
 
     /// Hands the queued acts to the host and forgets them - keeping a RECEIPT:
     /// the completion ids of exactly this batch, so a batch the host cannot
-    /// read can be failed back by id. See `failTakenCommands`.
+    /// read can be failed back by id. See `failTakenActCalls`.
     ///
     /// The take is atomic against a child task's `send`; the encoding happens
     /// outside the lock, having nothing shared left to read. The receipt is
@@ -1332,16 +1332,18 @@ public final class Renderer: @unchecked Sendable {
     ///
     /// An empty queue answers an empty array, and the export hands the host a
     /// null pointer for it - the common case, every pump, allocating nothing.
-    func takeCommandsWire() -> [UInt8] {
-        let batch = takeCommands()
+    func takeActCallsWire() -> [UInt8] {
+        let batch = takeActCalls()
         return batch.isEmpty ? [] : Wire.encode(batch, dictionary: wireDictionary)
     }
 
-    /// Hands queued acts to an in-process native host without encoding them.
+    /// Hands the queued act calls over without encoding them: to a native
+    /// host in this process, and to `takeActCallsWire`, which encodes them.
     ///
-    /// Keeps the same receipt as the Wire path, so a host that cannot perform
-    /// a batch can resume every waiter with `failTakenCommands(_:)`.
-    func takeCommands() -> [Command] {
+    /// Keeps the receipt either way. Only a batch that would not read is
+    /// failed back by it; a host in this process answers each call by its id
+    /// instead (`StateUIHost.reply`, `StateUIHost.fail`).
+    func takeActCalls() -> [ActCall] {
         // The saves waiting for a store, made into acts HERE rather than at
         // the write: a key written five times between two takes is one act
         // holding the last value, which is what keeps a TextField bound to kept
@@ -1350,16 +1352,16 @@ public final class Renderer: @unchecked Sendable {
         //
         // The write that recorded a save woke the host itself, and a save
         // waiting counts as a pending act until it is taken - see
-        // `commandsPending` - because the render a state write asks for is
+        // `actCallsPending` - because the render a state write asks for is
         // not always coming: a kept state no view reads asks for none, and
         // its save must not wait for the next event to be taken.
         let saves = PersistentStore.shared.takeWaiting().map {
-            Command(act: .persistValue, arguments: [.name($0.name), $0.value], completion: nil)
+            ActCall(act: .persistValue, arguments: [.name($0.name), $0.value], completion: nil)
         }
 
         let queued = guarded.sync {
-            let queued = commands
-            commands.removeAll(keepingCapacity: true)
+            let queued = actCalls
+            actCalls.removeAll(keepingCapacity: true)
             takenCompletions = queued.compactMap { $0.completion }
             return queued
         }
@@ -1399,7 +1401,7 @@ public final class Renderer: @unchecked Sendable {
     /// The receipt is taken and cleared first, so calling this twice fails
     /// nobody twice - and an act performed normally in the meantime is safe
     /// either way, `dispatch` answering false for a completion already gone.
-    func failTakenCommands(_ reason: String) {
+    func failTakenActCalls(_ reason: String) {
         let ids = guarded.sync {
             let ids = takenCompletions
             takenCompletions = []

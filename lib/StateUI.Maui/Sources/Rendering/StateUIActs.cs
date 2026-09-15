@@ -18,7 +18,7 @@ namespace StateUI.Maui.Rendering;
 /// <code>
 /// // C#, MauiProgram.CreateMauiApp:
 /// StateUIActs.Add("Gallery.BatteryLevel",
-///     command => [SwiftWireValue.Of(Battery.Default.ChargeLevel)]);
+///     call => [SwiftWireValue.Of(Battery.Default.ChargeLevel)]);
 ///
 /// // Swift, anywhere:
 /// extension Act {
@@ -28,7 +28,7 @@ namespace StateUI.Maui.Rendering;
 /// let level = try await stateUICall(.batteryLevel).value()?.number
 /// </code>
 /// <para>
-/// A performer reads its arguments off the <see cref="SwiftCommand"/> with
+/// A performer reads its arguments off the <see cref="HostActCall"/> with
 /// the typed accessors and answers values built with
 /// <see cref="SwiftWireValue"/>'s factories - empty for a function with
 /// nothing to say. One that throws fails the act: the awaiting Swift handler
@@ -47,7 +47,7 @@ namespace StateUI.Maui.Rendering;
 public static class StateUIActs
 {
     private static readonly Lock Guard = new();
-    private static readonly Dictionary<string, Func<SwiftCommand, Task<SwiftWireValue[]>>> Performers = [];
+    private static readonly Dictionary<string, Func<HostActCall, Task<SwiftWireValue[]>>> Performers = [];
 
     /// <summary>
     /// Registers an async function under a name. Registering the same name
@@ -55,7 +55,7 @@ public static class StateUIActs
     /// </summary>
     /// <param name="name">The name Swift calls, e.g. <c>"Gallery.BatteryLevel"</c>.</param>
     /// <param name="performer">What to run; its values answer the Swift <c>try await</c>.</param>
-    public static void Add(string name, Func<SwiftCommand, Task<SwiftWireValue[]>> performer)
+    public static void Add(string name, Func<HostActCall, Task<SwiftWireValue[]>> performer)
     {
         lock (Guard)
         {
@@ -69,9 +69,9 @@ public static class StateUIActs
     /// </summary>
     /// <param name="name">The name Swift calls, e.g. <c>"Gallery.BatteryLevel"</c>.</param>
     /// <param name="performer">What to run; its values answer the Swift <c>try await</c>.</param>
-    public static void Add(string name, Func<SwiftCommand, SwiftWireValue[]> performer)
+    public static void Add(string name, Func<HostActCall, SwiftWireValue[]> performer)
     {
-        Add(name, command => Task.FromResult(performer(command)));
+        Add(name, call => Task.FromResult(performer(call)));
     }
 
     /// <summary>
@@ -97,11 +97,11 @@ public static class StateUIActs
     /// }
     ///
     /// // C#, in MauiProgram.CreateMauiApp:
-    /// StateUIActs.Add("Gallery.Spin", command =>
+    /// StateUIActs.Add("Gallery.Spin", call =>
     /// {
-    ///     if (StateUIActs.TargetOf(command) is ColorWheel wheel)
+    ///     if (StateUIActs.TargetOf(call) is ColorWheel wheel)
     ///     {
-    ///         wheel.Rotation = command.GetDouble(1) ?? 0;
+    ///         wheel.Rotation = call.GetDouble(1) ?? 0;
     ///     }
     ///
     ///     return [];
@@ -115,14 +115,14 @@ public static class StateUIActs
     /// the message.
     /// </para>
     /// </remarks>
-    /// <param name="command">The act, as the performer received it.</param>
+    /// <param name="call">The act, as the performer received it.</param>
     /// <returns>The control argument 0 names, or null.</returns>
-    public static VisualElement? TargetOf(SwiftCommand command) =>
-        StateUIEnvironment.Session?.Aimed(command);
+    public static VisualElement? TargetOf(HostActCall call) =>
+        StateUIEnvironment.Session?.Aimed(call);
 
     /// <summary>The performer for a name, or null - consulted by
-    /// <c>Perform</c>'s default arm before it reports an unknown command.</summary>
-    internal static Func<SwiftCommand, Task<SwiftWireValue[]>>? Find(string name)
+    /// <c>Perform</c>'s default arm before it reports an unknown act.</summary>
+    internal static Func<HostActCall, Task<SwiftWireValue[]>>? Find(string name)
     {
         lock (Guard)
         {

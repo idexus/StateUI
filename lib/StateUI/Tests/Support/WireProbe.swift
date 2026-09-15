@@ -61,7 +61,7 @@ public final class WireNames {
     }
 }
 
-/// One decoded act: what `Command` says, read back off the wire.
+/// One decoded act: what `ActCall` says, read back off the wire.
 public struct WireAct {
     /// The act's name, resolved from the session's dictionary - an act the
     /// library wraps and one an application named for itself alike.
@@ -181,7 +181,7 @@ public enum WireProbe {
                 completion: completion == 0 ? nil : completion))
         }
 
-        precondition(at == bytes.count, "the batch carries bytes past its last command")
+        precondition(at == bytes.count, "the batch carries bytes past its last act")
         return acts
     }
 

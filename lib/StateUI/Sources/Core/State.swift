@@ -490,7 +490,7 @@ public final class State<Value>: @unchecked Sendable {
     /// Outside the storage's lock, which `record` ran under, and whether or
     /// not the write asked for a render: a kept state no view reads asks for
     /// none, and a save left to the render would wait for the next event
-    /// instead. `Renderer.commandsPending` counts what is waiting as work, so
+    /// instead. `Renderer.actCallsPending` counts what is waiting as work, so
     /// the woken thread finds it. A wake is coalesced with the render's own,
     /// where there was one.
     private func wakeForSave() {

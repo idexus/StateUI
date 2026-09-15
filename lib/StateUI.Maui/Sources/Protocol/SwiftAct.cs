@@ -13,7 +13,7 @@ namespace StateUI.Maui.Protocol;
 /// <remarks>
 /// <see cref="None"/> is a name this runtime has no case for - an
 /// application's registered act, answered by the registry consulted in
-/// <c>Perform</c>'s default arm, or an unknown command reported as one.
+/// <c>Perform</c>'s default arm, or an unknown act reported as one.
 /// </remarks>
 public enum SwiftAct : ushort
 {

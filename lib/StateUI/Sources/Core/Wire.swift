@@ -278,16 +278,16 @@ public enum Wire {
     }
 
     /// Serializes a batch of acts for the host, announcements first.
-    static func encode(_ commands: [Command], dictionary: WireDictionary) -> [UInt8] {
+    static func encode(_ calls: [ActCall], dictionary: WireDictionary) -> [UInt8] {
         var body: [UInt8] = []
-        body.u16(count(commands.count, of: "acts"))
+        body.u16(count(calls.count, of: "acts"))
 
-        for command in commands {
-            body.u16(dictionary.id(of: command.act.name))
-            body.i32(Int32(command.completion ?? 0))
-            body.u8(count(command.arguments.count, of: "arguments to one act"))
+        for call in calls {
+            body.u16(dictionary.id(of: call.act.name))
+            body.i32(Int32(call.completion ?? 0))
+            body.u8(count(call.arguments.count, of: "arguments to one act"))
 
-            for argument in command.arguments {
+            for argument in call.arguments {
                 write(argument, into: &body, dictionary: dictionary)
             }
         }

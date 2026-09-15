@@ -28,7 +28,7 @@
 // WRITING is the other direction and needs nothing awaited: the value lands in
 // memory at once, so the read after the write is right, and the key is marked
 // for saving. What actually goes out is one act per key per drain, sorted by
-// name - see `Renderer.takeCommandsWire` - so a key written five times inside
+// name - see `Renderer.takeActCallsWire` - so a key written five times inside
 // one handler is saved once. It is a collapse PER DRAIN and not a delay: an
 // event drains, so a `TextField` bound to kept state does reach the store once a
 // letter. A view that wants the store touched when the typing stops keeps the
@@ -361,7 +361,7 @@ final class PersistentStore: @unchecked Sendable {
     }
 
     /// How many keys are waiting to be saved - counted as pending work by
-    /// `Renderer.commandsPending`, so the host takes them whether or not the
+    /// `Renderer.actCallsPending`, so the host takes them whether or not the
     /// write that recorded them asked for a render.
     var pending: Int { guarded.sync { waiting.count } }
 

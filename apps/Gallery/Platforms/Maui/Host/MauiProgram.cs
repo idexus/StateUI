@@ -20,16 +20,16 @@ public static class MauiProgram
         // Swift side declares as Act tokens - see
         // Sources/Samples/Interop/CustomActsSample.swift. A performer is a
         // plain or an async function, the two shapes Add takes.
-        StateUIActs.Add("Gallery.SetClipboard", async command =>
+        StateUIActs.Add("Gallery.SetClipboard", async call =>
         {
-            await Clipboard.Default.SetTextAsync(command.GetString(0) ?? "");
+            await Clipboard.Default.SetTextAsync(call.GetString(0) ?? "");
             return [];
         });
 
-        StateUIActs.Add("Gallery.ReadClipboard", async command =>
+        StateUIActs.Add("Gallery.ReadClipboard", async call =>
             [SwiftWireValue.Of(await Clipboard.Default.GetTextAsync() ?? "")]);
 
-        StateUIActs.Add("Gallery.BatteryLevel", command =>
+        StateUIActs.Add("Gallery.BatteryLevel", call =>
             [
                 SwiftWireValue.Of(Battery.Default.ChargeLevel),
                 SwiftWireValue.Of(Battery.Default.State == BatteryState.Charging),
@@ -38,9 +38,9 @@ public static class MauiProgram
         // An act aimed at a control: argument 0 is the control's identity, and
         // TargetOf turns it back into the control - null once the control has
         // left the screen, which is an ordinary answer.
-        StateUIActs.Add("Gallery.FlashRating", async command =>
+        StateUIActs.Add("Gallery.FlashRating", async call =>
         {
-            if (StateUIActs.TargetOf(command) is RatingBar bar)
+            if (StateUIActs.TargetOf(call) is RatingBar bar)
             {
                 await bar.FadeToAsync(0.25, 120);
                 await bar.FadeToAsync(1, 120);

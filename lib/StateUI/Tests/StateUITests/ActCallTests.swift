@@ -8,15 +8,70 @@
 // makes of it. That is the whole protocol, and it is the same one whether the
 // caller is `try await Dialogs.alert(…)` or a typed call added later.
 
+import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
-final class CommandTests: XCTestCase {
+final class ActCallTests: XCTestCase {
+    // MARK: - The name
+
+    /// An act is never called a command. The queue, its take and its receipt,
+    /// the C exports, the typed SPI, the C# mirror and the handbook spell act
+    /// calls; a drawing's commands are another thing and keep their word.
+    func testTheActPathSpellsNoCommand() throws {
+        let removed = [
+            "HostCommand", "SwiftCommand", "takeCommands", "TakeCommands",
+            "failTakenCommands", "FailTakenCommands", "commandsPending",
+            "PerformCommands", "ReadCommands", "stateui_take_commands_wire",
+            "stateui_fail_taken_commands", "unknown command", "Command.swift",
+            "fixtures/commands", "\"commands/",
+        ]
+
+        var files = try Fixtures.allSources().map {
+            (path: "lib/StateUI/Sources/\($0.path)", text: $0.text)
+        }
+        files += try Fixtures.mauiSources().map {
+            (path: "lib/StateUI.Maui/Sources/\($0.path)", text: $0.text)
+        }
+        for tree in ["lib/StateUI.AppKit/Sources", "lib/StateUI.Maui/Tests", "docs"] {
+            files += try Self.files(under: tree)
+        }
+        files.append((
+            path: "README.md",
+            text: try String(
+                contentsOf: Fixtures.repository.appendingPathComponent("README.md"),
+                encoding: .utf8)))
+
+        let found = files.flatMap { file in
+            removed.filter(file.text.contains).map { "\(file.path): \($0)" }
+        }
+        XCTAssertEqual(found, [], "an act on its way to the host is an act call, never a command")
+    }
+
+    /// The Swift, C# and Markdown files of one tree, build output left out.
+    private static func files(under tree: String) throws -> [(path: String, text: String)] {
+        let root = Fixtures.repository.appendingPathComponent(tree)
+        guard let walk = FileManager.default.enumerator(atPath: root.path) else { return [] }
+
+        var found: [(path: String, text: String)] = []
+        for case let name as String in walk {
+            let path = name.replacingOccurrences(of: "\\", with: "/")
+            let parts = path.split(separator: "/")
+            if parts.contains("bin") || parts.contains("obj") { continue }
+            guard [".swift", ".cs", ".md"].contains(where: path.hasSuffix) else { continue }
+
+            found.append((
+                path: "\(tree)/\(path)",
+                text: try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)))
+        }
+        return found.sorted { $0.path < $1.path }
+    }
+
     /// The queue is on the shared renderer, so a test starts by emptying it -
     /// and reads what it took through the probe, values already apart.
     @discardableResult
     private func drain() -> [WireAct] {
-        WireProbe.decode(Renderer.shared.takeCommandsWire())
+        WireProbe.decode(Renderer.shared.takeActCallsWire())
     }
 
     /// What a handler's body is, when it gives an answer back.
@@ -29,7 +84,7 @@ final class CommandTests: XCTestCase {
     ///
     /// `Task` queues its first job on this thread synchronously, and running the
     /// queue here is what `Renderer.dispatch` does for a real event - so by the
-    /// time this returns the act is on the command queue. Deterministic, not a
+    /// time this returns the act is on the act queue. Deterministic, not a
     /// race.
     private func begin<Value>(_ body: sending @escaping Act<Value>) -> Task<Value, Error> {
         let task = Task { @MainThread in try await body() }
@@ -91,7 +146,7 @@ final class CommandTests: XCTestCase {
         try await said.value
     }
 
-    func testTakingTheCommandsEmptiesTheQueue() async throws {
+    func testTakingTheActCallsEmptiesTheQueue() async throws {
         drain()
         let navigation = begin { try await Dialogs.alert("//list", message: "saved") }
 
@@ -354,7 +409,7 @@ final class CommandTests: XCTestCase {
         let navigation = begin { try await Dialogs.alert("//list", message: "saved") }
         XCTAssertFalse(drain().isEmpty)
 
-        Renderer.shared.failTakenCommands("the host could not read the batch")
+        Renderer.shared.failTakenActCalls("the host could not read the batch")
         await settle()
 
         do {
@@ -376,7 +431,7 @@ final class CommandTests: XCTestCase {
         let first = begin { try await Dialogs.alert("//list", message: "saved") }
         XCTAssertFalse(drain().isEmpty)
 
-        Renderer.shared.failTakenCommands("unreadable")
+        Renderer.shared.failTakenActCalls("unreadable")
         await settle()
 
         do {
@@ -387,10 +442,60 @@ final class CommandTests: XCTestCase {
         // Queued but NOT yet taken, so no receipt covers it - the stale
         // cashing below must leave it alone.
         let second = begin { try await Dialogs.alert("//home", message: "saved") }
-        Renderer.shared.failTakenCommands("stale")
+        Renderer.shared.failTakenActCalls("stale")
 
         let acts = drain()
         await report(try completionId(in: acts), .finished([]))
         try await second.value
+    }
+
+    // MARK: - A host in this process
+
+    /// A native host in this process answers through the typed SPI: the
+    /// caller resumes with the values exactly as they were handed over, and
+    /// a call is answered once.
+    func testATypedReplyReachesTheCaller() async throws {
+        drain()
+
+        let asked = begin {
+            try await stateUICall("Page.DisplayActionSheet", [.string("Delete?")])
+        }
+        let call = try XCTUnwrap(StateUIHost.takeActCalls().first)
+        let id = try XCTUnwrap(call.completion)
+
+        XCTAssertEqual(call.act, "Page.DisplayActionSheet")
+        XCTAssertEqual(call.arguments, [.string("Delete?")])
+        XCTAssertTrue(StateUIHost.reply(id, with: [.string("Delete")]))
+        await settle()
+
+        let answer = try await asked.value
+        XCTAssertEqual(answer, [.string("Delete")])
+        XCTAssertFalse(StateUIHost.reply(id, with: []), "a call is answered once")
+    }
+
+    /// A typed failure is what the caller throws: the host's reason, never a
+    /// silence and never a hang.
+    func testATypedFailureIsThrownWithTheHostsReason() async throws {
+        drain()
+
+        let navigation = begin { try await Dialogs.alert("//nowhere", message: "saved") }
+        let id = try XCTUnwrap(StateUIHost.takeActCalls().first?.completion)
+
+        XCTAssertTrue(StateUIHost.fail(id, reason: "there is no page to show a dialog on"))
+        await settle()
+
+        do {
+            try await navigation.value
+            XCTFail("a failed act should throw")
+        } catch let error as StateUIError {
+            XCTAssertEqual(error.message, "there is no page to show a dialog on")
+        }
+    }
+
+    /// Only a completion id is answered: a positive number is an element's
+    /// handler, never a caller.
+    func testATypedAnswerToAnEventIdAnswersNobody() {
+        XCTAssertFalse(StateUIHost.reply(7, with: []))
+        XCTAssertFalse(StateUIHost.fail(7, reason: "not a completion"))
     }
 }

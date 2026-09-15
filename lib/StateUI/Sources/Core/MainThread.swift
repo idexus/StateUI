@@ -4,7 +4,7 @@
 // The one thread everything here runs on, expressed to the compiler.
 //
 // This library has no thread and no run loop of its own. Everything it does
-// happens inside a call the host makes - a render, an event, a command
+// happens inside a call the host makes - a render, an event, an act
 // reporting back - on the host's UI thread. A handler may SUSPEND in the
 // middle of that, and Swift's runtime has an opinion about where it resumes.
 //
@@ -51,9 +51,9 @@
 // as though it might, which is exactly what the host's retry exists to deny.
 //
 // HOW THE HOST KNOWS WHEN TO ASK:
-// For a job produced by a host command's completion, the host was there - it
+// For a job produced by a host act's completion, the host was there - it
 // reported the completion, so it asks right after (and keeps asking, on a
-// clock). But a job can land when no command is in flight at all: Task.sleep
+// clock). But a job can land when no act is in flight at all: Task.sleep
 // coming due, a Task an author started finishing, an AsyncStream yielding. For
 // those the host parks a thread of its OWN inside `stateui_wait_work`, and
 // `enqueue` signals it - as does `Renderer.send` (`poke`), for the act a
@@ -62,7 +62,7 @@
 // thread-safe on every platform - and parks again.
 //
 // That is what makes `Task.sleep` and every other plain Swift await legal in a
-// handler: what a handler awaits does not have to be a host command.
+// handler: what a handler awaits does not have to be a host act.
 //
 // The attach trap above shapes that thread too: the HOST creates it, so its
 // runtime has always known it, and it only ever calls the host's own code
@@ -151,7 +151,7 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// Neither is allowed to run the job: the first would be right by luck, and
     /// the second would be the bug this whole file exists to prevent.
     ///
-    /// The wake is what lets the job be one NO command produced - a
+    /// The wake is what lets the job be one NO act produced - a
     /// `Task.sleep` coming due, a task an author started finishing - and still
     /// run promptly. The signal happens outside the lock; it only wakes a
     /// thread, and holding an unrelated lock across even that is how lock
@@ -173,7 +173,7 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// Wakes the host's parked thread with nothing queued HERE - for work this
     /// queue cannot see.
     ///
-    /// A COMMAND is that work: an act queued from a plain `Task` runs on the
+    /// An ACT is that work: an act queued from a plain `Task` runs on the
     /// pool and lands no job on this executor, so without this wake the host
     /// would not hear of the act until some other event made it look - the
     /// return half of a press animation sitting queued and the card staying
@@ -241,7 +241,7 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// The half of the queue's state `resumesPending` cannot see: a handler
     /// suspended on `async let` children resumes through a job that no
     /// completion accounting covers, because what it awaited was its own child
-    /// tasks rather than a host command. The host polls this beside
+    /// tasks rather than a host act. The host polls this beside
     /// `stateui_resumes_pending`, so a job that lands after the counters read
     /// zero is still collected.
     var pendingCount: Int {

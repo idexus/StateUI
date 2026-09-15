@@ -101,7 +101,7 @@ final class AimTests: XCTestCase {
     /// anything is queued, so nothing reaches the host at all.
     func testAnAimOnNoViewThrowsFromTheActItself() async {
         let panel = Aim(Border.self)
-        _ = Renderer.shared.takeCommandsWire()
+        _ = Renderer.shared.takeActCallsWire()
 
         do {
             try await panel.focus()
@@ -285,7 +285,7 @@ final class AimTests: XCTestCase {
         let wheel = Aim(Border.self)
 
         renders.render(stack([Border().aim(wheel).body], id: "root"))
-        _ = Renderer.shared.takeCommandsWire()
+        _ = Renderer.shared.takeActCallsWire()
 
         async let spun: Void = wheel.spin(by: 90)
 

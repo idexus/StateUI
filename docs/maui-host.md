@@ -467,11 +467,11 @@ StateUIControls.Add("Notes.TrafficLight",
         }
     });
 
-StateUIActs.Add("Notes.FlashLight", command =>
+StateUIActs.Add("Notes.FlashLight", call =>
 {
-    if (StateUIActs.TargetOf(command) is TrafficLight light)
+    if (StateUIActs.TargetOf(call) is TrafficLight light)
     {
-        light.Flash(command.GetInt(1) ?? 1);
+        light.Flash(call.GetInt(1) ?? 1);
     }
 
     return [];
@@ -597,17 +597,17 @@ to `level`, and its journey, reaches the control without rebuilding
 `stateUICall` or `stateUISend`. There are two overloads:
 
 ```csharp
-public static void Add(string name, Func<SwiftCommand, Task<SwiftWireValue[]>> performer)
-public static void Add(string name, Func<SwiftCommand, SwiftWireValue[]> performer)
+public static void Add(string name, Func<HostActCall, Task<SwiftWireValue[]>> performer)
+public static void Add(string name, Func<HostActCall, SwiftWireValue[]> performer)
 ```
 
 ```csharp
 StateUIActs.Add("Notes.BatteryLevel",
-    command => [SwiftWireValue.Of(Battery.Default.ChargeLevel)]);
+    call => [SwiftWireValue.Of(Battery.Default.ChargeLevel)]);
 
-StateUIActs.Add("Notes.Export", async command =>
+StateUIActs.Add("Notes.Export", async call =>
 {
-    string location = await Exporter.SaveAsync(command.GetString(0) ?? "");
+    string location = await Exporter.SaveAsync(call.GetString(0) ?? "");
     return [SwiftWireValue.Of(location)];
 });
 ```
@@ -615,7 +615,7 @@ StateUIActs.Add("Notes.Export", async command =>
 - **Where it runs.** A performer runs on the thread MAUI draws on, and an
   async one is awaited there.
 - **Its values.** It reads its arguments with the typed accessors of
-  `SwiftCommand`: `GetString`, `GetDouble`, `GetInt`, `GetBool`, `GetName`,
+  `HostActCall`: `GetString`, `GetDouble`, `GetInt`, `GetBool`, `GetName`,
   `GetEnumeration`. It answers with values built by `SwiftWireValue.Of`,
   `OfMember`, or `OfValues`, and answers empty when it has nothing to say.
 - **Failure.** An exception fails the act: the awaiting Swift handler throws

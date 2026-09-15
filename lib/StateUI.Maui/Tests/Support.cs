@@ -682,7 +682,7 @@ internal static class Fixtures
     public static string TestsDirectory =>
         Path.Combine(Repository.Value, "lib", "StateUI.Maui", "Tests");
 
-    /// <summary>A fixture, by name - `first-render.bin`, `commands/Focus.bin`.</summary>
+    /// <summary>A fixture, by name - `first-render.bin`, `act-calls/Focus.bin`.</summary>
     public static byte[] ReadBytes(string name) =>
         File.ReadAllBytes(Path.Combine(Directory, name));
 

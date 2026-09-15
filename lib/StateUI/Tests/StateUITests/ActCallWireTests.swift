@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The command channel's wire format, written down for the host.
+// The act calls' wire format, written down for the host.
 //
-// `fixtures/commands/*.bin` are produced here by the REAL typed calls -
+// `fixtures/act-calls/*.bin` are produced here by the REAL typed calls -
 // `focus`, a dialog, a web view's navigation - and they are what a host's
 // reader of the channel is held to: the view name at 0, then each argument
 // at its own place. One fixture per SHAPE rather than per method where acts
@@ -26,7 +26,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
-final class CommandWireTests: XCTestCase {
+final class ActCallWireTests: XCTestCase {
     private typealias Act<Value> = nonisolated(nonsending) () async throws -> Value
 
     /// Empties the shared queue, so a test starts from nothing - showing the
@@ -34,12 +34,12 @@ final class CommandWireTests: XCTestCase {
     /// announcement, discarded batches included.
     @discardableResult
     private func drain() -> [UInt8] {
-        let bytes = Renderer.shared.takeCommandsWire()
+        let bytes = Renderer.shared.takeActCallsWire()
         _ = WireProbe.decode(bytes)
         return bytes
     }
 
-    /// Starts an act and lets it reach its suspension - see CommandTests.
+    /// Starts an act and lets it reach its suspension - see ActCallTests.
     private func begin<Value>(_ body: sending @escaping Act<Value>) -> Task<Value, Error> {
         let task = Task { @MainThread in try await body() }
         stateUIRunJobs()
@@ -81,11 +81,11 @@ final class CommandWireTests: XCTestCase {
         try Fixtures.check(
             Wire.encode(
                 pinned.map {
-                    Command(act: StateUI.Act($0.name), arguments: $0.arguments, completion: $0.completion)
+                    ActCall(act: StateUI.Act($0.name), arguments: $0.arguments, completion: $0.completion)
                 },
                 dictionary: WireDictionary()),
             sidecar: WireProbe.dump(pinned),
-            against: "commands/\(fixture)")
+            against: "act-calls/\(fixture)")
 
         await finish(taken)
         _ = try? await task.value
@@ -242,10 +242,10 @@ final class CommandWireTests: XCTestCase {
         try Fixtures.check(
             Wire.encode(
                 acts.map {
-                    Command(act: StateUI.Act($0.name), arguments: $0.arguments, completion: $0.completion)
+                    ActCall(act: StateUI.Act($0.name), arguments: $0.arguments, completion: $0.completion)
                 },
                 dictionary: WireDictionary()),
             sidecar: WireProbe.dump(acts),
-            against: "commands/HandlerFailed")
+            against: "act-calls/HandlerFailed")
     }
 }

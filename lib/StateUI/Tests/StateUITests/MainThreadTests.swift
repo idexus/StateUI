@@ -32,15 +32,15 @@ private struct Shows: ContentView {
 final class MainThreadTests: XCTestCase {
     // MARK: - The waker
 
-    /// A handler may await something that is NOT a host command - `Task.sleep`,
+    /// A handler may await something that is NOT a host act - `Task.sleep`,
     /// a task's value - because a job landing in the queue wakes the thread the
     /// host keeps parked in `stateui_wait_work`.
     ///
     /// The sleep below comes due on the runtime's own timer with no
-    /// command in flight, and its resume still reaches the queue promptly
+    /// act in flight, and its resume still reaches the queue promptly
     /// because the park is released. The worker thread stands in for the
     /// host's, doing exactly what the host's does: park, wake, ask for a drain.
-    func testASleepingHandlerIsResumedWithNoCommandInFlight() throws {
+    func testASleepingHandlerIsResumedWithNoActInFlight() throws {
         let renders = Renders()
         nonisolated(unsafe) var woke = false
 
@@ -82,14 +82,14 @@ final class MainThreadTests: XCTestCase {
     /// An act queued from a plain `Task` - the pool, no handler suspended on
     /// it, no job on the executor - still wakes the parked thread: `send`
     /// pokes it, and the count `stateui_wait_work` returns includes the
-    /// queued COMMANDS, so the host drains and takes the act.
+    /// queued ACTS, so the host drains and takes the act.
     ///
     /// Without the poke this was the gallery's press animation frozen at its
     /// dip: the return half was queued from the press Task at the moment the
     /// dip completed, nothing announced it, and the card stayed pressed until
     /// the next event reached the app - on Android, forever.
-    func testACommandQueuedFromAPlainTaskWakesTheParkedThread() throws {
-        _ = Renderer.shared.takeCommandsWire()
+    func testAnActQueuedFromAPlainTaskWakesTheParkedThread() throws {
+        _ = Renderer.shared.takeActCallsWire()
 
         let parked = DispatchSemaphore(value: 0)
 
@@ -104,7 +104,7 @@ final class MainThreadTests: XCTestCase {
             //
             // The wake is still what is being proved: with nothing poking it
             // this blocks, and the five-second wait below is what fails.
-            while Renderer.shared.commandsPending == 0 {
+            while Renderer.shared.actCallsPending == 0 {
                 _ = stateui_wait_work()
             }
 
@@ -130,7 +130,7 @@ final class MainThreadTests: XCTestCase {
     ///
     /// A write made inside something the host is driving is rendered by the
     /// drain that follows; a write a `Task.detached` makes from the pool has
-    /// nothing following it - no job, no command. Two things keep that write
+    /// nothing following it - no job, no act. Two things keep that write
     /// from waiting for the next touch: the dirty flag counts as work in
     /// `stateui_wait_work`, and `stateChanged` pokes the parked thread AFTER
     /// setting it, so the thread cannot wake, read a clean flag, and park
@@ -140,7 +140,7 @@ final class MainThreadTests: XCTestCase {
     func testAStateWriteAloneWakesTheHostAndReadsAsWork() async throws {
         // Quiet first - and the batch DECODED rather than thrown away, or the
         // names it announced are gone and the next reader dies on them.
-        _ = WireProbe.decode(Renderer.shared.takeCommandsWire())
+        _ = WireProbe.decode(Renderer.shared.takeActCallsWire())
         stateUIRunJobs()
         Renderer.shared.clearInvalidation()
 
@@ -160,12 +160,12 @@ final class MainThreadTests: XCTestCase {
         await Task.detached { fade.wrappedValue = 0.5 }.value
 
         XCTAssertTrue(Renderer.shared.needsRender, "a write dirties the tree")
-        XCTAssertEqual(Renderer.shared.commandsPending, 0, "and queues no command")
+        XCTAssertEqual(Renderer.shared.actCallsPending, 0, "and queues no act")
         XCTAssertEqual(MainThreadExecutor.shared.pendingCount, 0, "and lands no job")
 
         XCTAssertGreaterThan(
             stateui_wait_work(), 0,
-            "a dirty tree with no job and no command must read as work, and the "
+            "a dirty tree with no job and no act must read as work, and the "
                 + "write alone must have woken the thread that asks")
     }
 
@@ -174,7 +174,7 @@ final class MainThreadTests: XCTestCase {
     /// nobody reads asks for no render to carry it - so the write wakes the
     /// thread itself, and what is waiting to be saved counts as pending work.
     func testAKeptStateWriteNobodyReadsStillWakesTheHost() async throws {
-        _ = WireProbe.decode(Renderer.shared.takeCommandsWire())
+        _ = WireProbe.decode(Renderer.shared.takeActCallsWire())
         stateUIRunJobs()
         Renderer.shared.clearInvalidation()
 
@@ -187,12 +187,12 @@ final class MainThreadTests: XCTestCase {
         await Task.detached { kept.wrappedValue = 0.5 }.value
 
         XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
-        XCTAssertGreaterThan(Renderer.shared.commandsPending, 0, "but the save is pending work")
+        XCTAssertGreaterThan(Renderer.shared.actCallsPending, 0, "but the save is pending work")
         XCTAssertGreaterThan(
             stateui_wait_work(), 0,
             "and the write alone woke the thread that asks")
 
-        let acts = WireProbe.decode(Renderer.shared.takeCommandsWire())
+        let acts = WireProbe.decode(Renderer.shared.takeActCallsWire())
         XCTAssertEqual(acts.map { $0.name }, ["persistValue"], "which then takes the save")
     }
 
@@ -211,7 +211,7 @@ final class MainThreadTests: XCTestCase {
 
         XCTAssertEqual(taps, 1, """
             A handler with no suspension in it has to run to completion before \
-            dispatch returns. The host renders and drains the command queue \
+            dispatch returns. The host renders and drains the act queue \
             straight afterwards, so anything left unfinished would be shown one \
             event late.
             """)
@@ -223,7 +223,7 @@ final class MainThreadTests: XCTestCase {
         let renders = Renders()
         var reached = false
 
-        _ = Renderer.shared.takeCommandsWire()
+        _ = Renderer.shared.takeActCallsWire()
 
         let patch = renders.render(
             Button("Go")
@@ -260,7 +260,7 @@ final class MainThreadTests: XCTestCase {
     func testAHandlerThatThrowsIsReportedToTheHost() async throws {
         let renders = Renders()
 
-        _ = Renderer.shared.takeCommandsWire()
+        _ = Renderer.shared.takeActCallsWire()
 
         let patch = renders.render(
             Button("Break")
@@ -290,7 +290,7 @@ final class MainThreadTests: XCTestCase {
     /// thread whoever started it.
     ///
     /// This is not hypothetical: an early act was written without it, and what
-    /// showed was not a crash but a command queue that filled up a moment late.
+    /// showed was not a crash but an act queue that filled up a moment late.
     /// A regex over sources is acceptable here for the reason it is in
     /// DocumentationTests - it is a test reading the library beside it, and a
     /// signature it fails to recognize is one nobody is asked to annotate.

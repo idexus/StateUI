@@ -12,33 +12,33 @@ namespace StateUI.Maui.Tests;
 
 public class StateUIActsTests
 {
-    /// <summary>A command as Perform would hold it, for a performer to read.</summary>
-    private static SwiftCommand Command(string name, params SwiftWireValue[] arguments) =>
+    /// <summary>An act as Perform would hold it, for a performer to read.</summary>
+    private static HostActCall Call(string name, params SwiftWireValue[] arguments) =>
         new(SwiftAct.None, name, arguments, completion: -1);
 
     [Fact]
     public async Task ARegisteredAsyncFunctionAnswersItsValues()
     {
-        StateUIActs.Add("Test.Echo", async command =>
+        StateUIActs.Add("Test.Echo", async call =>
         {
             await Task.Yield();
-            return [SwiftWireValue.Of(command.GetString(0) ?? "")];
+            return [SwiftWireValue.Of(call.GetString(0) ?? "")];
         });
 
         var performer = StateUIActs.Find("Test.Echo");
         Assert.NotNull(performer);
 
-        SwiftWireValue[] answered = await performer(Command("Test.Echo", SwiftWireValue.Of("hi")));
+        SwiftWireValue[] answered = await performer(Call("Test.Echo", SwiftWireValue.Of("hi")));
         Assert.Equal("hi", Assert.Single(answered).Text);
     }
 
     [Fact]
     public async Task APlainFunctionRegistersTheSameWay()
     {
-        StateUIActs.Add("Test.Two", command =>
+        StateUIActs.Add("Test.Two", call =>
             [SwiftWireValue.Of(2.0), SwiftWireValue.Of(true)]);
 
-        SwiftWireValue[] answered = await StateUIActs.Find("Test.Two")!(Command("Test.Two"));
+        SwiftWireValue[] answered = await StateUIActs.Find("Test.Two")!(Call("Test.Two"));
 
         Assert.Equal(2, answered.Length);
         Assert.Equal(2.0, answered[0].Number);
@@ -46,7 +46,7 @@ public class StateUIActsTests
 
     /// <summary>
     /// A name nothing registered answers null, which is what lets the default
-    /// arm go on to report "unknown command" - a failure, never a silence.
+    /// arm go on to report "unknown act" - a failure, never a silence.
     /// </summary>
     [Fact]
     public void AnUnregisteredNameAnswersNothing()

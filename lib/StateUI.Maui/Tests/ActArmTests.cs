@@ -3,7 +3,7 @@
 
 // The acts, PERFORMED - the arms themselves, not the bytes that name them.
 //
-// CommandFixtureTests reads the same fixtures and stops at the SwiftCommand:
+// ActCallFixtureTests reads the same fixtures and stops at the HostActCall:
 // the name, the arguments, the completion id. What happened next - the switch
 // in StateUISession.Perform, twenty-three arms of it, the refusal sentences,
 // the catch blocks - had never executed in a test in either language. A whole
@@ -11,8 +11,8 @@
 //
 // What made it unreachable was not the session: `StateUIApplication` builds
 // one on every MultiWindowTests run. It was that every way IN and OUT of the
-// act loop is a static P/Invoke. The way in is `PerformCommands`, which reads a
-// native buffer and frees it - so the batch is handed to `Perform(commands)`
+// act loop is a static P/Invoke. The way in is `PerformActCalls`, which reads a
+// native buffer and frees it - so the batch is handed to `Perform(calls)`
 // instead, read from the very fixtures Swift wrote. The way out is the reply,
 // which resumes a Swift handler that does not exist here - so `Replies` is
 // substituted and the test reads what the arm answered.
@@ -55,7 +55,7 @@ internal sealed class RecordingTarget : IStateUITarget
 
 public class ActArmTests
 {
-    /// <summary>The zone `commands/UtcOffset.bin` asks about.</summary>
+    /// <summary>The zone `act-calls/UtcOffset.bin` asks about.</summary>
     private const string FixtureZone = "Europe/Warsaw";
 
     /// <summary>The day it asks about, at NOON - which is the contract, not a
@@ -74,7 +74,7 @@ public class ActArmTests
     /// <c>SwiftWire.WriteReply(...)</c> asks the question that matters and asks
     /// it of the writer that ships.
     /// </remarks>
-    /// <param name="fixture">The `fixtures/commands` batch to perform.</param>
+    /// <param name="fixture">The `fixtures/act-calls` batch to perform.</param>
     /// <param name="shown">What is ON SCREEN while it runs: each view is
     /// tracked under its node's id first, exactly as a render leaves it - a
     /// string id in the named map, a numeric one in the identity map.</param>
@@ -93,8 +93,8 @@ public class ActArmTests
             session.Renderer.Track(view, Host.Parse(node));
         }
 
-        session.Perform(SwiftWire.ReadCommands(
-            Fixtures.ReadBytes($"commands/{fixture}.bin"), new SwiftWireDictionary()));
+        session.Perform(SwiftWire.ReadActCalls(
+            Fixtures.ReadBytes($"act-calls/{fixture}.bin"), new SwiftWireDictionary()));
 
         return replies.Count == 0 ? (0, []) : replies[0];
     }
@@ -277,7 +277,7 @@ public class ActArmTests
     public void AWebViewActWithNoTargetIsRefused()
     {
         (int completion, byte[] reply) =
-            Perform(new SwiftCommand(SwiftAct.GoBack, "goBack", [], -3));
+            Perform(new HostActCall(SwiftAct.GoBack, "goBack", [], -3));
 
         Assert.Equal(-3, completion);
         Assert.Equal(
@@ -374,13 +374,13 @@ public class ActArmTests
     /// and an application's own.
     /// </summary>
     private static (int Completion, byte[] Reply) Perform(string act, int completion) =>
-        Perform(new SwiftCommand(SwiftAct.None, act, [], completion));
+        Perform(new HostActCall(SwiftAct.None, act, [], completion));
 
     /// <summary>
     /// One act, assembled by hand rather than read from a fixture - for what
     /// no fixture can carry, such as an aimed act with its target left out.
     /// </summary>
-    private static (int Completion, byte[] Reply) Perform(SwiftCommand command)
+    private static (int Completion, byte[] Reply) Perform(HostActCall call)
     {
         List<(int, byte[])> replies = [];
 
@@ -389,7 +389,7 @@ public class ActArmTests
             Replies = (id, reply) => replies.Add((id, reply)),
         };
 
-        session.Perform([command]);
+        session.Perform([call]);
 
         return replies.Count == 0 ? (0, []) : replies[0];
     }

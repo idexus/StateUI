@@ -190,7 +190,7 @@ final class WireFormatTests: XCTestCase {
 
     /// Every act the MAUI host has a MEMBER for also has an ARM in `Perform`.
     /// A member with no arm falls to the application's registry and then
-    /// answers "unknown command" to a handler awaiting a name the LIBRARY
+    /// answers "unknown act" to a handler awaiting a name the LIBRARY
     /// ships, and nothing in either language failed to compile.
     func testEveryActMemberHasAnArmInPerform() throws {
         let host = try Fixtures.mauiSources()

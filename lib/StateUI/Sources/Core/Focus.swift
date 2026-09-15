@@ -4,7 +4,7 @@
 // Who has the keyboard, and how to take it away.
 //
 // Focus is not a shape, so it is not in the tree. It is an act carried through
-// Command.swift, with two forms:
+// ActCall.swift, with two forms:
 //
 //     try await field.focus()      // this view, by the id it was given
 //     try await OnScreenKeyboard.hide()   // whatever has the keyboard, whatever it is

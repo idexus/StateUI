@@ -58,7 +58,7 @@ internal static partial class NativeMethods
     /// </param>
     /// <param name="length">The message's byte count.</param>
     /// <remarks>
-    /// Named <c>_wire</c> for the reason <see cref="TakeCommandsWire"/> is: a
+    /// Named <c>_wire</c> for the reason <see cref="TakeActCallsWire"/> is: a
     /// half built before this format fails with
     /// <see cref="EntryPointNotFoundException"/> instead of reading a register
     /// as a pointer.
@@ -114,8 +114,8 @@ internal static partial class NativeMethods
     /// - a clean, nameable error - where the same name with a changed
     /// signature would read a register as a pointer.
     /// </remarks>
-    [LibraryImport(Lib, EntryPoint = "stateui_take_commands_wire")]
-    internal static partial IntPtr TakeCommandsWire(out int length);
+    [LibraryImport(Lib, EntryPoint = "stateui_take_act_calls_wire")]
+    internal static partial IntPtr TakeActCallsWire(out int length);
 
     /// <summary>
     /// Which version of the binary wire format the native library writes.
@@ -128,7 +128,7 @@ internal static partial class NativeMethods
 
     /// <summary>
     /// Releases a buffer any of the four buffer exports returned -
-    /// <see cref="RenderWire"/>, <see cref="TakeCommandsWire"/>,
+    /// <see cref="RenderWire"/>, <see cref="TakeActCallsWire"/>,
     /// <see cref="PersistentKeys"/> and <see cref="InspectLog"/>. Memory
     /// allocated in Swift is freed in Swift - the <see cref="FreeString"/>
     /// rule.
@@ -146,8 +146,8 @@ internal static partial class NativeMethods
     /// the very bytes that would not read - so the take keeps a receipt on the
     /// Swift side, and this is how a failed read cashes it.
     /// </remarks>
-    [LibraryImport(Lib, EntryPoint = "stateui_fail_taken_commands", StringMarshalling = StringMarshalling.Utf8)]
-    internal static partial void FailTakenCommands(string reason);
+    [LibraryImport(Lib, EntryPoint = "stateui_fail_taken_act_calls", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void FailTakenActCalls(string reason);
 
 /// <summary>
     /// Takes a batch of state writes into the Swift side's image.
@@ -361,7 +361,7 @@ internal static partial class NativeMethods
     /// The half <see cref="ResumesPending"/> cannot see: a handler suspended on
     /// its own child tasks - <c>async let</c> - resumes through a job no
     /// completion accounting covers, because what it awaited was never a host
-    /// command. Polling only the resume count gave up exactly one job too
+    /// act. Polling only the resume count gave up exactly one job too
     /// early, which read as an animation loop frozen mid-beat.
     /// </remarks>
     [LibraryImport(Lib, EntryPoint = "stateui_jobs_pending")]
@@ -369,7 +369,7 @@ internal static partial class NativeMethods
 
     /// <summary>
     /// Parks the calling thread inside Swift until work lands, and returns how
-    /// much is waiting - jobs in its queue, plus commands not yet taken, plus
+    /// much is waiting - jobs in its queue, plus acts not yet taken, plus
     /// one for a tree a write from the pool left dirty - possibly 0, when
     /// another drain got there first.
     /// </summary>
@@ -379,7 +379,7 @@ internal static partial class NativeMethods
     /// deadlocks when native code enters managed from a thread it has never
     /// seen, so instead of Swift calling out, the host sends a thread IN to
     /// wait. It is what lets a <c>Task.sleep</c> or an author's own task resume
-    /// promptly with no command in flight - see
+    /// promptly with no act in flight - see
     /// <c>StateUISession.AskWheneverWorkLands</c>.
     /// </remarks>
     [LibraryImport(Lib, EntryPoint = "stateui_wait_work")]

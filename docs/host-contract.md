@@ -8,7 +8,7 @@ encoding.
 
 One process owns one `Renderer.shared` and one host adapter. Every scene and
 window belongs to the renderer's single application tree and shares its render
-generation, state board, handler registry, command queue, display cycle, and
+generation, state board, handler registry, act queue, display cycle, and
 Wire name dictionary. Multi-window support creates more native windows inside
 that tree; it never starts another renderer or host.
 

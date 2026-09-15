@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Commands sent from more than one thread at once.
+// Acts sent from more than one thread at once.
 //
 // `async let` runs its child on the cooperative pool - Swift's design, a child
 // task does not inherit the parent's actor - so two animations started with
 // `async let` reach `Renderer.send` from pool threads while the host thread is
-// taking commands and dispatching completions. The registry behind that is a
+// taking acts and dispatching completions. The registry behind that is a
 // dictionary and an array, and unguarded they are a data race: a lost
 // continuation on a good day, which reads as a handler frozen at its `await`,
 // and corrupted memory on a bad one.
@@ -27,7 +27,7 @@ import XCTest
 /// The locals are the point. Written with an explicit CAPTURE LIST instead -
 /// `{ [name, action] in ... }` - the compiler (Swift 6.3) moves the whole
 /// closure off this library's executor: it does not run inline from the
-/// dispatch (no command is queued), no job and no pending resume ever show,
+/// dispatch (no act is queued), no job and no pending resume ever show,
 /// and on a device the press froze until the next event reached the app.
 /// Proven both ways against the test below; the sister trap to the one
 /// Support.swift documents for test-method closures capturing a class.
@@ -54,14 +54,14 @@ private struct PressCard: Element {
 final class ConcurrencyTests: XCTestCase {
     /// Answers every act still queued and runs every job until nothing is
     /// left, so a test that stopped mid-handler leaves no suspended handler
-    /// and no unanswered command for the NEXT test to trip over - a stray
+    /// and no unanswered act for the NEXT test to trip over - a stray
     /// completion id was the first thing another test's `first` found.
     private func drainEverything() async {
         var quiet = 0
         let deadline = Date().addingTimeInterval(5)
 
         while quiet < 2 && Date() < deadline {
-            let ids = completionIds(in: Renderer.shared.takeCommandsWire())
+            let ids = completionIds(in: Renderer.shared.takeActCallsWire())
 
             for completion in ids {
                 ReplyBuffer.current = .finished([.bool(true)])
@@ -81,7 +81,7 @@ final class ConcurrencyTests: XCTestCase {
         }
     }
 
-    /// Every completion id in a commands message, in order.
+    /// Every completion id in a batch of act calls, in order.
     private func completionIds(in bytes: [UInt8]) -> [Int] {
         WireProbe.completions(bytes)
     }
@@ -93,7 +93,7 @@ final class ConcurrencyTests: XCTestCase {
         let renders = Renders()
         var finished = 0
 
-        _ = Renderer.shared.takeCommandsWire()
+        _ = Renderer.shared.takeActCallsWire()
 
         let laps = 40
         let patch = renders.render(
@@ -119,7 +119,7 @@ final class ConcurrencyTests: XCTestCase {
         let deadline = Date().addingTimeInterval(20)
 
         while finished < laps && Date() < deadline {
-            for completion in completionIds(in: Renderer.shared.takeCommandsWire()) {
+            for completion in completionIds(in: Renderer.shared.takeActCallsWire()) {
                 ReplyBuffer.current = .finished([.bool(true)])
                 XCTAssertTrue(
                     Renderer.shared.dispatch(completion),
@@ -149,7 +149,7 @@ final class ConcurrencyTests: XCTestCase {
         let renders = Renders()
         var reached = false
 
-        _ = Renderer.shared.takeCommandsWire()
+        _ = Renderer.shared.takeActCallsWire()
 
         let patch = renders.render(
             Button("Go")
@@ -165,7 +165,7 @@ final class ConcurrencyTests: XCTestCase {
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
 
-        let first = try XCTUnwrap(completionIds(in: Renderer.shared.takeCommandsWire()).first)
+        let first = try XCTUnwrap(completionIds(in: Renderer.shared.takeActCallsWire()).first)
         ReplyBuffer.current = .finished([.bool(true)])
         XCTAssertTrue(Renderer.shared.dispatch(first))
 
@@ -192,13 +192,13 @@ final class ConcurrencyTests: XCTestCase {
     }
 
     /// The same contract, written where the gallery writes it: in a
-    /// conforming struct's `body` getter. Fails - no command queued at all -
+    /// conforming struct's `body` getter. Fails - no act queued at all -
     /// when `PressCard`'s closure takes its values through a capture list
     /// instead of the getter locals; see the doc on `PressCard`.
     func testACardShapedHandlerStaysOnTheLibrarysExecutor() async throws {
         let renders = Renders()
 
-        _ = Renderer.shared.takeCommandsWire()
+        _ = Renderer.shared.takeActCallsWire()
 
         let patch = renders.render(
             PressCard(
@@ -208,7 +208,7 @@ final class ConcurrencyTests: XCTestCase {
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
 
-        let first = try XCTUnwrap(completionIds(in: Renderer.shared.takeCommandsWire()).first)
+        let first = try XCTUnwrap(completionIds(in: Renderer.shared.takeActCallsWire()).first)
         ReplyBuffer.current = .finished([.bool(true)])
         XCTAssertTrue(Renderer.shared.dispatch(first))
 
@@ -240,7 +240,7 @@ final class ConcurrencyTests: XCTestCase {
         let renders = Renders()
         var reached = false
 
-        _ = Renderer.shared.takeCommandsWire()
+        _ = Renderer.shared.takeActCallsWire()
 
         let patch = renders.render(
             Button("Go")
@@ -259,7 +259,7 @@ final class ConcurrencyTests: XCTestCase {
         let deadline = Date().addingTimeInterval(20)
 
         while !reached && Date() < deadline {
-            for completion in completionIds(in: Renderer.shared.takeCommandsWire()) {
+            for completion in completionIds(in: Renderer.shared.takeActCallsWire()) {
                 ReplyBuffer.current = .finished([.bool(true)])
                 XCTAssertTrue(
                     Renderer.shared.dispatch(completion),
@@ -281,7 +281,7 @@ final class ConcurrencyTests: XCTestCase {
         let renders = Renders()
         var reached = false
 
-        _ = Renderer.shared.takeCommandsWire()
+        _ = Renderer.shared.takeActCallsWire()
 
         let patch = renders.render(
             Button("Go")
@@ -294,7 +294,7 @@ final class ConcurrencyTests: XCTestCase {
         let id = try XCTUnwrap(patch.events?["clicked"])
         XCTAssertTrue(renders.fire(id))
 
-        let completion = try XCTUnwrap(completionIds(in: Renderer.shared.takeCommandsWire()).first)
+        let completion = try XCTUnwrap(completionIds(in: Renderer.shared.takeActCallsWire()).first)
 
         ReplyBuffer.current = .finished([.bool(true)])
         XCTAssertTrue(Renderer.shared.dispatch(completion))

@@ -47,7 +47,7 @@ extension HostEventUpdate {
 /// The queued acts, taken and decoded - the values already apart, so a test
 /// asserts on an act rather than searching bytes.
 func drainedActs() -> [WireAct] {
-    WireProbe.decode(Renderer.shared.takeCommandsWire())
+    WireProbe.decode(Renderer.shared.takeActCallsWire())
 }
 
 /// A composed view whose body does nothing but READ, through the closure it
@@ -340,7 +340,7 @@ enum Fixtures {
     /// Checks a binary message and its readable sidecar against their
     /// fixtures, or writes both when updating.
     ///
-    /// `name` carries no extension - `commands/Focus` is checked against
+    /// `name` carries no extension - `act-calls/Focus` is checked against
     /// `Focus.bin`, the CONTRACT a host reads, and `Focus.txt`, the
     /// rendering a review diff reads. It may name a subdirectory, which is
     /// created if it is not there. Both files are compared: a sidecar that

@@ -31,7 +31,7 @@ namespace StateUI.Maui.Rendering;
 /// <para>
 /// Saving goes the other way as an ordinary act, ONE PER KEY PER DRAIN: the
 /// Swift side holds the last value written under each name and hands it over
-/// with the next batch of commands, so a key written five times inside one
+/// with the next batch of acts, so a key written five times inside one
 /// handler is saved once. That is a collapse per drain and not a delay - an
 /// event drains, so an <c>Entry</c> bound to kept state does reach the store
 /// once a letter; a view that wants the store touched when the typing stops
@@ -124,10 +124,10 @@ internal static class StateUIPersistence
     /// is the one way an application can get this wrong, and it is said out
     /// loud.
     /// </remarks>
-    /// <param name="command">The act, argument 0 the key, argument 1 its value.</param>
-    internal static void Save(SwiftCommand command)
+    /// <param name="call">The act, argument 0 the key, argument 1 its value.</param>
+    internal static void Save(HostActCall call)
     {
-        if (command.GetName(0) is not { } name)
+        if (call.GetName(0) is not { } name)
         {
             return;
         }
@@ -145,19 +145,19 @@ internal static class StateUIPersistence
         {
             switch (kind)
             {
-                case SwiftPersistentKind.Boolean when command.GetBool(1) is { } value:
+                case SwiftPersistentKind.Boolean when call.GetBool(1) is { } value:
                     _store.Set(name, value, null);
                     break;
 
-                case SwiftPersistentKind.Integer when command.GetDouble(1) is { } value:
+                case SwiftPersistentKind.Integer when call.GetDouble(1) is { } value:
                     _store.Set(name, (long)value, null);
                     break;
 
-                case SwiftPersistentKind.Number when command.GetDouble(1) is { } value:
+                case SwiftPersistentKind.Number when call.GetDouble(1) is { } value:
                     _store.Set(name, value, null);
                     break;
 
-                case SwiftPersistentKind.Text when command.GetString(1) is { } value:
+                case SwiftPersistentKind.Text when call.GetString(1) is { } value:
                     _store.Set(name, value, null);
                     break;
             }

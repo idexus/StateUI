@@ -640,15 +640,20 @@ extension HostChildrenUpdate: RandomAccessCollection {
     public let root: HostPatch
 }
 
-/// One operation requested from a native host.
-@_spi(Host) public struct HostCommand: Sendable {
-    /// The operation's stable StateUI token.
+/// One act the application called, for a native host to perform.
+///
+/// The application calls through `stateUICall` or `stateUISend`. The host
+/// takes the call with `StateUIHost.takeActCalls()` and answers one that
+/// carries a completion with `StateUIHost.reply(_:with:)` or
+/// `StateUIHost.fail(_:reason:)`.
+@_spi(Host) public struct HostActCall: Sendable {
+    /// The act's token.
     public let act: Act
 
-    /// Typed arguments in the operation's declared order.
+    /// Typed arguments, in the order the act declares them.
     public let arguments: [HostValue]
 
-    /// The negative continuation id, or nil when no answer is expected.
+    /// The negative id the answer quotes back, or nil when nobody waits.
     public let completion: Int?
 }
 
@@ -883,18 +888,45 @@ extension HostChildrenUpdate: RandomAccessCollection {
     /// Parks the calling doorbell thread until asynchronous work arrives.
     public static func waitForWork() -> Int {
         MainThreadExecutor.shared.waitForWork()
-            + Renderer.shared.commandsPending
+            + Renderer.shared.actCallsPending
             + (Renderer.shared.needsRender ? 1 : 0)
     }
 
-    /// Takes operations queued since the previous host pump.
-    public static func takeCommands() -> [HostCommand] {
-        Renderer.shared.takeCommands().map(HostCommand.init)
+    /// Takes the act calls queued since the previous host pump, in the order
+    /// the application made them.
+    public static func takeActCalls() -> [HostActCall] {
+        Renderer.shared.takeActCalls().map(HostActCall.init)
     }
 
-    /// Fails continuations from the last taken command batch.
-    public static func failTakenCommands(_ reason: String) {
-        Renderer.shared.failTakenCommands(reason)
+    /// Answers a performed act call with the values it came to.
+    ///
+    /// The awaiting `stateUICall` resumes with exactly these values - none
+    /// for an act that returns nothing.
+    ///
+    /// - Parameters:
+    ///   - completion: The negative id the act call carried.
+    ///   - values: What the act came to, in the order it declares them.
+    /// - Returns: Whether a caller still waited under that id.
+    @discardableResult
+    public static func reply(_ completion: Int, with values: [HostValue]) -> Bool {
+        guard completion < 0 else { return false }
+        ReplyBuffer.current = .finished(values)
+        return Renderer.shared.dispatch(completion)
+    }
+
+    /// Fails an act call the host could not perform.
+    ///
+    /// The awaiting `stateUICall` throws `StateUIError` carrying `reason`.
+    ///
+    /// - Parameters:
+    ///   - completion: The negative id the act call carried.
+    ///   - reason: Why the host could not perform it.
+    /// - Returns: Whether a caller still waited under that id.
+    @discardableResult
+    public static func fail(_ completion: Int, reason: String) -> Bool {
+        guard completion < 0 else { return false }
+        ReplyBuffer.current = .failed(reason)
+        return Renderer.shared.dispatch(completion)
     }
 }
 
@@ -906,10 +938,10 @@ extension HostStateBinding {
     }
 }
 
-extension HostCommand {
-    init(_ command: Command) {
-        act = command.act
-        arguments = command.arguments
-        completion = command.completion
+extension HostActCall {
+    init(_ call: ActCall) {
+        act = call.act
+        arguments = call.arguments
+        completion = call.completion
     }
 }

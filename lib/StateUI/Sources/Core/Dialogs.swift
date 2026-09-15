@@ -4,7 +4,7 @@
 // Asking the reader a question.
 //
 // A dialog is not a shape, so it is not in the tree - it is an ACT, and it
-// goes through Command.swift exactly as focusing a field or scrolling a list
+// goes through ActCall.swift exactly as focusing a field or scrolling a list
 // does:
 //
 //     let ok = try await Dialogs.confirm(

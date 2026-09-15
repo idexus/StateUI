@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The other half of fixtures/commands: batches the Swift tests wrote with the
+// The other half of fixtures/act-calls: batches the Swift tests wrote with the
 // REAL typed calls, read here with the exact reader and accessors Perform
 // uses - the view name at 0, the length two from the end, the easing last.
 //
@@ -15,35 +15,35 @@ using StateUI.Maui.Rendering;
 
 namespace StateUI.Maui.Tests;
 
-public class CommandFixtureTests
+public class ActCallFixtureTests
 {
-    /// <summary>The one command a fixture carries, read as the session reads a batch.</summary>
-    private static SwiftCommand One(string name)
+    /// <summary>The one act a fixture carries, read as the session reads a batch.</summary>
+    private static HostActCall One(string name)
     {
-        List<SwiftCommand> commands = SwiftWire.ReadCommands(
-            Fixtures.ReadBytes($"commands/{name}.bin"), new SwiftWireDictionary());
+        List<HostActCall> calls = SwiftWire.ReadActCalls(
+            Fixtures.ReadBytes($"act-calls/{name}.bin"), new SwiftWireDictionary());
 
-        return Assert.Single(commands);
+        return Assert.Single(calls);
     }
 
     [Fact]
     public void AskingTheTimeCarriesNothingButItsCompletion()
     {
-        SwiftCommand command = One("Now");
+        HostActCall call = One("Now");
 
-        Assert.Equal("currentTime", command.Name);
-        Assert.Empty(command.Arguments!);
-        Assert.True(command.Completion < 0, "someone is waiting for the answer");
+        Assert.Equal("currentTime", call.Name);
+        Assert.Empty(call.Arguments!);
+        Assert.True(call.Completion < 0, "someone is waiting for the answer");
     }
 
     [Fact]
     public void AskingTheZoneCarriesNothingButItsCompletion()
     {
-        SwiftCommand command = One("LocalZone");
+        HostActCall call = One("LocalZone");
 
-        Assert.Equal("currentTimeZone", command.Name);
-        Assert.Empty(command.Arguments!);
-        Assert.True(command.Completion < 0, "someone is waiting for the answer");
+        Assert.Equal("currentTimeZone", call.Name);
+        Assert.Empty(call.Arguments!);
+        Assert.True(call.Completion < 0, "someone is waiting for the answer");
     }
 
     /// <summary>
@@ -60,12 +60,12 @@ public class CommandFixtureTests
     [Fact]
     public void AskingForAnOffsetCarriesTheZoneThenTheDay()
     {
-        SwiftCommand command = One("UtcOffset");
+        HostActCall call = One("UtcOffset");
 
-        Assert.Equal("utcOffset", command.Name);
-        Assert.Equal("Europe/Warsaw", command.GetString(0));
-        Assert.Equal([2026, 1, 15], command.GetNumbers(1));
-        Assert.True(command.Completion < 0, "someone is waiting for the answer");
+        Assert.Equal("utcOffset", call.Name);
+        Assert.Equal("Europe/Warsaw", call.GetString(0));
+        Assert.Equal([2026, 1, 15], call.GetNumbers(1));
+        Assert.True(call.Completion < 0, "someone is waiting for the answer");
     }
 
     /// <summary>
@@ -82,13 +82,13 @@ public class CommandFixtureTests
     [Fact]
     public void AskingForAnOffsetWithNoDayCarriesNothingWhereTheDayIs()
     {
-        SwiftCommand command = One("UtcOffsetToday");
+        HostActCall call = One("UtcOffsetToday");
 
-        Assert.Equal("utcOffset", command.Name);
-        Assert.Equal("Europe/Warsaw", command.GetString(0));
-        Assert.Equal(2, command.Arguments!.Count);
-        Assert.Null(command.GetNumbers(1));
-        Assert.True(command.Completion < 0, "someone is waiting for the answer");
+        Assert.Equal("utcOffset", call.Name);
+        Assert.Equal("Europe/Warsaw", call.GetString(0));
+        Assert.Equal(2, call.Arguments!.Count);
+        Assert.Null(call.GetNumbers(1));
+        Assert.True(call.Completion < 0, "someone is waiting for the answer");
     }
 
     /// <summary>
@@ -98,29 +98,29 @@ public class CommandFixtureTests
     [Fact]
     public void AnAlertCarriesThreeArguments()
     {
-        SwiftCommand command = One("Alert");
+        HostActCall call = One("Alert");
 
-        Assert.Equal("alert", command.Name);
-        Assert.Equal(3, command.Arguments!.Count);
-        Assert.Equal("Saved", command.GetString(0));
-        Assert.Equal("The draft is safe", command.GetString(1));
-        Assert.Equal("OK", command.GetString(2));
-        Assert.True(command.Completion < 0, "someone is waiting for the dismissal");
+        Assert.Equal("alert", call.Name);
+        Assert.Equal(3, call.Arguments!.Count);
+        Assert.Equal("Saved", call.GetString(0));
+        Assert.Equal("The draft is safe", call.GetString(1));
+        Assert.Equal("OK", call.GetString(2));
+        Assert.True(call.Completion < 0, "someone is waiting for the dismissal");
     }
 
     /// <summary>A confirmation: accept at 2, cancel at 3, MAUI's order.</summary>
     [Fact]
     public void AConfirmationCarriesAcceptBeforeCancel()
     {
-        SwiftCommand command = One("Confirm");
+        HostActCall call = One("Confirm");
 
-        Assert.Equal("confirm", command.Name);
-        Assert.Equal(4, command.Arguments!.Count);
-        Assert.Equal("Delete draft?", command.GetString(0));
-        Assert.Equal("This cannot be undone", command.GetString(1));
-        Assert.Equal("Delete", command.GetString(2));
-        Assert.Equal("Keep", command.GetString(3));
-        Assert.True(command.Completion < 0, "someone is waiting for the answer");
+        Assert.Equal("confirm", call.Name);
+        Assert.Equal(4, call.Arguments!.Count);
+        Assert.Equal("Delete draft?", call.GetString(0));
+        Assert.Equal("This cannot be undone", call.GetString(1));
+        Assert.Equal("Delete", call.GetString(2));
+        Assert.Equal("Keep", call.GetString(3));
+        Assert.True(call.Completion < 0, "someone is waiting for the answer");
     }
 
     /// <summary>
@@ -130,16 +130,16 @@ public class CommandFixtureTests
     [Fact]
     public void AChoiceOfActionsCarriesItsCaptionsThenTheButtons()
     {
-        SwiftCommand command = One("ChooseAction");
+        HostActCall call = One("ChooseAction");
 
-        Assert.Equal("chooseAction", command.Name);
-        Assert.Equal("Share via", command.GetString(0));
-        Assert.Equal("Cancel", command.GetString(1));
-        Assert.Equal("Delete", command.GetString(2));
-        Assert.Equal("Mail", command.GetString(3));
-        Assert.Equal("Message", command.GetString(4));
-        Assert.Equal(5, command.Arguments!.Count);
-        Assert.True(command.Completion < 0, "someone is waiting for the choice");
+        Assert.Equal("chooseAction", call.Name);
+        Assert.Equal("Share via", call.GetString(0));
+        Assert.Equal("Cancel", call.GetString(1));
+        Assert.Equal("Delete", call.GetString(2));
+        Assert.Equal("Mail", call.GetString(3));
+        Assert.Equal("Message", call.GetString(4));
+        Assert.Equal(5, call.Arguments!.Count);
+        Assert.True(call.Completion < 0, "someone is waiting for the choice");
     }
 
     /// <summary>
@@ -158,18 +158,18 @@ public class CommandFixtureTests
     [Fact]
     public void APromptCarriesEveryParameterInMauisOrder()
     {
-        SwiftCommand command = One("Prompt");
+        HostActCall call = One("Prompt");
 
-        Assert.Equal("prompt", command.Name);
-        Assert.Equal("Rename", command.GetString(0));
-        Assert.Equal("A new name for the draft", command.GetString(1));
-        Assert.Equal("OK", command.GetString(2));
-        Assert.Equal("Cancel", command.GetString(3));
-        Assert.Equal("Name", command.GetString(4));
-        Assert.Equal(40, command.GetInt(5));
-        Assert.Equal(Keyboard.Text, SwiftValues.KeyboardOf(command.GetEnumeration(6)));
-        Assert.Equal("Draft 1", command.GetString(7));
-        Assert.True(command.Completion < 0, "someone is waiting for the text");
+        Assert.Equal("prompt", call.Name);
+        Assert.Equal("Rename", call.GetString(0));
+        Assert.Equal("A new name for the draft", call.GetString(1));
+        Assert.Equal("OK", call.GetString(2));
+        Assert.Equal("Cancel", call.GetString(3));
+        Assert.Equal("Name", call.GetString(4));
+        Assert.Equal(40, call.GetInt(5));
+        Assert.Equal(Keyboard.Text, SwiftValues.KeyboardOf(call.GetEnumeration(6)));
+        Assert.Equal("Draft 1", call.GetString(7));
+        Assert.True(call.Completion < 0, "someone is waiting for the text");
     }
 
     /// <summary>
@@ -181,12 +181,12 @@ public class CommandFixtureTests
     [InlineData("Unfocus", "unfocus")]
     public void AFocusActCarriesTheViewAndNothingElse(string fixture, string method)
     {
-        SwiftCommand command = One(fixture);
+        HostActCall call = One(fixture);
 
-        Assert.Equal(method, command.Name);
-        Assert.Equal("email", command.GetString(0));
-        Assert.Single(command.Arguments!);
-        Assert.True(command.Completion < 0, "the handler is waiting for it");
+        Assert.Equal(method, call.Name);
+        Assert.Equal("email", call.GetString(0));
+        Assert.Single(call.Arguments!);
+        Assert.True(call.Completion < 0, "the handler is waiting for it");
     }
 
     /// <summary>
@@ -199,13 +199,13 @@ public class CommandFixtureTests
     [Fact]
     public void AFocusActByElementNumberCarriesTheNumberNotAString()
     {
-        SwiftCommand command = One("FocusByNumber");
+        HostActCall call = One("FocusByNumber");
 
-        Assert.Equal("focus", command.Name);
-        Assert.Null(command.GetString(0));
-        Assert.Equal(7, command.GetDouble(0));
-        Assert.Single(command.Arguments!);
-        Assert.True(command.Completion < 0, "the handler is waiting for it");
+        Assert.Equal("focus", call.Name);
+        Assert.Null(call.GetString(0));
+        Assert.Equal(7, call.GetDouble(0));
+        Assert.Single(call.Arguments!);
+        Assert.True(call.Completion < 0, "the handler is waiting for it");
     }
 
     /// <summary>
@@ -217,11 +217,11 @@ public class CommandFixtureTests
     [Fact]
     public void ClosingTheKeyboardNamesNoViewAtAll()
     {
-        SwiftCommand command = One("HideOnScreenKeyboard");
+        HostActCall call = One("HideOnScreenKeyboard");
 
-        Assert.Equal("hideOnScreenKeyboard", command.Name);
-        Assert.Empty(command.Arguments!);
-        Assert.True(command.Completion < 0, "the handler is waiting for the answer");
+        Assert.Equal("hideOnScreenKeyboard", call.Name);
+        Assert.Empty(call.Arguments!);
+        Assert.True(call.Completion < 0, "the handler is waiting for the answer");
     }
 
     /// <summary>
@@ -234,12 +234,12 @@ public class CommandFixtureTests
     [InlineData("WebViewReload", "reload")]
     public void AWebViewActCarriesTheViewAndNothingElse(string fixture, string method)
     {
-        SwiftCommand command = One(fixture);
+        HostActCall call = One(fixture);
 
-        Assert.Equal(method, command.Name);
-        Assert.Equal("browser", command.GetString(0));
-        Assert.Single(command.Arguments!);
-        Assert.True(command.Completion < 0, "the handler is waiting for it to finish");
+        Assert.Equal(method, call.Name);
+        Assert.Equal("browser", call.GetString(0));
+        Assert.Single(call.Arguments!);
+        Assert.True(call.Completion < 0, "the handler is waiting for it to finish");
     }
 
     /// <summary>
@@ -249,12 +249,12 @@ public class CommandFixtureTests
     [Fact]
     public void RunningJavaScriptCarriesTheViewThenTheScript()
     {
-        SwiftCommand command = One("EvaluateJavaScript");
+        HostActCall call = One("EvaluateJavaScript");
 
-        Assert.Equal("evaluateJavaScript", command.Name);
-        Assert.Equal("browser", command.GetString(0));
-        Assert.Equal("document.title", command.GetString(1));
-        Assert.True(command.Completion < 0, "the handler is waiting for the answer");
+        Assert.Equal("evaluateJavaScript", call.Name);
+        Assert.Equal("browser", call.GetString(0));
+        Assert.Equal("document.title", call.GetString(1));
+        Assert.True(call.Completion < 0, "the handler is waiting for the answer");
     }
 
     /// <summary>
@@ -265,30 +265,30 @@ public class CommandFixtureTests
     [Fact]
     public void MovingAMapCarriesTheViewThenThreeNumbers()
     {
-        SwiftCommand command = One("MoveToRegion");
+        HostActCall call = One("MoveToRegion");
 
-        Assert.Equal("moveToRegion", command.Name);
-        Assert.Equal("map", command.GetString(0));
-        Assert.Equal(52.2297, command.GetDouble(1));
-        Assert.Equal(21.0122, command.GetDouble(2));
-        Assert.Equal(3000, command.GetDouble(3));
-        Assert.True(command.Completion < 0, "the handler is waiting for it to finish");
+        Assert.Equal("moveToRegion", call.Name);
+        Assert.Equal("map", call.GetString(0));
+        Assert.Equal(52.2297, call.GetDouble(1));
+        Assert.Equal(21.0122, call.GetDouble(2));
+        Assert.Equal(3000, call.GetDouble(3));
+        Assert.True(call.Completion < 0, "the handler is waiting for it to finish");
     }
 
     [Fact]
     public void AFailedHandlerCarriesItsMessageAndWaitsForNobody()
     {
-        SwiftCommand command = One("HandlerFailed");
+        HostActCall call = One("HandlerFailed");
 
-        Assert.Equal("handlerFailed", command.Name);
-        Assert.Equal("boom", command.GetString(0));
-        Assert.Null(command.Completion);
+        Assert.Equal("handlerFailed", call.Name);
+        Assert.Equal("boom", call.GetString(0));
+        Assert.Null(call.Completion);
     }
 
     /// <summary>
     /// What the accessors answer for an index with no argument at it -
-    /// including a negative one, which the tail-relative reads produce on a
-    /// command shorter than they expect.
+    /// including a negative one, which the tail-relative reads produce on an
+    /// act shorter than they expect.
     /// </summary>
     /// <remarks>
     /// An index past the end and the wire's own NOTHING both read as null, and
@@ -299,12 +299,12 @@ public class CommandFixtureTests
     [Fact]
     public void AnIndexWithNoArgumentAtItReadsAsNull()
     {
-        SwiftCommand command = One("HideOnScreenKeyboard");
+        HostActCall call = One("HideOnScreenKeyboard");
 
-        Assert.Null(command.GetString(-1));
-        Assert.Null(command.GetDouble(-1));
-        Assert.Null(command.GetString(9));
-        Assert.Null(command.GetDouble(9));
+        Assert.Null(call.GetString(-1));
+        Assert.Null(call.GetDouble(-1));
+        Assert.Null(call.GetString(9));
+        Assert.Null(call.GetDouble(9));
     }
 
     /// <summary>
@@ -328,7 +328,7 @@ public class CommandFixtureTests
         bytes.AddRange([1, 0]);         // name #1 is
         Str("scrollToAsync"); // the act being asked for
 
-        bytes.AddRange([1, 0]);         // one command
+        bytes.AddRange([1, 0]);         // one act
         bytes.AddRange([1, 0]);         // name #1
         bytes.AddRange([0xFF, 0xFF, 0xFF, 0xFF]);  // completion -1
         bytes.Add(4);                   // four arguments
@@ -338,12 +338,12 @@ public class CommandFixtureTests
         bytes.Add(3); bytes.AddRange(BitConverter.GetBytes(250.0));
         bytes.Add(4); Str("linear");
 
-        SwiftCommand command = Assert.Single(
-            SwiftWire.ReadCommands([.. bytes], new SwiftWireDictionary()));
+        HostActCall call = Assert.Single(
+            SwiftWire.ReadActCalls([.. bytes], new SwiftWireDictionary()));
 
-        Assert.Equal("scrollToAsync", command.Name);
-        Assert.Null(command.GetDouble(1));
-        Assert.Equal(250, command.GetDouble(2));
+        Assert.Equal("scrollToAsync", call.Name);
+        Assert.Null(call.GetDouble(1));
+        Assert.Equal(250, call.GetDouble(2));
     }
 
     /// <summary>
@@ -354,10 +354,10 @@ public class CommandFixtureTests
     [Fact]
     public void ATruncatedBatchThrowsInsteadOfAnsweringPartially()
     {
-        byte[] whole = Fixtures.ReadBytes("commands/Confirm.bin");
+        byte[] whole = Fixtures.ReadBytes("act-calls/Confirm.bin");
 
         Assert.Throws<InvalidDataException>(
-            () => SwiftWire.ReadCommands(
+            () => SwiftWire.ReadActCalls(
                 whole.AsSpan(0, whole.Length - 3).ToArray(), new SwiftWireDictionary()));
     }
 
@@ -375,18 +375,18 @@ public class CommandFixtureTests
         [
             SwiftWire.Version,
             0, 0,               // no announcements
-            1, 0,               // one command
+            1, 0,               // one act
             0xE7, 0x03,         // name #999, which nothing announced
             0, 0, 0, 0,         // no completion
             0,                  // no arguments
         ];
 
         Assert.Throws<InvalidDataException>(
-            () => SwiftWire.ReadCommands(bytes, new SwiftWireDictionary()));
+            () => SwiftWire.ReadActCalls(bytes, new SwiftWireDictionary()));
     }
 
     /// <summary>
-    /// Every commands fixture some test in this class reads, by file name -
+    /// Every act-calls fixture some test in this class reads, by file name -
     /// the list <see cref="EveryFixtureIsRead"/> holds the directory to.
     /// </summary>
     private static readonly string[] ReadFixtures =
@@ -399,19 +399,19 @@ public class CommandFixtureTests
     ];
 
     /// <summary>
-    /// A commands fixture nothing here reads fails by name - the walk
+    /// An act-calls fixture nothing here reads fails by name - the walk
     /// <c>ControlTests.EveryFixtureIsChecked</c> makes, over this directory.
     /// </summary>
     [Fact]
     public void EveryFixtureIsRead()
     {
         foreach (string file in Directory.GetFiles(
-            Path.Combine(Fixtures.Directory, "commands"), "*.bin"))
+            Path.Combine(Fixtures.Directory, "act-calls"), "*.bin"))
         {
             string name = Path.GetFileNameWithoutExtension(file);
 
             Assert.True(ReadFixtures.Contains(name),
-                $"commands/{name}.bin is written by the Swift tests and read by nothing here.");
+                $"act-calls/{name}.bin is written by the Swift tests and read by nothing here.");
         }
     }
 }

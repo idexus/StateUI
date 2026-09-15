@@ -1391,7 +1391,7 @@ public sealed class StateUIRenderer
                 // from another application - so the await happens HERE, on the
                 // C# side, and the Swift side hears about the drop through the
                 // ordinary event dispatch once there is something to tell it.
-                // The same rule as every act; see Core/Command.swift.
+                // The same rule as every act; see Core/ActCall.swift.
                 recognizer.Drop += async (_, e) =>
                     Raise(view, SwiftEvent.Drop, await e.Data.GetTextAsync() ?? "");
 

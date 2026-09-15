@@ -457,26 +457,29 @@ final class AppKitRenderer: @unchecked Sendable {
     func pump() {
         _ = StateUIHost.runJobs()
 
-        let commands = StateUIHost.takeCommands()
-        let unhandled = commands.filter { command in
-            if command.act == .persistValue {
-                savePersistent(command)
-                return false
+        for call in StateUIHost.takeActCalls() {
+            switch call.act {
+            case .persistValue:
+                savePersistent(call)
+
+            case .persistSceneValue:
+                keepSceneValue(call)
+
+            case .handlerFailed:
+                NSLog("StateUI AppKit: a handler failed: %@", call.arguments.first?.string ?? "")
+
+            default:
+                // An act this host does not perform: a caller waiting on it
+                // throws the reason, and one nobody waits for is logged, so
+                // neither passes in silence.
+                let reason = "the AppKit host does not perform the act '\(call.act.name)'"
+
+                if let completion = call.completion {
+                    StateUIHost.fail(completion, reason: reason)
+                } else {
+                    NSLog("StateUI AppKit: %@", reason)
+                }
             }
-
-            if command.act == .persistSceneValue {
-                keepSceneValue(command)
-                return false
-            }
-
-            return true
-        }
-
-        if !unhandled.isEmpty {
-            let names = unhandled.map { $0.act.name }.joined(separator: ", ")
-            let reason = "the AppKit host does not implement these acts yet: \(names)"
-            NSLog("StateUI AppKit: %@", reason)
-            StateUIHost.failTakenCommands(reason)
         }
 
         if root != nil, StateUIHost.cyclesPending {
@@ -583,14 +586,14 @@ final class AppKitRenderer: @unchecked Sendable {
         }
     }
 
-    func keepSceneValue(_ command: HostCommand) {
-        guard command.arguments.count >= 3,
-              let sceneID = command.arguments[0].name,
-              let name = command.arguments[1].name
+    func keepSceneValue(_ call: HostActCall) {
+        guard call.arguments.count >= 3,
+              let sceneID = call.arguments[0].name,
+              let name = call.arguments[1].name
         else { return }
 
         orderedScenes.first { $0.stateUIID == .manual(sceneID) }?
-            .keep(name: name, value: command.arguments[2])
+            .keep(name: name, value: call.arguments[2])
     }
 
     func hydratePersistentState() {
@@ -623,14 +626,14 @@ final class AppKitRenderer: @unchecked Sendable {
         StateUIHost.restorePersistent(restored)
     }
 
-    func savePersistent(_ command: HostCommand) {
+    func savePersistent(_ call: HostActCall) {
         guard StateUIHost.persistentStorage == .preferences,
-              command.arguments.count >= 2,
-              let name = command.arguments[0].name,
+              call.arguments.count >= 2,
+              let name = call.arguments[0].name,
               let key = StateUIHost.persistentKeys.first(where: { $0.name == name })
         else { return }
 
-        let value = command.arguments[1]
+        let value = call.arguments[1]
         switch key.kind {
         case .boolean:
             if let value = value.bool { preferences.set(value, forKey: name) }

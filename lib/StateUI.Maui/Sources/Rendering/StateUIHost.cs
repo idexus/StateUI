@@ -24,7 +24,7 @@ namespace StateUI.Maui.Rendering;
 /// <para>
 /// <b>One host to a process, and never one beside a <see cref="StateUIWindow"/>.</b>
 /// The Swift side is a single renderer holding a single tree - one generation,
-/// one handler registry, one command queue, one wire dictionary - so exactly
+/// one handler registry, one act queue, one wire dictionary - so exactly
 /// one session may render it. A second host shows a diagnostic where its tree
 /// would have been; see <see cref="StateUISession"/>.
 /// </para>

@@ -220,7 +220,7 @@ private func settle(
     rendering renders: Renders? = nil,
     _ tree: (() -> Node)? = nil
 ) async {
-    _ = StateUIHost.takeCommands()
+    _ = StateUIHost.takeActCalls()
     Renderer.shared.start(handler)
 
     // Bounded rather than "until nothing is asked": a handler that asks for
@@ -248,7 +248,7 @@ private func settle(
             }
         }
 
-        let taken = StateUIHost.takeCommands()
+        let taken = StateUIHost.takeActCalls()
 
         guard !taken.isEmpty || carried else { break }
 

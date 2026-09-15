@@ -389,7 +389,7 @@ final class ChangesTests: XCTestCase {
                 .body
         }
 
-        _ = Renderer.shared.takeCommandsWire()
+        _ = Renderer.shared.takeActCallsWire()
         renders.render(tree(1))
         renders.render(tree(2))
 

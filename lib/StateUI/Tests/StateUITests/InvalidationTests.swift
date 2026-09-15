@@ -690,7 +690,7 @@ final class InvalidationTests: XCTestCase {
         page.writes = Int.max
         page.count.wrappedValue = 0
 
-        _ = WireProbe.decode(Renderer.shared.takeCommandsWire())
+        _ = WireProbe.decode(Renderer.shared.takeActCallsWire())
         Renderer.shared.setApplication(WritingApp())
         Renderer.shared.clearInvalidation()
 
@@ -700,7 +700,7 @@ final class InvalidationTests: XCTestCase {
         for _ in 0 ..< Renderer.selfDirtyLimit {
             let message = WireProbe.decodeMessage(Renderer.shared.renderWire(baseline: generation))
             generation = Int32(message.generation)
-            reported += WireProbe.decode(Renderer.shared.takeCommandsWire())
+            reported += WireProbe.decode(Renderer.shared.takeActCallsWire())
         }
 
         XCTAssertFalse(Renderer.shared.needsRender, "the streak ended with the change dropped")

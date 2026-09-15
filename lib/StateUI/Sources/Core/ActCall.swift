@@ -39,7 +39,7 @@
 // how the continuation waiting for this act is found again.
 
 /// One act for the host to perform.
-struct Command {
+struct ActCall {
     /// The act - one of the library's tokens, or an application's own
     /// registered one. What travels is the session dictionary's number for it.
     let act: Act
@@ -95,7 +95,7 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
 /// Callable from a handler, from a child task a handler started - `async let`
 /// runs its child on the cooperative pool, and the queue behind this is locked
 /// for exactly that - and from a `Task.detached`. A handler may also await
-/// things that are NOT commands - `Task.sleep`, a task's value - because the
+/// things that are NOT acts - `Task.sleep`, a task's value - because the
 /// host keeps a thread parked in `stateui_wait_work` and a resume wakes it;
 /// see Core/MainThread.swift.
 ///

@@ -48,7 +48,7 @@ private func makeCString(_ text: String) -> UnsafeMutablePointer<CChar>? {
 /// other. The reply carries the new generation.
 ///
 /// The `_wire` suffix names the FORMAT, for the reason
-/// stateui_take_commands_wire carries it: a half built for another format
+/// stateui_take_act_calls_wire carries it: a half built for another format
 /// calls a name that is not here and fails to find the entry point - a
 /// clean, nameable error - where one name over two signatures would read a
 /// register as a pointer.
@@ -65,7 +65,7 @@ public func stateui_render_wire(
 
 /// Allocates a copy of a wire message for the caller, writing its byte count
 /// - the shape the three buffer exports hand over. Null for an empty message
-/// - the commands take on a quiet pump, the persistent keys of an application
+/// - the act calls taken on a quiet pump, the persistent keys of an application
 /// that keeps nothing.
 private func makeBuffer(
     _ bytes: [UInt8],
@@ -109,7 +109,7 @@ public func stateui_dispatch_wire(
     if handlerId < 0 {
         // A reply that cannot be read must still resume the handler waiting
         // on it - as a failure, never a hang. The same reasoning as
-        // stateui_fail_taken_commands, one level down.
+        // stateui_fail_taken_act_calls, one level down.
         ReplyBuffer.current = Wire.decodeReply(payload)
             ?? .failed("the reply from the host could not be read. Usually a "
                 + "native library and a runtime built from different versions.")
@@ -158,11 +158,11 @@ public func stateui_dispatch_host_event(
 ///
 /// The caller owns the returned memory and must release it with
 /// stateui_free_buffer.
-@_cdecl("stateui_take_commands_wire")
-public func stateui_take_commands_wire(
+@_cdecl("stateui_take_act_calls_wire")
+public func stateui_take_act_calls_wire(
     _ length: UnsafeMutablePointer<Int32>?
 ) -> UnsafeMutablePointer<UInt8>? {
-    makeBuffer(Renderer.shared.takeCommandsWire(), length)
+    makeBuffer(Renderer.shared.takeActCallsWire(), length)
 }
 
 /// Which version of the binary wire format this library writes.
@@ -193,10 +193,10 @@ public func stateui_free_buffer(_ pointer: UnsafeMutableRawPointer?) {
 ///
 /// The host cannot name the acts itself: their completion ids are inside the
 /// very bytes that would not read, so the take keeps a receipt on this side
-/// and this is how the host cashes it. See `Renderer.failTakenCommands`.
-@_cdecl("stateui_fail_taken_commands")
-public func stateui_fail_taken_commands(_ reason: UnsafePointer<CChar>?) {
-    Renderer.shared.failTakenCommands(reason.map { String(cString: $0) } ?? "")
+/// and this is how the host cashes it. See `Renderer.failTakenActCalls`.
+@_cdecl("stateui_fail_taken_act_calls")
+public func stateui_fail_taken_act_calls(_ reason: UnsafePointer<CChar>?) {
+    Renderer.shared.failTakenActCalls(reason.map { String(cString: $0) } ?? "")
 }
 
 // MARK: - The cycle
@@ -427,7 +427,7 @@ public func stateui_connect_scene(_ bytes: UnsafePointer<UInt8>?, _ length: Int3
 /// that gets 0 should ask again on its next turn.
 ///
 /// Anything the handler does - a state write, another act - happens inside this
-/// call, so the host renders and drains the command queue afterwards exactly as
+/// call, so the host renders and drains the act queue afterwards exactly as
 /// it does after an event.
 ///
 /// Deliberately a call INTO this library rather than a callback out of it: a
@@ -452,13 +452,13 @@ public func stateui_resumes_pending() -> Int32 {
 }
 
 /// Parks the calling thread until work lands, and returns how much is waiting
-/// - jobs in the queue, PLUS commands not yet taken, PLUS one for a tree a
+/// - jobs in the queue, PLUS acts not yet taken, PLUS one for a tree a
 /// write from the pool left dirty - which can be 0, when another drain got
 /// there first.
 ///
-/// This is how a job NO command produced still runs promptly: a `Task.sleep`
+/// This is how a job NO act produced still runs promptly: a `Task.sleep`
 /// coming due, a task an author started finishing. And the other way round -
-/// the commands in the count are how a COMMAND no job announces is still
+/// the acts in the count are how an ACT no job announces is still
 /// performed promptly: an act queued from a plain `Task` runs on the pool,
 /// puts nothing on the executor, and `send`'s poke is the only thing that
 /// says it exists. The host gives this library a thread - one it CREATED, so
@@ -473,11 +473,11 @@ public func stateui_wait_work() -> Int32 {
     // already driving - an event, a completed act, a handler running on
     // `@MainThread` - is rendered by the drain that follows. A write a
     // `Task.detached` or an `async let` child makes from the cooperative pool
-    // queues NOTHING: no job, no command, only the dirty flag and the wake
+    // queues NOTHING: no job, no act, only the dirty flag and the wake
     // `stateChanged` makes - so without the dirty tree in this count the wake
     // finds no work and the screen waits for the next event.
     Int32(MainThreadExecutor.shared.waitForWork()
-        + Renderer.shared.commandsPending
+        + Renderer.shared.actCallsPending
         + (Renderer.shared.needsRender ? 1 : 0))
 }
 
@@ -486,7 +486,7 @@ public func stateui_wait_work() -> Int32 {
 /// The other half of what `stateui_resumes_pending` says. A handler suspended
 /// on its own child tasks - `async let` - resumes through a job that no
 /// completion accounting can see, since what it awaited was never a host
-/// command. Above zero there is work to run RIGHT NOW; the pending count says
+/// act. Above zero there is work to run RIGHT NOW; the pending count says
 /// work is still coming. A host that polls only the second gives up exactly one
 /// job too early, which reads as an animation loop frozen mid-beat.
 @_cdecl("stateui_jobs_pending")

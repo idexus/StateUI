@@ -34,7 +34,7 @@ namespace StateUI.Maui.Protocol;
 /// an id no message announced - throws <see cref="InvalidDataException"/>,
 /// and the caller cashes the receipt so every act in the unreadable batch
 /// fails back to its awaiting handler. See
-/// <c>StateUISession.PerformCommands</c>.
+/// <c>StateUISession.PerformActCalls</c>.
 /// </para>
 /// </remarks>
 /// 
@@ -438,7 +438,7 @@ internal static partial class SwiftWire
     }
 
     /// <summary>Reads a whole batch of acts, announcements first.</summary>
-    internal static List<SwiftCommand> ReadCommands(ReadOnlySpan<byte> bytes, SwiftWireDictionary names)
+    internal static List<HostActCall> ReadActCalls(ReadOnlySpan<byte> bytes, SwiftWireDictionary names)
     {
         var reader = new Reader(bytes);
 
@@ -452,7 +452,7 @@ internal static partial class SwiftWire
         ReadAnnouncements(ref reader, names);
 
         int count = reader.U16();
-        var commands = new List<SwiftCommand>(count);
+        var calls = new List<HostActCall>(count);
 
         for (int i = 0; i < count; i++)
         {
@@ -472,15 +472,15 @@ internal static partial class SwiftWire
                 arguments.Add(reader.Value(names));
             }
 
-            commands.Add(new SwiftCommand(act, name, arguments, completion == 0 ? null : completion));
+            calls.Add(new HostActCall(act, name, arguments, completion == 0 ? null : completion));
         }
 
         if (!reader.AtEnd)
         {
-            throw new InvalidDataException("the batch carries bytes past its last command");
+            throw new InvalidDataException("the batch carries bytes past its last act");
         }
 
-        return commands;
+        return calls;
     }
 
     /// <summary>
@@ -942,7 +942,7 @@ internal static partial class SwiftWire
 
 /// <summary>
 /// One value as it crossed the wire: a tag and the payload the tag says is
-/// there. What a command's argument is made of - see <c>Core/Wire.swift</c>
+/// there. What an act's argument is made of - see <c>Core/Wire.swift</c>
 /// for the tags.
 /// </summary>
 public readonly struct SwiftWireValue
