@@ -10,22 +10,22 @@ public protocol MapProperties: PropertyContainer {}
 extension MapProperties {
     /// How the world is drawn - streets, satellite photography, or both.
     public func mapType(_ value: MapType) -> Modified {
-        setValue(.mapType, value.propValue)
+        setValue(MapContract.mapType, value)
     }
 
     /// Whether a drag pans it.
     public func isScrollEnabled(_ value: Bool) -> Modified {
-        setValue(.isScrollEnabled, .bool(value))
+        setValue(MapContract.isScrollEnabled, value)
     }
 
     /// Whether a pinch zooms it.
     public func isZoomEnabled(_ value: Bool) -> Modified {
-        setValue(.isZoomEnabled, .bool(value))
+        setValue(MapContract.isZoomEnabled, value)
     }
 
     /// Whether the roads are coloured by traffic.
     public func isTrafficEnabled(_ value: Bool) -> Modified {
-        setValue(.isTrafficEnabled, .bool(value))
+        setValue(MapContract.isTrafficEnabled, value)
     }
 
     /// Whether the reader's own position is drawn on it - and the PLATFORM's
@@ -34,7 +34,7 @@ extension MapProperties {
     /// moment this turns on, and Android needs the location permission
     /// granted. The map itself needs none of that.
     public func showsUserLocation(_ value: Bool) -> Modified {
-        setValue(.showsUserLocation, .bool(value))
+        setValue(MapContract.showsUserLocation, value)
     }
 }
 
@@ -69,7 +69,7 @@ public struct Map: View, MapProperties {
 
     /// An empty one - what a `Style<Map>` is written against.
     public init() {
-        node = Node(type: .map)
+        node = Node(contract: MapContract.self)
     }
 
     /// A map opening on the region around a point.
@@ -86,9 +86,8 @@ public struct Map: View, MapProperties {
     /// - Parameter radiusMeters: Half the width of what is shown, in METERS -
     ///   a plain number, its unit in its name.
     public init(latitude: Double, longitude: Double, radiusMeters: Double) {
-        node = Node(type: .map, props: [
-            .region: .numbers([latitude, longitude, radiusMeters]),
-        ])
+        node = Node(contract: MapContract.self)
+        node.write(MapContract.region, MapRegion(latitude: latitude, longitude: longitude, radiusMeters: radiusMeters))
     }
 
     // MARK: Properties
@@ -117,10 +116,7 @@ public struct Map: View, MapProperties {
 
     /// Fires when the map itself is tapped - not a pin - with where.
     public func onMapClicked(_ handler: @escaping ValueEventHandler<Location>) -> Self {
-        addHandler(.mapClicked) {
-            guard let location = Location(EventBuffer.current.value()) else { return }
-            try await handler(location)
-        }
+        onEvent(MapContract.mapClicked, handler)
     }
 }
 
@@ -140,7 +136,8 @@ public struct Pin: Element {
     /// A pin labelled `label` - what the callout shows in bold. Give it a
     /// `.location`, or it stands at zero-zero in the Atlantic.
     public init(_ label: String) {
-        node = Node(type: .pin, props: [.label: .string(label)])
+        node = Node(contract: PinContract.self)
+        node.write(PinContract.label, label)
     }
 
     /// The node, as every element answers it.
@@ -150,14 +147,14 @@ public struct Pin: Element {
     /// value and is where a pin usually gets it.
     public func label(_ value: String) -> Self {
         var copy = self
-        copy.node.props[.label] = .string(value)
+        copy.node.write(PinContract.label, value)
         return copy
     }
 
     /// The line under the label in the callout.
     public func address(_ value: String) -> Self {
         var copy = self
-        copy.node.props[.address] = .string(value)
+        copy.node.write(PinContract.address, value)
         return copy
     }
 
@@ -165,14 +162,14 @@ public struct Pin: Element {
     /// draws for it.
     public func type(_ value: PinType) -> Self {
         var copy = self
-        copy.node.props[.type] = value.propValue
+        copy.node.write(PinContract.type, value)
         return copy
     }
 
     /// Where it stands.
     public func location(latitude: Double, longitude: Double) -> Self {
         var copy = self
-        copy.node.props[.location] = .numbers([latitude, longitude])
+        copy.node.write(PinContract.location, Location(latitude: latitude, longitude: longitude))
         return copy
     }
 
@@ -181,7 +178,7 @@ public struct Pin: Element {
     /// callout opens, so it cannot keep the callout shut.
     public func onPinClicked(_ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.node.addHandler(.pinClicked, handler)
+        copy.node.addHandler(PinContract.pinClicked.token, handler)
         return copy
     }
 
@@ -189,7 +186,7 @@ public struct Pin: Element {
     /// place a navigation usually goes.
     public func onPinDetailsClicked(_ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.node.addHandler(.pinDetailsClicked, handler)
+        copy.node.addHandler(PinContract.pinDetailsClicked.token, handler)
         return copy
     }
 }
@@ -241,12 +238,6 @@ public struct Location: Equatable, Sendable, HostRepresentable {
 
         self.latitude = pair[0]
         self.longitude = pair[1]
-    }
-
-    /// The same, for a payload's value that may be missing.
-    init?(_ value: PropValue?) {
-        guard let value else { return nil }
-        self.init(propValue: value)
     }
 }
 

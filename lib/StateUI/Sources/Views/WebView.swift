@@ -16,16 +16,16 @@ extension WebViewProperties {
     /// site expects. Writing one is for a server that answers differently by
     /// client - an application's own name and version, say.
     public func userAgent(_ value: String) -> Modified {
-        setValue(.userAgent, .string(value))
+        setValue(WebViewContract.userAgent, value)
     }
 
     /// The page it shows, by URL.
     ///
-    /// The kind travels in front of the address - see `WebView.SourceKind` -
+    /// The kind travels in front of the address - see `WebViewSource` -
     /// because a source is one of two things and the wire says which rather
     /// than leaving the host to tell them apart by shape.
     public func source(_ url: String) -> Modified {
-        setValue(.source, .values([WebView.SourceKind.url.propValue, .string(url)]))
+        setValue(WebViewContract.source, .url(url))
     }
 
     /// The page it shows, written here rather than fetched.
@@ -36,14 +36,7 @@ extension WebViewProperties {
     /// - Parameter baseUrl: What relative links in it resolve against, when
     ///   there are any.
     public func source(html: String, baseUrl: String? = nil) -> Modified {
-        // Three values whether or not there is a base url, the third being
-        // `.nothing` when there is none: the COUNT says nothing about the
-        // value, so the host reads the same three places every time.
-        setValue(.source, .values([
-            WebView.SourceKind.html.propValue,
-            .string(html),
-            baseUrl.map { PropValue.string($0) } ?? .nothing,
-        ]))
+        setValue(WebViewContract.source, .html(html, baseUrl: baseUrl))
     }
 }
 
@@ -69,28 +62,13 @@ public struct WebView: View, WebViewProperties {
 
     /// An empty one - what a `Style<WebView>` is written against.
     public init() {
-        node = Node(type: .webView)
+        node = Node(contract: WebViewContract.self)
     }
 
     /// A view on the page at `url`.
     public init(_ url: String) {
-        node = Node(type: .webView, props: [
-            .source: .values([SourceKind.url.propValue, .string(url)]),
-        ])
-    }
-
-    /// Which of the two things a source is, as the number that crosses.
-    ///
-    /// Numbered by this library, the way a `BorderShape`'s kinds are: a closed
-    /// vocabulary rides the wire as a number.
-    enum SourceKind: Int32, Sendable {
-        /// A page fetched from an address.
-        case url = 0
-
-        /// A document written into the description itself.
-        case html = 1
-
-        var propValue: PropValue { .enumeration(rawValue) }
+        node = Node(contract: WebViewContract.self)
+        node.write(WebViewContract.source, .url(url))
     }
 
     // MARK: Properties
@@ -101,10 +79,8 @@ public struct WebView: View, WebViewProperties {
     /// Read-only, and set by the platform after every navigation, so this only
     /// writes INTO the binding.
     public func canGoBack(_ binding: Binding<Bool>) -> Self {
-        addHandler(.canGoBackChanged) {
-            if let can = EventBuffer.current.value()?.bool {
-                binding.wrappedValue = can
-            }
+        onEvent(WebViewContract.canGoBackChanged) { can in
+            binding.wrappedValue = can
         }
     }
 
@@ -112,10 +88,8 @@ public struct WebView: View, WebViewProperties {
     /// and what enables a Forward button. Written INTO the binding by the
     /// platform, like `canGoBack`.
     public func canGoForward(_ binding: Binding<Bool>) -> Self {
-        addHandler(.canGoForwardChanged) {
-            if let can = EventBuffer.current.value()?.bool {
-                binding.wrappedValue = can
-            }
+        onEvent(WebViewContract.canGoForwardChanged) { can in
+            binding.wrappedValue = can
         }
     }
 
@@ -128,25 +102,23 @@ public struct WebView: View, WebViewProperties {
     /// has - so there is deliberately nothing to set. A page that must not be
     /// left is a page not navigated to.
     public func onNavigating(_ handler: @escaping ValueEventHandler<WebNavigation>) -> Self {
-        addHandler(.navigating) {
-            guard let report = WebNavigation(EventBuffer.current) else { return }
-            try await handler(report)
+        onEvent(WebViewContract.navigating) { event, url in
+            try await handler(WebNavigation(event: event, url: url))
         }
     }
 
     /// Fires when a navigation finished, with how it ended - the place to
     /// clear a spinner, or to say a page could not be fetched.
     public func onNavigated(_ handler: @escaping ValueEventHandler<WebNavigated>) -> Self {
-        addHandler(.navigated) {
-            guard let report = WebNavigated(EventBuffer.current) else { return }
-            try await handler(report)
+        onEvent(WebViewContract.navigated) { result, event, url in
+            try await handler(WebNavigated(result: result, event: event, url: url))
         }
     }
 
     /// Fires when the platform's web process died under the view - out of
     /// memory, usually - leaving it blank. `reload()` is the recovery.
     public func onProcessTerminated(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.processTerminated, handler)
+        onEvent(WebViewContract.processTerminated, handler)
     }
 }
 
@@ -187,12 +159,6 @@ public enum WebNavigationEvent: Int32, Sendable, HostRepresentable {
         guard case .enumeration(let member) = propValue else { return nil }
         self = WebNavigationEvent(rawValue: member) ?? .unknown
     }
-
-    /// The same, for a payload's value that may be missing.
-    init?(_ value: PropValue?) {
-        guard let value else { return nil }
-        self.init(propValue: value)
-    }
 }
 
 /// How a navigation ended.
@@ -227,12 +193,6 @@ public enum WebNavigationResult: Int32, Sendable, HostRepresentable {
         guard case .enumeration(let member) = propValue else { return nil }
         self = WebNavigationResult(rawValue: member) ?? .unknown
     }
-
-    /// The same, for a payload's value that may be missing.
-    init?(_ value: PropValue?) {
-        guard let value else { return nil }
-        self.init(propValue: value)
-    }
 }
 
 /// One navigation, as it starts.
@@ -242,17 +202,6 @@ public struct WebNavigation: Equatable, Sendable {
 
     /// Where it is going.
     public var url: String
-
-    /// Reads a payload's two values - why, then where. A string carries its
-    /// length on this wire, so a url with commas in it needs no rule about
-    /// travelling last.
-    init?(_ payload: [PropValue]) {
-        guard let event = WebNavigationEvent(payload.value(0)),
-              let url = payload.value(1)?.string else { return nil }
-
-        self.event = event
-        self.url = url
-    }
 }
 
 /// One navigation, as it ends.
@@ -265,17 +214,6 @@ public struct WebNavigated: Equatable, Sendable {
 
     /// Where it went.
     public var url: String
-
-    /// Reads a payload's three values - how it ended, why, then where.
-    init?(_ payload: [PropValue]) {
-        guard let result = WebNavigationResult(payload.value(0)),
-              let event = WebNavigationEvent(payload.value(1)),
-              let url = payload.value(2)?.string else { return nil }
-
-        self.result = result
-        self.event = event
-        self.url = url
-    }
 }
 
 // MARK: - What it shows
