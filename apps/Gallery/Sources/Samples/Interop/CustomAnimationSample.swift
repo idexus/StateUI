@@ -19,7 +19,7 @@ struct CustomAnimationSample: SampleContent, ExampleContent {
         // On the control, over the public registration for a walked value:
         //
         //     func rating(_ state: Binding<Double>) -> Modified {
-        //         setValue(.rating, on: state, mode: .inOut, kind: .property)
+        //         setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
         //     }
         @State private var stars = 0.0
         @State private var reading = "0.0 of 0"

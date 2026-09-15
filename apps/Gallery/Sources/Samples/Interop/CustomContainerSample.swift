@@ -1,9 +1,18 @@
 #if MAUI
 import StateUI
 
-extension NodeType {
-    /// The C# Badge, registered under this name.
-    static let badge = NodeType("Gallery.Badge")
+/// The C# Badge, declared: its node type, the tier it wears, and its one
+/// member under the name MauiProgram registers, with its value's type.
+enum BadgeContract: ElementContract {
+    static let nodeType: NodeType = "Gallery.Badge"
+    static let tiers: [any Contract.Type] = [ViewContract.self]
+
+    /// What the bubble says; at 0 the bubble hides. C#: `Badge.Count`,
+    /// declared in the registration. A count has no half way, so a change
+    /// does not travel.
+    static let count = ElementProperty<Self, Int>("count", travels: false)
+
+    static let members: [any ContractMember] = [count]
 }
 
 /// The Swift half of the C# Badge: a registered control holding content
@@ -14,7 +23,7 @@ extension NodeType {
 /// by identity. One view, like any single-content control; a layout inside
 /// holds more.
 struct Badge: View {
-    var node = Node(type: .badge)
+    var node = Node(contract: BadgeContract.self)
 
     /// A badge with nothing under the bubble.
     init() {}
@@ -24,13 +33,12 @@ struct Badge: View {
     /// The closure runs as the badge is built, so a state it reads is read by
     /// the view that writes the badge.
     init(@ViewBuilder content: () -> [Element]) {
-        node = Node(type: .badge, children: content().map { $0.body })
+        node = Node(contract: BadgeContract.self, children: content().map { $0.body })
     }
 
-    /// What the bubble says; at 0 the bubble hides. C#: `Badge.Count`,
-    /// declared in the registration under the library's own `count`.
+    /// What the bubble says; at 0 the bubble hides. C#: `Badge.Count`.
     func count(_ value: Int) -> Self {
-        setValue(.count, .number(Double(value)))
+        setValue(BadgeContract.count, value)
     }
 }
 
@@ -45,20 +53,25 @@ struct CustomContainerSample: SampleContent, ExampleContent {
     static let summary = "A registered C# control holding content described in Swift."
 
     static let code = """
-        extension NodeType {
-            static let badge = NodeType("Gallery.Badge")
+        enum BadgeContract: ElementContract {
+            static let nodeType: NodeType = "Gallery.Badge"
+            static let tiers: [any Contract.Type] = [ViewContract.self]
+
+            // A count has no half way, so a change does not travel.
+            static let count = ElementProperty<Self, Int>("count", travels: false)
+
+            static let members: [any ContractMember] = [count]
         }
 
         struct Badge: View {
-            var node = Node(type: .badge)
+            var node = Node(contract: BadgeContract.self)
 
             init(@ViewBuilder content: () -> [Element]) {
-                node = Node(type: .badge, children: content().map { $0.body })
+                node = Node(contract: BadgeContract.self, children: content().map { $0.body })
             }
 
-            // The library's own `count`, declared by the C# registration.
             func count(_ value: Int) -> Self {
-                setValue(.count, .number(Double(value)))
+                setValue(BadgeContract.count, value)
             }
         }
 

@@ -1,18 +1,8 @@
 #if MAUI
 import StateUI
 
-/// The events MauiProgram raises on its own schedule, with no control behind
-/// them.
-extension Event {
-    /// The battery reported: its level and whether it is charging.
-    /// C#: `Battery.Default.BatteryInfoChanged`.
-    static let batteryChanged = Event("Gallery.BatteryChanged")
-
-    /// The network came or went. C#: `Connectivity.ConnectivityChanged`.
-    static let connectivityChanged = Event("Gallery.ConnectivityChanged")
-}
-
-/// Events C# raises with no control behind them, heard by name.
+/// Events C# raises with no control behind them, heard through the
+/// application's contract.
 struct CustomEventsSample: SampleContent, ExampleContent {
     @State private var battery = "not heard yet"
     @State private var network = "not heard yet"
@@ -21,12 +11,24 @@ struct CustomEventsSample: SampleContent, ExampleContent {
 
     static let id = "customEvents"
     static let title = "Hearing from C#"
-    static let summary = "Events C# raises on its own, heard by name with no control behind them."
+    static let summary = "Events C# raises on its own, heard with no control behind them."
 
     static let code = """
-        extension Event {
-            static let batteryChanged = Event("Gallery.BatteryChanged")
-            static let connectivityChanged = Event("Gallery.ConnectivityChanged")
+        // The application's own acts and events, with no control behind them.
+        enum GalleryContract: ApplicationTier {
+            static let name = "Gallery"
+
+            static let setClipboard = ElementAct<Self, String, Void>("Gallery.SetClipboard")
+            static let readClipboard = ElementAct<Self, Void, String>("Gallery.ReadClipboard")
+            static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("Gallery.BatteryLevel")
+            static let nobody = ElementAct<Self, Void, Void>("Gallery.Nobody")
+
+            static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Gallery.BatteryChanged")
+            static let connectivityChanged = ElementEvent<Self, Bool>("Gallery.ConnectivityChanged")
+
+            static let members: [any ContractMember] = [
+                setClipboard, readClipboard, batteryLevel, nobody, batteryChanged, connectivityChanged,
+            ]
         }
 
         @State private var battery = "not heard yet"
@@ -50,15 +52,12 @@ struct CustomEventsSample: SampleContent, ExampleContent {
         .onCreated {
             heard.forEach { $0.cancel() }
             heard = [
-                HostEvents.on(.batteryChanged) { payload in
-                    if let level = payload.value()?.number {
-                        let charging = payload.value(1)?.bool == true
-                        battery = "\\(Int(level * 100))%" + (charging ? ", charging" : "")
-                        log.append("\\(log.count + 1). battery: \\(battery)")
-                    }
+                HostEvents.on(GalleryContract.batteryChanged) { level, charging in
+                    battery = "\\(Int(level * 100))%" + (charging ? ", charging" : "")
+                    log.append("\\(log.count + 1). battery: \\(battery)")
                 },
-                HostEvents.on(.connectivityChanged) { payload in
-                    network = payload.value()?.bool == true ? "online" : "offline"
+                HostEvents.on(GalleryContract.connectivityChanged) { online in
+                    network = online ? "online" : "offline"
                     log.append("\\(log.count + 1). network: \\(network)")
                 },
             ]
@@ -89,15 +88,12 @@ struct CustomEventsSample: SampleContent, ExampleContent {
         .onCreated {
             heard.forEach { $0.cancel() }
             heard = [
-                HostEvents.on(.batteryChanged) { payload in
-                    if let level = payload.value()?.number {
-                        let charging = payload.value(1)?.bool == true
-                        battery = "\(Int(level * 100))%" + (charging ? ", charging" : "")
-                        log.append("\(log.count + 1). battery: \(battery)")
-                    }
+                HostEvents.on(GalleryContract.batteryChanged) { level, charging in
+                    battery = "\(Int(level * 100))%" + (charging ? ", charging" : "")
+                    log.append("\(log.count + 1). battery: \(battery)")
                 },
-                HostEvents.on(.connectivityChanged) { payload in
-                    network = payload.value()?.bool == true ? "online" : "offline"
+                HostEvents.on(GalleryContract.connectivityChanged) { online in
+                    network = online ? "online" : "offline"
                     log.append("\(log.count + 1). network: \(network)")
                 },
             ]
@@ -112,8 +108,9 @@ struct CustomEventsSample: SampleContent, ExampleContent {
         VStack {
             Label("C# calls `StateUIEvents.Raise(name, values)` when its own event "
                 + "fires, from any thread. Every `HostEvents.on` subscription to that "
-                + "name runs like a control's handler: on the library's executor, free "
-                + "to await and to write `@State`.")
+                + "member of `GalleryContract` runs like a control's handler: on the "
+                + "library's executor, handed the values the contract declares, free to "
+                + "await and to write `@State`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

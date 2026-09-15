@@ -11,28 +11,27 @@ struct CustomBindingSample: SampleContent, ExampleContent {
     static let summary = "A registered control handed a state with $ - shown, and written back on a tap."
 
     static let code = """
-        extension NodeType {
-            static let ratingBar = NodeType("Gallery.RatingBar")
-        }
+        enum RatingBarContract: ElementContract {
+            static let nodeType: NodeType = "Gallery.RatingBar"
+            static let tiers: [any Contract.Type] = [ViewContract.self]
 
-        extension Prop {
-            static let rating = Prop("rating")
-        }
+            static let rating = ElementProperty<Self, Double>("rating")
+            static let ratingChanged = ElementEvent<Self, Double>("ratingChanged")
+            static let flash = ElementAct<Self, Void, Void>("Gallery.FlashRating")
 
-        extension Event {
-            static let ratingChanged = Event("ratingChanged")
+            static let members: [any ContractMember] = [rating, ratingChanged, flash]
         }
 
         protocol RatingBarProperties: PropertyContainer {}
 
         extension RatingBarProperties {
             func rating(_ value: Double) -> Modified {
-                setValue(.rating, .number(value))
+                setValue(RatingBarContract.rating, value)
             }
         }
 
         struct RatingBar: View, RatingBarProperties {
-            var node = Node(type: .ratingBar)
+            var node = Node(contract: RatingBarContract.self)
 
             init() {}
 
@@ -45,15 +44,11 @@ struct CustomBindingSample: SampleContent, ExampleContent {
             }
 
             func rating(_ state: Binding<Double>) -> Modified {
-                setValue(.rating, on: state, mode: .inOut, kind: .property)
+                setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
             }
 
             func onRatingChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
-                onEvent(.ratingChanged) { payload in
-                    if let rating = payload.value()?.number {
-                        try await handler(rating)
-                    }
-                }
+                onEvent(RatingBarContract.ratingChanged, handler)
             }
         }
 

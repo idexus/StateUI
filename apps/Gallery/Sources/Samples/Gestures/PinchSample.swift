@@ -47,11 +47,10 @@ struct PinchSample: SampleContent, ExampleContent {
                     pinch = max(0.5, min(3, pinch * update.scale))
                 }
             }
-            // Beside the typed handler, not instead of it: what the host
-            // actually sent, before anything reads it - typed values, one per
-            // field of the report.
-            .onEvent(.pinchUpdated) { payload in
-                let line = payload.map { "\\($0)" }.joined(separator: "  ")
+            // Beside the typed handler, not instead of it: the report's
+            // three values as the view's contract declares them.
+            .onEvent(ViewContract.pinchUpdated) { phase, scale, origin in
+                let line = "\\(phase)  \\(scale)  \\(origin.x), \\(origin.y)"
                 log = (log + [line]).suffix(6).map { $0 }
             }
 
@@ -103,13 +102,13 @@ struct PinchSample: SampleContent, ExampleContent {
                     pinch = max(0.5, min(3, pinch * update.scale))
                 }
             }
-            // Beside the typed handler, not instead of it: what the host
-            // actually sent, before anything reads it - typed values, one per
-            // field of the report. A gesture that stops reporting and a
-            // payload this side cannot read look identical from the outside,
-            // and this is what tells them apart.
-            .onEvent(.pinchUpdated) { payload in
-                let line = payload.map { "\($0)" }.joined(separator: "  ")
+            // Beside the typed handler, not instead of it: the report's three
+            // values as the view's contract declares them - its phase, its
+            // scale, and where it is centred. A report of another shape
+            // reaches no handler and is said once, which is what tells a
+            // gesture that stopped reporting from one this side cannot read.
+            .onEvent(ViewContract.pinchUpdated) { phase, scale, origin in
+                let line = "\(phase)  \(scale)  \(origin.x), \(origin.y)"
                 log = (log + [line]).suffix(6).map { $0 }
             }
 
@@ -123,8 +122,7 @@ struct PinchSample: SampleContent, ExampleContent {
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
 
-            // What arrived, verbatim: status, scale, and where the pinch is
-            // centred.
+            // What arrived: phase, scale, and where the pinch is centred.
             VStack {
                 ForEach(Array(log.enumerated()), id: \.offset) { pair in
                     Label(pair.element)

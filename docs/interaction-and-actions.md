@@ -181,59 +181,70 @@ the second makes the dependency explicit.
 
 ## Host-extension actions
 
-Open `Act` values let a host package define an extension boundary and wrap its
-low-level call in a typed function:
+An application reaches its own host code through acts it declares in a tier
+the application wears - an `ApplicationTier` - each with the types of its
+arguments and its answer:
 
-```swift quote
-extension Act {
-    static let exportDocument = Act("com.example.notes.export-document")
+```swift
+enum NotesContract: ApplicationTier {
+    static let name = "Notes"
+
+    static let exportDocument = ElementAct<Self, String, String>("Notes.ExportDocument")
+
+    static let members: [any ContractMember] = [exportDocument]
 }
 
-@MainThread
-func export(_ id: String) async throws -> String {
-    let result = try await stateUICall(.exportDocument, [.string(id)])
-    guard let location = result.first?.string else {
-        throw StateUIError(message: "The export returned no location")
-    }
-    return location
+@State var location = ""
+
+Button("Export").onClicked {
+    location = try await stateUICall(NotesContract.exportDocument, "draft-7")
 }
 ```
 
-`stateUICall` waits for typed return values and throws `StateUIError` on a host
-failure. `stateUISend` is fire-and-forget and therefore has no error result;
-use it only when no later decision depends on success.
+`stateUICall` hands the act the arguments its contract declares, waits for the
+answer it declares, and throws `StateUIError` on a host failure or an answer
+of another shape. `stateUISend` is fire-and-forget and therefore has no error
+result; use it only when no later decision depends on success.
 
 A batch of actions is not a transaction. Use ordinary Swift control flow and
 `await` for ordering.
 
 The MAUI host registers an application's acts in C# with `StateUIActs.Add`;
 [MAUI host](maui-host.md#an-act) shows both halves. The AppKit host exposes no
-action-handler registry: declaring the token is not enough there, and AppKit
+action-handler registry: declaring the act is not enough there, and AppKit
 rejects an act it does not own.
 
 ## Host-extension events
 
 `HostEvents` represents a provider notification with no tree element. The
-subscription must be retained and cancelled when its owner leaves:
+application declares it in its contract with the types of the values it
+carries, and the subscription must be retained and cancelled when its owner
+leaves:
 
-```swift quote
-extension Event {
-    static let importFinished = Event("com.example.notes.import-finished")
+```swift
+enum NotesContract: ApplicationTier {
+    static let name = "Notes"
+
+    static let importFinished = ElementEvent<Self, String>("Notes.ImportFinished")
+
+    static let members: [any ContractMember] = [importFinished]
 }
 
+@State var imported = ""
 var subscription: HostEventSubscription?
 
-subscription = HostEvents.on(.importFinished) { payload in
-    imported = payload.first?.string
+subscription = HostEvents.on(NotesContract.importFinished) { location in
+    imported = location
 }
 
 subscription?.cancel()
 subscription = nil
 ```
 
-An ordinary control or gesture event always belongs on its element instead.
-Use open host events only for provider-owned notifications that genuinely have
-no element identity.
+A raise carrying values of another shape is reported once and reaches no
+handler. An ordinary control or gesture event always belongs on its element
+instead. Use an application's events only for provider-owned notifications
+that genuinely have no element identity.
 
 The MAUI host raises such an event from C# with `StateUIEvents.Raise`; see
 [MAUI host](maui-host.md#an-event-without-a-control). The typed AppKit SPI

@@ -412,10 +412,11 @@ public static class MauiProgram
 }
 ```
 
-The Swift half of each registration is ordinary StateUI API. Only the
-registries on this page are specific to the MAUI host; the AppKit host has no
-equivalent. The Gallery's "C# interop" group, compiled under `#if MAUI`, shows
-every kind of registration working.
+The Swift half of each registration is a contract - the control's own, or the
+application's for an act or an event with no control behind it - written with
+ordinary StateUI API. Only the registries on this page are specific to the
+MAUI host; the AppKit host has no equivalent. The Gallery's "C# interop"
+group, compiled under `#if MAUI`, shows every kind of registration working.
 
 ### A control
 
@@ -478,41 +479,37 @@ StateUIActs.Add("Notes.FlashLight", call =>
 });
 ```
 
-The Swift half describes the same node type:
+The Swift half declares the same names in the control's contract, each with
+the type of its value, and describes the node type through it:
 
 - it writes the property with `setValue`;
 - it hears the event with `onEvent`;
-- it aims the act at the control with an
+- it performs the act on the control through an
   [`Aim`](interaction-and-actions.md#aims-and-control-methods).
 
 ```swift
-extension NodeType {
-    static let trafficLight = NodeType("Notes.TrafficLight")
-}
+enum TrafficLightContract: ElementContract {
+    static let nodeType: NodeType = "Notes.TrafficLight"
+    static let tiers: [any Contract.Type] = [ViewContract.self]
 
-extension Prop {
-    static let lightPhase = Prop("phase")
-}
+    static let phase = ElementProperty<Self, String>("phase")
+    static let lightTapped = ElementEvent<Self, Int>("lightTapped")
+    static let flash = ElementAct<Self, Int, Void>("Notes.FlashLight")
 
-extension Event {
-    static let lightTapped = Event("lightTapped")
-}
-
-extension Act {
-    static let flashLight = Act("Notes.FlashLight")
+    static let members: [any ContractMember] = [phase, lightTapped, flash]
 }
 
 struct TrafficLight: View {
-    var node = Node(type: .trafficLight)
+    var node = Node(contract: TrafficLightContract.self)
 
     func phase(_ value: String) -> Modified {
-        setValue(.lightPhase, .string(value))
+        setValue(TrafficLightContract.phase, value)
     }
 }
 
 extension Aim where Target == TrafficLight {
     func flash(times: Int) async throws {
-        try await stateUICall(.flashLight, [try target, .number(Double(times))])
+        try await call(TrafficLightContract.flash, times)
     }
 }
 
@@ -527,16 +524,17 @@ struct Crossing: ContentView {
             TrafficLight()
                 .phase(phase)
                 .aim(light)
-                .onEvent(.lightTapped) { _ in taps += 1 }
+                .onEvent(TrafficLightContract.lightTapped) { _ in taps += 1 }
             Button("Flash").onClicked { try await light.flash(times: 3) }
         }
     }
 }
 ```
 
-`Aim.target` puts the control's identity in argument 0, and
-`StateUIActs.TargetOf` turns it back into the control. `TargetOf` answers null
-when the control has left the tree before the host performs the act.
+`Aim.call` puts the control's identity in argument 0, ahead of the arguments
+the contract declares, and `StateUIActs.TargetOf` turns it back into the
+control. `TargetOf` answers null when the control has left the tree before the
+host performs the act.
 
 A Swift `Style` can target the control once its Swift struct conforms to
 `StyleTarget`. Styles resolve on the Swift side, so the control arrives with
@@ -559,19 +557,20 @@ StateUIControls.Add("Notes.Gauge",
 ```
 
 ```swift
-extension NodeType {
-    static let gauge = NodeType("Notes.Gauge")
-}
+enum GaugeContract: ElementContract {
+    static let nodeType: NodeType = "Notes.Gauge"
+    static let tiers: [any Contract.Type] = [ViewContract.self]
 
-extension Prop {
-    static let gaugeLevel = Prop("level")
+    static let level = ElementProperty<Self, Double>("level")
+
+    static let members: [any ContractMember] = [level]
 }
 
 struct Gauge: View {
-    var node = Node(type: .gauge)
+    var node = Node(contract: GaugeContract.self)
 
     func level(_ state: Binding<Double>) -> Modified {
-        setValue(.gaugeLevel, on: state, mode: .inOut, kind: .property)
+        setValue(GaugeContract.level, on: state, mode: .inOut, kind: .property)
     }
 }
 
@@ -593,8 +592,10 @@ to `level`, and its journey, reaches the control without rebuilding
 
 ### An act
 
-`StateUIActs.Add` registers a function that Swift calls by name with
-`stateUICall` or `stateUISend`. There are two overloads:
+`StateUIActs.Add` registers a function under the name of an act a Swift
+contract declares: the application's, called with `stateUICall` or
+`stateUISend`, or a control's, performed through the control's aim. `Add` has
+two overloads:
 
 ```csharp
 public static void Add(string name, Func<HostActCall, Task<HostValue[]>> performer)
@@ -619,7 +620,8 @@ StateUIActs.Add("Notes.Export", async call =>
   `GetEnumeration`. It answers with values built by `HostValue.Of`,
   `OfMember`, or `OfValues`, and answers empty when it has nothing to say.
 - **Failure.** An exception fails the act: the awaiting Swift handler throws
-  `StateUIError` with the exception's message.
+  `StateUIError` with the exception's message. So does an answer of another
+  shape than the act's contract declares.
 - **Scope.** A registration never shadows an act of the host's own.
 
 The Swift half is under
@@ -636,8 +638,9 @@ Battery.Default.BatteryInfoChanged += (_, e) =>
 ```
 
 `Raise` is safe from any thread. It drops an event nobody subscribed to, and
-one raised before the first interface exists. The Swift side subscribes with
-`HostEvents.on`; see
+one raised before the first interface exists. The Swift side declares the
+event in the application's contract and subscribes with `HostEvents.on`; a
+raise whose values differ from the declaration reaches no handler. See
 [Host-extension events](interaction-and-actions.md#host-extension-events).
 
 ### A persistent store

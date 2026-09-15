@@ -5,23 +5,27 @@
 
 import StateUI
 
-extension NodeType {
-    /// The C# RatingBar, registered under this name.
-    static let ratingBar = NodeType("Gallery.RatingBar")
-}
+/// The C# RatingBar, declared: its node type, the tier it wears, and its
+/// members under the names MauiProgram registers, each with its value's type.
+enum RatingBarContract: ElementContract {
+    static let nodeType: NodeType = "Gallery.RatingBar"
+    static let tiers: [any Contract.Type] = [ViewContract.self]
 
-extension Prop {
     /// How many stars are filled. C#: `RatingBar.RatingProperty`, declared in
     /// the registration, so the host assigns it, walks it and lets a style
     /// set it.
-    static let rating = Prop("rating")
-}
+    static let rating = ElementProperty<Self, Double>("rating")
 
-extension Event {
     /// A star was tapped. C#: `RatingBar.RatingChanged`. A value this side
     /// assigns - described, styled or walked - never comes back as this
     /// event.
-    static let ratingChanged = Event("ratingChanged")
+    static let ratingChanged = ElementEvent<Self, Double>("ratingChanged")
+
+    /// Draws attention to one bar. C#: the performer fades the control
+    /// `StateUIActs.TargetOf` answers.
+    static let flash = ElementAct<Self, Void, Void>("Gallery.FlashRating")
+
+    static let members: [any ContractMember] = [rating, ratingChanged, flash]
 }
 
 /// The RatingBar's own properties. The control wears them and so does its
@@ -31,14 +35,14 @@ protocol RatingBarProperties: PropertyContainer {}
 extension RatingBarProperties {
     /// How many stars are filled, 0 through 5. C#: `RatingBar.Rating`.
     func rating(_ value: Double) -> Modified {
-        setValue(.rating, .number(value))
+        setValue(RatingBarContract.rating, value)
     }
 }
 
 /// Five stars drawn by a control written in C#, described here like a
 /// built-in one.
 struct RatingBar: View, RatingBarProperties {
-    var node = Node(type: .ratingBar)
+    var node = Node(contract: RatingBarContract.self)
 
     /// An empty bar: the value set with `.rating(_:)`, a tap heard with
     /// `.onRatingChanged(_:)`.
@@ -75,17 +79,13 @@ struct RatingBar: View, RatingBarProperties {
     /// On the control and not on `RatingBarProperties`: a style wears that
     /// protocol, and a style has no state to follow.
     func rating(_ state: Binding<Double>) -> Modified {
-        setValue(.rating, on: state, mode: .inOut, kind: .property)
+        setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
     }
 
     /// A star was tapped, with the rating it gave. Runs beside a binding's
     /// write-back, never instead of it.
     func onRatingChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
-        onEvent(.ratingChanged) { payload in
-            if let rating = payload.value()?.number {
-                try await handler(rating)
-            }
-        }
+        onEvent(RatingBarContract.ratingChanged, handler)
     }
 }
 

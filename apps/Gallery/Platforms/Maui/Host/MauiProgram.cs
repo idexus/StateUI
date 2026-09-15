@@ -16,10 +16,10 @@ public static class MauiProgram
         // everywhere else it is MAUI's own UseMauiApp.
         builder.UseStateUIApp<App>();
 
-        // The gallery's own acts: C# functions registered under the names the
-        // Swift side declares as Act tokens - see
-        // Sources/Samples/Interop/CustomActsSample.swift. A performer is a
-        // plain or an async function, the two shapes Add takes.
+        // The gallery's own acts: C# functions registered under the names
+        // the application's contract declares, with what each takes and
+        // answers - see Sources/Samples/Interop/GalleryContract.swift. A
+        // performer is a plain or an async function, the two shapes Add takes.
         StateUIActs.Add("Gallery.SetClipboard", async call =>
         {
             await Clipboard.Default.SetTextAsync(call.GetString(0) ?? "");
@@ -35,9 +35,10 @@ public static class MauiProgram
                 HostValue.Of(Battery.Default.State == BatteryState.Charging),
             ]);
 
-        // An act aimed at a control: argument 0 is the control's identity, and
-        // TargetOf turns it back into the control - null once the control has
-        // left the screen, which is an ordinary answer.
+        // An act aimed at a control, declared in the control's contract - see
+        // Sources/Samples/Interop/RatingBar.swift: argument 0 is the control's
+        // identity, and TargetOf turns it back into the control - null once
+        // the control has left the screen, which is an ordinary answer.
         StateUIActs.Add("Gallery.FlashRating", async call =>
         {
             if (StateUIActs.TargetOf(call) is RatingBar bar)
@@ -50,9 +51,10 @@ public static class MauiProgram
         });
 
         // The gallery's own pushes: events raised by name with no control
-        // behind them - see Sources/Samples/Interop/CustomEventsSample.swift.
-        // Safe from any thread, and a raise nobody hears is an ordinary
-        // answer, so the sources are wired unconditionally.
+        // behind them, declared in the same contract - see
+        // Sources/Samples/Interop/GalleryContract.swift. Safe from any
+        // thread, and a raise nobody hears is an ordinary answer, so the
+        // sources are wired unconditionally.
         Battery.Default.BatteryInfoChanged += (_, e) =>
             StateUIEvents.Raise("Gallery.BatteryChanged",
                 HostValue.Of(e.ChargeLevel),

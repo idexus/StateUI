@@ -1,26 +1,11 @@
 #if MAUI
 import StateUI
 
-extension NodeType {
-    /// The C# TrafficLight, registered under this name.
-    static let trafficLight = NodeType("Gallery.TrafficLight")
-}
-
-extension Prop {
-    /// Which lamp is lit. C#: `TrafficLight.Signal`.
-    static let signal = Prop("signal")
-}
-
-extension Event {
-    /// A lamp was tapped. C#: `TrafficLight.LampTapped`.
-    static let lampTapped = Event("lampTapped")
-}
-
 /// What the light can show.
 ///
 /// A closed vocabulary, so it crosses as its member's number. The numbers are
 /// this application's own contract, and the C# control mirrors them.
-enum TrafficSignal: Int32, CaseIterable {
+enum TrafficSignal: Int32, CaseIterable, HostRepresentable {
     /// Red. C#: 0.
     case stop = 0
 
@@ -31,25 +16,37 @@ enum TrafficSignal: Int32, CaseIterable {
     case go = 2
 }
 
-/// The Swift half of the C# TrafficLight: a view wrapping a node of the
-/// registered type. `setValue` writes its property and `onEvent` hears its
-/// event; margins, alignment, opacity and gestures come with `View`.
+/// The C# TrafficLight, declared: its node type, the tier it wears, and its
+/// members under the names MauiProgram registers, each with its value's type.
+enum TrafficLightContract: ElementContract {
+    static let nodeType: NodeType = "Gallery.TrafficLight"
+    static let tiers: [any Contract.Type] = [ViewContract.self]
+
+    /// Which lamp is lit. C#: `TrafficLight.Signal`.
+    static let signal = ElementProperty<Self, TrafficSignal>("signal")
+
+    /// A lamp was tapped, with its index from the top.
+    /// C#: `TrafficLight.LampTapped`.
+    static let lampTapped = ElementEvent<Self, Int>("lampTapped")
+
+    static let members: [any ContractMember] = [signal, lampTapped]
+}
+
+/// The Swift half of the C# TrafficLight: a view whose node its contract
+/// makes. `setValue` writes its property and `onEvent` hears its event;
+/// margins, alignment, opacity and gestures come with `View`.
 struct TrafficLight: View {
-    var node = Node(type: .trafficLight)
+    var node = Node(contract: TrafficLightContract.self)
 
     /// Which lamp is lit. C#: `TrafficLight.Signal`.
     func signal(_ value: TrafficSignal) -> Self {
-        setValue(.signal, .enumeration(value.rawValue))
+        setValue(TrafficLightContract.signal, value)
     }
 
     /// A lamp was tapped, with its index from the top.
     /// C#: `TrafficLight.LampTapped`.
     func onLampTapped(_ handler: @escaping ValueEventHandler<Int>) -> Self {
-        onEvent(.lampTapped) { payload in
-            if let index = payload.value()?.int {
-                try await handler(index)
-            }
-        }
+        onEvent(TrafficLightContract.lampTapped, handler)
     }
 }
 
@@ -63,35 +60,29 @@ struct CustomControlSample: SampleContent, ExampleContent {
     static let summary = "A control written in C# and registered by the app, described like any other."
 
     static let code = """
-        extension NodeType {
-            static let trafficLight = NodeType("Gallery.TrafficLight")
-        }
-
-        extension Prop {
-            static let signal = Prop("signal")
-        }
-
-        extension Event {
-            static let lampTapped = Event("lampTapped")
-        }
-
-        enum TrafficSignal: Int32, CaseIterable {
+        enum TrafficSignal: Int32, CaseIterable, HostRepresentable {
             case stop = 0, caution = 1, go = 2
         }
 
+        enum TrafficLightContract: ElementContract {
+            static let nodeType: NodeType = "Gallery.TrafficLight"
+            static let tiers: [any Contract.Type] = [ViewContract.self]
+
+            static let signal = ElementProperty<Self, TrafficSignal>("signal")
+            static let lampTapped = ElementEvent<Self, Int>("lampTapped")
+
+            static let members: [any ContractMember] = [signal, lampTapped]
+        }
+
         struct TrafficLight: View {
-            var node = Node(type: .trafficLight)
+            var node = Node(contract: TrafficLightContract.self)
 
             func signal(_ value: TrafficSignal) -> Self {
-                setValue(.signal, .enumeration(value.rawValue))
+                setValue(TrafficLightContract.signal, value)
             }
 
             func onLampTapped(_ handler: @escaping ValueEventHandler<Int>) -> Self {
-                onEvent(.lampTapped) { payload in
-                    if let index = payload.value()?.int {
-                        try await handler(index)
-                    }
-                }
+                onEvent(TrafficLightContract.lampTapped, handler)
             }
         }
 
@@ -145,7 +136,8 @@ struct CustomControlSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("The lamps are a C# control the gallery registers with "
-                + "`StateUIControls.Add`. The host creates it once, keeps it by "
+                + "`StateUIControls.Add`, under the names `TrafficLightContract` declares "
+                + "with the type of each value. The host creates it once, keeps it by "
                 + "identity between renders, runs the registration's `apply`, and then "
                 + "applies what every view shares - margins, alignment, opacity, "
                 + "gestures.")

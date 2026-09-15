@@ -1,32 +1,15 @@
 #if MAUI
 import StateUI
 
-/// The gallery's own acts: C# functions MauiProgram registers under these
-/// names, declared the way the library declares its own.
-extension Act {
-    /// Puts text on the system clipboard. C#: `Clipboard.SetTextAsync`.
-    static let setClipboard = Act("Gallery.SetClipboard")
-
-    /// Reads the system clipboard. C#: `Clipboard.GetTextAsync`.
-    static let readClipboard = Act("Gallery.ReadClipboard")
-
-    /// The battery's level and whether it is charging. C#: `Battery.Default`.
-    static let batteryLevel = Act("Gallery.BatteryLevel")
-
-    /// Draws attention to one rating bar. C#: the performer fades the control
-    /// `StateUIActs.TargetOf` answers.
-    static let flashRating = Act("Gallery.FlashRating")
-}
-
-/// An act aimed at a control the application registers.
+/// An act of the bar's contract, aimed at one bar.
 ///
-/// `target` is the control's identity and goes in argument 0; the C# half
-/// turns it back into the control with `StateUIActs.TargetOf(command)`. Two
-/// bars on one page each answer to their own aim.
+/// `call` puts the control's identity in argument 0; the C# half turns it
+/// back into the control with `StateUIActs.TargetOf(command)`. Two bars on one
+/// page each answer to their own aim.
 extension Aim where Target == RatingBar {
     /// Flashes the bar this aim is on.
     func flash() async throws {
-        try await stateUICall(.flashRating, [try target])
+        try await call(RatingBarContract.flash)
     }
 }
 
@@ -42,17 +25,28 @@ struct CustomActsSample: SampleContent, ExampleContent {
     static let summary = "A C# function the app registers - called, awaited, and failing out loud."
 
     static let code = """
-        extension Act {
-            static let setClipboard = Act("Gallery.SetClipboard")
-            static let readClipboard = Act("Gallery.ReadClipboard")
-            static let batteryLevel = Act("Gallery.BatteryLevel")
-            static let flashRating = Act("Gallery.FlashRating")
+        // The application's own acts and events, with no control behind them.
+        enum GalleryContract: ApplicationTier {
+            static let name = "Gallery"
+
+            static let setClipboard = ElementAct<Self, String, Void>("Gallery.SetClipboard")
+            static let readClipboard = ElementAct<Self, Void, String>("Gallery.ReadClipboard")
+            static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("Gallery.BatteryLevel")
+            static let nobody = ElementAct<Self, Void, Void>("Gallery.Nobody")
+
+            static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Gallery.BatteryChanged")
+            static let connectivityChanged = ElementEvent<Self, Bool>("Gallery.ConnectivityChanged")
+
+            static let members: [any ContractMember] = [
+                setClipboard, readClipboard, batteryLevel, nobody, batteryChanged, connectivityChanged,
+            ]
         }
 
-        // An act aimed at a control puts the control's identity first.
+        // An act of a control's own contract goes through the control's aim,
+        // which puts the control's identity first.
         extension Aim where Target == RatingBar {
             func flash() async throws {
-                try await stateUICall(.flashRating, [try target])
+                try await call(RatingBarContract.flash)
             }
         }
 
@@ -68,34 +62,32 @@ struct CustomActsSample: SampleContent, ExampleContent {
 
             Button("Copy to the clipboard")
                 .onClicked {
-                    try await stateUICall(.setClipboard, [.string(draft)])
+                    try await stateUICall(GalleryContract.setClipboard, draft)
                     status = "copied"
                 }
 
-            // An answer is typed values, read with the PropValue accessors.
+            // An answer arrives as the types the contract declares.
             Button("Paste from the clipboard")
                 .onClicked {
-                    let text = try await stateUICall(.readClipboard).value()?.string ?? ""
+                    let text = try await stateUICall(GalleryContract.readClipboard)
                     draft = text
                     status = text.isEmpty ? "the clipboard is empty" : "pasted"
                 }
 
             Button("Ask about the battery")
                 .onClicked {
-                    let reply = try await stateUICall(.batteryLevel)
-                    let level = reply.value()?.number ?? -1
-                    let charging = reply.value(1)?.bool ?? false
+                    let (level, charging) = try await stateUICall(GalleryContract.batteryLevel)
 
                     status = level <= 0
                         ? "this device does not say"
                         : "battery \\(Int(level * 100))%" + (charging ? ", charging" : "")
                 }
 
-            // A name nothing registered throws; a failure is never a silence.
+            // An act nothing registered throws; a failure is never a silence.
             Button("Call something nobody registered")
                 .onClicked {
                     do {
-                        try await stateUICall(Act("Gallery.Nobody"))
+                        try await stateUICall(GalleryContract.nobody)
                         status = "that should have thrown"
                     } catch {
                         status = "thrown: \\(error)"
@@ -126,22 +118,20 @@ struct CustomActsSample: SampleContent, ExampleContent {
 
             Button("Copy to the clipboard")
                 .onClicked {
-                    try await stateUICall(.setClipboard, [.string(draft)])
+                    try await stateUICall(GalleryContract.setClipboard, draft)
                     status = "copied"
                 }
 
             Button("Paste from the clipboard")
                 .onClicked {
-                    let text = try await stateUICall(.readClipboard).value()?.string ?? ""
+                    let text = try await stateUICall(GalleryContract.readClipboard)
                     draft = text
                     status = text.isEmpty ? "the clipboard is empty" : "pasted"
                 }
 
             Button("Ask about the battery")
                 .onClicked {
-                    let reply = try await stateUICall(.batteryLevel)
-                    let level = reply.value()?.number ?? -1
-                    let charging = reply.value(1)?.bool ?? false
+                    let (level, charging) = try await stateUICall(GalleryContract.batteryLevel)
 
                     // A desktop without a battery answers 0, so only a level
                     // above zero counts.
@@ -153,7 +143,7 @@ struct CustomActsSample: SampleContent, ExampleContent {
             Button("Call something nobody registered")
                 .onClicked {
                     do {
-                        try await stateUICall(Act("Gallery.Nobody"))
+                        try await stateUICall(GalleryContract.nobody)
                         status = "that should have thrown"
                     } catch {
                         status = "thrown: \(error)"
@@ -181,20 +171,24 @@ struct CustomActsSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("`StateUIActs.Add` registers a C# function under a name at startup. "
-                + "This side declares the same name as an `Act` and calls it with "
-                + "`stateUICall` from any handler: typed arguments in, typed values back.")
+                + "`GalleryContract` declares the same name as an act of the application, "
+                + "with what it takes and answers, and `stateUICall` calls it from any "
+                + "handler: typed arguments in, typed values back.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("A performer that throws, and a name nothing registered, resume the "
-                + "handler by throwing `StateUIError` with the reason. Prefix the names "
-                + "with the application's own, so they never meet the library's.")
+            Label("A performer that throws, a name nothing registered, and an answer of "
+                + "another shape than the contract's resume the handler by throwing "
+                + "`StateUIError` with the reason. Prefix the names with the application's "
+                + "own, so they never meet the library's.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("An aimed act puts `try target` in argument 0, and the performer turns "
-                + "it back into the control with `StateUIActs.TargetOf(command)`, which "
-                + "answers null once that control has left the screen.")
+            Label("An act of a control's own is declared in the control's contract and "
+                + "called through its aim: `call` puts the control's identity in argument "
+                + "0, and the performer turns it back into the control with "
+                + "`StateUIActs.TargetOf(command)`, which answers null once that control "
+                + "has left the screen.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
