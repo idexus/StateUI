@@ -275,7 +275,8 @@ final class DrivenWireTests: XCTestCase {
     /// A walked twin for a property nothing declares, or over a value nothing
     /// interpolates, would compile and then do nothing at all - which is the
     /// one failure this library refuses to ship. Read off the source: every
-    /// `journey(.x, by:)` under a `public func x(_ state: Binding<T>)`.
+    /// `journey(.x, by:)` - or `journey(SomeContract.x, by:)`, the member with
+    /// its contract - under a `public func x(_ state: Binding<T>)`.
     func testEveryWalkedModifierNamesACarriedPropertyOfTheSameName() throws {
         let sources = try Fixtures.allSources()
 
@@ -296,7 +297,10 @@ final class DrivenWireTests: XCTestCase {
                 if let name = written.occurrences(between: "public func ", and: "(").first,
                    let type = written.occurrences(between: "Binding<", and: ">").first {
                     signature = (name, type)
-                } else if written.contains("journey(."), let signature {
+                } else if let property = written.occurrences(between: "journey(", and: ",").first,
+                          property.hasPrefix(".")
+                            || property.split(separator: ".").first?.hasSuffix("Contract") == true,
+                          let signature {
                     walked.append(signature)
                 }
             }

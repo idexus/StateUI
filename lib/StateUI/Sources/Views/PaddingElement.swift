@@ -18,7 +18,7 @@ extension PaddingElement {
     /// Margin is the space outside.
     ///
     ///     VStack { … }.padding(24)
-    public func padding(_ value: Insets) -> Modified { setValue(.padding, value.propValue) }
+    public func padding(_ value: Insets) -> Modified { setValue(PaddingElementContract.padding, value) }
 
     /// Left and right, then top and bottom.
     public func padding(_ horizontalSize: Double, _ verticalSize: Double) -> Modified {

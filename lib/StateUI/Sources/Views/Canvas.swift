@@ -84,7 +84,7 @@ public struct Canvas: View, CanvasProperties {
         addHandler(event) {
             // A payload that will not parse leaves the handler alone, the way a
             // gesture's does: half a point is worse than none.
-            if let point = Point(EventBuffer.current.value()) {
+            if let point = EventBuffer.current.value().flatMap(Point.init(propValue:)) {
                 try await handler(point)
             }
         }

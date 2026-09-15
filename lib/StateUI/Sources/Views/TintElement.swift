@@ -16,6 +16,6 @@ extension TintElement {
     ///     Switch($isOn).tint(.orange)
     ///     Slider($volume).tint(.orange)
     public func tint(_ value: Color) -> Modified {
-        setValue(.tint, value.propValue)
+        setValue(TintElementContract.tint, value)
     }
 }

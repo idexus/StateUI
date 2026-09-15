@@ -20,11 +20,11 @@ extension TextAlignmentElement {
     /// within its parent - a centred label in a left-aligned control looks
     /// like neither.
     public func horizontalTextAlignment(_ value: TextAlignment) -> Modified {
-        setValue(.horizontalTextAlignment, value.propValue)
+        setValue(TextAlignmentElementContract.horizontalTextAlignment, value)
     }
 
     /// Where the text sits within the control's own height.
     public func verticalTextAlignment(_ value: TextAlignment) -> Modified {
-        setValue(.verticalTextAlignment, value.propValue)
+        setValue(TextAlignmentElementContract.verticalTextAlignment, value)
     }
 }

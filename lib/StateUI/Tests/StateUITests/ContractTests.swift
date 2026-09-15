@@ -68,6 +68,82 @@ final class ContractTests: XCTestCase {
         XCTAssertNil(Bool(propValue: .string("true")))
     }
 
+    /// A list crosses in the form its values' type gives it: numbers as one
+    /// run, text as one list, points as one flat run of pairs.
+    func testAListCrossesInItsValuesForm() {
+        XCTAssertEqual([1.0, 2.5].propValue, .numbers([1, 2.5]))
+        XCTAssertEqual(["a", "b"].propValue, .strings(["a", "b"]))
+        XCTAssertEqual([Point(1, 2), Point(3, 4)].propValue, .numbers([1, 2, 3, 4]))
+
+        XCTAssertEqual([Double](propValue: .numbers([1, 2])), [1, 2])
+        XCTAssertEqual([Point](propValue: .numbers([1, 2, 3, 4])), [Point(1, 2), Point(3, 4)])
+        XCTAssertNil([Point](propValue: .numbers([1, 2, 3])), "an odd run is not points")
+        XCTAssertNil([String](propValue: .numbers([1])))
+    }
+
+    /// Text that names something crosses as a name, never as prose.
+    func testATextThatNamesCrossesAsAName() {
+        let lamp = Lamp().setValue(VisualElementContract.style, "Card")
+
+        XCTAssertEqual(lamp.node.props["style"], .name("Card"))
+    }
+
+    /// The two unions cross exactly as their parts do, and read back.
+    func testTheUnionsCrossAsTheirPartsDo() {
+        let brush = Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)])
+
+        XCTAssertEqual(Background.color(.tomato).propValue, Color.tomato.propValue)
+        XCTAssertEqual(Background.brush(brush).propValue, brush.propValue)
+        XCTAssertEqual(Background(propValue: Color.tomato.propValue), .color(.tomato))
+        XCTAssertEqual(Background(propValue: brush.propValue), .brush(brush))
+
+        XCTAssertEqual(SafeAreaEdges.uniform(.none).propValue, .enumeration(0))
+        XCTAssertEqual(
+            SafeAreaEdges.edges(left: .none, top: .container, right: .none, bottom: .container).propValue,
+            .values([.enumeration(0), .enumeration(2), .enumeration(0), .enumeration(2)]))
+        XCTAssertEqual(SafeAreaEdges(propValue: .enumeration(3)), .uniform(.all))
+        XCTAssertEqual(
+            SafeAreaEdges(propValue: .values([.enumeration(0), .enumeration(1), .enumeration(2), .enumeration(3)])),
+            .edges(left: .none, top: .keyboard, right: .container, bottom: .all))
+    }
+
+    /// Every value a tier holds comes back from its host form as itself.
+    func testAValueComesBackFromItsHostFormAsItself() {
+        func roundTrip<Value: HostRepresentable & Equatable>(_ value: Value, file: StaticString = #filePath,
+                                                             line: UInt = #line) {
+            XCTAssertEqual(Value(propValue: value.propValue), value, file: file, line: line)
+        }
+
+        roundTrip(Color.tomato)
+        roundTrip(Color(light: .white, dark: .black))
+        roundTrip(Brush.solidColor(.gold))
+        roundTrip(Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]))
+        roundTrip(Brush.radialGradient([GradientStop(.white, 0), GradientStop(.steelBlue, 1)], radius: 0.8))
+        roundTrip(Insets(1, 2, 3, 4))
+        roundTrip(Rect(1, 2, 3, 4))
+        roundTrip(Point(5, 6))
+        roundTrip(ImageSource("logo.png"))
+        roundTrip(ImageSource(light: "logo.png", dark: "logo_dark.png"))
+        roundTrip(ViewTransform.rotate(15).scaleX(1.2))
+        roundTrip(TextAlignment.center)
+        roundTrip(FontAttributes([.bold, .italic]))
+        roundTrip(SwipeDirection.all)
+        roundTrip(GesturePhase.running)
+    }
+
+    /// An optional value left off the end of a payload reads as nothing; a
+    /// required one left off refuses the payload.
+    func testAnOptionalLeftOffTheEndReadsAsNothing() {
+        let omitted: Point?? = MemberValues.decode([], as: Point?.self)
+        let given: Point?? = MemberValues.decode([.numbers([1, 2])], as: Point?.self)
+
+        XCTAssertEqual(omitted, .some(nil))
+        XCTAssertEqual(given, .some(Point(1, 2)))
+        XCTAssertNil(MemberValues.decode([], as: Point.self), "a value the contract requires")
+        XCTAssertEqual(MemberValues.decode([.number(1)], as: Int.self, String?.self).map { "\($0.0) \($0.1 ?? "-")" },
+                       "1 -")
+    }
+
     // MARK: - An event
 
     /// An event's values reach its handler as the types its contract

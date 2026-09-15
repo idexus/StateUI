@@ -13,7 +13,7 @@ import XCTest
 /// `python3 .scripts/controls-dictionary.py` rewrites the member lists,
 /// keeping every mark and note already written. A member is counted by the
 /// rule every other test here uses - `Fixtures.propertyKeys(in:)` for a
-/// property, `addHandler(.x` for a handler.
+/// property, `Fixtures.handlerKeys(in:)` for a handler.
 ///
 /// A ✅* - realized, but incomplete - says in its note what is missing, or it
 /// is a claim nobody can check; and the counts the index and the platform
@@ -97,22 +97,8 @@ final class ControlDictionaryTests: XCTestCase {
             .map { String($0.dropFirst(prefix.count)) }
     }
 
-    /// Every handler a source registers - the `.x` of `addHandler(.x`.
-    private func handlers(in file: String) throws -> Set<String> {
-        let code = try Fixtures.text(in: file).components(separatedBy: "\n")
-            .filter { !$0.trimmingCharacters(in: .whitespaces).hasPrefix("//") }
-            .joined(separator: "\n")
-        var found: Set<String> = []
-        var rest = Substring(code)
-        while let range = rest.range(of: "addHandler(.") {
-            found.insert(String(rest[range.upperBound...].prefix(while: { $0.isLetter || $0.isNumber })))
-            rest = rest[range.upperBound...]
-        }
-        return found
-    }
-
     private func declared(in file: String) throws -> Set<String> {
-        try Fixtures.propertyKeys(in: file).union(handlers(in: file))
+        try Fixtures.propertyKeys(in: file).union(Fixtures.handlerKeys(in: file))
     }
 
     func testEveryEntryHasItsFileAndTheIndexNamesIt() throws {

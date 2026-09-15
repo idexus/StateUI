@@ -352,3 +352,28 @@ public struct ViewTransform: Equatable, Sendable {
         max(0, cos(min(abs(degrees), 90) * Double.pi / 180))
     }
 }
+
+extension ViewTransform: HostRepresentable {
+    /// The matrix's six numbers - a, b, c, d, then the translation - each a
+    /// value of its own.
+    public var propValue: PropValue {
+        .values([.number(a), .number(b), .number(c), .number(d), .number(tx), .number(ty)])
+    }
+
+    /// A transform back from its six numbers - nil for anything else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard let values = propValue.values, values.count == 6 else { return nil }
+
+        let numbers = values.compactMap(\.number)
+        guard numbers.count == 6 else { return nil }
+
+        self.init()
+        a = numbers[0]
+        b = numbers[1]
+        c = numbers[2]
+        d = numbers[3]
+        tx = numbers[4]
+        ty = numbers[5]
+    }
+}

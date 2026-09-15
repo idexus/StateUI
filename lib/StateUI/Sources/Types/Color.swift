@@ -40,7 +40,7 @@
 /// different colours - `Color(light:dark:)` is one value that goes wherever a
 /// colour goes. Held as four 8-bit channels, so two spellings of one colour
 /// are equal and neither is a change worth sending.
-public struct Color: Equatable, Sendable {
+public struct Color: Equatable, Sendable, HostRepresentable {
     /// The four sRGB channels of one colour, 0-255 each - what crosses the
     /// wire.
     struct Rgba: Equatable, Sendable {
@@ -123,10 +123,29 @@ public struct Color: Equatable, Sendable {
     ///
     /// A pair is BOTH, `.themed`, for the differ to pick from as it builds the
     /// element wearing it - see the head of this file.
-    var propValue: PropValue {
+    public var propValue: PropValue {
         guard let dark else { return Color.tagged(light) }
 
         return .themed(light: Color.tagged(light), dark: Color.tagged(dark))
+    }
+
+    /// A colour back: four channels, or a pair of them - nil for anything
+    /// else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        switch propValue {
+        case .color(let red, let green, let blue, let alpha):
+            self.init(Rgba(red: red, green: green, blue: blue, alpha: alpha))
+
+        case .themed(light: .color(let red, let green, let blue, let alpha),
+                     dark: .color(let darkRed, let darkGreen, let darkBlue, let darkAlpha)):
+            self.init(
+                Rgba(red: red, green: green, blue: blue, alpha: alpha),
+                dark: Rgba(red: darkRed, green: darkGreen, blue: darkBlue, alpha: darkAlpha))
+
+        default:
+            return nil
+        }
     }
 
     /// Four channels under the colour tag.

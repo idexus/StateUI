@@ -6,7 +6,10 @@ structure, and one per tier they inherit.
 
 Members come from the sources by the rule the tests use - a property is a
 `setValue(.x`, `set(.x` or `props[.x`, a handler an `addHandler(.x`, named by
-the `on...` function that registers it when there is one. An entry's own
+the `on...` function that registers it when there is one. The same calls over a
+member written with its contract - `setValue(VisualElementContract.opacity`,
+`write(`, `describe(`, `onEvent(` - count too, the contracts under
+lib/StateUI/Sources/Contracts saying which kind the member is. An entry's own
 members are what its source file declares; an entry sharing its file with
 another takes the blocks of its own type, and a part of the structure takes
 what SOURCES names - so a file always lists what the code declares.
@@ -92,19 +95,64 @@ def uncommented(text):
     return "\n".join(l for l in text.split("\n") if not l.lstrip().startswith("//"))
 
 
+def contract_members():
+    """{(contract, member): kind} - every member the library's contracts declare, under the
+    contract type's name and the member's, its kind "property", "event" or "act"."""
+    members = {}
+    for folder, _, names in os.walk(os.path.join(SOURCES_DIR, "Contracts")):
+        for name in sorted(names):
+            if not name.endswith(".swift"):
+                continue
+            text = uncommented(open(os.path.join(folder, name), encoding="utf-8").read())
+            owner = None
+            for m in re.finditer(r"\benum (\w+)\s*:|static let (\w+) = Element(Property|Event|Act)<", text):
+                if m.group(1):
+                    owner = m.group(1)
+                elif owner:
+                    members[(owner, m.group(2))] = m.group(3).lower()
+    return members
+
+
+MEMBERS = contract_members()
+# A member written with its contract - `setValue(VisualElementContract.opacity`,
+# `$0.write(ViewContract.tapCount`, `onEvent(ViewContract.tapped` - is resolved against the
+# contracts, so the kind a contract declares, not the spelling, says what the member is.
+WRITTEN = r"\b(?:setValue|set|write|describe)\(\s*(\w+)\.(\w+)|props\[\s*(\w+)\.(\w+)"
+HEARD = r"\b(?:addHandler|onEvent)\(\s*(\w+)\.(\w+)"
+
+
+def written(code):
+    """Every property a block writes with its contract."""
+    found = set()
+    for m in re.finditer(WRITTEN, code):
+        contract, member = (m.group(1), m.group(2)) if m.group(1) else (m.group(3), m.group(4))
+        if MEMBERS.get((contract, member)) == "property":
+            found.add(member)
+    return found
+
+
+def heard(code):
+    """Every event a block subscribes, in the order it does - by its token or its contract."""
+    events = [(m.start(), m.group(1)) for m in re.finditer(r"addHandler\(\.(\w+)", code)]
+    events += [(m.start(), m.group(2)) for m in re.finditer(HEARD, code)
+               if MEMBERS.get((m.group(1), m.group(2))) == "event"]
+    return [event for _, event in sorted(events)]
+
+
 def members_of(body):
     """(properties, handlers) declared in one block - handlers as {event: modifier}."""
     code = uncommented(body)
     props = set(re.findall(r"setValue\(\.(\w+)", code))
     props |= set(re.findall(r"(?<![\w.])set\(\.(\w+)", code))
     props |= set(re.findall(r"props\[\.(\w+)\]", code))
-    handlers = {event: "" for event in re.findall(r"addHandler\(\.(\w+)", code)}
+    props |= written(code)
+    handlers = {event: "" for event in heard(code)}
     funcs = [(m.start(), m.group(1)) for m in re.finditer(r"public func (on\w+)\(", code)]
     for k, (start, name) in enumerate(funcs):
         end = funcs[k + 1][0] if k + 1 < len(funcs) else len(code)
-        event = re.search(r"addHandler\(\.(\w+)", code[start:end])
-        if event:
-            handlers[event.group(1)] = name
+        events = heard(code[start:end])
+        if events:
+            handlers[events[0]] = name
     return props, handlers
 
 

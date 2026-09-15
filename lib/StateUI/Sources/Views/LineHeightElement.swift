@@ -17,6 +17,6 @@ extension LineHeightElement {
     /// The height of a line, as a MULTIPLE of the font's own - 1.5 for half
     /// again. Said nothing about, the font's own height stands.
     public func lineHeight(_ value: Double) -> Modified {
-        setValue(.lineHeight, .number(value))
+        setValue(LineHeightElementContract.lineHeight, value)
     }
 }

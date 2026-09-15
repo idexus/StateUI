@@ -399,6 +399,12 @@ enum Fixtures {
     /// subscript is therefore read as well, without a leading dot, which is
     /// also how the properties a PAGE contributes (`props[.title]` on a local
     /// dictionary in Application.swift) are seen.
+    ///
+    /// A member written with its contract counts in the same places -
+    /// `setValue(VisualElementContract.opacity, …)`, `$0.write(ViewContract.tapCount, …)`,
+    /// `$0.describe(…)`, `props[….token]` - resolved against the library's
+    /// contracts, so the kind a contract declares, not the spelling, says it
+    /// is a property.
     static func propertyKeys(in file: String) throws -> Set<String> {
         // COMMENTS FIRST. The doc above every modifier quotes the spellings it
         // is about, and a scan that reads them would claim a property is
@@ -412,9 +418,14 @@ enum Fixtures {
         return Set(source.occurrences(between: "setValue(.", and: ","))
             .union(source.words(before: "set(.", upTo: ","))
             .union(source.occurrences(between: "props[.", and: "]"))
+            .union(members(of: .property, in: source,
+                           after: #"\b(?:setValue|set|write|describe)\(\s*|props\[\s*"#))
     }
 
-    /// Every EVENT a source file subscribes - `addHandler(.scrollYChanged)`.
+    /// Every EVENT a source file subscribes - `addHandler(.scrollYChanged)`,
+    /// or the member with its contract, `onEvent(ViewContract.tapped, …)` and
+    /// `addHandler(ViewContract.tapped.token, …)`, resolved as `propertyKeys`
+    /// resolves one.
     ///
     /// The sibling of `propertyKeys`, and the reason it exists: a modifier
     /// whose whole body is an `addHandler` writes no property, so the modifier
@@ -439,8 +450,40 @@ enum Fixtures {
             if !name.isEmpty { events.insert(String(name)) }
         }
 
-        return events
+        return events.union(members(of: .event, in: source, after: #"\b(?:addHandler|onEvent)\(\s*"#))
     }
+
+    /// Every library member of `kind` a source names right after one of the
+    /// `openers` - `setValue(VisualElementContract.opacity`. The contract is
+    /// found by its type's name among `LibraryContracts.all` and the member by
+    /// its name there, so a name no library contract declares is no member.
+    private static func members(of kind: MemberFacts.Kind, in source: String, after openers: String) -> Set<String> {
+        let regex = try! NSRegularExpression(pattern: "(?:\(openers))(\\w+)\\.(\\w+)")
+        var found: Set<String> = []
+
+        for match in regex.matches(in: source, range: NSRange(source.startIndex..., in: source)) {
+            let contract = String(source[Range(match.range(at: 1), in: source)!])
+            let member = String(source[Range(match.range(at: 2), in: source)!])
+
+            if libraryKinds[contract]?[member] == kind { found.insert(member) }
+        }
+
+        return found
+    }
+
+    /// Every library member's kind, under its contract type's name and its
+    /// own: `libraryKinds["VisualElementContract"]?["opacity"] == .property`.
+    private static let libraryKinds: [String: [String: MemberFacts.Kind]] = {
+        var kinds: [String: [String: MemberFacts.Kind]] = [:]
+
+        for contract in LibraryContracts.all {
+            for case let member as any DeclaredMember in contract.members {
+                kinds[String(describing: contract), default: [:]][member.name] = member.facts.kind
+            }
+        }
+
+        return kinds
+    }()
 
     /// Every node type a source file describes - `Node(type: .label)`. A
     /// NodeType token's member is the type name with its first letter

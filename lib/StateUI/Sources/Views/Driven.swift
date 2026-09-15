@@ -75,7 +75,7 @@ extension Label {
     /// - Parameter state: the state the words are read from.
     /// - Returns: the label, with its text driven by that state.
     public func text(_ state: Binding<String>) -> Label {
-        setValue(.text, on: state, mode: .out, kind: .text)
+        setValue(TextElementContract.text, on: state, mode: .out, kind: .text)
     }
 }
 
@@ -87,7 +87,7 @@ extension Button {
     /// - Parameter state: the state the caption is read from.
     /// - Returns: the button, with its caption driven by that state.
     public func text(_ state: Binding<String>) -> Button {
-        setValue(.text, on: state, mode: .out, kind: .text)
+        setValue(TextElementContract.text, on: state, mode: .out, kind: .text)
     }
 }
 
@@ -125,6 +125,6 @@ extension VisualElement {
     /// - Parameter state: the state the room is written onto.
     /// - Returns: the element, reporting its room there.
     public func frame(_ state: Binding<Rect>) -> Modified {
-        setValue(.frame, on: state, mode: .in, kind: .feed)
+        setValue(VisualElementContract.frame, on: state, mode: .in, kind: .feed)
     }
 }

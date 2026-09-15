@@ -17,7 +17,7 @@
 /// What an `AbsoluteLayout` places a child with, and what a frame report
 /// carries back. The numbers are device units unless the thing reading them
 /// says otherwise - `absoluteLayoutProportions` is where that is said.
-public struct Rect: Equatable, Sendable {
+public struct Rect: Equatable, Sendable, HostRepresentable {
     /// The left edge, in device units - or a fraction of the layout's width when
     /// the bounds are proportional.
     public var x: Double
@@ -48,7 +48,15 @@ public struct Rect: Equatable, Sendable {
     }
 
     /// The wire form: an array, in the initializer's order.
-    var propValue: PropValue {
+    public var propValue: PropValue {
         .numbers([x, y, width, height])
+    }
+
+    /// A rectangle back from its four numbers - nil for anything else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard let numbers = propValue.numbers, numbers.count == 4 else { return nil }
+
+        self.init(numbers[0], numbers[1], numbers[2], numbers[3])
     }
 }

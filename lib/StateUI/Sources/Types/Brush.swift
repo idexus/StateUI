@@ -52,7 +52,7 @@ public struct GradientStop: Equatable, Sendable {
 ///
 /// A brush is where a gradient goes: `.background` takes one colour or one of
 /// these.
-public struct Brush: Equatable, Sendable {
+public struct Brush: Equatable, Sendable, HostRepresentable {
     /// Which of the three brushes this is, as the number that crosses - a
     /// closed vocabulary, so it rides its member rather than a spelling. The
     /// numbers are this library's own, like every other vocabulary's: see the
@@ -141,7 +141,7 @@ public struct Brush: Equatable, Sendable {
 
     /// The kind, then what that kind is made of - see the note at the top of
     /// the file.
-    var propValue: PropValue {
+    public var propValue: PropValue {
         var values: [PropValue] = [.enumeration(kind.rawValue)]
 
         switch kind {
@@ -154,5 +154,38 @@ public struct Brush: Equatable, Sendable {
         }
 
         return .values(values)
+    }
+
+    /// A brush back: its kind, then what that kind is made of - nil for
+    /// anything else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard let values = propValue.values,
+              let kind = values.first?.enumeration.flatMap(Kind.init(rawValue:))
+        else { return nil }
+
+        switch kind {
+        case .solidColor:
+            guard values.count == 2, let color = Color(propValue: values[1]) else { return nil }
+
+            self = .solidColor(color)
+
+        case .linearGradient, .radialGradient:
+            guard values.count >= 2, let geometry = values[1].numbers, values.count % 2 == 0 else {
+                return nil
+            }
+
+            var stops: [GradientStop] = []
+
+            for index in stride(from: 2, to: values.count, by: 2) {
+                guard let offset = values[index].number,
+                      let color = Color(propValue: values[index + 1])
+                else { return nil }
+
+                stops.append(GradientStop(color, offset))
+            }
+
+            self.init(kind, geometry: geometry, stops: stops)
+        }
     }
 }

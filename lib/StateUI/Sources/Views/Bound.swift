@@ -100,7 +100,7 @@ extension BorderElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func borderColor(_ state: Binding<Color>) -> Modified {
-        journey(.borderColor, by: state)
+        journey(BorderElementContract.borderColor, by: state)
     }
 
     /// `borderWidth`, handed on as `$x`: the host walks it there under the
@@ -110,7 +110,7 @@ extension BorderElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func borderWidth(_ state: Binding<Double>) -> Modified {
-        journey(.borderWidth, by: state)
+        journey(BorderElementContract.borderWidth, by: state)
     }
 
     /// `cornerRadius`, handed on as `$x`: the host sets it as it is, and
@@ -120,7 +120,7 @@ extension BorderElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func cornerRadius(_ state: Binding<Int>) -> Modified {
-        plain(.cornerRadius, by: state)
+        plain(BorderElementContract.cornerRadius, by: state)
     }
 }
 
@@ -208,7 +208,7 @@ extension DecorableTextElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func textDecorations(_ state: Binding<TextDecorations>) -> Modified {
-        plain(.textDecorations, by: state)
+        plain(DecorableTextElementContract.textDecorations, by: state)
     }
 }
 
@@ -269,7 +269,7 @@ extension FontElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func fontAttributes(_ state: Binding<FontAttributes>) -> Modified {
-        plain(.fontAttributes, by: state)
+        plain(FontElementContract.fontAttributes, by: state)
     }
 
     /// `fontAutoScalingEnabled`, handed on as `$x`: the host sets it as it is,
@@ -279,7 +279,7 @@ extension FontElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func fontAutoScalingEnabled(_ state: Binding<Bool>) -> Modified {
-        plain(.fontAutoScalingEnabled, by: state)
+        plain(FontElementContract.fontAutoScalingEnabled, by: state)
     }
 
     /// `fontSize`, handed on as `$x`: the host walks it there under the
@@ -289,7 +289,7 @@ extension FontElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func fontSize(_ state: Binding<Double>) -> Modified {
-        journey(.fontSize, by: state)
+        journey(FontElementContract.fontSize, by: state)
     }
 }
 
@@ -340,7 +340,7 @@ extension ImageElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func aspect(_ state: Binding<Aspect>) -> Modified {
-        plain(.aspect, by: state)
+        plain(ImageElementContract.aspect, by: state)
     }
 }
 
@@ -426,7 +426,7 @@ extension InputView {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func cursorPosition(_ state: Binding<Int>) -> Modified {
-        plain(.cursorPosition, by: state)
+        plain(InputViewContract.cursorPosition, by: state)
     }
 
     /// `isReadOnly`, handed on as `$x`: the host sets it as it is, and handing
@@ -435,7 +435,7 @@ extension InputView {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func isReadOnly(_ state: Binding<Bool>) -> Modified {
-        plain(.isReadOnly, by: state)
+        plain(InputViewContract.isReadOnly, by: state)
     }
 
     /// `isSpellCheckEnabled`, handed on as `$x`: the host sets it as it is, and
@@ -445,7 +445,7 @@ extension InputView {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func isSpellCheckEnabled(_ state: Binding<Bool>) -> Modified {
-        plain(.isSpellCheckEnabled, by: state)
+        plain(InputViewContract.isSpellCheckEnabled, by: state)
     }
 
     /// `isTextPredictionEnabled`, handed on as `$x`: the host sets it as it is,
@@ -455,7 +455,7 @@ extension InputView {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func isTextPredictionEnabled(_ state: Binding<Bool>) -> Modified {
-        plain(.isTextPredictionEnabled, by: state)
+        plain(InputViewContract.isTextPredictionEnabled, by: state)
     }
 
     /// `inputPurpose`, handed on as `$x`: the host sets the member it names, and
@@ -465,7 +465,7 @@ extension InputView {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func inputPurpose(_ state: Binding<InputPurpose>) -> Modified {
-        plain(.inputPurpose, by: state)
+        plain(InputViewContract.inputPurpose, by: state)
     }
 
     /// `maximumLength`, handed on as `$x`: the host sets it as it is, and handing
@@ -474,7 +474,7 @@ extension InputView {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func maximumLength(_ state: Binding<Int>) -> Modified {
-        plain(.maximumLength, by: state)
+        plain(InputViewContract.maximumLength, by: state)
     }
 
     /// `placeholder`, handed on as `$x`: the host writes the words, and handing
@@ -483,7 +483,7 @@ extension InputView {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func placeholder(_ state: Binding<String>) -> Modified {
-        words(.placeholder, by: state)
+        words(InputViewContract.placeholder, by: state)
     }
 
     /// `placeholderColor`, handed on as `$x`: the host walks it there under the
@@ -493,7 +493,7 @@ extension InputView {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func placeholderColor(_ state: Binding<Color>) -> Modified {
-        journey(.placeholderColor, by: state)
+        journey(InputViewContract.placeholderColor, by: state)
     }
 
     /// `selectionLength`, handed on as `$x`: the host sets it as it is, and
@@ -503,7 +503,7 @@ extension InputView {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func selectionLength(_ state: Binding<Int>) -> Modified {
-        plain(.selectionLength, by: state)
+        plain(InputViewContract.selectionLength, by: state)
     }
 }
 
@@ -530,7 +530,7 @@ extension Layout {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func letsInputThrough(_ state: Binding<Bool>) -> Modified {
-        plain(.letsInputThrough, by: state)
+        plain(LayoutContract.letsInputThrough, by: state)
     }
 
     /// `clipsContent`, handed on as `$x`: the host sets it as it is, and
@@ -540,7 +540,7 @@ extension Layout {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func clipsContent(_ state: Binding<Bool>) -> Modified {
-        plain(.clipsContent, by: state)
+        plain(LayoutContract.clipsContent, by: state)
     }
 
     /// `avoidsSafeArea`, handed on as `$x`: the host sets the member it names,
@@ -550,7 +550,7 @@ extension Layout {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func avoidsSafeArea(_ state: Binding<SafeArea>) -> Modified {
-        plain(.avoidsSafeArea, by: state)
+        plain(LayoutContract.avoidsSafeArea.token, by: state)
     }
 }
 
@@ -607,7 +607,7 @@ extension LineHeightElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func lineHeight(_ state: Binding<Double>) -> Modified {
-        plain(.lineHeight, by: state)
+        plain(LineHeightElementContract.lineHeight, by: state)
     }
 }
 
@@ -621,7 +621,7 @@ extension PaddingElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func padding(_ state: Binding<Insets>) -> Modified {
-        journey(.padding, by: state)
+        journey(PaddingElementContract.padding, by: state)
     }
 }
 
@@ -739,7 +739,7 @@ extension Shape {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func aspect(_ state: Binding<Aspect>) -> Modified {
-        plain(.aspect, by: state)
+        plain(ShapeContract.aspect, by: state)
     }
 
     /// `strokeDashOffset`, handed on as `$x`: the host walks it there under the
@@ -749,7 +749,7 @@ extension Shape {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func strokeDashOffset(_ state: Binding<Double>) -> Modified {
-        journey(.strokeDashOffset, by: state)
+        journey(ShapeContract.strokeDashOffset, by: state)
     }
 
     /// `strokeMiterLimit`, handed on as `$x`: the host walks it there under the
@@ -759,7 +759,7 @@ extension Shape {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func strokeMiterLimit(_ state: Binding<Double>) -> Modified {
-        journey(.strokeMiterLimit, by: state)
+        journey(ShapeContract.strokeMiterLimit, by: state)
     }
 
     /// `strokeWidth`, handed on as `$x`: the host walks it there under the
@@ -769,7 +769,7 @@ extension Shape {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func strokeWidth(_ state: Binding<Double>) -> Modified {
-        journey(.strokeWidth, by: state)
+        journey(ShapeContract.strokeWidth, by: state)
     }
 }
 
@@ -805,7 +805,7 @@ extension StackBase {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func spacing(_ state: Binding<Double>) -> Modified {
-        journey(.spacing, by: state)
+        journey(StackBaseContract.spacing, by: state)
     }
 }
 
@@ -845,7 +845,7 @@ extension TextAlignmentElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Modified {
-        plain(.horizontalTextAlignment, by: state)
+        plain(TextAlignmentElementContract.horizontalTextAlignment, by: state)
     }
 
     /// `verticalTextAlignment`, handed on as `$x`: the host sets the member it
@@ -855,7 +855,7 @@ extension TextAlignmentElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func verticalTextAlignment(_ state: Binding<TextAlignment>) -> Modified {
-        plain(.verticalTextAlignment, by: state)
+        plain(TextAlignmentElementContract.verticalTextAlignment, by: state)
     }
 }
 
@@ -869,7 +869,7 @@ extension TextStyleElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func characterSpacing(_ state: Binding<Double>) -> Modified {
-        journey(.characterSpacing, by: state)
+        journey(TextStyleElementContract.characterSpacing, by: state)
     }
 
     /// `textColor`, handed on as `$x`: the host walks it there under the
@@ -879,7 +879,7 @@ extension TextStyleElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func textColor(_ state: Binding<Color>) -> Modified {
-        journey(.textColor, by: state)
+        journey(TextStyleElementContract.textColor, by: state)
     }
 }
 
@@ -893,7 +893,7 @@ extension TintElement where Self: VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func tint(_ state: Binding<Color>) -> Modified {
-        journey(.tint, by: state)
+        journey(TintElementContract.tint, by: state)
     }
 }
 
@@ -907,7 +907,7 @@ extension View {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func absoluteLayoutProportions(_ state: Binding<AbsoluteLayoutProportions>) -> Modified {
-        plain(.absoluteLayoutProportions, by: state)
+        plain(ViewContract.absoluteLayoutProportions, by: state)
     }
 
     /// `gridColumn`, handed on as `$x`: the host sets it as it is, and handing
@@ -916,7 +916,7 @@ extension View {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func gridColumn(_ state: Binding<Int>) -> Modified {
-        plain(.gridColumn, by: state)
+        plain(ViewContract.gridColumn, by: state)
     }
 
     /// `gridColumnSpan`, handed on as `$x`: the host sets it as it is, and
@@ -926,7 +926,7 @@ extension View {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func gridColumnSpan(_ state: Binding<Int>) -> Modified {
-        plain(.gridColumnSpan, by: state)
+        plain(ViewContract.gridColumnSpan, by: state)
     }
 
     /// `gridRow`, handed on as `$x`: the host sets it as it is, and handing it
@@ -935,7 +935,7 @@ extension View {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func gridRow(_ state: Binding<Int>) -> Modified {
-        plain(.gridRow, by: state)
+        plain(ViewContract.gridRow, by: state)
     }
 
     /// `gridRowSpan`, handed on as `$x`: the host sets it as it is, and handing
@@ -944,7 +944,7 @@ extension View {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func gridRowSpan(_ state: Binding<Int>) -> Modified {
-        plain(.gridRowSpan, by: state)
+        plain(ViewContract.gridRowSpan, by: state)
     }
 
     /// `horizontalAlignment`, handed on as `$x`: the host sets the member it
@@ -954,7 +954,7 @@ extension View {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func horizontalAlignment(_ state: Binding<Alignment>) -> Modified {
-        plain(.horizontalAlignment, by: state)
+        plain(ViewContract.horizontalAlignment, by: state)
     }
 
     /// `margin`, handed on as `$x`: the host walks it there under the element's
@@ -964,7 +964,7 @@ extension View {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func margin(_ state: Binding<Insets>) -> Modified {
-        journey(.margin, by: state)
+        journey(ViewContract.margin, by: state)
     }
 
     /// `verticalAlignment`, handed on as `$x`: the host sets the member it names,
@@ -974,7 +974,7 @@ extension View {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func verticalAlignment(_ state: Binding<Alignment>) -> Modified {
-        plain(.verticalAlignment, by: state)
+        plain(ViewContract.verticalAlignment, by: state)
     }
 }
 
@@ -988,7 +988,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func pivotX(_ state: Binding<Double>) -> Modified {
-        journey(.pivotX, by: state)
+        journey(VisualElementContract.pivotX, by: state)
     }
 
     /// `pivotY`, handed on as `$x`: the host walks it there under the
@@ -998,7 +998,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func pivotY(_ state: Binding<Double>) -> Modified {
-        journey(.pivotY, by: state)
+        journey(VisualElementContract.pivotY, by: state)
     }
 
     /// `accessibilityIdentifier`, handed on as `$x`: the host writes the words, and
@@ -1008,7 +1008,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func accessibilityIdentifier(_ state: Binding<String>) -> Modified {
-        words(.accessibilityIdentifier, by: state)
+        words(PropertyContainerContract.accessibilityIdentifier, by: state)
     }
 
     /// `automationExcludedWithChildren`, handed on as `$x`: the host sets it as
@@ -1018,7 +1018,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func automationExcludedWithChildren(_ state: Binding<Bool>) -> Modified {
-        plain(.automationExcludedWithChildren, by: state)
+        plain(VisualElementContract.automationExcludedWithChildren, by: state)
     }
 
     /// `isAccessibilityHidden`, handed on as `$x`: the host sets it as
@@ -1028,7 +1028,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func isAccessibilityHidden(_ state: Binding<Bool>) -> Modified {
-        plain(.isAccessibilityHidden, by: state)
+        plain(VisualElementContract.isAccessibilityHidden, by: state)
     }
 
     /// `background`, handed on as `$x`: the host walks it there under the
@@ -1038,7 +1038,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func background(_ state: Binding<Color>) -> Modified {
-        journey(.background, by: state)
+        journey(VisualElementContract.background.token, by: state)
     }
 
     /// `layoutDirection`, handed on as `$x`: the host sets the member it names,
@@ -1048,7 +1048,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func layoutDirection(_ state: Binding<LayoutDirection>) -> Modified {
-        plain(.layoutDirection, by: state)
+        plain(VisualElementContract.layoutDirection, by: state)
     }
 
     /// `height`, handed on as `$x`: the host walks it there under the
@@ -1058,7 +1058,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func height(_ state: Binding<Double>) -> Modified {
-        journey(.height, by: state)
+        journey(VisualElementContract.height, by: state)
     }
 
     /// `ignoresInput`, handed on as `$x`: the host sets it as it is, and
@@ -1068,7 +1068,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func ignoresInput(_ state: Binding<Bool>) -> Modified {
-        plain(.ignoresInput, by: state)
+        plain(VisualElementContract.ignoresInput, by: state)
     }
 
     /// `isEnabled`, handed on as `$x`: the host sets it as it is, and handing
@@ -1077,7 +1077,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func isEnabled(_ state: Binding<Bool>) -> Modified {
-        plain(.isEnabled, by: state)
+        plain(VisualElementContract.isEnabled, by: state)
     }
 
     /// `isVisible`, handed on as `$x`: the host sets it as it is, and handing
@@ -1086,7 +1086,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func isVisible(_ state: Binding<Bool>) -> Modified {
-        plain(.isVisible, by: state)
+        plain(VisualElementContract.isVisible, by: state)
     }
 
     /// `maximumHeight`, handed on as `$x`: the host walks it there under
@@ -1096,7 +1096,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func maximumHeight(_ state: Binding<Double>) -> Modified {
-        journey(.maximumHeight, by: state)
+        journey(VisualElementContract.maximumHeight, by: state)
     }
 
     /// `maximumWidth`, handed on as `$x`: the host walks it there under
@@ -1106,7 +1106,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func maximumWidth(_ state: Binding<Double>) -> Modified {
-        journey(.maximumWidth, by: state)
+        journey(VisualElementContract.maximumWidth, by: state)
     }
 
     /// `minimumHeight`, handed on as `$x`: the host walks it there under
@@ -1116,7 +1116,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func minimumHeight(_ state: Binding<Double>) -> Modified {
-        journey(.minimumHeight, by: state)
+        journey(VisualElementContract.minimumHeight, by: state)
     }
 
     /// `minimumWidth`, handed on as `$x`: the host walks it there under
@@ -1126,7 +1126,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func minimumWidth(_ state: Binding<Double>) -> Modified {
-        journey(.minimumWidth, by: state)
+        journey(VisualElementContract.minimumWidth, by: state)
     }
 
     /// `opacity`, handed on as `$x`: the host walks it there under the
@@ -1136,7 +1136,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func opacity(_ state: Binding<Double>) -> Modified {
-        journey(.opacity, by: state)
+        journey(VisualElementContract.opacity, by: state)
     }
 
     /// `rotation`, handed on as `$x`: the host walks it there under the
@@ -1146,7 +1146,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func rotation(_ state: Binding<Double>) -> Modified {
-        journey(.rotation, by: state)
+        journey(VisualElementContract.rotation, by: state)
     }
 
     /// `rotationX`, handed on as `$x`: the host walks it there under the
@@ -1156,7 +1156,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func rotationX(_ state: Binding<Double>) -> Modified {
-        journey(.rotationX, by: state)
+        journey(VisualElementContract.rotationX, by: state)
     }
 
     /// `rotationY`, handed on as `$x`: the host walks it there under the
@@ -1166,7 +1166,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func rotationY(_ state: Binding<Double>) -> Modified {
-        journey(.rotationY, by: state)
+        journey(VisualElementContract.rotationY, by: state)
     }
 
     /// `scale`, handed on as `$x`: the host walks it there under the element's
@@ -1176,7 +1176,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func scale(_ state: Binding<Double>) -> Modified {
-        journey(.scale, by: state)
+        journey(VisualElementContract.scale, by: state)
     }
 
     /// `scaleX`, handed on as `$x`: the host walks it there under the element's
@@ -1186,7 +1186,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func scaleX(_ state: Binding<Double>) -> Modified {
-        journey(.scaleX, by: state)
+        journey(VisualElementContract.scaleX, by: state)
     }
 
     /// `scaleY`, handed on as `$x`: the host walks it there under the element's
@@ -1196,7 +1196,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func scaleY(_ state: Binding<Double>) -> Modified {
-        journey(.scaleY, by: state)
+        journey(VisualElementContract.scaleY, by: state)
     }
 
     /// `accessibilityLabel`, handed on as `$x`: the host writes the words, and
@@ -1206,7 +1206,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func accessibilityLabel(_ state: Binding<String>) -> Modified {
-        words(.accessibilityLabel, by: state)
+        words(VisualElementContract.accessibilityLabel, by: state)
     }
 
     /// `accessibilityHeadingLevel`, handed on as `$x`: the host sets the member it
@@ -1216,7 +1216,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func accessibilityHeadingLevel(_ state: Binding<HeadingLevel>) -> Modified {
-        plain(.accessibilityHeadingLevel, by: state)
+        plain(VisualElementContract.accessibilityHeadingLevel, by: state)
     }
 
     /// `accessibilityHint`, handed on as `$x`: the host writes the words, and
@@ -1226,7 +1226,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func accessibilityHint(_ state: Binding<String>) -> Modified {
-        words(.accessibilityHint, by: state)
+        words(VisualElementContract.accessibilityHint, by: state)
     }
 
     /// `translationX`, handed on as `$x`: the host walks it there under the
@@ -1236,7 +1236,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func translationX(_ state: Binding<Double>) -> Modified {
-        journey(.translationX, by: state)
+        journey(VisualElementContract.translationX, by: state)
     }
 
     /// `translationY`, handed on as `$x`: the host walks it there under the
@@ -1246,7 +1246,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func translationY(_ state: Binding<Double>) -> Modified {
-        journey(.translationY, by: state)
+        journey(VisualElementContract.translationY, by: state)
     }
 
     /// `width`, handed on as `$x`: the host walks it there under the
@@ -1256,7 +1256,7 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func width(_ state: Binding<Double>) -> Modified {
-        journey(.width, by: state)
+        journey(VisualElementContract.width, by: state)
     }
 
     /// `zIndex`, handed on as `$x`: the host sets it as it is, and handing it
@@ -1265,6 +1265,6 @@ extension VisualElement {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func zIndex(_ state: Binding<Int>) -> Modified {
-        plain(.zIndex, by: state)
+        plain(VisualElementContract.zIndex, by: state)
     }
 }

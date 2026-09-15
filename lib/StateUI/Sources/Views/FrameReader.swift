@@ -104,8 +104,8 @@ extension View {
         // what keeps a `.parent` listener out of a scroll entirely.
         let last = LastFrame()
 
-        return addHandler(.frameChanged) {
-            guard let report = FrameReport(EventBuffer.current.value()) else { return }
+        return onEvent(ViewContract.frameChanged) { numbers in
+            guard let report = FrameReport(numbers) else { return }
 
             let frame = report.frame(in: space)
             guard frame != last.rect else { return }
@@ -199,11 +199,11 @@ struct FrameReport {
     let safeArea: Rect
 
     /// Reads the eight numbers of one report - x, y, width, height, windowX,
-    /// windowY, safeX, safeY, one `numbers` value. Anything else is nil, and
-    /// the caller leaves the handler alone: a payload that will not read is
-    /// a version mismatch, not an event.
-    init?(_ value: PropValue?) {
-        guard let numbers = value?.numbers, numbers.count == 8 else { return nil }
+    /// windowY, safeX, safeY. Any other count is nil, and the caller leaves
+    /// the handler alone: a report that will not read is a version mismatch,
+    /// not an event.
+    init?(_ numbers: [Double]) {
+        guard numbers.count == 8 else { return nil }
         frame = Rect(numbers[0], numbers[1], numbers[2], numbers[3])
         global = Rect(numbers[4], numbers[5], numbers[2], numbers[3])
         safeArea = Rect(numbers[6], numbers[7], numbers[2], numbers[3])

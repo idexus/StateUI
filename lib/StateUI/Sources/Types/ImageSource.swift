@@ -24,7 +24,7 @@
 /// finds the SVG where no PNG of that name exists. A plain string is one of
 /// these, so only artwork that differs between the themes needs the type
 /// written out.
-public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral {
+public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral, HostRepresentable {
     /// The file, by name.
     public let file: String
 
@@ -73,10 +73,24 @@ public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral {
     ///
     /// A picture drawn twice is BOTH, `.themed`, for the differ to pick from
     /// as it builds the element showing it - the way a colour pair is.
-    var propValue: PropValue {
+    public var propValue: PropValue {
         guard let dark else { return .string(file) }
 
         return .themed(light: .string(file), dark: .string(dark))
+    }
+
+    /// A picture back: one file's name, or a pair of them - nil for anything
+    /// else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        switch propValue {
+        case .string(let file):
+            self.init(file)
+        case .themed(light: .string(let light), dark: .string(let dark)):
+            self.init(light: light, dark: dark)
+        default:
+            return nil
+        }
     }
 
     /// Read back off a node, for the templates that are handed an item and have

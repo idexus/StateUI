@@ -23,7 +23,7 @@ extension ImageElement {
     /// stretches, which distorts, and `.center` draws the picture at its own
     /// size in the middle, scaling nothing.
     public func aspect(_ value: Aspect) -> Modified {
-        setValue(.aspect, value.propValue)
+        setValue(ImageElementContract.aspect, value)
     }
 
 }

@@ -18,6 +18,6 @@ extension DecorableTextElement {
     ///
     ///     Label("Sold out").textDecorations(.strikethrough)
     public func textDecorations(_ value: TextDecorations) -> Modified {
-        setValue(.textDecorations, value.propValue)
+        setValue(DecorableTextElementContract.textDecorations, value)
     }
 }

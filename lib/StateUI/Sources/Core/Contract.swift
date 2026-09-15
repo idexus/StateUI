@@ -45,7 +45,7 @@
 ///         public static let fontSize = ElementProperty<Self, Double>("fontSize", layer: .native)
 ///         public static let members: [any ContractMember] = [fontSize]
 ///     }
-public protocol Contract {
+public protocol Contract: Sendable {
     /// What the contract is called: the node type's name for an element, the
     /// tier's own for a tier.
     static var name: String { get }
@@ -61,6 +61,27 @@ public protocol Contract {
 extension Contract {
     /// Nothing worn, unless the contract says.
     public static var tiers: [any Contract.Type] { [] }
+
+    /// This contract and every tier it wears, each once, nearest first - a
+    /// tier reached twice, through two of the tiers worn, counted where it was
+    /// first met.
+    static var worn: [any Contract.Type] {
+        var seen: Set<ObjectIdentifier> = []
+        var order: [any Contract.Type] = []
+
+        func visit(_ contract: any Contract.Type) {
+            guard seen.insert(ObjectIdentifier(contract)).inserted else { return }
+
+            order.append(contract)
+
+            for tier in contract.tiers {
+                visit(tier)
+            }
+        }
+
+        visit(Self.self)
+        return order
+    }
 }
 
 /// The contract of one node type: the element the tree describes, every member
@@ -180,6 +201,10 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     /// alone cannot say.
     let moves: MotionValues
 
+    /// Whether its text is a NAME from an open vocabulary - a font family, a
+    /// style key, a radio group - rather than prose an author wrote.
+    let asName: Bool
+
     /// A property declared in `Owner`.
     ///
     /// - Parameters:
@@ -201,10 +226,53 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
         self.travels = travels
         self.cleared = cleared
         self.moves = moves
+        self.asName = false
     }
 
     /// The key the property crosses the boundary under.
     @_spi(Host) public var token: Prop { Prop(name) }
+
+    /// A value of this property, as it crosses: its own form, or a name where
+    /// the property holds one.
+    func crossing(_ value: Value) -> PropValue {
+        if asName, let text = value as? String {
+            return .name(text)
+        }
+
+        return value.propValue
+    }
+}
+
+extension ElementProperty where Value == String {
+    /// A property whose text is a NAME from an open vocabulary - a font family,
+    /// a style key, a radio group. It repeats across a tree and means the same
+    /// thing every time, so it crosses as a name, never as prose.
+    ///
+    ///     static let fontFamily = ElementProperty<Self, String>("fontFamily", layer: .native, asName: true)
+    ///
+    /// - Parameters:
+    ///   - name: its name - the name of the static member holding it.
+    ///   - layer: which layer realizes it; an application's own unless said.
+    ///   - travels: whether a change travels to the new value.
+    ///   - cleared: whether a value no longer described is put back to the
+    ///     control's default.
+    ///   - moves: which of a view's values it is, where the value cannot say.
+    ///   - asName: true, for the text a name.
+    public init(
+        _ name: String,
+        layer: ElementLayer = .provider,
+        travels: Bool = true,
+        cleared: Bool = true,
+        moves: MotionValues = [],
+        asName: Bool
+    ) {
+        self.name = name
+        self.layer = layer
+        self.travels = travels
+        self.cleared = cleared
+        self.moves = moves
+        self.asName = asName
+    }
 }
 
 /// An event an element reports: its name, and the types of what it carries.
@@ -276,6 +344,53 @@ public protocol HostRepresentable {
     /// The value back from what crossed, or nil where that is another kind.
     /// - Parameter propValue: what the host sent.
     init?(propValue: PropValue)
+
+    /// How a list of these crosses: as a list of values, unless the type has
+    /// a leaner form - numbers cross as one run of numbers, text as one list
+    /// of text.
+    /// - Parameter list: the values, in order.
+    static func propValue(of list: [Self]) -> PropValue
+
+    /// A list of these back from what crossed, or nil where it is not one.
+    /// - Parameter value: what the host sent.
+    static func list(from value: PropValue) -> [Self]?
+}
+
+extension HostRepresentable {
+    /// A list of values, each in its own form.
+    /// - Parameter list: the values, in order.
+    public static func propValue(of list: [Self]) -> PropValue {
+        .values(list.map(\.propValue))
+    }
+
+    /// A list of values, each read back as this type - or nil where one is
+    /// another kind.
+    /// - Parameter value: what the host sent.
+    public static func list(from value: PropValue) -> [Self]? {
+        guard case .values(let values) = value else { return nil }
+
+        var list: [Self] = []
+
+        for item in values {
+            guard let read = Self(propValue: item) else { return nil }
+            list.append(read)
+        }
+
+        return list
+    }
+}
+
+extension Array: HostRepresentable where Element: HostRepresentable {
+    /// The list, in the form its values' type gives a list.
+    public var propValue: PropValue { Element.propValue(of: self) }
+
+    /// The list back, or nil where what crossed is not a list of these.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard let list = Element.list(from: propValue) else { return nil }
+
+        self = list
+    }
 }
 
 extension Bool: HostRepresentable {
@@ -318,6 +433,14 @@ extension Double: HostRepresentable {
 
         self = value
     }
+
+    /// Numbers cross as one run of numbers.
+    /// - Parameter list: the numbers, in order.
+    public static func propValue(of list: [Double]) -> PropValue { .numbers(list) }
+
+    /// The run of numbers, or nil for anything else.
+    /// - Parameter value: what the host sent.
+    public static func list(from value: PropValue) -> [Double]? { value.numbers }
 }
 
 extension String: HostRepresentable {
@@ -331,6 +454,27 @@ extension String: HostRepresentable {
 
         self = value
     }
+
+    /// Texts cross as one list of text.
+    /// - Parameter list: the texts, in order.
+    public static func propValue(of list: [String]) -> PropValue { .strings(list) }
+
+    /// The list of text, or nil for anything else.
+    /// - Parameter value: what the host sent.
+    public static func list(from value: PropValue) -> [String]? { value.strings }
+}
+
+/// A value that may be left out of the END of a payload: saying nothing is
+/// how a host says it has none - a pointer's position the platform does not
+/// know.
+protocol OmissibleValue {
+    /// The value a left-out position stands for.
+    static var omitted: Self { get }
+}
+
+extension Optional: OmissibleValue {
+    /// Nil.
+    static var omitted: Self { nil }
 }
 
 extension Optional: HostRepresentable where Wrapped: HostRepresentable {
@@ -396,7 +540,8 @@ extension HostRepresentable where Self: RawRepresentable, RawValue == Int32 {
 
     /// The values a payload holds, as the declared types, or nil where their
     /// count or one kind differs: what crosses is exactly what the declaration
-    /// says, or it is refused whole.
+    /// says, or it is refused whole. The one leniency is at the END: an
+    /// optional value there may be left out, and reads as nil.
     /// - Parameters:
     ///   - payload: what crossed.
     ///   - type: the declared types, in order.
@@ -405,7 +550,7 @@ extension HostRepresentable where Self: RawRepresentable, RawValue == Int32 {
         _ payload: [PropValue],
         as type: repeat (each Value).Type
     ) -> (repeat each Value)? {
-        guard payload.count == count(repeat (each Value).self) else { return nil }
+        guard payload.count <= count(repeat (each Value).self) else { return nil }
 
         var index = 0
 
@@ -477,13 +622,22 @@ extension HostRepresentable where Self: RawRepresentable, RawValue == Int32 {
         return count
     }
 
-    /// The next value, as the next declared type - or the refusal.
+    /// The next value, as the next declared type - or the refusal. Past the
+    /// end of the payload only an optional value is read, as nil.
     private static func take<Value: HostRepresentable>(
         _ type: Value.Type,
         from payload: [PropValue],
         at index: inout Int
     ) throws -> Value {
         defer { index += 1 }
+
+        guard index < payload.count else {
+            guard let omitted = (Value.self as? any OmissibleValue.Type)?.omitted as? Value else {
+                throw Refused()
+            }
+
+            return omitted
+        }
 
         guard let value = Value(propValue: payload[index]) else { throw Refused() }
 
@@ -492,6 +646,84 @@ extension HostRepresentable where Self: RawRepresentable, RawValue == Int32 {
 
     /// A value that is not the declared kind.
     private struct Refused: Error {}
+}
+
+/// What a member says about itself - read by the tables the library derives
+/// from its contracts and by the guards that hold those contracts.
+struct MemberFacts: Equatable {
+    /// A property, an event or an act.
+    enum Kind: Equatable {
+        case property
+        case event
+        case act
+    }
+
+    /// Which of the three it is.
+    let kind: Kind
+
+    /// Which layer realizes it; nil for an act.
+    let layer: ElementLayer?
+
+    /// Whether a change travels to the new value.
+    let travels: Bool
+
+    /// Whether a value no longer described is put back to the default.
+    let cleared: Bool
+
+    /// Which of a view's values it is, where the value cannot say.
+    let moves: MotionValues
+
+    /// Whether its text crosses as a name.
+    let asName: Bool
+}
+
+/// A member whose facts the library can read out of a list of members.
+protocol DeclaredMember: ContractMember {
+    /// What it says about itself.
+    var facts: MemberFacts { get }
+}
+
+extension ElementProperty: DeclaredMember {
+    /// A property's facts.
+    var facts: MemberFacts {
+        MemberFacts(kind: .property, layer: layer, travels: travels, cleared: cleared,
+                    moves: moves, asName: asName)
+    }
+}
+
+extension ElementEvent: DeclaredMember {
+    /// An event's facts: its layer, and nothing a property's value says.
+    var facts: MemberFacts {
+        MemberFacts(kind: .event, layer: layer, travels: true, cleared: true, moves: [], asName: false)
+    }
+}
+
+extension ElementAct: DeclaredMember {
+    /// An act's facts: none a layer or a value says.
+    var facts: MemberFacts {
+        MemberFacts(kind: .act, layer: nil, travels: true, cleared: true, moves: [], asName: false)
+    }
+}
+
+extension Node {
+    /// Writes one member's value into this node - what a modifier setting
+    /// several members at once writes through, where `setValue` cannot chain.
+    mutating func write<Owner: Contract, Value: HostRepresentable>(
+        _ property: ElementProperty<Owner, Value>,
+        _ value: Value
+    ) {
+        props[property.token] = property.crossing(value)
+    }
+
+    /// Writes one member's value into this node, or leaves the member
+    /// undescribed where there is none - a setting a modifier takes as
+    /// optional, whose absence the host reads as its own default.
+    mutating func describe<Owner: Contract, Value: HostRepresentable>(
+        _ property: ElementProperty<Owner, Value>,
+        _ value: Value?
+    ) {
+        props[property.token] = value.map { property.crossing($0) }
+    }
 }
 
 extension PropValue {

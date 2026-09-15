@@ -34,6 +34,6 @@ extension BarElement {
     ///
     /// Leave it unwritten to retain the native material and appearance.
     public func barBackgroundColor(_ value: Color) -> Modified {
-        setValue(.barBackgroundColor, value.propValue)
+        setValue(BarElementContract.barBackgroundColor, value)
     }
 }

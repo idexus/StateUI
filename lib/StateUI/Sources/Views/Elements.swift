@@ -109,7 +109,7 @@ extension PropertyContainer {
         _ property: ElementProperty<Owner, Value>,
         _ value: Value
     ) -> Modified {
-        setValue(property.token, value.propValue)
+        setValue(property.token, property.crossing(value))
     }
 
     /// Drives one of this element's properties from a state the host carries,
@@ -360,6 +360,35 @@ extension PropertyContainer {
     func words(_ property: Prop, by state: Binding<String>, mode: StateMode = .out) -> Modified {
         setValue(property, on: state, mode: mode, kind: .text)
     }
+
+    /// A member the host WALKS from a state of the type its contract
+    /// declares - `journey(_:by:)` over the member.
+    func journey<Owner: Contract, Value: Walked & HostRepresentable>(
+        _ property: ElementProperty<Owner, Value>,
+        by state: Binding<Value>
+    ) -> Modified {
+        journey(property.token, by: state)
+    }
+
+    /// A member the host SETS as the state of its declared type stands -
+    /// `plain(_:by:mode:)` over the member.
+    func plain<Owner: Contract, Value: StateValue & HostRepresentable>(
+        _ property: ElementProperty<Owner, Value>,
+        by state: Binding<Value>,
+        mode: StateMode = .out
+    ) -> Modified {
+        plain(property.token, by: state, mode: mode)
+    }
+
+    /// Words the host writes into a text member as the state changes -
+    /// `words(_:by:mode:)` over the member.
+    func words<Owner: Contract>(
+        _ property: ElementProperty<Owner, String>,
+        by state: Binding<String>,
+        mode: StateMode = .out
+    ) -> Modified {
+        words(property.token, by: state, mode: mode)
+    }
 }
 
 extension VisualElement {
@@ -477,7 +506,7 @@ extension PropertyContainer {
     /// Keep it stable across renders and unique on the page: an id that moves
     /// with the state is an id nothing can wait for, and two things sharing
     /// one leave the driver to guess.
-    public func accessibilityIdentifier(_ value: String) -> Modified { setValue(.accessibilityIdentifier, .string(value)) }
+    public func accessibilityIdentifier(_ value: String) -> Modified { setValue(PropertyContainerContract.accessibilityIdentifier, value) }
 }
 
 extension PropertyContainer where Modified == Self {
@@ -908,7 +937,7 @@ extension VisualElement {
     /// wherever it is written - so it is a `.name` and not a `.string`. It
     /// never leaves this side in any case: `styled(_:with:)` resolves it and
     /// takes it off the node, the host having no dictionary to look one up in.
-    public func style(_ key: String) -> Modified { setValue(.style, .name(key)) }
+    public func style(_ key: String) -> Modified { setValue(VisualElementContract.style, key) }
 }
 
 extension VisualElementProperties {
@@ -925,17 +954,17 @@ extension VisualElementProperties {
     /// change reaches what is arriving. A view described for the FIRST time is
     /// simply there or not - nothing anybody saw is changing - and
     /// `.motion(.none)` puts the flag back to being a flag.
-    public func isVisible(_ value: Bool) -> Modified { setValue(.isVisible, .bool(value)) }
+    public func isVisible(_ value: Bool) -> Modified { setValue(VisualElementContract.isVisible, value) }
 
     /// Whether the view responds to the user. Disabling a container disables
     /// everything in it.
-    public func isEnabled(_ value: Bool) -> Modified { setValue(.isEnabled, .bool(value)) }
+    public func isEnabled(_ value: Bool) -> Modified { setValue(VisualElementContract.isEnabled, value) }
 
     /// Whether the view and everything in it ignore input: a tap or a click
     /// goes through to whatever is behind it. Not the same as disabled - a
     /// disabled view still takes the touch and does nothing with it. A layout
     /// whose children should still answer says `letsInputThrough` instead.
-    public func ignoresInput(_ value: Bool) -> Modified { setValue(.ignoresInput, .bool(value)) }
+    public func ignoresInput(_ value: Bool) -> Modified { setValue(VisualElementContract.ignoresInput, value) }
 
     /// Which way the view lays its content out - and, for a language written
     /// right to left, the edge everything starts from.
@@ -944,10 +973,10 @@ extension VisualElementProperties {
     ///
     /// It is INHERITED: a view left at `.inherited` takes whatever the view
     /// above it has, so an application usually says it once at the top.
-    public func layoutDirection(_ value: LayoutDirection) -> Modified { setValue(.layoutDirection, value.propValue) }
+    public func layoutDirection(_ value: LayoutDirection) -> Modified { setValue(VisualElementContract.layoutDirection, value) }
 
     /// How opaque the view is, from 0 to 1.
-    public func opacity(_ value: Double) -> Modified { setValue(.opacity, .number(value)) }
+    public func opacity(_ value: Double) -> Modified { setValue(VisualElementContract.opacity, value) }
 
     /// What is drawn behind the view: a colour here, or a brush when one
     /// colour will not do. It is ONE property whichever it carries, and a
@@ -956,7 +985,7 @@ extension VisualElementProperties {
     /// A `Color(light:dark:)` here carries both halves; the differ picks the
     /// one the theme asks for as it builds the view, so a theme change builds
     /// again exactly the views wearing a pair.
-    public func background(_ value: Color) -> Modified { setValue(.background, value.propValue) }
+    public func background(_ value: Color) -> Modified { setValue(VisualElementContract.background, .color(value)) }
 
     /// What is drawn behind the view, when one colour will not do.
     ///
@@ -967,29 +996,29 @@ extension VisualElementProperties {
     ///
     /// The same property as a colour background: a view given both draws the
     /// one it was given last.
-    public func background(_ value: Brush) -> Modified { setValue(.background, value.propValue) }
+    public func background(_ value: Brush) -> Modified { setValue(VisualElementContract.background, .brush(value)) }
 
     /// How wide the view asks to be, in device units. A REQUEST: the layout has
     /// the last word.
-    public func width(_ value: Double) -> Modified { setValue(.width, .number(value)) }
+    public func width(_ value: Double) -> Modified { setValue(VisualElementContract.width, value) }
 
     /// How tall the view asks to be.
-    public func height(_ value: Double) -> Modified { setValue(.height, .number(value)) }
+    public func height(_ value: Double) -> Modified { setValue(VisualElementContract.height, value) }
 
     /// The width below which the view asks not to be squeezed.
-    public func minimumWidth(_ value: Double) -> Modified { setValue(.minimumWidth, .number(value)) }
+    public func minimumWidth(_ value: Double) -> Modified { setValue(VisualElementContract.minimumWidth, value) }
 
     /// The height below which the view asks not to be squeezed.
-    public func minimumHeight(_ value: Double) -> Modified { setValue(.minimumHeight, .number(value)) }
+    public func minimumHeight(_ value: Double) -> Modified { setValue(VisualElementContract.minimumHeight, value) }
 
     /// The width above which the view asks not to be stretched.
-    public func maximumWidth(_ value: Double) -> Modified { setValue(.maximumWidth, .number(value)) }
+    public func maximumWidth(_ value: Double) -> Modified { setValue(VisualElementContract.maximumWidth, value) }
 
     /// The height above which the view asks not to be stretched.
-    public func maximumHeight(_ value: Double) -> Modified { setValue(.maximumHeight, .number(value)) }
+    public func maximumHeight(_ value: Double) -> Modified { setValue(VisualElementContract.maximumHeight, value) }
 
     /// Turns the view, in degrees clockwise, about its pivot.
-    public func rotation(_ value: Double) -> Modified { setValue(.rotation, .number(value)) }
+    public func rotation(_ value: Double) -> Modified { setValue(VisualElementContract.rotation, value) }
 
     /// How this view is moved, turned and sized - ONE transform, about the
     /// view's own centre, and the same picture on every platform.
@@ -1012,11 +1041,11 @@ extension VisualElementProperties {
     /// - Returns: the view, transformed.
     public func transform(_ transform: ViewTransform) -> Modified {
         modified {
-            $0.props[.translationX] = .number(transform.x)
-            $0.props[.translationY] = .number(transform.y)
-            $0.props[.rotation] = .number(transform.rotation)
-            $0.props[.scaleX] = .number(transform.width)
-            $0.props[.scaleY] = .number(transform.height)
+            $0.write(VisualElementContract.translationX, transform.x)
+            $0.write(VisualElementContract.translationY, transform.y)
+            $0.write(VisualElementContract.rotation, transform.rotation)
+            $0.write(VisualElementContract.scaleX, transform.width)
+            $0.write(VisualElementContract.scaleY, transform.height)
         }
     }
 
@@ -1029,7 +1058,7 @@ extension VisualElementProperties {
     /// Apple turned them away where Android drew them tilted in the plane and
     /// moved as well. A turn that must look alike on every platform is written
     /// as what a turned rectangle LOOKS like: a `scaleX` of `cos(angle)`.
-    public func rotationX(_ value: Double) -> Modified { setValue(.rotationX, .number(value)) }
+    public func rotationX(_ value: Double) -> Modified { setValue(VisualElementContract.rotationX, value) }
 
     /// Turns the view about its vertical axis, in degrees - one side going away
     /// as the other comes forward.
@@ -1039,33 +1068,33 @@ extension VisualElementProperties {
     /// same picture everywhere. A turn that must look alike on every platform
     /// is written as what a turned rectangle LOOKS like: a `scaleX` of
     /// `cos(angle)`.
-    public func rotationY(_ value: Double) -> Modified { setValue(.rotationY, .number(value)) }
+    public func rotationY(_ value: Double) -> Modified { setValue(VisualElementContract.rotationY, value) }
 
     /// Resizes the view about its pivot, 1 being its natural size. Drawing
     /// only - the space the layout gave it does not change.
-    public func scale(_ value: Double) -> Modified { setValue(.scale, .number(value)) }
+    public func scale(_ value: Double) -> Modified { setValue(VisualElementContract.scale, value) }
 
     /// Scales the view sideways only.
-    public func scaleX(_ value: Double) -> Modified { setValue(.scaleX, .number(value)) }
+    public func scaleX(_ value: Double) -> Modified { setValue(VisualElementContract.scaleX, value) }
 
     /// Scales the view up and down only.
-    public func scaleY(_ value: Double) -> Modified { setValue(.scaleY, .number(value)) }
+    public func scaleY(_ value: Double) -> Modified { setValue(VisualElementContract.scaleY, value) }
 
     /// Moves the view sideways from where the layout put it, in device units.
-    public func translationX(_ value: Double) -> Modified { setValue(.translationX, .number(value)) }
+    public func translationX(_ value: Double) -> Modified { setValue(VisualElementContract.translationX, value) }
 
     /// Moves the view up or down from where the layout put it.
-    public func translationY(_ value: Double) -> Modified { setValue(.translationY, .number(value)) }
+    public func translationY(_ value: Double) -> Modified { setValue(VisualElementContract.translationY, value) }
 
     /// Where rotation and scaling pivot, sideways: 0 the left edge, 1 the right,
     /// 0.5 the middle.
-    public func pivotX(_ value: Double) -> Modified { setValue(.pivotX, .number(value)) }
+    public func pivotX(_ value: Double) -> Modified { setValue(VisualElementContract.pivotX, value) }
 
     /// The same, vertically: 0 the top edge, 1 the bottom.
-    public func pivotY(_ value: Double) -> Modified { setValue(.pivotY, .number(value)) }
+    public func pivotY(_ value: Double) -> Modified { setValue(VisualElementContract.pivotY, value) }
 
     /// Who is drawn on top where views overlap, higher being nearer the front.
-    public func zIndex(_ value: Int) -> Modified { setValue(.zIndex, .number(Double(value))) }
+    public func zIndex(_ value: Int) -> Modified { setValue(VisualElementContract.zIndex, value) }
 
     // MARK: - What the view says about itself
     //
@@ -1088,7 +1117,7 @@ extension VisualElementProperties {
     /// those, so a description written on one REPLACES them rather than adding
     /// to them - which is why the ones worth writing are on the controls that
     /// have no words of their own.
-    public func accessibilityLabel(_ value: String) -> Modified { setValue(.accessibilityLabel, .string(value)) }
+    public func accessibilityLabel(_ value: String) -> Modified { setValue(VisualElementContract.accessibilityLabel, value) }
 
     /// What a screen reader says will HAPPEN, after it has said what the view is.
     ///
@@ -1098,7 +1127,7 @@ extension VisualElementProperties {
     ///
     /// The description names the control and this says what using it does, so
     /// a hint on a view nobody can act on is a sentence read out for nothing.
-    public func accessibilityHint(_ value: String) -> Modified { setValue(.accessibilityHint, .string(value)) }
+    public func accessibilityHint(_ value: String) -> Modified { setValue(VisualElementContract.accessibilityHint, value) }
 
     /// Whether a screen reader skips this view.
     ///
@@ -1113,7 +1142,7 @@ extension VisualElementProperties {
     /// always: a view with words is reachable and a plain container is not.
     /// Say `false` where a platform has left something out, and never hide a
     /// view the reader has to be able to act on.
-    public func isAccessibilityHidden(_ value: Bool) -> Modified { setValue(.isAccessibilityHidden, .bool(value)) }
+    public func isAccessibilityHidden(_ value: Bool) -> Modified { setValue(VisualElementContract.isAccessibilityHidden, value) }
 
     /// Whether taking this view out takes everything inside it too.
     ///
@@ -1124,7 +1153,7 @@ extension VisualElementProperties {
     /// decorative header, a card standing behind the one in front. Written on
     /// a container, so one word covers what would otherwise be a word on every
     /// view in it.
-    public func automationExcludedWithChildren(_ value: Bool) -> Modified { setValue(.automationExcludedWithChildren, .bool(value)) }
+    public func automationExcludedWithChildren(_ value: Bool) -> Modified { setValue(VisualElementContract.automationExcludedWithChildren, value) }
 
     /// That this view is a HEADING, and how deep.
     ///
@@ -1133,7 +1162,7 @@ extension VisualElementProperties {
     /// A reader who cannot see the page moves through it by its headings, which
     /// is what makes a long page navigable at all. Drawing a Label big says
     /// nothing about that: a heading is what this says it is.
-    public func accessibilityHeadingLevel(_ value: HeadingLevel) -> Modified { setValue(.accessibilityHeadingLevel, value.propValue) }
+    public func accessibilityHeadingLevel(_ value: HeadingLevel) -> Modified { setValue(VisualElementContract.accessibilityHeadingLevel, value) }
 }
 
 // MARK: - What the control knows and this side does not
@@ -1154,10 +1183,8 @@ extension VisualElement {
     /// Whether the platform has given this control the focus. Read-only - the
     /// platform moves the focus - so this only writes INTO the binding.
     public func isFocused(_ binding: Binding<Bool>) -> Modified {
-        addHandler(.isFocusedChanged) {
-            if let focused = EventBuffer.current.value()?.bool {
-                binding.wrappedValue = focused
-            }
+        onEvent(VisualElementContract.isFocusedChanged) { focused in
+            binding.wrappedValue = focused
         }
     }
 
@@ -1182,7 +1209,7 @@ extension ViewProperties {
     ///
     ///     Label("Total").margin(16)                      // all four sides
     ///     Label("Total").margin(Insets(16, 0, 0, 0))  // the left edge only
-    public func margin(_ value: Insets) -> Modified { setValue(.margin, value.propValue) }
+    public func margin(_ value: Insets) -> Modified { setValue(ViewContract.margin, value) }
 
     /// Left and right, then top and bottom.
     public func margin(_ horizontalSize: Double, _ verticalSize: Double) -> Modified {
@@ -1199,12 +1226,12 @@ extension ViewProperties {
     ///
     ///     Button("Save").horizontalAlignment(.center)
     public func horizontalAlignment(_ value: Alignment) -> Modified {
-        setValue(.horizontalAlignment, value.propValue)
+        setValue(ViewContract.horizontalAlignment, value)
     }
 
     /// The same, for the height.
     public func verticalAlignment(_ value: Alignment) -> Modified {
-        setValue(.verticalAlignment, value.propValue)
+        setValue(ViewContract.verticalAlignment, value)
     }
 }
 
@@ -1269,7 +1296,7 @@ extension View {
     /// The whole view answers, not a button inside it - which is the difference
     /// between a row you can tap and a row with something tappable in it.
     public func onTapped(_ handler: @escaping EventHandler) -> Modified {
-        addHandler(.tapped, handler)
+        onEvent(ViewContract.tapped, handler)
     }
 
     /// The same, for a double tap or more: `count` taps in a row.
@@ -1282,8 +1309,8 @@ extension View {
         // Both changes in one `modified`, because chaining would return
         // `Modified.Modified` and nothing here can promise that is `Modified`.
         modified {
-            $0.props[.tapCount] = .number(Double(count))
-            $0.addHandler(.tapped, handler)
+            $0.write(ViewContract.tapCount, count)
+            $0.addHandler(ViewContract.tapped.token, handler)
         }
     }
 
@@ -1306,9 +1333,9 @@ extension View {
         _ handler: @escaping ValueEventHandler<SwipeDirection>
     ) -> Modified {
         modified {
-            $0.props[.swipeDirection] = direction.propValue
-            $0.props[.swipeThreshold] = threshold.map { .number($0) }
-            $0.addHandler(.swiped) {
+            $0.write(ViewContract.swipeDirection, direction)
+            $0.describe(ViewContract.swipeThreshold, threshold)
+            $0.addHandler(ViewContract.swiped.token) {
                 // A payload that will not read leaves the handler alone, the
                 // rule every gesture follows - running it with an empty set
                 // instead would say "a swipe happened" with no direction, which
@@ -1342,7 +1369,7 @@ extension View {
     /// - Parameter value: the driven state the distance is written into.
     /// - Returns: the view, reporting there.
     public func panX(_ value: Binding<Double>) -> Modified {
-        driven(.panXChannel, by: value)
+        driven(ViewContract.panXChannel.token, by: value)
     }
 
     /// Writes how far the view has been dragged DOWN into a driven state, which
@@ -1355,7 +1382,7 @@ extension View {
     /// - Parameter value: the driven state the distance is written into.
     /// - Returns: the view, reporting there.
     public func panY(_ value: Binding<Double>) -> Modified {
-        driven(.panYChannel, by: value)
+        driven(ViewContract.panYChannel.token, by: value)
     }
 
     /// Runs as the view is dragged, from the moment it starts until it is let
@@ -1378,10 +1405,12 @@ extension View {
         _ handler: @escaping ValueEventHandler<PanUpdate>
     ) -> Modified {
         modified {
-            $0.props[.panTouchCount] = touchCount.map { .number(Double($0)) }
-            $0.addHandler(.panUpdated) {
-                if let update = PanUpdate(EventBuffer.current) {
-                    try await handler(update)
+            $0.describe(ViewContract.panTouchCount, touchCount)
+            $0.addHandler(ViewContract.panUpdated.token) {
+                if let (phase, totalX, totalY) = MemberValues.carried(
+                    EventBuffer.current, by: ViewContract.panUpdated.name,
+                    as: GesturePhase.self, Double.self, Double.self) {
+                    try await handler(PanUpdate(phase: phase, totalX: totalX, totalY: totalY))
                 }
             }
         }
@@ -1395,10 +1424,8 @@ extension View {
     /// since the pinch began - so a view being pinched multiplies rather than
     /// assigns.
     public func onPinchUpdated(_ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
-        addHandler(.pinchUpdated) {
-            if let update = PinchUpdate(EventBuffer.current) {
-                try await handler(update)
-            }
+        onEvent(ViewContract.pinchUpdated) { phase, scale, origin in
+            try await handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin))
         }
     }
 
@@ -1409,19 +1436,20 @@ extension View {
     /// A pointer is a mouse, a trackpad or a pen - so these are the desktop
     /// gestures, and on a touch-only device they never fire.
     public func onPointerEntered(_ handler: @escaping EventHandler) -> Modified {
-        addHandler(.pointerEntered, handler)
+        onEvent(ViewContract.pointerEntered, handler)
     }
 
     /// Runs when a pointer leaves the view - the other half of a hover.
     public func onPointerExited(_ handler: @escaping EventHandler) -> Modified {
-        addHandler(.pointerExited, handler)
+        onEvent(ViewContract.pointerExited, handler)
     }
 
     /// Runs as the pointer moves over the view, with where it is in the view's
-    /// own coordinates.
+    /// own coordinates - where the platform says where; a move it gives no
+    /// position for does not run it.
     public func onPointerMoved(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        addHandler(.pointerMoved) {
-            if let point = Point(EventBuffer.current.value()) {
+        onEvent(ViewContract.pointerMoved) { point in
+            if let point {
                 try await handler(point)
             }
         }
@@ -1430,8 +1458,8 @@ extension View {
     /// Runs when a pointer button goes down over the view, with where it went
     /// down in the view's own coordinates.
     public func onPointerPressed(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        addHandler(.pointerPressed) {
-            if let point = Point(EventBuffer.current.value()) {
+        onEvent(ViewContract.pointerPressed) { point in
+            if let point {
                 try await handler(point)
             }
         }
@@ -1439,8 +1467,8 @@ extension View {
 
     /// Runs when the pointer button comes back up, with where it came up.
     public func onPointerReleased(_ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        addHandler(.pointerReleased) {
-            if let point = Point(EventBuffer.current.value()) {
+        onEvent(ViewContract.pointerReleased) { point in
+            if let point {
                 try await handler(point)
             }
         }
@@ -1462,18 +1490,18 @@ extension View {
         onDragStarting: EventHandler? = nil
     ) -> Modified {
         modified {
-            $0.props[.dragText] = .string(text)
-            $0.props[.canDrag] = .bool(canDrag)
+            $0.write(ViewContract.dragText, text)
+            $0.write(ViewContract.canDrag, canDrag)
 
             if let onDragStarting = onDragStarting {
-                $0.addHandler(.dragStarting, onDragStarting)
+                $0.addHandler(ViewContract.dragStarting.token, onDragStarting)
             }
         }
     }
 
     /// Runs when a drag that started here ends, wherever it ended.
     public func onDropCompleted(_ handler: @escaping EventHandler) -> Modified {
-        addHandler(.dropCompleted, handler)
+        onEvent(ViewContract.dropCompleted, handler)
     }
 
     /// Accepts what is dropped on the view, with the text it carried.
@@ -1482,9 +1510,10 @@ extension View {
     ///         .onDrop { text in items.append(text) }
     public func onDrop(_ handler: @escaping ValueEventHandler<String>) -> Modified {
         modified {
-            $0.props[.allowDrop] = .bool(true)
-            $0.addHandler(.drop) {
-                if let text = EventBuffer.current.value()?.string {
+            $0.write(ViewContract.allowDrop, true)
+            $0.addHandler(ViewContract.drop.token) {
+                if let text = MemberValues.carried(
+                    EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
                     try await handler(text)
                 }
             }
@@ -1493,13 +1522,13 @@ extension View {
 
     /// Runs while a drag is over the view, before it is let go.
     public func onDragOver(_ handler: @escaping EventHandler) -> Modified {
-        addHandler(.dragOver, handler)
+        onEvent(ViewContract.dragOver, handler)
     }
 
     /// Runs when a drag leaves the view without being let go - the mirror of
     /// `onDragOver`, and where a highlight put up there is taken down.
     public func onDragLeave(_ handler: @escaping EventHandler) -> Modified {
-        addHandler(.dragLeave, handler)
+        onEvent(ViewContract.dragLeave, handler)
     }
 }
 
@@ -1517,16 +1546,16 @@ extension ViewProperties {
     ///
     ///     Label("Name").gridRow(0).gridColumn(0)
     ///     TextField($name).gridRow(0).gridColumn(1)
-    public func gridRow(_ value: Int) -> Modified { setValue(.gridRow, .number(Double(value))) }
+    public func gridRow(_ value: Int) -> Modified { setValue(ViewContract.gridRow, value) }
 
     /// Which column of the enclosing Grid the view sits in, counting from 0.
-    public func gridColumn(_ value: Int) -> Modified { setValue(.gridColumn, .number(Double(value))) }
+    public func gridColumn(_ value: Int) -> Modified { setValue(ViewContract.gridColumn, value) }
 
     /// How many rows the view covers, starting at its own.
-    public func gridRowSpan(_ value: Int) -> Modified { setValue(.gridRowSpan, .number(Double(value))) }
+    public func gridRowSpan(_ value: Int) -> Modified { setValue(ViewContract.gridRowSpan, value) }
 
     /// How many columns the view covers, starting at its own.
-    public func gridColumnSpan(_ value: Int) -> Modified { setValue(.gridColumnSpan, .number(Double(value))) }
+    public func gridColumnSpan(_ value: Int) -> Modified { setValue(ViewContract.gridColumnSpan, value) }
 }
 
 // MARK: - Where a view sits in an AbsoluteLayout
@@ -1553,13 +1582,13 @@ extension ViewProperties {
     ///     .absoluteLayoutBounds(Rect(0.5, 0, 0.5, 1))
     ///     .absoluteLayoutProportions(.all)
     public func absoluteLayoutBounds(_ value: Rect) -> Modified {
-        setValue(.absoluteLayoutBounds, value.propValue)
+        setValue(ViewContract.absoluteLayoutBounds, value)
     }
 
     /// Which of those four numbers are fractions of the layout rather than
     /// device units.
     public func absoluteLayoutProportions(_ value: AbsoluteLayoutProportions) -> Modified {
-        setValue(.absoluteLayoutProportions, value.propValue)
+        setValue(ViewContract.absoluteLayoutProportions, value)
     }
 }
 
@@ -1577,7 +1606,7 @@ extension LayoutProperties {
     /// The trap is that this is about the LAYOUT's edges, while `.clip` on any
     /// view is about a shape given to that view.
     public func clipsContent(_ value: Bool) -> Modified {
-        setValue(.clipsContent, .bool(value))
+        setValue(LayoutContract.clipsContent, value)
     }
 
     /// Whether the layout's own empty area lets input through to whatever is
@@ -1589,7 +1618,7 @@ extension LayoutProperties {
     /// `.ignoresInput(true)` is the other half: the view and everything in it
     /// let input through. Where both are set, `ignoresInput` wins.
     public func letsInputThrough(_ value: Bool) -> Modified {
-        setValue(.letsInputThrough, .bool(value))
+        setValue(LayoutContract.letsInputThrough, value)
     }
 
     /// Which parts of the screen's UNSAFE strip - the notch, the bars, the
@@ -1603,7 +1632,7 @@ extension LayoutProperties {
     /// header meant to reach the top edge wants `.none`: its content then sits
     /// where its padding says, and its frame fits that content.
     public func avoidsSafeArea(_ value: SafeArea) -> Modified {
-        setValue(.avoidsSafeArea, value.propValue)
+        setValue(LayoutContract.avoidsSafeArea, .uniform(value))
     }
 
     /// The same, said for the horizontal and the vertical edges separately.
@@ -1643,12 +1672,7 @@ extension LayoutProperties {
         _ right: SafeArea,
         _ bottom: SafeArea
     ) -> Modified {
-        setValue(.avoidsSafeArea, .values([
-            left.propValue,
-            top.propValue,
-            right.propValue,
-            bottom.propValue,
-        ]))
+        setValue(LayoutContract.avoidsSafeArea, .edges(left: left, top: top, right: right, bottom: bottom))
     }
 }
 
@@ -1661,7 +1685,7 @@ public protocol StackBase: Layout, StackBaseProperties {}
 extension StackBaseProperties {
     /// The gap left BETWEEN children, in device units - not before the first or
     /// after the last, which is what padding is for.
-    public func spacing(_ value: Double) -> Modified { setValue(.spacing, .number(value)) }
+    public func spacing(_ value: Double) -> Modified { setValue(StackBaseContract.spacing, value) }
 }
 
 // MARK: - Shape
@@ -1691,22 +1715,19 @@ extension ShapeProperties {
     /// what was DRAWN, about the view's centre, after the layout has placed
     /// it.
     public func renderTransform(_ value: ViewTransform) -> Modified {
-        setValue(.renderTransform, .values([
-            .number(value.a), .number(value.b), .number(value.c),
-            .number(value.d), .number(value.tx), .number(value.ty),
-        ]))
+        setValue(ShapeContract.renderTransform, value)
     }
 
     /// What the inside of the shape is painted with.
     ///
     ///     Ellipse().fill(.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]))
-    public func fill(_ value: Brush) -> Modified { setValue(.fill, value.propValue) }
+    public func fill(_ value: Brush) -> Modified { setValue(ShapeContract.fill, value) }
 
     /// The same, in one colour - `.fill(.solidColor(colour))` said shortly.
     public func fill(_ value: Color) -> Modified { fill(.solidColor(value)) }
 
     /// What the outline is painted with.
-    public func stroke(_ value: Brush) -> Modified { setValue(.stroke, value.propValue) }
+    public func stroke(_ value: Brush) -> Modified { setValue(ShapeContract.stroke, value) }
 
     /// The same, in one colour.
     public func stroke(_ value: Color) -> Modified { stroke(.solidColor(value)) }
@@ -1716,7 +1737,7 @@ extension ShapeProperties {
     /// and a thickness on its own draws nothing, there being no stroke to draw
     /// it with.
     public func strokeWidth(_ value: Double) -> Modified {
-        setValue(.strokeWidth, .number(value))
+        setValue(ShapeContract.strokeWidth, value)
     }
 
     /// The dashes and the gaps between them, in multiples of the stroke
@@ -1727,34 +1748,34 @@ extension ShapeProperties {
     ///         .strokeWidth(2)
     ///         .strokeDashPattern([4, 2])   // 8 units of dash, 4 of gap
     public func strokeDashPattern(_ value: [Double]) -> Modified {
-        setValue(.strokeDashPattern, .numbers(value))
+        setValue(ShapeContract.strokeDashPattern, value)
     }
 
     /// How far into the dash pattern the line starts.
     public func strokeDashOffset(_ value: Double) -> Modified {
-        setValue(.strokeDashOffset, .number(value))
+        setValue(ShapeContract.strokeDashOffset, value)
     }
 
     /// How the ends of an open line are drawn.
     public func strokeLineCap(_ value: LineCap) -> Modified {
-        setValue(.strokeLineCap, value.propValue)
+        setValue(ShapeContract.strokeLineCap, value)
     }
 
     /// How two segments meet at a corner.
     public func strokeLineJoin(_ value: LineJoin) -> Modified {
-        setValue(.strokeLineJoin, value.propValue)
+        setValue(ShapeContract.strokeLineJoin, value)
     }
 
     /// How far a sharp corner may reach before it is cut off, in multiples of
     /// the stroke thickness.
     public func strokeMiterLimit(_ value: Double) -> Modified {
-        setValue(.strokeMiterLimit, .number(value))
+        setValue(ShapeContract.strokeMiterLimit, value)
     }
 
     /// What the shape does with the room it is given - the `Aspect` an Image
     /// takes too. `.fit`, the default, scales the drawing to fit and keeps its
     /// proportions; `.center` keeps the size its own numbers say.
-    public func aspect(_ value: Aspect) -> Modified { setValue(.aspect, value.propValue) }
+    public func aspect(_ value: Aspect) -> Modified { setValue(ShapeContract.aspect, value) }
 }
 
 // MARK: - InputView
@@ -1787,11 +1808,7 @@ extension InputView {
     /// Runs after a binding's write, if there is one, so the state already
     /// holds what the payload carries.
     public func onTextChanged(_ handler: @escaping ValueEventHandler<String>) -> Modified {
-        addHandler(.textChanged) {
-            if let text = EventBuffer.current.value()?.string {
-                try await handler(text)
-            }
-        }
+        onEvent(InputViewContract.textChanged, handler)
     }
 }
 
@@ -1803,7 +1820,7 @@ extension InputViewProperties {
     /// just filled in, say. It is CLAMPED to the text, so a position past the
     /// end lands at the end.
     public func cursorPosition(_ value: Int) -> Modified {
-        setValue(.cursorPosition, .number(Double(value)))
+        setValue(InputViewContract.cursorPosition, value)
     }
 
     /// How many characters from the caret are selected, 0 being none.
@@ -1813,7 +1830,7 @@ extension InputViewProperties {
     /// selects the lot, which is what a field wants when it is filled in for
     /// the reader to replace.
     public func selectionLength(_ value: Int) -> Modified {
-        setValue(.selectionLength, .number(Double(value)))
+        setValue(InputViewContract.selectionLength, value)
     }
 
     /// Whether the platform underlines what it thinks is misspelt.
@@ -1822,7 +1839,7 @@ extension InputViewProperties {
     /// serial number - where the underline says nothing and the platform's
     /// corrections get in the way.
     public func isSpellCheckEnabled(_ value: Bool) -> Modified {
-        setValue(.isSpellCheckEnabled, .bool(value))
+        setValue(InputViewContract.isSpellCheckEnabled, value)
     }
 
     /// Whether the platform offers the next word as the reader types.
@@ -1830,34 +1847,34 @@ extension InputViewProperties {
     /// Not the same as the spell check, and usually turned off with it and for
     /// the same fields.
     public func isTextPredictionEnabled(_ value: Bool) -> Modified {
-        setValue(.isTextPredictionEnabled, .bool(value))
+        setValue(InputViewContract.isTextPredictionEnabled, value)
     }
 
     /// What the field says while it is empty.
     public func placeholder(_ value: String) -> Modified {
-        setValue(.placeholder, .string(value))
+        setValue(InputViewContract.placeholder, value)
     }
 
     /// The colour of that text.
     public func placeholderColor(_ value: Color) -> Modified {
-        setValue(.placeholderColor, value.propValue)
+        setValue(InputViewContract.placeholderColor, value)
     }
 
     /// Whether the text can be selected and copied but not changed - which is
     /// not the same as disabled.
     public func isReadOnly(_ value: Bool) -> Modified {
-        setValue(.isReadOnly, .bool(value))
+        setValue(InputViewContract.isReadOnly, value)
     }
 
     /// What the field is for - an email address, a number, a url and the rest -
     /// which picks the keyboard the platform offers.
     public func inputPurpose(_ value: InputPurpose) -> Modified {
-        setValue(.inputPurpose, value.propValue)
+        setValue(InputViewContract.inputPurpose, value)
     }
 
     /// How many characters the field accepts.
     public func maximumLength(_ value: Int) -> Modified {
-        setValue(.maximumLength, .number(Double(value)))
+        setValue(InputViewContract.maximumLength, value)
     }
 }
 

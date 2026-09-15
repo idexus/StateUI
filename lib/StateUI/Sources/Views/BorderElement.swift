@@ -35,12 +35,12 @@ extension BorderElement {
     /// Nothing is drawn until `borderWidth` is set as well: a colour on its own
     /// shows no outline at all.
     public func borderColor(_ value: Color) -> Modified {
-        setValue(.borderColor, value.propValue)
+        setValue(BorderElementContract.borderColor, value)
     }
 
     /// How thick the outline is, in device units.
     public func borderWidth(_ value: Double) -> Modified {
-        setValue(.borderWidth, .number(value))
+        setValue(BorderElementContract.borderWidth, value)
     }
 
     /// How rounded the corners are, in device units - the control's own
@@ -49,7 +49,7 @@ extension BorderElement {
     /// A whole number, so its twin in Bound.swift sets it as it stands rather
     /// than walking it: nothing walks an integer.
     public func cornerRadius(_ value: Int) -> Modified {
-        setValue(.cornerRadius, .number(Double(value)))
+        setValue(BorderElementContract.cornerRadius, value)
     }
 }
 

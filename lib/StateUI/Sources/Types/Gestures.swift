@@ -35,15 +35,9 @@ public enum GesturePhase: Int32, Sendable {
 
     /// The platform took the gesture away - a call arriving, a scroll winning.
     case canceled = 3
-
-    /// Reads a payload's phase value - a member of a closed vocabulary, so
-    /// `.enumeration` and not a plain number. Nil for anything that is not
-    /// one, so a report that will not read leaves the handler alone.
-    init?(_ value: PropValue?) {
-        guard let member = value?.enumeration else { return nil }
-        self.init(rawValue: member)
-    }
 }
+
+extension GesturePhase: HostRepresentable {}
 
 /// Which way a swipe went, and which ways a view listens for. Bits are StateUI's
 /// own, `1 << 0` upwards in declaration order.
@@ -74,25 +68,29 @@ public struct SwipeDirection: OptionSet, Sendable {
     /// Every direction - what a view listens for unless it says otherwise.
     public static let all: SwipeDirection = [.left, .right, .up, .down]
 
-    /// The bits as the one number a bit set already is; every direction is 15.
-    var propValue: PropValue { .enumeration(rawValue) }
-
-    /// The one direction a swipe went, as the event reports it.
-    ///
-    /// ONE, and a set of several is refused rather than read as one. A set is
-    /// what a view listens for, not an answer to "which way did it go?" Every
-    /// host must therefore report one dominant direction bit.
-    init?(_ value: PropValue?) {
-        guard let bits = value?.enumeration else { return nil }
-
-        let direction = SwipeDirection(rawValue: bits)
-
-        switch direction {
-        case .left, .right, .up, .down: self = direction
-        default: return nil
+    /// Whether this is ONE direction - what a swipe reports - rather than a
+    /// set of them, which is what a view listens for. Every host reports one
+    /// dominant direction bit, so a set of several is no answer to "which way
+    /// did it go?"
+    var isOneDirection: Bool {
+        switch self {
+        case .left, .right, .up, .down: true
+        default: false
         }
     }
+
+    /// The one direction a swipe went, as the event reports it - and nil for
+    /// a set of several, or for anything else.
+    init?(_ value: PropValue?) {
+        guard let value, let direction = SwipeDirection(propValue: value), direction.isOneDirection else {
+            return nil
+        }
+
+        self = direction
+    }
 }
+
+extension SwipeDirection: HostRepresentable {}
 
 /// A point.
 ///
@@ -131,25 +129,37 @@ public struct Point: Equatable, Sendable {
     /// distance - a drag so far, a scroller's offset - it is having gone
     /// nowhere.
     public static let zero = Point(0, 0)
-
-    /// Reads the pair a payload carries - one `numbers` value, x then y. Nil
-    /// for anything else, so a report that will not read leaves the handler
-    /// alone.
-    init?(_ value: PropValue?) {
-        guard let pair = value?.numbers, pair.count == 2 else { return nil }
-        self.init(x: pair[0], y: pair[1])
-    }
 }
 
-extension Array where Element == Point {
-    /// The points as one flat run of numbers, x then y, a pair per point -
-    /// which is what a Polygon's or a Polyline's corners travel as, and the
-    /// same shape a pointerMoved payload reports ONE of.
-    ///
-    /// Numbers rather than a formatted `20,0 40,40 0,40`: a corner crosses as
-    /// its own bits, so a long outline is neither formatted nor parsed again.
-    var propValue: PropValue {
-        .numbers(flatMap { [$0.x, $0.y] })
+extension Point: HostRepresentable {
+    /// Across, then down: one pair of numbers - what a pointer's position
+    /// crosses as.
+    public var propValue: PropValue { .numbers([x, y]) }
+
+    /// A point back from its pair - nil for anything else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard let pair = propValue.numbers, pair.count == 2 else { return nil }
+
+        self.init(x: pair[0], y: pair[1])
+    }
+
+    /// Points cross as one flat run of numbers, x then y, a pair per point -
+    /// what a Polygon's or a Polyline's corners travel as. Numbers rather than
+    /// a formatted `20,0 40,40 0,40`: a corner crosses as its own bits, so a
+    /// long outline is neither formatted nor parsed again.
+    /// - Parameter list: the points, in order.
+    public static func propValue(of list: [Point]) -> PropValue {
+        .numbers(list.flatMap { [$0.x, $0.y] })
+    }
+
+    /// The points back from their run of pairs - nil for an odd run or for
+    /// anything else.
+    /// - Parameter value: what the host sent.
+    public static func list(from value: PropValue) -> [Point]? {
+        guard let numbers = value.numbers, numbers.count.isMultiple(of: 2) else { return nil }
+
+        return stride(from: 0, to: numbers.count, by: 2).map { Point(numbers[$0], numbers[$0 + 1]) }
     }
 }
 
@@ -181,13 +191,8 @@ public struct PanUpdate: Equatable, Sendable {
     /// PanFrame.
     public var totalY: Double
 
-    /// Reads a payload's three values: phase, totalX, totalY. Nil for anything
-    /// else, so a report that will not read leaves the handler alone.
-    init?(_ payload: [PropValue]) {
-        guard let phase = GesturePhase(payload.value(0)),
-              let totalX = payload.value(1)?.number,
-              let totalY = payload.value(2)?.number else { return nil }
-
+    /// One report, from the three values a pan carries: phase, totalX, totalY.
+    init(phase: GesturePhase, totalX: Double, totalY: Double) {
         self.phase = phase
         self.totalX = totalX
         self.totalY = totalY
@@ -214,16 +219,11 @@ public struct PinchUpdate: Equatable, Sendable {
     /// left and (1,1) the bottom right.
     public var scaleOrigin: Point
 
-    /// Reads a payload's three values: phase, scale, then the origin as one
-    /// pair. Nil for anything else, so a report that will not read leaves the
-    /// handler alone.
-    init?(_ payload: [PropValue]) {
-        guard let phase = GesturePhase(payload.value(0)),
-              let scale = payload.value(1)?.number,
-              let origin = Point(payload.value(2)) else { return nil }
-
+    /// One report, from the three values a pinch carries: phase, scale, and
+    /// the origin.
+    init(phase: GesturePhase, scale: Double, scaleOrigin: Point) {
         self.phase = phase
         self.scale = scale
-        self.scaleOrigin = origin
+        self.scaleOrigin = scaleOrigin
     }
 }

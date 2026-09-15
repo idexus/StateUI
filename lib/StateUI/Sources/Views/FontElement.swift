@@ -16,21 +16,21 @@ public protocol FontElement: PropertyContainer {}
 
 extension FontElement {
     /// How big the text is, in device units.
-    public func fontSize(_ value: Double) -> Modified { setValue(.fontSize, .number(value)) }
+    public func fontSize(_ value: Double) -> Modified { setValue(FontElementContract.fontSize, value) }
 
     /// Which font, by the alias the app registered it under - not the file name.
     ///
     /// That alias is a NAME, not prose: it stands for a registered resource and
     /// repeats on every view using the font, so it rides the session's
     /// dictionary as a number rather than being spelled out per control.
-    public func fontFamily(_ value: String) -> Modified { setValue(.fontFamily, .name(value)) }
+    public func fontFamily(_ value: String) -> Modified { setValue(FontElementContract.fontFamily, value) }
 
     /// Bold, italic, or both.
     ///
     ///     Label("Total").fontAttributes([.bold, .italic])
-    public func fontAttributes(_ value: FontAttributes) -> Modified { setValue(.fontAttributes, value.propValue) }
+    public func fontAttributes(_ value: FontAttributes) -> Modified { setValue(FontElementContract.fontAttributes, value) }
 
     /// Whether the text grows with the system's text-size setting. On by
     /// default.
-    public func fontAutoScalingEnabled(_ value: Bool) -> Modified { setValue(.fontAutoScalingEnabled, .bool(value)) }
+    public func fontAutoScalingEnabled(_ value: Bool) -> Modified { setValue(FontElementContract.fontAutoScalingEnabled, value) }
 }

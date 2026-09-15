@@ -16,7 +16,7 @@ public protocol TextElement: TextStyleElement {}
 extension TextElement {
     /// What the control says. Usually given in the initializer instead -
     /// `Label("Total")` - and this is the way to change it in a style.
-    public func text(_ value: String) -> Modified { setValue(.text, .string(value)) }
+    public func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
 
     /// Whether those letters are DRAWN as written or in one case throughout.
     ///
@@ -25,6 +25,6 @@ extension TextElement {
     /// On this tier rather than on `TextStyleElement`, because transforming a
     /// formatted picker value would be a different, platform-specific promise.
     public func textCase(_ value: TextCase) -> Modified {
-        setValue(.textCase, value.propValue)
+        setValue(TextElementContract.textCase, value)
     }
 }

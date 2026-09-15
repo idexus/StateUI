@@ -43,7 +43,7 @@ extension PageElement {
     /// TOP of the stack, and a written page says it with `page.title`. A title
     /// on the `NavigationStack` itself names the whole stack.
     public func title(_ value: String) -> Modified {
-        setValue(.title, .string(value))
+        setValue(PageElementContract.title, value)
     }
 
     /// The picture that stands for the page.
@@ -52,7 +52,7 @@ extension PageElement {
     /// the caption. A page that is not shown as an item of something else has
     /// nowhere to draw it, and platforms ignore it there.
     public func icon(_ value: ImageSource) -> Modified {
-        setValue(.icon, value.propValue)
+        setValue(PageElementContract.icon, value)
     }
 
 }

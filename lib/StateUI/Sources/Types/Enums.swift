@@ -36,8 +36,6 @@ public enum Alignment: Int32, Sendable {
 
     /// Taking all of it. The default.
     case fill = 3
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// Whether text is drawn bold, italic, or both - a flag set, with bits of this
@@ -67,8 +65,6 @@ public struct FontAttributes: OptionSet, Sendable {
 
     /// Drawn italic.
     public static let italic = FontAttributes(rawValue: 1 << 1)
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// Where text sits inside the space its own control was given.
@@ -85,8 +81,6 @@ public enum TextAlignment: Int32, Sendable {
 
     /// Against the far edge.
     case end = 2
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// What text does when it will not fit on one line - wrap, or be cut short
@@ -113,8 +107,6 @@ public enum LineBreak: Int32, Sendable {
     /// One line, cut in the MIDDLE - which keeps both ends readable, as a file
     /// path wants.
     case middleTruncation = 5
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// The lines drawn through or under text - a flag set, with bits of this
@@ -140,8 +132,6 @@ public struct TextDecorations: OptionSet, Sendable {
 
     /// A line through it.
     public static let strikethrough = TextDecorations(rawValue: 1 << 1)
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// Whether the text is drawn as written, or in one case throughout.
@@ -161,8 +151,6 @@ public enum TextCase: Int32, Sendable {
 
     /// ALL IN UPPER CASE - a heading, a button's caption.
     case uppercase = 3
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// What a text input is for, which picks the on-screen keyboard the platform
@@ -191,8 +179,6 @@ public enum InputPurpose: Int32, Sendable {
 
     /// With / and .com to hand.
     case url = 7
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// The label on the keyboard's return key.
@@ -214,8 +200,6 @@ public enum ReturnKey: Int32, Sendable {
 
     /// "Send".
     case send = 5
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// Which ways a `ScrollView` scrolls.
@@ -232,8 +216,6 @@ public enum ScrollOrientation: Int32, Sendable {
     /// Neither - which is how a ScrollView is stopped from scrolling without
     /// being replaced.
     case neither = 3
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// What a map pin stands for - what `.type` takes, and what decides the icon
@@ -250,8 +232,6 @@ public enum PinType: Int32, Sendable {
 
     /// One a search turned up.
     case searchResult = 3
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// How a picture or a shape fills the room it was given, when the two are not
@@ -271,8 +251,6 @@ public enum Aspect: Int32, Sendable {
 
     /// Drawn at its own size, in the middle.
     case center = 3
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// Which way a view lays its content out, and which edge it starts from -
@@ -291,8 +269,6 @@ public enum LayoutDirection: Int32, Sendable {
 
     /// Right to left, whatever the view above says.
     case rightToLeft = 2
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// How deep a heading is - what `.accessibilityHeadingLevel` takes.
@@ -330,8 +306,6 @@ public enum HeadingLevel: Int32, Sendable {
 
     /// The deepest a heading goes.
     case level9 = 9
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// When the scroll bars are drawn - what `.verticalScrollBarVisibility` and
@@ -345,8 +319,6 @@ public enum ScrollBarVisibility: Int32, Sendable {
 
     /// Never shown, though it still scrolls.
     case never = 2
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// The outline a Border draws, and the shape its own background is painted to
@@ -433,8 +405,6 @@ public struct AbsoluteLayoutProportions: OptionSet, Sendable {
     /// All four as fractions - the OR of the other four, as a composite here
     /// always is.
     public static let all: AbsoluteLayoutProportions = [.position, .size]
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// What a swipe reveals: buttons to tap, or one act carried out by the swipe
@@ -445,8 +415,6 @@ public enum SwipeMode: Int32, Sendable {
 
     /// A full swipe runs the first item, with no tap at all.
     case execute = 1
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// What the open items do once one of them has run.
@@ -459,8 +427,6 @@ public enum SwipeBehaviorOnInvoked: Int32, Sendable {
 
     /// Always left open.
     case remainOpen = 2
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// How the end of an open line is drawn.
@@ -474,8 +440,6 @@ public enum LineCap: Int32, Sendable {
     /// A square beyond the end point - the same shape as `.flat`, half a stroke
     /// further along.
     case square = 2
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// How two segments of a line meet.
@@ -488,8 +452,6 @@ public enum LineJoin: Int32, Sendable {
 
     /// The corner rounded.
     case round = 2
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// Which parts of a self-crossing outline count as inside it.
@@ -501,8 +463,6 @@ public enum FillRule: Int32, Sendable {
     /// Inside where the edges crossed do not cancel out by direction - so the
     /// middle of a star is filled.
     case nonzero = 1
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// What one dot of a PositionIndicator is drawn as.
@@ -512,8 +472,6 @@ public enum IndicatorShape: Int32, Sendable {
 
     /// A square.
     case square = 1
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// Where a toolbar item goes in the platform's native action surface.
@@ -526,8 +484,6 @@ public enum ToolbarItemPlacement: Int32, Sendable {
 
     /// Behind the native overflow menu.
     case overflow = 2
-
-    var propValue: PropValue { .enumeration(rawValue) }
 }
 
 /// What one edge of a layout stays clear of on the screen's UNSAFE strip -
@@ -552,8 +508,46 @@ public enum SafeArea: Int32, Sendable {
 
     /// Clear of everything - bars, notch and keyboard alike.
     case all = 3
+}
 
-    var propValue: PropValue { .enumeration(rawValue) }
+/// What each edge of a layout stays clear of - one answer for all four, or one
+/// for each. What `.avoidsSafeArea` takes.
+///
+/// One answer crosses as that one member; four cross as the four members -
+/// left, top, right, bottom - each a value of its own, a member and a quantity
+/// being different things on this wire.
+public enum SafeAreaEdges: Equatable, Sendable, HostRepresentable {
+    /// The same answer for all four edges.
+    case uniform(SafeArea)
+
+    /// Each edge's own: left, top, right, bottom.
+    case edges(left: SafeArea, top: SafeArea, right: SafeArea, bottom: SafeArea)
+
+    /// One member, or the four in order.
+    public var propValue: PropValue {
+        switch self {
+        case .uniform(let area):
+            return area.propValue
+        case .edges(let left, let top, let right, let bottom):
+            return .values([left.propValue, top.propValue, right.propValue, bottom.propValue])
+        }
+    }
+
+    /// The answer back: one member, or four in order - nil for anything else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        if let area = SafeArea(propValue: propValue) {
+            self = .uniform(area)
+            return
+        }
+
+        guard let values = propValue.values, values.count == 4,
+              let left = SafeArea(propValue: values[0]), let top = SafeArea(propValue: values[1]),
+              let right = SafeArea(propValue: values[2]), let bottom = SafeArea(propValue: values[3])
+        else { return nil }
+
+        self = .edges(left: left, top: top, right: right, bottom: bottom)
+    }
 }
 
 // MARK: - The choices a channel can carry
@@ -583,3 +577,33 @@ extension ScrollOrientation: StateChoice {}
 extension TextAlignment: StateChoice {}
 extension TextDecorations: StateChoice {}
 extension TextCase: StateChoice {}
+
+// MARK: - The values a member holds
+
+// Every one of these crosses as its member's number, which is what
+// `HostRepresentable` in Core/Contract.swift answers for a vocabulary over
+// Int32 - one line each, beside the type.
+
+extension AbsoluteLayoutProportions: HostRepresentable {}
+extension Alignment: HostRepresentable {}
+extension Aspect: HostRepresentable {}
+extension FillRule: HostRepresentable {}
+extension FontAttributes: HostRepresentable {}
+extension HeadingLevel: HostRepresentable {}
+extension IndicatorShape: HostRepresentable {}
+extension InputPurpose: HostRepresentable {}
+extension LayoutDirection: HostRepresentable {}
+extension LineBreak: HostRepresentable {}
+extension LineCap: HostRepresentable {}
+extension LineJoin: HostRepresentable {}
+extension PinType: HostRepresentable {}
+extension ReturnKey: HostRepresentable {}
+extension SafeArea: HostRepresentable {}
+extension ScrollBarVisibility: HostRepresentable {}
+extension ScrollOrientation: HostRepresentable {}
+extension SwipeBehaviorOnInvoked: HostRepresentable {}
+extension SwipeMode: HostRepresentable {}
+extension TextAlignment: HostRepresentable {}
+extension TextCase: HostRepresentable {}
+extension TextDecorations: HostRepresentable {}
+extension ToolbarItemPlacement: HostRepresentable {}

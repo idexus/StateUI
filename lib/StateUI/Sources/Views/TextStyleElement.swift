@@ -28,8 +28,8 @@ extension TextStyleElement {
     /// A `Color(light:dark:)` here carries both halves; the differ picks the
     /// one the theme asks for as it builds the view, so a theme change builds
     /// again exactly the views wearing a pair.
-    public func textColor(_ value: Color) -> Modified { setValue(.textColor, value.propValue) }
+    public func textColor(_ value: Color) -> Modified { setValue(TextStyleElementContract.textColor, value) }
 
     /// The space added between letters, in device units.
-    public func characterSpacing(_ value: Double) -> Modified { setValue(.characterSpacing, .number(value)) }
+    public func characterSpacing(_ value: Double) -> Modified { setValue(TextStyleElementContract.characterSpacing, value) }
 }

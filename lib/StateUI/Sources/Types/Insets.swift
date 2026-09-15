@@ -17,7 +17,7 @@
 /// `.margin` keeps it OUTSIDE, between the control and its neighbours. A
 /// number written where one of these is wanted becomes the same value on all
 /// four sides.
-public struct Insets: Equatable, Sendable {
+public struct Insets: Equatable, Sendable, HostRepresentable {
     /// The space on the left, in device units.
     public var left: Double
 
@@ -52,8 +52,16 @@ public struct Insets: Equatable, Sendable {
     }
 
     /// The wire form: an array, in the four-value initializer's order.
-    var propValue: PropValue {
+    public var propValue: PropValue {
         .numbers([left, top, right, bottom])
+    }
+
+    /// Insets back from their four numbers - nil for anything else.
+    /// - Parameter propValue: what the host sent.
+    public init?(propValue: PropValue) {
+        guard let numbers = propValue.numbers, numbers.count == 4 else { return nil }
+
+        self.init(numbers[0], numbers[1], numbers[2], numbers[3])
     }
 }
 
