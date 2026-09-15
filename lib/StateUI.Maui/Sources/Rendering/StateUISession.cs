@@ -95,34 +95,8 @@ internal sealed class StateUISession
     /// </summary>
     private static bool _initialized;
 
-    /// <summary>
-    /// The generation of the last message applied in full, quoted back on the
-    /// next render.
-    /// </summary>
-    /// <remarks>
-    /// A patch only means anything against the exact tree it was computed from.
-    /// Holding the generation - and advancing it only once a message has been
-    /// applied without throwing - is what makes Swift send the whole tree again
-    /// whenever this side cannot be sure of what it is showing. Zero is never a
-    /// generation Swift issues, so it always means "start over".
-    /// </remarks>
-    private int _generation;
-
-    /// <summary>
-    /// How many renders have begun, so that one can tell whether another ran
-    /// underneath it.
-    /// </summary>
-    /// <remarks>
-    /// A render can nest: applying a message reaches MAUI, a platform raises a
-    /// report synchronously inside the apply, and a handler that hears it
-    /// pumps. The inner message is computed against a tree this apply has not
-    /// finished writing, so once it has been applied, what is on screen is not
-    /// reliably either message - and the outer render must not claim its
-    /// generation. It leaves it at zero instead, which asks for the whole tree
-    /// next time. That is cheap, because a resync keeps every identity, handler
-    /// and <c>@State</c>.
-    /// </remarks>
-    private int _renders;
+    /// <summary>Takes the core's messages into the tree, one whole message at a time.</summary>
+    private readonly PatchIntake _intake = new();
 
     /// <summary>
     /// Calls into the APP's Swift module, which names its Application.
@@ -440,7 +414,7 @@ internal sealed class StateUISession
     /// </remarks>
     internal void Resync()
     {
-        _generation = 0;
+        _intake.Forget();
         Render();
     }
 
@@ -457,7 +431,7 @@ internal sealed class StateUISession
     /// after one - so it only resets the baseline; the next render, whenever it
     /// comes, is complete.
     /// </remarks>
-    internal void Forget() => _generation = 0;
+    internal void Forget() => _intake.Forget();
 
     /// <summary>
     /// Registers the application before anything is handed to it - what a
@@ -548,13 +522,10 @@ internal sealed class StateUISession
     /// </param>
     private void Render(bool mayRetry)
     {
-        // Dropped first, so that anything going wrong below leaves this side
-        // asking for the whole tree rather than for a patch onto a visual tree
-        // it only half applied.
-        int baseline = _generation;
-        _generation = 0;
-
-        int began = ++_renders;
+        // Dropped as it is quoted, so that anything going wrong below leaves
+        // this side asking for the whole tree rather than for a patch onto a
+        // visual tree it only half applied.
+        int baseline = _intake.Quote();
 
         _uiThread.Verify(_target.Dispatcher, "a render");
 
@@ -663,7 +634,7 @@ internal sealed class StateUISession
 
             long applying = System.Diagnostics.Stopwatch.GetTimestamp();
 
-            if (!_target.Apply(message.Root, complete: message.Complete))
+            if (!_intake.Take(message, _target.Apply))
             {
                 if (mayRetry)
                 {
@@ -678,12 +649,6 @@ internal sealed class StateUISession
                 }
 
                 return;
-            }
-
-            // Only when nothing rendered underneath this one - see _renders.
-            if (_renders == began)
-            {
-                _generation = message.Generation;
             }
 
             // Every scene's part first, then the message's own, which is the
