@@ -19,7 +19,7 @@ extension ColorBoxProperties {
     /// underneath, so give a box its colour here and leave its background
     /// alone - in a style as much as on the control.
     public func color(_ value: Color) -> Modified {
-        setValue(.color, value.propValue)
+        setValue(ColorBoxContract.color, value)
     }
 
     /// How rounded the corners are, in device units - the same radius on all
@@ -27,7 +27,7 @@ extension ColorBoxProperties {
     ///
     /// A radius of half the side turns a square box into a circle.
     public func cornerRadius(_ value: Double) -> Modified {
-        setValue(.cornerRadius, .number(value))
+        setValue(ColorBoxContract.cornerRadius, .uniform(value))
     }
 
     /// One corner at a time, in StateUI's declared order.
@@ -45,7 +45,9 @@ extension ColorBoxProperties {
         bottomLeft: Double,
         bottomRight: Double
     ) -> Modified {
-        setValue(.cornerRadius, .numbers([topLeft, topRight, bottomLeft, bottomRight]))
+        setValue(
+            ColorBoxContract.cornerRadius,
+            .corners(topLeft: topLeft, topRight: topRight, bottomLeft: bottomLeft, bottomRight: bottomRight))
     }
 }
 
@@ -65,13 +67,14 @@ public struct ColorBox: View, ColorBoxProperties {
 
     /// An empty one - what a `Style<ColorBox>` is written against.
     public init() {
-        node = Node(type: .colorBox)
+        node = Node(contract: ColorBoxContract.self)
     }
 
     /// A rectangle drawn in `color`. Sized by `.width` and
     /// `.height`, or by the room the layout gives it.
     public init(_ color: Color) {
-        node = Node(type: .colorBox, props: [.color: color.propValue])
+        node = Node(contract: ColorBoxContract.self)
+        node.write(ColorBoxContract.color, color)
     }
 
 }

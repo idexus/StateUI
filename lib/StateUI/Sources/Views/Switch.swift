@@ -16,7 +16,7 @@ extension SwitchProperties {
     /// so a modifier written beside one wins - and a binding goes on being
     /// written back to, which is how the two can then disagree.
     public func isOn(_ value: Bool) -> Modified {
-        setValue(.isOn, .bool(value))
+        setValue(SwitchContract.isOn, value)
     }
 }
 
@@ -80,10 +80,6 @@ public struct Switch: View, TintElement, SwitchProperties {
     /// Fires when it is flipped, with the way it was flipped TO. Runs after a
     /// binding's write, if there is one.
     public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
-        addHandler(.toggled) {
-            if let toggled = EventBuffer.current.value()?.bool {
-                try await handler(toggled)
-            }
-        }
+        onEvent(SwitchContract.toggled, handler)
     }
 }

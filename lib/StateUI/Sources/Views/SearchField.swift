@@ -14,7 +14,7 @@ extension SearchFieldProperties {
     /// `.onSubmitted`, which is a handler rather than a caption.
     /// Already `.search` on a search box.
     public func returnKey(_ value: ReturnKey) -> Modified {
-        setValue(.returnKey, value.propValue)
+        setValue(SearchFieldContract.returnKey, value)
     }
 }
 
@@ -42,13 +42,14 @@ public struct SearchField: InputView, TextElement, FontElement, TextAlignmentEle
 
     /// An empty one - what a `Style<SearchField>` is written against.
     public init() {
-        node = Node(type: .searchField)
+        node = Node(contract: SearchFieldContract.self)
     }
 
     /// A search box showing `text`. One-way: what is typed goes nowhere without
     /// `.onTextChanged`.
     public init(_ text: String) {
-        node = Node(type: .searchField, props: [.text: .string(text)])
+        node = Node(contract: SearchFieldContract.self)
+        node.write(TextElementContract.text, text)
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
@@ -92,6 +93,6 @@ public struct SearchField: InputView, TextElement, FontElement, TextAlignmentEle
     /// Fires when the search is submitted - the return key, or the magnifier
     /// where a platform draws a button.
     public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.submitted, handler)
+        onEvent(SearchFieldContract.submitted, handler)
     }
 }

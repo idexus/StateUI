@@ -10,7 +10,7 @@ public protocol RadioButtonProperties: PropertyContainer {}
 extension RadioButtonProperties {
     /// Whether this is the chosen one.
     public func isOn(_ value: Bool) -> Modified {
-        setValue(.isOn, .bool(value))
+        setValue(RadioButtonContract.isOn, value)
     }
 
     /// Which set this belongs to - picking one clears every other button
@@ -19,7 +19,7 @@ extension RadioButtonProperties {
     /// A name rather than prose: every button in the set writes the same one,
     /// and the host resolves it without relying on native view adjacency.
     public func groupName(_ value: String) -> Modified {
-        setValue(.groupName, .name(value))
+        setValue(RadioButtonContract.groupName, Name(value))
     }
 }
 
@@ -56,13 +56,14 @@ public struct RadioButton: View, TextElement, FontElement, PaddingElement,
 
     /// An empty one - what a `Style<RadioButton>` is written against.
     public init() {
-        node = Node(type: .radioButton)
+        node = Node(contract: RadioButtonContract.self)
     }
 
     /// A button captioned `text`. One-way: what is picked goes nowhere
     /// without `.onToggled`.
     public init(_ text: String) {
-        node = Node(type: .radioButton, props: [.text: .string(text)])
+        node = Node(contract: RadioButtonContract.self)
+        node.write(TextElementContract.text, text)
     }
 
     // MARK: Properties
@@ -87,10 +88,6 @@ public struct RadioButton: View, TextElement, FontElement, PaddingElement,
     /// false on the one that was chosen before, true on the new one. Runs after
     /// a binding's write, if there is one.
     public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
-        addHandler(.toggled) {
-            if let checked = EventBuffer.current.value()?.bool {
-                try await handler(checked)
-            }
-        }
+        onEvent(RadioButtonContract.toggled, handler)
     }
 }

@@ -14,18 +14,18 @@ extension SliderProperties {
     /// so a modifier written beside one wins - and a binding goes on being
     /// written back to, which is how the two can then disagree.
     public func value(_ value: Double) -> Modified {
-        setValue(.value, .number(value))
+        setValue(SliderContract.value, value)
     }
 
     /// The value at the near end of the track, 0 until told otherwise.
     public func minimum(_ value: Double) -> Modified {
-        setValue(.minimum, .number(value))
+        setValue(SliderContract.minimum, value)
     }
 
     /// The value at the far end of the track, 1 until told otherwise - so a
     /// slider meant to run to 100 must say so.
     public func maximum(_ value: Double) -> Modified {
-        setValue(.maximum, .number(value))
+        setValue(SliderContract.maximum, value)
     }
 }
 
@@ -45,13 +45,14 @@ public struct Slider: View, TintElement, SliderProperties {
 
     /// An empty one - what a `Style<Slider>` is written against.
     public init() {
-        node = Node(type: .slider)
+        node = Node(contract: SliderContract.self)
     }
 
     /// A slider sitting at `value`. One-way: the drag goes nowhere without
     /// `.onValueChanged`.
     public init(_ value: Double) {
-        node = Node(type: .slider, props: [.value: .number(value)])
+        node = Node(contract: SliderContract.self)
+        node.write(SliderContract.value, value)
     }
 
     /// Two-way: shows what the state holds and writes back what is dragged -
@@ -117,25 +118,18 @@ public struct Slider: View, TintElement, SliderProperties {
     /// Work heavy enough to stutter belongs in `.onDragCompleted` instead, this
     /// one running for every position the thumb passes through.
     public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
-        addHandler(.valueChanged) {
-            // A payload that will not parse leaves the handler alone, the rule
-            // every gesture follows - a zero nobody dragged to would read as a
-            // real position.
-            if let value = EventBuffer.current.value()?.number {
-                try await handler(value)
-            }
-        }
+        onEvent(SliderContract.valueChanged, handler)
     }
 
     /// Runs when the thumb is grabbed - the start of a drag whose every step
     /// is an `onValueChanged`.
     public func onDragStarted(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.dragStarted, handler)
+        onEvent(SliderContract.dragStarted, handler)
     }
 
     /// Runs when the thumb is let go - where work too heavy for every step of
     /// the drag belongs.
     public func onDragCompleted(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.dragCompleted, handler)
+        onEvent(SliderContract.dragCompleted, handler)
     }
 }

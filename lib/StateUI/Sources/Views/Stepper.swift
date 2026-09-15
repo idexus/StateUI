@@ -16,25 +16,25 @@ extension StepperProperties {
     /// a modifier written beside one wins - and a binding goes on being written
     /// back to, which is how the two can then disagree.
     public func value(_ value: Double) -> Modified {
-        setValue(.value, .number(value))
+        setValue(StepperContract.value, value)
     }
 
     /// The lowest it goes - the minus button stops here.
     /// It is 0 until told otherwise.
     public func minimum(_ value: Double) -> Modified {
-        setValue(.minimum, .number(value))
+        setValue(StepperContract.minimum, value)
     }
 
     /// The highest it goes - the plus button stops here.
     /// It is 100 until told otherwise.
     public func maximum(_ value: Double) -> Modified {
-        setValue(.maximum, .number(value))
+        setValue(StepperContract.maximum, value)
     }
 
     /// How far one tap moves the value.
     /// It is 1 until told otherwise.
     public func step(_ value: Double) -> Modified {
-        setValue(.step, .number(value))
+        setValue(StepperContract.step, value)
     }
 }
 
@@ -56,13 +56,14 @@ public struct Stepper: View, StepperProperties {
 
     /// An empty one - what a `Style<Stepper>` is written against.
     public init() {
-        node = Node(type: .stepper)
+        node = Node(contract: StepperContract.self)
     }
 
     /// A stepper sitting at `value`. One-way: the step goes nowhere without
     /// `.onValueChanged`.
     public init(_ value: Double) {
-        node = Node(type: .stepper, props: [.value: .number(value)])
+        node = Node(contract: StepperContract.self)
+        node.write(StepperContract.value, value)
     }
 
     /// Two-way: shows what the state holds and writes back what is stepped to
@@ -106,12 +107,6 @@ public struct Stepper: View, StepperProperties {
     /// Fires on every tap of either button, with the value stepped to. Runs
     /// after a binding's write, if there is one.
     public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
-        addHandler(.valueChanged) {
-            // A payload that will not parse leaves the handler alone, the rule
-            // every gesture follows.
-            if let value = EventBuffer.current.value()?.number {
-                try await handler(value)
-            }
-        }
+        onEvent(StepperContract.valueChanged, handler)
     }
 }

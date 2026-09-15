@@ -11,14 +11,14 @@ extension LabelProperties {
     /// What happens to text too long for the space: wrap it, or cut it and say
     /// so.
     public func lineBreak(_ value: LineBreak) -> Modified {
-        setValue(.lineBreak, value.propValue)
+        setValue(LabelContract.lineBreak, value)
     }
 
     /// How many lines to show before the text is cut - what the cut LOOKS like
     /// is `lineBreak`'s business. A count of -1 means no limit, which is
     /// the default.
     public func maximumLines(_ value: Int) -> Modified {
-        setValue(.maximumLines, .number(Double(value)))
+        setValue(LabelContract.maximumLines, value)
     }
 }
 
@@ -38,12 +38,13 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
 
     /// An empty one - what a `Style<Label>` is written against.
     public init() {
-        node = Node(type: .label)
+        node = Node(contract: LabelContract.self)
     }
 
     /// A label showing `text`.
     public init(_ text: String) {
-        node = Node(type: .label, props: [.text: .string(text)])
+        node = Node(contract: LabelContract.self)
+        node.write(TextElementContract.text, text)
     }
 
     /// The same spelling over a state the host carries: written by the host when the bytes
@@ -79,7 +80,7 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     /// the runs and not its `text`.
     public func spans(@ViewBuilder _ spans: () -> [Element]) -> Self {
         modified {
-            $0.children = [Node(type: .spans, children: spans().map { $0.body })]
+            $0.children = [Node(contract: SpansContract.self, children: spans().map { $0.body })]
         }
     }
 }
@@ -110,16 +111,17 @@ public struct TextSpan: ModifiableElement, TextElement, FontElement,
 
     /// An empty one, for a run built up by modifiers.
     public init() {
-        node = Node(type: .span)
+        node = Node(contract: SpanContract.self)
     }
 
     /// A run showing `text`.
     public init(_ text: String) {
-        node = Node(type: .span, props: [.text: .string(text)])
+        node = Node(contract: SpanContract.self)
+        node.write(TextElementContract.text, text)
     }
 
     /// What is drawn behind this run - a highlight over part of a line.
     public func background(_ value: Color) -> Self {
-        setValue(.background, value.propValue)
+        setValue(SpanContract.background, value)
     }
 }

@@ -13,7 +13,7 @@ extension ProgressBarProperties {
     /// How far along, as a FRACTION from 0 to 1 - not a percentage and not a
     /// count of items. The host clamps anything outside that range.
     public func progress(_ value: Double) -> Modified {
-        setValue(.progress, .number(value))
+        setValue(ProgressBarContract.progress, value)
     }
 }
 
@@ -39,13 +39,14 @@ public struct ProgressBar: View, TintElement, ProgressBarProperties {
 
     /// An empty one - what a `Style<ProgressBar>` is written against.
     public init() {
-        node = Node(type: .progressBar)
+        node = Node(contract: ProgressBarContract.self)
     }
 
     /// A bar filled `progress` of the way, from 0 to 1. The host clamps
     /// anything outside that.
     public init(_ progress: Double) {
-        node = Node(type: .progressBar, props: [.progress: .number(progress)])
+        node = Node(contract: ProgressBarContract.self)
+        node.write(ProgressBarContract.progress, progress)
     }
 
     // MARK: Properties

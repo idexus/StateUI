@@ -17,7 +17,7 @@ extension TextEditorProperties {
     /// text inside it. A growing editor wants a ScrollView above it, having no
     /// height of its own to stop at.
     public func growsWithText(_ value: Bool) -> Modified {
-        setValue(.growsWithText, .bool(value))
+        setValue(TextEditorContract.growsWithText, value)
     }
 }
 
@@ -39,13 +39,14 @@ public struct TextEditor: InputView, TextElement, FontElement, TextAlignmentElem
 
     /// An empty one - what a `Style<TextEditor>` is written against.
     public init() {
-        node = Node(type: .textEditor)
+        node = Node(contract: TextEditorContract.self)
     }
 
     /// An editor showing `text`. One-way: what is typed goes nowhere without
     /// `.onTextChanged`, which is what the binding form does for you.
     public init(_ text: String) {
-        node = Node(type: .textEditor, props: [.text: .string(text)])
+        node = Node(contract: TextEditorContract.self)
+        node.write(TextElementContract.text, text)
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.

@@ -13,7 +13,7 @@ extension CheckBoxProperties {
     /// Usually given in the initializer instead; this is the way to set it in a
     /// style, or to change it on a checkbox built elsewhere.
     public func isOn(_ value: Bool) -> Modified {
-        setValue(.isOn, .bool(value))
+        setValue(CheckBoxContract.isOn, value)
     }
 }
 
@@ -38,13 +38,14 @@ public struct CheckBox: View, TintElement, CheckBoxProperties {
 
     /// An empty one - what a `Style<CheckBox>` is written against.
     public init() {
-        node = Node(type: .checkBox)
+        node = Node(contract: CheckBoxContract.self)
     }
 
     /// A box that is ticked or not. One-way: what is ticked goes nowhere
     /// without `.onToggled`.
     public init(_ isOn: Bool) {
-        node = Node(type: .checkBox, props: [.isOn: .bool(isOn)])
+        node = Node(contract: CheckBoxContract.self)
+        node.write(CheckBoxContract.isOn, isOn)
     }
 
     /// Two-way: shows what the binding holds, and writes back what is ticked.
@@ -73,10 +74,6 @@ public struct CheckBox: View, TintElement, CheckBoxProperties {
     /// Fires when it is ticked or unticked, with the new value. Runs after a
     /// binding's write, if there is one.
     public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
-        addHandler(.toggled) {
-            if let checked = EventBuffer.current.value()?.bool {
-                try await handler(checked)
-            }
-        }
+        onEvent(CheckBoxContract.toggled, handler)
     }
 }

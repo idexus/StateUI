@@ -17,7 +17,7 @@ extension ImageProperties {
     /// all for a still one. It is a property rather than an act, so a paused
     /// animation is a state the tree describes and a rebuild cannot lose.
     public func isAnimating(_ value: Bool) -> Modified {
-        setValue(.isAnimating, .bool(value))
+        setValue(ImageContract.isAnimating, value)
     }
 }
 
@@ -54,13 +54,14 @@ public struct Image: View, ImageElement, ImageProperties {
 
     /// An empty one - what a `Style<Image>` is written against.
     public init() {
-        node = Node(type: .image)
+        node = Node(contract: ImageContract.self)
     }
 
     /// A picture from `source`. Takes a plain string too, since an ImageSource
     /// is expressible by one: `Image("tab_list.png")`.
     public init(_ source: ImageSource) {
-        node = Node(type: .image, props: [.source: source.propValue])
+        node = Node(contract: ImageContract.self)
+        node.write(ImageContract.source, source)
     }
 
     /// One picture per theme: both halves go on the node, and the differ picks

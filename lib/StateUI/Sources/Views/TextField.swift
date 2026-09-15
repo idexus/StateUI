@@ -12,7 +12,7 @@ public protocol TextFieldProperties: PropertyContainer {}
 extension TextFieldProperties {
     /// Whether what is typed is hidden behind the platform's secure-entry marks.
     public func isPassword(_ value: Bool) -> Modified {
-        setValue(.isPassword, .bool(value))
+        setValue(TextFieldContract.isPassword, value)
     }
 
     /// What the keyboard's return key is captioned - Go, Search, Send, Next.
@@ -20,14 +20,14 @@ extension TextFieldProperties {
     /// whatever it says. A host with a hardware keyboard may have no caption
     /// to change and still reports the submission.
     public func returnKey(_ value: ReturnKey) -> Modified {
-        setValue(.returnKey, value.propValue)
+        setValue(TextFieldContract.returnKey, value)
     }
 
     /// Whether the field shows the native button that empties it - while
     /// there is text and the field has the focus, on platforms whose ordinary
     /// text field provides one. It does unless told otherwise.
     public func showsClearButton(_ value: Bool) -> Modified {
-        setValue(.showsClearButton, .bool(value))
+        setValue(TextFieldContract.showsClearButton, value)
     }
 }
 
@@ -54,13 +54,14 @@ public struct TextField: InputView, TextElement, FontElement, TextAlignmentEleme
 
     /// An empty one - what a `Style<TextField>` is written against.
     public init() {
-        node = Node(type: .textField)
+        node = Node(contract: TextFieldContract.self)
     }
 
     /// A field showing `text`. One-way: what is typed goes nowhere without
     /// `.onTextChanged`, which is what the binding form does for you.
     public init(_ text: String) {
-        node = Node(type: .textField, props: [.text: .string(text)])
+        node = Node(contract: TextFieldContract.self)
+        node.write(TextElementContract.text, text)
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
@@ -104,6 +105,6 @@ public struct TextField: InputView, TextElement, FontElement, TextAlignmentEleme
     /// Fires when the return key is pressed - the moment to move to the next
     /// field or run the search.
     public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.submitted, handler)
+        onEvent(TextFieldContract.submitted, handler)
     }
 }

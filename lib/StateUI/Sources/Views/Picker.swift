@@ -14,7 +14,7 @@ extension PickerProperties {
     /// can still close the native list by choosing, clicking away or pressing
     /// Escape; `onClosed` reports that reader-driven boundary.
     public func isOpen(_ value: Bool) -> Modified {
-        setValue(.isOpen, .bool(value))
+        setValue(PickerContract.isOpen, value)
     }
 
     /// The list to choose from, in the order it is offered.
@@ -23,18 +23,18 @@ extension PickerProperties {
     /// an application choosing among models formats them here and resolves the
     /// chosen model through its index.
     public func options(_ value: [String]) -> Modified {
-        setValue(.options, .strings(value))
+        setValue(PickerContract.options, value)
     }
 
     /// Which item is chosen, counted from zero; -1 for none.
     public func selectedIndex(_ value: Int) -> Modified {
-        setValue(.selectedIndex, .number(Double(value)))
+        setValue(PickerContract.selectedIndex, value)
     }
 
     /// What the field says while nothing is chosen. A host can also reuse it
     /// as the heading of a separate native choice surface.
     public func title(_ value: String) -> Modified {
-        setValue(.title, .string(value))
+        setValue(PickerContract.title, value)
     }
 }
 
@@ -62,13 +62,14 @@ public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement,
 
     /// An empty one - what a `Style<Picker>` is written against.
     public init() {
-        node = Node(type: .picker)
+        node = Node(contract: PickerContract.self)
     }
 
     /// A picker offering `items`, with nothing chosen until `.selectedIndex`
     /// says so.
     public init(_ items: [String]) {
-        node = Node(type: .picker, props: [.options: .strings(items)])
+        node = Node(contract: PickerContract.self)
+        node.write(PickerContract.options, items)
     }
 
     // MARK: Properties
@@ -98,14 +99,7 @@ public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement,
     /// the state still holds the old index. The payload carries the new one
     /// either way.
     public func onSelectedIndexChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
-        addHandler(.selectedIndexChanged) {
-            // A payload that will not parse leaves the handler alone, the rule
-            // every gesture follows. -1 is a real value here - nothing chosen -
-            // so it cannot double as "unreadable".
-            if let index = EventBuffer.current.value()?.int {
-                try await handler(index)
-            }
-        }
+        onEvent(PickerContract.selectedIndexChanged, handler)
     }
 
     /// The reader has opened the native list of choices.
@@ -113,12 +107,12 @@ public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement,
     /// It deliberately does not echo an `isOpen(true)` write from the tree: an
     /// application issuing that request already knows it did so.
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.opened, handler)
+        onEvent(PickerContract.opened, handler)
     }
 
     /// The reader has closed it - by a choice, a click outside or the native
     /// platform's dismissal command.
     public func onClosed(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.closed, handler)
+        onEvent(PickerContract.closed, handler)
     }
 }

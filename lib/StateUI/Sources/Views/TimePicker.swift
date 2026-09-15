@@ -15,7 +15,7 @@ extension TimePickerProperties {
     /// Settable, so a button elsewhere on the page can open it - and the
     /// platform closes it by itself, which is what `onClosed` is for.
     public func isOpen(_ value: Bool) -> Modified {
-        setValue(.isOpen, .bool(value))
+        setValue(TimePickerContract.isOpen, value)
     }
 
     /// The time the field is showing, on a 24-hour clock whatever `.format`
@@ -27,7 +27,7 @@ extension TimePickerProperties {
     /// argument, so a modifier written beside one wins - and a binding goes on
     /// being written back to, which is how the two can then disagree.
     public func time(_ value: ClockTime) -> Modified {
-        setValue(.time, value.propValue)
+        setValue(TimePickerContract.time, value)
     }
 
     /// How the time is written - "t" for the short form, "T" for the long one,
@@ -37,7 +37,7 @@ extension TimePickerProperties {
     /// nothing - which is also what decides whether the reader sees 13:00 or
     /// 1:00 PM.
     public func format(_ value: String) -> Modified {
-        setValue(.format, .string(value))
+        setValue(TimePickerContract.format, value)
     }
 }
 
@@ -65,13 +65,14 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
 
     /// An empty one - what a `Style<TimePicker>` is written against.
     public init() {
-        node = Node(type: .timePicker)
+        node = Node(contract: TimePickerContract.self)
     }
 
     /// A picker showing `time`. One-way: what is chosen goes nowhere without
     /// `.onTimeChanged`.
     public init(_ time: ClockTime) {
-        node = Node(type: .timePicker, props: [.time: time.propValue])
+        node = Node(contract: TimePickerContract.self)
+        node.write(TimePickerContract.time, time)
     }
 
     /// Two-way: shows the time and writes back the one that is chosen.
@@ -115,11 +116,7 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
     /// Fires when a time is chosen, with the new one. Runs after a binding's
     /// write, if there is one.
     public func onTimeChanged(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
-        addHandler(.timeChanged) {
-            if let time = ClockTime(EventBuffer.current.value()) {
-                try await handler(time)
-            }
-        }
+        onEvent(TimePickerContract.timeChanged, handler)
     }
 
     /// The clock face has opened.
@@ -129,11 +126,11 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
     /// from a button of its own already knows, so what this is for is the
     /// other direction.
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.opened, handler)
+        onEvent(TimePickerContract.opened, handler)
     }
 
     /// It has closed - by a choice, by a tap outside, or by the platform.
     public func onClosed(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.closed, handler)
+        onEvent(TimePickerContract.closed, handler)
     }
 }

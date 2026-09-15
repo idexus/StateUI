@@ -10,7 +10,7 @@ public protocol ButtonProperties: PropertyContainer {}
 extension ButtonProperties {
     /// What happens to a caption too long for the button.
     public func lineBreak(_ value: LineBreak) -> Modified {
-        setValue(.lineBreak, value.propValue)
+        setValue(ButtonContract.lineBreak, value)
     }
 
     /// The picture beside the caption - a file among the application's image
@@ -19,7 +19,7 @@ extension ButtonProperties {
     ///
     ///     Button("Surprise me").icon("nav_surprise.png")
     public func icon(_ value: ImageSource) -> Modified {
-        setValue(.icon, value.propValue)
+        setValue(ButtonContract.icon, value)
     }
 
     /// Which side of the caption the icon stands on. `.leading`, the default,
@@ -31,12 +31,12 @@ extension ButtonProperties {
     ///         .iconPosition(.leading)
     ///         .iconSpacing(8)
     public func iconPosition(_ value: IconPosition) -> Modified {
-        setValue(.iconPosition, value.propValue)
+        setValue(ButtonContract.iconPosition, value)
     }
 
     /// The gap between the icon and the caption, in device units.
     public func iconSpacing(_ value: Double) -> Modified {
-        setValue(.iconSpacing, .number(value))
+        setValue(ButtonContract.iconSpacing, value)
     }
 }
 
@@ -63,7 +63,7 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
 
     /// An empty one - what a `Style<Button>` is written against.
     public init() {
-        node = Node(type: .button)
+        node = Node(contract: ButtonContract.self)
     }
 
     /// A button whose content is an icon, with no caption: the picture is what
@@ -75,12 +75,14 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
     /// The same button as one with a caption - the same border, corner radius
     /// and pressed state - with `.aspect` for how its picture fills it.
     public init(icon: ImageSource) {
-        node = Node(type: .button, props: [.icon: icon.propValue])
+        node = Node(contract: ButtonContract.self)
+        node.write(ButtonContract.icon, icon)
     }
 
     /// A button captioned `text`.
     public init(_ text: String) {
-        node = Node(type: .button, props: [.text: .string(text)])
+        node = Node(contract: ButtonContract.self)
+        node.write(TextElementContract.text, text)
     }
 
     /// The same spelling over a state the host carries: a caption written by the host when the
@@ -99,18 +101,18 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
     /// A second `.onClicked` runs beside the first, like every typed event
     /// modifier.
     public func onClicked(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.clicked, handler)
+        onEvent(ButtonContract.clicked, handler)
     }
 
     /// Runs the moment the finger goes down, before it is lifted.
     public func onPressed(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.pressed, handler)
+        onEvent(ButtonContract.pressed, handler)
     }
 
     /// Runs when the finger is lifted, wherever it ends up - unlike `onClicked`,
     /// which needs it lifted on the button.
     public func onReleased(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.released, handler)
+        onEvent(ButtonContract.released, handler)
     }
 }
 

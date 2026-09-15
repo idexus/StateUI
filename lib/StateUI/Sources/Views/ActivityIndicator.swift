@@ -15,7 +15,7 @@ extension ActivityIndicatorProperties {
     /// beside it. Usually given in the initializer instead; this is the way to
     /// set it in a style.
     public func isRunning(_ value: Bool) -> Modified {
-        setValue(.isRunning, .bool(value))
+        setValue(ActivityIndicatorContract.isRunning, value)
     }
 }
 
@@ -39,14 +39,15 @@ public struct ActivityIndicator: View, TintElement, ActivityIndicatorProperties 
 
     /// An empty one - what a `Style<ActivityIndicator>` is written against.
     public init() {
-        node = Node(type: .activityIndicator)
+        node = Node(contract: ActivityIndicatorContract.self)
     }
 
     /// A spinner, spinning or still - and still is also INVISIBLE on most
     /// platforms, which is what makes `ActivityIndicator(loading)` the whole of
     /// showing it while the work runs and hiding it when the work is done.
     public init(_ isRunning: Bool) {
-        node = Node(type: .activityIndicator, props: [.isRunning: .bool(isRunning)])
+        node = Node(contract: ActivityIndicatorContract.self)
+        node.write(ActivityIndicatorContract.isRunning, isRunning)
     }
 
     // MARK: Properties

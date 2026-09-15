@@ -13,7 +13,7 @@ extension DatePickerProperties {
     /// Settable, so a button elsewhere on the page can open it - and the
     /// platform closes it by itself, which is what `onClosed` is for.
     public func isOpen(_ value: Bool) -> Modified {
-        setValue(.isOpen, .bool(value))
+        setValue(DatePickerContract.isOpen, value)
     }
 
     /// The day the field shows.
@@ -21,12 +21,12 @@ extension DatePickerProperties {
     /// Usually given in the initializer instead; this is the way to set it in a
     /// style, or on a picker built elsewhere.
     public func date(_ value: CalendarDate) -> Modified {
-        setValue(.date, value.propValue)
+        setValue(DatePickerContract.date, value)
     }
 
     /// The earliest day the calendar offers - everything before it is refused.
     public func minimumDate(_ value: CalendarDate) -> Modified {
-        setValue(.minimumDate, value.propValue)
+        setValue(DatePickerContract.minimumDate, value)
     }
 
     /// The latest day the calendar offers - everything after it is refused.
@@ -38,7 +38,7 @@ extension DatePickerProperties {
     /// TIME of day and there is no date beside it, so a page whose limit is the
     /// current day holds that day in state.
     public func maximumDate(_ value: CalendarDate) -> Modified {
-        setValue(.maximumDate, value.propValue)
+        setValue(DatePickerContract.maximumDate, value)
     }
 
     /// How the date is written in the field, as a format string - "D" for the
@@ -49,7 +49,7 @@ extension DatePickerProperties {
     /// locale are - which is also why the month names come out in the
     /// reader's language without anything being asked for.
     public func format(_ value: String) -> Modified {
-        setValue(.format, .string(value))
+        setValue(DatePickerContract.format, value)
     }
 }
 
@@ -74,13 +74,14 @@ public struct DatePicker: View, TextStyleElement, FontElement, DatePickerPropert
 
     /// An empty one - what a `Style<DatePicker>` is written against.
     public init() {
-        node = Node(type: .datePicker)
+        node = Node(contract: DatePickerContract.self)
     }
 
     /// A picker showing `date`. One-way: what is chosen goes nowhere without
     /// `.onDateChanged`.
     public init(_ date: CalendarDate) {
-        node = Node(type: .datePicker, props: [.date: date.propValue])
+        node = Node(contract: DatePickerContract.self)
+        node.write(DatePickerContract.date, date)
     }
 
     /// Two-way: shows the date and writes back the one that is chosen.
@@ -124,11 +125,7 @@ public struct DatePicker: View, TextStyleElement, FontElement, DatePickerPropert
     /// Fires when a date is chosen. Runs after a binding's write, if there is
     /// one.
     public func onDateChanged(_ handler: @escaping ValueEventHandler<CalendarDate>) -> Self {
-        addHandler(.dateChanged) {
-            if let date = CalendarDate(EventBuffer.current.value()) {
-                try await handler(date)
-            }
-        }
+        onEvent(DatePickerContract.dateChanged, handler)
     }
 
     /// The calendar has opened.
@@ -138,11 +135,11 @@ public struct DatePicker: View, TextStyleElement, FontElement, DatePickerPropert
     /// from a button of its own already knows, so what this is for is the
     /// other direction.
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.opened, handler)
+        onEvent(DatePickerContract.opened, handler)
     }
 
     /// It has closed - by a choice, by a tap outside, or by the platform.
     public func onClosed(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.closed, handler)
+        onEvent(DatePickerContract.closed, handler)
     }
 }
