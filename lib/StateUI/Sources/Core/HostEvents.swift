@@ -208,8 +208,9 @@ public enum HostEvents {
     }
 
     /// Runs every handler subscribed to a name and answers how many there
-    /// were - called by the export, on the host's UI thread. The handlers
-    /// are taken under the lock and started outside it, the dispatch rule.
+    /// were - called by the export and by `StateUIHost.raise`, on the host's
+    /// UI thread. The handlers are taken under the lock and started outside
+    /// it, the dispatch rule.
     static func dispatch(_ name: String, _ payload: [PropValue]) -> Int {
         let handlers = guarded.sync { subscriptions[Event(name)] ?? [] }
 

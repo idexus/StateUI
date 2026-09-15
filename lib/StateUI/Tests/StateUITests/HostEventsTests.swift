@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Events the HOST raises by name, driven through the real
-// export: bytes in, subscriptions found, handlers queued on this library's
-// executor and drained the way the host drains them.
+// export - bytes in, subscriptions found, handlers queued on this library's
+// executor and drained the way the host drains them - and raised typed by a
+// host in the process, `StateUIHost.raise`, which takes the same road.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -78,6 +79,44 @@ final class HostEventsTests: XCTestCase {
         XCTAssertEqual(answer, -1)
     }
 
+    // MARK: - A host in the process
+
+    /// A host in the process raises the member itself, typed: the handler
+    /// hears the values it was handed, and the raise answers how many heard
+    /// it - the export's road without the bytes.
+    func testAHostInTheProcessRaisesTheMemberWithItsValues() {
+        let heard = Heard()
+        let subscription = HostEvents.on(TestEvents.batteryChanged) { level, charging in
+            heard.lines.append("\(level) \(charging)")
+        }
+        defer { subscription.cancel() }
+
+        XCTAssertEqual(StateUIHost.raise(TestEvents.batteryChanged, 0.42, false), 1)
+        stateUIRunJobs()
+
+        XCTAssertEqual(heard.lines, ["0.42 false"])
+    }
+
+    /// One value and none take the same call: what the raise carries is the
+    /// member's payload, whatever its count.
+    func testAHostInTheProcessRaisesOneValueAndNone() {
+        let heard = Heard()
+        let one = HostEvents.on(TestEvents.connectivityChanged) { online in
+            heard.lines.append("online \(online)")
+        }
+        let none = HostEvents.on(TestEvents.ordered) { heard.lines.append("ordered") }
+        defer {
+            one.cancel()
+            none.cancel()
+        }
+
+        XCTAssertEqual(StateUIHost.raise(TestEvents.connectivityChanged, true), 1)
+        XCTAssertEqual(StateUIHost.raise(TestEvents.ordered), 1)
+        stateUIRunJobs()
+
+        XCTAssertEqual(heard.lines, ["online true", "ordered"])
+    }
+
     // MARK: - Support
 
     /// Raises an event through the real export, bytes and all, and answers
@@ -103,6 +142,7 @@ private enum TestEvents: ApplicationTier {
     static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Test.BatteryChanged")
     static let ordered = ElementEvent<Self, Void>("Test.Ordered")
     static let cancelled = ElementEvent<Self, Bool>("Test.Cancelled")
+    static let connectivityChanged = ElementEvent<Self, Bool>("Test.ConnectivityChanged")
 
-    static let members: [any ContractMember] = [batteryChanged, ordered, cancelled]
+    static let members: [any ContractMember] = [batteryChanged, ordered, cancelled, connectivityChanged]
 }

@@ -881,6 +881,28 @@ extension HostChildrenUpdate: RandomAccessCollection {
         return Renderer.shared.dispatch(Int(handler))
     }
 
+    /// Raises an event of the application's - one no control raises - with
+    /// the values its contract declares, as the platform reported them: every
+    /// `HostEvents.on` subscription to the member hears them, each handler
+    /// queued on this library's executor for the next `runJobs`. The road a
+    /// foreign host's raise takes through the export, typed at the call: the
+    /// values are the member's, so a raise of another shape does not compile.
+    ///
+    ///     StateUIHost.raise(GalleryContract.batteryChanged, level, charging)
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - value: what it carries, in the order its contract declares.
+    /// - Returns: how many subscriptions heard it - a raise nobody hears is
+    ///   an ordinary zero.
+    @discardableResult
+    public static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
+        _ value: repeat each Value
+    ) -> Int {
+        HostEvents.dispatch(event.token.name, MemberValues.encode(repeat each value))
+    }
+
     /// Runs jobs waiting on StateUI's UI executor on the calling thread.
     @discardableResult
     public static func runJobs() -> Int { stateUIRunJobs() }
