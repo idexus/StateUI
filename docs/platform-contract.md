@@ -299,7 +299,7 @@ where an individual control already realizes the member.
 | spatial transform and pivot | `rotationX`, `rotationY`, `pivotX`, `pivotY` | ✅ | ✅ | — | — | — | — | — |
 | accessibility | `accessibilityIdentifier`, `isAccessibilityHidden`, `automationExcludedWithChildren`, `accessibilityLabel`, `accessibilityHint`, `accessibilityHeadingLevel` | ✅ | ✅ | — | — | — | — | — |
 | frame feed/event | `frame`, `frameChanged` | ✅ | ✅ | — | — | — | — | — |
-| focus feed and event | `isFocused`, `isFocusedChanged` | ✅ | — | — | — | — | — | — |
+| focus feed and event | `isFocused`, `isFocusedChanged` | ✅ | ✅ | — | — | — | — | — |
 | tap | `tapCount`, `onTapped` (`tapped`) | ✅ | ✅ | — | — | — | — | — |
 | swipe gesture | `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`) | ✅ | ✅ | — | — | — | — | — |
 | pan and pinch | `panXChannel`, `panYChannel`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `onPinchUpdated` (`pinchUpdated`) | ✅ | ✅* | — | — | — | — | — |
@@ -313,42 +313,42 @@ Every control, and every part an application, its windows and its pages are made
 <!-- dictionary:begin -->
 | Control | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Label](controls/Label.md) | 78 | 77 ✅ | 62 ✅ · 2 ✅* |  |  |  |  |  |
-| [Button](controls/Button.md) | 83 | 81 ✅ | 63 ✅ · 3 ✅* |  |  |  |  |  |
-| [TextField](controls/TextField.md) | 87 | 86 ✅ | 65 ✅ · 2 ✅* |  |  |  |  |  |
-| [TextEditor](controls/TextEditor.md) | 84 | 83 ✅ | 64 ✅ · 2 ✅* |  |  |  |  |  |
-| [SearchField](controls/SearchField.md) | 86 | 85 ✅ | 64 ✅ · 2 ✅* |  |  |  |  |  |
-| [Image](controls/Image.md) | 65 | 64 ✅ | 50 ✅ · 2 ✅* |  |  |  |  |  |
-| [Picker](controls/Picker.md) | 79 | 78 ✅ | 61 ✅ · 2 ✅* |  |  |  |  |  |
-| [DatePicker](controls/DatePicker.md) | 77 | 76 ✅ | 56 ✅ · 2 ✅* |  |  |  |  |  |
-| [TimePicker](controls/TimePicker.md) | 75 | 74 ✅ | 54 ✅ · 2 ✅* |  |  |  |  |  |
-| [Switch](controls/Switch.md) | 66 | 65 ✅ | 50 ✅ · 2 ✅* |  |  |  |  |  |
-| [CheckBox](controls/CheckBox.md) | 66 | 65 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
-| [RadioButton](controls/RadioButton.md) | 78 | 77 ✅ | 58 ✅ · 2 ✅* |  |  |  |  |  |
-| [Slider](controls/Slider.md) | 70 | 69 ✅ | 55 ✅ · 2 ✅* |  |  |  |  |  |
-| [Stepper](controls/Stepper.md) | 68 | 67 ✅ | 53 ✅ · 2 ✅* |  |  |  |  |  |
-| [ActivityIndicator](controls/ActivityIndicator.md) | 65 | 64 ✅ | 48 ✅ · 2 ✅* |  |  |  |  |  |
-| [ProgressBar](controls/ProgressBar.md) | 65 | 64 ✅ | 48 ✅ · 2 ✅* |  |  |  |  |  |
-| [ColorBox](controls/ColorBox.md) | 65 | 64 ✅ | 50 ✅ · 2 ✅* |  |  |  |  |  |
-| [Border](controls/Border.md) | 72 | 71 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
+| [Label](controls/Label.md) | 78 | 77 ✅ | 63 ✅ · 2 ✅* |  |  |  |  |  |
+| [Button](controls/Button.md) | 83 | 81 ✅ | 64 ✅ · 3 ✅* |  |  |  |  |  |
+| [TextField](controls/TextField.md) | 87 | 86 ✅ | 66 ✅ · 2 ✅* |  |  |  |  |  |
+| [TextEditor](controls/TextEditor.md) | 84 | 83 ✅ | 65 ✅ · 2 ✅* |  |  |  |  |  |
+| [SearchField](controls/SearchField.md) | 86 | 85 ✅ | 65 ✅ · 2 ✅* |  |  |  |  |  |
+| [Image](controls/Image.md) | 65 | 64 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
+| [Picker](controls/Picker.md) | 79 | 78 ✅ | 62 ✅ · 2 ✅* |  |  |  |  |  |
+| [DatePicker](controls/DatePicker.md) | 77 | 76 ✅ | 57 ✅ · 2 ✅* |  |  |  |  |  |
+| [TimePicker](controls/TimePicker.md) | 75 | 74 ✅ | 55 ✅ · 2 ✅* |  |  |  |  |  |
+| [Switch](controls/Switch.md) | 66 | 65 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
+| [CheckBox](controls/CheckBox.md) | 66 | 65 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
+| [RadioButton](controls/RadioButton.md) | 78 | 77 ✅ | 59 ✅ · 2 ✅* |  |  |  |  |  |
+| [Slider](controls/Slider.md) | 70 | 69 ✅ | 56 ✅ · 2 ✅* |  |  |  |  |  |
+| [Stepper](controls/Stepper.md) | 68 | 67 ✅ | 54 ✅ · 2 ✅* |  |  |  |  |  |
+| [ActivityIndicator](controls/ActivityIndicator.md) | 65 | 64 ✅ | 49 ✅ · 2 ✅* |  |  |  |  |  |
+| [ProgressBar](controls/ProgressBar.md) | 65 | 64 ✅ | 49 ✅ · 2 ✅* |  |  |  |  |  |
+| [ColorBox](controls/ColorBox.md) | 65 | 64 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
+| [Border](controls/Border.md) | 72 | 71 ✅ | 53 ✅ · 2 ✅* |  |  |  |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 71 | 70 ✅ |  |  |  |  |  |  |
-| [VStack](controls/VStack.md) | 68 | 67 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
-| [HStack](controls/HStack.md) | 68 | 67 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
-| [Grid](controls/Grid.md) | 71 | 70 ✅ | 54 ✅ · 2 ✅* |  |  |  |  |  |
-| [AbsoluteLayout](controls/AbsoluteLayout.md) | 67 | 66 ✅ | 49 ✅ · 2 ✅* |  |  |  |  |  |
-| [ScrollView](controls/ScrollView.md) | 68 | 67 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
+| [VStack](controls/VStack.md) | 68 | 67 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
+| [HStack](controls/HStack.md) | 68 | 67 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
+| [Grid](controls/Grid.md) | 71 | 70 ✅ | 55 ✅ · 2 ✅* |  |  |  |  |  |
+| [AbsoluteLayout](controls/AbsoluteLayout.md) | 67 | 66 ✅ | 50 ✅ · 2 ✅* |  |  |  |  |  |
+| [ScrollView](controls/ScrollView.md) | 68 | 67 ✅ | 53 ✅ · 2 ✅* |  |  |  |  |  |
 | [RefreshView](controls/RefreshView.md) | 67 | 66 ✅ |  |  |  |  |  |  |
 | [SwipeView](controls/SwipeView.md) | 68 | 67 ✅ |  |  |  |  |  |  |
 | [Map](controls/Map.md) | 75 | 62 ✅ · 12 ✅* |  |  |  |  |  |  |
 | [WebView](controls/WebView.md) | 70 | 69 ✅ |  |  |  |  |  |  |
 | [TitleBar](controls/TitleBar.md) | 66 | 65 ✅ | 3 ✅ · 1 ✅* |  |  |  |  |  |
-| [Canvas](controls/Canvas.md) | 64 | 63 ✅ | 49 ✅ · 2 ✅* |  |  |  |  |  |
-| [Rectangle](controls/Rectangle.md) | 74 | 73 ✅ | 56 ✅ · 3 ✅* |  |  |  |  |  |
-| [Ellipse](controls/Ellipse.md) | 73 | 72 ✅ | 55 ✅ · 3 ✅* |  |  |  |  |  |
-| [Line](controls/Line.md) | 77 | 76 ✅ | 61 ✅ · 3 ✅* |  |  |  |  |  |
-| [Path](controls/Path.md) | 74 | 73 ✅ | 58 ✅ · 3 ✅* |  |  |  |  |  |
-| [Polygon](controls/Polygon.md) | 75 | 74 ✅ | 59 ✅ · 3 ✅* |  |  |  |  |  |
-| [Polyline](controls/Polyline.md) | 75 | 74 ✅ | 59 ✅ · 3 ✅* |  |  |  |  |  |
+| [Canvas](controls/Canvas.md) | 64 | 63 ✅ | 50 ✅ · 2 ✅* |  |  |  |  |  |
+| [Rectangle](controls/Rectangle.md) | 74 | 73 ✅ | 57 ✅ · 3 ✅* |  |  |  |  |  |
+| [Ellipse](controls/Ellipse.md) | 73 | 72 ✅ | 56 ✅ · 3 ✅* |  |  |  |  |  |
+| [Line](controls/Line.md) | 77 | 76 ✅ | 62 ✅ · 3 ✅* |  |  |  |  |  |
+| [Path](controls/Path.md) | 74 | 73 ✅ | 59 ✅ · 3 ✅* |  |  |  |  |  |
+| [Polygon](controls/Polygon.md) | 75 | 74 ✅ | 60 ✅ · 3 ✅* |  |  |  |  |  |
+| [Polyline](controls/Polyline.md) | 75 | 74 ✅ | 60 ✅ · 3 ✅* |  |  |  |  |  |
 
 | Part | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |

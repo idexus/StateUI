@@ -105,6 +105,7 @@ enum AppKitRealization {
         .complete("VisualElement", "frame"),
         .complete("VisualElement", "height"),
         .complete("VisualElement", "isAccessibilityHidden"),
+        .complete("VisualElement", "isFocusedChanged"),
         .complete("VisualElement", "isVisible"),
         .complete("VisualElement", "maximumHeight"),
         .complete("VisualElement", "maximumWidth"),

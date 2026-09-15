@@ -172,6 +172,7 @@ final class AppKitRenderer: @unchecked Sendable {
     private let reducesMotion: () -> Bool
     fileprivate let intake = AppKitPatchIntake()
     private lazy var actPerformer = AppKitActPerformer(renderer: self)
+    private var focusReportQueued = false
     private var nextMount: UInt64 = 0
     private var patchTime: Double?
     private var patchReducesMotion: Bool?
@@ -902,6 +903,20 @@ final class AppKitRenderer: @unchecked Sendable {
         NSApp.keyWindow ?? orderedWindowControllers.first?.window
     }
 
+    /// A window's first responder moved. Every element that follows its focus
+    /// is told once the move has settled: AppKit hands the focus through
+    /// passing holders on its way - the window among them - within one turn.
+    func focusMoved() {
+        guard !focusReportQueued else { return }
+        focusReportQueued = true
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            focusReportQueued = false
+            root?.reportFocus()
+        }
+    }
+
     var frameClockWindowForTesting: NSWindow? { frameClock.window }
 
     var describedMotionActiveForTesting: Bool { describedMotion.isActive }
@@ -1153,6 +1168,9 @@ final class MountedNode: NSObject {
     private var frameObservedViews: [NSView] = []
     private var frameQueued = false
     private var lastFrameReport: [Double]?
+
+    /// The focus this element last reported, where it follows its focus.
+    private var reportedFocus = false
     private var tapRecognizer: AppKitTapRecognizer?
     private var swipeRecognizer: AppKitSwipeRecognizer?
     private var panRecognizer: AppKitPanRecognizer?
@@ -1242,6 +1260,7 @@ final class MountedNode: NSObject {
             drivenValues.removeAll(keepingCapacity: true)
             created = false
             lastFrameReport = nil
+            reportedFocus = false
             pagePresented = false
             pendingTabFallback = nil
             recycledChildren.removeAll(keepingCapacity: true)
@@ -1467,6 +1486,19 @@ final class MountedNode: NSObject {
             return
         }
         for child in children { child.forgetForTesting(view) }
+    }
+
+    /// Tells every element in this subtree that follows its focus where the
+    /// focus now is, where that has changed.
+    func reportFocus() {
+        if let handler = events[.isFocusedChanged], let view {
+            let focused = AppKitFocus.holds(view, view.window?.firstResponder)
+            if focused != reportedFocus {
+                reportedFocus = focused
+                host?.dispatch(handler, payload: [.bool(focused)])
+            }
+        }
+        for child in children { child.reportFocus() }
     }
 
     /// Every mounted identity in this subtree.

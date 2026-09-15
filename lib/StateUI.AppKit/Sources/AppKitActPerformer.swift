@@ -64,14 +64,14 @@ final class AppKitActPerformer {
         }
 
         if call.act == .unfocus {
-            if let window = view.window, Self.holds(view, window.firstResponder) {
+            if let window = view.window, AppKitFocus.holds(view, window.firstResponder) {
                 window.makeFirstResponder(nil)
             }
             reply(call, [])
             return
         }
 
-        guard let window = view.window, let focusable = Self.focusable(in: view) else {
+        guard let window = view.window, let focusable = AppKitFocus.focusable(in: view) else {
             reply(call, [.bool(false)])
             return
         }
@@ -113,30 +113,6 @@ final class AppKitActPerformer {
         case .number(let number)?: .auto(Int(number))
         default: nil
         }
-    }
-
-    /// The view inside `view` that takes the keyboard: the view itself where it
-    /// does, or the first one within it that does - a text field's own field,
-    /// not the box it stands in.
-    static func focusable(in view: NSView) -> NSView? {
-        if view.acceptsFirstResponder { return view }
-
-        for subview in view.subviews {
-            if let found = focusable(in: subview) { return found }
-        }
-        return nil
-    }
-
-    /// Whether `responder` - a window's first responder - is `view` or inside
-    /// it, a text field's field editor counting as the field it edits.
-    static func holds(_ view: NSView, _ responder: NSResponder?) -> Bool {
-        var holder = responder
-        if let editor = responder as? NSTextView, editor.isFieldEditor,
-           let field = editor.delegate as? NSView {
-            holder = field
-        }
-        guard let holding = holder as? NSView else { return false }
-        return holding === view || holding.isDescendant(of: view)
     }
 }
 #endif

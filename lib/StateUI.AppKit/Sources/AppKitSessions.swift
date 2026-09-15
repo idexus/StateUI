@@ -358,6 +358,10 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private(set) var closingFromTree = false
     private var presentedPage: MountedNode?
     private var modals: [AppKitModalWindowController] = []
+
+    /// The window's first responder, watched so every element that follows its
+    /// focus hears it move.
+    private var focusWatch: NSKeyValueObservation?
     private lazy var toolbar = AppKitWindowToolbar(windowIdentifier: record.windowIdentifier)
 
     /// The row a window's tabs stand in beneath its toolbar, and where it
@@ -423,6 +427,9 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
         window.delegate = self
         configureChrome(window)
+        focusWatch = window.observe(\.firstResponder) { [weak self] _, _ in
+            MainActor.assumeIsolated { self?.focusMoved() }
+        }
         if nativeWindow == nil {
             window.identifier = NSUserInterfaceItemIdentifier(record.windowIdentifier)
             window.isRestorable = true
@@ -940,7 +947,14 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     }
 
     func windowWillClose(_ notification: Notification) {
+        focusWatch?.invalidate()
+        focusWatch = nil
         host?.windowWillClose(self)
+    }
+
+    /// The first responder of this window, or of a sheet over it, moved.
+    func focusMoved() {
+        host?.focusMoved()
     }
 
     func windowDidMiniaturize(_ notification: Notification) {
@@ -960,6 +974,9 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
     private(set) var node: MountedNode
     private weak var stateUIOwner: AppKitWindowController?
 
+    /// The sheet's first responder, watched for its owner.
+    private var focusWatch: NSKeyValueObservation?
+
     init(node: MountedNode, owner: AppKitWindowController) {
         self.node = node
         stateUIOwner = owner
@@ -972,6 +989,9 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         window.isReleasedWhenClosed = false
         super.init(window: window)
         window.delegate = self
+        focusWatch = window.observe(\.firstResponder) { [weak self] _, _ in
+            MainActor.assumeIsolated { self?.stateUIOwner?.focusMoved() }
+        }
         synchronize(node)
     }
 

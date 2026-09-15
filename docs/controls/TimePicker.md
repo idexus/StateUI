@@ -53,7 +53,7 @@ A control backed by a node, and drawn.
 | `ignoresInput` | property | ✅ |  |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | ✅ | ✅ |  |  |  |  |  |  |
 | `isEnabled` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `isFocusedChanged` | handler | ✅ |  |  |  |  |  |  |  |
+| `isFocusedChanged` | handler | ✅ | ✅ |  |  |  |  |  |  |
 | `isVisible` | property | ✅ | ✅ |  |  |  |  |  |  |
 | `layoutDirection` | property | ✅ |  |  |  |  |  |  |  |
 | `maximumHeight` | property | ✅ | ✅ |  |  |  |  |  |  |
