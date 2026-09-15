@@ -5,9 +5,8 @@
 [![Linux](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml/badge.svg?branch=main)](https://github.com/idexus/StateUI/actions/workflows/build-linux.yml?query=branch%3Amain)
 # StateUI
 
-> **Native interfaces, written in Swift.**
-
-StateUI describes an application's interface in Swift. Swift owns the UI tree,
+ **Native interfaces, written in Swift.**
+> StateUI describes an application's interface in Swift. Swift owns the UI tree,
 identity, state, diffing, and motion; a thin host applies sparse patches to
 controls from its platform toolkit.
 
