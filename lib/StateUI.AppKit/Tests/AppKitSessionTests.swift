@@ -633,11 +633,11 @@ final class AppKitSessionTests: XCTestCase {
         let first = try XCTUnwrap(renderer.windowsForTesting[0].window)
         let second = try XCTUnwrap(renderer.windowsForTesting[1].window)
 
-        XCTAssertTrue(renderer.displayWindowForTesting === first)
+        XCTAssertTrue(renderer.frameClockWindowForTesting === first)
         renderer.windowsForTesting[0].windowWillClose(
             Notification(name: NSWindow.willCloseNotification))
 
-        XCTAssertTrue(renderer.displayWindowForTesting === second)
+        XCTAssertTrue(renderer.frameClockWindowForTesting === second)
     }
 
     @MainActor

@@ -419,7 +419,7 @@ final class AppKitScrollViewTests: XCTestCase {
         let scroller = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
         let reading = try XCTUnwrap(renderer.nativeViews(AppKitLabelView.self).first)
         scroller.window?.contentView?.layoutSubtreeIfNeeded()
-        XCTAssertFalse(renderer.displayLinkRunningForTesting, "a still page keeps no clock")
+        XCTAssertFalse(renderer.frameClockRunningForTesting, "a still page keeps no clock")
 
         NotificationCenter.default.post(name: NSScrollView.willStartLiveScrollNotification, object: scroller)
         let renders = renderer.windowSynchronizationCountForTesting
@@ -429,7 +429,7 @@ final class AppKitScrollViewTests: XCTestCase {
         }
 
         XCTAssertEqual(reading.stringValue, "0 down", "nothing is taken inside the platform's scroll step")
-        XCTAssertTrue(renderer.displayLinkRunningForTesting, "a moving scroller holds the frame clock")
+        XCTAssertTrue(renderer.frameClockRunningForTesting, "a moving scroller holds the frame clock")
 
         renderer.displayFrameForTesting()
         XCTAssertEqual(reading.stringValue, "120 down")
@@ -437,7 +437,7 @@ final class AppKitScrollViewTests: XCTestCase {
 
         NotificationCenter.default.post(name: NSScrollView.didEndLiveScrollNotification, object: scroller)
         renderer.displayFrameForTesting()
-        XCTAssertFalse(renderer.displayLinkRunningForTesting, "a scroller that stands lets the clock go")
+        XCTAssertFalse(renderer.frameClockRunningForTesting, "a scroller that stands lets the clock go")
     }
 
 }

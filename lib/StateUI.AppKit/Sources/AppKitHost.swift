@@ -165,7 +165,7 @@ final class AppKitRenderer: @unchecked Sendable {
     private let motion = AppKitMotionEngine()
     private let propertyMotion = AppKitPropertyMotionEngine()
     private let images = NSCache<NSString, NSImage>()
-    private let clock: () -> Double
+    private let frameClock: AppKitFrameClock
     private let reducesMotion: () -> Bool
     private var baseline: Int32 = 0
     private var nextMount: UInt64 = 0
@@ -174,8 +174,6 @@ final class AppKitRenderer: @unchecked Sendable {
     private var root: MountedNode?
     private var scenes: [ElementId: AppKitSceneController] = [:]
     private var sceneOrder: [ElementId] = []
-    private var displayLink: CADisplayLink?
-    private weak var displayWindow: NSWindow?
 
     /// The scrollers moving or waiting to report, each given the display's
     /// frames until it stands and has said everything.
@@ -206,7 +204,7 @@ final class AppKitRenderer: @unchecked Sendable {
         presentsWindows: Bool = true,
         eventSink: ((Int32, [HostValue]) -> Void)? = nil,
         preferences: UserDefaults = .standard,
-        clock: @escaping () -> Double = { CACurrentMediaTime() * 1_000 },
+        clock: (() -> Double)? = nil,
         reducesMotion: @escaping () -> Bool = {
             NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
         }
@@ -215,8 +213,9 @@ final class AppKitRenderer: @unchecked Sendable {
         self.presentsWindows = presentsWindows
         self.eventSink = eventSink
         self.preferences = preferences
-        self.clock = clock
+        frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
         self.reducesMotion = reducesMotion
+        frameClock.onFrame = { [weak self] now in self?.displayFrame(now: now) }
     }
 
     func start() {
@@ -358,7 +357,7 @@ final class AppKitRenderer: @unchecked Sendable {
     /// has said everything - see `AppKitScrollView.frame(now:)`.
     fileprivate func requestFrames(for scroller: AppKitScrollView) {
         framedScrollers.add(scroller)
-        refreshDisplayLink()
+        holdFrames()
     }
 
     func openPlatformScene() {
@@ -430,7 +429,7 @@ final class AppKitRenderer: @unchecked Sendable {
         if readerTransactionDepth > 0 { readerTransactionChangedState = true }
 
         root?.applyState(binding.state, value: value)
-        advanceCycle(now: clock())
+        advanceCycle(now: frameClock.now())
         return true
     }
 
@@ -439,7 +438,7 @@ final class AppKitRenderer: @unchecked Sendable {
         guard motion.take(value, through: binding) else { return false }
 
         applyMotionOutputs()
-        advanceCycle(now: clock())
+        advanceCycle(now: frameClock.now())
         return true
     }
 
@@ -451,7 +450,7 @@ final class AppKitRenderer: @unchecked Sendable {
     @discardableResult
     func takeGestureValue(_ value: Double, state: Int32) -> Bool {
         guard core.moveGestureValue(value, state: state) else { return false }
-        advanceCycle(now: clock())
+        advanceCycle(now: frameClock.now())
         return true
     }
 
@@ -484,7 +483,7 @@ final class AppKitRenderer: @unchecked Sendable {
         }
 
         if root != nil, core.cyclesPending {
-            advanceCycle(now: clock())
+            advanceCycle(now: frameClock.now())
         }
 
         guard root == nil || core.needsRender else { return }
@@ -553,10 +552,10 @@ final class AppKitRenderer: @unchecked Sendable {
         sceneOrder = nextIDs
 
         if let window = orderedWindowControllers.compactMap(\.window).first {
-            ensureDisplayLink(for: window)
+            frameClock.attach(to: window)
         }
         offerRestoredWindows()
-        refreshDisplayLink()
+        holdFrames()
     }
 
     /// Delivers what waits, in order. A phase is state the application
@@ -770,17 +769,11 @@ final class AppKitRenderer: @unchecked Sendable {
             installPageMenus([])
         }
 
-        if displayWindow === controller.window {
-            displayLink?.invalidate()
-            displayLink = nil
-            displayWindow = nil
-
-            if let replacement = orderedWindowControllers
-                .filter({ $0 !== controller })
+        if let closing = controller.window {
+            frameClock.release(closing, next: orderedWindowControllers
+                .filter { $0 !== controller }
                 .compactMap(\.window)
-                .first {
-                ensureDisplayLink(for: replacement)
-            }
+                .first)
         }
 
         guard !controller.closingFromTree else { return }
@@ -805,7 +798,7 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     func nativeWindowAvailable(_ window: NSWindow) {
-        ensureDisplayLink(for: window)
+        frameClock.attach(to: window)
     }
 
     func pageMenusChanged(in controller: AppKitWindowController) {
@@ -890,7 +883,7 @@ final class AppKitRenderer: @unchecked Sendable {
 
     var windowsForTesting: [AppKitWindowController] { orderedWindowControllers }
 
-    var displayWindowForTesting: NSWindow? { displayWindow }
+    var frameClockWindowForTesting: NSWindow? { frameClock.window }
 
     var propertyMotionsActiveForTesting: Bool { propertyMotion.isActive }
 
@@ -913,7 +906,7 @@ final class AppKitRenderer: @unchecked Sendable {
     private func applyRoot(_ patch: HostPatch) {
         let previousPatchTime = patchTime
         let previousPatchReducesMotion = patchReducesMotion
-        if patchTime == nil { patchTime = clock() }
+        if patchTime == nil { patchTime = frameClock.now() }
         if patchReducesMotion == nil { patchReducesMotion = reducesMotion() }
         defer {
             patchTime = previousPatchTime
@@ -928,15 +921,15 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     func advanceMotionsForTesting() {
-        advanceMotions(now: clock(), reducesMotion: reducesMotion())
-        refreshDisplayLink()
+        advanceMotions(now: frameClock.now(), reducesMotion: reducesMotion())
+        holdFrames()
     }
 
     func displayFrameForTesting() {
-        displayFrame(now: clock())
+        displayFrame(now: frameClock.now())
     }
 
-    var displayLinkRunningForTesting: Bool { displayLink.map { !$0.isPaused } ?? false }
+    var frameClockRunningForTesting: Bool { frameClock.isRunning }
 
     func applyStateForTesting(_ state: Int32, value: HostStateValue) {
         let impact = root?.applyState(state, value: value) ?? []
@@ -957,23 +950,7 @@ final class AppKitRenderer: @unchecked Sendable {
         for window in restoredWindows.values { window.close() }
         restoredWindows.removeAll()
         propertyMotion.retain([])
-        displayLink?.invalidate()
-        displayLink = nil
-        displayWindow = nil
-    }
-
-    private func ensureDisplayLink(for window: NSWindow) {
-        guard displayLink == nil else { return }
-
-        let link = window.displayLink(target: self, selector: #selector(displayTick(_:)))
-        link.add(to: .main, forMode: .common)
-        displayLink = link
-        displayWindow = window
-        refreshDisplayLink()
-    }
-
-    @objc private func displayTick(_ link: CADisplayLink) {
-        displayFrame(now: link.timestamp * 1_000)
+        frameClock.stop()
     }
 
     /// One frame of the display's clock: everything moving advances, and what
@@ -1016,7 +993,7 @@ final class AppKitRenderer: @unchecked Sendable {
         applyMotionOutputs()
 
         cycleContinues = cycle.continues
-        refreshDisplayLink()
+        holdFrames()
     }
 
     private func advanceMotions(now: Double, reducesMotion: Bool) {
@@ -1033,7 +1010,7 @@ final class AppKitRenderer: @unchecked Sendable {
         motion.presentedValue(
             for: binding,
             from: carried,
-            now: clock(),
+            now: frameClock.now(),
             reducesMotion: reducesMotion())
     }
 
@@ -1087,9 +1064,9 @@ final class AppKitRenderer: @unchecked Sendable {
             standing: standing,
             target: target,
             transition: transition,
-            now: patchTime ?? clock(),
+            now: patchTime ?? frameClock.now(),
             reducesMotion: patchReducesMotion ?? reducesMotion())
-        refreshDisplayLink()
+        holdFrames()
     }
 
     fileprivate func removePropertyMotions(mount: UInt64) {
@@ -1143,13 +1120,14 @@ final class AppKitRenderer: @unchecked Sendable {
         }
     }
 
-    private func refreshDisplayLink() {
-        displayLink?.isPaused = !(
-            cycleContinues
-                || motion.isActive
-                || propertyMotion.isActive
-                || core.cyclesPending
-                || framedScrollers.anyObject != nil)
+    /// Holds the frame clock while anything still moves or owes a frame: a
+    /// trip, the core's cycle, a scroller moving or with a report to make.
+    private func holdFrames() {
+        frameClock.held = cycleContinues
+            || motion.isActive
+            || propertyMotion.isActive
+            || core.cyclesPending
+            || framedScrollers.anyObject != nil
     }
 }
 
