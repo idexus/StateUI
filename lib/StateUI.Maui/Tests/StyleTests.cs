@@ -873,8 +873,9 @@ public class StyleTests
     ];
 
     /// <summary>
-    /// The properties Swift will not ask this side to clear, read from its own
-    /// declaration so the two halves cannot drift.
+    /// The properties Swift will not ask this side to clear, read from its
+    /// contracts - every member declared <c>cleared: false</c> - so the two
+    /// halves cannot drift.
     /// </summary>
     /// <remarks>
     /// Swift sends the whole element again for one of these - so a key named
@@ -882,21 +883,19 @@ public class StyleTests
     /// </remarks>
     private static HashSet<string> NotCleared()
     {
-        string source = File.ReadAllText(
-            System.IO.Path.Combine(SwiftEnums.Sources, "Core", "Tokens.swift"));
+        var declaration = new System.Text.RegularExpressions.Regex(
+            @"ElementProperty<.*?>\(\s*""([A-Za-z][A-Za-z0-9]*)""([^)]*)\)",
+            System.Text.RegularExpressions.RegexOptions.Singleline);
 
-        int start = source.IndexOf("static let notCleared", StringComparison.Ordinal);
-        Assert.True(start >= 0, "Prop.notCleared is not declared in Core/Tokens.swift any more");
-
-        int open = source.IndexOf('[', start);
-        int close = source.IndexOf(']', open);
-
-        HashSet<string> named = System.Text.RegularExpressions.Regex
-            .Matches(source[(open + 1)..close], @"\.([A-Za-z][A-Za-z0-9]*)")
+        HashSet<string> named = Directory
+            .EnumerateFiles(
+                System.IO.Path.Combine(SwiftEnums.Sources, "Contracts"), "*.swift", SearchOption.AllDirectories)
+            .SelectMany(path => declaration.Matches(File.ReadAllText(path)))
+            .Where(match => match.Groups[2].Value.Contains("cleared: false", StringComparison.Ordinal))
             .Select(match => match.Groups[1].Value)
             .ToHashSet(StringComparer.Ordinal);
 
-        Assert.NotEmpty(named);
+        Assert.True(named.Count > 0, "no contract member is declared cleared: false any more");
 
         // Every one of them is a property this side knows by that spelling. A
         // name that is not - one renamed on the Swift side, or one left behind
@@ -906,7 +905,7 @@ public class StyleTests
         {
             Assert.True(
                 TokenNames<HostProp>.Parse(name) != HostProp.None,
-                $"Prop.notCleared names '{name}', which is not a property this side has");
+                $"a contract declares '{name}' not cleared, and this side has no such property");
         }
 
         return named;

@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The library's contracts, held to what they stand beside until the old tables
-// go: every member's layer, travel, clearing and motion group equal the
-// ownership table and the three property sets; every member's name is a token
-// the library declares and the name of the static member holding it; every
-// declared member is on its contract's list; and no contract wears two members
-// of one name.
+// The library's contracts, held to what they stand beside: every member's layer
+// equals the ownership table until it goes; the members of one name share their
+// travel, clearing and motion, which the differ reads by the name; every
+// member's name is a token the library declares and the name of the static
+// member holding it; every declared member is on its contract's list; and no
+// contract wears two members of one name.
 
 import Foundation
 import XCTest
@@ -33,36 +33,62 @@ final class LibraryContractTests: XCTestCase {
         }
     }
 
-    // MARK: - The facts equal the tables
+    // MARK: - The facts
 
-    /// A property's layer is the ownership table's owner, it travels unless
-    /// `Prop.unmoved` holds it, it is cleared unless `Prop.notCleared` holds
-    /// it, and its motion group is `Prop.moving`'s.
-    func testEveryPropertysFactsAreTheTablesItStandsBeside() {
+    /// A property's layer is the ownership table's owner.
+    func testEveryPropertysLayerIsTheOwnershipTables() {
         var wrong: [String] = []
 
         for member in declared where member.facts.kind == .property {
-            let prop = Prop(member.name)
-            let path = "\(member.contract).\(member.name)"
-
-            let owner = HostContract.properties[prop].map(Self.layer(of:))
+            let owner = HostContract.properties[Prop(member.name)].map(Self.layer(of:))
             if owner != member.facts.layer {
-                wrong.append("\(path): layer \(String(describing: member.facts.layer)), "
-                    + "the ownership table says \(String(describing: owner))")
-            }
-            if member.facts.travels == Prop.unmoved.contains(prop) {
-                wrong.append("\(path): travels \(member.facts.travels), Prop.unmoved says otherwise")
-            }
-            if member.facts.cleared == Prop.notCleared.contains(prop) {
-                wrong.append("\(path): cleared \(member.facts.cleared), Prop.notCleared says otherwise")
-            }
-            if member.facts.moves != prop.moving {
-                wrong.append("\(path): moves \(member.facts.moves.rawValue), Prop.moving says "
-                    + "\(prop.moving.rawValue)")
+                wrong.append("\(member.contract).\(member.name): layer "
+                    + "\(String(describing: member.facts.layer)), the ownership table says "
+                    + "\(String(describing: owner))")
             }
         }
 
         XCTAssertEqual(wrong, [])
+    }
+
+    /// The members of one name say the same of travel, clearing and motion:
+    /// the differ holds a token, which is a name, and reads the facts by it -
+    /// two members of one name that disagreed would each be half wrong.
+    func testTheMembersOfOneNameShareTheirFacts() {
+        var first: [String: Declared] = [:]
+        var wrong: [String] = []
+
+        for member in declared where member.facts.kind == .property {
+            guard let earlier = first[member.name] else {
+                first[member.name] = member
+                continue
+            }
+
+            if (earlier.facts.travels, earlier.facts.cleared, earlier.facts.moves)
+                != (member.facts.travels, member.facts.cleared, member.facts.moves) {
+                wrong.append("\(member.contract).\(member.name) differs from \(earlier.contract)'s")
+            }
+        }
+
+        XCTAssertEqual(wrong, [])
+    }
+
+    /// A token's facts are its members': what the differ reads by a name is
+    /// what the contracts declare under it - and a name no contract declares,
+    /// an application's own, travels, is cleared and says nothing of motion.
+    func testATokensFactsAreItsMembers() {
+        var wrong: [String] = []
+
+        for member in declared where member.facts.kind == .property {
+            let read = Prop(member.name).facts
+            if (read.travels, read.cleared, read.moves)
+                != (member.facts.travels, member.facts.cleared, member.facts.moves) {
+                wrong.append("\(member.contract).\(member.name)")
+            }
+        }
+
+        XCTAssertEqual(wrong, [])
+        XCTAssertEqual(Prop("Test.Unknown").facts, .undeclared)
     }
 
     /// An event's layer is the ownership table's owner.

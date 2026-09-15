@@ -179,13 +179,13 @@ final class MotionTests: XCTestCase {
         // test happened to write: taking the check out of Diff.swift fails
         // here naming `maximumLength`, `gridRowSpan` and `position`.
         //
-        // WHAT IT CANNOT HOLD is a member LEAVING the list, since the list is
-        // what it walks. That belongs to whoever removes one, and `Prop.
-        // unmoved` says so where it is declared.
+        // WHAT IT CANNOT HOLD is a member that stops saying so, since the
+        // members are what it walks. That belongs to whoever changes one, and
+        // `ElementProperty.travels` says so where it is declared.
         //
         // A NUMBER is what each is given, because a number is exactly the
         // value that would travel if the property were not on the list.
-        for property in Prop.unmoved {
+        for property in LibraryContracts.facts.filter({ !$0.value.travels }).keys.sorted() {
             let alone = Renders()
 
             alone.render(Label("x").setValue(property, .number(0)).id("l").body)
@@ -197,7 +197,7 @@ final class MotionTests: XCTestCase {
                 "\(property.name) did not change at all, so this proves nothing")
             XCTAssertTrue(
                 moved.transitions.isEmpty,
-                "\(property.name) travelled, and nothing on Prop.unmoved may")
+                "\(property.name) travelled, and no member that does not travel may")
         }
     }
 

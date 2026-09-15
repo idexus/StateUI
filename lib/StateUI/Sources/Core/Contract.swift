@@ -188,17 +188,42 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     /// Which layer realizes it.
     let layer: ElementLayer
 
-    /// Whether a change travels to the new value. False for what has no half
-    /// way: a place, a count, a law a scroller obeys, a range, a placement.
+    /// Whether a change travels to the new value - the default. False where
+    /// there is no half way, of four kinds:
+    ///
+    /// - a PLACE or a COUNT: which tab, which item, which row of a grid, how
+    ///   many dots, where the caret is - nothing walks a whole number;
+    /// - a LAW a scroller obeys - how far apart its stops are, how much of a
+    ///   throw it keeps - read as a release is decided, which a law still
+    ///   arriving would decide differently every frame;
+    /// - a RANGE or a REGION - a slider's ends, where a map looks - answered by
+    ///   a method or a redraw, not by a value shown on the way;
+    /// - a PLACEMENT: where a child sits in an AbsoluteLayout, which the host
+    ///   answers from what it measured; the layout's own motion carries a
+    ///   child from one place to the next.
+    ///
+    /// A host still snaps a transition it cannot interpolate; this keeps the
+    /// ones StateUI knows are invalid out of `HostPatch`.
+    /// `testAPlaceOrACountNeverTravels` holds that the differ honours every
+    /// member that says so, and cannot hold which members say it: set it back
+    /// to true only for a property that should travel.
     let travels: Bool
 
     /// Whether a value no longer described is put back to the control's own
-    /// default. False where no default answers for it, and the element is
-    /// built again instead.
+    /// default - the default. False where no default answers for it, and the
+    /// element is built again instead: a gesture's settings, which belong to
+    /// its recognizer; a list's items, which are data; where the host PUTS an
+    /// item - a toolbar item's `order` and `priority`, a swipe's `side`; a
+    /// CHOICE, which clearing would move - back to the first tab, the first
+    /// item, the top of the list; and a window's kind, its value, whether it
+    /// hides and whether it floats, which the host reads to keep the
+    /// platform's windows. Every host agrees with the members that say so, or
+    /// the difference is found only on a screen.
     let cleared: Bool
 
     /// Which of a view's values it is, for `.motion(_:_:)`, where the value
-    /// alone cannot say.
+    /// alone cannot say: a size, a place, a transform, spacing, text. A colour
+    /// says its own group through its value.
     let moves: MotionValues
 
     /// A property declared in `Owner`.
@@ -626,6 +651,10 @@ struct MemberFacts: Equatable {
     /// Which of a view's values it is, where the value cannot say.
     let moves: MotionValues
 
+    /// What a property no library contract declares says of itself - an
+    /// application's own: it travels, it is cleared, and it says nothing of
+    /// motion.
+    static let undeclared = MemberFacts(kind: .property, layer: nil, travels: true, cleared: true, moves: [])
 }
 
 /// A member whose facts the library can read out of a list of members.

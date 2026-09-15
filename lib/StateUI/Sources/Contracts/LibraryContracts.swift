@@ -52,4 +52,30 @@ enum LibraryContracts {
 
     /// Every contract.
     static let all: [any Contract.Type] = tiers + elements.map { $0 as any Contract.Type }
+
+    /// Every property's facts, by the name it crosses under - what the differ
+    /// asks of a property it holds only a token for. The members of one name
+    /// say the same (`LibraryContractTests`), so the first one met answers for
+    /// them all.
+    static let facts: [Prop: MemberFacts] = {
+        var facts: [Prop: MemberFacts] = [:]
+
+        for contract in all {
+            for case let member as any PropertyMember in contract.members where facts[Prop(member.name)] == nil {
+                facts[Prop(member.name)] = member.facts
+            }
+        }
+
+        return facts
+    }()
+}
+
+extension Prop {
+    /// What the members of this name say: whether a change travels, whether a
+    /// lost value is cleared, which of a view's values it is. A name no library
+    /// contract declares - an application's own - travels, is cleared, and
+    /// says nothing of motion.
+    var facts: MemberFacts {
+        LibraryContracts.facts[self] ?? .undeclared
+    }
 }

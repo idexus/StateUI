@@ -722,9 +722,9 @@ final class Differ {
         let lost = (rendered?.props.keys.filter { node.props[$0] == nil } ?? []).sorted()
 
         // Except for the few the host has no default to put back, which are
-        // still the whole element again. See Prop.notCleared.
+        // still the whole element again. See `ElementProperty.cleared`.
         let replace = rendered != nil
-            && (rendered!.type != node.type || lost.contains { Prop.notCleared.contains($0) })
+            && (rendered!.type != node.type || lost.contains { !$0.facts.cleared })
 
         // Nothing to build on: either this element is new, or what is there
         // cannot become what the node describes.
@@ -891,11 +891,11 @@ final class Differ {
 
         if !describeAll, !replace, previous != nil, plan != nil || !travels.isNothing {
             for (property, value) in patch.properties
-            where value.moves && !Prop.unmoved.contains(property)
+            where value.moves && property.facts.travels
                 && patch.transitions[property] == nil {
-                if measured, !property.moving.isDisjoint(with: [.width, .height]) { continue }
+                if measured, !property.facts.moves.isDisjoint(with: [.width, .height]) { continue }
 
-                let moves = travel(value.kind.union(property.moving))
+                let moves = travel(value.kind.union(property.facts.moves))
 
                 if moves.isNothing { continue }
 
@@ -969,7 +969,7 @@ final class Differ {
             // travels under is a question only the tree can be asked. The
             // answer is left on the value and read at the crossing - see
             // `HostStorage.crossing()`.
-            let mine = travel(key.moving.union(registration.values))
+            let mine = travel(key.facts.moves.union(registration.values))
 
             if let already = state.inheritedBy, already != id, state.inherited != mine {
                 complain("""

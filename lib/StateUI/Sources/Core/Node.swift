@@ -98,7 +98,7 @@ public enum PropValue: Equatable, Sendable {
     /// provisionally continuous so shape-preserving values such as compatible
     /// gradients can move lane by lane. Text, flags, names and enumerations snap.
     ///
-    /// `Prop.unmoved` supplies semantic property exceptions. A host validates
+    /// A member that does not travel is the semantic exception. A host validates
     /// the source and target shapes and snaps any pair it cannot interpolate.
     var moves: Bool {
         switch self {
@@ -110,8 +110,8 @@ public enum PropValue: Equatable, Sendable {
     /// Which KIND of value this is, where the value itself says.
     ///
     /// A colour identifies its own group regardless of which semantic property
-    /// carries it. Every other group is answered by the property; see
-    /// `Prop.moving`.
+    /// carries it. Every other group is answered by the property's member; see
+    /// `ElementProperty.moves`.
     var kind: MotionValues {
         switch self {
         case .color, .values: .colour

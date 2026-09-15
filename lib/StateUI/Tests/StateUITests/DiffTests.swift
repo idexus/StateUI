@@ -160,7 +160,7 @@ final class DiffTests: XCTestCase {
         let patch = renders.render(Node(type: "Picker", id: "a", props: ["title": .string("pick")]))
 
         // A list's items are data: there is no default to put back, so the
-        // only honest answer is the control again. See Prop.notCleared.
+        // only honest answer is the control again. See `ElementProperty.cleared`.
         XCTAssertTrue(patch.replace, "nothing can clear items away")
         XCTAssertTrue(patch.cleared.isEmpty, "a complete node has nothing to clear")
         XCTAssertEqual(patch.props, ["title": .string("pick")], "and it comes back complete")

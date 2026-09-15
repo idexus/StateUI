@@ -559,8 +559,8 @@ extension HostPlacement {
     /// host discards it and builds it again from this complete patch.
     ///
     /// Set when the element type changed, and for a property that has gone away
-    /// which no host-neutral operation can put back - `Prop.notCleared`, and
-    /// nothing else. Every other lost property is named in `clearedProperties`
+    /// which no host-neutral operation can put back - a member that says it is
+    /// not `cleared`, and nothing else. Every other lost property is named in `clearedProperties`
     /// instead, which costs one property rather than the element and its subtree.
     public var replace = false
 

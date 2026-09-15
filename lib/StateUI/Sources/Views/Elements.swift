@@ -211,7 +211,7 @@ extension PropertyContainer {
                 conversion: state.conversion,
                 mode: mode,
                 kind: kind,
-                values: property.moving.union(Value.moving))
+                values: property.facts.moves.union(Value.moving))
         }
     }
 
@@ -286,7 +286,7 @@ extension PropertyContainer {
                 conversion: conversion,
                 mode: mode,
                 kind: kind,
-                values: property.moving.union(moving))
+                values: property.facts.moves.union(moving))
         }
     }
 
