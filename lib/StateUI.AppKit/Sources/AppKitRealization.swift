@@ -35,10 +35,12 @@ enum AppKitRealization {
         }
     }
 
-    /// The entries this host shows as unsupported, `AppKitUnsupportedView`,
-    /// and the parts of one: none of their members is realized.
+    /// The entries this host realizes none of: those it shows as unsupported,
+    /// `AppKitUnsupportedView`, the parts of one, and a style's setters and
+    /// visual states, which it has no handling of.
     static let unrealized: Set<String> = [
-        "Map", "Pin", "PositionIndicator", "RefreshView", "SwipeAction", "SwipeActions", "SwipeView", "WebView",
+        "Map", "Pin", "PositionIndicator", "RefreshView", "Setters", "SwipeAction", "SwipeActions", "SwipeView",
+        "VisualState", "WebView",
     ]
 
     /// The entries this host presents with no view of their own - a title

@@ -3,10 +3,10 @@
 
 // The whole contract, against everything that names the library's vocabulary:
 // every node type is one element's, every property and event of the ownership
-// table a member, every act a member of exactly one contract; the platform
-// contract's vocabulary is the contracts' own, and every name its tables use is
-// in the contract; every member a source writes or hears is a member, of that
-// kind, of a contract the source describes.
+// table a member, every act a member of exactly one contract; every name the
+// platform contract's tables use is in the contract; every member a source
+// writes or hears is a member, of that kind, of a contract the source
+// describes.
 
 import Foundation
 import XCTest
@@ -85,44 +85,20 @@ final class CompleteContractTests: XCTestCase {
 
     // MARK: - The platform contract
 
-    /// The platform contract's "Complete host vocabulary" is the contracts'
-    /// own: exactly the element contracts' node types, and exactly the names
-    /// their properties and events are declared under.
-    func testThePlatformContractsVocabularyIsTheContracts() throws {
-        let document = try Self.platformContract()
-
-        XCTAssertEqual(
-            Self.difference(Self.listed(under: "### Controls and structural nodes", in: document),
-                            Set(LibraryContracts.elements.map { $0.nodeType.name })), [],
-            "the node types the platform contract lists")
-        XCTAssertEqual(
-            Self.difference(Self.listed(under: "### Properties", in: document), names(of: .property)), [],
-            "the properties the platform contract lists")
-        XCTAssertEqual(
-            Self.difference(Self.listed(under: "### Events", in: document), names(of: .event)), [],
-            "the events the platform contract lists")
-    }
-
     /// Every name a row of the platform contract's tables uses is in the
     /// contract - a node type, a member, a handler's `on…` spelling of an
-    /// event member - or one of the few pieces of core API a row names beside
-    /// them, each listed here with what it is.
+    /// event member - or one of the core view members the hand-written table
+    /// names, each listed here with what it is.
     func testEveryNameThePlatformContractsTablesUseIsInTheContract() throws {
         let document = try Self.platformContract()
-        let sections = ["## Control creation", "## Shared view members", "## Control properties and handlers"]
+        let sections = ["## Control creation", "## Host acts", "## Shared view members", "## Contract members"]
         let coreAPI: Set<String> = [
             // Identity, aiming and reactions every element has, which no host realizes.
             "id", "aim", "onChanged", "samples", "engine",
             // Motion, which the differ writes beside the values it moves.
             "motion", "MotionValues", "MotionLanes",
-            // Modifiers whose member is named beside them in the same row.
-            "isFocused", "spans", "titleView",
-            // The planned native collection, a StateUI composition today.
-            "ItemsView",
-            // The Swift names a row's members are written with: the type a Span
-            // is made with, Swift's own library owning `Span`, and the group a
-            // window's session metadata is declared on.
-            "TextSpan", "WindowGroup",
+            // The focus feed, a state the element's focus event keeps.
+            "isFocused",
         ]
         let types = Set(LibraryContracts.elements.map { $0.nodeType.name })
         let members = Set(declared.map(\.member.name))
@@ -234,18 +210,6 @@ final class CompleteContractTests: XCTestCase {
         try String(contentsOf: Fixtures.repository.appendingPathComponent("docs/platform-contract.md"), encoding: .utf8)
     }
 
-    /// The backticked names between a heading and the next heading.
-    private static func listed(under heading: String, in document: String) -> Set<String> {
-        guard let start = document.range(of: heading + "\n") else { return [] }
-
-        let rest = document[start.upperBound...]
-        let end = rest.range(of: "\n#")?.lowerBound ?? rest.endIndex
-
-        return Set(rest[..<end].components(separatedBy: "`").enumerated()
-            .filter { $0.offset % 2 == 1 }
-            .map(\.element))
-    }
-
     /// The backticked names in the table rows of one `## ` section.
     private static func backticked(inTableOf heading: String, in document: String) -> Set<String> {
         guard let start = document.range(of: heading + "\n") else { return [] }
@@ -263,12 +227,5 @@ final class CompleteContractTests: XCTestCase {
         }
 
         return names
-    }
-
-    /// What one list has and the other lacks, each way, for a failure that
-    /// names both.
-    private static func difference(_ listed: Set<String>, _ declared: Set<String>) -> [String] {
-        listed.subtracting(declared).sorted().map { "listed, not declared: \($0)" }
-            + declared.subtracting(listed).sorted().map { "declared, not listed: \($0)" }
     }
 }

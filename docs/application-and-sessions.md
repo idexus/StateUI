@@ -150,7 +150,7 @@ after neither cause keeps the window hidden.
 Both policies are adaptive: a host implements them with its native window
 relationships when that platform exposes the capability. A declaration is not
 evidence that a particular host implements the policy; the
-[platform matrix](platform-contract.md#control-properties-and-handlers) is the
+[platform matrix](platform-contract.md#contract-members) is the
 support authority.
 
 ## Application and scene phases
@@ -466,7 +466,7 @@ updates.
 
 Set the title bar through the window session. A platform without an authored
 native title area may ignore it; the
-[TitleBar matrix row](platform-contract.md#control-properties-and-handlers)
+[TitleBar matrix row](platform-contract.md#contract-members)
 must carry a check before an application relies on it.
 
 ## Reading support status

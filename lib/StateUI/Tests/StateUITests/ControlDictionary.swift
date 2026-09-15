@@ -325,10 +325,219 @@ struct ControlDictionary {
         ]
     }
 
-    /// The platform contract's counts, in its dictionary block.
+    /// The platform contract's rendered tables, by the block each stands in.
     func contractBlocks() -> [String: String] {
-        ["dictionary": summary(of: split.controls, heading: "Control", linking: "controls/") + "\n\n"
-            + summary(of: split.structure, heading: "Part", linking: "controls/")]
+        [
+            "dictionary": summary(of: split.controls, heading: "Control", linking: "controls/") + "\n\n"
+                + summary(of: split.structure, heading: "Part", linking: "controls/"),
+            "creation": creationTable(),
+            "members": memberTable(),
+            "shared": sharedTable(),
+            "acts": actTable(),
+            "vocabulary": vocabulary(),
+        ]
+    }
+
+    /// A row per element: the layer that realizes it, and a ✅ for each host
+    /// that creates or interprets it.
+    func creationTable() -> String {
+        var lines = [Self.header("Element", "Layer"), Self.rule(leading: 2)]
+
+        for element in elements {
+            let marks = Self.platforms.map { platform -> String in
+                guard let declaration = declaration(of: platform) else { return "" }
+
+                return declaration.unrealized.contains(element.name) ? "" : "✅"
+            }
+
+            lines.append(Self.row(["`\(element.name)`", "\(element.layer)"] + marks))
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
+    /// A row per contract with properties or events - the tiers, then the
+    /// elements - naming them, marked by the rule for a row naming several.
+    /// Its acts are the act table's.
+    func memberTable() -> String {
+        var lines = [Self.header("Contract", "Members"), Self.rule(leading: 2)]
+
+        for contract in contracts {
+            let described = Self.described(by: contract)
+
+            guard !described.isEmpty else { continue }
+
+            let marks = Self.platforms.map { platform in
+                Self.grouped(described.map { mark(of: $0, declaredIn: contract, on: platform) })
+            }
+
+            lines.append(Self.row(
+                ["[\(contract.name)](\(Self.page(of: contract)))",
+                 described.map { describe($0)[0] }.joined(separator: ", ")] + marks))
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
+    /// A row per property and event of the three tiers every view wears,
+    /// marked across the views.
+    func sharedTable() -> String {
+        var lines = [Self.header("Member", "Tier", "Kind"), Self.rule(leading: 3)]
+        let everyView: [any Contract.Type] = [
+            PropertyContainerContract.self, VisualElementContract.self, ViewContract.self,
+        ]
+
+        for tier in everyView {
+            for member in Self.described(by: tier) {
+                let cells = describe(member)
+
+                lines.append(Self.row(
+                    [cells[0], "[\(tier.name)](\(Self.page(of: tier)))", cells[1]]
+                        + Self.platforms.map { mark(of: member, declaredIn: tier, on: $0, amongViews: true) }))
+            }
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
+    /// A row per act of every contract.
+    func actTable() -> String {
+        var lines = [Self.header("Act", "Contract"), Self.rule(leading: 2)]
+
+        for contract in contracts {
+            for member in contract.members where (member as? any DeclaredMember)?.facts.kind == .act {
+                lines.append(Self.row(
+                    ["`\(member.name)`", "[\(contract.name)](\(Self.page(of: contract)))"]
+                        + Self.platforms.map { mark(of: member, declaredIn: contract, on: $0) }))
+            }
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
+    /// Every name the contracts declare, as the platform contract lists them:
+    /// the node types, then the names of the properties, the events and the
+    /// acts.
+    func vocabulary() -> String {
+        func names(of kind: MemberFacts.Kind) -> [String] {
+            Set(contracts.flatMap { contract in
+                contract.members.filter { ($0 as? any DeclaredMember)?.facts.kind == kind }.map { $0.name }
+            }).sorted(by: Self.inReadingOrder)
+        }
+
+        let lists: [(heading: String, names: [String])] = [
+            ("Controls and structural nodes", elements.map { $0.name }.sorted(by: Self.inReadingOrder)),
+            ("Properties", names(of: .property)),
+            ("Events", names(of: .event)),
+            ("Acts", names(of: .act)),
+        ]
+
+        return lists
+            .map { "### \($0.heading)\n\n" + Self.wrapped($0.names.map { "`\($0)`" }) }
+            .joined(separator: "\n\n")
+    }
+
+    /// Every contract, the tiers first.
+    var contracts: [any Contract.Type] {
+        tiers + elements.map { $0 as any Contract.Type }
+    }
+
+    /// The declaration of one host, where it has one.
+    func declaration(of platform: String) -> Declaration? {
+        declarations.first { $0.host == platform }
+    }
+
+    /// One member's mark on one host: on the element declaring it, or - for a
+    /// tier's member - across the elements wearing the tier that the host
+    /// realizes with a view of their own, and only the views among them
+    /// `amongViews`.
+    func mark(
+        of member: any ContractMember, declaredIn contract: any Contract.Type, on platform: String,
+        amongViews: Bool = false
+    ) -> String {
+        guard let declaration = declaration(of: platform) else { return "" }
+
+        if let element = contract as? any ElementContract.Type {
+            return declaration.mark(of: member.name, on: element.name, from: nil).mark
+        }
+
+        let view = ObjectIdentifier(ViewContract.self)
+        let wearers = elements.filter { element in
+            element.worn.contains { ObjectIdentifier($0) == ObjectIdentifier(contract) }
+                && (!amongViews || element.worn.contains { ObjectIdentifier($0) == view })
+                && !declaration.unrealized.contains(element.name)
+                && !declaration.viewless.contains(element.name)
+        }
+
+        return Self.grouped(wearers.map { declaration.mark(of: member.name, on: $0.name, from: contract.name).mark })
+    }
+
+    /// The mark of a row naming several members, or of one member across
+    /// several elements: ✅ when every one is realized in full, ✅* when every
+    /// one is realized and some only in part, and nothing otherwise - or where
+    /// there is nothing to count.
+    static func grouped(_ marks: [String]) -> String {
+        guard !marks.isEmpty, marks.allSatisfy({ $0 == "✅" || $0 == "✅*" }) else { return "" }
+
+        return marks.contains("✅*") ? "✅*" : "✅"
+    }
+
+    /// A contract's properties and events: every member but its acts.
+    static func described(by contract: any Contract.Type) -> [any ContractMember] {
+        contract.members.filter { ($0 as? any DeclaredMember)?.facts.kind != .act }
+    }
+
+    /// A contract's page, as the platform contract links it.
+    static func page(of contract: any Contract.Type) -> String {
+        (contract as? any ElementContract.Type) == nil
+            ? "controls/tiers/\(contract.name).md" : "controls/\(contract.name).md"
+    }
+
+    /// A table's header: its own columns, then one per host.
+    static func header(_ leading: String...) -> String {
+        row(leading + platforms)
+    }
+
+    /// The rule under a header: its own columns left, the hosts' centred.
+    static func rule(leading count: Int) -> String {
+        row(Array(repeating: "---", count: count) + platforms.map { _ in ":---:" })
+    }
+
+    /// One table row.
+    static func row(_ cells: [String]) -> String {
+        "| " + cells.joined(separator: " | ") + " |"
+    }
+
+    /// Names in the order a reader looks them up: by their letters, case
+    /// aside.
+    static func inReadingOrder(_ first: String, _ second: String) -> Bool {
+        let (a, b) = (first.lowercased(), second.lowercased())
+
+        return a == b ? first < second : a < b
+    }
+
+    /// A list written as prose - a comma after each name, a full stop after
+    /// the last - wrapped at eighty columns.
+    static func wrapped(_ items: [String]) -> String {
+        var lines: [String] = []
+        var line = ""
+
+        for (index, item) in items.enumerated() {
+            let word = item + (index == items.count - 1 ? "." : ",")
+
+            if line.isEmpty {
+                line = word
+            } else if line.count + 1 + word.count <= 80 {
+                line += " " + word
+            } else {
+                lines.append(line)
+                line = word
+            }
+        }
+
+        if !line.isEmpty { lines.append(line) }
+
+        return lines.joined(separator: "\n")
     }
 
     /// One table of counts: a row per element, how many members its page
