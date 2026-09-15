@@ -1196,8 +1196,6 @@ final class MountedNode: NSObject {
     private var frameObservedViews: [NSView] = []
     private var frameQueued = false
     private var lastFrameReport: [Double]?
-    private var lastScrollXBucket: Int?
-    private var lastScrollYBucket: Int?
     private var tapRecognizer: AppKitTapRecognizer?
     private var swipeRecognizer: AppKitSwipeRecognizer?
     private var panRecognizer: AppKitPanRecognizer?
@@ -1287,8 +1285,6 @@ final class MountedNode: NSObject {
             drivenValues.removeAll(keepingCapacity: true)
             created = false
             lastFrameReport = nil
-            lastScrollXBucket = nil
-            lastScrollYBucket = nil
             pagePresented = false
             pendingTabFallback = nil
             recycledChildren.removeAll(keepingCapacity: true)
@@ -2138,34 +2134,14 @@ final class MountedNode: NSObject {
                 tookState = host.take([Double(new.x), Double(new.y)], through: binding)
             }
 
-            if old.x != new.x {
-                let decision = scrollEventDecision(new.x, previousBucket: lastScrollXBucket)
-                lastScrollXBucket = decision.bucket
-                if decision.report, let handler = events[.scrollXChanged] {
-                    host.dispatch(handler, payload: [.number(Double(new.x))])
-                }
+            if old.x != new.x, let handler = events[.scrollXChanged] {
+                host.dispatch(handler, payload: [.number(Double(new.x))])
             }
-            if old.y != new.y {
-                let decision = scrollEventDecision(new.y, previousBucket: lastScrollYBucket)
-                lastScrollYBucket = decision.bucket
-                if decision.report, let handler = events[.scrollYChanged] {
-                    host.dispatch(handler, payload: [.number(Double(new.y))])
-                }
+            if old.y != new.y, let handler = events[.scrollYChanged] {
+                host.dispatch(handler, payload: [.number(Double(new.y))])
             }
         }
         host.settleReaderWrite(tookState)
-    }
-
-    private func scrollEventDecision(
-        _ value: CGFloat,
-        previousBucket: Int?
-    ) -> (report: Bool, bucket: Int?) {
-        guard let step = number(.scrollStep), step.isFinite, step > 0 else {
-            return (true, previousBucket)
-        }
-        let current = Int(floor(Double(value) / step))
-        let previous = previousBucket ?? 0
-        return (current != previous, current)
     }
 
     private func scrollStopped() {
@@ -2460,10 +2436,6 @@ final class MountedNode: NSObject {
         }
 
         if let scroll = view as? AppKitScrollView {
-            if changed.contains(.scrollStep) {
-                lastScrollXBucket = nil
-                lastScrollYBucket = nil
-            }
             let offset = changed.contains(.scrollOffset)
                 ? value(.scrollOffset)?.numbers.flatMap { values -> NSPoint? in
                     guard values.count >= 2 else { return nil }

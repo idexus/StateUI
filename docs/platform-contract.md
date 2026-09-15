@@ -450,7 +450,7 @@ token in parentheses.
 | `WebView` | handlers | `onNavigating` (`navigating`), `onNavigated` (`navigated`), `onProcessTerminated` (`processTerminated`) | — | — | — | — | — | — | — |
 | `Map` / `Pin` | provider properties | `region`, `mapType`, `isScrollEnabled`, `isZoomEnabled`, `isTrafficEnabled`, `showsUserLocation`, pin `label`, `address`, `location`, `type` | — | — | — | — | — | — | — |
 | `Map` / `Pin` | provider handlers | `mapClicked`, `pinClicked`, `pinDetailsClicked` | — | — | — | — | — | — | — |
-| host metadata | structural/adaptive | `content`, `group`, `mode`, `name`, `style`, `isOpaque`, `scrollStep`, `textType`, `visualStateChanged` | — | — | — | — | — | — | — |
+| host metadata | structural/adaptive | `content`, `group`, `mode`, `name`, `style`, `isOpaque`, `textType`, `visualStateChanged` | — | — | — | — | — | — | — |
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,
 a dominant input on its disabled axis passes to the nearest enclosing scroller.
@@ -509,7 +509,7 @@ host status.
 `placement`, `points`, `position`, `priority`, `progress`, `region`,
 `renderTransform`, `returnKey`, `rotation`, `rotationX`, `rotationY`, `rows`,
 `rowSpacing`, `scale`, `scaleX`, `scaleY`, `scrollOffset`,
-`scrollStep`, `selectedIndex`, `selectedIndicatorColor`, `selectionLength`,
+`selectedIndex`, `selectedIndicatorColor`, `selectionLength`,
 `shape`, `showsClearButton`, `showsUserLocation`, `side`,
 `source`, `spacing`, `step`, `stroke`,
 `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`,

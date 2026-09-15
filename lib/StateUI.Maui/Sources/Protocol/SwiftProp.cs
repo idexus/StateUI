@@ -156,7 +156,6 @@ internal enum SwiftProp : ushort
     Scale = 167,
     ScaleX = 168,
     ScaleY = 169,
-    ScrollStep = 222,
     ScrollOffset = 229,
     SelectedIndex = 171,
     SelectedIndicatorColor = 172,

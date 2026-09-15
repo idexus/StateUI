@@ -357,19 +357,6 @@ public sealed class StateUIRenderer
             defaultValue: int.MaxValue);
 
     /// <summary>
-    /// How far a scroller's offset moves between two reports of it, in device
-    /// units - the Swift side's <c>scrollStep</c>, kept on the control because
-    /// the subscription that reads it is made once and the step can change with
-    /// every render. Zero is every change.
-    /// </summary>
-    internal static readonly BindableProperty ScrollStepProperty =
-        BindableProperty.CreateAttached(
-            "StateUIScrollStep",
-            typeof(double),
-            typeof(StateUIRenderer),
-            defaultValue: 0.0);
-
-    /// <summary>
     /// Whether a state carries this scroller's offset - the Swift side's
     /// <c>.scrollOffset($offset)</c>, read off the message's state entries
     /// where the scroller is reconciled.
@@ -1757,18 +1744,8 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
-    /// Reports one of a scroller's offsets - every change, or once each time it
-    /// crosses a multiple of the step the tree wrote.
+    /// Reports one of a scroller's offsets, at every change.
     /// </summary>
-    /// <remarks>
-    /// The step is read at fire time off the control, never captured: the
-    /// subscription is made once and a list's step is a row, recut whenever
-    /// the rows are measured. The bucket compared against is the LAST REPORTED
-    /// one, so a drag that wanders back and forth across one boundary reports
-    /// each crossing and a drag that stays inside a bucket reports nothing -
-    /// which is what lets a list hear one report per row, with nothing
-    /// crossing per frame.
-    /// </remarks>
     private void WatchOffset(
         ScrollView scroll,
         RenderedElement element,
@@ -1781,7 +1758,6 @@ public sealed class StateUIRenderer
             return;
         }
 
-        long reported = 0;
         bool queued = false;
 
         void Deliver()
@@ -1814,25 +1790,6 @@ public sealed class StateUIRenderer
             }
 
             double value = read();
-
-            if (scroll.GetValue(ScrollStepProperty) is double step && step > 0)
-            {
-                long bucket = (long)Math.Floor(value / step);
-
-                if (bucket == reported)
-                {
-                    return;
-                }
-
-                // Remembered only once the report went out: one dropped under
-                // an apply must not dedup the retry the settled value makes.
-                if (Report(scroll, name, value))
-                {
-                    reported = bucket;
-                }
-
-                return;
-            }
 
             Report(scroll, name, value);
         }
@@ -3693,8 +3650,6 @@ public sealed class StateUIRenderer
         {
             scroll.HorizontalScrollBarVisibility = across;
         }
-
-        if (node.GetNumber(SwiftProp.ScrollStep) is double step) { scroll.SetValue(ScrollStepProperty, step); }
 
         // WHETHER A STATE CARRIES THE OFFSET, read off the MESSAGE rather than
         // off the tie: the tie is made later in this same pass, and the

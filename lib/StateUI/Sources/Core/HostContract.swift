@@ -123,7 +123,7 @@
             .minimumWidth, .opacity, .orientation,
             .padding, .placeholder, .placeholderColor, .progress,
             .renderTransform, .rotation, .rotationX, .rotationY,
-            .scale, .scaleX, .scaleY, .scrollStep,
+            .scale, .scaleX, .scaleY,
             .selectedIndex, .selectionLength, .accessibilityLabel,
             .accessibilityHeadingLevel, .accessibilityHint,
             .source, .spacing, .text, .textColor,

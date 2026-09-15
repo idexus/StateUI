@@ -219,7 +219,7 @@ extension Prop {
         .gridColumn, .gridColumnSpan, .gridRow, .gridRowSpan, .zIndex,
         .placement, .priority, .position, .selectedIndex,
         .tapCount, .panTouchCount, .maximumVisible,
-        .scrollStep, .step, .minimum, .maximum, .swipeThreshold,
+        .step, .minimum, .maximum, .swipeThreshold,
         .points, .strokeDashPattern, .region, .location,
         .absoluteLayoutBounds, .absoluteLayoutProportions,
         .scrollOffset,
@@ -566,7 +566,6 @@ public extension Prop {
     /// lanes - the platform's offset being one point, and one journey being
     /// what makes a diagonal move arrive on both axes together.
     static let scrollOffset = Prop("scrollOffset")
-    static let scrollStep = Prop("scrollStep")
     static let selectedIndex = Prop("selectedIndex")
     static let selectedIndicatorColor = Prop("selectedIndicatorColor")
     static let selectionLength = Prop("selectionLength")

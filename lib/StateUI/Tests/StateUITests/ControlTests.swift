@@ -719,13 +719,8 @@ final class ControlTests: XCTestCase {
             for key in try Fixtures.propertyKeys(in: source).sorted()
             // A sidecar writes `  borderColor: color FF808080` and a test writes
             // `.borderColor(`, so both anchors are what keep `text` from being
-            // answered by `textColor`. The third is a test that READS the
-            // property by its token - `props[.scrollStep]` - which is how a
-            // property no modifier writes is proven: the list's own report
-            // step is worked out from the row and has no spelling an author
-            // could use.
-            where !proof.contains("\(key): ") && !proof.contains(".\(key)(")
-                && !proof.contains("[.\(key)]") {
+            // answered by `textColor`.
+            where !proof.contains("\(key): ") && !proof.contains(".\(key)(") {
                 missing.append("\(source) declares \(key)")
             }
         }

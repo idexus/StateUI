@@ -253,6 +253,25 @@ final class HostContractTests: XCTestCase {
         XCTAssertTrue(document.contains("✅ means"), "platform contract does not define completion")
     }
 
+    /// The scroller is the platform's: no grid to settle on, no momentum to
+    /// tune and no report step. The tokens that carried them were removed by
+    /// decision and do not return; a host member left for one of them fails
+    /// the two-way token guard in `WireFormatTests`.
+    func testTheScrollerKeepsNoGridNoMomentumAndNoStep() throws {
+        let tokenSource = try String(
+            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
+            encoding: .utf8)
+        let properties = declaredNames(of: "Prop", in: tokenSource)
+        let events = declaredNames(of: "Event", in: tokenSource)
+
+        XCTAssertTrue(
+            properties.isDisjoint(with: [
+                "snapInterval", "snapFrom", "snapsAtMost", "scrollMomentum", "scrollStep",
+            ]),
+            "a scroller's grid, momentum or report step is back in the host contract")
+        XCTAssertFalse(events.contains("snapItemChanged"), "a scroller reports a grid item again")
+    }
+
     /// Every view speaks in plain words: the size it asks for is its width and
     /// height, how it sits in its space is its alignment, and what it does with
     /// input, direction, clipping, its pivot and its context menu is said the
