@@ -18,43 +18,27 @@ final class ResourceTests: XCTestCase {
         AppStyles.sheet(on: .unknown).written
     }
 
-    /// Every type the gallery styles is one the host contract can render.
-    /// The explicit list keeps a misspelled target from becoming a silent
-    /// no-op in the running application.
-    private static let renderable: Set<String> = [
-        "Label", "Button", "TextField", "TextEditor", "Picker",
-        "DatePicker", "TimePicker", "SearchField", "Switch", "CheckBox",
-        "RadioButton", "Slider", "ActivityIndicator", "ProgressBar",
-        "PositionIndicator", "RefreshView", "Image", "ColorBox", "Border",
-        "Grid", "ScrollView", "VStack", "HStack",
-    ]
+    /// Every element a style may target, by its node type: the library's,
+    /// and on the MAUI host the Gallery's own controls, which
+    /// `MauiProgramTests` holds to what MauiProgram registers. A style for a
+    /// control of the MAUI host alone is compiled out under any other
+    /// condition.
+    private static var elements: Set<String> {
+        var names = Set(LibraryContracts.elements.map { $0.nodeType.name })
 
-    /// The controls the gallery's MAUI head registers in C#, by the names its
-    /// `MauiProgram.cs` hands `StateUIControls.Add` - a style written for the
-    /// MAUI host alone may target one of those. Under any other condition such
-    /// a style is compiled out, and there are none.
-    private static var registered: Set<String> {
         #if MAUI
-        let program = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()    // GalleryTests
-            .deletingLastPathComponent()    // Tests
-            .deletingLastPathComponent()    // Gallery
-            .appendingPathComponent("Platforms/Maui/Host/MauiProgram.cs")
-        let text = (try? String(contentsOf: program, encoding: .utf8)) ?? ""
-        return Set(text.components(separatedBy: "StateUIControls.Add(\"").dropFirst()
-            .compactMap { $0.components(separatedBy: "\"").first })
-        #else
-        return []
+        names.formUnion(MauiProgramTests.elements.map { $0.nodeType.name })
         #endif
+
+        return names
     }
 
-    func testEveryStyleTargetsAControlThatExists() {
+    func testEveryStyleTargetsAnElementAContractDeclares() {
         XCTAssertFalse(styles.isEmpty)
 
         for style in styles {
-            XCTAssertTrue(Self.renderable.union(Self.registered).contains(style.target.name),
-                          "\(style.target.name) is neither a control the renderer knows "
-                              + "nor one the MAUI head registers")
+            XCTAssertTrue(Self.elements.contains(style.target.name),
+                          "\(style.target.name) is no element a contract declares")
         }
     }
 
