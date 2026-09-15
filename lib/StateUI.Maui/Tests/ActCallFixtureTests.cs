@@ -292,7 +292,7 @@ public class ActCallFixtureTests
         HostActCall call = One("Announce");
 
         Assert.Equal("announce", call.Name);
-        Assert.Equal(1, call.Arguments!.Count);
+        Assert.Single(call.Arguments!);
         Assert.Equal("5 results", call.GetString(0));
         Assert.True(call.Completion < 0, "the handler waits until it is said");
     }
