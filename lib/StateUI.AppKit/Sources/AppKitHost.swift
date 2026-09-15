@@ -171,6 +171,7 @@ final class AppKitRenderer: @unchecked Sendable {
     private let frameClock: AppKitFrameClock
     private let reducesMotion: () -> Bool
     fileprivate let intake = AppKitPatchIntake()
+    private lazy var actPerformer = AppKitActPerformer(renderer: self)
     private var nextMount: UInt64 = 0
     private var patchTime: Double?
     private var patchReducesMotion: Bool?
@@ -475,28 +476,7 @@ final class AppKitRenderer: @unchecked Sendable {
         _ = core.runJobs()
 
         for call in core.takeActCalls() {
-            switch call.act {
-            case .persistValue:
-                savePersistent(call)
-
-            case .persistSceneValue:
-                keepSceneValue(call)
-
-            case .handlerFailed:
-                NSLog("StateUI AppKit: a handler failed: %@", call.arguments.first?.string ?? "")
-
-            default:
-                // An act this host does not perform: a caller waiting on it
-                // throws the reason, and one nobody waits for is logged, so
-                // neither passes in silence.
-                let reason = "the AppKit host does not perform the act '\(call.act.name)'"
-
-                if let completion = call.completion {
-                    core.fail(completion, reason: reason)
-                } else {
-                    NSLog("StateUI AppKit: %@", reason)
-                }
-            }
+            actPerformer.perform(call)
         }
 
         if root != nil, core.cyclesPending {
@@ -911,6 +891,16 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     var windowsForTesting: [AppKitWindowController] { orderedWindowControllers }
+
+    /// The native view of the element with `id`, as the tree stands.
+    func presentedView(id: ElementId) -> NSView? {
+        root?.first(id: id)?.view
+    }
+
+    /// The window the reader is looking at: the key window, else the main one.
+    var readerWindow: NSWindow? {
+        NSApp.keyWindow ?? orderedWindowControllers.first?.window
+    }
 
     var frameClockWindowForTesting: NSWindow? { frameClock.window }
 
