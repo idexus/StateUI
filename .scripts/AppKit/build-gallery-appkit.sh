@@ -9,19 +9,28 @@ repository_dir="$(cd "$script_dir/../.." && pwd)"
 gallery_dir="$repository_dir/apps/Gallery"
 configuration="${1:-debug}"
 product="GalleryAppKit"
+# Swift written for the AppKit host alone stands under `#if APPKIT`, which
+# -Xswiftc -DAPPKIT defines for every module of the build - on a build
+# directory of its own, which the Gallery's tests, compiled without it, would
+# otherwise rebuild from scratch at every switch.
+scratch_dir="$gallery_dir/.build-appkit"
 
 swift build \
     --package-path "$gallery_dir" \
+    --scratch-path "$scratch_dir" \
     --disable-build-manifest-caching \
     --configuration "$configuration" \
+    -Xswiftc -DAPPKIT \
     --product "$product"
 
 binary_dir="$(swift build \
     --package-path "$gallery_dir" \
+    --scratch-path "$scratch_dir" \
     --disable-build-manifest-caching \
     --configuration "$configuration" \
+    -Xswiftc -DAPPKIT \
     --show-bin-path)"
-application_dir="$gallery_dir/.build/$configuration/$product.app"
+application_dir="$scratch_dir/$configuration/$product.app"
 contents_dir="$application_dir/Contents"
 executable_dir="$contents_dir/MacOS"
 resources_dir="$contents_dir/Resources"

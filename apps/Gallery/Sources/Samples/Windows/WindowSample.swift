@@ -31,6 +31,9 @@ struct WindowSample: SampleContent, ExampleContent {
                         window.maximumHeight = 1200
                         window.isMaximizable = true
                         window.isMinimizable = true
+                        #if APPKIT
+                        window.isTranslucent = true
+                        #endif
                     }
             }
         }
@@ -60,9 +63,11 @@ struct WindowSample: SampleContent, ExampleContent {
             window.isMinimizable = minimizable
         }
 
-        Switch($translucent).onChanged(translucent) {
-            window.isTranslucent = translucent
-        }
+        Switch($translucent)
+            .onChanged(translucent) {
+                window.isTranslucent = translucent
+            }
+            .onCreated { translucent = window.isTranslucent == true }
         """
 
     var notes: Element? { nil }
@@ -129,6 +134,9 @@ struct WindowSample: SampleContent, ExampleContent {
             width = frame.width
             height = frame.height
         }
+        // The switch starts where the window stands - on, where the gallery's
+        // window opens translucent.
+        .onCreated { translucent = window.isTranslucent == true }
     }
 
     /// An action that writes the surrounding window session.

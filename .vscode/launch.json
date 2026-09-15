@@ -12,8 +12,9 @@
   //   MAUI, Linux                       -> "Debug app (Linux)", "Debug app (Swift, Linux)",
   //                                        "Launch app (Release, Linux)"
   //
-  // The AppKit launches build with SwiftPM and start the application's
-  // Platforms/AppKit executable.
+  // The AppKit launches build with SwiftPM under the APPKIT condition and start
+  // the application's Platforms/AppKit executable - the Gallery's from
+  // .build-appkit, a build of its own apart from its tests.
   //
   // The MAUI launches name no application. ".NET MAUI: Select Startup Project"
   // says which head - apps/<Name>/Platforms/Maui/<Name>.csproj - the status bar
@@ -40,7 +41,7 @@
       "type": "lldb-dap",
       "request": "launch",
       "preLaunchTask": "Build Gallery (AppKit, Debug)",
-      "program": "${workspaceFolder}/apps/Gallery/.build/debug/GalleryAppKit.app/Contents/MacOS/GalleryAppKit",
+      "program": "${workspaceFolder}/apps/Gallery/.build-appkit/debug/GalleryAppKit.app/Contents/MacOS/GalleryAppKit",
       "cwd": "${workspaceFolder}",
       "stopOnEntry": false,
       "presentation": { "group": "1 AppKit", "order": 1 }
@@ -50,7 +51,7 @@
       "type": "lldb-dap",
       "request": "launch",
       "preLaunchTask": "Build Gallery (AppKit, Release)",
-      "program": "${workspaceFolder}/apps/Gallery/.build/release/GalleryAppKit.app/Contents/MacOS/GalleryAppKit",
+      "program": "${workspaceFolder}/apps/Gallery/.build-appkit/release/GalleryAppKit.app/Contents/MacOS/GalleryAppKit",
       "cwd": "${workspaceFolder}",
       "stopOnEntry": false,
       "presentation": { "group": "1 AppKit", "order": 2 }

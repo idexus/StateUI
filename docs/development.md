@@ -27,9 +27,11 @@ The core never imports Foundation or a platform UI framework. Application code
 may import Foundation. Platform frameworks remain inside host packages and
 platform entry points.
 
-Swift written for the MAUI host alone stands under `#if MAUI`, the condition
-every MAUI build of a Swift module defines. `NativeProjectTests` refuses any
-other mention of that host in the library and in the applications' `Sources/`.
+Swift written for one host alone stands under the condition named for it:
+`#if MAUI`, which every MAUI build of a Swift module defines, and `#if APPKIT`,
+which every AppKit build of an application defines. `NativeProjectTests`
+refuses any other mention of either host in the library and in the
+applications' `Sources/`.
 
 ## Gallery
 

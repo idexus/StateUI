@@ -26,6 +26,8 @@
         "${workspaceFolder}",
         "--configuration",
         "debug",
+        "-Xswiftc",
+        "-DAPPKIT",
         "--product",
         "StateUIStarterAppKit"
       ],
@@ -42,6 +44,8 @@
         "${workspaceFolder}",
         "--configuration",
         "release",
+        "-Xswiftc",
+        "-DAPPKIT",
         "--product",
         "StateUIStarterAppKit"
       ],

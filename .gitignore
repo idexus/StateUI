@@ -4,6 +4,7 @@ obj/
 artifacts/
 .build/
 .build-maui/
+.build-appkit/
 .vs/
 
 # Debug symbols

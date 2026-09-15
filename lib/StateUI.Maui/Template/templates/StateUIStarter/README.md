@@ -44,10 +44,12 @@ on, which is not the target.
 The AppKit host, when the application has one:
 
 ```bash
-swift run StateUIStarterAppKit
+swift run -Xswiftc -DAPPKIT StateUIStarterAppKit
 ```
 
 Run it from the application's root, which is where it reads `Resources/` from.
+`-Xswiftc -DAPPKIT` defines `#if APPKIT`, the condition Swift written for the
+AppKit host alone stands under.
 
 In VS Code, press **F5**. "Debug app (C#)" follows the device picker in the
 status bar; "Debug app (AppKit)" starts the macOS host. `.vscode/launch.json`

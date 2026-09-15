@@ -163,8 +163,8 @@ struct ImageSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("The first row is the sidebar's own icons: SVGs in `Resources/Images`, "
-                + "each asked for by its `.png` name. Where no PNG of that name exists, the "
-                + "AppKit host loads the SVG of the same name instead.")
+                + "each asked for by its `.png` name. Where the build makes no PNG of that "
+                + "name, the host loads the SVG of the same name instead.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -97,16 +97,15 @@ final class NativeProjectTests: XCTestCase {
         ])
     }
 
-    /// The code every host runs names no host. Swift written for the MAUI host
-    /// alone stands under `#if MAUI` - the condition every MAUI build defines,
-    /// see `testEveryMauiSwiftBuildDefinesTheMauiCondition` - and such a block,
-    /// up to its `#else` or `#endif`, is the one place the library and each
-    /// application's `Sources/` may name it.
+    /// The code every host runs names no host. Swift written for one host alone
+    /// stands under the condition named for it - `#if MAUI`, which every MAUI
+    /// build defines, and `#if APPKIT`, which every AppKit build of an
+    /// application defines; see the two tests below - and such a block, up to
+    /// its `#else` or `#endif`, is the one place the library and each
+    /// application's `Sources/` may name that host.
     ///
-    /// The word is assembled here so this guard does not find itself.
-    func testTheSharedSourcesNameTheMauiHostOnlyUnderItsCondition() throws {
-        let word = "ma" + "ui"
-        let condition = "#if " + word.uppercased()
+    /// The words are assembled here so this guard does not find itself.
+    func testTheSharedSourcesNameAHostOnlyUnderItsCondition() throws {
         let repository = Fixtures.repository
         var roots = [repository.appendingPathComponent("lib/StateUI/Sources")]
         let apps = try FileManager.default.contentsOfDirectory(
@@ -114,35 +113,38 @@ final class NativeProjectTests: XCTestCase {
         roots += apps.map { $0.appendingPathComponent("Sources") }
 
         var offenders: [String] = []
-        for root in roots {
-            guard let walk = FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)
-            else { continue }
+        for word in ["ma" + "ui", "app" + "kit"] {
+            let condition = "#if " + word.uppercased()
+            for root in roots {
+                guard let walk = FileManager.default.enumerator(at: root, includingPropertiesForKeys: nil)
+                else { continue }
 
-            for case let file as URL in walk where file.pathExtension == "swift" {
-                let text = try String(contentsOf: file, encoding: .utf8)
-                // Zero outside the condition's block, one directly inside it,
-                // more inside a block nested in it.
-                var depth = 0
-                for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false)
-                    .enumerated() {
-                    let directive = line.trimmingCharacters(in: .whitespaces)
-                    if depth > 0 {
-                        if directive.hasPrefix("#if") {
-                            depth += 1
-                        } else if directive.hasPrefix("#endif") {
-                            depth -= 1
-                        } else if depth == 1 && directive.hasPrefix("#else") {
-                            // What follows is compiled for every other host.
-                            depth = 0
+                for case let file as URL in walk where file.pathExtension == "swift" {
+                    let text = try String(contentsOf: file, encoding: .utf8)
+                    // Zero outside the condition's block, one directly inside
+                    // it, more inside a block nested in it.
+                    var depth = 0
+                    for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false)
+                        .enumerated() {
+                        let directive = line.trimmingCharacters(in: .whitespaces)
+                        if depth > 0 {
+                            if directive.hasPrefix("#if") {
+                                depth += 1
+                            } else if directive.hasPrefix("#endif") {
+                                depth -= 1
+                            } else if depth == 1 && directive.hasPrefix("#else") {
+                                // What follows is compiled for every other host.
+                                depth = 0
+                            }
+                            continue
                         }
-                        continue
-                    }
 
-                    if directive == condition {
-                        depth = 1
-                    } else if line.lowercased().contains(word) {
-                        let relative = String(file.path.dropFirst(repository.path.count + 1))
-                        offenders.append("\(relative):\(number + 1)")
+                        if directive == condition {
+                            depth = 1
+                        } else if line.lowercased().contains(word) {
+                            let relative = String(file.path.dropFirst(repository.path.count + 1))
+                            offenders.append("\(relative):\(number + 1)")
+                        }
                     }
                 }
             }
@@ -187,6 +189,53 @@ final class NativeProjectTests: XCTestCase {
             .filter { $0.contains("& swiftc") && $0.contains(" -c ") }
         XCTAssertEqual(windows.count, 1, "build-windows.ps1 has one compile step")
         XCTAssertTrue(windows.allSatisfy { $0.contains("-D MAUI") }, "build-windows.ps1 compiles without MAUI")
+    }
+
+    /// Every Swift build of an application's AppKit head is compiled with the
+    /// AppKit condition, so no block under `#if APPKIT` is left out of one of
+    /// them: the Gallery's script, the tasks that build HelloWorld and a new
+    /// application's head, and the commands `new-app` and the template print.
+    func testEveryAppKitSwiftBuildDefinesTheAppKitCondition() throws {
+        let repository = Fixtures.repository
+        let template = "lib/StateUI.Maui/Template/templates/StateUIStarter"
+        func text(_ relative: String) throws -> String {
+            try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
+        }
+
+        // A command on one line, a shell line continued with a backslash
+        // joined back up.
+        for relative in [
+            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/new-app.sh", "\(template)/README.md",
+        ] {
+            let commands = try text(relative)
+                .replacingOccurrences(of: "\\\n", with: " ")
+                .components(separatedBy: "\n")
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+                .filter {
+                    $0.hasPrefix("swift build") || $0.hasPrefix("swift run") || $0.contains("$(swift build")
+                }
+            XCTAssertFalse(commands.isEmpty, "\(relative) runs no swift build")
+            for command in commands {
+                XCTAssertTrue(
+                    command.contains("-Xswiftc -DAPPKIT"), "\(relative) builds without APPKIT: \(command)")
+            }
+        }
+
+        // A task names the head it builds right after `--product`.
+        for relative in [".vscode/tasks.json", "\(template)/.vscode/tasks.json"] {
+            let tasks = try text(relative).components(separatedBy: "\"label\"").filter { task in
+                let lines = task.components(separatedBy: "\n").map { $0.trimmingCharacters(in: .whitespaces) }
+                guard let product = lines.firstIndex(of: "\"--product\","), product + 1 < lines.count
+                else { return false }
+                return lines[product + 1].hasSuffix("AppKit\"")
+            }
+            XCTAssertFalse(tasks.isEmpty, "\(relative) builds no AppKit head")
+            for task in tasks {
+                XCTAssertTrue(
+                    task.contains("\"-Xswiftc\"") && task.contains("\"-DAPPKIT\""),
+                    "\(relative) builds an AppKit head without APPKIT")
+            }
+        }
     }
 
     func testGalleryOwnsItsAcceptanceTests() {

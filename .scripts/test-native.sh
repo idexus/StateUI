@@ -18,3 +18,9 @@ swift test --package-path "$repository_dir" \
   --scratch-path "$repository_dir/.build-maui" -Xswiftc -DMAUI
 swift test --package-path "$repository_dir/apps/Gallery" \
   --scratch-path "$repository_dir/apps/Gallery/.build-maui" -Xswiftc -DMAUI
+
+# And Swift written for the AppKit host alone stands under `#if APPKIT`, so the
+# Gallery runs once more with that condition, on the directory its AppKit
+# build keeps.
+swift test --package-path "$repository_dir/apps/Gallery" \
+  --scratch-path "$repository_dir/apps/Gallery/.build-appkit" -Xswiftc -DAPPKIT
