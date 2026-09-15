@@ -304,11 +304,13 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertNil(content.materialForTesting)
     }
 
-    /// On a translucent window a written bar colour still paints the detail's
-    /// band, and the window keeps no background: the desktop, not the colour,
-    /// shows around the floating sidebar.
+    /// On a translucent window a written bar colour tints the window's
+    /// material rather than painting a band: the window keeps no background,
+    /// the detail paints none, and the band over the page, the margin around
+    /// the floating sidebar and what its glass shows all wear the tint. An
+    /// opaque window again paints the band and frames the sidebar in the colour.
     @MainActor
-    func testATranslucentWindowShowsTheDesktopAroundTheSidebar() throws {
+    func testATranslucentWindowsBarColourTintsItsMaterial() throws {
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
@@ -324,18 +326,29 @@ final class AppKitPageTests: XCTestCase {
             detail: stack), translucent: true))
 
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let split = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         XCTAssertEqual(window.backgroundColor, .clear)
-        XCTAssertEqual(split.detailBarColorForTesting, NSColor(
-            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+        XCTAssertNil(split.detailBarColorForTesting, "the tinted material shows through the band")
+        let colour = NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1)
+        XCTAssertEqual(content.materialTint, colour)
+
+        renderer.applyForTesting(windowTree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu"),
+            detail: stack), translucent: false))
+        XCTAssertEqual(window.backgroundColor, colour)
+        XCTAssertEqual(split.detailBarColorForTesting, colour)
+        XCTAssertNil(content.materialTint)
+        XCTAssertNil(content.materialForTesting)
     }
 
-    /// On a translucent window the band a written bar colour paints lies over
-    /// the window's material, so a colour with an alpha shows the desktop
-    /// through the bars as well.
+    /// On a translucent window the tint lies over the whole material, the band
+    /// the bars cover included, and the window draws no band beneath it - a
+    /// colour with an alpha shows the desktop through all of it.
     @MainActor
-    func testATranslucentWindowsBarLiesOverItsMaterial() throws {
+    func testATranslucentWindowsTintCoversItsWholeMaterial() throws {
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
@@ -344,19 +357,55 @@ final class AppKitPageTests: XCTestCase {
 
         var stack = navigation([page("home", title: "Home")])
         stack.properties[.barBackgroundColor] = .color(
-            red: 81, green: 43, blue: 212, alpha: 204)
+            red: 81, green: 43, blue: 212, alpha: 153)
         renderer.applyForTesting(windowTree(stack, translucent: true))
 
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         content.layoutSubtreeIfNeeded()
         let material = try XCTUnwrap(content.materialForTesting)
-        XCTAssertEqual(material.frame, content.bounds, "the material lies under the band too")
-        let band = try XCTUnwrap(content.materialBandForTesting, "no band over the material")
-        XCTAssertFalse(band.isHidden)
-        XCTAssertEqual(band.frame.maxY, material.bounds.height, "the band is the material's top")
-        XCTAssertEqual(band.frame.height, content.barBand.height)
-        XCTAssertEqual(band.layer?.backgroundColor?.alpha ?? 0, 204.0 / 255.0, accuracy: 0.001)
+        XCTAssertEqual(material.frame, content.bounds)
+        let tint = try XCTUnwrap(content.materialTintForTesting, "no tint over the material")
+        XCTAssertFalse(tint.isHidden)
+        XCTAssertEqual(tint.frame, material.bounds, "the tint covers the whole material")
+        XCTAssertEqual(tint.layer?.backgroundColor?.alpha ?? 0, 153.0 / 255.0, accuracy: 0.001)
+        XCTAssertNil(content.barColor, "no band drawn beneath the tint")
+    }
+
+    /// A floating sidebar keeps the same margin on every side, the detail's
+    /// included: the detail's page and its band stand as far from the sidebar
+    /// as the sidebar stands from the window's edge, the window showing
+    /// between them.
+    @MainActor
+    func testAFloatingSidebarKeepsItsMarginBesideTheDetail() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        var stack = navigation([page("home", title: "Home")])
+        stack.properties[.barBackgroundColor] = .color(
+            red: 54, green: 42, blue: 86, alpha: 255)
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu"),
+            detail: stack), width: 1200))
+
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        window.setContentSize(NSSize(width: 1200, height: 800))
+        window.contentView?.layoutSubtreeIfNeeded()
+
+        let split = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
+        let panes = split.splitController.splitViewItems.map(\.viewController.view)
+        let sidebar = panes[0].convert(panes[0].bounds, to: nil)
+        let detail = try XCTUnwrap(panes[1] as? AppKitPaneView)
+        let shown = try XCTUnwrap(renderer.viewForTesting(id: .manual("navigation")))
+        XCTAssertGreaterThan(sidebar.minX, 0, "the sidebar floats in the window's margin")
+        XCTAssertEqual(shown.convert(shown.bounds, to: nil).minX - sidebar.maxX, sidebar.minX,
+                       "the page keeps the sidebar's margin")
+        XCTAssertEqual(detail.barBand.minX, sidebar.minX, "and so does the band")
     }
 
     @MainActor

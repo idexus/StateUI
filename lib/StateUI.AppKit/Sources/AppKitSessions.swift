@@ -800,14 +800,17 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     /// toolbar and the window's background around a floating sidebar are one
     /// surface, so the sidebar stands framed in the bars' colour, its glass
     /// taking a tint of it. With none written the window keeps the system's.
-    /// A translucent window keeps no background at all: the desktop shows
-    /// around the sidebar, through the window's material.
+    /// On a translucent window the colour tints the window's material instead:
+    /// the band over the page, the margin around the sidebar and what its
+    /// glass shows all wear it, the desktop through it, and no pane paints a
+    /// band of its own.
     private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
         window.titlebarAppearsTransparent = color != nil
         let background = isTranslucent ? NSColor.clear : (color ?? .windowBackgroundColor)
         if window.backgroundColor != background { window.backgroundColor = background }
-        content.barColor = split == nil ? color : nil
-        split?.setDetailBarColor(color)
+        content.barColor = split == nil && !isTranslucent ? color : nil
+        content.materialTint = isTranslucent ? color : nil
+        split?.setDetailBarColor(isTranslucent ? nil : color)
     }
 
     /// An authored title bar's own title, at the trailing edge. It takes

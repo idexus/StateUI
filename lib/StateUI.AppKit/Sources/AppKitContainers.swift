@@ -645,13 +645,12 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     /// desktop show through it.
     private var material: NSVisualEffectView?
 
-    /// The band a written bar colour paints, at the top of the material.
-    private var materialBand: NSView?
+    /// What lies over the whole material, in `materialTint`.
+    private var materialTintView: NSView?
 
     /// Whether the desktop shows through the window: its material lies under
     /// the page, wherever the page leaves it uncovered or paints a colour it
-    /// shows through, and the band a written bar colour paints lies over it -
-    /// a colour with an alpha shows the desktop there too.
+    /// shows through - in `materialTint`, where one is written.
     var isTranslucent = false {
         didSet {
             guard isTranslucent != oldValue else { return }
@@ -661,23 +660,31 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
                 material.material = .underWindowBackground
                 material.blendingMode = .behindWindow
                 material.state = .followsWindowActiveState
-                let band = NSView()
-                band.wantsLayer = true
-                material.addSubview(band)
+                let tint = NSView()
+                tint.wantsLayer = true
+                material.addSubview(tint)
                 addSubview(material, positioned: .below, relativeTo: nil)
                 self.material = material
-                materialBand = band
+                materialTintView = tint
             } else {
                 material?.removeFromSuperview()
                 material = nil
-                materialBand = nil
+                materialTintView = nil
             }
             needsLayout = true
         }
     }
 
     var materialForTesting: NSVisualEffectView? { material }
-    var materialBandForTesting: NSView? { materialBand }
+    /// The colour the window's bars are written in, over the material of a
+    /// translucent window: the band above the page, the margin around a
+    /// floating sidebar and what its glass shows all wear it, the desktop
+    /// through it. Nil leaves the material the system's.
+    var materialTint: NSColor? {
+        didSet { if materialTint != oldValue { needsLayout = true } }
+    }
+
+    var materialTintForTesting: NSView? { materialTintView }
 
     /// The colour the window's bars are written in, painted over `barBand`.
     /// Nil leaves the title bar and toolbar the system's material.
@@ -694,8 +701,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        // Over a material the band is the material's own; see `layout()`.
-        guard let barColor, material == nil else { return }
+        guard let barColor else { return }
         barColor.setFill()
         barBand.fill()
     }
@@ -733,14 +739,9 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
         super.layout()
         if let material {
             material.frame = bounds
-            // The top of the material, which is not flipped: the band a
-            // written bar colour paints, lying over what blends with the
-            // desktop.
-            materialBand?.frame = NSRect(
-                x: 0, y: bounds.height - barBand.height,
-                width: bounds.width, height: barBand.height)
-            materialBand?.layer?.backgroundColor = barColor?.cgColor
-            materialBand?.isHidden = barColor == nil
+            materialTintView?.frame = material.bounds
+            materialTintView?.layer?.backgroundColor = materialTint?.cgColor
+            materialTintView?.isHidden = materialTint == nil
         }
         page?.frame = pageSpansTitleBar ? bounds : safeAreaRect
         overlaySurface.frame = safeAreaRect
@@ -761,9 +762,11 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
         didSet { if barColor != oldValue { needsDisplay = true } }
     }
 
-    /// The part of this pane the window's title bar and toolbar cover.
+    /// The part of this pane the window's title bar and toolbar cover, beyond
+    /// the margin it keeps beside a floating sidebar.
     var barBand: NSRect {
-        NSRect(x: 0, y: 0, width: bounds.width, height: max(0, safeAreaRect.minY))
+        NSRect(x: padding.left, y: 0, width: max(0, bounds.width - padding.left),
+               height: max(0, safeAreaRect.minY))
     }
 
     override func layout() {
@@ -1248,6 +1251,23 @@ final class AppKitSplitView: AppKitHitTestView {
         splitController.splitView.frame = splitController.view.bounds
         splitController.splitView.needsLayout = true
         splitController.splitView.layoutSubtreeIfNeeded()
+        keepTheSidebarsMarginBesideTheDetail()
+    }
+
+    /// A floating sidebar stands in the window's margin on every side, the
+    /// detail's included: the detail's page and its band keep as far from the
+    /// sidebar as the sidebar keeps from the window's edge, the window showing
+    /// between them. A sidebar that does not float, or is collapsed, leaves no
+    /// margin to keep.
+    private func keepTheSidebarsMarginBesideTheDetail() {
+        let margin = sidebarItem.isCollapsed
+            ? 0
+            : max(0, sidebarSurface.convert(sidebarSurface.bounds, to: self).minX)
+        guard detailSurface.padding.left != margin else { return }
+
+        detailSurface.padding.left = margin
+        detailSurface.needsLayout = true
+        detailSurface.needsDisplay = true
     }
 
     /// The host's one adaptation: a window wide enough for both panes opens

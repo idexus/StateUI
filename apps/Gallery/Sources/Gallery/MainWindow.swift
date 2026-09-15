@@ -237,14 +237,14 @@ struct MainWindow: Window {
 
     // MARK: - The window's own chrome
 
-    /// Native desktop chrome whose values and slot contents are described by
-    /// the gallery scene. See Samples/Windows/TitleBarSample.swift.
-    /// What the bars are painted in: the gallery's accent, with a fifth let
+    /// What the bars are painted in: the gallery's accent, with two fifths let
     /// through while the desktop shows through the window.
     private var barColour: Color {
         window.isTranslucent == true ? style.accent.translucentColor : style.accent.color
     }
 
+    /// Native desktop chrome whose values and slot contents are described by
+    /// the gallery scene. See Samples/Windows/TitleBarSample.swift.
     private var chrome: TitleBar {
         TitleBar("StateUI")
             .subtitle(bar.subtitle)

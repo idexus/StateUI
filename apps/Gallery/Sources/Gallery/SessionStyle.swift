@@ -52,14 +52,14 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
         }
     }
 
-    /// The colour with a fifth let through - the bars of a window the desktop
-    /// shows through, which keep their white legible over it.
+    /// The colour with two fifths let through - what a window the desktop shows
+    /// through is tinted with, its white still legible over it.
     var translucentColor: Color {
         switch self {
-        case .violet: return Color("#CC512BD4")
-        case .teal: return Color("#CC0F766E")
-        case .coral: return Color("#CCC2410C")
-        case .graphite: return Color("#CC374151")
+        case .violet: return Color("#99512BD4")
+        case .teal: return Color("#990F766E")
+        case .coral: return Color("#99C2410C")
+        case .graphite: return Color("#99374151")
         }
     }
 }

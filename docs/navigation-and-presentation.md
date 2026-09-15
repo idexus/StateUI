@@ -210,8 +210,9 @@ background unwritten preserves the platform's material. A written colour is
 painted where the bars stand - on AppKit the band the title bar and toolbar
 cover over the visible content, with the page's title in `barForegroundColor` on it,
 and the window's background, which a Mac shows around a floating sidebar and
-through its glass - while the toolbar's own items keep the system's look. Gradients remain ordinary
-view composition where the application owns the surface.
+through its glass - while the toolbar's own items keep the system's look. On a
+translucent window the colour tints the window's material instead. Gradients
+remain ordinary view composition where the application owns the surface.
 
 ## Menu bars and context menus
 

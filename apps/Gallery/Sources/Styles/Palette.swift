@@ -76,11 +76,6 @@ enum Palette {
     /// card lift off it with a fill rather than a shadow.
     static let surface = Color(light: AppColors.surface, dark: AppColors.surfaceDark)
 
-    /// The page in a window the desktop shows through: the surface with a
-    /// fifth let through, so the desktop reads as a tint beneath it.
-    static let translucentSurface = Color(
-        light: AppColors.surfaceTranslucent, dark: AppColors.surfaceTranslucentDark)
-
     /// One step up from the page: a card, a code block, a panel.
     static let raised = Color(light: AppColors.raised, dark: AppColors.raisedDark)
 

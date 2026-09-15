@@ -85,10 +85,6 @@ enum AppColors {
     /// off it without a shadow.
     static let surface = Color("#F7F5FC")
 
-    /// The surface with a fifth let through, for a window the desktop shows
-    /// through.
-    static let surfaceTranslucent = Color("#CCF7F5FC")
-
     /// A card, a code block - anything sitting on the page.
     static let raised = Color("#FFFFFF")
 
@@ -112,10 +108,6 @@ enum AppColors {
 
     /// The page in the dark: violet-black rather than grey-black.
     static let surfaceDark = Color("#0D0B14")
-
-    /// The dark surface with a fifth let through, for a window the desktop
-    /// shows through.
-    static let surfaceTranslucentDark = Color("#CC0D0B14")
 
     /// A card in the dark, one step up from the page.
     static let raisedDark = Color("#17141F")

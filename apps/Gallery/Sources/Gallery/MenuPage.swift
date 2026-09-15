@@ -66,14 +66,15 @@ struct MenuPage: ContentView {
             page.icon = "nav_menu_dark.png"
             page.background = surface
         }
-        // A window the desktop shows through lets it through the menu as well.
+        // A window the desktop shows through shows it through the menu as well.
         .onChanged(window.isTranslucent) { page.background = surface }
     }
 
-    /// What the menu is drawn on: the gallery's surface, a fifth let through
-    /// where the window shows the desktop.
-    private var surface: Color {
-        window.isTranslucent == true ? Palette.translucentSurface : Palette.surface
+    /// What the menu is drawn on: the gallery's surface - and nothing of its own
+    /// where the window shows the desktop, the sidebar's glass showing it in
+    /// the tint the window's bars lay over it.
+    private var surface: Color? {
+        window.isTranslucent == true ? nil : Palette.surface
     }
 
     /// The mark, the name and what this is - on the gradient the home page opens
