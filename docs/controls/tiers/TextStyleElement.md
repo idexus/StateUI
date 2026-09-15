@@ -1,14 +1,18 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # TextStyleElement
 
-The colour and letter spacing of a control's text, WITHOUT the text itself.
+How text looks wherever it is drawn: its colour and the space between its letters.
 
-Declared in `lib/StateUI/Sources/Views/TextStyleElement.swift`.
+Wears: [PropertyContainer](PropertyContainer.md)
 
-Worn by: [Label](../Label.md) · [Button](../Button.md) · [TextField](../TextField.md) · [TextEditor](../TextEditor.md) · [SearchField](../SearchField.md) · [Picker](../Picker.md) · [DatePicker](../DatePicker.md) · [TimePicker](../TimePicker.md) · [RadioButton](../RadioButton.md)
+Worn by: [Button](../Button.md) · [DatePicker](../DatePicker.md) · [Label](../Label.md) · [Picker](../Picker.md) · [RadioButton](../RadioButton.md) · [SearchField](../SearchField.md) · [Span](../Span.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/TextStyleElementContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `characterSpacing` | property |
-| `textColor` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `characterSpacing` | property | `Double` | native |
+| `textColor` | property | `Color` | native |

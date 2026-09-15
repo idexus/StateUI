@@ -1,43 +1,49 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # View
 
-A VisualElement a layout positions.
+What every view a layout positions has: where it sits in its layout, the space kept around it, and the gestures, drags and frame reports it answers.
 
-Declared in `lib/StateUI/Sources/Views/Elements.swift`.
+Wears: [VisualElement](VisualElement.md)
 
-Worn by: [Label](../Label.md) · [Button](../Button.md) · [TextField](../TextField.md) · [TextEditor](../TextEditor.md) · [SearchField](../SearchField.md) · [Image](../Image.md) · [Picker](../Picker.md) · [DatePicker](../DatePicker.md) · [TimePicker](../TimePicker.md) · [Switch](../Switch.md) · [CheckBox](../CheckBox.md) · [RadioButton](../RadioButton.md) · [Slider](../Slider.md) · [Stepper](../Stepper.md) · [ActivityIndicator](../ActivityIndicator.md) · [ProgressBar](../ProgressBar.md) · [ColorBox](../ColorBox.md) · [Border](../Border.md) · [PositionIndicator](../PositionIndicator.md) · [VStack](../VStack.md) · [HStack](../HStack.md) · [Grid](../Grid.md) · [AbsoluteLayout](../AbsoluteLayout.md) · [ScrollView](../ScrollView.md) · [RefreshView](../RefreshView.md) · [SwipeView](../SwipeView.md) · [Map](../Map.md) · [WebView](../WebView.md) · [TitleBar](../TitleBar.md) · [Canvas](../Canvas.md) · [Rectangle](../Rectangle.md) · [Ellipse](../Ellipse.md) · [Line](../Line.md) · [Path](../Path.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md)
+Worn by: [AbsoluteLayout](../AbsoluteLayout.md) · [ActivityIndicator](../ActivityIndicator.md) · [Border](../Border.md) · [Button](../Button.md) · [Canvas](../Canvas.md) · [CheckBox](../CheckBox.md) · [ColorBox](../ColorBox.md) · [DatePicker](../DatePicker.md) · [Ellipse](../Ellipse.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [Label](../Label.md) · [Line](../Line.md) · [Map](../Map.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [PositionIndicator](../PositionIndicator.md) · [ProgressBar](../ProgressBar.md) · [RadioButton](../RadioButton.md) · [Rectangle](../Rectangle.md) · [RefreshView](../RefreshView.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Slider](../Slider.md) · [Stepper](../Stepper.md) · [SwipeView](../SwipeView.md) · [Switch](../Switch.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [TitleBar](../TitleBar.md) · [VStack](../VStack.md) · [WebView](../WebView.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/ViewContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `absoluteLayoutBounds` | property |
-| `absoluteLayoutProportions` | property |
-| `allowDrop` | property |
-| `canDrag` | property |
-| `onDragLeave` (`dragLeave`) | handler |
-| `onDragOver` (`dragOver`) | handler |
-| `dragStarting` | handler |
-| `dragText` | property |
-| `onDrop` (`drop`) | handler |
-| `onDropCompleted` (`dropCompleted`) | handler |
-| `onFrameChanged` (`frameChanged`) | handler |
-| `gridColumn` | property |
-| `gridColumnSpan` | property |
-| `gridRow` | property |
-| `gridRowSpan` | property |
-| `horizontalAlignment` | property |
-| `margin` | property |
-| `panTouchCount` | property |
-| `onPanUpdated` (`panUpdated`) | handler |
-| `onPinchUpdated` (`pinchUpdated`) | handler |
-| `onPointerEntered` (`pointerEntered`) | handler |
-| `onPointerExited` (`pointerExited`) | handler |
-| `onPointerMoved` (`pointerMoved`) | handler |
-| `onPointerPressed` (`pointerPressed`) | handler |
-| `onPointerReleased` (`pointerReleased`) | handler |
-| `swipeDirection` | property |
-| `swipeThreshold` | property |
-| `onSwiped` (`swiped`) | handler |
-| `tapCount` | property |
-| `onTapped` (`tapped`) | handler |
-| `verticalAlignment` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `absoluteLayoutBounds` | property | `Rect` | structure |
+| `absoluteLayoutProportions` | property | `AbsoluteLayoutProportions` | structure |
+| `allowDrop` | property | `Bool` | native |
+| `canDrag` | property | `Bool` | native |
+| `onDragLeave` (`dragLeave`) | event |  | native |
+| `onDragOver` (`dragOver`) | event |  | native |
+| `dragStarting` | event |  | native |
+| `dragText` | property | `String` | native |
+| `onDrop` (`drop`) | event | `String` | native |
+| `onDropCompleted` (`dropCompleted`) | event |  | native |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native |
+| `gridColumn` | property | `Int` | stateUI |
+| `gridColumnSpan` | property | `Int` | stateUI |
+| `gridRow` | property | `Int` | stateUI |
+| `gridRowSpan` | property | `Int` | stateUI |
+| `horizontalAlignment` | property | `Alignment` | native |
+| `margin` | property | `Insets` | native |
+| `panTouchCount` | property | `Int` | structure |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |
+| `panXChannel` | property | `Int` | structure |
+| `panYChannel` | property | `Int` | structure |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |
+| `onPointerEntered` (`pointerEntered`) | event |  | native |
+| `onPointerExited` (`pointerExited`) | event |  | native |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |
+| `swipeDirection` | property | `SwipeDirection` | structure |
+| `swipeThreshold` | property | `Double` | structure |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native |
+| `tapCount` | property | `Int` | structure |
+| `onTapped` (`tapped`) | event |  | native |
+| `verticalAlignment` | property | `Alignment` | native |

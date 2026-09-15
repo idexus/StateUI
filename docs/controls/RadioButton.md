@@ -1,20 +1,24 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # RadioButton
 
 One choice out of several, where picking one clears the rest.
+
+Layer: `stateUI`. StateUI composes it from smaller primitives before a host receives the tree.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextElement](tiers/TextElement.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md)
 
 Marks: ✅ realized by that host and covered by its tests · ✅* realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
 
-Declared in `lib/StateUI/Sources/Views/RadioButton.swift`.
+Declared in `lib/StateUI/Sources/Contracts/Elements/RadioButtonContract.swift`.
 
 ## RadioButton's own members
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `groupName` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `isOn` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `onToggled` (`toggled`) | handler | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `groupName` | property | `Name` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
+| `isOn` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `onToggled` (`toggled`) | event | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 
 Realization:
 
@@ -28,131 +32,136 @@ Realization:
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
-Anything carrying property values, whether or not it is drawn - a control, a `Style`, a `TextSpan`.
+What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [VisualElement](tiers/VisualElement.md)
 
-A control backed by a node, and drawn.
+What every drawn element has: its size and its bounds, how it is shown and turned, whether it answers input and holds the keyboard focus, the visual states it enters, and what a screen reader says about it.
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityHeadingLevel` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `accessibilityHint` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `accessibilityLabel` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `automationExcludedWithChildren` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `background` | property | ✅ | ✅* |  |  |  |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
-| `frame` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `height` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `ignoresInput` | property | ✅ |  |  |  |  |  |  |  |
-| `isAccessibilityHidden` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `isEnabled` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `isFocusedChanged` | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `isVisible` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `layoutDirection` | property | ✅ |  |  |  |  |  |  |  |
-| `maximumHeight` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `maximumWidth` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `minimumHeight` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `minimumWidth` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `opacity` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `pivotX` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `pivotY` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `rotation` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `rotationX` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `rotationY` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `scale` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `scaleX` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `scaleY` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `style` | property |  |  |  |  |  |  |  |  |
-| `translationX` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `translationY` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `width` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `zIndex` | property | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `accessibilityHint` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `background` | property | `Background` | native | ✅ | ✅* |  |  |  |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
+| `focus` | act | `() -> Bool` |  |  | ✅ |  |  |  |  |  |  |
+| `frame` | property | `Rect` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `height` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
+| `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  |  |  |
+| `maximumHeight` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `maximumWidth` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `minimumHeight` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `minimumWidth` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `pivotX` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `pivotY` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `rotation` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `rotationX` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `scale` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `scaleX` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `scaleY` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `style` | property | `Name` | structure |  |  |  |  |  |  |  |  |
+| `translationX` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `translationY` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `unfocus` | act | `() -> Void` |  |  | ✅ |  |  |  |  |  |  |
+| `onVisualStateChanged` (`visualStateChanged`) | event | `String` | stateUI | ✅ |  |  |  |  |  |  |  |
+| `width` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `zIndex` | property | `Int` | native | ✅ |  |  |  |  |  |  |  |
 
 ## From [View](tiers/View.md)
 
-A VisualElement a layout positions.
+What every view a layout positions has: where it sits in its layout, the space kept around it, and the gestures, drags and frame reports it answers.
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `absoluteLayoutBounds` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `absoluteLayoutProportions` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `allowDrop` | property | ✅ |  |  |  |  |  |  |  |
-| `canDrag` | property | ✅ |  |  |  |  |  |  |  |
-| `onDragLeave` (`dragLeave`) | handler | ✅ |  |  |  |  |  |  |  |
-| `onDragOver` (`dragOver`) | handler | ✅ |  |  |  |  |  |  |  |
-| `dragStarting` | handler | ✅ |  |  |  |  |  |  |  |
-| `dragText` | property | ✅ |  |  |  |  |  |  |  |
-| `onDrop` (`drop`) | handler | ✅ |  |  |  |  |  |  |  |
-| `onDropCompleted` (`dropCompleted`) | handler | ✅ |  |  |  |  |  |  |  |
-| `onFrameChanged` (`frameChanged`) | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `gridColumn` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `gridColumnSpan` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `gridRow` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `gridRowSpan` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `horizontalAlignment` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `margin` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `panTouchCount` | property | ✅ | ✅* |  |  |  |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
-| `onPanUpdated` (`panUpdated`) | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `onPinchUpdated` (`pinchUpdated`) | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `onPointerEntered` (`pointerEntered`) | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `onPointerExited` (`pointerExited`) | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `onPointerMoved` (`pointerMoved`) | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `onPointerPressed` (`pointerPressed`) | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `onPointerReleased` (`pointerReleased`) | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `swipeDirection` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `swipeThreshold` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `onSwiped` (`swiped`) | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `tapCount` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `onTapped` (`tapped`) | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `verticalAlignment` | property | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `absoluteLayoutBounds` | property | `Rect` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `absoluteLayoutProportions` | property | `AbsoluteLayoutProportions` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `allowDrop` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
+| `canDrag` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
+| `onDragLeave` (`dragLeave`) | event |  | native | ✅ |  |  |  |  |  |  |  |
+| `onDragOver` (`dragOver`) | event |  | native | ✅ |  |  |  |  |  |  |  |
+| `dragStarting` | event |  | native | ✅ |  |  |  |  |  |  |  |
+| `dragText` | property | `String` | native | ✅ |  |  |  |  |  |  |  |
+| `onDrop` (`drop`) | event | `String` | native | ✅ |  |  |  |  |  |  |  |
+| `onDropCompleted` (`dropCompleted`) | event |  | native | ✅ |  |  |  |  |  |  |  |
+| `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `gridColumn` | property | `Int` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
+| `gridRow` | property | `Int` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
+| `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
+| `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `margin` | property | `Insets` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `panTouchCount` | property | `Int` | structure | ✅ | ✅* |  |  |  |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `panXChannel` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `panYChannel` | property | `Int` | structure | ✅ |  |  |  |  |  |  |  |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
+| `onPointerExited` (`pointerExited`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
+| `onPointerMoved` (`pointerMoved`) | event | `Point?` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `onPointerPressed` (`pointerPressed`) | event | `Point?` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `onPointerReleased` (`pointerReleased`) | event | `Point?` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `swipeDirection` | property | `SwipeDirection` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `swipeThreshold` | property | `Double` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `tapCount` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `onTapped` (`tapped`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
+| `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [TextElement](tiers/TextElement.md)
 
-The tier for a control whose text IS a property: everything `TextStyleElement` has, plus the text itself.
+What every element showing words has: the words, and the case they are drawn in.
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `text` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `textCase` | property | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `text` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `textCase` | property | `TextCase` | native | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
-The colour and letter spacing of a control's text, WITHOUT the text itself.
+How text looks wherever it is drawn: its colour and the space between its letters.
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `characterSpacing` | property | ✅ |  |  |  |  |  |  |  |
-| `textColor` | property | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `characterSpacing` | property | `Double` | native | ✅ |  |  |  |  |  |  |  |
+| `textColor` | property | `Color` | native | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
-How the text of a control is set in type - its size, its family, its weight.
+The font text is drawn in: its family, its size, its weight and slant, and whether it follows the reader's text-size setting.
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `fontAutoScalingEnabled` | property | ✅ |  |  |  |  |  |  |  |
-| `fontFamily` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `fontSize` | property | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive | ✅ |  |  |  |  |  |  |  |
+| `fontFamily` | property | `Name` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `fontSize` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
 
-The space a control keeps INSIDE itself, around its content.
+The space kept inside an element, around what it holds.
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `padding` | property | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `padding` | property | `Insets` | native | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [BorderElement](tiers/BorderElement.md)
 
-The outline of a control that draws one - the tier `Button` and `RadioButton` wear, and the one place the three properties that paint an outline are declared.
+The line around a control's own box, and how round its corners are.
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `borderColor` | property | ✅ |  |  |  |  |  |  |  |
-| `borderWidth` | property | ✅ |  |  |  |  |  |  |  |
-| `cornerRadius` | property | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `borderColor` | property | `Color` | native | ✅ |  |  |  |  |  |  |  |
+| `borderWidth` | property | `Double` | native | ✅ |  |  |  |  |  |  |  |
+| `cornerRadius` | property | `Int` | native | ✅ |  |  |  |  |  |  |  |

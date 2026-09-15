@@ -1,13 +1,17 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # PaddingElement
 
-The space a control keeps INSIDE itself, around its content.
+The space kept inside an element, around what it holds.
 
-Declared in `lib/StateUI/Sources/Views/PaddingElement.swift`.
+Wears: [VisualElement](VisualElement.md)
 
-Worn by: [Label](../Label.md) · [Button](../Button.md) · [RadioButton](../RadioButton.md) · [Border](../Border.md) · [VStack](../VStack.md) · [HStack](../HStack.md) · [Grid](../Grid.md) · [AbsoluteLayout](../AbsoluteLayout.md) · [ScrollView](../ScrollView.md)
+Worn by: [AbsoluteLayout](../AbsoluteLayout.md) · [Border](../Border.md) · [Button](../Button.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Label](../Label.md) · [RadioButton](../RadioButton.md) · [ScrollView](../ScrollView.md) · [VStack](../VStack.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/PaddingElementContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `padding` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `padding` | property | `Insets` | native |

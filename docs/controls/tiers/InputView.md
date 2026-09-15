@@ -1,22 +1,26 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # InputView
 
-A View the reader types into.
+What every field a reader types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
 
-Declared in `lib/StateUI/Sources/Views/Elements.swift`.
+Wears: [View](View.md)
 
-Worn by: [TextField](../TextField.md) · [TextEditor](../TextEditor.md) · [SearchField](../SearchField.md)
+Worn by: [SearchField](../SearchField.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/InputViewContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `cursorPosition` | property |
-| `inputPurpose` | property |
-| `isReadOnly` | property |
-| `isSpellCheckEnabled` | property |
-| `isTextPredictionEnabled` | property |
-| `maximumLength` | property |
-| `placeholder` | property |
-| `placeholderColor` | property |
-| `selectionLength` | property |
-| `onTextChanged` (`textChanged`) | handler |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `cursorPosition` | property | `Int` | native |
+| `inputPurpose` | property | `InputPurpose` | adaptive |
+| `isReadOnly` | property | `Bool` | native |
+| `isSpellCheckEnabled` | property | `Bool` | native |
+| `isTextPredictionEnabled` | property | `Bool` | native |
+| `maximumLength` | property | `Int` | native |
+| `placeholder` | property | `String` | native |
+| `placeholderColor` | property | `Color` | native |
+| `selectionLength` | property | `Int` | native |
+| `onTextChanged` (`textChanged`) | event | `String` | native |

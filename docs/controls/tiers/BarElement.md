@@ -1,13 +1,17 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # BarElement
 
-The bar over a stack or a set of tabs.
+The bar a page arrangement draws: its colour.
 
-Declared in `lib/StateUI/Sources/Views/BarElement.swift`.
+Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [NavigationStack](../NavigationStack.md) · [TabbedView](../TabbedView.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/BarElementContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `barBackgroundColor` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `barBackgroundColor` | property | `Color` | adaptive |

@@ -1,43 +1,50 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # VisualElement
 
-A control backed by a node, and drawn.
+What every drawn element has: its size and its bounds, how it is shown and turned, whether it answers input and holds the keyboard focus, the visual states it enters, and what a screen reader says about it.
 
-Declared in `lib/StateUI/Sources/Views/Elements.swift`.
+Wears: [PropertyContainer](PropertyContainer.md)
 
-Worn by: [Label](../Label.md) · [Button](../Button.md) · [TextField](../TextField.md) · [TextEditor](../TextEditor.md) · [SearchField](../SearchField.md) · [Image](../Image.md) · [Picker](../Picker.md) · [DatePicker](../DatePicker.md) · [TimePicker](../TimePicker.md) · [Switch](../Switch.md) · [CheckBox](../CheckBox.md) · [RadioButton](../RadioButton.md) · [Slider](../Slider.md) · [Stepper](../Stepper.md) · [ActivityIndicator](../ActivityIndicator.md) · [ProgressBar](../ProgressBar.md) · [ColorBox](../ColorBox.md) · [Border](../Border.md) · [PositionIndicator](../PositionIndicator.md) · [VStack](../VStack.md) · [HStack](../HStack.md) · [Grid](../Grid.md) · [AbsoluteLayout](../AbsoluteLayout.md) · [ScrollView](../ScrollView.md) · [RefreshView](../RefreshView.md) · [SwipeView](../SwipeView.md) · [Map](../Map.md) · [WebView](../WebView.md) · [TitleBar](../TitleBar.md) · [Canvas](../Canvas.md) · [Rectangle](../Rectangle.md) · [Ellipse](../Ellipse.md) · [Line](../Line.md) · [Path](../Path.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md)
+Worn by: [AbsoluteLayout](../AbsoluteLayout.md) · [ActivityIndicator](../ActivityIndicator.md) · [Border](../Border.md) · [Button](../Button.md) · [Canvas](../Canvas.md) · [CheckBox](../CheckBox.md) · [ColorBox](../ColorBox.md) · [DatePicker](../DatePicker.md) · [Ellipse](../Ellipse.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [Label](../Label.md) · [Line](../Line.md) · [Map](../Map.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [PositionIndicator](../PositionIndicator.md) · [ProgressBar](../ProgressBar.md) · [RadioButton](../RadioButton.md) · [Rectangle](../Rectangle.md) · [RefreshView](../RefreshView.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Slider](../Slider.md) · [Stepper](../Stepper.md) · [SwipeView](../SwipeView.md) · [Switch](../Switch.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [TitleBar](../TitleBar.md) · [VStack](../VStack.md) · [WebView](../WebView.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/VisualElementContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `accessibilityHeadingLevel` | property |
-| `accessibilityHint` | property |
-| `accessibilityLabel` | property |
-| `automationExcludedWithChildren` | property |
-| `background` | property |
-| `frame` | property |
-| `height` | property |
-| `ignoresInput` | property |
-| `isAccessibilityHidden` | property |
-| `isEnabled` | property |
-| `isFocusedChanged` | handler |
-| `isVisible` | property |
-| `layoutDirection` | property |
-| `maximumHeight` | property |
-| `maximumWidth` | property |
-| `minimumHeight` | property |
-| `minimumWidth` | property |
-| `opacity` | property |
-| `pivotX` | property |
-| `pivotY` | property |
-| `rotation` | property |
-| `rotationX` | property |
-| `rotationY` | property |
-| `scale` | property |
-| `scaleX` | property |
-| `scaleY` | property |
-| `style` | property |
-| `translationX` | property |
-| `translationY` | property |
-| `width` | property |
-| `zIndex` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `accessibilityHeadingLevel` | property | `HeadingLevel` | native |
+| `accessibilityHint` | property | `String` | native |
+| `accessibilityLabel` | property | `String` | native |
+| `automationExcludedWithChildren` | property | `Bool` | native |
+| `background` | property | `Background` | native |
+| `focus` | act | `() -> Bool` |  |
+| `frame` | property | `Rect` | structure |
+| `height` | property | `Double` | native |
+| `ignoresInput` | property | `Bool` | native |
+| `isAccessibilityHidden` | property | `Bool` | native |
+| `isEnabled` | property | `Bool` | native |
+| `isFocusedChanged` | event | `Bool` | native |
+| `isVisible` | property | `Bool` | native |
+| `layoutDirection` | property | `LayoutDirection` | native |
+| `maximumHeight` | property | `Double` | native |
+| `maximumWidth` | property | `Double` | native |
+| `minimumHeight` | property | `Double` | native |
+| `minimumWidth` | property | `Double` | native |
+| `opacity` | property | `Double` | native |
+| `pivotX` | property | `Double` | native |
+| `pivotY` | property | `Double` | native |
+| `rotation` | property | `Double` | native |
+| `rotationX` | property | `Double` | native |
+| `rotationY` | property | `Double` | native |
+| `scale` | property | `Double` | native |
+| `scaleX` | property | `Double` | native |
+| `scaleY` | property | `Double` | native |
+| `style` | property | `Name` | structure |
+| `translationX` | property | `Double` | native |
+| `translationY` | property | `Double` | native |
+| `unfocus` | act | `() -> Void` |  |
+| `onVisualStateChanged` (`visualStateChanged`) | event | `String` | stateUI |
+| `width` | property | `Double` | native |
+| `zIndex` | property | `Int` | native |

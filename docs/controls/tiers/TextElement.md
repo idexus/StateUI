@@ -1,14 +1,18 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # TextElement
 
-The tier for a control whose text IS a property: everything `TextStyleElement` has, plus the text itself.
+What every element showing words has: the words, and the case they are drawn in.
 
-Declared in `lib/StateUI/Sources/Views/TextElement.swift`.
+Wears: [TextStyleElement](TextStyleElement.md)
 
-Worn by: [Label](../Label.md) · [Button](../Button.md) · [TextField](../TextField.md) · [TextEditor](../TextEditor.md) · [SearchField](../SearchField.md) · [RadioButton](../RadioButton.md)
+Worn by: [Button](../Button.md) · [Label](../Label.md) · [RadioButton](../RadioButton.md) · [SearchField](../SearchField.md) · [Span](../Span.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/TextElementContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `text` | property |
-| `textCase` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `text` | property | `String` | native |
+| `textCase` | property | `TextCase` | native |

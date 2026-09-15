@@ -76,10 +76,11 @@ Treat one control, property, event, or host action as one vertical change:
 4. Implement every host claimed by the change, keeping native adapters thin.
 5. Add focused core tests and direct native-host tests.
 6. Add or update the smallest Gallery demonstration and handbook section.
-7. Regenerate the member lists with `python3 .scripts/controls-dictionary.py`,
-   and mark the exact rows in `platform-contract.md` and in the member's
-   `docs/controls/` file only after host tests pass; a `✅*` note says what is
-   still missing.
+7. Record each realized member in the host's declaration - `AppKitRealization`
+   or `MauiRealization` - only after host tests pass, a partial one saying what
+   is still missing; `STATEUI_UPDATE_DOCS=1 swift test --filter
+   ControlDictionaryTests` then writes `docs/controls/` and its counts. Mark the
+   rows of `platform-contract.md`'s own tables in the same change.
 
 Removing a capability follows the same path: remove stale vocabulary, host
 branches, tests, samples, and documentation together. Do not leave an inert

@@ -406,10 +406,16 @@ enum Fixtures {
     /// contracts, so the kind a contract declares, not the spelling, says it
     /// is a property.
     static func propertyKeys(in file: String) throws -> Set<String> {
+        propertyKeys(inSource: try text(in: file))
+    }
+
+    /// `propertyKeys(in:)` over a source's text, for a guard that reads every
+    /// source once.
+    static func propertyKeys(inSource text: String) -> Set<String> {
         // COMMENTS FIRST. The doc above every modifier quotes the spellings it
         // is about, and a scan that reads them would claim a property is
         // declared because a sentence mentioned it.
-        let source = try text(in: file)
+        let source = text
             .split(separator: "\n", omittingEmptySubsequences: false)
             .map { $0.drop(while: { $0 == " " }) }
             .filter { !$0.hasPrefix("//") }
@@ -431,7 +437,12 @@ enum Fixtures {
     /// whose whole body is an `addHandler` writes no property, so the modifier
     /// guard cannot see it at all. Two reached the shelf that way.
     static func handlerKeys(in file: String) throws -> Set<String> {
-        let source = try text(in: file)
+        handlerKeys(inSource: try text(in: file))
+    }
+
+    /// `handlerKeys(in:)` over a source's text.
+    static func handlerKeys(inSource text: String) -> Set<String> {
+        let source = text
             .split(separator: "\n", omittingEmptySubsequences: false)
             .map { $0.drop(while: { $0 == " " }) }
             .filter { !$0.hasPrefix("//") }
@@ -495,7 +506,11 @@ enum Fixtures {
     /// call wrapped over two lines is the same call, and a type visible only
     /// in the wrapped form would be one no guard ever asked about.
     static func nodeTypes(in file: String) throws -> Set<String> {
-        let source = try text(in: file)
+        nodeTypes(inSource: try text(in: file))
+    }
+
+    /// `nodeTypes(in:)` over a source's text.
+    static func nodeTypes(inSource source: String) -> Set<String> {
         let squeezed = source.components(separatedBy: .whitespacesAndNewlines).joined()
         var types: Set<String> = []
 

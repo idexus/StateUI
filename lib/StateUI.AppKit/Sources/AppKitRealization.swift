@@ -8,9 +8,10 @@
 /// application's structure - or a tier, the protocol an entry takes the member
 /// from; an entry's own record wins over its tier's. A member is recorded once
 /// this host realizes it and a test of this package covers it; `.partial` says
-/// what is still missing. `AppKitRealizationTests` holds the dictionary's
-/// AppKit column equal to these records, and
-/// `python3 .scripts/controls-dictionary.py` writes the column from them.
+/// what is still missing; an act is recorded where a test of this package
+/// performs it. `ControlDictionaryTests`, in the core's suite, reads these
+/// records, holds each to the contracts, and renders the dictionary's AppKit
+/// column from them.
 enum AppKitRealization {
     /// Realized in full.
     case complete(_ owner: String, _ member: String)
@@ -34,14 +35,17 @@ enum AppKitRealization {
         }
     }
 
-    /// The entries this host shows as unsupported, `AppKitUnsupportedView`:
-    /// none of their members is realized.
-    static let unrealized: Set<String> = ["Map", "PositionIndicator", "RefreshView", "SwipeView", "WebView"]
+    /// The entries this host shows as unsupported, `AppKitUnsupportedView`,
+    /// and the parts of one: none of their members is realized.
+    static let unrealized: Set<String> = [
+        "Map", "Pin", "PositionIndicator", "RefreshView", "SwipeAction", "SwipeActions", "SwipeView", "WebView",
+    ]
 
     /// The entries this host presents with no view of their own - a title
-    /// bar is the window's - so no tier's record reaches them: only a member
-    /// the entry's own records name is realized.
-    static let viewless: Set<String> = ["TitleBar"]
+    /// bar is the window's, a span a run of its label's text - so no tier's
+    /// record reaches them: only a member the entry's own records name is
+    /// realized.
+    static let viewless: Set<String> = ["Span", "TitleBar"]
 
     /// Every record, the tiers' first.
     static let records: [AppKitRealization] = [
@@ -86,6 +90,7 @@ enum AppKitRealization {
         .complete("View", "margin"),
         .partial("View", "panTouchCount", missing: "AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete("View", "panUpdated"),
+        .complete("View", "panXChannel"),
         .complete("View", "pinchUpdated"),
         .complete("View", "pointerEntered"),
         .complete("View", "pointerExited"),
@@ -102,6 +107,7 @@ enum AppKitRealization {
         .complete("VisualElement", "accessibilityHint"),
         .complete("VisualElement", "accessibilityLabel"),
         .complete("VisualElement", "automationExcludedWithChildren"),
+        .complete("VisualElement", "focus"),
         .complete("VisualElement", "frame"),
         .complete("VisualElement", "height"),
         .complete("VisualElement", "isAccessibilityHidden"),
@@ -122,6 +128,7 @@ enum AppKitRealization {
         .complete("VisualElement", "scaleY"),
         .complete("VisualElement", "translationX"),
         .complete("VisualElement", "translationY"),
+        .complete("VisualElement", "unfocus"),
         .complete("VisualElement", "width"),
 
         // MARK: Entries - a control's or a part's own, and where it differs from its tier
@@ -131,6 +138,9 @@ enum AppKitRealization {
         .complete("ActivityIndicator", "accessibilityIdentifier"),
         .partial("ActivityIndicator", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by `Border`."),
         .complete("ActivityIndicator", "isRunning"),
+        .complete("Application", "hideOnScreenKeyboard"),
+        .complete("Application", "persistSceneValue"),
+        .complete("Application", "persistValue"),
         .complete("Border", "accessibilityIdentifier"),
         .complete("Border", "background"),
         .complete("Border", "ignoresInput"),
@@ -158,8 +168,11 @@ enum AppKitRealization {
         .complete("Button", "textColor"),
         .complete("Canvas", "accessibilityIdentifier"),
         .partial("Canvas", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by `Border`."),
+        .complete("Canvas", "dragged"),
         .complete("Canvas", "drawable"),
         .complete("Canvas", "ignoresInput"),
+        .complete("Canvas", "pressed"),
+        .complete("Canvas", "released"),
         .complete("CheckBox", "accessibilityIdentifier"),
         .partial("CheckBox", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by `Border`."),
         .complete("CheckBox", "isEnabled"),
@@ -202,6 +215,7 @@ enum AppKitRealization {
         .partial("Image", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by `Border`."),
         .complete("Image", "ignoresInput"),
         .complete("Image", "isAnimating"),
+        .complete("Image", "source"),
         .complete("Label", "accessibilityIdentifier"),
         .partial("Label", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by `Border`."),
         .complete("Label", "characterSpacing"),
@@ -226,6 +240,7 @@ enum AppKitRealization {
         .complete("Line", "y1"),
         .complete("Line", "y2"),
         .complete("Menu", "isEnabled"),
+        .complete("Menu", "text"),
         .partial("MenuItem", "accessibilityIdentifier", missing: "Only an entry of a context menu carries it; an entry the page puts in the menu bar does not."),
         .complete("MenuItem", "isDestructive"),
         .complete("NavigationStack", "accessibilityIdentifier"),
@@ -309,7 +324,10 @@ enum AppKitRealization {
         .complete("ScrollView", "horizontalScrollBarVisibility"),
         .complete("ScrollView", "orientation"),
         .complete("ScrollView", "padding"),
+        .complete("ScrollView", "scrollOffset"),
         .complete("ScrollView", "scrollStopped"),
+        .complete("ScrollView", "scrollXChanged"),
+        .complete("ScrollView", "scrollYChanged"),
         .complete("ScrollView", "verticalScrollBarVisibility"),
         .complete("SearchField", "accessibilityIdentifier"),
         .partial("SearchField", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by `Border`."),
@@ -330,6 +348,9 @@ enum AppKitRealization {
         .complete("Slider", "tint"),
         .complete("Slider", "value"),
         .complete("Slider", "valueChanged"),
+        .complete("Span", "fontAttributes"),
+        .complete("Span", "text"),
+        .complete("Span", "textCase"),
         .complete("SplitView", "accessibilityIdentifier"),
         .complete("SplitView", "isSidebarVisibleChanged"),
         .complete("Stepper", "accessibilityIdentifier"),
@@ -380,6 +401,7 @@ enum AppKitRealization {
         .complete("TitleBar", "barForegroundColor"),
         .complete("TitleBar", "icon"),
         .complete("TitleBar", "subtitle"),
+        .complete("TitleBar", "title"),
         .complete("ToolbarItem", "placement"),
         .complete("ToolbarItem", "priority"),
         .complete("VStack", "accessibilityIdentifier"),

@@ -5,8 +5,8 @@
 // every node type is one element's, every property and event of the ownership
 // table a member, every act a member of exactly one contract; the platform
 // contract's vocabulary is the contracts' own, and every name its tables use is
-// in the contract; every row of the control dictionary is a member, of the
-// row's kind, of a contract its entry describes.
+// in the contract; every member a source writes or hears is a member, of that
+// kind, of a contract the source describes.
 
 import Foundation
 import XCTest
@@ -142,110 +142,92 @@ final class CompleteContractTests: XCTestCase {
         XCTAssertEqual(stranger, [], "a name the platform contract uses that the contract does not declare")
     }
 
-    // MARK: - The control dictionary
+    // MARK: - The sources
 
-    /// Every row of the control dictionary is a member of a contract its entry
-    /// describes, of the kind its row says: an entry's own rows belong to the
-    /// node types its sources build, a section taken from a tier to that tier,
-    /// and a tier's own file to the tier.
-    func testEveryDictionaryRowIsAMember() throws {
-        let folder = Fixtures.repository.appendingPathComponent("docs/controls")
-        let tiers = Dictionary(uniqueKeysWithValues: LibraryContracts.tiers.map { ($0.name, $0) })
+    /// Every member a view's source writes or hears is a member, of that kind,
+    /// of a contract the source describes or of a tier that contract wears: an
+    /// element's file writes its own contract's members and its tiers', a
+    /// tier's file its tier's. A source describes the elements whose node
+    /// types it builds and the contracts its protocols and extensions name;
+    /// the few writing for an element they neither build nor extend are in
+    /// `describing`.
+    func testEverySourceWritesOnlyMembersOfWhatItDescribes() throws {
+        let contracts = Dictionary(LibraryContracts.all.map { ($0.name, $0) }, uniquingKeysWith: { first, _ in first })
         var wrong: [String] = []
+        var read = 0
 
-        for file in try FileManager.default.contentsOfDirectory(atPath: folder.path).sorted()
-        where file.hasSuffix(".md") && file != "README.md" {
-            let entry = String(file.dropLast(3))
-            let text = try String(contentsOf: folder.appendingPathComponent(file), encoding: .utf8)
-            var built: Set<String> = [entry]
+        for source in try Fixtures.allSources()
+        where source.path.hasPrefix("Views/") || Self.describing[source.path] != nil {
+            let properties = Fixtures.propertyKeys(inSource: source.text)
+            let events = Fixtures.handlerKeys(inSource: source.text)
 
-            for source in Self.declaredIn(text) {
-                built.formUnion(try Fixtures.nodeTypes(in: source))
+            guard !properties.isEmpty || !events.isEmpty else { continue }
+
+            let described = Fixtures.nodeTypes(inSource: source.text)
+                .union(Self.describing[source.path] ?? [])
+                .union(Self.extended(in: source.text))
+            let owners = described.compactMap { contracts[$0] }.flatMap { $0.worn }
+
+            read += 1
+
+            guard !owners.isEmpty else {
+                wrong.append("\(source.path): describes no contract")
+                continue
             }
 
-            let own = LibraryContracts.elements
-                .filter { built.contains($0.nodeType.name) }
-                .flatMap { $0.worn }
+            for name in properties.sorted() where !Self.declares(name, .property, in: owners) {
+                wrong.append("\(source.path): property `\(name)`")
+            }
 
-            for (heading, rows) in Self.sections(of: text) {
-                let owners: [any Contract.Type]
-
-                if heading == "## \(entry)'s own members" {
-                    owners = own
-                } else if heading.hasPrefix("## From ["),
-                          let tier = tiers[String(heading.dropFirst("## From [".count).prefix { $0 != "]" })] {
-                    owners = [tier]
-                } else {
-                    continue
-                }
-
-                for row in rows where !Self.declares(row, in: owners) {
-                    wrong.append("\(entry) \(heading.dropFirst(3)): \(row.kind) `\(row.token)`")
-                }
+            for name in events.sorted() where !Self.declares(name, .event, in: owners) {
+                wrong.append("\(source.path): event `\(name)`")
             }
         }
 
-        for (name, tier) in tiers {
-            let path = folder.appendingPathComponent("tiers/\(name).md")
-            guard let text = try? String(contentsOf: path, encoding: .utf8) else { continue }
-
-            for row in Self.sections(of: text).flatMap(\.rows) where !Self.declares(row, in: [tier]) {
-                wrong.append("tiers/\(name): \(row.kind) `\(row.token)`")
-            }
-        }
-
-        XCTAssertEqual(wrong, [], "a dictionary row no contract its entry describes declares")
+        XCTAssertGreaterThan(read, 30, "the scan read almost nothing")
+        XCTAssertEqual(wrong, [], "a member a source writes that no contract it describes declares")
     }
 
     // MARK: - Support
 
-    /// One member row of the dictionary: its token and its kind.
-    private struct Row {
-        let token: String
-        let kind: String
+    /// The sources that write for an element they neither build by its node
+    /// type nor extend: the scene's handlers and the window's and the page's
+    /// properties, written where a session keeps them, and the placed layout,
+    /// a composition over an `AbsoluteLayout` placing its children.
+    private static let describing: [String: [String]] = [
+        "Core/Scenes.swift": ["Scene", "Window"],
+        "Types/HostEnvironment.swift": ["Window"],
+        "Types/PageSession.swift": ["Page"],
+        "Views/Application.swift": ["Window", "Page"],
+        "Views/PlacedLayout.swift": ["AbsoluteLayout"],
+    ]
+
+    /// The contracts a source names by its protocols and extensions -
+    /// `extension FontElement`, `public protocol ViewProperties`, a tier's
+    /// `…Properties` spelling read as the tier - and by the contract it builds
+    /// a node from, `Node(contract: LabelContract.self)`.
+    private static func extended(in source: String) -> Set<String> {
+        var names: Set<String> = []
+
+        for pattern in [#"^(?:public )?(?:protocol|extension) (\w+)"#, #"Node\(contract:\s*(\w+)Contract\.self"#] {
+            let regex = try! NSRegularExpression(pattern: pattern, options: .anchorsMatchLines)
+
+            for match in regex.matches(in: source, range: NSRange(source.startIndex..., in: source)) {
+                let name = String(source[Range(match.range(at: 1), in: source)!])
+                names.insert(name.hasSuffix("Properties") ? String(name.dropLast("Properties".count)) : name)
+            }
+        }
+
+        return names
     }
 
-    /// Whether a row is a member of one of the contracts, of the row's kind -
-    /// a handler row an event, a property row a property.
-    private static func declares(_ row: Row, in contracts: [any Contract.Type]) -> Bool {
-        let kind: MemberFacts.Kind = row.kind == "handler" ? .event : .property
-
-        return contracts.contains { contract in
+    /// Whether one of the contracts declares a member of that name and kind.
+    private static func declares(_ name: String, _ kind: MemberFacts.Kind, in contracts: [any Contract.Type]) -> Bool {
+        contracts.contains { contract in
             contract.members.contains { member in
-                member.name == row.token && (member as? any DeclaredMember)?.facts.kind == kind
+                member.name == name && (member as? any DeclaredMember)?.facts.kind == kind
             }
         }
-    }
-
-    /// Every `## ` section of a dictionary file, with its member rows.
-    private static func sections(of text: String) -> [(heading: String, rows: [Row])] {
-        var result: [(heading: String, rows: [Row])] = []
-
-        for line in text.components(separatedBy: "\n") {
-            if line.hasPrefix("## ") {
-                result.append((line, []))
-            } else if line.hasPrefix("| `"), !result.isEmpty {
-                let cells = line.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespaces) }
-                let token = cells[1].split(separator: "`").map(String.init)
-                    .filter { !$0.contains("(") && !$0.contains(")") && !$0.trimmingCharacters(in: .whitespaces).isEmpty }
-                    .last ?? cells[1]
-                result[result.count - 1].rows.append(Row(token: token, kind: cells[2]))
-            }
-        }
-
-        return result
-    }
-
-    /// The sources a dictionary file says its members are declared in, as
-    /// paths under lib/StateUI/Sources.
-    private static func declaredIn(_ text: String) -> [String] {
-        let prefix = "lib/StateUI/Sources/"
-
-        guard let line = text.components(separatedBy: "\n").first(where: { $0.hasPrefix("Declared in ") }) else {
-            return []
-        }
-
-        return line.components(separatedBy: "`").filter { $0.hasPrefix(prefix) }.map { String($0.dropFirst(prefix.count)) }
     }
 
     private static func platformContract() throws -> String {

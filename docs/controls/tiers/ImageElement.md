@@ -1,13 +1,17 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # ImageElement
 
-The artwork half shared by `Image` and `Button`.
+How a picture fills the room it was given.
 
-Declared in `lib/StateUI/Sources/Views/ImageElement.swift`.
+Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Button](../Button.md) · [Image](../Image.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/ImageElementContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `aspect` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `aspect` | property | `Aspect` | native |

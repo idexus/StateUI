@@ -1,16 +1,20 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # FontElement
 
-How the text of a control is set in type - its size, its family, its weight.
+The font text is drawn in: its family, its size, its weight and slant, and whether it follows the reader's text-size setting.
 
-Declared in `lib/StateUI/Sources/Views/FontElement.swift`.
+Wears: [PropertyContainer](PropertyContainer.md)
 
-Worn by: [Label](../Label.md) · [Button](../Button.md) · [TextField](../TextField.md) · [TextEditor](../TextEditor.md) · [SearchField](../SearchField.md) · [Picker](../Picker.md) · [DatePicker](../DatePicker.md) · [TimePicker](../TimePicker.md) · [RadioButton](../RadioButton.md)
+Worn by: [Button](../Button.md) · [DatePicker](../DatePicker.md) · [Label](../Label.md) · [Picker](../Picker.md) · [RadioButton](../RadioButton.md) · [SearchField](../SearchField.md) · [Span](../Span.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/FontElementContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `fontAttributes` | property |
-| `fontAutoScalingEnabled` | property |
-| `fontFamily` | property |
-| `fontSize` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `fontAttributes` | property | `FontAttributes` | native |
+| `fontAutoScalingEnabled` | property | `Bool` | adaptive |
+| `fontFamily` | property | `Name` | native |
+| `fontSize` | property | `Double` | native |

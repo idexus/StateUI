@@ -1,19 +1,23 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # ToolbarItem
 
 An action in the page's native navigation or toolbar surface.
+
+Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](tiers/MenuItemElement.md)
 
 Marks: ✅ realized by that host and covered by its tests · ✅* realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
 
-Declared in `lib/StateUI/Sources/Views/ToolbarItem.swift`.
+Declared in `lib/StateUI/Sources/Contracts/Elements/ToolbarItemContract.swift`.
 
 ## ToolbarItem's own members
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `placement` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `priority` | property | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `placement` | property | `ToolbarItemPlacement` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `priority` | property | `Int` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
 
 Realization:
 
@@ -27,20 +31,20 @@ Realization:
 
 ## From [PropertyContainer](tiers/PropertyContainer.md)
 
-Anything carrying property values, whether or not it is drawn - a control, a `Style`, a `TextSpan`.
+What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | ✅ |  |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  |  |  |  |  |  |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
-What a toolbar item, a menu entry and a swipe action all share: `text`, `icon`, `isDestructive`, `isEnabled` - and `onClicked`, what choosing one does.
+What every item a reader chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClicked` (`clicked`) | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `icon` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `isDestructive` | property | ✅ |  |  |  |  |  |  |  |
-| `isEnabled` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `text` | property | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `onClicked` (`clicked`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
+| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `isDestructive` | property | `Bool` | adaptive | ✅ |  |  |  |  |  |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `text` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |

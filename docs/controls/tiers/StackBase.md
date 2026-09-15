@@ -1,13 +1,17 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # StackBase
 
-A layout that stacks its children in one direction.
+What both stacks have: the space between their children.
 
-Declared in `lib/StateUI/Sources/Views/Elements.swift`.
+Wears: [Layout](Layout.md)
 
-Worn by: [VStack](../VStack.md) · [HStack](../HStack.md)
+Worn by: [HStack](../HStack.md) · [VStack](../VStack.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/StackBaseContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `spacing` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `spacing` | property | `Double` | native |

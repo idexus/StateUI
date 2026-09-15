@@ -1,89 +1,129 @@
 # Control dictionary
 
-Every control StateUI ships, and every part an application, its windows and its pages are made of, member by member, with how far each target host realizes it.
+Every element StateUI declares - each control, and each part an application, its windows and its pages are made of - member by member, with how far each target host realizes it.
 
-An entry's file opens with the members it declares itself, then one section per protocol it inherits, each linking that protocol's file. Every property and handler carries a mark for each platform, because a host realizes the same inherited member differently on different controls - a background is a layer colour on a label and a path fill on a border.
+A page is its element's contract rendered: the members it declares itself, then one section per tier it wears, each linking that tier's page. Every member shows its kind - a property, an event or an act - its value, the layer that realizes it, and a mark for each platform, because a host realizes the same inherited member differently on different elements: a background is a layer colour on a label and a path fill on a border.
 
 Marks: ✅ realized by that host and covered by its tests · ✅* realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet.
 
-A host's column is what that host declares it realizes - AppKit's is `AppKitRealization` and MAUI's is `MauiRealization`, each in its host's sources - and a realization records itself there in the same change. A row has one Notes cell for every host: AppKit's note as written, then each other host's as `MAUI: …`, joined by `; `. `ControlDictionaryTests` fails when a file's members differ from the code, when a ✅* has no note, or when a file is missing; `AppKitRealizationTests` and `MauiRealizationTests` fail when their host's column or note differs from its records. `python3 .scripts/controls-dictionary.py` rewrites the member lists and the columns, keeping every realization line already written.
+A host's column is what that host declares it realizes - AppKit's `AppKitRealization` and MAUI's `MauiRealization`, each in its host's sources - and a realization records itself there in the same change. A row has one Notes cell for every host: AppKit's note as written, then each other host's as `MAUI: …`, joined by `; `. Nothing on a page is written by hand: `ControlDictionaryTests` fails when a page or a table below differs from the contracts and the declarations, or when a declaration names what no contract declares, and `STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests` writes them again.
 
 ## Controls
 
+The elements a layout positions - every one wears [View](tiers/View.md).
+
+<!-- controls:begin -->
 | Control | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Label](Label.md) | 78 | 77 ✅ | 63 ✅ · 2 ✅* |  |  |  |  |  |
-| [Button](Button.md) | 83 | 81 ✅ | 64 ✅ · 3 ✅* |  |  |  |  |  |
-| [TextField](TextField.md) | 87 | 86 ✅ | 66 ✅ · 2 ✅* |  |  |  |  |  |
-| [TextEditor](TextEditor.md) | 84 | 83 ✅ | 65 ✅ · 2 ✅* |  |  |  |  |  |
-| [SearchField](SearchField.md) | 86 | 85 ✅ | 65 ✅ · 2 ✅* |  |  |  |  |  |
-| [Image](Image.md) | 65 | 64 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
-| [Picker](Picker.md) | 79 | 78 ✅ | 62 ✅ · 2 ✅* |  |  |  |  |  |
-| [DatePicker](DatePicker.md) | 77 | 76 ✅ | 57 ✅ · 2 ✅* |  |  |  |  |  |
-| [TimePicker](TimePicker.md) | 75 | 74 ✅ | 55 ✅ · 2 ✅* |  |  |  |  |  |
-| [Switch](Switch.md) | 66 | 65 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
-| [CheckBox](CheckBox.md) | 66 | 65 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
-| [RadioButton](RadioButton.md) | 78 | 77 ✅ | 59 ✅ · 2 ✅* |  |  |  |  |  |
-| [Slider](Slider.md) | 70 | 69 ✅ | 56 ✅ · 2 ✅* |  |  |  |  |  |
-| [Stepper](Stepper.md) | 68 | 67 ✅ | 54 ✅ · 2 ✅* |  |  |  |  |  |
-| [ActivityIndicator](ActivityIndicator.md) | 65 | 64 ✅ | 49 ✅ · 2 ✅* |  |  |  |  |  |
-| [ProgressBar](ProgressBar.md) | 65 | 64 ✅ | 49 ✅ · 2 ✅* |  |  |  |  |  |
-| [ColorBox](ColorBox.md) | 65 | 64 ✅ | 51 ✅ · 2 ✅* |  |  |  |  |  |
-| [Border](Border.md) | 72 | 71 ✅ | 53 ✅ · 2 ✅* |  |  |  |  |  |
-| [PositionIndicator](PositionIndicator.md) | 71 | 70 ✅ |  |  |  |  |  |  |
-| [VStack](VStack.md) | 68 | 67 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
-| [HStack](HStack.md) | 68 | 67 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
-| [Grid](Grid.md) | 71 | 70 ✅ | 55 ✅ · 2 ✅* |  |  |  |  |  |
-| [AbsoluteLayout](AbsoluteLayout.md) | 67 | 66 ✅ | 50 ✅ · 2 ✅* |  |  |  |  |  |
-| [ScrollView](ScrollView.md) | 68 | 67 ✅ | 53 ✅ · 2 ✅* |  |  |  |  |  |
-| [RefreshView](RefreshView.md) | 67 | 66 ✅ |  |  |  |  |  |  |
-| [SwipeView](SwipeView.md) | 68 | 67 ✅ |  |  |  |  |  |  |
-| [Map](Map.md) | 75 | 62 ✅ · 12 ✅* |  |  |  |  |  |  |
-| [WebView](WebView.md) | 70 | 69 ✅ |  |  |  |  |  |  |
-| [TitleBar](TitleBar.md) | 66 | 65 ✅ | 3 ✅ · 1 ✅* |  |  |  |  |  |
-| [Canvas](Canvas.md) | 64 | 63 ✅ | 50 ✅ · 2 ✅* |  |  |  |  |  |
-| [Rectangle](Rectangle.md) | 74 | 73 ✅ | 57 ✅ · 3 ✅* |  |  |  |  |  |
-| [Ellipse](Ellipse.md) | 73 | 72 ✅ | 56 ✅ · 3 ✅* |  |  |  |  |  |
-| [Line](Line.md) | 77 | 76 ✅ | 62 ✅ · 3 ✅* |  |  |  |  |  |
-| [Path](Path.md) | 74 | 73 ✅ | 59 ✅ · 3 ✅* |  |  |  |  |  |
-| [Polygon](Polygon.md) | 75 | 74 ✅ | 60 ✅ · 3 ✅* |  |  |  |  |  |
-| [Polyline](Polyline.md) | 75 | 74 ✅ | 60 ✅ · 3 ✅* |  |  |  |  |  |
+| [AbsoluteLayout](AbsoluteLayout.md) | 72 | 69 ✅ | 53 ✅ · 2 ✅* |  |  |  |  |  |
+| [ActivityIndicator](ActivityIndicator.md) | 70 | 67 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
+| [Border](Border.md) | 77 | 74 ✅ | 56 ✅ · 2 ✅* |  |  |  |  |  |
+| [Button](Button.md) | 88 | 84 ✅ | 67 ✅ · 3 ✅* |  |  |  |  |  |
+| [Canvas](Canvas.md) | 72 | 69 ✅ | 56 ✅ · 2 ✅* |  |  |  |  |  |
+| [CheckBox](CheckBox.md) | 71 | 68 ✅ | 55 ✅ · 2 ✅* |  |  |  |  |  |
+| [ColorBox](ColorBox.md) | 70 | 67 ✅ | 54 ✅ · 2 ✅* |  |  |  |  |  |
+| [DatePicker](DatePicker.md) | 82 | 79 ✅ | 60 ✅ · 2 ✅* |  |  |  |  |  |
+| [Ellipse](Ellipse.md) | 78 | 75 ✅ | 59 ✅ · 3 ✅* |  |  |  |  |  |
+| [Grid](Grid.md) | 76 | 73 ✅ | 58 ✅ · 2 ✅* |  |  |  |  |  |
+| [HStack](HStack.md) | 73 | 70 ✅ | 55 ✅ · 2 ✅* |  |  |  |  |  |
+| [Image](Image.md) | 71 | 68 ✅ | 55 ✅ · 2 ✅* |  |  |  |  |  |
+| [Label](Label.md) | 83 | 80 ✅ | 66 ✅ · 2 ✅* |  |  |  |  |  |
+| [Line](Line.md) | 82 | 79 ✅ | 65 ✅ · 3 ✅* |  |  |  |  |  |
+| [Map](Map.md) | 76 | 65 ✅ · 6 ✅* |  |  |  |  |  |  |
+| [Path](Path.md) | 79 | 76 ✅ | 62 ✅ · 3 ✅* |  |  |  |  |  |
+| [Picker](Picker.md) | 84 | 81 ✅ | 65 ✅ · 2 ✅* |  |  |  |  |  |
+| [Polygon](Polygon.md) | 80 | 77 ✅ | 63 ✅ · 3 ✅* |  |  |  |  |  |
+| [Polyline](Polyline.md) | 80 | 77 ✅ | 63 ✅ · 3 ✅* |  |  |  |  |  |
+| [PositionIndicator](PositionIndicator.md) | 76 | 73 ✅ |  |  |  |  |  |  |
+| [ProgressBar](ProgressBar.md) | 70 | 67 ✅ | 52 ✅ · 2 ✅* |  |  |  |  |  |
+| [RadioButton](RadioButton.md) | 83 | 80 ✅ | 62 ✅ · 2 ✅* |  |  |  |  |  |
+| [Rectangle](Rectangle.md) | 79 | 76 ✅ | 60 ✅ · 3 ✅* |  |  |  |  |  |
+| [RefreshView](RefreshView.md) | 73 | 70 ✅ |  |  |  |  |  |  |
+| [ScrollView](ScrollView.md) | 76 | 72 ✅ | 59 ✅ · 2 ✅* |  |  |  |  |  |
+| [SearchField](SearchField.md) | 91 | 88 ✅ | 68 ✅ · 2 ✅* |  |  |  |  |  |
+| [Slider](Slider.md) | 75 | 72 ✅ | 59 ✅ · 2 ✅* |  |  |  |  |  |
+| [Stepper](Stepper.md) | 73 | 70 ✅ | 57 ✅ · 2 ✅* |  |  |  |  |  |
+| [SwipeView](SwipeView.md) | 72 | 69 ✅ |  |  |  |  |  |  |
+| [Switch](Switch.md) | 71 | 68 ✅ | 54 ✅ · 2 ✅* |  |  |  |  |  |
+| [TextEditor](TextEditor.md) | 89 | 86 ✅ | 68 ✅ · 2 ✅* |  |  |  |  |  |
+| [TextField](TextField.md) | 92 | 89 ✅ | 69 ✅ · 2 ✅* |  |  |  |  |  |
+| [TimePicker](TimePicker.md) | 80 | 77 ✅ | 58 ✅ · 2 ✅* |  |  |  |  |  |
+| [TitleBar](TitleBar.md) | 72 | 69 ✅ | 4 ✅ · 1 ✅* |  |  |  |  |  |
+| [VStack](VStack.md) | 73 | 70 ✅ | 55 ✅ · 2 ✅* |  |  |  |  |  |
+| [WebView](WebView.md) | 79 | 72 ✅ |  |  |  |  |  |  |
+<!-- controls:end -->
 
 ## Application structure
 
-The scene, the window and the page an application is made of, the arrangements a page can be, and the entries of a page's toolbar and menus.
+The scene, the window and the page an application is made of, the arrangements a page can be, the entries of its toolbar and menus, and the slots and parts the others hold.
 
+<!-- structure:begin -->
 | Part | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Scene](Scene.md) | 6 | 6 ✅ | 6 ✅ |  |  |  |  |  |
-| [Window](Window.md) | 23 | 20 ✅ · 1 ✅* | 23 ✅ |  |  |  |  |  |
-| [Page](Page.md) | 12 | 12 ✅ | 12 ✅ |  |  |  |  |  |
-| [NavigationStack](NavigationStack.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |
-| [TabbedView](TabbedView.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |
-| [SplitView](SplitView.md) | 4 | 3 ✅ | 4 ✅ |  |  |  |  |  |
-| [ToolbarItem](ToolbarItem.md) | 8 | 8 ✅ | 6 ✅ |  |  |  |  |  |
-| [Menu](Menu.md) | 1 | 1 ✅ | 1 ✅ |  |  |  |  |  |
+| [Application](Application.md) | 12 | 5 ✅ | 3 ✅ |  |  |  |  |  |
+| [Content](Content.md) | 0 |  |  |  |  |  |  |  |
+| [ContextMenu](ContextMenu.md) | 0 |  |  |  |  |  |  |  |
+| [LeadingContent](LeadingContent.md) | 0 |  |  |  |  |  |  |  |
+| [Menu](Menu.md) | 2 | 2 ✅ | 2 ✅ |  |  |  |  |  |
+| [MenuBar](MenuBar.md) | 0 |  |  |  |  |  |  |  |
 | [MenuItem](MenuItem.md) | 6 | 5 ✅ | 5 ✅ · 1 ✅* |  |  |  |  |  |
+| [MenuSeparator](MenuSeparator.md) | 0 |  |  |  |  |  |  |  |
+| [ModalStack](ModalStack.md) | 0 |  |  |  |  |  |  |  |
+| [NavigationStack](NavigationStack.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |
+| [Overlay](Overlay.md) | 0 |  |  |  |  |  |  |  |
+| [Page](Page.md) | 12 | 12 ✅ | 12 ✅ |  |  |  |  |  |
+| [Pin](Pin.md) | 6 | 0 ✅ · 6 ✅* |  |  |  |  |  |  |
+| [Scene](Scene.md) | 6 | 6 ✅ | 6 ✅ |  |  |  |  |  |
+| [Setters](Setters.md) | 0 |  |  |  |  |  |  |  |
+| [Span](Span.md) | 12 | 11 ✅ | 3 ✅ |  |  |  |  |  |
+| [Spans](Spans.md) | 0 |  |  |  |  |  |  |  |
+| [SplitView](SplitView.md) | 5 | 4 ✅ | 4 ✅ |  |  |  |  |  |
+| [SwipeAction](SwipeAction.md) | 8 | 7 ✅ |  |  |  |  |  |  |
+| [SwipeActions](SwipeActions.md) | 3 | 3 ✅ |  |  |  |  |  |  |
+| [TabbedView](TabbedView.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |
+| [TitleView](TitleView.md) | 0 |  |  |  |  |  |  |  |
+| [ToolbarItem](ToolbarItem.md) | 8 | 8 ✅ | 6 ✅ |  |  |  |  |  |
+| [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |  |
+| [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |  |
+| [VisualState](VisualState.md) | 2 | 2 ✅ |  |  |  |  |  |  |
+| [Window](Window.md) | 23 | 20 ✅ · 1 ✅* | 23 ✅ |  |  |  |  |  |
+<!-- structure:end -->
 
 ## Tiers
 
-- [BarElement](tiers/BarElement.md) - The bar over a stack or a set of tabs.
-- [BorderElement](tiers/BorderElement.md) - The outline of a control that draws one - the tier `Button` and `RadioButton` wear, and the one place the three properties that paint an outline are declared.
-- [DecorableTextElement](tiers/DecorableTextElement.md) - A line under the text, through it, or both - the tier `Label` and `TextSpan` both wear.
-- [FontElement](tiers/FontElement.md) - How the text of a control is set in type - its size, its family, its weight.
-- [ImageElement](tiers/ImageElement.md) - The artwork half shared by `Image` and `Button`.
-- [InputView](tiers/InputView.md) - A View the reader types into.
-- [Layout](tiers/Layout.md) - A view that arranges children.
-- [LineHeightElement](tiers/LineHeightElement.md) - The height of a text line, relative to the font's own - the tier `Label` and `TextSpan` both wear.
-- [MenuItemElement](tiers/MenuItemElement.md) - What a toolbar item, a menu entry and a swipe action all share: `text`, `icon`, `isDestructive`, `isEnabled` - and `onClicked`, what choosing one does.
-- [PaddingElement](tiers/PaddingElement.md) - The space a control keeps INSIDE itself, around its content.
-- [PageElement](tiers/PageElement.md) - The identity shown for a constructed container page.
-- [PropertyContainer](tiers/PropertyContainer.md) - Anything carrying property values, whether or not it is drawn - a control, a `Style`, a `TextSpan`.
-- [Shape](tiers/Shape.md) - A drawn outline.
-- [StackBase](tiers/StackBase.md) - A layout that stacks its children in one direction.
-- [TextAlignmentElement](tiers/TextAlignmentElement.md) - Where a control's text sits INSIDE the control.
-- [TextElement](tiers/TextElement.md) - The tier for a control whose text IS a property: everything `TextStyleElement` has, plus the text itself.
-- [TextStyleElement](tiers/TextStyleElement.md) - The colour and letter spacing of a control's text, WITHOUT the text itself.
-- [TintElement](tiers/TintElement.md) - A control's accent: the colour the platform draws what is chosen, filled or under way in - a switch that is on, the covered part of a slider, a ticked box, the filled part of a bar, a spinner.
-- [View](tiers/View.md) - A VisualElement a layout positions.
-- [VisualElement](tiers/VisualElement.md) - A control backed by a node, and drawn.
+Members many elements share, declared once.
+
+<!-- tiers:begin -->
+- [PropertyContainer](tiers/PropertyContainer.md) - What anything carrying values in the tree has - a control, a `Style`, a text run: the name automation finds it by.
+- [VisualElement](tiers/VisualElement.md) - What every drawn element has: its size and its bounds, how it is shown and turned, whether it answers input and holds the keyboard focus, the visual states it enters, and what a screen reader says about it.
+- [View](tiers/View.md) - What every view a layout positions has: where it sits in its layout, the space kept around it, and the gestures, drags and frame reports it answers.
+- [Layout](tiers/Layout.md) - What every layout has: the screen's unsafe strips it keeps clear of, and whether its children are clipped or let input through.
+- [StackBase](tiers/StackBase.md) - What both stacks have: the space between their children.
+- [InputView](tiers/InputView.md) - What every field a reader types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
+- [Shape](tiers/Shape.md) - What every drawn shape has: what fills it, the line around it, how it fits its room, and a transform of its own drawing.
+- [TextElement](tiers/TextElement.md) - What every element showing words has: the words, and the case they are drawn in.
+- [TextStyleElement](tiers/TextStyleElement.md) - How text looks wherever it is drawn: its colour and the space between its letters.
+- [FontElement](tiers/FontElement.md) - The font text is drawn in: its family, its size, its weight and slant, and whether it follows the reader's text-size setting.
+- [TextAlignmentElement](tiers/TextAlignmentElement.md) - Where text sits inside the space its own element was given.
+- [LineHeightElement](tiers/LineHeightElement.md) - How far apart the lines of text are.
+- [DecorableTextElement](tiers/DecorableTextElement.md) - The lines drawn through or under text.
+- [PaddingElement](tiers/PaddingElement.md) - The space kept inside an element, around what it holds.
+- [BorderElement](tiers/BorderElement.md) - The line around a control's own box, and how round its corners are.
+- [ImageElement](tiers/ImageElement.md) - How a picture fills the room it was given.
+- [TintElement](tiers/TintElement.md) - A control's one accent colour.
+- [BarElement](tiers/BarElement.md) - The bar a page arrangement draws: its colour.
+- [MenuItemElement](tiers/MenuItemElement.md) - What every item a reader chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
+- [PageElement](tiers/PageElement.md) - What a page shows about itself where another container presents it as an item - a title and a picture.
+<!-- tiers:end -->
+
+## Layers
+
+Which layer realizes an element or a member - the word each page and each row uses.
+
+<!-- layers:begin -->
+- `native` - Every base host presents it with its native toolkit.
+- `adaptive` - Every base host presents it by its platform's conventions, keeping StateUI's state contract.
+- `stateUI` - StateUI composes it from smaller primitives before a host receives the tree.
+- `structure` - It carries structure or protocol data rather than configuring a visual platform object.
+- `provider` - An optional provider supplies it: a package, or the application that registers it with its hosts.
+<!-- layers:end -->

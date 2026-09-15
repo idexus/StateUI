@@ -1,40 +1,44 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # Window
 
 A window onto a page.
+
+Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
 Inherits nothing: every member below is its own.
 
 Marks: ✅ realized by that host and covered by its tests · ✅* realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
 
-Declared in `lib/StateUI/Sources/Views/Application.swift`, `lib/StateUI/Sources/Types/HostEnvironment.swift` and `lib/StateUI/Sources/Core/Scenes.swift`.
+Declared in `lib/StateUI/Sources/Contracts/Elements/WindowContract.swift`.
 
 ## Window's own members
 
-| Member | Kind | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
-| --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `activated` | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `created` | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `deactivated` | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `destroying` | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `floatsOnTop` | property | ✅* | ✅ |  |  |  |  |  | MAUI: Only Mac Catalyst keeps the window on top; Windows and Linux leave it among the others. |
-| `height` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `hidesWhenInactive` | property |  | ✅ |  |  |  |  |  |  |
-| `isMaximizable` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `isMinimizable` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `isTranslucent` | property |  | ✅ |  |  |  |  |  |  |
-| `maximumHeight` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `maximumWidth` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `minimumHeight` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `minimumWidth` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `modalPopped` | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `resumed` | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `stopped` | handler | ✅ | ✅ |  |  |  |  |  |  |
-| `title` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `width` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `windowType` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `windowValue` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `x` | property | ✅ | ✅ |  |  |  |  |  |  |
-| `y` | property | ✅ | ✅ |  |  |  |  |  |  |
+| Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
+| --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
+| `activated` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `created` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `deactivated` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `destroying` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `floatsOnTop` | property | `Bool` | adaptive | ✅* | ✅ |  |  |  |  |  | MAUI: Only Mac Catalyst keeps the window on top; Windows and Linux leave it among the others. |
+| `height` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `hidesWhenInactive` | property | `Bool` | adaptive |  | ✅ |  |  |  |  |  |  |
+| `isMaximizable` | property | `Bool` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `isMinimizable` | property | `Bool` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `isTranslucent` | property | `Bool` | adaptive |  | ✅ |  |  |  |  |  |  |
+| `maximumHeight` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `maximumWidth` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `minimumHeight` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `minimumWidth` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `modalPopped` | event | `Int` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `resumed` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `stopped` | event |  | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `title` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `width` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `windowType` | property | `WindowType` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `windowValue` | property | `String` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `x` | property | `Double` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `y` | property | `Double` | structure | ✅ | ✅ |  |  |  |  |  |  |
 
 Realization:
 

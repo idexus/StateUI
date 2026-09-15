@@ -1,15 +1,19 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # Layout
 
-A view that arranges children.
+What every layout has: the screen's unsafe strips it keeps clear of, and whether its children are clipped or let input through.
 
-Declared in `lib/StateUI/Sources/Views/Elements.swift`.
+Wears: [View](View.md) · [PaddingElement](PaddingElement.md)
 
-Worn by: [VStack](../VStack.md) · [HStack](../HStack.md) · [Grid](../Grid.md) · [AbsoluteLayout](../AbsoluteLayout.md)
+Worn by: [AbsoluteLayout](../AbsoluteLayout.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [VStack](../VStack.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/LayoutContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `avoidsSafeArea` | property |
-| `clipsContent` | property |
-| `letsInputThrough` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `avoidsSafeArea` | property | `SafeAreaEdges` | adaptive |
+| `clipsContent` | property | `Bool` | native |
+| `letsInputThrough` | property | `Bool` | native |

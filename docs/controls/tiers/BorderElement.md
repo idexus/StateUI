@@ -1,15 +1,19 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # BorderElement
 
-The outline of a control that draws one - the tier `Button` and `RadioButton` wear, and the one place the three properties that paint an outline are declared.
+The line around a control's own box, and how round its corners are.
 
-Declared in `lib/StateUI/Sources/Views/BorderElement.swift`.
+Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Button](../Button.md) · [RadioButton](../RadioButton.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/BorderElementContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `borderColor` | property |
-| `borderWidth` | property |
-| `cornerRadius` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `borderColor` | property | `Color` | native |
+| `borderWidth` | property | `Double` | native |
+| `cornerRadius` | property | `Int` | native |

@@ -1,13 +1,17 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # TintElement
 
-A control's accent: the colour the platform draws what is chosen, filled or under way in - a switch that is on, the covered part of a slider, a ticked box, the filled part of a bar, a spinner.
+A control's one accent colour.
 
-Declared in `lib/StateUI/Sources/Views/TintElement.swift`.
+Wears: [PropertyContainer](PropertyContainer.md)
 
-Worn by: [SearchField](../SearchField.md) · [Picker](../Picker.md) · [Switch](../Switch.md) · [CheckBox](../CheckBox.md) · [Slider](../Slider.md) · [ActivityIndicator](../ActivityIndicator.md) · [ProgressBar](../ProgressBar.md) · [RefreshView](../RefreshView.md)
+Worn by: [ActivityIndicator](../ActivityIndicator.md) · [CheckBox](../CheckBox.md) · [Picker](../Picker.md) · [ProgressBar](../ProgressBar.md) · [RefreshView](../RefreshView.md) · [SearchField](../SearchField.md) · [Slider](../Slider.md) · [Switch](../Switch.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/TintElementContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `tint` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `tint` | property | `Color` | adaptive |

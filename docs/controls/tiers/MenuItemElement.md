@@ -1,17 +1,21 @@
+<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+
 # MenuItemElement
 
-What a toolbar item, a menu entry and a swipe action all share: `text`, `icon`, `isDestructive`, `isEnabled` - and `onClicked`, what choosing one does.
+What every item a reader chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
 
-Declared in `lib/StateUI/Sources/Views/MenuItemElement.swift`.
+Wears: [PropertyContainer](PropertyContainer.md)
 
-Worn by: [ToolbarItem](../ToolbarItem.md) · [MenuItem](../MenuItem.md)
+Worn by: [MenuItem](../MenuItem.md) · [SwipeAction](../SwipeAction.md) · [ToolbarItem](../ToolbarItem.md)
 
-How each of them realizes these members is in its own file.
+Declared in `lib/StateUI/Sources/Contracts/Tiers/MenuItemElementContract.swift`.
 
-| Member | Kind |
-| --- | --- |
-| `onClicked` (`clicked`) | handler |
-| `icon` | property |
-| `isDestructive` | property |
-| `isEnabled` | property |
-| `text` | property |
+How each of them realizes these members is on its own page.
+
+| Member | Kind | Value | Layer |
+| --- | --- | --- | --- |
+| `onClicked` (`clicked`) | event |  | native |
+| `icon` | property | `ImageSource` | adaptive |
+| `isDestructive` | property | `Bool` | adaptive |
+| `isEnabled` | property | `Bool` | native |
+| `text` | property | `String` | native |

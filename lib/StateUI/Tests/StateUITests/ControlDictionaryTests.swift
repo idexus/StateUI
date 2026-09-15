@@ -3,206 +3,202 @@
 
 import Foundation
 import XCTest
+@_spi(Host) @testable import StateUI
 
-/// The control dictionary - docs/controls - against the code it describes.
+/// The control dictionary - docs/controls - is the contracts and the hosts'
+/// declarations rendered, and the declarations are held to the contracts.
 ///
-/// An entry - a control, or a part of an application's structure - lists the
-/// members its sources declare, then one section per protocol it inherits; a
-/// tier's file lists that protocol's members. A property or a handler added,
-/// renamed or removed without its row fails here, and
-/// `python3 .scripts/controls-dictionary.py` rewrites the member lists,
-/// keeping every mark and note already written. A member is counted by the
-/// rule every other test here uses - `Fixtures.propertyKeys(in:)` for a
-/// property, `Fixtures.handlerKeys(in:)` for a handler.
+/// A page that differs from what `ControlDictionary` renders fails here, and so
+/// does a page no contract has, and an index or a platform contract whose
+/// tables are not the rendered ones. `STATEUI_UPDATE_DOCS=1` writes them all
+/// and removes a page whose contract is gone - then read the diff.
 ///
-/// A ✅* - realized, but incomplete - says in its note what is missing, or it
-/// is a claim nobody can check; and the counts the index and the platform
-/// contract show are taken from the files, so every mark lives in one place.
+/// The declarations are read where they are rendered, so they are held here:
+/// a record naming what no contract declares, a record written twice, a
+/// partial one that does not say what is missing, and an unrealized or
+/// viewless name that is no element all fail.
 final class ControlDictionaryTests: XCTestCase {
-    private struct Row {
-        let token: String
-        let marks: [String]
-        let note: String
-    }
-
     private static let folder = Fixtures.repository.appendingPathComponent("docs/controls")
-    private static let platforms = ["MAUI", "AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
 
-    private func read(_ path: String) throws -> String {
-        try String(contentsOf: Self.folder.appendingPathComponent(path), encoding: .utf8)
+    private static let hint = "Record the realization in its host's declaration or change the contract, then run "
+        + "STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests and read the diff."
+
+    private static var updating: Bool {
+        ProcessInfo.processInfo.environment["STATEUI_UPDATE_DOCS"] == "1"
     }
 
-    /// Every entry the dictionary holds: each file beside the index.
-    private func entries() throws -> [String] {
-        try FileManager.default.contentsOfDirectory(atPath: Self.folder.path)
-            .filter { $0.hasSuffix(".md") && $0 != "README.md" }
-            .map { String($0.dropLast(3)) }
-            .sorted()
-    }
+    // MARK: - The documents
 
-    private func tiers() throws -> [String] {
-        try FileManager.default.contentsOfDirectory(atPath: Self.folder.appendingPathComponent("tiers").path)
-            .filter { $0.hasSuffix(".md") }
-            .map { String($0.dropLast(3)) }
-            .sorted()
-    }
+    /// Every page is its contract rendered, and every page belongs to a
+    /// contract.
+    func testEveryPageIsItsContractRendered() throws {
+        let pages = try ControlDictionary().pages()
+        let files = try Self.files()
 
-    /// A member cell's token: `icon` is `icon`, `onClicked` (`clicked`) is `clicked`.
-    private func token(_ cell: String) -> String {
-        cell.split(separator: "`")
-            .map(String.init)
-            .filter { !$0.contains("(") && !$0.contains(")") && !$0.trimmingCharacters(in: .whitespaces).isEmpty }
-            .last ?? cell
-    }
+        if Self.updating {
+            try FileManager.default.createDirectory(
+                at: Self.folder.appendingPathComponent("tiers"), withIntermediateDirectories: true)
 
-    private func cells(_ line: String) -> [String] {
-        line.components(separatedBy: "|").map { $0.trimmingCharacters(in: .whitespaces) }
-    }
+            for (path, text) in pages {
+                try text.write(to: Self.folder.appendingPathComponent(path), atomically: true, encoding: .utf8)
+            }
 
-    /// Every `## ` section of an entry's file, with the rows under it.
-    private func sections(_ entry: String) throws -> [(heading: String, rows: [Row])] {
-        var result: [(heading: String, rows: [Row])] = []
-        for line in try read("\(entry).md").components(separatedBy: "\n") {
-            if line.hasPrefix("## ") {
-                result.append((line, []))
-            } else if line.hasPrefix("| `"), !result.isEmpty {
-                // "", member, kind, a mark per platform, note, ""
-                let row = cells(line)
-                let marks = Array(row.dropFirst(3).prefix(Self.platforms.count))
-                let note = row.count > 3 + Self.platforms.count ? row[3 + Self.platforms.count] : ""
-                result[result.count - 1].rows.append(Row(token: token(row[1]), marks: marks, note: note))
+            for path in files where pages[path] == nil {
+                try FileManager.default.removeItem(at: Self.folder.appendingPathComponent(path))
+            }
+
+            return
+        }
+
+        for (path, text) in pages.sorted(by: { $0.key < $1.key }) {
+            guard let written = try? String(contentsOf: Self.folder.appendingPathComponent(path), encoding: .utf8)
+            else {
+                XCTFail("docs/controls/\(path) is missing. \(Self.hint)")
+                continue
+            }
+
+            if let difference = Self.difference(written, text) {
+                XCTFail("docs/controls/\(path) is not what its contract renders: \(difference). \(Self.hint)")
             }
         }
-        return result
-    }
 
-    private func own(_ entry: String) throws -> Set<String> {
-        Set(try sections(entry).first { $0.heading == "## \(entry)'s own members" }?.rows.map(\.token) ?? [])
-    }
-
-    private func tierTokens(_ tier: String) throws -> Set<String> {
-        Set(try read("tiers/\(tier).md").components(separatedBy: "\n")
-            .filter { $0.hasPrefix("| `") }
-            .map { token(cells($0)[1]) })
-    }
-
-    /// The sources a file says its members are declared in, as paths under
-    /// lib/StateUI/Sources - `Views/Label.swift`.
-    private func declaredFiles(_ path: String) throws -> [String] {
-        let prefix = "lib/StateUI/Sources/"
-        guard let line = try read(path).components(separatedBy: "\n").first(where: { $0.hasPrefix("Declared in ") })
-        else { return [] }
-        return line.components(separatedBy: "`")
-            .filter { $0.hasPrefix(prefix) }
-            .map { String($0.dropFirst(prefix.count)) }
-    }
-
-    private func declared(in file: String) throws -> Set<String> {
-        try Fixtures.propertyKeys(in: file).union(Fixtures.handlerKeys(in: file))
-    }
-
-    func testEveryEntryHasItsFileAndTheIndexNamesIt() throws {
-        let index = try read("README.md")
-        XCTAssertFalse(try entries().isEmpty)
-        for entry in try entries() {
-            XCTAssertTrue(index.contains("](\(entry).md)"), "docs/controls/README.md does not name \(entry)")
-            XCTAssertFalse(try declaredFiles("\(entry).md").isEmpty, "\(entry).md does not say where it is declared")
+        for path in files where pages[path] == nil {
+            XCTFail("docs/controls/\(path) is the page of no contract. \(Self.hint)")
         }
     }
 
-    /// An entry's own rows are members its sources declare, and every member a
-    /// source declares is an own row of an entry naming it - equality for a
-    /// control alone in its file, and for a source several entries share, such
-    /// as the window's and the page's `Application.swift`, their rows together.
-    func testAnEntrysOwnMembersAreWhatItsSourcesDeclare() throws {
-        var claimed: [String: Set<String>] = [:]
-        for entry in try entries() {
-            let files = try declaredFiles("\(entry).md")
-            let listed = try own(entry)
-            let code = try files.reduce(into: Set<String>()) { $0.formUnion(try declared(in: $1)) }
-            XCTAssertTrue(listed.isSubset(of: code), """
-                docs/controls/\(entry).md lists \(listed.subtracting(code).sorted()), which \(files) do \
-                not declare. Run python3 .scripts/controls-dictionary.py.
-                """)
-            for file in files {
-                claimed[file, default: []].formUnion(listed)
+    /// The index and the platform contract carry the rendered tables, each
+    /// between its markers.
+    func testTheIndexAndThePlatformContractCarryTheRenderedTables() throws {
+        let dictionary = try ControlDictionary()
+
+        for (path, blocks) in [("docs/controls/README.md", dictionary.indexBlocks()),
+                               ("docs/platform-contract.md", dictionary.contractBlocks())] {
+            let url = Fixtures.repository.appendingPathComponent(path)
+            let written = try String(contentsOf: url, encoding: .utf8)
+            var rendered = written
+
+            for (name, content) in blocks.sorted(by: { $0.key < $1.key }) {
+                rendered = try ControlDictionary.replacing(block: name, in: rendered, with: content)
             }
-        }
-        for (file, listed) in claimed.sorted(by: { $0.key < $1.key }) {
-            let missing = try declared(in: file).subtracting(listed)
-            XCTAssertTrue(missing.isEmpty, """
-                \(file) declares \(missing.sorted()), which no entry naming it lists as its own. Run \
-                python3 .scripts/controls-dictionary.py.
-                """)
-        }
-    }
 
-    func testATiersSectionIsWhatItsFileLists() throws {
-        for entry in try entries() {
-            let mine = try own(entry)
-            for part in try sections(entry) where part.heading.hasPrefix("## From [") {
-                let tier = String(part.heading.dropFirst("## From [".count).prefix(while: { $0 != "]" }))
-                XCTAssertEqual(Set(part.rows.map(\.token)), try tierTokens(tier).subtracting(mine),
-                               "\(entry)'s section from \(tier) is not what tiers/\(tier).md lists")
+            if Self.updating {
+                try rendered.write(to: url, atomically: true, encoding: .utf8)
+            } else if let difference = Self.difference(written, rendered) {
+                XCTFail("\(path) does not carry the rendered tables: \(difference). \(Self.hint)")
             }
         }
     }
 
-    /// Every member of every source the dictionary names - an entry's or a
-    /// tier's - is a row of an entry, where it carries its marks.
-    func testEveryMemberOfADescribedFileHasARow() throws {
-        var listed = Set<String>()
-        var files = Set<String>()
-        for entry in try entries() {
-            files.formUnion(try declaredFiles("\(entry).md"))
-            listed.formUnion(try sections(entry).flatMap { $0.rows.map(\.token) })
+    // MARK: - The declarations
+
+    /// Every record names a contract and a member that contract declares or
+    /// wears, and every unrealized or viewless name is an element.
+    func testEveryRecordNamesAMemberOfWhatItNames() throws {
+        let contracts = Dictionary(LibraryContracts.all.map { ($0.name, $0) }, uniquingKeysWith: { first, _ in first })
+        let elements = Set(LibraryContracts.elements.map { $0.name })
+        var wrong: [String] = []
+
+        for declaration in try ControlDictionary.declarations() {
+            XCTAssertGreaterThan(declaration.records.count, 100, "\(declaration.source): the scan read almost nothing")
+
+            for record in declaration.records {
+                guard let owner = contracts[record.owner] else {
+                    wrong.append("\(declaration.host): \(record.owner) is no contract")
+                    continue
+                }
+
+                if !owner.worn.contains(where: { tier in tier.members.contains { $0.name == record.member } }) {
+                    wrong.append("\(declaration.host): \(record.owner) declares and wears no \(record.member)")
+                }
+            }
+
+            for name in declaration.unrealized.union(declaration.viewless).sorted() where !elements.contains(name) {
+                wrong.append("\(declaration.host): \(name), unrealized or viewless, is no element")
+            }
         }
-        for tier in try tiers() {
-            files.formUnion(try declaredFiles("tiers/\(tier).md"))
-        }
-        for file in files.sorted() {
-            let missing = try declared(in: file).subtracting(listed)
-            XCTAssertTrue(missing.isEmpty, """
-                \(file) declares \(missing.sorted()), which no entry in docs/controls lists. Run \
-                python3 .scripts/controls-dictionary.py.
-                """)
-        }
+
+        XCTAssertEqual(wrong, [], "a declaration names what the contracts do not")
     }
 
-    func testAPartialMarkSaysWhatIsMissing() throws {
-        for entry in try entries() {
-            for part in try sections(entry) {
-                for row in part.rows {
-                    XCTAssertTrue(row.marks.allSatisfy { ["", "✅", "✅*"].contains($0) },
-                                  "\(entry): \(row.token) carries a mark other than ✅ or ✅*")
-                    if row.marks.contains("✅*") {
-                        XCTAssertFalse(row.note.isEmpty, "\(entry): \(row.token) is ✅* without saying what is missing")
-                    }
+    /// No host records one member of one contract twice.
+    func testEveryRecordIsWrittenOnce() throws {
+        for declaration in try ControlDictionary.declarations() {
+            var seen: Set<String> = []
+
+            for record in declaration.records {
+                if !seen.insert("\(record.owner).\(record.member)").inserted {
+                    XCTFail("\(declaration.source) records \(record.member) on \(record.owner) twice")
                 }
             }
         }
     }
 
-    /// The counts in the index and in docs/platform-contract.md are the files'
-    /// own marks, so a mark changed in one place changes everywhere.
-    func testTheCountsAreTakenFromTheFiles() throws {
-        let index = try read("README.md")
-        let contract = try String(
-            contentsOf: Fixtures.repository.appendingPathComponent("docs/platform-contract.md"), encoding: .utf8)
-        XCTAssertTrue(contract.contains("<!-- dictionary:begin -->"))
-        for entry in try entries() {
-            let rows = try sections(entry).flatMap(\.rows)
-            let counts = Self.platforms.indices.map { k -> String in
-                let done = rows.filter { $0.marks.count > k && $0.marks[k] == "✅" }.count
-                let partial = rows.filter { $0.marks.count > k && $0.marks[k] == "✅*" }.count
-                guard done + partial > 0 else { return "" }
-                return partial > 0 ? "\(done) ✅ · \(partial) ✅*" : "\(done) ✅"
+    /// A member realized in part says what is missing: a ✅* nobody can check
+    /// is no mark at all.
+    func testAPartialRecordSaysWhatIsMissing() throws {
+        for declaration in try ControlDictionary.declarations() {
+            for record in declaration.records where record.missing?.isEmpty == true {
+                XCTFail("\(declaration.source) records \(record.member) on \(record.owner) in part, "
+                    + "and does not say what is missing")
             }
-            let cells = " | \(rows.count) | " + counts.joined(separator: " | ") + " |"
-            XCTAssertTrue(index.contains("[\(entry)](\(entry).md)" + cells),
-                          "docs/controls/README.md does not show \(entry)'s counts")
-            XCTAssertTrue(contract.contains("[\(entry)](controls/\(entry).md)" + cells),
-                          "docs/platform-contract.md does not show \(entry)'s counts")
         }
+    }
+
+    // MARK: - The contracts
+
+    /// Every tier is worn by an element: a tier nobody wears declares members
+    /// no host is ever asked for.
+    func testEveryTierIsWorn() {
+        for tier in LibraryContracts.tiers {
+            let worn = LibraryContracts.elements.contains { element in
+                element.worn.contains { ObjectIdentifier($0) == ObjectIdentifier(tier) }
+            }
+
+            XCTAssertTrue(worn, "\(tier.name) is worn by no element")
+        }
+    }
+
+    /// Each event is heard through one `on…` modifier, whichever element hears
+    /// it, so its row names one.
+    func testEveryEventIsHeardThroughOneModifier() throws {
+        for (event, spellings) in try ControlDictionary.handlerSpellings() where spellings.count > 1 {
+            XCTFail("\(event) is heard through \(spellings.sorted())")
+        }
+    }
+
+    // MARK: - Support
+
+    /// Every page the dictionary holds, by its path under docs/controls - the
+    /// index left out.
+    private static func files() throws -> [String] {
+        let manager = FileManager.default
+        let pages = try manager.contentsOfDirectory(atPath: folder.path)
+            .filter { $0.hasSuffix(".md") && $0 != "README.md" }
+        let tiers = try manager.contentsOfDirectory(atPath: folder.appendingPathComponent("tiers").path)
+            .filter { $0.hasSuffix(".md") }
+            .map { "tiers/" + $0 }
+
+        return (pages + tiers).sorted()
+    }
+
+    /// Where a written text first parts from the rendered one; nil where they
+    /// agree.
+    private static func difference(_ written: String, _ rendered: String) -> String? {
+        guard written != rendered else { return nil }
+
+        let writtenLines = written.components(separatedBy: "\n")
+        let renderedLines = rendered.components(separatedBy: "\n")
+
+        for index in 0..<max(writtenLines.count, renderedLines.count) {
+            let was = index < writtenLines.count ? writtenLines[index] : "(nothing)"
+            let should = index < renderedLines.count ? renderedLines[index] : "(nothing)"
+
+            if was != should {
+                return "line \(index + 1) reads \"\(was)\" and should read \"\(should)\""
+            }
+        }
+
+        return "they differ"
     }
 }
