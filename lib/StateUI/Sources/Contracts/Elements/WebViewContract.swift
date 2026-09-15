@@ -4,7 +4,7 @@
 /// A view showing web content - a page fetched by URL, or HTML written here.
 public enum WebViewContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .webView
+    public static let nodeType: NodeType = "WebView"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

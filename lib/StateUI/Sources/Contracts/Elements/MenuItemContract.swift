@@ -4,7 +4,7 @@
 /// One entry in a menu.
 public enum MenuItemContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .menuItem
+    public static let nodeType: NodeType = "MenuItem"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

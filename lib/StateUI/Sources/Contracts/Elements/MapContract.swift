@@ -4,7 +4,7 @@
 /// A map of the world, with pins on it.
 public enum MapContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .map
+    public static let nodeType: NodeType = "Map"
 
     /// An optional provider supplies it; no base host has to.
     public static let layer: ElementLayer = .provider

@@ -5,7 +5,7 @@
 /// space the line is given.
 public enum LineContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .line
+    public static let nodeType: NodeType = "Line"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

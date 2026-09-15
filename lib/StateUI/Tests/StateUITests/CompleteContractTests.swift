@@ -65,12 +65,7 @@ final class CompleteContractTests: XCTestCase {
     /// Every act the library declares is a member of exactly one contract,
     /// and every act member is one the library declares.
     func testEveryActIsAMemberOfExactlyOneContract() throws {
-        let acts = Set(try Fixtures.text(in: "Core/Tokens.swift")
-            .split(separator: "\n")
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { $0.hasPrefix("static let ") }
-            .compactMap { $0.components(separatedBy: "= Act(\"").dropFirst().first?.prefix { $0 != "\"" } }
-            .map(String.init))
+        let acts = try Fixtures.tokenNames(of: "Act")
         var owners: [String: [String]] = [:]
 
         for item in declared where item.kind == .act {

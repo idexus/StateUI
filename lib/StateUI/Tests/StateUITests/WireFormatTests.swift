@@ -117,17 +117,34 @@ final class WireFormatTests: XCTestCase {
         XCTAssertEqual(bytes(), bytes())
     }
 
-    func testEveryTokenIsSpelledLikeItsMember() throws {
-        var wrong: [String] = []
+    /// No source spells a name out with a token's constructor: a name is
+    /// spelled once, where a contract declares its member, and every other
+    /// file writes the member or the token made from it. A name spelled
+    /// anywhere else is one no contract declares.
+    ///
+    /// Read as text, because `Prop("fontSize")` compiles wherever it is
+    /// written - the constructors stay open to the hosts - and only a guard
+    /// can say where a spelling belongs.
+    func testNoSourceSpellsAName() throws {
+        // The differ's placeholder for a composed view not built yet: it never
+        // crosses, so no contract declares it, and it is the one name spelled
+        // where it stands.
+        let placeholder = #"static let composed = NodeType("Composed")"#
+        var spelled: [String] = []
 
-        for (vocabulary, member, spelling) in try tokens() {
-            let expected = vocabulary == "NodeType" ? member.capitalizedFirst : member
-            if spelling != expected {
-                wrong.append("\(vocabulary).\(member) is written \"\(spelling)\", not \"\(expected)\"")
+        for source in try Fixtures.allSources() {
+            for (index, line) in source.text.split(separator: "\n", omittingEmptySubsequences: false).enumerated() {
+                let code = line.trimmed
+
+                if !code.hasPrefix("//"), code != placeholder,
+                   code.range(of: #"\b(NodeType|Prop|Event|Act)\(""#, options: .regularExpression) != nil
+                    || code.range(of: #"\.(props|events|driven)\[""#, options: .regularExpression) != nil {
+                    spelled.append("\(source.path):\(index + 1)  \(code)")
+                }
             }
         }
 
-        XCTAssertEqual(wrong, [])
+        XCTAssertEqual(spelled, [], "a name spelled outside the contracts")
     }
 
     /// Every name the Swift side can send is a member on the MAUI host's side,
@@ -155,7 +172,7 @@ final class WireFormatTests: XCTestCase {
         var checked = 0
 
         for (vocabulary, file) in vocabularies {
-            let declared = try tokens().filter { $0.vocabulary == vocabulary }.map(\.member)
+            let declared = try Fixtures.tokenNames(of: vocabulary).sorted()
             XCTAssertFalse(declared.isEmpty, "no \(vocabulary) was read from Core/Tokens.swift")
 
             guard let enumeration = host.first(where: { $0.path.hasSuffix(file) })?.text else {
@@ -242,45 +259,6 @@ final class WireFormatTests: XCTestCase {
 
         XCTAssertGreaterThan(threshold, PackedPlacement.unshaded)
         XCTAssertLessThan(threshold, 0)
-    }
-
-    private func tokens() throws -> [(vocabulary: String, member: String, spelling: String)] {
-        let text = try String(
-            contentsOf: Fixtures.sources.appendingPathComponent("Core/Tokens.swift"),
-            encoding: .utf8)
-        var found: [(vocabulary: String, member: String, spelling: String)] = []
-        var vocabulary = ""
-
-        for line in text.split(separator: "\n", omittingEmptySubsequences: false) {
-            let code = line.trimmed
-            if code.hasPrefix("public extension "), code.hasSuffix(" {") {
-                vocabulary = String(code.dropFirst("public extension ".count).dropLast(2))
-                continue
-            }
-            if code == "}" {
-                vocabulary = ""
-                continue
-            }
-            guard !vocabulary.isEmpty, code.hasPrefix("static let ") else { continue }
-
-            let declaration = code.dropFirst("static let ".count)
-            guard let equals = declaration.range(of: " = "),
-                  let opens = declaration.range(of: "(\""),
-                  let closes = declaration.range(of: "\")", options: .backwards)
-            else {
-                XCTFail("Core/Tokens.swift has an unreadable declaration: \(code)")
-                continue
-            }
-
-            let member = declaration[..<equals.lowerBound]
-                .trimmingCharacters(in: CharacterSet(charactersIn: "`"))
-            found.append((
-                vocabulary: vocabulary,
-                member: member,
-                spelling: String(declaration[opens.upperBound..<closes.lowerBound])))
-        }
-
-        return found
     }
 }
 

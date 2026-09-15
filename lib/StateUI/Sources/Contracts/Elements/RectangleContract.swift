@@ -4,7 +4,7 @@
 /// A rectangle, drawn as a shape - with square corners, or rounded ones.
 public enum RectangleContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .rectangle
+    public static let nodeType: NodeType = "Rectangle"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

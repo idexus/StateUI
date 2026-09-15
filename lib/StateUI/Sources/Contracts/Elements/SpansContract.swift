@@ -4,7 +4,7 @@
 /// The runs a label is made of, in order.
 public enum SpansContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .spans
+    public static let nodeType: NodeType = "Spans"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

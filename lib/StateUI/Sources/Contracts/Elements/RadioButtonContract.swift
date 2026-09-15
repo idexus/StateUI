@@ -4,7 +4,7 @@
 /// One choice out of several, where picking one clears the rest.
 public enum RadioButtonContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .radioButton
+    public static let nodeType: NodeType = "RadioButton"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

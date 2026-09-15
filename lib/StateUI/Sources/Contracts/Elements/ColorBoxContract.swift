@@ -4,7 +4,7 @@
 /// A host-native rectangle of colour.
 public enum ColorBoxContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .colorBox
+    public static let nodeType: NodeType = "ColorBox"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

@@ -4,7 +4,7 @@
 /// The pages presented over a window, the last of them on top.
 public enum ModalStackContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .modalStack
+    public static let nodeType: NodeType = "ModalStack"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

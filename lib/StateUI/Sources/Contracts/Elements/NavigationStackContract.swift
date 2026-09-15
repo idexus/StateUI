@@ -4,7 +4,7 @@
 /// A page holding a native stack of pages, with a bar and a back affordance.
 public enum NavigationStackContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .navigationStack
+    public static let nodeType: NodeType = "NavigationStack"
 
     /// Every base host presents it by its platform's conventions, keeping
     /// StateUI's state contract.

@@ -139,75 +139,24 @@ final class DocumentationTests: XCTestCase {
             """)
     }
 
-    /// EVERY MEMBER OF A `public extension`, which the first check cannot see
-    /// either: a member inside one carries no `public` of its own, exactly as
-    /// an enum case does not.
-    ///
-    /// Without this check that form is a way to publish a member the doc guard
-    /// never asks about - the one shape that could get past a test whose whole
-    /// subject is the public surface.
-    ///
-    /// THE TOKEN VOCABULARIES ARE EXEMPT, by name and on purpose: a `NodeType`,
-    /// a `Prop` and an `Event` are names and nothing else, so a comment on one
-    /// could only restate it, and what the name MEANS is on the modifier an
-    /// author types. `Act` is NOT exempt - its name alone does not say what the
-    /// host is asked to do, so that is the one thing it has to say - which
-    /// is also what keeps this test reading real declarations rather than
-    /// passing over an empty list.
-    func testEveryMemberOfAPublicExtensionIsDocumented() throws {
-        // Names, not files: an exemption that covered Core/Tokens.swift whole
-        // would cover whatever is added to it next.
-        let exempt: Set<String> = ["NodeType", "Prop", "Event"]
-        var undocumented: [String] = []
+    /// THE LIBRARY DECLARES NO `public extension`: a member inside one is
+    /// public without saying so, and the first check - which reads the word -
+    /// would never ask it for a `///`. So every public member says `public`
+    /// itself, where that check sees it. The hosts' vocabulary sits in
+    /// `@_spi(Host) public extension` blocks: the host SPI, not the surface an
+    /// application writes against.
+    func testTheLibraryDeclaresNoPublicExtension() throws {
+        var found: [String] = []
 
         for source in try Fixtures.allSources() {
-            let lines = source.text.components(separatedBy: "\n")
-            var depth = 0
-            var body: Int?
-            var extended = ""
-
-            for (index, line) in lines.enumerated() {
-                let text = line.trimmed
-
-                if let inside = body, depth == inside, !exempt.contains(extended),
-                    isMemberDeclaration(text), !isDocumented(lines, above: index) {
-                    undocumented.append("\(source.path):\(index + 1)  \(text)")
-                }
-
-                if body == nil, text.hasPrefix("public extension ") {
-                    extended = String(
-                        text.dropFirst("public extension ".count)
-                            .prefix { $0 != " " && $0 != ":" && $0 != "{" })
-                    body = depth + line.filter { $0 == "{" }.count
-                }
-
-                depth += line.filter { $0 == "{" }.count
-                depth -= line.filter { $0 == "}" }.count
-
-                if let inside = body, depth < inside { body = nil }
+            for (index, line) in source.text.components(separatedBy: "\n").enumerated()
+            where line.trimmed.hasPrefix("public extension ") {
+                found.append("\(source.path):\(index + 1)  \(line.trimmed)")
             }
         }
 
-        XCTAssertEqual(undocumented, [], """
-            These sit in a `public extension` and say nothing about themselves:
-
-            \(undocumented.joined(separator: "\n"))
-
-            A member of a public extension is public without saying so. Write a \
-            `///` above each - what it does.
-            """)
-    }
-
-    /// Whether a line declares a member - inside an extension, where the
-    /// `public` is the extension's rather than the member's.
-    private func isMemberDeclaration(_ text: String) -> Bool {
-        for keyword in ["static let ", "static var ", "static func ", "func ",
-                        "var ", "let ", "init(", "init?(", "init<", "subscript",
-                        "typealias "] where text.hasPrefix(keyword) {
-            return true
-        }
-
-        return false
+        XCTAssertEqual(found, [], "a public extension publishes its members without saying so - "
+            + "write `public` on each member instead")
     }
 
     /// Whether the lines above a declaration document it.

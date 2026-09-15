@@ -5,7 +5,7 @@
 /// one is showing.
 public enum PositionIndicatorContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .positionIndicator
+    public static let nodeType: NodeType = "PositionIndicator"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

@@ -4,7 +4,7 @@
 /// A picture from the application's resources.
 public enum ImageContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .image
+    public static let nodeType: NodeType = "Image"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

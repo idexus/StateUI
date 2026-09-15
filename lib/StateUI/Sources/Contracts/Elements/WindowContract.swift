@@ -4,7 +4,7 @@
 /// A window onto a page.
 public enum WindowContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .window
+    public static let nodeType: NodeType = "Window"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

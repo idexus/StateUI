@@ -4,7 +4,7 @@
 /// How far along something is, from 0 to 1.
 public enum ProgressBarContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .progressBar
+    public static let nodeType: NodeType = "ProgressBar"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

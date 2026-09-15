@@ -4,7 +4,7 @@
 /// A box that is ticked or not.
 public enum CheckBoxContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .checkBox
+    public static let nodeType: NodeType = "CheckBox"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

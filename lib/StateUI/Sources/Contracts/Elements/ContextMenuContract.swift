@@ -5,7 +5,7 @@
 /// long press.
 public enum ContextMenuContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .contextMenu
+    public static let nodeType: NodeType = "ContextMenu"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

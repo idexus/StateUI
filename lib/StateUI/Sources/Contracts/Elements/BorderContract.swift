@@ -4,7 +4,7 @@
 /// A single view with an outline around it.
 public enum BorderContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .border
+    public static let nodeType: NodeType = "Border"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

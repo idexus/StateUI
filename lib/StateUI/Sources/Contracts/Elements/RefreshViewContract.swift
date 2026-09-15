@@ -4,7 +4,7 @@
 /// Pull down on what is inside it to ask for it again.
 public enum RefreshViewContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .refreshView
+    public static let nodeType: NodeType = "RefreshView"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

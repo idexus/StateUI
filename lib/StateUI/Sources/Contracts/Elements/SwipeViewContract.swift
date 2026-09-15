@@ -4,7 +4,7 @@
 /// A view with actions hidden behind it, revealed by a swipe.
 public enum SwipeViewContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .swipeView
+    public static let nodeType: NodeType = "SwipeView"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

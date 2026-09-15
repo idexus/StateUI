@@ -539,6 +539,35 @@ enum Fixtures {
         return source.text
     }
 
+    /// The names one vocabulary's tokens stand for, read off Core/Tokens.swift:
+    /// a token stands under its member's name, and a node type's is that name
+    /// capitalized - `"Prop"` answers `fontSize`, `"NodeType"` answers `Label`.
+    static func tokenNames(of vocabulary: String) throws -> Set<String> {
+        tokenNames(of: vocabulary, in: try text(in: "Core/Tokens.swift"))
+    }
+
+    /// The same, read off the text of Core/Tokens.swift a caller already holds.
+    static func tokenNames(of vocabulary: String, in source: String) -> Set<String> {
+        var names: Set<String> = []
+        var inside = false
+
+        for line in source.split(separator: "\n") {
+            let code = line.trimmingCharacters(in: .whitespaces)
+
+            if code == "@_spi(Host) public extension \(vocabulary) {" {
+                inside = true
+            } else if inside, code == "}" {
+                inside = false
+            } else if inside, code.hasPrefix("static let "), let equals = code.range(of: " = ") {
+                let member = code[code.index(code.startIndex, offsetBy: "static let ".count)..<equals.lowerBound]
+                    .trimmingCharacters(in: CharacterSet(charactersIn: "`"))
+                names.insert(vocabulary == "NodeType" ? member.prefix(1).uppercased() + member.dropFirst() : member)
+            }
+        }
+
+        return names
+    }
+
     /// Every one of the library's sources, wherever it sits.
     ///
     /// Found by walking, not listed - the same rule the build follows, so a new

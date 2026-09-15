@@ -4,7 +4,7 @@
 /// A native single-line text field.
 public enum TextFieldContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .textField
+    public static let nodeType: NodeType = "TextField"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

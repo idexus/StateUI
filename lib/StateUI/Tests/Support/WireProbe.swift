@@ -28,7 +28,7 @@
 // the table - but never in SPELLING, and coverage is what
 // `testEveryEnumerationInASidecarIsSpelled` fails on.
 
-import StateUI
+@_spi(Host) import StateUI
 
 /// The names a decode resolves ids through - one session's worth, learned
 /// from the announcements at the head of every buffer shown to it.

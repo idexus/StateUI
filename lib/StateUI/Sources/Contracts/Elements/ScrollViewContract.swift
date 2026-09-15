@@ -4,7 +4,7 @@
 /// A scrollable container.
 public enum ScrollViewContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .scrollView
+    public static let nodeType: NodeType = "ScrollView"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native
@@ -20,7 +20,8 @@ public enum ScrollViewContract: ElementContract {
     public static let orientation = ElementProperty<Self, ScrollOrientation>("orientation", layer: .native)
 
     /// Where the scroller stands, in device units from the content's top-left
-    /// corner.
+    /// corner: one point of two lanes, so one journey makes a diagonal move
+    /// arrive on both axes together.
     public static let scrollOffset = ElementProperty<Self, Point>(
         "scrollOffset", layer: .structure, travels: false)
 

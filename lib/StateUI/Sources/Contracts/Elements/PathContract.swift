@@ -4,7 +4,7 @@
 /// Whatever an outline can be, written in SVG path syntax.
 public enum PathContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .path
+    public static let nodeType: NodeType = "Path"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

@@ -4,7 +4,7 @@
 /// A day, chosen from the platform's own calendar.
 public enum DatePickerContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .datePicker
+    public static let nodeType: NodeType = "DatePicker"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

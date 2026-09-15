@@ -5,7 +5,7 @@
 /// it, and the state they share.
 public enum SceneContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .scene
+    public static let nodeType: NodeType = "Scene"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

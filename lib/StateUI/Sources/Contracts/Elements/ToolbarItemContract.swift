@@ -4,7 +4,7 @@
 /// An action in the page's native navigation or toolbar surface.
 public enum ToolbarItemContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .toolbarItem
+    public static let nodeType: NodeType = "ToolbarItem"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

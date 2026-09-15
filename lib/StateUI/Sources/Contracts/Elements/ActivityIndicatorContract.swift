@@ -5,7 +5,7 @@
 /// length.
 public enum ActivityIndicatorContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .activityIndicator
+    public static let nodeType: NodeType = "ActivityIndicator"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

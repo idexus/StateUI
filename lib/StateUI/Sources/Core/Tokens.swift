@@ -19,10 +19,11 @@
 // contract spells, as a literal: `static let nodeType: NodeType =
 // "Gallery.TrafficLight"`.
 //
-// The SOURCES of this library write only the static members - `.label`,
-// `.fontSize`, `.textChanged`, `.alert` - and the guard test in
-// WireFormatTests names any file that spells a name out instead. This file is
-// deliberately the one place the spellings exist.
+// Each name is SPELLED ONCE, where a contract declares its member, and a
+// token here is made from that member - `static let fontSize =
+// FontElementContract.fontSize.token`. The library's sources write the members,
+// or these tokens where they read a tree, and `testNoSourceSpellsAName` names
+// any file that spells a name out instead.
 
 /// The kind of element a `Node` describes: a native-host capability, a
 /// structural node StateUI defines, or an application's own control.
@@ -280,30 +281,24 @@ public struct Act: Hashable, Sendable, ExpressibleByStringLiteral,
 
 // MARK: - The library's own vocabulary
 //
-// One member per name the sources write, nothing else. A new control, property
-// or event starts here - the member IS the registration, there is no table to
-// keep in step and no number to reserve.
+// One token per member the sources and the hosts name, made from the member: a
+// new control, property, event or act starts in its CONTRACT, and its token
+// follows here - there is no table to keep in step and no number to reserve.
 //
-// PUBLIC for the hosts, which read a tree by these names. An application writes
-// a member with its contract - `ViewContract.pinchUpdated` - which is where the
+// FOR THE HOSTS, behind `@_spi(Host)`: they read a tree by these names until
+// their registrations name the members themselves. An application writes a
+// member with its contract - `ViewContract.pinchUpdated` - which is where the
 // name and its value's type meet, and so do these sources wherever they write
 // a value.
 //
-// THE STRING IS THE MEMBER'S OWN NAME, always: `Prop("fontSize")` under
-// `fontSize`, `NodeType("Label")` under `label` - capitalized for a node type,
-// because a node type is a CLASS name and every other vocabulary is a member
-// name. `testEveryTokenIsSpelledLikeItsMember` says so and names any that
-// drifts, which is what leaves nothing to remember and nothing to look up: the
-// declaration cannot lie about what goes on the wire.
+// A TOKEN IS ITS MEMBER'S NAME, standing under the member's own - `fontSize`,
+// `label` - and a node type is its contract's name: `LabelContract` declares
+// "Label". LibraryContractTests says both, which is what leaves nothing to
+// remember and nothing to look up: the declaration cannot lie about what goes
+// on the wire.
 //
-// A node type, property or event carries no `///` - the one exemption in the
-// library, taken deliberately and written into DocumentationTests: the token
-// IS the name, so a comment could only restate it, while what the name MEANS
-// belongs on the modifier an author actually types. Hundreds of restatements
-// would be the kind of documentation that rots without anyone noticing.
-//
-// An ACT is the exception to the exemption and says what the host does for
-// it, because that is the one thing its name does not carry.
+// A token carries no `///`: its documentation is its member's, where an author
+// and a host read what the member holds, carries or does.
 extension NodeType {
     /// Elements whose host arranges children from native measurement rather
     /// than from an ordinary property.
@@ -327,403 +322,344 @@ extension NodeType {
     static let saysMotion: Set<NodeType> = places.union([.application])
 }
 
-public extension NodeType {
-    static let absoluteLayout = NodeType("AbsoluteLayout")
-    static let activityIndicator = NodeType("ActivityIndicator")
-    static let application = NodeType("Application")
-    static let border = NodeType("Border")
-    static let colorBox = NodeType("ColorBox")
-    static let button = NodeType("Button")
-    static let checkBox = NodeType("CheckBox")
-    static let content = NodeType("Content")
-    static let page = NodeType("Page")
-    static let contextMenu = NodeType("ContextMenu")
-    static let datePicker = NodeType("DatePicker")
-    static let textEditor = NodeType("TextEditor")
-    static let ellipse = NodeType("Ellipse")
-    static let textField = NodeType("TextField")
-    static let splitView = NodeType("SplitView")
-    static let spans = NodeType("Spans")
-    static let canvas = NodeType("Canvas")
-    static let grid = NodeType("Grid")
-    static let hStack = NodeType("HStack")
-    static let image = NodeType("Image")
-    static let positionIndicator = NodeType("PositionIndicator")
-    static let label = NodeType("Label")
-    static let leadingContent = NodeType("LeadingContent")
-    static let line = NodeType("Line")
-    static let map = NodeType("Map")
-    static let menu = NodeType("Menu")
-    static let menuBar = NodeType("MenuBar")
-    static let menuItem = NodeType("MenuItem")
-    static let menuSeparator = NodeType("MenuSeparator")
-    static let modalStack = NodeType("ModalStack")
-    static let navigationStack = NodeType("NavigationStack")
-    static let titleView = NodeType("TitleView")
-    static let overlay = NodeType("Overlay")
-    static let path = NodeType("Path")
-    static let picker = NodeType("Picker")
-    static let pin = NodeType("Pin")
-    static let polygon = NodeType("Polygon")
-    static let polyline = NodeType("Polyline")
-    static let progressBar = NodeType("ProgressBar")
-    static let radioButton = NodeType("RadioButton")
-    static let rectangle = NodeType("Rectangle")
-    static let refreshView = NodeType("RefreshView")
-    static let scene = NodeType("Scene")
-    static let scrollView = NodeType("ScrollView")
-    static let searchField = NodeType("SearchField")
-    static let setters = NodeType("Setters")
-    static let slider = NodeType("Slider")
-    static let span = NodeType("Span")
-    static let stepper = NodeType("Stepper")
-    static let swipeAction = NodeType("SwipeAction")
-    static let swipeActions = NodeType("SwipeActions")
-    static let swipeView = NodeType("SwipeView")
-    static let `switch` = NodeType("Switch")
-    static let tabbedView = NodeType("TabbedView")
-    static let timePicker = NodeType("TimePicker")
-    static let titleBar = NodeType("TitleBar")
-    static let toolbarItem = NodeType("ToolbarItem")
-    static let toolbarItems = NodeType("ToolbarItems")
-    static let trailingContent = NodeType("TrailingContent")
-    static let vStack = NodeType("VStack")
-    static let visualState = NodeType("VisualState")
-    static let webView = NodeType("WebView")
-    static let window = NodeType("Window")
+@_spi(Host) public extension NodeType {
+    static let absoluteLayout = AbsoluteLayoutContract.nodeType
+    static let activityIndicator = ActivityIndicatorContract.nodeType
+    static let application = ApplicationContract.nodeType
+    static let border = BorderContract.nodeType
+    static let colorBox = ColorBoxContract.nodeType
+    static let button = ButtonContract.nodeType
+    static let checkBox = CheckBoxContract.nodeType
+    static let content = ContentContract.nodeType
+    static let page = PageContract.nodeType
+    static let contextMenu = ContextMenuContract.nodeType
+    static let datePicker = DatePickerContract.nodeType
+    static let textEditor = TextEditorContract.nodeType
+    static let ellipse = EllipseContract.nodeType
+    static let textField = TextFieldContract.nodeType
+    static let splitView = SplitViewContract.nodeType
+    static let spans = SpansContract.nodeType
+    static let canvas = CanvasContract.nodeType
+    static let grid = GridContract.nodeType
+    static let hStack = HStackContract.nodeType
+    static let image = ImageContract.nodeType
+    static let positionIndicator = PositionIndicatorContract.nodeType
+    static let label = LabelContract.nodeType
+    static let leadingContent = LeadingContentContract.nodeType
+    static let line = LineContract.nodeType
+    static let map = MapContract.nodeType
+    static let menu = MenuContract.nodeType
+    static let menuBar = MenuBarContract.nodeType
+    static let menuItem = MenuItemContract.nodeType
+    static let menuSeparator = MenuSeparatorContract.nodeType
+    static let modalStack = ModalStackContract.nodeType
+    static let navigationStack = NavigationStackContract.nodeType
+    static let titleView = TitleViewContract.nodeType
+    static let overlay = OverlayContract.nodeType
+    static let path = PathContract.nodeType
+    static let picker = PickerContract.nodeType
+    static let pin = PinContract.nodeType
+    static let polygon = PolygonContract.nodeType
+    static let polyline = PolylineContract.nodeType
+    static let progressBar = ProgressBarContract.nodeType
+    static let radioButton = RadioButtonContract.nodeType
+    static let rectangle = RectangleContract.nodeType
+    static let refreshView = RefreshViewContract.nodeType
+    static let scene = SceneContract.nodeType
+    static let scrollView = ScrollViewContract.nodeType
+    static let searchField = SearchFieldContract.nodeType
+    static let setters = SettersContract.nodeType
+    static let slider = SliderContract.nodeType
+    static let span = SpanContract.nodeType
+    static let stepper = StepperContract.nodeType
+    static let swipeAction = SwipeActionContract.nodeType
+    static let swipeActions = SwipeActionsContract.nodeType
+    static let swipeView = SwipeViewContract.nodeType
+    static let `switch` = SwitchContract.nodeType
+    static let tabbedView = TabbedViewContract.nodeType
+    static let timePicker = TimePickerContract.nodeType
+    static let titleBar = TitleBarContract.nodeType
+    static let toolbarItem = ToolbarItemContract.nodeType
+    static let toolbarItems = ToolbarItemsContract.nodeType
+    static let trailingContent = TrailingContentContract.nodeType
+    static let vStack = VStackContract.nodeType
+    static let visualState = VisualStateContract.nodeType
+    static let webView = WebViewContract.nodeType
+    static let window = WindowContract.nodeType
 }
 
-public extension Prop {
-    static let absoluteLayoutBounds = Prop("absoluteLayoutBounds")
-    static let absoluteLayoutProportions = Prop("absoluteLayoutProportions")
-    static let accessibilityHeadingLevel = Prop("accessibilityHeadingLevel")
-    static let accessibilityHint = Prop("accessibilityHint")
-    static let accessibilityIdentifier = Prop("accessibilityIdentifier")
-    static let accessibilityLabel = Prop("accessibilityLabel")
-    static let address = Prop("address")
-    static let allowDrop = Prop("allowDrop")
-    static let avoidsSafeArea = Prop("avoidsSafeArea")
-    static let barForegroundColor = Prop("barForegroundColor")
-    static let hidesWhenInactive = Prop("hidesWhenInactive")
-    static let isAccessibilityHidden = Prop("isAccessibilityHidden")
-    static let pivotX = Prop("pivotX")
-    static let pivotY = Prop("pivotY")
-    static let aspect = Prop("aspect")
-    static let automationExcludedWithChildren = Prop("automationExcludedWithChildren")
-    static let growsWithText = Prop("growsWithText")
-    static let background = Prop("background")
-    static let barBackgroundColor = Prop("barBackgroundColor")
-    static let borderColor = Prop("borderColor")
-    static let borderWidth = Prop("borderWidth")
-    static let canDrag = Prop("canDrag")
-    static let characterSpacing = Prop("characterSpacing")
-    static let shape = Prop("shape")
-    static let showsClearButton = Prop("showsClearButton")
-    static let color = Prop("color")
-    static let columns = Prop("columns")
-    static let columnSpacing = Prop("columnSpacing")
-    static let iconPosition = Prop("iconPosition")
-    static let iconSpacing = Prop("iconSpacing")
-    static let cornerRadius = Prop("cornerRadius")
-    static let count = Prop("count")
-    static let currentPage = Prop("currentPage")
-    static let cursorPosition = Prop("cursorPosition")
-    static let data = Prop("data")
-    static let date = Prop("date")
-    static let dragText = Prop("dragText")
-    static let drawable = Prop("drawable")
-    static let fill = Prop("fill")
-    static let fillRule = Prop("fillRule")
-    static let floatsOnTop = Prop("floatsOnTop")
-    static let layoutDirection = Prop("layoutDirection")
-    static let letsInputThrough = Prop("letsInputThrough")
-    static let fontAttributes = Prop("fontAttributes")
-    static let fontAutoScalingEnabled = Prop("fontAutoScalingEnabled")
-    static let fontFamily = Prop("fontFamily")
-    static let fontSize = Prop("fontSize")
-    static let format = Prop("format")
-    static let frame = Prop("frame")
-    static let gridColumn = Prop("gridColumn")
-    static let gridColumnSpan = Prop("gridColumnSpan")
-    static let gridRow = Prop("gridRow")
-    static let gridRowSpan = Prop("gridRowSpan")
-    static let group = Prop("group")
-    static let groupName = Prop("groupName")
-    static let height = Prop("height")
-    static let hideSingle = Prop("hideSingle")
-    static let horizontalAlignment = Prop("horizontalAlignment")
-    static let horizontalScrollBarVisibility = Prop("horizontalScrollBarVisibility")
-    static let horizontalTextAlignment = Prop("horizontalTextAlignment")
-    static let icon = Prop("icon")
-    static let step = Prop("step")
-    static let indicatorColor = Prop("indicatorColor")
-    static let indicatorSize = Prop("indicatorSize")
-    static let indicatorsShape = Prop("indicatorsShape")
-    static let ignoresInput = Prop("ignoresInput")
-    static let isAnimating = Prop("isAnimating")
-    static let isOn = Prop("isOn")
-    static let clipsContent = Prop("clipsContent")
-    static let isDestructive = Prop("isDestructive")
-    static let isEnabled = Prop("isEnabled")
-    static let isMaximizable = Prop("isMaximizable")
-    static let isMinimizable = Prop("isMinimizable")
-    static let isTranslucent = Prop("isTranslucent")
-    static let isOpen = Prop("isOpen")
-    static let isPassword = Prop("isPassword")
-    static let isSidebarVisible = Prop("isSidebarVisible")
-    static let isReadOnly = Prop("isReadOnly")
-    static let isRefreshEnabled = Prop("isRefreshEnabled")
-    static let isRefreshing = Prop("isRefreshing")
-    static let isRunning = Prop("isRunning")
-    static let isScrollEnabled = Prop("isScrollEnabled")
-    static let showsUserLocation = Prop("showsUserLocation")
-    static let isSpellCheckEnabled = Prop("isSpellCheckEnabled")
-    static let isTextPredictionEnabled = Prop("isTextPredictionEnabled")
-    static let isTrafficEnabled = Prop("isTrafficEnabled")
-    static let isVisible = Prop("isVisible")
-    static let isZoomEnabled = Prop("isZoomEnabled")
-    static let options = Prop("options")
-    static let inputPurpose = Prop("inputPurpose")
-    static let label = Prop("label")
-    static let lineBreak = Prop("lineBreak")
-    static let lineHeight = Prop("lineHeight")
-    static let location = Prop("location")
-    static let mapType = Prop("mapType")
-    static let margin = Prop("margin")
-    static let maximum = Prop("maximum")
-    static let maximumDate = Prop("maximumDate")
-    static let maximumHeight = Prop("maximumHeight")
-    static let maximumVisible = Prop("maximumVisible")
-    static let maximumWidth = Prop("maximumWidth")
-    static let maximumLength = Prop("maximumLength")
-    static let maximumLines = Prop("maximumLines")
-    static let minimum = Prop("minimum")
-    static let minimumDate = Prop("minimumDate")
-    static let minimumHeight = Prop("minimumHeight")
-    static let minimumWidth = Prop("minimumWidth")
-    static let mode = Prop("mode")
-    static let name = Prop("name")
-    static let backButtonTitle = Prop("backButtonTitle")
-    static let hasBackButton = Prop("hasBackButton")
-    static let hasNavigationBar = Prop("hasNavigationBar")
-    static let opacity = Prop("opacity")
-    static let placement = Prop("placement")
-    static let orientation = Prop("orientation")
-    static let padding = Prop("padding")
-    static let panTouchCount = Prop("panTouchCount")
+@_spi(Host) public extension Prop {
+    static let absoluteLayoutBounds = ViewContract.absoluteLayoutBounds.token
+    static let absoluteLayoutProportions = ViewContract.absoluteLayoutProportions.token
+    static let accessibilityHeadingLevel = VisualElementContract.accessibilityHeadingLevel.token
+    static let accessibilityHint = VisualElementContract.accessibilityHint.token
+    static let accessibilityIdentifier = PropertyContainerContract.accessibilityIdentifier.token
+    static let accessibilityLabel = VisualElementContract.accessibilityLabel.token
+    static let address = PinContract.address.token
+    static let allowDrop = ViewContract.allowDrop.token
+    static let avoidsSafeArea = LayoutContract.avoidsSafeArea.token
+    static let barForegroundColor = NavigationStackContract.barForegroundColor.token
+    static let hidesWhenInactive = WindowContract.hidesWhenInactive.token
+    static let isAccessibilityHidden = VisualElementContract.isAccessibilityHidden.token
+    static let pivotX = VisualElementContract.pivotX.token
+    static let pivotY = VisualElementContract.pivotY.token
+    static let aspect = ShapeContract.aspect.token
+    static let automationExcludedWithChildren = VisualElementContract.automationExcludedWithChildren.token
+    static let growsWithText = TextEditorContract.growsWithText.token
+    static let background = VisualElementContract.background.token
+    static let barBackgroundColor = BarElementContract.barBackgroundColor.token
+    static let borderColor = BorderElementContract.borderColor.token
+    static let borderWidth = BorderElementContract.borderWidth.token
+    static let canDrag = ViewContract.canDrag.token
+    static let characterSpacing = TextStyleElementContract.characterSpacing.token
+    static let shape = BorderContract.shape.token
+    static let showsClearButton = TextFieldContract.showsClearButton.token
+    static let color = ColorBoxContract.color.token
+    static let columns = GridContract.columns.token
+    static let columnSpacing = GridContract.columnSpacing.token
+    static let iconPosition = ButtonContract.iconPosition.token
+    static let iconSpacing = ButtonContract.iconSpacing.token
+    static let cornerRadius = BorderElementContract.cornerRadius.token
+    static let count = PositionIndicatorContract.count.token
+    static let currentPage = TabbedViewContract.currentPage.token
+    static let cursorPosition = InputViewContract.cursorPosition.token
+    static let data = PathContract.data.token
+    static let date = DatePickerContract.date.token
+    static let dragText = ViewContract.dragText.token
+    static let drawable = CanvasContract.drawable.token
+    static let fill = ShapeContract.fill.token
+    static let fillRule = PolygonContract.fillRule.token
+    static let floatsOnTop = WindowContract.floatsOnTop.token
+    static let layoutDirection = VisualElementContract.layoutDirection.token
+    static let letsInputThrough = LayoutContract.letsInputThrough.token
+    static let fontAttributes = FontElementContract.fontAttributes.token
+    static let fontAutoScalingEnabled = FontElementContract.fontAutoScalingEnabled.token
+    static let fontFamily = FontElementContract.fontFamily.token
+    static let fontSize = FontElementContract.fontSize.token
+    static let format = DatePickerContract.format.token
+    static let frame = VisualElementContract.frame.token
+    static let gridColumn = ViewContract.gridColumn.token
+    static let gridColumnSpan = ViewContract.gridColumnSpan.token
+    static let gridRow = ViewContract.gridRow.token
+    static let gridRowSpan = ViewContract.gridRowSpan.token
+    static let group = VisualStateContract.group.token
+    static let groupName = RadioButtonContract.groupName.token
+    static let height = VisualElementContract.height.token
+    static let hideSingle = PositionIndicatorContract.hideSingle.token
+    static let horizontalAlignment = ViewContract.horizontalAlignment.token
+    static let horizontalScrollBarVisibility = ScrollViewContract.horizontalScrollBarVisibility.token
+    static let horizontalTextAlignment = TextAlignmentElementContract.horizontalTextAlignment.token
+    static let icon = MenuItemElementContract.icon.token
+    static let step = StepperContract.step.token
+    static let indicatorColor = PositionIndicatorContract.indicatorColor.token
+    static let indicatorSize = PositionIndicatorContract.indicatorSize.token
+    static let indicatorsShape = PositionIndicatorContract.indicatorsShape.token
+    static let ignoresInput = VisualElementContract.ignoresInput.token
+    static let isAnimating = ImageContract.isAnimating.token
+    static let isOn = CheckBoxContract.isOn.token
+    static let clipsContent = LayoutContract.clipsContent.token
+    static let isDestructive = MenuItemElementContract.isDestructive.token
+    static let isEnabled = VisualElementContract.isEnabled.token
+    static let isMaximizable = WindowContract.isMaximizable.token
+    static let isMinimizable = WindowContract.isMinimizable.token
+    static let isTranslucent = WindowContract.isTranslucent.token
+    static let isOpen = DatePickerContract.isOpen.token
+    static let isPassword = TextFieldContract.isPassword.token
+    static let isSidebarVisible = SplitViewContract.isSidebarVisible.token
+    static let isReadOnly = InputViewContract.isReadOnly.token
+    static let isRefreshEnabled = RefreshViewContract.isRefreshEnabled.token
+    static let isRefreshing = RefreshViewContract.isRefreshing.token
+    static let isRunning = ActivityIndicatorContract.isRunning.token
+    static let isScrollEnabled = MapContract.isScrollEnabled.token
+    static let showsUserLocation = MapContract.showsUserLocation.token
+    static let isSpellCheckEnabled = InputViewContract.isSpellCheckEnabled.token
+    static let isTextPredictionEnabled = InputViewContract.isTextPredictionEnabled.token
+    static let isTrafficEnabled = MapContract.isTrafficEnabled.token
+    static let isVisible = VisualElementContract.isVisible.token
+    static let isZoomEnabled = MapContract.isZoomEnabled.token
+    static let options = PickerContract.options.token
+    static let inputPurpose = InputViewContract.inputPurpose.token
+    static let label = PinContract.label.token
+    static let lineBreak = ButtonContract.lineBreak.token
+    static let lineHeight = LineHeightElementContract.lineHeight.token
+    static let location = PinContract.location.token
+    static let mapType = MapContract.mapType.token
+    static let margin = ViewContract.margin.token
+    static let maximum = SliderContract.maximum.token
+    static let maximumDate = DatePickerContract.maximumDate.token
+    static let maximumHeight = VisualElementContract.maximumHeight.token
+    static let maximumVisible = PositionIndicatorContract.maximumVisible.token
+    static let maximumWidth = VisualElementContract.maximumWidth.token
+    static let maximumLength = InputViewContract.maximumLength.token
+    static let maximumLines = LabelContract.maximumLines.token
+    static let minimum = SliderContract.minimum.token
+    static let minimumDate = DatePickerContract.minimumDate.token
+    static let minimumHeight = VisualElementContract.minimumHeight.token
+    static let minimumWidth = VisualElementContract.minimumWidth.token
+    static let mode = SwipeActionsContract.mode.token
+    static let name = VisualStateContract.name.token
+    static let backButtonTitle = PageContract.backButtonTitle.token
+    static let hasBackButton = PageContract.hasBackButton.token
+    static let hasNavigationBar = PageContract.hasNavigationBar.token
+    static let opacity = VisualElementContract.opacity.token
+    static let placement = ToolbarItemContract.placement.token
+    static let orientation = ScrollViewContract.orientation.token
+    static let padding = PaddingElementContract.padding.token
+    static let panTouchCount = ViewContract.panTouchCount.token
+    static let panXChannel = ViewContract.panXChannel.token
+    static let panYChannel = ViewContract.panYChannel.token
+    static let placeholder = InputViewContract.placeholder.token
+    static let placeholderColor = InputViewContract.placeholderColor.token
+    static let points = PolygonContract.points.token
+    static let position = PositionIndicatorContract.position.token
+    static let priority = ToolbarItemContract.priority.token
+    static let progress = ProgressBarContract.progress.token
+    static let region = MapContract.region.token
+    static let renderTransform = ShapeContract.renderTransform.token
+    static let returnKey = SearchFieldContract.returnKey.token
+    static let rotation = VisualElementContract.rotation.token
+    static let rotationX = VisualElementContract.rotationX.token
+    static let rotationY = VisualElementContract.rotationY.token
+    static let rows = GridContract.rows.token
+    static let rowSpacing = GridContract.rowSpacing.token
+    static let scale = VisualElementContract.scale.token
+    static let scaleX = VisualElementContract.scaleX.token
+    static let scaleY = VisualElementContract.scaleY.token
+    static let scrollOffset = ScrollViewContract.scrollOffset.token
+    static let selectedIndex = PickerContract.selectedIndex.token
+    static let selectedIndicatorColor = PositionIndicatorContract.selectedIndicatorColor.token
+    static let selectionLength = InputViewContract.selectionLength.token
+    static let side = SwipeActionsContract.side.token
+    static let source = ImageContract.source.token
+    static let spacing = StackBaseContract.spacing.token
+    static let stroke = ShapeContract.stroke.token
+    static let strokeDashOffset = ShapeContract.strokeDashOffset.token
+    static let strokeDashPattern = ShapeContract.strokeDashPattern.token
+    static let strokeLineCap = ShapeContract.strokeLineCap.token
+    static let strokeLineJoin = ShapeContract.strokeLineJoin.token
+    static let strokeMiterLimit = ShapeContract.strokeMiterLimit.token
+    static let strokeWidth = ShapeContract.strokeWidth.token
+    static let style = VisualElementContract.style.token
+    static let subtitle = TitleBarContract.subtitle.token
+    static let swipeBehaviorOnInvoked = SwipeActionsContract.swipeBehaviorOnInvoked.token
+    static let swipeDirection = ViewContract.swipeDirection.token
+    static let swipeThreshold = ViewContract.swipeThreshold.token
+    static let tapCount = ViewContract.tapCount.token
+    static let text = TextElementContract.text.token
+    static let textColor = TextStyleElementContract.textColor.token
+    static let textDecorations = DecorableTextElementContract.textDecorations.token
+    static let textCase = TextElementContract.textCase.token
+    static let threshold = SwipeViewContract.threshold.token
+    static let time = TimePickerContract.time.token
+    static let tint = TintElementContract.tint.token
+    static let title = PageElementContract.title.token
+    static let translationX = VisualElementContract.translationX.token
+    static let translationY = VisualElementContract.translationY.token
+    static let type = PinContract.type.token
+    static let userAgent = WebViewContract.userAgent.token
 
-    /// This library's own: the channel a drag's distance ACROSS is written
-    /// into, by the number it rides on.
-    static let panXChannel = Prop("panXChannel")
-
-    /// This library's own: the channel a drag's distance DOWN is written
-    /// into, by the number it rides on.
-    static let panYChannel = Prop("panYChannel")
-    static let placeholder = Prop("placeholder")
-    static let placeholderColor = Prop("placeholderColor")
-    static let points = Prop("points")
-    static let position = Prop("position")
-    static let priority = Prop("priority")
-    static let progress = Prop("progress")
-    static let region = Prop("region")
-    static let renderTransform = Prop("renderTransform")
-    static let returnKey = Prop("returnKey")
-    static let rotation = Prop("rotation")
-    static let rotationX = Prop("rotationX")
-    static let rotationY = Prop("rotationY")
-    static let rows = Prop("rows")
-    static let rowSpacing = Prop("rowSpacing")
-    static let scale = Prop("scale")
-    static let scaleX = Prop("scaleX")
-    static let scaleY = Prop("scaleY")
-
-    /// This library's own: where the scroller stands, as one point of two
-    /// lanes - the platform's offset being one point, and one journey being
-    /// what makes a diagonal move arrive on both axes together.
-    static let scrollOffset = Prop("scrollOffset")
-    static let selectedIndex = Prop("selectedIndex")
-    static let selectedIndicatorColor = Prop("selectedIndicatorColor")
-    static let selectionLength = Prop("selectionLength")
-    static let side = Prop("side")
-    static let source = Prop("source")
-    static let spacing = Prop("spacing")
-    static let stroke = Prop("stroke")
-    static let strokeDashOffset = Prop("strokeDashOffset")
-    static let strokeDashPattern = Prop("strokeDashPattern")
-    static let strokeLineCap = Prop("strokeLineCap")
-    static let strokeLineJoin = Prop("strokeLineJoin")
-    static let strokeMiterLimit = Prop("strokeMiterLimit")
-    static let strokeWidth = Prop("strokeWidth")
-    static let style = Prop("style")
-    static let subtitle = Prop("subtitle")
-    static let swipeBehaviorOnInvoked = Prop("swipeBehaviorOnInvoked")
-    static let swipeDirection = Prop("swipeDirection")
-    static let swipeThreshold = Prop("swipeThreshold")
-    static let tapCount = Prop("tapCount")
-    static let text = Prop("text")
-    static let textColor = Prop("textColor")
-    static let textDecorations = Prop("textDecorations")
-    static let textCase = Prop("textCase")
-    static let threshold = Prop("threshold")
-    static let time = Prop("time")
-    static let tint = Prop("tint")
-    static let title = Prop("title")
-    static let translationX = Prop("translationX")
-    static let translationY = Prop("translationY")
-    static let type = Prop("type")
-    static let userAgent = Prop("userAgent")
-
-    static let value = Prop("value")
-    static let verticalAlignment = Prop("verticalAlignment")
-    static let verticalScrollBarVisibility = Prop("verticalScrollBarVisibility")
-    static let verticalTextAlignment = Prop("verticalTextAlignment")
-    static let width = Prop("width")
-    static let windowType = Prop("windowType")
-    static let windowValue = Prop("windowValue")
-    static let x = Prop("x")
-    static let x1 = Prop("x1")
-    static let x2 = Prop("x2")
-    static let y = Prop("y")
-    static let y1 = Prop("y1")
-    static let y2 = Prop("y2")
-    static let zIndex = Prop("zIndex")
+    static let value = SliderContract.value.token
+    static let verticalAlignment = ViewContract.verticalAlignment.token
+    static let verticalScrollBarVisibility = ScrollViewContract.verticalScrollBarVisibility.token
+    static let verticalTextAlignment = TextAlignmentElementContract.verticalTextAlignment.token
+    static let width = VisualElementContract.width.token
+    static let windowType = WindowContract.windowType.token
+    static let windowValue = WindowContract.windowValue.token
+    static let x = WindowContract.x.token
+    static let x1 = LineContract.x1.token
+    static let x2 = LineContract.x2.token
+    static let y = WindowContract.y.token
+    static let y1 = LineContract.y1.token
+    static let y2 = LineContract.y2.token
+    static let zIndex = VisualElementContract.zIndex.token
 }
 
-public extension Event {
-    static let activated = Event("activated")
-    static let appearing = Event("appearing")
-    static let canGoBackChanged = Event("canGoBackChanged")
-    static let canGoForwardChanged = Event("canGoForwardChanged")
-    static let clicked = Event("clicked")
-    static let closed = Event("closed")
-    static let dateChanged = Event("dateChanged")
-    static let pinClicked = Event("pinClicked")
-    static let pinDetailsClicked = Event("pinDetailsClicked")
-    static let refreshRequested = Event("refreshRequested")
-    static let submitted = Event("submitted")
-    static let created = Event("created")
-    static let currentPageChanged = Event("currentPageChanged")
-    static let deactivated = Event("deactivated")
-    static let destroying = Event("destroying")
-    static let disappearing = Event("disappearing")
-    static let dragCompleted = Event("dragCompleted")
-    static let dragged = Event("dragged")
-    static let dragLeave = Event("dragLeave")
-    static let dragOver = Event("dragOver")
-    static let dragStarted = Event("dragStarted")
-    static let dragStarting = Event("dragStarting")
-    static let drop = Event("drop")
-    static let dropCompleted = Event("dropCompleted")
-    static let frameChanged = Event("frameChanged")
-    static let isFocusedChanged = Event("isFocusedChanged")
-    static let isSidebarVisibleChanged = Event("isSidebarVisibleChanged")
-    static let isRefreshingChanged = Event("isRefreshingChanged")
-    static let mapClicked = Event("mapClicked")
-    static let modalPopped = Event("modalPopped")
-    static let navigated = Event("navigated")
-    static let navigatedFrom = Event("navigatedFrom")
-    static let navigatedTo = Event("navigatedTo")
-    static let navigating = Event("navigating")
-    static let navigatingFrom = Event("navigatingFrom")
-    static let opened = Event("opened")
-    static let panUpdated = Event("panUpdated")
-    static let pinchUpdated = Event("pinchUpdated")
-    static let pointerEntered = Event("pointerEntered")
-    static let pointerExited = Event("pointerExited")
-    static let pointerMoved = Event("pointerMoved")
-    static let pointerPressed = Event("pointerPressed")
-    static let pointerReleased = Event("pointerReleased")
-    static let popped = Event("popped")
-    static let pressed = Event("pressed")
-    static let processTerminated = Event("processTerminated")
-    static let released = Event("released")
-    static let resumed = Event("resumed")
-    static let scrollStopped = Event("scrollStopped")
-    static let scrollXChanged = Event("scrollXChanged")
-    static let scrollYChanged = Event("scrollYChanged")
-    static let selectedIndexChanged = Event("selectedIndexChanged")
-    static let stopped = Event("stopped")
-    static let swipeChanging = Event("swipeChanging")
-    static let swiped = Event("swiped")
-    static let swipeEnded = Event("swipeEnded")
-    static let swipeStarted = Event("swipeStarted")
-    static let tapped = Event("tapped")
-    static let textChanged = Event("textChanged")
-    static let timeChanged = Event("timeChanged")
-    static let toggled = Event("toggled")
-    static let valueChanged = Event("valueChanged")
-    static let visualStateChanged = Event("visualStateChanged")
-    static let windowClosed = Event("windowClosed")
-    static let windowRestored = Event("windowRestored")
+@_spi(Host) public extension Event {
+    static let activated = SceneContract.activated.token
+    static let appearing = PageContract.appearing.token
+    static let canGoBackChanged = WebViewContract.canGoBackChanged.token
+    static let canGoForwardChanged = WebViewContract.canGoForwardChanged.token
+    static let clicked = MenuItemElementContract.clicked.token
+    static let closed = DatePickerContract.closed.token
+    static let dateChanged = DatePickerContract.dateChanged.token
+    static let pinClicked = PinContract.pinClicked.token
+    static let pinDetailsClicked = PinContract.pinDetailsClicked.token
+    static let refreshRequested = RefreshViewContract.refreshRequested.token
+    static let submitted = SearchFieldContract.submitted.token
+    static let created = WindowContract.created.token
+    static let currentPageChanged = TabbedViewContract.currentPageChanged.token
+    static let deactivated = SceneContract.deactivated.token
+    static let destroying = SceneContract.destroying.token
+    static let disappearing = PageContract.disappearing.token
+    static let dragCompleted = SliderContract.dragCompleted.token
+    static let dragged = CanvasContract.dragged.token
+    static let dragLeave = ViewContract.dragLeave.token
+    static let dragOver = ViewContract.dragOver.token
+    static let dragStarted = SliderContract.dragStarted.token
+    static let dragStarting = ViewContract.dragStarting.token
+    static let drop = ViewContract.drop.token
+    static let dropCompleted = ViewContract.dropCompleted.token
+    static let frameChanged = ViewContract.frameChanged.token
+    static let isFocusedChanged = VisualElementContract.isFocusedChanged.token
+    static let isSidebarVisibleChanged = SplitViewContract.isSidebarVisibleChanged.token
+    static let isRefreshingChanged = RefreshViewContract.isRefreshingChanged.token
+    static let mapClicked = MapContract.mapClicked.token
+    static let modalPopped = WindowContract.modalPopped.token
+    static let navigated = WebViewContract.navigated.token
+    static let navigatedFrom = PageContract.navigatedFrom.token
+    static let navigatedTo = PageContract.navigatedTo.token
+    static let navigating = WebViewContract.navigating.token
+    static let navigatingFrom = PageContract.navigatingFrom.token
+    static let opened = DatePickerContract.opened.token
+    static let panUpdated = ViewContract.panUpdated.token
+    static let pinchUpdated = ViewContract.pinchUpdated.token
+    static let pointerEntered = ViewContract.pointerEntered.token
+    static let pointerExited = ViewContract.pointerExited.token
+    static let pointerMoved = ViewContract.pointerMoved.token
+    static let pointerPressed = ViewContract.pointerPressed.token
+    static let pointerReleased = ViewContract.pointerReleased.token
+    static let popped = NavigationStackContract.popped.token
+    static let pressed = ButtonContract.pressed.token
+    static let processTerminated = WebViewContract.processTerminated.token
+    static let released = ButtonContract.released.token
+    static let resumed = WindowContract.resumed.token
+    static let scrollStopped = ScrollViewContract.scrollStopped.token
+    static let scrollXChanged = ScrollViewContract.scrollXChanged.token
+    static let scrollYChanged = ScrollViewContract.scrollYChanged.token
+    static let selectedIndexChanged = PickerContract.selectedIndexChanged.token
+    static let stopped = SceneContract.stopped.token
+    static let swipeChanging = SwipeViewContract.swipeChanging.token
+    static let swiped = ViewContract.swiped.token
+    static let swipeEnded = SwipeViewContract.swipeEnded.token
+    static let swipeStarted = SwipeViewContract.swipeStarted.token
+    static let tapped = ViewContract.tapped.token
+    static let textChanged = InputViewContract.textChanged.token
+    static let timeChanged = TimePickerContract.timeChanged.token
+    static let toggled = CheckBoxContract.toggled.token
+    static let valueChanged = SliderContract.valueChanged.token
+    static let visualStateChanged = VisualElementContract.visualStateChanged.token
+    static let windowClosed = SceneContract.windowClosed.token
+    static let windowRestored = SceneContract.windowRestored.token
 }
 
-public extension Act {
-    /// Gives the aimed view the keyboard focus, answering whether it took it.
-    static let focus = Act("focus")
-
-    /// Takes the keyboard focus off the aimed view.
-    static let unfocus = Act("unfocus")
-
-    /// Steps the aimed web view back through its history.
-    static let goBack = Act("goBack")
-
-    /// Steps the aimed web view forward through its history.
-    static let goForward = Act("goForward")
-
-    /// Loads the aimed web view's page again.
-    static let reload = Act("reload")
-
-    /// Runs JavaScript in the aimed web view's page, answering what it
-    /// evaluated to, as text.
-    static let evaluateJavaScript = Act("evaluateJavaScript")
-
-    /// Moves the aimed map to show a region.
-    static let moveToRegion = Act("moveToRegion")
-
-    /// Takes the keyboard down from whichever view on the showing page holds
-    /// the focus - the host finds that view, which this side cannot. See
-    /// `OnScreenKeyboard.hide()`.
-    static let hideOnScreenKeyboard = Act("hideOnScreenKeyboard")
-
-    /// Tells the reader something on the showing page, with one button that
-    /// dismisses it; nothing comes back but the dismissal. See `Dialogs.alert`.
-    static let alert = Act("alert")
-
-    /// Asks the reader a yes-or-no question on the showing page, answering
-    /// whether the accept button was pressed. See `Dialogs.confirm`.
-    static let confirm = Act("confirm")
-
-    /// Offers the reader a list of choices on the showing page, answering the
-    /// pressed caption. See `Dialogs.chooseAction`.
-    static let chooseAction = Act("chooseAction")
-
-    /// Asks the reader to type something on the showing page, answering the
-    /// text. See `Dialogs.prompt`.
-    static let prompt = Act("prompt")
-
-    /// Has the platform's screen reader say a text. See
-    /// `ScreenReader.announce`.
-    static let announce = Act("announce")
-
-    /// The host's local time of day, asked of its clock. See `ClockTime.now()`.
-    static let currentTime = Act("currentTime")
-
-    /// The IANA identifier of the host's local time zone. See
-    /// `TimeZoneInfo.local()`.
-    static let currentTimeZone = Act("currentTimeZone")
-
-    /// How far a zone is from UTC on a given day, asked of the host. See
-    /// `TimeZoneInfo.utcOffset`.
-    static let utcOffset = Act("utcOffset")
-
-    /// A persistent key's new value, on its way to the store. Which store
-    /// that is belongs to the host - see Core/Persistence.swift.
-    static let persistValue = Act("persistValue")
-
-    /// A scene key's new value, on its way to the platform's record of that
-    /// scene. See Core/Scenes.swift.
-    static let persistSceneValue = Act("persistSceneValue")
-
-    /// A handler's escaped error, reported to the host.
-    static let handlerFailed = Act("handlerFailed")
+@_spi(Host) public extension Act {
+    static let focus = VisualElementContract.focus.token
+    static let unfocus = VisualElementContract.unfocus.token
+    static let goBack = WebViewContract.goBack.token
+    static let goForward = WebViewContract.goForward.token
+    static let reload = WebViewContract.reload.token
+    static let evaluateJavaScript = WebViewContract.evaluateJavaScript.token
+    static let moveToRegion = MapContract.moveToRegion.token
+    static let hideOnScreenKeyboard = ApplicationContract.hideOnScreenKeyboard.token
+    static let alert = ApplicationContract.alert.token
+    static let confirm = ApplicationContract.confirm.token
+    static let chooseAction = ApplicationContract.chooseAction.token
+    static let prompt = ApplicationContract.prompt.token
+    static let announce = ApplicationContract.announce.token
+    static let currentTime = ApplicationContract.currentTime.token
+    static let currentTimeZone = ApplicationContract.currentTimeZone.token
+    static let utcOffset = ApplicationContract.utcOffset.token
+    static let persistValue = ApplicationContract.persistValue.token
+    static let persistSceneValue = ApplicationContract.persistSceneValue.token
+    static let handlerFailed = ApplicationContract.handlerFailed.token
 }

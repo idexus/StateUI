@@ -5,7 +5,7 @@
 /// leading view.
 public enum LeadingContentContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .leadingContent
+    public static let nodeType: NodeType = "LeadingContent"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

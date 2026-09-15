@@ -4,7 +4,7 @@
 /// A read-only piece of text.
 public enum LabelContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .label
+    public static let nodeType: NodeType = "Label"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

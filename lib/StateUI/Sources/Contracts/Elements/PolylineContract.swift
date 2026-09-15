@@ -5,7 +5,7 @@
 /// zigzag.
 public enum PolylineContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .polyline
+    public static let nodeType: NodeType = "Polyline"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

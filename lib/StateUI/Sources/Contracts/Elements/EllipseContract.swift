@@ -4,7 +4,7 @@
 /// An oval filling the room it is given - a circle when that room is square.
 public enum EllipseContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .ellipse
+    public static let nodeType: NodeType = "Ellipse"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

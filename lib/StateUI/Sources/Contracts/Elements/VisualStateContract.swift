@@ -4,7 +4,7 @@
 /// One state a control can be in, and the values it sets there.
 public enum VisualStateContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .visualState
+    public static let nodeType: NodeType = "VisualState"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

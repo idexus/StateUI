@@ -5,7 +5,7 @@
 /// below.
 public enum MenuSeparatorContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .menuSeparator
+    public static let nodeType: NodeType = "MenuSeparator"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

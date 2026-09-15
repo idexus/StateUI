@@ -4,7 +4,7 @@
 /// Arranges its children in rows and columns.
 public enum GridContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .grid
+    public static let nodeType: NodeType = "Grid"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

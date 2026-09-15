@@ -4,7 +4,7 @@
 /// A time of day, chosen from the platform's own clock.
 public enum TimePickerContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .timePicker
+    public static let nodeType: NodeType = "TimePicker"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

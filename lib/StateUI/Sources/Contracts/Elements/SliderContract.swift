@@ -4,7 +4,7 @@
 /// A value picked by dragging a thumb along a native track.
 public enum SliderContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .slider
+    public static let nodeType: NodeType = "Slider"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

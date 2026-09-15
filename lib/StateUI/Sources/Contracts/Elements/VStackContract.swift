@@ -4,7 +4,7 @@
 /// Stacks its children top to bottom, each as tall as it asks to be.
 public enum VStackContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .vStack
+    public static let nodeType: NodeType = "VStack"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

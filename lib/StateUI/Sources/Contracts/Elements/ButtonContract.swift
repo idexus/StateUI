@@ -4,7 +4,7 @@
 /// A button with a caption, and a handler for the press.
 public enum ButtonContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .button
+    public static let nodeType: NodeType = "Button"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

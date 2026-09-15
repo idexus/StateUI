@@ -5,7 +5,7 @@
 /// them.
 public enum TabbedViewContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .tabbedView
+    public static let nodeType: NodeType = "TabbedView"
 
     /// Every base host presents it by its platform's conventions, keeping
     /// StateUI's state contract.

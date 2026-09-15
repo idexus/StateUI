@@ -4,7 +4,7 @@
 /// A page's toolbar items.
 public enum ToolbarItemsContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .toolbarItems
+    public static let nodeType: NodeType = "ToolbarItems"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

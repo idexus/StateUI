@@ -4,7 +4,7 @@
 /// One of a swipe view's four collections of actions, and what they do.
 public enum SwipeActionsContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .swipeActions
+    public static let nodeType: NodeType = "SwipeActions"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

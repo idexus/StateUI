@@ -4,7 +4,7 @@
 /// One choice out of a list.
 public enum PickerContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .picker
+    public static let nodeType: NodeType = "Picker"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

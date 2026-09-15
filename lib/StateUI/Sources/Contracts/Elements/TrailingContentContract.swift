@@ -5,7 +5,7 @@
 /// trailing view.
 public enum TrailingContentContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .trailingContent
+    public static let nodeType: NodeType = "TrailingContent"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

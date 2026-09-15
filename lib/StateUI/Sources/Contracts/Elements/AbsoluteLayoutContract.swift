@@ -4,7 +4,7 @@
 /// Puts each child exactly where it is told, and nowhere else.
 public enum AbsoluteLayoutContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .absoluteLayout
+    public static let nodeType: NodeType = "AbsoluteLayout"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

@@ -3,7 +3,7 @@
 
 #if os(macOS)
 import Foundation
-import StateUI
+@_spi(Host) import StateUI
 @testable import StateUIAppKit
 import XCTest
 

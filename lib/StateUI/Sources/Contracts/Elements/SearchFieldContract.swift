@@ -4,7 +4,7 @@
 /// A text field with a search button on the keyboard.
 public enum SearchFieldContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .searchField
+    public static let nodeType: NodeType = "SearchField"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

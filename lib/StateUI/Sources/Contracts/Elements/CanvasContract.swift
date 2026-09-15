@@ -4,7 +4,7 @@
 /// A canvas to draw on, one instruction at a time.
 public enum CanvasContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .canvas
+    public static let nodeType: NodeType = "Canvas"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

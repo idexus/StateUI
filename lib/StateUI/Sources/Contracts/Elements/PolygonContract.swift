@@ -4,7 +4,7 @@
 /// A closed outline through a list of points.
 public enum PolygonContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .polygon
+    public static let nodeType: NodeType = "Polygon"
 
     /// StateUI composes it from smaller primitives before a host receives the
     /// tree.

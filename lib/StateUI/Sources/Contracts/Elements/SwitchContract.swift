@@ -4,7 +4,7 @@
 /// An on/off toggle.
 public enum SwitchContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .`switch`
+    public static let nodeType: NodeType = "Switch"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

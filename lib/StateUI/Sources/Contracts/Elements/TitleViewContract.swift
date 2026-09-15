@@ -4,7 +4,7 @@
 /// The view a page shows in its bar in place of its title.
 public enum TitleViewContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .titleView
+    public static let nodeType: NodeType = "TitleView"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure

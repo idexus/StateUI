@@ -4,7 +4,7 @@
 /// A text field of several lines.
 public enum TextEditorContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .textEditor
+    public static let nodeType: NodeType = "TextEditor"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

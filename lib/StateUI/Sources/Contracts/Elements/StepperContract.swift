@@ -4,7 +4,7 @@
 /// A number changed one step at a time, by two buttons.
 public enum StepperContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .stepper
+    public static let nodeType: NodeType = "Stepper"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

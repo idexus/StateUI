@@ -4,7 +4,7 @@
 /// Stacks its children left to right, each as wide as it asks to be.
 public enum HStackContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .hStack
+    public static let nodeType: NodeType = "HStack"
 
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native

@@ -4,7 +4,7 @@
 /// A page holding two: a sidebar at the side and the page beside it.
 public enum SplitViewContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .splitView
+    public static let nodeType: NodeType = "SplitView"
 
     /// Every base host presents it by its platform's conventions, keeping
     /// StateUI's state contract.

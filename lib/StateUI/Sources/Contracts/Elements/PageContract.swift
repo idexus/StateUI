@@ -5,7 +5,7 @@
 /// destinations, a tab, either half of a split view, a sheet.
 public enum PageContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .page
+    public static let nodeType: NodeType = "Page"
 
     /// Every base host presents it by its platform's conventions, keeping
     /// StateUI's state contract.

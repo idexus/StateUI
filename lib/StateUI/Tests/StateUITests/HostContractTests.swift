@@ -848,16 +848,7 @@ final class HostContractTests: XCTestCase {
     }
 
     private func declaredNames(of vocabulary: String, in source: String) -> Set<String> {
-        let marker = "= \(vocabulary)(\""
-
-        return Set(source.split(separator: "\n").compactMap { line in
-            let code = line.trimmingCharacters(in: .whitespaces)
-            guard code.hasPrefix("static let "),
-                  let start = code.range(of: marker)?.upperBound,
-                  let end = code[start...].firstIndex(of: "\"")
-            else { return nil }
-            return String(code[start..<end])
-        })
+        Fixtures.tokenNames(of: vocabulary, in: source)
     }
 
     private func assertCoverage(

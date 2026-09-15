@@ -4,7 +4,7 @@
 /// An authored title area attached to a window.
 public enum TitleBarContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .titleBar
+    public static let nodeType: NodeType = "TitleBar"
 
     /// Every base host presents it by its platform's conventions, keeping
     /// StateUI's state contract.

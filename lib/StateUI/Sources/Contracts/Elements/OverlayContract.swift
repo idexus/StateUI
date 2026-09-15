@@ -4,7 +4,7 @@
 /// A view shown above a window's page, over everything else it holds.
 public enum OverlayContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = .overlay
+    public static let nodeType: NodeType = "Overlay"
 
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
