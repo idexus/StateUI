@@ -645,9 +645,13 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     /// desktop show through it.
     private var material: NSVisualEffectView?
 
+    /// The band a written bar colour paints, at the top of the material.
+    private var materialBand: NSView?
+
     /// Whether the desktop shows through the window: its material lies under
     /// the page, wherever the page leaves it uncovered or paints a colour it
-    /// shows through - below the band a written bar colour paints.
+    /// shows through, and the band a written bar colour paints lies over it -
+    /// a colour with an alpha shows the desktop there too.
     var isTranslucent = false {
         didSet {
             guard isTranslucent != oldValue else { return }
@@ -657,17 +661,23 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
                 material.material = .underWindowBackground
                 material.blendingMode = .behindWindow
                 material.state = .followsWindowActiveState
+                let band = NSView()
+                band.wantsLayer = true
+                material.addSubview(band)
                 addSubview(material, positioned: .below, relativeTo: nil)
                 self.material = material
+                materialBand = band
             } else {
                 material?.removeFromSuperview()
                 material = nil
+                materialBand = nil
             }
             needsLayout = true
         }
     }
 
     var materialForTesting: NSVisualEffectView? { material }
+    var materialBandForTesting: NSView? { materialBand }
 
     /// The colour the window's bars are written in, painted over `barBand`.
     /// Nil leaves the title bar and toolbar the system's material.
@@ -684,7 +694,8 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
-        guard let barColor else { return }
+        // Over a material the band is the material's own; see `layout()`.
+        guard let barColor, material == nil else { return }
         barColor.setFill()
         barBand.fill()
     }
@@ -720,10 +731,17 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     override func layout() {
         super.layout()
-        material?.frame = barColor == nil
-            ? bounds
-            : NSRect(x: 0, y: barBand.maxY, width: bounds.width,
-                     height: max(0, bounds.height - barBand.maxY))
+        if let material {
+            material.frame = bounds
+            // The top of the material, which is not flipped: the band a
+            // written bar colour paints, lying over what blends with the
+            // desktop.
+            materialBand?.frame = NSRect(
+                x: 0, y: bounds.height - barBand.height,
+                width: bounds.width, height: barBand.height)
+            materialBand?.layer?.backgroundColor = barColor?.cgColor
+            materialBand?.isHidden = barColor == nil
+        }
         page?.frame = pageSpansTitleBar ? bounds : safeAreaRect
         overlaySurface.frame = safeAreaRect
         overlaySurface.layoutSubtreeIfNeeded()

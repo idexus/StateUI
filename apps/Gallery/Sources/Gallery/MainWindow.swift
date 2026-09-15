@@ -113,6 +113,13 @@ struct MainWindow: Window {
                 window.titleBar = chrome
             }
         }
+        // And again when the desktop starts or stops showing through the
+        // window, the bars letting it through with the rest.
+        .onChanged(window.isTranslucent) {
+            if device.formFactor == .desktop {
+                window.titleBar = chrome
+            }
+        }
     }
 
     /// The other half of the split view: the section, arranged the way that section
@@ -136,7 +143,7 @@ struct MainWindow: Window {
         }
         // The bar belongs to the navigation arrangement, not one page on it.
         // Its foreground stays white against the gallery accent in both themes.
-        .barBackgroundColor(style.accent.color)
+        .barBackgroundColor(barColour)
         .barForegroundColor(Palette.onBrand)
     }
 
@@ -214,7 +221,7 @@ struct MainWindow: Window {
                 // at all.
                 .title("Stack")
                 .icon(ImageSource(light: "tab_bar.png", dark: "tab_bar_dark.png"))
-                .barBackgroundColor(style.accent.color)
+                .barBackgroundColor(barColour)
                 .barForegroundColor(Palette.onBrand)
 
             case .second:
@@ -225,18 +232,24 @@ struct MainWindow: Window {
             }
         }
         .selection(nav.$tab)
-        .barBackgroundColor(style.accent.color)
+        .barBackgroundColor(barColour)
     }
 
     // MARK: - The window's own chrome
 
     /// Native desktop chrome whose values and slot contents are described by
     /// the gallery scene. See Samples/Windows/TitleBarSample.swift.
+    /// What the bars are painted in: the gallery's accent, with a fifth let
+    /// through while the desktop shows through the window.
+    private var barColour: Color {
+        window.isTranslucent == true ? style.accent.translucentColor : style.accent.color
+    }
+
     private var chrome: TitleBar {
         TitleBar("StateUI")
             .subtitle(bar.subtitle)
             .icon("stateui_mark.png")
-            .background(style.accent.color)
+            .background(barColour)
             .barForegroundColor(Palette.onBrand)
             .trailingContent {
                 ChromeEnd(bar: bar, nav: nav, catalog: catalog)

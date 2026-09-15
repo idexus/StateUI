@@ -331,6 +331,34 @@ final class AppKitPageTests: XCTestCase {
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
     }
 
+    /// On a translucent window the band a written bar colour paints lies over
+    /// the window's material, so a colour with an alpha shows the desktop
+    /// through the bars as well.
+    @MainActor
+    func testATranslucentWindowsBarLiesOverItsMaterial() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        var stack = navigation([page("home", title: "Home")])
+        stack.properties[.barBackgroundColor] = .color(
+            red: 81, green: 43, blue: 212, alpha: 204)
+        renderer.applyForTesting(windowTree(stack, translucent: true))
+
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        content.layoutSubtreeIfNeeded()
+        let material = try XCTUnwrap(content.materialForTesting)
+        XCTAssertEqual(material.frame, content.bounds, "the material lies under the band too")
+        let band = try XCTUnwrap(content.materialBandForTesting, "no band over the material")
+        XCTAssertFalse(band.isHidden)
+        XCTAssertEqual(band.frame.maxY, material.bounds.height, "the band is the material's top")
+        XCTAssertEqual(band.frame.height, content.barBand.height)
+        XCTAssertEqual(band.layer?.backgroundColor?.alpha ?? 0, 204.0 / 255.0, accuracy: 0.001)
+    }
+
     @MainActor
     func testTabSelectionChangesVisibilityWithoutInventingNavigation() {
         var reported: [(Int32, [HostValue])] = []

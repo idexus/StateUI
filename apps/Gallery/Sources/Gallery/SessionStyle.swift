@@ -51,6 +51,17 @@ enum AccentChoice: String, CaseIterable, PersistentValue {
         case .graphite: return Color("#374151")
         }
     }
+
+    /// The colour with a fifth let through - the bars of a window the desktop
+    /// shows through, which keep their white legible over it.
+    var translucentColor: Color {
+        switch self {
+        case .violet: return Color("#CC512BD4")
+        case .teal: return Color("#CC0F766E")
+        case .coral: return Color("#CCC2410C")
+        case .graphite: return Color("#CC374151")
+        }
+    }
 }
 
 /// What one gallery looks like, and how its tool windows stand - stepping
