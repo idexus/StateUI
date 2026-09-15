@@ -16,9 +16,9 @@ A control, property, or event decision reaches every active layer together:
 
 - Swift API and vocabulary;
 - `HostContract` ownership;
-- every applicable native host;
+- every applicable host, the MAUI host included;
 - focused core and host tests;
-- the native Gallery;
+- the Gallery, on every host the change reaches;
 - the handbook (`README.md`, `docs/`, and public `///` documentation).
 
 Update `docs/platform-contract.md` in the same slice. Add `✅` only when the
@@ -32,8 +32,10 @@ requirement.
 ## Keep the core platform-neutral
 
 Code under `lib/StateUI/Sources` does not import Foundation or a platform UI
-framework. AppKit belongs under `lib/StateUI.AppKit`; each later host receives a
-sibling package of its own.
+framework. AppKit belongs under `lib/StateUI.AppKit` and the .NET MAUI host
+under `lib/StateUI.Maui`, with its build in `.scripts/Maui`; each later host
+receives a sibling package of its own. Swift written for the MAUI host alone
+stands under `#if MAUI`, the condition every MAUI build defines.
 
 Swift owns identity, diffing, state, journeys, and motion descriptions. Hosts
 own native objects, platform callbacks, and display-frame property motion. Keep
@@ -51,25 +53,34 @@ Every public Swift declaration needs `///` documentation. Gallery pages use
 minimal on-screen prose: show behavior directly and tell the reader only what
 they need to try.
 
+Every public C# member of the MAUI host carries XML documentation: CS1591 and
+CS1573 are errors in its projects.
+
 ## Test
 
-Run the suite owned by the area while iterating, then all three before handing
+Run the suite owned by the area while iterating, then all four before handing
 off a complete vertical change:
 
 ```bash
 swift test
 swift test --package-path lib/StateUI.AppKit
 swift test --package-path apps/Gallery
+dotnet test lib/StateUI.Maui/Tests
 ```
 
-Build the native Gallery bundle:
+Build the native Gallery bundle, and the Gallery's MAUI head for a platform the
+change reaches:
 
 ```bash
 .scripts/AppKit/build-gallery-appkit.sh debug
+dotnet build apps/Gallery/Platforms/Maui -f net10.0-maccatalyst
 ```
 
 Run one application build at a time. Concurrent application builds share Swift
 object directories and can silently execute stale output.
+
+A pull request to `main` or `dev` runs the `Tests` workflow and the four
+platform builds: `iOS / Mac Catalyst`, `Android`, `Windows`, and `Linux`.
 
 ## Keep changes reviewable
 

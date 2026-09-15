@@ -206,12 +206,10 @@ use it only when no later decision depends on success.
 A batch of actions is not a transaction. Use ordinary Swift control flow and
 `await` for ordering.
 
-The active AppKit host does not expose a public action-handler registry.
-Consequently, an application or provider cannot make the example above
-operational merely by declaring the token; AppKit rejects an act it does not
-own. This is a host-extension contract for a package that supplies a real
-adapter hook, tests, and a checked matrix row, not a currently available AppKit
-plug-in point.
+The MAUI host registers an application's acts in C# with `StateUIActs.Add`;
+[MAUI host](maui-host.md#an-act) shows both halves. The AppKit host exposes no
+action-handler registry: declaring the token is not enough there, and AppKit
+rejects an act it does not own.
 
 ## Host-extension events
 
@@ -237,11 +235,10 @@ An ordinary control or gesture event always belongs on its element instead.
 Use open host events only for provider-owned notifications that genuinely have
 no element identity.
 
-The active typed AppKit SPI does not publicly expose emission of an arbitrary
-host event. As with an open act, a declaration and subscription alone do not
-make this a usable extension: the provider's host adapter must own a supported
-emission route and its lifecycle. Wire hosts can implement that boundary, but
-support still belongs in the platform matrix.
+The MAUI host raises such an event from C# with `StateUIEvents.Raise`; see
+[MAUI host](maui-host.md#an-event-without-a-control). The typed AppKit SPI
+does not expose emission of an arbitrary host event, so there a declaration and
+a subscription alone reach nothing.
 
 ## Accessibility and automation
 

@@ -5,12 +5,15 @@ platform-neutral Swift module. A small native executable imports that module
 and the selected host package. The same application module can therefore be
 started by another host without changing its view tree.
 
-AppKit is the active native host. The supported setup today is a StateUI
-checkout: the AppKit host is a sibling Swift package whose manifest currently
-uses a local dependency on the repository root. A remote package declaration
-for the complete library-plus-host pair is not published yet.
+Two hosts are active: AppKit, and .NET MAUI for Android, iOS, Mac Catalyst,
+Windows, and Linux. The supported setup today is a StateUI checkout: the AppKit
+host is a sibling Swift package whose manifest uses a local dependency on the
+repository root, and a MAUI application is created against the same checkout.
+Neither host has a published package route yet.
 
 ## Requirements
+
+The AppKit host needs:
 
 - macOS 14 or newer;
 - a Swift 6 toolchain supplied by Xcode;
@@ -29,7 +32,8 @@ Build the signed Gallery bundle with its resources and icon:
 ```
 
 VS Code also exposes Debug and Release F5 configurations for both
-applications.
+applications. [Starting with the MAUI host](#starting-with-the-maui-host) lists
+what the MAUI host needs.
 
 ## Application shape
 
@@ -130,6 +134,10 @@ belong to one application tree, renderer generation, and native host. Opening a
 new scene does not start another host; it asks that host to materialize another
 native scene session.
 
+The MAUI head reaches the same `stateui_app_register` through an interop file
+its build generates, so its C# code never calls it. [MAUI host](maui-host.md)
+describes that head.
+
 The repository examples use this directory shape:
 
 ```text
@@ -142,6 +150,9 @@ apps/Notes/
   Platforms/
     AppKit/
       main.swift
+    Maui/
+      Notes.csproj
+      Host/
   Resources/
     Images/
   Tests/
@@ -200,6 +211,36 @@ Image("stateui_tile.png")
 The native bundling script is responsible for copying those files and the app
 icon into the application bundle. StateUI's core does not read a filesystem or
 choose a platform image class.
+
+## Starting with the MAUI host
+
+The MAUI host runs the same application module from a .NET MAUI project in
+`Platforms/Maui/`. It needs the .NET 10 SDK and, everywhere except Linux, the
+MAUI workload:
+
+```bash
+dotnet workload install maui
+```
+
+Build and start HelloWorld's MAUI head on Mac Catalyst:
+
+```bash
+.scripts/Maui/run-app.sh maccatalyst apps/HelloWorld/Platforms/Maui/HelloWorld.csproj
+```
+
+An application outside this repository comes from the `stateui-maui` template.
+From the repository root, a directory named `StateUI`, pack and install the
+template, then create an application beside the checkout:
+
+```bash
+dotnet pack lib/StateUI.Maui/Template -c Release -o artifacts
+dotnet new install artifacts/StateUI.Maui.Template.0.3.1.nupkg
+dotnet new stateui-maui -n Notes -o ../Notes --stateui-path "$PWD" --appkit
+```
+
+`--appkit` adds the AppKit head beside the MAUI one. [MAUI host](maui-host.md)
+covers every platform, the F5 configurations, controls and acts registered in
+C#, and troubleshooting.
 
 ## Next steps
 
