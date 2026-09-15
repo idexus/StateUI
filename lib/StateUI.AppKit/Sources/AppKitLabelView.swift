@@ -29,6 +29,7 @@ final class AppKitLabelView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     var textFrame: NSRect { textField.frame }
     var nativeTextSizeForTesting: NSSize { textField.cell?.cellSize ?? .zero }
     private(set) var nativeMeasurementCountForTesting = 0
+    var textForTesting: NSAttributedString { textField.attributedStringValue }
 
     override var isFlipped: Bool { true }
 

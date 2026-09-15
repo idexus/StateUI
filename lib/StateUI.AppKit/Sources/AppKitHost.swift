@@ -170,7 +170,7 @@ final class AppKitRenderer: @unchecked Sendable {
     private let images = NSCache<NSString, NSImage>()
     private let frameClock: AppKitFrameClock
     private let reducesMotion: () -> Bool
-    private var baseline: Int32 = 0
+    fileprivate let intake = AppKitPatchIntake()
     private var nextMount: UInt64 = 0
     private var patchTime: Double?
     private var patchReducesMotion: Bool?
@@ -302,7 +302,7 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     func dispatch(_ handler: Int32, payload: [HostValue] = [], isPhase: Bool = false) {
-        if synchronizingWindows || readerTransactionDepth > 0 {
+        if synchronizingWindows || readerTransactionDepth > 0 || intake.isApplying {
             queuedEvents.append(QueuedEvent(
                 handler: handler,
                 payload: payload,
@@ -505,11 +505,22 @@ final class AppKitRenderer: @unchecked Sendable {
 
         guard root == nil || core.needsRender else { return }
 
-        let rendered = core.render(baseline: baseline)
+        let rendered = core.render(baseline: intake.baseline)
 
-        applyRoot(rendered.root)
+        if !intake.take(rendered.root, generation: rendered.generation, apply: {
+            applyRoot($0, complete: rendered.complete)
+        }) {
+            // REFUSED, then asked for whole once: a complete render is
+            // reconciled against the tree the core holds, so every identity,
+            // handler and state survives it.
+            NSLog("StateUI AppKit: the interface drifted and is asked for whole: %@",
+                  intake.lastDrift ?? "")
+            let complete = core.render(baseline: 0)
+            intake.take(complete.root, generation: complete.generation, apply: {
+                applyRoot($0, complete: complete.complete)
+            })
+        }
 
-        baseline = rendered.generation
         stateChannels.retain(root?.propertyStates ?? [])
         describedMotion.retain(root?.describedKeys ?? [])
         layoutMotion.retain(root?.mounts ?? [])
@@ -914,7 +925,7 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     func applyForTesting(_ patch: HostPatch) {
-        applyRoot(patch)
+        intake.take(patch, generation: intake.baseline &+ 1) { applyRoot($0, complete: true) }
 
         describedMotion.retain(root?.describedKeys ?? [])
         layoutMotion.retain(root?.mounts ?? [])
@@ -922,7 +933,7 @@ final class AppKitRenderer: @unchecked Sendable {
         flushQueuedEvents()
     }
 
-    private func applyRoot(_ patch: HostPatch) {
+    private func applyRoot(_ patch: HostPatch, complete: Bool) {
         let previousPatchTime = patchTime
         let previousPatchReducesMotion = patchReducesMotion
         if patchTime == nil { patchTime = frameClock.now() }
@@ -934,9 +945,23 @@ final class AppKitRenderer: @unchecked Sendable {
 
         if let root, root.id == patch.id, root.type == patch.type, !patch.replace {
             root.apply(patch)
-        } else {
+        } else if root == nil || complete || patch.replace {
             root = MountedNode(patch, host: self)
+        } else {
+            intake.drifted("a sparse message describes a root '\(patch.id)' the tree does not hold")
         }
+    }
+
+    /// What made the last refused message drift.
+    var driftForTesting: String? { intake.lastDrift }
+
+    /// The generation the host quotes on its next render.
+    var baselineForTesting: Int32 { intake.baseline }
+
+    /// Loses the element that presents `view`, as a host that dropped part of
+    /// its tree would.
+    func forgetForTesting(_ view: NSView) {
+        root?.forgetForTesting(view)
     }
 
     func stepTripsForTesting() {
@@ -1272,18 +1297,24 @@ final class MountedNode: NSObject {
 
         case .changed(let childPatches):
             for childPatch in childPatches {
-                if let index = children.firstIndex(where: { $0.id == childPatch.id }) {
-                    let child = children[index]
+                // A NEW CHILD ALWAYS ARRIVES IN AN ARRANGED LIST: a sparse list
+                // naming one this element does not hold, or holds as something
+                // else, was computed against another tree, and nothing is
+                // mounted from its partial description.
+                guard let index = children.firstIndex(where: { $0.id == childPatch.id }) else {
+                    host.intake.drifted(
+                        "a patch names child '\(childPatch.id)' that '\(id)' does not have")
+                    continue
+                }
+                let child = children[index]
 
-                    if child.type == childPatch.type, !childPatch.replace {
-                        child.apply(childPatch)
-                    } else {
-                        children[index] = MountedNode(
-                            childPatch, host: host, parent: self)
-                    }
+                if child.type == childPatch.type, !childPatch.replace {
+                    child.apply(childPatch)
+                } else if childPatch.replace {
+                    children[index] = MountedNode(childPatch, host: host, parent: self)
                 } else {
-                    children.append(MountedNode(
-                        childPatch, host: host, parent: self))
+                    host.intake.drifted(
+                        "a patch describes '\(childPatch.id)' as \(childPatch.type) where '\(id)' holds \(child.type)")
                 }
             }
         }
@@ -1436,6 +1467,16 @@ final class MountedNode: NSObject {
         }
 
         for child in children { child.gatherDescribedKeys(into: &keys) }
+    }
+
+    /// Drops the element that presents `view` from this subtree.
+    func forgetForTesting(_ view: NSView) {
+        if let index = children.firstIndex(where: { $0.view === view }) {
+            children[index].view?.removeFromSuperview()
+            children.remove(at: index)
+            return
+        }
+        for child in children { child.forgetForTesting(view) }
     }
 
     /// Every mounted identity in this subtree.
