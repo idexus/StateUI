@@ -165,6 +165,7 @@ final class AppKitRenderer: @unchecked Sendable {
     private let walker: AppKitWalker
     private let stateChannels: AppKitStateChannels
     private let describedMotion: AppKitDescribedMotion
+    private let displayCycle: AppKitDisplayCycle
     private let images = NSCache<NSString, NSImage>()
     private let frameClock: AppKitFrameClock
     private let reducesMotion: () -> Bool
@@ -179,7 +180,6 @@ final class AppKitRenderer: @unchecked Sendable {
     /// The scrollers moving or waiting to report, each given the display's
     /// frames until it stands and has said everything.
     private let framedScrollers = NSHashTable<AppKitScrollView>.weakObjects()
-    private var cycleContinues = false
     private var doorbellStarted = false
     private var connectedInitialScene = false
     private var started = false
@@ -220,7 +220,15 @@ final class AppKitRenderer: @unchecked Sendable {
         self.walker = walker
         stateChannels = AppKitStateChannels(walker: walker)
         describedMotion = AppKitDescribedMotion(walker: walker)
-        frameClock.onFrame = { [weak self] now in self?.displayFrame(now: now) }
+        displayCycle = AppKitDisplayCycle(
+            core: core,
+            clock: frameClock,
+            walker: walker,
+            stateChannels: stateChannels,
+            describedMotion: describedMotion,
+            reducesMotion: reducesMotion)
+        frameClock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
+        displayCycle.presenter = self
     }
 
     func start() {
@@ -362,7 +370,7 @@ final class AppKitRenderer: @unchecked Sendable {
     /// has said everything - see `AppKitScrollView.frame(now:)`.
     fileprivate func requestFrames(for scroller: AppKitScrollView) {
         framedScrollers.add(scroller)
-        holdFrames()
+        displayCycle.hold()
     }
 
     func openPlatformScene() {
@@ -434,7 +442,7 @@ final class AppKitRenderer: @unchecked Sendable {
         if readerTransactionDepth > 0 { readerTransactionChangedState = true }
 
         root?.applyState(binding.state, value: value)
-        advanceCycle(now: frameClock.now())
+        displayCycle.drain(now: frameClock.now())
         return true
     }
 
@@ -442,8 +450,8 @@ final class AppKitRenderer: @unchecked Sendable {
     func take(_ value: [Double], through binding: HostStateBinding) -> Bool {
         guard stateChannels.take(value, through: binding) else { return false }
 
-        presentStateChannels()
-        advanceCycle(now: frameClock.now())
+        displayCycle.presentStateChannels()
+        displayCycle.drain(now: frameClock.now())
         return true
     }
 
@@ -455,7 +463,7 @@ final class AppKitRenderer: @unchecked Sendable {
     @discardableResult
     func takeGestureValue(_ value: Double, state: Int32) -> Bool {
         guard core.moveGestureValue(value, state: state) else { return false }
-        advanceCycle(now: frameClock.now())
+        displayCycle.drain(now: frameClock.now())
         return true
     }
 
@@ -488,7 +496,7 @@ final class AppKitRenderer: @unchecked Sendable {
         }
 
         if root != nil, core.cyclesPending {
-            advanceCycle(now: frameClock.now())
+            displayCycle.drain(now: frameClock.now())
         }
 
         guard root == nil || core.needsRender else { return }
@@ -500,7 +508,7 @@ final class AppKitRenderer: @unchecked Sendable {
         baseline = rendered.generation
         stateChannels.retain(root?.propertyStates ?? [])
         describedMotion.retain(root?.describedKeys ?? [])
-        presentStateChannels()
+        displayCycle.presentStateChannels()
 
         let created = root?.takeCreatedHandlers() ?? []
         if !created.isEmpty {
@@ -560,7 +568,7 @@ final class AppKitRenderer: @unchecked Sendable {
             frameClock.attach(to: window)
         }
         offerRestoredWindows()
-        holdFrames()
+        displayCycle.hold()
     }
 
     /// Delivers what waits, in order. A phase is state the application
@@ -926,12 +934,12 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     func stepTripsForTesting() {
-        stepTrips(now: frameClock.now(), reducesMotion: reducesMotion())
-        holdFrames()
+        displayCycle.stepTrips(now: frameClock.now(), reducesMotion: reducesMotion())
+        displayCycle.hold()
     }
 
     func displayFrameForTesting() {
-        displayFrame(now: frameClock.now())
+        displayCycle.frame(now: frameClock.now())
     }
 
     var frameClockRunningForTesting: Bool { frameClock.isRunning }
@@ -956,57 +964,6 @@ final class AppKitRenderer: @unchecked Sendable {
         restoredWindows.removeAll()
         describedMotion.retain([])
         frameClock.stop()
-    }
-
-    /// One frame of the display's clock: everything moving advances, and what
-    /// it changed is rendered once.
-    private func displayFrame(now: Double) {
-        frameScrollers(now: now)
-        advanceCycle(now: now)
-
-        if eventSink == nil, core.needsRender {
-            pump()
-        }
-    }
-
-    /// Lets every moving scroller say what the frame saw it do, all of them as
-    /// one reader transaction; a scroller that stands and has said everything
-    /// lets the clock go.
-    private func frameScrollers(now: Double) {
-        let scrollers = framedScrollers.allObjects
-        guard !scrollers.isEmpty else { return }
-
-        performReaderTransaction {
-            for scroller in scrollers {
-                scroller.frame(now: now)
-                if !scroller.wantsFrames { framedScrollers.remove(scroller) }
-            }
-        }
-    }
-
-    private func advanceCycle(now: Double) {
-        let reducesMotion = reducesMotion()
-        stepTrips(now: now, reducesMotion: reducesMotion)
-
-        let cycle = core.cycle(now: now, reducesMotion: reducesMotion)
-
-        for change in cycle.changes {
-            stateChannels.receive(change, now: now, reducesMotion: reducesMotion)
-            root?.applyState(change.state, value: change.value)
-        }
-
-        presentStateChannels()
-
-        cycleContinues = cycle.continues
-        holdFrames()
-    }
-
-    private func stepTrips(now: Double, reducesMotion: Bool) {
-        let steps = walker.step(now: now, reducesMotion: reducesMotion)
-        stateChannels.follow(steps)
-        describedMotion.follow(steps)
-        presentStateChannels()
-        presentDescribedMotion()
     }
 
     fileprivate func presentedValue(
@@ -1072,7 +1029,7 @@ final class AppKitRenderer: @unchecked Sendable {
             transition: transition,
             now: patchTime ?? frameClock.now(),
             reducesMotion: patchReducesMotion ?? reducesMotion())
-        holdFrames()
+        displayCycle.hold()
     }
 
     fileprivate func removePropertyMotions(mount: UInt64) {
@@ -1087,52 +1044,42 @@ final class AppKitRenderer: @unchecked Sendable {
             .standingValue(property)
     }
 
-    private func presentStateChannels() {
-        let outputs = stateChannels.takeOutputs()
-        var valuesByState: [Int32: HostStateValue] = [:]
+}
 
-        for output in outputs {
-            let carried = StateUIHost.value(of: output.journey)
-            valuesByState[output.state] = carried
+extension AppKitRenderer: AppKitFramePresenter {
+    var wantsFrames: Bool { framedScrollers.anyObject != nil }
 
-            if let report = output.report {
-                _ = core.report(
-                    output.journey,
-                    updating: report,
-                    through: output.binding)
+    /// Lets every moving scroller say what the frame saw it do, all of them as
+    /// one reader transaction; a scroller that stands and has said everything
+    /// lets the clock go.
+    func commitReaderReports(now: Double) {
+        let scrollers = framedScrollers.allObjects
+        guard !scrollers.isEmpty else { return }
+
+        performReaderTransaction {
+            for scroller in scrollers {
+                scroller.frame(now: now)
+                if !scroller.wantsFrames { framedScrollers.remove(scroller) }
             }
         }
+    }
 
-        let impact: AppKitPresentationImpact = valuesByState.isEmpty
-            ? []
-            : (root?.applyStates(valuesByState) ?? [])
+    func present(state: Int32, value: HostStateValue) {
+        root?.applyState(state, value: value)
+    }
+
+    func present(states: [Int32: HostStateValue]) {
+        let impact = root?.applyStates(states) ?? []
         if impact.contains(.windowShell) { synchronizeWindows() }
-
-        for completion in stateChannels.takeCompletions() {
-            _ = core.complete(completion.id, succeeded: completion.succeeded)
-        }
     }
 
-    private func presentDescribedMotion() {
-        var propertiesByMount: [UInt64: Set<Prop>] = [:]
-        for output in describedMotion.takeOutputs() {
-            propertiesByMount[output.key.mount, default: []].insert(output.key.property)
-        }
-
-        guard !propertiesByMount.isEmpty else { return }
-        let impact = root?.applyPropertyMotion(propertiesByMount) ?? []
-        if impact.contains(.windowShell) {
-            synchronizeWindows()
-        }
+    func present(properties: [UInt64: Set<Prop>]) {
+        let impact = root?.applyPropertyMotion(properties) ?? []
+        if impact.contains(.windowShell) { synchronizeWindows() }
     }
 
-    /// Holds the frame clock while anything still moves or owes a frame: a
-    /// trip, the core's cycle, a scroller moving or with a report to make.
-    private func holdFrames() {
-        frameClock.held = cycleContinues
-            || walker.isMoving
-            || core.cyclesPending
-            || framedScrollers.anyObject != nil
+    func renderIfNeeded() {
+        if eventSink == nil, core.needsRender { pump() }
     }
 }
 
