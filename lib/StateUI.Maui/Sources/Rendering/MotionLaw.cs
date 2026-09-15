@@ -54,6 +54,23 @@ internal static class MotionLaw
     /// </summary>
     internal const double Longest = 10_000;
 
+    /// <summary>Whether two runs of lanes stand at the same place, to <see cref="Still"/>.</summary>
+    /// <param name="left">One run.</param>
+    /// <param name="right">The other, as long.</param>
+    /// <returns>Whether every lane agrees.</returns>
+    internal static bool Same(double[] left, double[] right)
+    {
+        for (int lane = 0; lane < left.Length; lane++)
+        {
+            if (Math.Abs(left[lane] - right[lane]) >= Still)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /// <summary>
     /// Puts the value and its speed at <paramref name="t"/> into
     /// <paramref name="p"/> and <paramref name="v"/>.

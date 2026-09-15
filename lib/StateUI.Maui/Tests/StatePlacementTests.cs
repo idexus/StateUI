@@ -93,8 +93,8 @@ public class StatePlacementTests
         var host = new Host();
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        StateAttachment run = host.Renderer.Channels.Registered(layout).Values
-            .Single(attachment => attachment.Kind == HostStateKind.Placement);
+        PlacementAttachment run = host.Renderer.Channels.Registered(layout).Values
+            .OfType<PlacementAttachment>().Single();
 
         Assert.Equal(HostStateMode.Out, run.Mode);
         Assert.Null(run.Property);
@@ -118,8 +118,8 @@ public class StatePlacementTests
 
         (AbsoluteLayout layout, _, _) = Placed(host);
 
-        StateAttachment room = host.Renderer.Channels.Registered(layout).Values
-            .Single(attachment => attachment.Kind == HostStateKind.Feed);
+        FeedAttachment room = host.Renderer.Channels.Registered(layout).Values
+            .OfType<FeedAttachment>().Single();
 
         Assert.Equal(HostStateMode.In, room.Mode);
 
@@ -151,7 +151,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, View second) = Placed(host);
 
         int number = host.Renderer.Channels.Registered(layout).Values
-            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
+            .OfType<PlacementAttachment>().Single().Number;
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(number, ~0UL, Run(
@@ -181,7 +181,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Channels.Registered(layout).Values
-            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
+            .OfType<PlacementAttachment>().Single().Number;
 
         void Wear(double x)
         {
@@ -219,7 +219,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Channels.Registered(layout).Values
-            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
+            .OfType<PlacementAttachment>().Single().Number;
 
         void Wear(ulong mask, byte[] bytes)
         {
@@ -262,7 +262,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Channels.Registered(layout).Values
-            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
+            .OfType<PlacementAttachment>().Single().Number;
 
         void Wear(double law, double millis, double x)
         {
@@ -306,7 +306,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Channels.Registered(layout).Values
-            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
+            .OfType<PlacementAttachment>().Single().Number;
 
         void Wear()
         {
@@ -341,7 +341,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Channels.Registered(layout).Values
-            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
+            .OfType<PlacementAttachment>().Single().Number;
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(number, ~0UL, Run(

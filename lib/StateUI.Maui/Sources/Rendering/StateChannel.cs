@@ -84,7 +84,7 @@ internal sealed class StateChannel : ITripTarget
         {
             foreach (StateAttachment attachment in _attachments)
             {
-                if (attachment.Kind == HostStateKind.Property)
+                if (attachment is PropertyAttachment)
                 {
                     return $"state{Number}.{attachment.Property?.PropertyName ?? "scroll"}";
                 }
@@ -107,7 +107,7 @@ internal sealed class StateChannel : ITripTarget
 
             foreach (StateAttachment attachment in _attachments)
             {
-                if (attachment.Kind != HostStateKind.Property)
+                if (attachment is not PropertyAttachment)
                 {
                     continue;
                 }
@@ -131,7 +131,7 @@ internal sealed class StateChannel : ITripTarget
         {
             foreach (StateAttachment attachment in _attachments)
             {
-                if (attachment.Kind == HostStateKind.Property
+                if (attachment is PropertyAttachment
                     && attachment.Mode != HostStateMode.In
                     && attachment.View is not null)
                 {
@@ -150,7 +150,7 @@ internal sealed class StateChannel : ITripTarget
         {
             foreach (StateAttachment attachment in _attachments)
             {
-                if (attachment.Kind == HostStateKind.Property)
+                if (attachment is PropertyAttachment)
                 {
                     return true;
                 }
@@ -179,9 +179,9 @@ internal sealed class StateChannel : ITripTarget
     {
         attachment.Channel = this;
 
-        if (!_shaped && attachment.Kind == HostStateKind.Property)
+        if (!_shaped && attachment is PropertyAttachment walked)
         {
-            _lanes = attachment.Lanes;
+            _lanes = walked.Lanes;
             _shaped = true;
         }
 
@@ -210,7 +210,7 @@ internal sealed class StateChannel : ITripTarget
     {
         foreach (StateAttachment attachment in _attachments)
         {
-            if (attachment.Kind == HostStateKind.Property && attachment.Read(into))
+            if (attachment is PropertyAttachment walked && walked.Read(into))
             {
                 return true;
             }
@@ -224,7 +224,7 @@ internal sealed class StateChannel : ITripTarget
     {
         foreach (StateAttachment attachment in _attachments)
         {
-            if (attachment.Kind != HostStateKind.Property || attachment.Mode == HostStateMode.In)
+            if (attachment is not PropertyAttachment walked || walked.Mode == HostStateMode.In)
             {
                 continue;
             }
@@ -237,7 +237,7 @@ internal sealed class StateChannel : ITripTarget
                 continue;
             }
 
-            attachment.Write(from);
+            walked.Write(from);
         }
     }
 
@@ -246,7 +246,7 @@ internal sealed class StateChannel : ITripTarget
     {
         foreach (StateAttachment attachment in _attachments)
         {
-            if (attachment.Kind == HostStateKind.Property && attachment.Compose(from) is object value)
+            if (attachment is PropertyAttachment walked && walked.Compose(from) is object value)
             {
                 return value;
             }
@@ -260,7 +260,7 @@ internal sealed class StateChannel : ITripTarget
     /// </summary>
     /// <remarks>
     /// Under <see cref="Walker.Writing"/>, for the reason
-    /// <see cref="StateAttachment.Set(double[])"/> gives: the platform raises
+    /// <see cref="PlainAttachment.Set(double[])"/> gives: the platform raises
     /// each property's changed notification synchronously inside the
     /// assignment, and that notification is this side's own value coming round.
     /// </remarks>
@@ -293,7 +293,7 @@ internal sealed class StateChannel : ITripTarget
     /// </remarks>
     /// <param name="attachment">The attachment joining.</param>
     /// <param name="bytes">The state, whole.</param>
-    internal void Join(StateAttachment attachment, byte[] bytes)
+    internal void Join(PropertyAttachment attachment, byte[] bytes)
     {
         if (Moving is Trip carrying)
         {
@@ -332,9 +332,9 @@ internal sealed class StateChannel : ITripTarget
 
         double[] setPoint = JourneyCodec.DestinationOf(lanes, width);
 
-        if (!StateAttachment.Same(JourneyCodec.ValueOf(lanes, width), setPoint))
+        if (!MotionLaw.Same(JourneyCodec.ValueOf(lanes, width), setPoint))
         {
-            _walker.Aim(this, setPoint, StateAttachment.Law(lanes, width, _walker));
+            _walker.Aim(this, setPoint, _walker.Law(lanes, JourneyCodec.LawAt(width)));
         }
     }
 
@@ -361,9 +361,9 @@ internal sealed class StateChannel : ITripTarget
             foreach (StateAttachment attachment in _attachments)
             {
                 if (ReferenceEquals(attachment, by)
-                    || attachment.Kind != HostStateKind.Property
-                    || attachment.Mode == HostStateMode.In
-                    || attachment.Lanes != lanes.Length)
+                    || attachment is not PropertyAttachment walked
+                    || walked.Mode == HostStateMode.In
+                    || walked.Lanes != lanes.Length)
                 {
                     continue;
                 }
@@ -373,7 +373,7 @@ internal sealed class StateChannel : ITripTarget
                     _walker.Halt(held, own, TripEnd.Nothing);
                 }
 
-                attachment.Write(lanes);
+                walked.Write(lanes);
             }
         }
         finally
@@ -447,7 +447,7 @@ internal sealed class StateChannel : ITripTarget
                 _walker.Aim(
                     this,
                     JourneyCodec.DestinationOf(lanes, width),
-                    StateAttachment.Law(lanes, width, _walker),
+                    _walker.Law(lanes, JourneyCodec.LawAt(width)),
                     done: waiter == 0 ? null : whole => land(waiter, whole),
                     velocity: kicked ? JourneyCodec.PerMillisecond(speed) : null);
             }
@@ -472,7 +472,7 @@ internal sealed class StateChannel : ITripTarget
                 ? trip.Target
                 : JourneyCodec.DestinationOf(lanes, width);
 
-            _walker.Aim(this, target, StateAttachment.Law(lanes, width, _walker), velocity: JourneyCodec.PerMillisecond(going));
+            _walker.Aim(this, target, _walker.Law(lanes, JourneyCodec.LawAt(width)), velocity: JourneyCodec.PerMillisecond(going));
         }
     }
 

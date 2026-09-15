@@ -50,7 +50,7 @@ internal sealed class CarriedReports
     /// </remarks>
     /// <param name="view">The control whose room it is.</param>
     /// <param name="attachment">Where the room goes.</param>
-    internal void Feed(VisualElement view, StateAttachment attachment)
+    internal void Feed(VisualElement view, FeedAttachment attachment)
     {
         // THE CLOSURES ARE MADE WHERE THE CONTROL IS NOT. Everything a feed
         // keeps - the handler, and the unsubscription the TIE holds - lives in
@@ -78,7 +78,7 @@ internal sealed class CarriedReports
     /// </summary>
     /// <param name="held">The control, weakly.</param>
     /// <param name="attachment">Where the room goes.</param>
-    private void Listen(WeakReference<VisualElement> held, StateAttachment attachment)
+    private void Listen(WeakReference<VisualElement> held, FeedAttachment attachment)
     {
         void Moved(object? sender, PropertyChangedEventArgs args)
         {
@@ -140,7 +140,7 @@ internal sealed class CarriedReports
     /// </remarks>
     /// <param name="view">The control whose room it is.</param>
     /// <param name="attachment">Where the room goes.</param>
-    private void Reported(VisualElement view, StateAttachment attachment)
+    private void Reported(VisualElement view, FeedAttachment attachment)
     {
         Rect frame = view.Frame;
 
@@ -216,13 +216,12 @@ internal sealed class CarriedReports
             // attachment the control has, and whether a frame was being
             // written.
             MotionTrace.Say(_channels.Sink(view, property) is StateAttachment heard
-                ? $"reader {view.GetType().Name}.{property.PropertyName} = {value:0.###}  attachment {heard.Number} kind={heard.Kind} mode={heard.Mode} lanes={heard.Lanes} writing={Walker.Writing}"
+                ? $"reader {view.GetType().Name}.{property.PropertyName} = {value:0.###}  attachment {heard.Number} {heard.GetType().Name} mode={heard.Mode} writing={Walker.Writing}"
                 : $"reader {view.GetType().Name}.{property.PropertyName} = {value:0.###}  no attachment ({_channels.Count} numbers)");
         }
 
         if (_channels.Count == 0
-            || _channels.Sink(view, property) is not StateAttachment attachment
-            || attachment.Kind != HostStateKind.Property
+            || _channels.Sink(view, property) is not PropertyAttachment attachment
             || attachment.Mode == HostStateMode.Out
             || attachment.Lanes != lanes.Length)
         {
@@ -246,7 +245,7 @@ internal sealed class CarriedReports
     /// <param name="attachment">The attachment the value is carried on.</param>
     /// <param name="lanes">Where they left it, lane by lane.</param>
     /// <returns>Whether the cycle has work to do.</returns>
-    private bool Landed(BindableObject view, StateAttachment attachment, double[] lanes)
+    private bool Landed(BindableObject view, PropertyAttachment attachment, double[] lanes)
     {
         // THE VALUE IS THE READER'S NOW, on every control that shows it: the
         // state's channel lets go, and every other control on the number is
@@ -299,7 +298,7 @@ internal sealed class CarriedReports
     internal bool Slid(BindableObject view, double[] lanes)
     {
         if (_channels.Count == 0
-            || _channels.Sink(view, HostProp.ScrollOffset) is not StateAttachment attachment
+            || _channels.Sink(view, HostProp.ScrollOffset) is not PropertyAttachment attachment
             || attachment.Mode == HostStateMode.Out
             || attachment.Lanes != lanes.Length)
         {
@@ -317,7 +316,7 @@ internal sealed class CarriedReports
     /// The one lane crosses as the host's own write, so the state hears it
     /// exactly as it hears a slider's thumb: a reader of the state renders,
     /// nobody else does. The state's echo of the value is not set on the
-    /// control again because <see cref="StateAttachment.Set(double[])"/>
+    /// control again because <see cref="PlainAttachment.Set(double[])"/>
     /// compares against what the control already shows, and a write this side
     /// makes comes round under <see cref="Walker.Writing"/> and is dropped.
     /// Every other control the same state drives is set here too, the cycle's
@@ -337,7 +336,7 @@ internal sealed class CarriedReports
     /// <remarks>
     /// A STATE'S OWN WRITE IS NOT A REPORT: the platform raises its changed
     /// notification synchronously inside the assignment
-    /// <see cref="StateAttachment.Set(double[])"/> makes, and that assignment
+    /// <see cref="PlainAttachment.Set(double[])"/> makes, and that assignment
     /// runs under <see cref="Walker.Writing"/>, so what arrives here while that
     /// counter is up is this side's own value coming round and is dropped -
     /// answered as handled, so the renderer raises no event for it either.
@@ -349,8 +348,7 @@ internal sealed class CarriedReports
     internal bool Reported(BindableObject view, BindableProperty property, double[] lanes)
     {
         if (_channels.Count == 0
-            || _channels.Sink(view, property) is not StateAttachment attachment
-            || attachment.Kind != HostStateKind.Plain
+            || _channels.Sink(view, property) is not PlainAttachment attachment
             || attachment.Mode != HostStateMode.InOut)
         {
             return false;
@@ -367,9 +365,9 @@ internal sealed class CarriedReports
         {
             foreach (StateAttachment other in channel.Attachments)
             {
-                if (!ReferenceEquals(other, attachment) && other.Kind == HostStateKind.Plain)
+                if (other is PlainAttachment plain && !ReferenceEquals(other, attachment))
                 {
-                    other.Set(lanes);
+                    plain.Set(lanes);
                 }
             }
         }
@@ -399,8 +397,7 @@ internal sealed class CarriedReports
     internal bool Typed(BindableObject view, BindableProperty property, string words)
     {
         if (_channels.Count == 0
-            || _channels.Sink(view, property) is not StateAttachment attachment
-            || attachment.Kind != HostStateKind.Text
+            || _channels.Sink(view, property) is not TextAttachment attachment
             || attachment.Mode != HostStateMode.InOut)
         {
             return false;
@@ -418,9 +415,9 @@ internal sealed class CarriedReports
         {
             foreach (StateAttachment other in channel.Attachments)
             {
-                if (!ReferenceEquals(other, attachment) && other.Kind == HostStateKind.Text)
+                if (other is TextAttachment text && !ReferenceEquals(other, attachment))
                 {
-                    other.Wear(words);
+                    text.Wear(words);
                 }
             }
         }

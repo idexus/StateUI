@@ -153,7 +153,7 @@ internal sealed class MotionProperty : ITripTarget
     /// <summary>
     /// The value some lanes stand for, in the platform's own type - what a
     /// write composes, and what an attachment with no target object of its own
-    /// asks for, see <see cref="StateAttachment.Write"/>.
+    /// asks for, see <see cref="PropertyAttachment.Write"/>.
     /// </summary>
     /// <param name="shape">What the value is made of.</param>
     /// <param name="fraction">Whether a number is a fraction of one.</param>

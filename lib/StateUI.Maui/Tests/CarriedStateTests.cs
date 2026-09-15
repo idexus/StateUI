@@ -99,7 +99,7 @@ public class CarriedStateTests
 
         Assert.Equal(1, attachment.Number);
         Assert.Equal(HostStateMode.InOut, attachment.Mode);
-        Assert.Equal(HostStateKind.Property, attachment.Kind);
+        Assert.IsType<PropertyAttachment>(attachment);
         Assert.Equal(VisualElement.OpacityProperty, attachment.Property);
     }
 
@@ -156,7 +156,7 @@ public class CarriedStateTests
         {
             StateAttachment attachment = Assert.Single(host.Renderer.Channels.Registered(view).Values);
 
-            Assert.Equal(HostStateKind.Text, attachment.Kind);
+            Assert.IsType<TextAttachment>(attachment);
             Assert.Equal(HostStateMode.Out, attachment.Mode);
             Assert.Equal(1, attachment.Number);
         }
@@ -1128,7 +1128,7 @@ public class CarriedStateTests
             ],
         });
 
-        StateAttachment attachment = Assert.Single(host.Renderer.Channels.Registered(layout)).Value;
+        FeedAttachment attachment = Assert.IsType<FeedAttachment>(Assert.Single(host.Renderer.Channels.Registered(layout)).Value);
 
         Assert.NotNull(attachment.Released);
         Assert.Empty(Holds(attachment.Released, 3));

@@ -51,7 +51,7 @@ internal sealed class StateChannels
     }
 
     /// <summary>Arms the frame feed a control registers - the carried reports' own.</summary>
-    internal Action<VisualElement, StateAttachment>? Feeding { get; set; }
+    internal Action<VisualElement, FeedAttachment>? Feeding { get; set; }
 
     /// <summary>How many numbers have a control on them.</summary>
     internal int Count => _byNumber.Count;
@@ -103,16 +103,16 @@ internal sealed class StateChannels
             // AND THE LAYOUT IS TOLD IT IS PLACED, before anything measures
             // it: its children stand where arithmetic over the room puts them,
             // so their reach says nothing about how big it should be.
-            if (attachment.Kind == HostStateKind.Placement)
+            if (attachment is PlacementAttachment)
             {
                 view.SetValue(MotionPlacement.PlacedProperty, true);
             }
 
-            if (attachment.Kind == HostStateKind.Feed
+            if (attachment is FeedAttachment feed
                 && entry.Key.Prop == HostProp.Frame
                 && view is VisualElement reporting)
             {
-                Feeding?.Invoke(reporting, attachment);
+                Feeding?.Invoke(reporting, feed);
                 fed = true;
                 continue;
             }
@@ -236,7 +236,7 @@ internal sealed class StateChannels
         owner is BindableObject view
         && key is BindableProperty property
         && Sink(view, property) is StateAttachment attachment
-        && attachment.Kind is HostStateKind.Property or HostStateKind.Text or HostStateKind.Plain
+        && attachment is PropertyAttachment or TextAttachment or PlainAttachment
         && attachment.Mode != HostStateMode.In;
 
     /// <summary>
@@ -295,7 +295,7 @@ internal sealed class StateChannels
 
         if (read > 0 && StateBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
         {
-            attachment.Resting(bytes, _walker, spec);
+            (attachment as PropertyAttachment)?.Resting(bytes, _walker, spec);
         }
 
         return true;
@@ -400,8 +400,11 @@ internal sealed class StateChannels
 
             // A feed listens to the platform, and a control nothing describes
             // any more is one nothing should hear from.
-            attachment.Released?.Invoke();
-            attachment.Released = null;
+            if (attachment is FeedAttachment feed)
+            {
+                feed.Released?.Invoke();
+                feed.Released = null;
+            }
 
             // A motion of this control's own on the property - a visual
             // state's, the tree's - is one nothing reads any more: halted, so
@@ -459,7 +462,7 @@ internal sealed class StateChannels
 
             foreach (StateAttachment attachment in channel.Attachments.ToArray())
             {
-                if (attachment.Kind != HostStateKind.Property)
+                if (attachment is not PropertyAttachment)
                 {
                     attachment.Wear(bytes, mask, _walker, _land);
                 }

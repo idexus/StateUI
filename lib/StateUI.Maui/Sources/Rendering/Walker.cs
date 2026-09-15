@@ -210,6 +210,28 @@ internal sealed class Walker
     internal HostMotion Travel { get; set; } = HostMotion.Eased(0, HostEasing.Linear);
 
     /// <summary>
+    /// The law three lanes of a state name: a walked value's own, or
+    /// <see cref="Travel"/> where they name the element's.
+    /// </summary>
+    /// <remarks>
+    /// Kind 0 is no motion at all, 2 is a stated length on a stated curve, and
+    /// 3 is a spring. Kind 1 is a value that asked for the law of whatever
+    /// element drives it and is driven by NONE - Swift resolves an element's
+    /// own law into these lanes as the value crosses, being the only side that
+    /// can read a per-value motion plan - so the application's answer is the
+    /// right one for a value no element has claimed.
+    /// </remarks>
+    /// <param name="lanes">The state's lanes.</param>
+    /// <param name="at">The first of the law's three.</param>
+    /// <returns>The law.</returns>
+    internal HostMotion Law(double[] lanes, int at) =>
+        JourneyCodec.MotionAt(lanes, at) switch
+        {
+            (JourneyCodec.Law.Inherited, _) => Travel,
+            (_, HostMotion motion) => motion,
+        };
+
+    /// <summary>
     /// Whether the frame is to be skipped - asked once per frame.
     /// </summary>
     /// <remarks>
