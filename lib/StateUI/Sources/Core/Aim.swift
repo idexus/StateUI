@@ -143,29 +143,14 @@ public final class Aim<Target>: @unchecked Sendable, CustomStringConvertible {
     /// element's identity, in the namespace it has - a number, or the name the
     /// author also gave it with `.id()`.
     ///
-    /// It goes in argument 0, which is where every act the library ships puts
-    /// it. That is the whole of aiming, and it is PUBLIC so that an application
-    /// can aim an act of its OWN at a control of its own:
-    ///
-    ///     extension Act {
-    ///         static let spin = Act("Gallery.Spin")
-    ///     }
-    ///
-    ///     extension Aim where Target == ColorWheel {
-    ///         public nonisolated(nonsending) func spin() async throws {
-    ///             try await stateUICall(.spin, [try target])
-    ///         }
-    ///     }
-    ///
-    /// The host half registers the performer under the act's name and turns
-    /// the identity back into the control - by number, or by name. Both
-    /// halves or neither: an aim this side sends alone is one no performer can
-    /// resolve.
+    /// `call` puts it in argument 0, which is where every aimed act has it,
+    /// and the host half turns it back into the control - by number, or by
+    /// name.
     ///
     /// Throws instead of guessing: an aim that never reached a view, or one
     /// put on two, has nothing sound to aim at, and an act that goes nowhere
     /// looks exactly like one that has not started yet.
-    public var target: PropValue {
+    var target: PropValue {
         get throws { try box.target }
     }
 
@@ -178,6 +163,11 @@ public final class Aim<Target>: @unchecked Sendable, CustomStringConvertible {
     ///             try await call(TrafficLightContract.flash, times)
     ///         }
     ///     }
+    ///
+    /// An application aims an act of its own at a control of its own this way:
+    /// the host half registers a performer under the act's name and turns the
+    /// identity back into the control. Both halves or neither - an aim this
+    /// side sends alone is one no performer can resolve.
     ///
     /// Throws where the aim is on no view or on two, where the host could not
     /// perform the act, and where the answer is not what the contract

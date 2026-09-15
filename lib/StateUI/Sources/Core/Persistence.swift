@@ -32,7 +32,7 @@
 // one handler is saved once. It is a collapse PER DRAIN and not a delay: an
 // event drains, so a `TextField` bound to kept state does reach the store once a
 // letter. A view that wants the store touched when the typing stops keeps the
-// text in ordinary state and writes the kept one from `.onEvent(.submitted)`.
+// text in ordinary state and writes the kept one from `.onSubmitted`.
 //
 // ONE KEY IS ONE PIECE OF STATE, everywhere in the application. Two views that
 // declare the same key share the storage itself, not a copy of the value, so a

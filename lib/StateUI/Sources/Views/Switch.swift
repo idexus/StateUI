@@ -38,13 +38,14 @@ public struct Switch: View, TintElement, SwitchProperties {
     /// An empty one - what a `Style<Switch>` is written against, and what
     /// `.isOn(_:)` plus `.onToggled` build on.
     public init() {
-        node = Node(type: .`switch`)
+        node = Node(contract: SwitchContract.self)
     }
 
     /// A switch showing `isOn`. One-way: the flip goes nowhere without
     /// `.onToggled` - CheckBox's `CheckBox(true)` is the same pair.
     public init(_ isOn: Bool) {
-        node = Node(type: .`switch`, props: [.isOn: .bool(isOn)])
+        node = Node(contract: SwitchContract.self)
+        node.write(SwitchContract.isOn, isOn)
     }
 
     /// Two-way: shows what the binding holds, and writes back what is flipped.

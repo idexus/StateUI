@@ -77,20 +77,9 @@ public protocol PropertyContainer {
 }
 
 extension PropertyContainer {
-    /// Sets a property by its token, for anything the typed modifiers do not
-    /// cover yet.
-    ///
-    ///     Label("Hi").setValue(.fontSize, .number(20))
-    ///     Label("Hi").setValue("fontSize", .number(20))   // the same, spelled
-    ///
-    /// The vocabularies are PUBLIC, so the library's own tokens are there to be
-    /// written; an application reaching a property of a control IT registered
-    /// declares a token of its own the same way, and a literal serves for a
-    /// one-off, `Prop` being `ExpressibleByStringLiteral`. See Core/Tokens.swift.
-    ///
-    /// The host has to know the name too - an unrecognized property is
-    /// ignored rather than reported.
-    public func setValue(_ property: Prop, _ value: PropValue) -> Modified {
+    /// Sets a property by its token - what the typed `setValue` is written
+    /// over, and every modifier that writes a value it built itself.
+    func setValue(_ property: Prop, _ value: PropValue) -> Modified {
         modified { $0.props[property] = value }
     }
 
@@ -112,13 +101,19 @@ extension PropertyContainer {
         setValue(property.token, value.propValue)
     }
 
-    /// Drives one of this element's properties from a state the host carries,
-    /// the state's value being the type the contract declares - the typed
-    /// form of `setValue(_:on:mode:kind:)` over a token.
+    /// Drives one of this element's properties from a state the HOST moves,
+    /// the state's value being the type the contract declares - what an
+    /// application's own control is handed for a property its registration
+    /// declares.
+    ///
+    /// Write it on the CONTROL, never on its `…Properties` protocol: a
+    /// `StyleBag` wears those, and a style is driven by nothing.
     ///
     /// - Parameters:
     ///   - property: the member, written with its contract.
-    ///   - state: the whole state, `$x`.
+    ///   - state: the value the host carries it from - `$x` on a `@State` or
+    ///     on a `@Binding`, whole. A PART of one, `$room.width`, has no image
+    ///     of its own for the host to write into, and is refused with a word.
     ///   - mode: which way it crosses.
     ///   - kind: which of the host's doors the value goes through.
     /// - Returns: the element, with the registration on it.
@@ -131,9 +126,12 @@ extension PropertyContainer {
         setValue(property.token, on: state, mode: mode, kind: kind)
     }
 
-    /// The same, for a value the host WALKS - through the `.property` door the
-    /// state is walked as a journey, so `$stars.journey.move(to: 5)` moves the
-    /// member the way it moves a Border's opacity.
+    /// The same, for a value the host WALKS - a number, a colour, a thickness,
+    /// a point. Through the `.property` door the state is walked as a JOURNEY,
+    /// so `$stars.journey.move(to: 5)` moves the member the way it moves a
+    /// Border's opacity; through any other door - a feed, a plain value the
+    /// control sets as it stands - the value crosses as itself. The compiler
+    /// picks this one wherever the value can be walked.
     ///
     ///     func rating(_ state: Binding<Double>) -> Modified {
     ///         setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
@@ -176,15 +174,9 @@ extension PropertyContainer {
         return setValue(property, .number(Double(Renderer.shared.number(for: image))))
     }
 
-    /// Drives one of this element's properties from state the HOST moves.
-    ///
-    /// The public half of what every driven modifier is written over: an
-    /// application that registered a control of its own declares its
-    /// properties, and this is how one of them is driven without the library
-    /// knowing the control exists.
-    ///
-    /// Write it on the CONTROL, never on its `…Properties` protocol: a
-    /// `StyleBag` wears those, and a style is driven by nothing.
+    /// Drives a property from state the HOST moves, by its token - what the
+    /// typed `setValue(_:on:mode:kind:)` and every driven modifier are written
+    /// over.
     ///
     /// - Parameters:
     ///   - property: which property, by the token the host resolves it under.
@@ -194,7 +186,7 @@ extension PropertyContainer {
     ///   - mode: which way it crosses.
     ///   - kind: which of the host's doors the value goes through.
     /// - Returns: the element, with the registration on it.
-    public func setValue<Value: StateValue>(
+    func setValue<Value: StateValue>(
         _ property: Prop,
         on state: Binding<Value>,
         mode: StateMode,
@@ -223,20 +215,11 @@ extension PropertyContainer {
         }
     }
 
-    /// The public registration for a value the host WALKS - a number, a colour,
-    /// a thickness, a point - which is what an application's own control is
-    /// handed for a property it declared as movable:
-    ///
-    ///     func rating(_ state: Binding<Double>) -> Modified {
-    ///         setValue(.rating, on: state, mode: .inOut, kind: .property)
-    ///     }
-    ///
-    /// Through the `.property` door the state is walked as a JOURNEY, so
-    /// `$stars.journey.move(to: 5)` moves the control's property the way it
-    /// moves a Border's opacity; through any other door - a feed, a plain
-    /// value the control sets as it stands - the value crosses as itself. The
-    /// same call as the one over any `StateValue`, picked by the compiler where
-    /// the value can be walked.
+    /// The registration for a value the host WALKS, by its token: through the
+    /// `.property` door the state is walked as a JOURNEY, through any other the
+    /// value crosses as itself. What the typed `setValue(_:on:mode:kind:)` over
+    /// a walked value is written over, picked by the compiler where the value
+    /// can be walked.
     ///
     /// - Parameters:
     ///   - property: which property, by the token the host resolves it under.
@@ -244,7 +227,7 @@ extension PropertyContainer {
     ///   - mode: which way it crosses.
     ///   - kind: which of the host's doors the value goes through.
     /// - Returns: the element, with the registration on it.
-    public func setValue<Value: Walked>(
+    func setValue<Value: Walked>(
         _ property: Prop,
         on state: Binding<Value>,
         mode: StateMode,
@@ -531,33 +514,6 @@ public protocol ModifiableElement: PropertyContainer, Element where Modified: El
 public protocol VisualElement: ModifiableElement, VisualElementProperties {}
 
 extension ModifiableElement {
-    /// Registers a handler for an event by name, for events the typed modifiers
-    /// do not cover yet - beside whatever is there, with the VALUES the event
-    /// carried.
-    ///
-    ///     ColorBox()
-    ///         .onPinchUpdated { … }
-    ///         .onEvent(.pinchUpdated) { payload in
-    ///             log.append(payload.value(1)?.number ?? 0)   // the scale
-    ///         }
-    ///
-    /// The other half of the `setValue` escape hatch, and the ONLY one for
-    /// events: nothing public replaces a handler, because a two-way binding
-    /// leaves a write-back handler behind and replacing it would kill the
-    /// binding without a word. A typed modifier turns a payload into a value
-    /// and drops one it cannot read - which is right for an author and wrong
-    /// for anyone asking why nothing happens. This hands over exactly what the
-    /// host sent, unread: one typed value per field of the event's payload,
-    /// in the order the event declares them - `payload.value(0)?.string`
-    /// reads the first as text, `.number`, `.bool` and `.numbers` read the
-    /// other kinds, and an event with nothing to say hands over an empty list.
-    /// The event is a token - a literal spelling works, and an application
-    /// listening to its own control's event declares one, exactly as the
-    /// library does.
-    public func onEvent(_ event: Event, _ handler: @escaping ValueEventHandler<[PropValue]>) -> Modified {
-        addHandler(event) { try await handler(EventBuffer.current) }
-    }
-
     /// Hears one of this element's events that carries nothing.
     ///
     ///     onEvent(TrafficLightContract.closed) { shown = false }

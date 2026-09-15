@@ -219,12 +219,16 @@ public enum PropValue: Equatable, Sendable {
 }
 
 extension [PropValue] {
-    /// The value at `index`, or nil when the payload is shorter - so a
-    /// payload that does not carry what a reader expects leaves the reader
-    /// alone, which is the rule every typed event modifier follows.
+    /// The value at `index`, or nil when the list is shorter - so a list that
+    /// does not hold what a reader expects leaves the reader alone. How a
+    /// value of an application's own reads the parts it crossed as:
     ///
-    ///     .onEvent(.panUpdated) { payload in
-    ///         let totalX = payload.value(1)?.number
+    ///     init?(propValue: PropValue) {
+    ///         guard let parts = propValue.values,
+    ///               let latitude = parts.value(0)?.number,
+    ///               let longitude = parts.value(1)?.number else { return nil }
+    ///
+    ///         self.init(latitude: latitude, longitude: longitude)
     ///     }
     public func value(_ index: Int = 0) -> PropValue? {
         indices.contains(index) ? self[index] : nil
@@ -263,18 +267,25 @@ public typealias ValueEventHandler<each Value> = nonisolated(nonsending) (repeat
 /// One element of the UI tree: its semantic type, properties, children and
 /// event handlers.
 ///
-/// Every control in this library ends up as one, and a `Node` is itself an
-/// `Element`, so one written by hand goes into any builder. That is how an
-/// application describes a control it registered with a host, and how it sets
-/// a property for which it has no typed modifier:
+/// Every element ends up as one, made from its contract, and a `Node` is itself
+/// an `Element`, so one goes into any builder. That is how an application
+/// describes a control it registered with a host:
 ///
-///     extension NodeType {
-///         static let marker = NodeType("Maps.Marker")
+///     enum MarkerContract: ElementContract {
+///         static let nodeType: NodeType = "Maps.Marker"
+///         static let title = ElementProperty<Self, String>("title")
+///         static let members: [any ContractMember] = [title]
 ///     }
 ///
-///     Node(type: .marker, props: ["title": .string("Harbour")])
+///     struct Marker: View {
+///         var node = Node(contract: MarkerContract.self)
 ///
-/// The host resolves the type token through StateUI's built-in contract or its
+///         func title(_ value: String) -> Self {
+///             setValue(MarkerContract.title, value)
+///         }
+///     }
+///
+/// The host resolves the type through StateUI's built-in contract or its
 /// application control registry. An unresolved type draws the unknown-control
 /// marker rather than hiding the rest of the interface.
 ///
@@ -284,7 +295,7 @@ public typealias ValueEventHandler<each Value> = nonisolated(nonsending) (repeat
 public struct Node {
     /// The element's StateUI type token, such as `.label`,
     /// `.vStack`, or an application's own registered type.
-    public var type: NodeType
+    public internal(set) var type: NodeType
 
     /// Who this element is, when the author says so - `.id("row-7")`.
     ///
@@ -349,7 +360,7 @@ public struct Node {
 
     /// The element's semantic properties, keyed by StateUI tokens such as
     /// `.text`, `.fontSize` and `.horizontalAlignment`.
-    public var props: [Prop: PropValue]
+    var props: [Prop: PropValue]
 
     /// Nested nodes. Empty for leaf controls.
     ///
@@ -398,7 +409,7 @@ public struct Node {
     /// a registry, and the id a host reports has to outlive this node anyway.
     /// The differ registers handlers under ids that belong to the ELEMENT and
     /// stay put for as long as it lives.
-    public var events: [Event: EventHandler]
+    var events: [Event: EventHandler]
 
     /// The properties driven by a state, and how each one crosses - what
     /// `.opacity($fade)` records where it writes no value at all.
@@ -492,8 +503,8 @@ public struct Node {
     /// The primitive behind every typed event modifier: a handler written after
     /// another runs BESIDE it, never instead of it. What a two-way binding
     /// leaves behind is a handler, and an `.onTextChanged` that replaced it
-    /// would kill the binding without a word. The public `onEvent` escape goes
-    /// through here too, its literal spelling becoming a token on the way in.
+    /// would kill the binding without a word. Every typed `onEvent` goes
+    /// through here too, its member's token on the way in.
     mutating func addHandler(_ event: Event, _ handler: @escaping EventHandler) {
         let existing = events[event]
 
@@ -503,21 +514,17 @@ public struct Node {
         }
     }
 
-    /// A node. Every control's initializer ends here, and an author can too:
-    /// a `Node` is an `Element`, so one written by hand drops into any builder
-    /// - which is how a control an application registered with the host is
-    /// described. What the host does with a type name it knows nothing about
-    /// is on the type's own comment.
+    /// A node of a type, with what it holds already made - what
+    /// `Node(contract:)` and the library's own structure are written over.
     ///
     /// - Parameters:
-    ///   - type: the StateUI type token, built in or registered by the
-    ///     application. A literal spelling works.
+    ///   - type: the node type.
     ///   - id: who this element is, when the author says so. Nil leaves it to
     ///     be identified by where it was written.
-    ///   - props: its properties, keyed by semantic StateUI tokens.
+    ///   - props: its properties, keyed by their tokens.
     ///   - children: the nodes under it, in order. Empty for a leaf control.
-    ///   - events: what each semantic event runs, keyed by its StateUI token.
-    public init(
+    ///   - events: what each event runs, keyed by its token.
+    init(
         type: NodeType,
         id: String? = nil,
         props: [Prop: PropValue] = [:],

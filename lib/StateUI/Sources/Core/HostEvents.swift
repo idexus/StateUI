@@ -6,9 +6,9 @@
 // Every other event belongs to an element of the tree and is found by a
 // handler id the differ issued. What the host pushes on its own -
 // connectivity changing, the battery reporting - has no element to hang off,
-// so the application registers the raise with the host and subscribes here
-// BY NAME, with the same `Event` token both sides of an element's event
-// already share.
+// so the application declares it in its contract, registers the raise with
+// the host, and subscribes here to the member: the name crosses, and the
+// values arrive as the types the member declares.
 //
 // The handlers run exactly as a control's do: queued on this library's
 // executor, isolated to @MainThread, free to await - `Renderer.start` is where
@@ -42,20 +42,23 @@ public final class HostEventSubscription: @unchecked Sendable {
 }
 
 /// Events the host raises by NAME - the push half of the interop surface,
-/// sister to the acts an application registers.
+/// sister to the acts an application registers - each a member of an
+/// `ApplicationTier`, heard with the values it declares.
 ///
-///     extension Event {
-///         static let batteryChanged = Event("Gallery.BatteryChanged")
+///     enum NotesContract: ApplicationTier {
+///         static let name = "Notes"
+///         static let batteryChanged = ElementEvent<Self, (Double, Bool)>("Notes.BatteryChanged")
+///         static let members: [any ContractMember] = [batteryChanged]
 ///     }
 ///
-///     let heard = HostEvents.on(.batteryChanged) { payload in
-///         level = payload.value()?.number ?? level
+///     let heard = HostEvents.on(NotesContract.batteryChanged) { level, charging in
+///         battery = level
 ///     }
 ///     // later, when the listener leaves:
 ///     heard.cancel()
 ///
 /// The host half registers the raise once, at startup, and raises the same
-/// name with the typed values whenever the platform reports a change.
+/// name with the values whenever the platform reports a change.
 ///
 /// A raise nobody subscribed to is an ordinary answer, not an error - the
 /// battery reports whether a page is watching or not. Prefix event names with
@@ -76,20 +79,17 @@ public enum HostEvents {
     /// the UI thread.
     private static let guarded = DispatchQueue(label: "StateUI.HostEvents")
 
-    /// Subscribes a handler to an event the host raises by name. Handlers
-    /// run in the order they were subscribed, each queued on this library's
-    /// executor exactly as a control's handler is - `@MainThread`-isolated,
-    /// free to await, its thrown errors reported.
+    /// Subscribes a handler to what the host raises under an event's name -
+    /// what every `on` is written over, the values still as they crossed.
+    /// Handlers run in the order they were subscribed, each queued on this
+    /// library's executor exactly as a control's handler is -
+    /// `@MainThread`-isolated, free to await, its thrown errors reported.
     ///
     /// - Parameters:
-    ///   - event: the name the host raises - the application's own token,
-    ///     e.g. `Event("Gallery.BatteryChanged")`.
-    ///   - handler: given the raise's typed values, in the order the host
-    ///     wrote them - read them with `payload.value()?.number` and its kin,
-    ///     the `onEvent` shape.
+    ///   - event: the name the host raises.
+    ///   - handler: given what the raise carried, in the order the host wrote it.
     /// - Returns: the subscription, to `cancel()` when the listener leaves.
-    @discardableResult
-    public static func on(
+    private static func subscribe(
         _ event: Event,
         _ handler: @escaping ValueEventHandler<[PropValue]>
     ) -> HostEventSubscription {
@@ -120,7 +120,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Void>,
         _ handler: @escaping EventHandler
     ) -> HostEventSubscription {
-        on(event.token) { payload in
+        subscribe(event.token) { payload in
             guard MemberValues.carried(payload, by: event.name) != nil else { return }
 
             try await handler()
@@ -144,7 +144,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, Value>,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> HostEventSubscription {
-        on(event.token) { payload in
+        subscribe(event.token) { payload in
             guard let value = MemberValues.carried(payload, by: event.name, as: Value.self) else { return }
 
             try await handler(value)
@@ -167,7 +167,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second)>,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> HostEventSubscription {
-        on(event.token) { payload in
+        subscribe(event.token) { payload in
             guard let (first, second) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self)
             else { return }
@@ -191,7 +191,7 @@ public enum HostEvents {
         _ event: ElementEvent<Owner, (First, Second, Third)>,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
     ) -> HostEventSubscription {
-        on(event.token) { payload in
+        subscribe(event.token) { payload in
             guard let (first, second, third) = MemberValues.carried(
                 payload, by: event.name, as: First.self, Second.self, Third.self)
             else { return }

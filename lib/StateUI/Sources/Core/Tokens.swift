@@ -13,16 +13,11 @@
 // makes the library's tokens and an application's the same thing: there is no
 // reserved pool to collide with and no table to be missing from.
 //
-// An application extends a vocabulary exactly the way the library declares it:
-//
-//     extension Act {
-//         static let batteryLevel = Act("Gallery.BatteryLevel")
-//     }
-//
-// and every token type is `ExpressibleByStringLiteral`, so the one-off spelling
-// still reads naturally where a declaration would be ceremony:
-//
-//     Node(type: "ColorWheel")
+// Nobody writes a token by hand: an element and its members are declared in a
+// CONTRACT (Core/Contract.swift), and a member's token is made from its name -
+// the library's and an application's alike. A node type is the one token a
+// contract spells, as a literal: `static let nodeType: NodeType =
+// "Gallery.TrafficLight"`.
 //
 // The SOURCES of this library write only the static members - `.label`,
 // `.fontSize`, `.textChanged`, `.alert` - and the guard test in
@@ -32,25 +27,23 @@
 /// The kind of element a `Node` describes: a native-host capability, a
 /// structural node StateUI defines, or an application's own control.
 ///
-/// A token, not an enum, so an application can name a control the library has
-/// never heard of and drop it into any builder - the host draws an unknown
-/// type as a red marker rather than failing, which is what keeps a lagging
-/// host visible without hiding the rest of the interface.
+/// A token, not an enum, so an application's contract can name a control the
+/// library has never heard of - the host draws an unknown type as a red marker
+/// rather than failing, which is what keeps a lagging host visible without
+/// hiding the rest of the interface.
 public struct NodeType: Hashable, Comparable, Sendable,
     ExpressibleByStringLiteral, CustomStringConvertible {
     /// The type's stable StateUI name, or the application's own.
     public let name: String
 
-    /// A node type from its name, which is how an application declares one:
-    ///
-    ///     extension NodeType {
-    ///         static let colorWheel = NodeType("ColorWheel")
-    ///     }
+    /// A node type from its name.
     public init(_ name: String) {
         self.name = name
     }
 
-    /// The literal form, so `Node(type: "ColorWheel")` reads naturally.
+    /// The literal form, which is how a contract names its node type:
+    ///
+    ///     static let nodeType: NodeType = "Gallery.ColorWheel"
     public init(stringLiteral value: String) {
         self.init(value)
     }
@@ -74,17 +67,13 @@ public struct Prop: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
     /// The property's stable StateUI name.
     public let name: String
 
-    /// A property key from its name, which is how an application reaches a
-    /// property of its own control:
-    ///
-    ///     extension Prop {
-    ///         static let hue = Prop("hue")
-    ///     }
+    /// A property key from its name - what a member's token is made from.
     public init(_ name: String) {
         self.name = name
     }
 
-    /// The literal form, so `setValue("fontSize", .number(20))` still reads.
+    /// The literal form, so a name reads plainly where a key is compared:
+    /// `property == "fontSize"`.
     public init(stringLiteral value: String) {
         self.init(value)
     }
@@ -237,17 +226,13 @@ public struct Event: Hashable, Comparable, Sendable, ExpressibleByStringLiteral,
     /// The event's stable StateUI name.
     public let name: String
 
-    /// An event from its name, which is how an application hears an event of
-    /// its own control:
-    ///
-    ///     extension Event {
-    ///         static let hueChanged = Event("hueChanged")
-    ///     }
+    /// An event from its name - what a member's token is made from.
     public init(_ name: String) {
         self.name = name
     }
 
-    /// The literal form, so `onEvent("hueChanged") { _ in }` still reads.
+    /// The literal form, so a name reads plainly where an event is compared:
+    /// `event == "clicked"`.
     public init(stringLiteral value: String) {
         self.init(value)
     }
@@ -278,17 +263,13 @@ public struct Act: Hashable, Sendable, ExpressibleByStringLiteral,
     /// one.
     public let name: String
 
-    /// An act from its name, which is how an application names a function it
-    /// registered with the host - see `stateUICall`:
-    ///
-    ///     extension Act {
-    ///         static let batteryLevel = Act("Gallery.BatteryLevel")
-    ///     }
+    /// An act from its name - what a member's token is made from.
     public init(_ name: String) {
         self.name = name
     }
 
-    /// The literal form, so `stateUICall("Gallery.BatteryLevel", …)` still reads.
+    /// The literal form, so a name reads plainly where an act is compared:
+    /// `call.act == "alert"`.
     public init(stringLiteral value: String) {
         self.init(value)
     }
@@ -303,11 +284,10 @@ public struct Act: Hashable, Sendable, ExpressibleByStringLiteral,
 // or event starts here - the member IS the registration, there is no table to
 // keep in step and no number to reserve.
 //
-// PUBLIC, so an application writes what the library writes:
-// `.onEvent(.pinchUpdated)` rather than `.onEvent("pinchUpdated")`, which
-// spells a name out by hand - the very thing `testTheSourcesSpellNoNames`
-// forbids these sources from doing. One vocabulary, or the rule is a privilege
-// rather than a rule.
+// PUBLIC for the hosts, which read a tree by these names. An application writes
+// a member with its contract - `ViewContract.pinchUpdated` - which is where the
+// name and its value's type meet, and so do these sources wherever they write
+// a value.
 //
 // THE STRING IS THE MEMBER'S OWN NAME, always: `Prop("fontSize")` under
 // `fontSize`, `NodeType("Label")` under `label` - capitalized for a node type,

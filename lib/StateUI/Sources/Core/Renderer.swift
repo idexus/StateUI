@@ -1131,19 +1131,14 @@ public final class Renderer: @unchecked Sendable {
     /// Shown until an application registers itself, in the same shape a real one
     /// produces so the host has one thing to read.
     private static var unregistered: Node {
-        var main = Node(type: .window, children: [
-            Node(type: .page, children: [
-                Node(type: .label, props: [
-                    .text: .string("StateUI: no application registered")
-                ])
-            ])
-        ])
-        main.id = SceneElement.mainKey
+        var label = Node(contract: LabelContract.self)
+        label.write(TextElementContract.text, "StateUI: no application registered")
 
-        var scene = Node(type: .scene, children: [main])
-        scene.id = "1"
+        let page = Node(contract: PageContract.self, children: [label])
+        let main = Node(contract: WindowContract.self, id: SceneElement.mainKey, children: [page])
+        let scene = Node(contract: SceneContract.self, id: "1", children: [main])
 
-        return Node(type: .application, children: [scene])
+        return Node(contract: ApplicationContract.self, children: [scene])
     }
 
     /// Registers somebody waiting to be told how a movement ended, and

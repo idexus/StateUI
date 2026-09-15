@@ -86,71 +86,6 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
     public var description: String { message }
 }
 
-/// Asks the host to perform an act - one the library ships, or a function the
-/// application registered with the host - and waits for it.
-///
-/// The untyped road beside the typed calls - a token and a list of values -
-/// and a way an application reaches its OWN host code: register a performer
-/// with the host under a name, declare the same name as an `Act` token, and
-/// call it by that token:
-///
-///     extension Act {
-///         static let batteryLevel = Act("Gallery.BatteryLevel")
-///     }
-///
-///     let level = try await stateUICall(.batteryLevel).value()?.number
-///
-/// Returns the VALUES the host's reply carried - read them with `PropValue`'s
-/// accessors - and throws `StateUIError` if the act could not be performed,
-/// including when the host has no case and no registration for the name.
-/// Resumes on the host's UI thread, which is where it was called from.
-///
-/// Callable from a handler, from a child task a handler started - `async let`
-/// runs its child on the cooperative pool, and the queue behind this is locked
-/// for exactly that - and from a `Task.detached`. A handler may also await
-/// things that are NOT acts - `Task.sleep`, a task's value - because the
-/// host keeps a thread parked in `stateui_wait_work` and a resume wakes it;
-/// see Core/MainThread.swift.
-///
-/// Two acts queued without an `await` between them start in the order they were
-/// queued and finish in whichever order the host's methods do. `await` is what
-/// orders them.
-///
-/// - Parameters:
-///   - act: the act's token - a literal spelling works too,
-///     `stateUICall("Gallery.BatteryLevel", …)`.
-///   - arguments: its arguments, in the order the method takes them.
-/// - Returns: the values the host reported, empty for a method that returns
-///   nothing.
-@discardableResult
-public nonisolated(nonsending) func stateUICall(
-    _ act: Act,
-    _ arguments: [PropValue] = []
-) async throws -> [PropValue] {
-    try await Renderer.shared.call(act, arguments)
-}
-
-/// Asks the host to perform an act without waiting for it.
-///
-///     extension Act {
-///         static let logEvent = Act("Gallery.LogEvent")
-///     }
-///
-///     stateUISend(.logEvent, [.string("opened the sample")])
-///
-/// For an act whose outcome nothing depends on: it returns at once, and the
-/// host performs it on its next drain. Anything that fails reaches nothing
-/// here: the host logs a name it has no case for, and Swift is never told -
-/// which is the difference from `stateUICall` and the reason to reach for
-/// that one instead.
-///
-/// - Parameters:
-///   - act: the act's token - a literal spelling works too.
-///   - arguments: its arguments, in the order the method takes them.
-public func stateUISend(_ act: Act, _ arguments: [PropValue] = []) {
-    Renderer.shared.send(act, arguments, completion: nil)
-}
-
 /// Performs an act of the application's - one with no control behind it -
 /// handing it arguments of the types its contract declares and answering with
 /// the values it declares.
@@ -163,6 +98,17 @@ public func stateUISend(_ act: Act, _ arguments: [PropValue] = []) {
 /// what the contract declares. Resumes on the host's UI thread, which is where
 /// it was called from. An act of an element's own goes through the element's
 /// aim: `Aim.call`.
+///
+/// Callable from a handler, from a child task a handler started - `async let`
+/// runs its child on the cooperative pool, and the queue behind this is locked
+/// for exactly that - and from a `Task.detached`. A handler may also await
+/// things that are NOT acts - `Task.sleep`, a task's value - because the host
+/// keeps a thread parked in `stateui_wait_work` and a resume wakes it; see
+/// Core/MainThread.swift.
+///
+/// Two acts queued without an `await` between them start in the order they
+/// were queued and finish in whichever order the host's methods do. `await` is
+/// what orders them.
 ///
 /// - Parameters:
 ///   - act: the member, written with its contract.
@@ -184,6 +130,11 @@ public nonisolated(nonsending) func stateUICall<
 /// whether it failed, reaches nothing here.
 ///
 ///     stateUISend(NotesContract.logEvent, "opened the sample")
+///
+/// It returns at once, and the host performs the act on its next drain. A
+/// name the host has no case for is logged there and never told here - the
+/// difference from `stateUICall`, and the reason to reach for that one
+/// instead.
 ///
 /// - Parameters:
 ///   - act: the member, written with its contract.
