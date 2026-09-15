@@ -762,11 +762,9 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
         didSet { if barColor != oldValue { needsDisplay = true } }
     }
 
-    /// The part of this pane the window's title bar and toolbar cover, beyond
-    /// the margin it keeps beside a floating sidebar.
+    /// The part of this pane the window's title bar and toolbar cover.
     var barBand: NSRect {
-        NSRect(x: padding.left, y: 0, width: max(0, bounds.width - padding.left),
-               height: max(0, safeAreaRect.minY))
+        NSRect(x: 0, y: 0, width: bounds.width, height: max(0, safeAreaRect.minY))
     }
 
     override func layout() {
@@ -1251,23 +1249,6 @@ final class AppKitSplitView: AppKitHitTestView {
         splitController.splitView.frame = splitController.view.bounds
         splitController.splitView.needsLayout = true
         splitController.splitView.layoutSubtreeIfNeeded()
-        keepTheSidebarsMarginBesideTheDetail()
-    }
-
-    /// A floating sidebar stands in the window's margin on every side, the
-    /// detail's included: the detail's page and its band keep as far from the
-    /// sidebar as the sidebar keeps from the window's edge, the window showing
-    /// between them. A sidebar that does not float, or is collapsed, leaves no
-    /// margin to keep.
-    private func keepTheSidebarsMarginBesideTheDetail() {
-        let margin = sidebarItem.isCollapsed
-            ? 0
-            : max(0, sidebarSurface.convert(sidebarSurface.bounds, to: self).minX)
-        guard detailSurface.padding.left != margin else { return }
-
-        detailSurface.padding.left = margin
-        detailSurface.needsLayout = true
-        detailSurface.needsDisplay = true
     }
 
     /// The host's one adaptation: a window wide enough for both panes opens

@@ -372,12 +372,11 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertNil(content.barColor, "no band drawn beneath the tint")
     }
 
-    /// A floating sidebar keeps the same margin on every side, the detail's
-    /// included: the detail's page and its band stand as far from the sidebar
-    /// as the sidebar stands from the window's edge, the window showing
-    /// between them.
+    /// The detail meets a floating sidebar: its page and its band begin at the
+    /// sidebar's trailing edge, the window's margin standing only between the
+    /// sidebar and the window's own edges.
     @MainActor
-    func testAFloatingSidebarKeepsItsMarginBesideTheDetail() throws {
+    func testTheDetailMeetsAFloatingSidebar() throws {
         let renderer = AppKitRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
@@ -403,9 +402,9 @@ final class AppKitPageTests: XCTestCase {
         let detail = try XCTUnwrap(panes[1] as? AppKitPaneView)
         let shown = try XCTUnwrap(renderer.viewForTesting(id: .manual("navigation")))
         XCTAssertGreaterThan(sidebar.minX, 0, "the sidebar floats in the window's margin")
-        XCTAssertEqual(shown.convert(shown.bounds, to: nil).minX - sidebar.maxX, sidebar.minX,
-                       "the page keeps the sidebar's margin")
-        XCTAssertEqual(detail.barBand.minX, sidebar.minX, "and so does the band")
+        XCTAssertEqual(shown.convert(shown.bounds, to: nil).minX, sidebar.maxX,
+                       "the page begins at the sidebar's edge")
+        XCTAssertEqual(detail.barBand.minX, 0, "and so does the band")
     }
 
     @MainActor

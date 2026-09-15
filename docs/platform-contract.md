@@ -118,8 +118,7 @@ background, which shows around a floating sidebar and through its glass; an
 authored `TitleBar`'s `background` paints both where no arrangement writes
 one. On a translucent window the colour tints the window's material
 instead, which the band, the margin around the sidebar and its glass all
-show. A floating sidebar keeps the window's margin on every side, the
-detail's included. Text on a painted band is the bar's: the page's title
+show. Text on a painted band is the bar's: the page's title
 in the arrangement's `barForegroundColor`, the title bar's own title in the
 title bar's, each falling back to the other and then to white or black by the band's lightness.
 On the system's material both keep the system's colours.

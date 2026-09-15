@@ -237,8 +237,8 @@ struct MainWindow: Window {
 
     // MARK: - The window's own chrome
 
-    /// What the bars are painted in: the gallery's accent, with two fifths let
-    /// through while the desktop shows through the window.
+    /// What the bars are painted in: the gallery's accent, with three fifths
+    /// let through while the desktop shows through the window.
     private var barColour: Color {
         window.isTranslucent == true ? style.accent.translucentColor : style.accent.color
     }
