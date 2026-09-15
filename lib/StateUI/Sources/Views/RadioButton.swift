@@ -77,8 +77,8 @@ public struct RadioButton: View, TextElement, FontElement, PaddingElement,
     /// - Returns: the button, wearing and reporting that value.
     public func isOn(_ binding: Binding<Bool>) -> Self {
         binding.image == nil
-            ? described(.isOn, binding, on: .toggled)
-            : plain(.isOn, by: binding, mode: .inOut)
+            ? described(RadioButtonContract.isOn.token, binding, on: RadioButtonContract.toggled.token)
+            : plain(RadioButtonContract.isOn.token, by: binding, mode: .inOut)
     }
 
     // MARK: Events

@@ -110,12 +110,12 @@ public struct SplitView: Page, ModifiableElement, PageElement, PageArrangement {
         detail: () -> any Page
     ) {
         node = Node(
-            type: .splitView,
-            props: [.isSidebarVisible: .bool(isSidebarVisible.wrappedValue)],
+            contract: SplitViewContract.self,
             children: [
                 Self.identified(Node.page(sidebar()), as: Self.sidebarIdentity),
                 Self.identified(Node.page(detail()), as: Self.detailIdentity),
             ])
+        node.write(SplitViewContract.isSidebarVisible, isSidebarVisible.wrappedValue)
 
         // The reader's own ways in and out - the platform's sidebar button,
         // the edge swipe, the tap on the dimmed detail page - all end here,

@@ -859,10 +859,12 @@ final class ControlTests: XCTestCase {
     /// a type a `Views/` file describes and no fixture ever builds.
     func testEveryControlHasACase() throws {
         let covered = Set(Self.cases.map { $0.name })
+        var read = 0
 
         for source in try Fixtures.controlSources() {
             for type in try Fixtures.nodeTypes(in: source).sorted()
             where !Fixtures.notViews.contains(type) {
+                read += 1
                 XCTAssertTrue(covered.contains(type), """
                     \(source) describes \(type), which has no case in \
                     ControlTests.
@@ -874,6 +876,8 @@ final class ControlTests: XCTestCase {
                     """)
             }
         }
+
+        XCTAssertGreaterThan(read, 30, "the scan read almost nothing")
     }
 
     /// The shared tier, deliberately covered in one place rather than in every

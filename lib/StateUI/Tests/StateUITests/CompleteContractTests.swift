@@ -49,6 +49,52 @@ final class CompleteContractTests: XCTestCase {
         XCTAssertEqual(contracts.filter { $0.value.count > 1 }.keys.sorted(), [], "a node type with two contracts")
     }
 
+    /// Every node the library builds, it builds through a contract -
+    /// `Node(contract:)` - so the node type is the contract's and every value
+    /// on it a member's. Two are built by type, each for its reason: the
+    /// differ's placeholder for a composed view not built yet, which never
+    /// crosses and so has no contract, and a style's node, which takes the type
+    /// its target's node already has.
+    ///
+    /// Read across lines: a construction wrapped after `Node(` is the same
+    /// construction, and a scan reading line by line walks past it.
+    func testEveryNodeIsBuiltThroughItsContract() throws {
+        let allowed: [(path: String, construction: String)] = [
+            ("Core/Stateful.swift", "Node(type: .composed)"),
+            ("Views/Style.swift", "Node(type: Target().node.type)"),
+        ]
+        var byType: [String] = []
+
+        for source in try Fixtures.allSources() {
+            let text = source.text
+            var searched = text.startIndex..<text.endIndex
+
+            while let found = text.range(of: #"Node\(\s*type:"#, options: .regularExpression, range: searched) {
+                searched = found.upperBound..<text.endIndex
+
+                let lineStart = text[..<found.lowerBound].lastIndex(of: "\n").map { text.index(after: $0) }
+                    ?? text.startIndex
+                let lineEnd = text[found.lowerBound...].firstIndex(of: "\n") ?? text.endIndex
+                let line = text[lineStart..<lineEnd].trimmingCharacters(in: .whitespaces)
+
+                if line.hasPrefix("//") { continue }
+                if allowed.contains(where: { source.path == $0.path && text[found.lowerBound...].hasPrefix($0.construction) }) {
+                    continue
+                }
+
+                let number = text[..<found.lowerBound].filter { $0 == "\n" }.count + 1
+                byType.append("\(source.path):\(number)  \(line.prefix(70))")
+            }
+        }
+
+        for exception in allowed {
+            XCTAssertTrue(try Fixtures.text(in: exception.path).contains(exception.construction),
+                          "\(exception.path) no longer builds \(exception.construction)")
+        }
+
+        XCTAssertEqual(byType, [], "a node built by type rather than through its contract")
+    }
+
     /// Every act the library declares is a member of exactly one contract,
     /// and every act member is one the library declares.
     func testEveryActIsAMemberOfExactlyOneContract() throws {
@@ -146,34 +192,47 @@ final class CompleteContractTests: XCTestCase {
         XCTAssertEqual(wrong, [], "a member a source writes that no contract it describes declares")
     }
 
+    /// Every element `describing` lists for a source is one the source cannot
+    /// say: an element it builds or extends is read from its text.
+    func testDescribingListsOnlyWhatASourceCannotSay() throws {
+        var said: [String] = []
+
+        for (path, elements) in Self.describing.sorted(by: { $0.key < $1.key }) {
+            let text = try Fixtures.text(in: path)
+            let read = Fixtures.nodeTypes(inSource: text).union(Self.extended(in: text))
+
+            for element in elements where read.contains(element) {
+                said.append("\(path): \(element)")
+            }
+        }
+
+        XCTAssertEqual(said, [], "an element listed for a source that builds or extends it")
+    }
+
     // MARK: - Support
 
-    /// The sources that write for an element they neither build by its node
-    /// type nor extend: the scene's handlers and the window's and the page's
-    /// properties, written where a session keeps them, and the placed layout,
-    /// a composition over an `AbsoluteLayout` placing its children.
+    /// The sources that write for an element they neither build nor extend:
+    /// the window's properties, which the scenes and the host environment
+    /// write, the page's, which its session keeps, and the placed layout's, a
+    /// composition over an `AbsoluteLayout` placing its children.
     private static let describing: [String: [String]] = [
-        "Core/Scenes.swift": ["Scene", "Window"],
+        "Core/Scenes.swift": ["Window"],
         "Types/HostEnvironment.swift": ["Window"],
         "Types/PageSession.swift": ["Page"],
-        "Views/Application.swift": ["Window", "Page"],
         "Views/PlacedLayout.swift": ["AbsoluteLayout"],
     ]
 
     /// The contracts a source names by its protocols and extensions -
     /// `extension FontElement`, `public protocol ViewProperties`, a tier's
-    /// `…Properties` spelling read as the tier - and by the contract it builds
-    /// a node from, `Node(contract: LabelContract.self)`.
+    /// `…Properties` spelling read as the tier.
     private static func extended(in source: String) -> Set<String> {
+        let regex = try! NSRegularExpression(pattern: #"^(?:public )?(?:protocol|extension) (\w+)"#,
+                                             options: .anchorsMatchLines)
         var names: Set<String> = []
 
-        for pattern in [#"^(?:public )?(?:protocol|extension) (\w+)"#, #"Node\(contract:\s*(\w+)Contract\.self"#] {
-            let regex = try! NSRegularExpression(pattern: pattern, options: .anchorsMatchLines)
-
-            for match in regex.matches(in: source, range: NSRange(source.startIndex..., in: source)) {
-                let name = String(source[Range(match.range(at: 1), in: source)!])
-                names.insert(name.hasSuffix("Properties") ? String(name.dropLast("Properties".count)) : name)
-            }
+        for match in regex.matches(in: source, range: NSRange(source.startIndex..., in: source)) {
+            let name = String(source[Range(match.range(at: 1), in: source)!])
+            names.insert(name.hasSuffix("Properties") ? String(name.dropLast("Properties".count)) : name)
         }
 
         return names

@@ -94,7 +94,7 @@ public struct ModalStack {
     ) {
         build = {
             Node(
-                type: .modalStack,
+                contract: ModalStackContract.self,
                 children: stack.wrappedValue.enumerated().map { depth, sheet in
                     var page = Node.page(destination(sheet))
                     page.id = ModalStack.identity(depth: depth, sheet: sheet)

@@ -187,8 +187,9 @@ extension Window {
             // is this side's to settle, and one order is what makes the
             // window's children the same list in every run.
             var node = Node(
-                type: .window, props: session.props,
+                contract: WindowContract.self,
                 children: [Node.page(page)] + session.slots + (overlay.map { [$0] } ?? []))
+            node.props = session.props
 
             // Where the window stands, as its platform window reports it -
             // written out one by one rather than walked over a collection: the

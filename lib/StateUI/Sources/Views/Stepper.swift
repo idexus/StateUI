@@ -97,7 +97,7 @@ public struct Stepper: View, StepperProperties {
     ///   carried by the host as a journey.
     /// - Returns: the control, wearing and reporting that value.
     public func value(_ value: Binding<Double>) -> Modified {
-        journey(.value, by: value)
+        journey(StepperContract.value.token, by: value)
     }
 
     // MARK: Properties

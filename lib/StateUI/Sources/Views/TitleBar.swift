@@ -84,7 +84,7 @@ public struct TitleBar: View, TitleBarProperties {
     /// A closure producing nothing empties the slot, which is what an `if` in
     /// one is for.
     public func leadingContent(@ViewBuilder _ content: () -> [Element]) -> Self {
-        slot(.leadingContent, content())
+        slot(LeadingContentContract.self, content())
     }
 
     /// Places one root view in the central title-area position.
@@ -96,24 +96,24 @@ public struct TitleBar: View, TitleBarProperties {
     ///
     /// A closure producing nothing empties the slot.
     public func content(@ViewBuilder _ content: () -> [Element]) -> Self {
-        slot(.content, content())
+        slot(ContentContract.self, content())
     }
 
     /// Places one root view at the far end of the title area.
     ///
     /// A closure producing nothing empties the slot.
     public func trailingContent(@ViewBuilder _ content: () -> [Element]) -> Self {
-        slot(.trailingContent, content())
+        slot(TrailingContentContract.self, content())
     }
 
     /// Replaces one named slot while keeping structural children last.
-    private func slot(_ type: NodeType, _ views: [Element]) -> Self {
+    private func slot<Slot: ElementContract>(_ slot: Slot.Type, _ views: [Element]) -> Self {
         var copy = self
-        copy.node.children.removeAll { $0.type == type }
+        copy.node.children.removeAll { $0.type == Slot.nodeType }
         let slots = copy.node.children.filter { $0.type == .contextMenu }
         copy.node.children.removeAll { $0.type == .contextMenu }
 
-        let filled = views.first.map { [Node(type: type, children: [$0.body])] } ?? []
+        let filled = views.first.map { [Node(contract: Slot.self, children: [$0.body])] } ?? []
 
         copy.node.children += filled + slots
         return copy

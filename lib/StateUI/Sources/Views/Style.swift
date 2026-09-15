@@ -298,12 +298,8 @@ extension StyleBag where Context == StyleBase {
 
         copy.states = visualStates(
             copy.states,
-            adding: Node(
-                type: .visualState,
-                props: [.name: .name(state.name), .group: .name(group)],
-                children: [Node(
-                    type: .setters,
-                    props: setters(StyleBag<Target, StyleState>(key: nil)).node.props)]),
+            adding: visualStateSetting(
+                setters(StyleBag<Target, StyleState>(key: nil)).node.props, named: state.name, in: group),
             resting: Target.restingVisualState.name)
 
         return copy
@@ -327,9 +323,7 @@ extension StyleBag where Context == StyleBase {
 
         copy.states = visualStates(
             copy.states,
-            adding: Node(
-                type: .visualState,
-                props: [.name: .name(state.name), .group: .name(group)]),
+            adding: emptyVisualState(named: state.name, in: group),
             resting: Target.restingVisualState.name)
 
         return copy
@@ -443,12 +437,8 @@ extension VisualElement where Self: StyleTarget {
         group: String = "CommonStates",
         _ setters: (StyleBag<Self, StyleState>) -> StyleBag<Self, StyleState>
     ) -> Modified {
-        visualState(Node(
-            type: .visualState,
-            props: [.name: .name(state.name), .group: .name(group)],
-            children: [Node(
-                type: .setters,
-                props: setters(StyleBag<Self, StyleState>(key: nil)).node.props)]))
+        visualState(visualStateSetting(
+            setters(StyleBag<Self, StyleState>(key: nil)).node.props, named: state.name, in: group))
     }
 
     /// A state of this control's that changes nothing, which is how it gets back
@@ -469,9 +459,7 @@ extension VisualElement where Self: StyleTarget {
         _ state: VisualState<Self>,
         group: String = "CommonStates"
     ) -> Modified {
-        visualState(Node(
-            type: .visualState,
-            props: [.name: .name(state.name), .group: .name(group)]))
+        visualState(emptyVisualState(named: state.name, in: group))
     }
 
     /// Runs when this control ENTERS a state - which is what makes a state
@@ -839,7 +827,9 @@ private func overlaid(_ base: Node, with own: Node) -> Node {
     let theirs = base.children.first { $0.type == .setters }?.props ?? [:]
 
     var result = base
-    result.children = [Node(type: SettersContract.nodeType, props: theirs.merging(mine) { _, m in m })]
+    var setters = Node(contract: SettersContract.self)
+    setters.props = theirs.merging(mine) { _, m in m }
+    result.children = [setters]
 
     return result
 }
@@ -961,6 +951,17 @@ func emptyVisualState(named name: String, in group: String) -> Node {
     var node = Node(contract: VisualStateContract.self)
     node.write(VisualStateContract.name, Name(name))
     node.write(VisualStateContract.group, Name(group))
+    return node
+}
+
+/// A visual state with the values in force while the control is in it: its
+/// setters, under the state's name and group.
+func visualStateSetting(_ values: [Prop: PropValue], named name: String, in group: String) -> Node {
+    var setters = Node(contract: SettersContract.self)
+    setters.props = values
+
+    var node = emptyVisualState(named: name, in: group)
+    node.children = [setters]
     return node
 }
 

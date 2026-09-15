@@ -63,8 +63,8 @@ public struct CheckBox: View, TintElement, CheckBoxProperties {
     /// - Returns: the box, wearing and reporting that value.
     public func isOn(_ value: Binding<Bool>) -> Modified {
         value.image == nil
-            ? described(.isOn, value, on: .toggled)
-            : plain(.isOn, by: value, mode: .inOut)
+            ? described(CheckBoxContract.isOn.token, value, on: CheckBoxContract.toggled.token)
+            : plain(CheckBoxContract.isOn.token, by: value, mode: .inOut)
     }
 
     // MARK: Properties

@@ -475,7 +475,7 @@ final class Scenes: @unchecked Sendable {
         // own, so two scenes built from one value would share every storage
         // the first of them adopted.
         Node(
-            type: .application,
+            contract: ApplicationContract.self,
             children: list.map { SceneElement(record: $0, scene: application.scene).body })
     }
 }

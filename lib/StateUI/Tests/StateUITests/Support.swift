@@ -496,11 +496,13 @@ enum Fixtures {
         return kinds
     }()
 
-    /// Every node type a source file describes - `Node(type: .label)`. A
-    /// NodeType token's member is the type name with its first letter
-    /// lowered, so the scan raises it back; the member ends at the first
-    /// character an identifier cannot contain, whether a comma or the
-    /// closing parenthesis follows.
+    /// Every node type a source file describes: each node it builds, built
+    /// through its contract - `Node(contract: LabelContract.self)` - the one
+    /// road a library source builds a node by
+    /// (`testEveryNodeIsBuiltThroughItsContract`). A contract is named for its
+    /// node type with `Contract` after it (`testEveryNodeTypeIsItsContractsName`),
+    /// so the scan takes the suffix off; a name without it, a generic slot's
+    /// `Slot.self`, is no contract the scan can read.
     ///
     /// Read TWICE, the second time with every space and newline taken out: a
     /// call wrapped over two lines is the same call, and a type visible only
@@ -517,11 +519,13 @@ enum Fixtures {
         for read in [source, squeezed] {
             var rest = Substring(read)
 
-            while let range = rest.range(of: "Node(type:.") ?? rest.range(of: "Node(type: .") {
-                rest = rest[range.upperBound...]
-                let member = rest.prefix { $0.isLetter || $0.isNumber || $0 == "`" }
-                let plain = member.replacingOccurrences(of: "`", with: "")
-                types.insert(plain.prefix(1).uppercased() + plain.dropFirst())
+            while let range = rest.range(of: "Node(contract:") {
+                rest = rest[range.upperBound...].drop { $0 == " " }
+                let name = rest.prefix { $0.isLetter || $0.isNumber }
+
+                if name.hasSuffix("Contract"), rest.dropFirst(name.count).hasPrefix(".self") {
+                    types.insert(String(name.dropLast("Contract".count)))
+                }
             }
         }
 

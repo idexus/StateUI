@@ -38,10 +38,8 @@ public struct Menu: Element {
     ///   row that opens it inside another menu.
     /// - Parameter items: the entries, in the order they are written.
     public init(_ text: String, @MenuBuilder items: () -> [Element]) {
-        node = Node(
-            type: .menu,
-            props: [.text: .string(text)],
-            children: items().map { $0.body })
+        node = Node(contract: MenuContract.self, children: items().map { $0.body })
+        node.write(MenuContract.text, text)
     }
 
     /// The node, as every element answers it.

@@ -160,7 +160,7 @@ public struct TabbedView: Page, ModifiableElement, BarElement, PageElement, Page
         self.tabs = ordered.map { AnyHashable($0) }
 
         node = Node(
-            type: .tabbedView,
+            contract: TabbedViewContract.self,
             children: ordered.map { tab in
                 Self.identified(Node.page(destination(tab)), as: String(describing: tab))
             })

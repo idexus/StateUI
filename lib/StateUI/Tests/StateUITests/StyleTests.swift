@@ -907,13 +907,16 @@ final class StyleTests: XCTestCase {
     ///
     /// The same kind of check as testEveryControlHasACase next door, and the
     /// same justification for reading source code: it is a test, and it can only
-    /// ever under-report.
+    /// ever under-report - and the count at its end refuses a scan that reads
+    /// nothing.
     func testEveryControlIsAStyleTarget() throws {
         let declared = try Fixtures.text(in: "Style.swift")
+        var read = 0
 
         for source in try Fixtures.controlSources() {
             for type in try Fixtures.nodeTypes(in: source).sorted()
             where !Fixtures.notViews.contains(type) {
+                read += 1
                 XCTAssertTrue(declared.contains("extension \(type): StyleTarget {}"), """
                     \(source) describes \(type), which Style.swift does not \
                     declare a style target.
@@ -923,6 +926,8 @@ final class StyleTests: XCTestCase {
                     """)
             }
         }
+
+        XCTAssertGreaterThan(read, 30, "the scan read almost nothing")
     }
 
     /// And the other half of the same rule: a control's OWN property surface

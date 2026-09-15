@@ -70,8 +70,8 @@ public struct Switch: View, TintElement, SwitchProperties {
     /// - Returns: the switch, wearing and reporting that value.
     public func isOn(_ value: Binding<Bool>) -> Modified {
         value.image == nil
-            ? described(.isOn, value, on: .toggled)
-            : plain(.isOn, by: value, mode: .inOut)
+            ? described(SwitchContract.isOn.token, value, on: SwitchContract.toggled.token)
+            : plain(SwitchContract.isOn.token, by: value, mode: .inOut)
     }
 
     // MARK: Properties

@@ -94,8 +94,8 @@ public struct TextField: InputView, TextElement, FontElement, TextAlignmentEleme
     /// - Returns: the control, wearing and reporting that text.
     public func text(_ value: Binding<String>) -> Modified {
         value.image == nil
-            ? described(.text, value, on: .textChanged)
-            : words(.text, by: value, mode: .inOut)
+            ? described(TextElementContract.text.token, value, on: .textChanged)
+            : words(TextElementContract.text.token, by: value, mode: .inOut)
     }
 
     // MARK: Properties

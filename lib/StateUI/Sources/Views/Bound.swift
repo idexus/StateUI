@@ -46,7 +46,7 @@ extension Border {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func strokeDashOffset(_ state: Binding<Double>) -> Modified {
-        journey(.strokeDashOffset, by: state)
+        journey(BorderContract.strokeDashOffset.token, by: state)
     }
 
     /// `strokeLineCap`, handed on as `$x`: the host sets the member it names,
@@ -56,7 +56,7 @@ extension Border {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func strokeLineCap(_ state: Binding<LineCap>) -> Modified {
-        plain(.strokeLineCap, by: state)
+        plain(BorderContract.strokeLineCap.token, by: state)
     }
 
     /// `strokeLineJoin`, handed on as `$x`: the host sets the member it names,
@@ -66,7 +66,7 @@ extension Border {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func strokeLineJoin(_ state: Binding<LineJoin>) -> Modified {
-        plain(.strokeLineJoin, by: state)
+        plain(BorderContract.strokeLineJoin.token, by: state)
     }
 
     /// `strokeMiterLimit`, handed on as `$x`: the host walks it there under the
@@ -76,7 +76,7 @@ extension Border {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func strokeMiterLimit(_ state: Binding<Double>) -> Modified {
-        journey(.strokeMiterLimit, by: state)
+        journey(BorderContract.strokeMiterLimit.token, by: state)
     }
 
     /// `strokeWidth`, handed on as `$x`: the host walks it there under the
@@ -86,7 +86,7 @@ extension Border {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func strokeWidth(_ state: Binding<Double>) -> Modified {
-        journey(.strokeWidth, by: state)
+        journey(BorderContract.strokeWidth.token, by: state)
     }
 }
 
@@ -147,7 +147,7 @@ extension ColorBox {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func cornerRadius(_ state: Binding<Double>) -> Modified {
-        plain(.cornerRadius, by: state)
+        plain(ColorBoxContract.cornerRadius.token, by: state)
     }
 }
 
@@ -181,7 +181,7 @@ extension Button {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func lineBreak(_ state: Binding<LineBreak>) -> Modified {
-        plain(.lineBreak, by: state)
+        plain(ButtonContract.lineBreak.token, by: state)
     }
 }
 
@@ -194,7 +194,7 @@ extension DatePicker {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func isOpen(_ state: Binding<Bool>) -> Modified {
-        plain(.isOpen, by: state)
+        plain(DatePickerContract.isOpen.token, by: state)
     }
 }
 
@@ -255,7 +255,7 @@ extension TextField {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func returnKey(_ state: Binding<ReturnKey>) -> Modified {
-        plain(.returnKey, by: state)
+        plain(TextFieldContract.returnKey.token, by: state)
     }
 }
 
@@ -635,7 +635,7 @@ extension Polygon {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func fillRule(_ state: Binding<FillRule>) -> Modified {
-        plain(.fillRule, by: state)
+        plain(PolygonContract.fillRule.token, by: state)
     }
 }
 
@@ -677,7 +677,7 @@ extension Rectangle {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func cornerRadius(_ state: Binding<Double>) -> Modified {
-        plain(.cornerRadius, by: state)
+        plain(RectangleContract.cornerRadius.token, by: state)
     }
 }
 
@@ -782,7 +782,7 @@ extension Slider {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func maximum(_ state: Binding<Double>) -> Modified {
-        plain(.maximum, by: state)
+        plain(SliderContract.maximum.token, by: state)
     }
 
     /// `minimum`, handed on as `$x`: the host sets it as it is, and handing it
@@ -791,7 +791,7 @@ extension Slider {
     /// - Parameter state: the state the property is read from.
     /// - Returns: the element, with the property carried from that state.
     public func minimum(_ state: Binding<Double>) -> Modified {
-        plain(.minimum, by: state)
+        plain(SliderContract.minimum.token, by: state)
     }
 }
 
