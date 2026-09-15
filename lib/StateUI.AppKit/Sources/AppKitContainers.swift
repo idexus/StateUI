@@ -1518,20 +1518,10 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     private var usesStackWrapper = false
     private var pendingOffset: NSPoint?
     private var lastObservedOffset = NSPoint.zero
-    private var movementActive = false
-    private var movementChanged = false
-    private var liveScrolling = false
     private var gestureScroller: WheelScroller?
 
-    /// Something the scroller says on a display frame.
-    private enum Report {
-        case moved(from: NSPoint, to: NSPoint)
-        case stopped
-    }
-
-    /// What the scroller has to say on the display's next frame, in order.
-    private var reports: [Report] = []
-    private var stopWorkItem: DispatchWorkItem?
+    /// The reader's movement of this scroller, and its rest.
+    private let movement = AppKitScrollMovement()
 
     var offset: NSPoint { reachable(contentView.bounds.origin) }
     var usesStackWrapperForTesting: Bool { usesStackWrapper }
@@ -1546,6 +1536,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         scrollerStyle = .overlay
         contentView.postsBoundsChangedNotifications = true
         documentView = documentSurface
+        movement.onFramesWanted = { [weak self] in self?.onFramesWanted?() }
 
         NotificationCenter.default.addObserver(
             self,
@@ -1700,51 +1691,24 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     }
 
     @objc private func willStartLiveScroll(_ notification: Notification) {
-        liveScrolling = true
-        beginMovement()
+        movement.liveScrollBegan()
     }
 
     /// A live scroll ends when the movement it began has run out.
     @objc private func didEndLiveScroll(_ notification: Notification) {
-        liveScrolling = false
-        rest()
+        movement.liveScrollEnded()
     }
 
     @objc private func clipBoundsChanged(_ notification: Notification) {
         guard !AppKitProgramWrite.isWriting else { return }
         let current = offset
         guard current != lastObservedOffset else { return }
-        if !movementActive { beginMovement() }
         // WHERE IT STANDS FIRST, then the report: the report runs the render
         // that writes the state back, and that write is told apart from an
         // application's by where the scroller already stands.
         let previous = lastObservedOffset
         lastObservedOffset = current
-        readerMoved(from: previous, to: current)
-        if !liveScrolling { scheduleRest() }
-    }
-
-    private func beginMovement() {
-        stopWorkItem?.cancel()
-        movementActive = true
-        movementChanged = false
-        onFramesWanted?()
-    }
-
-    /// A move of the reader's, kept for the display's next frame. AppKit moves
-    /// the clip view from inside its own frame step, and a report rendered
-    /// there holds that frame: the scroll events behind it then arrive merged
-    /// into one jump. A move joins the move before it, so a frame reports
-    /// where the scroller went rather than every step it took.
-    private func readerMoved(from old: NSPoint, to new: NSPoint) {
-        guard old != new else { return }
-        movementChanged = true
-        if case .moved(let from, _)? = reports.last {
-            reports[reports.count - 1] = .moved(from: from, to: new)
-        } else {
-            reports.append(.moved(from: old, to: new))
-        }
-        onFramesWanted?()
+        movement.readerMoved(from: previous, to: current)
     }
 
     /// How many times something other than the reader moved the scroller.
@@ -1762,52 +1726,23 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         lastObservedOffset = current
 
         if asReader {
-            readerMoved(from: old, to: current)
-            if !liveScrolling { scheduleRest() }
+            movement.readerMoved(from: old, to: current)
         }
-    }
-
-    /// A movement no live scroll brackets - a wheel's click, a write - has
-    /// ended once the offset has been still for a moment.
-    private func scheduleRest() {
-        stopWorkItem?.cancel()
-        let work = DispatchWorkItem { [weak self] in self?.rest() }
-        stopWorkItem = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: work)
-    }
-
-    /// The movement under way has ended where it stands.
-    private func rest() {
-        stopWorkItem?.cancel()
-        stopWorkItem = nil
-        finishMovement()
-    }
-
-    private func finishMovement() {
-        guard movementActive else { return }
-        movementActive = false
-        if movementChanged {
-            reports.append(.stopped)
-            onFramesWanted?()
-        }
-        movementChanged = false
     }
 
     /// Whether the scroller needs the display's frames: it is moving, or it
     /// has something to say.
-    var wantsFrames: Bool { movementActive || !reports.isEmpty }
+    var wantsFrames: Bool { movement.wantsFrames }
 
     /// One frame of the display's clock. What the scroller has to say is said
     /// here and nowhere else, in order: where it went, and that it came to
     /// rest.
     func frame(now: Double) {
-        let said = reports
-        reports = []
-        for report in said {
+        for report in movement.frame(now: now) {
             switch report {
             case .moved(let from, let to):
                 onOffsetChanged?(from, to)
-            case .stopped:
+            case .rested:
                 onScrollStopped?()
             }
         }
@@ -1840,7 +1775,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     }
 
     func beginMovementForTesting() {
-        beginMovement()
+        movement.begin()
     }
 
     func moveAsReaderForTesting(to point: NSPoint) {
@@ -1848,7 +1783,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     }
 
     func restForTesting() {
-        rest()
+        movement.rest()
     }
 }
 

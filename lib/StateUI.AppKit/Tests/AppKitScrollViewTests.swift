@@ -281,6 +281,78 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(reports.last?.1, [])
     }
 
+    /// A movement no live scroll brackets - a wheel's click - rests once the
+    /// offset has stood still for 120 ms of the frame clock's time, and says so
+    /// once: the quiet is the display's own time, never a timer's.
+    @MainActor
+    func testAMovementNoLiveScrollBracketsRestsOnTheFrameClock() throws {
+        var now = 0.0
+        var reports: [Int32] = []
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { handler, _ in reports.append(handler) },
+            clock: { now })
+        defer { renderer.closeForTesting() }
+        var content = HostPatch(id: .manual("content"), type: .colorBox)
+        content.properties = [.width: .number(500), .height: .number(500)]
+        var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
+        scroll.properties = [.orientation: .enumeration(2)]
+        scroll.events = .replace([.scrollYChanged: 11, .scrollStopped: 13])
+        scroll.children = .arranged([content])
+        renderer.applyForTesting(tree(scroll))
+
+        let native = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
+        native.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
+        native.layoutSubtreeIfNeeded()
+        reports.removeAll()
+
+        native.beginMovementForTesting()
+        native.moveAsReaderForTesting(to: NSPoint(x: 0, y: 40))
+        renderer.displayFrameForTesting()
+        XCTAssertEqual(reports, [11], "where it went, on the next frame")
+
+        now = 100
+        renderer.displayFrameForTesting()
+        XCTAssertEqual(reports, [11], "still for less than the quiet")
+
+        now = 120
+        renderer.displayFrameForTesting()
+        XCTAssertEqual(reports, [11, 13], "at rest once it has stood still long enough")
+
+        now = 300
+        renderer.displayFrameForTesting()
+        XCTAssertEqual(reports, [11, 13], "and said once")
+    }
+
+    /// A scroller's movement is stepped by the frame clock alone: no timer and
+    /// no second clock decides when it rests.
+    func testAScrollersMovementReadsNoClockButTheFrameClock() throws {
+        let sources = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()    // Tests
+            .deletingLastPathComponent()    // StateUI.AppKit
+            .appendingPathComponent("Sources")
+        let timers = ["asyncAfter(", "DispatchWorkItem", "Timer.", "scheduledTimer", "afterDelay:"]
+        var found: [String] = []
+
+        for name in ["AppKitContainers.swift", "AppKitScrollMovement.swift"] {
+            guard let text = try? String(
+                contentsOf: sources.appendingPathComponent(name), encoding: .utf8)
+            else { continue }
+
+            for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false)
+                .enumerated()
+            where !line.trimmingCharacters(in: .whitespaces).hasPrefix("//") {
+                for timer in timers where line.contains(timer) {
+                    found.append("\(name):\(number + 1): \(timer)")
+                }
+            }
+        }
+
+        XCTAssertEqual(found, [], "a scroller rests on the frame clock's time")
+    }
+
     /// A vertical scroller's bar visibility reaches its native scroller:
     /// `.never` takes the bar away, `.always` keeps it from hiding, and a
     /// scroller that says neither leaves AppKit to show and hide it.
