@@ -215,6 +215,9 @@ final class TabbedViewTests: XCTestCase {
                 .map(\.name))
 
         let declared = try Fixtures.propertyKeys(in: "TabbedView.swift")
+
+        XCTAssertFalse(declared.isEmpty, "the scan found nothing TabbedView.swift writes")
+
         let missing = declared.subtracting(sent).sorted()
 
         XCTAssertTrue(missing.isEmpty, """

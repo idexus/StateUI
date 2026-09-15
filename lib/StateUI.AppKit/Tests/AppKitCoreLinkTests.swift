@@ -10,16 +10,10 @@ final class AppKitCoreLinkTests: XCTestCase {
     /// file of the host calls `StateUIHost`, except for the lane codecs, which
     /// are arithmetic on values the host already holds.
     func testOnlyTheCoreLinkCallsIntoTheCore() throws {
-        let sources = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()    // Tests
-            .deletingLastPathComponent()    // StateUI.AppKit
-            .appendingPathComponent("Sources")
         let codecs = ["journey(from:", "value(of:", "placements(from:"]
         var calls: [String] = []
 
-        let names = try FileManager.default.contentsOfDirectory(atPath: sources.path).sorted()
-        for name in names where name.hasSuffix(".swift") && name != "AppKitCoreLink.swift" {
-            let text = try String(contentsOf: sources.appendingPathComponent(name), encoding: .utf8)
+        for (name, text) in try AppKitSources.all() where name != "AppKitCoreLink.swift" {
             let lines = text.split(separator: "\n", omittingEmptySubsequences: false)
 
             for (number, line) in lines.enumerated()

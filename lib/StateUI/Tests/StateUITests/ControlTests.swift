@@ -677,9 +677,13 @@ final class ControlTests: XCTestCase {
             covered[control.source, default: []].formUnion(Self.propNames(in: control.node))
         }
 
+        var read = 0
+
         for (source, keys) in covered.sorted(by: { $0.key < $1.key }) {
             let declared = try Fixtures.propertyKeys(in: source)
             let missing = declared.subtracting(keys).sorted()
+
+            read += declared.count
 
             XCTAssertTrue(missing.isEmpty, """
                 \(source) declares \(missing.joined(separator: ", ")), which no \
@@ -691,6 +695,8 @@ final class ControlTests: XCTestCase {
                 readable sidecar.
                 """)
         }
+
+        XCTAssertGreaterThan(read, 110, "the scan read almost nothing")
     }
 
     /// The same promise for a file that has no case OF ITS OWN - a tier.
@@ -714,9 +720,14 @@ final class ControlTests: XCTestCase {
             + Fixtures.testSources().map(\.text))
             .joined(separator: "\n")
         var missing: [String] = []
+        var read = 0
 
         for source in try Fixtures.controlSources() where !withCases.contains(source) {
-            for key in try Fixtures.propertyKeys(in: source).sorted()
+            let declared = try Fixtures.propertyKeys(in: source)
+
+            read += declared.count
+
+            for key in declared.sorted()
             // A sidecar writes `  borderColor: color FF808080` and a test writes
             // `.borderColor(`, so both anchors are what keep `text` from being
             // answered by `textColor`.
@@ -725,6 +736,7 @@ final class ControlTests: XCTestCase {
             }
         }
 
+        XCTAssertGreaterThan(read, 22, "the scan read almost nothing")
         XCTAssertEqual(missing, [], """
             These are declared by a file with no case of its own, and no \
             fixture carries them:
@@ -844,6 +856,7 @@ final class ControlTests: XCTestCase {
             .filter { !named.contains($0) }
             .sorted()
 
+        XCTAssertGreaterThan(subscribed.count, 29, "the scan read almost nothing")
         XCTAssertEqual(missing, [], """
             These events a control subscribes are named by no test:
 

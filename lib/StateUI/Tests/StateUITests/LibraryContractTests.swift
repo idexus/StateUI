@@ -96,13 +96,19 @@ final class LibraryContractTests: XCTestCase {
     /// `static let fontSize = ElementProperty<Self, Double>("fontSize", …)`.
     func testAMembersNameIsTheNameOfItsStaticMember() throws {
         var wrong: [String] = []
+        var read = 0
 
         for file in try Self.contractFiles() {
-            for (member, spelling) in Self.declarations(in: file.text) where member != spelling {
+            let declarations = Self.declarations(in: file.text)
+
+            read += declarations.count
+
+            for (member, spelling) in declarations where member != spelling {
                 wrong.append("\(file.path): \(member) is written \"\(spelling)\"")
             }
         }
 
+        XCTAssertGreaterThan(read, 210, "the scan read almost nothing")
         XCTAssertEqual(wrong, [])
     }
 
@@ -125,7 +131,11 @@ final class LibraryContractTests: XCTestCase {
     func testEveryDeclaredMemberIsOnItsContractsList() throws {
         var wrong: [String] = []
 
-        for file in try Self.contractFiles() {
+        let files = try Self.contractFiles()
+
+        XCTAssertGreaterThan(files.count, 55, "the scan read almost nothing")
+
+        for file in files {
             let declared = Set(Self.declarations(in: file.text).map(\.member))
             let listed = Set(Self.listed(in: file.text))
 

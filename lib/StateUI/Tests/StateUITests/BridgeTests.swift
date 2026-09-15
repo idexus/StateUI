@@ -176,6 +176,7 @@ final class BridgeTests: XCTestCase {
                 .flatMap { $0.occurrences(between: "@_cdecl(\"", and: "\"") })
         }
 
+        XCTAssertGreaterThan(declared.count, 18, "the scan read almost nothing")
         XCTAssertEqual(found.sorted(), declared.sorted())
     }
 

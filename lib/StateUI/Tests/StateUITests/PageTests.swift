@@ -328,7 +328,11 @@ final class PageTests: XCTestCase {
         let sent = Self.keys(in: Self.arrived(EveryPropertyPage()))
 
         for source in ["ToolbarItem.swift", "MenuBar.swift", "MenuItemElement.swift"] {
-            let missing = try Fixtures.propertyKeys(in: source).subtracting(sent).sorted()
+            let declared = try Fixtures.propertyKeys(in: source)
+
+            XCTAssertFalse(declared.isEmpty, "the scan found nothing \(source) writes")
+
+            let missing = declared.subtracting(sent).sorted()
 
             XCTAssertTrue(missing.isEmpty, """
                 \(source) declares \(missing.joined(separator: ", ")), which \
@@ -413,6 +417,9 @@ final class PageTests: XCTestCase {
             .map(\.name))
 
         let declared = try Fixtures.propertyKeys(in: "PageElement.swift")
+
+        XCTAssertFalse(declared.isEmpty, "the scan found nothing PageElement.swift writes")
+
         let missing = declared.subtracting(sent).sorted()
 
         XCTAssertTrue(missing.isEmpty, """

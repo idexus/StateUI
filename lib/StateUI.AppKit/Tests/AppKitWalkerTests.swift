@@ -12,15 +12,9 @@ final class AppKitWalkerTests: XCTestCase {
     /// motion law, so a state channel and a described property cannot walk
     /// the same kind of value two ways.
     func testOnlyTheWalkerSamplesALaw() throws {
-        let sources = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()    // Tests
-            .deletingLastPathComponent()    // StateUI.AppKit
-            .appendingPathComponent("Sources")
         var found: [String] = []
 
-        let names = try FileManager.default.contentsOfDirectory(atPath: sources.path).sorted()
-        for name in names where name.hasSuffix(".swift") && name != "AppKitWalker.swift" {
-            let text = try String(contentsOf: sources.appendingPathComponent(name), encoding: .utf8)
+        for (name, text) in try AppKitSources.all() where name != "AppKitWalker.swift" {
             let lines = text.split(separator: "\n", omittingEmptySubsequences: false)
 
             for (number, line) in lines.enumerated()

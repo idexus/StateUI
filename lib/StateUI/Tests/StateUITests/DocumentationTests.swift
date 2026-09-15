@@ -28,17 +28,21 @@ final class DocumentationTests: XCTestCase {
     /// turning into a demand for a comment on every `var copy = self`.
     func testEveryPublicApiIsDocumented() throws {
         var undocumented: [String] = []
+        var read = 0
 
         for source in try Fixtures.allSources() {
             let lines = source.text.components(separatedBy: "\n")
 
             for (index, line) in lines.enumerated() where isPublicDeclaration(line) {
+                read += 1
+
                 if !isDocumented(lines, above: index) {
                     undocumented.append("\(source.path):\(index + 1)  \(line.trimmed)")
                 }
             }
         }
 
+        XCTAssertGreaterThan(read, 1600, "the scan read almost nothing")
         XCTAssertEqual(undocumented, [], """
             These are public and say nothing about themselves:
 
@@ -100,6 +104,7 @@ final class DocumentationTests: XCTestCase {
     /// comment.
     func testEveryPublicEnumCaseIsDocumented() throws {
         var undocumented: [String] = []
+        var read = 0
 
         for source in try Fixtures.allSources() {
             let lines = source.text.components(separatedBy: "\n")
@@ -113,9 +118,12 @@ final class DocumentationTests: XCTestCase {
                 // deeper is a switch arm inside a computed property - the enum's
                 // own `propValue` is full of them - and reading those as
                 // declarations asks for a doc comment on every branch.
-                if let inside = body, depth == inside, text.hasPrefix("case "),
-                    !isDocumented(lines, above: index) {
-                    undocumented.append("\(source.path):\(index + 1)  \(text)")
+                if let inside = body, depth == inside, text.hasPrefix("case ") {
+                    read += 1
+
+                    if !isDocumented(lines, above: index) {
+                        undocumented.append("\(source.path):\(index + 1)  \(text)")
+                    }
                 }
 
                 if body == nil, isPublicDeclaration(line), text.contains("enum ") {
@@ -129,6 +137,7 @@ final class DocumentationTests: XCTestCase {
             }
         }
 
+        XCTAssertGreaterThan(read, 170, "the scan read almost nothing")
         XCTAssertEqual(undocumented, [], """
             These enum cases are public and say nothing about themselves:
 

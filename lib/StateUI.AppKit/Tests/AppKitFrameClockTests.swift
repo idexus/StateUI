@@ -11,16 +11,10 @@ final class AppKitFrameClockTests: XCTestCase {
     /// frame clock's: no other file of the host takes a display link or reads
     /// the media clock.
     func testTheFrameClockIsTheOnlySignalAndTimebase() throws {
-        let sources = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()    // Tests
-            .deletingLastPathComponent()    // StateUI.AppKit
-            .appendingPathComponent("Sources")
         let signals = ["CADisplayLink", "displayLink(target:", "CACurrentMediaTime"]
         var found: [String] = []
 
-        let names = try FileManager.default.contentsOfDirectory(atPath: sources.path).sorted()
-        for name in names where name.hasSuffix(".swift") && name != "AppKitFrameClock.swift" {
-            let text = try String(contentsOf: sources.appendingPathComponent(name), encoding: .utf8)
+        for (name, text) in try AppKitSources.all() where name != "AppKitFrameClock.swift" {
             let lines = text.split(separator: "\n", omittingEmptySubsequences: false)
 
             for (number, line) in lines.enumerated()

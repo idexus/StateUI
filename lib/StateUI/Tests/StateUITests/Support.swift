@@ -280,7 +280,18 @@ func settle(timeout: TimeInterval = 2) async -> Int {
     return 0
 }
 
+/// A walk of the sources, the tests or the fixtures that read almost nothing:
+/// its directory moved, or its filter lets nothing through - and every guard
+/// reading the walk would pass on nothing.
+struct WalkReadAlmostNothing: Error, CustomStringConvertible {
+    let root: String
+    let read: Int
+
+    var description: String { "the walk of \(root) read \(read) files, almost nothing" }
+}
+
 /// The fixtures, source trees, and test trees used by source-level guards.
+/// Every walk refuses one that read almost nothing (`WalkReadAlmostNothing`).
 enum Fixtures {
     /// `lib/StateUI/Tests/Fixtures`, found from this file rather than from a working
     /// directory that depends on who started the process.
@@ -317,7 +328,9 @@ enum Fixtures {
         let root = repository.appendingPathComponent("lib/StateUI.Maui/Sources")
         var found: [(path: String, text: String)] = []
 
-        guard let walk = FileManager.default.enumerator(atPath: root.path) else { return [] }
+        guard let walk = FileManager.default.enumerator(atPath: root.path) else {
+            throw WalkReadAlmostNothing(root: root.path, read: 0)
+        }
 
         for case let name as String in walk where name.hasSuffix(".cs") {
             // obj/ holds generated copies, and on a machine that has built for
@@ -329,7 +342,7 @@ enum Fixtures {
             found.append((path: path, text: text))
         }
 
-        return found.sorted { $0.path < $1.path }
+        return try refusingAlmostNothing(found.sorted { $0.path < $1.path }, readFrom: root, moreThan: 50)
     }
 
     static var updating: Bool {
@@ -586,14 +599,16 @@ enum Fixtures {
         let root = sources
         var found: [(path: String, text: String)] = []
 
-        guard let walk = FileManager.default.enumerator(atPath: root.path) else { return [] }
+        guard let walk = FileManager.default.enumerator(atPath: root.path) else {
+            throw WalkReadAlmostNothing(root: root.path, read: 0)
+        }
 
         for case let name as String in walk where name.hasSuffix(".swift") {
             let text = try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)
             found.append((path: name.replacingOccurrences(of: "\\", with: "/"), text: text))
         }
 
-        return found.sorted { $0.path < $1.path }
+        return try refusingAlmostNothing(found.sorted { $0.path < $1.path }, readFrom: root, moreThan: 150)
     }
 
     /// Every active test source, so a guard can ask whether some test names a
@@ -609,7 +624,9 @@ enum Fixtures {
 
         for (target, root) in targets {
 
-            guard let walk = FileManager.default.enumerator(atPath: root.path) else { continue }
+            guard let walk = FileManager.default.enumerator(atPath: root.path) else {
+                throw WalkReadAlmostNothing(root: root.path, read: 0)
+            }
 
             for case let name as String in walk where name.hasSuffix(".swift") {
                 let text = try String(
@@ -620,7 +637,7 @@ enum Fixtures {
             }
         }
 
-        return found.sorted { $0.path < $1.path }
+        return try refusingAlmostNothing(found.sorted { $0.path < $1.path }, readFrom: repository, moreThan: 90)
     }
 
     /// Every fixture sidecar - the readable half of the deterministic wire
@@ -629,13 +646,15 @@ enum Fixtures {
         let root = directory
         var found: [String] = []
 
-        guard let walk = FileManager.default.enumerator(atPath: root.path) else { return [] }
+        guard let walk = FileManager.default.enumerator(atPath: root.path) else {
+            throw WalkReadAlmostNothing(root: root.path, read: 0)
+        }
 
         for case let name as String in walk where name.hasSuffix(".txt") {
             found.append(try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8))
         }
 
-        return found
+        return try refusingAlmostNothing(found, readFrom: root, moreThan: 80)
     }
 
     /// Node types described under Views/ that are not VIEWS.
@@ -709,7 +728,9 @@ enum Fixtures {
             "ModalStack.swift",
         ]
 
-        guard let walk = FileManager.default.enumerator(atPath: views.path) else { return [] }
+        guard let walk = FileManager.default.enumerator(atPath: views.path) else {
+            throw WalkReadAlmostNothing(root: views.path, read: 0)
+        }
         var found: [String] = []
 
         for case let name as String in walk {
@@ -720,7 +741,18 @@ enum Fixtures {
             found.append(path)
         }
 
-        return found.sorted()
+        return try refusingAlmostNothing(found.sorted(), readFrom: views, moreThan: 40)
+    }
+
+    /// What a walk found, refused unless it read more than `floor` files - a
+    /// floor well under what the tree holds, so a walk that moved or filters
+    /// everything out fails where it is read.
+    private static func refusingAlmostNothing<Found>(
+        _ found: [Found], readFrom root: URL, moreThan floor: Int
+    ) throws -> [Found] {
+        guard found.count > floor else { throw WalkReadAlmostNothing(root: root.path, read: found.count) }
+
+        return found
     }
 }
 

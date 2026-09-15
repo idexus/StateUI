@@ -936,6 +936,7 @@ final class StyleTests: XCTestCase {
     /// leave `Style<Name>` without the control's own setters.
     func testEveryPropertySurfaceReachesTheStyle() throws {
         let declared = try Fixtures.text(in: "Style.swift")
+        var read = 0
 
         // Elements.swift declares the TIER surfaces, which reach the style
         // through the `where Target:` conformances - this walk is about the
@@ -947,6 +948,8 @@ final class StyleTests: XCTestCase {
             where surface.hasSuffix("Properties") {
                 let target = String(surface.dropLast("Properties".count))
 
+                read += 1
+
                 XCTAssertTrue(
                     declared.contains(
                         "extension StyleBag: \(surface) where Target == \(target) {}"),
@@ -957,6 +960,8 @@ final class StyleTests: XCTestCase {
                     """)
             }
         }
+
+        XCTAssertGreaterThan(read, 21, "the scan read almost nothing")
     }
 
     /// The property tiers must stay PROPERTY tiers: a handler subscribed from
@@ -965,6 +970,8 @@ final class StyleTests: XCTestCase {
     /// carries the rest - `addHandler` is declared on `ModifiableElement`, out of
     /// a `PropertyContainer` extension's reach.
     func testThePropertyTiersCarryNoHandlers() throws {
+        var read = 0
+
         for source in try Fixtures.allSources() where source.path.hasPrefix("Views/") {
             for block in source.text.components(separatedBy: "\nextension ").dropFirst() {
                 let name = block.prefix { $0 != " " && $0 != ":" && $0 != "{" }
@@ -975,11 +982,15 @@ final class StyleTests: XCTestCase {
                         || name == "TextAlignmentElement" || name == "BarElement"
                 else { continue }
 
+                read += 1
+
                 XCTAssertFalse(
                     block.components(separatedBy: "\n}\n").first?.contains("addHandler") ?? false,
                     "extension \(name) in \(source.path) puts a handler on the property side")
             }
         }
+
+        XCTAssertGreaterThan(read, 35, "the scan read almost nothing")
     }
 
     // MARK: - The fixture

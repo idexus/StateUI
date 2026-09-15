@@ -296,12 +296,15 @@ final class MainThreadTests: XCTestCase {
     /// signature it fails to recognize is one nobody is asked to annotate.
     func testEveryAsyncFunctionRunsOnItsCallersExecutor() throws {
         var unmarked: [String] = []
+        var read = 0
 
         for source in try Fixtures.allSources() {
             let lines = source.text.components(separatedBy: "\n")
 
             for (index, line) in lines.enumerated() {
                 guard declaresAnAsyncFunction(line) else { continue }
+
+                read += 1
 
                 // The marker may be on this line or on the `func` line above,
                 // when the signature is spread over several. Comments are left
@@ -319,6 +322,7 @@ final class MainThreadTests: XCTestCase {
             }
         }
 
+        XCTAssertGreaterThan(read, 19, "the scan read almost nothing")
         XCTAssertEqual(unmarked, [], """
             These are async and do not say where they run:
 

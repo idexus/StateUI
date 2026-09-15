@@ -10,17 +10,11 @@ final class AppKitRuntimeNamesTests: XCTestCase {
     /// the runtime is an ENGINE - that word is the application's frame code -
     /// and a CHANNEL is only the state channel, one per `@State`.
     func testTheRuntimesTypesKeepTheReservedWords() throws {
-        let sources = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()    // Tests
-            .deletingLastPathComponent()    // StateUI.AppKit
-            .appendingPathComponent("Sources")
         let declaration = try NSRegularExpression(
             pattern: #"\b(?:class|struct|enum|protocol|actor|typealias)\s+(\w+)"#)
         var found: [String] = []
 
-        let names = try FileManager.default.contentsOfDirectory(atPath: sources.path).sorted()
-        for name in names where name.hasSuffix(".swift") {
-            let text = try String(contentsOf: sources.appendingPathComponent(name), encoding: .utf8)
+        for (name, text) in try AppKitSources.all() {
             let matches = declaration.matches(in: text, range: NSRange(text.startIndex..., in: text))
 
             for match in matches {

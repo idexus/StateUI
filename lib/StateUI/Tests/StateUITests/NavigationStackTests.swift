@@ -199,6 +199,9 @@ final class NavigationStackTests: XCTestCase {
                 .map(\.name))
 
         let declared = try Fixtures.propertyKeys(in: "BarElement.swift")
+
+        XCTAssertFalse(declared.isEmpty, "the scan found nothing BarElement.swift writes")
+
         let missing = declared.subtracting(sent).sorted()
 
         XCTAssertTrue(missing.isEmpty, """

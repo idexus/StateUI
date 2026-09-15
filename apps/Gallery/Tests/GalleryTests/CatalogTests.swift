@@ -889,10 +889,13 @@ final class CatalogTests: XCTestCase {
     /// every piece of the sample's state through itself; both were tried.
     func testEveryReadingASampleTakesIsShownInItsListing() throws {
         let samples = catalog().groups.flatMap(\.samples)
+        var read = 0
 
         for (path, text) in try gallerySources() {
             guard let id = declaredId(in: text),
                   let sample = samples.first(where: { $0.id == id }) else { continue }
+
+            read += 1
 
             // The listing is written INSIDE the file, so what the file says
             // less what the listing says is what the example actually takes.
@@ -905,6 +908,8 @@ final class CatalogTests: XCTestCase {
                 + "a reading whose place a reader cannot see says nothing about what "
                 + "is being measured")
         }
+
+        XCTAssertGreaterThan(read, 68, "the scan read almost nothing")
     }
 
     /// An example that FILLS reaches the cell it is given.
