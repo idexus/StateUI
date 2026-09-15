@@ -182,8 +182,12 @@ internal static class StateUIEnvironment
         }
     }
 
-    /// <summary>What the display last said, so saying it again costs nothing.</summary>
-    private static (DisplayOrientation Orientation, double Width, double Height, double Density) _display;
+    /// <summary>
+    /// What the display last said - every value its snapshot carries - so
+    /// saying it again costs nothing.
+    /// </summary>
+    private static (double Width, double Height, double Density, DisplayOrientation Orientation,
+        DisplayRotation Rotation, float RefreshRate) _display;
 
     /// <summary>
     /// Says the display may have moved, and pushes it where it has.
@@ -208,17 +212,10 @@ internal static class StateUIEnvironment
     {
         try
         {
-            DisplayInfo info = DeviceDisplay.Current.MainDisplayInfo;
-
-            (DisplayOrientation, double, double, double) now =
-                (info.Orientation, info.Width, info.Height, info.Density);
-
-            if (now == _display)
+            if (!Changed(DeviceDisplay.Current.MainDisplayInfo))
             {
                 return;
             }
-
-            _display = now;
         }
         catch (Exception)
         {
@@ -227,6 +224,26 @@ internal static class StateUIEnvironment
         }
 
         Session?.PushEnvironment(DisplayDomain, DisplaySnapshot);
+    }
+
+    /// <summary>
+    /// Whether <paramref name="info"/> says anything the display's last push
+    /// did not, remembering it when it does.
+    /// </summary>
+    /// <param name="info">What the display says now.</param>
+    /// <returns>Whether that is news to a view reading the display.</returns>
+    internal static bool Changed(DisplayInfo info)
+    {
+        (double, double, double, DisplayOrientation, DisplayRotation, float) now =
+            (info.Width, info.Height, info.Density, info.Orientation, info.Rotation, info.RefreshRate);
+
+        if (now == _display)
+        {
+            return false;
+        }
+
+        _display = now;
+        return true;
     }
 
     /// <summary>The battery's four values, in the Swift provider's order.</summary>
