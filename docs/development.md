@@ -21,7 +21,6 @@ apps/Gallery/Tests/               Gallery acceptance tests
 apps/HelloWorld/Sources/          small platform-neutral example application
 apps/HelloWorld/Platforms/AppKit/ HelloWorld AppKit entry point
 apps/HelloWorld/Platforms/Maui/   HelloWorld MAUI head
-_old/                             inactive archive
 ```
 
 The core never imports Foundation or a platform UI framework. Application code

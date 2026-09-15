@@ -647,7 +647,7 @@ final class TemplateTests: XCTestCase {
 
         let repository = Fixtures.repository
         let copy = "lib/StateUI.Maui/Template/templates/\(token)/.scripts/"
-        let leftOut = Fixtures.byproducts.union([".git", "_old", "artifacts", ".vs", "AGENTS.md", "CLAUDE.md"])
+        let leftOut = Fixtures.byproducts.union([".git", "artifacts", ".vs", "AGENTS.md", "CLAUDE.md"])
 
         var said = 0
         var wrong: [String] = []

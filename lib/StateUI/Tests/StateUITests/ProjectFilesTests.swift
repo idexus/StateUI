@@ -21,8 +21,8 @@ final class ProjectFilesTests: XCTestCase {
 
         // What a build or a pack writes is not the build's own file: bin/, obj/
         // and .build/, and the template's copy of .scripts/, which its project
-        // makes as it builds. The archive is not built at all.
-        let written: Set<String> = [".build", ".git", "_old", "bin", "obj"]
+        // makes as it builds.
+        let written: Set<String> = [".build", ".git", "bin", "obj"]
 
         guard let walk = FileManager.default.enumerator(
             at: repository, includingPropertiesForKeys: nil)

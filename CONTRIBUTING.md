@@ -91,9 +91,6 @@ they belong to their author.
 A commit message is a short declarative sentence describing what is now true.
 Do not include generated-by text or authorship trailers.
 
-The `_old/` tree is frozen reference material. It is outside active builds,
-tests, packaging, and synchronization.
-
 ## Contribution terms
 
 StateUI is distributed under the Apache License 2.0. A submitted contribution

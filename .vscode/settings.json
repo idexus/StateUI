@@ -17,11 +17,9 @@
     "out",
     "bazel-out",
     "bazel-bin",
-    "_old",
     "StateUIStarter"
   ],
   "swift.excludePathsFromActivation": {
-    "**/_old/**": true,
     "**/Template/templates/**": true
   },
 

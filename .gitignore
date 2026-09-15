@@ -14,11 +14,8 @@ artifacts/
 *.user
 .DS_Store
 
-# Historical SDK evaluation leftovers may still exist beside archived projects.
+# SDK evaluation leftovers MSBuild may leave beside a project.
 *.SdkResolver.*.proj.Backup.tmp
-
-# The archive contains sources only; generated state remains ignored anywhere.
-/_old/**/Package.resolved
 
 # The template ships the SAME build scripts the apps here use, copied in as
 # StateUI.Maui.Template builds. Ignored rather than committed so the copy cannot
