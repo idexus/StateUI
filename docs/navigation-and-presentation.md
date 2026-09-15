@@ -205,8 +205,9 @@ tabs on the top edge of its content.
 
 Page arrangements accept a flat `barBackgroundColor`. A `NavigationStack` also
 accepts `barForegroundColor` for its title and native action affordances. Native tab
-selectors retain their selected and unselected state appearance. Leaving the
-background unwritten preserves the platform's material. A written colour is
+selectors keep their selected and unselected states, legible over a written
+background. Leaving the background unwritten preserves the platform's
+material. A written colour is
 painted where the bars stand - on AppKit the band the title bar and toolbar
 cover over the visible content, with the page's title in `barForegroundColor` on it,
 and the window's background, which a Mac shows around a floating sidebar and

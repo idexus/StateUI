@@ -354,19 +354,44 @@ internal sealed class PagePresenter
         node.SetColor(HostProp.BarForegroundColor, navigation, NavigationPage.BarTextColorProperty);
     }
 
-    /// <summary>The same three, on the other page that draws a bar.</summary>
+    /// <summary>
+    /// The bar's background on the other page that draws a bar, and the tabs
+    /// read on it.
+    /// </summary>
     /// <remarks>
-    /// MAUI declares them on the interface both pages implement and repeats the
-    /// static fields on each class, so this is the same three properties named
-    /// through TabbedPage - which is exactly why the Swift side has them on one
-    /// tier, <c>BarElement</c>, rather than twice.
+    /// MAUI declares the background on the interface both pages implement and
+    /// repeats the static field on each class, so this is the same property
+    /// named through TabbedPage - which is exactly why the Swift side has it on
+    /// one tier, <c>BarElement</c>, rather than twice. A native selector keeps
+    /// its selected and unselected tabs apart, and over a colour written for
+    /// the bar they read on it: the selected tab white on a dark bar and black
+    /// on a light one, the others dimmed. With none written the selector keeps
+    /// the platform's own colours.
     /// </remarks>
     /// <param name="tabbed">The tabbed page to paint.</param>
     /// <param name="node">What Swift says about it.</param>
     private static void ApplyBar(TabbedPage tabbed, HostPatch node)
     {
         node.SetColor(HostProp.BarBackgroundColor, tabbed, TabbedPage.BarBackgroundColorProperty);
+
+        if (tabbed.BarBackgroundColor is Color bar)
+        {
+            Color reads = ReadsOn(bar);
+            tabbed.SelectedTabColor = reads;
+            tabbed.UnselectedTabColor = reads.WithAlpha(0.6f);
+        }
+        else
+        {
+            tabbed.ClearValue(TabbedPage.SelectedTabColorProperty);
+            tabbed.ClearValue(TabbedPage.UnselectedTabColorProperty);
+        }
     }
+
+    /// <summary>What reads on a bar: white on a dark colour, black on a light one.</summary>
+    /// <param name="bar">The bar's colour.</param>
+    /// <returns>White or black.</returns>
+    private static Color ReadsOn(Color bar) =>
+        0.2126f * bar.Red + 0.7152f * bar.Green + 0.0722f * bar.Blue < 0.5f ? Colors.White : Colors.Black;
 
     /// <summary>
     /// What a page is called and what stands for it - the two properties MAUI

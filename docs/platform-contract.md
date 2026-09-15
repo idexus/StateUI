@@ -122,6 +122,9 @@ show. Text on a painted band is the bar's: the page's title
 in the arrangement's `barForegroundColor`, the title bar's own title in the
 title bar's, each falling back to the other and then to white or black by the band's lightness.
 On the system's material both keep the system's colours.
+On MAUI a tabbed view's tabs over a written `barBackgroundColor` read on it
+the same way - the selected tab in white or black by its lightness, the others
+at 60 per cent - and with none written keep the platform's colours.
 
 `ItemsView` is the public name for the native virtualized collection. It
 presents identified items without constraining them to a list or grid. Its

@@ -339,7 +339,7 @@ public class TabbedPageTests
 
     /// <summary>
     /// The bar's background, repainted by a later message - which is what lets
-    /// a theme change reach it. The selector's own states stay the platform's.
+    /// a theme change reach it.
     /// </summary>
     [Fact]
     public void ALaterPatchRepaintsTheBar()
@@ -357,6 +357,38 @@ public class TabbedPageTests
             "{\"id\":1,\"type\":\"TabbedView\",\"props\":{\"barBackgroundColor\":\"#FF0000\"}}"));
 
         Assert.Equal(Colors.Red, tabbed.BarBackgroundColor);
+    }
+
+    /// <summary>
+    /// Over a colour written for the bar the tabs read on it: the selected tab
+    /// white on a dark bar and black on a light one, the others dimmed. With
+    /// the colour taken away the selector keeps the platform's own.
+    /// </summary>
+    [Fact]
+    public void TheTabsReadOnTheBarTheirColourIsWrittenFor()
+    {
+        (PagePresenter pages, _) = Renderer();
+
+        var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
+            "{\"id\":1,\"type\":\"TabbedView\",\"arranged\":true,"
+            + "\"props\":{\"barBackgroundColor\":\"#512BD4\"},"
+            + "\"children\":[" + TabAt("home", "Home") + "]}")));
+
+        Assert.Equal(Colors.White, tabbed.SelectedTabColor);
+        Assert.Equal(Colors.White.WithAlpha(0.6f), tabbed.UnselectedTabColor);
+
+        pages.Render(tabbed, Host.Parse(
+            "{\"id\":1,\"type\":\"TabbedView\",\"props\":{\"barBackgroundColor\":\"#F7F5FC\"}}"));
+
+        Assert.Equal(Colors.Black, tabbed.SelectedTabColor);
+        Assert.Equal(Colors.Black.WithAlpha(0.6f), tabbed.UnselectedTabColor);
+
+        pages.Render(tabbed, Host.Parse(
+            "{\"id\":1,\"type\":\"TabbedView\",\"cleared\":[\"barBackgroundColor\"]}"));
+
+        Assert.Null(tabbed.BarBackgroundColor);
+        Assert.Null(tabbed.SelectedTabColor);
+        Assert.Null(tabbed.UnselectedTabColor);
     }
 
     // ---- What the renderer forgets ------------------------------------------
