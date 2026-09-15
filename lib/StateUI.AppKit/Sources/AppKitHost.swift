@@ -163,7 +163,7 @@ final class AppKitRenderer: @unchecked Sendable {
     private let preferences: UserDefaults
     private let core = AppKitCoreLink()
     private let walker: AppKitWalker
-    private let stateChannels: AppKitStateChannels
+    fileprivate let stateChannels: AppKitStateChannels
     private let describedMotion: AppKitDescribedMotion
     fileprivate let layoutMotion: AppKitLayoutMotion
     private let displayCycle: AppKitDisplayCycle
@@ -381,6 +381,12 @@ final class AppKitRenderer: @unchecked Sendable {
         displayCycle.hold()
     }
 
+    /// Lets `scroller` go of the display's frames, as it leaves the tree.
+    fileprivate func stopFrames(for scroller: AppKitScrollView) {
+        framedScrollers.remove(scroller)
+        displayCycle.hold()
+    }
+
     func openPlatformScene() {
         connectPlatformScene(restoring: [:])
         pump()
@@ -502,9 +508,6 @@ final class AppKitRenderer: @unchecked Sendable {
             })
         }
 
-        stateChannels.retain(root?.propertyStates ?? [])
-        describedMotion.retain(root?.describedKeys ?? [])
-        layoutMotion.retain(root?.mounts ?? [])
         displayCycle.presentStateChannels()
 
         let created = root?.takeCreatedHandlers() ?? []
@@ -932,8 +935,6 @@ final class AppKitRenderer: @unchecked Sendable {
     func applyForTesting(_ patch: HostPatch) {
         intake.take(patch, generation: intake.baseline &+ 1) { applyRoot($0, complete: true) }
 
-        describedMotion.retain(root?.describedKeys ?? [])
-        layoutMotion.retain(root?.mounts ?? [])
         synchronizeWindows()
         flushQueuedEvents()
     }
@@ -951,6 +952,7 @@ final class AppKitRenderer: @unchecked Sendable {
         if let root, root.id == patch.id, root.type == patch.type, !patch.replace {
             root.apply(patch)
         } else if root == nil || complete || patch.replace {
+            root?.leave()
             root = MountedNode(patch, host: self)
         } else {
             intake.drifted("a sparse message describes a root '\(patch.id)' the tree does not hold")
@@ -982,6 +984,8 @@ final class AppKitRenderer: @unchecked Sendable {
 
     var tripsMovingForTesting: Bool { walker.isMoving }
 
+    var channelCountForTesting: Int { stateChannels.count }
+
     func applyStateForTesting(_ state: Int32, value: HostStateValue) {
         let impact = root?.applyState(state, value: value) ?? []
         if impact.contains(.windowShell) { synchronizeWindows() }
@@ -1000,8 +1004,7 @@ final class AppKitRenderer: @unchecked Sendable {
         sceneOrder.removeAll()
         for window in restoredWindows.values { window.close() }
         restoredWindows.removeAll()
-        describedMotion.retain([])
-        layoutMotion.retain([])
+        root?.leave()
         frameClock.stop()
     }
 
@@ -1071,8 +1074,8 @@ final class AppKitRenderer: @unchecked Sendable {
         displayCycle.hold()
     }
 
-    /// Drops the motions of an element being adopted - its described
-    /// properties' and its place's - so the adopted element arrives.
+    /// Drops the motions of an element that leaves the tree, or is adopted -
+    /// its described properties' and its place's.
     fileprivate func removeMotions(mount: UInt64) {
         describedMotion.remove(mount: mount)
         layoutMotion.remove(mount: mount)
@@ -1142,6 +1145,9 @@ final class MountedNode: NSObject {
     private let mount: UInt64
     private var properties: [Prop: HostValue] = [:]
     private var driven: [Prop: HostStateBinding] = [:]
+
+    /// The states this element's properties wear, one entry per property.
+    private var wornStates: [Int32] = []
     private var drivenValues: [Prop: HostStateValue] = [:]
     private var events: [Event: Int32] = [:]
     private(set) var children: [MountedNode] = []
@@ -1263,6 +1269,7 @@ final class MountedNode: NSObject {
             reportedFocus = false
             pagePresented = false
             pendingTabFallback = nil
+            for child in recycledChildren { child.leave() }
             recycledChildren.removeAll(keepingCapacity: true)
         } else {
             for property in patch.clearedProperties {
@@ -1282,6 +1289,7 @@ final class MountedNode: NSObject {
             self.driven = driven
             drivenValues = drivenValues.filter { driven[$0.key] != nil }
         }
+        wear(driven)
 
         for (property, binding) in driven where binding.mode != .in {
             drivenValues[property] = core.value(for: binding)
@@ -1295,7 +1303,10 @@ final class MountedNode: NSObject {
             // says nothing of its own travels that way.
             if type == .application { host.layoutMotion.applicationMotion = motion.motion }
         }
-        if !recycles { recycledChildren.removeAll(keepingCapacity: true) }
+        if !recycles, !recycledChildren.isEmpty {
+            for child in recycledChildren { child.leave() }
+            recycledChildren.removeAll(keepingCapacity: true)
+        }
 
         switch patch.children {
         case .unchanged:
@@ -1320,6 +1331,7 @@ final class MountedNode: NSObject {
                 if child.type == childPatch.type, !childPatch.replace {
                     child.apply(childPatch)
                 } else if childPatch.replace {
+                    child.leave()
                     children[index] = MountedNode(childPatch, host: host, parent: self)
                 } else {
                     host.intake.drifted(
@@ -1374,9 +1386,11 @@ final class MountedNode: NSObject {
                 child.apply(patch, adopting: true)
                 return child
             }
+            leave(previous)
             return
         }
 
+        let before = children
         let previous = Dictionary(uniqueKeysWithValues: children.map { ($0.id, $0) })
 
         if recycles {
@@ -1386,6 +1400,7 @@ final class MountedNode: NSObject {
                       recycledChildren.count < Self.recyclingCapacity
                 else { continue }
                 child.setRecycled(true)
+                child.park()
                 recycledChildren.append(child)
             }
         }
@@ -1407,6 +1422,16 @@ final class MountedNode: NSObject {
             }
 
             return MountedNode(patch, host: host, parent: self)
+        }
+        leave(before)
+    }
+
+    /// Detaches every one of `previous` that is no longer a child of this
+    /// element or a row it keeps for recycling.
+    private func leave(_ previous: [MountedNode]) {
+        let staying = Set((children + recycledChildren).map(ObjectIdentifier.init))
+        for child in previous where !staying.contains(ObjectIdentifier(child)) {
+            child.leave()
         }
     }
 
@@ -1442,45 +1467,72 @@ final class MountedNode: NSObject {
         return found
     }
 
-    /// Every state a property in this subtree is tied to - gathered in one
-    /// walk into one set, because every render asks.
-    var propertyStates: Set<Int32> {
-        var states: Set<Int32> = []
-        gatherPropertyStates(into: &states)
-        return states
+    /// Ties this element to the channels of the states its properties wear,
+    /// letting go of the ones it no longer does.
+    private func wear(_ driven: [Prop: HostStateBinding]) {
+        let worn = driven.values.filter { $0.kind == .property }.map(\.state).sorted()
+        guard worn != wornStates, let host else { return }
+
+        for state in wornStates { host.stateChannels.detach(state) }
+        for state in worn { host.stateChannels.attach(state) }
+        wornStates = worn
     }
 
-    private func gatherPropertyStates(into states: inout Set<Int32>) {
-        for binding in driven.values where binding.kind == .property {
-            states.insert(binding.state)
-        }
-        for child in children { child.gatherPropertyStates(into: &states) }
+    /// Detaches this element and everything under it from every part of the
+    /// runtime as it leaves the tree: the channels it wears, its motions and its
+    /// place, and what it attached outside the tree - frame observers,
+    /// recognizers, a scroller's hold on the frame clock.
+    func leave() {
+        letGo()
+        releaseNativeAttachments()
+        for child in children + recycledChildren { child.leave() }
     }
 
-    /// Every property a patch describes in this subtree.
-    var describedKeys: Set<AppKitDescribedKey> {
-        var keys: Set<AppKitDescribedKey> = []
-        gatherDescribedKeys(into: &keys)
-        return keys
+    /// Lets go of what a parked row no longer shows - the channels it wears,
+    /// its motions and its place - while its views wait to be adopted.
+    private func park() {
+        letGo()
+        for child in children { child.park() }
     }
 
-    private func gatherDescribedKeys(into keys: inout Set<AppKitDescribedKey>) {
-        for property in properties.keys where driven[property].map({ $0.mode == .in }) ?? true {
-            keys.insert(AppKitDescribedKey(mount: mount, property: property))
+    private func letGo() {
+        if let host {
+            for state in wornStates { host.stateChannels.detach(state) }
+            host.removeMotions(mount: mount)
+        }
+        wornStates = []
+    }
+
+    private func releaseNativeAttachments() {
+        if observesFrame {
+            NotificationCenter.default.removeObserver(
+                self, name: NSView.frameDidChangeNotification, object: nil)
+            NotificationCenter.default.removeObserver(
+                self, name: NSView.boundsDidChangeNotification, object: nil)
+            frameObservedViews.removeAll()
+            observesFrame = false
         }
 
-        // An element fading in as it joins a standing layout moves its
-        // opacity whether or not a patch ever named one.
-        if fadesIn {
-            keys.insert(AppKitDescribedKey(mount: mount, property: .opacity))
+        let recognizers: [NSGestureRecognizer?] = [
+            tapRecognizer, swipeRecognizer, panRecognizer, pinchRecognizer,
+        ]
+        for recognizer in recognizers.compactMap({ $0 }) {
+            view?.removeGestureRecognizer(recognizer)
         }
+        tapRecognizer = nil
+        swipeRecognizer = nil
+        panRecognizer = nil
+        pinchRecognizer = nil
+        pointerRecognizer?.detach()
+        pointerRecognizer = nil
 
-        for child in children { child.gatherDescribedKeys(into: &keys) }
+        if let scroller = view as? AppKitScrollView { host?.stopFrames(for: scroller) }
     }
 
     /// Drops the element that presents `view` from this subtree.
     func forgetForTesting(_ view: NSView) {
         if let index = children.firstIndex(where: { $0.view === view }) {
+            children[index].leave()
             children[index].view?.removeFromSuperview()
             children.remove(at: index)
             return
@@ -1499,18 +1551,6 @@ final class MountedNode: NSObject {
             }
         }
         for child in children { child.reportFocus() }
-    }
-
-    /// Every mounted identity in this subtree.
-    var mounts: Set<UInt64> {
-        var mounts: Set<UInt64> = []
-        gatherMounts(into: &mounts)
-        return mounts
-    }
-
-    private func gatherMounts(into mounts: inout Set<UInt64>) {
-        mounts.insert(mount)
-        for child in children { child.gatherMounts(into: &mounts) }
     }
 
     /// Hands a layout what its children travel under, and tells it a patch

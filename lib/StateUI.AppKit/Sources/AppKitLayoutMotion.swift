@@ -181,17 +181,8 @@ final class AppKitLayoutMotion {
         }
     }
 
-    /// Forgets the places of every element no longer mounted, and ends their
-    /// trips.
-    func retain(_ mounts: Set<UInt64>) {
-        seats = seats.filter { mounts.contains($0.key) }
-        walker.retain { target in
-            guard case .placed(let mount) = target else { return true }
-            return mounts.contains(mount)
-        }
-    }
-
-    /// Forgets the place of an element being adopted, which then arrives.
+    /// Forgets the place of an element that leaves the tree, or is adopted -
+    /// which then arrives.
     func remove(mount: UInt64) {
         seats[mount] = nil
         walker.halt(.placed(mount))

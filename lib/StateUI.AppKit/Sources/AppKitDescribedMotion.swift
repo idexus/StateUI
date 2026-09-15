@@ -120,16 +120,6 @@ final class AppKitDescribedMotion {
         }
     }
 
-    /// Drops transitions that no longer belong to a mounted property.
-    func retain(_ keys: Set<AppKitDescribedKey>) {
-        transitions = transitions.filter { keys.contains($0.key) }
-        outputs.removeAll { !keys.contains($0.key) }
-        walker.retain { target in
-            guard case .described(let key) = target else { return true }
-            return keys.contains(key)
-        }
-    }
-
     /// Drops every transition owned by an element being replaced or adopted.
     func remove(mount: UInt64) {
         transitions = transitions.filter { $0.key.mount != mount }

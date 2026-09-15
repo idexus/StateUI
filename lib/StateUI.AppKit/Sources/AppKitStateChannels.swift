@@ -32,6 +32,9 @@ struct AppKitJourneyCompletion: Equatable {
 final class AppKitStateChannels {
     private let walker: AppKitWalker
     private var channels: [Int32: AppKitStateChannel] = [:]
+
+    /// How many controls wear each state: a channel lives while any does.
+    private var wearers: [Int32: Int] = [:]
     private var outputs: [AppKitStateChannelOutput] = []
     private var completions: [AppKitJourneyCompletion] = []
 
@@ -41,6 +44,9 @@ final class AppKitStateChannels {
     }
 
     var isActive: Bool { channels.values.contains(where: \.isActive) }
+
+    /// How many states have a channel.
+    var count: Int { channels.count }
 
     /// Resolves the value a driven property draws from, creating its shared
     /// channel when this is the first property attached to the state.
@@ -91,12 +97,36 @@ final class AppKitStateChannels {
             emit: emit)
     }
 
-    /// Follows what a step of the walker made of the channels' trips.
+    /// Follows what a step of the walker made of the channels' trips. A
+    /// channel nobody wears any more goes once its trip has landed.
     func follow(_ steps: [AppKitStep]) {
         for step in steps {
             guard case .state(let number) = step.target else { continue }
             channels[number]?.follow(step.value, step.velocity, rested: step.rested, emit: emit)
+            if step.rested, wearers[number] == nil { channels[number] = nil }
         }
+    }
+
+    /// A control ties one of its properties to `state`.
+    func attach(_ state: Int32) {
+        wearers[state, default: 0] += 1
+    }
+
+    /// A control lets go of `state` - it leaves the tree, or the property is
+    /// no longer tied. The last one to let go takes the channel with it, once
+    /// the value has landed where it was sent: THE STATE'S CHANNEL IS NOT A
+    /// CONTROL'S TO END, and a control described again a moment later joins it
+    /// where it is.
+    func detach(_ state: Int32) {
+        guard let count = wearers[state] else { return }
+
+        if count > 1 {
+            wearers[state] = count - 1
+            return
+        }
+
+        wearers[state] = nil
+        if channels[state]?.isActive != true { channels[state] = nil }
     }
 
     /// Lets a two-way native reader take a property journey at the position it
@@ -110,14 +140,6 @@ final class AppKitStateChannels {
         else { return false }
 
         return true
-    }
-
-    /// Keeps inactive channels only while a rendered control still wears them.
-    /// An active channel with no view runs to its truthful landing first.
-    func retain(_ states: Set<Int32>) {
-        channels = channels.filter { state, channel in
-            states.contains(state) || channel.isActive
-        }
     }
 
     /// Takes values emitted since the previous host pump.
