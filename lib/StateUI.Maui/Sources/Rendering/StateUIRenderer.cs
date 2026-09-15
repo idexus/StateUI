@@ -4934,7 +4934,7 @@ public sealed class StateUIRenderer
         // what a control is until it is told otherwise.
         if (node.Moves)
         {
-            if (node.Motion is MotionSpec travel)
+            if (node.Motion is HostMotion travel)
             {
                 view.SetValue(LayoutMotion.TravelProperty, travel);
 
@@ -5295,7 +5295,7 @@ public sealed class StateUIRenderer
         List<(SwiftKey Key, BindableProperty Property, object Value)>? entered =
             Entered(view, described);
 
-        MotionSpec spec = Travelling(view);
+        HostMotion spec = Travelling(view);
         var settled = new HashSet<BindableProperty>();
 
         foreach (List<(SwiftKey Key, BindableProperty Property, object Value)> state
@@ -5427,7 +5427,7 @@ public sealed class StateUIRenderer
     /// it is written by <see cref="Track"/>, which runs after this.
     /// </para>
     /// </remarks>
-    private void Shown(View view, bool wanted, MotionSpec spec)
+    private void Shown(View view, bool wanted, HostMotion spec)
     {
         view.SetValue(WantedProperty, wanted);
 
@@ -5511,8 +5511,8 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>How this control's own values travel.</summary>
-    private MotionSpec Travelling(View view) =>
-        view.GetValue(LayoutMotion.TravelProperty) is MotionSpec spec ? spec : _walker.Travel;
+    private HostMotion Travelling(View view) =>
+        view.GetValue(LayoutMotion.TravelProperty) is HostMotion spec ? spec : _walker.Travel;
 
 
     /// <summary>

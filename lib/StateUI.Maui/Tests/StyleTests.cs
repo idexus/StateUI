@@ -158,7 +158,7 @@ public class StyleTests
         // The application's own law, which every control travels under unless
         // it says otherwise - and what makes the aim a JOURNEY rather than an
         // arrival, so the interrupt below has something to halt.
-        host.Renderer.Walker.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(200, SwiftEasing.Linear);
 
         var button = (Button)host.Apply("""
             {"id":1,"type":"Button","props":{"isEnabled":false,"background":"#F09072"},"children":[
@@ -192,7 +192,7 @@ public class StyleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(200, SwiftEasing.Linear);
 
         var button = (Button)host.Apply("""
             {"id":1,"type":"Button","props":{"isEnabled":false,"background":"#F09072"},"children":[

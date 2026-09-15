@@ -6,6 +6,7 @@ namespace StateUI.Maui.Rendering;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls;
+using StateUI.Maui.Protocol;
 
 /// <summary>Where a motion leaves the value it was carrying.</summary>
 internal enum TripEnd : byte
@@ -51,8 +52,8 @@ internal sealed class Trip
     /// <summary>Where it is going.</summary>
     internal required double[] Target { get; init; }
 
-    /// <summary>The law it travels under.</summary>
-    internal MotionSpec Spec { get; set; }
+    /// <summary>How it travels.</summary>
+    internal HostMotion Motion { get; set; }
 
     /// <summary>When the current motion began, in stopwatch ticks.</summary>
     internal long T0 { get; set; }
@@ -206,7 +207,7 @@ internal sealed class Walker
     /// the application's answer changes every layout that inherits it without
     /// a single one of them being told.
     /// </remarks>
-    internal MotionSpec Travel { get; set; } = MotionSpec.Eased(0, 0);
+    internal HostMotion Travel { get; set; } = HostMotion.Eased(0, SwiftEasing.Linear);
 
     /// <summary>
     /// Whether the frame is to be skipped - asked once per frame.
@@ -388,7 +389,7 @@ internal sealed class Walker
     internal Trip? Aim(
         ITripTarget moves,
         double[] to,
-        in MotionSpec spec,
+        in HostMotion spec,
         Action<bool>? done = null,
         double[]? from = null,
         double[]? velocity = null)
@@ -478,7 +479,7 @@ internal sealed class Walker
         }
 
         to.CopyTo(trip.Target, 0);
-        trip.Spec = spec;
+        trip.Motion = spec;
         trip.Done = done;
 
         // A SETPOINT WHERE THE VALUE ALREADY IS is an arrival. Nothing else

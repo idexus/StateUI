@@ -228,7 +228,7 @@ public sealed class SwiftNode
     /// rather than described: none of it is a property, so there is no
     /// transition for it to ride beside. See <c>LayoutMotion</c>.
     /// </remarks>
-    internal MotionSpec? Motion { get; set; }
+    internal HostMotion? Motion { get; set; }
 
     /// <summary>
     /// Whether the message SAID anything about how this element moves - which
@@ -559,7 +559,7 @@ internal readonly record struct SwiftStateEntry(
 /// <param name="Law">
 /// Which law it travels under - a stated length or a spring - as the number
 /// the Swift <c>Motion.Law</c> enum gives it, mirrored by
-/// <see cref="SwiftMotionLaw"/>.
+/// <see cref="HostMotion.Law"/>.
 /// </param>
 /// <param name="Millis">
 /// How long the walk takes, in milliseconds - or, for a spring, how quickly it
@@ -581,12 +581,8 @@ internal readonly record struct SwiftTransition(
     int Easing,
     double Factor)
 {
-    /// <summary>The law this walk travels under, as the walker states one.</summary>
-    internal MotionSpec Spec => (SwiftMotionLaw)Law switch
-    {
-        SwiftMotionLaw.Spring => MotionSpec.Spring(Millis, Factor),
-        _ => MotionSpec.Eased(Millis, Easing),
-    };
+    /// <summary>How this walk travels.</summary>
+    internal HostMotion Motion => HostMotion.Of(Law, Millis, Easing, Factor);
 
     /// <summary>
     /// The property this walk is about, as a key that reads either bag - so a

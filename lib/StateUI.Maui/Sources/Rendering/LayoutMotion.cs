@@ -266,7 +266,7 @@ internal sealed class LayoutMotion : ILayoutManager
         // The layout's own answer where it has one, the application's where it
         // does not - which is what almost every layout there is uses, and what
         // keeps the common case off the wire entirely.
-        MotionSpec spec = _layout.GetValue(TravelProperty) is MotionSpec placement
+        HostMotion spec = _layout.GetValue(TravelProperty) is HostMotion placement
             ? placement
             : _walker.Travel;
 
@@ -280,7 +280,7 @@ internal sealed class LayoutMotion : ILayoutManager
 
         if (lanes == 0)
         {
-            spec = MotionSpec.Eased(0, 0);
+            spec = HostMotion.Eased(0, SwiftEasing.Linear);
         }
 
         // WHY this arrangement is happening, which is the one thing it does not
@@ -597,7 +597,7 @@ internal sealed class LayoutMotion : ILayoutManager
         IView child,
         Seat seat,
         Rect target,
-        in MotionSpec spec,
+        in HostMotion spec,
         Trip moving,
         bool gaveUp)
     {
@@ -649,7 +649,7 @@ internal sealed class LayoutMotion : ILayoutManager
     /// always there.
     /// </para>
     /// </remarks>
-    private void Arrive(IView child, in MotionSpec spec)
+    private void Arrive(IView child, in HostMotion spec)
     {
         if (child is not VisualElement view)
         {

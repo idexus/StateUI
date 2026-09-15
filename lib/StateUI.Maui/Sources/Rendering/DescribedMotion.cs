@@ -288,7 +288,7 @@ internal sealed class DescribedMotion
             return;
         }
 
-        _walker.Aim(moves, to, transition.Spec);
+        _walker.Aim(moves, to, transition.Motion);
     }
 
     /// <summary>Whether this view's size is one somebody is measuring.</summary>

@@ -5,69 +5,6 @@ using StateUI.Maui.Protocol;
 
 namespace StateUI.Maui.Rendering;
 
-/// <summary>Which law a trip travels under.</summary>
-internal enum MotionKind : byte
-{
-    /// <summary>A stated length on a stated curve.</summary>
-    Eased = 0,
-
-    /// <summary>A mass on a spring, stated as a response and a damping.</summary>
-    Spring = 1,
-}
-
-/// <summary>
-/// What a motion is, as the numbers that describe it: everything the walker
-/// needs to know beyond where the value is going.
-/// </summary>
-/// <remarks>
-/// A value type with no state of its own, so the same spec can start any number
-/// of trips. Which fields mean anything depends on <see cref="Kind"/>, and
-/// the two factories below are the only way one is meant to be built.
-/// </remarks>
-internal readonly struct MotionSpec
-{
-    /// <summary>The law this motion travels under.</summary>
-    internal MotionKind Kind { get; private init; }
-
-    /// <summary>How long an eased motion takes, in milliseconds.</summary>
-    internal double Length { get; private init; }
-
-    /// <summary>The curve an eased motion follows, as its wire member.</summary>
-    internal int Curve { get; private init; }
-
-    /// <summary>A spring's period, in milliseconds - how quickly it answers.</summary>
-    internal double Response { get; private init; }
-
-    /// <summary>
-    /// A spring's damping: 1 comes to rest without overshooting, below 1
-    /// overshoots and rings, above 1 crawls in.
-    /// </summary>
-    internal double Damping { get; private init; }
-
-    /// <summary>A stated length on a stated curve.</summary>
-    /// <param name="length">How long it takes, in milliseconds.</param>
-    /// <param name="curve">The curve, as its <c>SwiftEasing</c> member.</param>
-    internal static MotionSpec Eased(double length, int curve) => new()
-    {
-        Kind = MotionKind.Eased,
-        Length = Math.Max(length, 0),
-        Curve = curve,
-    };
-
-    /// <summary>A mass on a spring.</summary>
-    /// <param name="response">The period, in milliseconds.</param>
-    /// <param name="damping">1 for a spring that does not overshoot.</param>
-    internal static MotionSpec Spring(double response, double damping) => new()
-    {
-        Kind = MotionKind.Spring,
-        Response = Math.Max(response, 1),
-        Damping = Math.Max(damping, 0.01),
-    };
-
-    /// <summary>Whether this motion is no motion at all - land at once.</summary>
-    internal bool Instant => Kind == MotionKind.Eased && Length <= 0;
-}
-
 /// <summary>
 /// Where a value is at a given moment of its motion, and how fast it is going
 /// there - and the curves an eased motion follows.
@@ -121,17 +58,25 @@ internal static class MotionLaw
     /// Puts the value and its speed at <paramref name="t"/> into
     /// <paramref name="p"/> and <paramref name="v"/>.
     /// </summary>
-    /// <param name="trip">The trip, holding where it started and where it is going.</param>
+    /// <remarks>
+    /// The motion's numbers are read as the wire carries them, a spring's
+    /// response held to a millisecond and its damping off nought here, as the
+    /// core's law holds them.
+    /// </remarks>
+    /// <param name="trip">The trip, holding where it started, where it is going and how.</param>
     /// <param name="t">Milliseconds since the motion began.</param>
     /// <param name="p">Filled with the value at that moment.</param>
     /// <param name="v">Filled with how fast each lane is moving, per millisecond.</param>
     /// <returns>Whether the motion is over.</returns>
     internal static bool Sample(Trip trip, double t, double[] p, double[] v)
     {
-        return trip.Spec.Kind switch
+        HostMotion motion = trip.Motion;
+
+        return motion.Kind switch
         {
-            MotionKind.Spring => Spring(trip, t, p, v),
-            _ => Eased(trip, t, p, v),
+            HostMotion.Law.Spring => Spring(
+                trip, Math.Max(motion.Millis, 1u), Math.Max(motion.Factor, 0.01), t, p, v),
+            _ => Eased(trip, motion.Millis, motion.Curve, t, p, v),
         };
     }
 
@@ -139,15 +84,15 @@ internal static class MotionLaw
     /// <remarks>
     /// A number the wire does not name is the straight line.
     /// </remarks>
-    /// <param name="curve">The curve, as its <c>SwiftEasing</c> member.</param>
+    /// <param name="curve">The curve.</param>
     /// <param name="s">How far through the motion is, from 0 to 1.</param>
     /// <returns>The fraction of the distance covered - which the bouncing and
     /// springing curves deliberately take past 1 and back.</returns>
-    internal static double Ease(int curve, double s)
+    internal static double Ease(SwiftEasing curve, double s)
     {
         double x = Math.Clamp(s, 0, 1);
 
-        switch ((SwiftEasing)curve)
+        switch (curve)
         {
             case SwiftEasing.SineOut:
                 return Math.Sin(x * Math.PI / 2);
@@ -205,10 +150,10 @@ internal static class MotionLaw
     /// wide enough that no curve's own arithmetic shows through it; at the ends
     /// the difference is one-sided, since there is no curve outside 0 to 1.
     /// </remarks>
-    /// <param name="curve">The curve, as its <c>SwiftEasing</c> member.</param>
+    /// <param name="curve">The curve.</param>
     /// <param name="s">How far through the motion is, from 0 to 1.</param>
     /// <returns>The curve's rate of climb there.</returns>
-    internal static double Slope(int curve, double s)
+    internal static double Slope(SwiftEasing curve, double s)
     {
         const double step = 1e-4;
 
@@ -235,10 +180,9 @@ internal static class MotionLaw
     /// changed mid-walk bends the motion rather than cutting it, and a motion
     /// that nothing interrupted is unchanged.
     /// </remarks>
-    private static bool Eased(Trip trip, double t, double[] p, double[] v)
+    private static bool Eased(
+        Trip trip, double length, SwiftEasing curve, double t, double[] p, double[] v)
     {
-        double length = trip.Spec.Length;
-
         if (length <= 0 || t >= length)
         {
             trip.Target.CopyTo(p, 0);
@@ -247,8 +191,8 @@ internal static class MotionLaw
         }
 
         double s = t / length;
-        double curve = Ease(trip.Spec.Curve, s);
-        double slope = Slope(trip.Spec.Curve, s);
+        double eased = Ease(curve, s);
+        double slope = Slope(curve, s);
 
         // The Hermite basis, which only the lanes that carry speed need.
         double h00 = ((2 * s) - 3) * s * s + 1;
@@ -266,7 +210,7 @@ internal static class MotionLaw
 
             if (speed == 0)
             {
-                p[lane] = from + ((to - from) * curve);
+                p[lane] = from + ((to - from) * eased);
                 v[lane] = (to - from) * slope / length;
                 continue;
             }
@@ -287,10 +231,11 @@ internal static class MotionLaw
     /// makes the three damping cases the textbook ones and keeps the target out
     /// of the exponentials.
     /// </remarks>
-    private static bool Spring(Trip trip, double t, double[] p, double[] v)
+    private static bool Spring(
+        Trip trip, double response, double damping, double t, double[] p, double[] v)
     {
-        double w = 2 * Math.PI / trip.Spec.Response;
-        double zeta = trip.Spec.Damping;
+        double w = 2 * Math.PI / response;
+        double zeta = damping;
         bool rested = t >= Longest;
 
         for (int lane = 0; lane < p.Length; lane++)

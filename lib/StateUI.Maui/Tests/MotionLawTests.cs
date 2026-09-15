@@ -61,10 +61,10 @@ public class MotionLawTests
     /// </summary>
     private static Trip Parse(string[] words)
     {
-        double millis = Number(words[3]);
-        MotionSpec spec = words[1] == "spring"
-            ? MotionSpec.Spring(millis, Number(words[4]))
-            : MotionSpec.Eased(millis, (int)Enum.Parse<SwiftEasing>(words[2], ignoreCase: true));
+        uint millis = (uint)Number(words[3]);
+        HostMotion motion = words[1] == "spring"
+            ? HostMotion.Spring(millis, Number(words[4]))
+            : HostMotion.Eased(millis, Enum.Parse<SwiftEasing>(words[2], ignoreCase: true));
         double[] from = Lanes(words[6]);
 
         return new Trip
@@ -77,7 +77,7 @@ public class MotionLawTests
             From = from,
             StartV = Lanes(words[10]),
             Target = Lanes(words[8]),
-            Spec = spec,
+            Motion = motion,
         };
     }
 

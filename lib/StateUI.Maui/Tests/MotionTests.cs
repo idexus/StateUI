@@ -41,7 +41,7 @@ public class MotionTests
 
         Assert.False(clock.Running);
 
-        walker.Aim(Opacity(label), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, SwiftEasing.Linear));
         Assert.True(clock.Running);
 
         clock.Tick(100);
@@ -61,7 +61,7 @@ public class MotionTests
 
         MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
 
-        walker.Aim(scale, [100.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(scale, [100.0], HostMotion.Eased(100, SwiftEasing.Linear));
         clock.Tick(50);
 
         double atTurn = label.Scale;
@@ -70,7 +70,7 @@ public class MotionTests
         // Sent somewhere else entirely, and the very next frame must still be
         // going the way it was: a cut would show as the value standing still
         // for a frame, or worse, jumping back.
-        walker.Aim(scale, [0.0], MotionSpec.Eased(400, (int)SwiftEasing.Linear));
+        walker.Aim(scale, [0.0], HostMotion.Eased(400, SwiftEasing.Linear));
         clock.Tick(8);
 
         Assert.True(
@@ -104,9 +104,9 @@ public class MotionTests
         walker.Aim(
             Opacity(carried),
             [1.0],
-            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            HostMotion.Eased(100, SwiftEasing.Linear),
             _ => walker.Aim(
-                Opacity(bystander), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear)));
+                Opacity(bystander), [1.0], HostMotion.Eased(100, SwiftEasing.Linear)));
 
         clock.Tick(50);
 
@@ -115,7 +115,7 @@ public class MotionTests
         walker.Aim(
             Opacity(carried),
             [0.25],
-            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            HostMotion.Eased(100, SwiftEasing.Linear),
             _ => answered = true);
 
         clock.Tick(200);
@@ -139,9 +139,9 @@ public class MotionTests
         walker.Aim(
             Opacity(carried),
             [1.0],
-            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            HostMotion.Eased(100, SwiftEasing.Linear),
             _ => walker.Aim(
-                Opacity(carried), [0.9], MotionSpec.Eased(100, (int)SwiftEasing.Linear)));
+                Opacity(carried), [0.9], HostMotion.Eased(100, SwiftEasing.Linear)));
 
         clock.Tick(50);
 
@@ -151,7 +151,7 @@ public class MotionTests
         walker.Aim(
             Opacity(carried),
             [0.25],
-            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            HostMotion.Eased(100, SwiftEasing.Linear),
             whole => { answered = true; arrived = whole; });
 
         clock.Tick(200);
@@ -174,7 +174,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
             [1.0],
-            MotionSpec.Eased(1000, (int)SwiftEasing.CubicOut));
+            HostMotion.Eased(1000, SwiftEasing.CubicOut));
 
         clock.Tick(250);
 
@@ -195,7 +195,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
             [1.0],
-            MotionSpec.Spring(200, 1));
+            HostMotion.Spring(200, 1));
 
         double most = 0;
 
@@ -226,16 +226,16 @@ public class MotionTests
         walker.Aim(
             scale,
             [10.0],
-            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            HostMotion.Eased(100, SwiftEasing.Linear),
             done: _ =>
             {
                 // The handler resumed by the ending motion sends the value
                 // somewhere else - from inside the very call that is replacing
                 // it.
-                walker.Aim(scale, [99.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+                walker.Aim(scale, [99.0], HostMotion.Eased(100, SwiftEasing.Linear));
             });
 
-        walker.Aim(scale, [50.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(scale, [50.0], HostMotion.Eased(100, SwiftEasing.Linear));
 
         clock.Tick(200);
 
@@ -253,7 +253,7 @@ public class MotionTests
         var walker = new Walker { Clock = null };
         var label = new Label { Opacity = 0 };
 
-        walker.Aim(Opacity(label), [1.0], MotionSpec.Eased(400, (int)SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(400, SwiftEasing.Linear));
 
         Assert.Equal(1, label.Opacity);
     }
@@ -278,7 +278,7 @@ public class MotionTests
             walker.Aim(
                 Opacity(label),
                 [1.0],
-                MotionSpec.Eased(400, (int)SwiftEasing.Linear),
+                HostMotion.Eased(400, SwiftEasing.Linear),
                 done: whole => answered = whole);
 
             Assert.Equal(1, label.Opacity);
@@ -301,7 +301,7 @@ public class MotionTests
         (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Opacity = 0 };
 
-        walker.Aim(Opacity(label), [1.0], MotionSpec.Spring(200, 0.3));
+        walker.Aim(Opacity(label), [1.0], HostMotion.Spring(200, 0.3));
 
         for (int frame = 0; frame < 120; frame++)
         {
@@ -327,7 +327,7 @@ public class MotionTests
         walker.Aim(
             scale,
             [100.0],
-            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            HostMotion.Eased(100, SwiftEasing.Linear),
             velocity: [2.0]);
 
         clock.Tick(50);
@@ -353,7 +353,7 @@ public class MotionTests
 
         MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
 
-        walker.Aim(scale, [100.0], MotionSpec.Spring(200, 1), velocity: [-2.0]);
+        walker.Aim(scale, [100.0], HostMotion.Spring(200, 1), velocity: [-2.0]);
         clock.Tick(8);
 
         Assert.True(
@@ -385,7 +385,7 @@ public class MotionTests
         walker.Aim(
             scale,
             [100.0],
-            MotionSpec.Eased(200, (int)SwiftEasing.Linear),
+            HostMotion.Eased(200, SwiftEasing.Linear),
             done: whole => answered = whole,
             velocity: [1.0]);
 
@@ -411,7 +411,7 @@ public class MotionTests
         (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Opacity = 0 };
 
-        walker.Aim(Opacity(label), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, SwiftEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal(0.5, label.Opacity, 6);
@@ -438,7 +438,7 @@ public class MotionTests
         walker.Cycle = () => read.Add(label.Opacity);
         walker.Idle = () => !busy;
 
-        walker.Aim(Opacity(label), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, SwiftEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal([0.5], read);
@@ -526,7 +526,7 @@ public class MotionTests
             [
                 new SwiftTransition(
                     SwiftProp.Opacity, "opacity",
-                    (int)SwiftMotionLaw.Eased, 100, (int)SwiftEasing.Linear, 0),
+                    (int)HostMotion.Law.Eased, 100, (int)SwiftEasing.Linear, 0),
             ],
         });
 
@@ -583,7 +583,7 @@ public class MotionTests
             [
                 new SwiftTransition(
                     SwiftProp.Height, "heightRequest",
-                    (int)SwiftMotionLaw.Eased, 100, (int)SwiftEasing.Linear, 0),
+                    (int)HostMotion.Law.Eased, 100, (int)SwiftEasing.Linear, 0),
             ],
         };
 
@@ -626,7 +626,7 @@ public class MotionTests
             [
                 new SwiftTransition(
                     SwiftProp.Text, "text",
-                    (int)SwiftMotionLaw.Eased, 200, (int)SwiftEasing.Linear, 0),
+                    (int)HostMotion.Law.Eased, 200, (int)SwiftEasing.Linear, 0),
             ],
         });
 
@@ -649,7 +649,7 @@ public class MotionTests
         var host = new Host();
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, SwiftEasing.Linear);
 
         var label = (Label)host.Apply(Stateful);
 
@@ -684,7 +684,7 @@ public class MotionTests
         var host = new Host();
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(200, SwiftEasing.Linear);
 
         var label = (Label)host.Apply(Stateful);
 
@@ -724,7 +724,7 @@ public class MotionTests
         var host = new Host();
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, SwiftEasing.Linear);
 
         var label = (Label)host.ApplyMessage(new SwiftNode
         {
@@ -771,7 +771,7 @@ public class MotionTests
         var host = new Host();
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, SwiftEasing.Linear);
 
         var label = (Label)host.ApplyMessage(new SwiftNode
         {
@@ -813,7 +813,7 @@ public class MotionTests
         var host = new Host();
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, SwiftEasing.Linear);
 
         var label = (Label)host.ApplyMessage(new SwiftNode
         {
@@ -847,7 +847,7 @@ public class MotionTests
             Id = new SwiftId(1),
             Type = SwiftNodeType.Label,
             Moves = true,
-            Motion = MotionSpec.Eased(0, 0),
+            Motion = HostMotion.Eased(0, SwiftEasing.Linear),
             Props = new Dictionary<SwiftProp, SwiftWireValue>
             {
                 [SwiftProp.IsVisible] = SwiftWireValue.Of(true),
@@ -867,7 +867,7 @@ public class MotionTests
     {
         var host = new Host();
         host.Renderer.Walker.Clock = new HandFrameClock();
-        host.Renderer.Walker.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, SwiftEasing.Linear);
 
         var label = (Label)host.ApplyMessage(new SwiftNode
         {
@@ -884,7 +884,7 @@ public class MotionTests
             Id = new SwiftId(1),
             Type = SwiftNodeType.Label,
             Moves = true,
-            Motion = MotionSpec.Eased(0, 0),
+            Motion = HostMotion.Eased(0, SwiftEasing.Linear),
             Props = new Dictionary<SwiftProp, SwiftWireValue>
             {
                 [SwiftProp.IsVisible] = SwiftWireValue.Of(false),
@@ -937,7 +937,7 @@ public class MotionTests
             [
                 new SwiftTransition(
                     SwiftProp.Rotation, "rotation",
-                    (int)SwiftMotionLaw.Eased, 100, (int)SwiftEasing.Linear, 0),
+                    (int)HostMotion.Law.Eased, 100, (int)SwiftEasing.Linear, 0),
             ],
         });
 
@@ -951,7 +951,7 @@ public class MotionTests
             Id = new SwiftId(1),
             Type = SwiftNodeType.Label,
             Moves = true,
-            Motion = MotionSpec.Eased(0, 0),
+            Motion = HostMotion.Eased(0, SwiftEasing.Linear),
         });
 
         Assert.Equal(90, label.Rotation, 3);
@@ -986,7 +986,7 @@ public class MotionTests
             stack, VisualElement.BackgroundProperty, going, false,
             out ITripTarget moves, out double[] to));
 
-        walker.Aim(moves, to, MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(moves, to, HostMotion.Eased(100, SwiftEasing.Linear));
 
         clock.Tick(50);
 
@@ -1036,7 +1036,7 @@ public class MotionTests
             button, Button.CornerRadiusProperty, 20, false,
             out ITripTarget moves, out double[] to));
 
-        walker.Aim(moves, to, MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(moves, to, HostMotion.Eased(100, SwiftEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal(10, button.CornerRadius);
@@ -1099,7 +1099,7 @@ public class MotionTests
         SwiftTransition transition = Assert.Single(panel.Transitions!);
 
         Assert.Equal(200u, transition.Millis);
-        Assert.Equal((int)SwiftMotionLaw.Eased, transition.Law);
+        Assert.Equal((int)HostMotion.Law.Eased, transition.Law);
     }
 
     // ---- The layout ---------------------------------------------------------
@@ -1193,7 +1193,7 @@ public class MotionTests
         }
     }
 
-    private static Laid Laying(MotionSpec spec, int children)
+    private static Laid Laying(HostMotion spec, int children)
     {
         var clock = new HandFrameClock();
         var walker = new Walker { Clock = clock };
@@ -1218,7 +1218,7 @@ public class MotionTests
         };
     }
 
-    private static readonly MotionSpec Travelling = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+    private static readonly HostMotion Travelling = HostMotion.Eased(200, SwiftEasing.Linear);
 
     /// <summary>
     /// The first arrangement is an arrival: the first thing anyone sees is
@@ -1344,7 +1344,7 @@ public class MotionTests
     [Fact]
     public void ALayoutToldToStayStillPlacesItsChildrenAtOnce()
     {
-        Laid laid = Laying(MotionSpec.Eased(0, 0), 1);
+        Laid laid = Laying(HostMotion.Eased(0, SwiftEasing.Linear), 1);
         IView child = laid.Layout[0];
 
         laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
@@ -2009,7 +2009,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
             [1.0],
-            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+            HostMotion.Eased(100, SwiftEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal(0.5, label.Opacity, 3);
@@ -2043,7 +2043,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
             [1.0],
-            MotionSpec.Eased(100, (int)SwiftEasing.Linear),
+            HostMotion.Eased(100, SwiftEasing.Linear),
             whole => answered = whole);
 
         clock.Tick(50);
@@ -2072,7 +2072,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
             [3.0],
-            MotionSpec.Eased(100, (int)SwiftEasing.CubicOut));
+            HostMotion.Eased(100, SwiftEasing.CubicOut));
 
         clock.Tick(97);
         Assert.NotEqual(3.0, label.Scale);
@@ -2090,7 +2090,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
             [1, 1, 1, 1],
-            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+            HostMotion.Eased(100, SwiftEasing.Linear));
 
         clock.Tick(50);
 
@@ -2113,7 +2113,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
             [1, 0, 0, 0],
-            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+            HostMotion.Eased(100, SwiftEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal(0.5f, border.BackgroundColor.Alpha, 3);
@@ -2131,7 +2131,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(stack, Layout.PaddingProperty, MotionValue.Edges),
             [4, 8, 12, 16],
-            MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+            HostMotion.Eased(100, SwiftEasing.Linear));
 
         clock.Tick(50);
 
@@ -2188,12 +2188,12 @@ public class MotionTests
     public void EveryEasingSwiftCanWriteHasACurveBehindIt(int member)
     {
         // Whatever a curve does on the way, it starts and ends with the change.
-        Assert.Equal(0, MotionLaw.Ease(member, 0), 12);
-        Assert.Equal(1, MotionLaw.Ease(member, 1), 12);
+        Assert.Equal(0, MotionLaw.Ease((SwiftEasing)member, 0), 12);
+        Assert.Equal(1, MotionLaw.Ease((SwiftEasing)member, 1), 12);
 
         // And every arm but linear is a DIFFERENT curve, or a missing case
         // would read as a pass.
-        Assert.Equal(member == (int)SwiftEasing.Linear, MotionLaw.Ease(member, 0.3) == 0.3);
+        Assert.Equal(member == (int)SwiftEasing.Linear, MotionLaw.Ease((SwiftEasing)member, 0.3) == 0.3);
     }
 
     /// <summary>
@@ -2207,8 +2207,8 @@ public class MotionTests
         // 9999 rather than a null: an easing is a slot in the transition
         // record, always present, so the only way to be handed one this side
         // does not know is a Swift side that has grown a curve.
-        Assert.Equal(0.3, MotionLaw.Ease(9999, 0.3));
-        Assert.Equal(0.3, MotionLaw.Ease(-1, 0.3));
+        Assert.Equal(0.3, MotionLaw.Ease((SwiftEasing)9999, 0.3));
+        Assert.Equal(0.3, MotionLaw.Ease((SwiftEasing)(-1), 0.3));
     }
 
     /// <summary>

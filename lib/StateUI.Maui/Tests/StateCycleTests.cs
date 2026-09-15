@@ -761,7 +761,7 @@ public class StateCycleTests
         host.Renderer.Walker.Aim(
             new MotionProperty(border, VisualElement.OpacityProperty, MotionValue.Number, true),
             [0.1],
-            MotionSpec.Eased(200, (int)SwiftEasing.Linear));
+            HostMotion.Eased(200, SwiftEasing.Linear));
 
         // The control travels, on a trip of its own.
         Assert.NotNull(host.Renderer.Walker.Moving(border, VisualElement.OpacityProperty));
@@ -889,7 +889,7 @@ public class StateCycleTests
 
         // The law the application would have stated, which a harness handed
         // the view alone never sees.
-        host.Renderer.Walker.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(200, SwiftEasing.Linear);
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.5, setPoint: 0.5));
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));

@@ -299,11 +299,7 @@ internal static partial class SwiftWire
                         int easing = reader.I32();
                         double factor = reader.F64();
 
-                        node.Motion = (SwiftMotionLaw)law switch
-                        {
-                            SwiftMotionLaw.Spring => MotionSpec.Spring(millis, factor),
-                            _ => MotionSpec.Eased(millis, easing),
-                        };
+                        node.Motion = HostMotion.Of(law, millis, easing, factor);
                     }
 
                     // Always, whichever law: a layout may travel the way the

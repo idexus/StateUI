@@ -928,7 +928,7 @@ internal sealed class StateCycle
     /// <param name="property">Which of its properties.</param>
     /// <param name="spec">The law the caller was going to use.</param>
     /// <returns>Whether a state drives it.</returns>
-    internal bool Restate(BindableObject view, BindableProperty property, in MotionSpec spec)
+    internal bool Restate(BindableObject view, BindableProperty property, in HostMotion spec)
     {
         if (!Drives(view, property) || Sink(view, property) is not StateAttachment attachment)
         {
@@ -1685,7 +1685,7 @@ internal sealed class StateAttachment
     /// <param name="bytes">The state, whole.</param>
     /// <param name="walker">What moves the values.</param>
     /// <param name="spec">The law the writer was going to use.</param>
-    internal void Resting(byte[] bytes, Walker walker, in MotionSpec spec)
+    internal void Resting(byte[] bytes, Walker walker, in HostMotion spec)
     {
         if (Property is null
             || Kind != SwiftStateKind.Property
@@ -1806,7 +1806,7 @@ internal sealed class StateAttachment
             return;
         }
 
-        MotionSpec spec = LawAt(lanes, lanes.Length - Laws, walker);
+        HostMotion spec = LawAt(lanes, lanes.Length - Laws, walker);
         bool owing = false;
 
         for (int index = 0; index < run; index++)
@@ -1990,7 +1990,7 @@ internal sealed class StateAttachment
     /// can read a per-value motion plan - so the application's answer is the
     /// right one for a value no element has claimed.
     /// </remarks>
-    internal static MotionSpec Law(double[] lanes, int width, Walker walker) =>
+    internal static HostMotion Law(double[] lanes, int width, Walker walker) =>
         LawAt(lanes, width * 3, walker);
 
     /// <summary>The law the three lanes at <paramref name="at"/> name.</summary>
@@ -1998,16 +1998,19 @@ internal sealed class StateAttachment
     /// <param name="at">The first of the law's three lanes.</param>
     /// <param name="walker">What moves the values, for the element's own law.</param>
     /// <returns>The law.</returns>
-    private static MotionSpec LawAt(double[] lanes, int at, Walker walker)
+    private static HostMotion LawAt(double[] lanes, int at, Walker walker)
     {
         return (int)lanes[at] switch
         {
             1 => walker.Travel,
-            2 => MotionSpec.Eased(lanes[at + 1], (int)lanes[at + 2]),
-            3 => MotionSpec.Spring(lanes[at + 1], lanes[at + 2]),
-            _ => MotionSpec.Eased(0, 0),
+            2 => HostMotion.Eased(Millis(lanes[at + 1]), (SwiftEasing)(int)lanes[at + 2]),
+            3 => HostMotion.Spring(Millis(lanes[at + 1]), lanes[at + 2]),
+            _ => HostMotion.Eased(0, SwiftEasing.Linear),
         };
     }
+
+    /// <summary>A lane's milliseconds, as the whole number a motion carries.</summary>
+    private static uint Millis(double lane) => (uint)Math.Max(lane, 0);
 
     /// <summary>Whether two runs of lanes hold the same numbers.</summary>
     internal static bool Same(double[] left, double[] right)

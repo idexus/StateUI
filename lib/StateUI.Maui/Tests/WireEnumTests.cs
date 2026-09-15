@@ -46,6 +46,12 @@ public class WireEnumTests
         // and is nested there for the same reason it is nested in Swift.
         ["DrawCommand.Kind"] = typeof(StateUI.Maui.Rendering.SwiftDrawable).GetNestedType(
             "Kind", BindingFlags.NonPublic | BindingFlags.Public)!,
+
+        // A motion's law is nested in the motion that crosses with it, as it
+        // is in Swift: `HostMotionLaw` is the core's law evaluator, which
+        // this side spells `MotionLaw`.
+        ["Motion.Law"] = typeof(HostMotion).GetNestedType(
+            "Law", BindingFlags.NonPublic | BindingFlags.Public)!,
     };
 
     /// <summary>

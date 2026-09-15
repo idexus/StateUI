@@ -664,7 +664,7 @@ internal sealed class StateUISession
             // application: a layout that agrees with it is on no message at
             // all, which is what keeps the common case off the wire. See
             // LayoutMotion.
-            if (message.Root.Moves && message.Root.Motion is MotionSpec placement)
+            if (message.Root.Moves && message.Root.Motion is HostMotion placement)
             {
                 Renderer.Walker.Travel = placement;
             }
