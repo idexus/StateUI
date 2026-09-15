@@ -94,7 +94,8 @@ internal sealed class StateUISession
 
     /// <summary>
     /// Brings the core's work onto the thread MAUI draws on - the doorbell, the
-    /// drain after a resume, and each turn of jobs, render, acts and cycle.
+    /// drain after a resume, and each turn of jobs, a pending cycle, the render
+    /// and the acts.
     /// </summary>
     private readonly Pump _pump;
 
@@ -122,7 +123,7 @@ internal sealed class StateUISession
         _target = target;
         Renderer = new StateUIRenderer(OnEvent);
         ActPerformer = new(target, Renderer, _uiThread, () => _pump!.Replied());
-        _pump = new Pump(target, _uiThread, _names, Renderer, ActPerformer, Render);
+        _pump = new Pump(target, _uiThread, _names, Renderer, ActPerformer, Render, () => _intake.Mounted);
     }
 
     /// <summary>
@@ -137,7 +138,7 @@ internal sealed class StateUISession
         _target = target;
         Renderer = new StateUIRenderer(dispatch);
         ActPerformer = new(target, Renderer, _uiThread, () => _pump!.Replied());
-        _pump = new Pump(target, _uiThread, _names, Renderer, ActPerformer, Render);
+        _pump = new Pump(target, _uiThread, _names, Renderer, ActPerformer, Render, () => _intake.Mounted);
     }
 
     /// <summary>

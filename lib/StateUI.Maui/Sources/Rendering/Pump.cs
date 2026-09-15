@@ -8,8 +8,8 @@ namespace StateUI.Maui.Rendering;
 
 /// <summary>
 /// Brings the core's work onto the thread MAUI draws on and runs it there: the
-/// jobs a resumed handler left, a render when the core needs one, the acts the
-/// application called, and a state cycle.
+/// jobs a resumed handler left, a pending state cycle, a render when the core
+/// needs one, and the acts the application called.
 /// </summary>
 /// <remarks>
 /// Three ways in. The DOORBELL - a thread parked in the core until work lands -
@@ -27,6 +27,7 @@ internal sealed class Pump
     private readonly StateUIRenderer _renderer;
     private readonly ActPerformer _performer;
     private readonly Action<bool> _render;
+    private readonly Func<bool> _mounted;
 
     /// <summary>The pump of one session.</summary>
     /// <param name="target">What the session renders into, whose dispatcher a drain is posted on.</param>
@@ -35,8 +36,9 @@ internal sealed class Pump
     /// <param name="renderer">Whose display cycle a turn runs.</param>
     /// <param name="performer">What performs the acts a turn takes.</param>
     /// <param name="render">The session's render of one message: whether a refused one may be asked for again whole.</param>
+    /// <param name="mounted">Whether a tree is mounted - a message has gone in whole.</param>
     internal Pump(IStateUITarget target, UiThread uiThread, WireDictionary names,
-        StateUIRenderer renderer, ActPerformer performer, Action<bool> render)
+        StateUIRenderer renderer, ActPerformer performer, Action<bool> render, Func<bool> mounted)
     {
         _target = target;
         _uiThread = uiThread;
@@ -44,6 +46,7 @@ internal sealed class Pump
         _renderer = renderer;
         _performer = performer;
         _render = render;
+        _mounted = mounted;
     }
 
     /// <summary>
@@ -149,30 +152,33 @@ internal sealed class Pump
     }
 
     /// <summary>
-    /// Renders what the core describes, performs the acts and cycles - what a
-    /// target's own render asks for, whether or not the core needs one.
+    /// A turn whose render a target asks for: a pending cycle, the render
+    /// whether or not the core needs one, then the acts.
     /// </summary>
     internal void Render()
     {
+        Cycle();
         _render(true);
         PerformActCalls();
-        Cycle();
     }
 
     /// <summary>
-    /// Brings the interface up to date and performs whatever the Swift side
-    /// asked for while it was running.
+    /// One turn: the jobs a resumed handler left, a pending cycle, a render when
+    /// the core needs one, then the acts.
     /// </summary>
     /// <remarks>
-    /// In that order on purpose: a handler that changes state and acts in the
-    /// same breath - focuses a field it has just shown, opens a dialog over
-    /// the page it has just changed - acts on an interface that already shows
-    /// the change.
+    /// In that order on purpose. The cycle before the render, so the one
+    /// message carries what a handler wrote and what followed it; the acts
+    /// after, so a handler that changes state and acts in the same breath -
+    /// enables a field and focuses it, opens a dialog over the page it has
+    /// just changed - acts on an interface that already shows the change.
     /// </remarks>
     internal void Run()
     {
         // A resumed handler may have left work here since the last look.
         CoreLink.RunJobs();
+
+        Cycle();
 
         // Only re-render if the Swift side says something changed. An event that
         // only reads state - a button that logs, a completed handler that does
@@ -183,7 +189,6 @@ internal sealed class Pump
         }
 
         PerformActCalls();
-        Cycle();
     }
 
     /// <summary>
@@ -264,7 +269,8 @@ internal sealed class Pump
     }
 
     /// <summary>
-    /// Runs one state cycle, now that the Swift side has had its turn.
+    /// Runs the state cycle a write has left pending, before the render - so the
+    /// one render carries what a handler wrote and what followed it.
     /// </summary>
     /// <remarks>
     /// THE OTHER OCCASION BESIDE A FRAME, and the one that makes a state written
@@ -272,13 +278,22 @@ internal sealed class Pump
     /// moves, so a write would sit in the image until something else happened
     /// to wake the display. One cycle here takes it in, runs whatever follows
     /// it, and lands what those wrote - and the clock is started where the
-    /// cycle says there is more to come.
+    /// cycle says there is more to come. Only over a mounted tree: before the
+    /// first message there is nothing to land a value on.
     /// </remarks>
     private void Cycle()
     {
+        if (!_mounted())
+        {
+            return;
+        }
+
         try
         {
-            _renderer.DisplayCycle.Run(CycleReason.Drained);
+            if (!_renderer.DisplayCycle.Idle())
+            {
+                _renderer.DisplayCycle.Run(CycleReason.Drained);
+            }
         }
         catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
         {

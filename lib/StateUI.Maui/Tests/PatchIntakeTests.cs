@@ -53,6 +53,25 @@ public class PatchIntakeTests
         Assert.Equal(0, intake.Quote());
     }
 
+    /// <summary>
+    /// A tree is mounted once a message has gone in whole, and stays mounted
+    /// when the next render is asked for whole - what a turn's pending cycle
+    /// waits for.
+    /// </summary>
+    [Fact]
+    public void ATreeIsMountedOnceAMessageHasGoneInWhole()
+    {
+        var intake = new PatchIntake();
+
+        Assert.False(intake.Take(Message(5), (_, _) => false));
+        Assert.False(intake.Mounted);
+
+        Assert.True(intake.Take(Message(6), (_, _) => true));
+        intake.Forget();
+
+        Assert.True(intake.Mounted);
+    }
+
     /// <summary>An apply that throws claims nothing and leaves nothing applying.</summary>
     [Fact]
     public void AnApplyThatThrowsClaimsNothing()

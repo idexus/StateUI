@@ -479,48 +479,54 @@ final class AppKitRenderer: @unchecked Sendable {
         return true
     }
 
+    /// One turn of the host: the jobs a resumed handler left, a pending cycle,
+    /// a render when the core needs one, then the acts - on the interface the
+    /// render has just brought up to date.
     func pump() {
         _ = core.runJobs()
-
-        for call in core.takeActCalls() {
-            actPerformer.perform(call)
-        }
 
         if root != nil, core.cyclesPending {
             displayCycle.drain(now: frameClock.now())
         }
 
-        guard root == nil || core.needsRender else { return }
+        if root == nil || core.needsRender {
+            let rendered = core.render(baseline: intake.baseline)
 
-        let rendered = core.render(baseline: intake.baseline)
-
-        if !intake.take(rendered.root, generation: rendered.generation, apply: {
-            applyRoot($0, complete: rendered.complete)
-        }) {
-            // REFUSED, then asked for whole once: a complete render is
-            // reconciled against the tree the core holds, so every identity,
-            // handler and state survives it.
-            NSLog("StateUI AppKit: the interface drifted and is asked for whole: %@",
-                  intake.lastDrift ?? "")
-            let complete = core.render(baseline: 0)
-            intake.take(complete.root, generation: complete.generation, apply: {
-                applyRoot($0, complete: complete.complete)
-            })
-        }
-
-        displayCycle.presentStateChannels()
-
-        let created = root?.takeCreatedHandlers() ?? []
-        if !created.isEmpty {
-            for handler in created {
-                _ = core.dispatch(handler)
+            if !intake.take(rendered.root, generation: rendered.generation, apply: {
+                applyRoot($0, complete: rendered.complete)
+            }) {
+                // REFUSED, then asked for whole once: a complete render is
+                // reconciled against the tree the core holds, so every identity,
+                // handler and state survives it.
+                NSLog("StateUI AppKit: the interface drifted and is asked for whole: %@",
+                      intake.lastDrift ?? "")
+                let complete = core.render(baseline: 0)
+                intake.take(complete.root, generation: complete.generation, apply: {
+                    applyRoot($0, complete: complete.complete)
+                })
             }
-            pump()
-            return
+
+            displayCycle.presentStateChannels()
+
+            let created = root?.takeCreatedHandlers() ?? []
+            if !created.isEmpty {
+                for handler in created {
+                    _ = core.dispatch(handler)
+                }
+                pump()
+                return
+            }
+
+            synchronizeWindows()
+            flushQueuedEvents()
         }
 
-        synchronizeWindows()
-        flushQueuedEvents()
+        // THE ACTS LAND ON THE INTERFACE THEIR HANDLER CHANGED: taken once the
+        // render is in, so a handler that enables a field and focuses it in the
+        // same breath finds it enabled.
+        for call in core.takeActCalls() {
+            actPerformer.perform(call)
+        }
     }
 
     private func startDoorbell() {

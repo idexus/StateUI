@@ -40,6 +40,12 @@ internal sealed class PatchIntake
     internal bool IsApplying => _depth > 0;
 
     /// <summary>
+    /// Whether a message has gone in whole - a tree is mounted, whatever the
+    /// core is asked for next.
+    /// </summary>
+    internal bool Mounted { get; private set; }
+
+    /// <summary>
     /// The generation to render against - the last message applied in full, or
     /// nought for the whole tree - dropped as it is quoted.
     /// </summary>
@@ -89,6 +95,7 @@ internal sealed class PatchIntake
             return false;
         }
 
+        Mounted = true;
         _generation = interrupted ? 0 : message.Generation;
 
         return true;
