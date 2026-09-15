@@ -943,7 +943,8 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testAStructuredBrushMovesOnlyInsideItsStableShape() throws {
-        let described = AppKitDescribedMotion()
+        let walker = AppKitWalker()
+        let described = AppKitDescribedMotion(walker: walker)
         let key = AppKitDescribedKey(mount: 1, property: .fill)
         let source = HostValue.values([
             .enumeration(2),
@@ -967,7 +968,7 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: false)
         XCTAssertEqual(described.presentedValue(for: key), source)
 
-        described.advance(now: 100)
+        described.follow(walker.step(now: 100))
         XCTAssertEqual(described.takeOutputs().last?.value, .values([
             .enumeration(2),
             .numbers([0, 0.5, 1, 0.5]),
@@ -978,7 +979,8 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testChangingAStructuredBrushShapeSnapsInsteadOfInventingAnIntermediate() {
-        let described = AppKitDescribedMotion()
+        let walker = AppKitWalker()
+        let described = AppKitDescribedMotion(walker: walker)
         let key = AppKitDescribedKey(mount: 1, property: .fill)
         let linear = HostValue.values([
             .enumeration(2),
@@ -1006,7 +1008,8 @@ final class AppKitMotionTests: XCTestCase {
     /// move as colours, and a colour never blends into a brush.
     @MainActor
     func testAColourBackgroundMovesAsAColourAndSnapsToABrush() {
-        let described = AppKitDescribedMotion()
+        let walker = AppKitWalker()
+        let described = AppKitDescribedMotion(walker: walker)
         let colour = AppKitDescribedKey(mount: 1, property: .background)
         let black = HostValue.color(red: 0, green: 0, blue: 0, alpha: 255)
 
@@ -1018,7 +1021,7 @@ final class AppKitMotionTests: XCTestCase {
             now: 0,
             reducesMotion: false)
 
-        described.advance(now: 100)
+        described.follow(walker.step(now: 100))
         XCTAssertEqual(described.takeOutputs().last?.value,
                        .color(red: 128, green: 128, blue: 128, alpha: 255))
 
@@ -1036,7 +1039,8 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testOneStateNumberOwnsOneChannelAcrossControls() throws {
-        let channels = AppKitStateChannels()
+        let walker = AppKitWalker()
+        let channels = AppKitStateChannels(walker: walker)
         let binding = HostStateBinding(state: 7, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -1053,7 +1057,7 @@ final class AppKitMotionTests: XCTestCase {
             for: binding, from: carried, now: 0, reducesMotion: false)
         XCTAssertEqual(channels.takeOutputs().count, 1, "the second wearer reuses the channel")
 
-        channels.advance(now: 100)
+        channels.follow(walker.step(now: 100))
         let frame = try XCTUnwrap(channels.takeOutputs().last)
 
         XCTAssertEqual(frame.state, 7)
@@ -1063,7 +1067,8 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testRetargetingCarriesTheCurrentVelocityIntoTheNewMotion() throws {
-        let channels = AppKitStateChannels()
+        let walker = AppKitWalker()
+        let channels = AppKitStateChannels(walker: walker)
         let binding = HostStateBinding(state: 9, mode: .inOut, kind: .property)
         let first = HostJourney(
             value: [0],
@@ -1098,14 +1103,15 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(aimed.journey.value[0], 0.875, accuracy: 0.000_001)
         XCTAssertEqual(aimed.journey.velocity[0], 3.75, accuracy: 0.01)
 
-        channels.advance(now: 101)
+        channels.follow(walker.step(now: 101))
         let next = try XCTUnwrap(channels.takeOutputs().last)
         XCTAssertGreaterThan(next.journey.value[0], aimed.journey.value[0])
     }
 
     @MainActor
     func testACompletedMotionReportsItsExactDestinationOnce() throws {
-        let channels = AppKitStateChannels()
+        let walker = AppKitWalker()
+        let channels = AppKitStateChannels(walker: walker)
         let binding = HostStateBinding(state: 11, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -1121,7 +1127,7 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: false)
         _ = channels.takeOutputs()
 
-        channels.advance(now: 100)
+        channels.follow(walker.step(now: 100))
         let landed = try XCTUnwrap(channels.takeOutputs().last)
 
         XCTAssertEqual(landed.journey.value, [1])
@@ -1131,14 +1137,15 @@ final class AppKitMotionTests: XCTestCase {
             channels.takeCompletions(),
             [AppKitJourneyCompletion(id: -23, succeeded: true)])
 
-        channels.advance(now: 200)
+        channels.follow(walker.step(now: 200))
         XCTAssertTrue(channels.takeOutputs().isEmpty)
         XCTAssertTrue(channels.takeCompletions().isEmpty)
     }
 
     @MainActor
     func testEnablingReducedMotionLandsAnActiveJourneyAndItsWaiter() throws {
-        let channels = AppKitStateChannels()
+        let walker = AppKitWalker()
+        let channels = AppKitStateChannels(walker: walker)
         let binding = HostStateBinding(state: 12, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -1154,7 +1161,7 @@ final class AppKitMotionTests: XCTestCase {
             reducesMotion: false)
         _ = channels.takeOutputs()
 
-        channels.advance(now: 50, reducesMotion: true)
+        channels.follow(walker.step(now: 50, reducesMotion: true))
         let landed = try XCTUnwrap(channels.takeOutputs().last)
 
         XCTAssertEqual(landed.journey.value, [1])
@@ -1169,7 +1176,8 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testAReaderTakesAnActiveJourneyAtItsOwnPosition() throws {
-        let channels = AppKitStateChannels()
+        let walker = AppKitWalker()
+        let channels = AppKitStateChannels(walker: walker)
         let binding = HostStateBinding(state: 13, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -1200,7 +1208,8 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testAnOutputOnlyBindingCannotTakeItsJourney() {
-        let channels = AppKitStateChannels()
+        let walker = AppKitWalker()
+        let channels = AppKitStateChannels(walker: walker)
         let binding = HostStateBinding(state: 15, mode: .out, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -1223,7 +1232,8 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testAStateSnapCancelsItsWaiterOnceWithoutRebookingIt() throws {
-        let channels = AppKitStateChannels()
+        let walker = AppKitWalker()
+        let channels = AppKitStateChannels(walker: walker)
         let binding = HostStateBinding(state: 17, mode: .inOut, kind: .property)
         let moving = HostJourney(
             value: [0],
@@ -1264,14 +1274,15 @@ final class AppKitMotionTests: XCTestCase {
             channels.takeCompletions(),
             [AppKitJourneyCompletion(id: -41, succeeded: false)])
 
-        channels.advance(now: 200)
+        channels.follow(walker.step(now: 200))
         XCTAssertTrue(channels.takeOutputs().isEmpty)
         XCTAssertTrue(channels.takeCompletions().isEmpty)
     }
 
     @MainActor
     func testAnAwaitedRetargetOwnsItsNewCompletion() {
-        let channels = AppKitStateChannels()
+        let walker = AppKitWalker()
+        let channels = AppKitStateChannels(walker: walker)
         let binding = HostStateBinding(state: 19, mode: .inOut, kind: .property)
         let first = HostJourney(
             value: [0],
@@ -1306,7 +1317,7 @@ final class AppKitMotionTests: XCTestCase {
             channels.takeCompletions(),
             [AppKitJourneyCompletion(id: -41, succeeded: false)])
 
-        channels.advance(now: 150)
+        channels.follow(walker.step(now: 150))
         XCTAssertEqual(
             channels.takeCompletions(),
             [AppKitJourneyCompletion(id: -42, succeeded: true)])

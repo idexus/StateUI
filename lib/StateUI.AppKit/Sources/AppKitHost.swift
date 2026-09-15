@@ -162,8 +162,9 @@ final class AppKitRenderer: @unchecked Sendable {
     private let eventSink: ((Int32, [HostValue]) -> Void)?
     private let preferences: UserDefaults
     private let core = AppKitCoreLink()
-    private let stateChannels = AppKitStateChannels()
-    private let describedMotion = AppKitDescribedMotion()
+    private let walker: AppKitWalker
+    private let stateChannels: AppKitStateChannels
+    private let describedMotion: AppKitDescribedMotion
     private let images = NSCache<NSString, NSImage>()
     private let frameClock: AppKitFrameClock
     private let reducesMotion: () -> Bool
@@ -215,6 +216,10 @@ final class AppKitRenderer: @unchecked Sendable {
         self.preferences = preferences
         frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
         self.reducesMotion = reducesMotion
+        let walker = AppKitWalker()
+        self.walker = walker
+        stateChannels = AppKitStateChannels(walker: walker)
+        describedMotion = AppKitDescribedMotion(walker: walker)
         frameClock.onFrame = { [weak self] now in self?.displayFrame(now: now) }
     }
 
@@ -997,8 +1002,9 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     private func stepTrips(now: Double, reducesMotion: Bool) {
-        stateChannels.advance(now: now, reducesMotion: reducesMotion)
-        describedMotion.advance(now: now, reducesMotion: reducesMotion)
+        let steps = walker.step(now: now, reducesMotion: reducesMotion)
+        stateChannels.follow(steps)
+        describedMotion.follow(steps)
         presentStateChannels()
         presentDescribedMotion()
     }
@@ -1124,8 +1130,7 @@ final class AppKitRenderer: @unchecked Sendable {
     /// trip, the core's cycle, a scroller moving or with a report to make.
     private func holdFrames() {
         frameClock.held = cycleContinues
-            || stateChannels.isActive
-            || describedMotion.isActive
+            || walker.isMoving
             || core.cyclesPending
             || framedScrollers.anyObject != nil
     }

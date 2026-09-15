@@ -26,12 +26,19 @@ struct AppKitJourneyCompletion: Equatable {
 ///
 /// Controls never own their own copy of a driven journey. Every property tied
 /// to the same number reads this channel, so all of them stand at the same
-/// value and retarget with the same velocity on the same display frame.
+/// value and retarget with the same velocity on the same display frame. The
+/// trips they travel on are the walker's.
 @MainActor
 final class AppKitStateChannels {
+    private let walker: AppKitWalker
     private var channels: [Int32: AppKitStateChannel] = [:]
     private var outputs: [AppKitStateChannelOutput] = []
     private var completions: [AppKitJourneyCompletion] = []
+
+    /// State channels whose trips `walker` walks.
+    init(walker: AppKitWalker) {
+        self.walker = walker
+    }
 
     var isActive: Bool { channels.values.contains(where: \.isActive) }
 
@@ -56,6 +63,7 @@ final class AppKitStateChannels {
             channel = AppKitStateChannel(
                 binding: binding,
                 journey: incoming,
+                walker: walker,
                 now: now,
                 reducesMotion: reducesMotion,
                 emit: emit)
@@ -83,13 +91,11 @@ final class AppKitStateChannels {
             emit: emit)
     }
 
-    /// Advances every active channel from the display's monotonic clock.
-    func advance(now: Double, reducesMotion: Bool = false) {
-        for state in channels.keys.sorted() {
-            channels[state]?.advance(
-                now: now,
-                reducesMotion: reducesMotion,
-                emit: emit)
+    /// Follows what a step of the walker made of the channels' trips.
+    func follow(_ steps: [AppKitStep]) {
+        for step in steps {
+            guard case .state(let number) = step.target else { continue }
+            channels[number]?.follow(step.value, step.velocity, rested: step.rested, emit: emit)
         }
     }
 
@@ -143,39 +149,40 @@ final class AppKitStateChannels {
     }
 }
 
-/// One state's channel: its journey, and the trip the host walks it on.
+/// One state's channel: its journey, and the trip the walker walks it on.
 @MainActor
 private final class AppKitStateChannel {
     var binding: HostStateBinding
 
+    private let walker: AppKitWalker
+    private let target: AppKitTripTarget
     private var value: [Double]
     private var destination: [Double]
     private var velocity: [Double]
-    private var from: [Double]
-    private var startingVelocity: [Double]
     private var motion: Motion
     private var completion: Int?
     private var stopped: UInt64
-    private var began: Double
-    private(set) var isActive = false
+
+    /// Whether the walker walks this channel's trip.
+    var isActive: Bool { walker.trip(for: target) != nil }
 
     init(
         binding: HostStateBinding,
         journey: HostJourney,
+        walker: AppKitWalker,
         now: Double,
         reducesMotion: Bool,
         emit: (AppKitStateChannel, HostJourneyUpdate?, AppKitJourneyCompletion?) -> Void
     ) {
         self.binding = binding
+        self.walker = walker
+        target = .state(binding.state)
         value = journey.value
         destination = journey.destination
         velocity = journey.velocity
-        from = journey.value
-        startingVelocity = journey.velocity.map { $0 / 1_000 }
         motion = journey.motion
         completion = journey.completion
         stopped = journey.stopped
-        began = now
 
         guard !motion.isCustom else { return }
         aim(
@@ -221,7 +228,7 @@ private final class AppKitStateChannel {
         if changedStop {
             sample(now: now, emit: emit)
             if isActive { cancelCompletion(emit: emit) }
-            isActive = false
+            walker.halt(target)
             destination = value
             velocity = Array(repeating: 0, count: width)
             motion = incoming.motion
@@ -232,7 +239,7 @@ private final class AppKitStateChannel {
         if changedValue {
             sample(now: now, emit: emit)
             if isActive { cancelCompletion(emit: emit) }
-            isActive = false
+            walker.halt(target)
             value = incoming.value
             destination = incoming.destination
             velocity = incoming.velocity
@@ -264,22 +271,27 @@ private final class AppKitStateChannel {
         }
     }
 
-    func advance(
-        now: Double,
-        reducesMotion: Bool,
+    /// Follows where the walker put this channel's trip: a frame on the way,
+    /// or the landing at its destination.
+    func follow(
+        _ lanes: [Double],
+        _ speed: [Double],
+        rested: Bool,
         emit: (AppKitStateChannel, HostJourneyUpdate?, AppKitJourneyCompletion?) -> Void
     ) {
-        guard isActive else { return }
-        if reducesMotion {
+        guard !rested else {
+            walker.halt(target)
             value = destination
             velocity = Array(repeating: 0, count: value.count)
-            isActive = false
             let landed = completion.map { AppKitJourneyCompletion(id: $0, succeeded: true) }
             completion = nil
             emit(self, .position, landed)
             return
         }
-        sample(now: now, emit: emit)
+
+        value = lanes
+        velocity = speed.map { $0 * 1_000 }
+        emit(self, .frame, nil)
     }
 
     /// Stops the current motion at the reader's authoritative position.
@@ -291,12 +303,10 @@ private final class AppKitStateChannel {
         guard taken.count == value.count else { return false }
 
         if isActive { cancelCompletion(emit: emit) }
-        isActive = false
+        walker.halt(target)
         value = taken
         destination = taken
         velocity = Array(repeating: 0, count: taken.count)
-        from = taken
-        startingVelocity = velocity
         completion = nil
         emit(self, .position, nil)
         return true
@@ -321,64 +331,47 @@ private final class AppKitStateChannel {
         destination = incoming.destination
 
         if motion.isCustom {
-            isActive = false
+            walker.halt(target)
             value = incoming.value
             velocity = incoming.velocity
             emit(self, nil, nil)
             return
         }
 
-        from = value
-        startingVelocity = usesStatedVelocity
-            ? incoming.velocity.map { $0 / 1_000 }
-            : velocity.map { $0 / 1_000 }
-        velocity = startingVelocity.map { $0 * 1_000 }
-        began = now
+        let trip = AppKitTrip(
+            from: value,
+            destination: destination,
+            velocity: (usesStatedVelocity ? incoming.velocity : velocity).map { $0 / 1_000 },
+            motion: motion,
+            began: now)
+        velocity = trip.velocity.map { $0 * 1_000 }
 
         let instant = motion.law == .eased && motion.millis == 0
-        let alreadyThere = zip(value, destination).allSatisfy {
-            abs($0 - $1) < HostMotionLaw.still
-        } && startingVelocity.allSatisfy { abs($0) < HostMotionLaw.still }
 
-        if instant || reducesMotion || alreadyThere {
+        if instant || reducesMotion || trip.arrives {
+            walker.halt(target)
             value = destination
             velocity = Array(repeating: 0, count: value.count)
-            isActive = false
             let landed = completion.map { AppKitJourneyCompletion(id: $0, succeeded: true) }
             completion = nil
             emit(self, .position, landed)
             return
         }
 
-        isActive = true
+        walker.start(trip, for: target)
         emit(self, .position, nil)
     }
 
+    /// Brings the value to where the walker's trip stands at `now`, before a
+    /// change lands on it.
     private func sample(
         now: Double,
         emit: (AppKitStateChannel, HostJourneyUpdate?, AppKitJourneyCompletion?) -> Void
     ) {
-        guard isActive else { return }
+        guard let trip = walker.trip(for: target) else { return }
 
-        let sample = HostMotionLaw.sample(
-            motion,
-            elapsed: max(0, now - began),
-            from: from,
-            destination: destination,
-            velocity: startingVelocity)
-        value = sample.value
-        velocity = sample.velocity.map { $0 * 1_000 }
-
-        if sample.rested {
-            value = destination
-            velocity = Array(repeating: 0, count: value.count)
-            isActive = false
-            let landed = completion.map { AppKitJourneyCompletion(id: $0, succeeded: true) }
-            completion = nil
-            emit(self, .position, landed)
-        } else {
-            emit(self, .frame, nil)
-        }
+        let position = trip.position(at: now)
+        follow(position.value, position.velocity, rested: position.rested, emit: emit)
     }
 
     private func cancelCompletion(

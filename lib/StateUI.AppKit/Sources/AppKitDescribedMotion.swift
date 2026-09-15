@@ -31,8 +31,14 @@ struct AppKitDescribedOutput: Equatable {
 /// value drawn on the current frame.
 @MainActor
 final class AppKitDescribedMotion {
+    private let walker: AppKitWalker
     private var transitions: [AppKitDescribedKey: AppKitDescribedTransition] = [:]
     private var outputs: [AppKitDescribedOutput] = []
+
+    /// Described motion whose trips `walker` walks.
+    init(walker: AppKitWalker) {
+        self.walker = walker
+    }
 
     var isActive: Bool { !transitions.isEmpty }
 
@@ -58,7 +64,10 @@ final class AppKitDescribedMotion {
         var carriedVelocity: [Double] = []
 
         if let running = transitions.removeValue(forKey: key) {
-            _ = running.sample(now: now)
+            if let trip = walker.trip(for: .described(key)) {
+                _ = running.follow(trip.position(at: now))
+            }
+            walker.halt(.described(key))
             source = running.presented
             carriedLanes = running.lanes
             carriedVelocity = running.velocity
@@ -79,54 +88,56 @@ final class AppKitDescribedMotion {
                 property: key.property)
         else { return }
 
-        let velocity = carriedVelocity.count == plan.from.count
-            ? carriedVelocity
-            : Array(repeating: 0, count: plan.from.count)
-        let alreadyThere = zip(plan.from, plan.destination).allSatisfy {
-            abs($0 - $1) < HostMotionLaw.still
-        } && velocity.allSatisfy { abs($0) < HostMotionLaw.still }
-
-        guard !alreadyThere else { return }
-        transitions[key] = AppKitDescribedTransition(
-            plan: plan,
-            velocity: velocity,
+        let trip = AppKitTrip(
+            from: plan.from,
+            destination: plan.destination,
+            velocity: carriedVelocity.count == plan.from.count
+                ? carriedVelocity
+                : Array(repeating: 0, count: plan.from.count),
             motion: motion,
             began: now)
+
+        guard !trip.arrives else { return }
+        transitions[key] = AppKitDescribedTransition(plan: plan, velocity: trip.velocity)
+        walker.start(trip, for: .described(key))
     }
 
-    /// Advances active transitions in stable identity/property order.
-    func advance(now: Double, reducesMotion: Bool = false) {
-        if reducesMotion {
-            for key in transitions.keys.sorted() {
-                guard let transition = transitions[key] else { continue }
-                outputs.append(AppKitDescribedOutput(key: key, value: transition.target))
+    /// Follows what a step of the walker made of the transitions' trips, in
+    /// stable identity/property order.
+    func follow(_ steps: [AppKitStep]) {
+        for step in steps {
+            guard case .described(let key) = step.target,
+                  let transition = transitions[key]
+            else { continue }
+
+            let presented = transition.follow((step.value, step.velocity, step.rested))
+            outputs.append(AppKitDescribedOutput(key: key, value: presented.value))
+
+            if presented.rested {
+                transitions[key] = nil
+                walker.halt(.described(key))
             }
-            transitions.removeAll(keepingCapacity: true)
-            return
         }
-
-        var landed: [AppKitDescribedKey] = []
-
-        for key in transitions.keys.sorted() {
-            guard let transition = transitions[key] else { continue }
-            let sample = transition.sample(now: now)
-            outputs.append(AppKitDescribedOutput(key: key, value: sample.value))
-            if sample.rested { landed.append(key) }
-        }
-
-        for key in landed { transitions[key] = nil }
     }
 
     /// Drops transitions that no longer belong to a mounted property.
     func retain(_ keys: Set<AppKitDescribedKey>) {
         transitions = transitions.filter { keys.contains($0.key) }
         outputs.removeAll { !keys.contains($0.key) }
+        walker.retain { target in
+            guard case .described(let key) = target else { return true }
+            return keys.contains(key)
+        }
     }
 
     /// Drops every transition owned by an element being replaced or adopted.
     func remove(mount: UInt64) {
         transitions = transitions.filter { $0.key.mount != mount }
         outputs.removeAll { $0.key.mount == mount }
+        walker.retain { target in
+            guard case .described(let key) = target else { return true }
+            return key.mount != mount
+        }
     }
 
     func takeOutputs() -> [AppKitDescribedOutput] {
@@ -135,57 +146,38 @@ final class AppKitDescribedMotion {
     }
 }
 
-/// One described property on its way to its target.
+/// One described property on its way to its target: the shape of its value,
+/// and where its lanes stand. Its trip is the walker's.
 @MainActor
 private final class AppKitDescribedTransition {
     private let plan: AppKitMotionValuePlan
     fileprivate var lanes: [Double]
-    private let startingVelocity: [Double]
-    private let motion: Motion
-    private let began: Double
     fileprivate var velocity: [Double]
 
-    init(
-        plan: AppKitMotionValuePlan,
-        velocity: [Double],
-        motion: Motion,
-        began: Double
-    ) {
+    init(plan: AppKitMotionValuePlan, velocity: [Double]) {
         self.plan = plan
         lanes = plan.from
-        startingVelocity = velocity
         self.velocity = velocity
-        self.motion = motion
-        self.began = began
     }
 
     var presented: HostValue { plan.value(at: lanes) }
-    var target: HostValue { plan.target }
 
-    func sample(now: Double) -> (value: HostValue, rested: Bool) {
-        let sample = HostMotionLaw.sample(
-            motion,
-            elapsed: max(0, now - began),
-            from: plan.from,
-            destination: plan.destination,
-            velocity: startingVelocity)
-
-        guard sample.value.allSatisfy(\.isFinite),
-              sample.velocity.allSatisfy(\.isFinite)
+    /// Takes the trip's position, answering the value to draw and whether the
+    /// transition is over. A position that is not a number lands.
+    func follow(
+        _ position: (value: [Double], velocity: [Double], rested: Bool)
+    ) -> (value: HostValue, rested: Bool) {
+        guard !position.rested,
+              position.value.allSatisfy(\.isFinite),
+              position.velocity.allSatisfy(\.isFinite)
         else {
             lanes = plan.destination
             velocity = Array(repeating: 0, count: lanes.count)
             return (plan.target, true)
         }
 
-        if sample.rested {
-            lanes = plan.destination
-            velocity = Array(repeating: 0, count: lanes.count)
-            return (plan.target, true)
-        }
-
-        lanes = sample.value
-        velocity = sample.velocity
+        lanes = position.value
+        velocity = position.velocity
         return (plan.value(at: lanes), false)
     }
 }
