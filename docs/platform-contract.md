@@ -589,8 +589,8 @@ This behavior is part of the shared contract and must be proved before a host's
 
 The inventory is rendered from the contracts: every node type an element
 contract declares, and every name a member is declared under, so a review
-sees a name enter or leave the contract. `HostContract` holds the ownership of
-every node type, property and event to these names.
+sees a name enter or leave the contract. Each contract's `layer` says who
+realizes the element and each of its members.
 
 <!-- vocabulary:begin -->
 ### Controls and structural nodes

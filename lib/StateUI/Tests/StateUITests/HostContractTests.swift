@@ -5,7 +5,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// The native-host contract is closed over StateUI's built-in vocabulary even
-/// though applications remain free to add their own tokens.
+/// though applications remain free to declare their own contracts.
 final class HostContractTests: XCTestCase {
     func testEveryBuiltInControlPropertyAndEventHasOneOwner() throws {
         let source = try String(
@@ -13,15 +13,15 @@ final class HostContractTests: XCTestCase {
             encoding: .utf8)
 
         assertCoverage(
-            classified: Set(HostContract.controls.keys.map(\.name)),
+            classified: Set(LibraryContracts.elements.map { $0.nodeType.name }),
             declared: declaredNames(of: "NodeType", in: source),
             vocabulary: "NodeType")
         assertCoverage(
-            classified: Set(HostContract.properties.keys.map(\.name)),
+            classified: Self.names(of: .property),
             declared: declaredNames(of: "Prop", in: source),
             vocabulary: "Prop")
         assertCoverage(
-            classified: Set(HostContract.events.keys.map(\.name)),
+            classified: Self.names(of: .event),
             declared: declaredNames(of: "Event", in: source),
             vocabulary: "Event")
     }
@@ -197,14 +197,14 @@ final class HostContractTests: XCTestCase {
             .positionIndicator, .line, .path, .polygon, .polyline, .radioButton,
             .rectangle, .refreshView, .swipeView,
         ] {
-            XCTAssertEqual(HostContract.controls[type], .stateUI)
+            XCTAssertEqual(Self.layer(of: type), .stateUI)
         }
 
         for property in [
             Prop.columns, .gridColumn, .gridColumnSpan, .gridRow,
             .gridRowSpan, .rows,
         ] {
-            XCTAssertEqual(HostContract.properties[property], .stateUI)
+            XCTAssertEqual(Self.layer(of: property), .stateUI)
         }
     }
 
@@ -212,7 +212,7 @@ final class HostContractTests: XCTestCase {
         for type in [
             NodeType.application, .scene, .window, .overlay, .swipeAction,
         ] {
-            XCTAssertEqual(HostContract.controls[type], .structure)
+            XCTAssertEqual(Self.layer(of: type), .structure)
         }
     }
 
@@ -234,15 +234,15 @@ final class HostContractTests: XCTestCase {
             "a property nothing writes is back in the vocabulary: "
                 + properties.intersection(["content", "isOpaque", "textType"]).sorted().joined(separator: ", "))
         XCTAssertFalse(controls.contains("Composed"), "the differ's placeholder is host vocabulary again")
-        XCTAssertNil(HostContract.controls[NodeType("Composed")], "the differ's placeholder has a host owner again")
+        XCTAssertNil(Self.layer(of: NodeType("Composed")), "the differ's placeholder has a contract again")
     }
 
     func testProviderSurfaceDoesNotBecomeABaseHostRequirement() {
-        XCTAssertEqual(HostContract.controls[.map], .provider)
-        XCTAssertEqual(HostContract.controls[.pin], .provider)
-        XCTAssertEqual(HostContract.properties[.mapType], .provider)
-        XCTAssertEqual(HostContract.properties[.region], .provider)
-        XCTAssertEqual(HostContract.events[.mapClicked], .provider)
+        XCTAssertEqual(Self.layer(of: NodeType.map), .provider)
+        XCTAssertEqual(Self.layer(of: NodeType.pin), .provider)
+        XCTAssertEqual(Self.layer(of: Prop.mapType), .provider)
+        XCTAssertEqual(Self.layer(of: Prop.region), .provider)
+        XCTAssertEqual(Self.layer(of: Event.mapClicked), .provider)
     }
 
     func testPlatformContractNamesEveryBuiltInTokenAndTargetHost() throws {
@@ -256,15 +256,15 @@ final class HostContractTests: XCTestCase {
             .joined(separator: "\n")
 
         assertDocumented(
-            HostContract.controls.keys.map(\.name),
+            LibraryContracts.elements.map { $0.nodeType.name },
             vocabulary: "control",
             in: statusRows)
         assertDocumented(
-            HostContract.properties.keys.map(\.name),
+            Self.names(of: .property).sorted(),
             vocabulary: "property",
             in: statusRows)
         assertDocumented(
-            HostContract.events.keys.map(\.name),
+            Self.names(of: .event).sorted(),
             vocabulary: "event",
             in: statusRows)
 
@@ -845,6 +845,45 @@ final class HostContractTests: XCTestCase {
                 XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
             }
         }
+    }
+
+    /// The names the library's contracts declare members of one kind under.
+    private static func names(of kind: MemberFacts.Kind) -> Set<String> {
+        Set(LibraryContracts.all.flatMap { contract in
+            contract.members.compactMap { member in
+                (member as? any DeclaredMember)?.facts.kind == kind ? member.name : nil
+            }
+        })
+    }
+
+    /// The layer an element's contract declares, by its node type - nil for a
+    /// type no library contract declares.
+    private static func layer(of type: NodeType) -> ElementLayer? {
+        LibraryContracts.elements.first { $0.nodeType == type }?.layer
+    }
+
+    /// The layer the properties of one name declare - the members of one name
+    /// share it (`LibraryContractTests`).
+    private static func layer(of property: Prop) -> ElementLayer? {
+        facts(of: property.name, kind: .property)?.layer
+    }
+
+    /// The layer the events of one name declare.
+    private static func layer(of event: Event) -> ElementLayer? {
+        facts(of: event.name, kind: .event)?.layer
+    }
+
+    /// What the first member of a name and a kind says of itself.
+    private static func facts(of name: String, kind: MemberFacts.Kind) -> MemberFacts? {
+        for contract in LibraryContracts.all {
+            for member in contract.members where member.name == name {
+                if let facts = (member as? any DeclaredMember)?.facts, facts.kind == kind {
+                    return facts
+                }
+            }
+        }
+
+        return nil
     }
 
     private func declaredNames(of vocabulary: String, in source: String) -> Set<String> {

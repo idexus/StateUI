@@ -2,11 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The whole contract, against everything that names the library's vocabulary:
-// every node type is one element's, every property and event of the ownership
-// table a member, every act a member of exactly one contract; every name the
-// platform contract's tables use is in the contract; every member a source
-// writes or hears is a member, of that kind, of a contract the source
-// describes.
+// every node type is one element's, every act a member of exactly one
+// contract; every name the platform contract's tables use is in the contract;
+// every member a source writes or hears is a member, of that kind, of a
+// contract the source describes.
 
 import Foundation
 import XCTest
@@ -37,29 +36,17 @@ final class CompleteContractTests: XCTestCase {
 
     /// Every node type the library declares is the type of exactly one element
     /// contract, and no element contract declares a type the library does not.
-    func testEveryNodeTypeIsExactlyOneElementsContract() {
+    func testEveryNodeTypeIsExactlyOneElementsContract() throws {
         var contracts: [String: [String]] = [:]
 
         for element in LibraryContracts.elements {
             contracts[element.nodeType.name, default: []].append(String(describing: element))
         }
 
-        let types = Set(HostContract.controls.keys.map(\.name))
+        let types = try Fixtures.tokenNames(of: "NodeType")
         XCTAssertEqual(types.subtracting(contracts.keys).sorted(), [], "a node type with no contract")
         XCTAssertEqual(Set(contracts.keys).subtracting(types).sorted(), [], "a contract for no node type")
         XCTAssertEqual(contracts.filter { $0.value.count > 1 }.keys.sorted(), [], "a node type with two contracts")
-    }
-
-    /// Every property and every event the ownership table names is a member of
-    /// a contract - the other way round, `LibraryContractTests` holds every
-    /// member to a name the table owns.
-    func testEveryPropertyAndEventIsAMember() {
-        XCTAssertEqual(
-            Set(HostContract.properties.keys.map(\.name)).subtracting(names(of: .property)).sorted(), [],
-            "a property no contract declares")
-        XCTAssertEqual(
-            Set(HostContract.events.keys.map(\.name)).subtracting(names(of: .event)).sorted(), [],
-            "an event no contract declares")
     }
 
     /// Every act the library declares is a member of exactly one contract,

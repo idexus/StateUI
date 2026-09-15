@@ -35,7 +35,7 @@ applications' `Sources/`.
 
 ## Gallery
 
-Gallery is the acceptance surface for the active `HostContract`. Its examples
+Gallery is the acceptance surface for the element contracts. Its examples
 show behavior directly and keep on-screen prose to a title and, when needed,
 one short instruction.
 
@@ -72,7 +72,8 @@ Treat one control, property, event, or host action as one vertical change:
 
 1. Decide its cross-platform semantic name and ownership.
 2. Add or change the public Swift declaration and its `///` documentation.
-3. Register the member in `HostContract` and its typed or Wire vocabulary.
+3. Declare the member in its element's contract - its name, its value's type
+   and its layer; its host-SPI token follows from the member.
 4. Implement every host claimed by the change, keeping native adapters thin.
 5. Add focused core tests and direct native-host tests.
 6. Add or update the smallest Gallery demonstration and handbook section.

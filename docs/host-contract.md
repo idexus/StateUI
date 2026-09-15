@@ -189,15 +189,15 @@ causes, never two phases into one render.
 
 ## Vocabulary ownership
 
-`HostContract` is the checked inventory for StateUI's built-in controls,
-properties, and events. Every built-in token has one owner:
+Every element's contract declares the layer that realizes it, and so does each
+of its members - an `ElementLayer`:
 
 - `native` — every base host is required to map the semantic capability to its
   toolkit;
 - `adaptive` — each host follows its platform convention while preserving the
   StateUI state contract;
 - `stateUI` — the core derives the behavior from smaller primitives;
-- `structure` — the token carries tree or protocol structure;
+- `structure` — it carries tree or protocol structure;
 - `provider` — an optional package owns the capability.
 
 `NodeType`, `Prop`, `Event`, and `Act` remain open at the value level. An

@@ -78,7 +78,7 @@ StateUI uses one source for each kind of question:
 | --- | --- |
 | What StateUI means | this handbook and public `///` documentation |
 | What an application can spell | public declarations in `lib/StateUI/Sources` |
-| What crosses a host boundary | `HostContract` and [Host contract](host-contract.md) |
+| What crosses a host boundary | the element contracts and [Host contract](host-contract.md) |
 | What a particular host implements | [Platform contract](platform-contract.md) and the [control dictionary](controls/README.md) |
 | What works as visible behavior | the native Gallery |
 | What keeps the contract stable | core, host, and Gallery tests |

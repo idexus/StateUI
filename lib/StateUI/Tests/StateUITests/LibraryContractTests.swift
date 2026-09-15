@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The library's contracts, held to what they stand beside: every member's layer
-// equals the ownership table until it goes; the members of one name share their
-// travel, clearing and motion, which the differ reads by the name; every
-// member's name is a token the library declares and the name of the static
-// member holding it; every declared member is on its contract's list; and no
-// contract wears two members of one name.
+// The library's contracts, held to what they stand beside: the members of one
+// name share their layer, travel, clearing and motion, which the differ and the
+// hosts read by the name; every member's name is a token the library declares
+// and the name of the static member holding it; every declared member is on its
+// contract's list; and no contract wears two members of one name.
 
 import Foundation
 import XCTest
@@ -35,37 +34,23 @@ final class LibraryContractTests: XCTestCase {
 
     // MARK: - The facts
 
-    /// A property's layer is the ownership table's owner.
-    func testEveryPropertysLayerIsTheOwnershipTables() {
-        var wrong: [String] = []
-
-        for member in declared where member.facts.kind == .property {
-            let owner = HostContract.properties[Prop(member.name)].map(Self.layer(of:))
-            if owner != member.facts.layer {
-                wrong.append("\(member.contract).\(member.name): layer "
-                    + "\(String(describing: member.facts.layer)), the ownership table says "
-                    + "\(String(describing: owner))")
-            }
-        }
-
-        XCTAssertEqual(wrong, [])
-    }
-
-    /// The members of one name say the same of travel, clearing and motion:
-    /// the differ holds a token, which is a name, and reads the facts by it -
-    /// two members of one name that disagreed would each be half wrong.
+    /// The members of one name say the same of their layer, travel, clearing
+    /// and motion: the differ and the hosts hold a token, which is a name, and
+    /// read what it says by the name - two members of one name that disagreed
+    /// would each be half wrong.
     func testTheMembersOfOneNameShareTheirFacts() {
         var first: [String: Declared] = [:]
         var wrong: [String] = []
 
-        for member in declared where member.facts.kind == .property {
-            guard let earlier = first[member.name] else {
-                first[member.name] = member
+        for member in declared where member.facts.kind != .act {
+            let key = "\(member.facts.kind) \(member.name)"
+            guard let earlier = first[key] else {
+                first[key] = member
                 continue
             }
 
-            if (earlier.facts.travels, earlier.facts.cleared, earlier.facts.moves)
-                != (member.facts.travels, member.facts.cleared, member.facts.moves) {
+            if (earlier.facts.layer, earlier.facts.travels, earlier.facts.cleared, earlier.facts.moves)
+                != (member.facts.layer, member.facts.travels, member.facts.cleared, member.facts.moves) {
                 wrong.append("\(member.contract).\(member.name) differs from \(earlier.contract)'s")
             }
         }
@@ -91,35 +76,18 @@ final class LibraryContractTests: XCTestCase {
         XCTAssertEqual(Prop("Test.Unknown").facts, .undeclared)
     }
 
-    /// An event's layer is the ownership table's owner.
-    func testEveryEventsLayerIsTheOwnershipTables() {
-        var wrong: [String] = []
-
-        for member in declared where member.facts.kind == .event {
-            let owner = HostContract.events[Event(member.name)].map(Self.layer(of:))
-            if owner != member.facts.layer {
-                wrong.append("\(member.contract).\(member.name): layer "
-                    + "\(String(describing: member.facts.layer)), the ownership table says "
-                    + "\(String(describing: owner))")
-            }
-        }
-
-        XCTAssertEqual(wrong, [])
-    }
-
     // MARK: - The names
 
     /// A member crosses under its name, so a library member's name is a token
-    /// the library declares - and only a property or an event of the
-    /// ownership table, or an act of Core/Tokens.swift, is one.
-    func testEveryMemberIsATokenTheLibraryDeclares() {
-        let stranded = declared.filter { member in
-            switch member.facts.kind {
-            case .property: HostContract.properties[Prop(member.name)] == nil
-            case .event: HostContract.events[Event(member.name)] == nil
-            case .act: false
-            }
-        }
+    /// the library declares in Core/Tokens.swift.
+    func testEveryMemberIsATokenTheLibraryDeclares() throws {
+        let tokens: [MemberFacts.Kind: Set<String>] = [
+            .property: try Fixtures.tokenNames(of: "Prop"),
+            .event: try Fixtures.tokenNames(of: "Event"),
+            .act: try Fixtures.tokenNames(of: "Act"),
+        ]
+
+        let stranded = declared.filter { tokens[$0.facts.kind]?.contains($0.name) != true }
 
         XCTAssertEqual(stranded.map { "\($0.contract).\($0.name)" }, [])
     }
@@ -204,27 +172,6 @@ final class LibraryContractTests: XCTestCase {
     }
 
     // MARK: - Support
-
-    /// The ownership table's word, as the contract's.
-    private static func layer(of owner: HostPropertyOwner) -> ElementLayer {
-        switch owner {
-        case .native: .native
-        case .adaptive: .adaptive
-        case .stateUI: .stateUI
-        case .structure: .structure
-        case .provider: .provider
-        }
-    }
-
-    /// The same, for an event's owner.
-    private static func layer(of owner: HostEventOwner) -> ElementLayer {
-        switch owner {
-        case .native: .native
-        case .adaptive: .adaptive
-        case .stateUI: .stateUI
-        case .provider: .provider
-        }
-    }
 
     /// Every source under `Sources/Contracts/` that declares members.
     private static func contractFiles() throws -> [(path: String, text: String)] {
