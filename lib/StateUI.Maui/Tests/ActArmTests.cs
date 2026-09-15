@@ -5,7 +5,7 @@
 //
 // ActCallFixtureTests reads the same fixtures and stops at the HostActCall:
 // the name, the arguments, the completion id. What happened next - the switch
-// in StateUISession.Perform, twenty-three arms of it, the refusal sentences,
+// in ActPerformer.Perform, twenty-three arms of it, the refusal sentences,
 // the catch blocks - had never executed in a test in either language. A whole
 // half of the runtime was reachable only from a device.
 //

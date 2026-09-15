@@ -340,7 +340,7 @@ internal static partial class CoreLink
     /// <para>
     /// The job does not exist yet when the completion is reported, so a caller
     /// that gets 0 should ask again on its next turn - see
-    /// <c>StateUISession.DrainWhenTheResumeArrives</c>.
+    /// <see cref="Rendering.Pump.DrainWhenTheResumeArrives"/>.
     /// </para>
     /// </remarks>
     [LibraryImport(Lib, EntryPoint = "stateui_run_jobs")]
@@ -351,7 +351,7 @@ internal static partial class CoreLink
     /// yet. Zero when there is nothing to wait for.
     /// </summary>
     /// <remarks>
-    /// What makes <c>StateUISession.DrainWhenTheResumeArrives</c> a condition
+    /// What makes <see cref="Rendering.Pump.DrainWhenTheResumeArrives"/> a condition
     /// rather than a guess: <see cref="RunJobs"/> returning 0 says only that the
     /// work has not appeared, never whether it is coming.
     /// </remarks>
@@ -385,7 +385,7 @@ internal static partial class CoreLink
     /// seen, so instead of Swift calling out, the host sends a thread IN to
     /// wait. It is what lets a <c>Task.sleep</c> or an author's own task resume
     /// promptly with no act in flight - see
-    /// <c>StateUISession.AskWheneverWorkLands</c>.
+    /// <see cref="Rendering.Pump.StartDoorbell"/>.
     /// </remarks>
     [LibraryImport(Lib, EntryPoint = "stateui_wait_work")]
     internal static partial int WaitWork();

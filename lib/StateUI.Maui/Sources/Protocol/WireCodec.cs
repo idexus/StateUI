@@ -34,7 +34,7 @@ namespace StateUI.Maui.Protocol;
 /// an id no message announced - throws <see cref="InvalidDataException"/>,
 /// and the caller cashes the receipt so every act in the unreadable batch
 /// fails back to its awaiting handler. See
-/// <c>StateUISession.PerformActCalls</c>.
+/// <c>Pump.PerformActCalls</c>.
 /// </para>
 /// </remarks>
 /// 
