@@ -13,7 +13,7 @@ extension PositionIndicatorProperties {
     /// The other way to say it is `PositionIndicator(items) { … }`, which counts
     /// its items itself - one or the other, never both.
     public func count(_ value: Int) -> Modified {
-        setValue(.count, .number(Double(value)))
+        setValue(PositionIndicatorContract.count, value)
     }
 
     /// Which one is the current one, counting from 0.
@@ -23,38 +23,38 @@ extension PositionIndicatorProperties {
     /// gallery's `position($shown)` is what writes, and this reads the same
     /// state.
     public func position(_ value: Int) -> Modified {
-        setValue(.position, .number(Double(value)))
+        setValue(PositionIndicatorContract.position, value)
     }
 
     /// The colour of a dot that is not the current one.
     public func indicatorColor(_ value: Color) -> Modified {
-        setValue(.indicatorColor, value.propValue)
+        setValue(PositionIndicatorContract.indicatorColor, value)
     }
 
     /// And of the one that is.
     public func selectedIndicatorColor(_ value: Color) -> Modified {
-        setValue(.selectedIndicatorColor, value.propValue)
+        setValue(PositionIndicatorContract.selectedIndicatorColor, value)
     }
 
     /// How big each dot is, in device units.
     public func indicatorSize(_ value: Double) -> Modified {
-        setValue(.indicatorSize, .number(value))
+        setValue(PositionIndicatorContract.indicatorSize, value)
     }
 
     /// The most dots to draw, however many items there are.
     public func maximumVisible(_ value: Int) -> Modified {
-        setValue(.maximumVisible, .number(Double(value)))
+        setValue(PositionIndicatorContract.maximumVisible, value)
     }
 
     /// A dot or a square, for every dot. The modifier's name is plural and the
     /// enum's is not.
     public func indicatorsShape(_ value: IndicatorShape) -> Modified {
-        setValue(.indicatorsShape, value.propValue)
+        setValue(PositionIndicatorContract.indicatorsShape, value)
     }
 
     /// Whether one lonely dot is hidden rather than drawn. True by default.
     public func hideSingle(_ value: Bool) -> Modified {
-        setValue(.hideSingle, .bool(value))
+        setValue(PositionIndicatorContract.hideSingle, value)
     }
 }
 
@@ -78,7 +78,7 @@ public struct PositionIndicator: View, PositionIndicatorProperties {
 
     /// An empty one - what a `Style<PositionIndicator>` is written against.
     public init() {
-        node = Node(type: .positionIndicator)
+        node = Node(contract: PositionIndicatorContract.self)
     }
 
     /// Each dot is described as a view of its own and built from the supplied
@@ -94,7 +94,7 @@ public struct PositionIndicator: View, PositionIndicatorProperties {
         _ items: Items,
         content: (Items.Element) -> Element
     ) {
-        node = Node(type: .positionIndicator, children: items.map { content($0).body })
+        node = Node(contract: PositionIndicatorContract.self, children: items.map { content($0).body })
     }
 
 }

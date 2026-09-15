@@ -13,7 +13,7 @@ extension SwipeViewProperties {
     /// How far the view has to travel before the items are revealed, in device
     /// units.
     public func threshold(_ value: Double) -> Modified {
-        setValue(.threshold, .number(value))
+        setValue(SwipeViewContract.threshold, value)
     }
 }
 
@@ -43,14 +43,14 @@ public struct SwipeView: View, SwipeViewProperties {
 
     /// An empty one - what a `Style<SwipeView>` is written against.
     public init() {
-        node = Node(type: .swipeView)
+        node = Node(contract: SwipeViewContract.self)
     }
 
     /// A swipeable view around what the closure describes. A SwipeView holds
     /// ONE view; put a layout in it if there is more than one thing to show.
     /// The closure is kept and run when the differ describes the view.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
-        node = Node(type: .swipeView)
+        node = Node(contract: SwipeViewContract.self)
         node.producer = { content().map { $0.body } }
     }
 
@@ -64,30 +64,27 @@ public struct SwipeView: View, SwipeViewProperties {
 
     /// The reader has begun swiping.
     public func onSwipeStarted(_ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self {
-        addHandler(.swipeStarted) {
-            // A payload that will not read leaves the handler alone, the rule
-            // every report carrying a direction follows.
-            if let direction = SwipeDirection(EventBuffer.current.value()) {
-                try await handler(direction)
-            }
+        // A report names the ONE direction a swipe went; a set of several
+        // is no answer to "which way?", and leaves the handler alone.
+        onEvent(SwipeViewContract.swipeStarted) { direction in
+            guard direction.isOneDirection else { return }
+            try await handler(direction)
         }
     }
 
     /// The swipe is moving, reported as it goes.
     public func onSwipeChanging(_ handler: @escaping ValueEventHandler<SwipeChange>) -> Self {
-        addHandler(.swipeChanging) {
-            if let change = SwipeChange(EventBuffer.current) {
-                try await handler(change)
-            }
+        onEvent(SwipeViewContract.swipeChanging) { direction, offset in
+            guard direction.isOneDirection else { return }
+            try await handler(SwipeChange(direction: direction, offset: offset))
         }
     }
 
     /// The finger has been lifted, and the items are either out or back.
     public func onSwipeEnded(_ handler: @escaping ValueEventHandler<SwipeEnd>) -> Self {
-        addHandler(.swipeEnded) {
-            if let end = SwipeEnd(EventBuffer.current) {
-                try await handler(end)
-            }
+        onEvent(SwipeViewContract.swipeEnded) { direction, isOpen in
+            guard direction.isOneDirection else { return }
+            try await handler(SwipeEnd(direction: direction, isOpen: isOpen))
         }
     }
 
@@ -168,17 +165,14 @@ public struct SwipeView: View, SwipeViewProperties {
         var copy = self
 
         copy.node.children.removeAll {
-            $0.type == .swipeActions && $0.props[.side] == side.propValue
+            $0.type == SwipeActionsContract.nodeType && $0.props[SwipeActionsContract.side.token] == side.propValue
         }
 
-        copy.node.children.append(Node(
-            type: .swipeActions,
-            props: [
-                .side: side.propValue,
-                .mode: mode.propValue,
-                .swipeBehaviorOnInvoked: swipeBehaviorOnInvoked.propValue,
-            ],
-            children: content().map { $0.body }))
+        var actions = Node(contract: SwipeActionsContract.self, children: content().map { $0.body })
+        actions.write(SwipeActionsContract.side, side)
+        actions.write(SwipeActionsContract.mode, mode)
+        actions.write(SwipeActionsContract.swipeBehaviorOnInvoked, swipeBehaviorOnInvoked)
+        copy.node.children.append(actions)
 
         return copy
     }
@@ -223,7 +217,8 @@ public struct SwipeAction: Element, MenuItemElement {
     /// An item captioned `text`. Give it an `.onClicked` - an item that does
     /// nothing is one that looks broken.
     public init(_ text: String) {
-        node = Node(type: .swipeAction, props: [.text: .string(text)])
+        node = Node(contract: SwipeActionContract.self)
+        node.write(MenuItemElementContract.text, text)
     }
 
     /// The node this item describes.
@@ -235,13 +230,13 @@ public struct SwipeAction: Element, MenuItemElement {
 
     /// What is drawn behind it, which is how one item is told from the next.
     public func background(_ value: Color) -> Self {
-        setValue(.background, value.propValue)
+        setValue(SwipeActionContract.background, value)
     }
 
     /// Whether it is revealed at all - which is how one item of a set is left
     /// out without the set being written twice.
     public func isVisible(_ value: Bool) -> Self {
-        setValue(.isVisible, .bool(value))
+        setValue(SwipeActionContract.isVisible, value)
     }
 }
 
@@ -256,16 +251,6 @@ public struct SwipeChange: Equatable, Sendable {
     /// Signed: negative while the view moves left, positive while it moves
     /// right, which is why it is not a distance.
     public var offset: Double
-
-    /// Reads a payload's two values - direction, then offset. Nil for anything
-    /// else, so a report that will not read leaves the handler alone.
-    init?(_ payload: [PropValue]) {
-        guard let direction = SwipeDirection(payload.value(0)),
-              let offset = payload.value(1)?.number else { return nil }
-
-        self.direction = direction
-        self.offset = offset
-    }
 }
 
 /// The end of a swipe - what `.onSwipeEnded` hands its handler.
@@ -278,13 +263,4 @@ public struct SwipeEnd: Equatable, Sendable {
     /// False for a swipe that did not reach the threshold and sprang back,
     /// which is what tells a half-swipe from a real one.
     public var isOpen: Bool
-
-    /// Reads a payload's two values - direction, then isOpen.
-    init?(_ payload: [PropValue]) {
-        guard let direction = SwipeDirection(payload.value(0)),
-              let isOpen = payload.value(1)?.bool else { return nil }
-
-        self.direction = direction
-        self.isOpen = isOpen
-    }
 }

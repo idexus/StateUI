@@ -19,13 +19,13 @@ extension RefreshViewProperties {
     /// is the INITIALIZER, `RefreshView($refreshing) { … }`, where every other
     /// two-way control in this library spells it as a modifier of the same name.
     public func isRefreshing(_ value: Bool) -> Modified {
-        setValue(.isRefreshing, .bool(value))
+        setValue(RefreshViewContract.isRefreshing, value)
     }
 
     /// Whether a pull does anything at all - which is how refreshing is turned
     /// off without the view being taken away.
     public func isRefreshEnabled(_ value: Bool) -> Modified {
-        setValue(.isRefreshEnabled, .bool(value))
+        setValue(RefreshViewContract.isRefreshEnabled, value)
     }
 }
 
@@ -57,14 +57,14 @@ public struct RefreshView: View, TintElement, RefreshViewProperties {
 
     /// An empty one - what a `Style<RefreshView>` is written against.
     public init() {
-        node = Node(type: .refreshView)
+        node = Node(contract: RefreshViewContract.self)
     }
 
     /// A refreshable view around what the closure describes. One-way: the pull
     /// goes nowhere without `.onRefreshRequested`.
     /// The closure is kept and run when the differ describes the view.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
-        node = Node(type: .refreshView)
+        node = Node(contract: RefreshViewContract.self)
         node.producer = { content().map { $0.body } }
     }
 
@@ -76,7 +76,7 @@ public struct RefreshView: View, TintElement, RefreshViewProperties {
     /// else ever writes false, and a spinner left turning is what forgetting
     /// looks like.
     public init(_ isRefreshing: Binding<Bool>, @ViewBuilder content: @escaping () -> [Element]) {
-        node = Node(type: .refreshView)
+        node = Node(contract: RefreshViewContract.self)
         node.producer = { content().map { $0.body } }
 
         // HANDED OVER, both ways: the host shows the spinner from the state
@@ -97,6 +97,6 @@ public struct RefreshView: View, TintElement, RefreshViewProperties {
     /// Where the work goes, and where `isRefreshing` is cleared once it is done.
     /// Runs after a binding's write, if there is one.
     public func onRefreshRequested(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.refreshRequested, handler)
+        onEvent(RefreshViewContract.refreshRequested, handler)
     }
 }

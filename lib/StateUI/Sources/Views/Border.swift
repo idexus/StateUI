@@ -16,7 +16,7 @@ extension BorderProperties {
     ///
     /// It draws nothing without a `strokeWidth` above 0.
     public func stroke(_ value: Brush) -> Modified {
-        setValue(.stroke, value.propValue)
+        setValue(BorderContract.stroke, value)
     }
 
     /// The same, in one colour - which is what a border's outline usually is.
@@ -35,7 +35,7 @@ extension BorderProperties {
     /// is how a Border is used for its SHAPE alone, as the rounded corners on a
     /// coloured card.
     public func strokeWidth(_ value: Double) -> Modified {
-        setValue(.strokeWidth, .number(value))
+        setValue(BorderContract.strokeWidth, value)
     }
 
     /// The shape the outline follows, and the shape the border's own
@@ -50,7 +50,7 @@ extension BorderProperties {
     /// `cornerRadius` of its own: a Button, a RadioButton, a ColorBox and a
     /// Rectangle carry one, and everything else is wrapped in a Border.
     public func shape(_ value: BorderShape) -> Modified {
-        setValue(.shape, value.propValue)
+        setValue(BorderContract.shape, value)
     }
 
     // The rest of the stroke, which a Border carries as fully as a Shape does.
@@ -67,29 +67,29 @@ extension BorderProperties {
     ///         .strokeWidth(2)
     ///         .strokeDashPattern([4, 2])
     public func strokeDashPattern(_ value: [Double]) -> Modified {
-        setValue(.strokeDashPattern, .numbers(value))
+        setValue(BorderContract.strokeDashPattern, value)
     }
 
     /// How far into the dash pattern the outline starts.
     public func strokeDashOffset(_ value: Double) -> Modified {
-        setValue(.strokeDashOffset, .number(value))
+        setValue(BorderContract.strokeDashOffset, value)
     }
 
     /// How the ends of each dash are drawn - and nothing at all on an outline
     /// with no dashes, a closed shape having no ends.
     public func strokeLineCap(_ value: LineCap) -> Modified {
-        setValue(.strokeLineCap, value.propValue)
+        setValue(BorderContract.strokeLineCap, value)
     }
 
     /// How the outline turns a corner of the stroke shape.
     public func strokeLineJoin(_ value: LineJoin) -> Modified {
-        setValue(.strokeLineJoin, value.propValue)
+        setValue(BorderContract.strokeLineJoin, value)
     }
 
     /// How far a sharp corner may reach before it is cut off, in multiples of
     /// the stroke thickness - `.miter` corners only.
     public func strokeMiterLimit(_ value: Double) -> Modified {
-        setValue(.strokeMiterLimit, .number(value))
+        setValue(BorderContract.strokeMiterLimit, value)
     }
 }
 
@@ -120,14 +120,14 @@ public struct Border: View, PaddingElement, BorderProperties {
 
     /// An empty one - what a `Style<Border>` is written against.
     public init() {
-        node = Node(type: .border)
+        node = Node(contract: BorderContract.self)
     }
 
     /// A border around what the closure describes. A Border holds ONE view;
     /// put a layout in it if there is more than one thing to show.
     /// The closure is kept and run when the differ describes the border.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
-        node = Node(type: .border)
+        node = Node(contract: BorderContract.self)
         node.producer = { content().map { $0.body } }
     }
 

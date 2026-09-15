@@ -17,7 +17,7 @@ extension ScrollViewProperties {
     /// keeps its way and says `.ignoresInput(true)` instead, which stops
     /// the hand and leaves the scroller where it stands.
     public func orientation(_ value: ScrollOrientation) -> Modified {
-        setValue(.orientation, value.propValue)
+        setValue(ScrollViewContract.orientation, value)
     }
 
     /// Whether the bar down the side is drawn.
@@ -25,12 +25,12 @@ extension ScrollViewProperties {
     /// `.never` is what a scroller inside a page of cards usually wants - the
     /// bar says the same thing the content already does.
     public func verticalScrollBarVisibility(_ value: ScrollBarVisibility) -> Modified {
-        setValue(.verticalScrollBarVisibility, value.propValue)
+        setValue(ScrollViewContract.verticalScrollBarVisibility, value)
     }
 
     /// The same, along the bottom.
     public func horizontalScrollBarVisibility(_ value: ScrollBarVisibility) -> Modified {
-        setValue(.horizontalScrollBarVisibility, value.propValue)
+        setValue(ScrollViewContract.horizontalScrollBarVisibility, value)
     }
 }
 
@@ -55,13 +55,13 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
 
     /// An empty one - what a `Style<ScrollView>` is written against.
     public init() {
-        node = Node(type: .scrollView)
+        node = Node(contract: ScrollViewContract.self)
     }
 
     /// A scrollable view around what the closure describes.
     /// The closure is kept and run when the differ describes the scroller.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
-        node = Node(type: .scrollView)
+        node = Node(contract: ScrollViewContract.self)
         node.producer = { content().map { $0.body } }
     }
 
@@ -125,6 +125,6 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
     /// write to the offset from here carries the scroller on to the item it is
     /// nearest - which is how `GalleryView` settles on a card.
     public func onScrollStopped(_ handler: @escaping EventHandler) -> Self {
-        addHandler(.scrollStopped, handler)
+        onEvent(ScrollViewContract.scrollStopped, handler)
     }
 }

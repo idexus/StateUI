@@ -17,7 +17,7 @@ extension GridProperties {
     /// over, and `.absolute` is that many device units. A grid told nothing has
     /// one row and one column.
     public func rows(_ lengths: GridLength...) -> Modified {
-        setValue(.rows, lengths.propValue)
+        setValue(GridContract.rows, lengths)
     }
 
     /// How wide each column is - one length per column, so the count says how
@@ -27,18 +27,18 @@ extension GridProperties {
     ///
     /// The same three kinds of length as `rows`.
     public func columns(_ lengths: GridLength...) -> Modified {
-        setValue(.columns, lengths.propValue)
+        setValue(GridContract.columns, lengths)
     }
 
     /// The gap between one row and the next, in device units. It falls
     /// BETWEEN the rows only - the space around the whole grid is `.padding`.
     public func rowSpacing(_ value: Double) -> Modified {
-        setValue(.rowSpacing, .number(value))
+        setValue(GridContract.rowSpacing, value)
     }
 
     /// The gap between one column and the next, in device units.
     public func columnSpacing(_ value: Double) -> Modified {
-        setValue(.columnSpacing, .number(value))
+        setValue(GridContract.columnSpacing, value)
     }
 }
 
@@ -71,7 +71,7 @@ public struct Grid: Layout, GridProperties {
 
     /// An empty one - what a `Style<Grid>` is written against.
     public init() {
-        node = Node(type: .grid)
+        node = Node(contract: GridContract.self)
     }
 
     /// A grid holding what the closure describes. Where each child sits is
@@ -82,7 +82,7 @@ public struct Grid: Layout, GridProperties {
     /// nothing and an ancestor's `.environment(...)` is in scope for
     /// whatever the closure builds.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
-        node = Node(type: .grid)
+        node = Node(contract: GridContract.self)
         node.producer = { content().map { $0.body } }
     }
 

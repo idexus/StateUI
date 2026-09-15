@@ -46,14 +46,14 @@ public struct AbsoluteLayout: Layout {
 
     /// An empty one - what a `Style<AbsoluteLayout>` is written against.
     public init() {
-        node = Node(type: .absoluteLayout)
+        node = Node(contract: AbsoluteLayoutContract.self)
     }
 
     /// A layout holding what the closure describes. Where each child sits is
     /// written on the child, with `.absoluteLayoutBounds`.
     /// The closure is kept and run when the differ describes the layout.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
-        node = Node(type: .absoluteLayout)
+        node = Node(contract: AbsoluteLayoutContract.self)
         node.producer = { content().map { $0.body } }
     }
 

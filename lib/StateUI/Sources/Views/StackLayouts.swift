@@ -26,13 +26,13 @@ public struct VStack: StackBase {
 
     /// An empty stack, suitable as a `Style<VStack>` target.
     public init() {
-        node = Node(type: .vStack)
+        node = Node(contract: VStackContract.self)
     }
 
     /// A column of whatever the closure describes, in the order written.
     /// The closure is kept and run when the differ describes the stack.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
-        node = Node(type: .vStack)
+        node = Node(contract: VStackContract.self)
         node.producer = { content().map { $0.body } }
     }
 }
@@ -53,13 +53,13 @@ public struct HStack: StackBase {
 
     /// An empty stack, suitable as a `Style<HStack>` target.
     public init() {
-        node = Node(type: .hStack)
+        node = Node(contract: HStackContract.self)
     }
 
     /// A row of whatever the closure describes, in the order written.
     /// The closure is kept and run when the differ describes the stack.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
-        node = Node(type: .hStack)
+        node = Node(contract: HStackContract.self)
         node.producer = { content().map { $0.body } }
     }
 }

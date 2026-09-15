@@ -262,7 +262,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
             return views
         }
 
-        return views.setValue(.absoluteLayoutBounds, on: number, mode: .out, kind: .placement)
+        return views.setValue(ViewContract.absoluteLayoutBounds.token, on: number, mode: .out, kind: .placement)
     }
 
     /// What the layout was handed, behind a reference. See `source`.
