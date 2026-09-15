@@ -196,9 +196,9 @@ final class WireFormatTests: XCTestCase {
         let host = try Fixtures.mauiSources()
 
         guard let enumeration = host.first(where: { $0.path.hasSuffix("Protocol/HostAct.cs") })?.text,
-              let session = host.first(where: { $0.path.hasSuffix("Rendering/StateUISession.cs") })?.text
+              let performer = host.first(where: { $0.path.hasSuffix("Rendering/ActPerformer.cs") })?.text
         else {
-            return XCTFail("HostAct.cs or StateUISession.cs was not found in the MAUI host")
+            return XCTFail("HostAct.cs or ActPerformer.cs was not found in the MAUI host")
         }
 
         let members = enumeration.split(separator: "\n")
@@ -209,8 +209,8 @@ final class WireFormatTests: XCTestCase {
 
         XCTAssertGreaterThan(members.count, 10, "too few members to be reading the right file")
         XCTAssertEqual(
-            members.filter { !session.contains("case HostAct.\($0):") }, [],
-            "members of HostAct with no `case` in StateUISession.Perform")
+            members.filter { !performer.contains("case HostAct.\($0):") }, [],
+            "members of HostAct with no `case` in ActPerformer.Perform")
     }
 
     /// A placement crosses as a RUN OF DOUBLES with no field markers on it -

@@ -83,17 +83,15 @@ public class ActArmTests
     {
         List<(int, byte[])> replies = [];
 
-        StateUISession session = new(new RecordingTarget())
-        {
-            Replies = (id, reply) => replies.Add((id, reply)),
-        };
+        StateUISession session = new(new RecordingTarget());
+        session.ActPerformer.Replies = (id, reply) => replies.Add((id, reply));
 
         foreach ((VisualElement view, string node) in shown)
         {
             session.Renderer.Track(view, Host.Parse(node));
         }
 
-        session.Perform(WireCodec.ReadActCalls(
+        session.ActPerformer.Perform(WireCodec.ReadActCalls(
             Fixtures.ReadBytes($"act-calls/{fixture}.bin"), new WireDictionary()));
 
         return replies.Count == 0 ? (0, []) : replies[0];
@@ -384,12 +382,10 @@ public class ActArmTests
     {
         List<(int, byte[])> replies = [];
 
-        StateUISession session = new(new RecordingTarget())
-        {
-            Replies = (id, reply) => replies.Add((id, reply)),
-        };
+        StateUISession session = new(new RecordingTarget());
+        session.ActPerformer.Replies = (id, reply) => replies.Add((id, reply));
 
-        session.Perform([call]);
+        session.ActPerformer.Perform([call]);
 
         return replies.Count == 0 ? (0, []) : replies[0];
     }

@@ -118,7 +118,7 @@ public static class StateUIActs
     /// <param name="call">The act, as the performer received it.</param>
     /// <returns>The control argument 0 names, or null.</returns>
     public static VisualElement? TargetOf(HostActCall call) =>
-        StateUIEnvironment.Session?.Aimed(call);
+        StateUIEnvironment.Session?.ActPerformer.Aimed(call);
 
     /// <summary>The performer for a name, or null - consulted by
     /// <c>Perform</c>'s default arm before it reports an unknown act.</summary>
