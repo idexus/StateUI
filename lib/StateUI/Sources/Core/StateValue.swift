@@ -490,15 +490,15 @@ struct StateEntry: Equatable {
 
 /// How a value the host walks lies on the image: where it is, where it is
 /// going, how fast, the law that closes the gap, and two lanes of
-/// bookkeeping - the shape `$fade.journey` reads and writes, and the one the
-/// host's `MotionChannel` is fed from.
+/// bookkeeping - the shape `$fade.journey` reads and writes, and the one a
+/// host's trip is fed from.
 ///
-/// ONE OF THESE IS ONE CHANNEL ON THE HOST, however many controls are handed
-/// `$fade`: each holds a HANDLE on the one value, written from the same lanes
-/// on the same frame, so two controls on one state can never stand in two
-/// places, and a control handed the state while it travels joins it where it
-/// is. The host calls its half a `MotionChannel`, that side counting channels
-/// where this one describes the trip.
+/// ONE OF THESE IS ONE STATE CHANNEL ON THE HOST, however many controls are
+/// handed `$fade`: each holds a HANDLE on the one value, written from the same
+/// lanes on the same frame, so two controls on one state can never stand in
+/// two places, and a control handed the state while it travels joins it where
+/// it is. A runtime that reads the Wire reads these lanes in this layout, and
+/// `journey-lanes.txt` holds it to that.
 ///
 /// Internal on purpose: what an author reaches is the `Journey` over the
 /// state, and what a converter is handed is that same journey. The lanes are

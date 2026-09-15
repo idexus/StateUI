@@ -649,42 +649,17 @@ public final class Renderer: @unchecked Sendable {
     /// - Returns: how many states were written, or -1 where the bytes ran out
     ///   part way through - which is a boundary fault and not a value.
     func cycleWritten(_ batch: UnsafeBufferPointer<UInt8>) -> Int {
-        var at = 0
-
-        func take(_ bytes: Int) -> Int? {
-            guard at + bytes <= batch.count else { return nil }
-
-            var value = 0
-
-            for byte in 0..<bytes {
-                value |= Int(batch[at + byte]) << (byte * 8)
-            }
-
-            at += bytes
-            return value
-        }
-
-        guard let count = take(2) else { return -1 }
-
+        let (writes, complete) = StateBatch.decode(batch)
         var written = 0
 
-        for _ in 0..<count {
-            guard let number = take(4), let low = take(4), let high = take(4),
-                  let length = take(4), at + length <= batch.count
-            else { return -1 }
+        for write in writes {
+            guard let storage = storage(of: write.number) else { continue }
 
-            let mask = UInt64(low) | (UInt64(high) << 32)
-            let bytes = Array(batch[at..<(at + length)])
-
-            at += length
-
-            guard let storage = storage(of: Int32(truncatingIfNeeded: number)) else { continue }
-
-            board(of: storage).told(bytes, mask: mask, to: storage)
+            board(of: storage).told(write.bytes, mask: write.mask, to: storage)
 
             // AFTER the board has let go: what the state does with the news
             // may take this renderer's own lock.
-            storage.told?(mask)
+            storage.told?(write.mask)
 
             // And the readings somebody asked for of this value, whatever the
             // state itself made of the news: a walked value's frames are
@@ -694,7 +669,7 @@ public final class Renderer: @unchecked Sendable {
             written += 1
         }
 
-        return written
+        return complete ? written : -1
     }
 
     /// Runs one cycle of one board.
@@ -735,18 +710,9 @@ public final class Renderer: @unchecked Sendable {
             return 0
         }
 
-        var bytes: [UInt8] = []
-
-        bytes.reserveCapacity(batch.reduce(2) { $0 + 16 + $1.bytes.count })
-        append(UInt64(batch.count), 2, to: &bytes)
-
-        for entry in batch {
-            append(UInt64(UInt32(bitPattern: entry.number)), 4, to: &bytes)
-            append(entry.mask & 0xFFFF_FFFF, 4, to: &bytes)
-            append(entry.mask >> 32, 4, to: &bytes)
-            append(UInt64(entry.bytes.count), 4, to: &bytes)
-            bytes += entry.bytes
-        }
+        let bytes = StateBatch.encode(batch.map {
+            StateBatch.Write(number: $0.number, mask: $0.mask, bytes: $0.bytes)
+        })
 
         guard bytes.count <= out.count else {
             // NOTHING WAS CLEARED where the answer did not fit, which is what
@@ -800,13 +766,6 @@ public final class Renderer: @unchecked Sendable {
         }
 
         return storage
-    }
-
-    /// Writes a number little-endian, the width the layout says.
-    private func append(_ value: UInt64, _ width: Int, to bytes: inout [UInt8]) {
-        for byte in 0..<width {
-            bytes.append(UInt8(truncatingIfNeeded: value >> UInt64(byte * 8)))
-        }
     }
 
     /// Puts the state numbering back to where a fresh process has it, and

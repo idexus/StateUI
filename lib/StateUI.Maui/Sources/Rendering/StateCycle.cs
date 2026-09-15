@@ -676,18 +676,18 @@ internal sealed class StateCycle
         // value, which the branch below reads as a snap. Measured on the
         // gallery: a slider travelled to every value until it was touched
         // once, and jumped for the rest of the session.
-        double[] said = new double[(attachment.Lanes * 3) + 5];
+        double[] said = new double[JourneyCodec.Count(attachment.Lanes)];
 
         for (int lane = 0; lane < attachment.Lanes; lane++)
         {
             said[lane] = lanes[lane];
-            said[attachment.Lanes + lane] = lanes[lane];
+            said[JourneyCodec.Destination(attachment.Lanes) + lane] = lanes[lane];
         }
 
         // WHERE IT IS AND WHERE IT IS GOING, both, and standing still - three
         // groups of `Lanes`, which for one number is the three slots this
         // always named and for a point is six.
-        Told(attachment.Number, said, (1UL << (attachment.Lanes * 3)) - 1);
+        Told(attachment.Number, said, (1UL << JourneyCodec.LawAt(attachment.Lanes)) - 1);
 
         return Cycled();
     }
@@ -1289,16 +1289,11 @@ internal sealed class StateCycle
 }
 
 /// <summary>
-/// One property of one control, tied to a state - and the whole of what the
-/// lanes of an animated value mean.
+/// One property of one control, tied to a state.
 /// </summary>
 /// <remarks>
-/// THE LANE LAYOUT IS HERE AND NOWHERE ELSE on this side: where the value is,
-/// where it is going, how fast, under what law, who is waiting and how many
-/// times it has been stopped. The Swift half writes the same order in
-/// <c>Core/StateValue.swift</c> (<c>Journey.carried</c>);
-/// StateCycleTests' <c>Lanes</c> helper lays the C# side out and JourneyTests
-/// reads the Swift side, and the two are kept in step by hand.
+/// A walked value's lanes are read through <see cref="JourneyCodec"/>, the one
+/// place this side lays them out.
 /// </remarks>
 internal sealed class StateAttachment
 {
@@ -1699,14 +1694,14 @@ internal sealed class StateAttachment
         double[] lanes = StateBatch.Lanes(bytes);
         int width = Lanes;
 
-        if (lanes.Length < (width * 3) + 5)
+        if (lanes.Length < JourneyCodec.Count(width))
         {
             return;
         }
 
         double[] destination = channel.Moving is Trip carrying
             ? (double[])carrying.Target.Clone()
-            : lanes[width..(width * 2)];
+            : JourneyCodec.DestinationOf(lanes, width);
 
         walker.Aim(new MotionProperty(view, Property, _shape, _fraction), destination, spec);
     }
@@ -1752,9 +1747,6 @@ internal sealed class StateAttachment
         // every control on the number - see StateChannel.Wear.
     }
 
-    /// <summary>How many lanes a law takes, at the end of a run.</summary>
-    private const int Laws = 3;
-
     /// <summary>Every lane, for a run nothing has been told about yet.</summary>
     private const ulong All = ~0UL;
 
@@ -1799,14 +1791,14 @@ internal sealed class StateAttachment
 
         double[] lanes = StateBatch.Lanes(bytes);
         int width = MotionPlacement.Fields;
-        int run = Math.Min((lanes.Length - Laws) / width, layout.Count);
+        int run = Math.Min((lanes.Length - JourneyCodec.LawLanes) / width, layout.Count);
 
         if (run <= 0)
         {
             return;
         }
 
-        HostMotion spec = LawAt(lanes, lanes.Length - Laws, walker);
+        HostMotion spec = LawAt(lanes, lanes.Length - JourneyCodec.LawLanes, walker);
         bool owing = false;
 
         for (int index = 0; index < run; index++)
@@ -1964,22 +1956,6 @@ internal sealed class StateAttachment
             : Sliding?.Compose(lanes);
 
     /// <summary>
-    /// A speed per millisecond, as the walker keeps one, from the per-second
-    /// lanes the image carries.
-    /// </summary>
-    internal static double[] PerFrame(double[] lanes)
-    {
-        double[] perMillisecond = new double[lanes.Length];
-
-        for (int lane = 0; lane < lanes.Length; lane++)
-        {
-            perMillisecond[lane] = lanes[lane] / 1000;
-        }
-
-        return perMillisecond;
-    }
-
-    /// <summary>
     /// The law the lanes name.
     /// </summary>
     /// <remarks>
@@ -1991,26 +1967,19 @@ internal sealed class StateAttachment
     /// right one for a value no element has claimed.
     /// </remarks>
     internal static HostMotion Law(double[] lanes, int width, Walker walker) =>
-        LawAt(lanes, width * 3, walker);
+        LawAt(lanes, JourneyCodec.LawAt(width), walker);
 
     /// <summary>The law the three lanes at <paramref name="at"/> name.</summary>
     /// <param name="lanes">The whole value.</param>
     /// <param name="at">The first of the law's three lanes.</param>
     /// <param name="walker">What moves the values, for the element's own law.</param>
     /// <returns>The law.</returns>
-    private static HostMotion LawAt(double[] lanes, int at, Walker walker)
-    {
-        return (int)lanes[at] switch
+    private static HostMotion LawAt(double[] lanes, int at, Walker walker) =>
+        JourneyCodec.MotionAt(lanes, at) switch
         {
-            1 => walker.Travel,
-            2 => HostMotion.Eased(Millis(lanes[at + 1]), (HostEasing)(int)lanes[at + 2]),
-            3 => HostMotion.Spring(Millis(lanes[at + 1]), lanes[at + 2]),
-            _ => HostMotion.Eased(0, HostEasing.Linear),
+            (JourneyCodec.Law.Inherited, _) => walker.Travel,
+            (_, HostMotion motion) => motion,
         };
-    }
-
-    /// <summary>A lane's milliseconds, as the whole number a motion carries.</summary>
-    private static uint Millis(double lane) => (uint)Math.Max(lane, 0);
 
     /// <summary>Whether two runs of lanes hold the same numbers.</summary>
     internal static bool Same(double[] left, double[] right)
@@ -2024,167 +1993,5 @@ internal sealed class StateAttachment
         }
 
         return true;
-    }
-}
-
-/// <summary>
-/// The batch both directions cross in: a count, then a number, a mask, a length
-/// and the bytes.
-/// </summary>
-/// <remarks>
-/// Little-endian throughout and written by hand, for the reason the wire is:
-/// there is no endianness to agree about and no framework in the way.
-/// </remarks>
-internal static class StateBatch
-{
-    /// <summary>The bytes a batch of writes lies as.</summary>
-    /// <param name="batch">The states, each with the lanes being written.</param>
-    /// <returns>The bytes.</returns>
-    internal static byte[] Bytes(IReadOnlyList<(int Number, ulong Mask, double[] Lanes)> batch)
-    {
-        List<(int Number, ulong Mask, byte[] Bytes)> raw = new(batch.Count);
-
-        foreach ((int number, ulong mask, double[] lanes) in batch)
-        {
-            byte[] payload = new byte[lanes.Length * 8];
-
-            for (int lane = 0; lane < lanes.Length; lane++)
-            {
-                BitConverter.TryWriteBytes(payload.AsSpan(lane * 8, 8), BitConverter.DoubleToUInt64Bits(lanes[lane]));
-            }
-
-            raw.Add((number, mask, payload));
-        }
-
-        return Bytes(raw);
-    }
-
-    /// <summary>
-    /// The bytes a batch of writes lies as, each value already in its own
-    /// bytes - lanes, or a text.
-    /// </summary>
-    /// <param name="batch">The states, each with the bytes being written.</param>
-    /// <returns>The bytes.</returns>
-    internal static byte[] Bytes(IReadOnlyList<(int Number, ulong Mask, byte[] Bytes)> batch)
-    {
-        List<byte> bytes = new(2 + (batch.Count * 32));
-
-        Add(bytes, (ulong)batch.Count, 2);
-
-        foreach ((int number, ulong mask, byte[] payload) in batch)
-        {
-            Add(bytes, (uint)number, 4);
-            Add(bytes, mask & 0xFFFF_FFFF, 4);
-            Add(bytes, mask >> 32, 4);
-            Add(bytes, (ulong)payload.Length, 4);
-            bytes.AddRange(payload);
-        }
-
-        return [.. bytes];
-    }
-
-    /// <summary>The bytes a text lies as on the image: its length, then its UTF-8.</summary>
-    /// <param name="text">The words.</param>
-    /// <returns>The bytes, which <see cref="Text"/> reads back.</returns>
-    internal static byte[] Words(string text)
-    {
-        byte[] utf8 = System.Text.Encoding.UTF8.GetBytes(text);
-        byte[] bytes = new byte[4 + utf8.Length];
-
-        BitConverter.TryWriteBytes(bytes.AsSpan(0, 4), utf8.Length);
-        utf8.CopyTo(bytes, 4);
-        return bytes;
-    }
-
-    /// <summary>What a batch says.</summary>
-    /// <param name="bytes">The batch.</param>
-    /// <returns>The states, each with which lanes moved and its own bytes.</returns>
-    internal static List<(int Number, ulong Mask, byte[] Bytes)> Read(ReadOnlySpan<byte> bytes)
-    {
-        List<(int Number, ulong Mask, byte[] Bytes)> read = [];
-
-        if (bytes.Length < 2)
-        {
-            return read;
-        }
-
-        int count = (int)Number(bytes, 0, 2);
-        int at = 2;
-
-        for (int entry = 0; entry < count; entry++)
-        {
-            if (at + 16 > bytes.Length)
-            {
-                return read;
-            }
-
-            int number = (int)Number(bytes, at, 4);
-            ulong mask = Number(bytes, at + 4, 4) | (Number(bytes, at + 8, 4) << 32);
-            int length = (int)Number(bytes, at + 12, 4);
-
-            at += 16;
-
-            if (at + length > bytes.Length)
-            {
-                return read;
-            }
-
-            read.Add((number, mask, bytes.Slice(at, length).ToArray()));
-            at += length;
-        }
-
-        return read;
-    }
-
-    /// <summary>A little-endian number of a stated width.</summary>
-    private static ulong Number(ReadOnlySpan<byte> bytes, int at, int width)
-    {
-        ulong value = 0;
-
-        for (int byteAt = 0; byteAt < width; byteAt++)
-        {
-            value |= (ulong)bytes[at + byteAt] << (byteAt * 8);
-        }
-
-        return value;
-    }
-
-    /// <summary>The lanes a number's bytes hold.</summary>
-    /// <param name="bytes">The bytes.</param>
-    /// <returns>One number per eight bytes.</returns>
-    internal static double[] Lanes(byte[] bytes)
-    {
-        double[] lanes = new double[bytes.Length / 8];
-
-        for (int lane = 0; lane < lanes.Length; lane++)
-        {
-            lanes[lane] = BitConverter.ToDouble(bytes, lane * 8);
-        }
-
-        return lanes;
-    }
-
-    /// <summary>The text a number's bytes hold: its own length, then its own UTF-8.</summary>
-    /// <param name="bytes">The bytes.</param>
-    /// <returns>The words.</returns>
-    internal static string Text(byte[] bytes)
-    {
-        if (bytes.Length < 4)
-        {
-            return string.Empty;
-        }
-
-        int length = BitConverter.ToInt32(bytes, 0);
-
-        return System.Text.Encoding.UTF8.GetString(
-            bytes, 4, Math.Min(length, bytes.Length - 4));
-    }
-
-    private static void Add(List<byte> bytes, ulong value, int width)
-    {
-        for (int byteAt = 0; byteAt < width; byteAt++)
-        {
-            bytes.Add((byte)(value >> (byteAt * 8)));
-        }
     }
 }

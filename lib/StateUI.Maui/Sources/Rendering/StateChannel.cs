@@ -314,7 +314,7 @@ internal sealed class StateChannel : ITripTarget
         double[] lanes = StateBatch.Lanes(bytes);
         int width = _lanes;
 
-        if (lanes.Length < (width * 3) + 5)
+        if (lanes.Length < JourneyCodec.Count(width))
         {
             return;
         }
@@ -323,16 +323,16 @@ internal sealed class StateChannel : ITripTarget
 
         try
         {
-            attachment.Write(lanes[..width]);
+            attachment.Write(JourneyCodec.ValueOf(lanes, width));
         }
         finally
         {
             Walker.Writing--;
         }
 
-        double[] setPoint = lanes[width..(width * 2)];
+        double[] setPoint = JourneyCodec.DestinationOf(lanes, width);
 
-        if (!StateAttachment.Same(lanes[..width], setPoint))
+        if (!StateAttachment.Same(JourneyCodec.ValueOf(lanes, width), setPoint))
         {
             _walker.Aim(this, setPoint, StateAttachment.Law(lanes, width, _walker));
         }
@@ -399,7 +399,7 @@ internal sealed class StateChannel : ITripTarget
         double[] lanes = StateBatch.Lanes(bytes);
         int width = _lanes;
 
-        if (lanes.Length < (width * 3) + 5)
+        if (lanes.Length < JourneyCodec.Count(width))
         {
             return;
         }
@@ -413,13 +413,13 @@ internal sealed class StateChannel : ITripTarget
         for (int lane = 0; lane < width; lane++)
         {
             values |= Bit(lane);
-            setPoints |= Bit(width + lane);
-            speeds |= Bit((width * 2) + lane);
+            setPoints |= Bit(JourneyCodec.Destination(width) + lane);
+            speeds |= Bit(JourneyCodec.Velocity(width) + lane);
         }
 
-        int waiter = (int)lanes[(width * 3) + 3];
+        int waiter = (int)lanes[JourneyCodec.Waiter(width)];
 
-        if ((mask & Bit((width * 3) + 4)) != 0)
+        if ((mask & Bit(JourneyCodec.Stops(width))) != 0)
         {
             // STOPPED where it stands, and whoever was waiting hears that it
             // did not run to the end.
@@ -434,22 +434,22 @@ internal sealed class StateChannel : ITripTarget
             // A VALUE WRITTEN IS A SNAP: whatever was carrying it lets go
             // without a word, because the author has just written it.
             Halt(TripEnd.Nothing);
-            Written(lanes[..width]);
+            Written(JourneyCodec.ValueOf(lanes, width));
         }
 
         if ((mask & setPoints) != 0)
         {
-            double[] speed = lanes[(width * 2)..(width * 3)];
+            double[] speed = JourneyCodec.VelocityOf(lanes, width);
             bool kicked = (mask & speeds) != 0;
 
             if (Wears)
             {
                 _walker.Aim(
                     this,
-                    lanes[width..(width * 2)],
+                    JourneyCodec.DestinationOf(lanes, width),
                     StateAttachment.Law(lanes, width, _walker),
                     done: waiter == 0 ? null : whole => land(waiter, whole),
-                    velocity: kicked ? StateAttachment.PerFrame(speed) : null);
+                    velocity: kicked ? JourneyCodec.PerMillisecond(speed) : null);
             }
             else if (waiter != 0)
             {
@@ -467,12 +467,12 @@ internal sealed class StateChannel : ITripTarget
         {
             // A SPEED ON ITS OWN is a kick: what is moving bends, and what is
             // still leaves and comes back.
-            double[] going = lanes[(width * 2)..(width * 3)];
+            double[] going = JourneyCodec.VelocityOf(lanes, width);
             double[] target = Moving is Trip trip
                 ? trip.Target
-                : lanes[width..(width * 2)];
+                : JourneyCodec.DestinationOf(lanes, width);
 
-            _walker.Aim(this, target, StateAttachment.Law(lanes, width, _walker), velocity: StateAttachment.PerFrame(going));
+            _walker.Aim(this, target, StateAttachment.Law(lanes, width, _walker), velocity: JourneyCodec.PerMillisecond(going));
         }
     }
 
@@ -496,15 +496,15 @@ internal sealed class StateChannel : ITripTarget
         trip.Observed = false;
 
         int width = _lanes;
-        double[] lanes = new double[(width * 3) + 5];
+        double[] lanes = new double[JourneyCodec.Count(width)];
         ulong mask = 0;
 
         for (int lane = 0; lane < width; lane++)
         {
             lanes[lane] = trip.P[lane];
-            lanes[(width * 2) + lane] = trip.V[lane] * 1000;
+            lanes[JourneyCodec.Velocity(width) + lane] = JourneyCodec.PerSecond(trip.V[lane]);
             mask |= 1UL << lane;
-            mask |= 1UL << ((width * 2) + lane);
+            mask |= 1UL << (JourneyCodec.Velocity(width) + lane);
         }
 
         return (mask, lanes);
@@ -535,18 +535,18 @@ internal sealed class StateChannel : ITripTarget
             return null;
         }
 
-        double[] lanes = new double[(width * 3) + 5];
+        double[] lanes = new double[JourneyCodec.Count(width)];
         ulong mask = 0;
 
         for (int lane = 0; lane < width; lane++)
         {
             lanes[lane] = trip.P[lane];
-            lanes[width + lane] = going ? trip.Target[lane] : trip.P[lane];
-            lanes[(width * 2) + lane] = going ? trip.V[lane] * 1000 : 0;
+            lanes[JourneyCodec.Destination(width) + lane] = going ? trip.Target[lane] : trip.P[lane];
+            lanes[JourneyCodec.Velocity(width) + lane] = going ? JourneyCodec.PerSecond(trip.V[lane]) : 0;
 
             mask |= 1UL << lane;
-            mask |= 1UL << (width + lane);
-            mask |= 1UL << ((width * 2) + lane);
+            mask |= 1UL << (JourneyCodec.Destination(width) + lane);
+            mask |= 1UL << (JourneyCodec.Velocity(width) + lane);
         }
 
         // Nothing left for the poll to say: this has just told the state

@@ -195,6 +195,21 @@ public class FixtureTests
             Assert.True(all.Contains($"\"{name}\"", StringComparison.Ordinal),
                 $"{name} is written by the Swift tests and applied by nothing here.");
         }
+
+        // A TABLE - a .txt with no .bin beside it - is the contract itself
+        // rather than a reading of one, and is read by name the same way.
+        foreach (string file in Directory.GetFiles(Fixtures.Directory, "*.txt"))
+        {
+            if (File.Exists(Path.ChangeExtension(file, ".bin")))
+            {
+                continue;
+            }
+
+            string name = Path.GetFileName(file);
+
+            Assert.True(all.Contains($"\"{name}\"", StringComparison.Ordinal),
+                $"{name} is written by the Swift tests and read by nothing here.");
+        }
     }
 
     /// <summary>
