@@ -180,7 +180,42 @@ internal static class StateUIEnvironment
         catch (Exception)
         {
         }
+
+#if ANDROID
+        try
+        {
+            // A turn from one landscape to the other changes no size, and
+            // MAUI's MainDisplayInfoChanged - raised from the orientation
+            // sensor - arrives BEFORE the window manager turns the display,
+            // so it reads the rotation it is leaving and nothing follows it.
+            // The display manager says so once the display HAS turned, and
+            // for a new refresh rate too.
+            var displays = (Android.Hardware.Display.DisplayManager?)Android.App.Application.Context
+                .GetSystemService(Android.Content.Context.DisplayService);
+            displays?.RegisterDisplayListener(
+                new DisplayTurned(), new Android.OS.Handler(Android.OS.Looper.MainLooper!));
+        }
+        catch (Exception)
+        {
+        }
+#endif
     }
+
+#if ANDROID
+    /// <summary>Hears the display change once it has changed.</summary>
+    private sealed class DisplayTurned : Java.Lang.Object, Android.Hardware.Display.DisplayManager.IDisplayListener
+    {
+        public void OnDisplayAdded(int displayId)
+        {
+        }
+
+        public void OnDisplayRemoved(int displayId)
+        {
+        }
+
+        public void OnDisplayChanged(int displayId) => DisplayMoved();
+    }
+#endif
 
     /// <summary>
     /// What the display last said - every value its snapshot carries - so
