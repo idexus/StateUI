@@ -301,6 +301,159 @@ final class AppKitMeasurementTests: XCTestCase {
 
     /// A page shaped like a Gallery sample: an example in a bordered card,
     /// its notes, and a long code listing in a horizontal scroller below it.
+    /// A change inside a pane is laid out inside it: a pane gives its page all
+    /// of its room, so neither the pane nor anything around it is asked. A
+    /// label's report that reached a split view item's glass container held
+    /// every scroll event of the Gallery ~90 ms.
+    @MainActor
+    func testAChangeInsideAPaneIsLaidOutInsideIt() {
+        let label = NSTextField(labelWithString: "12")
+        let stack = AppKitStackView(axis: .vertical)
+        stack.setItems([AppKitLayoutItem(view: label)])
+        let page = AppKitSingleChildView()
+        page.setItem(AppKitLayoutItem(view: stack))
+        let pane = AppKitPaneView()
+        pane.setItem(AppKitLayoutItem(view: page))
+        let plain = NSView(frame: NSRect(x: 0, y: 0, width: 400, height: 300))
+        plain.addSubview(pane)
+        pane.frame = plain.bounds
+        let holder = AppKitSingleChildView(frame: NSRect(x: 0, y: 0, width: 400, height: 300))
+        holder.setItem(AppKitLayoutItem(view: plain))
+        holder.layoutSubtreeIfNeeded()
+        pane.layoutSubtreeIfNeeded()
+        for view in [holder, plain, pane, page, stack] {
+            XCTAssertFalse(view.needsLayout, "\(type(of: view)) starts laid out")
+        }
+
+        label.invalidateMeasurements()
+
+        XCTAssertTrue(stack.needsLayout, "the stack holding the change lays out")
+        XCTAssertTrue(page.needsLayout, "and the page")
+        XCTAssertFalse(pane.needsLayout, "the pane is not asked")
+        XCTAssertFalse(plain.needsLayout, "nor anything around it")
+        XCTAssertFalse(holder.needsLayout)
+    }
+
+    /// A change inside a window's page is laid out by the page: the window's
+    /// content gives its page all of its room and is not asked.
+    @MainActor
+    func testAChangeInsideAWindowsPageDoesNotAskTheWindow() {
+        let label = NSTextField(labelWithString: "12")
+        let page = AppKitSingleChildView()
+        page.setItem(AppKitLayoutItem(view: label))
+        let content = AppKitWindowContentView(frame: NSRect(x: 0, y: 0, width: 400, height: 300))
+        content.set(page: page, overlay: nil)
+        content.layoutSubtreeIfNeeded()
+
+        label.invalidateMeasurements()
+
+        XCTAssertTrue(page.needsLayout)
+        XCTAssertFalse(content.needsLayout)
+    }
+
+    /// A change in a scroller reaches the scroller over the clip view it keeps,
+    /// because the scroller measures what it holds.
+    @MainActor
+    func testAChangeInAScrollerReachesTheScrollerOverItsClipView() {
+        let label = NSTextField(labelWithString: "12")
+        let scroll = AppKitScrollView(frame: NSRect(x: 0, y: 0, width: 400, height: 300))
+        scroll.setItems([AppKitLayoutItem(view: label)])
+        scroll.layoutSubtreeIfNeeded()
+
+        label.invalidateMeasurements()
+
+        XCTAssertTrue(scroll.needsLayout)
+    }
+
+    /// A change in a tab reaches its tabbed view over the native tab view,
+    /// because the tabbed view measures its pages.
+    @MainActor
+    func testAChangeInATabReachesItsTabbedView() {
+        let label = NSTextField(labelWithString: "12")
+        let page = AppKitSingleChildView()
+        page.setItem(AppKitLayoutItem(view: label))
+        let tabs = AppKitTabbedView(frame: NSRect(x: 0, y: 0, width: 400, height: 300))
+        _ = tabs.setItems(
+            [AppKitTabItem(layout: AppKitLayoutItem(view: page), title: "One", image: nil)],
+            requestedIndex: 0)
+        tabs.layoutSubtreeIfNeeded()
+
+        label.invalidateMeasurements()
+
+        XCTAssertTrue(tabs.needsLayout)
+    }
+
+    /// A plain native view that counts how often it is asked its size.
+    private final class CountingView: NSView {
+        private(set) var measured = 0
+
+        override var intrinsicContentSize: NSSize {
+            measured += 1
+            return NSSize(width: 40, height: 20)
+        }
+    }
+
+    /// Every StateUI container measures itself. One a parent measured through
+    /// AppKit's fitting built a constraint engine for every question: the
+    /// grids of the Gallery's scroll sample, asked again on each scroll report,
+    /// held every scroll event ~110 ms.
+    @MainActor
+    func testEveryContainerMeasuresItself() {
+        let containers: [NSView] = [
+            AppKitStackView(axis: .vertical),
+            AppKitGridView(),
+            AppKitAbsoluteLayoutView(),
+            AppKitNavigationView(),
+            AppKitSingleChildView(),
+            AppKitBorderView(),
+            AppKitScrollView(frame: .zero),
+            AppKitTabbedView(frame: .zero),
+        ]
+
+        for container in containers {
+            XCTAssertTrue(
+                container is AppKitWidthConstrainedMeasuring,
+                "\(type(of: container)) measures itself")
+        }
+    }
+
+    /// A grid keeps what it measured: asked again, it asks its children
+    /// nothing until something under it changes.
+    @MainActor
+    func testAGridMeasuredAgainAsksItsChildrenNothing() {
+        let child = CountingView()
+        let grid = AppKitGridView()
+        grid.rows = [AppKitGridLength(kind: .auto, value: 1)]
+        grid.columns = [AppKitGridLength(kind: .auto, value: 1)]
+        grid.setItems([AppKitLayoutItem(view: child)])
+
+        let first = AppKitLayoutItem(view: grid).fittingSize()
+        let measured = child.measured
+        let again = AppKitLayoutItem(view: grid).fittingSize()
+
+        XCTAssertEqual(again, first)
+        XCTAssertGreaterThan(measured, 0)
+        XCTAssertEqual(child.measured, measured, "the grid kept its answer")
+
+        child.invalidateMeasurements()
+        _ = AppKitLayoutItem(view: grid).fittingSize()
+        XCTAssertGreaterThan(child.measured, measured, "and forgets it when a child changes")
+    }
+
+    /// A child that fills its holder is laid out without being measured: its
+    /// natural size decides nothing.
+    @MainActor
+    func testAChildThatFillsItsHolderIsNotMeasuredToBeLaidOut() {
+        let child = CountingView()
+        let holder = AppKitSingleChildView(frame: NSRect(x: 0, y: 0, width: 400, height: 300))
+        holder.setItem(AppKitLayoutItem(view: child))
+
+        holder.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(child.frame, holder.bounds)
+        XCTAssertEqual(child.measured, 0)
+    }
+
     private func samplePage() -> HostPatch {
         func label(_ id: String, _ text: String) -> HostPatch {
             var label = HostPatch(id: .manual(id), type: .label)

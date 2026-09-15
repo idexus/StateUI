@@ -19,8 +19,9 @@ protocol AppKitWidthConstrainedMeasuring: AnyObject {
 ///
 /// A size is kept until something that can change it happens: the view's own
 /// content or arrangement, or a descendant's. `invalidateMeasurements()` is the
-/// one road by which such a change forgets it, from the changed view up to its
-/// window, so an unchanged subtree beside the change is never measured again.
+/// one road by which such a change forgets it, from the changed view up to the
+/// room it stands in, so an unchanged subtree beside the change is never
+/// measured again.
 @MainActor
 final class AppKitMeasurementCache {
     private var sizes: [(width: CGFloat?, size: NSSize)] = []
@@ -51,20 +52,41 @@ protocol AppKitMeasurementCaching: AnyObject {
     var measurements: AppKitMeasurementCache { get }
 }
 
+/// A container whose size its place decides - a split view's pane, a window's
+/// content - and which gives its child all of it.
+///
+/// A change inside a room is laid out inside it: the measurement climb stops
+/// below the room, and nothing around it is asked. A label's report that
+/// climbed on into a split view item's glass container made every window
+/// update wait ~90 ms for it.
+@MainActor
+protocol AppKitRoom: NSView {}
+
 @MainActor
 extension NSView {
-    /// Forgets the measurement of this view and of every ancestor up to the
-    /// window's content view, and asks each of them to lay out again. A change
-    /// that cannot alter a size never calls this, so nothing beside it moves.
+    /// Forgets the measurement of this view and of every ancestor whose size
+    /// can follow it, and asks each of them to lay out again.
+    ///
+    /// The climb goes over the native views a container keeps inside itself -
+    /// a scroller's clip view, a tab view - and stops below a room, or at the
+    /// window's content. A change that cannot alter a size never calls this,
+    /// so nothing beside it moves.
     func invalidateMeasurements() {
         var current: NSView? = self
 
         while let view = current {
             (view as? AppKitMeasurementCaching)?.measurements.invalidate()
-            view.invalidateIntrinsicContentSize()
             view.needsLayout = true
-            if view === view.window?.contentView { break }
-            current = view.superview
+
+            guard view !== view.window?.contentView,
+                  let above = view.superview,
+                  !(above is AppKitRoom)
+            else { break }
+
+            // What the parent reads when it measures this view; a room does
+            // not measure its child, so the view below one keeps its answer.
+            view.invalidateIntrinsicContentSize()
+            current = above
         }
     }
 }
@@ -227,7 +249,9 @@ class AppKitHitTestView: NSView {
 
 /// A native canvas for children with authored or engine-driven placement.
 @MainActor
-final class AppKitAbsoluteLayoutView: AppKitTravellingLayout {
+final class AppKitAbsoluteLayoutView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
+    AppKitMeasurementCaching {
+    let measurements = AppKitMeasurementCache()
     var placement: HostPlacementRun? {
         didSet { needsLayout = true }
     }
@@ -269,6 +293,17 @@ final class AppKitAbsoluteLayoutView: AppKitTravellingLayout {
     }
 
     override var intrinsicContentSize: NSSize {
+        fittingContentSize(width: nil)
+    }
+
+    /// The room its children's bounds reach, at their natural sizes whatever
+    /// width it is offered: measured once and kept until something under it
+    /// changes.
+    func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
+        measurements.size(offering: nil) { measuredContentSize() }
+    }
+
+    private func measuredContentSize() -> NSSize {
         var width: CGFloat = 0
         var height: CGFloat = 0
 
@@ -550,7 +585,9 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         let content = (insetsBySafeArea ? safeAreaRect : bounds).inset(by: padding)
         let availableWidth = max(0, content.width - item.margin.left - item.margin.right)
         let availableHeight = max(0, content.height - item.margin.top - item.margin.bottom)
-        let natural = item.fittingSize(width: availableWidth)
+        let natural = Self.placesByNaturalSize(item)
+            ? item.fittingSize(width: availableWidth)
+            : .zero
         let width = extent(
             option: item.horizontal,
             explicit: item.width,
@@ -580,6 +617,13 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
             width: width,
             height: height)
     }
+
+    /// Whether a child's natural size places it: on an axis it does not fill
+    /// and has no size of its own. A child that fills both ways takes the room
+    /// whatever it measures.
+    private static func placesByNaturalSize(_ item: AppKitLayoutItem) -> Bool {
+        (item.horizontal != 3 && item.width == nil) || (item.vertical != 3 && item.height == nil)
+    }
 }
 
 /// The stable native root of one StateUI window. Pages and overlays occupy
@@ -588,8 +632,11 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
 /// panes' pages out of them itself. A window overlay is a slot, not a second
 /// page: it is composed above the page and transparent to input wherever its
 /// child has no hit target.
+///
+/// A room: a change inside the page is laid out by the page, and the window is
+/// not asked.
 @MainActor
-final class AppKitWindowContentView: NSView {
+final class AppKitWindowContentView: NSView, AppKitRoom {
     private weak var page: NSView?
     private var pageSpansTitleBar = false
     private let overlaySurface = AppKitOverlaySurfaceView()
@@ -654,8 +701,11 @@ final class AppKitWindowContentView: NSView {
 
 /// One pane of a split view. Its page keeps out of the part the window's title
 /// bar and toolbar cover, and a colour written for the bars paints that part.
+///
+/// A room: the split view decides its size and it gives its page all of it, so
+/// a change inside the page is laid out by the page.
 @MainActor
-final class AppKitPaneView: AppKitSingleChildView {
+final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
     /// The colour the window's bars are written in, painted over `barBand`.
     var barColor: NSColor? {
         didSet { if barColor != oldValue { needsDisplay = true } }
@@ -698,7 +748,7 @@ private final class AppKitOverlaySurfaceView: AppKitSingleChildView {
 /// arrangement, so AppKit is given no second navigation model to reconcile
 /// with StateUI's path.
 @MainActor
-final class AppKitNavigationView: AppKitHitTestView {
+final class AppKitNavigationView: AppKitHitTestView, AppKitWidthConstrainedMeasuring {
     private var items: [AppKitLayoutItem] = []
 
     override var isFlipped: Bool { true }
@@ -719,8 +769,13 @@ final class AppKitNavigationView: AppKitHitTestView {
     }
 
     override var intrinsicContentSize: NSSize {
+        fittingContentSize(width: nil)
+    }
+
+    /// The top page's size, measured by the page for the width offered.
+    func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
         guard let item = items.last else { return .zero }
-        let size = item.fittingSize()
+        let size = item.fittingSize(width: availableWidth)
         return NSSize(
             width: size.width + item.margin.left + item.margin.right,
             height: size.height + item.margin.top + item.margin.bottom)
@@ -757,7 +812,8 @@ struct AppKitTabItem {
 /// else its tabs stand on the top edge of its content, as a Mac tab view's do.
 /// The tab view is the system's, and nothing is painted on it.
 @MainActor
-final class AppKitTabbedView: AppKitHitTestView, NSTabViewDelegate {
+final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
+    NSTabViewDelegate {
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
 
     /// Whether the window shows this tabbed view's tabs, beneath its toolbar.
@@ -797,6 +853,12 @@ final class AppKitTabbedView: AppKitHitTestView, NSTabViewDelegate {
     /// Reconciles the native tabs and returns a platform fallback only when
     /// the selected page itself disappeared from the arrangement.
     func setItems(_ items: [AppKitTabItem], requestedIndex: Int?) -> Int? {
+        // THE TABS IT HAS, CHOSEN AS THEY ARE: a patch on its way to a page
+        // applies this view again, and that asks nothing of it.
+        if Self.sameTabs(self.items, items), requestedIndex.map({ $0 == selectedIndex }) ?? true {
+            return nil
+        }
+
         let formerView = item(at: selectedIndex)?.layout.view
         let formerIndex = selectedIndex
         self.items = items
@@ -818,6 +880,13 @@ final class AppKitTabbedView: AppKitHitTestView, NSTabViewDelegate {
 
         show(next)
         return fallback
+    }
+
+    /// Whether two runs of tabs show the same pages the same way.
+    private static func sameTabs(_ left: [AppKitTabItem], _ right: [AppKitTabItem]) -> Bool {
+        left.count == right.count && zip(left, right).allSatisfy {
+            $0.layout.arranges(like: $1.layout) && $0.title == $1.title && $0.image === $1.image
+        }
     }
 
     /// Selects a tab as the reader does from the window's row of tabs. A tab the
@@ -846,13 +915,20 @@ final class AppKitTabbedView: AppKitHitTestView, NSTabViewDelegate {
     }
 
     override var intrinsicContentSize: NSSize {
+        fittingContentSize(width: nil)
+    }
+
+    /// The chosen page's size, measured by the page for the width inside the
+    /// tab view's own frame, and that frame around it.
+    func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
         let chrome = Self.chrome(of: tabView.tabViewType)
         let minimum = tabView.minimumSize.width
         guard let item = item(at: selectedIndex) else {
             return NSSize(width: minimum, height: chrome.top + chrome.bottom)
         }
 
-        let size = item.layout.fittingSize()
+        let size = item.layout.fittingSize(
+            width: availableWidth.map { max(0, $0 - chrome.left - chrome.right) })
         let margin = item.layout.margin
         return NSSize(
             width: max(minimum,
@@ -948,6 +1024,7 @@ final class AppKitTabbedView: AppKitHitTestView, NSTabViewDelegate {
 final class AppKitTabPane: NSView {
     var item: AppKitLayoutItem? {
         didSet {
+            guard !AppKitLayoutItem.sameArrangement(oldValue, item) else { return }
             if let view = item?.view, view.superview !== self {
                 addSubview(view)
             }
@@ -1078,8 +1155,17 @@ final class AppKitSplitView: AppKitHitTestView {
     }
 
     func setItems(_ items: [AppKitLayoutItem]) {
-        sidebarSurface.setItem(items.first)
-        detailSurface.setItem(items.count > 1 ? items[1] : nil)
+        let sidebar = items.first
+        let detail = items.count > 1 ? items[1] : nil
+
+        // THE PANES IT HAS: a patch on its way to a page applies this view
+        // again, and that asks nothing of it.
+        guard !AppKitLayoutItem.sameArrangement(sidebarSurface.item, sidebar)
+            || !AppKitLayoutItem.sameArrangement(detailSurface.item, detail)
+        else { return }
+
+        sidebarSurface.setItem(sidebar)
+        detailSurface.setItem(detail)
         invalidateIntrinsicContentSize()
         needsLayout = true
     }
@@ -1199,7 +1285,9 @@ struct AppKitGridLength: Equatable {
 
 /// AppKit's deterministic implementation of StateUI's row-and-column layout.
 @MainActor
-final class AppKitGridView: AppKitTravellingLayout {
+final class AppKitGridView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
+    AppKitMeasurementCaching {
+    let measurements = AppKitMeasurementCache()
     var rows: [AppKitGridLength] = [] {
         didSet { if rows != oldValue { invalidateMeasurements() } }
     }
@@ -1234,6 +1322,16 @@ final class AppKitGridView: AppKitTravellingLayout {
     }
 
     override var intrinsicContentSize: NSSize {
+        fittingContentSize(width: nil)
+    }
+
+    /// The grid at its tracks' natural sizes, whatever width it is offered:
+    /// measured once and kept until something under it changes.
+    func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
+        measurements.size(offering: nil) { measuredContentSize() }
+    }
+
+    private func measuredContentSize() -> NSSize {
         let rowCount = max(rows.count, (items.map { $0.row + $0.rowSpan }.max() ?? 1))
         let columnCount = max(columns.count, (items.map { $0.column + $0.columnSpan }.max() ?? 1))
         let measuredRows = trackSizes(

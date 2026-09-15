@@ -1402,22 +1402,32 @@ final class MountedNode: NSObject {
         return found
     }
 
+    /// Every state a property in this subtree is tied to - gathered in one
+    /// walk into one set, because every render asks.
     var propertyStates: Set<Int32> {
-        var states = Set(driven.values.lazy.filter { $0.kind == .property }.map(\.state))
-
-        for child in children {
-            states.formUnion(child.propertyStates)
-        }
-
+        var states: Set<Int32> = []
+        gatherPropertyStates(into: &states)
         return states
     }
 
+    private func gatherPropertyStates(into states: inout Set<Int32>) {
+        for binding in driven.values where binding.kind == .property {
+            states.insert(binding.state)
+        }
+        for child in children { child.gatherPropertyStates(into: &states) }
+    }
+
+    /// Every property a patch describes in this subtree.
     var describedKeys: Set<AppKitDescribedKey> {
-        var keys = Set(properties.keys.lazy.filter { property in
-            self.driven[property].map { $0.mode == .in } ?? true
-        }.map {
-            AppKitDescribedKey(mount: self.mount, property: $0)
-        })
+        var keys: Set<AppKitDescribedKey> = []
+        gatherDescribedKeys(into: &keys)
+        return keys
+    }
+
+    private func gatherDescribedKeys(into keys: inout Set<AppKitDescribedKey>) {
+        for property in properties.keys where driven[property].map({ $0.mode == .in }) ?? true {
+            keys.insert(AppKitDescribedKey(mount: mount, property: property))
+        }
 
         // An element fading in as it joins a standing layout moves its
         // opacity whether or not a patch ever named one.
@@ -1425,16 +1435,19 @@ final class MountedNode: NSObject {
             keys.insert(AppKitDescribedKey(mount: mount, property: .opacity))
         }
 
-        for child in children {
-            keys.formUnion(child.describedKeys)
-        }
-
-        return keys
+        for child in children { child.gatherDescribedKeys(into: &keys) }
     }
 
     /// Every mounted identity in this subtree.
     var mounts: Set<UInt64> {
-        children.reduce(into: [mount]) { $0.formUnion($1.mounts) }
+        var mounts: Set<UInt64> = []
+        gatherMounts(into: &mounts)
+        return mounts
+    }
+
+    private func gatherMounts(into mounts: inout Set<UInt64>) {
+        mounts.insert(mount)
+        for child in children { child.gatherMounts(into: &mounts) }
     }
 
     /// Hands a layout what its children travel under, and tells it a patch

@@ -20,6 +20,68 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertEqual(proportional.value, 2)
     }
 
+    /// A container handed the arrangement it already has asks nothing. A patch
+    /// on its way to a descendant applies every ancestor again, and a split
+    /// view that laid out its panes on each one - every scroll report of a
+    /// label reading the offset - held every scroll event of the Gallery
+    /// ~110 ms.
+    @MainActor
+    func testAContainerHandedTheArrangementItHasAsksNothing() {
+        func item(_ view: NSView) -> AppKitLayoutItem { AppKitLayoutItem(view: view) }
+        let room = NSRect(x: 0, y: 0, width: 400, height: 300)
+        var containers: [(name: String, view: NSView, arrange: () -> Void)] = []
+
+        let stack = AppKitStackView(axis: .vertical)
+        let stacked = NSView()
+        containers.append(("stack", stack, { stack.setItems([item(stacked)]) }))
+
+        let grid = AppKitGridView()
+        let cell = NSView()
+        containers.append(("grid", grid, { grid.setItems([item(cell)]) }))
+
+        let absolute = AppKitAbsoluteLayoutView()
+        let placed = NSView()
+        containers.append(("absolute layout", absolute, { absolute.setItems([item(placed)]) }))
+
+        let navigation = AppKitNavigationView()
+        let page = NSView()
+        containers.append(("navigation", navigation, { navigation.setItems([item(page)]) }))
+
+        let holder = AppKitSingleChildView()
+        let held = NSView()
+        containers.append(("single child", holder, { holder.setItem(item(held)) }))
+
+        let scroll = AppKitScrollView(frame: room)
+        let scrolled = NSView()
+        containers.append(("scroller", scroll, { scroll.setItems([item(scrolled)]) }))
+
+        let split = AppKitSplitView(frame: room)
+        let sidebar = NSView()
+        let detail = NSView()
+        containers.append(("split view", split, { split.setItems([item(sidebar), item(detail)]) }))
+
+        let tabs = AppKitTabbedView(frame: room)
+        let tab = NSView()
+        containers.append(("tabbed view", tabs, {
+            _ = tabs.setItems(
+                [AppKitTabItem(layout: item(tab), title: "One", image: nil)],
+                requestedIndex: 0)
+        }))
+
+        for container in containers {
+            container.view.frame = room
+            container.arrange()
+            container.view.layoutSubtreeIfNeeded()
+            XCTAssertFalse(container.view.needsLayout, "the \(container.name) starts laid out")
+
+            container.arrange()
+
+            XCTAssertFalse(
+                container.view.needsLayout,
+                "the \(container.name) asks nothing of an arrangement it has")
+        }
+    }
+
     @MainActor
     func testAStackPlacesChildrenInStableSourceOrder() {
         let first = NSView()
