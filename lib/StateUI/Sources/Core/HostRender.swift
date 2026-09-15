@@ -903,6 +903,39 @@ extension HostChildrenUpdate: RandomAccessCollection {
         HostEvents.dispatch(event.token.name, MemberValues.encode(repeat each value))
     }
 
+    /// Tells the core what this host realizes - its `Registry.realization`,
+    /// or what a host across the Wire reported - replacing what it said
+    /// before. Until a host says, the core knows of nothing realized.
+    ///
+    /// - Parameter realization: the elements and members this host realizes.
+    public static func setRealization(_ realization: HostRealization) {
+        HostRealizations.current = realization
+    }
+
+    /// Whether this host makes a view for an element.
+    ///
+    /// - Parameter contract: the element's contract.
+    /// - Returns: whether the host said it realizes the element.
+    public static func realizes(_ contract: any ElementContract.Type) -> Bool {
+        HostRealizations.current.elements.contains(contract.nodeType.name)
+    }
+
+    /// Whether this host realizes a property, on any element.
+    ///
+    /// - Parameter member: the property, written with its contract.
+    /// - Returns: whether the host said it realizes the property.
+    public static func realizes<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) -> Bool {
+        HostRealizations.current.members.contains { $0.owner == Owner.name && $0.member == member.name }
+    }
+
+    /// Whether this host raises an event, on any element.
+    ///
+    /// - Parameter member: the event, written with its contract.
+    /// - Returns: whether the host said it raises the event.
+    public static func realizes<Owner: Contract, Payload>(_ member: ElementEvent<Owner, Payload>) -> Bool {
+        HostRealizations.current.members.contains { $0.owner == Owner.name && $0.member == member.name }
+    }
+
     /// Runs jobs waiting on StateUI's UI executor on the calling thread.
     @discardableResult
     public static func runJobs() -> Int { stateUIRunJobs() }
