@@ -226,11 +226,11 @@ internal sealed class HandCrossing : ICycleCrossing
 /// were skipped, what was written and whether anything says it has more to do.
 /// </para>
 /// <para>
-/// A property with a state behind it is moved by the SAME engine that moves
+/// A property with a state behind it is moved by the SAME walker that moves
 /// everything else here, on a channel that is the STATE's - one per number,
-/// written onto every control tied to it, see <see cref="StateFan"/> - so a
+/// written onto every control tied to it, see <see cref="StateChannel"/> - so a
 /// state is one value however many controls wear it, and every guard the
-/// motion engine already has sees a state's motion as it sees any other.
+/// walker already has sees a state's motion as it sees any other.
 /// </para>
 /// </remarks>
 internal sealed class StateCycle
@@ -238,18 +238,18 @@ internal sealed class StateCycle
     /// <summary>How much room a read is given before it asks for more.</summary>
     private const int Room = 4096;
 
-    private readonly MotionEngine _engine;
+    private readonly Walker _walker;
     private readonly Action<int, bool> _land;
     private readonly int _sync;
 
     /// <summary>
     /// Every number with a control on it - one state may drive several, and
-    /// they share one channel, which is the fan's.
+    /// they share one channel.
     /// </summary>
-    private readonly Dictionary<int, StateFan> _byNumber = [];
+    private readonly Dictionary<int, StateChannel> _byNumber = [];
 
     /// <summary>And by the control, which is how a host writer asks about one.</summary>
-    private readonly ConditionalWeakTable<BindableObject, Dictionary<SwiftKey, StateTie>> _byView = new();
+    private readonly ConditionalWeakTable<BindableObject, Dictionary<SwiftKey, StateAttachment>> _byView = new();
 
     /// <summary>What a cycle reads into, kept rather than made per frame.</summary>
     private byte[] _buffer = new byte[Room];
@@ -263,17 +263,17 @@ internal sealed class StateCycle
     /// <summary>
     /// One cycle over one board.
     /// </summary>
-    /// <param name="engine">What moves the values.</param>
+    /// <param name="walker">What moves the values.</param>
     /// <param name="crossing">The far end of the image.</param>
     /// <param name="land">Told a completion is done, and whether it finished.</param>
     /// <param name="sync">Which board.</param>
     internal StateCycle(
-        MotionEngine engine,
+        Walker walker,
         ICycleCrossing crossing,
         Action<int, bool> land,
         int sync = 0)
     {
-        _engine = engine;
+        _walker = walker;
         Crossing = crossing;
         _land = land;
         _sync = sync;
@@ -286,8 +286,8 @@ internal sealed class StateCycle
     internal ICycleCrossing Crossing { get; set; }
 
     /// <summary>
-    /// Ties this control's properties to their states, forgetting whatever it
-    /// was tied to before.
+    /// Attaches this control's properties to their states, forgetting whatever
+    /// it was tied to before.
     /// </summary>
     /// <remarks>
     /// THE VALUE IS LANDED AT ONCE, before anything is drawn: the state is read
@@ -310,38 +310,38 @@ internal sealed class StateCycle
             return;
         }
 
-        Dictionary<SwiftKey, StateTie> tied = [];
+        Dictionary<SwiftKey, StateAttachment> tied = [];
         bool fed = false;
 
         foreach (SwiftStateEntry entry in entries)
         {
-            if (StateTie.Of(view, entry, node.Type, node.TypeName) is not StateTie tie)
+            if (StateAttachment.Of(view, entry, node.Type, node.TypeName) is not StateAttachment attachment)
             {
                 continue;
             }
 
-            tied[entry.Key] = tie;
+            tied[entry.Key] = attachment;
 
-            if (!_byNumber.TryGetValue(entry.Number, out StateFan? fan))
+            if (!_byNumber.TryGetValue(entry.Number, out StateChannel? channel))
             {
-                _byNumber[entry.Number] = fan = new StateFan(entry.Number, _engine);
+                _byNumber[entry.Number] = channel = new StateChannel(entry.Number, _walker);
             }
 
-            fan.Add(tie);
+            channel.Add(attachment);
 
             // AND THE LAYOUT IS TOLD IT IS PLACED, before anything measures
             // it: its children stand where arithmetic over the room puts them,
             // so their reach says nothing about how big it should be.
-            if (tie.Kind == SwiftStateKind.Placement)
+            if (attachment.Kind == SwiftStateKind.Placement)
             {
                 view.SetValue(MotionPlacement.PlacedProperty, true);
             }
 
-            if (tie.Kind == SwiftStateKind.Feed
+            if (attachment.Kind == SwiftStateKind.Feed
                 && entry.Key.Prop == SwiftProp.Frame
                 && view is VisualElement reporting)
             {
-                Fed(reporting, tie);
+                Fed(reporting, attachment);
                 fed = true;
                 continue;
             }
@@ -353,7 +353,7 @@ internal sealed class StateCycle
 
             if (read > 0 && StateBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
             {
-                tie.Landed(bytes, _engine);
+                attachment.Landed(bytes, _walker);
             }
         }
 
@@ -361,7 +361,7 @@ internal sealed class StateCycle
         // TRAVEL, and that is the same mark a WATCHED frame sets, for the same
         // reason: what is reported there decides where those children GO, so
         // they must ARRIVE at the answer rather than walk to it through the
-        // very measurement that made it. See MotionArranger.Measures.
+        // very measurement that made it. See LayoutMotion.Measures.
         //
         // Asked here rather than where the feed is armed, because the two
         // entries arrive in whatever order the message lays them out - and
@@ -394,36 +394,36 @@ internal sealed class StateCycle
     /// a run inside a page that scrolled, a pane the reader dragged wider.
     /// </remarks>
     /// <param name="view">The control whose room it is.</param>
-    /// <param name="tie">Where the room goes.</param>
-    private void Fed(VisualElement view, StateTie tie)
+    /// <param name="attachment">Where the room goes.</param>
+    private void Fed(VisualElement view, StateAttachment attachment)
     {
         // THE CLOSURES ARE MADE WHERE THE CONTROL IS NOT. Everything a feed
         // keeps - the handler, and the unsubscription the TIE holds - lives in
         // `Listen`, whose scope has the control only as a weak reference: the
-        // cycle keeps ties by number, so a closure of theirs that captures the
-        // control roots it for the life of the process, and the tie's own weak
-        // reference can then never go null, which means `Prune` never drops it
-        // either. The compiler decides what a closure captures by SCOPE, so
-        // the control must not be in the scope that makes them - not even as
-        // a variable the closures never read.
+        // cycle keeps attachments by number, so a closure of theirs that
+        // captures the control roots it for the life of the process, and the
+        // attachment's own weak reference can then never go null, which means
+        // `Prune` never drops it either. The compiler decides what a closure
+        // captures by SCOPE, so the control must not be in the scope that makes
+        // them - not even as a variable the closures never read.
         //
         // MEASURED on the gallery, 2026-09-07, walking the whole of it: the
         // two samples that feed a frame - `PlacedLayout` and
         // `GalleryView` - left their whole subtree behind on every visit.
-        Listen(new WeakReference<VisualElement>(view), tie);
+        Listen(new WeakReference<VisualElement>(view), attachment);
 
         // And the room it already stands in, so a layout registered onto a
         // page that has been laid out already is not waiting for a change.
-        Reported(view, tie);
+        Reported(view, attachment);
     }
 
     /// <summary>
-    /// Hears a control's own frame changing, and leaves the tie a way to stop
-    /// hearing it - both of them holding the control weakly.
+    /// Hears a control's own frame changing, and leaves the attachment a way to
+    /// stop hearing it - both of them holding the control weakly.
     /// </summary>
     /// <param name="held">The control, weakly.</param>
-    /// <param name="tie">Where the room goes.</param>
-    private void Listen(WeakReference<VisualElement> held, StateTie tie)
+    /// <param name="attachment">Where the room goes.</param>
+    private void Listen(WeakReference<VisualElement> held, StateAttachment attachment)
     {
         void Moved(object? sender, PropertyChangedEventArgs args)
         {
@@ -434,13 +434,13 @@ internal sealed class StateCycle
                 or nameof(VisualElement.Frame)
                 && sender is VisualElement moved)
             {
-                Reported(moved, tie);
+                Reported(moved, attachment);
             }
         }
 
         Hearing(held, Moved, hear: true);
 
-        tie.Released = () => Hearing(held, Moved, hear: false);
+        attachment.Released = () => Hearing(held, Moved, hear: false);
     }
 
     /// <summary>Starts or stops hearing a control that may already be gone.</summary>
@@ -484,18 +484,18 @@ internal sealed class StateCycle
     /// </para>
     /// </remarks>
     /// <param name="view">The control whose room it is.</param>
-    /// <param name="tie">Where the room goes.</param>
-    private void Reported(VisualElement view, StateTie tie)
+    /// <param name="attachment">Where the room goes.</param>
+    private void Reported(VisualElement view, StateAttachment attachment)
     {
         Rect frame = view.Frame;
 
-        if (tie.Fed == frame)
+        if (attachment.Fed == frame)
         {
             return;
         }
 
-        tie.Fed = frame;
-        Told(tie.Number, [frame.X, frame.Y, frame.Width, frame.Height], 0b1111);
+        attachment.Fed = frame;
+        Told(attachment.Number, [frame.X, frame.Y, frame.Width, frame.Height], 0b1111);
 
         MotionPlacement.InPass++;
 
@@ -511,31 +511,31 @@ internal sealed class StateCycle
 
     /// <summary>What this control's properties are tied to, if anything.</summary>
     /// <param name="view">The control.</param>
-    /// <returns>The ties, by property.</returns>
-    internal IReadOnlyDictionary<SwiftKey, StateTie> Registered(BindableObject view) =>
-        _byView.TryGetValue(view, out Dictionary<SwiftKey, StateTie>? tied)
+    /// <returns>The attachments, by property.</returns>
+    internal IReadOnlyDictionary<SwiftKey, StateAttachment> Registered(BindableObject view) =>
+        _byView.TryGetValue(view, out Dictionary<SwiftKey, StateAttachment>? tied)
             ? tied
-            : new Dictionary<SwiftKey, StateTie>();
+            : new Dictionary<SwiftKey, StateAttachment>();
 
     /// <summary>
-    /// The tie carrying one named value on a control, or null - the lookup for
-    /// a value the platform declares no settable property for.
+    /// The attachment carrying one named value on a control, or null - the
+    /// lookup for a value the platform declares no settable property for.
     /// </summary>
     /// <param name="view">The control.</param>
     /// <param name="named">Which value.</param>
-    /// <returns>The tie, or null where no state carries it.</returns>
-    internal StateTie? Sink(BindableObject view, SwiftProp named)
+    /// <returns>The attachment, or null where no state carries it.</returns>
+    internal StateAttachment? Sink(BindableObject view, SwiftProp named)
     {
-        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, StateTie>? tied))
+        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, StateAttachment>? tied))
         {
             return null;
         }
 
-        foreach (StateTie tie in tied.Values)
+        foreach (StateAttachment attachment in tied.Values)
         {
-            if (tie.Key.Prop == named)
+            if (attachment.Key.Prop == named)
             {
-                return tie;
+                return attachment;
             }
         }
 
@@ -543,7 +543,8 @@ internal sealed class StateCycle
     }
 
     /// <summary>
-    /// The tie one property of one control has, or null where it has none.
+    /// The attachment one property of one control has, or null where it has
+    /// none.
     /// </summary>
     /// <remarks>
     /// The one question every host writer asks before it decides a resting
@@ -553,19 +554,19 @@ internal sealed class StateCycle
     /// </remarks>
     /// <param name="view">The control.</param>
     /// <param name="property">Which of its properties.</param>
-    /// <returns>The tie, or null.</returns>
-    internal StateTie? Sink(BindableObject view, BindableProperty property)
+    /// <returns>The attachment, or null.</returns>
+    internal StateAttachment? Sink(BindableObject view, BindableProperty property)
     {
-        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, StateTie>? tied))
+        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, StateAttachment>? tied))
         {
             return null;
         }
 
-        foreach (StateTie tie in tied.Values)
+        foreach (StateAttachment attachment in tied.Values)
         {
-            if (tie.Property == property)
+            if (attachment.Property == property)
             {
-                return tie;
+                return attachment;
             }
         }
 
@@ -579,9 +580,9 @@ internal sealed class StateCycle
     /// <remarks>
     /// <para>
     /// THE REPORT THAT IS NOT AN ECHO. Every platform raises its change
-    /// notification while the value is being assigned, so the engine's own
+    /// notification while the value is being assigned, so the walker's own
     /// frames come back as reports; those are dropped, by
-    /// <see cref="MotionEngine.Writing"/>. What is left was made by somebody
+    /// <see cref="Walker.Writing"/>. What is left was made by somebody
     /// else, and on a Slider or a Stepper that is a finger.
     /// </para>
     /// <para>
@@ -621,45 +622,47 @@ internal sealed class StateCycle
         if (MotionTrace.Watching)
         {
             // The one line that says why a finger was or was not heard: the
-            // tie the control has, and whether a frame was being written.
-            MotionTrace.Say(Sink(view, property) is StateTie heard
-                ? $"reader {view.GetType().Name}.{property.PropertyName} = {value:0.###}  tie {heard.Number} kind={heard.Kind} mode={heard.Mode} lanes={heard.Lanes} writing={MotionEngine.Writing}"
-                : $"reader {view.GetType().Name}.{property.PropertyName} = {value:0.###}  no tie ({_byNumber.Count} numbers)");
+            // attachment the control has, and whether a frame was being
+            // written.
+            MotionTrace.Say(Sink(view, property) is StateAttachment heard
+                ? $"reader {view.GetType().Name}.{property.PropertyName} = {value:0.###}  attachment {heard.Number} kind={heard.Kind} mode={heard.Mode} lanes={heard.Lanes} writing={Walker.Writing}"
+                : $"reader {view.GetType().Name}.{property.PropertyName} = {value:0.###}  no attachment ({_byNumber.Count} numbers)");
         }
 
         if (_byNumber.Count == 0
-            || Sink(view, property) is not StateTie tie
-            || tie.Kind != SwiftStateKind.Property
-            || tie.Mode == SwiftStateMode.Out
-            || tie.Lanes != lanes.Length)
+            || Sink(view, property) is not StateAttachment attachment
+            || attachment.Kind != SwiftStateKind.Property
+            || attachment.Mode == SwiftStateMode.Out
+            || attachment.Lanes != lanes.Length)
         {
             return false;
         }
 
-        if (MotionEngine.Writing > 0)
+        if (Walker.Writing > 0)
         {
             return true;
         }
 
-        return Landed(view, tie, lanes);
+        return Landed(view, attachment, lanes);
     }
 
     /// <summary>
-    /// A reader's own movement onto the tie carrying it, whatever found the
-    /// tie - a property that reported, or a scroller, which has none.
+    /// A reader's own movement onto the attachment carrying it, whatever found
+    /// the attachment - a property that reported, or a scroller, which has
+    /// none.
     /// </summary>
     /// <param name="view">The control the reader moved.</param>
-    /// <param name="tie">The tie the value is carried on.</param>
+    /// <param name="attachment">The attachment the value is carried on.</param>
     /// <param name="lanes">Where they left it, lane by lane.</param>
     /// <returns>Whether the cycle has work to do.</returns>
-    private bool Landed(BindableObject view, StateTie tie, double[] lanes)
+    private bool Landed(BindableObject view, StateAttachment attachment, double[] lanes)
     {
         // THE VALUE IS THE READER'S NOW, on every control that shows it: the
         // state's channel lets go, and every other control on the number is
         // written the reader's own number - before the cycle, and whether or
         // not there is one, since a control is not going to hear it any other
         // way and it needs no arithmetic to hear it.
-        tie.Fan?.Taken(tie, lanes);
+        attachment.Channel?.Taken(attachment, lanes);
 
         // Where it is, where it is going, and standing still: three lanes, and
         // the law, the waiter and the stop counter left as they were.
@@ -673,18 +676,18 @@ internal sealed class StateCycle
         // value, which the branch below reads as a snap. Measured on the
         // gallery: a slider travelled to every value until it was touched
         // once, and jumped for the rest of the session.
-        double[] said = new double[(tie.Lanes * 3) + 5];
+        double[] said = new double[(attachment.Lanes * 3) + 5];
 
-        for (int lane = 0; lane < tie.Lanes; lane++)
+        for (int lane = 0; lane < attachment.Lanes; lane++)
         {
             said[lane] = lanes[lane];
-            said[tie.Lanes + lane] = lanes[lane];
+            said[attachment.Lanes + lane] = lanes[lane];
         }
 
         // WHERE IT IS AND WHERE IT IS GOING, both, and standing still - three
         // groups of `Lanes`, which for one number is the three slots this
         // always named and for a point is six.
-        Told(tie.Number, said, (1UL << (tie.Lanes * 3)) - 1);
+        Told(attachment.Number, said, (1UL << (attachment.Lanes * 3)) - 1);
 
         return Cycled();
     }
@@ -705,14 +708,14 @@ internal sealed class StateCycle
     internal bool Slid(BindableObject view, double[] lanes)
     {
         if (_byNumber.Count == 0
-            || Sink(view, SwiftProp.ScrollOffset) is not StateTie tie
-            || tie.Mode == SwiftStateMode.Out
-            || tie.Lanes != lanes.Length)
+            || Sink(view, SwiftProp.ScrollOffset) is not StateAttachment attachment
+            || attachment.Mode == SwiftStateMode.Out
+            || attachment.Lanes != lanes.Length)
         {
             return false;
         }
 
-        return MotionEngine.Writing > 0 || Landed(view, tie, lanes);
+        return Walker.Writing > 0 || Landed(view, attachment, lanes);
     }
 
     /// <summary>
@@ -723,9 +726,9 @@ internal sealed class StateCycle
     /// The one lane crosses as the host's own write, so the state hears it
     /// exactly as it hears a slider's thumb: a reader of the state renders,
     /// nobody else does. The state's echo of the value is not set on the
-    /// control again because <see cref="StateTie.Set(double[])"/> compares
-    /// against what the control already shows, and a write this side makes
-    /// comes round under <see cref="MotionEngine.Writing"/> and is dropped.
+    /// control again because <see cref="StateAttachment.Set(double[])"/>
+    /// compares against what the control already shows, and a write this side
+    /// makes comes round under <see cref="Walker.Writing"/> and is dropped.
     /// Every other control the same state drives is set here too, the cycle's
     /// read-back naming only what this side has not yet been told.
     /// </remarks>
@@ -742,11 +745,11 @@ internal sealed class StateCycle
     /// </summary>
     /// <remarks>
     /// A STATE'S OWN WRITE IS NOT A REPORT: the platform raises its changed
-    /// notification synchronously inside the assignment <see cref="StateTie.Set(double[])"/>
-    /// makes, and that assignment runs under <see cref="MotionEngine.Writing"/>,
-    /// so what arrives here while that counter is up is this side's own value
-    /// coming round and is dropped - answered as handled, so the renderer
-    /// raises no event for it either.
+    /// notification synchronously inside the assignment
+    /// <see cref="StateAttachment.Set(double[])"/> makes, and that assignment
+    /// runs under <see cref="Walker.Writing"/>, so what arrives here while that
+    /// counter is up is this side's own value coming round and is dropped -
+    /// answered as handled, so the renderer raises no event for it either.
     /// </remarks>
     /// <param name="view">The control that reported.</param>
     /// <param name="property">Which of its properties moved.</param>
@@ -755,25 +758,25 @@ internal sealed class StateCycle
     internal bool Reported(BindableObject view, BindableProperty property, double[] lanes)
     {
         if (_byNumber.Count == 0
-            || Sink(view, property) is not StateTie tie
-            || tie.Kind != SwiftStateKind.Plain
-            || tie.Mode != SwiftStateMode.InOut)
+            || Sink(view, property) is not StateAttachment attachment
+            || attachment.Kind != SwiftStateKind.Plain
+            || attachment.Mode != SwiftStateMode.InOut)
         {
             return false;
         }
 
-        if (MotionEngine.Writing > 0)
+        if (Walker.Writing > 0)
         {
             return true;
         }
 
-        Told(tie.Number, lanes, lanes.Length >= 64 ? ~0UL : (1UL << lanes.Length) - 1);
+        Told(attachment.Number, lanes, lanes.Length >= 64 ? ~0UL : (1UL << lanes.Length) - 1);
 
-        if (tie.Fan is StateFan fan)
+        if (attachment.Channel is StateChannel channel)
         {
-            foreach (StateTie other in fan.Ties)
+            foreach (StateAttachment other in channel.Attachments)
             {
-                if (!ReferenceEquals(other, tie) && other.Kind == SwiftStateKind.Plain)
+                if (!ReferenceEquals(other, attachment) && other.Kind == SwiftStateKind.Plain)
                 {
                     other.Set(lanes);
                 }
@@ -790,11 +793,11 @@ internal sealed class StateCycle
     /// <remarks>
     /// The text crosses WHOLE - its length and its letters - as the host's own
     /// write, so the state hears a keystroke exactly as it hears a switch
-    /// flipped: a reader of the state renders, nobody else does. The tie
+    /// flipped: a reader of the state renders, nobody else does. The attachment
     /// remembers the words, so the state's echo of them on the next cycle is
     /// not set back onto the field under the reader's caret; every other field
     /// the same state drives is set here. A write this side made comes round
-    /// as a platform notification under <see cref="MotionEngine.Writing"/> and
+    /// as a platform notification under <see cref="Walker.Writing"/> and
     /// is dropped, as <see cref="Reported(BindableObject, BindableProperty, double[])"/>
     /// drops it.
     /// </remarks>
@@ -805,26 +808,26 @@ internal sealed class StateCycle
     internal bool Typed(BindableObject view, BindableProperty property, string words)
     {
         if (_byNumber.Count == 0
-            || Sink(view, property) is not StateTie tie
-            || tie.Kind != SwiftStateKind.Text
-            || tie.Mode != SwiftStateMode.InOut)
+            || Sink(view, property) is not StateAttachment attachment
+            || attachment.Kind != SwiftStateKind.Text
+            || attachment.Mode != SwiftStateMode.InOut)
         {
             return false;
         }
 
-        if (MotionEngine.Writing > 0)
+        if (Walker.Writing > 0)
         {
             return true;
         }
 
-        tie.Remember(words);
-        Told(tie.Number, StateBatch.Words(words), ~0UL);
+        attachment.Remember(words);
+        Told(attachment.Number, StateBatch.Words(words), ~0UL);
 
-        if (tie.Fan is StateFan fan)
+        if (attachment.Channel is StateChannel channel)
         {
-            foreach (StateTie other in fan.Ties)
+            foreach (StateAttachment other in channel.Attachments)
             {
-                if (!ReferenceEquals(other, tie) && other.Kind == SwiftStateKind.Text)
+                if (!ReferenceEquals(other, attachment) && other.Kind == SwiftStateKind.Text)
                 {
                     other.Wear(words);
                 }
@@ -876,9 +879,9 @@ internal sealed class StateCycle
     internal bool Drives(object owner, object key) =>
         owner is BindableObject view
         && key is BindableProperty property
-        && Sink(view, property) is StateTie tie
-        && tie.Kind is SwiftStateKind.Property or SwiftStateKind.Text or SwiftStateKind.Plain
-        && tie.Mode != SwiftStateMode.In;
+        && Sink(view, property) is StateAttachment attachment
+        && attachment.Kind is SwiftStateKind.Property or SwiftStateKind.Text or SwiftStateKind.Plain
+        && attachment.Mode != SwiftStateMode.In;
 
     /// <summary>
     /// Puts a state-driven property back where its state says it belongs, and
@@ -896,16 +899,16 @@ internal sealed class StateCycle
     /// <returns>Whether a state drives it.</returns>
     internal bool Reland(BindableObject view, BindableProperty property)
     {
-        if (!Drives(view, property) || Sink(view, property) is not StateTie tie)
+        if (!Drives(view, property) || Sink(view, property) is not StateAttachment attachment)
         {
             return false;
         }
 
-        int read = Crossing.Read(tie.Number, _buffer);
+        int read = Crossing.Read(attachment.Number, _buffer);
 
         if (read > 0 && StateBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
         {
-            tie.Landed(bytes, _engine);
+            attachment.Landed(bytes, _walker);
         }
 
         return true;
@@ -927,23 +930,23 @@ internal sealed class StateCycle
     /// <returns>Whether a state drives it.</returns>
     internal bool Restate(BindableObject view, BindableProperty property, in MotionSpec spec)
     {
-        if (!Drives(view, property) || Sink(view, property) is not StateTie tie)
+        if (!Drives(view, property) || Sink(view, property) is not StateAttachment attachment)
         {
             return false;
         }
 
-        int read = Crossing.Read(tie.Number, _buffer);
+        int read = Crossing.Read(attachment.Number, _buffer);
 
         if (read > 0 && StateBatch.Read(_buffer.AsSpan(0, read)) is [(_, _, byte[] bytes)])
         {
-            tie.Resting(bytes, _engine, spec);
+            attachment.Resting(bytes, _walker, spec);
         }
 
         return true;
     }
 
     /// <summary>
-    /// Tells a state where its value is going, whenever its own channel is
+    /// Tells a state where its value is going, whenever its own trip is
     /// aimed or lands.
     /// </summary>
     /// <remarks>
@@ -951,7 +954,7 @@ internal sealed class StateCycle
     /// WHAT KEEPS A DRIVEN STATE HONEST. A setpoint the state itself wrote is
     /// already on the image; what is not is where the value actually started
     /// from and how fast it set off, and - the half no poll can see - where it
-    /// LANDED: the channel is taken out of the table as it lands, so nothing
+    /// LANDED: the trip is taken out of the table as it lands, so nothing
     /// is left to read the value it finished at. Written here, where the
     /// value is and where it is going agree and the speed is nought, which is
     /// what an engine reads as "arrived".
@@ -959,46 +962,46 @@ internal sealed class StateCycle
     /// <para>
     /// A CHANNEL OF ONE CONTROL'S OWN IS NOT THE STATE'S NEWS. A visual state
     /// dimming a button, or the tree stating a value beside the registration,
-    /// aims that control's own (control, property) channel, and the value on
+    /// aims that control's own (control, property) trip, and the value on
     /// the number is unchanged by it - every other control on the number is
-    /// still showing the state. See <see cref="StateFan"/>.
+    /// still showing the state. See <see cref="StateChannel"/>.
     /// </para>
     /// </remarks>
-    /// <param name="channel">The motion.</param>
+    /// <param name="trip">The motion.</param>
     /// <param name="going">Whether the value is on its way rather than stopped.</param>
-    internal void Mirror(MotionChannel channel, bool going)
+    internal void Mirror(Trip trip, bool going)
     {
-        if (channel.Moves is not StateFan fan
-            || !fan.Reports
-            || fan.Mirror(channel, going) is not (ulong mask, double[] lanes))
+        if (trip.Moves is not StateChannel channel
+            || !channel.Reports
+            || channel.Mirror(trip, going) is not (ulong mask, double[] lanes))
         {
             return;
         }
 
-        Crossing.Write(StateBatch.Bytes([(fan.Number, mask, lanes)]));
+        Crossing.Write(StateBatch.Bytes([(channel.Number, mask, lanes)]));
     }
 
     /// <summary>
-    /// Drops every tie whose control has been collected, and every number left
-    /// with none.
+    /// Drops every attachment whose control has been collected, and every
+    /// number left with none.
     /// </summary>
     /// <remarks>
-    /// The other half of holding a control weakly: a tie is harmless once its
-    /// view has gone - it writes nothing and aims nothing - but the list it
-    /// sits in would grow for ever. Run at the head of a cycle, which is the
-    /// one moment the map is walked anyway.
+    /// The other half of holding a control weakly: an attachment is harmless
+    /// once its view has gone - it writes nothing and aims nothing - but the
+    /// list it sits in would grow for ever. Run at the head of a cycle, which
+    /// is the one moment the map is walked anyway.
     /// </remarks>
     private void Prune()
     {
         List<int>? empty = null;
 
-        foreach ((int number, StateFan fan) in _byNumber)
+        foreach ((int number, StateChannel channel) in _byNumber)
         {
-            // A NUMBER WITH NOTHING LEFT ON IT GOES - once its channel has
+            // A NUMBER WITH NOTHING LEFT ON IT GOES - once its trip has
             // landed. One still moving runs to the end and tells the state
             // where the value got to, which is the truth about the value
             // whether or not anything is there to show it.
-            if (fan.Prune() == 0 && fan.Moving is null)
+            if (channel.Prune() == 0 && channel.Moving is null)
             {
                 (empty ??= []).Add(number);
             }
@@ -1017,39 +1020,39 @@ internal sealed class StateCycle
     /// <param name="view">The control.</param>
     internal void Detach(BindableObject view)
     {
-        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, StateTie>? tied))
+        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, StateAttachment>? tied))
         {
             return;
         }
 
-        foreach (StateTie tie in tied.Values)
+        foreach (StateAttachment attachment in tied.Values)
         {
             // THE STATE'S CHANNEL IS NOT THIS CONTROL'S TO END: the value goes
             // on to wherever it was sent, for whatever else wears the number -
             // and a control described again a moment later joins it where it
-            // is. A number left with nothing on it is dropped once its channel
+            // is. A number left with nothing on it is dropped once its trip
             // has landed, by the next cycle's sweep.
-            if (tie.Fan is StateFan fan)
+            if (attachment.Channel is StateChannel channel)
             {
-                fan.Remove(tie);
+                channel.Remove(attachment);
 
-                if (fan.Empty && fan.Moving is null)
+                if (channel.Empty && channel.Moving is null)
                 {
-                    _byNumber.Remove(tie.Number);
+                    _byNumber.Remove(attachment.Number);
                 }
             }
 
             // A feed listens to the platform, and a control nothing describes
             // any more is one nothing should hear from.
-            tie.Released?.Invoke();
-            tie.Released = null;
+            attachment.Released?.Invoke();
+            attachment.Released = null;
 
             // A motion of this control's own on the property - a visual
             // state's, the tree's - is one nothing reads any more: halted, so
             // its waiter hears false rather than never.
-            if (tie.Property is not null)
+            if (attachment.Property is not null)
             {
-                _engine.Halt(view, tie.Property, MotionEnd.Nothing);
+                _walker.Halt(view, attachment.Property, TripEnd.Nothing);
             }
         }
 
@@ -1057,7 +1060,7 @@ internal sealed class StateCycle
     }
 
     /// <summary>
-    /// Whether nothing is waiting for a frame - what the engine asks before it
+    /// Whether nothing is waiting for a frame - what the walker asks before it
     /// stops the clock.
     /// </summary>
     /// <returns>True when the clock may stop.</returns>
@@ -1070,7 +1073,7 @@ internal sealed class StateCycle
     /// ONE PER FRAME, whatever else asks. A drained run is skipped inside a
     /// frame, because the frame's own cycle is about to catch whatever the
     /// drain wrote; and every run is skipped while a message is being applied,
-    /// for the reason the engine skips a frame there - a value written inside
+    /// for the reason the walker skips a frame there - a value written inside
     /// an apply is a render inside an apply.
     /// </remarks>
     /// <param name="reason">Why.</param>
@@ -1093,7 +1096,7 @@ internal sealed class StateCycle
             Prune();
             Told();
 
-            int answer = Crossing.Cycle(_sync, _engine.Clock?.Now is long now
+            int answer = Crossing.Cycle(_sync, _walker.Clock?.Now is long now
                 ? now * 1000.0 / System.Diagnostics.Stopwatch.Frequency
                 : 0, MotionMood.Reduced);
 
@@ -1113,7 +1116,7 @@ internal sealed class StateCycle
             // aims nothing, so nothing else would start the clock for it.
             if (!Idle())
             {
-                _engine.Clock?.Start();
+                _walker.Clock?.Start();
             }
         }
         finally
@@ -1143,7 +1146,7 @@ internal sealed class StateCycle
     /// </summary>
     /// <remarks>
     /// Where a value is and how fast it is going, for every state-driven
-    /// property the engine has written since the last cycle - so an engine
+    /// property the walker has written since the last cycle - so an engine
     /// steering by a value the host is carrying is reading where it actually
     /// got to rather than where it was sent.
     /// </remarks>
@@ -1151,11 +1154,11 @@ internal sealed class StateCycle
     {
         List<(int Number, ulong Mask, double[] Lanes)> batch = [];
 
-        foreach ((int number, StateFan fan) in _byNumber)
+        foreach ((int number, StateChannel channel) in _byNumber)
         {
             // ONE READING PER NUMBER, off the one channel: what the image says
             // is where the value got to, and the value is in one place.
-            if (fan.Reports && fan.Reading() is (ulong mask, double[] lanes))
+            if (channel.Reports && channel.Reading() is (ulong mask, double[] lanes))
             {
                 batch.Add((number, mask, lanes));
             }
@@ -1192,7 +1195,7 @@ internal sealed class StateCycle
 
         foreach ((int number, ulong mask, byte[] bytes) in StateBatch.Read(_buffer.AsSpan(0, written)))
         {
-            if (!_byNumber.TryGetValue(number, out StateFan? fan))
+            if (!_byNumber.TryGetValue(number, out StateChannel? channel))
             {
                 continue;
             }
@@ -1200,16 +1203,16 @@ internal sealed class StateCycle
             // A JOURNEY IS WORN ONCE, by the number's channel, whatever the
             // number of controls on it; what is not a journey - a plain
             // value, a text, a run of placements - is each control's own.
-            if (fan.Journeys)
+            if (channel.Journeys)
             {
-                fan.Wear(bytes, mask, _land);
+                channel.Wear(bytes, mask, _land);
             }
 
-            foreach (StateTie tie in fan.Ties.ToArray())
+            foreach (StateAttachment attachment in channel.Attachments.ToArray())
             {
-                if (tie.Kind != SwiftStateKind.Property)
+                if (attachment.Kind != SwiftStateKind.Property)
                 {
-                    tie.Wear(bytes, mask, _engine, _land);
+                    attachment.Wear(bytes, mask, _walker, _land);
                 }
             }
         }
@@ -1269,7 +1272,7 @@ internal sealed class StateCycle
     internal void Told(int number, double[] lanes, ulong mask)
     {
         Crossing.Write(StateBatch.Bytes([(number, mask, lanes)]));
-        _engine.Clock?.Start();
+        _walker.Clock?.Start();
     }
 
     /// <summary>
@@ -1281,7 +1284,7 @@ internal sealed class StateCycle
     internal void Told(int number, byte[] bytes, ulong mask)
     {
         Crossing.Write(StateBatch.Bytes([(number, mask, bytes)]));
-        _engine.Clock?.Start();
+        _walker.Clock?.Start();
     }
 }
 
@@ -1297,17 +1300,17 @@ internal sealed class StateCycle
 /// StateCycleTests' <c>Lanes</c> helper lays the C# side out and JourneyTests
 /// reads the Swift side, and the two are kept in step by hand.
 /// </remarks>
-internal sealed class StateTie
+internal sealed class StateAttachment
 {
     /// <summary>The control this drives, held WEAKLY.</summary>
     /// <remarks>
     /// A control that leaves the tree is let go by its parent and by nothing
     /// else. The aiming maps hold weak references for that reason and the
-    /// motion engine keys its channels off a weak table; held strongly here,
-    /// every control ever driven would live as long as the process - measured
-    /// on all three platforms as two or three kept per page visited, the page
-    /// being rebuilt on every visit. A tie whose control has gone does nothing
-    /// and is dropped by the cycle's next sweep.
+    /// walker keys its trips off a weak table; held strongly here, every
+    /// control ever driven would live as long as the process - measured on all
+    /// three platforms as two or three kept per page visited, the page being
+    /// rebuilt on every visit. An attachment whose control has gone does
+    /// nothing and is dropped by the cycle's next sweep.
     /// </remarks>
     private readonly WeakReference<BindableObject> _view;
     private readonly MotionValue _shape;
@@ -1318,10 +1321,10 @@ internal sealed class StateTie
 
     /// <summary>
     /// The number's channel, shared with every other control on the number -
-    /// what a journey on this property is carried by. Set by the fan as the
-    /// tie joins it.
+    /// what a journey on this property is carried by. Set by the channel as the
+    /// attachment joins it.
     /// </summary>
-    internal StateFan? Fan { get; set; }
+    internal StateChannel? Channel { get; set; }
 
     /// <summary>What the last text written onto the control was.</summary>
     /// <remarks>
@@ -1340,7 +1343,7 @@ internal sealed class StateTie
     /// <c>TimeSpan</c> one.
     /// </summary>
     /// <remarks>
-    /// THE ASSIGNMENT RUNS UNDER <see cref="MotionEngine.Writing"/>: the
+    /// THE ASSIGNMENT RUNS UNDER <see cref="Walker.Writing"/>: the
     /// platform raises the property's changed notification synchronously
     /// inside it, and that notification is this side's own write coming
     /// round - refused as an event by the renderer and as a report by the
@@ -1413,7 +1416,7 @@ internal sealed class StateTie
             return;
         }
 
-        MotionEngine.Writing++;
+        Walker.Writing++;
 
         try
         {
@@ -1421,7 +1424,7 @@ internal sealed class StateTie
         }
         finally
         {
-            MotionEngine.Writing--;
+            Walker.Writing--;
         }
     }
 
@@ -1460,7 +1463,7 @@ internal sealed class StateTie
     /// to every OTHER field the same state drives.
     /// </summary>
     /// <remarks>
-    /// Under <see cref="MotionEngine.Writing"/>, for the reason
+    /// Under <see cref="Walker.Writing"/>, for the reason
     /// <see cref="Set(double[])"/> gives: the field's own changed notification
     /// is this side's write coming round.
     /// </remarks>
@@ -1474,7 +1477,7 @@ internal sealed class StateTie
 
         _wrote = words;
 
-        MotionEngine.Writing++;
+        Walker.Writing++;
 
         try
         {
@@ -1482,11 +1485,11 @@ internal sealed class StateTie
         }
         finally
         {
-            MotionEngine.Writing--;
+            Walker.Writing--;
         }
     }
 
-    private StateTie(
+    private StateAttachment(
         BindableObject view,
         SwiftStateEntry entry,
         BindableProperty? property,
@@ -1536,8 +1539,8 @@ internal sealed class StateTie
     };
 
     /// <summary>
-    /// The tie a registration asks for, or null where this side cannot make
-    /// one.
+    /// The attachment a registration asks for, or null where this side cannot
+    /// make one.
     /// </summary>
     /// <remarks>
     /// A property nothing declares, or one of a value nothing can carry, is
@@ -1552,8 +1555,8 @@ internal sealed class StateTie
     /// Its name, which resolves a property of a control an application
     /// registered.
     /// </param>
-    /// <returns>The tie, or null.</returns>
-    internal static StateTie? Of(
+    /// <returns>The attachment, or null.</returns>
+    internal static StateAttachment? Of(
         BindableObject view,
         SwiftStateEntry entry,
         SwiftNodeType type,
@@ -1565,22 +1568,22 @@ internal sealed class StateTie
         if (entry.Kind == SwiftStateKind.Placement)
         {
             return view is Microsoft.Maui.Controls.Layout
-                ? new StateTie(view, entry, null, MotionValue.Number)
+                ? new StateAttachment(view, entry, null, MotionValue.Number)
                 : null;
         }
 
         if (entry.Kind == SwiftStateKind.Feed)
         {
-            return new StateTie(view, entry, null, MotionValue.Number);
+            return new StateAttachment(view, entry, null, MotionValue.Number);
         }
 
         // A SCROLLER'S OFFSET IS ONE POINT AND HAS NO SETTABLE PROPERTY: the
-        // platform declares ScrollX and ScrollY read-only, so this tie carries
-        // no property at all and aims at the scroller itself, which the engine
-        // moves as a two-lane target. See ScrollMovement.Walked.
+        // platform declares ScrollX and ScrollY read-only, so this attachment
+        // carries no property at all and aims at the scroller itself, which the
+        // walker moves as a two-lane target. See ScrollMovement.Walked.
         if (entry.Key.Prop == SwiftProp.ScrollOffset)
         {
-            return view is ScrollView ? new StateTie(view, entry, null, MotionValue.Offset) : null;
+            return view is ScrollView ? new StateAttachment(view, entry, null, MotionValue.Offset) : null;
         }
 
         if (SwiftStyles.Property(type, typeName, entry.Key) is not BindableProperty property)
@@ -1593,14 +1596,14 @@ internal sealed class StateTie
         // types into, where the typed words cross back whole.
         if (entry.Kind == SwiftStateKind.Text)
         {
-            return new StateTie(view, entry, property, MotionValue.Number);
+            return new StateAttachment(view, entry, property, MotionValue.Number);
         }
 
         // A PLAIN value is one lane set as it stands - a flag, a count, a
         // number that never travels - on whatever property it names.
         if (entry.Kind == SwiftStateKind.Plain)
         {
-            return new StateTie(view, entry, property, MotionValue.Number);
+            return new StateAttachment(view, entry, property, MotionValue.Number);
         }
 
         if (Shape(property) is not MotionValue shape)
@@ -1608,7 +1611,7 @@ internal sealed class StateTie
             return null;
         }
 
-        return new StateTie(view, entry, property, shape);
+        return new StateAttachment(view, entry, property, shape);
     }
 
     /// <summary>What a property's value is made of, or null for one nothing carries.</summary>
@@ -1627,12 +1630,12 @@ internal sealed class StateTie
     /// registration owes before anything is drawn.
     /// </summary>
     /// <param name="bytes">The state, whole.</param>
-    /// <param name="engine">What moves the values.</param>
-    internal void Landed(byte[] bytes, MotionEngine engine)
+    /// <param name="walker">What moves the values.</param>
+    internal void Landed(byte[] bytes, Walker walker)
     {
         if (Kind == SwiftStateKind.Plain)
         {
-            Wear(bytes, ~0UL, engine, static (_, _) => { });
+            Wear(bytes, ~0UL, walker, static (_, _) => { });
             return;
         }
 
@@ -1641,17 +1644,17 @@ internal sealed class StateTie
             // WHOLE, because nothing has been placed yet - and every one of
             // them arrives rather than travelling, a view nobody has placed
             // having nowhere to travel from.
-            Placed(bytes, All, engine);
+            Placed(bytes, All, walker);
             return;
         }
 
         if (Kind == SwiftStateKind.Text)
         {
-            Wear(bytes, 1, engine, static (_, _) => { });
+            Wear(bytes, 1, walker, static (_, _) => { });
             return;
         }
 
-        if (Mode == SwiftStateMode.In || Fan is not StateFan fan)
+        if (Mode == SwiftStateMode.In || Channel is not StateChannel channel)
         {
             return;
         }
@@ -1661,10 +1664,10 @@ internal sealed class StateTie
         // control joins the number's channel where the value is.
         if (Property is BindableProperty own && View is BindableObject told)
         {
-            engine.Halt(told, own, MotionEnd.Nothing);
+            walker.Halt(told, own, TripEnd.Nothing);
         }
 
-        fan.Join(this, bytes);
+        channel.Join(this, bytes);
     }
 
     /// <summary>
@@ -1673,22 +1676,22 @@ internal sealed class StateTie
     /// instead of settling one of its own.
     /// </summary>
     /// <remarks>
-    /// On the control's OWN channel, from wherever the writer left it - a
+    /// On the control's OWN trip, from wherever the writer left it - a
     /// visual state leaving has the control at the state's colour, not the
     /// number's - and the number's channel leaves the control alone until that
     /// lands. The destination is where the number is bound: its channel's
     /// target while it travels, the image's setpoint while it stands.
     /// </remarks>
     /// <param name="bytes">The state, whole.</param>
-    /// <param name="engine">What moves the values.</param>
+    /// <param name="walker">What moves the values.</param>
     /// <param name="spec">The law the writer was going to use.</param>
-    internal void Resting(byte[] bytes, MotionEngine engine, in MotionSpec spec)
+    internal void Resting(byte[] bytes, Walker walker, in MotionSpec spec)
     {
         if (Property is null
             || Kind != SwiftStateKind.Property
             || Mode == SwiftStateMode.In
             || View is not BindableObject view
-            || Fan is not StateFan fan)
+            || Channel is not StateChannel channel)
         {
             return;
         }
@@ -1701,11 +1704,11 @@ internal sealed class StateTie
             return;
         }
 
-        double[] destination = fan.Moving is MotionChannel carrying
+        double[] destination = channel.Moving is Trip carrying
             ? (double[])carrying.Target.Clone()
             : lanes[width..(width * 2)];
 
-        engine.Aim(new MotionProperty(view, Property, _shape, _fraction), destination, spec);
+        walker.Aim(new MotionProperty(view, Property, _shape, _fraction), destination, spec);
     }
 
     /// <summary>
@@ -1719,13 +1722,13 @@ internal sealed class StateTie
     /// </remarks>
     /// <param name="bytes">The state, whole.</param>
     /// <param name="mask">Which lanes moved.</param>
-    /// <param name="engine">What moves the values.</param>
+    /// <param name="walker">What moves the values.</param>
     /// <param name="land">Told a completion is done, and whether it finished.</param>
-    internal void Wear(byte[] bytes, ulong mask, MotionEngine engine, Action<int, bool> land)
+    internal void Wear(byte[] bytes, ulong mask, Walker walker, Action<int, bool> land)
     {
         if (Kind == SwiftStateKind.Placement)
         {
-            Placed(bytes, mask, engine);
+            Placed(bytes, mask, walker);
             return;
         }
 
@@ -1746,7 +1749,7 @@ internal sealed class StateTie
         }
 
         // A JOURNEY IS NOT WORN HERE: it rides the number's channel, once for
-        // every control on the number - see StateFan.Wear.
+        // every control on the number - see StateChannel.Wear.
     }
 
     /// <summary>How many lanes a law takes, at the end of a run.</summary>
@@ -1758,8 +1761,8 @@ internal sealed class StateTie
     /// <summary>Where each placed view's journey is kept.</summary>
     /// <remarks>
     /// WEAK, because these outlive nothing: a view taken out of the run is a
-    /// view this must let go of, and the tie belongs to a layout that belongs
-    /// to a page.
+    /// view this must let go of, and the attachment belongs to a layout that
+    /// belongs to a page.
     /// </remarks>
     private readonly ConditionalWeakTable<View, MotionPlacement> _seats = new();
 
@@ -1786,8 +1789,8 @@ internal sealed class StateTie
     /// </remarks>
     /// <param name="bytes">The run, whole.</param>
     /// <param name="mask">Which lanes moved.</param>
-    /// <param name="engine">What moves the values.</param>
-    private void Placed(byte[] bytes, ulong mask, MotionEngine engine)
+    /// <param name="walker">What moves the values.</param>
+    private void Placed(byte[] bytes, ulong mask, Walker walker)
     {
         if (View is not Microsoft.Maui.Controls.Layout layout)
         {
@@ -1803,7 +1806,7 @@ internal sealed class StateTie
             return;
         }
 
-        MotionSpec spec = LawAt(lanes, lanes.Length - Laws, engine);
+        MotionSpec spec = LawAt(lanes, lanes.Length - Laws, walker);
         bool owing = false;
 
         for (int index = 0; index < run; index++)
@@ -1829,12 +1832,12 @@ internal sealed class StateTie
                 // AT ONCE, and whatever was carrying this view lets go: the
                 // arithmetic has just said where the view is, which is not a
                 // destination but a fact.
-                engine.Halt(child, MotionPlacement.Seat, MotionEnd.Nothing);
+                walker.Halt(child, MotionPlacement.Seat, TripEnd.Nothing);
                 seat.Write(_place);
             }
             else
             {
-                engine.Aim(seat, _place, spec);
+                walker.Aim(seat, _place, spec);
             }
 
             owing |= seat.Owing;
@@ -1911,7 +1914,7 @@ internal sealed class StateTie
     /// read-only and the scroller's movement writes it, see
     /// <see cref="ScrollMovement.Walked"/>.
     /// </summary>
-    private IMotionTarget? Sliding =>
+    private ITripTarget? Sliding =>
         View is ScrollView scroll && Property is null
             && scroll.GetValue(StateUIRenderer.ScrollMovementProperty) is ScrollMovement movement
             ? movement.Walked
@@ -1924,8 +1927,8 @@ internal sealed class StateTie
     /// <remarks>
     /// What the number's channel does to every control on the number, each
     /// frame, and what a report or a joining does to one. Not under the
-    /// writing marker itself: the engine raises it around a frame, and the
-    /// fan around its own writes.
+    /// writing marker itself: the walker raises it around a frame, and the
+    /// state channel around its own writes.
     /// </remarks>
     /// <param name="lanes">The value, lane by lane.</param>
     internal void Write(double[] lanes)
@@ -1961,7 +1964,7 @@ internal sealed class StateTie
             : Sliding?.Compose(lanes);
 
     /// <summary>
-    /// A speed per millisecond, as the engine keeps one, from the per-second
+    /// A speed per millisecond, as the walker keeps one, from the per-second
     /// lanes the image carries.
     /// </summary>
     internal static double[] PerFrame(double[] lanes)
@@ -1987,19 +1990,19 @@ internal sealed class StateTie
     /// can read a per-value motion plan - so the application's answer is the
     /// right one for a value no element has claimed.
     /// </remarks>
-    internal static MotionSpec Law(double[] lanes, int width, MotionEngine engine) =>
-        LawAt(lanes, width * 3, engine);
+    internal static MotionSpec Law(double[] lanes, int width, Walker walker) =>
+        LawAt(lanes, width * 3, walker);
 
     /// <summary>The law the three lanes at <paramref name="at"/> name.</summary>
     /// <param name="lanes">The whole value.</param>
     /// <param name="at">The first of the law's three lanes.</param>
-    /// <param name="engine">What moves the values, for the element's own law.</param>
+    /// <param name="walker">What moves the values, for the element's own law.</param>
     /// <returns>The law.</returns>
-    private static MotionSpec LawAt(double[] lanes, int at, MotionEngine engine)
+    private static MotionSpec LawAt(double[] lanes, int at, Walker walker)
     {
         return (int)lanes[at] switch
         {
-            1 => engine.Travel,
+            1 => walker.Travel,
             2 => MotionSpec.Eased(lanes[at + 1], (int)lanes[at + 2]),
             3 => MotionSpec.Spring(lanes[at + 1], lanes[at + 2]),
             _ => MotionSpec.Eased(0, 0),
@@ -2011,7 +2014,7 @@ internal sealed class StateTie
     {
         for (int lane = 0; lane < left.Length; lane++)
         {
-            if (Math.Abs(left[lane] - right[lane]) >= MotionCurve.Still)
+            if (Math.Abs(left[lane] - right[lane]) >= MotionLaw.Still)
             {
                 return false;
             }

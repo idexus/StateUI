@@ -9,7 +9,7 @@ using Microsoft.Maui.Layouts;
 using StateUI.Maui.Protocol;
 
 /// <summary>
-/// A layout whose children TRAVEL to their new places instead of appearing
+/// How a layout's children TRAVEL to their new places instead of appearing
 /// there.
 /// </summary>
 /// <remarks>
@@ -24,7 +24,7 @@ using StateUI.Maui.Protocol;
 /// It wraps whatever manager the layout would have used, so the arithmetic is
 /// untouched: a stack still stacks, a grid still measures its stars, a flex
 /// still wraps. What changes is only WHERE each child is put once that
-/// arithmetic has answered - at the place the engine has carried it to, rather
+/// arithmetic has answered - at the place the walker has carried it to, rather
 /// than at the answer itself. Add a card and the ones below it slide down;
 /// widen a grid's column and every child crosses to its new width; swap what a
 /// layout holds and everything settles into place.
@@ -38,12 +38,12 @@ using StateUI.Maui.Protocol;
 /// because a child that glides after a reader's own hand is late every frame.
 /// </para>
 /// </remarks>
-internal sealed class MotionArranger : ILayoutManager
+internal sealed class LayoutMotion : ILayoutManager
 {
     /// <summary>What each child's place is filed under, per layout.</summary>
     private sealed class Seat
     {
-        /// <summary>The child's place, as something the engine can move.</summary>
+        /// <summary>The child's place, as something the walker can move.</summary>
         internal required MotionFrame Frame { get; init; }
 
         /// <summary>Where it was last put - which is where it travels FROM.</summary>
@@ -52,7 +52,7 @@ internal sealed class MotionArranger : ILayoutManager
 
     private readonly ILayoutManager _inner;
     private readonly Layout _layout;
-    private readonly MotionEngine _engine;
+    private readonly Walker _walker;
     private readonly ConditionalWeakTable<IView, Seat> _seats = new();
 
     /// <summary>Whether each child's size is one somebody measures.</summary>
@@ -146,7 +146,7 @@ internal sealed class MotionArranger : ILayoutManager
         BindableProperty.CreateAttached(
             "StateUILanes",
             typeof(object),
-            typeof(MotionArranger),
+            typeof(LayoutMotion),
             defaultValue: null);
 
     /// <summary>
@@ -157,18 +157,18 @@ internal sealed class MotionArranger : ILayoutManager
         BindableProperty.CreateAttached(
             "StateUITravel",
             typeof(object),
-            typeof(MotionArranger),
+            typeof(LayoutMotion),
             defaultValue: null);
 
     /// <summary>Wraps a layout's own manager.</summary>
     /// <param name="layout">The layout.</param>
     /// <param name="inner">What works out where the children go.</param>
-    /// <param name="engine">What carries them there.</param>
-    internal MotionArranger(Layout layout, ILayoutManager inner, MotionEngine engine)
+    /// <param name="walker">What carries them there.</param>
+    internal LayoutMotion(Layout layout, ILayoutManager inner, Walker walker)
     {
         _layout = layout;
         _inner = inner;
-        _engine = engine;
+        _walker = walker;
 
         // A CHILD THAT LEAVES STOPS TRAVELLING. Nothing can see it any more, so
         // there is nothing left to draw - and a motion still under way would go
@@ -189,19 +189,19 @@ internal sealed class MotionArranger : ILayoutManager
                 return;
             }
 
-            if (_engine.Moving(gone, MotionFrame.Place) is MotionChannel channel
+            if (_walker.Moving(gone, MotionFrame.Place) is Trip trip
                 && _seats.TryGetValue(gone, out Seat? seat))
             {
-                seat.Was = new Rect(channel.P[0], channel.P[1], channel.P[2], channel.P[3]);
+                seat.Was = new Rect(trip.P[0], trip.P[1], trip.P[2], trip.P[3]);
             }
 
-            _engine.Halt(gone, MotionFrame.Place, MotionEnd.Nothing);
+            _walker.Halt(gone, MotionFrame.Place, TripEnd.Nothing);
 
             // Unless somebody else has the opacity: a fade this layout never
             // started is not this layout's to land.
-            if (_engine.Driven?.Invoke(gone, VisualElement.OpacityProperty) != true)
+            if (_walker.Driven?.Invoke(gone, VisualElement.OpacityProperty) != true)
             {
-                _engine.Halt(gone, VisualElement.OpacityProperty, MotionEnd.Target);
+                _walker.Halt(gone, VisualElement.OpacityProperty, TripEnd.Target);
             }
         };
     }
@@ -268,7 +268,7 @@ internal sealed class MotionArranger : ILayoutManager
         // keeps the common case off the wire entirely.
         MotionSpec spec = _layout.GetValue(TravelProperty) is MotionSpec placement
             ? placement
-            : _engine.Travel;
+            : _walker.Travel;
 
         // Which parts of a place travel at all. A layout told `.motion(.none,
         // .size)` puts its children in their new places and gives them their
@@ -290,7 +290,7 @@ internal sealed class MotionArranger : ILayoutManager
         // moving: a window dragged, a keyboard rising, a scroller settling.
         // Everything then tracks it exactly, because a child that glides after
         // a reader's own hand is late every frame.
-        bool said = _applied != _engine.Applies;
+        bool said = _applied != _walker.Applies;
         bool first = !_placed;
 
         // A MOTION CANNOT OUTLIVE A PASS THAT WILL NOT END. A place is walked
@@ -311,8 +311,8 @@ internal sealed class MotionArranger : ILayoutManager
         // help. The children are then where the tree says, the pass has nothing
         // left to redo, and what the reader sees is the platform's own rotation
         // rather than ours on top of it. See `Refuse`.
-        bool advanced = _stamp != _engine.At;
-        _stamp = _engine.At;
+        bool advanced = _stamp != _walker.At;
+        _stamp = _walker.At;
 
         if (advanced)
         {
@@ -334,7 +334,7 @@ internal sealed class MotionArranger : ILayoutManager
             _reads.Clear();
         }
 
-        _applied = _engine.Applies;
+        _applied = _walker.Applies;
         _placed = true;
 
         // Whether anything in this layout is being measured - asked once, of
@@ -411,7 +411,7 @@ internal sealed class MotionArranger : ILayoutManager
                 continue;
             }
 
-            MotionChannel? moving = _engine.Moving(child, MotionFrame.Place);
+            Trip? moving = _walker.Moving(child, MotionFrame.Place);
 
             if (!Real(seat.Was) || !Real(target))
             {
@@ -428,7 +428,7 @@ internal sealed class MotionArranger : ILayoutManager
                 // what it is doing - it simply appears at its own size.
                 if (moving is not null)
                 {
-                    _engine.Halt(child, MotionFrame.Place, MotionEnd.Nothing);
+                    _walker.Halt(child, MotionFrame.Place, TripEnd.Nothing);
                 }
 
                 seat.Was = target;
@@ -465,7 +465,7 @@ internal sealed class MotionArranger : ILayoutManager
             {
                 if (moving is not null)
                 {
-                    _engine.Halt(child, MotionFrame.Place, MotionEnd.Nothing);
+                    _walker.Halt(child, MotionFrame.Place, TripEnd.Nothing);
                 }
 
                 seat.Was = target;
@@ -526,7 +526,7 @@ internal sealed class MotionArranger : ILayoutManager
             SwiftMotionLanes travels = lanes & ~(sized | Asked(child));
 
             // A lane that does not travel starts where it is going, which is
-            // the whole of what holding one still means to a channel.
+            // the whole of what holding one still means to a trip.
             double[] start =
             [
                 travels.HasFlag(SwiftMotionLanes.X) ? was.X : target.X,
@@ -535,7 +535,7 @@ internal sealed class MotionArranger : ILayoutManager
                 travels.HasFlag(SwiftMotionLanes.Height) ? was.Height : target.Height,
             ];
 
-            _engine.Aim(
+            _walker.Aim(
                 seat.Frame,
                 [target.X, target.Y, target.Width, target.Height],
                 spec,
@@ -598,19 +598,19 @@ internal sealed class MotionArranger : ILayoutManager
         Seat seat,
         Rect target,
         in MotionSpec spec,
-        MotionChannel moving,
+        Trip moving,
         bool gaveUp)
     {
         // A SIZE THAT IS NOT IN THE AIR IS NOT WHAT THIS PASS IS STUCK ON, so
         // there is nothing to give up and the place arrives - which is the
         // rotation case, where a row travels without changing size at all.
         bool sizing =
-            Math.Abs(moving.P[2] - moving.Target[2]) >= MotionCurve.Still
-            || Math.Abs(moving.P[3] - moving.Target[3]) >= MotionCurve.Still;
+            Math.Abs(moving.P[2] - moving.Target[2]) >= MotionLaw.Still
+            || Math.Abs(moving.P[3] - moving.Target[3]) >= MotionLaw.Still;
 
         if (gaveUp || !sizing)
         {
-            _engine.Halt(child, MotionFrame.Place, MotionEnd.Target);
+            _walker.Halt(child, MotionFrame.Place, TripEnd.Target);
             return;
         }
 
@@ -622,9 +622,9 @@ internal sealed class MotionArranger : ILayoutManager
         // and the size is the whole of what has to change.
         double[] from = [moving.P[0], moving.P[1], target.Width, target.Height];
 
-        _engine.Halt(child, MotionFrame.Place, MotionEnd.Nothing);
+        _walker.Halt(child, MotionFrame.Place, TripEnd.Nothing);
 
-        _engine.Aim(
+        _walker.Aim(
             seat.Frame,
             [target.X, target.Y, target.Width, target.Height],
             spec,
@@ -661,7 +661,7 @@ internal sealed class MotionArranger : ILayoutManager
         // row inserted into a live layout and described as hidden is on its
         // way OUT, and a fade in over the top of it would replace that motion,
         // tell it that it did not finish, and leave the view standing there.
-        if (_engine.Moving(view, VisualElement.OpacityProperty) is not null)
+        if (_walker.Moving(view, VisualElement.OpacityProperty) is not null)
         {
             return;
         }
@@ -669,12 +669,12 @@ internal sealed class MotionArranger : ILayoutManager
         // NOR ONE SOMEBODY ELSE OWNS. A child whose opacity is on a state wears
         // whatever the number says from the frame it arrives, and a fade in over
         // the top of that would be a second writer on one value.
-        if (_engine.Driven?.Invoke(view, VisualElement.OpacityProperty) == true)
+        if (_walker.Driven?.Invoke(view, VisualElement.OpacityProperty) == true)
         {
             return;
         }
 
-        _engine.Aim(
+        _walker.Aim(
             new MotionProperty(view, VisualElement.OpacityProperty, MotionValue.Number, true),
             [view.Opacity],
             spec,

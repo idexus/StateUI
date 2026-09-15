@@ -1,9 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+using StateUI.Maui.Protocol;
+
 namespace StateUI.Maui.Rendering;
 
-/// <summary>Which law a channel travels under.</summary>
+/// <summary>Which law a trip travels under.</summary>
 internal enum MotionKind : byte
 {
     /// <summary>A stated length on a stated curve.</summary>
@@ -14,12 +16,12 @@ internal enum MotionKind : byte
 }
 
 /// <summary>
-/// What a motion is, as the numbers that describe it: everything the engine
+/// What a motion is, as the numbers that describe it: everything the walker
 /// needs to know beyond where the value is going.
 /// </summary>
 /// <remarks>
 /// A value type with no state of its own, so the same spec can start any number
-/// of channels. Which fields mean anything depends on <see cref="Kind"/>, and
+/// of trips. Which fields mean anything depends on <see cref="Kind"/>, and
 /// the two factories below are the only way one is meant to be built.
 /// </remarks>
 internal readonly struct MotionSpec
@@ -68,7 +70,7 @@ internal readonly struct MotionSpec
 
 /// <summary>
 /// Where a value is at a given moment of its motion, and how fast it is going
-/// there.
+/// there - and the curves an eased motion follows.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -82,15 +84,20 @@ internal readonly struct MotionSpec
 /// Velocity is the law's own derivative, never a difference between two
 /// samples. That is what a retarget needs: the motion that replaces this one
 /// starts from the speed this one had, so the value bends instead of being cut.
+/// A curve's SLOPE is a central difference on the CURVE - a pure function of
+/// how far through the motion is - and not a difference between two frames, so
+/// it answers the same number in every run and every process, at any frame
+/// rate, including none at all.
 /// </para>
 /// <para>
-/// The laws are the core's: a line-by-line copy of the Swift
-/// <c>HostMotionLaw</c>, which every runtime walks with. <c>motion-laws.txt</c>,
-/// the core's trajectory table, is what proves the copy
-/// (<c>MotionLawTests</c>).
+/// The laws and their curves are the core's: a line-by-line copy of the Swift
+/// <c>HostMotionLaw</c>, in the same arithmetic order, which every runtime
+/// walks with - a value walked on <c>cubicOut</c> here is the sequence of
+/// numbers every other runtime walks. <c>motion-laws.txt</c>, the core's
+/// trajectory table, is what proves the copy (<c>MotionLawTests</c>).
 /// </para>
 /// </remarks>
-internal static class MotionCurve
+internal static class MotionLaw
 {
     /// <summary>
     /// A spring is at rest when it is this close to its target and this slow -
@@ -114,18 +121,106 @@ internal static class MotionCurve
     /// Puts the value and its speed at <paramref name="t"/> into
     /// <paramref name="p"/> and <paramref name="v"/>.
     /// </summary>
-    /// <param name="channel">The channel, holding where it started and where it is going.</param>
+    /// <param name="trip">The trip, holding where it started and where it is going.</param>
     /// <param name="t">Milliseconds since the motion began.</param>
     /// <param name="p">Filled with the value at that moment.</param>
     /// <param name="v">Filled with how fast each lane is moving, per millisecond.</param>
     /// <returns>Whether the motion is over.</returns>
-    internal static bool At(MotionChannel channel, double t, double[] p, double[] v)
+    internal static bool Sample(Trip trip, double t, double[] p, double[] v)
     {
-        return channel.Spec.Kind switch
+        return trip.Spec.Kind switch
         {
-            MotionKind.Spring => Spring(channel, t, p, v),
-            _ => Eased(channel, t, p, v),
+            MotionKind.Spring => Spring(trip, t, p, v),
+            _ => Eased(trip, t, p, v),
         };
+    }
+
+    /// <summary>How far along a curve is at <paramref name="s"/>, from 0 to 1.</summary>
+    /// <remarks>
+    /// A number the wire does not name is the straight line.
+    /// </remarks>
+    /// <param name="curve">The curve, as its <c>SwiftEasing</c> member.</param>
+    /// <param name="s">How far through the motion is, from 0 to 1.</param>
+    /// <returns>The fraction of the distance covered - which the bouncing and
+    /// springing curves deliberately take past 1 and back.</returns>
+    internal static double Ease(int curve, double s)
+    {
+        double x = Math.Clamp(s, 0, 1);
+
+        switch ((SwiftEasing)curve)
+        {
+            case SwiftEasing.SineOut:
+                return Math.Sin(x * Math.PI / 2);
+
+            case SwiftEasing.SineIn:
+                return 1 - Math.Cos(x * Math.PI / 2);
+
+            case SwiftEasing.SineInOut:
+                return (1 - Math.Cos(x * Math.PI)) / 2;
+
+            case SwiftEasing.CubicIn:
+                return x * x * x;
+
+            case SwiftEasing.CubicOut:
+            {
+                double shifted = x - 1;
+                return (shifted * shifted * shifted) + 1;
+            }
+
+            case SwiftEasing.CubicInOut:
+            {
+                if (x < 0.5)
+                {
+                    return 4 * x * x * x;
+                }
+
+                double shifted = (2 * x) - 2;
+                return (shifted * shifted * shifted / 2) + 1;
+            }
+
+            case SwiftEasing.BounceOut:
+                return BounceOut(x);
+
+            case SwiftEasing.BounceIn:
+                return 1 - BounceOut(1 - x);
+
+            case SwiftEasing.SpringIn:
+                return x * x * ((2.70158 * x) - 1.70158);
+
+            case SwiftEasing.SpringOut:
+            {
+                double shifted = x - 1;
+                return (shifted * shifted * ((2.70158 * shifted) + 1.70158)) + 1;
+            }
+
+            default:
+                return x;
+        }
+    }
+
+    /// <summary>How steeply the curve is rising at <paramref name="s"/>.</summary>
+    /// <remarks>
+    /// Per unit of <c>s</c>, so a caller divides by the motion's length to get
+    /// a speed. The step is small enough to be exact for every curve here and
+    /// wide enough that no curve's own arithmetic shows through it; at the ends
+    /// the difference is one-sided, since there is no curve outside 0 to 1.
+    /// </remarks>
+    /// <param name="curve">The curve, as its <c>SwiftEasing</c> member.</param>
+    /// <param name="s">How far through the motion is, from 0 to 1.</param>
+    /// <returns>The curve's rate of climb there.</returns>
+    internal static double Slope(int curve, double s)
+    {
+        const double step = 1e-4;
+
+        double from = Math.Clamp(s - step, 0, 1);
+        double to = Math.Clamp(s + step, 0, 1);
+
+        if (to - from <= 0)
+        {
+            return 0;
+        }
+
+        return (Ease(curve, to) - Ease(curve, from)) / (to - from);
     }
 
     /// <summary>
@@ -140,20 +235,20 @@ internal static class MotionCurve
     /// changed mid-walk bends the motion rather than cutting it, and a motion
     /// that nothing interrupted is unchanged.
     /// </remarks>
-    private static bool Eased(MotionChannel channel, double t, double[] p, double[] v)
+    private static bool Eased(Trip trip, double t, double[] p, double[] v)
     {
-        double length = channel.Spec.Length;
+        double length = trip.Spec.Length;
 
         if (length <= 0 || t >= length)
         {
-            channel.Target.CopyTo(p, 0);
+            trip.Target.CopyTo(p, 0);
             Array.Clear(v);
             return true;
         }
 
         double s = t / length;
-        double curve = MotionEasing.At(channel.Spec.Curve, s);
-        double slope = MotionEasing.Slope(channel.Spec.Curve, s);
+        double curve = Ease(trip.Spec.Curve, s);
+        double slope = Slope(trip.Spec.Curve, s);
 
         // The Hermite basis, which only the lanes that carry speed need.
         double h00 = ((2 * s) - 3) * s * s + 1;
@@ -165,9 +260,9 @@ internal static class MotionCurve
 
         for (int lane = 0; lane < p.Length; lane++)
         {
-            double from = channel.From[lane];
-            double to = channel.Target[lane];
-            double speed = channel.StartV[lane];
+            double from = trip.From[lane];
+            double to = trip.Target[lane];
+            double speed = trip.StartV[lane];
 
             if (speed == 0)
             {
@@ -192,17 +287,17 @@ internal static class MotionCurve
     /// makes the three damping cases the textbook ones and keeps the target out
     /// of the exponentials.
     /// </remarks>
-    private static bool Spring(MotionChannel channel, double t, double[] p, double[] v)
+    private static bool Spring(Trip trip, double t, double[] p, double[] v)
     {
-        double w = 2 * Math.PI / channel.Spec.Response;
-        double zeta = channel.Spec.Damping;
+        double w = 2 * Math.PI / trip.Spec.Response;
+        double zeta = trip.Spec.Damping;
         bool rested = t >= Longest;
 
         for (int lane = 0; lane < p.Length; lane++)
         {
-            double to = channel.Target[lane];
-            double x0 = channel.From[lane] - to;
-            double v0 = channel.StartV[lane];
+            double to = trip.Target[lane];
+            double x0 = trip.From[lane] - to;
+            double v0 = trip.StartV[lane];
             double x, dx;
 
             if (Math.Abs(zeta - 1) < 1e-6)
@@ -247,7 +342,7 @@ internal static class MotionCurve
             }
 
             // Near enough to be over, and every lane has to agree before the
-            // whole channel is: a spring on four lanes settles them one by one.
+            // whole trip is: a spring on four lanes settles them one by one.
             p[lane] = to;
             v[lane] = 0;
         }
@@ -258,16 +353,40 @@ internal static class MotionCurve
 
             for (int lane = 0; lane < p.Length && rested; lane++)
             {
-                rested = v[lane] == 0 && p[lane] == channel.Target[lane];
+                rested = v[lane] == 0 && p[lane] == trip.Target[lane];
             }
         }
 
         if (rested)
         {
-            channel.Target.CopyTo(p, 0);
+            trip.Target.CopyTo(p, 0);
             Array.Clear(v);
         }
 
         return rested;
+    }
+
+    /// <summary>The bounce that settles into its end, four arcs smaller each time.</summary>
+    private static double BounceOut(double x)
+    {
+        if (x < 1 / 2.75)
+        {
+            return 7.5625 * x * x;
+        }
+
+        if (x < 2 / 2.75)
+        {
+            double shifted = x - (1.5 / 2.75);
+            return (7.5625 * shifted * shifted) + 0.75;
+        }
+
+        if (x < 2.5 / 2.75)
+        {
+            double shifted = x - (2.25 / 2.75);
+            return (7.5625 * shifted * shifted) + 0.9375;
+        }
+
+        double last = x - (2.625 / 2.75);
+        return (7.5625 * last * last) + 0.984375;
     }
 }

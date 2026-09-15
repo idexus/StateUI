@@ -663,10 +663,10 @@ internal sealed class StateUISession
             // HOW EVERY LAYOUT'S CHILDREN TRAVEL, said once for the whole
             // application: a layout that agrees with it is on no message at
             // all, which is what keeps the common case off the wire. See
-            // MotionArranger.
+            // LayoutMotion.
             if (message.Root.Moves && message.Root.Motion is MotionSpec placement)
             {
-                Renderer.Motion.Travel = placement;
+                Renderer.Walker.Travel = placement;
             }
 
             // Swift says whether this is the whole tree; it is not inferred from

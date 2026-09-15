@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Does every member the host REPORTS survive the trip onto our numbering?
+// Does every member the host REPORTS survive the translation onto our
+// numbering?
 //
 // A member of a closed vocabulary crosses this wire as THIS REPOSITORY's number
 // for it, in both directions, and a report the host raises is translated onto

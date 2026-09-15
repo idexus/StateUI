@@ -3,7 +3,7 @@
 
 // The two motion laws, walked with the core's numbers. MotionLawTests.swift
 // writes every trajectory of its table into motion-laws.txt; this walks each
-// trip the file describes and asks MotionCurve where it stands at each
+// trip the file describes and asks MotionLaw where it stands at each
 // instant the file names.
 
 using System.Globalization;
@@ -21,7 +21,7 @@ public class MotionLawTests
     [Fact]
     public void EveryTripInTheCoresTableWalksToTheSameNumbers()
     {
-        MotionChannel? trip = null;
+        Trip? trip = null;
         int instants = 0;
 
         foreach (string line in File.ReadAllLines(Path.Combine(Fixtures.Directory, "motion-laws.txt")))
@@ -35,7 +35,7 @@ public class MotionLawTests
 
             if (words[0] == "trip")
             {
-                trip = Trip(words);
+                trip = Parse(words);
                 continue;
             }
 
@@ -44,7 +44,7 @@ public class MotionLawTests
             double[] value = new double[trip.From.Length];
             double[] velocity = new double[trip.From.Length];
 
-            bool rested = MotionCurve.At(trip, Number(words[1]), value, velocity);
+            bool rested = MotionLaw.Sample(trip, Number(words[1]), value, velocity);
 
             Assert.True(rested == (words[2] == "rested"), $"{line}: arrived {rested}");
             Close(Lanes(words[4]), value, line);
@@ -59,7 +59,7 @@ public class MotionLawTests
     /// A trip from its line:
     /// <c>trip law curve milliseconds damping from lanes to lanes velocity lanes</c>.
     /// </summary>
-    private static MotionChannel Trip(string[] words)
+    private static Trip Parse(string[] words)
     {
         double millis = Number(words[3]);
         MotionSpec spec = words[1] == "spring"
@@ -67,7 +67,7 @@ public class MotionLawTests
             : MotionSpec.Eased(millis, (int)Enum.Parse<SwiftEasing>(words[2], ignoreCase: true));
         double[] from = Lanes(words[6]);
 
-        return new MotionChannel
+        return new Trip
         {
             // The law reads where the trip began and where it is going, and
             // never what it moves.

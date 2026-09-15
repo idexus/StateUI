@@ -14,15 +14,15 @@ using StateUI.Maui.Protocol;
 /// A transition arrives as an ordinary property change with a
 /// <see cref="SwiftTransition"/> beside it. This takes those properties out of
 /// the node before the renderer applies it - so the assignment that would have
-/// snapped never happens - and aims the engine at the value that arrived, from
+/// snapped never happens - and aims the walker at the value that arrived, from
 /// wherever the control is now.
 /// </para>
 /// <para>
 /// NOBODY IS WAITING. A transition is a law and nothing else: a value that
 /// changed is a setpoint, the tree already says where it is going, and a render
 /// in the middle of the walk says the same thing again. So there is no
-/// bookkeeping here at all - what a message names, the engine is aimed at, and
-/// the walk is the engine's business from that moment. A value somebody DOES
+/// bookkeeping here at all - what a message names, the walker is aimed at, and
+/// the walk is the walker's business from that moment. A value somebody DOES
 /// await is a driven one, walked off its own image by <see cref="StateCycle"/>.
 /// </para>
 /// <para>
@@ -33,20 +33,20 @@ using StateUI.Maui.Protocol;
 /// nobody said anything about.
 /// </para>
 /// <para>
-/// What actually MOVES is <see cref="MotionEngine"/>; this is the wire's face
+/// What actually MOVES is <see cref="Walker"/>; this is the wire's face
 /// on it - which properties a message says to walk, and under which law.
 /// </para>
 /// </remarks>
-internal sealed class SwiftTransitions
+internal sealed class DescribedMotion
 {
     /// <summary>What actually moves the values.</summary>
-    private readonly MotionEngine _engine;
+    private readonly Walker _walker;
 
-    /// <summary>Reads a message's transitions onto an engine.</summary>
-    /// <param name="engine">What moves the values.</param>
-    internal SwiftTransitions(MotionEngine engine)
+    /// <summary>Reads a message's transitions onto a walker.</summary>
+    /// <param name="walker">What moves the values.</param>
+    internal DescribedMotion(Walker walker)
     {
-        _engine = engine;
+        _walker = walker;
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ internal sealed class SwiftTransitions
     }
 
     /// <summary>
-    /// Whether this property is one the engine can carry a control through -
+    /// Whether this property is one the walker can carry a control through -
     /// it has a MAUI property behind it, and its value has a half-way.
     /// </summary>
     private static bool Walkable(SwiftNode node, SwiftTransition transition, SwiftWireValue target)
@@ -130,7 +130,7 @@ internal sealed class SwiftTransitions
 
         return SwiftStyles.Value(property, carrier, key) is object value
             && MotionProperty.Of(
-                new Label(), property, value, false, out IMotionTarget _, out double[] _);
+                new Label(), property, value, false, out ITripTarget _, out double[] _);
     }
 
     /// <summary>
@@ -175,7 +175,7 @@ internal sealed class SwiftTransitions
         SwiftNode node,
         List<(SwiftTransition Transition, SwiftWireValue Target)> taken)
     {
-        if (!_engine.Stirring(view))
+        if (!_walker.Stirring(view))
         {
             return;
         }
@@ -191,9 +191,9 @@ internal sealed class SwiftTransitions
 
                 if (SwiftStyles.Property(node.Type, node.TypeName, SwiftKey.Of(property, string.Empty))
                     is BindableProperty bindable
-                    && _engine.Driven?.Invoke(view, bindable) != true)
+                    && _walker.Driven?.Invoke(view, bindable) != true)
                 {
-                    _engine.Halt(view, bindable, MotionEnd.Nothing);
+                    _walker.Halt(view, bindable, TripEnd.Nothing);
                 }
             }
         }
@@ -212,9 +212,9 @@ internal sealed class SwiftTransitions
 
             if (SwiftStyles.Property(node.Type, node.TypeName, SwiftKey.Of(SwiftProp.None, spelling))
                 is BindableProperty bindable
-                && _engine.Driven?.Invoke(view, bindable) != true)
+                && _walker.Driven?.Invoke(view, bindable) != true)
             {
-                _engine.Halt(view, bindable, MotionEnd.Nothing);
+                _walker.Halt(view, bindable, TripEnd.Nothing);
             }
         }
     }
@@ -238,7 +238,7 @@ internal sealed class SwiftTransitions
         return false;
     }
 
-    /// <summary>Aims the engine at one property's target, under the stated law.</summary>
+    /// <summary>Aims the walker at one property's target, under the stated law.</summary>
     private void Start(
         View view,
         SwiftNodeType type,
@@ -261,11 +261,11 @@ internal sealed class SwiftTransitions
         }
 
         // A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL, and this is
-        // the engine's half of the rule the arranger already keeps for the
+        // the walker's half of the rule the arranger already keeps for the
         // same reason: where a layout is being measured, none of its children
         // is carried through a size, because what the measurement reports is
         // what the views in it leave it. A size the tree describes is carried
-        // by the ENGINE rather than by the arrangement, and without this it
+        // by the WALKER rather than by the arrangement, and without this it
         // would go on travelling: a page built from a `FrameReader`'s frame
         // crawls to every new room over a fifth of a second, re-measuring the
         // whole layout at every frame, and everything standing under it rides
@@ -280,7 +280,7 @@ internal sealed class SwiftTransitions
 
         if (!MotionProperty.Of(
             view, property, destination, Fraction(property),
-            out IMotionTarget moves, out double[] to))
+            out ITripTarget moves, out double[] to))
         {
             // Not walkable - a string, an enum, a picture. Assign it: the
             // value is what the tree said, and only the travelling was refused.
@@ -288,7 +288,7 @@ internal sealed class SwiftTransitions
             return;
         }
 
-        _engine.Aim(moves, to, transition.Spec);
+        _walker.Aim(moves, to, transition.Spec);
     }
 
     /// <summary>Whether this view's size is one somebody is measuring.</summary>

@@ -237,28 +237,28 @@ internal sealed class ScrollMovement
         _sliding = new Sliding(this);
     }
 
-    /// <summary>The offset, as something the engine can move.</summary>
+    /// <summary>The offset, as something the walker can move.</summary>
     private readonly Sliding _sliding;
 
     /// <summary>The key the scroller's offset is known by as a target.</summary>
     internal static readonly object Slide = new();
 
-    /// <summary>The offset, as the engine walks it - two lanes, one point.</summary>
+    /// <summary>The offset, as the walker walks it - two lanes, one point.</summary>
     /// <remarks>
     /// What a state tied to <c>scrollOffset($:)</c> aims at: the platform
     /// declares the offset read-only, so a written state moves the scroller
     /// through this rather than through a setter that does not exist.
     /// </remarks>
-    internal IMotionTarget Walked => _sliding;
+    internal ITripTarget Walked => _sliding;
 
     /// <summary>
-    /// The scroller's offset, as a value the engine moves like any other.
+    /// The scroller's offset, as a value the walker moves like any other.
     /// </summary>
     /// <remarks>
     /// Held inside what the scroller can REACH, every frame: a run reported
     /// short one beat and whole the next must not be sent where it cannot go.
     /// </remarks>
-    private sealed class Sliding : IMotionTarget
+    private sealed class Sliding : ITripTarget
     {
         private readonly ScrollMovement _movement;
 

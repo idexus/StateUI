@@ -162,13 +162,13 @@ internal static class RenderTally
     internal static Func<long>? Holding;
 
     /// <summary>
-    /// How many motions the engine is carrying right now - answered by the
-    /// live engine, and nothing where there is none.
+    /// How many motions the walker is carrying right now - answered by the
+    /// live walker, and nothing where there is none.
     /// </summary>
     /// <remarks>
     /// A motion holds the control it moves for as long as it runs, so this is
     /// the column to read beside <c>tracked</c>: a count that stays up after a
-    /// page has been left says the engine is still carrying what that page
+    /// page has been left says the walker is still carrying what that page
     /// put in it.
     /// </remarks>
     internal static Func<long>? MovingCount;

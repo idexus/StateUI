@@ -165,7 +165,7 @@ internal static class SwiftStyles
             // A VALUE WITH A HALF-WAY IS NOT A SETTER. MAUI applies a setter by
             // assigning, which is the one thing in this library that cannot be
             // animated from the outside - so a colour, an opacity, a size or a
-            // set of edges is taken OUT of the state and carried by the engine
+            // set of edges is taken OUT of the state and carried by the walker
             // instead, at whatever the control's own motion says. A control
             // whose motion is none gets exactly what a setter gave it.
             //
@@ -196,7 +196,7 @@ internal static class SwiftStyles
     /// else: ignored rather than guessed at.
     /// <para>
     /// Internal rather than private because a transition reads its target value
-    /// through here as well - see <see cref="SwiftTransitions"/>. The same table
+    /// through here as well - see <see cref="DescribedMotion"/>. The same table
     /// answers both questions, which is what keeps a property walkable the
     /// moment it becomes styleable.
     /// </para>

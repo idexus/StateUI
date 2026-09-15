@@ -362,9 +362,9 @@ public sealed class StateUIRenderer
     /// where the scroller is reconciled.
     /// </summary>
     /// <remarks>
-    /// Written where the scroller is reconciled, before the tie is made later
-    /// in the same pass, and read by <c>ObserveScroll</c>, which makes the
-    /// scroller's movement for it. See <see cref="StateCycle"/>.
+    /// Written where the scroller is reconciled, before the attachment is made
+    /// later in the same pass, and read by <c>ObserveScroll</c>, which makes
+    /// the scroller's movement for it. See <see cref="StateCycle"/>.
     /// </remarks>
     internal static readonly BindableProperty ScrolledProperty =
         BindableProperty.CreateAttached(
@@ -544,7 +544,7 @@ public sealed class StateUIRenderer
     /// old generation, so Swift describes the whole tree again - and a property
     /// that is being WALKED arrives as a plain value, which ends the walk - so
     /// a report raised from inside an apply would kill the very motion that
-    /// raised it, measured on Catalyst. See <see cref="SwiftTransitions"/>.
+    /// raised it, measured on Catalyst. See <see cref="DescribedMotion"/>.
     /// </remarks>
     internal bool Busy => _rendering;
 
@@ -574,8 +574,8 @@ public sealed class StateUIRenderer
             {
                 // What tells a layout that the arrangement it is about to be
                 // asked for is a change to what the interface HOLDS, rather
-                // than the room around it moving. See MotionArranger.
-                renderer._motion.Said();
+                // than the room around it moving. See LayoutMotion.
+                renderer._walker.Said();
             }
         }
 
@@ -624,22 +624,22 @@ public sealed class StateUIRenderer
         // is what makes a render there, which is a resync, which describes the
         // moving property as a plain value and ends the very motion that
         // caused it. One frame deferred is invisible.
-        _motion = new MotionEngine { Held = () => _rendering };
+        _walker = new Walker { Held = () => _rendering };
 
-        // What the motion engine is still carrying, beside what is tracked: a
-        // count that stays up after a page has been left says the engine is
+        // What the walker is still carrying, beside what is tracked: a
+        // count that stays up after a page has been left says the walker is
         // holding what that page put in it.
-        RenderTally.MovingCount = () => _motion.Carrying;
+        RenderTally.MovingCount = () => _walker.Carrying;
 
-        _transitions = new SwiftTransitions(_motion);
+        _describedMotion = new DescribedMotion(_walker);
 
-        // THE CYCLE RIDES THE FRAME: the engine steps every value that is
+        // THE CYCLE RIDES THE FRAME: the walker steps every value that is
         // moving, and then whatever else the frame is for runs - which is one
         // cycle of the image, in and out. An awaited movement on a state answers
         // on one of the negative completion ids every act answers on, so it goes
         // out the door an act's reply goes out of.
         _cycle = new StateCycle(
-            _motion,
+            _walker,
             new NativeCycleCrossing(),
             (waiter, whole) =>
                 _dispatch(waiter, SwiftWire.WriteReply([SwiftWireValue.Of(whole)])))
@@ -647,15 +647,15 @@ public sealed class StateUIRenderer
             Held = () => _rendering,
         };
 
-        _motion.Cycle = _cycle.Frame;
-        _motion.Idle = _cycle.Idle;
+        _walker.Cycle = _cycle.Frame;
+        _walker.Idle = _cycle.Idle;
 
         // The two seams the rest of the renderer reaches the states THROUGH,
         // rather than by holding one: a layout's arranger and the message's own
-        // transitions are handed the engine and nothing else, and both have to
+        // transitions are handed the walker and nothing else, and both have to
         // know whether something else owns a value before they write it.
-        _motion.Driven = _cycle.Drives;
-        _motion.Aimed = _cycle.Mirror;
+        _walker.Driven = _cycle.Drives;
+        _walker.Aimed = _cycle.Mirror;
     }
 
     /// <summary>
@@ -669,18 +669,18 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// What moves every value that is going somewhere - see
-    /// <see cref="MotionEngine"/>. Reachable so a test can wind its clock by
+    /// <see cref="Walker"/>. Reachable so a test can wind its clock by
     /// hand, which an application never needs to.
     /// </summary>
-    internal MotionEngine Motion => _motion;
+    internal Walker Walker => _walker;
 
-    private readonly MotionEngine _motion;
+    private readonly Walker _walker;
 
     /// <summary>
     /// The properties being walked to rather than assigned - see
-    /// <see cref="SwiftTransitions"/>.
+    /// <see cref="DescribedMotion"/>.
     /// </summary>
-    private readonly SwiftTransitions _transitions;
+    private readonly DescribedMotion _describedMotion;
 
     /// <summary>
     /// Applies a message to <paramref name="existing"/> and returns the control
@@ -740,15 +740,15 @@ public sealed class StateUIRenderer
         // Lifted BEFORE the node is applied, started AFTER - the only order
         // there is, since the assignment that would snap has to be prevented
         // before it happens and the control it is about may not exist until it
-        // does. See SwiftTransitions.
-        List<(SwiftTransition Transition, SwiftWireValue Target)> walked = _transitions.Take(node);
+        // does. See DescribedMotion.
+        List<(SwiftTransition Transition, SwiftWireValue Target)> walked = _describedMotion.Take(node);
         View view = Made(existing, node);
 
-        _transitions.Apply(view, node, walked);
+        _describedMotion.Apply(view, node, walked);
 
 
         // AFTER the transitions, for the reason the registration below is after
-        // them too: a state's own value is carried by the ENGINE, and the
+        // them too: a state's own value is carried by the WALKER, and the
         // interrupt every plain assignment makes would halt it a moment after
         // it started. A style states a control's resting colour and its
         // disabled colour together, so the first message a disabled control
@@ -852,8 +852,8 @@ public sealed class StateUIRenderer
             SwiftNodeType.ActivityIndicator => ReconcileActivityIndicator(node, existing),
             SwiftNodeType.ProgressBar => ReconcileProgressBar(node, existing),
             SwiftNodeType.Grid => ReconcileGrid(node, existing),
-            SwiftNodeType.VStack => ReconcileStack(node, existing, () => new MotionLayouts.Vertical { Engine = _motion }),
-            SwiftNodeType.HStack => ReconcileStack(node, existing, () => new MotionLayouts.Horizontal { Engine = _motion }),
+            SwiftNodeType.VStack => ReconcileStack(node, existing, () => new TravellingLayouts.Vertical { Walker = _walker }),
+            SwiftNodeType.HStack => ReconcileStack(node, existing, () => new TravellingLayouts.Horizontal { Walker = _walker }),
             SwiftNodeType.AbsoluteLayout => ReconcileAbsoluteLayout(node, existing),
             SwiftNodeType.ScrollView => ReconcileScrollView(node, existing),
             SwiftNodeType.WebView => ReconcileWebView(node, existing),
@@ -1858,7 +1858,7 @@ public sealed class StateUIRenderer
     /// THIS SIDE'S OWN WRITES NEVER COME BACK AS EVENTS, and there are two of
     /// them: a message being applied (<c>_rendering</c>) and a motion or a
     /// cycle writing a value of its own - a frame, or a state's value onto a
-    /// tie (<see cref="MotionEngine.Writing"/>). Both assign properties,
+    /// attachment (<see cref="Walker.Writing"/>). Both assign properties,
     /// every platform raises its change notification synchronously inside an
     /// assignment, and a two-way control's report is written straight back into
     /// the state it was described from - so a value the host is carrying would
@@ -1875,7 +1875,7 @@ public sealed class StateUIRenderer
     /// </returns>
     internal bool Raise(object? sender, SwiftEvent name, byte[]? payload = null)
     {
-        if (_rendering || MotionEngine.Writing > 0)
+        if (_rendering || Walker.Writing > 0)
         {
             return false;
         }
@@ -1962,7 +1962,7 @@ public sealed class StateUIRenderer
     {
         // The same two writes of ours that the typed form refuses - an apply,
         // and a motion's or a cycle's own write.
-        if (_rendering || MotionEngine.Writing > 0)
+        if (_rendering || Walker.Writing > 0)
         {
             return;
         }
@@ -2017,7 +2017,7 @@ public sealed class StateUIRenderer
     /// <c>_rendering</c> guard keeps this side's OWN assignment out, as it does
     /// for <see cref="Moved"/>: a value set from a message raises the same
     /// notification, and a message is not a finger; a value a CYCLE set raises
-    /// it under <see cref="MotionEngine.Writing"/>, which the cycle refuses.
+    /// it under <see cref="Walker.Writing"/>, which the cycle refuses.
     /// </remarks>
     /// <param name="sender">The control.</param>
     /// <param name="property">Which of its properties moved.</param>
@@ -2477,7 +2477,7 @@ public sealed class StateUIRenderer
 
         // A FRAME SOMEBODY READS IS A FRAME THAT DOES NOT TRAVEL. What comes
         // back is worked out from, so the arranger settles this view at its
-        // size rather than walking it there. See MotionArranger.Measures.
+        // size rather than walking it there. See LayoutMotion.Measures.
         view.SetValue(WatchedProperty, true);
 
         // NOTHING BELOW MAY CAPTURE THE VIEW. The ancestors are listened to up
@@ -3525,7 +3525,7 @@ public sealed class StateUIRenderer
     {
         if (Reuse(existing, node) is not Grid grid)
         {
-            grid = new MotionLayouts.Rows { Engine = _motion };
+            grid = new TravellingLayouts.Rows { Walker = _walker };
         }
 
         if (node.GetRowDefinitions(SwiftProp.Rows) is RowDefinitionCollection rows) { grid.RowDefinitions = rows; }
@@ -3573,7 +3573,7 @@ public sealed class StateUIRenderer
     {
         if (Reuse(existing, node) is not AbsoluteLayout layout)
         {
-            layout = new MotionLayouts.Placed { Engine = _motion };
+            layout = new TravellingLayouts.Placed { Walker = _walker };
         }
 
         if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { layout.Padding = padding; }
@@ -3653,8 +3653,8 @@ public sealed class StateUIRenderer
         }
 
         // WHETHER A STATE CARRIES THE OFFSET, read off the MESSAGE rather than
-        // off the tie: the tie is made later in this same pass, and the
-        // watcher below has to be armed before it.
+        // off the attachment: the attachment is made later in this same pass,
+        // and the watcher below has to be armed before it.
         bool carried = false;
 
         foreach (SwiftStateEntry entry in node.States ?? [])
@@ -4508,7 +4508,7 @@ public sealed class StateUIRenderer
                 // A replace keeps its place: the new control stands exactly
                 // where the one it supersedes stood. What it supersedes is
                 // leaving the tree, so its motions are dropped - see Align.
-                if (match is IView superseded) { _motion.Drop(superseded); }
+                if (match is IView superseded) { _walker.Drop(superseded); }
 
                 int at = IndexOf(items, match);
                 items.RemoveAt(at);
@@ -4597,9 +4597,9 @@ public sealed class StateUIRenderer
             }
 
             // Leaving for good, so whatever was travelling on it is dropped
-            // rather than written - see Align, and MotionEngine.Drop for what
+            // rather than written - see Align, and Walker.Drop for what
             // a write to a view the tree has let go costs on Apple.
-            if (item is IView leaving) { _motion.Drop(leaving); }
+            if (item is IView leaving) { _walker.Drop(leaving); }
 
             items.RemoveAt(index);
         }
@@ -4720,7 +4720,7 @@ public sealed class StateUIRenderer
             // row nobody can see, so the motion has nothing left to draw - and
             // a value still moving when the row is handed to the next item
             // would carry the old row's colour into the new one.
-            _motion.Settle(row);
+            _walker.Settle(row);
 
             // An act aims through one of two maps and the identity says which,
             // so exactly one of them has an entry to take back. Without this an
@@ -4780,8 +4780,8 @@ public sealed class StateUIRenderer
                 // to a view the tree has stopped describing reaches a platform
                 // view whose managed peer may already be collected. The
                 // reorder below takes children out and puts them back, which
-                // is why only this cull says anything to the engine.
-                if (items[index] is IView leaving) { _motion.Drop(leaving); }
+                // is why only this cull says anything to the walker.
+                if (items[index] is IView leaving) { _walker.Drop(leaving); }
 
                 items.RemoveAt(index);
             }
@@ -4936,7 +4936,7 @@ public sealed class StateUIRenderer
         {
             if (node.Motion is MotionSpec travel)
             {
-                view.SetValue(MotionArranger.TravelProperty, travel);
+                view.SetValue(LayoutMotion.TravelProperty, travel);
 
                 // A VIEW THAT DOES NOT TRAVEL IS AT ITS VALUE. The law arrives
                 // with the message, so it can arrive while something of this
@@ -4946,15 +4946,15 @@ public sealed class StateUIRenderer
                 // travel" that leaves the tree and the screen agreeing.
                 if (travel.Instant)
                 {
-                    _motion.Arrive(view);
+                    _walker.Arrive(view);
                 }
             }
             else
             {
-                view.ClearValue(MotionArranger.TravelProperty);
+                view.ClearValue(LayoutMotion.TravelProperty);
             }
 
-            view.SetValue(MotionArranger.LanesProperty, node.Lanes);
+            view.SetValue(LayoutMotion.LanesProperty, node.Lanes);
         }
 
         // VisualElement
@@ -5147,7 +5147,7 @@ public sealed class StateUIRenderer
 
         // A control whose states move a value has to be heard entering them,
         // whether or not the tree asked to hear it: the announcement is how the
-        // engine learns there is anywhere new to go.
+        // walker learns there is anywhere new to go.
         bool announcing = Announces(view, node) || described.Travelling.Count > 0;
         bool moved = !was.Select(state => state.Key).SequenceEqual(now.Select(state => state.Key));
         bool said = arriving.Any(child => child.Props is not null || child.Children is not null);
@@ -5222,7 +5222,7 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
-    /// Puts the engine in charge of the values this control's states MOVE.
+    /// Puts the walker in charge of the values this control's states MOVE.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -5334,17 +5334,17 @@ public sealed class StateUIRenderer
                 if (target is null
                     || !MotionProperty.Of(
                         view, property, target, property == VisualElement.OpacityProperty,
-                        out IMotionTarget moves, out double[] lanes))
+                        out ITripTarget moves, out double[] lanes))
                 {
                     // Nothing the tree ever set and no state asking for it: the
                     // property goes back to MAUI's own default, which is what
                     // it had before any of this.
-                    _motion.Halt(view, property, MotionEnd.Nothing);
+                    _walker.Halt(view, property, TripEnd.Nothing);
                     view.ClearValue(property);
                     continue;
                 }
 
-                _motion.Aim(moves, lanes, spec);
+                _walker.Aim(moves, lanes, spec);
             }
         }
     }
@@ -5374,7 +5374,7 @@ public sealed class StateUIRenderer
     /// being walked, the two chase each other down. Read by the arranger, which
     /// lands such a layout's children AT ONCE - the place with the size, all
     /// four lanes, because a place left in the air is a place two writers aim
-    /// at - and by <c>SwiftTransitions</c>, which lands a size aimed at such a
+    /// at - and by <c>DescribedMotion</c>, which lands a size aimed at such a
     /// view or at a child of one.
     /// </remarks>
     internal static readonly BindableProperty WatchedProperty =
@@ -5431,7 +5431,7 @@ public sealed class StateUIRenderer
     {
         view.SetValue(WantedProperty, wanted);
 
-        if (view.IsVisible == wanted && _motion.Moving(view, VisualElement.OpacityProperty) is null)
+        if (view.IsVisible == wanted && _walker.Moving(view, VisualElement.OpacityProperty) is null)
         {
             return;
         }
@@ -5446,7 +5446,7 @@ public sealed class StateUIRenderer
 
         if (spec.Instant || driven || view.GetValue(ElementProperty) is not RenderedElement)
         {
-            _motion.Halt(view, VisualElement.OpacityProperty, MotionEnd.Nothing);
+            _walker.Halt(view, VisualElement.OpacityProperty, TripEnd.Nothing);
 
             if (!_cycle.Reland(view, VisualElement.OpacityProperty))
             {
@@ -5476,7 +5476,7 @@ public sealed class StateUIRenderer
             view.IsVisible = true;
             Touchable(view);
 
-            _motion.Aim(moves, [shown], spec, from: [0]);
+            _walker.Aim(moves, [shown], spec, from: [0]);
             return;
         }
 
@@ -5485,7 +5485,7 @@ public sealed class StateUIRenderer
         // showing starts from somewhere honest.
         view.InputTransparent = true;
 
-        _motion.Aim(moves, [0], spec, done: _ =>
+        _walker.Aim(moves, [0], spec, done: _ =>
         {
             if (view.GetValue(WantedProperty) is true)
             {
@@ -5512,7 +5512,7 @@ public sealed class StateUIRenderer
 
     /// <summary>How this control's own values travel.</summary>
     private MotionSpec Travelling(View view) =>
-        view.GetValue(MotionArranger.TravelProperty) is MotionSpec spec ? spec : _motion.Travel;
+        view.GetValue(LayoutMotion.TravelProperty) is MotionSpec spec ? spec : _walker.Travel;
 
 
     /// <summary>
@@ -5651,7 +5651,7 @@ public sealed class StateUIRenderer
         /// <remarks>
         /// A setter is an assignment, which is the one thing in this library
         /// that cannot be animated from the outside - so a value with a
-        /// half-way is taken out of the state and carried by the engine
+        /// half-way is taken out of the state and carried by the walker
         /// instead. See <c>SwiftStyles.AddSetters</c>.
         /// </remarks>
         public Dictionary<string, List<(SwiftKey Key, BindableProperty Property, object Value)>> Travelling

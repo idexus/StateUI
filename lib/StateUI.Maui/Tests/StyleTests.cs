@@ -137,7 +137,7 @@ public class StyleTests
     /// The shape a style makes: one description says a button's resting colour
     /// AND what it looks like disabled, so the first message a disabled button
     /// arrives in NAMES <c>backgroundColor</c> and ENTERS <c>Disabled</c>. A
-    /// state's colour is carried by the engine rather than set by MAUI, and a
+    /// state's colour is carried by the walker rather than set by MAUI, and a
     /// plain assignment halts whatever carries the property it names - so the
     /// two have to be ordered: the states are applied after the transitions
     /// pass, and the aim outlives the interrupt.
@@ -151,14 +151,14 @@ public class StyleTests
     public void ADisabledControlWearsItsStateColourFromTheFirstMessage()
     {
         var host = new Host();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
 
         // The application's own law, which every control travels under unless
         // it says otherwise - and what makes the aim a JOURNEY rather than an
         // arrival, so the interrupt below has something to halt.
-        host.Renderer.Motion.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
 
         var button = (Button)host.Apply("""
             {"id":1,"type":"Button","props":{"isEnabled":false,"background":"#F09072"},"children":[
@@ -189,10 +189,10 @@ public class StyleTests
     public void AStateColourSurvivesAPatchThatRestatesTheProperty()
     {
         var host = new Host();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
-        host.Renderer.Motion.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Clock = clock;
+        host.Renderer.Walker.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
 
         var button = (Button)host.Apply("""
             {"id":1,"type":"Button","props":{"isEnabled":false,"background":"#F09072"},"children":[
@@ -664,15 +664,15 @@ public class StyleTests
         IList<VisualStateGroup> groups = VisualStateManager.GetVisualStateGroups(label);
 
         // A COLOUR IS NOT A SETTER: a value with a half-way is carried by the
-        // engine instead, so what is left in the state is the announcement the
-        // engine listens for - and nothing else. See StateUIRenderer.Settle.
+        // walker instead, so what is left in the state is the announcement the
+        // walker listens for - and nothing else. See StateUIRenderer.Settle.
         Assert.Equal(
             ["SwiftVisualState"],
             groups[0].States[1].Setters.Select(setter => setter.Property.PropertyName));
 
         label.IsEnabled = false;
 
-        // The announcement is the ENGINE's, and it reaches Swift only where the
+        // The announcement is the WALKER's, and it reaches Swift only where the
         // tree asked to hear it - which nobody here did.
         Assert.Equal(Color.Parse("#FF0000"), label.TextColor);
         Assert.Empty(host.Dispatched);
@@ -794,7 +794,7 @@ public class StyleTests
         Assert.Equal(["Normal", "Disabled"], groups[0].States.Select(state => state.Name));
 
         // Normal changes nothing of its own; what it carries is the
-        // announcement, which is how the engine hears that a state was left.
+        // announcement, which is how the walker hears that a state was left.
         Assert.Equal(
             ["SwiftVisualState"],
             groups[0].States[0].Setters.Select(setter => setter.Property.PropertyName));

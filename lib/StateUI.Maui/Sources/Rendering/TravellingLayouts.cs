@@ -8,7 +8,7 @@ using Microsoft.Maui.Layouts;
 
 /// <summary>
 /// The layouts this renderer builds - MAUI's own, arranging through
-/// <see cref="MotionArranger"/> so that a child which changes place TRAVELS
+/// <see cref="LayoutMotion"/> so that a child which changes place TRAVELS
 /// there.
 /// </summary>
 /// <remarks>
@@ -25,28 +25,28 @@ using Microsoft.Maui.Layouts;
 /// no argument: there is nowhere else to hand a layout what it needs.
 /// </para>
 /// </remarks>
-internal static class MotionLayouts
+internal static class TravellingLayouts
 {
     /// <summary>A vertical stack whose children travel.</summary>
     internal sealed class Vertical : VerticalStackLayout
     {
         /// <summary>What carries this layout's children to their places.</summary>
-        internal required MotionEngine Engine { get; init; }
+        internal required Walker Walker { get; init; }
 
         /// <inheritdoc/>
         protected override ILayoutManager CreateLayoutManager() =>
-            new MotionArranger(this, base.CreateLayoutManager(), Engine);
+            new LayoutMotion(this, base.CreateLayoutManager(), Walker);
     }
 
     /// <summary>A horizontal stack whose children travel.</summary>
     internal sealed class Horizontal : HorizontalStackLayout
     {
         /// <summary>What carries this layout's children to their places.</summary>
-        internal required MotionEngine Engine { get; init; }
+        internal required Walker Walker { get; init; }
 
         /// <inheritdoc/>
         protected override ILayoutManager CreateLayoutManager() =>
-            new MotionArranger(this, base.CreateLayoutManager(), Engine);
+            new LayoutMotion(this, base.CreateLayoutManager(), Walker);
     }
 
     /// <summary>
@@ -56,11 +56,11 @@ internal static class MotionLayouts
     internal sealed class Rows : Grid
     {
         /// <summary>What carries this layout's children to their places.</summary>
-        internal required MotionEngine Engine { get; init; }
+        internal required Walker Walker { get; init; }
 
         /// <inheritdoc/>
         protected override ILayoutManager CreateLayoutManager() =>
-            new MotionArranger(this, base.CreateLayoutManager(), Engine);
+            new LayoutMotion(this, base.CreateLayoutManager(), Walker);
     }
 
     /// <summary>
@@ -70,21 +70,21 @@ internal static class MotionLayouts
     internal sealed class Placed : AbsoluteLayout
     {
         /// <summary>What carries this layout's children to their places.</summary>
-        internal required MotionEngine Engine { get; init; }
+        internal required Walker Walker { get; init; }
 
         /// <inheritdoc/>
         protected override ILayoutManager CreateLayoutManager() =>
-            new MotionArranger(this, base.CreateLayoutManager(), Engine);
+            new LayoutMotion(this, base.CreateLayoutManager(), Walker);
     }
 
     /// <summary>A flex layout whose children travel.</summary>
     internal sealed class Flexed : FlexLayout
     {
         /// <summary>What carries this layout's children to their places.</summary>
-        internal required MotionEngine Engine { get; init; }
+        internal required Walker Walker { get; init; }
 
         /// <inheritdoc/>
         protected override ILayoutManager CreateLayoutManager() =>
-            new MotionArranger(this, base.CreateLayoutManager(), Engine);
+            new LayoutMotion(this, base.CreateLayoutManager(), Walker);
     }
 }

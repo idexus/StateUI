@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using Microsoft.Maui.Controls;
 
 /// <summary>Where a motion leaves the value it was carrying.</summary>
-internal enum MotionEnd : byte
+internal enum TripEnd : byte
 {
     /// <summary>Exactly where it was going - what arriving means.</summary>
     Target = 0,
@@ -28,13 +28,13 @@ internal enum MotionEnd : byte
 /// <remarks>
 /// Everything about a motion in one place: where it started, how fast it was
 /// going when it started, where it is going, under what law, and who is waiting
-/// to hear that it arrived. The lanes are plain arrays because a channel is
+/// to hear that it arrived. The lanes are plain arrays because a trip is
 /// stepped sixty times a second and the numbers are read in order.
 /// </remarks>
-internal sealed class MotionChannel
+internal sealed class Trip
 {
     /// <summary>What this moves - and, in its owner and key, which value it is.</summary>
-    internal required IMotionTarget Moves { get; init; }
+    internal required ITripTarget Moves { get; init; }
 
     /// <summary>Where the value is, this frame.</summary>
     internal required double[] P { get; init; }
@@ -57,16 +57,16 @@ internal sealed class MotionChannel
     /// <summary>When the current motion began, in stopwatch ticks.</summary>
     internal long T0 { get; set; }
 
-    /// <summary>Whether the engine is stepping this right now.</summary>
+    /// <summary>Whether the walker is stepping this right now.</summary>
     internal bool Moving { get; set; }
 
     /// <summary>
     /// How many setpoints THIS value has been given - the count an aim compares
     /// against to find out whether a newer one overtook it while it was telling
-    /// the motion it replaces that it had ended. Per channel, because being
+    /// the motion it replaces that it had ended. Per trip, because being
     /// told resumes a handler and a handler that renders aims every other
-    /// channel that message touches: none of those is this value being sent
-    /// somewhere new. See <see cref="MotionEngine.Aim"/>.
+    /// trip that message touches: none of those is this value being sent
+    /// somewhere new. See <see cref="Walker.Aim"/>.
     /// </summary>
     internal long Aims { get; set; }
 
@@ -78,8 +78,8 @@ internal sealed class MotionChannel
 
     /// <summary>Whether the value has been written since anything looked.</summary>
     /// <remarks>
-    /// What a reader beside the engine asks instead of walking every channel:
-    /// the engine sets it whenever it writes, and whoever reads the value
+    /// What a reader beside the walker asks instead of walking every trip:
+    /// the walker sets it whenever it writes, and whoever reads the value
     /// clears it. Nothing here ever clears it, so a build with no such reader
     /// simply carries a flag that is set.
     /// </remarks>
@@ -99,16 +99,16 @@ internal sealed class MotionChannel
 /// instead of cutting it.
 /// </para>
 /// <para>
-/// One engine per session, on the thread the platform draws on, with no locks
+/// One walker per session, on the thread the platform draws on, with no locks
 /// anywhere: every setpoint arrives from an apply and every frame arrives from
 /// the platform's clock, and both of those are that thread.
 /// </para>
 /// <para>
-/// It SLEEPS. The clock is started when the first channel begins to move and
+/// It SLEEPS. The clock is started when the first trip begins to move and
 /// stopped when the last one lands, so a still screen costs nothing at all.
 /// </para>
 /// </remarks>
-internal sealed class MotionEngine
+internal sealed class Walker
 {
     /// <summary>
     /// How deep inside a frame's own write to a control this thread is.
@@ -118,7 +118,7 @@ internal sealed class MotionEngine
     /// WHAT TELLS AN ECHO FROM A READER. Setting a control's value raises the
     /// platform's own change notification synchronously - a Slider assigned
     /// five times raises five ValueChanged, measured - so a report arriving
-    /// while this is above nought is the engine hearing itself, and is
+    /// while this is above nought is the walker hearing itself, and is
     /// dropped. A report arriving while it is nought was made by somebody
     /// else, which on a control the reader can move means a finger: that one
     /// takes the value, ending whatever was carrying it.
@@ -132,35 +132,35 @@ internal sealed class MotionEngine
     internal static int Writing;
 
     /// <summary>
-    /// Every channel, by what it moves - the control, then which of its values.
+    /// Every trip, by what it moves - the control, then which of its values.
     /// </summary>
     /// <remarks>
     /// Weak in the owner, so a control that has left the tree is not held by
-    /// the fact that something once moved it. A channel is removed the moment
+    /// the fact that something once moved it. A trip is removed the moment
     /// it lands, which is what makes the next setpoint on the same value read
     /// where the platform actually has it: a reader's drag, a visual state, a
     /// layout pass - anything may have written it while nothing was moving.
     /// </remarks>
-    private readonly ConditionalWeakTable<object, Dictionary<object, MotionChannel>> _table = new();
+    private readonly ConditionalWeakTable<object, Dictionary<object, Trip>> _table = new();
 
-    /// <summary>The channels that are moving, which is what a frame steps.</summary>
-    private readonly List<MotionChannel> _moving = [];
+    /// <summary>The trips that are moving, which is what a frame steps.</summary>
+    private readonly List<Trip> _moving = [];
 
-    /// <summary>How many motions this engine is carrying - the tally's own.</summary>
+    /// <summary>How many motions this walker is carrying - the tally's own.</summary>
     internal int Carrying => _moving.Count;
 
-    /// <summary>The moving channels, copied for the length of one frame.</summary>
+    /// <summary>The moving trips, copied for the length of one frame.</summary>
     /// <remarks>
     /// A write can be heard - a slider raises a change, a layout re-arranges -
-    /// and what hears it may render, which may start or stop channels. So a
+    /// and what hears it may render, which may start or stop trips. So a
     /// frame steps a COPY and skips whatever stopped moving while it ran.
     /// </remarks>
-    private readonly List<MotionChannel> _frame = [];
+    private readonly List<Trip> _frame = [];
 
     /// <summary>What landed during a frame, told after it rather than inside it.</summary>
-    private readonly List<(MotionChannel Channel, bool Whole)> _landed = [];
+    private readonly List<(Trip Trip, bool Whole)> _landed = [];
 
-    private IMotionClock? _clock;
+    private IFrameClock? _clock;
     private bool _asked;
     private bool _stepping;
     private bool _inFrame;
@@ -177,7 +177,7 @@ internal sealed class MotionEngine
     /// message behind it is the room itself moving: a window dragged, a
     /// keyboard rising, a scroller settling. Everything then tracks it exactly,
     /// because a child that glides after a reader's own hand is late every
-    /// frame. See <c>MotionArranger</c>.
+    /// frame. See <c>LayoutMotion</c>.
     /// </remarks>
     internal long Applies { get; private set; }
 
@@ -189,7 +189,7 @@ internal sealed class MotionEngine
     /// The clock runs on the thread that lays out, so this number standing
     /// still across two arrangements says the same thing twice over: no frame
     /// has been made, and none can be until the pass that is asking lets the
-    /// thread go. Read by <c>MotionArranger</c>, which is the one place a
+    /// thread go. Read by <c>LayoutMotion</c>, which is the one place a
     /// motion is written from inside a layout pass. Nought until the first
     /// frame is made; afterwards it holds the last frame's instant, and a
     /// number that does not move is the whole signal.
@@ -224,11 +224,11 @@ internal sealed class MotionEngine
     /// asked once the frame is over, before the clock is stopped.
     /// </summary>
     /// <remarks>
-    /// The engine's own reason to be awake is a value under way, and when the
+    /// The walker's own reason to be awake is a value under way, and when the
     /// last one lands there is nothing left to draw. Anything else that rides
     /// the display's rhythm has reasons of its own - a value written from a
     /// handler, arithmetic that says it has not finished - and none of those is
-    /// a channel, so they are asked about here. Null is a build where nothing
+    /// a trip, so they are asked about here. Null is a build where nothing
     /// else is awake, which is every build until something claims it.
     /// </remarks>
     internal Func<bool>? Idle { get; set; }
@@ -246,7 +246,7 @@ internal sealed class MotionEngine
     internal Action? Cycle { get; set; }
 
     /// <summary>
-    /// Whether a value is being driven from OUTSIDE the engine, or null where
+    /// Whether a value is being driven from OUTSIDE the walker, or null where
     /// nothing else drives anything.
     /// </summary>
     /// <remarks>
@@ -268,20 +268,20 @@ internal sealed class MotionEngine
     /// <para>
     /// Twice per motion and not once per frame: when a setpoint arms a motion,
     /// and when one stops somewhere the value is actually written. Frame by
-    /// frame there is <see cref="MotionChannel.Observed"/>, which a reader
+    /// frame there is <see cref="Trip.Observed"/>, which a reader
     /// polls; what this answers is the two moments a poll CANNOT see - a
     /// destination that changed without the value having moved yet, and a
-    /// landing, after which the channel is gone from the table and there is
+    /// landing, after which the trip is gone from the table and there is
     /// nothing left to poll.
     /// </para>
     /// <para>
     /// The flag says which of the two it is: true while the value is on its
     /// way somewhere, false where it has stopped - and a value that has
-    /// stopped is going nowhere, whatever the channel it left behind still
+    /// stopped is going nowhere, whatever the trip it left behind still
     /// says about where it was sent.
     /// </para>
     /// </remarks>
-    internal Action<MotionChannel, bool>? Aimed { get; set; }
+    internal Action<Trip, bool>? Aimed { get; set; }
 
     /// <summary>
     /// What says when to draw - the platform's own frame signal, or one a test
@@ -292,7 +292,7 @@ internal sealed class MotionEngine
     /// the headless tests, unless they bring one - lands every setpoint at once,
     /// which is the honest answer where there is no screen to move across.
     /// </remarks>
-    internal IMotionClock? Clock
+    internal IFrameClock? Clock
     {
         get
         {
@@ -312,7 +312,7 @@ internal sealed class MotionEngine
         }
     }
 
-    private void Attach(IMotionClock? clock)
+    private void Attach(IFrameClock? clock)
     {
         if (ReferenceEquals(_clock, clock))
         {
@@ -334,11 +334,11 @@ internal sealed class MotionEngine
     }
 
     /// <summary>The platform's clock, or nothing when it cannot be had.</summary>
-    private static IMotionClock? Made()
+    private static IFrameClock? Made()
     {
         try
         {
-            return MotionClock.Create();
+            return FrameClock.Create();
         }
         catch (Exception)
         {
@@ -378,36 +378,36 @@ internal sealed class MotionEngine
     /// <param name="velocity">
     /// How fast each lane is going as this motion begins, per millisecond, for
     /// a caller that knows a speed the value itself cannot say - a reader's
-    /// hand let go of it, or arithmetic beside the engine handed it over. It
+    /// hand let go of it, or arithmetic beside the walker handed it over. It
     /// stands in for the speed a motion being replaced would have lent, so a
     /// value handed over is never cut. A speed given where the value is already
     /// at its target is a NUDGE: the value leaves and comes back, which a
     /// motion of no distance otherwise would not do.
     /// </param>
-    /// <returns>The channel, or null when the value landed at once.</returns>
-    internal MotionChannel? Aim(
-        IMotionTarget moves,
+    /// <returns>The trip, or null when the value landed at once.</returns>
+    internal Trip? Aim(
+        ITripTarget moves,
         double[] to,
         in MotionSpec spec,
         Action<bool>? done = null,
         double[]? from = null,
         double[]? velocity = null)
     {
-        Dictionary<object, MotionChannel> owned = _table.GetValue(moves.Owner, static _ => []);
-        bool had = owned.TryGetValue(moves.Key, out MotionChannel? channel);
+        Dictionary<object, Trip> owned = _table.GetValue(moves.Owner, static _ => []);
+        bool had = owned.TryGetValue(moves.Key, out Trip? trip);
 
         // Every setpoint given to THIS value is counted, so a call can find out
         // whether a newer one overtook it while it was telling somebody their
         // motion had ended.
-        long spoke = had ? ++channel!.Aims : 0;
+        long spoke = had ? ++trip!.Aims : 0;
 
-        if (had && channel!.Moving)
+        if (had && trip!.Moving)
         {
             // Whatever was waiting on the motion being replaced hears first,
             // and hears that it did not finish - the same answer a second
             // animation of one property has always given the first.
-            Action<bool>? waiting = channel.Done;
-            channel.Done = null;
+            Action<bool>? waiting = trip.Done;
+            trip.Done = null;
 
             if (waiting is not null)
             {
@@ -418,7 +418,7 @@ internal sealed class MotionEngine
                 // gives up its turn rather than writing over the answer.
                 waiting(false);
 
-                if (spoke != channel.Aims)
+                if (spoke != trip.Aims)
                 {
                     // Somebody sent THIS value somewhere else while we spoke,
                     // and theirs is the setpoint that stands. Whoever awaited
@@ -431,9 +431,9 @@ internal sealed class MotionEngine
             }
         }
 
-        if (channel is null)
+        if (trip is null)
         {
-            channel = new MotionChannel
+            trip = new Trip
             {
                 Moves = moves,
                 P = new double[moves.Lanes],
@@ -443,43 +443,43 @@ internal sealed class MotionEngine
                 Target = new double[moves.Lanes],
             };
 
-            owned[moves.Key] = channel;
+            owned[moves.Key] = trip;
         }
 
-        if (channel.Moving)
+        if (trip.Moving)
         {
-            channel.P.CopyTo(channel.From, 0);
-            channel.V.CopyTo(channel.StartV, 0);
+            trip.P.CopyTo(trip.From, 0);
+            trip.V.CopyTo(trip.StartV, 0);
         }
         else if (from is not null)
         {
-            Array.Clear(channel.StartV);
-            from.CopyTo(channel.From, 0);
+            Array.Clear(trip.StartV);
+            from.CopyTo(trip.From, 0);
         }
         else
         {
-            Array.Clear(channel.StartV);
+            Array.Clear(trip.StartV);
 
-            if (!channel.Moves.Read(channel.From))
+            if (!trip.Moves.Read(trip.From))
             {
                 // Nothing there to move from - a property of a shape that has
                 // no half-way, or a child no layout has placed yet. It goes to
                 // where it was told and says so.
-                to.CopyTo(channel.From, 0);
+                to.CopyTo(trip.From, 0);
             }
         }
 
         if (velocity is not null)
         {
-            // A speed the CALLER knows outranks the one the channel would have
+            // A speed the CALLER knows outranks the one the trip would have
             // lent: it is the speed the value is actually going at, from a hand
             // that has just let go or arithmetic that has just handed over.
-            velocity.CopyTo(channel.StartV, 0);
+            velocity.CopyTo(trip.StartV, 0);
         }
 
-        to.CopyTo(channel.Target, 0);
-        channel.Spec = spec;
-        channel.Done = done;
+        to.CopyTo(trip.Target, 0);
+        trip.Spec = spec;
+        trip.Done = done;
 
         // A SETPOINT WHERE THE VALUE ALREADY IS is an arrival. Nothing else
         // would be drawn - a motion of no distance writes the same number for
@@ -490,30 +490,30 @@ internal sealed class MotionEngine
         // Nothing moves either for a reader who asked for less movement. Both
         // answer TRUE to whoever awaited the motion: the target was reached,
         // which is the whole of what they asked about.
-        if (spec.Instant || There(channel) || MotionMood.Reduced || Clock is null)
+        if (spec.Instant || There(trip) || MotionMood.Reduced || Clock is null)
         {
-            Land(channel, whole: true);
+            Land(trip, whole: true);
             return null;
         }
 
-        channel.From.CopyTo(channel.P, 0);
-        channel.StartV.CopyTo(channel.V, 0);
-        channel.T0 = Clock?.Now ?? Stopwatch.GetTimestamp();
+        trip.From.CopyTo(trip.P, 0);
+        trip.StartV.CopyTo(trip.V, 0);
+        trip.T0 = Clock?.Now ?? Stopwatch.GetTimestamp();
 
-        if (!channel.Moving)
+        if (!trip.Moving)
         {
-            channel.Moving = true;
-            _moving.Add(channel);
+            trip.Moving = true;
+            _moving.Add(trip);
         }
 
         // Written at once, so the value is where the motion says it is from
         // the frame it starts on - which is what lets a layout hand its child
         // over having already put it at the target.
-        Put(channel);
+        Put(trip);
         Clock?.Start();
-        Aimed?.Invoke(channel, true);
+        Aimed?.Invoke(trip, true);
 
-        return channel;
+        return trip;
     }
 
     /// <summary>Whether the value is already where it is being sent, and still.</summary>
@@ -522,12 +522,12 @@ internal sealed class MotionEngine
     /// somewhere has a motion to draw - it leaves and comes back - so a
     /// distance of nothing is an arrival only from a standstill.
     /// </remarks>
-    private static bool There(MotionChannel channel)
+    private static bool There(Trip trip)
     {
-        for (int lane = 0; lane < channel.From.Length; lane++)
+        for (int lane = 0; lane < trip.From.Length; lane++)
         {
-            if (Math.Abs(channel.From[lane] - channel.Target[lane]) >= MotionCurve.Still
-                || channel.StartV[lane] != 0)
+            if (Math.Abs(trip.From[lane] - trip.Target[lane]) >= MotionLaw.Still
+                || trip.StartV[lane] != 0)
             {
                 return false;
             }
@@ -544,14 +544,14 @@ internal sealed class MotionEngine
     /// <returns>True when at least one of its values is under way.</returns>
     internal bool Stirring(object owner)
     {
-        if (_moving.Count == 0 || !_table.TryGetValue(owner, out Dictionary<object, MotionChannel>? owned))
+        if (_moving.Count == 0 || !_table.TryGetValue(owner, out Dictionary<object, Trip>? owned))
         {
             return false;
         }
 
-        foreach (MotionChannel channel in owned.Values)
+        foreach (Trip trip in owned.Values)
         {
-            if (channel.Moving)
+            if (trip.Moving)
             {
                 return true;
             }
@@ -563,12 +563,12 @@ internal sealed class MotionEngine
     /// <summary>Where a value has got to, whether or not it is still moving.</summary>
     /// <param name="owner">The control.</param>
     /// <param name="key">Which of its values.</param>
-    /// <returns>The channel carrying it, or null when nothing is.</returns>
-    internal MotionChannel? Moving(object owner, object key) =>
-        _table.TryGetValue(owner, out Dictionary<object, MotionChannel>? owned)
-        && owned.TryGetValue(key, out MotionChannel? channel)
-        && channel.Moving
-            ? channel
+    /// <returns>The trip carrying it, or null when nothing is.</returns>
+    internal Trip? Moving(object owner, object key) =>
+        _table.TryGetValue(owner, out Dictionary<object, Trip>? owned)
+        && owned.TryGetValue(key, out Trip? trip)
+        && trip.Moving
+            ? trip
             : null;
 
     /// <summary>
@@ -579,14 +579,14 @@ internal sealed class MotionEngine
     /// <param name="key">Which of its values.</param>
     /// <param name="end">Where to leave the value.</param>
     /// <returns>Whether anything was moving.</returns>
-    internal bool Halt(object owner, object key, MotionEnd end = MotionEnd.Here)
+    internal bool Halt(object owner, object key, TripEnd end = TripEnd.Here)
     {
-        if (Moving(owner, key) is not MotionChannel channel)
+        if (Moving(owner, key) is not Trip trip)
         {
             return false;
         }
 
-        Land(channel, whole: false, end);
+        Land(trip, whole: false, end);
         return true;
     }
 
@@ -605,7 +605,7 @@ internal sealed class MotionEngine
     /// <para>
     /// It matters because a value that stalls is a value nothing puts right:
     /// an absent field means unchanged, so a property that reached its target
-    /// in the TREE is never restated, and a channel left short of it would
+    /// in the TREE is never restated, and a trip left short of it would
     /// keep a control turned, scaled or faded wrongly for the rest of the
     /// session. Measured on Android, in a layout of seven cards changing
     /// shape: some cards kept the previous shape's rotation for good.
@@ -615,16 +615,16 @@ internal sealed class MotionEngine
     internal void Arrive(object owner)
     {
         if (_moving.Count == 0
-            || !_table.TryGetValue(owner, out Dictionary<object, MotionChannel>? owned))
+            || !_table.TryGetValue(owner, out Dictionary<object, Trip>? owned))
         {
             return;
         }
 
-        foreach (MotionChannel channel in owned.Values.ToArray())
+        foreach (Trip trip in owned.Values.ToArray())
         {
-            if (channel.Moving)
+            if (trip.Moving)
             {
-                Land(channel, whole: false);
+                Land(trip, whole: false);
             }
         }
     }
@@ -668,7 +668,7 @@ internal sealed class MotionEngine
     /// </summary>
     /// <remarks>
     /// <para>
-    /// A channel holds its control for as long as it moves, so a view the tree
+    /// A trip holds its control for as long as it moves, so a view the tree
     /// has stopped describing goes on being stepped and goes on being written
     /// to. On Apple that is fatal rather than merely wrong: a place lands by
     /// ARRANGING, arranging reads the platform view's superview, and reading it
@@ -679,7 +679,7 @@ internal sealed class MotionEngine
     /// list whose rows travel: dead within four sweeps.
     /// </para>
     /// <para>
-    /// So the channel is ended with <see cref="MotionEnd.Nothing"/> - no write
+    /// So the trip is ended with <see cref="TripEnd.Nothing"/> - no write
     /// of any kind, the value left wherever it stood, which is nobody's picture
     /// because the control is not on the screen - and whoever awaited it hears
     /// that it did not run to the end. Where a control is being PUT AWAY rather
@@ -695,13 +695,13 @@ internal sealed class MotionEngine
             return;
         }
 
-        if (_table.TryGetValue(view, out Dictionary<object, MotionChannel>? owned))
+        if (_table.TryGetValue(view, out Dictionary<object, Trip>? owned))
         {
-            foreach (MotionChannel channel in owned.Values.ToArray())
+            foreach (Trip trip in owned.Values.ToArray())
             {
-                if (channel.Moving)
+                if (trip.Moving)
                 {
-                    Land(channel, whole: false, MotionEnd.Nothing);
+                    Land(trip, whole: false, TripEnd.Nothing);
                 }
             }
         }
@@ -771,7 +771,7 @@ internal sealed class MotionEngine
         _clock?.Stop();
     }
 
-    /// <summary>One frame: every channel advanced, written, and asked whether it is there.</summary>
+    /// <summary>One frame: every trip advanced, written, and asked whether it is there.</summary>
     private void Step()
     {
         if (_stepping || _moving.Count == 0)
@@ -801,23 +801,23 @@ internal sealed class MotionEngine
 
         try
         {
-            foreach (MotionChannel channel in _frame)
+            foreach (Trip trip in _frame)
             {
-                if (!channel.Moving)
+                if (!trip.Moving)
                 {
                     continue;
                 }
 
-                double t = (now - channel.T0) * 1000.0 / Stopwatch.Frequency;
-                bool rested = MotionCurve.At(channel, t, channel.P, channel.V);
+                double t = (now - trip.T0) * 1000.0 / Stopwatch.Frequency;
+                bool rested = MotionLaw.Sample(trip, t, trip.P, trip.V);
 
                 if (rested)
                 {
-                    _landed.Add((channel, true));
+                    _landed.Add((trip, true));
                     continue;
                 }
 
-                Put(channel);
+                Put(trip);
             }
         }
         finally
@@ -826,19 +826,19 @@ internal sealed class MotionEngine
         }
 
         // TAKEN AND EMPTIED IN ONE GO. A platform write can throw - a mapper,
-        // a native property - and the list is the ENGINE's rather than this
+        // a native property - and the list is the WALKER's rather than this
         // frame's, so one left holding a landing would land it again on the
-        // next frame, against a channel that has since been aimed somewhere
+        // next frame, against a trip that has since been aimed somewhere
         // else.
-        (MotionChannel Channel, bool Whole)[] landed = [.. _landed];
+        (Trip Trip, bool Whole)[] landed = [.. _landed];
 
         _landed.Clear();
 
-        foreach ((MotionChannel channel, bool whole) in landed)
+        foreach ((Trip trip, bool whole) in landed)
         {
-            if (channel.Moving)
+            if (trip.Moving)
             {
-                Land(channel, whole);
+                Land(trip, whole);
             }
         }
     }
@@ -854,9 +854,9 @@ internal sealed class MotionEngine
     /// what was WRITTEN, never against the platform's own reading, so nothing
     /// here can be talked out of a write by a control that rounds.
     /// </remarks>
-    private static void Put(MotionChannel channel)
+    private static void Put(Trip trip)
     {
-        double[]? wrote = channel.Wrote;
+        double[]? wrote = trip.Wrote;
 
         if (wrote is not null)
         {
@@ -864,7 +864,7 @@ internal sealed class MotionEngine
 
             for (int lane = 0; lane < wrote.Length && same; lane++)
             {
-                same = Math.Abs(wrote[lane] - channel.P[lane]) < MotionCurve.Still;
+                same = Math.Abs(wrote[lane] - trip.P[lane]) < MotionLaw.Still;
             }
 
             if (same)
@@ -874,18 +874,18 @@ internal sealed class MotionEngine
         }
         else
         {
-            wrote = new double[channel.P.Length];
-            channel.Wrote = wrote;
+            wrote = new double[trip.P.Length];
+            trip.Wrote = wrote;
         }
 
-        channel.P.CopyTo(wrote, 0);
-        channel.Observed = true;
+        trip.P.CopyTo(wrote, 0);
+        trip.Observed = true;
 
         Writing++;
 
         try
         {
-            channel.Moves.Write(channel.P);
+            trip.Moves.Write(trip.P);
         }
         finally
         {
@@ -894,35 +894,35 @@ internal sealed class MotionEngine
 
         if (MotionTrace.Watching)
         {
-            MotionTrace.Wrote(channel);
+            MotionTrace.Wrote(trip);
         }
     }
 
     /// <summary>
-    /// Ends a motion: the value put exactly where it was going, the channel
+    /// Ends a motion: the value put exactly where it was going, the trip
     /// forgotten, and whoever was waiting told.
     /// </summary>
     /// <remarks>
     /// The LAST write is the target itself and not the last thing the curve
     /// worked out, because a value that stops a thousandth short has stopped
-    /// somewhere nobody described. The channel is then dropped, so the next
+    /// somewhere nobody described. The trip is then dropped, so the next
     /// setpoint on this value reads the platform afresh.
     /// </remarks>
-    /// <param name="channel">The motion.</param>
+    /// <param name="trip">The motion.</param>
     /// <param name="whole">Whether it ran to the end.</param>
     /// <param name="end">Where the value is left.</param>
-    private void Land(MotionChannel channel, bool whole, MotionEnd end = MotionEnd.Target)
+    private void Land(Trip trip, bool whole, TripEnd end = TripEnd.Target)
     {
-        if (end == MotionEnd.Target)
+        if (end == TripEnd.Target)
         {
-            channel.Target.CopyTo(channel.P, 0);
+            trip.Target.CopyTo(trip.P, 0);
         }
 
-        Array.Clear(channel.V);
+        Array.Clear(trip.V);
 
-        if (end != MotionEnd.Nothing)
+        if (end != TripEnd.Nothing)
         {
-            channel.Observed = true;
+            trip.Observed = true;
 
             // INSIDE the marker, as a frame's write is, and for a sharper
             // reason: a landing writes the control, the platform raises its
@@ -934,7 +934,7 @@ internal sealed class MotionEngine
 
             try
             {
-                channel.Moves.Write(channel.P);
+                trip.Moves.Write(trip.P);
             }
             finally
             {
@@ -953,45 +953,45 @@ internal sealed class MotionEngine
             // tall while its WidthRequest stood at 300, unchanged by ten idle
             // seconds or by a scroll. Asked again a turn later, outside the
             // frame, the measure happens. Only a SIZE needs it - every other
-            // property this engine carries is drawn from the value itself.
-            if (channel.Moves.Owner is VisualElement sized
-                && channel.Moves.Key is BindableProperty property
+            // property this walker carries is drawn from the value itself.
+            if (trip.Moves.Owner is VisualElement sized
+                && trip.Moves.Key is BindableProperty property
                 && (property == VisualElement.WidthRequestProperty
                     || property == VisualElement.HeightRequestProperty))
             {
                 sized.Dispatcher.Dispatch(sized.InvalidateMeasure);
             }
-            else if (channel.Moves is StateFan fan)
+            else if (trip.Moves is StateChannel channel)
             {
                 // A size on a STATE is worn by every control on the number.
-                fan.Remeasure();
+                channel.Remeasure();
             }
 #endif
         }
 
-        channel.Wrote = null;
+        trip.Wrote = null;
 
-        if (channel.Moving)
+        if (trip.Moving)
         {
-            channel.Moving = false;
-            _moving.Remove(channel);
+            trip.Moving = false;
+            _moving.Remove(trip);
         }
 
-        if (_table.TryGetValue(channel.Moves.Owner, out Dictionary<object, MotionChannel>? owned))
+        if (_table.TryGetValue(trip.Moves.Owner, out Dictionary<object, Trip>? owned))
         {
-            owned.Remove(channel.Moves.Key);
+            owned.Remove(trip.Moves.Key);
         }
 
         // BEFORE the waiter, which resumes a handler that may write this very
         // value somewhere else: where it stopped is older news than whatever
         // that handler asks for next.
-        if (end != MotionEnd.Nothing)
+        if (end != TripEnd.Nothing)
         {
-            Aimed?.Invoke(channel, false);
+            Aimed?.Invoke(trip, false);
         }
 
-        Action<bool>? waiting = channel.Done;
-        channel.Done = null;
+        Action<bool>? waiting = trip.Done;
+        trip.Done = null;
         waiting?.Invoke(whole);
 
         Sleep();

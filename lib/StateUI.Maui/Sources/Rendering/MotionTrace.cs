@@ -62,19 +62,19 @@ internal static class MotionTrace
         return System.IO.Path.GetTempPath();
     }
 
-    /// <summary>Writes down one frame of one channel.</summary>
-    /// <param name="channel">The channel that was just written.</param>
-    internal static void Wrote(MotionChannel channel)
+    /// <summary>Writes down one frame of one trip.</summary>
+    /// <param name="trip">The trip that was just written.</param>
+    internal static void Wrote(Trip trip)
     {
         var line = new StringBuilder();
 
-        line.Append(Name(channel)).Append("  p");
+        line.Append(Name(trip)).Append("  p");
 
-        Numbers(line, channel.P);
+        Numbers(line, trip.P);
         line.Append("  v");
-        Numbers(line, channel.V);
+        Numbers(line, trip.V);
         line.Append("  to");
-        Numbers(line, channel.Target);
+        Numbers(line, trip.Target);
 
         Say(line.ToString());
     }
@@ -135,15 +135,15 @@ internal static class MotionTrace
     }
 
     /// <summary>What to call the value that moved.</summary>
-    private static string Name(MotionChannel channel)
+    private static string Name(Trip trip)
     {
-        if (channel.Moves is StateFan fan)
+        if (trip.Moves is StateChannel channel)
         {
-            return fan.Name;
+            return channel.Name;
         }
 
-        string owner = channel.Moves.Owner.GetType().Name;
-        object key = channel.Moves.Key;
+        string owner = trip.Moves.Owner.GetType().Name;
+        object key = trip.Moves.Key;
 
         return key is Microsoft.Maui.Controls.BindableProperty property
             ? owner + "." + property.PropertyName

@@ -93,8 +93,8 @@ public class StatePlacementTests
         var host = new Host();
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
-        StateTie run = host.Renderer.Cycle.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftStateKind.Placement);
+        StateAttachment run = host.Renderer.Cycle.Registered(layout).Values
+            .Single(attachment => attachment.Kind == SwiftStateKind.Placement);
 
         Assert.Equal(SwiftStateMode.Out, run.Mode);
         Assert.Null(run.Property);
@@ -118,8 +118,8 @@ public class StatePlacementTests
 
         (AbsoluteLayout layout, _, _) = Placed(host);
 
-        StateTie room = host.Renderer.Cycle.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftStateKind.Feed);
+        StateAttachment room = host.Renderer.Cycle.Registered(layout).Values
+            .Single(attachment => attachment.Kind == SwiftStateKind.Feed);
 
         Assert.Equal(SwiftStateMode.In, room.Mode);
 
@@ -145,13 +145,13 @@ public class StatePlacementTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Motion.Clock = new HandMotionClock();
+        host.Renderer.Walker.Clock = new HandFrameClock();
         host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, View second) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(number, ~0UL, Run(
@@ -175,13 +175,13 @@ public class StatePlacementTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Motion.Clock = new HandMotionClock();
+        host.Renderer.Walker.Clock = new HandFrameClock();
         host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
 
         void Wear(double x)
         {
@@ -211,15 +211,15 @@ public class StatePlacementTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
 
         void Wear(ulong mask, byte[] bytes)
         {
@@ -254,15 +254,15 @@ public class StatePlacementTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
 
         void Wear(double law, double millis, double x)
         {
@@ -300,13 +300,13 @@ public class StatePlacementTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Motion.Clock = new HandMotionClock();
+        host.Renderer.Walker.Clock = new HandFrameClock();
         host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
 
         void Wear()
         {
@@ -335,13 +335,13 @@ public class StatePlacementTests
         var host = new Host();
         var crossing = new HandCrossing();
 
-        host.Renderer.Motion.Clock = new HandMotionClock();
+        host.Renderer.Walker.Clock = new HandFrameClock();
         host.Renderer.Cycle.Crossing = crossing;
 
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(tie => tie.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(number, ~0UL, Run(
@@ -402,7 +402,7 @@ public class StatePlacementTests
         Assert.Contains("Layer.Opacity = ", layered);
     }
 
-    /// <summary>One method of <c>MotionTargets.cs</c>, brace to brace.</summary>
+    /// <summary>One method of <c>TripTargets.cs</c>, brace to brace.</summary>
     /// <param name="signature">How the method's declaration begins.</param>
     /// <returns>Everything the method says.</returns>
     private static string MotionTargetsBody(string signature)
@@ -413,7 +413,7 @@ public class StatePlacementTests
         while (directory is not null && file is null)
         {
             string candidate = Path.Combine(
-                directory.FullName, "lib", "StateUI.Maui", "Sources", "Rendering", "MotionTargets.cs");
+                directory.FullName, "lib", "StateUI.Maui", "Sources", "Rendering", "TripTargets.cs");
 
             file = File.Exists(candidate) ? candidate : null;
             directory = directory.Parent;
@@ -424,7 +424,7 @@ public class StatePlacementTests
         string source = File.ReadAllText(file);
         int begins = source.IndexOf(signature, StringComparison.Ordinal);
 
-        Assert.True(begins > 0, $"{signature} was not found in MotionTargets.cs");
+        Assert.True(begins > 0, $"{signature} was not found in TripTargets.cs");
 
         int depth = 0;
         int at = source.IndexOf('{', begins);

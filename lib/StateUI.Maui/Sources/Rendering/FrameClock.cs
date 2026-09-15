@@ -21,13 +21,13 @@ namespace StateUI.Maui.Rendering;
 /// platform it is measurable in the process's own CPU line.
 /// </para>
 /// </remarks>
-internal interface IMotionClock
+internal interface IFrameClock
 {
     /// <summary>
     /// What time it is, in stopwatch ticks.
     /// </summary>
     /// <remarks>
-    /// One monotonic timebase for the whole engine, and every platform's clock
+    /// One monotonic timebase for the whole runtime, and every platform's clock
     /// answers it the same way - a frame signal says WHEN to draw and never
     /// what time it is, its own timestamps being in units of its own. The one
     /// clock that answers differently is the one a test winds, which is what
@@ -64,15 +64,15 @@ internal interface IMotionClock
 /// still wanted.
 /// </para>
 /// </remarks>
-internal sealed class FramePump
+internal sealed class FrameSignal
 {
     private readonly Action _ask;
     private bool _running;
     private bool _asked;
 
-    /// <summary>The pump, over whatever asks the platform for one frame.</summary>
+    /// <summary>The frame signal, over whatever asks the platform for one frame.</summary>
     /// <param name="ask">Asks the platform for the next signal.</param>
-    internal FramePump(Action ask) => _ask = ask;
+    internal FrameSignal(Action ask) => _ask = ask;
 
     /// <summary>Whether frames are wanted.</summary>
     internal bool Running => _running;
@@ -131,12 +131,12 @@ internal sealed class FramePump
 /// The clock this platform draws by.
 /// </summary>
 /// <remarks>
-/// One per process rather than one per window: the engine is one, and two
+/// One per process rather than one per window: the walker is one, and two
 /// windows' clocks would only tick it twice for the same instant - which the
-/// engine would answer with two frames' worth of nothing, since a frame that
+/// walker would answer with two frames' worth of nothing, since a frame that
 /// takes no time moves nothing.
 /// </remarks>
-internal static class MotionClock
+internal static class FrameClock
 {
     /// <summary>
     /// What answers a clock where this build has none of its own - set by a
@@ -144,16 +144,16 @@ internal static class MotionClock
     /// </summary>
     /// <remarks>
     /// The plain build is two different things: the headless tests, which drive
-    /// the engine by hand and want no clock at all, and Linux, whose GTK4
+    /// the walker by hand and want no clock at all, and Linux, whose GTK4
     /// backend brings its own package and sets one here from the window's frame
     /// clock. Neither can be told apart by a compiler switch, so it is asked
     /// for rather than compiled in.
     /// </remarks>
-    internal static Func<IMotionClock?>? Provided { get; set; }
+    internal static Func<IFrameClock?>? Provided { get; set; }
 
     /// <summary>Makes the clock, or nothing where this platform has none.</summary>
     /// <returns>A clock nobody has started yet.</returns>
-    internal static IMotionClock? Create()
+    internal static IFrameClock? Create()
     {
 #if IOS || MACCATALYST
         return new DisplayLink();
@@ -173,7 +173,7 @@ internal static class MotionClock
     /// stops arriving while a finger is tracking a scroller, which is exactly
     /// when a motion beside it must not stall.
     /// </remarks>
-    private sealed class DisplayLink : IMotionClock
+    private sealed class DisplayLink : IFrameClock
     {
         private CoreAnimation.CADisplayLink? _link;
 
@@ -204,16 +204,16 @@ internal static class MotionClock
     /// <remarks>
     /// A callback is good for a single frame there, so it posts itself again
     /// from inside the one it is answering - which is what
-    /// <see cref="FramePump"/> keeps to one. The choreographer belongs to the
+    /// <see cref="FrameSignal"/> keeps to one. The choreographer belongs to the
     /// THREAD that asks for it, which is why this is only ever started from the
     /// thread the platform draws on.
     /// </remarks>
-    private sealed class FrameCallback : Java.Lang.Object, Android.Views.Choreographer.IFrameCallback, IMotionClock
+    private sealed class FrameCallback : Java.Lang.Object, Android.Views.Choreographer.IFrameCallback, IFrameClock
     {
-        private readonly FramePump _pump;
+        private readonly FrameSignal _pump;
 
         public FrameCallback() =>
-            _pump = new FramePump(() => Android.Views.Choreographer.Instance?.PostFrameCallback(this));
+            _pump = new FrameSignal(() => Android.Views.Choreographer.Instance?.PostFrameCallback(this));
 
         public event Action? Frame;
 
@@ -241,7 +241,7 @@ internal static class MotionClock
     /// for every frame the whole window composes, whether anything of ours is
     /// moving or not.
     /// </remarks>
-    private sealed class Composition : IMotionClock
+    private sealed class Composition : IFrameClock
     {
         private bool _running;
 
@@ -283,7 +283,7 @@ internal static class MotionClock
 /// - and a test that never winds it is a test where nothing moves, which is the
 /// honest answer for a control with no screen under it.
 /// </remarks>
-internal sealed class HandMotionClock : IMotionClock
+internal sealed class HandFrameClock : IFrameClock
 {
     /// <summary>Whether anything has asked for frames.</summary>
     internal bool Running { get; private set; }

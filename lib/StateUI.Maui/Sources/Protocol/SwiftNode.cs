@@ -226,7 +226,7 @@ public sealed class SwiftNode
     /// one given a <c>.motion(_:)</c> of its own, and by the APPLICATION, whose
     /// answer the rest inherit - because what it answers for is worked out here
     /// rather than described: none of it is a property, so there is no
-    /// transition for it to ride beside. See <c>MotionArranger</c>.
+    /// transition for it to ride beside. See <c>LayoutMotion</c>.
     /// </remarks>
     internal MotionSpec? Motion { get; set; }
 
@@ -249,7 +249,7 @@ public sealed class SwiftNode
     /// <remarks>
     /// Said with <see cref="Motion"/> and always beside it, since a layout may
     /// travel the way the application does and still hold one part of a place
-    /// still. See <c>MotionArranger</c>.
+    /// still. See <c>LayoutMotion</c>.
     /// </remarks>
     internal SwiftMotionLanes Lanes { get; set; } = SwiftMotionLanes.All;
 
@@ -553,7 +553,7 @@ internal readonly record struct SwiftStateEntry(
 /// <param name="PropertyName">
 /// The property's spelling - what an application's own is found by, what
 /// <c>SwiftStyles.Property</c> resolves through, and what names the property
-/// the engine's channel is filed under, so a second walk on the same property
+/// the walker's trip is filed under, so a second walk on the same property
 /// bends the first rather than starting beside it.
 /// </param>
 /// <param name="Law">
@@ -568,7 +568,7 @@ internal readonly record struct SwiftStateEntry(
 /// <param name="Easing">
 /// The curve it walks on, as the number the Swift <c>Easing</c> enum gives it -
 /// this repository's own, like every closed vocabulary on this wire, mirrored by
-/// <see cref="SwiftEasing"/> and walked by <c>MotionEasing</c>.
+/// <see cref="SwiftEasing"/> and walked by <c>MotionLaw</c>.
 /// </param>
 /// <param name="Factor">
 /// A spring's damping - the number that law needs beside its milliseconds.
@@ -581,7 +581,7 @@ internal readonly record struct SwiftTransition(
     int Easing,
     double Factor)
 {
-    /// <summary>The law this walk travels under, as the engine states one.</summary>
+    /// <summary>The law this walk travels under, as the walker states one.</summary>
     internal MotionSpec Spec => (SwiftMotionLaw)Law switch
     {
         SwiftMotionLaw.Spring => MotionSpec.Spring(Millis, Factor),

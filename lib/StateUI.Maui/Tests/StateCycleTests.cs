@@ -95,12 +95,12 @@ public class StateCycleTests
 
         Assert.Equal(0.5, border.Opacity);
 
-        StateTie tie = Assert.Single(host.Renderer.Cycle.Registered(border).Values);
+        StateAttachment attachment = Assert.Single(host.Renderer.Cycle.Registered(border).Values);
 
-        Assert.Equal(1, tie.Number);
-        Assert.Equal(SwiftStateMode.InOut, tie.Mode);
-        Assert.Equal(SwiftStateKind.Property, tie.Kind);
-        Assert.Equal(VisualElement.OpacityProperty, tie.Property);
+        Assert.Equal(1, attachment.Number);
+        Assert.Equal(SwiftStateMode.InOut, attachment.Mode);
+        Assert.Equal(SwiftStateKind.Property, attachment.Kind);
+        Assert.Equal(VisualElement.OpacityProperty, attachment.Property);
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public class StateCycleTests
 
         Assert.Equal(
             [StackBase.SpacingProperty],
-            host.Renderer.Cycle.Registered(stack).Values.Select(tie => tie.Property));
+            host.Renderer.Cycle.Registered(stack).Values.Select(attachment => attachment.Property));
 
         var border = (Border)stack.Children[0];
         var label = (Label)border.Content!;
@@ -131,16 +131,16 @@ public class StateCycleTests
         Assert.Single(host.Renderer.Cycle.Registered(entry));
         Assert.Equal(
             [BoxView.ColorProperty],
-            host.Renderer.Cycle.Registered(box).Values.Select(tie => tie.Property));
+            host.Renderer.Cycle.Registered(box).Values.Select(attachment => attachment.Property));
 
         // And every one of them resolved to a property rather than to nothing:
-        // a token this side cannot resolve is a tie that is never made.
+        // a token this side cannot resolve is an attachment that is never made.
         foreach (BindableObject view in new BindableObject[]
                  { stack, border, label, shape, button, entry, box })
         {
             Assert.All(
                 host.Renderer.Cycle.Registered(view).Values,
-                tie => Assert.NotNull(tie.Property));
+                attachment => Assert.NotNull(attachment.Property));
         }
     }
 
@@ -154,11 +154,11 @@ public class StateCycleTests
         foreach (BindableObject view in new BindableObject[]
                  { (View)stack.Children[0], (View)stack.Children[1] })
         {
-            StateTie tie = Assert.Single(host.Renderer.Cycle.Registered(view).Values);
+            StateAttachment attachment = Assert.Single(host.Renderer.Cycle.Registered(view).Values);
 
-            Assert.Equal(SwiftStateKind.Text, tie.Kind);
-            Assert.Equal(SwiftStateMode.Out, tie.Mode);
-            Assert.Equal(1, tie.Number);
+            Assert.Equal(SwiftStateKind.Text, attachment.Kind);
+            Assert.Equal(SwiftStateMode.Out, attachment.Mode);
+            Assert.Equal(1, attachment.Number);
         }
     }
 
@@ -178,9 +178,9 @@ public class StateCycleTests
         var host = new Host();
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
 
-        StateTie slider = Assert.Single(
+        StateAttachment slider = Assert.Single(
             host.Renderer.Cycle.Registered((View)stack.Children[0]).Values);
-        StateTie stepper = Assert.Single(
+        StateAttachment stepper = Assert.Single(
             host.Renderer.Cycle.Registered((View)stack.Children[1]).Values);
 
         Assert.Equal(SwiftStateMode.InOut, slider.Mode);
@@ -280,10 +280,11 @@ public class StateCycleTests
     }
 
     /// <summary>
-    /// A PLAIN value the reader moved - a switch flipped - crosses as the host's
-    /// own write, one lane under the tie's number, and every other control the
-    /// same state drives is set beside it; the tie remembers the value, so the
-    /// state's echo of it is not set on the control again.
+    /// A PLAIN value the reader moved - a switch flipped - crosses as the
+    /// host's own write, one lane under the attachment's number, and every
+    /// other control the same state drives is set beside it; the attachment
+    /// remembers the value, so the state's echo of it is not set on the control
+    /// again.
     /// </summary>
     [Fact]
     public void AFlippedSwitchIsToldToItsPlainState()
@@ -381,9 +382,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -418,9 +419,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -453,9 +454,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -536,9 +537,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
         host.ApplyMessage(Read("state-sink.bin"));
 
@@ -621,7 +622,7 @@ public class StateCycleTests
         Assert.Equal("xyz", entry.Text);
         Assert.Empty(host.Dispatched);
         Assert.Equal(reports, crossing.Written.Count);
-        Assert.Equal(0, MotionEngine.Writing);
+        Assert.Equal(0, Walker.Writing);
     }
 
     /// <summary>
@@ -692,13 +693,13 @@ public class StateCycleTests
         Assert.Equal(new DateTime(2027, 1, 1), picker.Date);
         Assert.Empty(host.Dispatched);
         Assert.Equal(reports, crossing.Written.Count);
-        Assert.Equal(0, MotionEngine.Writing);
+        Assert.Equal(0, Walker.Writing);
     }
 
     /// <summary>
     /// The three fields redeclare InputView's TextProperty as the SAME
     /// instance, which is what lets the renderer report a keystroke under one
-    /// property name and the tie made from the field's own resolve it.
+    /// property name and the attachment made from the field's own resolve it.
     /// </summary>
     [Fact]
     public void TheTextPropertyIsOneInstanceAcrossTheFields()
@@ -738,7 +739,7 @@ public class StateCycleTests
     /// <summary>
     /// A CHANNEL OF ONE CONTROL'S OWN IS NOT THE STATE'S NEWS. A visual state
     /// dimming a button, or the tree stating a value beside the registration,
-    /// aims that control's own channel - and the value on the number is
+    /// aims that control's own trip - and the value on the number is
     /// unchanged by it: a button disabled to grey is a button that looks grey,
     /// not a colour that turned grey, and every other control on the number
     /// goes on showing the state.
@@ -748,22 +749,22 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         crossing.Written.Clear();
 
-        host.Renderer.Motion.Aim(
+        host.Renderer.Walker.Aim(
             new MotionProperty(border, VisualElement.OpacityProperty, MotionValue.Number, true),
             [0.1],
             MotionSpec.Eased(200, (int)SwiftEasing.Linear));
 
-        // The control travels, on a channel of its own.
-        Assert.NotNull(host.Renderer.Motion.Moving(border, VisualElement.OpacityProperty));
+        // The control travels, on a trip of its own.
+        Assert.NotNull(host.Renderer.Walker.Moving(border, VisualElement.OpacityProperty));
 
         clock.Tick(100);
 
@@ -773,7 +774,7 @@ public class StateCycleTests
 
     /// <summary>
     /// A STOP OF THE STATE'S OWN CHANNEL IS TOLD - the half no poll can see:
-    /// the channel is taken out of the table as it lands, so nothing is left
+    /// the trip is taken out of the table as it lands, so nothing is left
     /// to read the value it finished at. Where it stopped is where it is going
     /// and the speed is nought, which together are what an engine reads as
     /// arrived.
@@ -783,9 +784,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -798,9 +799,9 @@ public class StateCycleTests
         clock.Tick(100);
         crossing.Written.Clear();
 
-        StateFan fan = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Fan!;
+        StateChannel channel = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Channel!;
 
-        host.Renderer.Motion.Halt(fan, StateFan.Slot, MotionEnd.Here);
+        host.Renderer.Walker.Halt(channel, StateChannel.Slot, TripEnd.Here);
 
         (_, _, double[] lanes) = Assert.NotNull(Told(crossing));
 
@@ -820,9 +821,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -835,9 +836,9 @@ public class StateCycleTests
         clock.Tick(100);
         crossing.Written.Clear();
 
-        StateFan fan = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Fan!;
+        StateChannel channel = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Channel!;
 
-        host.Renderer.Motion.Halt(fan, StateFan.Slot, MotionEnd.Nothing);
+        host.Renderer.Walker.Halt(channel, StateChannel.Slot, TripEnd.Nothing);
 
         Assert.Empty(crossing.Written);
     }
@@ -881,14 +882,14 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         // The law the application would have stated, which a harness handed
         // the view alone never sees.
-        host.Renderer.Motion.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.5, setPoint: 0.5));
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -910,7 +911,7 @@ public class StateCycleTests
         Assert.True(VisualStateManager.GoToState(border, "Disabled"));
         Assert.True(VisualStateManager.GoToState(border, "Normal"));
 
-        Assert.NotNull(host.Renderer.Motion.Moving(border, VisualElement.OpacityProperty));
+        Assert.NotNull(host.Renderer.Walker.Moving(border, VisualElement.OpacityProperty));
         Assert.True(
             border.Opacity is > 0.15 and < 0.3,
             $"carried on from where it was, and it is at {border.Opacity}");
@@ -930,9 +931,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -955,9 +956,9 @@ public class StateCycleTests
         });
 
         // The number's channel is still carrying it.
-        StateFan fan = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Fan!;
+        StateChannel channel = Assert.Single(host.Renderer.Cycle.Registered(border).Values).Channel!;
 
-        Assert.NotNull(host.Renderer.Motion.Moving(fan, StateFan.Slot));
+        Assert.NotNull(host.Renderer.Walker.Moving(channel, StateChannel.Slot));
 
         clock.Tick(100);
         Assert.True(
@@ -1006,9 +1007,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.4, setPoint: 0.4));
 
@@ -1030,12 +1031,12 @@ public class StateCycleTests
         // Gone at once, with no fade to run and the opacity still the number's.
         Assert.False(border.IsVisible);
         Assert.Equal(0.4, border.Opacity, 6);
-        Assert.Null(host.Renderer.Motion.Moving(border, VisualElement.OpacityProperty));
+        Assert.Null(host.Renderer.Walker.Moving(border, VisualElement.OpacityProperty));
     }
 
     /// <summary>
-    /// A control that leaves the tree takes its ties with it, and whatever was
-    /// carrying one of its values is let go of.
+    /// A control that leaves the tree takes its attachments with it, and
+    /// whatever was carrying one of its values is let go of.
     /// </summary>
     [Fact]
     public void ADetachedViewIsTiedToNothing()
@@ -1055,13 +1056,13 @@ public class StateCycleTests
     /// holds it weakly and nothing else here holds it at all.
     /// </summary>
     /// <remarks>
-    /// `Detach` is called only
-    /// where a control REGISTERS again, never where one leaves, so a tie holding
-    /// its view strongly kept every driven control ever built alive for the life
-    /// of the process - measured on Mac, Android and an iPad as two or three
-    /// controls per page visited, and every page is rebuilt on every visit.
-    /// A weak reference is the fix, and this is what says so: drop every
-    /// reference this test holds, collect, and the control must be gone.
+    /// `Detach` is called only where a control REGISTERS again, never where one
+    /// leaves, so an attachment holding its view strongly kept every driven
+    /// control ever built alive for the life of the process - measured on Mac,
+    /// Android and an iPad as two or three controls per page visited, and every
+    /// page is rebuilt on every visit. A weak reference is the fix, and this is
+    /// what says so: drop every reference this test holds, collect, and the
+    /// control must be gone.
     /// </remarks>
     [Fact]
     public void AViewTheTreeHasDroppedIsCollectable()
@@ -1102,9 +1103,9 @@ public class StateCycleTests
     /// A feed subscribes to the control's own PropertyChanged and keeps the
     /// unsubscription on the TIE, which the cycle keeps by number - so a
     /// handler or an unsubscription that closes over the control roots it for
-    /// the life of the process, and the tie's weak reference can never go null,
-    /// which means <c>Prune</c> never drops it either. Measured on the gallery
-    /// as 76 controls left behind on every visit to <c>PlacedLayout</c>
+    /// the life of the process, and the attachment's weak reference can never
+    /// go null, which means <c>Prune</c> never drops it either. Measured on the
+    /// gallery as 76 controls left behind on every visit to <c>PlacedLayout</c>
     /// and 59 to <c>GalleryView</c>, <c>tracked</c> climbing for ever while
     /// <c>alive</c> came back to its baseline every time.
     ///
@@ -1127,10 +1128,10 @@ public class StateCycleTests
             ],
         });
 
-        StateTie tie = Assert.Single(host.Renderer.Cycle.Registered(layout)).Value;
+        StateAttachment attachment = Assert.Single(host.Renderer.Cycle.Registered(layout)).Value;
 
-        Assert.NotNull(tie.Released);
-        Assert.Empty(Holds(tie.Released, 3));
+        Assert.NotNull(attachment.Released);
+        Assert.Empty(Holds(attachment.Released, 3));
     }
 
     /// <summary>
@@ -1172,17 +1173,17 @@ public class StateCycleTests
     // ---- The reader --------------------------------------------------------
 
     /// <summary>
-    /// A REPORT RAISED INSIDE THE ENGINE'S OWN WRITE IS THE ENGINE HEARING
+    /// A REPORT RAISED INSIDE THE WALKER'S OWN WRITE IS THE WALKER HEARING
     /// ITSELF, and reaches the state as nothing at all.
     /// </summary>
     /// <remarks>
     /// Every platform raises its change notification synchronously as the value
     /// is assigned, so a walk of sixty frames is sixty reports. Believed, each
-    /// one would write the value the engine had just written back over where it
+    /// one would write the value the walker had just written back over where it
     /// was GOING, and the walk would end on its own first frame.
     /// </remarks>
     [Fact]
-    public void AReportRaisedInsideTheEnginesOwnWriteIsDropped()
+    public void AReportRaisedInsideTheWalkersOwnWriteIsDropped()
     {
         var host = new Host();
         var crossing = new HandCrossing();
@@ -1194,7 +1195,7 @@ public class StateCycleTests
 
         crossing.Written.Clear();
 
-        MotionEngine.Writing++;
+        Walker.Writing++;
 
         try
         {
@@ -1202,7 +1203,7 @@ public class StateCycleTests
         }
         finally
         {
-            MotionEngine.Writing--;
+            Walker.Writing--;
         }
 
         Assert.Empty(crossing.Written);
@@ -1282,13 +1283,13 @@ public class StateCycleTests
     /// ends where it stands, and the value is the reader's from that moment.
     /// </summary>
     [Fact]
-    public void AFingerTakesAValueTheEngineWasCarrying()
+    public void AFingerTakesAValueTheWalkerWasCarrying()
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
@@ -1325,7 +1326,7 @@ public class StateCycleTests
     /// than at the target.
     /// </summary>
     /// <remarks>
-    /// What tells state about the arrival is the engine's own mirror, not a
+    /// What tells state about the arrival is the walker's own mirror, not a
     /// platform report, so nothing is lost by dropping it.
     /// </remarks>
     [Fact]
@@ -1333,9 +1334,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
@@ -1345,7 +1346,7 @@ public class StateCycleTests
 
         slider.ValueChanged += (sender, e) =>
         {
-            if (MotionEngine.Writing == 0)
+            if (Walker.Writing == 0)
             {
                 reads++;
             }
@@ -1382,9 +1383,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         var stack = (VerticalStackLayout)host.ApplyMessage(Read("state-input.bin"));
@@ -1408,7 +1409,7 @@ public class StateCycleTests
 
         // And the marker is a guard rather than a wall: it is back to nought
         // the moment the journey is over, so the next report is the reader's.
-        Assert.Equal(0, MotionEngine.Writing);
+        Assert.Equal(0, Walker.Writing);
     }
 
     /// <summary>
@@ -1464,7 +1465,7 @@ public class StateCycleTests
     /// reading of the number per cycle rather than one per control.
     /// </summary>
     /// <remarks>
-    /// Before this, two controls on one number were two channels: two curves,
+    /// Before this, two controls on one number were two trips: two curves,
     /// two positions, and two writers of the image's value lane, with which of
     /// them the state quoted decided by an unstable sort.
     /// </remarks>
@@ -1473,9 +1474,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0, setPoint: 0));
 
@@ -1491,7 +1492,7 @@ public class StateCycleTests
         host.Renderer.Cycle.Run(CycleReason.Told);
 
         // ONE motion carries both.
-        Assert.Equal(1, host.Renderer.Motion.Carrying);
+        Assert.Equal(1, host.Renderer.Walker.Carrying);
 
         crossing.Written.Clear();
         clock.Tick(100);
@@ -1517,9 +1518,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -1550,7 +1551,7 @@ public class StateCycleTests
 
         // Where the value IS, at once, and one channel for the two of them.
         Assert.Equal(border.Opacity, label.Opacity, 3);
-        Assert.Equal(1, host.Renderer.Motion.Carrying);
+        Assert.Equal(1, host.Renderer.Walker.Carrying);
 
         clock.Tick(100);
 
@@ -1560,18 +1561,18 @@ public class StateCycleTests
 
     /// <summary>
     /// A WRITTEN OFFSET MOVES THE SCROLLER ON THE STATE'S CHANNEL. The platform
-    /// keeps a scroller's offset read-only, so the tie carries no property:
-    /// the channel writes the scroller through its movement, a frame at a time
-    /// on the engine's clock, to where the state sent it.
+    /// keeps a scroller's offset read-only, so the attachment carries no
+    /// property: the channel writes the scroller through its movement, a frame
+    /// at a time on the walker's clock, to where the state sent it.
     /// </summary>
     [Fact]
     public void AWrittenOffsetMovesTheScrollerOnTheStatesChannel()
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         ScrollView scroll = TiedScroller(host);
@@ -1590,13 +1591,13 @@ public class StateCycleTests
 
         Assert.Equal(0, put[^1].X, 3);
         Assert.Equal(150, put[^1].Y, 3);
-        Assert.Equal(1, host.Renderer.Motion.Carrying);
+        Assert.Equal(1, host.Renderer.Walker.Carrying);
 
         clock.Tick(100);
 
         Assert.Equal(0, put[^1].X, 3);
         Assert.Equal(300, put[^1].Y, 3);
-        Assert.Equal(0, host.Renderer.Motion.Carrying);
+        Assert.Equal(0, host.Renderer.Walker.Carrying);
     }
 
     /// <summary>
@@ -1611,9 +1612,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         ScrollView scroll = TiedScroller(host);
@@ -1633,12 +1634,12 @@ public class StateCycleTests
         // The frame written at 150, answered a frame late.
         ((IScrollViewController)scroll).SetScrolledPosition(0, 150);
 
-        Assert.Equal(1, host.Renderer.Motion.Carrying);
+        Assert.Equal(1, host.Renderer.Walker.Carrying);
 
         clock.Tick(100);
 
         Assert.Equal(300, put[^1].Y, 3);
-        Assert.Equal(0, host.Renderer.Motion.Carrying);
+        Assert.Equal(0, host.Renderer.Walker.Carrying);
 
         TestDispatcher.Drain();
     }
@@ -1654,9 +1655,9 @@ public class StateCycleTests
     {
         var host = new Host();
         var crossing = new HandCrossing();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
         host.Renderer.Cycle.Crossing = crossing;
 
         ScrollView scroll = TiedScroller(host);
@@ -1673,7 +1674,7 @@ public class StateCycleTests
 
         // The frame written at 150, answered inside the write - the way UIKit
         // and Android answer one, and never the reader's either way.
-        MotionEngine.Writing++;
+        Walker.Writing++;
 
         try
         {
@@ -1681,10 +1682,10 @@ public class StateCycleTests
         }
         finally
         {
-            MotionEngine.Writing--;
+            Walker.Writing--;
         }
 
-        Assert.Equal(1, host.Renderer.Motion.Carrying);
+        Assert.Equal(1, host.Renderer.Walker.Carrying);
 
         crossing.Written.Clear();
 
@@ -1692,7 +1693,7 @@ public class StateCycleTests
         // without hooks of its own takes, and the one every hook takes too.
         host.Renderer.MovementOf(scroll).Fingers(true);
 
-        Assert.Equal(0, host.Renderer.Motion.Carrying);
+        Assert.Equal(0, host.Renderer.Walker.Carrying);
 
         (int number, _, double[] lanes) = Assert.NotNull(Told(crossing));
 

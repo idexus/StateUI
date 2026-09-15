@@ -727,7 +727,7 @@ public class RendererTests
         // one, because the report would be written back over the journey; an
         // offset is only ever read, so it has nothing to feed back into and
         // refusing it loses the one thing it is for.
-        MotionEngine.Writing++;
+        Walker.Writing++;
 
         try
         {
@@ -735,7 +735,7 @@ public class RendererTests
         }
         finally
         {
-            MotionEngine.Writing--;
+            Walker.Writing--;
         }
 
         Assert.Equal((9, "120"), host.Dispatched[^1]);

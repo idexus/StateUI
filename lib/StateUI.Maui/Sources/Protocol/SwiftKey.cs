@@ -24,7 +24,7 @@ namespace StateUI.Maui.Protocol;
 /// string hashed anywhere. A named one is built wherever an application's own
 /// property is served: the string-keyed accessors on <c>SwiftNode</c> and
 /// <c>StateUIValues</c>, the <c>cleared</c> reader, <c>SwiftStyles.AddSetters</c>,
-/// <c>SwiftTransitions</c> and <c>StateUIRenderer.ReconcileRegistered</c>.
+/// <c>DescribedMotion</c> and <c>StateUIRenderer.ReconcileRegistered</c>.
 /// </para>
 /// <para>
 /// A named key carries its member as well, when the spelling happens to be one

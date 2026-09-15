@@ -23,7 +23,7 @@ namespace StateUI.Maui.Linux;
 /// GTK has the real thing - a frame clock per surface, which is what the
 /// compositor paces - and a widget can ask to be told about every frame of it.
 /// So this waits for a window to exist, hangs a tick callback off its root,
-/// and hands each of those ticks to the engine.
+/// and hands each of those ticks to the walker.
 /// </para>
 /// <para>
 /// The callback is REMOVED when nothing is moving, and asked for again when
@@ -36,10 +36,10 @@ namespace StateUI.Maui.Linux;
 [SupportedOSPlatform("linux")]
 internal static class LinuxFrames
 {
-    /// <summary>Makes this platform's frame clock the engine's.</summary>
+    /// <summary>Makes this platform's frame clock the walker's.</summary>
     internal static void Install()
     {
-        MotionClock.Provided = () => new Clock();
+        FrameClock.Provided = () => new Clock();
 
         // And the desktop's own "less movement, please", which is one setting
         // here where the other platforms each have their own.
@@ -47,7 +47,7 @@ internal static class LinuxFrames
     }
 
     /// <summary>One window's frame clock, asked for a tick at a time.</summary>
-    private sealed class Clock : IMotionClock
+    private sealed class Clock : IFrameClock
     {
         /// <summary>What GTK gave the callback, so it can be taken back.</summary>
         private uint _ticket;
@@ -117,7 +117,7 @@ internal static class LinuxFrames
         /// The first setpoint of a session can arrive before there is a window
         /// to hang anything off - a page describes itself as it is built - so a
         /// clock with nowhere to attach asks again on the next idle rather than
-        /// giving up. Until then the engine simply gets no frames, which is a
+        /// giving up. Until then the walker simply gets no frames, which is a
         /// value arriving at once and never a value lost.
         /// </remarks>
         private void Attach()

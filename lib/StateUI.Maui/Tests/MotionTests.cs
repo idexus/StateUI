@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The host's half of "a value that changes TRAVELS": the engine that carries it,
-// the laws it travels under, and the layout whose children travel to their new
-// places instead of appearing there.
+// The host's half of "a value that changes TRAVELS": the walker that carries
+// it, the laws it travels under, and the layout whose children travel to their
+// new places instead of appearing there.
 //
 // Every trajectory here is a pure function of the time since it began, so the
 // clock is wound by hand and every number below is exact. The Swift half is
@@ -17,17 +17,17 @@ namespace StateUI.Maui.Tests;
 
 public class MotionTests
 {
-    private static (MotionEngine Engine, HandMotionClock Clock) Winding()
+    private static (Walker Walker, HandFrameClock Clock) Winding()
     {
-        var clock = new HandMotionClock();
-        var engine = new MotionEngine { Clock = clock };
-        return (engine, clock);
+        var clock = new HandFrameClock();
+        var walker = new Walker { Clock = clock };
+        return (walker, clock);
     }
 
     private static MotionProperty Opacity(View view) =>
         new(view, VisualElement.OpacityProperty, MotionValue.Number, true);
 
-    // ---- The engine ---------------------------------------------------------
+    // ---- The walker ---------------------------------------------------------
 
     /// <summary>
     /// The clock runs only while something is moving. A signal arriving sixty
@@ -36,12 +36,12 @@ public class MotionTests
     [Fact]
     public void TheClockSleepsWhenNothingIsMoving()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Opacity = 0 };
 
         Assert.False(clock.Running);
 
-        engine.Aim(Opacity(label), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
         Assert.True(clock.Running);
 
         clock.Tick(100);
@@ -56,12 +56,12 @@ public class MotionTests
     [Fact]
     public void ATargetChangedHalfwayCarriesTheSpeedItHad()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Scale = 0 };
 
         MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
 
-        engine.Aim(scale, [100.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(scale, [100.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
         clock.Tick(50);
 
         double atTurn = label.Scale;
@@ -70,7 +70,7 @@ public class MotionTests
         // Sent somewhere else entirely, and the very next frame must still be
         // going the way it was: a cut would show as the value standing still
         // for a frame, or worse, jumping back.
-        engine.Aim(scale, [0.0], MotionSpec.Eased(400, (int)SwiftEasing.Linear));
+        walker.Aim(scale, [0.0], MotionSpec.Eased(400, (int)SwiftEasing.Linear));
         clock.Tick(8);
 
         Assert.True(
@@ -87,7 +87,7 @@ public class MotionTests
     /// </summary>
     /// <remarks>
     /// Being told resumes a Swift handler, and a handler that renders aims
-    /// every channel that message touches - a visual state, a transition, a
+    /// every trip that message touches - a visual state, a transition, a
     /// layout's children. None of that is this value being sent somewhere new,
     /// so none of it may take this call's turn: the aim that is speaking still
     /// owns the property it is aiming.
@@ -95,24 +95,24 @@ public class MotionTests
     [Fact]
     public void AnAimSurvivesAnotherValueMovingWhileItSpeaks()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var carried = new Label { Opacity = 0 };
         var bystander = new Label { Opacity = 0 };
 
         // The first journey's waiter does what a resumed handler does: it
         // renders, and the render aims a DIFFERENT control.
-        engine.Aim(
+        walker.Aim(
             Opacity(carried),
             [1.0],
             MotionSpec.Eased(100, (int)SwiftEasing.Linear),
-            _ => engine.Aim(
+            _ => walker.Aim(
                 Opacity(bystander), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear)));
 
         clock.Tick(50);
 
         bool answered = false;
 
-        engine.Aim(
+        walker.Aim(
             Opacity(carried),
             [0.25],
             MotionSpec.Eased(100, (int)SwiftEasing.Linear),
@@ -131,16 +131,16 @@ public class MotionTests
     [Fact]
     public void AnAimThatGivesUpItsTurnStillAnswersItsWaiter()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var carried = new Label { Opacity = 0 };
 
         // The waiter does what a resumed handler doing `$x.animateTo(...)`
         // does: it sends this very value somewhere new.
-        engine.Aim(
+        walker.Aim(
             Opacity(carried),
             [1.0],
             MotionSpec.Eased(100, (int)SwiftEasing.Linear),
-            _ => engine.Aim(
+            _ => walker.Aim(
                 Opacity(carried), [0.9], MotionSpec.Eased(100, (int)SwiftEasing.Linear)));
 
         clock.Tick(50);
@@ -148,7 +148,7 @@ public class MotionTests
         bool answered = false;
         bool arrived = true;
 
-        engine.Aim(
+        walker.Aim(
             Opacity(carried),
             [0.25],
             MotionSpec.Eased(100, (int)SwiftEasing.Linear),
@@ -168,10 +168,10 @@ public class MotionTests
     [Fact]
     public void AMotionFromRestFollowsTheCurveExactly()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Scale = 0 };
 
-        engine.Aim(
+        walker.Aim(
             new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
             [1.0],
             MotionSpec.Eased(1000, (int)SwiftEasing.CubicOut));
@@ -189,10 +189,10 @@ public class MotionTests
     [Fact]
     public void ASpringSettlesWithoutOvershooting()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Scale = 0 };
 
-        engine.Aim(
+        walker.Aim(
             new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
             [1.0],
             MotionSpec.Spring(200, 1));
@@ -218,12 +218,12 @@ public class MotionTests
     [Fact]
     public void ASetpointOvertakenWhileItSpeaksGivesUpItsTurn()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Scale = 0 };
 
         MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
 
-        engine.Aim(
+        walker.Aim(
             scale,
             [10.0],
             MotionSpec.Eased(100, (int)SwiftEasing.Linear),
@@ -232,10 +232,10 @@ public class MotionTests
                 // The handler resumed by the ending motion sends the value
                 // somewhere else - from inside the very call that is replacing
                 // it.
-                engine.Aim(scale, [99.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+                walker.Aim(scale, [99.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
             });
 
-        engine.Aim(scale, [50.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(scale, [50.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
 
         clock.Tick(200);
 
@@ -250,10 +250,10 @@ public class MotionTests
     [Fact]
     public void WithNoClockAValueSimplyArrives()
     {
-        var engine = new MotionEngine { Clock = null };
+        var walker = new Walker { Clock = null };
         var label = new Label { Opacity = 0 };
 
-        engine.Aim(Opacity(label), [1.0], MotionSpec.Eased(400, (int)SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], MotionSpec.Eased(400, (int)SwiftEasing.Linear));
 
         Assert.Equal(1, label.Opacity);
     }
@@ -266,7 +266,7 @@ public class MotionTests
     [Fact]
     public void AReaderWhoAskedForLessMovementGetsNone()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Opacity = 0 };
 
         MotionMood.Provided = () => true;
@@ -275,7 +275,7 @@ public class MotionTests
         {
             bool? answered = null;
 
-            engine.Aim(
+            walker.Aim(
                 Opacity(label),
                 [1.0],
                 MotionSpec.Eased(400, (int)SwiftEasing.Linear),
@@ -298,10 +298,10 @@ public class MotionTests
     [Fact]
     public void AFractionIsHeldInsideItsOwnRange()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Opacity = 0 };
 
-        engine.Aim(Opacity(label), [1.0], MotionSpec.Spring(200, 0.3));
+        walker.Aim(Opacity(label), [1.0], MotionSpec.Spring(200, 0.3));
 
         for (int frame = 0; frame < 120; frame++)
         {
@@ -314,17 +314,17 @@ public class MotionTests
     /// A speed handed in with the setpoint bends the law the same way a motion
     /// being replaced does: the same duration, beginning at the speed the value
     /// is actually going at. What a value handed over from arithmetic beside
-    /// the engine needs, and what a reader's release means.
+    /// the walker needs, and what a reader's release means.
     /// </summary>
     [Fact]
     public void AVelocityHandedInBendsAnEasedLawIntoAHermite()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Scale = 0 };
 
         MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
 
-        engine.Aim(
+        walker.Aim(
             scale,
             [100.0],
             MotionSpec.Eased(100, (int)SwiftEasing.Linear),
@@ -348,12 +348,12 @@ public class MotionTests
     [Fact]
     public void AVelocityHandedInSeedsASpring()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Scale = 0 };
 
         MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
 
-        engine.Aim(scale, [100.0], MotionSpec.Spring(200, 1), velocity: [-2.0]);
+        walker.Aim(scale, [100.0], MotionSpec.Spring(200, 1), velocity: [-2.0]);
         clock.Tick(8);
 
         Assert.True(
@@ -376,13 +376,13 @@ public class MotionTests
     [Fact]
     public void AStartVelocityOnAStillValueReturnsToWhereItWas()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Scale = 100 };
 
         MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
         bool? answered = null;
 
-        engine.Aim(
+        walker.Aim(
             scale,
             [100.0],
             MotionSpec.Eased(200, (int)SwiftEasing.Linear),
@@ -406,12 +406,12 @@ public class MotionTests
     /// was.
     /// </summary>
     [Fact]
-    public void AnEngineWithNothingBesideItStepsAsBefore()
+    public void AWalkerWithNothingBesideItStepsAsBefore()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Opacity = 0 };
 
-        engine.Aim(Opacity(label), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal(0.5, label.Opacity, 6);
@@ -429,16 +429,16 @@ public class MotionTests
     [Fact]
     public void WhatRidesTheFrameRunsAfterTheWritesAndCanHoldTheClock()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Opacity = 0 };
 
         List<double> read = [];
         bool busy = true;
 
-        engine.Cycle = () => read.Add(label.Opacity);
-        engine.Idle = () => !busy;
+        walker.Cycle = () => read.Add(label.Opacity);
+        walker.Idle = () => !busy;
 
-        engine.Aim(Opacity(label), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], MotionSpec.Eased(100, (int)SwiftEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal([0.5], read);
@@ -462,47 +462,47 @@ public class MotionTests
     public void AClockStoppedAndStartedInOneFrameTicksOnceNextFrame()
     {
         int asked = 0;
-        FramePump pump = new(() => asked++);
+        FrameSignal signal = new(() => asked++);
 
-        pump.Start();
+        signal.Start();
         Assert.Equal(1, asked);
 
         // Stopped and started while the first signal is still on its way: it is
         // that signal that arrives, and nothing else is asked for.
-        pump.Stop();
-        pump.Start();
+        signal.Stop();
+        signal.Start();
         Assert.Equal(1, asked);
 
         // It arrives, and answering it stops the clock and starts it again.
-        Assert.True(pump.Arrived());
-        pump.Stop();
-        pump.Start();
-        pump.Again();
+        Assert.True(signal.Arrived());
+        signal.Stop();
+        signal.Start();
+        signal.Again();
 
         Assert.Equal(2, asked);
-        Assert.True(pump.Running);
+        Assert.True(signal.Running);
 
         // And one that is not wanted any more asks for nothing.
-        Assert.True(pump.Arrived());
-        pump.Stop();
-        pump.Again();
+        Assert.True(signal.Arrived());
+        signal.Stop();
+        signal.Again();
 
         Assert.Equal(2, asked);
-        Assert.False(pump.Running);
+        Assert.False(signal.Running);
     }
 
     // ---- What the wire says -------------------------------------------------
 
     /// <summary>
-    /// A motion nobody started answers nobody. Channel zero is not a completion
+    /// A motion nobody started answers nobody. Zero is not a completion
     /// id: it is the ordinary motion of a value that changed.
     /// </summary>
     [Fact]
-    public void AMotionOnChannelZeroAnswersNobody()
+    public void AMotionUnderCompletionZeroAnswersNobody()
     {
         var host = new Host();
-        var clock = new HandMotionClock();
-        host.Renderer.Motion.Clock = clock;
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
 
         var border = (Border)host.ApplyMessage(new SwiftNode
         {
@@ -545,8 +545,8 @@ public class MotionTests
     /// A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL. Where a layout is
     /// being measured, none of its children is carried through a size - the
     /// arranger already holds the lanes for the same reason, and this is the
-    /// half the ENGINE owes, because a size the tree DESCRIBES is carried by
-    /// the engine rather than by the arrangement.
+    /// half the WALKER owes, because a size the tree DESCRIBES is carried by
+    /// the walker rather than by the arrangement.
     /// </summary>
     /// <remarks>
     /// What a measurement reports is what the views in it leave it, so a size
@@ -560,8 +560,8 @@ public class MotionTests
     [Fact]
     public void ASizeDoesNotTravelWhereTheLayoutIsBeingMeasured()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
-        var transitions = new SwiftTransitions(engine);
+        (Walker walker, HandFrameClock clock) = Winding();
+        var transitions = new DescribedMotion(walker);
 
         var watched = new Grid();
         var child = new Grid { HeightRequest = 100 };
@@ -612,7 +612,7 @@ public class MotionTests
     public void APropertyThatCannotTravelIsStillApplied()
     {
         var host = new Host();
-        host.Renderer.Motion.Clock = new HandMotionClock();
+        host.Renderer.Walker.Clock = new HandFrameClock();
 
         var label = (Label)host.ApplyMessage(new SwiftNode
         {
@@ -640,16 +640,16 @@ public class MotionTests
     /// A VISUAL STATE TRAVELS TOO. MAUI applies a state by assigning, which is
     /// the one thing this library cannot animate from the outside - so the
     /// values with a half-way are taken out of the state and carried by the
-    /// engine, and a control pressed is a control crossing to its pressed
+    /// walker, and a control pressed is a control crossing to its pressed
     /// colour rather than appearing in it.
     /// </summary>
     [Fact]
     public void AVisualStateTravelsToItsValuesAndBackAgain()
     {
         var host = new Host();
-        var clock = new HandMotionClock();
-        host.Renderer.Motion.Clock = clock;
-        host.Renderer.Motion.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+        host.Renderer.Walker.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
 
         var label = (Label)host.Apply(Stateful);
 
@@ -682,9 +682,9 @@ public class MotionTests
     public void AStateEnteredMidTravelBends()
     {
         var host = new Host();
-        var clock = new HandMotionClock();
-        host.Renderer.Motion.Clock = clock;
-        host.Renderer.Motion.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+        host.Renderer.Walker.Travel = MotionSpec.Eased(200, (int)SwiftEasing.Linear);
 
         var label = (Label)host.Apply(Stateful);
 
@@ -722,9 +722,9 @@ public class MotionTests
     public void HidingAViewFadesItAndOnlyThenHidesIt()
     {
         var host = new Host();
-        var clock = new HandMotionClock();
-        host.Renderer.Motion.Clock = clock;
-        host.Renderer.Motion.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+        host.Renderer.Walker.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
 
         var label = (Label)host.ApplyMessage(new SwiftNode
         {
@@ -769,9 +769,9 @@ public class MotionTests
     public void ShowingAViewBringsItUpFromNothing()
     {
         var host = new Host();
-        var clock = new HandMotionClock();
-        host.Renderer.Motion.Clock = clock;
-        host.Renderer.Motion.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+        host.Renderer.Walker.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
 
         var label = (Label)host.ApplyMessage(new SwiftNode
         {
@@ -811,9 +811,9 @@ public class MotionTests
     public void AViewShownAgainWithoutTravellingAnswersATouch()
     {
         var host = new Host();
-        var clock = new HandMotionClock();
-        host.Renderer.Motion.Clock = clock;
-        host.Renderer.Motion.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+        host.Renderer.Walker.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
 
         var label = (Label)host.ApplyMessage(new SwiftNode
         {
@@ -866,8 +866,8 @@ public class MotionTests
     public void AViewToldToStayStillIsHiddenAtOnce()
     {
         var host = new Host();
-        host.Renderer.Motion.Clock = new HandMotionClock();
-        host.Renderer.Motion.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
+        host.Renderer.Walker.Clock = new HandFrameClock();
+        host.Renderer.Walker.Travel = MotionSpec.Eased(100, (int)SwiftEasing.Linear);
 
         var label = (Label)host.ApplyMessage(new SwiftNode
         {
@@ -912,8 +912,8 @@ public class MotionTests
     public void AViewToldItDoesNotTravelLandsWhateverWasStillCrossing()
     {
         var host = new Host();
-        var clock = new HandMotionClock();
-        host.Renderer.Motion.Clock = clock;
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
 
         var label = (Label)host.ApplyMessage(new SwiftNode
         {
@@ -967,7 +967,7 @@ public class MotionTests
     [Fact]
     public void AGradientCrossesItsColours()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var stack = new VerticalStackLayout();
 
         var was = new LinearGradientBrush(
@@ -984,9 +984,9 @@ public class MotionTests
 
         Assert.True(MotionProperty.Of(
             stack, VisualElement.BackgroundProperty, going, false,
-            out IMotionTarget moves, out double[] to));
+            out ITripTarget moves, out double[] to));
 
-        engine.Aim(moves, to, MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(moves, to, MotionSpec.Eased(100, (int)SwiftEasing.Linear));
 
         clock.Tick(50);
 
@@ -1016,9 +1016,9 @@ public class MotionTests
 
         Assert.True(MotionProperty.Of(
             stack, VisualElement.BackgroundProperty, going, false,
-            out IMotionTarget moves, out double[] _));
+            out ITripTarget moves, out double[] _));
 
-        // Two stops against one: the engine reads nothing to come from, and
+        // Two stops against one: the walker reads nothing to come from, and
         // Aim then puts the value where it was told at once.
         Assert.False(moves.Read(new double[moves.Lanes]));
     }
@@ -1029,14 +1029,14 @@ public class MotionTests
     [Fact]
     public void ALengthTypedAsAWholeNumberStillTravels()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var button = new Button { CornerRadius = 0 };
 
         Assert.True(MotionProperty.Of(
             button, Button.CornerRadiusProperty, 20, false,
-            out IMotionTarget moves, out double[] to));
+            out ITripTarget moves, out double[] to));
 
-        engine.Aim(moves, to, MotionSpec.Eased(100, (int)SwiftEasing.Linear));
+        walker.Aim(moves, to, MotionSpec.Eased(100, (int)SwiftEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal(10, button.CornerRadius);
@@ -1057,9 +1057,9 @@ public class MotionTests
     public void AValueThatTravelsArrivesAsBytesAndIsCarriedThere()
     {
         var host = new Host();
-        var clock = new HandMotionClock();
+        var clock = new HandFrameClock();
 
-        host.Renderer.Motion.Clock = clock;
+        host.Renderer.Walker.Clock = clock;
 
         var panel = (Border)host.ApplyMessage(Fixtures.ReadBytes("travelling-first.bin"));
 
@@ -1071,7 +1071,7 @@ public class MotionTests
         // the field beside it, and the control has not got there yet.
         Assert.Equal(1, panel.Opacity, 3);
 
-        MotionChannel walk = host.Renderer.Motion.Moving(panel, VisualElement.OpacityProperty)!;
+        Trip walk = host.Renderer.Walker.Moving(panel, VisualElement.OpacityProperty)!;
 
         Assert.Equal(0.25, walk.Target[0], 3);
 
@@ -1162,15 +1162,15 @@ public class MotionTests
 
     private sealed class Laid
     {
-        internal required MotionArranger Arranger { get; init; }
+        internal required LayoutMotion Arranger { get; init; }
 
         internal required Places Inner { get; init; }
 
-        internal required HandMotionClock Clock { get; init; }
+        internal required HandFrameClock Clock { get; init; }
 
         internal required Layout Layout { get; init; }
 
-        internal required MotionEngine Engine { get; init; }
+        internal required Walker Walker { get; init; }
 
         /// <summary>
         /// Arranges as a MESSAGE would - what the interface holds changed, so
@@ -1178,7 +1178,7 @@ public class MotionTests
         /// </summary>
         internal void Arrange(Rect bounds, params Rect[] places)
         {
-            Engine.Said();
+            Walker.Said();
             Place(bounds, places);
         }
 
@@ -1195,8 +1195,8 @@ public class MotionTests
 
     private static Laid Laying(MotionSpec spec, int children)
     {
-        var clock = new HandMotionClock();
-        var engine = new MotionEngine { Clock = clock };
+        var clock = new HandFrameClock();
+        var walker = new Walker { Clock = clock };
         var layout = new VerticalStackLayout();
 
         for (int i = 0; i < children; i++)
@@ -1206,15 +1206,15 @@ public class MotionTests
 
         var inner = new Places(layout);
 
-        layout.SetValue(MotionArranger.TravelProperty, spec);
+        layout.SetValue(LayoutMotion.TravelProperty, spec);
 
         return new Laid
         {
-            Arranger = new MotionArranger(layout, inner, engine),
+            Arranger = new LayoutMotion(layout, inner, walker),
             Inner = inner,
             Clock = clock,
             Layout = layout,
-            Engine = engine,
+            Walker = walker,
         };
     }
 
@@ -1418,7 +1418,7 @@ public class MotionTests
 
         Assert.Equal(new Rect(0, 0, 100, 40), child.Frame);
         // Nothing grew out of nothing, though it may still fade in.
-        Assert.Null(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.Null(laid.Walker.Moving(child, MotionFrame.Place));
     }
 
     /// <summary>
@@ -1434,7 +1434,7 @@ public class MotionTests
         laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 439, 614));
 
         Assert.Equal(439, child.Frame.Width, 1);
-        Assert.Null(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.Null(laid.Walker.Moving(child, MotionFrame.Place));
     }
 
     /// <summary>
@@ -1472,7 +1472,7 @@ public class MotionTests
     {
         Laid laid = Laying(Travelling, 1);
 
-        laid.Engine.Driven = (_, key) => ReferenceEquals(key, VisualElement.OpacityProperty);
+        laid.Walker.Driven = (_, key) => ReferenceEquals(key, VisualElement.OpacityProperty);
         laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
 
         var joining = new BoxView { Opacity = 0.3 };
@@ -1481,7 +1481,7 @@ public class MotionTests
         laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40), new Rect(0, 40, 100, 40));
 
         Assert.Equal(0.3, joining.Opacity, 3);
-        Assert.Null(laid.Engine.Moving(joining, VisualElement.OpacityProperty));
+        Assert.Null(laid.Walker.Moving(joining, VisualElement.OpacityProperty));
     }
 
     /// <summary>
@@ -1496,18 +1496,18 @@ public class MotionTests
         Laid laid = Laying(Travelling, 1);
         var child = (BoxView)laid.Layout[0];
 
-        laid.Engine.Driven = (_, key) => ReferenceEquals(key, VisualElement.OpacityProperty);
+        laid.Walker.Driven = (_, key) => ReferenceEquals(key, VisualElement.OpacityProperty);
         laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
 
-        laid.Engine.Aim(
+        laid.Walker.Aim(
             new MotionProperty(child, VisualElement.OpacityProperty, MotionValue.Number, true),
             [0],
             Travelling);
 
         laid.Layout.Children.Remove(child);
 
-        Assert.NotNull(laid.Engine.Moving(child, VisualElement.OpacityProperty));
-        Assert.Null(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.NotNull(laid.Walker.Moving(child, VisualElement.OpacityProperty));
+        Assert.Null(laid.Walker.Moving(child, MotionFrame.Place));
     }
 
     /// <summary>
@@ -1607,9 +1607,9 @@ public class MotionTests
             joining, VisualElement.OpacityProperty, MotionValue.Number, true);
 
         laid.Layout.Children.Add(joining);
-        laid.Engine.Aim(fading, [0], Travelling);
+        laid.Walker.Aim(fading, [0], Travelling);
 
-        MotionChannel? crossing = laid.Engine.Moving(joining, VisualElement.OpacityProperty);
+        Trip? crossing = laid.Walker.Moving(joining, VisualElement.OpacityProperty);
         Assert.NotNull(crossing);
 
         laid.Arrange(
@@ -1617,7 +1617,7 @@ public class MotionTests
 
         Assert.Same(
             crossing,
-            laid.Engine.Moving(joining, VisualElement.OpacityProperty));
+            laid.Walker.Moving(joining, VisualElement.OpacityProperty));
 
         laid.Clock.Tick(200);
         Assert.Equal(0, joining.Opacity, 3);
@@ -1675,7 +1675,7 @@ public class MotionTests
 
         laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 90));
 
-        Assert.Null(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.Null(laid.Walker.Moving(child, MotionFrame.Place));
         Assert.Equal(new Rect(0, 100, 100, 90), child.Frame);
     }
 
@@ -1703,7 +1703,7 @@ public class MotionTests
         laid.Arrange(new Rect(0, 0, 200, 200), new Rect(0, 60, 140, 80));
         laid.Clock.Tick(100);
 
-        Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
         Assert.Equal(40, child.Frame.Height, 1);
 
         laid.Clock.Tick(300);
@@ -1730,7 +1730,7 @@ public class MotionTests
 
         // In flight, and one frame in - so the child is between the two.
         laid.Clock.Tick(60);
-        Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
 
         // The pass runs again and again, saying the same thing, with the clock
         // never reaching another frame. A window resized on Windows does this
@@ -1742,7 +1742,7 @@ public class MotionTests
             laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
         }
 
-        Assert.Null(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.Null(laid.Walker.Moving(child, MotionFrame.Place));
         Assert.Equal(new Rect(0, 120, 100, 40), child.Frame);
     }
 
@@ -1772,7 +1772,7 @@ public class MotionTests
 
         // The size is there at once, and the place is still on its way.
         Assert.Equal(90, child.Frame.Height, 1);
-        Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
         Assert.True(
             child.Frame.Y is > 0 and < 120,
             $"the place goes on travelling: {child.Frame.Y}");
@@ -1805,7 +1805,7 @@ public class MotionTests
         Laid laid = Laying(Travelling, 1);
         IView child = laid.Layout[0];
 
-        // A motion of this layout's that is over, so the engine's last frame is
+        // A motion of this layout's that is over, so the walker's last frame is
         // an instant in the past rather than nothing at all.
         laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
         laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 20, 100, 40));
@@ -1822,7 +1822,7 @@ public class MotionTests
             laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
         }
 
-        Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
         Assert.Equal(20, child.Frame.Y, 0);
 
         // And it travels the moment the clock does reach it.
@@ -1849,7 +1849,7 @@ public class MotionTests
             laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
         }
 
-        Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
     }
 
     /// <summary>
@@ -1865,16 +1865,16 @@ public class MotionTests
     {
         Laid laid = Laying(Travelling, 1);
 
-        Assert.Equal(0, MotionArranger.Arranging);
+        Assert.Equal(0, LayoutMotion.Arranging);
 
         int inside = -1;
 
-        laid.Inner.Watching = () => inside = MotionArranger.Arranging;
+        laid.Inner.Watching = () => inside = LayoutMotion.Arranging;
 
         laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
 
         Assert.Equal(1, inside);
-        Assert.Equal(0, MotionArranger.Arranging);
+        Assert.Equal(0, LayoutMotion.Arranging);
 
         // However it ends - a manager that throws is still a pass that is over.
         laid.Inner.Watching = () => throw new InvalidOperationException("no room");
@@ -1882,7 +1882,7 @@ public class MotionTests
         Assert.Throws<InvalidOperationException>(
             () => laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 60, 100, 40)));
 
-        Assert.Equal(0, MotionArranger.Arranging);
+        Assert.Equal(0, LayoutMotion.Arranging);
     }
 
     /// <summary>
@@ -1902,19 +1902,19 @@ public class MotionTests
         int deep = -1;
         int after = -1;
 
-        inner.Inner.Watching = () => deep = MotionArranger.Arranging;
+        inner.Inner.Watching = () => deep = LayoutMotion.Arranging;
 
         outer.Inner.Watching = () =>
         {
             inner.Arrange(new Rect(0, 0, 50, 50), new Rect(0, 0, 50, 20));
-            after = MotionArranger.Arranging;
+            after = LayoutMotion.Arranging;
         };
 
         outer.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
 
         Assert.Equal(2, deep);
         Assert.Equal(1, after);
-        Assert.Equal(0, MotionArranger.Arranging);
+        Assert.Equal(0, LayoutMotion.Arranging);
     }
 
     /// <summary>
@@ -1941,7 +1941,7 @@ public class MotionTests
         laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 40));
 
         Assert.Equal(50, child.Frame.Y, 0);
-        Assert.NotNull(laid.Engine.Moving(child, MotionFrame.Place));
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
     }
 
     /// <summary>
@@ -2003,10 +2003,10 @@ public class MotionTests
     [Fact]
     public void ANumberIsWalkedInAStraightLine()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Opacity = 0 };
 
-        engine.Aim(
+        walker.Aim(
             new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
             [1.0],
             MotionSpec.Eased(100, (int)SwiftEasing.Linear));
@@ -2023,24 +2023,24 @@ public class MotionTests
     /// does not land either.
     /// </summary>
     /// <remarks>
-    /// A channel holds its control for as long as it moves, so a view removed
+    /// A trip holds its control for as long as it moves, so a view removed
     /// from the tree goes on being stepped. On Apple the write is fatal rather
     /// than merely wrong - a place lands by ARRANGING, arranging reads the
     /// platform view's superview, and the runtime cannot marshal a native
     /// layout whose managed side has been collected - which took the gallery
     /// down within four sweeps of a recycling list whose rows travelled.
-    /// `Drop` ends the channel writing NOTHING, which is what this holds: the
+    /// `Drop` ends the trip writing NOTHING, which is what this holds: the
     /// opacity stands where the last frame left it, the clock stops, and
     /// whoever awaited it hears that it did not run to the end.
     /// </remarks>
     [Fact]
     public void AMotionOnAControlTheTreeDropsWritesNothingMore()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Opacity = 0 };
         bool? answered = null;
 
-        engine.Aim(
+        walker.Aim(
             new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
             [1.0],
             MotionSpec.Eased(100, (int)SwiftEasing.Linear),
@@ -2049,7 +2049,7 @@ public class MotionTests
         clock.Tick(50);
         Assert.Equal(0.5, label.Opacity, 3);
 
-        engine.Drop(label);
+        walker.Drop(label);
 
         Assert.False(answered, "the waiter is told it did not run to the end");
         Assert.Equal(0.5, label.Opacity, 3);
@@ -2066,10 +2066,10 @@ public class MotionTests
     [Fact]
     public void AWalkLandsOnTheNumberItWasGiven()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Scale = 1 };
 
-        engine.Aim(
+        walker.Aim(
             new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
             [3.0],
             MotionSpec.Eased(100, (int)SwiftEasing.CubicOut));
@@ -2084,10 +2084,10 @@ public class MotionTests
     [Fact]
     public void AColourIsWalkedChannelByChannel()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var border = new Border { BackgroundColor = Colors.Black };
 
-        engine.Aim(
+        walker.Aim(
             new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
             [1, 1, 1, 1],
             MotionSpec.Eased(100, (int)SwiftEasing.Linear));
@@ -2107,10 +2107,10 @@ public class MotionTests
     [Fact]
     public void AColourWalksItsAlphaAsWell()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var border = new Border { BackgroundColor = Colors.Red };
 
-        engine.Aim(
+        walker.Aim(
             new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
             [1, 0, 0, 0],
             MotionSpec.Eased(100, (int)SwiftEasing.Linear));
@@ -2125,10 +2125,10 @@ public class MotionTests
     [Fact]
     public void FourEdgesAreWalkedOneByOne()
     {
-        (MotionEngine engine, HandMotionClock clock) = Winding();
+        (Walker walker, HandFrameClock clock) = Winding();
         var stack = new VerticalStackLayout { Padding = new Thickness(0) };
 
-        engine.Aim(
+        walker.Aim(
             new MotionProperty(stack, Layout.PaddingProperty, MotionValue.Edges),
             [4, 8, 12, 16],
             MotionSpec.Eased(100, (int)SwiftEasing.Linear));
@@ -2188,12 +2188,12 @@ public class MotionTests
     public void EveryEasingSwiftCanWriteHasACurveBehindIt(int member)
     {
         // Whatever a curve does on the way, it starts and ends with the change.
-        Assert.Equal(0, MotionEasing.At(member, 0), 12);
-        Assert.Equal(1, MotionEasing.At(member, 1), 12);
+        Assert.Equal(0, MotionLaw.Ease(member, 0), 12);
+        Assert.Equal(1, MotionLaw.Ease(member, 1), 12);
 
         // And every arm but linear is a DIFFERENT curve, or a missing case
         // would read as a pass.
-        Assert.Equal(member == (int)SwiftEasing.Linear, MotionEasing.At(member, 0.3) == 0.3);
+        Assert.Equal(member == (int)SwiftEasing.Linear, MotionLaw.Ease(member, 0.3) == 0.3);
     }
 
     /// <summary>
@@ -2207,8 +2207,8 @@ public class MotionTests
         // 9999 rather than a null: an easing is a slot in the transition
         // record, always present, so the only way to be handed one this side
         // does not know is a Swift side that has grown a curve.
-        Assert.Equal(0.3, MotionEasing.At(9999, 0.3));
-        Assert.Equal(0.3, MotionEasing.At(-1, 0.3));
+        Assert.Equal(0.3, MotionLaw.Ease(9999, 0.3));
+        Assert.Equal(0.3, MotionLaw.Ease(-1, 0.3));
     }
 
     /// <summary>
@@ -2250,10 +2250,10 @@ public class MotionTests
     [Fact]
     public void ASizeThatLandsAsksForItsMeasureAgainOnAndroid()
     {
-        string source = Source("MotionEngine.cs");
+        string source = Source("Walker.cs");
         int lands = source.IndexOf("private void Land(", StringComparison.Ordinal);
 
-        Assert.True(lands > 0, "Land was not found in MotionEngine.cs");
+        Assert.True(lands > 0, "Land was not found in Walker.cs");
 
         string body = source[lands..];
         int arm = body.IndexOf("#if ANDROID", StringComparison.Ordinal);

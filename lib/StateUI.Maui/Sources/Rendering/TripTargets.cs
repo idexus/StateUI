@@ -6,25 +6,25 @@ namespace StateUI.Maui.Rendering;
 using Microsoft.Maui.Controls;
 
 /// <summary>
-/// Something a channel can move: where the value is now, and how to put it
+/// Something a trip can move: where the value is now, and how to put it
 /// somewhere else.
 /// </summary>
 /// <remarks>
 /// <para>
-/// The engine knows nothing but LANES - one number for an opacity, four for a
+/// The walker knows nothing but LANES - one number for an opacity, four for a
 /// colour, a thickness or a rectangle - and this is the whole of what turns
-/// lanes back into something a platform understands. It is also the channel's
+/// lanes back into something a platform understands. It is also the trip's
 /// IDENTITY: <see cref="Owner"/> and <see cref="Key"/> say which value is
 /// moving, so a second setpoint for the same one finds the motion already
 /// under way and bends it rather than starting beside it.
 /// </para>
 /// <para>
-/// One instance per moving value is the intended shape, and the engine keeps
+/// One instance per moving value is the intended shape, and the walker keeps
 /// the one it was first given - so an implementation is free to hold whatever
 /// it needs to write quickly.
 /// </para>
 /// </remarks>
-internal interface IMotionTarget
+internal interface ITripTarget
 {
     /// <summary>What the value belongs to - normally the control.</summary>
     object Owner { get; }
@@ -103,9 +103,9 @@ internal enum MotionValue : byte
 /// <remarks>
 /// The same <see cref="BindableProperty"/> a style setter would write and a
 /// plain assignment would snap - which is what makes a property animatable the
-/// moment it is styleable, and why the engine needs no table of its own.
+/// moment it is styleable, and why the walker needs no table of its own.
 /// </remarks>
-internal sealed class MotionProperty : IMotionTarget
+internal sealed class MotionProperty : ITripTarget
 {
     private readonly BindableObject _target;
     private readonly BindableProperty _property;
@@ -152,8 +152,8 @@ internal sealed class MotionProperty : IMotionTarget
 
     /// <summary>
     /// The value some lanes stand for, in the platform's own type - what a
-    /// write composes, and what a tie with no target object of its own asks
-    /// for, see <see cref="StateTie.Write"/>.
+    /// write composes, and what an attachment with no target object of its own
+    /// asks for, see <see cref="StateAttachment.Write"/>.
     /// </summary>
     /// <param name="shape">What the value is made of.</param>
     /// <param name="fraction">Whether a number is a fraction of one.</param>
@@ -268,7 +268,7 @@ internal sealed class MotionProperty : IMotionTarget
         BindableProperty property,
         object value,
         bool fraction,
-        out IMotionTarget moves,
+        out ITripTarget moves,
         out double[] to)
     {
         if (value is Brush paint)
@@ -331,7 +331,7 @@ internal sealed class MotionProperty : IMotionTarget
 /// that changes place would otherwise JUMP there while every colour and opacity
 /// beside it glides. This is the answer: the layout works out where its
 /// children belong and hands each rectangle over as a setpoint, and the frames
-/// in between are the engine's like any others.
+/// in between are the walker's like any others.
 /// </para>
 /// <para>
 /// Writing is <c>Arrange</c> alone - no measuring, no invalidating, nothing
@@ -340,9 +340,9 @@ internal sealed class MotionProperty : IMotionTarget
 /// Windows, which arranges by ASKING: see <see cref="Write"/>.
 /// </para>
 /// </remarks>
-internal sealed class MotionFrame : IMotionTarget
+internal sealed class MotionFrame : ITripTarget
 {
-    /// <summary>The one key every arrangement channel is filed under.</summary>
+    /// <summary>The one key every arrangement trip is filed under.</summary>
     /// <remarks>
     /// A child has exactly one place in its parent, so one key does for all of
     /// them - and it must not be a string, which another key could equal.
@@ -443,7 +443,7 @@ internal sealed class MotionFrame : IMotionTarget
             frame.Height + margin.VerticalThickness));
 
 #if WINDOWS
-        if (MotionArranger.Arranging == 0
+        if (LayoutMotion.Arranging == 0
             && _layout.Handler?.PlatformView is Microsoft.UI.Xaml.UIElement panel)
         {
             panel.InvalidateArrange();
@@ -462,7 +462,7 @@ internal sealed class MotionFrame : IMotionTarget
 /// </summary>
 /// <remarks>
 /// <para>
-/// One of these per placed view, so each of them travels on a channel of its
+/// One of these per placed view, so each of them travels on a trip of its
 /// own: a card added to a run does not disturb the ones already moving, and a
 /// run that changes shape is fifteen journeys rather than one of a hundred and
 /// eighty lanes.
@@ -483,7 +483,7 @@ internal sealed class MotionFrame : IMotionTarget
 /// skipped here rather than refused three layers down.
 /// </para>
 /// </remarks>
-internal sealed class MotionPlacement : IMotionTarget
+internal sealed class MotionPlacement : ITripTarget
 {
     /// <summary>The one key a placed view's journey is filed under.</summary>
     /// <remarks>
@@ -525,7 +525,7 @@ internal sealed class MotionPlacement : IMotionTarget
     /// grew or shrank with the placements, the placements with the room, and
     /// the pass oscillated for ever at a whole core. Measured on Mac Catalyst
     /// at launch, and as a run drawn off its own centre on Android. See
-    /// <see cref="MotionArranger.Measure"/>.
+    /// <see cref="LayoutMotion.Measure"/>.
     /// </remarks>
     internal static readonly BindableProperty PlacedProperty =
         BindableProperty.CreateAttached(
@@ -608,7 +608,7 @@ internal sealed class MotionPlacement : IMotionTarget
 
         for (int lane = 0; lane < Fields; lane++)
         {
-            if (Math.Abs(_worn[lane] - lanes[lane]) >= MotionCurve.Still)
+            if (Math.Abs(_worn[lane] - lanes[lane]) >= MotionLaw.Still)
             {
                 return false;
             }
@@ -831,7 +831,7 @@ internal sealed class MotionPlacement : IMotionTarget
 /// panel's flat colour and a header's gradient cross together.
 /// </para>
 /// </remarks>
-internal sealed class MotionPaint : IMotionTarget
+internal sealed class MotionPaint : ITripTarget
 {
     /// <summary>The numbers a gradient's geometry is made of.</summary>
     private const int Geometry = 4;
