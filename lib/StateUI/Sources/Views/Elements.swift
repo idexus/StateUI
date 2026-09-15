@@ -1258,7 +1258,7 @@ extension View {
             // Appended, so the view's own children keep the positions the differ
             // gave them. The host reads it by TYPE and leaves it out of the
             // arrangement.
-            $0.children.append(Node(type: .contextMenu, children: items().map { $0.body }))
+            $0.children.append(Node(contract: ContextMenuContract.self, children: items().map { $0.body }))
         }
     }
 }

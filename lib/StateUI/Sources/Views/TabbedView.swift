@@ -199,7 +199,7 @@ public struct TabbedView: Page, ModifiableElement, BarElement, PageElement, Page
         // is written to match on the way back. That is how a selected tab being
         // REMOVED resolves itself with no rule of its own.
         if let index = ordered.firstIndex(of: AnyHashable(binding.wrappedValue)) {
-            copy.node.props[.currentPage] = .number(Double(index))
+            copy.node.write(TabbedViewContract.currentPage, index)
         }
 
         // The reader's own way between tabs. The payload is the index of the
@@ -211,7 +211,7 @@ public struct TabbedView: Page, ModifiableElement, BarElement, PageElement, Page
         // the value it already holds would be a render nobody asked for. The
         // host guards the same thing from its side; both are cheap and the
         // pair is what keeps a tab switch to exactly one render.
-        copy.node.addHandler(.currentPageChanged) {
+        copy.node.addHandler(TabbedViewContract.currentPageChanged.token) {
             guard let index = EventBuffer.current.value()?.int,
                   index >= 0, index < ordered.count,
                   // A binding of a type the tabs are not - the one mistake this

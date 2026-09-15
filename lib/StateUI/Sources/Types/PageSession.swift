@@ -196,13 +196,13 @@ public final class PageSession {
     var props: [Prop: PropValue] {
         var props: [Prop: PropValue] = [:]
 
-        props[.title] = title.map { .string($0) }
-        props[.icon] = icon?.propValue
-        props[.padding] = padding?.propValue
-        props[.background] = background?.propValue
-        props[.hasNavigationBar] = hasNavigationBar.map { .bool($0) }
-        props[.hasBackButton] = hasBackButton.map { .bool($0) }
-        props[.backButtonTitle] = backButtonTitle.map { .string($0) }
+        props.describe(PageElementContract.title, title)
+        props.describe(PageElementContract.icon, icon)
+        props.describe(PageContract.padding, padding)
+        props.describe(PageContract.background, background)
+        props.describe(PageContract.hasNavigationBar, hasNavigationBar)
+        props.describe(PageContract.hasBackButton, hasBackButton)
+        props.describe(PageContract.backButtonTitle, backButtonTitle)
         return props
     }
 
@@ -213,18 +213,18 @@ public final class PageSession {
         var slots: [Node] = []
 
         if let titleView = titleView {
-            slots.append(Node(type: .titleView, children: [titleView.body]))
+            slots.append(Node(contract: TitleViewContract.self, children: [titleView.body]))
         }
 
         // Collections rather than one node each, for the reason a SwipeView's
         // items are: the host has a list to keep in step, and a list needs
         // somewhere of its own to be matched against.
         if !toolbarItems.isEmpty {
-            slots.append(Node(type: .toolbarItems, children: toolbarItems.map { $0.body }))
+            slots.append(Node(contract: ToolbarItemsContract.self, children: toolbarItems.map { $0.body }))
         }
 
         if !menuBar.isEmpty {
-            slots.append(Node(type: .menuBar, children: menuBar.map { $0.body }))
+            slots.append(Node(contract: MenuBarContract.self, children: menuBar.map { $0.body }))
         }
 
         return slots

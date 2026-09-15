@@ -7,19 +7,19 @@ public protocol TitleBarProperties: PropertyContainer {}
 extension TitleBarProperties {
     /// Adds a second line that identifies the current document or section.
     public func subtitle(_ value: String) -> Modified {
-        setValue(.subtitle, .string(value))
+        setValue(TitleBarContract.subtitle, value)
     }
 
     /// Places a small image beside the authored title.
     public func icon(_ value: ImageSource) -> Modified {
-        setValue(.icon, value.propValue)
+        setValue(TitleBarContract.icon, value)
     }
 
     /// The colour the bar draws its authored title and subtitle in.
     ///
     /// Use `background(_:)` for the title area's background.
     public func barForegroundColor(_ value: Color) -> Modified {
-        setValue(.barForegroundColor, value.propValue)
+        setValue(TitleBarContract.barForegroundColor, value)
     }
 }
 
@@ -63,12 +63,13 @@ public struct TitleBar: View, TitleBarProperties {
 
     /// An empty one - what a `Style<TitleBar>` is written against.
     public init() {
-        node = Node(type: .titleBar)
+        node = Node(contract: TitleBarContract.self)
     }
 
     /// Creates a title area reading `title`.
     public init(_ title: String) {
-        node = Node(type: .titleBar, props: [.title: .string(title)])
+        node = Node(contract: TitleBarContract.self)
+        node.write(TitleBarContract.title, title)
     }
 
     // MARK: The slots

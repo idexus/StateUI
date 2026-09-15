@@ -547,10 +547,10 @@ struct SceneElement: Element {
             // window hides while another scene is in front and whether it
             // floats on top - said either way, so none of the four is ever
             // taken off a window it was on.
-            window.props[.windowType] = .name(opened.type.name)
-            window.props[.windowValue] = opened.text.map { .string($0) }
-            window.props[.hidesWhenInactive] = .bool(group.hides)
-            window.props[.floatsOnTop] = .bool(group.floats)
+            window.write(WindowContract.windowType, opened.type)
+            window.describe(WindowContract.windowValue, opened.text)
+            window.write(WindowContract.hidesWhenInactive, group.hides)
+            window.write(WindowContract.floatsOnTop, group.floats)
 
             children.append(window)
         }
@@ -558,11 +558,11 @@ struct SceneElement: Element {
         // A window that closed takes its session with it.
         record.keepWindowSessions()
 
-        var node = Node(type: .scene, children: children)
+        var node = Node(contract: SceneContract.self, children: children)
         node.environments = windows.environments
 
         // The reader closed a window of the scene - its key is the payload.
-        node.addHandler(.windowClosed) {
+        node.addHandler(SceneContract.windowClosed.token) {
             if let key = EventBuffer.current.value()?.string {
                 record.closed(key: key)
             }
@@ -572,7 +572,7 @@ struct SceneElement: Element {
         // "No" is an answer too: the host holds the window until the render
         // after this one says whether the scene took it, so one is asked for
         // either way.
-        node.addHandler(.windowRestored) {
+        node.addHandler(SceneContract.windowRestored.token) {
             if let name = EventBuffer.current.value(0)?.string {
                 record.restored(kind: name, text: EventBuffer.current.value(1)?.string)
             }
@@ -582,12 +582,12 @@ struct SceneElement: Element {
 
         // Its main window has gone - the reader closed it - and the scene with
         // it, which is what closes every window beside it.
-        node.addHandler(.destroying) { Scenes.shared.ended(record) }
+        node.addHandler(SceneContract.destroying.token) { Scenes.shared.ended(record) }
 
         // Where the scene stands, as the host sees it.
-        node.addHandler(.activated) { record.session.phase = .active }
-        node.addHandler(.deactivated) { record.session.phase = .inactive }
-        node.addHandler(.stopped) { record.session.phase = .background }
+        node.addHandler(SceneContract.activated.token) { record.session.phase = .active }
+        node.addHandler(SceneContract.deactivated.token) { record.session.phase = .inactive }
+        node.addHandler(SceneContract.stopped.token) { record.session.phase = .background }
 
         return node
     }

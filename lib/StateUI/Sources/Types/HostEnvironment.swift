@@ -844,18 +844,18 @@ public final class WindowSession {
     var props: [Prop: PropValue] {
         var props: [Prop: PropValue] = [:]
 
-        props[.title] = title.map { .string($0) }
-        props[.x] = x.map { .number($0) }
-        props[.y] = y.map { .number($0) }
-        props[.width] = width.map { .number($0) }
-        props[.height] = height.map { .number($0) }
-        props[.isMaximizable] = isMaximizable.map { .bool($0) }
-        props[.isMinimizable] = isMinimizable.map { .bool($0) }
-        props[.isTranslucent] = isTranslucent.map { .bool($0) }
-        props[.minimumWidth] = minimumWidth.map { .number($0) }
-        props[.minimumHeight] = minimumHeight.map { .number($0) }
-        props[.maximumWidth] = maximumWidth.map { .number($0) }
-        props[.maximumHeight] = maximumHeight.map { .number($0) }
+        props.describe(WindowContract.title, title)
+        props.describe(WindowContract.x, x)
+        props.describe(WindowContract.y, y)
+        props.describe(WindowContract.width, width)
+        props.describe(WindowContract.height, height)
+        props.describe(WindowContract.isMaximizable, isMaximizable)
+        props.describe(WindowContract.isMinimizable, isMinimizable)
+        props.describe(WindowContract.isTranslucent, isTranslucent)
+        props.describe(WindowContract.minimumWidth, minimumWidth)
+        props.describe(WindowContract.minimumHeight, minimumHeight)
+        props.describe(WindowContract.maximumWidth, maximumWidth)
+        props.describe(WindowContract.maximumHeight, maximumHeight)
 
         return props
     }

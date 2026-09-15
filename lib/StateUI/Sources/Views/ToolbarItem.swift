@@ -33,7 +33,8 @@ public struct ToolbarItem: Element, MenuItemElement {
     /// An item captioned `text`. Give it an `.onClicked`: an item that does
     /// nothing is one that looks broken.
     public init(_ text: String) {
-        node = Node(type: .toolbarItem, props: [.text: .string(text)])
+        node = Node(contract: ToolbarItemContract.self)
+        node.write(MenuItemElementContract.text, text)
     }
 
     /// The node this item describes.
@@ -58,11 +59,11 @@ public struct ToolbarItem: Element, MenuItemElement {
     // what a TOOLBAR item alone has.
 
     /// Whether it sits on the bar itself or behind the overflow menu.
-    public func placement(_ value: ToolbarItemPlacement) -> Self { setValue(.placement, value.propValue) }
+    public func placement(_ value: ToolbarItemPlacement) -> Self { setValue(ToolbarItemContract.placement, value) }
 
     /// Where this item sorts among items in the same order group.
     ///
     /// Lower values appear first. Items with equal priority retain source
     /// order, so one collection always produces one deterministic arrangement.
-    public func priority(_ value: Int) -> Self { setValue(.priority, .number(Double(value))) }
+    public func priority(_ value: Int) -> Self { setValue(ToolbarItemContract.priority, value) }
 }

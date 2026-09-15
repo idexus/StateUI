@@ -381,30 +381,27 @@ extension StyleBag where Context == StyleBase {
 /// is written. So they are read back with `.name` here - `.string` would answer
 /// nil for every one of them and leave every state matching every other.
 func visualStates(_ existing: [Node], adding state: Node, resting: String) -> [Node] {
-    let group = state.props[.group]?.name ?? ""
-    let name = state.props[.name]?.name ?? ""
+    let group = state.visualStateGroup ?? ""
+    let name = state.visualStateName ?? ""
 
     var result = existing
 
     if let written = result.firstIndex(where: {
-        $0.props[.group]?.name == group && $0.props[.name]?.name == name
+        $0.visualStateGroup == group && $0.visualStateName == name
     }) {
         result[written] = state
     } else {
         result.append(state)
     }
 
-    guard let first = result.firstIndex(where: { $0.props[.group]?.name == group }) else {
+    guard let first = result.firstIndex(where: { $0.visualStateGroup == group }) else {
         return result
     }
 
     guard let at = result.firstIndex(where: {
-        $0.props[.group]?.name == group && $0.props[.name]?.name == resting
+        $0.visualStateGroup == group && $0.visualStateName == resting
     }) else {
-        result.insert(
-            Node(type: .visualState,
-                 props: [.name: .name(resting), .group: .name(group)]),
-            at: first)
+        result.insert(emptyVisualState(named: resting, in: group), at: first)
 
         return result
     }
@@ -513,21 +510,20 @@ extension VisualElement where Self: StyleTarget {
         modified { node in
             for state in states {
                 let already = node.children.contains {
-                    $0.type == .visualState
-                        && $0.props[.name]?.name == state.name
-                        && $0.props[.group]?.name == "CommonStates"
+                    $0.type == VisualStateContract.nodeType
+                        && $0.visualStateName == state.name
+                        && $0.visualStateGroup == "CommonStates"
                 }
 
                 guard !already else { continue }
 
                 write(
-                    Node(type: .visualState,
-                         props: [.name: .name(state.name), .group: .name("CommonStates")]),
+                    emptyVisualState(named: state.name, in: "CommonStates"),
                     into: &node,
                     resting: Self.restingVisualState.name)
             }
 
-            node.addHandler(.visualStateChanged) {
+            node.addHandler(VisualElementContract.visualStateChanged.token) {
                 // The name is what a state is matched by, and what the report
                 // carries. A payload of another shape leaves the handler alone,
                 // the rule every typed event follows.
@@ -714,7 +710,7 @@ public struct StyleSheet {
     /// the same way, since its values would be half applied and half dropped
     /// unread.
     func style(for node: Node) -> AnyStyle? {
-        if let key = node.props[.style]?.name, let at = keyed[key],
+        if let key = node.props[VisualElementContract.style.token]?.name, let at = keyed[key],
            written[at].target == node.type {
             return written[at]
         }
@@ -770,10 +766,10 @@ func styled(_ node: Node, with sheet: StyleSheet?) -> Node {
     // Asked before it is written: assigning nil to a key a dictionary does not
     // have still makes the storage unique, so an unguarded removal would COPY
     // the props of every node in the tree, styled or not.
-    guard style != nil || node.props[.style] != nil else { return node }
+    guard style != nil || node.props[VisualElementContract.style.token] != nil else { return node }
 
     var node = node
-    node.props[.style] = nil
+    node.props[VisualElementContract.style.token] = nil
 
     guard let style = style else { return node }
 
@@ -816,11 +812,11 @@ func merged(_ base: [Node], with own: [Node]) -> [Node] {
     var result = base
 
     for state in own {
-        let group = state.props[.group]?.name
-        let name = state.props[.name]?.name
+        let group = state.visualStateGroup
+        let name = state.visualStateName
 
         if let at = result.firstIndex(where: {
-            $0.props[.group]?.name == group && $0.props[.name]?.name == name
+            $0.visualStateGroup == group && $0.visualStateName == name
         }) {
             result[at] = overlaid(result[at], with: state)
         } else {
@@ -843,7 +839,7 @@ private func overlaid(_ base: Node, with own: Node) -> Node {
     let theirs = base.children.first { $0.type == .setters }?.props ?? [:]
 
     var result = base
-    result.children = [Node(type: .setters, props: theirs.merging(mine) { _, m in m })]
+    result.children = [Node(type: SettersContract.nodeType, props: theirs.merging(mine) { _, m in m })]
 
     return result
 }
@@ -958,3 +954,20 @@ extension TitleBar: StyleTarget {}
 // A SwipeAction is NOT one, and cannot be: it is a menu item rather than a view,
 // so it has none of the properties a style would set and no VisualElement to
 // hang one on. See Views/SwipeView.swift.
+
+/// A visual state named `name` in `group`, with no values of its own - how a
+/// state a control only has to be able to enter is written.
+func emptyVisualState(named name: String, in group: String) -> Node {
+    var node = Node(contract: VisualStateContract.self)
+    node.write(VisualStateContract.name, Name(name))
+    node.write(VisualStateContract.group, Name(group))
+    return node
+}
+
+extension Node {
+    /// The group a visual state's node says it belongs to.
+    fileprivate var visualStateGroup: String? { props[VisualStateContract.group.token]?.name }
+
+    /// The name a visual state's node carries.
+    fileprivate var visualStateName: String? { props[VisualStateContract.name.token]?.name }
+}

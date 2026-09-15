@@ -126,7 +126,7 @@ public struct SplitView: Page, ModifiableElement, PageElement, PageArrangement {
         // Written only when it MOVED, the rule every binding in this library
         // follows: a host can report either direction, and a binding written
         // with the value it already holds would be a render nobody asked for.
-        node.addHandler(.isSidebarVisibleChanged) {
+        node.addHandler(SplitViewContract.isSidebarVisibleChanged.token) {
             guard let visible = EventBuffer.current.value()?.bool,
                   visible != isSidebarVisible.wrappedValue else { return }
 

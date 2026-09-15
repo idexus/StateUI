@@ -59,7 +59,7 @@ public struct Menu: Element {
     /// Whether the menu opens at all.
     public func isEnabled(_ value: Bool) -> Self {
         var copy = self
-        copy.node.props[.isEnabled] = .bool(value)
+        copy.node.write(MenuContract.isEnabled, value)
         return copy
     }
 }
@@ -76,7 +76,8 @@ public struct MenuItem: Element, MenuItemElement {
     /// An entry captioned `text`. Give it an `.onClicked`: an entry that does
     /// nothing is one that looks broken.
     public init(_ text: String) {
-        node = Node(type: .menuItem, props: [.text: .string(text)])
+        node = Node(contract: MenuItemContract.self)
+        node.write(MenuItemElementContract.text, text)
     }
 
     /// The node, as every element answers it.
@@ -111,7 +112,7 @@ public struct MenuSeparator: Element {
 
     /// A line.
     public init() {
-        node = Node(type: .menuSeparator)
+        node = Node(contract: MenuSeparatorContract.self)
     }
 
     /// The node, as every element answers it.

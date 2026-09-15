@@ -195,16 +195,16 @@ extension Window {
             // wire is deterministic, and a Dictionary or a Set iterated into a
             // message differs between two instances inside one run. See
             // Core/Wire.swift.
-            node.addHandler(.created) { session.phase = .created }
-            node.addHandler(.activated) { session.phase = .activated }
-            node.addHandler(.deactivated) { session.phase = .deactivated }
-            node.addHandler(.stopped) { session.phase = .stopped }
-            node.addHandler(.resumed) { session.phase = .resumed }
-            node.addHandler(.destroying) { session.phase = .destroying }
+            node.addHandler(WindowContract.created.token) { session.phase = .created }
+            node.addHandler(WindowContract.activated.token) { session.phase = .activated }
+            node.addHandler(WindowContract.deactivated.token) { session.phase = .deactivated }
+            node.addHandler(WindowContract.stopped.token) { session.phase = .stopped }
+            node.addHandler(WindowContract.resumed.token) { session.phase = .resumed }
+            node.addHandler(WindowContract.destroying.token) { session.phase = .destroying }
 
             // The report that a modal has GONE, which is the window's because
             // the stack is - see ModalStack.swift.
-            if let stack = session.modalStack { node.addHandler(.modalPopped, stack.popped) }
+            if let stack = session.modalStack { node.addHandler(WindowContract.modalPopped.token, stack.popped) }
 
             return node
         }
@@ -216,7 +216,7 @@ extension Node {
     /// inspector's panel is. The host lays it over the platform's own window,
     /// and a touch its views do not take goes through to the page.
     static func overlay(_ view: Element) -> Node {
-        Node(type: .overlay, children: [view.body])
+        Node(contract: OverlayContract.self, children: [view.body])
     }
 }
 
@@ -286,16 +286,17 @@ extension Node {
     /// hangs off it besides - the content first, so a page that gained a title
     /// view does not look to the differ as though its content moved.
     private static func page(around content: Node, session: PageSession) -> Node {
-        var node = Node(type: .page, props: session.props, children: [content] + session.slots)
+        var node = Node(contract: PageContract.self, children: [content] + session.slots)
+        node.props = session.props
 
         // Where the page stands, as the platform reports it - one by one
         // rather than over a collection, the window's rule: the wire is
         // deterministic and nothing may iterate a Dictionary into a message.
-        node.addHandler(.appearing) { session.phase = .appearing }
-        node.addHandler(.disappearing) { session.phase = .disappearing }
-        node.addHandler(.navigatedTo) { session.phase = .navigatedTo }
-        node.addHandler(.navigatingFrom) { session.phase = .navigatingFrom }
-        node.addHandler(.navigatedFrom) { session.phase = .navigatedFrom }
+        node.addHandler(PageContract.appearing.token) { session.phase = .appearing }
+        node.addHandler(PageContract.disappearing.token) { session.phase = .disappearing }
+        node.addHandler(PageContract.navigatedTo.token) { session.phase = .navigatedTo }
+        node.addHandler(PageContract.navigatingFrom.token) { session.phase = .navigatingFrom }
+        node.addHandler(PageContract.navigatedFrom.token) { session.phase = .navigatedFrom }
 
         return node
     }

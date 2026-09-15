@@ -178,7 +178,7 @@ public struct NavigationStack: Page, ModifiableElement, BarElement, PageElement,
                 Self.identified(Node.page(destination(route)), as: Self.identity(depth: depth, route: route)))
         }
 
-        node = Node(type: .navigationStack, children: children)
+        node = Node(contract: NavigationStackContract.self, children: children)
 
         // The platform's own way back - the arrow, the swipe, Android's system
         // gesture - arrives here, and only once it has COMMITTED: an
@@ -193,7 +193,7 @@ public struct NavigationStack: Page, ModifiableElement, BarElement, PageElement,
         // push and that push being described), and it resolves the way the
         // reader's finger said. Recognizing it would mean numbering the
         // reports, which is a moving part this does not carry.
-        node.addHandler(.popped) {
+        node.addHandler(NavigationStackContract.popped.token) {
             guard let depth = EventBuffer.current.value()?.int else { return }
 
             let routes = path.wrappedValue
@@ -239,6 +239,6 @@ extension NavigationStack {
     /// The colour the bar draws on its background: the navigation title and
     /// native navigation and toolbar affordances. Destructive actions retain the platform's warning colour.
     public func barForegroundColor(_ value: Color) -> NavigationStack {
-        setValue(.barForegroundColor, value.propValue)
+        setValue(NavigationStackContract.barForegroundColor, value)
     }
 }
