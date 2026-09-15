@@ -273,18 +273,19 @@ final class AimTests: XCTestCase {
 
     /// An application's own act aims at a control the same way the library's
     /// own acts do, and `spin()` below is the proof: it is written entirely in
-    /// public API, in this package, the way an application would write it.
+    /// public API, in this package, the way an application would write it -
+    /// the act declared in the control's contract and performed through the
+    /// control's aim.
     ///
-    /// `Aim.target` is public because an application that can register a
+    /// `Aim.call` is public because an application that can register a
     /// control (`StateUIControls.Add`) and register an act (`StateUIActs.Add`)
-    /// must be able to AIM one at the other - with the target internal, that
-    /// last door stays closed in a surface whose whole promise is that an
-    /// application writes what the library writes.
-    func testAnApplicationsOwnActAimsWithTheSamePublicTarget() async throws {
+    /// must be able to AIM one at the other, in a surface whose whole promise
+    /// is that an application writes what the library writes.
+    func testAnApplicationsOwnActAimsThroughTheSamePublicCall() async throws {
         let renders = Renders()
-        let wheel = Aim(Border.self)
+        let wheel = Aim(Wheel.self)
 
-        renders.render(stack([Border().aim(wheel).body], id: "root"))
+        renders.render(stack([Wheel().aim(wheel).body], id: "root"))
         _ = Renderer.shared.takeActCallsWire()
 
         async let spun: Void = wheel.spin(by: 90)
@@ -294,7 +295,7 @@ final class AimTests: XCTestCase {
         try await Task.sleep(nanoseconds: 20_000_000)
         let queued = drainedActs()
 
-        XCTAssertEqual(queued.first?.name, "Gallery.Spin")
+        XCTAssertEqual(queued.first?.name, "Test.Spin")
         XCTAssertEqual(queued.first?.arguments.first, .number(1), "the element it was put on")
         XCTAssertEqual(queued.first?.arguments.last, .number(90))
 
@@ -308,17 +309,28 @@ final class AimTests: XCTestCase {
     }
 }
 
-/// An application's own vocabulary, declared the way Core/Tokens.swift declares
-/// the library's - and namespaced, which is the advice `Act` gives.
-extension Act {
-    fileprivate static let spin = Act("Gallery.Spin")
+/// A control of an application's own, declared the way an application
+/// declares one - its names prefixed with the application's, so they never
+/// meet the library's.
+private enum WheelContract: ElementContract {
+    static let nodeType: NodeType = "Test.Wheel"
+    static let tiers: [any Contract.Type] = [ViewContract.self]
+
+    static let spin = ElementAct<Self, Double, Void>("Test.Spin")
+
+    static let members: [any ContractMember] = [spin]
 }
 
-/// And its own act, aimed with the public `target`. Nine lines, and every one
-/// of them is something an application can write.
-extension Aim {
+/// The control's view: its node from its contract.
+private struct Wheel: View {
+    var node = Node(contract: WheelContract.self)
+}
+
+/// And its own act, performed through the aim. Every line of it is something
+/// an application can write.
+extension Aim where Target == Wheel {
     fileprivate func spin(by degrees: Double) async throws {
-        try await stateUICall(.spin, [try target, .number(degrees)])
+        try await call(WheelContract.spin, degrees)
     }
 }
 

@@ -155,26 +155,26 @@ final class GestureTests: XCTestCase {
         XCTAssertNil(patch.props["swipeThreshold"], "a threshold nobody set is not sent")
     }
 
-    /// The raw payload, beside the typed handler rather than instead of it.
-    ///
-    /// A typed modifier drops a payload it cannot read, which is right for an
-    /// author and useless for anyone asking why nothing happens. `.onEvent` is
-    /// what tells a gesture that stopped reporting from a payload this side
-    /// cannot read - and it only helps if BOTH still run.
-    func testTheRawPayloadCanBeSeenBesideTheTypedHandler() {
+    /// A report of another shape than the view's contract declares reaches
+    /// no handler - the typed modifier's, nor one heard through the member
+    /// itself beside it. Both read what the contract declares, and a report
+    /// that is not that is refused whole and said once, naming what arrived.
+    func testAReportOfAnotherShapeReachesNoHandler() {
         let renders = Renders()
         var typed = 0
-        var raw: [[PropValue]] = []
+        var heard: [String] = []
 
         let patch = renders.render(
             ColorBox()
                 .onPinchUpdated { _ in typed += 1 }
-                .onEvent(.pinchUpdated) { raw.append($0) }
+                .onEvent(ViewContract.pinchUpdated) { phase, scale, origin in
+                    heard.append("\(phase) \(scale) \(origin.x),\(origin.y)")
+                }
                 .body)
 
         let id = patch.events?["pinchUpdated"] ?? -1
 
-        // The second is the first with its status sent as a plain number, which
+        // The second is the first with its phase sent as a plain number, which
         // is the whole difference between a report and a refusal.
         let readable: [PropValue] = [
             .enumeration(GesturePhase.running.rawValue), .number(1.25), .numbers([0.5, 0.5]),
@@ -186,9 +186,9 @@ final class GestureTests: XCTestCase {
         renders.fire(id, with: readable)
         renders.fire(id, with: garbled)
 
-        XCTAssertEqual(typed, 1, "the typed handler read the one it could")
-        XCTAssertEqual(raw, [readable, garbled],
-                       "and the raw one saw both, including what the typed one dropped")
+        XCTAssertEqual(typed, 1, "the typed modifier read the one it could")
+        XCTAssertEqual(heard, ["running 1.25 0.5,0.5"],
+                       "and so did the member's handler beside it, and nothing else")
     }
 
     /// Every typed gesture modifier composes, so two of the same kind both run.

@@ -6,7 +6,7 @@
 // These stand in for the host by hand: start the act, read what was queued,
 // report an outcome under the completion id, and see what the awaiting side
 // makes of it. That is the whole protocol, and it is the same one whether the
-// caller is `try await Dialogs.alert(…)` or a typed call added later.
+// caller is `try await Dialogs.alert(…)` or an application's own act.
 
 import Foundation
 import XCTest
@@ -158,15 +158,15 @@ final class ActCallTests: XCTestCase {
         try await navigation.value
     }
 
-    /// Also the by-name ESCAPE: the ledger has no id for a method the library
-    /// does not wrap, so the name itself crosses - id 0, then the string.
+    /// An act sent rather than called has nobody waiting for it, so it
+    /// carries no completion: there is no caller to quote back to.
     func testAnActNobodyIsWaitingForCarriesNoCompletion() {
         drain()
 
-        stateUISend("Clipboard.SetTextAsync", [.string("note")])
+        stateUISend(TestActs.copy, "note")
 
         let acts = drain()
-        XCTAssertEqual(acts.first?.name, "Clipboard.SetTextAsync")
+        XCTAssertEqual(acts.first?.name, "Test.Copy")
         XCTAssertNil(acts.first?.completion,
                      "nothing is waiting, so there is no id to quote back")
     }
@@ -182,12 +182,7 @@ final class ActCallTests: XCTestCase {
     func testANumberThatIsNotFiniteCrossesAsItsOwnBits() throws {
         drain()
 
-        stateUISend("Something.Numeric", [
-            .number(Double.nan),
-            .number(.infinity),
-            .number(-.infinity),
-            .number(1),
-        ])
+        stateUISend(TestActs.numbers, Double.nan, Double.infinity, -Double.infinity, 1)
 
         let acts = drain()
         let arguments = try XCTUnwrap(acts.first?.arguments)
@@ -229,14 +224,12 @@ final class ActCallTests: XCTestCase {
     func testTheResultOfAnActReachesTheCaller() async throws {
         drain()
 
-        let asked = begin {
-            try await stateUICall("Page.DisplayActionSheet", [.string("Delete?")])
-        }
+        let asked = begin { try await stateUICall(TestActs.choose, "Delete?") }
 
         await report(try completionId(in: drain()), .finished([.string("Delete")]))
 
         let answer = try await asked.value
-        XCTAssertEqual(answer, [.string("Delete")])
+        XCTAssertEqual(answer, "Delete")
     }
 
     /// A dialog's answer can be NOTHING - a cancelled prompt, a sheet
@@ -294,15 +287,15 @@ final class ActCallTests: XCTestCase {
     }
 
     /// An empty result and an empty complaint are different answers, which is
-    /// the whole reason the reply carries a tag.
+    /// the whole reason the reply carries a tag: an act that answers nothing
+    /// finishes, and its caller carries on.
     func testAnEmptyResultIsNotAFailure() async throws {
         drain()
 
-        let asked = begin { try await stateUICall("Something.Void") }
+        let asked = begin { try await stateUICall(TestActs.nothing) }
         await report(try completionId(in: drain()), .finished([]))
 
-        let answer = try await asked.value
-        XCTAssertEqual(answer, [])
+        try await asked.value
     }
 
     /// A reply whose bytes will not read - version skew - must still resume
@@ -311,7 +304,7 @@ final class ActCallTests: XCTestCase {
     func testAnUnreadableReplyFailsTheActInsteadOfHangingIt() async throws {
         drain()
 
-        let asked = begin { try await stateUICall("Something.Old") }
+        let asked = begin { try await stateUICall(TestActs.old) }
         let id = try completionId(in: drain())
 
         let garbage: [UInt8] = [99, 1, 2, 3]
@@ -454,19 +447,17 @@ final class ActCallTests: XCTestCase {
     func testATypedReplyReachesTheCaller() async throws {
         drain()
 
-        let asked = begin {
-            try await stateUICall("Page.DisplayActionSheet", [.string("Delete?")])
-        }
+        let asked = begin { try await stateUICall(TestActs.choose, "Delete?") }
         let call = try XCTUnwrap(StateUIHost.takeActCalls().first)
         let id = try XCTUnwrap(call.completion)
 
-        XCTAssertEqual(call.act, "Page.DisplayActionSheet")
+        XCTAssertEqual(call.act, "Test.Choose")
         XCTAssertEqual(call.arguments, [.string("Delete?")])
         XCTAssertTrue(StateUIHost.reply(id, with: [.string("Delete")]))
         await settle()
 
         let answer = try await asked.value
-        XCTAssertEqual(answer, [.string("Delete")])
+        XCTAssertEqual(answer, "Delete")
         XCTAssertFalse(StateUIHost.reply(id, with: []), "a call is answered once")
     }
 
@@ -495,4 +486,18 @@ final class ActCallTests: XCTestCase {
         XCTAssertFalse(StateUIHost.reply(7, with: []))
         XCTAssertFalse(StateUIHost.fail(7, reason: "not a completion"))
     }
+}
+
+/// Acts of an application's own, declared the way an application declares
+/// them - what the tests of a call's round trip perform.
+private enum TestActs: ApplicationTier {
+    static let name = "Test"
+
+    static let choose = ElementAct<Self, String, String>("Test.Choose")
+    static let copy = ElementAct<Self, String, Void>("Test.Copy")
+    static let numbers = ElementAct<Self, (Double, Double, Double, Double), Void>("Test.Numbers")
+    static let nothing = ElementAct<Self, Void, Void>("Test.Nothing")
+    static let old = ElementAct<Self, Void, Void>("Test.Old")
+
+    static let members: [any ContractMember] = [choose, copy, numbers, nothing, old]
 }
