@@ -121,14 +121,14 @@ internal sealed class DescribedMotion
     {
         HostPropKey key = transition.Key;
 
-        if (SwiftStyles.Property(node.Type, node.TypeName, key) is not BindableProperty property)
+        if (PropertyTable.Property(node.Type, node.TypeName, key) is not BindableProperty property)
         {
             return false;
         }
 
         HostPatch carrier = Carrier(transition, target);
 
-        return SwiftStyles.Value(property, carrier, key) is object value
+        return PropertyTable.Value(property, carrier, key) is object value
             && MotionProperty.Of(
                 new Label(), property, value, false, out ITripTarget _, out double[] _);
     }
@@ -189,7 +189,7 @@ internal sealed class DescribedMotion
                     continue;
                 }
 
-                if (SwiftStyles.Property(node.Type, node.TypeName, HostPropKey.Of(property, string.Empty))
+                if (PropertyTable.Property(node.Type, node.TypeName, HostPropKey.Of(property, string.Empty))
                     is BindableProperty bindable
                     && _walker.Driven?.Invoke(view, bindable) != true)
                 {
@@ -210,7 +210,7 @@ internal sealed class DescribedMotion
                 continue;
             }
 
-            if (SwiftStyles.Property(node.Type, node.TypeName, HostPropKey.Of(HostProp.None, spelling))
+            if (PropertyTable.Property(node.Type, node.TypeName, HostPropKey.Of(HostProp.None, spelling))
                 is BindableProperty bindable
                 && _walker.Driven?.Invoke(view, bindable) != true)
             {
@@ -248,14 +248,14 @@ internal sealed class DescribedMotion
     {
         HostPropKey key = transition.Key;
 
-        if (SwiftStyles.Property(type, typeName, key) is not BindableProperty property)
+        if (PropertyTable.Property(type, typeName, key) is not BindableProperty property)
         {
             return;
         }
 
         HostPatch carrier = Carrier(transition, target);
 
-        if (SwiftStyles.Value(property, carrier, key) is not object destination)
+        if (PropertyTable.Value(property, carrier, key) is not object destination)
         {
             return;
         }
@@ -306,7 +306,7 @@ internal sealed class DescribedMotion
             || (view.Parent is VisualElement holder && StateUIRenderer.Watched(holder));
 
     /// <summary>
-    /// The shape <c>SwiftValues</c> reads a property off: a node with the one
+    /// The shape <c>Values</c> reads a property off: a node with the one
     /// key on it, in the bag that key belongs to.
     /// </summary>
     /// <remarks>

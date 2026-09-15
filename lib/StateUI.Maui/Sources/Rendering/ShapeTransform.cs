@@ -30,7 +30,7 @@ namespace StateUI.Maui.Rendering;
 /// frame, nothing crossing the wire.
 /// </para>
 /// </remarks>
-internal static class SwiftShapes
+internal static class ShapeTransform
 {
     /// <summary>The matrix a shape's path is run through, or null for the
     /// path as the shape made it.</summary>
@@ -38,7 +38,7 @@ internal static class SwiftShapes
         BindableProperty.CreateAttached(
             "GeometryTransform",
             typeof(Matrix3x2?),
-            typeof(SwiftShapes),
+            typeof(ShapeTransform),
             null,
             propertyChanged: static (bindable, _, _) => Poke(bindable));
 
@@ -56,12 +56,12 @@ internal static class SwiftShapes
     /// </summary>
     public static void AddHandlers(IMauiHandlersCollection handlers)
     {
-        handlers.AddHandler<SwiftRoundRectangle, Microsoft.Maui.Handlers.ShapeViewHandler>();
-        handlers.AddHandler<SwiftEllipse, Microsoft.Maui.Handlers.ShapeViewHandler>();
-        handlers.AddHandler<SwiftLine, Microsoft.Maui.Handlers.ShapeViewHandler>();
-        handlers.AddHandler<SwiftPath, Microsoft.Maui.Handlers.ShapeViewHandler>();
-        handlers.AddHandler<SwiftPolygon, Microsoft.Maui.Handlers.ShapeViewHandler>();
-        handlers.AddHandler<SwiftPolyline, Microsoft.Maui.Handlers.ShapeViewHandler>();
+        handlers.AddHandler<TransformedRoundRectangle, Microsoft.Maui.Handlers.ShapeViewHandler>();
+        handlers.AddHandler<TransformedEllipse, Microsoft.Maui.Handlers.ShapeViewHandler>();
+        handlers.AddHandler<TransformedLine, Microsoft.Maui.Handlers.ShapeViewHandler>();
+        handlers.AddHandler<TransformedPath, Microsoft.Maui.Handlers.ShapeViewHandler>();
+        handlers.AddHandler<TransformedPolygon, Microsoft.Maui.Handlers.ShapeViewHandler>();
+        handlers.AddHandler<TransformedPolyline, Microsoft.Maui.Handlers.ShapeViewHandler>();
     }
 
     /// <summary>The path the platform draws: the MAUI original's own answer
@@ -97,17 +97,17 @@ internal static class SwiftShapes
 }
 
 /// <summary>A RoundRectangle whose path wears the attached transform.</summary>
-internal sealed class SwiftRoundRectangle : Shape, IShape
+internal sealed class TransformedRoundRectangle : Shape, IShape
 {
     private readonly RoundRectangle _geometry = new();
 
     /// <summary>See RoundRectangle.CornerRadius.</summary>
     public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create(
-        nameof(CornerRadius), typeof(CornerRadius), typeof(SwiftRoundRectangle), new CornerRadius(),
+        nameof(CornerRadius), typeof(CornerRadius), typeof(TransformedRoundRectangle), new CornerRadius(),
         propertyChanged: static (bindable, _, made) =>
         {
-            ((SwiftRoundRectangle)bindable)._geometry.CornerRadius = (CornerRadius)made;
-            SwiftShapes.Poke(bindable);
+            ((TransformedRoundRectangle)bindable)._geometry.CornerRadius = (CornerRadius)made;
+            ShapeTransform.Poke(bindable);
         });
 
     /// <summary>Each corner's rounding, named separately.
@@ -121,59 +121,59 @@ internal sealed class SwiftRoundRectangle : Shape, IShape
     /// <inheritdoc/>
     public override PathF GetPath() => _geometry.GetPath();
 
-    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => SwiftShapes.PathFor(this, _geometry, bounds);
+    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => ShapeTransform.PathFor(this, _geometry, bounds);
 }
 
 /// <summary>An Ellipse whose path wears the attached transform.</summary>
-internal sealed class SwiftEllipse : Shape, IShape
+internal sealed class TransformedEllipse : Shape, IShape
 {
     private readonly Microsoft.Maui.Controls.Shapes.Ellipse _geometry = new();
 
     /// <inheritdoc/>
     public override PathF GetPath() => _geometry.GetPath();
 
-    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => SwiftShapes.PathFor(this, _geometry, bounds);
+    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => ShapeTransform.PathFor(this, _geometry, bounds);
 }
 
 /// <summary>A Line whose path wears the attached transform.</summary>
-internal sealed class SwiftLine : Shape, IShape
+internal sealed class TransformedLine : Shape, IShape
 {
     private readonly Line _geometry = new();
 
     /// <summary>See Line.X1.</summary>
     public static readonly BindableProperty X1Property = BindableProperty.Create(
-        nameof(X1), typeof(double), typeof(SwiftLine), 0.0,
+        nameof(X1), typeof(double), typeof(TransformedLine), 0.0,
         propertyChanged: static (bindable, _, made) =>
         {
-            ((SwiftLine)bindable)._geometry.X1 = (double)made;
-            SwiftShapes.Poke(bindable);
+            ((TransformedLine)bindable)._geometry.X1 = (double)made;
+            ShapeTransform.Poke(bindable);
         });
 
     /// <summary>See Line.Y1.</summary>
     public static readonly BindableProperty Y1Property = BindableProperty.Create(
-        nameof(Y1), typeof(double), typeof(SwiftLine), 0.0,
+        nameof(Y1), typeof(double), typeof(TransformedLine), 0.0,
         propertyChanged: static (bindable, _, made) =>
         {
-            ((SwiftLine)bindable)._geometry.Y1 = (double)made;
-            SwiftShapes.Poke(bindable);
+            ((TransformedLine)bindable)._geometry.Y1 = (double)made;
+            ShapeTransform.Poke(bindable);
         });
 
     /// <summary>See Line.X2.</summary>
     public static readonly BindableProperty X2Property = BindableProperty.Create(
-        nameof(X2), typeof(double), typeof(SwiftLine), 0.0,
+        nameof(X2), typeof(double), typeof(TransformedLine), 0.0,
         propertyChanged: static (bindable, _, made) =>
         {
-            ((SwiftLine)bindable)._geometry.X2 = (double)made;
-            SwiftShapes.Poke(bindable);
+            ((TransformedLine)bindable)._geometry.X2 = (double)made;
+            ShapeTransform.Poke(bindable);
         });
 
     /// <summary>See Line.Y2.</summary>
     public static readonly BindableProperty Y2Property = BindableProperty.Create(
-        nameof(Y2), typeof(double), typeof(SwiftLine), 0.0,
+        nameof(Y2), typeof(double), typeof(TransformedLine), 0.0,
         propertyChanged: static (bindable, _, made) =>
         {
-            ((SwiftLine)bindable)._geometry.Y2 = (double)made;
-            SwiftShapes.Poke(bindable);
+            ((TransformedLine)bindable)._geometry.Y2 = (double)made;
+            ShapeTransform.Poke(bindable);
         });
 
     /// <summary>Where the line starts, across. MAUI: Line.X1.</summary>
@@ -191,23 +191,23 @@ internal sealed class SwiftLine : Shape, IShape
     /// <inheritdoc/>
     public override PathF GetPath() => _geometry.GetPath();
 
-    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => SwiftShapes.PathFor(this, _geometry, bounds);
+    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => ShapeTransform.PathFor(this, _geometry, bounds);
 }
 
 /// <summary>A Path whose path wears the attached transform - through the one
 /// mechanism every shape shares, rather than MAUI's own
 /// <c>RenderTransform</c>, so there is one and not two.</summary>
-internal sealed class SwiftPath : Shape, IShape
+internal sealed class TransformedPath : Shape, IShape
 {
     private readonly Microsoft.Maui.Controls.Shapes.Path _geometry = new();
 
     /// <summary>See Path.Data.</summary>
     public static readonly BindableProperty DataProperty = BindableProperty.Create(
-        nameof(Data), typeof(Geometry), typeof(SwiftPath), null,
+        nameof(Data), typeof(Geometry), typeof(TransformedPath), null,
         propertyChanged: static (bindable, _, made) =>
         {
-            ((SwiftPath)bindable)._geometry.Data = (Geometry?)made;
-            SwiftShapes.Poke(bindable);
+            ((TransformedPath)bindable)._geometry.Data = (Geometry?)made;
+            ShapeTransform.Poke(bindable);
         });
 
     /// <summary>The outline the path draws. MAUI: Path.Data.</summary>
@@ -220,39 +220,39 @@ internal sealed class SwiftPath : Shape, IShape
     /// <inheritdoc/>
     public override PathF GetPath() => _geometry.GetPath();
 
-    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => SwiftShapes.PathFor(this, _geometry, bounds);
+    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => ShapeTransform.PathFor(this, _geometry, bounds);
 }
 
 /// <summary>A Polygon whose path wears the attached transform.</summary>
-internal sealed class SwiftPolygon : Shape, IShape
+internal sealed class TransformedPolygon : Shape, IShape
 {
     private readonly Polygon _geometry = new();
 
     /// <summary>A shape that tells its drawable which crossings are inside as
     /// soon as it has one, MAUI's own handler never doing it.</summary>
-    public SwiftPolygon() =>
-        HandlerChanged += (_, _) => SwiftShapes.Poke(this);
+    public TransformedPolygon() =>
+        HandlerChanged += (_, _) => ShapeTransform.Poke(this);
 
     /// <summary>See Polygon.Points.</summary>
     public static readonly BindableProperty PointsProperty = BindableProperty.Create(
-        nameof(Points), typeof(PointCollection), typeof(SwiftPolygon), null,
+        nameof(Points), typeof(PointCollection), typeof(TransformedPolygon), null,
         propertyChanged: static (bindable, _, made) =>
         {
-            ((SwiftPolygon)bindable)._geometry.Points = (PointCollection?)made ?? [];
-            SwiftShapes.Poke(bindable);
+            ((TransformedPolygon)bindable)._geometry.Points = (PointCollection?)made ?? [];
+            ShapeTransform.Poke(bindable);
         });
 
     /// <summary>See Polygon.FillRule.</summary>
     public static readonly BindableProperty FillRuleProperty = BindableProperty.Create(
-        nameof(FillRule), typeof(FillRule), typeof(SwiftPolygon), FillRule.EvenOdd,
+        nameof(FillRule), typeof(FillRule), typeof(TransformedPolygon), FillRule.EvenOdd,
         propertyChanged: static (bindable, _, made) =>
         {
-            ((SwiftPolygon)bindable)._geometry.FillRule = (FillRule)made;
+            ((TransformedPolygon)bindable)._geometry.FillRule = (FillRule)made;
 
             // The geometry keeps the rule for the PATH; the PICTURE takes it
             // from the drawable's clip, which Poke writes after the mapping
             // that replaces the drawable.
-            SwiftShapes.Poke(bindable);
+            ShapeTransform.Poke(bindable);
         });
 
     /// <summary>The corners, in order; the last closes back to the first.
@@ -273,39 +273,39 @@ internal sealed class SwiftPolygon : Shape, IShape
     /// <inheritdoc/>
     public override PathF GetPath() => _geometry.GetPath();
 
-    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => SwiftShapes.PathFor(this, _geometry, bounds);
+    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => ShapeTransform.PathFor(this, _geometry, bounds);
 }
 
 /// <summary>A Polyline whose path wears the attached transform.</summary>
-internal sealed class SwiftPolyline : Shape, IShape
+internal sealed class TransformedPolyline : Shape, IShape
 {
     private readonly Polyline _geometry = new();
 
     /// <summary>A shape that tells its drawable which crossings are inside as
     /// soon as it has one, MAUI's own handler never doing it.</summary>
-    public SwiftPolyline() =>
-        HandlerChanged += (_, _) => SwiftShapes.Poke(this);
+    public TransformedPolyline() =>
+        HandlerChanged += (_, _) => ShapeTransform.Poke(this);
 
     /// <summary>See Polyline.Points.</summary>
     public static readonly BindableProperty PointsProperty = BindableProperty.Create(
-        nameof(Points), typeof(PointCollection), typeof(SwiftPolyline), null,
+        nameof(Points), typeof(PointCollection), typeof(TransformedPolyline), null,
         propertyChanged: static (bindable, _, made) =>
         {
-            ((SwiftPolyline)bindable)._geometry.Points = (PointCollection?)made ?? [];
-            SwiftShapes.Poke(bindable);
+            ((TransformedPolyline)bindable)._geometry.Points = (PointCollection?)made ?? [];
+            ShapeTransform.Poke(bindable);
         });
 
     /// <summary>See Polyline.FillRule.</summary>
     public static readonly BindableProperty FillRuleProperty = BindableProperty.Create(
-        nameof(FillRule), typeof(FillRule), typeof(SwiftPolyline), FillRule.EvenOdd,
+        nameof(FillRule), typeof(FillRule), typeof(TransformedPolyline), FillRule.EvenOdd,
         propertyChanged: static (bindable, _, made) =>
         {
-            ((SwiftPolyline)bindable)._geometry.FillRule = (FillRule)made;
+            ((TransformedPolyline)bindable)._geometry.FillRule = (FillRule)made;
 
             // The geometry keeps the rule for the PATH; the PICTURE takes it
             // from the drawable's clip, which Poke writes after the mapping
             // that replaces the drawable.
-            SwiftShapes.Poke(bindable);
+            ShapeTransform.Poke(bindable);
         });
 
     /// <summary>The corners, in order, left open. MAUI: Polyline.Points.</summary>
@@ -325,5 +325,5 @@ internal sealed class SwiftPolyline : Shape, IShape
     /// <inheritdoc/>
     public override PathF GetPath() => _geometry.GetPath();
 
-    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => SwiftShapes.PathFor(this, _geometry, bounds);
+    PathF IShape.PathForBounds(Microsoft.Maui.Graphics.Rect bounds) => ShapeTransform.PathFor(this, _geometry, bounds);
 }

@@ -660,18 +660,18 @@ public class ControlTests
         ["Rectangle"] = (_, view) =>
         {
             // One radius or four: MAUI's RoundRectangle, square at nought.
-            var rectangle = Assert.IsType<SwiftRoundRectangle>(view);
+            var rectangle = Assert.IsType<TransformedRoundRectangle>(view);
 
             Assert.Equal(new CornerRadius(16, 16, 0, 0), rectangle.CornerRadius);
         },
 
         // An Ellipse is its bounds and nothing else, which is why its case in
         // the Swift tests sets nothing: what it can do is the shape tier.
-        ["Ellipse"] = (_, view) => Assert.IsType<SwiftEllipse>(view),
+        ["Ellipse"] = (_, view) => Assert.IsType<TransformedEllipse>(view),
 
         ["Line"] = (_, view) =>
         {
-            var line = Assert.IsType<SwiftLine>(view);
+            var line = Assert.IsType<TransformedLine>(view);
 
             Assert.Equal(0, line.X1);
             Assert.Equal(0, line.Y1);
@@ -681,7 +681,7 @@ public class ControlTests
 
         ["Path"] = (_, view) =>
         {
-            var path = Assert.IsType<SwiftPath>(view);
+            var path = Assert.IsType<TransformedPath>(view);
 
             // The data travelled as the string XAML writes and came back a real
             // Geometry: one figure, closed, with the three points of a triangle.
@@ -697,7 +697,7 @@ public class ControlTests
             // into six numbers. They are binary fractions on purpose: the
             // fixture states the matrix rather than computing it, so that no
             // platform's maths library can write a different file.
-            Matrix3x2 turned = Assert.NotNull(SwiftShapes.GetGeometryTransform(path));
+            Matrix3x2 turned = Assert.NotNull(ShapeTransform.GetGeometryTransform(path));
 
             Assert.Equal(1.5f, turned.M11);
             Assert.Equal(0.375f, turned.M12);
@@ -716,7 +716,7 @@ public class ControlTests
 
         ["Polygon"] = (_, view) =>
         {
-            var polygon = Assert.IsType<SwiftPolygon>(view);
+            var polygon = Assert.IsType<TransformedPolygon>(view);
 
             Assert.Equal([new(20, 0), new(40, 40), new(0, 40)], polygon.Points);
             Assert.Equal(FillRule.Nonzero, polygon.FillRule);
@@ -724,7 +724,7 @@ public class ControlTests
 
         ["Polyline"] = (_, view) =>
         {
-            var polyline = Assert.IsType<SwiftPolyline>(view);
+            var polyline = Assert.IsType<TransformedPolyline>(view);
 
             Assert.Equal([new(0, 30), new(20, 5), new(40, 25)], polyline.Points);
             Assert.Equal(FillRule.EvenOdd, polyline.FillRule);
@@ -739,19 +739,19 @@ public class ControlTests
             // the things they ARE: numbers as numbers, colours as colours, text
             // as text. So nothing has to be parsed back out of a joined string,
             // and a record carrying a comma is no different from any other.
-            HostValue[] commands = Assert.IsType<SwiftDrawable>(graphics.Drawable).Commands;
+            HostValue[] commands = Assert.IsType<ViewDrawing>(graphics.Drawable).Commands;
 
             Assert.Equal(
-                (int)SwiftDrawable.Kind.FillColor,
+                (int)ViewDrawing.Kind.FillColor,
                 commands[0].Values![0].Member);
             Assert.Equal(
-                (int)SwiftDrawable.Kind.RestoreState,
+                (int)ViewDrawing.Kind.RestoreState,
                 commands[^1].Values![0].Member);
 
             // The one record that carries text, read as the last of its values.
             HostValue drawString = Assert.Single(
                 commands,
-                record => record.Values![0].Member == (int)SwiftDrawable.Kind.DrawText);
+                record => record.Values![0].Member == (int)ViewDrawing.Kind.DrawText);
 
             Assert.Equal("Hello, world", drawString.Values![^1].Text);
 
@@ -868,7 +868,7 @@ public class ControlTests
             // The Shape tier, which MAUI declares once and all seven shapes
             // inherit - so it is checked here, beside the font tier, rather than
             // in each shape's own case.
-            var ellipse = Assert.IsType<SwiftEllipse>(stack.Children[0]);
+            var ellipse = Assert.IsType<TransformedEllipse>(stack.Children[0]);
 
             var fill = Assert.IsType<RadialGradientBrush>(ellipse.Fill);
             Assert.Equal(new Point(0.3, 0.3), fill.Center);
@@ -890,7 +890,7 @@ public class ControlTests
             Assert.Equal(Stretch.UniformToFill, ellipse.Aspect);
 
             // A solid brush behind a view is a colour, and lands where a colour
-            // does - see SwiftValues.SetBackground.
+            // does - see Values.SetBackground.
             Assert.Equal(Colors.WhiteSmoke, ellipse.BackgroundColor);
 
             var label = Assert.IsType<Label>(stack.Children[1]);
@@ -1115,25 +1115,25 @@ public class ControlTests
 
         Func<Shape>[] makers =
         [
-            () => new SwiftLine { X1 = 4, Y1 = 6, X2 = 30, Y2 = 22 },
-            () => new SwiftPolygon
+            () => new TransformedLine { X1 = 4, Y1 = 6, X2 = 30, Y2 = 22 },
+            () => new TransformedPolygon
             {
                 Points = [new Point(0, 0), new Point(20, 4), new Point(9, 30)],
             },
-            () => new SwiftPolyline
+            () => new TransformedPolyline
             {
                 Points = [new Point(2, 34), new Point(14, 8), new Point(38, 20)],
             },
-            () => new SwiftPath { Data = Triangle() },
-            () => new SwiftRoundRectangle { CornerRadius = new CornerRadius(8, 8, 2, 2) },
-            () => new SwiftEllipse(),
+            () => new TransformedPath { Data = Triangle() },
+            () => new TransformedRoundRectangle { CornerRadius = new CornerRadius(8, 8, 2, 2) },
+            () => new TransformedEllipse(),
         ];
 
         foreach (Func<Shape> make in makers)
         {
             Shape reference = make();
             Shape turned = make();
-            turned.SetValue(SwiftShapes.GeometryTransformProperty, matrix);
+            turned.SetValue(ShapeTransform.GeometryTransformProperty, matrix);
 
             PathF expected = ((IShape)reference).PathForBounds(bounds);
             PathF actual = ((IShape)turned).PathForBounds(bounds);

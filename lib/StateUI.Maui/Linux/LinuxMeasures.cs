@@ -372,19 +372,19 @@ internal static class LinuxMeasures
     /// <remarks>
     /// LAST, AFTER THE LIBRARY'S OWN REGISTRATION. The shapes are this
     /// library's own classes over MAUI's sealed originals, registered to the
-    /// shared handler by <c>SwiftShapes</c> - and a handler registry answers
+    /// shared handler by <c>ShapeTransform</c> - and a handler registry answers
     /// with whatever was registered last, so this has to be told after that.
     /// </remarks>
     /// <param name="builder">Whose handler registry takes them.</param>
     internal static MauiAppBuilder Shapes(MauiAppBuilder builder) =>
         builder.ConfigureMauiHandlers(handlers =>
         {
-            handlers.AddHandler<SwiftRoundRectangle, Drawn>();
-            handlers.AddHandler<SwiftEllipse, Drawn>();
-            handlers.AddHandler<SwiftLine, Drawn>();
-            handlers.AddHandler<SwiftPath, Drawn>();
-            handlers.AddHandler<SwiftPolygon, Drawn>();
-            handlers.AddHandler<SwiftPolyline, Drawn>();
+            handlers.AddHandler<TransformedRoundRectangle, Drawn>();
+            handlers.AddHandler<TransformedEllipse, Drawn>();
+            handlers.AddHandler<TransformedLine, Drawn>();
+            handlers.AddHandler<TransformedPath, Drawn>();
+            handlers.AddHandler<TransformedPolygon, Drawn>();
+            handlers.AddHandler<TransformedPolyline, Drawn>();
         });
 
     /// <summary>

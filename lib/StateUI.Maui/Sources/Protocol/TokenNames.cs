@@ -59,7 +59,7 @@ internal static class TokenNames<TToken>
     /// The reverse of <see cref="Parse"/>, built once beside it, for the places
     /// that need a name back out of a member: the order a visual state's
     /// setters go in - which is by NAME and load-bearing, see
-    /// <c>SwiftStyles.AddSetters</c> - a node built by this side rather than
+    /// <c>VisualStates.AddSetters</c> - a node built by this side rather than
     /// read off the wire, whose <c>TypeName</c> is derived from its type, and
     /// the report that names a property nothing here could clear.
     /// </remarks>

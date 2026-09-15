@@ -26,7 +26,7 @@ namespace StateUI.Maui.Rendering;
 /// when Swift describes the application.
 /// </para>
 /// <para>
-/// The pages themselves are <see cref="SwiftPages"/>'s: it builds them, keeps
+/// The pages themselves are <see cref="PagePresenter"/>'s: it builds them, keeps
 /// them by node identity and reconciles whatever nests inside them. All this
 /// window does is hand MAUI whichever page is now the root.
 /// </para>
@@ -48,9 +48,9 @@ public class StateUIWindow : Window
     /// <remarks>
     /// Not a window's business, which is why it is not written here: pages nest,
     /// and a second window would materialize its own through the same call. See
-    /// <see cref="SwiftPages"/>.
+    /// <see cref="PagePresenter"/>.
     /// </remarks>
-    private readonly SwiftPages _pageRenderer;
+    private readonly PagePresenter _pageRenderer;
 
     /// <summary>
     /// The identity of the node the window's title bar came from, so a message
@@ -111,7 +111,7 @@ public class StateUIWindow : Window
     {
         _application = application;
 
-        _pageRenderer = new SwiftPages(
+        _pageRenderer = new PagePresenter(
             application.Renderer,
             (message, exception) => ShowError(message, exception));
 
@@ -125,7 +125,7 @@ public class StateUIWindow : Window
         // down, Android's system back, or this side dismissing one. MAUI raises
         // it HERE rather than on any page, because the modal stack is the
         // window's: that is why the modal stack's handler is written on the
-        // window's own node, and why this subscription is not in SwiftPages.
+        // window's own node, and why this subscription is not in PagePresenter.
         ModalPopped += (_, _) => _pageRenderer.ModalWasPopped();
 
         if (adopt)

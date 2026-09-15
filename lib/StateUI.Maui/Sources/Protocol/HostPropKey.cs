@@ -23,7 +23,7 @@ namespace StateUI.Maui.Protocol;
 /// that a key with no name, which is a lookup in the library's bag and no
 /// string hashed anywhere. A named one is built wherever an application's own
 /// property is served: the string-keyed accessors on <c>HostPatch</c> and
-/// <c>StateUIValues</c>, the <c>cleared</c> reader, <c>SwiftStyles.AddSetters</c>,
+/// <c>StateUIValues</c>, the <c>cleared</c> reader, <c>VisualStates.AddSetters</c>,
 /// <c>DescribedMotion</c> and <c>StateUIRenderer.ReconcileRegistered</c>.
 /// </para>
 /// <para>

@@ -17,10 +17,10 @@ namespace StateUI.Maui.Tests;
 public class FlyoutPageTests
 {
     /// <summary>A page renderer whose failures fail the test.</summary>
-    private static (SwiftPages Pages, Host Host) Renderer()
+    private static (PagePresenter Pages, Host Host) Renderer()
     {
         var host = new Host();
-        var pages = new SwiftPages(
+        var pages = new PagePresenter(
             host.Renderer,
             (message, exception) => Assert.Fail($"{message}\n{exception}"));
 
@@ -48,7 +48,7 @@ public class FlyoutPageTests
     [Fact]
     public void TheTwoHalvesAreTheChildren()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(Flyout())));
 
@@ -64,7 +64,7 @@ public class FlyoutPageTests
     [Fact]
     public void TheDetailCanBeAWholeStack()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(
             "{\"id\":1,\"type\":\"SplitView\",\"arranged\":true,\"children\":["
@@ -85,7 +85,7 @@ public class FlyoutPageTests
     [Fact]
     public void AFlyoutCarriesATitleAndAnIconOfItsOwn()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(
             Flyout(extra: "\"title\":\"Mail\",\"icon\":\"mail.png\""))));
@@ -101,7 +101,7 @@ public class FlyoutPageTests
     [Fact]
     public void APatchAboutOneHalfLeavesTheOtherAlone()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(Flyout())));
         Page pane = flyout.Flyout;
@@ -123,7 +123,7 @@ public class FlyoutPageTests
     {
         var host = new Host();
         List<string> failures = [];
-        var pages = new SwiftPages(host.Renderer, (message, _) => failures.Add(message));
+        var pages = new PagePresenter(host.Renderer, (message, _) => failures.Add(message));
 
         pages.Render(null, Host.Parse(
             "{\"id\":1,\"type\":\"SplitView\",\"arranged\":true,\"children\":["
@@ -139,7 +139,7 @@ public class FlyoutPageTests
     {
         var host = new Host();
         List<string> failures = [];
-        var pages = new SwiftPages(host.Renderer, (message, _) => failures.Add(message));
+        var pages = new PagePresenter(host.Renderer, (message, _) => failures.Add(message));
 
         pages.Render(null, Host.Parse(
             "{\"id\":1,\"type\":\"SplitView\",\"arranged\":true,\"children\":["
@@ -155,7 +155,7 @@ public class FlyoutPageTests
     [Fact]
     public void SwiftCanOpenIt()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(Flyout())));
 
@@ -172,7 +172,7 @@ public class FlyoutPageTests
     [Fact]
     public void WhatSwiftAskedForIsNotReportedBack()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(Flyout())));
 
@@ -198,7 +198,7 @@ public class FlyoutPageTests
     [Fact]
     public void TheReaderOpeningItIsReported()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(Flyout())));
 
@@ -214,7 +214,7 @@ public class FlyoutPageTests
     [Fact]
     public void TheReaderClosingItIsReported()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(Flyout(true))));
 
@@ -240,7 +240,7 @@ public class FlyoutPageTests
     [Fact]
     public void WhatThePlatformDecidesIsReportedAfterTheMessage()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(Flyout())));
 
@@ -269,7 +269,7 @@ public class FlyoutPageTests
     [Fact]
     public void ForgettingBuildsTheFlyoutAgain()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(Flyout())));
 
@@ -289,7 +289,7 @@ public class FlyoutPageTests
     [Fact]
     public void TheFixtureBuildsTheWholeFlyout()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var flyout = Assert.IsType<FlyoutPage>(
             pages.Render(null, Host.Parse(Fixtures.ReadBytes("pages/SplitView.bin"))));

@@ -44,7 +44,7 @@ namespace StateUI.Maui.Rendering;
 /// default arm and answers null.
 /// </para>
 /// </remarks>
-internal static class SwiftValues
+internal static class Values
 {
     /// <summary>
     /// A colour, from the four channels it crossed as.
@@ -188,7 +188,7 @@ internal static class SwiftValues
     /// app being the whole screen. Windows applies all of them itself. Mac
     /// Catalyst applies the minimum and the maximum, ignores <c>X</c> and
     /// <c>Y</c>, and would ignore <c>Width</c> and <c>Height</c> - which is
-    /// what <see cref="SwiftWindowSize"/> is for.
+    /// what <see cref="WindowSize"/> is for.
     /// </para>
     /// <para>
     /// Assigned only when the property arrived, like everywhere else: a message
@@ -214,7 +214,7 @@ internal static class SwiftValues
 
         // Last, and only where the platform needs asking: it reads the maximum
         // assigned above to know what to give back afterwards.
-        SwiftWindowSize.OpenAtRequestedSize(window, node);
+        WindowSize.OpenAtRequestedSize(window, node);
     }
 
     /// <summary>Left, top, right, bottom - the order MAUI's constructor takes.</summary>
@@ -1275,12 +1275,12 @@ internal static class SwiftValues
     /// one value list per call - the kind first, then its arguments.
     /// </summary>
     /// <remarks>
-    /// A list of lists, one per canvas call. See <see cref="SwiftDrawable"/>.
+    /// A list of lists, one per canvas call. See <see cref="ViewDrawing"/>.
     /// </remarks>
     public static IDrawable? GetDrawable(this HostPatch node, HostPropKey key)
     {
         return node.GetValues(key) is HostValue[] commands
-            ? new SwiftDrawable(commands)
+            ? new ViewDrawing(commands)
             : null;
     }
 }

@@ -629,6 +629,6 @@ public class WindowTests
     [Fact]
     public void DriftIsNotReadAsMalformedBytes()
     {
-        Assert.IsNotAssignableFrom<InvalidDataException>(new SwiftTreeDriftException("drifted"));
+        Assert.IsNotAssignableFrom<InvalidDataException>(new TreeDriftException("drifted"));
     }
 }

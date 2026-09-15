@@ -754,7 +754,7 @@ internal static class Tree
 /// </summary>
 /// <remarks>
 /// <para>
-/// The other half of the check a drawing needs. A <c>SwiftDrawable</c> replays
+/// The other half of the check a drawing needs. A <c>ViewDrawing</c> replays
 /// the instructions the Swift side sent, and a record it does not recognize is
 /// SKIPPED - the same answer an unrecognized property gets, and just as silent.
 /// So a test that only compared the strings would prove nothing about the

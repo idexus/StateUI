@@ -18,10 +18,10 @@ namespace StateUI.Maui.Tests;
 public class TabbedPageTests
 {
     /// <summary>A page renderer whose failures fail the test.</summary>
-    private static (SwiftPages Pages, Host Host) Renderer()
+    private static (PagePresenter Pages, Host Host) Renderer()
     {
         var host = new Host();
-        var pages = new SwiftPages(
+        var pages = new PagePresenter(
             host.Renderer,
             (message, exception) => Assert.Fail($"{message}\n{exception}"));
 
@@ -55,7 +55,7 @@ public class TabbedPageTests
     [Fact]
     public void TheTabsAreTheChildren()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(0, TabAt("home", "Home"), TabAt("browse", "Browse")))));
@@ -68,7 +68,7 @@ public class TabbedPageTests
     [Fact]
     public void ATabsIconIsItsPages()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(0, TabAt("home", "Home")))));
@@ -80,7 +80,7 @@ public class TabbedPageTests
     [Fact]
     public void TheSelectionIsTheIndexSwiftSent()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(2, TabAt("home", "Home"), TabAt("browse", "Browse"), TabAt("settings", "Settings")))));
@@ -95,7 +95,7 @@ public class TabbedPageTests
     [Fact]
     public void ALaterPatchMovesTheSelection()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(0, TabAt("home", "Home"), TabAt("browse", "Browse")))));
@@ -114,7 +114,7 @@ public class TabbedPageTests
     [Fact]
     public void ReorderingKeepsThePages()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(0, TabAt("home", "Home"), TabAt("browse", "Browse")))));
@@ -145,7 +145,7 @@ public class TabbedPageTests
     [Fact]
     public void AReorderAroundTheShowingTabKeepsIt()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(1, TabAt("home", "Home"), TabAt("browse", "Browse"), TabAt("saved", "Saved")))));
@@ -168,7 +168,7 @@ public class TabbedPageTests
     [Fact]
     public void ATabInsertedBeforeTheShowingOneMovesItAlong()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(1, TabAt("home", "Home"), TabAt("browse", "Browse")))));
@@ -185,7 +185,7 @@ public class TabbedPageTests
     [Fact]
     public void ATabDescribedAwayGoes()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(0, TabAt("home", "Home"), TabAt("browse", "Browse")))));
@@ -204,7 +204,7 @@ public class TabbedPageTests
     [Fact]
     public void ARebuiltTabIsSwappedIntoTheBar()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(0, TabAt("home", "Home"), TabAt("browse", "Browse")))));
@@ -228,7 +228,7 @@ public class TabbedPageTests
     [Fact]
     public void TwoTabBarsDoNotShareAPage()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         string outer =
             "{\"id\":1,\"type\":\"TabbedView\",\"arranged\":true,\"children\":["
@@ -251,7 +251,7 @@ public class TabbedPageTests
     [Fact]
     public void ATabCanHoldAWholeStack()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             "{\"id\":1,\"type\":\"TabbedView\",\"arranged\":true,\"children\":["
@@ -273,7 +273,7 @@ public class TabbedPageTests
     [Fact]
     public void ATabBarCarriesATitleAndAnIconOfItsOwn()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             "{\"id\":1,\"type\":\"TabbedView\",\"arranged\":true,"
@@ -292,7 +292,7 @@ public class TabbedPageTests
     [Fact]
     public void AnEmptyTabBarIsLegal()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             "{\"id\":1,\"type\":\"TabbedView\",\"arranged\":true,\"children\":[]}")));
@@ -308,7 +308,7 @@ public class TabbedPageTests
     [Fact]
     public void TheLastTabCanGo()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(0, TabAt("home", "Home")))));
@@ -325,7 +325,7 @@ public class TabbedPageTests
     {
         var host = new Host();
         List<string> failures = [];
-        var pages = new SwiftPages(host.Renderer, (message, _) => failures.Add(message));
+        var pages = new PagePresenter(host.Renderer, (message, _) => failures.Add(message));
 
         pages.Render(null, Host.Parse(
             "{\"id\":1,\"type\":\"TabbedView\",\"arranged\":true,\"children\":["
@@ -344,7 +344,7 @@ public class TabbedPageTests
     [Fact]
     public void ALaterPatchRepaintsTheBar()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             "{\"id\":1,\"type\":\"TabbedView\",\"arranged\":true,"
@@ -365,7 +365,7 @@ public class TabbedPageTests
     [Fact]
     public void ForgettingBuildsTheTabsAgain()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(0, TabAt("home", "Home")))));
@@ -388,7 +388,7 @@ public class TabbedPageTests
     [Fact]
     public void TheFixtureBuildsTheWholeTabBar()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(
             pages.Render(null, Host.Parse(Fixtures.ReadBytes("pages/TabbedView.bin"))));
@@ -417,7 +417,7 @@ public class TabbedPageTests
     [Fact]
     public void TheReaderChoosingATabIsReported()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(0, TabAt("home", "Home"), TabAt("browse", "Browse")))));
@@ -438,7 +438,7 @@ public class TabbedPageTests
     [Fact]
     public void ASelectionSwiftAskedForIsNotReportedBack()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(0, TabAt("home", "Home"), TabAt("browse", "Browse")))));
@@ -458,7 +458,7 @@ public class TabbedPageTests
     [Fact]
     public void BuildingTheTabsSaysNothing()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         pages.Render(null, Host.Parse(
             Bar(1, TabAt("home", "Home"), TabAt("browse", "Browse"))));
@@ -482,7 +482,7 @@ public class TabbedPageTests
     [Fact]
     public void LosingTheShowingTabIsReportedAfterTheMessage()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(1, TabAt("home", "Home"), TabAt("browse", "Browse")))));
@@ -514,7 +514,7 @@ public class TabbedPageTests
     [Fact]
     public void ASelectionSwiftAskedForSaysNothingATurnLaterEither()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(0, TabAt("home", "Home"), TabAt("browse", "Browse")))));
@@ -541,7 +541,7 @@ public class TabbedPageTests
     [Fact]
     public void AnIndexOutsideTheTabsFallsBackToTheFirst()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var tabbed = Assert.IsType<TabbedPage>(pages.Render(null, Host.Parse(
             Bar(5, TabAt("home", "Home"), TabAt("browse", "Browse")))));

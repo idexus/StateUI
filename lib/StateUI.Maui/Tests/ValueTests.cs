@@ -121,7 +121,7 @@ public class ValueTests
     /// <para>
     /// A definition list is <c>[kind, number]</c> per row, and the LIST says how
     /// many rows there are; a stroke shape is <c>[kind, radius]</c>. Both are
-    /// read by <c>SwiftValues</c> rather than by a MAUI type converter, there
+    /// read by <c>Values</c> rather than by a MAUI type converter, there
     /// being no text on the wire to hand one.
     /// </para>
     /// <para>

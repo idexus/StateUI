@@ -126,12 +126,12 @@ public class StateUIHost : ContentView, IStateUITarget
         {
             return ApplyApplication(application);
         }
-        catch (SwiftTreeDriftException drift)
+        catch (TreeDriftException drift)
         {
             // A patch about a tree this host is not holding. REFUSED rather
             // than failed: the session answers a refusal by dropping the
             // generation and asking Swift for everything, which is the
-            // recovery this condition wants. See SwiftTreeDriftException.
+            // recovery this condition wants. See TreeDriftException.
             StateUISession.Report(
                 $"The interface drifted and is being asked for again: {drift.Message}");
 

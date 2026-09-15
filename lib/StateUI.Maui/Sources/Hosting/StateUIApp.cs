@@ -53,8 +53,8 @@ public static class StateUIApp
         return builder
             .UseMauiApp<TApp>()
             // The seven shapes are this library's own controls over MAUI's
-            // sealed originals - see Rendering/SwiftShapes.cs - and a control
+            // sealed originals - see Rendering/ShapeTransform.cs - and a control
             // of our own is one MAUI has no registration for.
-            .ConfigureMauiHandlers(Rendering.SwiftShapes.AddHandlers);
+            .ConfigureMauiHandlers(Rendering.ShapeTransform.AddHandlers);
     }
 }

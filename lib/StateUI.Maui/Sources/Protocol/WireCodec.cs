@@ -49,7 +49,7 @@ internal static partial class WireCodec
     /// WROTE and nothing else is one: a closed vocabulary rides its member's
     /// NUMBER (<see cref="HostValue.TagEnumeration"/>, this repository's
     /// own, translated onto the MAUI member by name - see
-    /// <see cref="Rendering.SwiftValues"/> for why, and for the mirrors), an
+    /// <see cref="Rendering.Values"/> for why, and for the mirrors), an
     /// open-vocabulary NAME rides the session's dictionary like a property key
     /// (<see cref="HostValue.TagName"/>), a value with parts rides as its
     /// parts, a colour is four bytes carrying one theme's half, and an absent

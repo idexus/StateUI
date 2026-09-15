@@ -47,7 +47,7 @@ internal static class ShapeWinding
     /// <c>IShapeView.Shape</c> hands the platform view a BRAND NEW drawable,
     /// so a winding mode written first is thrown away with the drawable that
     /// carried it - which is why every geometry change goes through
-    /// <c>SwiftShapes.Poke</c> and this runs at the end of it. Measured: with
+    /// <c>ShapeTransform.Poke</c> and this runs at the end of it. Measured: with
     /// the two the other way round the pentagram drew solid under both rules,
     /// exactly as it did with no patch at all.
     /// </para>
@@ -65,12 +65,12 @@ internal static class ShapeWinding
     {
         FillRule rule = shape switch
         {
-            SwiftPolygon polygon => polygon.FillRule,
-            SwiftPolyline polyline => polyline.FillRule,
+            TransformedPolygon polygon => polygon.FillRule,
+            TransformedPolyline polyline => polyline.FillRule,
             _ => FillRule.Nonzero,
         };
 
-        if (shape is not SwiftPolygon and not SwiftPolyline
+        if (shape is not TransformedPolygon and not TransformedPolyline
             || (shape as VisualElement)?.Handler?.PlatformView is not object platform
             || platform.GetType().GetProperty("Drawable")?.GetValue(platform) is not object drawable)
         {

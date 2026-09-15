@@ -3,7 +3,7 @@
 
 // The far half of every closed vocabulary the wire carries: one enum per Swift
 // enum, member for member, number for number - all but the drawing's command
-// kinds, whose mirror is nested in SwiftDrawable beside the reader that
+// kinds, whose mirror is nested in ViewDrawing beside the reader that
 // replays them.
 //
 // THE NUMBERS ARE THIS REPOSITORY'S, NEVER MAUI'S. A closed vocabulary crosses
@@ -15,7 +15,7 @@
 // None of that is promised to anybody, and a MAUI release that renumbered an
 // enum would silently reinterpret every property on this wire carrying it - no
 // error, no crash, just a different alignment. So the wire's numbers are ours,
-// they are stable for ever, and SwiftValues TRANSLATES them onto MAUI's members
+// they are stable for ever, and Values TRANSLATES them onto MAUI's members
 // BY NAME, one switch arm each. A jump table over a dense small integer is
 // far cheaper than hashing a spelling.
 //

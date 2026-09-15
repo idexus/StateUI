@@ -175,7 +175,7 @@ public static class StateUIControls
 
     /// <summary>
     /// A declared property of a registered type, or null - the registry's arm
-    /// of <c>SwiftStyles.Property</c>, which is what lets an animation walk
+    /// of <c>PropertyTable.Property</c>, which is what lets an animation walk
     /// an application control's own property.
     /// </summary>
     internal static BindableProperty? PropertyOf(string type, string name)

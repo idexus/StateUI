@@ -36,10 +36,10 @@ public class ModalStackTests
     /// whose dispatch goes to the native side. The fixture at the bottom is
     /// the one test that wants the real thing.
     /// </remarks>
-    private static (SwiftPages Pages, Host Host, Window Window) Renderer()
+    private static (PagePresenter Pages, Host Host, Window Window) Renderer()
     {
         var host = new Host();
-        var pages = new SwiftPages(
+        var pages = new PagePresenter(
             host.Renderer,
             (message, exception) => Assert.Fail($"{message}\n{exception}"));
 
@@ -76,7 +76,7 @@ public class ModalStackTests
     [Fact]
     public void AnEmptyListPresentsNothing()
     {
-        (SwiftPages pages, _, Window window) = Renderer();
+        (PagePresenter pages, _, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack());
 
@@ -86,7 +86,7 @@ public class ModalStackTests
     [Fact]
     public void AListOfOnePresentsIt()
     {
-        (SwiftPages pages, _, Window window) = Renderer();
+        (PagePresenter pages, _, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/settings", "Settings")));
 
@@ -100,7 +100,7 @@ public class ModalStackTests
     [Fact]
     public void ALongerListPresentsOverWhatIsAlreadyThere()
     {
-        (SwiftPages pages, _, Window window) = Renderer();
+        (PagePresenter pages, _, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/a", "A")));
         Page first = window.Navigation.ModalStack[0];
@@ -115,7 +115,7 @@ public class ModalStackTests
     [Fact]
     public void AShorterListDismissesTheTop()
     {
-        (SwiftPages pages, _, Window window) = Renderer();
+        (PagePresenter pages, _, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/a", "A"), Sheet("1/b", "B")));
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/a", "A")));
@@ -127,7 +127,7 @@ public class ModalStackTests
     [Fact]
     public void AnEmptyListDismissesAllOfThem()
     {
-        (SwiftPages pages, _, Window window) = Renderer();
+        (PagePresenter pages, _, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/a", "A"), Sheet("1/b", "B")));
         pages.ApplyModals(window.Navigation, window, Stack());
@@ -143,7 +143,7 @@ public class ModalStackTests
     [Fact]
     public void ADifferentSheetAtTheSameDepthReplacesIt()
     {
-        (SwiftPages pages, _, Window window) = Renderer();
+        (PagePresenter pages, _, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/a", "A")));
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/b", "B")));
@@ -159,7 +159,7 @@ public class ModalStackTests
     [Fact]
     public void APatchAboutASheetKeepsThePage()
     {
-        (SwiftPages pages, _, Window window) = Renderer();
+        (PagePresenter pages, _, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/settings", "Settings")));
         Page sheet = window.Navigation.ModalStack[0];
@@ -180,7 +180,7 @@ public class ModalStackTests
     [Fact]
     public void ARebuiltSheetIsPresentedInPlaceOfTheOldOne()
     {
-        (SwiftPages pages, _, Window window) = Renderer();
+        (PagePresenter pages, _, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/settings", "Settings")));
         Page sheet = window.Navigation.ModalStack[0];
@@ -200,7 +200,7 @@ public class ModalStackTests
     {
         var host = new Host();
         List<string> failures = [];
-        var pages = new SwiftPages(host.Renderer, (message, _) => failures.Add(message));
+        var pages = new PagePresenter(host.Renderer, (message, _) => failures.Add(message));
         var window = new Window { Page = new ContentPage() };
 
         pages.ApplyModals(window.Navigation, window, Host.Parse(
@@ -220,7 +220,7 @@ public class ModalStackTests
     [Fact]
     public async Task AReaderDismissingIsReported()
     {
-        (SwiftPages pages, Host host, Window window) = Renderer();
+        (PagePresenter pages, Host host, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/settings", "Settings")));
 
@@ -239,7 +239,7 @@ public class ModalStackTests
     [Fact]
     public void WhatSwiftAskedForIsNotReportedBack()
     {
-        (SwiftPages pages, Host host, Window window) = Renderer();
+        (PagePresenter pages, Host host, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/settings", "Settings")));
 
@@ -265,7 +265,7 @@ public class ModalStackTests
     [Fact]
     public async Task ADismissalOfWhatSwiftAlreadyClosedSaysNothing()
     {
-        (SwiftPages pages, Host host, Window window) = Renderer();
+        (PagePresenter pages, Host host, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/settings", "Settings")));
         pages.ApplyModals(window.Navigation, window, Stack());
@@ -286,7 +286,7 @@ public class ModalStackTests
     [Fact]
     public async Task ADismissalOverAStackReportsWhatSurvived()
     {
-        (SwiftPages pages, Host host, Window window) = Renderer();
+        (PagePresenter pages, Host host, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/a", "A"), Sheet("1/b", "B")));
 
@@ -302,7 +302,7 @@ public class ModalStackTests
     [Fact]
     public void ForgettingBuildsThemAgain()
     {
-        (SwiftPages pages, _, Window window) = Renderer();
+        (PagePresenter pages, _, Window window) = Renderer();
 
         pages.ApplyModals(window.Navigation, window, Stack(Sheet("0/a", "A")));
         Page sheet = window.Navigation.ModalStack[0];

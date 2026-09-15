@@ -530,7 +530,7 @@ public class RendererTests
         // those by giving up on the interface. What turns this into a
         // whole-tree resync is the target catching it and refusing - see
         // WindowTests.ASparsePatchNamingAChildThisSideLacksIsRefusedRatherThanFatal.
-        SwiftTreeDriftException error = Assert.Throws<SwiftTreeDriftException>(() =>
+        TreeDriftException error = Assert.Throws<TreeDriftException>(() =>
             host.Apply("""
                 {"id":1,"type":"VStack","children":[
                   {"id":"b","type":"Label","props":{"text":"two"}}]}
@@ -1235,7 +1235,7 @@ public class RendererTests
     {
         var host = new Host();
 
-        var shape = (SwiftRoundRectangle)host.Apply($$$"""
+        var shape = (TransformedRoundRectangle)host.Apply($$$"""
             {"id":"r","type":"Rectangle","props":{"fill":[
               {{{Host.Member(HostBrushKind.LinearGradient)}}},[0,0,1,0],0,"#FF0000",1,"#0000FF"
             ]}}
@@ -1753,12 +1753,12 @@ public class RendererTests
         Assert.False(((RefreshView)host.Apply("""{"id":8,"type":"RefreshView","props":{"isRefreshEnabled":false}}""")).IsRefreshEnabled);
         Assert.Equal(3, ((Border)host.Apply("""{"id":9,"type":"Border","props":{"strokeWidth":3}}""")).StrokeThickness);
 
-        var line = (SwiftLine)host.Apply("""{"id":10,"type":"Line","props":{"x1":4,"y1":6}}""");
+        var line = (TransformedLine)host.Apply("""{"id":10,"type":"Line","props":{"x1":4,"y1":6}}""");
 
         Assert.Equal(4, line.X1);
         Assert.Equal(6, line.Y1);
 
-        Assert.Equal(Microsoft.Maui.Controls.Shapes.FillRule.Nonzero, ((SwiftPolyline)host.Apply($$$"""
+        Assert.Equal(Microsoft.Maui.Controls.Shapes.FillRule.Nonzero, ((TransformedPolyline)host.Apply($$$"""
             {"id":11,"type":"Polyline","props":{"fillRule":{{{Host.Member(HostFillRule.Nonzero)}}}}}
             """)).FillRule);
 

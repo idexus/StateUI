@@ -26,11 +26,11 @@ namespace StateUI.Maui.Rendering;
 /// refusal by dropping the generation and asking Swift for the whole tree.
 /// </para>
 /// </remarks>
-internal sealed class SwiftTreeDriftException : Exception
+internal sealed class TreeDriftException : Exception
 {
     /// <summary>Says what the patch named and what was holding it.</summary>
     /// <param name="message">What the tree said, and what this side has.</param>
-    internal SwiftTreeDriftException(string message)
+    internal TreeDriftException(string message)
         : base(message)
     {
     }

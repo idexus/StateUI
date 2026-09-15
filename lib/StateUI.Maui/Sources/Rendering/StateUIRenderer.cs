@@ -63,7 +63,7 @@ namespace StateUI.Maui.Rendering;
 /// <para>
 /// Adding a control means a struct and a <c>NodeType</c> token on the Swift
 /// side, the matching <see cref="HostNodeType"/> member, a case here and an arm
-/// in <c>SwiftStyles.Property</c>. The wire itself does not change.
+/// in <c>PropertyTable.Property</c>. The wire itself does not change.
 /// </para>
 /// </remarks>
 public sealed class StateUIRenderer
@@ -530,7 +530,7 @@ public sealed class StateUIRenderer
     /// re-entrantly and Android threw <c>No view found for id 0xa ... for
     /// fragment</c>, which names nothing that leads back here. Measured on a
     /// device, opening a flyout; every report an arrangement makes is deferred
-    /// behind this guard - see SwiftPages.Announce.
+    /// behind this guard - see PagePresenter.Announce.
     /// </para>
     /// </remarks>
     internal Suppressed Applying() => new(this);
@@ -791,7 +791,7 @@ public sealed class StateUIRenderer
 
         foreach (HostPropKey key in cleared)
         {
-            if (SwiftStyles.Property(node.Type, node.TypeName, key, target) is BindableProperty property)
+            if (PropertyTable.Property(node.Type, node.TypeName, key, target) is BindableProperty property)
             {
                 // A PROPERTY THE TREE STOPPED DESCRIBING GOES BACK TO WHOEVER
                 // ELSE HAS IT, and only to MAUI's default where nobody does -
@@ -805,7 +805,7 @@ public sealed class StateUIRenderer
                 target.ClearValue(property);
 
                 // One background in StateUI, two properties in MAUI - see
-                // SwiftValues.SetBackground - and a background let go of is both.
+                // Values.SetBackground - and a background let go of is both.
                 if (key.Prop == HostProp.Background)
                 {
                     target.ClearValue(VisualElement.BackgroundProperty);
@@ -822,7 +822,7 @@ public sealed class StateUIRenderer
                     $"'{node.TypeName}' stopped describing " +
                     $"'{key.Name ?? TokenNames<HostProp>.Spelling(key.Prop)}' and " +
                     "nothing here knows what to put back, so the old value stands.\n\n" +
-                    "Add the property to that control's arm in SwiftStyles, or name it in " +
+                    "Add the property to that control's arm in PropertyTable, or name it in " +
                     "Prop.notCleared on the Swift side so the control is built again instead.");
             }
         }
@@ -1525,7 +1525,7 @@ public sealed class StateUIRenderer
 
     /// <summary>What a drag carries, kept on the recognizer that starts it.</summary>
     private static readonly BindableProperty DragTextProperty = BindableProperty.CreateAttached(
-        "SwiftDragText", typeof(string), typeof(StateUIRenderer), null);
+        "StateUIDragText", typeof(string), typeof(StateUIRenderer), null);
 
     /// <summary>
     /// Where a pointer is, in the view's own coordinates - one pair, or
@@ -2330,7 +2330,7 @@ public sealed class StateUIRenderer
     /// <summary>
     /// An Image. Its source is one file, by the name MAUI gives it once built -
     /// the differ has already picked the half of a picture drawn per theme -
-    /// and goes through <see cref="SwiftValues.SetImageSource"/> like every
+    /// and goes through <see cref="Values.SetImageSource"/> like every
     /// picture.
     /// </summary>
     private Image ReconcileImage(HostPatch node, View? existing)
@@ -2947,7 +2947,7 @@ public sealed class StateUIRenderer
         // built as a subclass whose GetPath() runs it through this matrix.
         if (node.GetGeometryTransform(HostProp.RenderTransform) is Matrix3x2 turned)
         {
-            shape.SetValue(SwiftShapes.GeometryTransformProperty, turned);
+            shape.SetValue(ShapeTransform.GeometryTransformProperty, turned);
         }
     }
 
@@ -2955,11 +2955,11 @@ public sealed class StateUIRenderer
     /// A rectangle, whose corners round by one radius or by four - MAUI's
     /// RoundRectangle, which a radius of nought draws square.
     /// </summary>
-    private SwiftRoundRectangle ReconcileRectangle(HostPatch node, View? existing)
+    private TransformedRoundRectangle ReconcileRectangle(HostPatch node, View? existing)
     {
-        if (Reuse(existing, node) is not SwiftRoundRectangle rectangle)
+        if (Reuse(existing, node) is not TransformedRoundRectangle rectangle)
         {
-            rectangle = new SwiftRoundRectangle();
+            rectangle = new TransformedRoundRectangle();
         }
 
         if (node.GetCornerRadius(HostProp.CornerRadius) is CornerRadius radius) { rectangle.CornerRadius = radius; }
@@ -2971,11 +2971,11 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>An oval filling the room it is given.</summary>
-    private SwiftEllipse ReconcileEllipse(HostPatch node, View? existing)
+    private TransformedEllipse ReconcileEllipse(HostPatch node, View? existing)
     {
-        if (Reuse(existing, node) is not SwiftEllipse ellipse)
+        if (Reuse(existing, node) is not TransformedEllipse ellipse)
         {
-            ellipse = new SwiftEllipse();
+            ellipse = new TransformedEllipse();
         }
 
         ApplyShape(node, ellipse);
@@ -2985,11 +2985,11 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A straight line between two points.</summary>
-    private SwiftLine ReconcileLine(HostPatch node, View? existing)
+    private TransformedLine ReconcileLine(HostPatch node, View? existing)
     {
-        if (Reuse(existing, node) is not SwiftLine line)
+        if (Reuse(existing, node) is not TransformedLine line)
         {
-            line = new SwiftLine();
+            line = new TransformedLine();
         }
 
         if (node.GetNumber(HostProp.X1) is double x1) { line.X1 = x1; }
@@ -3004,11 +3004,11 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>An outline written in SVG path syntax.</summary>
-    private SwiftPath ReconcilePath(HostPatch node, View? existing)
+    private TransformedPath ReconcilePath(HostPatch node, View? existing)
     {
-        if (Reuse(existing, node) is not SwiftPath path)
+        if (Reuse(existing, node) is not TransformedPath path)
         {
-            path = new SwiftPath();
+            path = new TransformedPath();
         }
 
         if (node.GetGeometry(HostProp.Data) is Geometry data) { path.Data = data; }
@@ -3020,11 +3020,11 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A closed outline through a list of points.</summary>
-    private SwiftPolygon ReconcilePolygon(HostPatch node, View? existing)
+    private TransformedPolygon ReconcilePolygon(HostPatch node, View? existing)
     {
-        if (Reuse(existing, node) is not SwiftPolygon polygon)
+        if (Reuse(existing, node) is not TransformedPolygon polygon)
         {
-            polygon = new SwiftPolygon();
+            polygon = new TransformedPolygon();
         }
 
         if (node.GetPoints(HostProp.Points) is PointCollection points) { polygon.Points = points; }
@@ -3037,11 +3037,11 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>The same list, left open.</summary>
-    private SwiftPolyline ReconcilePolyline(HostPatch node, View? existing)
+    private TransformedPolyline ReconcilePolyline(HostPatch node, View? existing)
     {
-        if (Reuse(existing, node) is not SwiftPolyline polyline)
+        if (Reuse(existing, node) is not TransformedPolyline polyline)
         {
-            polyline = new SwiftPolyline();
+            polyline = new TransformedPolyline();
         }
 
         if (node.GetPoints(HostProp.Points) is PointCollection points) { polyline.Points = points; }
@@ -3813,7 +3813,7 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// A WebView. Its source is a URL or HTML written in place - see
-    /// <see cref="SwiftValues.GetWebViewSource"/> - and CanGoBack and
+    /// <see cref="Values.GetWebViewSource"/> - and CanGoBack and
     /// CanGoForward are reported through the property watch, MAUI giving
     /// neither an event.
     /// </summary>
@@ -4116,7 +4116,7 @@ public sealed class StateUIRenderer
     /// <remarks>
     /// MAUI has four PROPERTIES rather than an enum, so there is nothing to
     /// translate onto and the mirror itself is what the side arrives as - see
-    /// <see cref="SwiftValues.GetSwipeSide"/>. It is a MEMBER and not a string:
+    /// <see cref="Values.GetSwipeSide"/>. It is a MEMBER and not a string:
     /// reading it as one answers null for every message and takes the
     /// <see cref="Held"/> branch instead, which is a wrong collection rather
     /// than a failure.
@@ -4346,7 +4346,7 @@ public sealed class StateUIRenderer
     /// Every kept list of children goes through here; a holder of ONE view (a
     /// Border, a RefreshView, a SwipeView's content, a registered container)
     /// reconciles that child directly, and the page arrangements keep their
-    /// own order in <see cref="SwiftPages"/>.
+    /// own order in <see cref="PagePresenter"/>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -4499,8 +4499,8 @@ public sealed class StateUIRenderer
                 // Its own exception type, and that is the load-bearing part:
                 // an InvalidDataException here reads as malformed bytes, and
                 // the session answers those by giving up on the interface
-                // instead of asking for it again. See SwiftTreeDriftException.
-                throw new SwiftTreeDriftException(
+                // instead of asking for it again. See TreeDriftException.
+                throw new TreeDriftException(
                     $"a patch names child '{child.Key}' that '{node.Key}' does not have");
             }
             else if (!ReferenceEquals(item, match))
@@ -5182,7 +5182,7 @@ public sealed class StateUIRenderer
 
         VisualStateGroupList groups = now.Count == 0
             ? []
-            : SwiftStyles.BuildStates(node.Type, node.TypeName, now, described.Travelling);
+            : VisualStates.BuildStates(node.Type, node.TypeName, now, described.Travelling);
 
         // Asked again now that the states have been read: whether anything
         // travels is only known once they have.
@@ -5211,7 +5211,7 @@ public sealed class StateUIRenderer
         {
             foreach ((HostPropKey key, BindableProperty property, object _) in state)
             {
-                if (SwiftStyles.Value(property, node, key) is not null)
+                if (PropertyTable.Value(property, node, key) is not null)
                 {
                     return true;
                 }
@@ -5229,7 +5229,7 @@ public sealed class StateUIRenderer
     /// A visual state is applied by the platform, outside the wire and outside
     /// anything this side describes - a button is pressed and MAUI assigns. So
     /// the values with a half-way are lifted out of the state (see
-    /// <c>SwiftStyles.AddSetters</c>) and carried here instead: the control
+    /// <c>VisualStates.AddSetters</c>) and carried here instead: the control
     /// announces the state it entered, and every value any state touches is
     /// sent either to what that state asks for or back to what the TREE says.
     /// </para>
@@ -5256,7 +5256,7 @@ public sealed class StateUIRenderer
         {
             foreach ((HostPropKey key, BindableProperty property, object _) in state)
             {
-                if (SwiftStyles.Value(property, node, key) is object resting)
+                if (PropertyTable.Value(property, node, key) is object resting)
                 {
                     described.Resting[property] = resting;
                 }
@@ -5561,7 +5561,7 @@ public sealed class StateUIRenderer
     /// Written by a state as it is entered, and read for nothing else.
     /// </summary>
     private static readonly BindableProperty StateProperty = BindableProperty.CreateAttached(
-        "SwiftVisualState",
+        "StateUIVisualState",
         typeof(string),
         typeof(StateUIRenderer),
         defaultValue: null);
@@ -5652,7 +5652,7 @@ public sealed class StateUIRenderer
         /// A setter is an assignment, which is the one thing in this library
         /// that cannot be animated from the outside - so a value with a
         /// half-way is taken out of the state and carried by the walker
-        /// instead. See <c>SwiftStyles.AddSetters</c>.
+        /// instead. See <c>VisualStates.AddSetters</c>.
         /// </remarks>
         public Dictionary<string, List<(HostPropKey Key, BindableProperty Property, object Value)>> Travelling
         { get; } = [];
@@ -6021,7 +6021,7 @@ public sealed class StateUIRenderer
             {
                 HostPropKey key = HostPropKey.Own(name);
 
-                if (SwiftStyles.Value(property, node, key) is object value)
+                if (PropertyTable.Value(property, node, key) is object value)
                 {
                     view.SetValue(property, value);
                 }

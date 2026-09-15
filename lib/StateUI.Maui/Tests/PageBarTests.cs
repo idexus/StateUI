@@ -165,7 +165,7 @@ public class PageBarTests
             """);
 
         // The renderer writes the deprecated platform-specific on purpose -
-        // the reason is beside the write in SwiftPages - so the read here is
+        // the reason is beside the write in PagePresenter - so the read here is
         // the same deliberate exception.
 #pragma warning disable CS0618
         Assert.False((bool)page.GetValue(iOSPage.UseSafeAreaProperty));

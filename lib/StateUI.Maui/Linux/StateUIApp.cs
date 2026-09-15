@@ -35,10 +35,10 @@ public static class StateUIApp
         where TApp : class, IApplication =>
         LinuxHost.Use<TApp>(builder)
             // The six shapes are this library's own controls over MAUI's
-            // sealed originals - see Rendering/SwiftShapes.cs - and on this
+            // sealed originals - see Rendering/ShapeTransform.cs - and on this
             // platform the base ShapeViewHandler is the GTK backend's, so the
             // one registration serves here too.
-            .ConfigureMauiHandlers(Rendering.SwiftShapes.AddHandlers)
+            .ConfigureMauiHandlers(Rendering.ShapeTransform.AddHandlers)
             // And the measure they are drawn at, which has to be told after
             // that registration to be the one the registry answers with.
             .Then(LinuxMeasures.Shapes);

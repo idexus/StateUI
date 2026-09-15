@@ -146,9 +146,9 @@ public class StateUIControlsTests
 
         Assert.Same(
             Gauge.LevelProperty,
-            SwiftStyles.Property(HostNodeType.None, "Test.Dial", HostPropKey.Own("level")));
+            PropertyTable.Property(HostNodeType.None, "Test.Dial", HostPropKey.Own("level")));
 
-        Assert.Null(SwiftStyles.Property(HostNodeType.None, "Test.Dial", HostPropKey.Own("volume")));
+        Assert.Null(PropertyTable.Property(HostNodeType.None, "Test.Dial", HostPropKey.Own("volume")));
     }
 
     /// <summary>

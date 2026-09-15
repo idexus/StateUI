@@ -42,7 +42,7 @@ namespace StateUI.Maui.Rendering;
 /// </para>
 /// </remarks>
 /// <param name="commands">The records, in the order they are drawn in.</param>
-internal sealed class SwiftDrawable(HostValue[] commands) : IDrawable
+internal sealed class ViewDrawing(HostValue[] commands) : IDrawable
 {
     /// <summary>
     /// Which member of ICanvas a record calls, as the number it travels as.

@@ -44,7 +44,7 @@ public class WireEnumTests
     {
         // The drawing's command list belongs to the reader that replays it,
         // and is nested there for the same reason it is nested in Swift.
-        ["DrawCommand.Kind"] = typeof(StateUI.Maui.Rendering.SwiftDrawable).GetNestedType(
+        ["DrawCommand.Kind"] = typeof(StateUI.Maui.Rendering.ViewDrawing).GetNestedType(
             "Kind", BindingFlags.NonPublic | BindingFlags.Public)!,
 
         // A motion's law is nested in the motion that crosses with it, as it

@@ -18,10 +18,10 @@ namespace StateUI.Maui.Tests;
 public class NavigationPageTests
 {
     /// <summary>A page renderer whose failures fail the test.</summary>
-    private static (SwiftPages Pages, Host Host) Renderer()
+    private static (PagePresenter Pages, Host Host) Renderer()
     {
         var host = new Host();
-        var pages = new SwiftPages(
+        var pages = new PagePresenter(
             host.Renderer,
             (message, exception) => Assert.Fail($"{message}\n{exception}"));
 
@@ -49,8 +49,8 @@ public class NavigationPageTests
         + $"\"children\":[{string.Join(",", pages)}]}}";
 
     /// <summary>How many containers this renderer is still holding, by kind.</summary>
-    private static int Held(SwiftPages pages, string field) =>
-        ((System.Collections.ICollection)typeof(SwiftPages)
+    private static int Held(PagePresenter pages, string field) =>
+        ((System.Collections.ICollection)typeof(PagePresenter)
             .GetField(field, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
             .GetValue(pages)!).Count;
 
@@ -68,7 +68,7 @@ public class NavigationPageTests
     [Fact]
     public void AContainerPoppedOffAStackIsLetGoOf()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         Page stack = pages.Render(
             null,
@@ -95,7 +95,7 @@ public class NavigationPageTests
     [Fact]
     public void AWatchedFrameListensNoHigherThanItsPage()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(pages.Render(
             null,
@@ -238,7 +238,7 @@ public class NavigationPageTests
     [Fact]
     public void TheRootIsTheFirstChild()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Stack(PageAt(2, "Home")))));
@@ -253,7 +253,7 @@ public class NavigationPageTests
     [Fact]
     public void AStackArrivesWholeAndIsBuiltWhole()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(
@@ -270,7 +270,7 @@ public class NavigationPageTests
     [Fact]
     public void ALongerArrangementPushesAndKeepsWhatWasThere()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Stack(PageAt(2, "Home")))));
@@ -287,7 +287,7 @@ public class NavigationPageTests
     [Fact]
     public void AShorterArrangementPopsAsFarAsItSays()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(
@@ -313,7 +313,7 @@ public class NavigationPageTests
     [Fact]
     public void ThePageTheReaderIsOnIsTheOneThatIsPopped()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(
@@ -343,7 +343,7 @@ public class NavigationPageTests
     [Fact]
     public void APatchThatIsNotAnArrangementLeavesTheStackAlone()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Stack(PageAt(2, "Home"), PageAt(3, "Detail")))));
@@ -372,7 +372,7 @@ public class NavigationPageTests
     [Fact]
     public void ARebuiltRootIsSwappedOntoTheStack()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Stack(PageAt(2, "Home")))));
@@ -392,7 +392,7 @@ public class NavigationPageTests
     [Fact]
     public void ARebuiltPageOnTopIsSwappedOntoTheStack()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Stack(PageAt(2, "Home"), PageAt(3, "Detail")))));
@@ -421,7 +421,7 @@ public class NavigationPageTests
     [Fact]
     public void TwoStacksDoNotShareARootPage()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         string outer =
             "{\"id\":1,\"type\":\"NavigationStack\",\"arranged\":true,\"children\":["
@@ -452,7 +452,7 @@ public class NavigationPageTests
     {
         var host = new Host();
         List<string> failures = [];
-        var pages = new SwiftPages(host.Renderer, (message, _) => failures.Add(message));
+        var pages = new PagePresenter(host.Renderer, (message, _) => failures.Add(message));
 
         pages.Render(null, Host.Parse(
             "{\"id\":1,\"type\":\"NavigationStack\",\"arranged\":true,\"children\":["
@@ -469,7 +469,7 @@ public class NavigationPageTests
     {
         var host = new Host();
         List<string> failures = [];
-        var pages = new SwiftPages(host.Renderer, (message, _) => failures.Add(message));
+        var pages = new PagePresenter(host.Renderer, (message, _) => failures.Add(message));
 
         pages.Render(null, Host.Parse("{\"id\":1,\"type\":\"NavigationStack\"}"));
 
@@ -486,7 +486,7 @@ public class NavigationPageTests
     [Fact]
     public void ALaterPatchRepaintsTheBar()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(
@@ -511,7 +511,7 @@ public class NavigationPageTests
     [Fact]
     public void ForgettingBuildsThePagesAgain()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Stack(PageAt(2, "Home")))));
@@ -535,12 +535,12 @@ public class NavigationPageTests
     /// Under <c>fixtures/pages/</c> rather than <c>fixtures/controls/</c>: a
     /// fixture in <c>controls/</c> is walked by <see cref="StyleTests"/>, which
     /// insists every property in it can be set by a Style - and a page's cannot,
-    /// there being no page arm in <c>SwiftStyles</c> at all.
+    /// there being no page arm in <c>PropertyTable</c> at all.
     /// </remarks>
     [Fact]
     public void TheFixtureBuildsTheWholeStack()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Fixtures.ReadBytes("pages/NavigationStack.bin"))));
@@ -598,7 +598,7 @@ public class NavigationPageTests
                 continue;
             }
 
-            (SwiftPages pages, _) = Renderer();
+            (PagePresenter pages, _) = Renderer();
 
             Assert.IsAssignableFrom<Page>(pages.Render(null, root));
         }
@@ -619,7 +619,7 @@ public class NavigationPageTests
     [Fact]
     public async Task APopTheReaderMadeIsReported()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Stack(PageAt(2, "Home"), PageAt(3, "Detail")))));
@@ -641,7 +641,7 @@ public class NavigationPageTests
     [Fact]
     public void APopSwiftAskedForIsNotReportedBack()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Stack(PageAt(2, "Home"), PageAt(3, "Detail")))));
@@ -668,7 +668,7 @@ public class NavigationPageTests
     [Fact]
     public async Task APopToTheRootEndsUpSayingZero()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(
@@ -704,7 +704,7 @@ public class NavigationPageTests
     [Fact]
     public async Task APopTheReaderMadeIsReportedATurnLater()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Stack(PageAt(2, "Home"), PageAt(3, "Detail")))));
@@ -740,7 +740,7 @@ public class NavigationPageTests
     [Fact]
     public void APopSwiftAskedForIsNotReportedBackATurnLaterEither()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Stack(PageAt(2, "Home"), PageAt(3, "Detail")))));
@@ -775,7 +775,7 @@ public class NavigationPageTests
     [Fact]
     public async Task APopThatLandsInsideAMessageIsReportedAfterIt()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(Stack(PageAt(2, "Home"), PageAt(3, "Detail")))));
@@ -807,7 +807,7 @@ public class NavigationPageTests
     [Fact]
     public async Task AMultiLevelPopSaysOnlyTheDepthThatSurvived()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var navigation = Assert.IsType<NavigationPage>(
             pages.Render(null, Host.Parse(

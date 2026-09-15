@@ -33,20 +33,20 @@ public partial class RuntimeNamesTests
     }
 
     /// <summary>
-    /// A mirror of what crosses the wire takes the typed patch's name -
-    /// <c>Host</c> and the Swift type's own - and the codec and its helpers the
-    /// Wire element's, never the name of the language on the other side.
+    /// A type of the runtime is named for what it is - a wire mirror for the
+    /// typed patch's <c>Host</c> type, every other type for the element it is -
+    /// and never for the language on the other side of the wire.
     /// </summary>
     [Fact]
-    public void TheWireMirrorsCarryTheTypedPatchsNames()
+    public void NoTypeIsNamedForTheLanguageAcrossTheWire()
     {
-        List<string> found = [.. Declarations(Path.Combine("Sources", "Protocol"))
+        List<string> found = [.. Declarations("Sources", "Linux")
             .Where(declared => declared.Type.StartsWith("Swift", StringComparison.Ordinal))
             .Select(declared => declared.Where)];
 
         Assert.True(
             found.Count == 0,
-            "a wire mirror takes the typed patch's Host name: " + string.Join(", ", found));
+            "a runtime type is named for what it is, not for Swift: " + string.Join(", ", found));
     }
 
     /// <summary>Every type declared under the given folders of this host's project.</summary>

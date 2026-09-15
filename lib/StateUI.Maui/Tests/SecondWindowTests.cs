@@ -26,7 +26,7 @@ public class SecondWindowTests
         + "Please access Shell via the Windows property on Gallery.App.";
 
     /// <summary>A page the renderer built, listening for the moves it was given ids for.</summary>
-    private static ContentPage Page(SwiftPages pages, int id, string title) =>
+    private static ContentPage Page(PagePresenter pages, int id, string title) =>
         Assert.IsType<ContentPage>(pages.Render(null, Host.Parse(
             $"{{\"id\":{id},\"type\":\"Page\",\"props\":{{\"title\":\"{title}\"}},"
             + $"\"events\":{{\"navigatedTo\":{id + 50}}},\"arranged\":true,\"children\":"
@@ -41,7 +41,7 @@ public class SecondWindowTests
     public async Task APopMauiCouldNotFinishIsFinishedHere()
     {
         var host = new Host();
-        var pages = new SwiftPages(host.Renderer, (message, exception) => Assert.Fail(message));
+        var pages = new PagePresenter(host.Renderer, (message, exception) => Assert.Fail(message));
         ContentPage leaving = Page(pages, 3, "One");
         ContentPage uncovered = Page(pages, 2, "Home");
 
@@ -61,7 +61,7 @@ public class SecondWindowTests
     public async Task AnyOtherFailureOfAPopStillFails()
     {
         var host = new Host();
-        var pages = new SwiftPages(host.Renderer, (message, exception) => Assert.Fail(message));
+        var pages = new PagePresenter(host.Renderer, (message, exception) => Assert.Fail(message));
         ContentPage leaving = Page(pages, 3, "One");
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => pages.Popped(

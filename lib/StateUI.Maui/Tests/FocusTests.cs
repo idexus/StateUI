@@ -9,7 +9,7 @@
 // unfocusing itself goes through a platform handler, and there are none in a
 // headless test, so a view told to give up the focus keeps IsFocused true. The
 // same limit every renderer test has, and the reason these read
-// SwiftFocus.Holding rather than the state afterwards.
+// Focus.Holding rather than the state afterwards.
 //
 // What the decision has to get right, each of them a way a simpler walk gets it
 // wrong:
@@ -60,8 +60,8 @@ public class FocusTests
     {
         (ContentPage page, Entry field) = PageWithAField(focused: true);
 
-        Assert.Same(field, SwiftFocus.Holding(page));
-        Assert.True(SwiftFocus.Hide(page));
+        Assert.Same(field, Focus.Holding(page));
+        Assert.True(Focus.Hide(page));
     }
 
     [Fact]
@@ -69,15 +69,15 @@ public class FocusTests
     {
         (ContentPage page, _) = PageWithAField(focused: false);
 
-        Assert.Null(SwiftFocus.Holding(page));
-        Assert.False(SwiftFocus.Hide(page), "nothing was focused, and that is not a failure");
+        Assert.Null(Focus.Holding(page));
+        Assert.False(Focus.Hide(page), "nothing was focused, and that is not a failure");
     }
 
     [Fact]
     public void AskingNoPageAtAllAnswersTheSameWay()
     {
-        Assert.Null(SwiftFocus.Holding(null));
-        Assert.False(SwiftFocus.Hide(null));
+        Assert.Null(Focus.Holding(null));
+        Assert.False(Focus.Hide(null));
     }
 
     // ---- Which page is showing ---------------------------------------------
@@ -106,10 +106,10 @@ public class FocusTests
             Detail = tabs,
         };
 
-        Assert.Same(page, SwiftFocus.Showing(flyout));
-        Assert.Same(page, SwiftFocus.Showing(tabs));
-        Assert.Same(page, SwiftFocus.Showing(stack));
-        Assert.Same(page, SwiftFocus.Showing(page));
+        Assert.Same(page, Focus.Showing(flyout));
+        Assert.Same(page, Focus.Showing(tabs));
+        Assert.Same(page, Focus.Showing(stack));
+        Assert.Same(page, Focus.Showing(page));
     }
 
     /// <summary>
@@ -127,6 +127,6 @@ public class FocusTests
         await stack.Navigation.PushModalAsync(sheet);
 
         Assert.Contains(sheet, stack.Navigation.ModalStack);
-        Assert.Same(sheet, SwiftFocus.Showing(stack));
+        Assert.Same(sheet, Focus.Showing(stack));
     }
 }

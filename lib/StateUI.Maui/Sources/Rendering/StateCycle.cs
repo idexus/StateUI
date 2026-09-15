@@ -1368,7 +1368,7 @@ internal sealed class StateAttachment
         if (type == typeof(DateTime) || type == typeof(TimeSpan))
         {
             // THREE LANES MAKE A DAY OR A TIME, composed the way the described
-            // value is (SwiftValues.GetDate / GetTime) and refused the same
+            // value is (Values.GetDate / GetTime) and refused the same
             // way: a day that does not exist sets nothing, so the picker goes
             // on showing the one it had.
             if (lanes.Length < 3)
@@ -1399,7 +1399,7 @@ internal sealed class StateAttachment
             // through, handed the member number the way the wire carries one.
             // So a channel understands every member the tree can describe,
             // and a member added later is understood the day it arrives.
-            boxed = SwiftStyles.Value(Property, Said(Key, (int)Math.Round(value)), Key);
+            boxed = PropertyTable.Value(Property, Said(Key, (int)Math.Round(value)), Key);
 
             if (boxed is null)
             {
@@ -1586,7 +1586,7 @@ internal sealed class StateAttachment
             return view is ScrollView ? new StateAttachment(view, entry, null, MotionValue.Offset) : null;
         }
 
-        if (SwiftStyles.Property(type, typeName, entry.Key) is not BindableProperty property)
+        if (PropertyTable.Property(type, typeName, entry.Key) is not BindableProperty property)
         {
             return null;
         }

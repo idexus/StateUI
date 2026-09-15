@@ -1062,7 +1062,7 @@ internal sealed class StateUISession
             "not know.\n" +
             "That control is on screen while the element behind it has left the " +
             "tree, so it will go on doing nothing. Usually something released a " +
-            "page too early - see SwiftPages, which keeps a page for as long as the arrangement it is on names it.\n" +
+            "page too early - see PagePresenter, which keeps a page for as long as the arrangement it is on names it.\n" +
             "Each id is reported once.");
     }
 
@@ -1383,7 +1383,7 @@ internal sealed class StateUISession
             {
                 case HostAct.Focus:
                 case HostAct.Unfocus:
-                    (result, failure) = Focus(call);
+                    (result, failure) = Aim(call);
                     break;
 
                 case HostAct.GoBack:
@@ -1398,10 +1398,10 @@ internal sealed class StateUISession
                     break;
 
                 case HostAct.HideOnScreenKeyboard:
-                    // Not a MAUI method - see SwiftFocus for why there is none
+                    // Not a MAUI method - see Focus for why there is none
                     // to call. The page is asked which of its views has the
                     // focus, because the Swift side cannot know.
-                    result = [HostValue.Of(SwiftFocus.Hide(Showing()))];
+                    result = [HostValue.Of(Focus.Hide(Showing()))];
                     break;
 
                 case HostAct.Alert:
@@ -1687,7 +1687,7 @@ internal sealed class StateUISession
                 + "in meters, and one of them is absent or not a number");
         }
 
-        map.MoveToRegion(SwiftValues.MapSpan(latitude, longitude, radius));
+        map.MoveToRegion(Values.MapSpan(latitude, longitude, radius));
 
         return ([], null);
     }
@@ -1755,7 +1755,7 @@ internal sealed class StateUISession
     /// result.
     /// </remarks>
     /// <returns>What to report back, and why it could not be done.</returns>
-    private (HostValue[] Result, string? Failure) Focus(HostActCall call)
+    private (HostValue[] Result, string? Failure) Aim(HostActCall call)
     {
         if (TargetOf(call) is not { } target)
         {
@@ -1806,7 +1806,7 @@ internal sealed class StateUISession
     /// <returns>What to report back, and why it could not be done.</returns>
     private async Task<(HostValue[] Result, string? Failure)> Dialog(HostActCall call)
     {
-        if (SwiftFocus.Showing(Showing()) is not Page page)
+        if (Focus.Showing(Showing()) is not Page page)
         {
             return ([], "there is no page to show a dialog on");
         }
@@ -1864,7 +1864,7 @@ internal sealed class StateUISession
                     // sentinel of ours: the wire says the length is not there
                     // and this is what MAUI wants to hear for that.
                     call.GetInt(5) ?? -1,
-                    SwiftValues.KeyboardOf(call.GetEnumeration(6)) ?? Keyboard.Default,
+                    Values.KeyboardOf(call.GetEnumeration(6)) ?? Keyboard.Default,
                     call.GetString(7) ?? "");
                 return (Chosen(typed), null);
         }
@@ -1890,7 +1890,7 @@ internal sealed class StateUISession
     /// <remarks>
     /// The window's page - which is an ARRANGEMENT, so what the reader is
     /// actually looking at is found by descending through it; that is
-    /// <see cref="SwiftFocus.Showing"/>'s job, and every caller here goes
+    /// <see cref="Focus.Showing"/>'s job, and every caller here goes
     /// through it.
     /// <para>
     /// The window the reader is WORKING IN, where a desktop application has

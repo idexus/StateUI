@@ -36,7 +36,7 @@ namespace StateUI.Maui.Rendering;
 /// and a phone has no window to size.
 /// </para>
 /// </remarks>
-internal static class SwiftWindowSize
+internal static class WindowSize
 {
 #if MACCATALYST
     /// <summary>
@@ -44,9 +44,9 @@ internal static class SwiftWindowSize
     /// Attached to the window, so it lives exactly as long as the window does.
     /// </summary>
     private static readonly BindableProperty AskedProperty = BindableProperty.CreateAttached(
-        "SwiftWindowSizeAsked",
+        "StateUIWindowSizeAsked",
         typeof(bool),
-        typeof(SwiftWindowSize),
+        typeof(WindowSize),
         defaultValue: false);
 #endif
 

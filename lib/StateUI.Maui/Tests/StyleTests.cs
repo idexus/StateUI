@@ -10,7 +10,7 @@
 // only thing that proves a name was resolved rather than dropped.
 //
 // What DID stay is the property table, because a visual state still needs it: a
-// Setter names its property as an object, and a name SwiftStyles does not know
+// Setter names its property as an object, and a name PropertyTable does not know
 // produces no setter at all - the state would be entered and simply not do that
 // thing. So the last test here reads every control fixture and insists that
 // each property a control accepts is one a state can set, which is also what
@@ -667,7 +667,7 @@ public class StyleTests
         // walker instead, so what is left in the state is the announcement the
         // walker listens for - and nothing else. See StateUIRenderer.Settle.
         Assert.Equal(
-            ["SwiftVisualState"],
+            ["StateUIVisualState"],
             groups[0].States[1].Setters.Select(setter => setter.Property.PropertyName));
 
         label.IsEnabled = false;
@@ -796,7 +796,7 @@ public class StyleTests
         // Normal changes nothing of its own; what it carries is the
         // announcement, which is how the walker hears that a state was left.
         Assert.Equal(
-            ["SwiftVisualState"],
+            ["StateUIVisualState"],
             groups[0].States[0].Setters.Select(setter => setter.Property.PropertyName));
 
         // The fixture's button arrives disabled, so it is drawn in that state
@@ -945,7 +945,7 @@ public class StyleTests
         Assert.True(checkedProperties > 20, $"only {checkedProperties} properties were read");
 
         Assert.True(missing.Count == 0,
-            "SwiftStyles has no BindableProperty for " + string.Join(", ", missing) +
+            "PropertyTable has no BindableProperty for " + string.Join(", ", missing) +
             ".\n\nA property with none is one the renderer cannot CLEAR when the tree " +
             "stops describing it, so the old value would stand on a page the author no " +
             "longer wrote it on. Add it to the arm for that type, or name it in " +
@@ -964,7 +964,7 @@ public class StyleTests
 
                 checkedProperties++;
 
-                if (SwiftStyles.Property(node.Type, node.TypeName, prop) is null)
+                if (PropertyTable.Property(node.Type, node.TypeName, prop) is null)
                 {
                     missing.Add($"{node.TypeName}.{key}");
                 }
@@ -993,7 +993,7 @@ public class StyleTests
         Assert.True(checkedProperties > 100, $"only {checkedProperties} properties were read");
 
         Assert.True(missing.Count == 0,
-            "SwiftStyles has no BindableProperty for " + string.Join(", ", missing) +
+            "PropertyTable has no BindableProperty for " + string.Join(", ", missing) +
             ".\n\nA property no BindableProperty is known for is one a visual " +
             "state silently will not set, and one an animation cannot walk. Add " +
             "it to the arm for that control, beside the same name in the renderer.");
@@ -1016,12 +1016,12 @@ public class StyleTests
 
                 checkedProperties++;
 
-                if (SwiftStyles.Property(node.Type, node.TypeName, prop)
+                if (PropertyTable.Property(node.Type, node.TypeName, prop)
                     is not BindableProperty property)
                 {
                     missing.Add($"{node.TypeName}.{key}");
                 }
-                else if (SwiftStyles.Value(property, node, prop) is null)
+                else if (PropertyTable.Value(property, node, prop) is null)
                 {
                     // The name resolved and the VALUE did not - the hole the
                     // nullable DatePicker.Date sat in: the setter is built

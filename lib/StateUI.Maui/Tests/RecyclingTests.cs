@@ -287,7 +287,7 @@ public class RecyclingTests
         var layout = (AbsoluteLayout)host.Apply(Run(("1", 7), ("2", 7)));
         host.Apply(Run(("2", 7)));
 
-        Assert.Throws<SwiftTreeDriftException>(() => host.Apply("""
+        Assert.Throws<TreeDriftException>(() => host.Apply("""
             {"id":1,"type":"AbsoluteLayout","children":[
               {"id":"1","type":"HStack","children":[
                 {"id":"1.a","type":"Label","props":{"text":"back"}}]}]}

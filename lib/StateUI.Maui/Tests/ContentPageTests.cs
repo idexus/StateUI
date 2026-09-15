@@ -17,10 +17,10 @@ namespace StateUI.Maui.Tests;
 public class ContentPageTests
 {
     /// <summary>A page renderer whose failures fail the test.</summary>
-    private static (SwiftPages Pages, Host Host) Renderer()
+    private static (PagePresenter Pages, Host Host) Renderer()
     {
         var host = new Host();
-        var pages = new SwiftPages(
+        var pages = new PagePresenter(
             host.Renderer,
             (message, exception) => Assert.Fail($"{message}\n{exception}"));
 
@@ -30,7 +30,7 @@ public class ContentPageTests
     /// <summary>The page the Swift fixture describes, built.</summary>
     private static (ContentPage Page, Host Host) Fixture()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var page = Assert.IsType<ContentPage>(
             pages.Render(null, Host.Parse(Fixtures.ReadBytes("pages/Page.bin"))));
@@ -75,7 +75,7 @@ public class ContentPageTests
     [Fact]
     public void APageThatStopsAnsweringItsTitleHasItClearedAndKeepsItsContent()
     {
-        (SwiftPages pages, _) = Renderer();
+        (PagePresenter pages, _) = Renderer();
 
         var page = Assert.IsType<ContentPage>(pages.Render(null, Host.Parse("""
             {"id":1,"type":"Page","props":{"title":"Named"},
@@ -144,7 +144,7 @@ public class ContentPageTests
     [Fact]
     public void AnArrivalReportsToTheHandlerTheNodeNamed()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var page = Assert.IsType<ContentPage>(pages.Render(
             null,
@@ -176,7 +176,7 @@ public class ContentPageTests
     [Fact]
     public void AMoveReportsToTheHandlersTheNodeNamed()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var page = Assert.IsType<ContentPage>(pages.Render(
             null,
@@ -222,7 +222,7 @@ public class ContentPageTests
     [Fact]
     public void APageNobodyListensToReportsNothing()
     {
-        (SwiftPages pages, Host host) = Renderer();
+        (PagePresenter pages, Host host) = Renderer();
 
         var page = Assert.IsType<ContentPage>(pages.Render(
             null,

@@ -822,7 +822,7 @@ internal sealed class StateUIApplication : IStateUITarget
         {
             return RenderTally.Measure(() => ApplyScenes(application, complete));
         }
-        catch (SwiftTreeDriftException drift)
+        catch (TreeDriftException drift)
         {
             // A patch about a tree this side is not holding. REFUSED, not
             // failed: the session answers a refusal by dropping the generation

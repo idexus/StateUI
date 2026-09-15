@@ -34,7 +34,7 @@ namespace StateUI.Maui.Rendering;
 /// happen - the same limit every renderer test here has.
 /// </para>
 /// </remarks>
-internal static class SwiftFocus
+internal static class Focus
 {
     /// <summary>
     /// Takes the focus off whatever holds it on the page that is showing.

@@ -167,7 +167,7 @@ public class ActCallFixtureTests
         Assert.Equal("Cancel", call.GetString(3));
         Assert.Equal("Name", call.GetString(4));
         Assert.Equal(40, call.GetInt(5));
-        Assert.Equal(Keyboard.Text, SwiftValues.KeyboardOf(call.GetEnumeration(6)));
+        Assert.Equal(Keyboard.Text, Values.KeyboardOf(call.GetEnumeration(6)));
         Assert.Equal("Draft 1", call.GetString(7));
         Assert.True(call.Completion < 0, "someone is waiting for the text");
     }

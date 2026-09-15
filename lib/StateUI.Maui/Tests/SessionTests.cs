@@ -42,7 +42,7 @@ public class SessionTests
     {
         var host = new Host();
         List<string> failures = [];
-        var pages = new SwiftPages(host.Renderer, (message, _) => failures.Add(message));
+        var pages = new PagePresenter(host.Renderer, (message, _) => failures.Add(message));
 
         Page? page = null;
         int applied = 0;

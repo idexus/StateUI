@@ -3,7 +3,7 @@
 
 using StateUI.Maui.Protocol;
 
-// Aliased rather than imported, for the reason SwiftValues says: that namespace
+// Aliased rather than imported, for the reason Values says: that namespace
 // repeats MAUI's control names as static classes of its own.
 using iOSPage = Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific.Page;
 
@@ -27,7 +27,7 @@ namespace StateUI.Maui.Rendering;
 /// A page nothing names any more is dropped when the stack it was on says so.
 /// </para>
 /// </remarks>
-internal sealed class SwiftPages
+internal sealed class PagePresenter
 {
     /// <summary>What materializes the views inside a page.</summary>
     private readonly StateUIRenderer _renderer;
@@ -60,7 +60,7 @@ internal sealed class SwiftPages
     /// <summary>A page renderer over a renderer of views.</summary>
     /// <param name="renderer">What materializes the views inside a page.</param>
     /// <param name="fail">Called with anything that cannot be applied.</param>
-    internal SwiftPages(StateUIRenderer renderer, Action<string, Exception?> fail)
+    internal PagePresenter(StateUIRenderer renderer, Action<string, Exception?> fail)
     {
         _renderer = renderer;
         _fail = fail;

@@ -163,7 +163,7 @@ public sealed class HostPatch
     /// </summary>
     /// <remarks>
     /// Each is cleared off the control - <c>ClearValue</c> on the
-    /// BindableProperty <see cref="Rendering.SwiftStyles"/> knows it by - so
+    /// BindableProperty <see cref="Rendering.PropertyTable"/> knows it by - so
     /// what the modifier stood for goes back to MAUI's own default. Only the
     /// KEYS arrive: there is no value to send for a property that is gone, and
     /// what it falls back to is MAUI's business. A key in whichever vocabulary
@@ -372,7 +372,7 @@ public sealed class HostPatch
     /// <remarks>
     /// The number is THIS REPOSITORY's, never MAUI's: every closed vocabulary
     /// has a mirror in <c>Protocol/HostEnums.cs</c> carrying the wire's
-    /// own numbering, and <see cref="Rendering.SwiftValues"/> translates that
+    /// own numbering, and <see cref="Rendering.Values"/> translates that
     /// mirror onto the real MAUI member BY NAME, one switch arm each. A bit set
     /// arrives as one of these too, carrying our bits.
     /// </remarks>
@@ -402,7 +402,7 @@ public sealed class HostPatch
 
     /// <summary>
     /// A property as a number, or null when it is absent or not one. Everything
-    /// numeric travels as a double; <c>SwiftValues.GetInt</c> narrows it where
+    /// numeric travels as a double; <c>Values.GetInt</c> narrows it where
     /// MAUI wants an int. A non-finite number reads as "not a number".
     /// </summary>
     public double? GetNumber(string key) => GetNumber(HostPropKey.Own(key));
@@ -457,7 +457,7 @@ public sealed class HostPatch
     /// <remarks>
     /// Answered as channels rather than as a MAUI <c>Color</c> so that this
     /// layer stays what it is: the shape of the bytes, with nothing of the
-    /// framework in it. <c>SwiftValues.GetColor</c> is where one becomes a
+    /// framework in it. <c>Values.GetColor</c> is where one becomes a
     /// colour.
     /// </remarks>
     public (byte Red, byte Green, byte Blue, byte Alpha)? GetRgba(string key) =>
@@ -552,7 +552,7 @@ internal readonly record struct HostStateBinding(
 /// </param>
 /// <param name="PropertyName">
 /// The property's spelling - what an application's own is found by, what
-/// <c>SwiftStyles.Property</c> resolves through, and what names the property
+/// <c>PropertyTable.Property</c> resolves through, and what names the property
 /// the walker's trip is filed under, so a second walk on the same property
 /// bends the first rather than starting beside it.
 /// </param>
