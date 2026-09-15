@@ -1057,21 +1057,25 @@ final class AppKitRenderer: @unchecked Sendable {
             property: property))
     }
 
+    @discardableResult
     fileprivate func receiveProperty(
         mount: UInt64,
         property: Prop,
         standing: HostValue?,
         target: HostValue?,
-        motion: Motion?
-    ) {
-        describedMotion.receive(
+        motion: Motion?,
+        landed: (() -> Void)? = nil
+    ) -> Bool {
+        let started = describedMotion.receive(
             key: AppKitDescribedKey(mount: mount, property: property),
             standing: standing,
             target: target,
             motion: motion,
+            landed: landed,
             now: patchTime ?? frameClock.now(),
             reducesMotion: patchReducesMotion ?? reducesMotion())
         displayCycle.hold()
+        return started
     }
 
     /// Drops the motions of an element that leaves the tree, or is adopted -
@@ -1177,6 +1181,14 @@ final class MountedNode: NSObject {
 
     /// The focus this element last reported, where it follows its focus.
     private var reportedFocus = false
+
+    /// Whether this element has been described once: showing and hiding cross
+    /// only on an element that was already there.
+    private var described = false
+
+    /// Whether this element is fading out: still visible, deaf to input, and
+    /// hidden once the fade lands.
+    private var leaving = false
     private var tapRecognizer: AppKitTapRecognizer?
     private var swipeRecognizer: AppKitSwipeRecognizer?
     private var panRecognizer: AppKitPanRecognizer?
@@ -1265,6 +1277,8 @@ final class MountedNode: NSObject {
             }
             drivenValues.removeAll(keepingCapacity: true)
             created = false
+            described = false
+            leaving = false
             lastFrameReport = nil
             reportedFocus = false
             pagePresented = false
@@ -1353,6 +1367,7 @@ final class MountedNode: NSObject {
                     : patch.transitions[property]?.motion)
         }
 
+        if described, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
         configureContextMenu()
         configureGestures()
@@ -1361,6 +1376,79 @@ final class MountedNode: NSObject {
         configureFrameObservation()
         reconcilePresentation(from: previousShown)
         reportTabFallback()
+        described = true
+    }
+
+    /// Crosses a change of visibility on an element already shown: out -
+    /// fading to nothing, deaf to input, hidden when the fade lands - or in,
+    /// from nothing up to the opacity the tree describes. Under the element's
+    /// own motion, or the application's where it says nothing; at once under
+    /// `.motion(.none)`, an engine's value, or a reader who asked for less.
+    private func crossVisibility() {
+        guard let host, let view else { return }
+        let visible = value(.isVisible)?.bool != false
+        let law = host.layoutMotion.law(of: motion)
+        let opacity = resolvedValue(.opacity) ?? .number(1)
+
+        if !visible {
+            guard !view.isHidden, !leaving, let law else { return }
+            leaving = true
+            let started = host.receiveProperty(
+                mount: mount,
+                property: .opacity,
+                standing: .number(Double(view.alphaValue)),
+                target: .number(0),
+                motion: law,
+                landed: { [weak self] in self?.crossed() })
+            if !started { leaving = false }
+        } else if leaving {
+            // BACK BEFORE IT WENT: up again from where the fade has reached,
+            // or at once where nothing moves.
+            leaving = false
+            host.receiveProperty(
+                mount: mount,
+                property: .opacity,
+                standing: .number(Double(view.alphaValue)),
+                target: opacity,
+                motion: law)
+        } else if view.isHidden, let law {
+            view.isHidden = false
+            host.receiveProperty(
+                mount: mount,
+                property: .opacity,
+                standing: .number(0),
+                target: opacity,
+                motion: law)
+        }
+    }
+
+    /// The fade out ended - landed, or cut short - and the element goes,
+    /// unless it was shown again on the way.
+    ///
+    /// THE REST OF THE CHANGE the patch began: the layout that places the
+    /// element closes over it the way a patch moves its children, rather than
+    /// snapping the rows below into the gap.
+    private func crossed() {
+        guard leaving, let view else { return }
+        leaving = false
+        (view.superview as? AppKitTravellingLayout)?.patchArrived()
+        applyVisibility()
+        view.invalidateMeasurements()
+    }
+
+    /// Shows, hides and fades the view as the tree says - kept visible and
+    /// deaf to input while it fades out.
+    private func applyVisibility() {
+        guard let view else { return }
+        view.isHidden = !leaving && value(.isVisible)?.bool == false
+        view.alphaValue = value(.opacity)?.number ?? 1
+        if let hitTestView = view as? AppKitHitTestView {
+            // The whole view and its children, or only its own empty area.
+            let ignores = value(.ignoresInput)?.bool ?? false
+            hitTestView.applyInputTransparency(
+                leaving || ignores || value(.letsInputThrough)?.bool == true,
+                cascades: leaving || ignores)
+        }
     }
 
     /// Reconciles a complete child arrangement. Ordinary children match by
@@ -1496,6 +1584,7 @@ final class MountedNode: NSObject {
     }
 
     private func letGo() {
+        leaving = false
         if let host {
             for state in wornStates { host.stateChannels.detach(state) }
             host.removeMotions(mount: mount)
@@ -2463,15 +2552,7 @@ final class MountedNode: NSObject {
             view.invalidateMeasurements()
         }
 
-        view.isHidden = value(.isVisible)?.bool == false
-        view.alphaValue = value(.opacity)?.number ?? 1
-        if let hitTestView = view as? AppKitHitTestView {
-            // The whole view and its children, or only its own empty area.
-            let ignores = value(.ignoresInput)?.bool ?? false
-            hitTestView.applyInputTransparency(
-                ignores || value(.letsInputThrough)?.bool == true,
-                cascades: ignores)
-        }
+        applyVisibility()
         if !(view is AppKitBorderView) && !(view is AppKitColorBoxView) {
             let background = color(.background)
             view.wantsLayer = true

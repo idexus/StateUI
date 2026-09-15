@@ -51,14 +51,22 @@ final class AppKitDescribedMotion {
     /// A missing motion is an explicit snap for a property present in the
     /// sparse patch. An unrelated sparse patch never calls this method and
     /// therefore leaves the transition alone.
+    ///
+    /// - Parameter landed: What follows the end of the transition: its
+    ///   landing, or another transition of the property cutting it short. An
+    ///   element that leaves drops it unrun.
+    /// - Returns: Whether a transition started; false where the value simply
+    ///   arrives.
+    @discardableResult
     func receive(
         key: AppKitDescribedKey,
         standing: HostValue?,
         target: HostValue?,
         motion: Motion?,
+        landed: (() -> Void)? = nil,
         now: Double,
         reducesMotion: Bool
-    ) {
+    ) -> Bool {
         var source = standing
         var carriedLanes: [Double] = []
         var carriedVelocity: [Double] = []
@@ -71,6 +79,7 @@ final class AppKitDescribedMotion {
             source = running.presented
             carriedLanes = running.lanes
             carriedVelocity = running.velocity
+            running.landed?()
         }
 
         guard let source,
@@ -86,7 +95,7 @@ final class AppKitDescribedMotion {
                 destination: target,
                 exactSource: carriedLanes,
                 property: key.property)
-        else { return }
+        else { return false }
 
         let trip = AppKitTrip(
             from: plan.from,
@@ -97,9 +106,11 @@ final class AppKitDescribedMotion {
             motion: motion,
             began: now)
 
-        guard !trip.arrives else { return }
-        transitions[key] = AppKitDescribedTransition(plan: plan, velocity: trip.velocity)
+        guard !trip.arrives else { return false }
+        transitions[key] = AppKitDescribedTransition(
+            plan: plan, velocity: trip.velocity, landed: landed)
         walker.start(trip, for: .described(key))
+        return true
     }
 
     /// Follows what a step of the walker made of the transitions' trips, in
@@ -116,6 +127,7 @@ final class AppKitDescribedMotion {
             if presented.rested {
                 transitions[key] = nil
                 walker.halt(.described(key))
+                transition.landed?()
             }
         }
     }
@@ -144,10 +156,14 @@ private final class AppKitDescribedTransition {
     fileprivate var lanes: [Double]
     fileprivate var velocity: [Double]
 
-    init(plan: AppKitMotionValuePlan, velocity: [Double]) {
+    /// What follows the transition's end.
+    let landed: (() -> Void)?
+
+    init(plan: AppKitMotionValuePlan, velocity: [Double], landed: (() -> Void)?) {
         self.plan = plan
         lanes = plan.from
         self.velocity = velocity
+        self.landed = landed
     }
 
     var presented: HostValue { plan.value(at: lanes) }

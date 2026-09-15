@@ -84,11 +84,9 @@ final class AppKitLayoutMotion {
         motion: HostLayoutMotion?,
         framesRead: Bool
     ) -> AppKitArrangement {
-        let law = motion.map { $0.motion.isInherited ? applicationMotion : $0.motion }
-            ?? applicationMotion
         let lanes = motion?.lanes ?? .all
 
-        guard said, !lanes.isEmpty, Self.moves(law), !reducesMotion() else {
+        guard said, !lanes.isEmpty, let law = law(of: motion) else {
             return AppKitArrangement()
         }
 
@@ -96,6 +94,15 @@ final class AppKitLayoutMotion {
             law: law,
             lanes: resized || framesRead ? [] : lanes,
             fades: true)
+    }
+
+    /// The law `motion` resolves to - an element's own, or the application's
+    /// where it says nothing - and nil where it moves nothing: a snap, an
+    /// engine's value, or a reader who asked for less movement.
+    func law(of motion: HostLayoutMotion?) -> Motion? {
+        let law = motion.map { $0.motion.isInherited ? applicationMotion : $0.motion }
+            ?? applicationMotion
+        return Self.moves(law) && !reducesMotion() ? law : nil
     }
 
     /// Stands `item` at `target`, or on its way there.
