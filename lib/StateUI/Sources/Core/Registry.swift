@@ -4,9 +4,10 @@
 // A HOST'S REALIZATION, CONTRACT BY CONTRACT.
 //
 // A host registers each element contract it realizes: how the element's view
-// is made, which of its properties the view takes and which of its own events
-// the view raises. The registration IS the record of what the host realizes -
-// the core answers "does this host realize X" from it, and the host makes and
+// is made, which of its members the view takes - one at a time, or the element
+// whole where a view takes several at once - and which of its own events the
+// view raises. The registration IS the record of what the host realizes: the
+// core answers "does this host realize X" from it, and the host makes and
 // updates its views through it. Generic over the platform's view type, so
 // every Swift host takes the same machinery; a host across the Wire tells the
 // core the same thing through the export.
@@ -49,11 +50,65 @@ import Dispatch
     }
 }
 
+/// The values an element holds, as its registration reads them: each by its
+/// member, as the type its contract declares - what the host presents, a
+/// value in motion or carried by a state included - and which of them
+/// changed.
+@_spi(Host) public struct ElementValues<Realized: ElementContract> {
+    /// The element's current value for a key, as the host presents it.
+    private let read: (Prop) -> HostValue?
+
+    /// The properties that changed.
+    private let changes: Set<Prop>
+
+    /// The element's values: those that changed, and each current value as
+    /// `read` answers it.
+    ///
+    /// - Parameters:
+    ///   - changed: the properties that changed.
+    ///   - read: the element's current value for a key, as the host presents
+    ///     it - nil where it is not described.
+    public init(changed: Set<Prop>, reading read: @escaping (Prop) -> HostValue?) {
+        self.read = read
+        changes = changed
+    }
+
+    /// A member's current value as the type its contract declares - nil where
+    /// it is not described, or crossed as another kind, which is said once.
+    ///
+    /// - Parameter member: the property, written with its contract.
+    public subscript<Owner: Contract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Value? {
+        guard let value = read(member.token) else { return nil }
+
+        guard let typed = Value(propValue: value) else {
+            complain("`\(member.name)` reached \(Realized.name) as \(MemberValues.describe([value])), "
+                + "and its contract declares \(Value.self): the view read no value for it.")
+            return nil
+        }
+
+        return typed
+    }
+
+    /// Whether the patch changed a member - the gate for a value a view must
+    /// not write unasked, a field's text under the reader's cursor.
+    ///
+    /// - Parameter member: the property, written with its contract.
+    /// - Returns: whether the patch changed it.
+    public func changed<Owner: Contract, Value: HostRepresentable>(_ member: ElementProperty<Owner, Value>) -> Bool {
+        changes.contains(member.token)
+    }
+}
+
 /// A host's realization of one element contract, member by member: the
-/// properties its view takes and the events of its own the view raises.
-@_spi(Host) public final class Registration<Realized: ElementContract, View: AnyObject> {
-    /// How each registered property reaches the view, by its key.
-    fileprivate var appliers: [Prop: (View, HostValue?) -> Void] = [:]
+/// properties its view takes, one at a time or the element whole, and the
+/// events of its own the view raises. `Made` is the view the registration
+/// makes, so every applier takes the host's own class for it.
+@_spi(Host) public final class Registration<Realized: ElementContract, Made: AnyObject> {
+    /// How each property registered alone reaches the view, by its key.
+    fileprivate var appliers: [Prop: (Made, HostValue?) -> Void] = [:]
+
+    /// The appliers taking the element whole, each with the keys it reads.
+    fileprivate var wholes: [(keys: Set<Prop>, apply: (Made, ElementValues<Realized>) -> Void)] = []
 
     /// Every member registered.
     fileprivate var members: Set<HostRealizedMember> = []
@@ -61,7 +116,7 @@ import Dispatch
     /// Made by `Registry.add` alone.
     fileprivate init() {}
 
-    /// A property the view takes, handed over as the type its contract
+    /// A property the view takes alone, handed over as the type its contract
     /// declares - nil where the value is no longer described. A member of the
     /// contract or of a tier it wears; any other is refused, and said once.
     ///
@@ -77,13 +132,9 @@ import Dispatch
     ///   - apply: puts the value on the view.
     public func property<Owner: Contract, Value: HostRepresentable>(
         _ member: ElementProperty<Owner, Value>,
-        _ apply: @escaping (View, Value?) -> Void
+        _ apply: @escaping (Made, Value?) -> Void
     ) {
-        guard Realized.worn.contains(where: { ObjectIdentifier($0) == ObjectIdentifier(Owner.self) }) else {
-            complain("\(Realized.name) was registered with `\(Owner.name).\(member.name)`, and "
-                + "\(Realized.name) wears no \(Owner.name): the property was not registered.")
-            return
-        }
+        guard Self.wears(Owner.self, for: member.name) else { return }
 
         appliers[member.token] = { view, value in
             guard let value else { return apply(view, nil) }
@@ -100,6 +151,40 @@ import Dispatch
         members.insert(HostRealizedMember(element: Realized.name, owner: Owner.name, member: member.name))
     }
 
+    /// Applies the element's configuration whole, where its view takes
+    /// several members at once - a caption's attributes read its text, its
+    /// font and its colour together. `members` are what it realizes - each a
+    /// property of the contract or of a tier it wears; anything else is left
+    /// out, and said once - and it runs once whenever any of them changes.
+    ///
+    ///     registration.applies([SwitchContract.isOn, VisualElementContract.isEnabled]) { toggle, values in
+    ///         toggle.apply(toggled: values[SwitchContract.isOn] ?? false,
+    ///                      enabled: values[VisualElementContract.isEnabled] ?? true)
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - members: the properties it reads, written with their contracts.
+    ///   - apply: puts the element's values on the view.
+    public func applies(_ members: [any ContractMember], _ apply: @escaping (Made, ElementValues<Realized>) -> Void) {
+        var keys: Set<Prop> = []
+
+        for member in members {
+            guard let property = member as? any RegisteredProperty else {
+                complain("\(Realized.name) was registered to apply `\(member.name)`, which is no property: "
+                    + "it was left out.")
+                continue
+            }
+
+            guard Self.wears(property.ownerType, for: member.name) else { continue }
+
+            keys.insert(property.key)
+            self.members.insert(
+                HostRealizedMember(element: Realized.name, owner: property.ownerType.name, member: member.name))
+        }
+
+        wholes.append((keys: keys, apply: apply))
+    }
+
     /// An event of its own the view raises through its `Raise` - recorded, so
     /// the core knows the host reports it.
     ///
@@ -107,6 +192,36 @@ import Dispatch
     public func raises<Payload>(_ event: ElementEvent<Realized, Payload>) {
         members.insert(HostRealizedMember(element: Realized.name, owner: Realized.name, member: event.name))
     }
+
+    /// Whether the element wears the contract a member was declared in - said
+    /// once where it does not.
+    private static func wears(_ owner: any Contract.Type, for member: String) -> Bool {
+        guard Realized.worn.contains(where: { ObjectIdentifier($0) == ObjectIdentifier(owner) }) else {
+            complain("\(Realized.name) was registered with `\(owner.name).\(member)`, and "
+                + "\(Realized.name) wears no \(owner.name): it was not registered.")
+            return false
+        }
+
+        return true
+    }
+}
+
+/// A property as a registration reads it out of a list: the contract declaring
+/// it, and the key it crosses under.
+protocol RegisteredProperty: ContractMember {
+    /// The contract declaring it.
+    var ownerType: any Contract.Type { get }
+
+    /// The key it crosses under.
+    var key: Prop { get }
+}
+
+extension ElementProperty: RegisteredProperty {
+    /// The contract declaring it.
+    var ownerType: any Contract.Type { Owner.self }
+
+    /// The key it crosses under.
+    var key: Prop { token }
 }
 
 /// Every registration a host made: how it makes and updates the view of each
@@ -114,14 +229,19 @@ import Dispatch
 @_spi(Host) public final class Registry<View: AnyObject> {
     /// One registered contract.
     private struct Entry {
-        /// Makes the element's view, its events handed to the function given.
-        let make: (@escaping (Event, [HostValue]) -> Void) -> View
+        /// Makes the element's view, its events handed to the function given -
+        /// nil where the registration made something that is no `View`.
+        let make: (@escaping (Event, [HostValue]) -> Void) -> View?
 
-        /// How each registered property reaches the view.
-        let appliers: [Prop: (View, HostValue?) -> Void]
+        /// Puts the changed properties it takes on the view, each read through
+        /// the function given, and answers them.
+        let apply: (View, Set<Prop>, @escaping (Prop) -> HostValue?) -> Set<Prop>
 
         /// Every member registered.
         let members: Set<HostRealizedMember>
+
+        /// The contracts the element wears, itself first.
+        let worn: [ObjectIdentifier]
     }
 
     /// The registrations, by node type.
@@ -130,6 +250,10 @@ import Dispatch
     /// The application's events these registrations raise - an element's own
     /// are its registration's.
     private var applicationEvents: Set<HostRealizedMember> = []
+
+    /// What the host's shared element machinery realizes on every element
+    /// wearing the member's contract, rather than one registration.
+    private var everyElement: [(owner: any Contract.Type, member: String)] = []
 
     /// An empty registry.
     public init() {}
@@ -143,18 +267,71 @@ import Dispatch
     ///   - create: makes the view, once per element, handed the raise its
     ///     events leave through.
     ///   - members: registers the members the view realizes.
-    public func add<Realized: ElementContract>(
+    public func add<Realized: ElementContract, Made: AnyObject>(
         _ contract: Realized.Type,
-        create: @escaping (Raise<Realized>) -> View,
-        members: (Registration<Realized, View>) -> Void = { _ in }
+        create: @escaping (Raise<Realized>) -> Made,
+        members: (Registration<Realized, Made>) -> Void = { _ in }
     ) {
-        let registration = Registration<Realized, View>()
+        let registration = Registration<Realized, Made>()
 
         members(registration)
+
+        let appliers = registration.appliers
+        let wholes = registration.wholes
+
         entries[Realized.nodeType] = Entry(
-            make: { send in create(Raise(send)) },
-            appliers: registration.appliers,
-            members: registration.members)
+            make: { send in
+                let made = create(Raise(send))
+
+                guard let view = made as? View else {
+                    complain("\(Realized.name)'s registration made a \(type(of: made)), which is no "
+                        + "\(View.self): no view stands for it.")
+                    return nil
+                }
+
+                return view
+            },
+            apply: { view, changed, read in
+                guard let made = view as? Made else { return [] }
+
+                var applied: Set<Prop> = []
+
+                for key in changed.sorted(by: { $0.name < $1.name }) {
+                    guard let apply = appliers[key] else { continue }
+
+                    apply(made, read(key))
+                    applied.insert(key)
+                }
+
+                let values = ElementValues<Realized>(changed: changed, reading: read)
+
+                for whole in wholes where !whole.keys.isDisjoint(with: changed) {
+                    whole.apply(made, values)
+                    applied.formUnion(whole.keys.intersection(changed))
+                }
+
+                return applied
+            },
+            members: registration.members,
+            worn: Realized.worn.map { ObjectIdentifier($0) })
+    }
+
+    /// A property the host's shared element machinery realizes on every
+    /// element wearing its contract - a view's opacity, its margins, its
+    /// visibility - rather than one registration.
+    ///
+    /// - Parameter member: the property, written with its contract.
+    public func everyElementRealizes<Owner: Contract, Value>(_ member: ElementProperty<Owner, Value>) {
+        everyElement.append((owner: Owner.self, member: member.name))
+    }
+
+    /// An event the host's shared element machinery raises on every element
+    /// wearing its contract - a tap, a focus change - rather than one
+    /// registration.
+    ///
+    /// - Parameter event: the event, written with its contract.
+    public func everyElementRaises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        everyElement.append((owner: Owner.self, member: event.name))
     }
 
     /// An event of the application's - one no element raises - the host
@@ -177,40 +354,49 @@ import Dispatch
     ///   - send: given each event the view raises, and what it carries.
     /// - Returns: the view, or nil.
     public func makeView(for type: NodeType, sending send: @escaping (Event, [HostValue]) -> Void) -> View? {
-        entries[type]?.make(send)
+        entries[type].flatMap { $0.make(send) }
     }
 
-    /// Puts the changed properties a registration takes on its view, in name
-    /// order - nil where a property is no longer described - and answers which
-    /// it put; the rest are the caller's.
+    /// Puts what changed - a patch's properties, or a display frame's moving
+    /// ones - on the element's view, as its registration takes it: a property
+    /// registered alone in name order, nil where it is no longer described,
+    /// then each whole applier whose members changed. Every value is read
+    /// through `read`, as the host presents it - a value in motion or carried
+    /// by a state included, not only what the tree described. Answers which
+    /// properties a registration took; the rest are the caller's.
     ///
     /// - Parameters:
-    ///   - changes: the changed properties and their values.
+    ///   - changed: the properties that changed.
     ///   - view: the element's view.
     ///   - type: the element's node type.
+    ///   - read: the element's current value for a key, as the host presents
+    ///     it.
     /// - Returns: the properties a registration took.
     @discardableResult
-    public func apply(_ changes: [Prop: HostValue?], to view: View, of type: NodeType) -> Set<Prop> {
-        guard let entry = entries[type] else { return [] }
-
-        var applied: Set<Prop> = []
-
-        for (prop, value) in changes.sorted(by: { $0.key.name < $1.key.name }) {
-            guard let apply = entry.appliers[prop] else { continue }
-
-            apply(view, value)
-            applied.insert(prop)
-        }
-
-        return applied
+    public func apply(
+        _ changed: Set<Prop>,
+        to view: View,
+        of type: NodeType,
+        reading read: @escaping (Prop) -> HostValue?
+    ) -> Set<Prop> {
+        entries[type]?.apply(view, changed, read) ?? []
     }
 
     /// What these registrations realize: every element they make a view for,
-    /// and every member they take or raise.
+    /// every member they take or raise, and what the shared machinery realizes
+    /// on each element that wears the member's contract.
     public var realization: HostRealization {
-        HostRealization(
-            elements: Set(entries.keys.map(\.name)),
-            members: entries.values.reduce(into: applicationEvents) { $0.formUnion($1.members) })
+        var members = applicationEvents
+
+        for (type, entry) in entries {
+            members.formUnion(entry.members)
+
+            for shared in everyElement where entry.worn.contains(ObjectIdentifier(shared.owner)) {
+                members.insert(HostRealizedMember(element: type.name, owner: shared.owner.name, member: shared.member))
+            }
+        }
+
+        return HostRealization(elements: Set(entries.keys.map(\.name)), members: members)
     }
 }
 

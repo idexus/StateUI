@@ -2360,7 +2360,21 @@ final class MountedNode: NSObject {
         host?.dispatch(handler)
     }
 
+    /// Hands an event a registered view raised to this element's handler for
+    /// it - nothing where the tree subscribed none.
+    private func send(_ event: Event, _ values: [HostValue]) {
+        guard let handler = events[event] else { return }
+
+        host?.dispatch(handler, payload: values)
+    }
+
     private func makeView() -> NSView? {
+        if let registered = AppKitRegistrations.registry.makeView(for: type, sending: { [weak self] event, values in
+            self?.send(event, values)
+        }) {
+            return registered
+        }
+
         switch type {
         case .application, .scene, .window:
             return nil
@@ -2449,12 +2463,6 @@ final class MountedNode: NSObject {
             slider.onDragStarted = { [weak self] in self?.beganSliderDrag() }
             slider.onDragCompleted = { [weak self] in self?.completedSliderDrag() }
             return slider
-
-        case .progressBar:
-            return AppKitProgressView()
-
-        case .activityIndicator:
-            return AppKitActivityIndicatorView()
 
         case .switch:
             let toggle = AppKitSwitchView()
@@ -2564,6 +2572,11 @@ final class MountedNode: NSObject {
             view.wantsLayer = true
             view.layer?.backgroundColor = background?.cgColor
         }
+
+        // A family the registry realizes takes its own members there, each read
+        // as this element presents it; the arms below are the families still
+        // to move.
+        AppKitRegistrations.registry.apply(changed, to: view, of: type, reading: { self.value($0) })
 
         if type == .toolbarItem, let button = view as? NSButton {
             button.title = string(.text) ?? ""
@@ -2749,12 +2762,6 @@ final class MountedNode: NSObject {
                 enabled: value(.isEnabled)?.bool ?? true)
         }
 
-        if let progress = view as? AppKitProgressView {
-            progress.apply(progress: value(.progress)?.number ?? 0)
-        }
-        if let activity = view as? AppKitActivityIndicatorView {
-            activity.apply(running: value(.isRunning)?.bool ?? false)
-        }
         if let toggle = view as? AppKitSwitchView {
             toggle.apply(
                 toggled: value(.isOn)?.bool ?? false,
