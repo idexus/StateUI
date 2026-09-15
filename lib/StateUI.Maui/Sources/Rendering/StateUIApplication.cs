@@ -209,7 +209,7 @@ internal sealed class StateUIApplication : IStateUITarget
     {
         try
         {
-            return NativeMethods.ConnectScene(payload, payload.Length);
+            return CoreLink.ConnectScene(payload, payload.Length);
         }
         catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
         {

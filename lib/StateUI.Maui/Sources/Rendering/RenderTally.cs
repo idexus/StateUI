@@ -71,7 +71,7 @@ internal static class RenderTally
             return;
         }
 
-        IntPtr text = NativeMethods.InspectLog(out int length);
+        IntPtr text = CoreLink.InspectLog(out int length);
 
         if (text == IntPtr.Zero)
         {
@@ -84,7 +84,7 @@ internal static class RenderTally
         }
         finally
         {
-            NativeMethods.FreeBuffer(text);
+            CoreLink.FreeBuffer(text);
         }
     }
 
@@ -342,9 +342,9 @@ internal static class RenderTally
 
             try
             {
-                int made = NativeMethods.Renders(out int empty, out int refused);
+                int made = CoreLink.Renders(out int empty, out int refused);
                 renders = $"renders {made}  empty {empty}  refused {refused}  " +
-                    $"alive {NativeMethods.Alive()}  tracked {TrackedCount?.Invoke() ?? 0}  " +
+                    $"alive {CoreLink.Alive()}  tracked {TrackedCount?.Invoke() ?? 0}  " +
                     $"moving {MovingCount?.Invoke() ?? 0}  ";
             }
             catch (DllNotFoundException)

@@ -95,7 +95,7 @@ internal static class StateUIPersistence
 
         try
         {
-            if (NativeMethods.SetPersistent(bytes, bytes.Length) <= 0)
+            if (CoreLink.SetPersistent(bytes, bytes.Length) <= 0)
             {
                 Complain(
                     "the library refused what the store held. Usually a native library " +
@@ -258,7 +258,7 @@ internal static class StateUIPersistence
 
         try
         {
-            raw = NativeMethods.PersistentKeys(out length);
+            raw = CoreLink.PersistentKeys(out length);
         }
         catch (EntryPointNotFoundException)
         {
@@ -286,7 +286,7 @@ internal static class StateUIPersistence
         }
         finally
         {
-            NativeMethods.FreeBuffer(raw);
+            CoreLink.FreeBuffer(raw);
         }
     }
 

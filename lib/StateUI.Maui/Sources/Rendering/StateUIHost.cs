@@ -111,7 +111,7 @@ public class StateUIHost : ContentView, IStateUITarget
         {
             try
             {
-                return NativeMethods.TakeString(NativeMethods.Platform());
+                return CoreLink.TakeString(CoreLink.Platform());
             }
             catch (Exception ex) when (ex is DllNotFoundException or EntryPointNotFoundException)
             {

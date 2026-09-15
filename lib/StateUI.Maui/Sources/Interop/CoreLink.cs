@@ -7,12 +7,17 @@ using StateUI.Maui.Protocol;
 namespace StateUI.Maui.Interop;
 
 /// <summary>
-/// The surface of the StateUI LIBRARY reachable across the P/Invoke boundary.
-///
-/// Everything here has a counterpart marked <c>@_cdecl</c> in the library's
-/// <c>Bridge/Exports.swift</c>; the two files should be read together.
+/// The link to the running core: every entry point of the StateUI library
+/// this host calls, and the one way any part of it calls one.
 /// </summary>
 /// <remarks>
+/// <para>
+/// Everything here has a counterpart marked <c>@_cdecl</c> in the library's
+/// <c>Bridge/Exports.swift</c>, and the two are read together:
+/// <c>BridgeTests.swift</c> holds every export to its import here and
+/// <c>CoreLinkTests</c> holds that no other file declares an entry point of
+/// the core, so a change of transport is a change of this one file.
+/// </para>
 /// <para>
 /// The application's own Swift module is a separate native library with a name
 /// derived from the project, so it cannot be referenced by a compile-time
@@ -33,7 +38,7 @@ namespace StateUI.Maui.Interop;
 /// resolves the platform convention itself (libStateUI.so, StateUI.dll).
 /// </para>
 /// </remarks>
-internal static partial class NativeMethods
+internal static partial class CoreLink
 {
     /// <summary>
     /// Where the exports live. See the remarks on this class for why it differs

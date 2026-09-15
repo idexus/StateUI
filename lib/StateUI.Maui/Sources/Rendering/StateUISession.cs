@@ -74,7 +74,7 @@ internal sealed class StateUISession
     /// an arm is contractually about. Never substituted in a running app.
     /// </remarks>
     internal Action<int, byte[]> Replies { get; init; } =
-        static (id, reply) => NativeMethods.DispatchWire(id, reply, reply.Length);
+        static (id, reply) => CoreLink.DispatchWire(id, reply, reply.Length);
 
     /// <summary>
     /// Checks that each crossing into Swift starts on the thread MAUI draws on.
@@ -312,7 +312,7 @@ internal sealed class StateUISession
     /// awaits need not be a host act.
     /// </para>
     /// <para>
-    /// The thread spends its life inside <see cref="NativeMethods.WaitWork"/>;
+    /// The thread spends its life inside <see cref="CoreLink.WaitWork"/>;
     /// Swift signals it as a job lands, and all it does with the news is post
     /// one drain onto the UI thread through the session's dispatcher - MAUI's
     /// dispatchers are thread-safe - and park again. It never runs a job
@@ -353,7 +353,7 @@ internal sealed class StateUISession
             {
                 while (true)
                 {
-                    if (NativeMethods.WaitWork() > 0)
+                    if (CoreLink.WaitWork() > 0)
                     {
                         DrainWhenTheResumeArrives();
                     }
@@ -513,7 +513,7 @@ internal sealed class StateUISession
         // library too old to have the export fails the same check as
         // EntryPointNotFoundException. First of all, because everything after
         // it hands the library bytes.
-        int wire = NativeMethods.WireVersion();
+        int wire = CoreLink.WireVersion();
         if (wire != WireCodec.Version)
         {
             _target.Fail(
@@ -597,7 +597,7 @@ internal sealed class StateUISession
             // once a render, and measured and reported only while one is
             // recording. The counts are the tally's own, kept for the length
             // of this message. See Core/Inspection.swift.
-            bool inspecting = NativeMethods.Inspecting() != 0;
+            bool inspecting = CoreLink.Inspecting() != 0;
             RenderTally.Inspecting = inspecting;
             RenderTally.Scenes.Clear();
             long nodes = RenderTally.Nodes;
@@ -609,7 +609,7 @@ internal sealed class StateUISession
             int described = 0;
             IntPtr raw = RenderTally.Time(
                 ref RenderTally.Described,
-                () => NativeMethods.RenderWire(baseline, out described));
+                () => CoreLink.RenderWire(baseline, out described));
             int length = described;
             long reading = System.Diagnostics.Stopwatch.GetTimestamp();
 
@@ -639,7 +639,7 @@ internal sealed class StateUISession
             }
             finally
             {
-                NativeMethods.FreeBuffer(raw);
+                CoreLink.FreeBuffer(raw);
             }
 
             double read = RenderTally.Micros(reading);
@@ -707,10 +707,10 @@ internal sealed class StateUISession
 
                 for (int index = 0; index < RenderTally.Scenes.Count; index++)
                 {
-                    NativeMethods.InspectScene(message.Generation, index, RenderTally.Scenes[index]);
+                    CoreLink.InspectScene(message.Generation, index, RenderTally.Scenes[index]);
                 }
 
-                NativeMethods.InspectApplied(
+                CoreLink.InspectApplied(
                     message.Generation,
                     read,
                     apply,
@@ -835,7 +835,7 @@ internal sealed class StateUISession
         if (dispatcher is null)
         {
             // No platform under it - a test. Whatever is there is all there is.
-            NativeMethods.RunJobs();
+            CoreLink.RunJobs();
             return;
         }
 
@@ -845,7 +845,7 @@ internal sealed class StateUISession
             {
                 _uiThread.Verify(dispatcher, "a resumed Swift handler");
 
-                bool progressed = NativeMethods.RunJobs() > 0;
+                bool progressed = CoreLink.RunJobs() > 0;
 
                 if (progressed)
                 {
@@ -868,7 +868,7 @@ internal sealed class StateUISession
                 // landed. Something HAVING run does not end the loop either
                 // way - an unrelated job drains on the same queue, and the
                 // resume this look is for may land a moment later.
-                bool owed = NativeMethods.ResumesPending() > 0 || NativeMethods.JobsPending() > 0;
+                bool owed = CoreLink.ResumesPending() > 0 || CoreLink.JobsPending() > 0;
 
                 if (!owed)
                 {
@@ -989,7 +989,7 @@ internal sealed class StateUISession
 
         try
         {
-            if (NativeMethods.DispatchWire(handlerId, payload, payload?.Length ?? 0) == 0)
+            if (CoreLink.DispatchWire(handlerId, payload, payload?.Length ?? 0) == 0)
             {
                 ReportAnEventNobodyHeard(handlerId);
             }
@@ -1145,7 +1145,7 @@ internal sealed class StateUISession
         {
             byte[] bytes = WireCodec.WriteEnvironment(domain, values);
 
-            if (NativeMethods.SetEnvironment(bytes, bytes.Length) <= 0
+            if (CoreLink.SetEnvironment(bytes, bytes.Length) <= 0
                 && !_saidEnvironmentUnreadable)
             {
                 _saidEnvironmentUnreadable = true;
@@ -1196,7 +1196,7 @@ internal sealed class StateUISession
         {
             byte[] bytes = WireCodec.WriteHostEvent(eventName, payload);
 
-            if (NativeMethods.DispatchHostEvent(bytes, bytes.Length) < 0
+            if (CoreLink.DispatchHostEvent(bytes, bytes.Length) < 0
                 && !_saidHostEventsUnreadable)
             {
                 _saidHostEventsUnreadable = true;
@@ -1239,12 +1239,12 @@ internal sealed class StateUISession
     private void Pump()
     {
         // A resumed handler may have left work here since the last look.
-        NativeMethods.RunJobs();
+        CoreLink.RunJobs();
 
         // Only re-render if the Swift side says something changed. An event that
         // only reads state - a button that logs, a completed handler that does
         // nothing - has no reason to walk the tree at all.
-        if (NativeMethods.NeedsRender() != 0)
+        if (CoreLink.NeedsRender() != 0)
         {
             Render(mayRetry: true);
         }
@@ -1262,7 +1262,7 @@ internal sealed class StateUISession
 
         try
         {
-            IntPtr buffer = NativeMethods.TakeActCallsWire(out int length);
+            IntPtr buffer = CoreLink.TakeActCallsWire(out int length);
 
             if (buffer == IntPtr.Zero || length <= 0)
             {
@@ -1281,7 +1281,7 @@ internal sealed class StateUISession
             }
             finally
             {
-                NativeMethods.FreeBuffer(buffer);
+                CoreLink.FreeBuffer(buffer);
             }
         }
         catch (Exception ex)
@@ -1295,7 +1295,7 @@ internal sealed class StateUISession
             // dialog waits for the reader - so the failure is causal.
             try
             {
-                NativeMethods.FailTakenActCalls(
+                CoreLink.FailTakenActCalls(
                     "the host could not read the act batch this act was in. " +
                     "Usually a native library and a runtime built from different " +
                     "versions.");

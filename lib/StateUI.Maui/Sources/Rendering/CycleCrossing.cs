@@ -17,7 +17,7 @@ using StateUI.Maui.Interop;
 internal interface ICycleCrossing
 {
     /// <summary>Takes a batch of writes into the image.</summary>
-    /// <param name="batch">The bytes, in the layout NativeMethods describes.</param>
+    /// <param name="batch">The bytes, in the layout CoreLink describes.</param>
     /// <returns>How many states were written, or -1 for bytes that could not be read.</returns>
     int Write(ReadOnlySpan<byte> batch);
 
@@ -68,13 +68,13 @@ internal sealed class NativeCycleCrossing : ICycleCrossing
 
         fixed (byte* bytes = batch)
         {
-            return NativeMethods.CycleWrite(bytes, batch.Length);
+            return CoreLink.CycleWrite(bytes, batch.Length);
         }
     }
 
     /// <inheritdoc/>
     public int Cycle(int sync, double now, bool reducesMotion) =>
-        Live ? NativeMethods.CycleRun(sync, now, reducesMotion ? 1 : 0) : 0;
+        Live ? CoreLink.CycleRun(sync, now, reducesMotion ? 1 : 0) : 0;
 
     /// <inheritdoc/>
     public unsafe int Read(int number, Span<byte> into)
@@ -86,15 +86,15 @@ internal sealed class NativeCycleCrossing : ICycleCrossing
 
         fixed (byte* bytes = into)
         {
-            return NativeMethods.CycleRead(number, bytes, into.Length);
+            return CoreLink.CycleRead(number, bytes, into.Length);
         }
     }
 
     /// <inheritdoc/>
-    public int Awake() => Live ? NativeMethods.CycleAwake() : 0;
+    public int Awake() => Live ? CoreLink.CycleAwake() : 0;
 
     /// <inheritdoc/>
-    public string? Trace() => Live ? NativeMethods.TakeString(NativeMethods.CycleTrace()) : null;
+    public string? Trace() => Live ? CoreLink.TakeString(CoreLink.CycleTrace()) : null;
 }
 
 /// <summary>

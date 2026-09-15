@@ -39,7 +39,7 @@ public partial class DisplayCycleTests
     }
 
     /// <summary>A call that runs the core's cycle, through the crossing or around it.</summary>
-    [GeneratedRegex(@"\.Cycle\(|NativeMethods\.CycleRun\(")]
+    [GeneratedRegex(@"\.Cycle\(|CoreLink\.CycleRun\(")]
     private static partial Regex CoreCycle();
 
     /// <summary>A folder of this host's project, found from where this file sits.</summary>

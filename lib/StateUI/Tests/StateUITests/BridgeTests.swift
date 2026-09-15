@@ -23,11 +23,11 @@ final class BridgeTests: XCTestCase {
             encoding: .utf8)
     }
 
-    /// `lib/StateUI.Maui/Sources/Interop/NativeMethods.cs`, the other side.
+    /// `lib/StateUI.Maui/Sources/Interop/CoreLink.cs`, the other side.
     private func imports() throws -> String {
         try String(
             contentsOf: Fixtures.repository
-                .appendingPathComponent("lib/StateUI.Maui/Sources/Interop/NativeMethods.cs"),
+                .appendingPathComponent("lib/StateUI.Maui/Sources/Interop/CoreLink.cs"),
             encoding: .utf8)
     }
 
@@ -59,11 +59,11 @@ final class BridgeTests: XCTestCase {
 
         XCTAssertEqual(
             exported.subtracting(imported), [],
-            "exported from Swift with no P/Invoke in NativeMethods.cs")
+            "exported from Swift with no P/Invoke in CoreLink.cs")
 
         XCTAssertEqual(
             imported.subtracting(exported), [],
-            "imported in NativeMethods.cs with no @_cdecl behind it - "
+            "imported in CoreLink.cs with no @_cdecl behind it - "
                 + "EntryPointNotFoundException at first call")
     }
 
