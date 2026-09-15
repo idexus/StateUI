@@ -1184,6 +1184,11 @@ final class AppKitSplitView: AppKitHitTestView {
             if #available(macOS 26.1, *) { accessory.preferredScrollEdgeEffectStyle = .soft }
             detailItem.addTopAlignedAccessoryViewController(accessory)
         }
+
+        // The row changes the detail's safe area, which lays nothing out: once
+        // AppKit has placed the row, the detail lays its page out again in it.
+        splitController.splitView.layoutSubtreeIfNeeded()
+        detailSurface.needsLayout = true
     }
 
     /// Paints the part of the detail the window's bars cover in the colour

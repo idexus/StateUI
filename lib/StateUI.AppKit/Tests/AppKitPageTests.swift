@@ -536,6 +536,55 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(controller.window?.title, "Home")
     }
 
+    /// A tabbed view pushed onto the stack in a split view's detail keeps below
+    /// the row its tabs stand in, and the page left when it is popped rises
+    /// back beneath the toolbar: the row coming and going changes the detail's
+    /// safe area, and the detail lays its page out again in it.
+    @MainActor
+    func testATabbedPageOnTheDetailsStackKeepsBelowItsTabRow() throws {
+        guard #available(macOS 26, *) else { throw XCTSkip("the row is the column's from macOS 26") }
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        let menu = page("menu", title: "Menu", events: 100)
+        let home = page("home", title: "Home", events: 200)
+        renderer.applyForTesting(tree(flyout(
+            presented: true, menu: menu, detail: navigation([home])), width: 1200))
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        window.setContentSize(NSSize(width: 1200, height: 800))
+        window.contentView?.layoutSubtreeIfNeeded()
+
+        let pushed = tabbed([
+            page("example", title: "Example", events: 300),
+            page("code", title: "In Code", events: 400),
+        ], selected: 0)
+        renderer.applyForTesting(tree(flyout(
+            presented: true, menu: menu, detail: navigation([home, pushed])), width: 1200))
+        window.contentView?.layoutSubtreeIfNeeded()
+
+        let split = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
+        let row = try XCTUnwrap(split.detailRowForTesting)
+        let rowFrame = row.convert(row.bounds, to: nil)
+        let tabs = try XCTUnwrap(renderer.viewForTesting(id: .manual("tabs")))
+        XCTAssertGreaterThan(rowFrame.height, 0)
+        XCTAssertLessThanOrEqual(
+            tabs.convert(tabs.bounds, to: nil).maxY, rowFrame.minY,
+            "the pushed tabbed view keeps below its tab row")
+
+        renderer.applyForTesting(tree(flyout(
+            presented: true, menu: menu, detail: navigation([home])), width: 1200))
+        window.contentView?.layoutSubtreeIfNeeded()
+        let shown = try XCTUnwrap(renderer.viewForTesting(id: .manual("home")))
+        XCTAssertNil(split.detailRowForTesting)
+        XCTAssertGreaterThan(
+            shown.convert(shown.bounds, to: nil).maxY, rowFrame.minY,
+            "the page left rises back beneath the toolbar")
+    }
+
     /// A tabbed view in a split view's detail shows its tabs in the row
     /// beneath the toolbar - across that column as its own accessory on macOS
     /// 26 and later, beneath the title bar before - and a detail that is no
