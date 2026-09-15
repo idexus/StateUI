@@ -452,14 +452,14 @@ public class WindowTests
             Host.Parse(Fixtures.ReadBytes("window-lifecycle.bin")), true);
 
         StateUIWindow window = Assert.Single(application.Windows);
-        IReadOnlyDictionary<SwiftEvent, int>? events = StateUIRenderer.EventsOf(window);
+        IReadOnlyDictionary<HostEvent, int>? events = StateUIRenderer.EventsOf(window);
 
         Assert.NotNull(events);
         Assert.Equal(
             new[]
             {
-                SwiftEvent.Activated, SwiftEvent.Created, SwiftEvent.Deactivated,
-                SwiftEvent.Destroying, SwiftEvent.Resumed, SwiftEvent.Stopped,
+                HostEvent.Activated, HostEvent.Created, HostEvent.Deactivated,
+                HostEvent.Destroying, HostEvent.Resumed, HostEvent.Stopped,
             },
             events!.Keys.OrderBy(name => name.ToString(), StringComparer.Ordinal));
     }

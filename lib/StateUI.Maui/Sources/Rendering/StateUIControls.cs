@@ -18,7 +18,7 @@ namespace StateUI.Maui.Rendering;
 /// nothing to say.
 /// </param>
 public delegate void StateUIRaise(
-    BindableObject sender, string eventName, params SwiftWireValue[] payload);
+    BindableObject sender, string eventName, params HostValue[] payload);
 
 /// <summary>
 /// The application's own controls: a factory and an applier registered under a
@@ -39,7 +39,7 @@ public delegate void StateUIRaise(
 ///     {
 ///         var light = new TrafficLight();
 ///         light.LightTapped += (_, index) =>
-///             raise(light, "lightTapped", SwiftWireValue.Of(index));
+///             raise(light, "lightTapped", HostValue.Of(index));
 ///         return light;
 ///     },
 ///     apply: (light, node) =>
@@ -108,7 +108,7 @@ public static class StateUIControls
     /// <see cref="Add{TControl}"/> is where the casts live.</summary>
     internal sealed record Registration(
         Func<StateUIRaise, View> Create,
-        Action<View, SwiftNode>? Apply,
+        Action<View, HostPatch>? Apply,
         IReadOnlyDictionary<string, BindableProperty>? Properties,
         Action<View, View?>? Content);
 
@@ -148,7 +148,7 @@ public static class StateUIControls
     public static void Add<TControl>(
         string type,
         Func<StateUIRaise, TControl> create,
-        Action<TControl, SwiftNode>? apply = null,
+        Action<TControl, HostPatch>? apply = null,
         IReadOnlyDictionary<string, BindableProperty>? properties = null,
         Action<TControl, View?>? content = null)
         where TControl : View

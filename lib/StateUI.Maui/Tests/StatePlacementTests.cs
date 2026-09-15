@@ -38,7 +38,7 @@ public class StatePlacementTests
             lanes.AddRange(place);
         }
 
-        lanes.AddRange([law, millis, (int)SwiftEasing.Linear]);
+        lanes.AddRange([law, millis, (int)HostEasing.Linear]);
 
         byte[] bytes = new byte[lanes.Count * 8];
 
@@ -94,9 +94,9 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         StateAttachment run = host.Renderer.Cycle.Registered(layout).Values
-            .Single(attachment => attachment.Kind == SwiftStateKind.Placement);
+            .Single(attachment => attachment.Kind == HostStateKind.Placement);
 
-        Assert.Equal(SwiftStateMode.Out, run.Mode);
+        Assert.Equal(HostStateMode.Out, run.Mode);
         Assert.Null(run.Property);
 
         // And not one of the twelve is on a child: where the views go is the
@@ -119,9 +119,9 @@ public class StatePlacementTests
         (AbsoluteLayout layout, _, _) = Placed(host);
 
         StateAttachment room = host.Renderer.Cycle.Registered(layout).Values
-            .Single(attachment => attachment.Kind == SwiftStateKind.Feed);
+            .Single(attachment => attachment.Kind == HostStateKind.Feed);
 
-        Assert.Equal(SwiftStateMode.In, room.Mode);
+        Assert.Equal(HostStateMode.In, room.Mode);
 
         crossing.Written.Clear();
         ((IView)layout).Arrange(new Rect(4, 8, 320, 240));
@@ -151,7 +151,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, View second) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(number, ~0UL, Run(
@@ -181,7 +181,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         void Wear(double x)
         {
@@ -219,7 +219,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         void Wear(ulong mask, byte[] bytes)
         {
@@ -262,7 +262,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         void Wear(double law, double millis, double x)
         {
@@ -306,7 +306,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         void Wear()
         {
@@ -341,7 +341,7 @@ public class StatePlacementTests
         (AbsoluteLayout layout, View first, _) = Placed(host);
 
         int number = host.Renderer.Cycle.Registered(layout).Values
-            .Single(attachment => attachment.Kind == SwiftStateKind.Placement).Number;
+            .Single(attachment => attachment.Kind == HostStateKind.Placement).Number;
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(number, ~0UL, Run(

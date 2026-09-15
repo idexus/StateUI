@@ -5,24 +5,24 @@ namespace StateUI.Maui.Protocol;
 
 /// <summary>
 /// A key into a node's properties, in whichever of the two vocabularies it
-/// belongs to: a <see cref="SwiftProp"/> for one of the library's, a NAME for
+/// belongs to: a <see cref="HostProp"/> for one of the library's, a NAME for
 /// one an application declared on a control of its own.
 /// </summary>
 /// <remarks>
 /// <para>
 /// The two cannot share a bag - every app-declared name resolves to
-/// <see cref="SwiftProp.None"/>, so a control with two of its own would lose
+/// <see cref="HostProp.None"/>, so a control with two of its own would lose
 /// one to the other as a duplicate key - so a node carries
 /// <c>Props</c> and <c>OwnProps</c>, and this is what reads either. It is the
-/// same shape <see cref="SwiftId"/> has for identity: the kind travels with
+/// same shape <see cref="HostElementId"/> has for identity: the kind travels with
 /// the value, and nothing has to ask which bag a key came from.
 /// </para>
 /// <para>
 /// Almost nothing builds one by hand. A call site names a member -
-/// <c>node.GetString(SwiftProp.Text)</c> - and the implicit conversion makes
+/// <c>node.GetString(HostProp.Text)</c> - and the implicit conversion makes
 /// that a key with no name, which is a lookup in the library's bag and no
 /// string hashed anywhere. A named one is built wherever an application's own
-/// property is served: the string-keyed accessors on <c>SwiftNode</c> and
+/// property is served: the string-keyed accessors on <c>HostPatch</c> and
 /// <c>StateUIValues</c>, the <c>cleared</c> reader, <c>SwiftStyles.AddSetters</c>,
 /// <c>DescribedMotion</c> and <c>StateUIRenderer.ReconcileRegistered</c>.
 /// </para>
@@ -34,23 +34,23 @@ namespace StateUI.Maui.Protocol;
 /// properties whatever MAUI would.
 /// </para>
 /// </remarks>
-internal readonly struct SwiftKey
+internal readonly struct HostPropKey
 {
     /// <summary>One of the library's properties, by member.</summary>
-    private SwiftKey(SwiftProp prop) => Prop = prop;
+    private HostPropKey(HostProp prop) => Prop = prop;
 
     /// <summary>One key under both forms a name can have reached this side in.</summary>
-    private SwiftKey(SwiftProp prop, string name)
+    private HostPropKey(HostProp prop, string name)
     {
         Prop = prop;
         Name = name;
     }
 
     /// <summary>
-    /// The library's member for this key, or <see cref="SwiftProp.None"/> for a
+    /// The library's member for this key, or <see cref="HostProp.None"/> for a
     /// name the library has none for.
     /// </summary>
-    internal SwiftProp Prop { get; }
+    internal HostProp Prop { get; }
 
     /// <summary>
     /// The spelling, for a key that came from an application - null for one the
@@ -64,22 +64,22 @@ internal readonly struct SwiftKey
     /// in the library's bag.
     /// </summary>
     /// <param name="name">The property's name, as the application declared it.</param>
-    internal static SwiftKey Own(string name) =>
-        new(SwiftTokenNames<SwiftProp>.Parse(name), name);
+    internal static HostPropKey Own(string name) =>
+        new(TokenNames<HostProp>.Parse(name), name);
 
     /// <summary>
     /// A key under both forms - what a node's own property list answers, having
     /// read the member off the wire and derived the spelling from it.
     /// </summary>
-    /// <param name="prop">The member, or <see cref="SwiftProp.None"/>.</param>
+    /// <param name="prop">The member, or <see cref="HostProp.None"/>.</param>
     /// <param name="name">The spelling.</param>
-    internal static SwiftKey Of(SwiftProp prop, string name) => new(prop, name);
+    internal static HostPropKey Of(HostProp prop, string name) => new(prop, name);
 
     /// <summary>
     /// One of the library's properties, which is what the renderer asks for -
-    /// implicit so that <c>node.GetString(SwiftProp.Text)</c> is what a call
+    /// implicit so that <c>node.GetString(HostProp.Text)</c> is what a call
     /// site reads as.
     /// </summary>
     /// <param name="prop">The member.</param>
-    public static implicit operator SwiftKey(SwiftProp prop) => new(prop);
+    public static implicit operator HostPropKey(HostProp prop) => new(prop);
 }

@@ -26,7 +26,7 @@ public class StateUIEventsTests
 
         try
         {
-            StateUIEvents.Raise("Test.Nobody", SwiftWireValue.Of(1.0));
+            StateUIEvents.Raise("Test.Nobody", HostValue.Of(1.0));
         }
         finally
         {

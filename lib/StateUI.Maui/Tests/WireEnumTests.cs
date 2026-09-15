@@ -14,7 +14,7 @@
 // MAUI's internal business: a release that renumbered one would be read by
 // this wire as a different member, with no error and no warning. So the Swift
 // side numbers each vocabulary itself, in declaration order from 0, and this
-// side mirrors those numbers in Protocol/SwiftWireEnums.cs and translates to
+// side mirrors those numbers in Protocol/HostEnums.cs and translates to
 // the MAUI value BY NAME.
 //
 // This file READS THE SWIFT SOURCES and compares them against the mirrors,
@@ -37,7 +37,7 @@ public class WireEnumTests
 {
     /// <summary>
     /// Vocabularies whose mirror is not found by the naming rule, and why.
-    /// Anything not here must be <c>Swift</c> + the Swift type's name with the
+    /// Anything not here must be <c>Host</c> + the Swift type's name with the
     /// dots taken out - see <see cref="MirrorOf"/>.
     /// </summary>
     private static readonly Dictionary<string, Type> MirroredElsewhere = new()
@@ -89,7 +89,7 @@ public class WireEnumTests
             {
                 wrong.Add(
                     $"{vocabulary} crosses the wire and this side has no mirror for it - "
-                    + $"declare Swift{Flattened(vocabulary)} in Protocol/SwiftWireEnums.cs");
+                    + $"declare Swift{Flattened(vocabulary)} in Protocol/HostEnums.cs");
                 continue;
             }
 
@@ -157,12 +157,12 @@ public class WireEnumTests
             return elsewhere;
         }
 
-        return typeof(SwiftAct).Assembly.GetType(
-            $"StateUI.Maui.Protocol.Swift{Flattened(vocabulary)}");
+        return typeof(HostAct).Assembly.GetType(
+            $"StateUI.Maui.Protocol.Host{Flattened(vocabulary)}");
     }
 
     /// <summary>
-    /// `StrokeShape.Kind` names `SwiftBorderShapeKind` - a nested Swift type
+    /// `StrokeShape.Kind` names `HostBorderShapeKind` - a nested Swift type
     /// keeps its enclosing type's name, since `Kind` alone would be five
     /// different things.
     /// </summary>

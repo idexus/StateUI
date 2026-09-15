@@ -158,7 +158,7 @@ public class StyleTests
         // The application's own law, which every control travels under unless
         // it says otherwise - and what makes the aim a JOURNEY rather than an
         // arrival, so the interrupt below has something to halt.
-        host.Renderer.Walker.Travel = HostMotion.Eased(200, SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(200, HostEasing.Linear);
 
         var button = (Button)host.Apply("""
             {"id":1,"type":"Button","props":{"isEnabled":false,"background":"#F09072"},"children":[
@@ -192,7 +192,7 @@ public class StyleTests
         var clock = new HandFrameClock();
 
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = HostMotion.Eased(200, SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(200, HostEasing.Linear);
 
         var button = (Button)host.Apply("""
             {"id":1,"type":"Button","props":{"isEnabled":false,"background":"#F09072"},"children":[
@@ -901,7 +901,7 @@ public class StyleTests
         foreach (string name in named.OrderBy(name => name, StringComparer.Ordinal))
         {
             Assert.True(
-                SwiftTokenNames<SwiftProp>.Parse(name) != SwiftProp.None,
+                TokenNames<HostProp>.Parse(name) != HostProp.None,
                 $"Prop.notCleared names '{name}', which is not a property this side has");
         }
 
@@ -922,7 +922,7 @@ public class StyleTests
         foreach ((string directory, bool oneSession) in
             new[] { ("controls", false), ("pages", false), ("scenes", true) })
         {
-            var names = new SwiftWireDictionary();
+            var names = new WireDictionary();
 
             foreach (string path in Directory
                 .EnumerateFiles(System.IO.Path.Combine(Fixtures.Directory, directory), "*.bin")
@@ -930,12 +930,12 @@ public class StyleTests
             {
                 if (!oneSession)
                 {
-                    names = new SwiftWireDictionary();
+                    names = new WireDictionary();
                 }
 
-                SwiftMessage message = SwiftWire.ReadMessage(File.ReadAllBytes(path), names);
+                HostRender message = WireCodec.ReadMessage(File.ReadAllBytes(path), names);
 
-                if (message.Root is SwiftNode root)
+                if (message.Root is HostPatch root)
                 {
                     Check(root);
                 }
@@ -951,11 +951,11 @@ public class StyleTests
             "longer wrote it on. Add it to the arm for that type, or name it in " +
             "Prop.notCleared on the Swift side so the element is sent again instead.");
 
-        void Check(SwiftNode node)
+        void Check(HostPatch node)
         {
-            foreach (SwiftProp prop in node.Props?.Keys ?? Enumerable.Empty<SwiftProp>())
+            foreach (HostProp prop in node.Props?.Keys ?? Enumerable.Empty<HostProp>())
             {
-                string key = SwiftTokenNames<SwiftProp>.Spelling(prop);
+                string key = TokenNames<HostProp>.Spelling(prop);
 
                 if (notCleared.Contains(key) || MauiHasNoProperty.Contains($"{node.TypeName}.{key}"))
                 {
@@ -970,7 +970,7 @@ public class StyleTests
                 }
             }
 
-            foreach (SwiftNode child in node.Children ?? [])
+            foreach (HostPatch child in node.Children ?? [])
             {
                 Check(child);
             }
@@ -998,16 +998,16 @@ public class StyleTests
             "state silently will not set, and one an animation cannot walk. Add " +
             "it to the arm for that control, beside the same name in the renderer.");
 
-        void Check(SwiftNode node)
+        void Check(HostPatch node)
         {
             // The keys come back as MEMBERS, and this reports what is MISSING -
             // so each spelling is derived from its member, which is what
-            // SwiftTokenNames answers and what a reader of the failure needs.
-            foreach (SwiftProp prop in NotControls.Contains(node.TypeName)
-                ? Enumerable.Empty<SwiftProp>()
-                : node.Props?.Keys ?? Enumerable.Empty<SwiftProp>())
+            // TokenNames answers and what a reader of the failure needs.
+            foreach (HostProp prop in NotControls.Contains(node.TypeName)
+                ? Enumerable.Empty<HostProp>()
+                : node.Props?.Keys ?? Enumerable.Empty<HostProp>())
             {
-                string key = SwiftTokenNames<SwiftProp>.Spelling(prop);
+                string key = TokenNames<HostProp>.Spelling(prop);
 
                 if (NotTheControls.Contains(key) || MauiHasNoProperty.Contains($"{node.TypeName}.{key}"))
                 {
@@ -1030,7 +1030,7 @@ public class StyleTests
                 }
             }
 
-            foreach (SwiftNode child in node.Children ?? [])
+            foreach (HostPatch child in node.Children ?? [])
             {
                 Check(child);
             }

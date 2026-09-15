@@ -3,7 +3,7 @@
 
 // The half of the bridge that turns a message into controls.
 //
-// A member of a closed vocabulary is written Host.Member(SwiftSwipeDirection.Left)
+// A member of a closed vocabulary is written Host.Member(HostSwipeDirection.Left)
 // rather than as a bare number, because the number is the whole of what crosses
 // and a digit in a JSON blob says nothing about which member - or which
 // vocabulary - it belongs to. A bit set is the members ORed.
@@ -70,7 +70,7 @@ public class RendererTests
         var label = (Label)host.Apply($$$"""
             {"id":1,"type":"Label","props":{"text":"one",
              "accessibilityLabel":"Delete","accessibilityHint":"Removes the row",
-             "accessibilityHeadingLevel":{{{Host.Member(SwiftHeadingLevel.Level2)}}}}}
+             "accessibilityHeadingLevel":{{{Host.Member(HostHeadingLevel.Level2)}}}}}
             """);
 
         Assert.Equal("Delete", SemanticProperties.GetDescription(label));
@@ -496,7 +496,7 @@ public class RendererTests
             {"id":"b","type":"Button","props":{"text":"go"},"events":{"clicked":7}}
             """);
 
-        Assert.Equal(7, StateUIRenderer.EventsOf(button)?[SwiftEvent.Clicked]);
+        Assert.Equal(7, StateUIRenderer.EventsOf(button)?[HostEvent.Clicked]);
 
         // The element survives but its last handler went - Swift sends an EMPTY
         // event map, and the renderer replaces its map with an empty one. Were
@@ -634,10 +634,10 @@ public class RendererTests
 
         // Past the application, scene, window and page, which a renderer is
         // never handed: it is given the view.
-        SwiftNode node = Host.Parse(Fixtures.ReadBytes("state-text-two-way.bin"));
+        HostPatch node = Host.Parse(Fixtures.ReadBytes("state-text-two-way.bin"));
 
-        while (node.Type is SwiftNodeType.Application or SwiftNodeType.Scene
-            or SwiftNodeType.Window or SwiftNodeType.Page)
+        while (node.Type is HostNodeType.Application or HostNodeType.Scene
+            or HostNodeType.Window or HostNodeType.Page)
         {
             node = node.Children![0];
         }
@@ -685,7 +685,7 @@ public class RendererTests
             {"id":1,"type":"Label","arranged":true,"children":[
               {"id":2,"type":"Spans","arranged":true,"children":[
                 {"id":3,"type":"Span","props":{"text":"loud",
-                 "textCase":{{{Host.Member(SwiftTextCase.Uppercase)}}}}}]}]}
+                 "textCase":{{{Host.Member(HostTextCase.Uppercase)}}}}}]}]}
             """);
 
         Assert.Equal(TextTransform.Uppercase, Assert.Single(label.FormattedText!.Spans).TextTransform);
@@ -781,7 +781,7 @@ public class RendererTests
 
         Assert.Same(tap, Assert.Single(tappable.GestureRecognizers.OfType<TapGestureRecognizer>()));
         Assert.Equal(1, tap.NumberOfTapsRequired);
-        Assert.Equal(3, StateUIRenderer.EventsOf(tappable)?[SwiftEvent.Tapped]);
+        Assert.Equal(3, StateUIRenderer.EventsOf(tappable)?[HostEvent.Tapped]);
 
         // And a view nobody wants to tap carries nothing.
         var plain = (Border)host.Apply("""{"id":"b","type":"Border"}""");
@@ -798,7 +798,7 @@ public class RendererTests
 
         var swiped = (Border)host.Apply($$$"""
             {"id":"s","type":"Border","props":{
-               "swipeDirection":{{{Host.Member(SwiftSwipeDirection.Left | SwiftSwipeDirection.Down)}}},
+               "swipeDirection":{{{Host.Member(HostSwipeDirection.Left | HostSwipeDirection.Down)}}},
                "swipeThreshold":40
              },"events":{"swiped":1}}
             """);
@@ -869,7 +869,7 @@ public class RendererTests
 
         var view = (Border)host.Apply($$$"""
             {"id":"s","type":"Border",
-             "props":{"swipeDirection":{{{Host.Member(SwiftSwipeDirection.All)}}}},
+             "props":{"swipeDirection":{{{Host.Member(HostSwipeDirection.All)}}}},
              "events":{"swiped":7}}
             """);
 
@@ -917,7 +917,7 @@ public class RendererTests
 
         var view = (Border)host.Apply($$$"""
             {"id":"s","type":"Border","props":{
-               "swipeDirection":{{{Host.Member(SwiftSwipeDirection.Left)}}},
+               "swipeDirection":{{{Host.Member(HostSwipeDirection.Left)}}},
                "swipeThreshold":40
              },"events":{"swiped":1}}
             """);
@@ -926,7 +926,7 @@ public class RendererTests
 
         host.Apply($$$"""
             {"id":"s","type":"Border","props":{
-               "swipeDirection":{{{Host.Member(SwiftSwipeDirection.Left | SwiftSwipeDirection.Up)}}}
+               "swipeDirection":{{{Host.Member(HostSwipeDirection.Left | HostSwipeDirection.Up)}}}
              }}
             """);
 
@@ -944,7 +944,7 @@ public class RendererTests
 
         host.Apply($$$"""
             {"id":"s","type":"Border","props":{
-               "swipeDirection":{{{Host.Member(SwiftSwipeDirection.Up)}}}
+               "swipeDirection":{{{Host.Member(HostSwipeDirection.Up)}}}
              }}
             """);
 
@@ -964,11 +964,11 @@ public class RendererTests
             {"id":1,"type":"Grid","arranged":true,
              "props":{
                "rows":[
-                 [{{{Host.Member(SwiftGridLengthKind.Fixed)}}},70],
-                 [{{{Host.Member(SwiftGridLengthKind.Auto)}}},1]],
+                 [{{{Host.Member(HostGridLengthKind.Fixed)}}},70],
+                 [{{{Host.Member(HostGridLengthKind.Auto)}}},1]],
                "columns":[
-                 [{{{Host.Member(SwiftGridLengthKind.Proportional)}}},1],
-                 [{{{Host.Member(SwiftGridLengthKind.Proportional)}}},2]],
+                 [{{{Host.Member(HostGridLengthKind.Proportional)}}},1],
+                 [{{{Host.Member(HostGridLengthKind.Proportional)}}},2]],
                "rowSpacing":12
              },"children":[
                {"id":"a","type":"Label","props":{"text":"a"}},
@@ -1032,16 +1032,16 @@ public class RendererTests
         Assert.NotNull(heard.GetValue(StateUIRenderer.ScrollMovementProperty));
 
         // And a scroller whose offset a state carries, with no handler at all.
-        var carried = (ScrollView)new Host().ApplyMessage(new SwiftNode
+        var carried = (ScrollView)new Host().ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.ScrollView,
+            Id = new HostElementId(1),
+            Type = HostNodeType.ScrollView,
             Arranged = true,
             Children = [],
             States =
             [
-                new SwiftStateEntry(
-                    SwiftProp.ScrollOffset, "scrollOffset", 3, SwiftStateMode.InOut, SwiftStateKind.Property),
+                new HostStateBinding(
+                    HostProp.ScrollOffset, "scrollOffset", 3, HostStateMode.InOut, HostStateKind.Property),
             ],
         });
 
@@ -1066,8 +1066,8 @@ public class RendererTests
             {"id":1,"type":"SwipeView","children":[
               {"id":2,"type":"Label","props":{"text":"Row"}},
               {"id":3,"type":"SwipeActions","props":{
-                 "side":{{{Host.Member(SwiftSwipeSide.Right)}}},
-                 "mode":{{{Host.Member(SwiftSwipeMode.Reveal)}}}
+                 "side":{{{Host.Member(HostSwipeSide.Right)}}},
+                 "mode":{{{Host.Member(HostSwipeMode.Reveal)}}}
                },"arranged":true,"children":[
                  {"id":4,"type":"SwipeAction","props":{"text":"Star"}},
                  {"id":5,"type":"SwipeAction","props":{"text":"Delete"},
@@ -1213,7 +1213,7 @@ public class RendererTests
 
         host.Apply($$$"""
             {"id":"b","type":"Border","props":{"stroke":[
-              {{{Host.Member(SwiftBrushKind.LinearGradient)}}},[0,0,1,0],0,"#FF0000",1,"#0000FF"
+              {{{Host.Member(HostBrushKind.LinearGradient)}}},[0,0,1,0],0,"#FF0000",1,"#0000FF"
             ]}}
             """);
 
@@ -1237,7 +1237,7 @@ public class RendererTests
 
         var shape = (SwiftRoundRectangle)host.Apply($$$"""
             {"id":"r","type":"Rectangle","props":{"fill":[
-              {{{Host.Member(SwiftBrushKind.LinearGradient)}}},[0,0,1,0],0,"#FF0000",1,"#0000FF"
+              {{{Host.Member(HostBrushKind.LinearGradient)}}},[0,0,1,0],0,"#FF0000",1,"#0000FF"
             ]}}
             """);
 
@@ -1245,7 +1245,7 @@ public class RendererTests
 
         host.Apply($$$"""
             {"id":"r","type":"Rectangle","props":{"fill":[
-              {{{Host.Member(SwiftBrushKind.LinearGradient)}}},[0,0,1,1],0,"#FF0000",1,"#0000FF"
+              {{{Host.Member(HostBrushKind.LinearGradient)}}},[0,0,1,1],0,"#FF0000",1,"#0000FF"
             ]}}
             """);
 
@@ -1268,7 +1268,7 @@ public class RendererTests
 
         var solid = (Border)host.Apply($$$"""
             {"id":"s","type":"Border","props":{
-               "stroke":[{{{Host.Member(SwiftBrushKind.SolidColor)}}},"#FF6347"]
+               "stroke":[{{{Host.Member(HostBrushKind.SolidColor)}}},"#FF6347"]
              }}
             """);
 
@@ -1276,7 +1276,7 @@ public class RendererTests
 
         var radial = (Border)host.Apply($$$"""
             {"id":"r","type":"Border","props":{
-               "stroke":[{{{Host.Member(SwiftBrushKind.RadialGradient)}}},[0.3,0.7,0.8],0.25,"#FFFFFF"]
+               "stroke":[{{{Host.Member(HostBrushKind.RadialGradient)}}},[0.3,0.7,0.8],0.25,"#FFFFFF"]
              }}
             """);
 
@@ -1305,7 +1305,7 @@ public class RendererTests
         host.Apply("""{"id":"b","type":"Border","props":{"stroke":[{"enum":9},"#0000FF"]}}""");
         host.Apply($$$"""
             {"id":"b","type":"Border","props":{
-               "stroke":[{{{Host.Member(SwiftBrushKind.LinearGradient)}}},0,"#0000FF"]
+               "stroke":[{{{Host.Member(HostBrushKind.LinearGradient)}}},0,"#0000FF"]
              }}
             """);
 
@@ -1329,7 +1329,7 @@ public class RendererTests
 
         var web = (WebView)host.Apply($$$"""
             {"id":"w","type":"WebView","props":{
-               "source":[{{{Host.Member(SwiftWebViewSourceKind.Url)}}},"https://example.com/docs"]
+               "source":[{{{Host.Member(HostWebViewSourceKind.Url)}}},"https://example.com/docs"]
              }}
             """);
 
@@ -1337,7 +1337,7 @@ public class RendererTests
 
         host.Apply($$$"""
             {"id":"w","type":"WebView","props":{"source":[
-               {{{Host.Member(SwiftWebViewSourceKind.Html)}}},
+               {{{Host.Member(HostWebViewSourceKind.Html)}}},
                "<h1>Hi, you</h1>","https://example.com/"
              ]}}
             """);
@@ -1351,7 +1351,7 @@ public class RendererTests
         // always there and says so - and nothing is invented in its place.
         host.Apply($$$"""
             {"id":"w","type":"WebView","props":{"source":[
-               {{{Host.Member(SwiftWebViewSourceKind.Html)}}},"<h1>Alone</h1>",null
+               {{{Host.Member(HostWebViewSourceKind.Html)}}},"<h1>Alone</h1>",null
              ]}}
             """);
 
@@ -1475,7 +1475,7 @@ public class RendererTests
               "isReadOnly":true,"maximumLength":500,
               "isSpellCheckEnabled":false,"isTextPredictionEnabled":false,
               "cursorPosition":3,"selectionLength":4,
-              "inputPurpose":{{{Host.Member(SwiftInputPurpose.Chat)}}}
+              "inputPurpose":{{{Host.Member(HostInputPurpose.Chat)}}}
             }}
             """);
 
@@ -1499,7 +1499,7 @@ public class RendererTests
               "isReadOnly":true,"maximumLength":40,
               "isSpellCheckEnabled":false,"isTextPredictionEnabled":false,
               "cursorPosition":3,"selectionLength":4,
-              "inputPurpose":{{{Host.Member(SwiftInputPurpose.Plain)}}}
+              "inputPurpose":{{{Host.Member(HostInputPurpose.Plain)}}}
             }}
             """);
 
@@ -1522,8 +1522,8 @@ public class RendererTests
         var picker = (Picker)host.Apply($$$"""
             {"id":1,"type":"Picker","props":{
               "textColor":"#FF0000","characterSpacing":1.5,
-              "horizontalTextAlignment":{{{Host.Member(SwiftTextAlignment.Center)}}},
-              "verticalTextAlignment":{{{Host.Member(SwiftTextAlignment.End)}}}
+              "horizontalTextAlignment":{{{Host.Member(HostTextAlignment.Center)}}},
+              "verticalTextAlignment":{{{Host.Member(HostTextAlignment.End)}}}
             }}
             """);
 
@@ -1555,8 +1555,8 @@ public class RendererTests
 
         var editor = (Editor)host.Apply($$$"""
             {"id":5,"type":"TextEditor","props":{
-              "horizontalTextAlignment":{{{Host.Member(SwiftTextAlignment.Center)}}},
-              "verticalTextAlignment":{{{Host.Member(SwiftTextAlignment.End)}}}
+              "horizontalTextAlignment":{{{Host.Member(HostTextAlignment.Center)}}},
+              "verticalTextAlignment":{{{Host.Member(HostTextAlignment.End)}}}
             }}
             """);
 
@@ -1612,7 +1612,7 @@ public class RendererTests
         var host = new Host();
         string font = $$$"""
             "fontSize":17,"fontFamily":{"name":"OpenSansRegular"},
-            "fontAttributes":{{{Host.Member(SwiftFontAttributes.Italic)}}},
+            "fontAttributes":{{{Host.Member(HostFontAttributes.Italic)}}},
             "fontAutoScalingEnabled":false
             """;
 
@@ -1642,7 +1642,7 @@ public class RendererTests
         var host = new Host();
         string text = $$$"""
             "textColor":"#FF0000","characterSpacing":1.5,
-            "textCase":{{{Host.Member(SwiftTextCase.Lowercase)}}}
+            "textCase":{{{Host.Member(HostTextCase.Lowercase)}}}
             """;
         Color red = Color.FromArgb("#FF0000");
 
@@ -1680,8 +1680,8 @@ public class RendererTests
     {
         var host = new Host();
         string aligned = $$$"""
-            "horizontalTextAlignment":{{{Host.Member(SwiftTextAlignment.End)}}},
-            "verticalTextAlignment":{{{Host.Member(SwiftTextAlignment.Center)}}}
+            "horizontalTextAlignment":{{{Host.Member(HostTextAlignment.End)}}},
+            "verticalTextAlignment":{{{Host.Member(HostTextAlignment.Center)}}}
             """;
 
         var field = (Entry)host.Apply($$$"""{"id":1,"type":"TextField","props":{ {{{aligned}}} }}""");
@@ -1729,13 +1729,13 @@ public class RendererTests
         Assert.True(((Entry)host.Apply("""{"id":1,"type":"TextField","props":{"isPassword":true}}""")).IsPassword);
 
         Assert.Equal(ReturnType.Go, ((SearchBar)host.Apply($$$"""
-            {"id":2,"type":"SearchField","props":{"returnKey":{{{Host.Member(SwiftReturnKey.Go)}}}}}
+            {"id":2,"type":"SearchField","props":{"returnKey":{{{Host.Member(HostReturnKey.Go)}}}}}
             """)).ReturnType);
 
         var button = (Button)host.Apply($$$"""
             {"id":3,"type":"Button","props":{
-              "lineBreak":{{{Host.Member(SwiftLineBreak.WordWrap)}}},
-              "iconPosition":{{{Host.Member(SwiftIconPosition.Trailing)}}}}}
+              "lineBreak":{{{Host.Member(HostLineBreak.WordWrap)}}},
+              "iconPosition":{{{Host.Member(HostIconPosition.Trailing)}}}}}
             """);
 
         Assert.Equal(LineBreakMode.WordWrap, button.LineBreakMode);
@@ -1759,11 +1759,11 @@ public class RendererTests
         Assert.Equal(6, line.Y1);
 
         Assert.Equal(Microsoft.Maui.Controls.Shapes.FillRule.Nonzero, ((SwiftPolyline)host.Apply($$$"""
-            {"id":11,"type":"Polyline","props":{"fillRule":{{{Host.Member(SwiftFillRule.Nonzero)}}}}}
+            {"id":11,"type":"Polyline","props":{"fillRule":{{{Host.Member(HostFillRule.Nonzero)}}}}}
             """)).FillRule);
 
         Assert.Equal(LayoutOptions.Start, ((Label)host.Apply($$$"""
-            {"id":12,"type":"Label","props":{"verticalAlignment":{{{Host.Member(SwiftAlignment.Start)}}}}}
+            {"id":12,"type":"Label","props":{"verticalAlignment":{{{Host.Member(HostAlignment.Start)}}}}}
             """)).VerticalOptions);
 
         var map = (Microsoft.Maui.Controls.Maps.Map)host.Apply("""
@@ -1779,7 +1779,7 @@ public class RendererTests
         var swipe = (SwipeView)host.Apply($$$"""
             {"id":14,"type":"SwipeView","children":[
               {"id":15,"type":"Label","props":{"text":"Row"}},
-              {"id":16,"type":"SwipeActions","props":{"side":{{{Host.Member(SwiftSwipeSide.Right)}}}},
+              {"id":16,"type":"SwipeActions","props":{"side":{{{Host.Member(HostSwipeSide.Right)}}}},
                "arranged":true,"children":[
                  {"id":17,"type":"SwipeAction",
                   "props":{"text":"Delete","isVisible":false,"isEnabled":false,"isDestructive":true}}]}]}
@@ -1808,7 +1808,7 @@ public class RendererTests
 
         var label = (Label)host.Apply($$$"""
             {"id":1,"type":"Label","props":{"background":[
-              {{{Host.Member(SwiftBrushKind.LinearGradient)}}},[0,0,1,0],0,"#FF0000",1,"#0000FF"
+              {{{Host.Member(HostBrushKind.LinearGradient)}}},[0,0,1,0],0,"#FF0000",1,"#0000FF"
             ]}}
             """);
 

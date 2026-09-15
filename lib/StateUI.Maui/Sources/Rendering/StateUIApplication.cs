@@ -238,8 +238,8 @@ internal sealed class StateUIApplication : IStateUITarget
         // And what its SCENE hears: where the scene stands, and a window going.
         window.Activated += (sender, _) => Activated(sender as StateUIWindow);
         window.Deactivated += (sender, _) => Deactivated(sender as StateUIWindow);
-        window.Stopped += (sender, _) => Stopped(sender as StateUIWindow, SwiftEvent.Stopped);
-        window.Resumed += (sender, _) => Stopped(sender as StateUIWindow, SwiftEvent.Deactivated);
+        window.Stopped += (sender, _) => Stopped(sender as StateUIWindow, HostEvent.Stopped);
+        window.Resumed += (sender, _) => Stopped(sender as StateUIWindow, HostEvent.Deactivated);
         window.Destroying += (sender, _) => Buried(sender as StateUIWindow);
     }
 
@@ -300,15 +300,15 @@ internal sealed class StateUIApplication : IStateUITarget
         // Swift first, with what the platform kept for the session - its
         // answer is a scene still waiting for its window, and the render below
         // puts that scene in this one.
-        List<SwiftWireValue> kept = [];
+        List<HostValue> kept = [];
 
-        foreach ((string name, SwiftWireValue value) in window.Origin?.Kept ?? [])
+        foreach ((string name, HostValue value) in window.Origin?.Kept ?? [])
         {
-            kept.Add(SwiftWireValue.Of(name));
+            kept.Add(HostValue.Of(name));
             kept.Add(value);
         }
 
-        if (_connect(SwiftWire.WritePayload([.. kept]) ?? []) < 0)
+        if (_connect(WireCodec.WritePayload([.. kept]) ?? []) < 0)
         {
             StateUISession.Report(
                 "the Swift side could not read what the platform kept for a scene; " +
@@ -422,11 +422,11 @@ internal sealed class StateUIApplication : IStateUITarget
         // that window closing, told by the name the tree knows it by.
         if (slot.Main)
         {
-            Report(slot.Scene, SwiftEvent.Destroying);
+            Report(slot.Scene, HostEvent.Destroying);
         }
         else
         {
-            Report(slot.Scene, SwiftEvent.WindowClosed, SwiftWireValue.Of(slot.Name));
+            Report(slot.Scene, HostEvent.WindowClosed, HostValue.Of(slot.Name));
         }
     }
 
@@ -451,7 +451,7 @@ internal sealed class StateUIApplication : IStateUITarget
         }
 
         if (!_scenes.Contains(scene)
-            || scene.Events?.TryGetValue(SwiftEvent.WindowRestored, out int handler) != true
+            || scene.Events?.TryGetValue(HostEvent.WindowRestored, out int handler) != true
             || restored.Window.Origin is not { Kind: string kind } origin)
         {
             Close(restored);
@@ -462,11 +462,11 @@ internal sealed class StateUIApplication : IStateUITarget
 
         if (origin.Value is string value)
         {
-            Renderer.Announce(handler, SwiftWireValue.Of(kind), SwiftWireValue.Of(value));
+            Renderer.Announce(handler, HostValue.Of(kind), HostValue.Of(value));
         }
         else
         {
-            Renderer.Announce(handler, SwiftWireValue.Of(kind));
+            Renderer.Announce(handler, HostValue.Of(kind));
         }
     }
 
@@ -598,7 +598,7 @@ internal sealed class StateUIApplication : IStateUITarget
 
     /// <summary>
     /// Writes down one of a scene's kept values - what the
-    /// <see cref="SwiftAct.PersistSceneValue"/> act asks for.
+    /// <see cref="HostAct.PersistSceneValue"/> act asks for.
     /// </summary>
     /// <remarks>
     /// Kept by the platform on the session of the scene's main window, which is
@@ -688,11 +688,11 @@ internal sealed class StateUIApplication : IStateUITarget
         {
             if (ReferenceEquals(scene, _front))
             {
-                Phase(scene, SwiftEvent.Activated);
+                Phase(scene, HostEvent.Activated);
             }
-            else if (scene.Phase == SwiftEvent.Activated)
+            else if (scene.Phase == HostEvent.Activated)
             {
-                Phase(scene, SwiftEvent.Deactivated);
+                Phase(scene, HostEvent.Deactivated);
             }
         }
 
@@ -738,7 +738,7 @@ internal sealed class StateUIApplication : IStateUITarget
 
         if (ReferenceEquals(slot.Scene, _front))
         {
-            Phase(slot.Scene, SwiftEvent.Deactivated);
+            Phase(slot.Scene, HostEvent.Deactivated);
         }
     }
 
@@ -748,7 +748,7 @@ internal sealed class StateUIApplication : IStateUITarget
     /// </summary>
     /// <param name="window">The window.</param>
     /// <param name="phase">Where that leaves the scene.</param>
-    private void Stopped(StateUIWindow? window, SwiftEvent phase)
+    private void Stopped(StateUIWindow? window, HostEvent phase)
     {
         if (window is null || window.HiddenByScene || SlotOf(window) is not { Main: true } slot)
         {
@@ -765,13 +765,13 @@ internal sealed class StateUIApplication : IStateUITarget
     /// </summary>
     /// <param name="scene">The scene.</param>
     /// <param name="phase">Activated, deactivated or stopped.</param>
-    private void Phase(SceneSlot scene, SwiftEvent phase)
+    private void Phase(SceneSlot scene, HostEvent phase)
     {
         scene.Phase = phase;
 
         Later(() =>
         {
-            if (scene.Phase is not SwiftEvent now || now == scene.Reported || !_scenes.Contains(scene))
+            if (scene.Phase is not HostEvent now || now == scene.Reported || !_scenes.Contains(scene))
             {
                 return;
             }
@@ -807,7 +807,7 @@ internal sealed class StateUIApplication : IStateUITarget
 
     // ---- What the tree describes --------------------------------------------
 
-    bool IStateUITarget.Apply(SwiftNode application, bool complete)
+    bool IStateUITarget.Apply(HostPatch application, bool complete)
     {
         // WHAT THIS MESSAGE CARRIES, on the motion trace's own clock - so a
         // render can be read beside the frames around it, and a page that
@@ -845,11 +845,11 @@ internal sealed class StateUIApplication : IStateUITarget
     /// </remarks>
     /// <param name="node">The message's root.</param>
     /// <returns>What it carries, capped so a resync cannot fill the file.</returns>
-    private static string Sketch(SwiftNode node)
+    private static string Sketch(HostPatch node)
     {
         List<string> said = [];
 
-        void Walk(SwiftNode n)
+        void Walk(HostPatch n)
         {
             if (said.Count >= 24)
             {
@@ -870,7 +870,7 @@ internal sealed class StateUIApplication : IStateUITarget
 
             if (n.Children is { Count: > 0 } children)
             {
-                foreach (SwiftNode child in children)
+                foreach (HostPatch child in children)
                 {
                     Walk(child);
                 }
@@ -885,7 +885,7 @@ internal sealed class StateUIApplication : IStateUITarget
     /// <summary>The scenes the message describes, applied one at a time.</summary>
     /// <param name="application">The application node - the root of a message.</param>
     /// <param name="complete">Whether it describes the whole tree.</param>
-    private bool ApplyScenes(SwiftNode application, bool complete)
+    private bool ApplyScenes(HostPatch application, bool complete)
     {
         int applying = ++_applies;
 
@@ -907,9 +907,9 @@ internal sealed class StateUIApplication : IStateUITarget
             SettleScenes(described);
         }
 
-        foreach (SwiftNode child in described)
+        foreach (HostPatch child in described)
         {
-            if (child.Type != SwiftNodeType.Scene)
+            if (child.Type != HostNodeType.Scene)
             {
                 ((IStateUITarget)this).Fail(
                     $"Swift described a '{child.TypeName}' where a Scene was expected.\n\n" +
@@ -953,7 +953,7 @@ internal sealed class StateUIApplication : IStateUITarget
     /// <param name="node">The scene's node.</param>
     /// <param name="complete">Whether the message describes the whole tree.</param>
     /// <returns>False to ask for the whole tree instead.</returns>
-    private bool ApplyScene(SceneSlot scene, SwiftNode node, bool complete)
+    private bool ApplyScene(SceneSlot scene, HostPatch node, bool complete)
     {
         // The scene's handler ids, replaced WHOLE whenever a message names
         // them: Swift keeps an id for as long as the element handles that
@@ -975,9 +975,9 @@ internal sealed class StateUIApplication : IStateUITarget
             return true;
         }
 
-        foreach (SwiftNode child in described)
+        foreach (HostPatch child in described)
         {
-            if (child.Type != SwiftNodeType.Window)
+            if (child.Type != HostNodeType.Window)
             {
                 ((IStateUITarget)this).Fail(
                     $"Swift described a '{child.TypeName}' where a Window was expected.\n\n" +
@@ -1016,7 +1016,7 @@ internal sealed class StateUIApplication : IStateUITarget
     /// and keeps the rest in the order they opened.
     /// </summary>
     /// <param name="described">The scenes the message lists.</param>
-    private void SettleScenes(List<SwiftNode> described)
+    private void SettleScenes(List<HostPatch> described)
     {
         for (int index = _scenes.Count - 1; index >= 0; index--)
         {
@@ -1046,7 +1046,7 @@ internal sealed class StateUIApplication : IStateUITarget
     /// <summary>Closes the windows a scene no longer describes.</summary>
     /// <param name="scene">The scene.</param>
     /// <param name="described">The windows its message lists.</param>
-    private static void SettleWindows(SceneSlot scene, List<SwiftNode> described)
+    private static void SettleWindows(SceneSlot scene, List<HostPatch> described)
     {
         for (int index = scene.Windows.Count - 1; index >= 0; index--)
         {
@@ -1117,7 +1117,7 @@ internal sealed class StateUIApplication : IStateUITarget
 
     /// <summary>The slot a described scene belongs to, made if the scene is new.</summary>
     /// <param name="node">The scene's node.</param>
-    private SceneSlot ClaimScene(SwiftNode node)
+    private SceneSlot ClaimScene(HostPatch node)
     {
         foreach (SceneSlot known in _scenes)
         {
@@ -1146,7 +1146,7 @@ internal sealed class StateUIApplication : IStateUITarget
     /// </remarks>
     /// <param name="scene">The scene describing it.</param>
     /// <param name="node">The window's node.</param>
-    private Slot ClaimWindow(SceneSlot scene, SwiftNode node)
+    private Slot ClaimWindow(SceneSlot scene, HostPatch node)
     {
         foreach (Slot known in scene.Windows)
         {
@@ -1164,7 +1164,7 @@ internal sealed class StateUIApplication : IStateUITarget
         // A scene's main window is the one that names no group: every other
         // window is described with its kind from the first message on.
         var slot = new Slot(
-            scene, node.Key, node.Name ?? node.Key, main: node.GetName(SwiftProp.WindowType) is null);
+            scene, node.Key, node.Name ?? node.Key, main: node.GetName(HostProp.WindowType) is null);
 
         if (!slot.Main)
         {
@@ -1183,7 +1183,7 @@ internal sealed class StateUIApplication : IStateUITarget
             slot.Opened = true;
             scene.Windows.Insert(0, slot);
 
-            foreach ((string name, SwiftWireValue value) in waiting.Origin?.Kept ?? [])
+            foreach ((string name, HostValue value) in waiting.Origin?.Kept ?? [])
             {
                 scene.Kept[name] = value;
             }
@@ -1231,12 +1231,12 @@ internal sealed class StateUIApplication : IStateUITarget
     /// <param name="slot">The window's slot.</param>
     /// <param name="node">Its node.</param>
     /// <returns>Whether anything the platform keeps for it changed.</returns>
-    private bool Describe(Slot slot, SwiftNode node)
+    private bool Describe(Slot slot, HostPatch node)
     {
-        string? kind = node.GetName(SwiftProp.WindowType) ?? slot.Kind;
-        string? value = node.GetString(SwiftProp.WindowValue) ?? slot.Value;
-        bool hides = node.GetBool(SwiftProp.HidesWhenInactive) ?? slot.AutoHide;
-        bool floats = node.GetBool(SwiftProp.FloatsOnTop) ?? slot.FloatsOnTop;
+        string? kind = node.GetName(HostProp.WindowType) ?? slot.Kind;
+        string? value = node.GetString(HostProp.WindowValue) ?? slot.Value;
+        bool hides = node.GetBool(HostProp.HidesWhenInactive) ?? slot.AutoHide;
+        bool floats = node.GetBool(HostProp.FloatsOnTop) ?? slot.FloatsOnTop;
 
         if (hides != slot.AutoHide || floats != slot.FloatsOnTop)
         {
@@ -1331,7 +1331,7 @@ internal sealed class StateUIApplication : IStateUITarget
     /// <param name="scene">The scene.</param>
     /// <param name="raised">What happened.</param>
     /// <param name="payload">What the handler reads, in order.</param>
-    private void Report(SceneSlot scene, SwiftEvent raised, params SwiftWireValue[] payload)
+    private void Report(SceneSlot scene, HostEvent raised, params HostValue[] payload)
     {
         if (scene.Events?.TryGetValue(raised, out int handler) == true)
         {
@@ -1371,19 +1371,19 @@ internal sealed class StateUIApplication : IStateUITarget
         internal List<Slot> Windows { get; } = [];
 
         /// <summary>The scene's handler ids, as its node last named them.</summary>
-        internal Dictionary<SwiftEvent, int>? Events { get; set; }
+        internal Dictionary<HostEvent, int>? Events { get; set; }
 
         /// <summary>
         /// Its <c>@State(sceneKey:)</c> values by name, as the platform is to
         /// keep them - in name order, so what is written is the same each time.
         /// </summary>
-        internal SortedDictionary<string, SwiftWireValue> Kept { get; } = new(StringComparer.Ordinal);
+        internal SortedDictionary<string, HostValue> Kept { get; } = new(StringComparer.Ordinal);
 
         /// <summary>Where it stands, as its windows last said: activated, deactivated or stopped.</summary>
-        internal SwiftEvent? Phase { get; set; }
+        internal HostEvent? Phase { get; set; }
 
         /// <summary>Where it was last told it stands.</summary>
-        internal SwiftEvent? Reported { get; set; }
+        internal HostEvent? Reported { get; set; }
 
         /// <summary>Its main window's slot.</summary>
         internal Slot? Main => Windows.Find(slot => slot.Main);

@@ -425,7 +425,7 @@ every kind of registration working.
 public static void Add<TControl>(
     string type,
     Func<StateUIRaise, TControl> create,
-    Action<TControl, SwiftNode>? apply = null,
+    Action<TControl, HostPatch>? apply = null,
     IReadOnlyDictionary<string, BindableProperty>? properties = null,
     Action<TControl, View?>? content = null)
     where TControl : View
@@ -433,7 +433,7 @@ public static void Add<TControl>(
 
 - **`create`** makes the control once per element. It wires the control's
   events through the `StateUIRaise` it receives:
-  `raise(sender, eventName, params SwiftWireValue[] payload)`.
+  `raise(sender, eventName, params HostValue[] payload)`.
 - **`apply`** runs on every message that touches the control and reads only
   what arrived: an absent property did not change.
 - **`properties`** declares properties backed by a `BindableProperty`, by Wire
@@ -456,7 +456,7 @@ StateUIControls.Add("Notes.TrafficLight",
     {
         var light = new TrafficLight();
         light.LightTapped += (_, index) =>
-            raise(light, "lightTapped", SwiftWireValue.Of(index));
+            raise(light, "lightTapped", HostValue.Of(index));
         return light;
     },
     apply: (light, node) =>
@@ -597,18 +597,18 @@ to `level`, and its journey, reaches the control without rebuilding
 `stateUICall` or `stateUISend`. There are two overloads:
 
 ```csharp
-public static void Add(string name, Func<HostActCall, Task<SwiftWireValue[]>> performer)
-public static void Add(string name, Func<HostActCall, SwiftWireValue[]> performer)
+public static void Add(string name, Func<HostActCall, Task<HostValue[]>> performer)
+public static void Add(string name, Func<HostActCall, HostValue[]> performer)
 ```
 
 ```csharp
 StateUIActs.Add("Notes.BatteryLevel",
-    call => [SwiftWireValue.Of(Battery.Default.ChargeLevel)]);
+    call => [HostValue.Of(Battery.Default.ChargeLevel)]);
 
 StateUIActs.Add("Notes.Export", async call =>
 {
     string location = await Exporter.SaveAsync(call.GetString(0) ?? "");
-    return [SwiftWireValue.Of(location)];
+    return [HostValue.Of(location)];
 });
 ```
 
@@ -616,7 +616,7 @@ StateUIActs.Add("Notes.Export", async call =>
   async one is awaited there.
 - **Its values.** It reads its arguments with the typed accessors of
   `HostActCall`: `GetString`, `GetDouble`, `GetInt`, `GetBool`, `GetName`,
-  `GetEnumeration`. It answers with values built by `SwiftWireValue.Of`,
+  `GetEnumeration`. It answers with values built by `HostValue.Of`,
   `OfMember`, or `OfValues`, and answers empty when it has nothing to say.
 - **Failure.** An exception fails the act: the awaiting Swift handler throws
   `StateUIError` with the exception's message.
@@ -632,7 +632,7 @@ a battery or connectivity change:
 
 ```csharp
 Battery.Default.BatteryInfoChanged += (_, e) =>
-    StateUIEvents.Raise("Notes.BatteryChanged", SwiftWireValue.Of(e.ChargeLevel));
+    StateUIEvents.Raise("Notes.BatteryChanged", HostValue.Of(e.ChargeLevel));
 ```
 
 `Raise` is safe from any thread. It drops an event nobody subscribed to, and

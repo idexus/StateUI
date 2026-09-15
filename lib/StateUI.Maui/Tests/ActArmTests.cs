@@ -47,7 +47,7 @@ internal sealed class RecordingTarget : IStateUITarget
     public IDispatcher? Dispatcher => null;
 
     /// <summary>Accepts anything; these tests never render.</summary>
-    public bool Apply(SwiftNode application, bool complete) => true;
+    public bool Apply(HostPatch application, bool complete) => true;
 
     /// <summary>Remembers the diagnostic.</summary>
     public void Fail(string message, Exception? exception) => Failures.Add(message);
@@ -71,7 +71,7 @@ public class ActArmTests
     /// writer and no reader for a reply - Swift is the only thing that reads
     /// one - so a decoder here would be a second implementation of the format
     /// with nothing checking it against the first. Comparing against
-    /// <c>SwiftWire.WriteReply(...)</c> asks the question that matters and asks
+    /// <c>WireCodec.WriteReply(...)</c> asks the question that matters and asks
     /// it of the writer that ships.
     /// </remarks>
     /// <param name="fixture">The `fixtures/act-calls` batch to perform.</param>
@@ -93,8 +93,8 @@ public class ActArmTests
             session.Renderer.Track(view, Host.Parse(node));
         }
 
-        session.Perform(SwiftWire.ReadActCalls(
-            Fixtures.ReadBytes($"act-calls/{fixture}.bin"), new SwiftWireDictionary()));
+        session.Perform(WireCodec.ReadActCalls(
+            Fixtures.ReadBytes($"act-calls/{fixture}.bin"), new WireDictionary()));
 
         return replies.Count == 0 ? (0, []) : replies[0];
     }
@@ -117,7 +117,7 @@ public class ActArmTests
         // rather than against byte indices written down here: same length, same
         // answered flag, same count as a four-number list this side builds.
         // The numbers themselves are the clock's and cannot be foreseen.
-        byte[] shape = SwiftWire.WriteReply(SwiftWireValue.Of([0.0, 0.0, 0.0, 0.0]));
+        byte[] shape = WireCodec.WriteReply(HostValue.Of([0.0, 0.0, 0.0, 0.0]));
 
         Assert.Equal(shape.Length, reply.Length);
         Assert.Equal(shape[1], reply[1]);
@@ -141,7 +141,7 @@ public class ActArmTests
             ? local.Id
             : TimeZoneInfo.TryConvertWindowsIdToIanaId(local.Id, out string? iana) ? iana : local.Id;
 
-        Assert.Equal(SwiftWire.WriteReply(SwiftWireValue.Of(expected)), reply);
+        Assert.Equal(WireCodec.WriteReply(HostValue.Of(expected)), reply);
     }
 
     /// <summary>
@@ -163,7 +163,7 @@ public class ActArmTests
         TimeZoneInfo zone = TimeZoneInfo.FindSystemTimeZoneById(FixtureZone);
         double expected = zone.GetUtcOffset(FixtureNoon).TotalMinutes;
 
-        Assert.Equal(SwiftWire.WriteReply(SwiftWireValue.Of(expected)), reply);
+        Assert.Equal(WireCodec.WriteReply(HostValue.Of(expected)), reply);
     }
 
     // ---- What happens when nobody is waiting, and when nobody knows ---------
@@ -196,7 +196,7 @@ public class ActArmTests
         // tells a refusal from an answer, and an empty ANSWER from one.
         Assert.NotEmpty(reply);
         Assert.Equal(0, reply[1]);
-        Assert.NotEqual(SwiftWire.WriteReply(), reply);
+        Assert.NotEqual(WireCodec.WriteReply(), reply);
     }
 
     /// <summary>
@@ -207,12 +207,12 @@ public class ActArmTests
     [Fact]
     public void ARegisteredActAnswersBeforeTheUnknownArm()
     {
-        StateUIActs.Add("Gallery.AnsweredByTheApp", _ => [SwiftWireValue.Of(42.0)]);
+        StateUIActs.Add("Gallery.AnsweredByTheApp", _ => [HostValue.Of(42.0)]);
 
         (int completion, byte[] reply) = Perform("Gallery.AnsweredByTheApp", -9);
 
         Assert.Equal(-9, completion);
-        Assert.Equal(SwiftWire.WriteReply(SwiftWireValue.Of(42.0)), reply);
+        Assert.Equal(WireCodec.WriteReply(HostValue.Of(42.0)), reply);
     }
 
     // ---- Aiming an act at a view on screen ----------------------------------
@@ -237,7 +237,7 @@ public class ActArmTests
             "WebViewGoBack", (new WebView(), """{"id":"browser","type":"WebView"}"""));
 
         Assert.Equal(-1, completion);
-        Assert.Equal(SwiftWire.WriteReply(), reply);
+        Assert.Equal(WireCodec.WriteReply(), reply);
     }
 
     /// <summary>
@@ -251,7 +251,7 @@ public class ActArmTests
 
         Assert.Equal(-1, completion);
         Assert.Equal(
-            SwiftWire.WriteFailure("there is no view called 'browser' on screen"), reply);
+            WireCodec.WriteFailure("there is no view called 'browser' on screen"), reply);
     }
 
     /// <summary>
@@ -266,7 +266,7 @@ public class ActArmTests
             "WebViewReload", (new Label(), """{"id":"browser","type":"Label"}"""));
 
         Assert.Equal(
-            SwiftWire.WriteFailure("the view called 'browser' is a Label, not a WebView"), reply);
+            WireCodec.WriteFailure("the view called 'browser' is a Label, not a WebView"), reply);
     }
 
     /// <summary>
@@ -277,11 +277,11 @@ public class ActArmTests
     public void AWebViewActWithNoTargetIsRefused()
     {
         (int completion, byte[] reply) =
-            Perform(new HostActCall(SwiftAct.GoBack, "goBack", [], -3));
+            Perform(new HostActCall(HostAct.GoBack, "goBack", [], -3));
 
         Assert.Equal(-3, completion);
         Assert.Equal(
-            SwiftWire.WriteFailure("a WebView act has to say which view it is for"), reply);
+            WireCodec.WriteFailure("a WebView act has to say which view it is for"), reply);
     }
 
     /// <summary>
@@ -297,7 +297,7 @@ public class ActArmTests
             (new Microsoft.Maui.Controls.Maps.Map(), """{"id":"map","type":"Map"}"""));
 
         Assert.Equal(-1, completion);
-        Assert.Equal(SwiftWire.WriteReply(), reply);
+        Assert.Equal(WireCodec.WriteReply(), reply);
     }
 
     [Fact]
@@ -306,7 +306,7 @@ public class ActArmTests
         (_, byte[] reply) = Answer("MoveToRegion");
 
         Assert.Equal(
-            SwiftWire.WriteFailure("there is no view called 'map' on screen"), reply);
+            WireCodec.WriteFailure("there is no view called 'map' on screen"), reply);
     }
 
     [Fact]
@@ -316,7 +316,7 @@ public class ActArmTests
             "MoveToRegion", (new Label(), """{"id":"map","type":"Label"}"""));
 
         Assert.Equal(
-            SwiftWire.WriteFailure("the view called 'map' is a Label, not a Map"), reply);
+            WireCodec.WriteFailure("the view called 'map' is a Label, not a Map"), reply);
     }
 
     /// <summary>
@@ -331,7 +331,7 @@ public class ActArmTests
             "Focus", (new Entry(), """{"id":"email","type":"TextField"}"""));
 
         Assert.Equal(-1, completion);
-        Assert.Equal(SwiftWire.WriteReply(SwiftWireValue.Of(false)), reply);
+        Assert.Equal(WireCodec.WriteReply(HostValue.Of(false)), reply);
     }
 
     [Fact]
@@ -340,7 +340,7 @@ public class ActArmTests
         (_, byte[] reply) = Answer("Focus");
 
         Assert.Equal(
-            SwiftWire.WriteFailure("there is no view called 'email' on screen"), reply);
+            WireCodec.WriteFailure("there is no view called 'email' on screen"), reply);
     }
 
     /// <summary>
@@ -354,7 +354,7 @@ public class ActArmTests
             "FocusByNumber", (new Entry(), """{"id":7,"type":"TextField"}"""));
 
         Assert.Equal(-1, completion);
-        Assert.Equal(SwiftWire.WriteReply(SwiftWireValue.Of(false)), reply);
+        Assert.Equal(WireCodec.WriteReply(HostValue.Of(false)), reply);
     }
 
     /// <summary>
@@ -366,7 +366,7 @@ public class ActArmTests
     {
         (_, byte[] reply) = Answer("FocusByNumber");
 
-        Assert.Equal(SwiftWire.WriteFailure("there is no view #7 on screen"), reply);
+        Assert.Equal(WireCodec.WriteFailure("there is no view #7 on screen"), reply);
     }
 
     /// <summary>
@@ -374,7 +374,7 @@ public class ActArmTests
     /// and an application's own.
     /// </summary>
     private static (int Completion, byte[] Reply) Perform(string act, int completion) =>
-        Perform(new HostActCall(SwiftAct.None, act, [], completion));
+        Perform(new HostActCall(HostAct.None, act, [], completion));
 
     /// <summary>
     /// One act, assembled by hand rather than read from a fixture - for what

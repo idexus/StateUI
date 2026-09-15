@@ -13,7 +13,7 @@ namespace StateUI.Maui.Protocol;
 /// own registered control, drawn by the registry, or a type from a Swift side
 /// newer than this host, drawn as the red marker. Either way the SPELLING is
 /// still needed - to find the registration, and to name the type in the
-/// marker - so <c>SwiftNode.TypeName</c> keeps it, exactly as
+/// marker - so <c>HostPatch.TypeName</c> keeps it, exactly as
 /// <c>HostActCall.Name</c> keeps an act's.
 /// </para>
 /// <para>
@@ -31,7 +31,7 @@ namespace StateUI.Maui.Protocol;
 /// DocumentationTests by vocabulary name.
 /// </para>
 /// </remarks>
-internal enum SwiftNodeType : ushort
+internal enum HostNodeType : ushort
 {
     /// <summary>A name this runtime has no member for.</summary>
     None = 0,

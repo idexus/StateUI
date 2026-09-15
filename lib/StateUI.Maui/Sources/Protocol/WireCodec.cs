@@ -25,7 +25,7 @@ namespace StateUI.Maui.Protocol;
 /// A name - a node type, a property key, an event, an act - travels as a
 /// number from the SESSION's dictionary: the first message to use one
 /// announces the pair in its head, and this side learns it as it parses. See
-/// <see cref="SwiftWireDictionary"/>. There is no static table, so there is
+/// <see cref="WireDictionary"/>. There is no static table, so there is
 /// nothing to be out of step with, and an application's own names ride
 /// numbers exactly as the library's do.
 /// </para>
@@ -39,7 +39,7 @@ namespace StateUI.Maui.Protocol;
 /// </remarks>
 /// 
 /// 
-internal static partial class SwiftWire
+internal static partial class WireCodec
 {
     /// <summary>
     /// The format version this runtime reads and writes. Checked against
@@ -47,28 +47,28 @@ internal static partial class SwiftWire
     /// first byte of every message. The format carries TYPED VALUES throughout
     /// - replies and event payloads included - where A STRING IS TEXT SOMEONE
     /// WROTE and nothing else is one: a closed vocabulary rides its member's
-    /// NUMBER (<see cref="SwiftWireValue.TagEnumeration"/>, this repository's
+    /// NUMBER (<see cref="HostValue.TagEnumeration"/>, this repository's
     /// own, translated onto the MAUI member by name - see
     /// <see cref="Rendering.SwiftValues"/> for why, and for the mirrors), an
     /// open-vocabulary NAME rides the session's dictionary like a property key
-    /// (<see cref="SwiftWireValue.TagName"/>), a value with parts rides as its
+    /// (<see cref="HostValue.TagName"/>), a value with parts rides as its
     /// parts, a colour is four bytes carrying one theme's half, and an absent
-    /// argument is <see cref="SwiftWireValue.TagNothing"/>. Every name is
+    /// argument is <see cref="HostValue.TagNothing"/>. Every name is
     /// NUMBERED PER SESSION and announced by the message that first uses it.
     /// The arrangement
-    /// is the children list itself - <see cref="SwiftNode.Arranged"/> - order,
+    /// is the children list itself - <see cref="HostPatch.Arranged"/> - order,
     /// count and removals in one. A property an element STOPS describing is
-    /// named in <see cref="SwiftNode.Cleared"/> and the host CLEARS it. An
-    /// element may say its children are ROWS - <see cref="SwiftNode.Recycles"/>
+    /// named in <see cref="HostPatch.Cleared"/> and the host CLEARS it. An
+    /// element may say its children are ROWS - <see cref="HostPatch.Recycles"/>
     /// - each saying what its subtree LOOKS like as one number,
-    /// <see cref="SwiftNode.Shape"/>, so a control whose row scrolled away is
+    /// <see cref="HostPatch.Shape"/>, so a control whose row scrolled away is
     /// kept for the next row of the same shape. An element carries a MOTION
     /// FIELD of its own, saying how it moves what no property of it carries - a
     /// child's place in a layout and a visual state, both of which this side
     /// works out. A property may be TIED TO A DRIVEN STATE -
-    /// <see cref="SwiftNode.States"/> - naming the number this side reads its
+    /// <see cref="HostPatch.States"/> - naming the number this side reads its
     /// value from, after which it carries no value on any message. And a
-    /// transition - <see cref="SwiftNode.Transitions"/> - is a LAW AND NOTHING
+    /// transition - <see cref="HostPatch.Transitions"/> - is a LAW AND NOTHING
     /// ELSE: no walk of a described value is awaited, what is awaited being a
     /// driven value, which rides the states field.
     /// </summary>
@@ -76,7 +76,7 @@ internal static partial class SwiftWire
 
     /// <summary>Reads a whole render message: the envelope, the names the
     /// message is the first to use, then the tree.</summary>
-    internal static SwiftMessage ReadMessage(ReadOnlySpan<byte> bytes, SwiftWireDictionary names)
+    internal static HostRender ReadMessage(ReadOnlySpan<byte> bytes, WireDictionary names)
     {
         var reader = new Reader(bytes);
 
@@ -90,14 +90,14 @@ internal static partial class SwiftWire
         bool complete = reader.U8() != 0;
         int generation = reader.I32();
         ReadAnnouncements(ref reader, names);
-        SwiftNode root = ReadNode(ref reader, names);
+        HostPatch root = ReadNode(ref reader, names);
 
         if (!reader.AtEnd)
         {
             throw new InvalidDataException("the message carries bytes past its root");
         }
 
-        return new SwiftMessage { Generation = generation, Complete = complete, Root = root };
+        return new HostRender { Generation = generation, Complete = complete, Root = root };
     }
 
     /// <summary>
@@ -106,7 +106,7 @@ internal static partial class SwiftWire
     /// them, so a batch that fails later in its bytes has still taught this
     /// side its names.
     /// </summary>
-    private static void ReadAnnouncements(ref Reader reader, SwiftWireDictionary names)
+    private static void ReadAnnouncements(ref Reader reader, WireDictionary names)
     {
         int count = reader.U16();
         for (int i = 0; i < count; i++)
@@ -122,8 +122,8 @@ internal static partial class SwiftWire
     /// and present only when it changed - "a field that is not here did not
     /// change".
     /// </summary>
-    private static SwiftNode ReadNode(
-        ref Reader reader, SwiftWireDictionary names, int depth = 0)
+    private static HostPatch ReadNode(
+        ref Reader reader, WireDictionary names, int depth = 0)
     {
         if (depth > MostNesting)
         {
@@ -133,10 +133,10 @@ internal static partial class SwiftWire
 
         // The identity, then the type - this file's promise about the bytes,
         // which an argument list would leave to the language.
-        SwiftId id = ReadId(ref reader);
-        SwiftWireDictionary.Entry type = ReadName(ref reader, names);
+        HostElementId id = ReadId(ref reader);
+        WireDictionary.Entry type = ReadName(ref reader, names);
 
-        var node = new SwiftNode
+        var node = new HostPatch
         {
             Id = id,
             Type = type.NodeType,
@@ -163,14 +163,14 @@ internal static partial class SwiftWire
                     // in it: "the node spoke about properties" is what its
                     // presence means downstream, and a control with nothing but
                     // its own said so too.
-                    node.Props = new Dictionary<SwiftProp, SwiftWireValue>(count);
+                    node.Props = new Dictionary<HostProp, HostValue>(count);
 
                     for (int i = 0; i < count; i++)
                     {
-                        SwiftWireDictionary.Entry key = ReadName(ref reader, names);
-                        SwiftWireValue value = reader.Value(names);
+                        WireDictionary.Entry key = ReadName(ref reader, names);
+                        HostValue value = reader.Value(names);
 
-                        if (key.Prop != SwiftProp.None)
+                        if (key.Prop != HostProp.None)
                         {
                             node.Props[key.Prop] = value;
                         }
@@ -185,14 +185,14 @@ internal static partial class SwiftWire
                 case 3:
                 {
                     int count = reader.U16();
-                    node.Events = new Dictionary<SwiftEvent, int>(count);
+                    node.Events = new Dictionary<HostEvent, int>(count);
 
                     for (int i = 0; i < count; i++)
                     {
-                        SwiftWireDictionary.Entry name = ReadName(ref reader, names);
+                        WireDictionary.Entry name = ReadName(ref reader, names);
                         int handler = reader.I32();
 
-                        if (name.Event != SwiftEvent.None)
+                        if (name.Event != HostEvent.None)
                         {
                             node.Events[name.Event] = handler;
                         }
@@ -215,12 +215,12 @@ internal static partial class SwiftWire
                 case 7:
                 {
                     int count = reader.U16();
-                    node.Cleared = new List<SwiftKey>(count);
+                    node.Cleared = new List<HostPropKey>(count);
 
                     for (int i = 0; i < count; i++)
                     {
-                        SwiftWireDictionary.Entry key = ReadName(ref reader, names);
-                        node.Cleared.Add(SwiftKey.Of(key.Prop, key.Name));
+                        WireDictionary.Entry key = ReadName(ref reader, names);
+                        node.Cleared.Add(HostPropKey.Of(key.Prop, key.Name));
                     }
                     break;
                 }
@@ -228,18 +228,18 @@ internal static partial class SwiftWire
                 case 6:
                 {
                     int count = reader.U16();
-                    node.Transitions = new List<SwiftTransition>(count);
+                    node.Transitions = new List<HostTransition>(count);
                     for (int i = 0; i < count; i++)
                     {
                         // Read into locals rather than into an argument list:
                         // the order of these is this file's promise about the
                         // bytes, not the language's about its arguments.
-                        SwiftWireDictionary.Entry property = ReadName(ref reader, names);
+                        WireDictionary.Entry property = ReadName(ref reader, names);
                         int law = reader.I32();
                         uint millis = reader.U32();
                         int easing = reader.I32();
                         double factor = reader.F64();
-                        node.Transitions.Add(new SwiftTransition(
+                        node.Transitions.Add(new HostTransition(
                             property.Prop, property.Name, law, millis, easing, factor));
                     }
                     break;
@@ -248,11 +248,11 @@ internal static partial class SwiftWire
                 case 11:
                 {
                     int count = reader.U16();
-                    node.States = new List<SwiftStateEntry>(count);
+                    node.States = new List<HostStateBinding>(count);
 
                     for (int i = 0; i < count; i++)
                     {
-                        SwiftWireDictionary.Entry property = ReadName(ref reader, names);
+                        WireDictionary.Entry property = ReadName(ref reader, names);
                         int number = reader.I32();
                         byte mode = reader.U8();
                         byte kind = reader.U8();
@@ -262,22 +262,22 @@ internal static partial class SwiftWire
                         // Swift half, and reading it as the member that
                         // happens to share its number would tie a property to
                         // the wrong end of a state in silence.
-                        if (mode > (byte)SwiftStateMode.InOut)
+                        if (mode > (byte)HostStateMode.InOut)
                         {
                             throw new InvalidDataException($"unknown number mode {mode}");
                         }
 
-                        if (kind > (byte)SwiftStateKind.Plain)
+                        if (kind > (byte)HostStateKind.Plain)
                         {
                             throw new InvalidDataException($"unknown number kind {kind}");
                         }
 
-                        node.States.Add(new SwiftStateEntry(
+                        node.States.Add(new HostStateBinding(
                             property.Prop,
                             property.Name,
                             number,
-                            (SwiftStateMode)mode,
-                            (SwiftStateKind)kind));
+                            (HostStateMode)mode,
+                            (HostStateKind)kind));
                     }
                     break;
                 }
@@ -304,7 +304,7 @@ internal static partial class SwiftWire
 
                     // Always, whichever law: a layout may travel the way the
                     // application does and still hold one part of a place still.
-                    node.Lanes = (SwiftMotionLanes)reader.U8();
+                    node.Lanes = (HostMotionLanes)reader.U8();
                     break;
                 }
 
@@ -313,7 +313,7 @@ internal static partial class SwiftWire
                 {
                     int count = reader.U16();
                     node.Arranged = field == 5;
-                    node.Children = new List<SwiftNode>(count);
+                    node.Children = new List<HostPatch>(count);
                     for (int i = 0; i < count; i++)
                     {
                         node.Children.Add(
@@ -329,10 +329,10 @@ internal static partial class SwiftWire
     }
 
     /// <summary>An identity, in whichever namespace its tag says.</summary>
-    private static SwiftId ReadId(ref Reader reader) => reader.U8() switch
+    private static HostElementId ReadId(ref Reader reader) => reader.U8() switch
     {
-        1 => new SwiftId(reader.I32()),
-        2 => new SwiftId(reader.Str()),
+        1 => new HostElementId(reader.I32()),
+        2 => new HostElementId(reader.Str()),
         var tag => throw new InvalidDataException($"unknown identity tag {tag}"),
     };
 
@@ -346,7 +346,7 @@ internal static partial class SwiftWire
     /// what keeps the two sides from quietly disagreeing about what anything
     /// means.
     /// </summary>
-    private static SwiftWireDictionary.Entry ReadName(ref Reader reader, SwiftWireDictionary names)
+    private static WireDictionary.Entry ReadName(ref Reader reader, WireDictionary names)
     {
         ushort id = reader.U16();
 
@@ -371,7 +371,7 @@ internal static partial class SwiftWire
     /// </remarks>
     /// <param name="bytes">The buffer Swift answered with.</param>
     /// <returns>The store's name and the keys, in the order declared.</returns>
-    internal static (string Storage, List<SwiftPersistentKey> Keys) ReadPersistentKeys(
+    internal static (string Storage, List<HostPersistentKey> Keys) ReadPersistentKeys(
         ReadOnlySpan<byte> bytes)
     {
         var reader = new Reader(bytes);
@@ -385,12 +385,12 @@ internal static partial class SwiftWire
 
         string storage = reader.Str();
         int count = reader.U16();
-        var keys = new List<SwiftPersistentKey>(count);
+        var keys = new List<HostPersistentKey>(count);
 
         for (int i = 0; i < count; i++)
         {
             string name = reader.Str();
-            keys.Add(new SwiftPersistentKey(name, (SwiftPersistentKind)reader.U8()));
+            keys.Add(new HostPersistentKey(name, (HostPersistentKind)reader.U8()));
         }
 
         if (!reader.AtEnd)
@@ -419,12 +419,12 @@ internal static partial class SwiftWire
     /// </remarks>
     /// <param name="found">Name and value, for the keys the store had.</param>
     internal static byte[] WritePersistent(
-        IReadOnlyList<(string Name, SwiftWireValue Value)> found)
+        IReadOnlyList<(string Name, HostValue Value)> found)
     {
         var bytes = new List<byte>(32) { Version };
         Write(bytes, Count16(found.Count, "kept values"));
 
-        foreach ((string name, SwiftWireValue value) in found)
+        foreach ((string name, HostValue value) in found)
         {
             Write(bytes, name);
             Write(bytes, value);
@@ -434,7 +434,7 @@ internal static partial class SwiftWire
     }
 
     /// <summary>Reads a whole batch of acts, announcements first.</summary>
-    internal static List<HostActCall> ReadActCalls(ReadOnlySpan<byte> bytes, SwiftWireDictionary names)
+    internal static List<HostActCall> ReadActCalls(ReadOnlySpan<byte> bytes, WireDictionary names)
     {
         var reader = new Reader(bytes);
 
@@ -457,12 +457,12 @@ internal static partial class SwiftWire
             // The name decides the arm ONCE, here - Perform still switches on
             // the enum, and a name it maps to nothing fails in the default
             // arm, or runs what the application registered for it.
-            SwiftAct act = SwiftTokenNames<SwiftAct>.Parse(name);
+            HostAct act = TokenNames<HostAct>.Parse(name);
 
             int completion = reader.I32();
             int argCount = reader.U8();
 
-            var arguments = new List<SwiftWireValue>(argCount);
+            var arguments = new List<HostValue>(argCount);
             for (int a = 0; a < argCount; a++)
             {
                 arguments.Add(reader.Value(names));
@@ -516,7 +516,7 @@ internal static partial class SwiftWire
     /// values - an event with nothing to say crosses no bytes at all, which
     /// is the common case and allocates nothing.
     /// </summary>
-    internal static byte[]? WritePayload(params SwiftWireValue[] values)
+    internal static byte[]? WritePayload(params HostValue[] values)
     {
         if (values.Length == 0)
         {
@@ -527,7 +527,7 @@ internal static partial class SwiftWire
         bytes.Add(Version);
         bytes.Add(Count8(values.Length, "values in one payload"));
 
-        foreach (SwiftWireValue value in values)
+        foreach (HostValue value in values)
         {
             Write(bytes, value);
         }
@@ -542,14 +542,14 @@ internal static partial class SwiftWire
     /// <c>Wire.decodeHostEvent</c> and runs whatever <c>HostEvents.on</c>
     /// subscribed.
     /// </summary>
-    internal static byte[] WriteHostEvent(string eventName, params SwiftWireValue[] values)
+    internal static byte[] WriteHostEvent(string eventName, params HostValue[] values)
     {
         var bytes = new List<byte>(32);
         bytes.Add(Version);
         Write(bytes, eventName);
         bytes.Add(Count8(values.Length, "values on one host event"));
 
-        foreach (SwiftWireValue value in values)
+        foreach (HostValue value in values)
         {
             Write(bytes, value);
         }
@@ -564,14 +564,14 @@ internal static partial class SwiftWire
     /// same counted value list every channel shares, one value per property
     /// in the order the Swift provider declares them.
     /// </summary>
-    internal static byte[] WriteEnvironment(byte domain, params SwiftWireValue[] values)
+    internal static byte[] WriteEnvironment(byte domain, params HostValue[] values)
     {
         var bytes = new List<byte>(32);
         bytes.Add(Version);
         bytes.Add(domain);
         bytes.Add(Count8(values.Length, "values in one push"));
 
-        foreach (SwiftWireValue value in values)
+        foreach (HostValue value in values)
         {
             Write(bytes, value);
         }
@@ -584,14 +584,14 @@ internal static partial class SwiftWire
     /// <c>try await</c> resumes with - none for a method that returns
     /// nothing.
     /// </summary>
-    internal static byte[] WriteReply(params SwiftWireValue[] values)
+    internal static byte[] WriteReply(params HostValue[] values)
     {
         var bytes = new List<byte>(16);
         bytes.Add(Version);
         bytes.Add(1);
         bytes.Add(Count8(values.Length, "values in one reply"));
 
-        foreach (SwiftWireValue value in values)
+        foreach (HostValue value in values)
         {
             Write(bytes, value);
         }
@@ -609,31 +609,31 @@ internal static partial class SwiftWire
         bytes.Add(Version);
         bytes.Add(0);
         bytes.Add(1);
-        Write(bytes, SwiftWireValue.Of(reason));
+        Write(bytes, HostValue.Of(reason));
         return [.. bytes];
     }
 
     /// <summary>One tagged value, the mirror of <c>Reader.Value</c>.</summary>
-    private static void Write(List<byte> bytes, SwiftWireValue value)
+    private static void Write(List<byte> bytes, HostValue value)
     {
         switch (value.Tag)
         {
-            case SwiftWireValue.TagFalse:
-            case SwiftWireValue.TagTrue:
+            case HostValue.TagFalse:
+            case HostValue.TagTrue:
                 bytes.Add(value.Tag);
                 break;
 
-            case SwiftWireValue.TagNumber:
+            case HostValue.TagNumber:
                 bytes.Add(value.Tag);
                 Write(bytes, value.Number);
                 break;
 
-            case SwiftWireValue.TagString:
+            case HostValue.TagString:
                 bytes.Add(value.Tag);
                 Write(bytes, value.Text ?? "");
                 break;
 
-            case SwiftWireValue.TagColor:
+            case HostValue.TagColor:
                 // Four channels, one byte each, so there is no word to agree
                 // an endianness for - the shape the tree carries a colour in.
                 bytes.Add(value.Tag);
@@ -643,7 +643,7 @@ internal static partial class SwiftWire
                 bytes.Add(value.Alpha);
                 break;
 
-            case SwiftWireValue.TagNumbers:
+            case HostValue.TagNumbers:
             {
                 double[] numbers = value.Numbers ?? [];
                 bytes.Add(value.Tag);
@@ -655,7 +655,7 @@ internal static partial class SwiftWire
                 break;
             }
 
-            case SwiftWireValue.TagStrings:
+            case HostValue.TagStrings:
             {
                 string[] strings = value.Strings ?? [];
                 bytes.Add(value.Tag);
@@ -667,33 +667,33 @@ internal static partial class SwiftWire
                 break;
             }
 
-            case SwiftWireValue.TagEnumeration:
+            case HostValue.TagEnumeration:
                 // A member of a closed vocabulary the HOST reports - a gesture's
                 // status, a battery state, why a navigation happened. Written
                 // as OUR number for it, never MAUI's: the caller has already
                 // translated MAUI's member onto the mirror, which is the same
                 // rule the tree travels by, read backwards. See
-                // SwiftWireEnums.cs.
+                // HostEnums.cs.
                 bytes.Add(value.Tag);
                 Write(bytes, value.Member);
                 break;
 
-            case SwiftWireValue.TagValues:
+            case HostValue.TagValues:
             {
                 // A list of them - the connection profiles are the one payload
                 // that carries several members at once, and a run of doubles
                 // could not say they were members.
-                SwiftWireValue[] values = value.Values ?? [];
+                HostValue[] values = value.Values ?? [];
                 bytes.Add(value.Tag);
                 Write(bytes, Count16(values.Length, "members in one list"));
-                foreach (SwiftWireValue each in values)
+                foreach (HostValue each in values)
                 {
                     Write(bytes, each);
                 }
                 break;
             }
 
-            case SwiftWireValue.TagNothing:
+            case HostValue.TagNothing:
                 // No payload: the tag IS the value. A dialog the reader
                 // dismissed answers with it, so "no choice" travels in the
                 // value rather than in the shape of the reply.
@@ -834,22 +834,22 @@ internal static partial class SwiftWire
             return value;
         }
 
-        internal SwiftWireValue Value(SwiftWireDictionary names, int depth = 0)
+        internal HostValue Value(WireDictionary names, int depth = 0)
         {
             byte tag = U8();
             switch (tag)
             {
-                case SwiftWireValue.TagFalse:
-                case SwiftWireValue.TagTrue:
-                    return new SwiftWireValue(tag);
+                case HostValue.TagFalse:
+                case HostValue.TagTrue:
+                    return new HostValue(tag);
 
-                case SwiftWireValue.TagNumber:
-                    return new SwiftWireValue(F64());
+                case HostValue.TagNumber:
+                    return new HostValue(F64());
 
-                case SwiftWireValue.TagString:
-                    return new SwiftWireValue(Str());
+                case HostValue.TagString:
+                    return new HostValue(Str());
 
-                case SwiftWireValue.TagNumbers:
+                case HostValue.TagNumbers:
                 {
                     int count = U16();
                     var numbers = new double[count];
@@ -857,10 +857,10 @@ internal static partial class SwiftWire
                     {
                         numbers[i] = F64();
                     }
-                    return new SwiftWireValue(numbers);
+                    return new HostValue(numbers);
                 }
 
-                case SwiftWireValue.TagStrings:
+                case HostValue.TagStrings:
                 {
                     int count = U16();
                     var strings = new string[count];
@@ -868,10 +868,10 @@ internal static partial class SwiftWire
                     {
                         strings[i] = Str();
                     }
-                    return new SwiftWireValue(strings);
+                    return new HostValue(strings);
                 }
 
-                case SwiftWireValue.TagColor:
+                case HostValue.TagColor:
                 {
                     // Four channels, written out one byte each - so there is
                     // no word to agree an endianness for. Read into locals
@@ -882,10 +882,10 @@ internal static partial class SwiftWire
                     byte green = U8();
                     byte blue = U8();
                     byte alpha = U8();
-                    return new SwiftWireValue(red, green, blue, alpha);
+                    return new HostValue(red, green, blue, alpha);
                 }
 
-                case SwiftWireValue.TagValues:
+                case HostValue.TagValues:
                 {
                     if (depth >= MostNesting)
                     {
@@ -894,29 +894,29 @@ internal static partial class SwiftWire
                     }
 
                     int count = U16();
-                    var values = new SwiftWireValue[count];
+                    var values = new HostValue[count];
                     for (int i = 0; i < count; i++)
                     {
                         values[i] = Value(names, depth + 1);
                     }
-                    return new SwiftWireValue(values);
+                    return new HostValue(values);
                 }
 
-                case SwiftWireValue.TagNothing:
+                case HostValue.TagNothing:
                     // No payload: the tag IS the value. Every typed accessor
                     // answers null for it, so an absent argument reads exactly
                     // as one that was never sent.
-                    return new SwiftWireValue(SwiftWireValue.TagNothing);
+                    return new HostValue(HostValue.TagNothing);
 
-                case SwiftWireValue.TagEnumeration:
+                case HostValue.TagEnumeration:
                     // A member of a closed vocabulary, as THIS REPOSITORY's
                     // number for it. Signed and four bytes wide: room for a
                     // bit set of any width, and for the negative number a
                     // translation answers to say a member is one it cannot
                     // read.
-                    return new SwiftWireValue(SwiftWireValue.TagEnumeration, I32());
+                    return new HostValue(HostValue.TagEnumeration, I32());
 
-                case SwiftWireValue.TagName:
+                case HostValue.TagName:
                 {
                     // A NAME from an open vocabulary - a visual state, a font
                     // family, a radio group - riding the session's dictionary
@@ -926,7 +926,7 @@ internal static partial class SwiftWire
                     string name = names.Resolve(id)
                         ?? throw new InvalidDataException(
                             $"a value names #{id}, never announced");
-                    return new SwiftWireValue(SwiftWireValue.TagName, name);
+                    return new HostValue(HostValue.TagName, name);
                 }
 
                 default:
@@ -934,209 +934,4 @@ internal static partial class SwiftWire
             }
         }
     }
-}
-
-/// <summary>
-/// One value as it crossed the wire: a tag and the payload the tag says is
-/// there. What an act's argument is made of - see <c>Core/Wire.swift</c>
-/// for the tags.
-/// </summary>
-public readonly struct SwiftWireValue
-{
-    internal const byte TagFalse = 1;
-    internal const byte TagTrue = 2;
-    internal const byte TagNumber = 3;
-    internal const byte TagString = 4;
-    internal const byte TagNumbers = 5;
-    internal const byte TagStrings = 6;
-
-    // 7 is unused, and nothing is renumbered to close the gap: a number costs
-    // nothing left alone, while moving one has to land on both halves in the
-    // same breath. A name crosses as TagName.
-
-    /// <summary>
-    /// A colour, as the four channels it is - each 0 to 255, sRGB, alpha
-    /// included. The value this tree carries most of, and the cheapest to say
-    /// exactly: four bytes, no parser, no vocabulary. The Swift side has
-    /// already picked the half for the theme in force, so one of these is one
-    /// colour and never a pair.
-    /// </summary>
-    internal const byte TagColor = 8;
-
-    /// <summary>
-    /// A list of values of any kind - what a value made of parts travels as: a
-    /// brush, a stroke shape, a flex basis, a grid length and a list of them, a
-    /// drawing, a WebView's source, a render transform, the safe-area edges, a
-    /// button's content layout; and, from this side, the connection profiles.
-    /// </summary>
-    internal const byte TagValues = 9;
-
-    /// <summary>
-    /// One member of a CLOSED vocabulary, as its own number.
-    /// </summary>
-    /// <remarks>
-    /// The number is THIS REPOSITORY's, declaration order from 0, in BOTH
-    /// directions: an <c>internal enum</c> in <c>Protocol/SwiftWireEnums.cs</c>
-    /// mirrors every Swift vocabulary member for member, and the translation
-    /// onto MAUI's own member is a switch naming it literally. A bit set is one
-    /// of these too, carrying our bits from 1&lt;&lt;0. Signed and four bytes
-    /// wide: room enough for a bit set of any width, and for the negative
-    /// number a translation answers to say a member is one it cannot read.
-    /// </remarks>
-    internal const byte TagEnumeration = 10;
-
-    /// <summary>
-    /// A NAME from an OPEN vocabulary - a visual state and its group, a radio
-    /// group, a font family, a window's kind, a kept state's key.
-    /// </summary>
-    /// <remarks>
-    /// Text an author wrote, but a name rather than prose: it repeats across a
-    /// tree and means the same thing every time, so it rides the session's
-    /// dictionary as its number exactly as a property key does - announced
-    /// once, two bytes thereafter - and is resolved back here. Reads as a
-    /// string through <see cref="SwiftNode.GetName(string)"/>, which is deliberately
-    /// NOT <see cref="SwiftNode.GetString(string)"/>: a name and a piece of text are
-    /// different things and this wire keeps them apart.
-    /// </remarks>
-    internal const byte TagName = 11;
-
-    /// <summary>
-    /// NOTHING - a value that is not there, carrying no payload at all.
-    /// </summary>
-    /// <remarks>
-    /// An argument list has no such thing as a field left out, and a value list
-    /// no such thing as a gap, so absence needs saying, and this is how it is
-    /// said: a dialog's missing cancel, destruction or placeholder caption, a
-    /// missing maximum length, "no day" in <c>getUtcOffset</c> and "no base
-    /// url" in a WebView's HTML source all cross as NOTHING, where an empty
-    /// string, a -1 or an empty list would each read as a value someone meant.
-    /// Every typed accessor answers null for one, which is what makes an absent
-    /// argument indistinguishable from a caller that never sent it.
-    /// </remarks>
-    internal const byte TagNothing = 12;
-
-    internal readonly byte Tag;
-    internal readonly double Number;
-    internal readonly int Member;
-    internal readonly string? Text;
-    internal readonly double[]? Numbers;
-    internal readonly string[]? Strings;
-    internal readonly SwiftWireValue[]? Values;
-    internal readonly byte Red;
-    internal readonly byte Green;
-    internal readonly byte Blue;
-    internal readonly byte Alpha;
-
-    internal SwiftWireValue(byte tag) => Tag = tag;
-
-    internal SwiftWireValue(byte red, byte green, byte blue, byte alpha)
-    {
-        Tag = TagColor;
-        Red = red;
-        Green = green;
-        Blue = blue;
-        Alpha = alpha;
-    }
-
-    internal SwiftWireValue(SwiftWireValue[] values)
-    {
-        Tag = TagValues;
-        Values = values;
-    }
-
-    internal SwiftWireValue(double number)
-    {
-        Tag = TagNumber;
-        Number = number;
-    }
-
-    internal SwiftWireValue(string text)
-    {
-        Tag = TagString;
-        Text = text;
-    }
-
-    internal SwiftWireValue(byte tag, string text)
-    {
-        Tag = tag;
-        Text = text;
-    }
-
-    /// <summary>
-    /// A member of a closed vocabulary - the tag says which kind of number it
-    /// is, and the number is kept apart from <see cref="Number"/> so that
-    /// nothing can read an alignment as a font size.
-    /// </summary>
-    internal SwiftWireValue(byte tag, int member)
-    {
-        Tag = tag;
-        Member = member;
-    }
-
-    internal SwiftWireValue(double[] numbers)
-    {
-        Tag = TagNumbers;
-        Numbers = numbers;
-    }
-
-    internal SwiftWireValue(string[] strings)
-    {
-        Tag = TagStrings;
-        Strings = strings;
-    }
-
-    /// <summary>
-    /// The member's number, when this value is one of a closed vocabulary -
-    /// null for anything else, a plain number included, so nothing reads a
-    /// font size as an alignment.
-    /// </summary>
-    internal int? Enumeration => Tag == TagEnumeration ? Member : null;
-
-    /// <summary>
-    /// The spelling, when this value is a NAME - null for anything else, TEXT
-    /// included. The two are different things and this wire keeps them apart.
-    /// </summary>
-    internal string? Name => Tag == TagName ? Text : null;
-
-    /// <summary>Text - an Entry's new value, a url, a search query.</summary>
-    public static SwiftWireValue Of(string text) => new(text);
-
-    /// <summary>
-    /// A QUANTITY - a slider's value, an index, a count. Never a member of a
-    /// vocabulary, however int-shaped it looks: that is
-    /// <see cref="OfMember(int)"/>.
-    /// </summary>
-    public static SwiftWireValue Of(double number) => new(number);
-
-    /// <summary>
-    /// One member of a CLOSED vocabulary, as THIS REPOSITORY's number for it -
-    /// a gesture's status, a battery state, why a navigation happened.
-    /// </summary>
-    /// <remarks>
-    /// Named apart from <see cref="Of(double)"/> rather than overloading it,
-    /// and that is the whole point: a member and a quantity are different
-    /// things, an <c>int</c> widens into a double without a word, and the two
-    /// calls would then differ only in the type of what was passed. The caller
-    /// translates MAUI's member onto the mirror in
-    /// <c>Protocol/SwiftWireEnums.cs</c> first - never a cast, which would put
-    /// MAUI's own number on the wire and leave a MAUI release free to
-    /// reinterpret it.
-    /// </remarks>
-    /// <param name="member">The mirror's member, cast to its number.</param>
-    public static SwiftWireValue OfMember(int member) => new(TagEnumeration, member);
-
-    /// <summary>
-    /// A list of values of any kind - what several members travel as, there
-    /// being no run of them the way there is a run of numbers.
-    /// </summary>
-    public static SwiftWireValue OfValues(params SwiftWireValue[] values) => new(values);
-
-    /// <summary>True or false - a switch's state, a focus, a can-go-back.</summary>
-    public static SwiftWireValue Of(bool value) => new(value ? TagTrue : TagFalse);
-
-    /// <summary>
-    /// A list of numbers - a point's pair, a date's three, a frame report's
-    /// eight, a selection's positions.
-    /// </summary>
-    public static SwiftWireValue Of(params double[] numbers) => new(numbers);
 }

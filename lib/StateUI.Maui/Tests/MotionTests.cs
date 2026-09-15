@@ -41,7 +41,7 @@ public class MotionTests
 
         Assert.False(clock.Running);
 
-        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, HostEasing.Linear));
         Assert.True(clock.Running);
 
         clock.Tick(100);
@@ -61,7 +61,7 @@ public class MotionTests
 
         MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
 
-        walker.Aim(scale, [100.0], HostMotion.Eased(100, SwiftEasing.Linear));
+        walker.Aim(scale, [100.0], HostMotion.Eased(100, HostEasing.Linear));
         clock.Tick(50);
 
         double atTurn = label.Scale;
@@ -70,7 +70,7 @@ public class MotionTests
         // Sent somewhere else entirely, and the very next frame must still be
         // going the way it was: a cut would show as the value standing still
         // for a frame, or worse, jumping back.
-        walker.Aim(scale, [0.0], HostMotion.Eased(400, SwiftEasing.Linear));
+        walker.Aim(scale, [0.0], HostMotion.Eased(400, HostEasing.Linear));
         clock.Tick(8);
 
         Assert.True(
@@ -104,9 +104,9 @@ public class MotionTests
         walker.Aim(
             Opacity(carried),
             [1.0],
-            HostMotion.Eased(100, SwiftEasing.Linear),
+            HostMotion.Eased(100, HostEasing.Linear),
             _ => walker.Aim(
-                Opacity(bystander), [1.0], HostMotion.Eased(100, SwiftEasing.Linear)));
+                Opacity(bystander), [1.0], HostMotion.Eased(100, HostEasing.Linear)));
 
         clock.Tick(50);
 
@@ -115,7 +115,7 @@ public class MotionTests
         walker.Aim(
             Opacity(carried),
             [0.25],
-            HostMotion.Eased(100, SwiftEasing.Linear),
+            HostMotion.Eased(100, HostEasing.Linear),
             _ => answered = true);
 
         clock.Tick(200);
@@ -139,9 +139,9 @@ public class MotionTests
         walker.Aim(
             Opacity(carried),
             [1.0],
-            HostMotion.Eased(100, SwiftEasing.Linear),
+            HostMotion.Eased(100, HostEasing.Linear),
             _ => walker.Aim(
-                Opacity(carried), [0.9], HostMotion.Eased(100, SwiftEasing.Linear)));
+                Opacity(carried), [0.9], HostMotion.Eased(100, HostEasing.Linear)));
 
         clock.Tick(50);
 
@@ -151,7 +151,7 @@ public class MotionTests
         walker.Aim(
             Opacity(carried),
             [0.25],
-            HostMotion.Eased(100, SwiftEasing.Linear),
+            HostMotion.Eased(100, HostEasing.Linear),
             whole => { answered = true; arrived = whole; });
 
         clock.Tick(200);
@@ -174,7 +174,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
             [1.0],
-            HostMotion.Eased(1000, SwiftEasing.CubicOut));
+            HostMotion.Eased(1000, HostEasing.CubicOut));
 
         clock.Tick(250);
 
@@ -226,16 +226,16 @@ public class MotionTests
         walker.Aim(
             scale,
             [10.0],
-            HostMotion.Eased(100, SwiftEasing.Linear),
+            HostMotion.Eased(100, HostEasing.Linear),
             done: _ =>
             {
                 // The handler resumed by the ending motion sends the value
                 // somewhere else - from inside the very call that is replacing
                 // it.
-                walker.Aim(scale, [99.0], HostMotion.Eased(100, SwiftEasing.Linear));
+                walker.Aim(scale, [99.0], HostMotion.Eased(100, HostEasing.Linear));
             });
 
-        walker.Aim(scale, [50.0], HostMotion.Eased(100, SwiftEasing.Linear));
+        walker.Aim(scale, [50.0], HostMotion.Eased(100, HostEasing.Linear));
 
         clock.Tick(200);
 
@@ -253,7 +253,7 @@ public class MotionTests
         var walker = new Walker { Clock = null };
         var label = new Label { Opacity = 0 };
 
-        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(400, SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(400, HostEasing.Linear));
 
         Assert.Equal(1, label.Opacity);
     }
@@ -278,7 +278,7 @@ public class MotionTests
             walker.Aim(
                 Opacity(label),
                 [1.0],
-                HostMotion.Eased(400, SwiftEasing.Linear),
+                HostMotion.Eased(400, HostEasing.Linear),
                 done: whole => answered = whole);
 
             Assert.Equal(1, label.Opacity);
@@ -327,7 +327,7 @@ public class MotionTests
         walker.Aim(
             scale,
             [100.0],
-            HostMotion.Eased(100, SwiftEasing.Linear),
+            HostMotion.Eased(100, HostEasing.Linear),
             velocity: [2.0]);
 
         clock.Tick(50);
@@ -385,7 +385,7 @@ public class MotionTests
         walker.Aim(
             scale,
             [100.0],
-            HostMotion.Eased(200, SwiftEasing.Linear),
+            HostMotion.Eased(200, HostEasing.Linear),
             done: whole => answered = whole,
             velocity: [1.0]);
 
@@ -411,7 +411,7 @@ public class MotionTests
         (Walker walker, HandFrameClock clock) = Winding();
         var label = new Label { Opacity = 0 };
 
-        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, HostEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal(0.5, label.Opacity, 6);
@@ -438,7 +438,7 @@ public class MotionTests
         walker.Cycle = () => read.Add(label.Opacity);
         walker.Idle = () => !busy;
 
-        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, SwiftEasing.Linear));
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, HostEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal([0.5], read);
@@ -504,29 +504,29 @@ public class MotionTests
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
 
-        var border = (Border)host.ApplyMessage(new SwiftNode
+        var border = (Border)host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Border,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Border,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.Opacity] = SwiftWireValue.Of(1.0),
+                [HostProp.Opacity] = HostValue.Of(1.0),
             },
         });
 
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Border,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Border,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.Opacity] = SwiftWireValue.Of(0.2),
+                [HostProp.Opacity] = HostValue.Of(0.2),
             },
             Transitions =
             [
-                new SwiftTransition(
-                    SwiftProp.Opacity, "opacity",
-                    (int)HostMotion.Law.Eased, 100, (int)SwiftEasing.Linear, 0),
+                new HostTransition(
+                    HostProp.Opacity, "opacity",
+                    (int)HostMotion.Law.Eased, 100, (int)HostEasing.Linear, 0),
             ],
         });
 
@@ -572,25 +572,25 @@ public class MotionTests
         var free = new Grid { HeightRequest = 100 };
         loose.Add(free);
 
-        SwiftNode Said() => new()
+        HostPatch Said() => new()
         {
-            Type = SwiftNodeType.Grid,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Type = HostNodeType.Grid,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.Height] = SwiftWireValue.Of(300.0),
+                [HostProp.Height] = HostValue.Of(300.0),
             },
             Transitions =
             [
-                new SwiftTransition(
-                    SwiftProp.Height, "heightRequest",
-                    (int)HostMotion.Law.Eased, 100, (int)SwiftEasing.Linear, 0),
+                new HostTransition(
+                    HostProp.Height, "heightRequest",
+                    (int)HostMotion.Law.Eased, 100, (int)HostEasing.Linear, 0),
             ],
         };
 
-        SwiftNode inside = Said();
+        HostPatch inside = Said();
         transitions.Apply(child, inside, transitions.Take(inside));
 
-        SwiftNode outside = Said();
+        HostPatch outside = Said();
         transitions.Apply(free, outside, transitions.Take(outside));
 
         // The measured one ARRIVES; the ordinary one is still where it began
@@ -614,19 +614,19 @@ public class MotionTests
         var host = new Host();
         host.Renderer.Walker.Clock = new HandFrameClock();
 
-        var label = (Label)host.ApplyMessage(new SwiftNode
+        var label = (Label)host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.Text] = SwiftWireValue.Of("said"),
+                [HostProp.Text] = HostValue.Of("said"),
             },
             Transitions =
             [
-                new SwiftTransition(
-                    SwiftProp.Text, "text",
-                    (int)HostMotion.Law.Eased, 200, (int)SwiftEasing.Linear, 0),
+                new HostTransition(
+                    HostProp.Text, "text",
+                    (int)HostMotion.Law.Eased, 200, (int)HostEasing.Linear, 0),
             ],
         });
 
@@ -649,7 +649,7 @@ public class MotionTests
         var host = new Host();
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = HostMotion.Eased(100, SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, HostEasing.Linear);
 
         var label = (Label)host.Apply(Stateful);
 
@@ -684,7 +684,7 @@ public class MotionTests
         var host = new Host();
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = HostMotion.Eased(200, SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(200, HostEasing.Linear);
 
         var label = (Label)host.Apply(Stateful);
 
@@ -724,27 +724,27 @@ public class MotionTests
         var host = new Host();
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = HostMotion.Eased(100, SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, HostEasing.Linear);
 
-        var label = (Label)host.ApplyMessage(new SwiftNode
+        var label = (Label)host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.Text] = SwiftWireValue.Of("here"),
+                [HostProp.Text] = HostValue.Of("here"),
             },
         });
 
         Assert.True(label.IsVisible);
 
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.IsVisible] = SwiftWireValue.Of(false),
+                [HostProp.IsVisible] = HostValue.Of(false),
             },
         });
 
@@ -771,28 +771,28 @@ public class MotionTests
         var host = new Host();
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = HostMotion.Eased(100, SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, HostEasing.Linear);
 
-        var label = (Label)host.ApplyMessage(new SwiftNode
+        var label = (Label)host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.Text] = SwiftWireValue.Of("here"),
-                [SwiftProp.IsVisible] = SwiftWireValue.Of(false),
+                [HostProp.Text] = HostValue.Of("here"),
+                [HostProp.IsVisible] = HostValue.Of(false),
             },
         });
 
         Assert.False(label.IsVisible, "a view described for the first time is simply there or not");
 
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.IsVisible] = SwiftWireValue.Of(true),
+                [HostProp.IsVisible] = HostValue.Of(true),
             },
         });
 
@@ -813,26 +813,26 @@ public class MotionTests
         var host = new Host();
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
-        host.Renderer.Walker.Travel = HostMotion.Eased(100, SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, HostEasing.Linear);
 
-        var label = (Label)host.ApplyMessage(new SwiftNode
+        var label = (Label)host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.Text] = SwiftWireValue.Of("here"),
+                [HostProp.Text] = HostValue.Of("here"),
             },
         });
 
         // Away it goes, fading, and deaf while it does.
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.IsVisible] = SwiftWireValue.Of(false),
+                [HostProp.IsVisible] = HostValue.Of(false),
             },
         });
 
@@ -842,15 +842,15 @@ public class MotionTests
         Assert.True(label.InputTransparent);
 
         // And back, by a message that also says this view does not travel.
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
             Moves = true,
-            Motion = HostMotion.Eased(0, SwiftEasing.Linear),
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Motion = HostMotion.Eased(0, HostEasing.Linear),
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.IsVisible] = SwiftWireValue.Of(true),
+                [HostProp.IsVisible] = HostValue.Of(true),
             },
         });
 
@@ -867,27 +867,27 @@ public class MotionTests
     {
         var host = new Host();
         host.Renderer.Walker.Clock = new HandFrameClock();
-        host.Renderer.Walker.Travel = HostMotion.Eased(100, SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, HostEasing.Linear);
 
-        var label = (Label)host.ApplyMessage(new SwiftNode
+        var label = (Label)host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.Text] = SwiftWireValue.Of("here"),
+                [HostProp.Text] = HostValue.Of("here"),
             },
         });
 
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
             Moves = true,
-            Motion = HostMotion.Eased(0, SwiftEasing.Linear),
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Motion = HostMotion.Eased(0, HostEasing.Linear),
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.IsVisible] = SwiftWireValue.Of(false),
+                [HostProp.IsVisible] = HostValue.Of(false),
             },
         });
 
@@ -915,29 +915,29 @@ public class MotionTests
         var clock = new HandFrameClock();
         host.Renderer.Walker.Clock = clock;
 
-        var label = (Label)host.ApplyMessage(new SwiftNode
+        var label = (Label)host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.Rotation] = SwiftWireValue.Of(0d),
+                [HostProp.Rotation] = HostValue.Of(0d),
             },
         });
 
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.Rotation] = SwiftWireValue.Of(90d),
+                [HostProp.Rotation] = HostValue.Of(90d),
             },
             Transitions =
             [
-                new SwiftTransition(
-                    SwiftProp.Rotation, "rotation",
-                    (int)HostMotion.Law.Eased, 100, (int)SwiftEasing.Linear, 0),
+                new HostTransition(
+                    HostProp.Rotation, "rotation",
+                    (int)HostMotion.Law.Eased, 100, (int)HostEasing.Linear, 0),
             ],
         });
 
@@ -946,12 +946,12 @@ public class MotionTests
 
         // The tree says this view does not travel - and says NOTHING about the
         // rotation, which as far as it is concerned arrived a message ago.
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.Label,
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
             Moves = true,
-            Motion = HostMotion.Eased(0, SwiftEasing.Linear),
+            Motion = HostMotion.Eased(0, HostEasing.Linear),
         });
 
         Assert.Equal(90, label.Rotation, 3);
@@ -986,7 +986,7 @@ public class MotionTests
             stack, VisualElement.BackgroundProperty, going, false,
             out ITripTarget moves, out double[] to));
 
-        walker.Aim(moves, to, HostMotion.Eased(100, SwiftEasing.Linear));
+        walker.Aim(moves, to, HostMotion.Eased(100, HostEasing.Linear));
 
         clock.Tick(50);
 
@@ -1036,7 +1036,7 @@ public class MotionTests
             button, Button.CornerRadiusProperty, 20, false,
             out ITripTarget moves, out double[] to));
 
-        walker.Aim(moves, to, HostMotion.Eased(100, SwiftEasing.Linear));
+        walker.Aim(moves, to, HostMotion.Eased(100, HostEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal(10, button.CornerRadius);
@@ -1089,14 +1089,14 @@ public class MotionTests
     [Fact]
     public void TheOrdinaryMotionOnTheWireIsALawAndNothingElse()
     {
-        var names = new SwiftWireDictionary();
+        var names = new WireDictionary();
 
-        _ = SwiftWire.ReadMessage(Fixtures.ReadBytes("travelling-first.bin"), names);
+        _ = WireCodec.ReadMessage(Fixtures.ReadBytes("travelling-first.bin"), names);
 
-        SwiftNode panel = SwiftWire.ReadMessage(
+        HostPatch panel = WireCodec.ReadMessage(
             Fixtures.ReadBytes("travelling.bin"), names).Root!;
 
-        SwiftTransition transition = Assert.Single(panel.Transitions!);
+        HostTransition transition = Assert.Single(panel.Transitions!);
 
         Assert.Equal(200u, transition.Millis);
         Assert.Equal((int)HostMotion.Law.Eased, transition.Law);
@@ -1218,7 +1218,7 @@ public class MotionTests
         };
     }
 
-    private static readonly HostMotion Travelling = HostMotion.Eased(200, SwiftEasing.Linear);
+    private static readonly HostMotion Travelling = HostMotion.Eased(200, HostEasing.Linear);
 
     /// <summary>
     /// The first arrangement is an arrival: the first thing anyone sees is
@@ -1344,7 +1344,7 @@ public class MotionTests
     [Fact]
     public void ALayoutToldToStayStillPlacesItsChildrenAtOnce()
     {
-        Laid laid = Laying(HostMotion.Eased(0, SwiftEasing.Linear), 1);
+        Laid laid = Laying(HostMotion.Eased(0, HostEasing.Linear), 1);
         IView child = laid.Layout[0];
 
         laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
@@ -2009,7 +2009,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
             [1.0],
-            HostMotion.Eased(100, SwiftEasing.Linear));
+            HostMotion.Eased(100, HostEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal(0.5, label.Opacity, 3);
@@ -2043,7 +2043,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
             [1.0],
-            HostMotion.Eased(100, SwiftEasing.Linear),
+            HostMotion.Eased(100, HostEasing.Linear),
             whole => answered = whole);
 
         clock.Tick(50);
@@ -2072,7 +2072,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
             [3.0],
-            HostMotion.Eased(100, SwiftEasing.CubicOut));
+            HostMotion.Eased(100, HostEasing.CubicOut));
 
         clock.Tick(97);
         Assert.NotEqual(3.0, label.Scale);
@@ -2090,7 +2090,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
             [1, 1, 1, 1],
-            HostMotion.Eased(100, SwiftEasing.Linear));
+            HostMotion.Eased(100, HostEasing.Linear));
 
         clock.Tick(50);
 
@@ -2113,7 +2113,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
             [1, 0, 0, 0],
-            HostMotion.Eased(100, SwiftEasing.Linear));
+            HostMotion.Eased(100, HostEasing.Linear));
 
         clock.Tick(50);
         Assert.Equal(0.5f, border.BackgroundColor.Alpha, 3);
@@ -2131,7 +2131,7 @@ public class MotionTests
         walker.Aim(
             new MotionProperty(stack, Layout.PaddingProperty, MotionValue.Edges),
             [4, 8, 12, 16],
-            HostMotion.Eased(100, SwiftEasing.Linear));
+            HostMotion.Eased(100, HostEasing.Linear));
 
         clock.Tick(50);
 
@@ -2176,24 +2176,24 @@ public class MotionTests
     /// without an arm behind it fails here rather than animating linearly.
     /// </summary>
     /// <remarks>
-    /// The members as plain numbers, because <c>SwiftEasing</c> is internal
+    /// The members as plain numbers, because <c>HostEasing</c> is internal
     /// and a theory's data has to be public - which is honest enough here:
     /// what crosses the wire IS the number.
     /// </remarks>
     public static TheoryData<int> Easings =>
-        [.. Enum.GetValues<SwiftEasing>().Select(kind => (int)kind)];
+        [.. Enum.GetValues<HostEasing>().Select(kind => (int)kind)];
 
     [Theory]
     [MemberData(nameof(Easings))]
     public void EveryEasingSwiftCanWriteHasACurveBehindIt(int member)
     {
         // Whatever a curve does on the way, it starts and ends with the change.
-        Assert.Equal(0, MotionLaw.Ease((SwiftEasing)member, 0), 12);
-        Assert.Equal(1, MotionLaw.Ease((SwiftEasing)member, 1), 12);
+        Assert.Equal(0, MotionLaw.Ease((HostEasing)member, 0), 12);
+        Assert.Equal(1, MotionLaw.Ease((HostEasing)member, 1), 12);
 
         // And every arm but linear is a DIFFERENT curve, or a missing case
         // would read as a pass.
-        Assert.Equal(member == (int)SwiftEasing.Linear, MotionLaw.Ease((SwiftEasing)member, 0.3) == 0.3);
+        Assert.Equal(member == (int)HostEasing.Linear, MotionLaw.Ease((HostEasing)member, 0.3) == 0.3);
     }
 
     /// <summary>
@@ -2207,8 +2207,8 @@ public class MotionTests
         // 9999 rather than a null: an easing is a slot in the transition
         // record, always present, so the only way to be handed one this side
         // does not know is a Swift side that has grown a curve.
-        Assert.Equal(0.3, MotionLaw.Ease((SwiftEasing)9999, 0.3));
-        Assert.Equal(0.3, MotionLaw.Ease((SwiftEasing)(-1), 0.3));
+        Assert.Equal(0.3, MotionLaw.Ease((HostEasing)9999, 0.3));
+        Assert.Equal(0.3, MotionLaw.Ease((HostEasing)(-1), 0.3));
     }
 
     /// <summary>
@@ -2219,7 +2219,7 @@ public class MotionTests
     {
         Assert.NotNull(reply);
         Assert.Equal(4, reply.Length);
-        Assert.Equal(SwiftWire.Version, reply[0]);
+        Assert.Equal(WireCodec.Version, reply[0]);
         Assert.Equal(1, reply[1]);
         Assert.Equal(1, reply[2]);
         return reply[3] == 2;

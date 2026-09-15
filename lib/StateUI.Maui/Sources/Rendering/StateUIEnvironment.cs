@@ -29,8 +29,8 @@ namespace StateUI.Maui.Rendering;
 /// </para>
 /// <para>
 /// Every enum crosses as THIS REPOSITORY's number for the member -
-/// <c>SwiftWireValue.OfMember</c> over the mirrors in
-/// <c>Protocol/SwiftWireEnums.cs</c>, translated by a switch naming the MAUI
+/// <c>HostValue.OfMember</c> over the mirrors in
+/// <c>Protocol/HostEnums.cs</c>, translated by a switch naming the MAUI
 /// member literally, never a cast of MAUI's own value: a cast would leave a
 /// MAUI release free to renumber an enum and have the Swift side read every
 /// report as a different member, with nothing failing anywhere. The idiom has
@@ -80,7 +80,7 @@ internal static class StateUIEnvironment
         session.PushEnvironment(ConnectivityDomain, ConnectivitySnapshot, pump: false);
         session.PushEnvironment(
             ApplicationDomain,
-            () => [SwiftWireValue.OfMember((int)SwiftApplicationPhase.Active)],
+            () => [HostValue.OfMember((int)HostApplicationPhase.Active)],
             pump: false);
     }
 
@@ -88,14 +88,14 @@ internal static class StateUIEnvironment
     /// Reports where the application now stands - moved by whichever of its
     /// windows reported last. Called from
     /// <see cref="StateUIRenderer.WireWindow"/> as MAUI raises a window's
-    /// events; Resumed reports <see cref="SwiftApplicationPhase.Inactive"/>,
+    /// events; Resumed reports <see cref="HostApplicationPhase.Inactive"/>,
     /// the window being visible again but not yet active - Activated follows on
     /// its own where the platform means it.
     /// </summary>
     /// <param name="phase">Which of the three the application is now in.</param>
-    internal static void ApplicationPhase(SwiftApplicationPhase phase)
+    internal static void ApplicationPhase(HostApplicationPhase phase)
     {
-        Session?.PushEnvironment(ApplicationDomain, () => [SwiftWireValue.OfMember((int)phase)]);
+        Session?.PushEnvironment(ApplicationDomain, () => [HostValue.OfMember((int)phase)]);
     }
 
     /// <summary>
@@ -282,50 +282,50 @@ internal static class StateUIEnvironment
     }
 
     /// <summary>The battery's four values, in the Swift provider's order.</summary>
-    private static SwiftWireValue[] BatterySnapshot()
+    private static HostValue[] BatterySnapshot()
     {
         IBattery battery = Battery.Default;
 
         return
         [
-            SwiftWireValue.Of(battery.ChargeLevel),
-            SwiftWireValue.OfMember((int)Member(battery.State)),
-            SwiftWireValue.OfMember((int)Member(battery.PowerSource)),
-            SwiftWireValue.OfMember((int)Member(battery.EnergySaverStatus)),
+            HostValue.Of(battery.ChargeLevel),
+            HostValue.OfMember((int)Member(battery.State)),
+            HostValue.OfMember((int)Member(battery.PowerSource)),
+            HostValue.OfMember((int)Member(battery.EnergySaverStatus)),
         ];
     }
 
     /// <summary>The network's reach, and every profile it is reached by.</summary>
-    private static SwiftWireValue[] ConnectivitySnapshot()
+    private static HostValue[] ConnectivitySnapshot()
     {
         IConnectivity connectivity = Connectivity.Current;
 
         return
         [
-            SwiftWireValue.OfMember((int)Member(connectivity.NetworkAccess)),
+            HostValue.OfMember((int)Member(connectivity.NetworkAccess)),
 
             // A list of MEMBERS, so a list of values and not a run of doubles:
             // a run of doubles is a run of quantities, and a member is not one.
-            SwiftWireValue.OfValues(
+            HostValue.OfValues(
                 [.. connectivity.ConnectionProfiles.Select(
-                    profile => SwiftWireValue.OfMember((int)Member(profile)))]),
+                    profile => HostValue.OfMember((int)Member(profile)))]),
         ];
     }
 
     /// <summary>The main display, as MAUI measures it - pixels, density, and
     /// which way it is turned.</summary>
-    private static SwiftWireValue[] DisplaySnapshot()
+    private static HostValue[] DisplaySnapshot()
     {
         DisplayInfo info = DeviceDisplay.Current.MainDisplayInfo;
 
         return
         [
-            SwiftWireValue.Of(info.Width),
-            SwiftWireValue.Of(info.Height),
-            SwiftWireValue.Of(info.Density),
-            SwiftWireValue.OfMember((int)Member(info.Orientation)),
-            SwiftWireValue.OfMember((int)Member(info.Rotation)),
-            SwiftWireValue.Of(info.RefreshRate),
+            HostValue.Of(info.Width),
+            HostValue.Of(info.Height),
+            HostValue.Of(info.Density),
+            HostValue.OfMember((int)Member(info.Orientation)),
+            HostValue.OfMember((int)Member(info.Rotation)),
+            HostValue.Of(info.RefreshRate),
         ];
     }
 
@@ -334,7 +334,7 @@ internal static class StateUIEnvironment
     /// them over CultureInfo, RegionInfo and TimeZoneInfo, and the zone goes
     /// out as its IANA name, the <c>TimeZoneInfo.local()</c> act's rule.
     /// </summary>
-    private static SwiftWireValue[] LocaleSnapshot()
+    private static HostValue[] LocaleSnapshot()
     {
         CultureInfo culture = CultureInfo.CurrentCulture;
 
@@ -360,13 +360,13 @@ internal static class StateUIEnvironment
 
         return
         [
-            SwiftWireValue.Of(culture.TwoLetterISOLanguageName),
-            SwiftWireValue.Of(region),
-            SwiftWireValue.Of(culture.Name),
-            SwiftWireValue.Of(ianaZone),
-            SwiftWireValue.Of(culture.DateTimeFormat.ShortTimePattern.Contains('H')),
-            SwiftWireValue.OfMember((int)Member(culture.DateTimeFormat.FirstDayOfWeek)),
-            SwiftWireValue.Of(metric),
+            HostValue.Of(culture.TwoLetterISOLanguageName),
+            HostValue.Of(region),
+            HostValue.Of(culture.Name),
+            HostValue.Of(ianaZone),
+            HostValue.Of(culture.DateTimeFormat.ShortTimePattern.Contains('H')),
+            HostValue.OfMember((int)Member(culture.DateTimeFormat.FirstDayOfWeek)),
+            HostValue.Of(metric),
         ];
     }
 
@@ -375,7 +375,7 @@ internal static class StateUIEnvironment
     /// keeping its <see cref="DeviceIdiom"/> as a struct compared by value
     /// with no number to borrow.
     /// </summary>
-    private static SwiftWireValue[] DeviceSnapshot()
+    private static HostValue[] DeviceSnapshot()
     {
         IDeviceInfo device = DeviceInfo.Current;
         // MAUI's DeviceIdiom is a struct compared by value, so this is a
@@ -383,40 +383,40 @@ internal static class StateUIEnvironment
         // takes when the far side has no enum to switch over.
         DeviceIdiom idiom = device.Idiom;
 
-        SwiftFormFactor member =
-            idiom == DeviceIdiom.Phone ? SwiftFormFactor.Phone
-            : idiom == DeviceIdiom.Tablet ? SwiftFormFactor.Tablet
-            : idiom == DeviceIdiom.Desktop ? SwiftFormFactor.Desktop
-            : idiom == DeviceIdiom.TV ? SwiftFormFactor.Tv
-            : idiom == DeviceIdiom.Watch ? SwiftFormFactor.Watch
-            : SwiftFormFactor.Unknown;
+        HostFormFactor member =
+            idiom == DeviceIdiom.Phone ? HostFormFactor.Phone
+            : idiom == DeviceIdiom.Tablet ? HostFormFactor.Tablet
+            : idiom == DeviceIdiom.Desktop ? HostFormFactor.Desktop
+            : idiom == DeviceIdiom.TV ? HostFormFactor.Tv
+            : idiom == DeviceIdiom.Watch ? HostFormFactor.Watch
+            : HostFormFactor.Unknown;
 
         return
         [
-            SwiftWireValue.OfMember((int)member),
-            SwiftWireValue.Of(device.Platform.ToString()),
-            SwiftWireValue.Of(device.Model),
-            SwiftWireValue.Of(device.Manufacturer),
-            SwiftWireValue.Of(device.Name),
-            SwiftWireValue.Of(device.VersionString),
-            SwiftWireValue.OfMember((int)Member(device.DeviceType)),
+            HostValue.OfMember((int)member),
+            HostValue.Of(device.Platform.ToString()),
+            HostValue.Of(device.Model),
+            HostValue.Of(device.Manufacturer),
+            HostValue.Of(device.Name),
+            HostValue.Of(device.VersionString),
+            HostValue.OfMember((int)Member(device.DeviceType)),
         ];
     }
 
     /// <summary>The app's manifest facts, and the one value here that moves:
     /// the requested theme.</summary>
-    private static SwiftWireValue[] AppSnapshot()
+    private static HostValue[] AppSnapshot()
     {
         Microsoft.Maui.ApplicationModel.IAppInfo app =
             Microsoft.Maui.ApplicationModel.AppInfo.Current;
 
         return
         [
-            SwiftWireValue.Of(app.Name),
-            SwiftWireValue.Of(app.PackageName),
-            SwiftWireValue.Of(app.VersionString),
-            SwiftWireValue.Of(app.BuildString),
-            SwiftWireValue.OfMember((int)Member(app.RequestedTheme)),
+            HostValue.Of(app.Name),
+            HostValue.Of(app.PackageName),
+            HostValue.Of(app.VersionString),
+            HostValue.Of(app.BuildString),
+            HostValue.OfMember((int)Member(app.RequestedTheme)),
         ];
     }
 
@@ -431,95 +431,95 @@ internal static class StateUIEnvironment
     // not do.
 
     /// <summary>How the battery is doing, as this side's member.</summary>
-    internal static SwiftBatteryState Member(BatteryState state) => state switch
+    internal static HostBatteryState Member(BatteryState state) => state switch
     {
-        BatteryState.Unknown => SwiftBatteryState.Unknown,
-        BatteryState.Charging => SwiftBatteryState.Charging,
-        BatteryState.Discharging => SwiftBatteryState.Discharging,
-        BatteryState.Full => SwiftBatteryState.Full,
-        BatteryState.NotCharging => SwiftBatteryState.NotCharging,
-        BatteryState.NotPresent => SwiftBatteryState.NotPresent,
-        _ => SwiftBatteryState.Unknown,
+        BatteryState.Unknown => HostBatteryState.Unknown,
+        BatteryState.Charging => HostBatteryState.Charging,
+        BatteryState.Discharging => HostBatteryState.Discharging,
+        BatteryState.Full => HostBatteryState.Full,
+        BatteryState.NotCharging => HostBatteryState.NotCharging,
+        BatteryState.NotPresent => HostBatteryState.NotPresent,
+        _ => HostBatteryState.Unknown,
     };
 
     /// <summary>Where the power is coming from, as this side's member.</summary>
-    internal static SwiftBatteryPowerSource Member(BatteryPowerSource source) => source switch
+    internal static HostBatteryPowerSource Member(BatteryPowerSource source) => source switch
     {
-        BatteryPowerSource.Unknown => SwiftBatteryPowerSource.Unknown,
-        BatteryPowerSource.Battery => SwiftBatteryPowerSource.Battery,
-        BatteryPowerSource.AC => SwiftBatteryPowerSource.Ac,
-        BatteryPowerSource.Usb => SwiftBatteryPowerSource.Usb,
-        BatteryPowerSource.Wireless => SwiftBatteryPowerSource.Wireless,
-        _ => SwiftBatteryPowerSource.Unknown,
+        BatteryPowerSource.Unknown => HostBatteryPowerSource.Unknown,
+        BatteryPowerSource.Battery => HostBatteryPowerSource.Battery,
+        BatteryPowerSource.AC => HostBatteryPowerSource.Ac,
+        BatteryPowerSource.Usb => HostBatteryPowerSource.Usb,
+        BatteryPowerSource.Wireless => HostBatteryPowerSource.Wireless,
+        _ => HostBatteryPowerSource.Unknown,
     };
 
     /// <summary>Whether the battery saver is on, as this side's member.</summary>
-    internal static SwiftEnergySaverStatus Member(EnergySaverStatus status) => status switch
+    internal static HostEnergySaverStatus Member(EnergySaverStatus status) => status switch
     {
-        EnergySaverStatus.Unknown => SwiftEnergySaverStatus.Unknown,
-        EnergySaverStatus.On => SwiftEnergySaverStatus.On,
-        EnergySaverStatus.Off => SwiftEnergySaverStatus.Off,
-        _ => SwiftEnergySaverStatus.Unknown,
+        EnergySaverStatus.Unknown => HostEnergySaverStatus.Unknown,
+        EnergySaverStatus.On => HostEnergySaverStatus.On,
+        EnergySaverStatus.Off => HostEnergySaverStatus.Off,
+        _ => HostEnergySaverStatus.Unknown,
     };
 
     /// <summary>What the network can reach, as this side's member.</summary>
-    internal static SwiftNetworkAccess Member(NetworkAccess access) => access switch
+    internal static HostNetworkAccess Member(NetworkAccess access) => access switch
     {
-        NetworkAccess.Unknown => SwiftNetworkAccess.Unknown,
-        NetworkAccess.None => SwiftNetworkAccess.None,
-        NetworkAccess.Local => SwiftNetworkAccess.Local,
-        NetworkAccess.ConstrainedInternet => SwiftNetworkAccess.ConstrainedInternet,
-        NetworkAccess.Internet => SwiftNetworkAccess.Internet,
-        _ => SwiftNetworkAccess.Unknown,
+        NetworkAccess.Unknown => HostNetworkAccess.Unknown,
+        NetworkAccess.None => HostNetworkAccess.None,
+        NetworkAccess.Local => HostNetworkAccess.Local,
+        NetworkAccess.ConstrainedInternet => HostNetworkAccess.ConstrainedInternet,
+        NetworkAccess.Internet => HostNetworkAccess.Internet,
+        _ => HostNetworkAccess.Unknown,
     };
 
     /// <summary>One way the device is connected, as this side's member.</summary>
-    internal static SwiftConnectionProfile Member(ConnectionProfile profile) => profile switch
+    internal static HostConnectionProfile Member(ConnectionProfile profile) => profile switch
     {
-        ConnectionProfile.Unknown => SwiftConnectionProfile.Unknown,
-        ConnectionProfile.Bluetooth => SwiftConnectionProfile.Bluetooth,
-        ConnectionProfile.Cellular => SwiftConnectionProfile.Cellular,
-        ConnectionProfile.Ethernet => SwiftConnectionProfile.Ethernet,
-        ConnectionProfile.WiFi => SwiftConnectionProfile.WiFi,
-        _ => SwiftConnectionProfile.Unknown,
+        ConnectionProfile.Unknown => HostConnectionProfile.Unknown,
+        ConnectionProfile.Bluetooth => HostConnectionProfile.Bluetooth,
+        ConnectionProfile.Cellular => HostConnectionProfile.Cellular,
+        ConnectionProfile.Ethernet => HostConnectionProfile.Ethernet,
+        ConnectionProfile.WiFi => HostConnectionProfile.WiFi,
+        _ => HostConnectionProfile.Unknown,
     };
 
     /// <summary>Which way the screen is turned, as this side's member.</summary>
-    internal static SwiftDisplayOrientation Member(DisplayOrientation orientation) => orientation switch
+    internal static HostDisplayOrientation Member(DisplayOrientation orientation) => orientation switch
     {
-        DisplayOrientation.Unknown => SwiftDisplayOrientation.Unknown,
-        DisplayOrientation.Portrait => SwiftDisplayOrientation.Portrait,
-        DisplayOrientation.Landscape => SwiftDisplayOrientation.Landscape,
-        _ => SwiftDisplayOrientation.Unknown,
+        DisplayOrientation.Unknown => HostDisplayOrientation.Unknown,
+        DisplayOrientation.Portrait => HostDisplayOrientation.Portrait,
+        DisplayOrientation.Landscape => HostDisplayOrientation.Landscape,
+        _ => HostDisplayOrientation.Unknown,
     };
 
     /// <summary>How far the screen is rotated, as this side's member.</summary>
-    internal static SwiftDisplayRotation Member(DisplayRotation rotation) => rotation switch
+    internal static HostDisplayRotation Member(DisplayRotation rotation) => rotation switch
     {
-        DisplayRotation.Unknown => SwiftDisplayRotation.Unknown,
-        DisplayRotation.Rotation0 => SwiftDisplayRotation.Rotation0,
-        DisplayRotation.Rotation90 => SwiftDisplayRotation.Rotation90,
-        DisplayRotation.Rotation180 => SwiftDisplayRotation.Rotation180,
-        DisplayRotation.Rotation270 => SwiftDisplayRotation.Rotation270,
-        _ => SwiftDisplayRotation.Unknown,
+        DisplayRotation.Unknown => HostDisplayRotation.Unknown,
+        DisplayRotation.Rotation0 => HostDisplayRotation.Rotation0,
+        DisplayRotation.Rotation90 => HostDisplayRotation.Rotation90,
+        DisplayRotation.Rotation180 => HostDisplayRotation.Rotation180,
+        DisplayRotation.Rotation270 => HostDisplayRotation.Rotation270,
+        _ => HostDisplayRotation.Unknown,
     };
 
     /// <summary>Which look the system asked for, as this side's member.</summary>
-    internal static SwiftTheme Member(Microsoft.Maui.ApplicationModel.AppTheme theme) => theme switch
+    internal static HostTheme Member(Microsoft.Maui.ApplicationModel.AppTheme theme) => theme switch
     {
-        Microsoft.Maui.ApplicationModel.AppTheme.Unspecified => SwiftTheme.System,
-        Microsoft.Maui.ApplicationModel.AppTheme.Light => SwiftTheme.Light,
-        Microsoft.Maui.ApplicationModel.AppTheme.Dark => SwiftTheme.Dark,
-        _ => SwiftTheme.System,
+        Microsoft.Maui.ApplicationModel.AppTheme.Unspecified => HostTheme.System,
+        Microsoft.Maui.ApplicationModel.AppTheme.Light => HostTheme.Light,
+        Microsoft.Maui.ApplicationModel.AppTheme.Dark => HostTheme.Dark,
+        _ => HostTheme.System,
     };
 
     /// <summary>Real hardware or an emulator, as this side's member.</summary>
-    internal static SwiftDeviceType Member(DeviceType type) => type switch
+    internal static HostDeviceType Member(DeviceType type) => type switch
     {
-        DeviceType.Unknown => SwiftDeviceType.Unknown,
-        DeviceType.Physical => SwiftDeviceType.Physical,
-        DeviceType.Virtual => SwiftDeviceType.Virtual,
-        _ => SwiftDeviceType.Unknown,
+        DeviceType.Unknown => HostDeviceType.Unknown,
+        DeviceType.Physical => HostDeviceType.Physical,
+        DeviceType.Virtual => HostDeviceType.Virtual,
+        _ => HostDeviceType.Unknown,
     };
 
     /// <summary>
@@ -527,15 +527,15 @@ internal static class StateUIEnvironment
     /// here whose far side is .NET's <see cref="DayOfWeek"/> rather than a MAUI
     /// enum, and numbered by us for the same reason as the rest.
     /// </summary>
-    internal static SwiftWeekday Member(DayOfWeek day) => day switch
+    internal static HostWeekday Member(DayOfWeek day) => day switch
     {
-        DayOfWeek.Sunday => SwiftWeekday.Sunday,
-        DayOfWeek.Monday => SwiftWeekday.Monday,
-        DayOfWeek.Tuesday => SwiftWeekday.Tuesday,
-        DayOfWeek.Wednesday => SwiftWeekday.Wednesday,
-        DayOfWeek.Thursday => SwiftWeekday.Thursday,
-        DayOfWeek.Friday => SwiftWeekday.Friday,
-        DayOfWeek.Saturday => SwiftWeekday.Saturday,
-        _ => SwiftWeekday.Sunday,
+        DayOfWeek.Sunday => HostWeekday.Sunday,
+        DayOfWeek.Monday => HostWeekday.Monday,
+        DayOfWeek.Tuesday => HostWeekday.Tuesday,
+        DayOfWeek.Wednesday => HostWeekday.Wednesday,
+        DayOfWeek.Thursday => HostWeekday.Thursday,
+        DayOfWeek.Friday => HostWeekday.Friday,
+        DayOfWeek.Saturday => HostWeekday.Saturday,
+        _ => HostWeekday.Sunday,
     };
 }

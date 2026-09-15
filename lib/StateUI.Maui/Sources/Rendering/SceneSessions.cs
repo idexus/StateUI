@@ -77,13 +77,13 @@ internal static class SceneSessions
         string? Text(string key) =>
             info?.ObjectForKey(new NSString(key)) is NSString text ? text.ToString() : null;
 
-        List<(string Name, SwiftWireValue Value)> kept = [];
+        List<(string Name, HostValue Value)> kept = [];
 
         if (info?.ObjectForKey(new NSString(KeptKey)) is NSDictionary values)
         {
             foreach (NSObject key in values.Keys)
             {
-                if (values[key] is NSString text && SceneOrigin.Read(text.ToString()) is SwiftWireValue value)
+                if (values[key] is NSString text && SceneOrigin.Read(text.ToString()) is HostValue value)
                 {
                     kept.Add((key.ToString(), value));
                 }
@@ -139,7 +139,7 @@ internal static class SceneSessions
             List<NSString> names = [];
             List<NSObject> texts = [];
 
-            foreach ((string name, SwiftWireValue held) in kept.Kept)
+            foreach ((string name, HostValue held) in kept.Kept)
             {
                 if (SceneOrigin.Write(held) is string text)
                 {

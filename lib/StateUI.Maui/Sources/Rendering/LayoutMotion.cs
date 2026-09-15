@@ -274,13 +274,13 @@ internal sealed class LayoutMotion : ILayoutManager
         // .size)` puts its children in their new places and gives them their
         // new size at once - a view growing out of nothing is the one movement
         // a reader reads as a fault, and a view sliding is not.
-        SwiftMotionLanes lanes = _layout.GetValue(LanesProperty) is SwiftMotionLanes told
+        HostMotionLanes lanes = _layout.GetValue(LanesProperty) is HostMotionLanes told
             ? told
-            : SwiftMotionLanes.All;
+            : HostMotionLanes.All;
 
         if (lanes == 0)
         {
-            spec = HostMotion.Eased(0, SwiftEasing.Linear);
+            spec = HostMotion.Eased(0, HostEasing.Linear);
         }
 
         // WHY this arrangement is happening, which is the one thing it does not
@@ -354,7 +354,7 @@ internal sealed class LayoutMotion : ILayoutManager
         // is the honest one to pay: rows on such a page arrive rather than
         // slide. A size the child ASKED for is the narrower rule and keeps its
         // place travelling - see `Asked`.
-        SwiftMotionLanes sized = Measures() ? SwiftMotionLanes.All : 0;
+        HostMotionLanes sized = Measures() ? HostMotionLanes.All : 0;
 
         // AND A RESIZE ARRIVES. The layout's own room changing is a reader
         // dragging the window, and a child gliding after it is late on every
@@ -381,7 +381,7 @@ internal sealed class LayoutMotion : ILayoutManager
             && (Math.Abs(bounds.Width - before.Width) > Hair
                 || (!said && Math.Abs(bounds.Height - before.Height) > Hair)))
         {
-            sized = SwiftMotionLanes.All;
+            sized = HostMotionLanes.All;
         }
 
         _room = bounds;
@@ -390,7 +390,7 @@ internal sealed class LayoutMotion : ILayoutManager
         // starved branch below, which is where that is found out.
         if (_arrives)
         {
-            sized |= SwiftMotionLanes.Width | SwiftMotionLanes.Height;
+            sized |= HostMotionLanes.Width | HostMotionLanes.Height;
         }
 
         foreach (IView child in _layout)
@@ -523,16 +523,16 @@ internal sealed class LayoutMotion : ILayoutManager
             // that fixed its own height still slides when the things around it
             // change. Where a MEASUREMENT is what is being taken, `Measures`
             // holds every lane - see above.
-            SwiftMotionLanes travels = lanes & ~(sized | Asked(child));
+            HostMotionLanes travels = lanes & ~(sized | Asked(child));
 
             // A lane that does not travel starts where it is going, which is
             // the whole of what holding one still means to a trip.
             double[] start =
             [
-                travels.HasFlag(SwiftMotionLanes.X) ? was.X : target.X,
-                travels.HasFlag(SwiftMotionLanes.Y) ? was.Y : target.Y,
-                travels.HasFlag(SwiftMotionLanes.Width) ? was.Width : target.Width,
-                travels.HasFlag(SwiftMotionLanes.Height) ? was.Height : target.Height,
+                travels.HasFlag(HostMotionLanes.X) ? was.X : target.X,
+                travels.HasFlag(HostMotionLanes.Y) ? was.Y : target.Y,
+                travels.HasFlag(HostMotionLanes.Width) ? was.Width : target.Width,
+                travels.HasFlag(HostMotionLanes.Height) ? was.Height : target.Height,
             ];
 
             _walker.Aim(
@@ -693,17 +693,17 @@ internal sealed class LayoutMotion : ILayoutManager
     /// </remarks>
     /// <param name="child">The child being placed.</param>
     /// <returns>The lanes it asked for, none where it asked for nothing.</returns>
-    private static SwiftMotionLanes Asked(IView child)
+    private static HostMotionLanes Asked(IView child)
     {
         if (child is not VisualElement view)
         {
             return 0;
         }
 
-        SwiftMotionLanes asked = 0;
+        HostMotionLanes asked = 0;
 
-        if (view.WidthRequest >= 0) { asked |= SwiftMotionLanes.Width; }
-        if (view.HeightRequest >= 0) { asked |= SwiftMotionLanes.Height; }
+        if (view.WidthRequest >= 0) { asked |= HostMotionLanes.Width; }
+        if (view.HeightRequest >= 0) { asked |= HostMotionLanes.Height; }
 
         return asked;
     }

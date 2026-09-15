@@ -32,7 +32,7 @@ internal interface IStateUITarget
     /// <param name="complete">
     /// Whether this message describes everything rather than only what changed.
     /// </param>
-    bool Apply(SwiftNode application, bool complete);
+    bool Apply(HostPatch application, bool complete);
 
     /// <summary>Shows a diagnostic in place of the interface.</summary>
     void Fail(string message, Exception? exception);
@@ -84,7 +84,7 @@ internal sealed class StateUISession
     /// <summary>
     /// This session's numbering of every name the wire carries, learned from
     /// the announcements at the head of each message - see
-    /// <see cref="SwiftWireDictionary"/>. One per session, shared by the tree
+    /// <see cref="WireDictionary"/>. One per session, shared by the tree
     /// and the acts, exactly as the Swift side keeps one per renderer.
     /// </summary>
     /// <remarks>
@@ -94,7 +94,7 @@ internal sealed class StateUISession
     /// again, so a second session, starting empty here, would read numbers
     /// nothing ever told it the meaning of.
     /// </remarks>
-    private readonly SwiftWireDictionary _names = new();
+    private readonly WireDictionary _names = new();
 
     /// <summary>
     /// How many plain dispatcher turns a resume is given before the looks slow
@@ -514,11 +514,11 @@ internal sealed class StateUISession
         // EntryPointNotFoundException. First of all, because everything after
         // it hands the library bytes.
         int wire = NativeMethods.WireVersion();
-        if (wire != SwiftWire.Version)
+        if (wire != WireCodec.Version)
         {
             _target.Fail(
                 $"The native library speaks wire version {wire} and " +
-                $"this runtime speaks {SwiftWire.Version}.\n\n" +
+                $"this runtime speaks {WireCodec.Version}.\n\n" +
                 "A native library and a runtime built from different " +
                 "versions - rebuild the app so the two halves match.",
                 null);
@@ -605,7 +605,7 @@ internal sealed class StateUISession
             long kept = RenderTally.Kept;
             long adopted = RenderTally.Adopted;
 
-            SwiftMessage message;
+            HostRender message;
             int described = 0;
             IntPtr raw = RenderTally.Time(
                 ref RenderTally.Described,
@@ -632,7 +632,7 @@ internal sealed class StateUISession
                     {
                         unsafe
                         {
-                            return SwiftWire.ReadMessage(
+                            return WireCodec.ReadMessage(
                                 new ReadOnlySpan<byte>((void*)bytes, count), _names);
                         }
                     });
@@ -650,7 +650,7 @@ internal sealed class StateUISession
                 return;
             }
 
-            if (message.Root.Type != SwiftNodeType.Application)
+            if (message.Root.Type != HostNodeType.Application)
             {
                 _target.Fail(
                     $"Swift described a '{message.Root.TypeName}' where an Application " +
@@ -1073,7 +1073,7 @@ internal sealed class StateUISession
     /// and everything Swift runs must happen on the thread MAUI draws on, so
     /// this marshals first and dispatches then.
     /// </summary>
-    internal void RaiseHostEvent(string eventName, SwiftWireValue[] payload)
+    internal void RaiseHostEvent(string eventName, HostValue[] payload)
     {
         IDispatcher? dispatcher = _target.Dispatcher;
 
@@ -1100,7 +1100,7 @@ internal sealed class StateUISession
     /// provider's defaults, the desktop-battery rule.</param>
     /// <param name="pump">False only for the startup pushes, which run inside
     /// the render that is about to happen anyway.</param>
-    internal void PushEnvironment(byte domain, Func<SwiftWireValue[]> snapshot, bool pump = true)
+    internal void PushEnvironment(byte domain, Func<HostValue[]> snapshot, bool pump = true)
     {
         IDispatcher? dispatcher = _target.Dispatcher;
 
@@ -1123,11 +1123,11 @@ internal sealed class StateUISession
     /// startup - brings the interface up to date, so the views that read the
     /// changed provider are rebuilt in the same breath.
     /// </summary>
-    private void PushEnvironmentNow(byte domain, Func<SwiftWireValue[]> snapshot, bool pump)
+    private void PushEnvironmentNow(byte domain, Func<HostValue[]> snapshot, bool pump)
     {
         _uiThread.Verify(_target.Dispatcher, "an environment push");
 
-        SwiftWireValue[] values;
+        HostValue[] values;
 
         try
         {
@@ -1143,7 +1143,7 @@ internal sealed class StateUISession
 
         try
         {
-            byte[] bytes = SwiftWire.WriteEnvironment(domain, values);
+            byte[] bytes = WireCodec.WriteEnvironment(domain, values);
 
             if (NativeMethods.SetEnvironment(bytes, bytes.Length) <= 0
                 && !_saidEnvironmentUnreadable)
@@ -1188,13 +1188,13 @@ internal sealed class StateUISession
     /// handler the raise ran may have written state, and a render must follow
     /// the same breath, the <see cref="OnEvent"/> rule.
     /// </summary>
-    private void RaiseHostEventNow(string eventName, SwiftWireValue[] payload)
+    private void RaiseHostEventNow(string eventName, HostValue[] payload)
     {
         _uiThread.Verify(_target.Dispatcher, "an event from the host");
 
         try
         {
-            byte[] bytes = SwiftWire.WriteHostEvent(eventName, payload);
+            byte[] bytes = WireCodec.WriteHostEvent(eventName, payload);
 
             if (NativeMethods.DispatchHostEvent(bytes, bytes.Length) < 0
                 && !_saidHostEventsUnreadable)
@@ -1275,7 +1275,7 @@ internal sealed class StateUISession
                 // no copy, no transcoding, nothing materialized in between.
                 unsafe
                 {
-                    calls = SwiftWire.ReadActCalls(
+                    calls = WireCodec.ReadActCalls(
                         new ReadOnlySpan<byte>((void*)buffer, length), _names);
                 }
             }
@@ -1366,7 +1366,7 @@ internal sealed class StateUISession
     /// See <c>Core/MainThread.swift</c>.
     /// </para>
     /// <para>
-    /// The reply crosses as typed values (<see cref="SwiftWire.WriteReply"/>):
+    /// The reply crosses as typed values (<see cref="WireCodec.WriteReply"/>):
     /// what the method returned, none for a method that returns nothing - or,
     /// when it could not be performed, a failure carrying the reason, which
     /// the awaiting Swift handler throws.
@@ -1374,44 +1374,44 @@ internal sealed class StateUISession
     /// </remarks>
     private async void Perform(HostActCall call)
     {
-        SwiftWireValue[] result = [];
+        HostValue[] result = [];
         string? failure = null;
 
         try
         {
             switch (call.Act)
             {
-                case SwiftAct.Focus:
-                case SwiftAct.Unfocus:
+                case HostAct.Focus:
+                case HostAct.Unfocus:
                     (result, failure) = Focus(call);
                     break;
 
-                case SwiftAct.GoBack:
-                case SwiftAct.GoForward:
-                case SwiftAct.Reload:
-                case SwiftAct.EvaluateJavaScript:
+                case HostAct.GoBack:
+                case HostAct.GoForward:
+                case HostAct.Reload:
+                case HostAct.EvaluateJavaScript:
                     (result, failure) = await Web(call);
                     break;
 
-                case SwiftAct.MoveToRegion:
+                case HostAct.MoveToRegion:
                     (result, failure) = MoveMap(call);
                     break;
 
-                case SwiftAct.HideOnScreenKeyboard:
+                case HostAct.HideOnScreenKeyboard:
                     // Not a MAUI method - see SwiftFocus for why there is none
                     // to call. The page is asked which of its views has the
                     // focus, because the Swift side cannot know.
-                    result = [SwiftWireValue.Of(SwiftFocus.Hide(Showing()))];
+                    result = [HostValue.Of(SwiftFocus.Hide(Showing()))];
                     break;
 
-                case SwiftAct.Alert:
-                case SwiftAct.Confirm:
-                case SwiftAct.ChooseAction:
-                case SwiftAct.Prompt:
+                case HostAct.Alert:
+                case HostAct.Confirm:
+                case HostAct.ChooseAction:
+                case HostAct.Prompt:
                     (result, failure) = await Dialog(call);
                     break;
 
-                case SwiftAct.Announce:
+                case HostAct.Announce:
                     // SAID OUT LOUD, and it interrupts whatever the reader was
                     // being told: a screen reader has one voice, so this is for
                     // what changed on its own - a search that finished, a row
@@ -1421,7 +1421,7 @@ internal sealed class StateUISession
                     result = [];
                     break;
 
-                case SwiftAct.CurrentTime:
+                case HostAct.CurrentTime:
                 {
                     // The time of day, because the Swift side deliberately has
                     // no clock: reading one through Foundation arrives with
@@ -1432,11 +1432,11 @@ internal sealed class StateUISession
                     // little until a tick reads the same second twice and the
                     // one after skips one.
                     DateTime now = DateTime.Now;
-                    result = [SwiftWireValue.Of(now.Hour, now.Minute, now.Second, now.Millisecond)];
+                    result = [HostValue.Of(now.Hour, now.Minute, now.Second, now.Millisecond)];
                     break;
                 }
 
-                case SwiftAct.CurrentTimeZone:
+                case HostAct.CurrentTimeZone:
                     // The IANA name, whatever the platform calls its zones.
                     // Foundation's own database speaks IANA, and Windows is the
                     // one platform naming them its own way - the conversion maps
@@ -1444,13 +1444,13 @@ internal sealed class StateUISession
                     // zone, which shares its rules with the device's even when
                     // it is a neighbouring city's name.
                     TimeZoneInfo zone = TimeZoneInfo.Local;
-                    result = [SwiftWireValue.Of(
+                    result = [HostValue.Of(
                         zone.HasIanaId ? zone.Id
                         : TimeZoneInfo.TryConvertWindowsIdToIanaId(zone.Id, out string? iana) ? iana
                         : zone.Id)];
                     break;
 
-                case SwiftAct.UtcOffset:
+                case HostAct.UtcOffset:
                 {
                     // Minutes, signed, as one number - India is 330 and New
                     // York is -240 in summer. The Swift side reads them into a
@@ -1490,18 +1490,18 @@ internal sealed class StateUISession
                         offset = asked.GetUtcOffset(when);
                     }
 
-                    result = [SwiftWireValue.Of((int)offset.TotalMinutes)];
+                    result = [HostValue.Of((int)offset.TotalMinutes)];
                     break;
                 }
 
-                case SwiftAct.PersistValue:
+                case HostAct.PersistValue:
                     // Nothing is waiting on this one: the value is already in
                     // Swift's own state, and the store is where it goes to
                     // survive the process.
                     StateUIPersistence.Save(call);
                     break;
 
-                case SwiftAct.PersistSceneValue:
+                case HostAct.PersistSceneValue:
                     // Nothing waits on this one either: the value is in its
                     // scene's state already, and the platform keeps it WITH
                     // the scene, for the system to hand back when it restores
@@ -1509,7 +1509,7 @@ internal sealed class StateUISession
                     (_target as StateUIApplication)?.Keep(call);
                     break;
 
-                case SwiftAct.HandlerFailed:
+                case HostAct.HandlerFailed:
                     // A Swift handler let something escape. Nothing is waiting
                     // on this one - it is reported so that a failed `try await`
                     // is visible rather than lost.
@@ -1562,8 +1562,8 @@ internal sealed class StateUISession
                 _uiThread.Verify(_target.Dispatcher, "a completed act");
 
                 byte[] reply = failure is null
-                    ? SwiftWire.WriteReply(result)
-                    : SwiftWire.WriteFailure(failure);
+                    ? WireCodec.WriteReply(result)
+                    : WireCodec.WriteFailure(failure);
 
                 Replies(id, reply);
                 Pump();
@@ -1662,7 +1662,7 @@ internal sealed class StateUISession
     /// moved to a zero nobody asked for is the Atlantic, drawn perfectly.
     /// </remarks>
     /// <returns>What to report back, and why it could not be done.</returns>
-    private (SwiftWireValue[] Result, string? Failure) MoveMap(HostActCall call)
+    private (HostValue[] Result, string? Failure) MoveMap(HostActCall call)
     {
         if (TargetOf(call) is not { } target)
         {
@@ -1703,7 +1703,7 @@ internal sealed class StateUISession
     /// history.
     /// </remarks>
     /// <returns>What to report back, and why it could not be done.</returns>
-    private async Task<(SwiftWireValue[] Result, string? Failure)> Web(HostActCall call)
+    private async Task<(HostValue[] Result, string? Failure)> Web(HostActCall call)
     {
         if (TargetOf(call) is not { } target)
         {
@@ -1722,15 +1722,15 @@ internal sealed class StateUISession
 
         switch (call.Act)
         {
-            case SwiftAct.GoBack:
+            case HostAct.GoBack:
                 web.GoBack();
                 return ([], null);
 
-            case SwiftAct.GoForward:
+            case HostAct.GoForward:
                 web.GoForward();
                 return ([], null);
 
-            case SwiftAct.Reload:
+            case HostAct.Reload:
                 web.Reload();
                 return ([], null);
 
@@ -1738,7 +1738,7 @@ internal sealed class StateUISession
                 // What the script's last expression evaluated to, as the
                 // platform writes it - null when the page answered nothing.
                 string script = call.GetString(1) ?? "";
-                return ([SwiftWireValue.Of(await web.EvaluateJavaScriptAsync(script) ?? "")], null);
+                return ([HostValue.Of(await web.EvaluateJavaScriptAsync(script) ?? "")], null);
         }
     }
 
@@ -1755,7 +1755,7 @@ internal sealed class StateUISession
     /// result.
     /// </remarks>
     /// <returns>What to report back, and why it could not be done.</returns>
-    private (SwiftWireValue[] Result, string? Failure) Focus(HostActCall call)
+    private (HostValue[] Result, string? Failure) Focus(HostActCall call)
     {
         if (TargetOf(call) is not { } target)
         {
@@ -1767,13 +1767,13 @@ internal sealed class StateUISession
             return ([], $"there is no view {target.Label} on screen");
         }
 
-        if (call.Act == SwiftAct.Unfocus)
+        if (call.Act == HostAct.Unfocus)
         {
             found.View.Unfocus();
             return ([], null);
         }
 
-        return ([SwiftWireValue.Of(found.View.Focus())], null);
+        return ([HostValue.Of(found.View.Focus())], null);
     }
 
     /// <summary>
@@ -1804,7 +1804,7 @@ internal sealed class StateUISession
     /// </para>
     /// </remarks>
     /// <returns>What to report back, and why it could not be done.</returns>
-    private async Task<(SwiftWireValue[] Result, string? Failure)> Dialog(HostActCall call)
+    private async Task<(HostValue[] Result, string? Failure)> Dialog(HostActCall call)
     {
         if (SwiftFocus.Showing(Showing()) is not Page page)
         {
@@ -1820,20 +1820,20 @@ internal sealed class StateUISession
 
         switch (call.Act)
         {
-            case SwiftAct.Alert:
+            case HostAct.Alert:
                 await page.DisplayAlertAsync(
                     title, call.GetString(1) ?? "", call.GetString(2) ?? "OK");
                 return ([], null);
 
-            case SwiftAct.Confirm:
+            case HostAct.Confirm:
                 bool accepted = await page.DisplayAlertAsync(
                     title,
                     call.GetString(1) ?? "",
                     call.GetString(2) ?? "OK",
                     call.GetString(3) ?? "Cancel");
-                return ([SwiftWireValue.Of(accepted)], null);
+                return ([HostValue.Of(accepted)], null);
 
-            case SwiftAct.ChooseAction:
+            case HostAct.ChooseAction:
                 // The two optional captions arrive as the wire's own nothing
                 // when they are absent, and read as null here without a
                 // sentinel in between: an empty string is a caption someone
@@ -1880,8 +1880,8 @@ internal sealed class StateUISession
     /// nothing at all", which is a different thing from a reader who chose
     /// nothing. Both read as null on the Swift side.
     /// </remarks>
-    private static SwiftWireValue[] Chosen(string? answer) =>
-        [answer is null ? new SwiftWireValue(SwiftWireValue.TagNothing) : SwiftWireValue.Of(answer)];
+    private static HostValue[] Chosen(string? answer) =>
+        [answer is null ? new HostValue(HostValue.TagNothing) : HostValue.Of(answer)];
 
 
     /// <summary>

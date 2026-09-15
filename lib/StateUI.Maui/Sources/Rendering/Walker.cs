@@ -207,7 +207,7 @@ internal sealed class Walker
     /// the application's answer changes every layout that inherits it without
     /// a single one of them being told.
     /// </remarks>
-    internal HostMotion Travel { get; set; } = HostMotion.Eased(0, SwiftEasing.Linear);
+    internal HostMotion Travel { get; set; } = HostMotion.Eased(0, HostEasing.Linear);
 
     /// <summary>
     /// Whether the frame is to be skipped - asked once per frame.

@@ -63,7 +63,7 @@ public class ModalStackTests
         + $"[{{\"id\":1,\"type\":\"Label\",\"props\":{{\"text\":\"{title}\"}}}}]}}";
 
     /// <summary>The modal stack node over the sheets named, innermost first.</summary>
-    private static SwiftNode Stack(params string[] sheets) => Host.Parse(
+    private static HostPatch Stack(params string[] sheets) => Host.Parse(
         $"{{\"id\":2,\"type\":\"ModalStack\",\"arranged\":true,\"children\":[{string.Join(",", sheets)}]}}");
 
     /// <summary>The titles of what is presented, innermost first.</summary>

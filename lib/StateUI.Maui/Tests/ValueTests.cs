@@ -58,10 +58,10 @@ public class ValueTests
     {
         var label = (Label)Render($$$"""
             {"id":"a","type":"Label","props":{
-              "horizontalAlignment":{{{Host.Member(SwiftAlignment.Center)}}},
-              "lineBreak":{{{Host.Member(SwiftLineBreak.TailTruncation)}}},
-              "fontAttributes":{{{Host.Member(SwiftFontAttributes.Bold | SwiftFontAttributes.Italic)}}},
-              "horizontalTextAlignment":{{{Host.Member(SwiftTextAlignment.End)}}}
+              "horizontalAlignment":{{{Host.Member(HostAlignment.Center)}}},
+              "lineBreak":{{{Host.Member(HostLineBreak.TailTruncation)}}},
+              "fontAttributes":{{{Host.Member(HostFontAttributes.Bold | HostFontAttributes.Italic)}}},
+              "horizontalTextAlignment":{{{Host.Member(HostTextAlignment.End)}}}
             }}
             """);
 
@@ -135,10 +135,10 @@ public class ValueTests
     {
         var grid = (Grid)Render($$$"""
             {"id":"g","type":"Grid","props":{"rows":[
-              [{{{Host.Member(SwiftGridLengthKind.Auto)}}},1],
-              [{{{Host.Member(SwiftGridLengthKind.Proportional)}}},1],
-              [{{{Host.Member(SwiftGridLengthKind.Proportional)}}},2],
-              [{{{Host.Member(SwiftGridLengthKind.Fixed)}}},100]
+              [{{{Host.Member(HostGridLengthKind.Auto)}}},1],
+              [{{{Host.Member(HostGridLengthKind.Proportional)}}},1],
+              [{{{Host.Member(HostGridLengthKind.Proportional)}}},2],
+              [{{{Host.Member(HostGridLengthKind.Fixed)}}},100]
             ]}}
             """);
 
@@ -149,7 +149,7 @@ public class ValueTests
 
         var border = (Border)Render($$$"""
             {"id":"b","type":"Border","props":{
-              "shape":[{{{Host.Member(SwiftBorderShapeKind.RoundedRectangle)}}},12],
+              "shape":[{{{Host.Member(HostBorderShapeKind.RoundedRectangle)}}},12],
               "stroke":"#FF0000"
             }}
             """);

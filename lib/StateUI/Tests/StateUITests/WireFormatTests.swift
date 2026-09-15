@@ -143,10 +143,10 @@ final class WireFormatTests: XCTestCase {
     /// camelCasing the member, capitalizing it for a node type.
     func testTheTokensAndTheHostsMembersAreTheSameNames() throws {
         let vocabularies = [
-            ("NodeType", "Protocol/SwiftNodeType.cs"),
-            ("Prop", "Protocol/SwiftProp.cs"),
-            ("Event", "Protocol/SwiftEvent.cs"),
-            ("Act", "Protocol/SwiftAct.cs"),
+            ("NodeType", "Protocol/HostNodeType.cs"),
+            ("Prop", "Protocol/HostProp.cs"),
+            ("Event", "Protocol/HostEvent.cs"),
+            ("Act", "Protocol/HostAct.cs"),
         ]
 
         let host = try Fixtures.mauiSources()
@@ -195,10 +195,10 @@ final class WireFormatTests: XCTestCase {
     func testEveryActMemberHasAnArmInPerform() throws {
         let host = try Fixtures.mauiSources()
 
-        guard let enumeration = host.first(where: { $0.path.hasSuffix("Protocol/SwiftAct.cs") })?.text,
+        guard let enumeration = host.first(where: { $0.path.hasSuffix("Protocol/HostAct.cs") })?.text,
               let session = host.first(where: { $0.path.hasSuffix("Rendering/StateUISession.cs") })?.text
         else {
-            return XCTFail("SwiftAct.cs or StateUISession.cs was not found in the MAUI host")
+            return XCTFail("HostAct.cs or StateUISession.cs was not found in the MAUI host")
         }
 
         let members = enumeration.split(separator: "\n")
@@ -209,8 +209,8 @@ final class WireFormatTests: XCTestCase {
 
         XCTAssertGreaterThan(members.count, 10, "too few members to be reading the right file")
         XCTAssertEqual(
-            members.filter { !session.contains("case SwiftAct.\($0):") }, [],
-            "members of SwiftAct with no `case` in StateUISession.Perform")
+            members.filter { !session.contains("case HostAct.\($0):") }, [],
+            "members of HostAct with no `case` in StateUISession.Perform")
     }
 
     /// A placement crosses as a RUN OF DOUBLES with no field markers on it -
@@ -220,14 +220,14 @@ final class WireFormatTests: XCTestCase {
     /// strictly between what this side writes for "no shade" and the nought a
     /// view wearing none of one answers.
     func testThePlacementStrideIsTheSameOnBothSides() throws {
-        guard let channels = try Fixtures.mauiSources()
-            .first(where: { $0.path.hasSuffix("Rendering/MotionTargets.cs") })?.text
+        guard let targets = try Fixtures.mauiSources()
+            .first(where: { $0.path.hasSuffix("Rendering/TripTargets.cs") })?.text
         else {
-            return XCTFail("MotionTargets.cs was not found in the MAUI host")
+            return XCTFail("TripTargets.cs was not found in the MAUI host")
         }
 
         func number(_ declaration: String) -> Double? {
-            guard let line = channels.split(separator: "\n").map({ $0.trimmed })
+            guard let line = targets.split(separator: "\n").map({ $0.trimmed })
                 .first(where: { $0.hasPrefix(declaration) })
             else { return nil }
 

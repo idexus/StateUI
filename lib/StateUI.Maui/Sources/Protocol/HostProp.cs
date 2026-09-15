@@ -13,15 +13,15 @@ namespace StateUI.Maui.Protocol;
 /// every property an APPLICATION declares on its own control is. Those cannot
 /// share a member - two of them on one control would collide as one
 /// dictionary key and the second would overwrite the first - so they live in
-/// <c>SwiftNode.OwnProps</c>, spelled, and the library's live here, numbered.
+/// <c>HostPatch.OwnProps</c>, spelled, and the library's live here, numbered.
 /// The split is the vocabulary's own shape: this one is closed, that one is
 /// open.
 /// </para>
 /// <para>
-/// These numbers never cross the wire; see <see cref="SwiftNodeType"/>.
+/// These numbers never cross the wire; see <see cref="HostNodeType"/>.
 /// </para>
 /// </remarks>
-internal enum SwiftProp : ushort
+internal enum HostProp : ushort
 {
     /// <summary>A name this runtime has no member for.</summary>
     None = 0,

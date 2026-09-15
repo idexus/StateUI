@@ -20,8 +20,8 @@ public class ActCallFixtureTests
     /// <summary>The one act a fixture carries, read as the session reads a batch.</summary>
     private static HostActCall One(string name)
     {
-        List<HostActCall> calls = SwiftWire.ReadActCalls(
-            Fixtures.ReadBytes($"act-calls/{name}.bin"), new SwiftWireDictionary());
+        List<HostActCall> calls = WireCodec.ReadActCalls(
+            Fixtures.ReadBytes($"act-calls/{name}.bin"), new WireDictionary());
 
         return Assert.Single(calls);
     }
@@ -316,7 +316,7 @@ public class ActCallFixtureTests
     [Fact]
     public void ANaNArgumentIsNotANumber()
     {
-        List<byte> bytes = [SwiftWire.Version];
+        List<byte> bytes = [WireCodec.Version];
 
         void Str(string text)
         {
@@ -339,7 +339,7 @@ public class ActCallFixtureTests
         bytes.Add(4); Str("linear");
 
         HostActCall call = Assert.Single(
-            SwiftWire.ReadActCalls([.. bytes], new SwiftWireDictionary()));
+            WireCodec.ReadActCalls([.. bytes], new WireDictionary()));
 
         Assert.Equal("scrollToAsync", call.Name);
         Assert.Null(call.GetDouble(1));
@@ -357,8 +357,8 @@ public class ActCallFixtureTests
         byte[] whole = Fixtures.ReadBytes("act-calls/Confirm.bin");
 
         Assert.Throws<InvalidDataException>(
-            () => SwiftWire.ReadActCalls(
-                whole.AsSpan(0, whole.Length - 3).ToArray(), new SwiftWireDictionary()));
+            () => WireCodec.ReadActCalls(
+                whole.AsSpan(0, whole.Length - 3).ToArray(), new WireDictionary()));
     }
 
     /// <summary>
@@ -373,7 +373,7 @@ public class ActCallFixtureTests
     {
         byte[] bytes =
         [
-            SwiftWire.Version,
+            WireCodec.Version,
             0, 0,               // no announcements
             1, 0,               // one act
             0xE7, 0x03,         // name #999, which nothing announced
@@ -382,7 +382,7 @@ public class ActCallFixtureTests
         ];
 
         Assert.Throws<InvalidDataException>(
-            () => SwiftWire.ReadActCalls(bytes, new SwiftWireDictionary()));
+            () => WireCodec.ReadActCalls(bytes, new WireDictionary()));
     }
 
     /// <summary>

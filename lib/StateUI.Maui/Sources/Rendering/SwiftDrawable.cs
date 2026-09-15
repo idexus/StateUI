@@ -35,14 +35,14 @@ namespace StateUI.Maui.Rendering;
 /// </para>
 /// <para>
 /// A number must also be FINITE, which is how the rest of the runtime reads one
-/// (<c>SwiftNode.GetNumber</c>, <c>HostActCall.GetDouble</c>), and a record with
+/// (<c>HostPatch.GetNumber</c>, <c>HostActCall.GetDouble</c>), and a record with
 /// a non-finite argument is skipped whole rather than drawn with a 0 put in its
 /// place. An infinity says nothing about where to draw, and a substituted 0 would
 /// draw the shape at the origin instead.
 /// </para>
 /// </remarks>
 /// <param name="commands">The records, in the order they are drawn in.</param>
-internal sealed class SwiftDrawable(SwiftWireValue[] commands) : IDrawable
+internal sealed class SwiftDrawable(HostValue[] commands) : IDrawable
 {
     /// <summary>
     /// Which member of ICanvas a record calls, as the number it travels as.
@@ -135,19 +135,19 @@ internal sealed class SwiftDrawable(SwiftWireValue[] commands) : IDrawable
     /// another without comparing the objects - an unchanged drawing is not sent
     /// at all, but a fixture applied twice is.
     /// </remarks>
-    public SwiftWireValue[] Commands { get; } = commands;
+    public HostValue[] Commands { get; } = commands;
 
     /// <summary>Replays every instruction against the canvas.</summary>
     /// <param name="canvas">What to draw on.</param>
     /// <param name="dirtyRect">The area being redrawn, which nothing here reads.</param>
     public void Draw(ICanvas canvas, RectF dirtyRect)
     {
-        foreach (SwiftWireValue command in Commands)
+        foreach (HostValue command in Commands)
         {
             // A record is [kind, arguments…], the kind at index 0 - so an
             // argument is at the index it was written at, one-based, exactly as
             // ICanvas takes them.
-            if (command is { Tag: SwiftWireValue.TagValues, Values: SwiftWireValue[] record }
+            if (command is { Tag: HostValue.TagValues, Values: HostValue[] record }
                 && Enumeration(record, 0) is int kind)
             {
                 Run(canvas, (Kind)kind, record);
@@ -155,7 +155,7 @@ internal sealed class SwiftDrawable(SwiftWireValue[] commands) : IDrawable
         }
     }
 
-    private static void Run(ICanvas canvas, Kind kind, SwiftWireValue[] record)
+    private static void Run(ICanvas canvas, Kind kind, HostValue[] record)
     {
         // Every arm reads its arguments in its guard, so a record missing one -
         // or carrying something of another shape, or a number that is not finite
@@ -294,9 +294,9 @@ internal sealed class SwiftDrawable(SwiftWireValue[] commands) : IDrawable
     /// at all. The Swift side has already picked the half for the theme in
     /// force, so one of these is one colour and never a pair.
     /// </remarks>
-    private static Color? Colour(SwiftWireValue[] record, int index)
+    private static Color? Colour(HostValue[] record, int index)
     {
-        return At(record, index) is { Tag: SwiftWireValue.TagColor } value
+        return At(record, index) is { Tag: HostValue.TagColor } value
             ? new Color(value.Red / 255f, value.Green / 255f, value.Blue / 255f, value.Alpha / 255f)
             : null;
     }
@@ -311,9 +311,9 @@ internal sealed class SwiftDrawable(SwiftWireValue[] commands) : IDrawable
     /// check is what makes a NaN or an infinity refuse the record it is in rather
     /// than draw it somewhere nobody asked for.
     /// </remarks>
-    private static double? Number(SwiftWireValue[] record, int index)
+    private static double? Number(HostValue[] record, int index)
     {
-        return At(record, index) is { Tag: SwiftWireValue.TagNumber } value
+        return At(record, index) is { Tag: HostValue.TagNumber } value
             && double.IsFinite(value.Number)
                 ? value.Number
                 : null;
@@ -330,7 +330,7 @@ internal sealed class SwiftDrawable(SwiftWireValue[] commands) : IDrawable
     /// half read, because a missing coordinate has no answer that would draw the
     /// right thing.
     /// </remarks>
-    private static double[]? Numbers(SwiftWireValue[] record, int count)
+    private static double[]? Numbers(HostValue[] record, int count)
     {
         double[] numbers = new double[count];
 
@@ -348,12 +348,12 @@ internal sealed class SwiftDrawable(SwiftWireValue[] commands) : IDrawable
     }
 
     /// <summary>An argument as true or false, or null when it is absent or neither.</summary>
-    private static bool? Flag(SwiftWireValue[] record, int index)
+    private static bool? Flag(HostValue[] record, int index)
     {
         return At(record, index)?.Tag switch
         {
-            SwiftWireValue.TagTrue => true,
-            SwiftWireValue.TagFalse => false,
+            HostValue.TagTrue => true,
+            HostValue.TagFalse => false,
             _ => null,
         };
     }
@@ -364,9 +364,9 @@ internal sealed class SwiftDrawable(SwiftWireValue[] commands) : IDrawable
     /// the SVG data of a path - so it rides the wire's string tag and nothing
     /// else reads as one.
     /// </remarks>
-    private static string? Text(SwiftWireValue[] record, int index)
+    private static string? Text(HostValue[] record, int index)
     {
-        return At(record, index) is { Tag: SwiftWireValue.TagString } value ? value.Text : null;
+        return At(record, index) is { Tag: HostValue.TagString } value ? value.Text : null;
     }
 
     /// <summary>
@@ -378,9 +378,9 @@ internal sealed class SwiftDrawable(SwiftWireValue[] commands) : IDrawable
     /// The one place in this file that names the wire's enumeration tag, so that
     /// the whole drawing follows it if it ever moves.
     /// </remarks>
-    private static int? Enumeration(SwiftWireValue[] record, int index)
+    private static int? Enumeration(HostValue[] record, int index)
     {
-        return At(record, index) is { Tag: SwiftWireValue.TagEnumeration } value ? value.Member : null;
+        return At(record, index) is { Tag: HostValue.TagEnumeration } value ? value.Member : null;
     }
 
     /// <summary>Where the text sits across its box, or null when it did not arrive.</summary>
@@ -389,19 +389,19 @@ internal sealed class SwiftDrawable(SwiftWireValue[] commands) : IDrawable
     /// Right 2, Justified 3 - and the Swift enum is declared with those values,
     /// so a cast is the whole conversion and no spelling crosses.
     /// </remarks>
-    private static HorizontalAlignment? Across(SwiftWireValue[] record, int index)
+    private static HorizontalAlignment? Across(HostValue[] record, int index)
     {
         return Enumeration(record, index) is int member ? (HorizontalAlignment)member : null;
     }
 
     /// <summary>And down it. MAUI's numbers again: Top 0, Center 1, Bottom 2.</summary>
-    private static VerticalAlignment? Down(SwiftWireValue[] record, int index)
+    private static VerticalAlignment? Down(HostValue[] record, int index)
     {
         return Enumeration(record, index) is int member ? (VerticalAlignment)member : null;
     }
 
     /// <summary>The argument at an index, or null when the record is shorter than that.</summary>
-    private static SwiftWireValue? At(SwiftWireValue[] record, int index)
+    private static HostValue? At(HostValue[] record, int index)
     {
         return index < record.Length ? record[index] : null;
     }

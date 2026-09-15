@@ -59,7 +59,7 @@ internal static class SwiftWindowSize
     /// window the user has since resized is not something a later render should
     /// snatch back.
     /// </remarks>
-    public static void OpenAtRequestedSize(Window window, SwiftNode node)
+    public static void OpenAtRequestedSize(Window window, HostPatch node)
     {
 #if MACCATALYST
         if ((bool)window.GetValue(AskedProperty))
@@ -67,8 +67,8 @@ internal static class SwiftWindowSize
             return;
         }
 
-        double width = node.GetNumber(SwiftProp.Width) ?? double.PositiveInfinity;
-        double height = node.GetNumber(SwiftProp.Height) ?? double.PositiveInfinity;
+        double width = node.GetNumber(HostProp.Width) ?? double.PositiveInfinity;
+        double height = node.GetNumber(HostProp.Height) ?? double.PositiveInfinity;
 
         if (double.IsPositiveInfinity(width) && double.IsPositiveInfinity(height))
         {

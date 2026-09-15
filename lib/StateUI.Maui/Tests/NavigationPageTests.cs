@@ -586,13 +586,13 @@ public class NavigationPageTests
 
         foreach (string file in files)
         {
-            SwiftNode root = Host.Parse(File.ReadAllBytes(file));
+            HostPatch root = Host.Parse(File.ReadAllBytes(file));
 
             // A fixture rooted in a WINDOW describes something a page renderer
             // cannot be handed on its own: the modal stack hangs off the
             // window's navigation, not off any page. It goes through a real
             // window instead, which is what an application does with it.
-            if (root.Type == SwiftNodeType.Window)
+            if (root.Type == HostNodeType.Window)
             {
                 Assert.True(Host.Window().Apply(root, true));
                 continue;

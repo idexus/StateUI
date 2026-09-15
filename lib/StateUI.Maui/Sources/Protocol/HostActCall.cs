@@ -18,7 +18,7 @@ namespace StateUI.Maui.Protocol;
 /// <see cref="Name"/> is the act's name as Swift spells it - <c>alert</c>, or
 /// an application's own <c>Gallery.BatteryLevel</c>. On the wire it travelled
 /// as a number from the session's dictionary - see
-/// <see cref="SwiftWireDictionary"/> - and was resolved back to the name here.
+/// <see cref="WireDictionary"/> - and was resolved back to the name here.
 /// </para>
 /// <para>
 /// An argument that is NOT THERE - a dialog with no destructive button, an
@@ -30,11 +30,11 @@ namespace StateUI.Maui.Protocol;
 /// </remarks>
 public sealed class HostActCall
 {
-    /// <summary>Parsed off the wire by <see cref="SwiftWire.ReadActCalls"/>.</summary>
+    /// <summary>Parsed off the wire by <see cref="WireCodec.ReadActCalls"/>.</summary>
     internal HostActCall(
-        SwiftAct act,
+        HostAct act,
         string name,
-        IReadOnlyList<SwiftWireValue> arguments,
+        IReadOnlyList<HostValue> arguments,
         int? completion)
     {
         Act = act;
@@ -45,10 +45,10 @@ public sealed class HostActCall
 
     /// <summary>
     /// The act, as the number that crossed the wire - what <c>Perform</c>
-    /// switches on. <see cref="SwiftAct.None"/> for a name this runtime has no
+    /// switches on. <see cref="HostAct.None"/> for a name this runtime has no
     /// case for, which the default arm answers under its <see cref="Name"/>.
     /// </summary>
-    public SwiftAct Act { get; }
+    public HostAct Act { get; }
 
     /// <summary>
     /// The act's name as Swift spells it - <c>alert</c>, or an application's
@@ -59,7 +59,7 @@ public sealed class HostActCall
     public string Name { get; }
 
     /// <summary>Its arguments, in the order the act declares them.</summary>
-    public IReadOnlyList<SwiftWireValue> Arguments { get; }
+    public IReadOnlyList<HostValue> Arguments { get; }
 
     /// <summary>
     /// The handler id to report back to when the act finishes, if the caller
@@ -73,7 +73,7 @@ public sealed class HostActCall
     /// else - a name, a member of a closed vocabulary, a number.
     /// </summary>
     public string? GetString(int index) =>
-        At(index) is { Tag: SwiftWireValue.TagString } value ? value.Text : null;
+        At(index) is { Tag: HostValue.TagString } value ? value.Text : null;
 
     /// <summary>
     /// An argument as a NAME from an open vocabulary - a kept state's key, a
@@ -86,7 +86,7 @@ public sealed class HostActCall
     /// nothing can take a label's words for a key somebody named.
     /// </remarks>
     public string? GetName(int index) =>
-        At(index) is { Tag: SwiftWireValue.TagName } value ? value.Text : null;
+        At(index) is { Tag: HostValue.TagName } value ? value.Text : null;
 
     /// <summary>An argument as a whole number, or null when there is none.</summary>
     public int? GetInt(int index) => GetDouble(index) is double value ? (int)value : null;
@@ -100,15 +100,15 @@ public sealed class HostActCall
     /// refuse it rather than animate to a zero nobody asked for.
     /// </remarks>
     public double? GetDouble(int index) =>
-        At(index) is { Tag: SwiftWireValue.TagNumber } value && double.IsFinite(value.Number)
+        At(index) is { Tag: HostValue.TagNumber } value && double.IsFinite(value.Number)
             ? value.Number
             : null;
 
     /// <summary>An argument as a boolean, or null when there is none.</summary>
     public bool? GetBool(int index) => At(index)?.Tag switch
     {
-        SwiftWireValue.TagTrue => true,
-        SwiftWireValue.TagFalse => false,
+        HostValue.TagTrue => true,
+        HostValue.TagFalse => false,
         _ => null,
     };
 
@@ -122,17 +122,17 @@ public sealed class HostActCall
     /// nothing can take a maximum length for a keyboard.
     /// </remarks>
     public int? GetEnumeration(int index) =>
-        At(index) is { Tag: SwiftWireValue.TagEnumeration } value ? value.Member : null;
+        At(index) is { Tag: HostValue.TagEnumeration } value ? value.Member : null;
 
     /// <summary>
     /// An argument as a list of numbers, or null when there is none - what a
     /// day travels as, three of them.
     /// </summary>
     public IReadOnlyList<double>? GetNumbers(int index) =>
-        At(index) is { Tag: SwiftWireValue.TagNumbers } value ? value.Numbers : null;
+        At(index) is { Tag: HostValue.TagNumbers } value ? value.Numbers : null;
 
 
     /// <summary>The argument at an index, or null when there is none.</summary>
-    private SwiftWireValue? At(int index) =>
+    private HostValue? At(int index) =>
         index >= 0 && index < Arguments.Count ? Arguments[index] : null;
 }

@@ -105,17 +105,17 @@ public class ContentPageTests
     {
         (ContentPage page, _) = Fixture();
 
-        IReadOnlyDictionary<SwiftEvent, int>? events = StateUIRenderer.EventsOf(page);
+        IReadOnlyDictionary<HostEvent, int>? events = StateUIRenderer.EventsOf(page);
 
         Assert.NotNull(events);
         Assert.Equal(
             new[]
             {
-                SwiftEvent.Appearing,
-                SwiftEvent.Disappearing,
-                SwiftEvent.NavigatedFrom,
-                SwiftEvent.NavigatedTo,
-                SwiftEvent.NavigatingFrom,
+                HostEvent.Appearing,
+                HostEvent.Disappearing,
+                HostEvent.NavigatedFrom,
+                HostEvent.NavigatedTo,
+                HostEvent.NavigatingFrom,
             },
             events!.Keys.Order());
     }

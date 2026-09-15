@@ -28,14 +28,14 @@ namespace StateUI.Maui.Protocol;
 /// A name is resolved to its MEMBER here, once, as the announcement is read -
 /// not at each use. Everything downstream then dispatches on an enum: the
 /// renderer switches on a node type, a property is found under a
-/// <see cref="SwiftProp"/> key, an event fires from a
-/// <see cref="SwiftEvent"/>. The spelling is kept beside them because two
+/// <see cref="HostProp"/> key, an event fires from a
+/// <see cref="HostEvent"/>. The spelling is kept beside them because two
 /// things still need it - an application's own control, which has no member
 /// and is found in the registry by name, and every diagnostic that has to say
 /// WHICH type or property it could not make sense of.
 /// </para>
 /// </remarks>
-internal sealed class SwiftWireDictionary
+internal sealed class WireDictionary
 {
     // The index IS the id. Slot 0 stays null - the writer never assigns 0.
     private readonly List<Entry?> _names = [null];
@@ -59,9 +59,9 @@ internal sealed class SwiftWireDictionary
 
         _names[id] = new Entry(
             name,
-            SwiftTokenNames<SwiftNodeType>.Parse(name),
-            SwiftTokenNames<SwiftProp>.Parse(name),
-            SwiftTokenNames<SwiftEvent>.Parse(name));
+            TokenNames<HostNodeType>.Parse(name),
+            TokenNames<HostProp>.Parse(name),
+            TokenNames<HostEvent>.Parse(name));
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ internal sealed class SwiftWireDictionary
     /// <param name="Event">Its event, or <c>None</c>.</param>
     internal readonly record struct Entry(
         string Name,
-        SwiftNodeType NodeType,
-        SwiftProp Prop,
-        SwiftEvent Event);
+        HostNodeType NodeType,
+        HostProp Prop,
+        HostEvent Event);
 }

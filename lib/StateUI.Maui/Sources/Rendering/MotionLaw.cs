@@ -88,31 +88,31 @@ internal static class MotionLaw
     /// <param name="s">How far through the motion is, from 0 to 1.</param>
     /// <returns>The fraction of the distance covered - which the bouncing and
     /// springing curves deliberately take past 1 and back.</returns>
-    internal static double Ease(SwiftEasing curve, double s)
+    internal static double Ease(HostEasing curve, double s)
     {
         double x = Math.Clamp(s, 0, 1);
 
         switch (curve)
         {
-            case SwiftEasing.SineOut:
+            case HostEasing.SineOut:
                 return Math.Sin(x * Math.PI / 2);
 
-            case SwiftEasing.SineIn:
+            case HostEasing.SineIn:
                 return 1 - Math.Cos(x * Math.PI / 2);
 
-            case SwiftEasing.SineInOut:
+            case HostEasing.SineInOut:
                 return (1 - Math.Cos(x * Math.PI)) / 2;
 
-            case SwiftEasing.CubicIn:
+            case HostEasing.CubicIn:
                 return x * x * x;
 
-            case SwiftEasing.CubicOut:
+            case HostEasing.CubicOut:
             {
                 double shifted = x - 1;
                 return (shifted * shifted * shifted) + 1;
             }
 
-            case SwiftEasing.CubicInOut:
+            case HostEasing.CubicInOut:
             {
                 if (x < 0.5)
                 {
@@ -123,16 +123,16 @@ internal static class MotionLaw
                 return (shifted * shifted * shifted / 2) + 1;
             }
 
-            case SwiftEasing.BounceOut:
+            case HostEasing.BounceOut:
                 return BounceOut(x);
 
-            case SwiftEasing.BounceIn:
+            case HostEasing.BounceIn:
                 return 1 - BounceOut(1 - x);
 
-            case SwiftEasing.SpringIn:
+            case HostEasing.SpringIn:
                 return x * x * ((2.70158 * x) - 1.70158);
 
-            case SwiftEasing.SpringOut:
+            case HostEasing.SpringOut:
             {
                 double shifted = x - 1;
                 return (shifted * shifted * ((2.70158 * shifted) + 1.70158)) + 1;
@@ -153,7 +153,7 @@ internal static class MotionLaw
     /// <param name="curve">The curve.</param>
     /// <param name="s">How far through the motion is, from 0 to 1.</param>
     /// <returns>The curve's rate of climb there.</returns>
-    internal static double Slope(SwiftEasing curve, double s)
+    internal static double Slope(HostEasing curve, double s)
     {
         const double step = 1e-4;
 
@@ -181,7 +181,7 @@ internal static class MotionLaw
     /// that nothing interrupted is unchanged.
     /// </remarks>
     private static bool Eased(
-        Trip trip, double length, SwiftEasing curve, double t, double[] p, double[] v)
+        Trip trip, double length, HostEasing curve, double t, double[] p, double[] v)
     {
         if (length <= 0 || t >= length)
         {

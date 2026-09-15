@@ -88,7 +88,7 @@ internal sealed class SwiftPages
     /// <param name="existing">The page showing in this slot, if any.</param>
     /// <param name="node">What Swift says should be there.</param>
     /// <returns>The page to show.</returns>
-    internal Page Render(Page? existing, SwiftNode node) => Render(existing, node, _pages);
+    internal Page Render(Page? existing, HostPatch node) => Render(existing, node, _pages);
 
     /// <summary>The same, within the set of pages one container is keeping.</summary>
     /// <remarks>
@@ -118,7 +118,7 @@ internal sealed class SwiftPages
     /// <param name="node">What Swift says should be there.</param>
     /// <param name="kept">The pages this container is keeping.</param>
     /// <returns>The page to show.</returns>
-    private Page Render(Page? existing, SwiftNode node, Dictionary<string, Page> kept)
+    private Page Render(Page? existing, HostPatch node, Dictionary<string, Page> kept)
     {
         Page? was = kept.GetValueOrDefault(node.Key);
 
@@ -131,7 +131,7 @@ internal sealed class SwiftPages
 
         switch (node.Type)
         {
-            case SwiftNodeType.Page:
+            case HostNodeType.Page:
             {
                 ContentPage page = was as ContentPage ?? new ContentPage();
 
@@ -147,15 +147,15 @@ internal sealed class SwiftPages
                     // inside the message that described it, and a report made
                     // there is DROPPED. A turn later there is nothing to
                     // swallow it.
-                    page.Appearing += (sender, _) => Announce(sender, SwiftEvent.Appearing);
-                    page.Disappearing += (sender, _) => Announce(sender, SwiftEvent.Disappearing);
+                    page.Appearing += (sender, _) => Announce(sender, HostEvent.Appearing);
+                    page.Disappearing += (sender, _) => Announce(sender, HostEvent.Disappearing);
 
                     // The navigation trio, which answer a MOVE and nothing
                     // else - where Appearing also answers the page coming back
                     // for a reason that was never one.
-                    page.NavigatedTo += (sender, _) => Announce(sender, SwiftEvent.NavigatedTo);
-                    page.NavigatingFrom += (sender, _) => Announce(sender, SwiftEvent.NavigatingFrom);
-                    page.NavigatedFrom += (sender, _) => Announce(sender, SwiftEvent.NavigatedFrom);
+                    page.NavigatedTo += (sender, _) => Announce(sender, HostEvent.NavigatedTo);
+                    page.NavigatingFrom += (sender, _) => Announce(sender, HostEvent.NavigatingFrom);
+                    page.NavigatedFrom += (sender, _) => Announce(sender, HostEvent.NavigatedFrom);
                 }
 
                 kept[node.Key] = page;
@@ -163,13 +163,13 @@ internal sealed class SwiftPages
                 return page;
             }
 
-            case SwiftNodeType.NavigationStack:
+            case HostNodeType.NavigationStack:
                 return ApplyNavigationPage(was as NavigationPage, node, kept);
 
-            case SwiftNodeType.TabbedView:
+            case HostNodeType.TabbedView:
                 return ApplyTabbedPage(was as TabbedPage, node, kept);
 
-            case SwiftNodeType.SplitView:
+            case HostNodeType.SplitView:
                 return ApplyFlyoutPage(was as FlyoutPage, node, kept);
 
             default:
@@ -196,7 +196,7 @@ internal sealed class SwiftPages
         internal required NavigationPage Page { get; init; }
 
         /// <summary>The node it was built from, for the handler ids.</summary>
-        internal required SwiftNode Node { get; set; }
+        internal required HostPatch Node { get; set; }
 
         /// <summary>
         /// The pages ON this stack, by the identity of the node each came from.
@@ -235,9 +235,9 @@ internal sealed class SwiftPages
     /// <param name="kept">The pages the CONTAINER of this stack is keeping.</param>
     /// <returns>The NavigationPage to show.</returns>
     private Page ApplyNavigationPage(
-        NavigationPage? existing, SwiftNode node, Dictionary<string, Page> kept)
+        NavigationPage? existing, HostPatch node, Dictionary<string, Page> kept)
     {
-        List<SwiftNode> children = node.Children ?? [];
+        List<HostPatch> children = node.Children ?? [];
 
         if (existing is null || !_stacks.TryGetValue(node.Key, out Stack? stack))
         {
@@ -278,7 +278,7 @@ internal sealed class SwiftPages
             ApplyPageChrome(built, node);
             ApplyBar(built, node);
 
-            foreach (SwiftNode child in children.Skip(1))
+            foreach (HostPatch child in children.Skip(1))
             {
                 Render(null, child, stack.Pages);
             }
@@ -305,7 +305,7 @@ internal sealed class SwiftPages
         // why this is watched rather than assumed.
         bool replaced = false;
 
-        foreach (SwiftNode child in children)
+        foreach (HostPatch child in children)
         {
             Page? was = stack.Pages.GetValueOrDefault(child.Key);
             Page made = Render(was, child, stack.Pages);
@@ -348,10 +348,10 @@ internal sealed class SwiftPages
     /// </remarks>
     /// <param name="navigation">The stack page to paint.</param>
     /// <param name="node">What Swift says about it.</param>
-    private static void ApplyBar(NavigationPage navigation, SwiftNode node)
+    private static void ApplyBar(NavigationPage navigation, HostPatch node)
     {
-        node.SetColor(SwiftProp.BarBackgroundColor, navigation, NavigationPage.BarBackgroundColorProperty);
-        node.SetColor(SwiftProp.BarForegroundColor, navigation, NavigationPage.BarTextColorProperty);
+        node.SetColor(HostProp.BarBackgroundColor, navigation, NavigationPage.BarBackgroundColorProperty);
+        node.SetColor(HostProp.BarForegroundColor, navigation, NavigationPage.BarTextColorProperty);
     }
 
     /// <summary>The same three, on the other page that draws a bar.</summary>
@@ -363,9 +363,9 @@ internal sealed class SwiftPages
     /// </remarks>
     /// <param name="tabbed">The tabbed page to paint.</param>
     /// <param name="node">What Swift says about it.</param>
-    private static void ApplyBar(TabbedPage tabbed, SwiftNode node)
+    private static void ApplyBar(TabbedPage tabbed, HostPatch node)
     {
-        node.SetColor(SwiftProp.BarBackgroundColor, tabbed, TabbedPage.BarBackgroundColorProperty);
+        node.SetColor(HostProp.BarBackgroundColor, tabbed, TabbedPage.BarBackgroundColorProperty);
     }
 
     /// <summary>
@@ -381,11 +381,11 @@ internal sealed class SwiftPages
     /// </remarks>
     /// <param name="page">The page to name.</param>
     /// <param name="node">What Swift says about it.</param>
-    private static void ApplyPageChrome(Page page, SwiftNode node)
+    private static void ApplyPageChrome(Page page, HostPatch node)
     {
-        if (node.GetString(SwiftProp.Title) is string title) { page.Title = title; }
+        if (node.GetString(HostProp.Title) is string title) { page.Title = title; }
 
-        node.SetImageSource(SwiftProp.Icon, page, Page.IconImageSourceProperty);
+        node.SetImageSource(HostProp.Icon, page, Page.IconImageSourceProperty);
     }
 
     /// <summary>The identities an arranged child list names, in order.</summary>
@@ -400,11 +400,11 @@ internal sealed class SwiftPages
     /// <param name="arrangement">What to call it in a failure - "stack", "tab bar".</param>
     /// <returns>The identities, in the order they arrived.</returns>
     private List<string> Order(
-        List<SwiftNode> children, Dictionary<string, Page> pages, string arrangement)
+        List<HostPatch> children, Dictionary<string, Page> pages, string arrangement)
     {
         List<string> order = [];
 
-        foreach (SwiftNode child in children)
+        foreach (HostPatch child in children)
         {
             if (pages.ContainsKey(child.Key))
             {
@@ -485,7 +485,7 @@ internal sealed class SwiftPages
             "Unable to determine the current Shell instance", StringComparison.Ordinal))
         {
             LetGo(leaving);
-            Announce(uncovered(), SwiftEvent.NavigatedTo);
+            Announce(uncovered(), HostEvent.NavigatedTo);
         }
     }
 
@@ -694,7 +694,7 @@ internal sealed class SwiftPages
         }
 
         stack.Desired = depth;
-        _renderer.Raise(stack.Page, SwiftEvent.Popped, (double)depth);
+        _renderer.Raise(stack.Page, HostEvent.Popped, (double)depth);
     }
 
     /// <summary>Says how deep the stack is now, a turn from now.</summary>
@@ -757,7 +757,7 @@ internal sealed class SwiftPages
     /// <param name="kept">The pages the CONTAINER of this tab bar is keeping.</param>
     /// <returns>The TabbedPage to show.</returns>
     private Page ApplyTabbedPage(
-        TabbedPage? existing, SwiftNode node, Dictionary<string, Page> kept)
+        TabbedPage? existing, HostPatch node, Dictionary<string, Page> kept)
     {
         if (existing is null || !_tabs.TryGetValue(node.Key, out Tabs? tabs))
         {
@@ -794,9 +794,9 @@ internal sealed class SwiftPages
         ApplyPageChrome(tabs.Page, node);
         ApplyBar(tabs.Page, node);
 
-        List<SwiftNode> children = node.Children ?? [];
+        List<HostPatch> children = node.Children ?? [];
 
-        foreach (SwiftNode child in children)
+        foreach (HostPatch child in children)
         {
             Render(tabs.Pages.GetValueOrDefault(child.Key), child, tabs.Pages);
         }
@@ -817,7 +817,7 @@ internal sealed class SwiftPages
         // object in the children list, and comparing what is there against what
         // is described is both the cheapest way to notice and the only one that
         // cannot be reasoned wrong.
-        Arrange(tabs, node.GetInt(SwiftProp.CurrentPage));
+        Arrange(tabs, node.GetInt(HostProp.CurrentPage));
 
         return tabs.Page;
     }
@@ -947,13 +947,13 @@ internal sealed class SwiftPages
     /// The delay is the tab bar's, for the same reason: MAUI raises Appearing
     /// while the page is being put on screen, which happens inside the message
     /// that described it, and <see cref="StateUIRenderer.Raise(object?,
-    /// SwiftEvent, byte[])"/> drops a report made from inside an apply -
+    /// HostEvent, byte[])"/> drops a report made from inside an apply -
     /// rendering there is a resync. A turn later there is nothing to
     /// swallow it.
     /// </remarks>
     /// <param name="sender">The page that raised it.</param>
     /// <param name="name">The event's name on the wire.</param>
-    private void Announce(object? sender, SwiftEvent name)
+    private void Announce(object? sender, HostEvent name)
     {
         if (sender is not Page page)
         {
@@ -994,7 +994,7 @@ internal sealed class SwiftPages
         }
 
         tabs.Desired = index;
-        _renderer.Raise(tabs.Page, SwiftEvent.CurrentPageChanged, (double)index);
+        _renderer.Raise(tabs.Page, HostEvent.CurrentPageChanged, (double)index);
     }
 
     // ---- The flyout ----------------------------------------------------------
@@ -1028,7 +1028,7 @@ internal sealed class SwiftPages
     /// <param name="node">What Swift says it is.</param>
     /// <param name="kept">The pages the CONTAINER of this one is keeping.</param>
     /// <returns>The FlyoutPage to show.</returns>
-    private Page ApplyFlyoutPage(FlyoutPage? existing, SwiftNode node, Dictionary<string, Page> kept)
+    private Page ApplyFlyoutPage(FlyoutPage? existing, HostPatch node, Dictionary<string, Page> kept)
     {
         if (existing is null || !_flyouts.TryGetValue(node.Key, out Flyout? flyout))
         {
@@ -1053,7 +1053,7 @@ internal sealed class SwiftPages
 
         ApplyPageChrome(flyout.Page, node);
 
-        foreach (SwiftNode child in node.Children ?? [])
+        foreach (HostPatch child in node.Children ?? [])
         {
             Page made = Render(flyout.Pages.GetValueOrDefault(child.Key), child, flyout.Pages);
 
@@ -1088,7 +1088,7 @@ internal sealed class SwiftPages
             }
         }
 
-        Present(flyout, node.GetBool(SwiftProp.IsSidebarVisible));
+        Present(flyout, node.GetBool(HostProp.IsSidebarVisible));
 
         return flyout.Page;
     }
@@ -1194,7 +1194,7 @@ internal sealed class SwiftPages
         }
 
         flyout.Desired = flyout.Page.IsPresented;
-        _renderer.Raise(flyout.Page, SwiftEvent.IsSidebarVisibleChanged, flyout.Page.IsPresented);
+        _renderer.Raise(flyout.Page, HostEvent.IsSidebarVisibleChanged, flyout.Page.IsPresented);
     }
 
     // ---- What is over all of it ---------------------------------------------
@@ -1246,12 +1246,12 @@ internal sealed class SwiftPages
     /// <param name="navigation">The window's navigation, which owns the modal stack.</param>
     /// <param name="reporter">What a dismissal is reported through - the window.</param>
     /// <param name="node">What Swift says is presented.</param>
-    internal void ApplyModals(INavigation navigation, Element reporter, SwiftNode node)
+    internal void ApplyModals(INavigation navigation, Element reporter, HostPatch node)
     {
         Modals modals = _modals ??=
             new Modals { Navigation = navigation, Reporter = reporter, Pages = [] };
 
-        List<SwiftNode> children = node.Children ?? [];
+        List<HostPatch> children = node.Children ?? [];
 
         // A page can come back a DIFFERENT object - `replace` says the old one
         // cannot be patched into what the node now describes - and then what is
@@ -1261,7 +1261,7 @@ internal sealed class SwiftPages
         // thing, in the same words.
         bool replaced = false;
 
-        foreach (SwiftNode child in children)
+        foreach (HostPatch child in children)
         {
             Page? was = modals.Pages.GetValueOrDefault(child.Key);
             Page made = Render(was, child, modals.Pages);
@@ -1441,7 +1441,7 @@ internal sealed class SwiftPages
         }
 
         modals.Desired = depth;
-        _renderer.Raise(modals.Reporter, SwiftEvent.ModalPopped, (double)depth);
+        _renderer.Raise(modals.Reporter, HostEvent.ModalPopped, (double)depth);
     }
 
     // ---- One page -----------------------------------------------------------
@@ -1459,7 +1459,7 @@ internal sealed class SwiftPages
     /// </remarks>
     /// <param name="page">The page to bring up to date.</param>
     /// <param name="node">What Swift says it should be.</param>
-    internal void ApplyContentPage(ContentPage page, SwiftNode node)
+    internal void ApplyContentPage(ContentPage page, HostPatch node)
     {
         // BEFORE anything else, because this is where the handler ids come
         // from: an untracked page reports to nobody.
@@ -1467,26 +1467,26 @@ internal sealed class SwiftPages
 
         ApplyPageChrome(page, node);
 
-        if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { page.Padding = padding; }
-        node.SetBackground(SwiftProp.Background, page);
+        if (node.GetThickness(HostProp.Padding) is Thickness padding) { page.Padding = padding; }
+        node.SetBackground(HostProp.Background, page);
 
         ApplyNavigationAppearance(page, node);
 
-        foreach (SwiftNode child in node.Children ?? [])
+        foreach (HostPatch child in node.Children ?? [])
         {
             switch (child.Type)
             {
-                case SwiftNodeType.TitleView:
+                case HostNodeType.TitleView:
                     NavigationPage.SetTitleView(
                         page, RenderSlot(NavigationPage.GetTitleView(page), child));
                     WatchTitleViewWidth(page);
                     break;
 
-                case SwiftNodeType.ToolbarItems:
+                case HostNodeType.ToolbarItems:
                     _renderer.ApplyList(page.ToolbarItems, child, _renderer.ApplyToolbarItem);
                     break;
 
-                case SwiftNodeType.MenuBar:
+                case HostNodeType.MenuBar:
                     _renderer.ApplyList(page.MenuBarItems, child, _renderer.ApplyMenuBarItem);
                     break;
 
@@ -1513,19 +1513,19 @@ internal sealed class SwiftPages
     /// </remarks>
     /// <param name="page">The page carrying the attached properties.</param>
     /// <param name="node">What Swift says about them.</param>
-    private static void ApplyNavigationAppearance(ContentPage page, SwiftNode node)
+    private static void ApplyNavigationAppearance(ContentPage page, HostPatch node)
     {
-        if (node.GetBool(SwiftProp.HasNavigationBar) is bool bar)
+        if (node.GetBool(HostProp.HasNavigationBar) is bool bar)
         {
             NavigationPage.SetHasNavigationBar(page, bar);
         }
 
-        if (node.GetBool(SwiftProp.HasBackButton) is bool back)
+        if (node.GetBool(HostProp.HasBackButton) is bool back)
         {
             NavigationPage.SetHasBackButton(page, back);
         }
 
-        if (node.GetString(SwiftProp.BackButtonTitle) is string title)
+        if (node.GetString(HostProp.BackButtonTitle) is string title)
         {
             NavigationPage.SetBackButtonTitle(page, title);
         }
@@ -1595,7 +1595,7 @@ internal sealed class SwiftPages
     /// <param name="existing">The view that was in the slot.</param>
     /// <param name="wrapper">The node standing for the slot itself.</param>
     /// <returns>The view to put there, or what was there when nothing arrived.</returns>
-    internal View? RenderSlot(View? existing, SwiftNode wrapper)
+    internal View? RenderSlot(View? existing, HostPatch wrapper)
     {
         return wrapper.Children is { Count: > 0 } children
             ? _renderer.Render(existing, children[0])

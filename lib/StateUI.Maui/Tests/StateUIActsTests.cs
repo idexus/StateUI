@@ -13,8 +13,8 @@ namespace StateUI.Maui.Tests;
 public class StateUIActsTests
 {
     /// <summary>An act as Perform would hold it, for a performer to read.</summary>
-    private static HostActCall Call(string name, params SwiftWireValue[] arguments) =>
-        new(SwiftAct.None, name, arguments, completion: -1);
+    private static HostActCall Call(string name, params HostValue[] arguments) =>
+        new(HostAct.None, name, arguments, completion: -1);
 
     [Fact]
     public async Task ARegisteredAsyncFunctionAnswersItsValues()
@@ -22,13 +22,13 @@ public class StateUIActsTests
         StateUIActs.Add("Test.Echo", async call =>
         {
             await Task.Yield();
-            return [SwiftWireValue.Of(call.GetString(0) ?? "")];
+            return [HostValue.Of(call.GetString(0) ?? "")];
         });
 
         var performer = StateUIActs.Find("Test.Echo");
         Assert.NotNull(performer);
 
-        SwiftWireValue[] answered = await performer(Call("Test.Echo", SwiftWireValue.Of("hi")));
+        HostValue[] answered = await performer(Call("Test.Echo", HostValue.Of("hi")));
         Assert.Equal("hi", Assert.Single(answered).Text);
     }
 
@@ -36,9 +36,9 @@ public class StateUIActsTests
     public async Task APlainFunctionRegistersTheSameWay()
     {
         StateUIActs.Add("Test.Two", call =>
-            [SwiftWireValue.Of(2.0), SwiftWireValue.Of(true)]);
+            [HostValue.Of(2.0), HostValue.Of(true)]);
 
-        SwiftWireValue[] answered = await StateUIActs.Find("Test.Two")!(Call("Test.Two"));
+        HostValue[] answered = await StateUIActs.Find("Test.Two")!(Call("Test.Two"));
 
         Assert.Equal(2, answered.Length);
         Assert.Equal(2.0, answered[0].Number);

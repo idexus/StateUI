@@ -31,7 +31,7 @@ internal readonly struct HostMotion
     internal uint Millis { get; private init; }
 
     /// <summary>The curve an eased motion follows.</summary>
-    internal SwiftEasing Curve { get; private init; }
+    internal HostEasing Curve { get; private init; }
 
     /// <summary>A spring's damping. Nought where the law has no use for one.</summary>
     internal double Factor { get; private init; }
@@ -42,7 +42,7 @@ internal readonly struct HostMotion
     /// <summary>A stated length on a stated curve.</summary>
     /// <param name="millis">How long it takes, in milliseconds.</param>
     /// <param name="curve">The curve it follows.</param>
-    internal static HostMotion Eased(uint millis, SwiftEasing curve) =>
+    internal static HostMotion Eased(uint millis, HostEasing curve) =>
         new() { Kind = Law.Eased, Millis = millis, Curve = curve };
 
     /// <summary>A mass on a spring.</summary>
@@ -58,12 +58,12 @@ internal readonly struct HostMotion
     /// </remarks>
     /// <param name="law">The law, as its <see cref="Law"/> number.</param>
     /// <param name="millis">The length, or the response.</param>
-    /// <param name="curve">The curve, as its <see cref="SwiftEasing"/> number.</param>
+    /// <param name="curve">The curve, as its <see cref="HostEasing"/> number.</param>
     /// <param name="factor">The damping.</param>
     internal static HostMotion Of(int law, uint millis, int curve, double factor) =>
         (Law)law switch
         {
             Law.Spring => Spring(millis, factor),
-            _ => Eased(millis, (SwiftEasing)curve),
+            _ => Eased(millis, (HostEasing)curve),
         };
 }

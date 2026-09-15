@@ -16,7 +16,7 @@ namespace StateUI.Maui.Protocol;
 /// patch from ever being applied to a tree it was not computed against - after a
 /// failure halfway through, for one.
 /// </remarks>
-public sealed class SwiftMessage
+public sealed class HostRender
 {
     /// <summary>
     /// Which render produced this message. Quoted back on the next request; see
@@ -41,7 +41,7 @@ public sealed class SwiftMessage
     /// windows, among them.
     /// Null only if Swift produced nothing, which it does not.
     /// </summary>
-    public SwiftNode? Root { get; set; }
+    public HostPatch? Root { get; set; }
 }
 
 /// <summary>
@@ -50,16 +50,16 @@ public sealed class SwiftMessage
 /// <c>.id()</c>. The two can never collide because the kind travels with the
 /// value.
 /// </summary>
-public readonly struct SwiftId
+public readonly struct HostElementId
 {
     private readonly string? _name;
     private readonly int _number;
 
     /// <summary>A renderer-assigned identity.</summary>
-    internal SwiftId(int number) => _number = number;
+    internal HostElementId(int number) => _number = number;
 
     /// <summary>An author-written identity.</summary>
-    internal SwiftId(string name) => _name = name;
+    internal HostElementId(string name) => _name = name;
 
     /// <summary>
     /// The identity as it is matched - quotes and all, so the two namespaces
@@ -91,10 +91,10 @@ public readonly struct SwiftId
 /// Decodes the Wire form of <c>HostPatch</c> in <c>Core/HostRender.swift</c>.
 /// Every NAME on it - the type, each property key, each event - is resolved
 /// to its MEMBER by
-/// <see cref="SwiftWire.ReadMessage"/>, once per name per session, as the
+/// <see cref="WireCodec.ReadMessage"/>, once per name per session, as the
 /// announcement is read: the renderer switches on <see cref="Type"/>, finds a
-/// property under a <see cref="SwiftProp"/> and an event under a
-/// <see cref="SwiftEvent"/>, and no spelling is compared anywhere below here.
+/// property under a <see cref="HostProp"/> and an event under a
+/// <see cref="HostEvent"/>, and no spelling is compared anywhere below here.
 /// </para>
 /// <para>
 /// An APPLICATION's own vocabulary is open, so it cannot be members: a control
@@ -110,22 +110,22 @@ public readonly struct SwiftId
 /// properties nothing here can put back.
 /// </para>
 /// </remarks>
-public sealed class SwiftNode
+public sealed class HostPatch
 {
     /// <summary>
     /// Who this element is. A number when the Swift renderer assigned it, a
     /// string when the author did with <c>.id()</c>.
     /// </summary>
-    public SwiftId Id { get; set; }
+    public HostElementId Id { get; set; }
 
     /// <summary>
     /// What this element IS, as the member the renderer switches on. Always
-    /// sent. <see cref="SwiftNodeType.None"/> for a type this runtime has no
+    /// sent. <see cref="HostNodeType.None"/> for a type this runtime has no
     /// case for - an application's own registered control, or one from a Swift
     /// side newer than this host, which renders as a red marker rather than
     /// throwing.
     /// </summary>
-    internal SwiftNodeType Type { get; set; }
+    internal HostNodeType Type { get; set; }
 
     private string? _typeName;
 
@@ -142,7 +142,7 @@ public sealed class SwiftNode
     /// </remarks>
     public string TypeName
     {
-        get => _typeName ?? SwiftTokenNames<SwiftNodeType>.Spelling(Type);
+        get => _typeName ?? TokenNames<HostNodeType>.Spelling(Type);
         set => _typeName = value;
     }
 
@@ -155,7 +155,7 @@ public sealed class SwiftNode
     public bool Replace { get; set; }
 
     /// <summary>Only the library's properties that changed, by member.</summary>
-    internal Dictionary<SwiftProp, SwiftWireValue>? Props { get; set; }
+    internal Dictionary<HostProp, HostValue>? Props { get; set; }
 
     /// <summary>
     /// The properties this element described last render and does not describe
@@ -170,7 +170,7 @@ public sealed class SwiftNode
     /// it belongs to, exactly as a property is, so an application's own
     /// control clears its own declared properties too.
     /// </remarks>
-    internal List<SwiftKey>? Cleared { get; set; }
+    internal List<HostPropKey>? Cleared { get; set; }
 
     /// <summary>
     /// The properties an APPLICATION declared on a control of its own, by the
@@ -178,13 +178,13 @@ public sealed class SwiftNode
     /// </summary>
     /// <remarks>
     /// A bag of its own because the vocabulary is: every app-declared name
-    /// resolves to <see cref="SwiftProp.None"/>, so a control with two of them
+    /// resolves to <see cref="HostProp.None"/>, so a control with two of them
     /// would lose one to the other as a duplicate key. A name the library ALSO
     /// has - <c>value</c>, <c>text</c> - arrives in <see cref="Props"/>
     /// instead, the reader having no way to tell whose it was, which is why a
-    /// <see cref="SwiftKey"/> looks in both.
+    /// <see cref="HostPropKey"/> looks in both.
     /// </remarks>
-    internal Dictionary<string, SwiftWireValue>? OwnProps { get; set; }
+    internal Dictionary<string, HostValue>? OwnProps { get; set; }
 
     /// <summary>
     /// The properties this element is to be WALKED to rather than assigned.
@@ -199,7 +199,7 @@ public sealed class SwiftNode
     /// it. A renderer that ignored this list would assign the targets and be
     /// correct, just not animated.
     /// </remarks>
-    internal List<SwiftTransition>? Transitions { get; set; }
+    internal List<HostTransition>? Transitions { get; set; }
 
     /// <summary>
     /// The properties whose value is read off a DRIVEN STATE rather than off this
@@ -213,7 +213,7 @@ public sealed class SwiftNode
     /// though one that ALSO has a stated value still carries that, and then
     /// the newest of the two setpoints is the one in force.
     /// </remarks>
-    internal List<SwiftStateEntry>? States { get; set; }
+    internal List<HostStateBinding>? States { get; set; }
 
     /// <summary>
     /// How this element moves what no property of it carries - where it puts
@@ -251,14 +251,14 @@ public sealed class SwiftNode
     /// travel the way the application does and still hold one part of a place
     /// still. See <c>LayoutMotion</c>.
     /// </remarks>
-    internal SwiftMotionLanes Lanes { get; set; } = SwiftMotionLanes.All;
+    internal HostMotionLanes Lanes { get; set; } = HostMotionLanes.All;
 
     /// <summary>
     /// The complete map of the library's events, sent only when the set of
     /// handled events changed. Handler ids belong to the element and outlive
     /// any one render, so an unchanged set needs no message.
     /// </summary>
-    internal Dictionary<SwiftEvent, int>? Events { get; set; }
+    internal Dictionary<HostEvent, int>? Events { get; set; }
 
     /// <summary>
     /// The same, for the events an APPLICATION raises from a control of its
@@ -318,10 +318,10 @@ public sealed class SwiftNode
     /// the changed ones otherwise. Null when nothing below this element
     /// changed at all.
     /// </summary>
-    public List<SwiftNode>? Children { get; set; }
+    public List<HostPatch>? Children { get; set; }
 
     /// <summary>
-    /// The identity as it is matched - see <see cref="SwiftId.Key"/>.
+    /// The identity as it is matched - see <see cref="HostElementId.Key"/>.
     /// </summary>
     public string Key => Id.Key;
 
@@ -347,7 +347,7 @@ public sealed class SwiftNode
     // spelling compared, and an APPLICATION names its own property the only way
     // it can - `node.GetString("state")` inside a registered control's `apply`.
     // A name is resolved once, here, and looked for in whichever bag it belongs
-    // to; see SwiftKey.
+    // to; see HostPropKey.
 
     /// <summary>A property as text, or null when it is absent or not a string.</summary>
     /// <remarks>
@@ -357,11 +357,11 @@ public sealed class SwiftNode
     /// <see cref="GetName(string)"/>, and a value with parts is
     /// <see cref="GetValues(string)"/>.
     /// </remarks>
-    public string? GetString(string key) => GetString(SwiftKey.Own(key));
+    public string? GetString(string key) => GetString(HostPropKey.Own(key));
 
     /// <summary>A property as text - see <see cref="GetString(string)"/>.</summary>
-    internal string? GetString(SwiftKey key) =>
-        TryGet(key, out SwiftWireValue value) && value.Tag is SwiftWireValue.TagString
+    internal string? GetString(HostPropKey key) =>
+        TryGet(key, out HostValue value) && value.Tag is HostValue.TagString
             ? value.Text
             : null;
 
@@ -371,16 +371,16 @@ public sealed class SwiftNode
     /// </summary>
     /// <remarks>
     /// The number is THIS REPOSITORY's, never MAUI's: every closed vocabulary
-    /// has a mirror in <c>Protocol/SwiftWireEnums.cs</c> carrying the wire's
+    /// has a mirror in <c>Protocol/HostEnums.cs</c> carrying the wire's
     /// own numbering, and <see cref="Rendering.SwiftValues"/> translates that
     /// mirror onto the real MAUI member BY NAME, one switch arm each. A bit set
     /// arrives as one of these too, carrying our bits.
     /// </remarks>
-    public int? GetEnumeration(string key) => GetEnumeration(SwiftKey.Own(key));
+    public int? GetEnumeration(string key) => GetEnumeration(HostPropKey.Own(key));
 
     /// <summary>A member's number - see <see cref="GetEnumeration(string)"/>.</summary>
-    internal int? GetEnumeration(SwiftKey key) =>
-        TryGet(key, out SwiftWireValue value) ? value.Enumeration : null;
+    internal int? GetEnumeration(HostPropKey key) =>
+        TryGet(key, out HostValue value) ? value.Enumeration : null;
 
     /// <summary>
     /// A property as the NAME it is - a visual state and its group, a radio
@@ -394,37 +394,37 @@ public sealed class SwiftNode
     /// repeats across a tree and means the same thing every time, which is what
     /// earns it two bytes instead of its letters, and prose does neither.
     /// </remarks>
-    public string? GetName(string key) => GetName(SwiftKey.Own(key));
+    public string? GetName(string key) => GetName(HostPropKey.Own(key));
 
     /// <summary>A property as a name - see <see cref="GetName(string)"/>.</summary>
-    internal string? GetName(SwiftKey key) =>
-        TryGet(key, out SwiftWireValue value) ? value.Name : null;
+    internal string? GetName(HostPropKey key) =>
+        TryGet(key, out HostValue value) ? value.Name : null;
 
     /// <summary>
     /// A property as a number, or null when it is absent or not one. Everything
     /// numeric travels as a double; <c>SwiftValues.GetInt</c> narrows it where
     /// MAUI wants an int. A non-finite number reads as "not a number".
     /// </summary>
-    public double? GetNumber(string key) => GetNumber(SwiftKey.Own(key));
+    public double? GetNumber(string key) => GetNumber(HostPropKey.Own(key));
 
     /// <summary>A property as a number - see <see cref="GetNumber(string)"/>.</summary>
-    internal double? GetNumber(SwiftKey key) =>
-        TryGet(key, out SwiftWireValue value)
-            && value.Tag == SwiftWireValue.TagNumber
+    internal double? GetNumber(HostPropKey key) =>
+        TryGet(key, out HostValue value)
+            && value.Tag == HostValue.TagNumber
             && double.IsFinite(value.Number)
             ? value.Number
             : null;
 
     /// <summary>A property as true or false, or null when it is absent or neither.</summary>
-    public bool? GetBool(string key) => GetBool(SwiftKey.Own(key));
+    public bool? GetBool(string key) => GetBool(HostPropKey.Own(key));
 
     /// <summary>A property as true or false - see <see cref="GetBool(string)"/>.</summary>
-    internal bool? GetBool(SwiftKey key) =>
-        TryGet(key, out SwiftWireValue value)
+    internal bool? GetBool(HostPropKey key) =>
+        TryGet(key, out HostValue value)
             ? value.Tag switch
             {
-                SwiftWireValue.TagTrue => true,
-                SwiftWireValue.TagFalse => false,
+                HostValue.TagTrue => true,
+                HostValue.TagFalse => false,
                 _ => (bool?)null,
             }
             : null;
@@ -433,20 +433,20 @@ public sealed class SwiftNode
     /// An array of numbers - how the structured value types travel. A
     /// Thickness arrives as left, top, right, bottom.
     /// </summary>
-    public double[]? GetNumbers(string key) => GetNumbers(SwiftKey.Own(key));
+    public double[]? GetNumbers(string key) => GetNumbers(HostPropKey.Own(key));
 
     /// <summary>A run of numbers - see <see cref="GetNumbers(string)"/>.</summary>
-    internal double[]? GetNumbers(SwiftKey key) =>
-        TryGet(key, out SwiftWireValue value) && value.Tag == SwiftWireValue.TagNumbers
+    internal double[]? GetNumbers(HostPropKey key) =>
+        TryGet(key, out HostValue value) && value.Tag == HostValue.TagNumbers
             ? value.Numbers
             : null;
 
     /// <summary>An array of strings - what a Picker is given to choose from.</summary>
-    public string[]? GetStrings(string key) => GetStrings(SwiftKey.Own(key));
+    public string[]? GetStrings(string key) => GetStrings(HostPropKey.Own(key));
 
     /// <summary>A run of strings - see <see cref="GetStrings(string)"/>.</summary>
-    internal string[]? GetStrings(SwiftKey key) =>
-        TryGet(key, out SwiftWireValue value) && value.Tag == SwiftWireValue.TagStrings
+    internal string[]? GetStrings(HostPropKey key) =>
+        TryGet(key, out HostValue value) && value.Tag == HostValue.TagStrings
             ? value.Strings
             : null;
 
@@ -461,11 +461,11 @@ public sealed class SwiftNode
     /// colour.
     /// </remarks>
     public (byte Red, byte Green, byte Blue, byte Alpha)? GetRgba(string key) =>
-        GetRgba(SwiftKey.Own(key));
+        GetRgba(HostPropKey.Own(key));
 
     /// <summary>A colour's four channels - see <see cref="GetRgba(string)"/>.</summary>
-    internal (byte Red, byte Green, byte Blue, byte Alpha)? GetRgba(SwiftKey key) =>
-        TryGet(key, out SwiftWireValue value) && value.Tag == SwiftWireValue.TagColor
+    internal (byte Red, byte Green, byte Blue, byte Alpha)? GetRgba(HostPropKey key) =>
+        TryGet(key, out HostValue value) && value.Tag == HostValue.TagColor
             ? (value.Red, value.Green, value.Blue, value.Alpha)
             : null;
 
@@ -473,11 +473,11 @@ public sealed class SwiftNode
     /// A property as a list of values of mixed kinds - what a Brush travels
     /// as. Null when the property is absent or is anything else.
     /// </summary>
-    public SwiftWireValue[]? GetValues(string key) => GetValues(SwiftKey.Own(key));
+    public HostValue[]? GetValues(string key) => GetValues(HostPropKey.Own(key));
 
     /// <summary>A value with parts - see <see cref="GetValues(string)"/>.</summary>
-    internal SwiftWireValue[]? GetValues(SwiftKey key) =>
-        TryGet(key, out SwiftWireValue value) && value.Tag == SwiftWireValue.TagValues
+    internal HostValue[]? GetValues(HostPropKey key) =>
+        TryGet(key, out HostValue value) && value.Tag == HostValue.TagValues
             ? value.Values
             : null;
 
@@ -486,10 +486,10 @@ public sealed class SwiftNode
     /// An application's bag first, because only a key that named itself can be
     /// in it - and the library's second, since a key can be in exactly one of
     /// them: the reader put each name where its member said it belonged.
-    /// <see cref="Props"/> never holds <see cref="SwiftProp.None"/>, so a key
+    /// <see cref="Props"/> never holds <see cref="HostProp.None"/>, so a key
     /// with no member finds nothing there.
     /// </remarks>
-    private bool TryGet(SwiftKey key, out SwiftWireValue value)
+    private bool TryGet(HostPropKey key, out HostValue value)
     {
         if (key.Name is string own && OwnProps is not null
             && OwnProps.TryGetValue(own, out value))
@@ -522,17 +522,17 @@ public sealed class SwiftNode
 /// <param name="Number">The number the value rides on.</param>
 /// <param name="Mode">Which way it crosses.</param>
 /// <param name="Kind">Which of the host's doors it goes through.</param>
-internal readonly record struct SwiftStateEntry(
-    SwiftProp Property,
+internal readonly record struct HostStateBinding(
+    HostProp Property,
     string PropertyName,
     int Number,
-    SwiftStateMode Mode,
-    SwiftStateKind Kind)
+    HostStateMode Mode,
+    HostStateKind Kind)
 {
     /// <summary>
     /// The property this registration is about, as a key that reads either bag.
     /// </summary>
-    internal SwiftKey Key => SwiftKey.Of(Property, PropertyName);
+    internal HostPropKey Key => HostPropKey.Of(Property, PropertyName);
 }
 
 /// <summary>
@@ -542,12 +542,12 @@ internal readonly record struct SwiftStateEntry(
 /// A law and nothing else: nobody is told when the walk ends, because nobody is
 /// waiting. A value that changed is a setpoint, and the tree already says where
 /// it is going. A value somebody AWAITS is a driven one, walked off its own
-/// image - see <see cref="SwiftNode.States"/>.
+/// image - see <see cref="HostPatch.States"/>.
 /// </remarks>
 /// <param name="Property">
-/// The member whose value in <see cref="SwiftNode.Props"/> is the target, or
-/// <see cref="SwiftProp.None"/> for a property an application declared on a
-/// control of its own, whose target is in <see cref="SwiftNode.OwnProps"/>
+/// The member whose value in <see cref="HostPatch.Props"/> is the target, or
+/// <see cref="HostProp.None"/> for a property an application declared on a
+/// control of its own, whose target is in <see cref="HostPatch.OwnProps"/>
 /// under <paramref name="PropertyName"/>.
 /// </param>
 /// <param name="PropertyName">
@@ -568,13 +568,13 @@ internal readonly record struct SwiftStateEntry(
 /// <param name="Easing">
 /// The curve it walks on, as the number the Swift <c>Easing</c> enum gives it -
 /// this repository's own, like every closed vocabulary on this wire, mirrored by
-/// <see cref="SwiftEasing"/> and walked by <c>MotionLaw</c>.
+/// <see cref="HostEasing"/> and walked by <c>MotionLaw</c>.
 /// </param>
 /// <param name="Factor">
 /// A spring's damping - the number that law needs beside its milliseconds.
 /// </param>
-internal readonly record struct SwiftTransition(
-    SwiftProp Property,
+internal readonly record struct HostTransition(
+    HostProp Property,
     string PropertyName,
     int Law,
     uint Millis,
@@ -589,5 +589,5 @@ internal readonly record struct SwiftTransition(
     /// registered control's own animatable property is found exactly as a
     /// Label's opacity is.
     /// </summary>
-    internal SwiftKey Key => SwiftKey.Of(Property, PropertyName);
+    internal HostPropKey Key => HostPropKey.Of(Property, PropertyName);
 }

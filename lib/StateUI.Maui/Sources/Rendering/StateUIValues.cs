@@ -12,7 +12,7 @@ namespace StateUI.Maui.Rendering;
 /// <remarks>
 /// <para>
 /// What a registered control's <c>apply</c> is handed is a
-/// <see cref="SwiftNode"/>, and <see cref="SwiftNode.GetString(string)"/> and
+/// <see cref="HostPatch"/>, and <see cref="HostPatch.GetString(string)"/> and
 /// its eight companions answer the WIRE's shapes: text, a number, a bit set, a
 /// colour's four channels. These answer MAUI's types instead, so a control's
 /// own property arrives ready to assign:
@@ -52,14 +52,14 @@ public static class StateUIValues
     /// <remarks>
     /// Everything numeric crosses as a double, so this is the narrowing and
     /// nothing more: it TRUNCATES rather than rounds, so 2.7 answers 2. Ask for
-    /// <see cref="SwiftNode.GetNumber(string)"/> where the fraction matters.
+    /// <see cref="HostPatch.GetNumber(string)"/> where the fraction matters.
     /// </remarks>
     /// <param name="node">The node the property arrived on.</param>
     /// <param name="key">The property's name, as the application declared it.</param>
     /// <returns>The number, truncated - or null when the property is absent or
     /// is not a number.</returns>
-    public static int? GetInt(this SwiftNode node, string key) =>
-        node.GetInt(SwiftKey.Own(key));
+    public static int? GetInt(this HostPatch node, string key) =>
+        node.GetInt(HostPropKey.Own(key));
 
     /// <summary>A property as a colour.</summary>
     /// <remarks>
@@ -72,8 +72,8 @@ public static class StateUIValues
     /// <param name="node">The node the property arrived on.</param>
     /// <param name="key">The property's name, as the application declared it.</param>
     /// <returns>The colour, or null when the property is absent or is not one.</returns>
-    public static Color? GetColor(this SwiftNode node, string key) =>
-        node.GetColor(SwiftKey.Own(key));
+    public static Color? GetColor(this HostPatch node, string key) =>
+        node.GetColor(HostPropKey.Own(key));
 
     /// <summary>A property as a thickness - left, top, right, bottom.</summary>
     /// <remarks>
@@ -85,16 +85,16 @@ public static class StateUIValues
     /// <param name="key">The property's name, as the application declared it.</param>
     /// <returns>The thickness, or null when the property is absent or is not
     /// one.</returns>
-    public static Thickness? GetThickness(this SwiftNode node, string key) =>
-        node.GetThickness(SwiftKey.Own(key));
+    public static Thickness? GetThickness(this HostPatch node, string key) =>
+        node.GetThickness(HostPropKey.Own(key));
 
     /// <summary>A property as a rectangle - x, y, width, height.</summary>
     /// <param name="node">The node the property arrived on.</param>
     /// <param name="key">The property's name, as the application declared it.</param>
     /// <returns>The rectangle, or null when the property is absent or is not
     /// one.</returns>
-    public static Rect? GetRect(this SwiftNode node, string key) =>
-        node.GetRect(SwiftKey.Own(key));
+    public static Rect? GetRect(this HostPatch node, string key) =>
+        node.GetRect(HostPropKey.Own(key));
 
     /// <summary>
     /// A property as a picture: a file in the application's
@@ -110,8 +110,8 @@ public static class StateUIValues
     /// <param name="key">The property's name, as the application declared it.</param>
     /// <returns>The picture, or null when the property is absent or is not
     /// text.</returns>
-    public static ImageSource? GetImageSource(this SwiftNode node, string key) =>
-        node.GetImageSource(SwiftKey.Own(key));
+    public static ImageSource? GetImageSource(this HostPatch node, string key) =>
+        node.GetImageSource(HostPropKey.Own(key));
 
     /// <summary>
     /// A property as a brush - a solid colour, a linear gradient or a radial
@@ -125,8 +125,8 @@ public static class StateUIValues
     /// <param name="key">The property's name, as the application declared it.</param>
     /// <returns>The brush, or null when the property is absent or is neither a
     /// brush nor a colour.</returns>
-    public static Brush? GetBrush(this SwiftNode node, string key) =>
-        node.GetBrush(SwiftKey.Own(key));
+    public static Brush? GetBrush(this HostPatch node, string key) =>
+        node.GetBrush(HostPropKey.Own(key));
 
     /// <summary>A property as a day, from the Swift <c>CalendarDate</c> that
     /// crossed.</summary>
@@ -139,8 +139,8 @@ public static class StateUIValues
     /// <param name="key">The property's name, as the application declared it.</param>
     /// <returns>The day, or null when the property is absent, is not a date, or
     /// names no real one.</returns>
-    public static DateTime? GetDate(this SwiftNode node, string key) =>
-        node.GetDate(SwiftKey.Own(key));
+    public static DateTime? GetDate(this HostPatch node, string key) =>
+        node.GetDate(HostPropKey.Own(key));
 
     /// <summary>A property as a time of day, from the Swift <c>ClockTime</c>
     /// that crossed.</summary>
@@ -154,6 +154,6 @@ public static class StateUIValues
     /// <returns>The time of day, or null when the property is absent or is not
     /// a time. The three are added up rather than checked, so 25:99 answers a
     /// length of 26:39.</returns>
-    public static TimeSpan? GetTime(this SwiftNode node, string key) =>
-        node.GetTime(SwiftKey.Own(key));
+    public static TimeSpan? GetTime(this HostPatch node, string key) =>
+        node.GetTime(HostPropKey.Own(key));
 }

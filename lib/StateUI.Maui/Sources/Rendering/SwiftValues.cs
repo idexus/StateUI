@@ -28,7 +28,7 @@ namespace StateUI.Maui.Rendering;
 /// <para>
 /// A CLOSED VOCABULARY IS A NUMBER, not a spelling, and the
 /// numbers are THIS REPOSITORY's, never MAUI's. Every one of them has a mirror
-/// in <c>Protocol/SwiftWireEnums.cs</c> carrying our numbering, and the accessor
+/// in <c>Protocol/HostEnums.cs</c> carrying our numbering, and the accessor
 /// here TRANSLATES that mirror onto the real MAUI member BY NAME, one switch arm
 /// each. Nothing is ever cast straight from the wire into a MAUI enum: MAUI's
 /// member numbers are MAUI's own business, and a release that renumbered one
@@ -63,7 +63,7 @@ internal static class SwiftValues
     /// names that a second host would have to reproduce exactly.
     /// </para>
     /// </remarks>
-    public static Color? GetColor(this SwiftNode node, SwiftKey key)
+    public static Color? GetColor(this HostPatch node, HostPropKey key)
     {
         return node.GetRgba(key) is (byte red, byte green, byte blue, byte alpha)
             ? new Color(red / 255f, green / 255f, blue / 255f, alpha / 255f)
@@ -83,8 +83,8 @@ internal static class SwiftValues
     /// </para>
     /// </remarks>
     public static void SetColor(
-        this SwiftNode node,
-        SwiftKey key,
+        this HostPatch node,
+        HostPropKey key,
         BindableObject target,
         BindableProperty property)
     {
@@ -104,15 +104,15 @@ internal static class SwiftValues
     /// One name, for the reason a colour is one colour: artwork drawn once per
     /// theme picked its half on the Swift side.
     /// </remarks>
-    public static ImageSource? GetImageSource(this SwiftNode node, SwiftKey key)
+    public static ImageSource? GetImageSource(this HostPatch node, HostPropKey key)
     {
         return node.GetString(key) is string file ? File(file) : null;
     }
 
     /// <summary>Assigns a picture to a property.</summary>
     public static void SetImageSource(
-        this SwiftNode node,
-        SwiftKey key,
+        this HostPatch node,
+        HostPropKey key,
         BindableObject target,
         BindableProperty property)
     {
@@ -143,21 +143,21 @@ internal static class SwiftValues
     ///                         against - or `nothing` where there is none
     /// </code>
     /// </remarks>
-    public static WebViewSource? GetWebViewSource(this SwiftNode node, SwiftKey key)
+    public static WebViewSource? GetWebViewSource(this HostPatch node, HostPropKey key)
     {
-        if (node.GetValues(key) is not [{ Enumeration: int kind }, .. SwiftWireValue[] rest])
+        if (node.GetValues(key) is not [{ Enumeration: int kind }, .. HostValue[] rest])
         {
             return null;
         }
 
-        return (SwiftWebViewSourceKind)kind switch
+        return (HostWebViewSourceKind)kind switch
         {
-            SwiftWebViewSourceKind.Url when rest is
-                [{ Text: string url, Tag: SwiftWireValue.TagString }] =>
+            HostWebViewSourceKind.Url when rest is
+                [{ Text: string url, Tag: HostValue.TagString }] =>
                 new UrlWebViewSource { Url = url },
 
-            SwiftWebViewSourceKind.Html when rest is
-                [{ Text: string html, Tag: SwiftWireValue.TagString }, SwiftWireValue baseUrl] =>
+            HostWebViewSourceKind.Html when rest is
+                [{ Text: string html, Tag: HostValue.TagString }, HostValue baseUrl] =>
                 new HtmlWebViewSource
                 {
                     Html = html,
@@ -165,7 +165,7 @@ internal static class SwiftValues
                     // The base url is there when it is a STRING and absent
                     // otherwise, the wire's own nothing standing where there is
                     // none - which is not text, so the one test answers it.
-                    BaseUrl = baseUrl.Tag == SwiftWireValue.TagString ? baseUrl.Text : null,
+                    BaseUrl = baseUrl.Tag == HostValue.TagString ? baseUrl.Text : null,
                 },
 
             _ => null,
@@ -195,22 +195,22 @@ internal static class SwiftValues
     /// carries what changed, and a window nobody resized is not in it.
     /// </para>
     /// </remarks>
-    public static void ApplyWindow(this SwiftNode node, Window window)
+    public static void ApplyWindow(this HostPatch node, Window window)
     {
-        if (node.GetString(SwiftProp.Title) is string title) { window.Title = title; }
+        if (node.GetString(HostProp.Title) is string title) { window.Title = title; }
 
-        if (node.GetNumber(SwiftProp.X) is double x) { window.X = x; }
-        if (node.GetNumber(SwiftProp.Y) is double y) { window.Y = y; }
+        if (node.GetNumber(HostProp.X) is double x) { window.X = x; }
+        if (node.GetNumber(HostProp.Y) is double y) { window.Y = y; }
 
-        if (node.GetNumber(SwiftProp.Width) is double width) { window.Width = width; }
-        if (node.GetNumber(SwiftProp.Height) is double height) { window.Height = height; }
+        if (node.GetNumber(HostProp.Width) is double width) { window.Width = width; }
+        if (node.GetNumber(HostProp.Height) is double height) { window.Height = height; }
 
-        if (node.GetBool(SwiftProp.IsMaximizable) is bool maximizable) { window.IsMaximizable = maximizable; }
-        if (node.GetBool(SwiftProp.IsMinimizable) is bool minimizable) { window.IsMinimizable = minimizable; }
-        if (node.GetNumber(SwiftProp.MinimumWidth) is double minimumWidth) { window.MinimumWidth = minimumWidth; }
-        if (node.GetNumber(SwiftProp.MinimumHeight) is double minimumHeight) { window.MinimumHeight = minimumHeight; }
-        if (node.GetNumber(SwiftProp.MaximumWidth) is double maximumWidth) { window.MaximumWidth = maximumWidth; }
-        if (node.GetNumber(SwiftProp.MaximumHeight) is double maximumHeight) { window.MaximumHeight = maximumHeight; }
+        if (node.GetBool(HostProp.IsMaximizable) is bool maximizable) { window.IsMaximizable = maximizable; }
+        if (node.GetBool(HostProp.IsMinimizable) is bool minimizable) { window.IsMinimizable = minimizable; }
+        if (node.GetNumber(HostProp.MinimumWidth) is double minimumWidth) { window.MinimumWidth = minimumWidth; }
+        if (node.GetNumber(HostProp.MinimumHeight) is double minimumHeight) { window.MinimumHeight = minimumHeight; }
+        if (node.GetNumber(HostProp.MaximumWidth) is double maximumWidth) { window.MaximumWidth = maximumWidth; }
+        if (node.GetNumber(HostProp.MaximumHeight) is double maximumHeight) { window.MaximumHeight = maximumHeight; }
 
         // Last, and only where the platform needs asking: it reads the maximum
         // assigned above to know what to give back afterwards.
@@ -218,7 +218,7 @@ internal static class SwiftValues
     }
 
     /// <summary>Left, top, right, bottom - the order MAUI's constructor takes.</summary>
-    public static Thickness? GetThickness(this SwiftNode node, SwiftKey key)
+    public static Thickness? GetThickness(this HostPatch node, HostPropKey key)
     {
         double[]? values = node.GetNumbers(key);
 
@@ -247,7 +247,7 @@ internal static class SwiftValues
     /// <param name="node">The node carrying the property.</param>
     /// <param name="key">The property's name.</param>
     /// <returns>Null when the property is absent or names no region.</returns>
-    public static SafeAreaEdges? GetSafeAreaEdges(this SwiftNode node, SwiftKey key)
+    public static SafeAreaEdges? GetSafeAreaEdges(this HostPatch node, HostPropKey key)
     {
         if (node.GetEnumeration(key) is int uniform)
         {
@@ -258,10 +258,10 @@ internal static class SwiftValues
         // numbers would say these were quantities.
         if (node.GetValues(key) is not
             [
-                { Tag: SwiftWireValue.TagEnumeration } left,
-                { Tag: SwiftWireValue.TagEnumeration } top,
-                { Tag: SwiftWireValue.TagEnumeration } right,
-                { Tag: SwiftWireValue.TagEnumeration } bottom,
+                { Tag: HostValue.TagEnumeration } left,
+                { Tag: HostValue.TagEnumeration } top,
+                { Tag: HostValue.TagEnumeration } right,
+                { Tag: HostValue.TagEnumeration } bottom,
             ])
         {
             return null;
@@ -281,12 +281,12 @@ internal static class SwiftValues
     /// </remarks>
     private static SafeAreaRegions? Region(int member)
     {
-        return (SwiftSafeArea)member switch
+        return (HostSafeArea)member switch
         {
-            SwiftSafeArea.None => SafeAreaRegions.None,
-            SwiftSafeArea.Keyboard => SafeAreaRegions.SoftInput,
-            SwiftSafeArea.Container => SafeAreaRegions.Container,
-            SwiftSafeArea.All => SafeAreaRegions.All,
+            HostSafeArea.None => SafeAreaRegions.None,
+            HostSafeArea.Keyboard => SafeAreaRegions.SoftInput,
+            HostSafeArea.Container => SafeAreaRegions.Container,
+            HostSafeArea.All => SafeAreaRegions.All,
             _ => null,
         };
     }
@@ -299,7 +299,7 @@ internal static class SwiftValues
     /// A length of -1 is MAUI's <c>AbsoluteLayout.AutoSize</c>, which is the
     /// value it is on both sides and needs no reading here.
     /// </remarks>
-    public static Rect? GetRect(this SwiftNode node, SwiftKey key)
+    public static Rect? GetRect(this HostPatch node, HostPropKey key)
     {
         return node.GetNumbers(key) is [double x, double y, double width, double height]
             ? new Rect(x, y, width, height)
@@ -310,7 +310,7 @@ internal static class SwiftValues
     /// A number, narrowed. Everything numeric travels as a double, and MAUI
     /// wants an int for a few of them - MaxLines, CornerRadius, SelectedIndex.
     /// </summary>
-    public static int? GetInt(this SwiftNode node, SwiftKey key)
+    public static int? GetInt(this HostPatch node, HostPropKey key)
     {
         return node.GetNumber(key) is double value ? (int)value : null;
     }
@@ -322,30 +322,30 @@ internal static class SwiftValues
     /// each of these translates onto one of the four plain statics - that
     /// alignment with the flag false - and the flag never crosses.
     /// </remarks>
-    public static LayoutOptions? GetLayoutOptions(this SwiftNode node, SwiftKey key)
+    public static LayoutOptions? GetLayoutOptions(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftAlignment)member switch
+            : (HostAlignment)member switch
             {
-                SwiftAlignment.Start => LayoutOptions.Start,
-                SwiftAlignment.Center => LayoutOptions.Center,
-                SwiftAlignment.End => LayoutOptions.End,
-                SwiftAlignment.Fill => LayoutOptions.Fill,
+                HostAlignment.Start => LayoutOptions.Start,
+                HostAlignment.Center => LayoutOptions.Center,
+                HostAlignment.End => LayoutOptions.End,
+                HostAlignment.Fill => LayoutOptions.Fill,
                 _ => null,
             };
     }
 
     /// <summary>Where text sits within a control's own bounds.</summary>
-    public static TextAlignment? GetTextAlignment(this SwiftNode node, SwiftKey key)
+    public static TextAlignment? GetTextAlignment(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftTextAlignment)member switch
+            : (HostTextAlignment)member switch
             {
-                SwiftTextAlignment.Start => TextAlignment.Start,
-                SwiftTextAlignment.Center => TextAlignment.Center,
-                SwiftTextAlignment.End => TextAlignment.End,
+                HostTextAlignment.Start => TextAlignment.Start,
+                HostTextAlignment.Center => TextAlignment.Center,
+                HostTextAlignment.End => TextAlignment.End,
                 _ => null,
             };
     }
@@ -356,45 +356,45 @@ internal static class SwiftValues
     /// nobody declared refuses the whole value - a switch cannot stand in,
     /// there being one number per COMBINATION.
     /// </remarks>
-    public static FontAttributes? GetFontAttributes(this SwiftNode node, SwiftKey key)
+    public static FontAttributes? GetFontAttributes(this HostPatch node, HostPropKey key)
     {
-        const SwiftFontAttributes declared = SwiftFontAttributes.Bold | SwiftFontAttributes.Italic;
+        const HostFontAttributes declared = HostFontAttributes.Bold | HostFontAttributes.Italic;
 
         if (node.GetEnumeration(key) is not int bits || (bits & ~(int)declared) != 0)
         {
             return null;
         }
 
-        var carried = (SwiftFontAttributes)bits;
+        var carried = (HostFontAttributes)bits;
         var attributes = FontAttributes.None;
 
-        if (carried.HasFlag(SwiftFontAttributes.Bold)) { attributes |= FontAttributes.Bold; }
-        if (carried.HasFlag(SwiftFontAttributes.Italic)) { attributes |= FontAttributes.Italic; }
+        if (carried.HasFlag(HostFontAttributes.Bold)) { attributes |= FontAttributes.Bold; }
+        if (carried.HasFlag(HostFontAttributes.Italic)) { attributes |= FontAttributes.Italic; }
 
         return attributes;
     }
 
     /// <summary>Underlined, struck through, both or neither.</summary>
     /// <remarks>A bit set; see <see cref="GetFontAttributes"/>.</remarks>
-    public static TextDecorations? GetTextDecorations(this SwiftNode node, SwiftKey key)
+    public static TextDecorations? GetTextDecorations(this HostPatch node, HostPropKey key)
     {
-        const SwiftTextDecorations declared =
-            SwiftTextDecorations.Underline | SwiftTextDecorations.Strikethrough;
+        const HostTextDecorations declared =
+            HostTextDecorations.Underline | HostTextDecorations.Strikethrough;
 
         if (node.GetEnumeration(key) is not int bits || (bits & ~(int)declared) != 0)
         {
             return null;
         }
 
-        var carried = (SwiftTextDecorations)bits;
+        var carried = (HostTextDecorations)bits;
         var decorations = TextDecorations.None;
 
-        if (carried.HasFlag(SwiftTextDecorations.Underline))
+        if (carried.HasFlag(HostTextDecorations.Underline))
         {
             decorations |= TextDecorations.Underline;
         }
 
-        if (carried.HasFlag(SwiftTextDecorations.Strikethrough))
+        if (carried.HasFlag(HostTextDecorations.Strikethrough))
         {
             decorations |= TextDecorations.Strikethrough;
         }
@@ -403,24 +403,24 @@ internal static class SwiftValues
     }
 
     /// <summary>What happens to text too long for its space.</summary>
-    public static LineBreakMode? GetLineBreakMode(this SwiftNode node, SwiftKey key)
+    public static LineBreakMode? GetLineBreakMode(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftLineBreak)member switch
+            : (HostLineBreak)member switch
             {
-                SwiftLineBreak.NoWrap => LineBreakMode.NoWrap,
-                SwiftLineBreak.WordWrap => LineBreakMode.WordWrap,
-                SwiftLineBreak.CharacterWrap => LineBreakMode.CharacterWrap,
-                SwiftLineBreak.HeadTruncation => LineBreakMode.HeadTruncation,
-                SwiftLineBreak.TailTruncation => LineBreakMode.TailTruncation,
-                SwiftLineBreak.MiddleTruncation => LineBreakMode.MiddleTruncation,
+                HostLineBreak.NoWrap => LineBreakMode.NoWrap,
+                HostLineBreak.WordWrap => LineBreakMode.WordWrap,
+                HostLineBreak.CharacterWrap => LineBreakMode.CharacterWrap,
+                HostLineBreak.HeadTruncation => LineBreakMode.HeadTruncation,
+                HostLineBreak.TailTruncation => LineBreakMode.TailTruncation,
+                HostLineBreak.MiddleTruncation => LineBreakMode.MiddleTruncation,
                 _ => null,
             };
     }
 
     /// <summary>Which keyboard a text input asks for.</summary>
-    public static Keyboard? GetKeyboard(this SwiftNode node, SwiftKey key)
+    public static Keyboard? GetKeyboard(this HostPatch node, HostPropKey key)
     {
         return KeyboardOf(node.GetEnumeration(key));
     }
@@ -435,39 +435,39 @@ internal static class SwiftValues
     /// CLASS, so there is no enum on that side to cast to at all.
     /// </remarks>
     /// <param name="member">
-    /// The keyboard's number, as <see cref="SwiftInputPurpose"/> - or null where the
+    /// The keyboard's number, as <see cref="HostInputPurpose"/> - or null where the
     /// argument was absent, which an act reads straight off the wire.
     /// </param>
     /// <returns>The MAUI keyboard, or null for a number naming none.</returns>
     public static Keyboard? KeyboardOf(int? member)
     {
-        return (SwiftInputPurpose?)member switch
+        return (HostInputPurpose?)member switch
         {
-            SwiftInputPurpose.Default => Keyboard.Default,
-            SwiftInputPurpose.Plain => Keyboard.Plain,
-            SwiftInputPurpose.Chat => Keyboard.Chat,
-            SwiftInputPurpose.Email => Keyboard.Email,
-            SwiftInputPurpose.Numeric => Keyboard.Numeric,
-            SwiftInputPurpose.Telephone => Keyboard.Telephone,
-            SwiftInputPurpose.Text => Keyboard.Text,
-            SwiftInputPurpose.Url => Keyboard.Url,
+            HostInputPurpose.Default => Keyboard.Default,
+            HostInputPurpose.Plain => Keyboard.Plain,
+            HostInputPurpose.Chat => Keyboard.Chat,
+            HostInputPurpose.Email => Keyboard.Email,
+            HostInputPurpose.Numeric => Keyboard.Numeric,
+            HostInputPurpose.Telephone => Keyboard.Telephone,
+            HostInputPurpose.Text => Keyboard.Text,
+            HostInputPurpose.Url => Keyboard.Url,
             _ => null,
         };
     }
 
     /// <summary>What the keyboard's return key says.</summary>
-    public static ReturnType? GetReturnType(this SwiftNode node, SwiftKey key)
+    public static ReturnType? GetReturnType(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftReturnKey)member switch
+            : (HostReturnKey)member switch
             {
-                SwiftReturnKey.Default => ReturnType.Default,
-                SwiftReturnKey.Done => ReturnType.Done,
-                SwiftReturnKey.Go => ReturnType.Go,
-                SwiftReturnKey.Next => ReturnType.Next,
-                SwiftReturnKey.Search => ReturnType.Search,
-                SwiftReturnKey.Send => ReturnType.Send,
+                HostReturnKey.Default => ReturnType.Default,
+                HostReturnKey.Done => ReturnType.Done,
+                HostReturnKey.Go => ReturnType.Go,
+                HostReturnKey.Next => ReturnType.Next,
+                HostReturnKey.Search => ReturnType.Search,
+                HostReturnKey.Send => ReturnType.Send,
                 _ => null,
             };
     }
@@ -478,7 +478,7 @@ internal static class SwiftValues
     /// <remarks>
     /// <para>
     /// The LIST says how many rows there are, and each entry is the kind - a
-    /// <see cref="SwiftGridLengthKind"/> - then the number that kind takes:
+    /// <see cref="HostGridLengthKind"/> - then the number that kind takes:
     /// </para>
     /// <code>
     /// [[2, 1], [1, 1], [1, 2], [0, 100]]     Auto, *, 2*, 100
@@ -489,7 +489,7 @@ internal static class SwiftValues
     /// parts, so there is no text to hand it.
     /// </para>
     /// </remarks>
-    public static RowDefinitionCollection? GetRowDefinitions(this SwiftNode node, SwiftKey key)
+    public static RowDefinitionCollection? GetRowDefinitions(this HostPatch node, HostPropKey key)
     {
         if (Lengths(node, key) is not List<GridLength> lengths)
         {
@@ -507,7 +507,7 @@ internal static class SwiftValues
     }
 
     /// <summary>The same, for columns.</summary>
-    public static ColumnDefinitionCollection? GetColumnDefinitions(this SwiftNode node, SwiftKey key)
+    public static ColumnDefinitionCollection? GetColumnDefinitions(this HostPatch node, HostPropKey key)
     {
         if (Lengths(node, key) is not List<GridLength> lengths)
         {
@@ -533,28 +533,28 @@ internal static class SwiftValues
     /// the SHAPE of the layout, and dropping one row silently would move every
     /// child below it.
     /// </remarks>
-    private static List<GridLength>? Lengths(SwiftNode node, SwiftKey key)
+    private static List<GridLength>? Lengths(HostPatch node, HostPropKey key)
     {
-        if (node.GetValues(key) is not SwiftWireValue[] values)
+        if (node.GetValues(key) is not HostValue[] values)
         {
             return null;
         }
 
         var lengths = new List<GridLength>(values.Length);
 
-        foreach (SwiftWireValue value in values)
+        foreach (HostValue value in values)
         {
             if (value.Values is not
-                [{ Enumeration: int kind }, { Tag: SwiftWireValue.TagNumber } size])
+                [{ Enumeration: int kind }, { Tag: HostValue.TagNumber } size])
             {
                 return null;
             }
 
-            GridUnitType? unit = (SwiftGridLengthKind)kind switch
+            GridUnitType? unit = (HostGridLengthKind)kind switch
             {
-                SwiftGridLengthKind.Fixed => GridUnitType.Absolute,
-                SwiftGridLengthKind.Proportional => GridUnitType.Star,
-                SwiftGridLengthKind.Auto => GridUnitType.Auto,
+                HostGridLengthKind.Fixed => GridUnitType.Absolute,
+                HostGridLengthKind.Proportional => GridUnitType.Star,
+                HostGridLengthKind.Auto => GridUnitType.Auto,
                 _ => null,
             };
 
@@ -584,30 +584,30 @@ internal static class SwiftValues
     /// <param name="node">The node to read.</param>
     /// <param name="key">The property's name.</param>
     /// <returns>The transform, or null where the message did not say.</returns>
-    public static TextTransform? GetTextTransform(this SwiftNode node, SwiftKey key)
+    public static TextTransform? GetTextTransform(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftTextCase)member switch
+            : (HostTextCase)member switch
             {
-                SwiftTextCase.None => TextTransform.None,
-                SwiftTextCase.Default => TextTransform.Default,
-                SwiftTextCase.Lowercase => TextTransform.Lowercase,
-                SwiftTextCase.Uppercase => TextTransform.Uppercase,
+                HostTextCase.None => TextTransform.None,
+                HostTextCase.Default => TextTransform.Default,
+                HostTextCase.Lowercase => TextTransform.Lowercase,
+                HostTextCase.Uppercase => TextTransform.Uppercase,
                 _ => null,
             };
     }
 
     /// <summary>Whether a scroll bar is shown, hidden, or left to the platform.</summary>
-    public static ScrollBarVisibility? GetScrollBarVisibility(this SwiftNode node, SwiftKey key)
+    public static ScrollBarVisibility? GetScrollBarVisibility(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftScrollBarVisibility)member switch
+            : (HostScrollBarVisibility)member switch
             {
-                SwiftScrollBarVisibility.Default => ScrollBarVisibility.Default,
-                SwiftScrollBarVisibility.Always => ScrollBarVisibility.Always,
-                SwiftScrollBarVisibility.Never => ScrollBarVisibility.Never,
+                HostScrollBarVisibility.Default => ScrollBarVisibility.Default,
+                HostScrollBarVisibility.Always => ScrollBarVisibility.Always,
+                HostScrollBarVisibility.Never => ScrollBarVisibility.Never,
                 _ => null,
             };
     }
@@ -620,7 +620,7 @@ internal static class SwiftValues
     /// where a calendar costs nothing. A trio that names no real day - a 31st of
     /// February, a month 13 - answers null, like any other unreadable value.
     /// </remarks>
-    public static DateTime? GetDate(this SwiftNode node, SwiftKey key)
+    public static DateTime? GetDate(this HostPatch node, HostPropKey key)
     {
         if (node.GetNumbers(key) is not [double year, double month, double day])
         {
@@ -644,7 +644,7 @@ internal static class SwiftValues
     /// what those three add up to. No millisecond: a TimePicker neither shows
     /// nor keeps one.
     /// </remarks>
-    public static TimeSpan? GetTime(this SwiftNode node, SwiftKey key)
+    public static TimeSpan? GetTime(this HostPatch node, HostPropKey key)
     {
         if (node.GetNumbers(key) is not [double hour, double minute, double second])
         {
@@ -671,9 +671,9 @@ internal static class SwiftValues
     /// leaving the property alone: a transform that half-parsed would draw a
     /// shape nobody asked for.
     /// </remarks>
-    public static Matrix3x2? GetGeometryTransform(this SwiftNode node, SwiftKey key)
+    public static Matrix3x2? GetGeometryTransform(this HostPatch node, HostPropKey key)
     {
-        if (node.GetValues(key) is not SwiftWireValue[] values) { return null; }
+        if (node.GetValues(key) is not HostValue[] values) { return null; }
 
         if (Numbers(values) is not
             [double m11, double m12, double m21, double m22, double offsetX, double offsetY])
@@ -686,13 +686,13 @@ internal static class SwiftValues
     }
 
     /// <summary>Every value read as a number, or null if one of them is not.</summary>
-    private static double[]? Numbers(SwiftWireValue[] values)
+    private static double[]? Numbers(HostValue[] values)
     {
         var read = new double[values.Length];
 
         for (int at = 0; at < values.Length; at++)
         {
-            if (values[at] is not { Tag: SwiftWireValue.TagNumber } number) { return null; }
+            if (values[at] is not { Tag: HostValue.TagNumber } number) { return null; }
             read[at] = number.Number;
         }
 
@@ -706,22 +706,22 @@ internal static class SwiftValues
     /// reads XAML's <c>RoundRectangle 12</c>: a string on this wire is text
     /// someone wrote, and a shape is not that.
     /// </remarks>
-    public static IShape? GetStrokeShape(this SwiftNode node, SwiftKey key)
+    public static IShape? GetStrokeShape(this HostPatch node, HostPropKey key)
     {
-        if (node.GetValues(key) is not [{ Enumeration: int kind }, .. SwiftWireValue[] rest])
+        if (node.GetValues(key) is not [{ Enumeration: int kind }, .. HostValue[] rest])
         {
             return null;
         }
 
-        return (SwiftBorderShapeKind)kind switch
+        return (HostBorderShapeKind)kind switch
         {
-            SwiftBorderShapeKind.Rectangle when rest is [] => new Rectangle(),
+            HostBorderShapeKind.Rectangle when rest is [] => new Rectangle(),
 
-            SwiftBorderShapeKind.RoundedRectangle when rest is
-                [{ Tag: SwiftWireValue.TagNumber } radius] =>
+            HostBorderShapeKind.RoundedRectangle when rest is
+                [{ Tag: HostValue.TagNumber } radius] =>
                 new RoundRectangle { CornerRadius = new CornerRadius(radius.Number) },
 
-            SwiftBorderShapeKind.Ellipse when rest is [] => new Ellipse(),
+            HostBorderShapeKind.Ellipse when rest is [] => new Ellipse(),
 
             _ => null,
         };
@@ -733,81 +733,81 @@ internal static class SwiftValues
     /// to left mirrors its content, the picture included.
     /// </remarks>
     public static Button.ButtonContentLayout.ImagePosition? GetIconPosition(
-        this SwiftNode node, SwiftKey key)
+        this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftIconPosition)member switch
+            : (HostIconPosition)member switch
             {
-                SwiftIconPosition.Leading => Button.ButtonContentLayout.ImagePosition.Left,
-                SwiftIconPosition.Top => Button.ButtonContentLayout.ImagePosition.Top,
-                SwiftIconPosition.Trailing => Button.ButtonContentLayout.ImagePosition.Right,
-                SwiftIconPosition.Bottom => Button.ButtonContentLayout.ImagePosition.Bottom,
+                HostIconPosition.Leading => Button.ButtonContentLayout.ImagePosition.Left,
+                HostIconPosition.Top => Button.ButtonContentLayout.ImagePosition.Top,
+                HostIconPosition.Trailing => Button.ButtonContentLayout.ImagePosition.Right,
+                HostIconPosition.Bottom => Button.ButtonContentLayout.ImagePosition.Bottom,
                 _ => null,
             };
     }
 
     /// <summary>Which way a view lays its content out. MAUI: FlowDirection.</summary>
-    public static FlowDirection? GetFlowDirection(this SwiftNode node, SwiftKey key)
+    public static FlowDirection? GetFlowDirection(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftLayoutDirection)member switch
+            : (HostLayoutDirection)member switch
             {
-                SwiftLayoutDirection.Inherited => FlowDirection.MatchParent,
-                SwiftLayoutDirection.LeftToRight => FlowDirection.LeftToRight,
-                SwiftLayoutDirection.RightToLeft => FlowDirection.RightToLeft,
+                HostLayoutDirection.Inherited => FlowDirection.MatchParent,
+                HostLayoutDirection.LeftToRight => FlowDirection.LeftToRight,
+                HostLayoutDirection.RightToLeft => FlowDirection.RightToLeft,
                 _ => null,
             };
     }
 
     /// <summary>How deep a heading is. MAUI: SemanticHeadingLevel.</summary>
-    public static SemanticHeadingLevel? GetSemanticHeadingLevel(this SwiftNode node, SwiftKey key)
+    public static SemanticHeadingLevel? GetSemanticHeadingLevel(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftHeadingLevel)member switch
+            : (HostHeadingLevel)member switch
             {
-                SwiftHeadingLevel.None => SemanticHeadingLevel.None,
-                SwiftHeadingLevel.Level1 => SemanticHeadingLevel.Level1,
-                SwiftHeadingLevel.Level2 => SemanticHeadingLevel.Level2,
-                SwiftHeadingLevel.Level3 => SemanticHeadingLevel.Level3,
-                SwiftHeadingLevel.Level4 => SemanticHeadingLevel.Level4,
-                SwiftHeadingLevel.Level5 => SemanticHeadingLevel.Level5,
-                SwiftHeadingLevel.Level6 => SemanticHeadingLevel.Level6,
-                SwiftHeadingLevel.Level7 => SemanticHeadingLevel.Level7,
-                SwiftHeadingLevel.Level8 => SemanticHeadingLevel.Level8,
-                SwiftHeadingLevel.Level9 => SemanticHeadingLevel.Level9,
+                HostHeadingLevel.None => SemanticHeadingLevel.None,
+                HostHeadingLevel.Level1 => SemanticHeadingLevel.Level1,
+                HostHeadingLevel.Level2 => SemanticHeadingLevel.Level2,
+                HostHeadingLevel.Level3 => SemanticHeadingLevel.Level3,
+                HostHeadingLevel.Level4 => SemanticHeadingLevel.Level4,
+                HostHeadingLevel.Level5 => SemanticHeadingLevel.Level5,
+                HostHeadingLevel.Level6 => SemanticHeadingLevel.Level6,
+                HostHeadingLevel.Level7 => SemanticHeadingLevel.Level7,
+                HostHeadingLevel.Level8 => SemanticHeadingLevel.Level8,
+                HostHeadingLevel.Level9 => SemanticHeadingLevel.Level9,
                 _ => null,
             };
     }
 
     /// <summary>What a map pin stands for. MAUI: PinType.</summary>
-    public static Microsoft.Maui.Controls.Maps.PinType? GetPinType(this SwiftNode node, SwiftKey key)
+    public static Microsoft.Maui.Controls.Maps.PinType? GetPinType(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftPinType)member switch
+            : (HostPinType)member switch
             {
-                SwiftPinType.Generic => Microsoft.Maui.Controls.Maps.PinType.Generic,
-                SwiftPinType.Place => Microsoft.Maui.Controls.Maps.PinType.Place,
-                SwiftPinType.SavedPin => Microsoft.Maui.Controls.Maps.PinType.SavedPin,
-                SwiftPinType.SearchResult => Microsoft.Maui.Controls.Maps.PinType.SearchResult,
+                HostPinType.Generic => Microsoft.Maui.Controls.Maps.PinType.Generic,
+                HostPinType.Place => Microsoft.Maui.Controls.Maps.PinType.Place,
+                HostPinType.SavedPin => Microsoft.Maui.Controls.Maps.PinType.SavedPin,
+                HostPinType.SearchResult => Microsoft.Maui.Controls.Maps.PinType.SearchResult,
                 _ => null,
             };
     }
 
     /// <summary>How an image fills the room it is given.</summary>
-    public static Aspect? GetAspect(this SwiftNode node, SwiftKey key)
+    public static Aspect? GetAspect(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftAspect)member switch
+            : (HostAspect)member switch
             {
-                SwiftAspect.Fit => Aspect.AspectFit,
-                SwiftAspect.Fill => Aspect.AspectFill,
-                SwiftAspect.Stretch => Aspect.Fill,
-                SwiftAspect.Center => Aspect.Center,
+                HostAspect.Fit => Aspect.AspectFit,
+                HostAspect.Fill => Aspect.AspectFill,
+                HostAspect.Stretch => Aspect.Fill,
+                HostAspect.Center => Aspect.Center,
                 _ => null,
             };
     }
@@ -818,36 +818,36 @@ internal static class SwiftValues
     /// joined by commas. See <see cref="GetFontAttributes"/> for why the bits
     /// are read one at a time rather than switched on.
     /// </remarks>
-    public static SwipeDirection? GetSwipeDirection(this SwiftNode node, SwiftKey key)
+    public static SwipeDirection? GetSwipeDirection(this HostPatch node, HostPropKey key)
     {
         if (node.GetEnumeration(key) is not int bits
-            || (bits & ~(int)SwiftSwipeDirection.All) != 0)
+            || (bits & ~(int)HostSwipeDirection.All) != 0)
         {
             return null;
         }
 
-        var carried = (SwiftSwipeDirection)bits;
+        var carried = (HostSwipeDirection)bits;
         SwipeDirection directions = 0;
 
-        if (carried.HasFlag(SwiftSwipeDirection.Right)) { directions |= SwipeDirection.Right; }
-        if (carried.HasFlag(SwiftSwipeDirection.Left)) { directions |= SwipeDirection.Left; }
-        if (carried.HasFlag(SwiftSwipeDirection.Up)) { directions |= SwipeDirection.Up; }
-        if (carried.HasFlag(SwiftSwipeDirection.Down)) { directions |= SwipeDirection.Down; }
+        if (carried.HasFlag(HostSwipeDirection.Right)) { directions |= SwipeDirection.Right; }
+        if (carried.HasFlag(HostSwipeDirection.Left)) { directions |= SwipeDirection.Left; }
+        if (carried.HasFlag(HostSwipeDirection.Up)) { directions |= SwipeDirection.Up; }
+        if (carried.HasFlag(HostSwipeDirection.Down)) { directions |= SwipeDirection.Down; }
 
         return directions;
     }
 
     /// <summary>Which way a ScrollView scrolls.</summary>
-    public static ScrollOrientation? GetScrollOrientation(this SwiftNode node, SwiftKey key)
+    public static ScrollOrientation? GetScrollOrientation(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftScrollOrientation)member switch
+            : (HostScrollOrientation)member switch
             {
-                SwiftScrollOrientation.Vertical => ScrollOrientation.Vertical,
-                SwiftScrollOrientation.Horizontal => ScrollOrientation.Horizontal,
-                SwiftScrollOrientation.Both => ScrollOrientation.Both,
-                SwiftScrollOrientation.Neither => ScrollOrientation.Neither,
+                HostScrollOrientation.Vertical => ScrollOrientation.Vertical,
+                HostScrollOrientation.Horizontal => ScrollOrientation.Horizontal,
+                HostScrollOrientation.Both => ScrollOrientation.Both,
+                HostScrollOrientation.Neither => ScrollOrientation.Neither,
                 _ => null,
             };
     }
@@ -861,33 +861,33 @@ internal static class SwiftValues
     /// two behave alike, MAUI reading this a bit at a time, and 15 is the one
     /// that lets a bit nobody declared refuse the value.
     /// </remarks>
-    public static AbsoluteLayoutFlags? GetAbsoluteLayoutFlags(this SwiftNode node, SwiftKey key)
+    public static AbsoluteLayoutFlags? GetAbsoluteLayoutFlags(this HostPatch node, HostPropKey key)
     {
         if (node.GetEnumeration(key) is not int bits
-            || (bits & ~(int)SwiftAbsoluteLayoutProportions.All) != 0)
+            || (bits & ~(int)HostAbsoluteLayoutProportions.All) != 0)
         {
             return null;
         }
 
-        var carried = (SwiftAbsoluteLayoutProportions)bits;
+        var carried = (HostAbsoluteLayoutProportions)bits;
         var flags = AbsoluteLayoutFlags.None;
 
-        if (carried.HasFlag(SwiftAbsoluteLayoutProportions.X))
+        if (carried.HasFlag(HostAbsoluteLayoutProportions.X))
         {
             flags |= AbsoluteLayoutFlags.XProportional;
         }
 
-        if (carried.HasFlag(SwiftAbsoluteLayoutProportions.Y))
+        if (carried.HasFlag(HostAbsoluteLayoutProportions.Y))
         {
             flags |= AbsoluteLayoutFlags.YProportional;
         }
 
-        if (carried.HasFlag(SwiftAbsoluteLayoutProportions.Width))
+        if (carried.HasFlag(HostAbsoluteLayoutProportions.Width))
         {
             flags |= AbsoluteLayoutFlags.WidthProportional;
         }
 
-        if (carried.HasFlag(SwiftAbsoluteLayoutProportions.Height))
+        if (carried.HasFlag(HostAbsoluteLayoutProportions.Height))
         {
             flags |= AbsoluteLayoutFlags.HeightProportional;
         }
@@ -896,15 +896,15 @@ internal static class SwiftValues
     }
 
     /// <summary>How the world is drawn - streets, photography, or both.</summary>
-    public static Microsoft.Maui.Maps.MapType? GetMapType(this SwiftNode node, SwiftKey key)
+    public static Microsoft.Maui.Maps.MapType? GetMapType(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftMapType)member switch
+            : (HostMapType)member switch
             {
-                SwiftMapType.Street => Microsoft.Maui.Maps.MapType.Street,
-                SwiftMapType.Satellite => Microsoft.Maui.Maps.MapType.Satellite,
-                SwiftMapType.Hybrid => Microsoft.Maui.Maps.MapType.Hybrid,
+                HostMapType.Street => Microsoft.Maui.Maps.MapType.Street,
+                HostMapType.Satellite => Microsoft.Maui.Maps.MapType.Satellite,
+                HostMapType.Hybrid => Microsoft.Maui.Maps.MapType.Hybrid,
                 _ => null,
             };
     }
@@ -913,7 +913,7 @@ internal static class SwiftValues
     /// A point on the world: latitude then longitude, as a list of two numbers -
     /// the shape a Thickness travels in, two values long.
     /// </summary>
-    public static Location? GetLocation(this SwiftNode node, SwiftKey key)
+    public static Location? GetLocation(this HostPatch node, HostPropKey key)
     {
         return node.GetNumbers(key) is [double latitude, double longitude]
             ? new Location(latitude, longitude)
@@ -924,7 +924,7 @@ internal static class SwiftValues
     /// A region of the world: the point above plus a radius in METERS, which
     /// is what MAUI's <c>Distance</c> is at bottom.
     /// </summary>
-    public static Microsoft.Maui.Maps.MapSpan? GetMapSpan(this SwiftNode node, SwiftKey key)
+    public static Microsoft.Maui.Maps.MapSpan? GetMapSpan(this HostPatch node, HostPropKey key)
     {
         return node.GetNumbers(key) is [double latitude, double longitude, double radius]
             ? MapSpan(latitude, longitude, radius)
@@ -945,28 +945,28 @@ internal static class SwiftValues
     }
 
     /// <summary>Whether a swipe reveals its items or runs the first of them.</summary>
-    public static SwipeMode? GetSwipeMode(this SwiftNode node, SwiftKey key)
+    public static SwipeMode? GetSwipeMode(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftSwipeMode)member switch
+            : (HostSwipeMode)member switch
             {
-                SwiftSwipeMode.Reveal => SwipeMode.Reveal,
-                SwiftSwipeMode.Execute => SwipeMode.Execute,
+                HostSwipeMode.Reveal => SwipeMode.Reveal,
+                HostSwipeMode.Execute => SwipeMode.Execute,
                 _ => null,
             };
     }
 
     /// <summary>What the open items do once one of them has run.</summary>
-    public static SwipeBehaviorOnInvoked? GetSwipeBehaviorOnInvoked(this SwiftNode node, SwiftKey key)
+    public static SwipeBehaviorOnInvoked? GetSwipeBehaviorOnInvoked(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftSwipeBehaviorOnInvoked)member switch
+            : (HostSwipeBehaviorOnInvoked)member switch
             {
-                SwiftSwipeBehaviorOnInvoked.Auto => SwipeBehaviorOnInvoked.Auto,
-                SwiftSwipeBehaviorOnInvoked.Close => SwipeBehaviorOnInvoked.Close,
-                SwiftSwipeBehaviorOnInvoked.RemainOpen => SwipeBehaviorOnInvoked.RemainOpen,
+                HostSwipeBehaviorOnInvoked.Auto => SwipeBehaviorOnInvoked.Auto,
+                HostSwipeBehaviorOnInvoked.Close => SwipeBehaviorOnInvoked.Close,
+                HostSwipeBehaviorOnInvoked.RemainOpen => SwipeBehaviorOnInvoked.RemainOpen,
                 _ => null,
             };
     }
@@ -980,14 +980,14 @@ internal static class SwiftValues
     /// RIGHT reveals, so the two vocabularies agree on every name and disagree
     /// on every meaning.
     /// </remarks>
-    public static SwiftSwipeSide? GetSwipeSide(this SwiftNode node, SwiftKey key)
+    public static HostSwipeSide? GetSwipeSide(this HostPatch node, HostPropKey key)
     {
         // The one accessor with no MAUI member to translate onto, so the guard
         // is all there is - and it is <see cref="Enum.IsDefined{T}(T)"/> over
         // OUR own mirror, which is a fact about this repository rather than
         // about a MAUI release.
-        return node.GetEnumeration(key) is int member && Enum.IsDefined((SwiftSwipeSide)member)
-            ? (SwiftSwipeSide)member
+        return node.GetEnumeration(key) is int member && Enum.IsDefined((HostSwipeSide)member)
+            ? (HostSwipeSide)member
             : null;
     }
 
@@ -1021,20 +1021,20 @@ internal static class SwiftValues
     /// build again when the system flips.
     /// </para>
     /// </remarks>
-    public static Brush? GetBrush(this SwiftNode node, SwiftKey key)
+    public static Brush? GetBrush(this HostPatch node, HostPropKey key)
     {
-        if (node.GetValues(key) is not [{ Enumeration: int kind }, .. SwiftWireValue[] rest])
+        if (node.GetValues(key) is not [{ Enumeration: int kind }, .. HostValue[] rest])
         {
             // Not a brush, then: a plain colour, which a Brush property takes.
             return node.GetColor(key) is Color colour ? new SolidColorBrush(colour) : null;
         }
 
-        return (SwiftBrushKind)kind switch
+        return (HostBrushKind)kind switch
         {
-            SwiftBrushKind.SolidColor when rest is [SwiftWireValue only]
+            HostBrushKind.SolidColor when rest is [HostValue only]
                 && Colour(only) is Color colour => new SolidColorBrush(colour),
 
-            SwiftBrushKind.LinearGradient when rest is
+            HostBrushKind.LinearGradient when rest is
                 [{ Numbers: [double x1, double y1, double x2, double y2] }, .. var stops] =>
                 new LinearGradientBrush
                 {
@@ -1043,7 +1043,7 @@ internal static class SwiftValues
                     EndPoint = new Point(x2, y2),
                 },
 
-            SwiftBrushKind.RadialGradient when rest is
+            HostBrushKind.RadialGradient when rest is
                 [{ Numbers: [double x, double y, double radius] }, .. var stops] =>
                 new RadialGradientBrush
                 {
@@ -1067,7 +1067,7 @@ internal static class SwiftValues
     /// BackgroundColor because that is the property a visual state, a
     /// transition and a driven value walk.
     /// </remarks>
-    public static void SetBackground(this SwiftNode node, SwiftKey key, VisualElement target)
+    public static void SetBackground(this HostPatch node, HostPropKey key, VisualElement target)
     {
         // A solid brush is a colour, and goes where a colour goes.
         if ((node.GetColor(key) ?? (node.GetBrush(key) as SolidColorBrush)?.Color) is Color color)
@@ -1083,8 +1083,8 @@ internal static class SwiftValues
 
     /// <summary>Assigns a brush to a property.</summary>
     public static void SetBrush(
-        this SwiftNode node,
-        SwiftKey key,
+        this HostPatch node,
+        HostPropKey key,
         BindableObject target,
         BindableProperty property)
     {
@@ -1105,13 +1105,13 @@ internal static class SwiftValues
     /// property follows everywhere else - and a trailing half-pair cannot make
     /// this walk off the end.
     /// </remarks>
-    private static GradientStopCollection Stops(SwiftWireValue[] values)
+    private static GradientStopCollection Stops(HostValue[] values)
     {
         var stops = new GradientStopCollection();
 
         for (int at = 0; at + 1 < values.Length; at += 2)
         {
-            if (values[at].Tag == SwiftWireValue.TagNumber && Colour(values[at + 1]) is Color colour)
+            if (values[at].Tag == HostValue.TagNumber && Colour(values[at + 1]) is Color colour)
             {
                 stops.Add(new GradientStop(colour, (float)values[at].Number));
             }
@@ -1121,9 +1121,9 @@ internal static class SwiftValues
     }
 
     /// <summary>One value as a colour, or null when it is something else.</summary>
-    private static Color? Colour(SwiftWireValue value)
+    private static Color? Colour(HostValue value)
     {
-        return value.Tag == SwiftWireValue.TagColor
+        return value.Tag == HostValue.TagColor
             ? new Color(value.Red / 255f, value.Green / 255f, value.Blue / 255f, value.Alpha / 255f)
             : null;
     }
@@ -1138,7 +1138,7 @@ internal static class SwiftValues
     /// left, top right, bottom left and bottom right, which is the order it
     /// takes them in.
     /// </remarks>
-    public static CornerRadius? GetCornerRadius(this SwiftNode node, SwiftKey key)
+    public static CornerRadius? GetCornerRadius(this HostPatch node, HostPropKey key)
     {
         if (node.GetNumbers(key) is [double topLeft, double topRight, double bottomLeft, double bottomRight])
         {
@@ -1153,7 +1153,7 @@ internal static class SwiftValues
     /// A flat list rather than a list of pairs. An odd count is a half point
     /// and reads as nothing at all.
     /// </remarks>
-    public static PointCollection? GetPoints(this SwiftNode node, SwiftKey key)
+    public static PointCollection? GetPoints(this HostPatch node, HostPropKey key)
     {
         if (node.GetNumbers(key) is not double[] numbers || numbers.Length % 2 != 0)
         {
@@ -1171,7 +1171,7 @@ internal static class SwiftValues
     }
 
     /// <summary>An outline in SVG path syntax, likewise.</summary>
-    public static Geometry? GetGeometry(this SwiftNode node, SwiftKey key)
+    public static Geometry? GetGeometry(this HostPatch node, HostPropKey key)
     {
         return node.GetString(key) is string value
             ? new PathGeometryConverter().ConvertFromInvariantString(value) as Geometry
@@ -1179,35 +1179,35 @@ internal static class SwiftValues
     }
 
     /// <summary>The dashes and the gaps between them.</summary>
-    public static DoubleCollection? GetDoubleCollection(this SwiftNode node, SwiftKey key)
+    public static DoubleCollection? GetDoubleCollection(this HostPatch node, HostPropKey key)
     {
         return node.GetNumbers(key) is double[] values ? [.. values] : null;
     }
 
     /// <summary>How the end of an open line is drawn.</summary>
-    public static PenLineCap? GetPenLineCap(this SwiftNode node, SwiftKey key)
+    public static PenLineCap? GetPenLineCap(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftLineCap)member switch
+            : (HostLineCap)member switch
             {
-                SwiftLineCap.Flat => PenLineCap.Flat,
-                SwiftLineCap.Round => PenLineCap.Round,
-                SwiftLineCap.Square => PenLineCap.Square,
+                HostLineCap.Flat => PenLineCap.Flat,
+                HostLineCap.Round => PenLineCap.Round,
+                HostLineCap.Square => PenLineCap.Square,
                 _ => null,
             };
     }
 
     /// <summary>How two segments meet at a corner.</summary>
-    public static PenLineJoin? GetPenLineJoin(this SwiftNode node, SwiftKey key)
+    public static PenLineJoin? GetPenLineJoin(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftLineJoin)member switch
+            : (HostLineJoin)member switch
             {
-                SwiftLineJoin.Miter => PenLineJoin.Miter,
-                SwiftLineJoin.Bevel => PenLineJoin.Bevel,
-                SwiftLineJoin.Round => PenLineJoin.Round,
+                HostLineJoin.Miter => PenLineJoin.Miter,
+                HostLineJoin.Bevel => PenLineJoin.Bevel,
+                HostLineJoin.Round => PenLineJoin.Round,
                 _ => null,
             };
     }
@@ -1216,56 +1216,56 @@ internal static class SwiftValues
     /// How a shape fills the room it is given. The one Aspect an image and a
     /// shape share; MAUI names a shape's a Stretch.
     /// </summary>
-    public static Stretch? GetShapeAspect(this SwiftNode node, SwiftKey key)
+    public static Stretch? GetShapeAspect(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftAspect)member switch
+            : (HostAspect)member switch
             {
-                SwiftAspect.Fit => Stretch.Uniform,
-                SwiftAspect.Fill => Stretch.UniformToFill,
-                SwiftAspect.Stretch => Stretch.Fill,
-                SwiftAspect.Center => Stretch.None,
+                HostAspect.Fit => Stretch.Uniform,
+                HostAspect.Fill => Stretch.UniformToFill,
+                HostAspect.Stretch => Stretch.Fill,
+                HostAspect.Center => Stretch.None,
                 _ => null,
             };
     }
 
     /// <summary>Which parts of a self-crossing outline count as inside it.</summary>
-    public static FillRule? GetFillRule(this SwiftNode node, SwiftKey key)
+    public static FillRule? GetFillRule(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftFillRule)member switch
+            : (HostFillRule)member switch
             {
-                SwiftFillRule.EvenOdd => FillRule.EvenOdd,
-                SwiftFillRule.Nonzero => FillRule.Nonzero,
+                HostFillRule.EvenOdd => FillRule.EvenOdd,
+                HostFillRule.Nonzero => FillRule.Nonzero,
                 _ => null,
             };
     }
 
     /// <summary>Where a toolbar item goes - on the bar, or behind the overflow.</summary>
-    public static ToolbarItemOrder? GetToolbarItemOrder(this SwiftNode node, SwiftKey key)
+    public static ToolbarItemOrder? GetToolbarItemOrder(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftToolbarItemPlacement)member switch
+            : (HostToolbarItemPlacement)member switch
             {
-                SwiftToolbarItemPlacement.Automatic => ToolbarItemOrder.Default,
-                SwiftToolbarItemPlacement.Bar => ToolbarItemOrder.Primary,
-                SwiftToolbarItemPlacement.Overflow => ToolbarItemOrder.Secondary,
+                HostToolbarItemPlacement.Automatic => ToolbarItemOrder.Default,
+                HostToolbarItemPlacement.Bar => ToolbarItemOrder.Primary,
+                HostToolbarItemPlacement.Overflow => ToolbarItemOrder.Secondary,
                 _ => null,
             };
     }
 
     /// <summary>What one dot of an IndicatorView is drawn as.</summary>
-    public static IndicatorShape? GetIndicatorShape(this SwiftNode node, SwiftKey key)
+    public static IndicatorShape? GetIndicatorShape(this HostPatch node, HostPropKey key)
     {
         return node.GetEnumeration(key) is not int member
             ? null
-            : (SwiftIndicatorShape)member switch
+            : (HostIndicatorShape)member switch
             {
-                SwiftIndicatorShape.Circle => IndicatorShape.Circle,
-                SwiftIndicatorShape.Square => IndicatorShape.Square,
+                HostIndicatorShape.Circle => IndicatorShape.Circle,
+                HostIndicatorShape.Square => IndicatorShape.Square,
                 _ => null,
             };
     }
@@ -1277,9 +1277,9 @@ internal static class SwiftValues
     /// <remarks>
     /// A list of lists, one per canvas call. See <see cref="SwiftDrawable"/>.
     /// </remarks>
-    public static IDrawable? GetDrawable(this SwiftNode node, SwiftKey key)
+    public static IDrawable? GetDrawable(this HostPatch node, HostPropKey key)
     {
-        return node.GetValues(key) is SwiftWireValue[] commands
+        return node.GetValues(key) is HostValue[] commands
             ? new SwiftDrawable(commands)
             : null;
     }

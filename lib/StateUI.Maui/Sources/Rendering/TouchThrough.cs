@@ -45,10 +45,10 @@ internal static class TouchThrough
     /// </remarks>
     /// <param name="node">The message about this layout.</param>
     /// <param name="layout">The layout the message was about.</param>
-    internal static void Cascade(SwiftNode node, Layout layout)
+    internal static void Cascade(HostPatch node, Layout layout)
     {
-        bool transparent = node.GetBool(SwiftProp.InputTransparent) ?? layout.InputTransparent;
-        bool cascades = node.GetBool(SwiftProp.CascadeInputTransparent) ?? layout.CascadeInputTransparent;
+        bool transparent = node.GetBool(HostProp.InputTransparent) ?? layout.InputTransparent;
+        bool cascades = node.GetBool(HostProp.CascadeInputTransparent) ?? layout.CascadeInputTransparent;
         bool through = transparent && cascades;
         bool written = (bool)layout.GetValue(ThroughProperty);
 

@@ -37,12 +37,12 @@ namespace StateUI.Maui.Rendering;
 /// <para>
 /// There is no translation table anywhere. A node's type IS the MAUI class and
 /// each property key IS the MAUI property, so the code below is mostly
-/// <c>label.FontSize = node.GetNumber(SwiftProp.FontSize)</c> - which is the
+/// <c>label.FontSize = node.GetNumber(HostProp.FontSize)</c> - which is the
 /// point: what a Swift author writes and what MAUI receives have the same
 /// names. They travel as MEMBERS: the wire numbers each name once per session
-/// and <see cref="SwiftWireDictionary"/> resolves it to a
-/// <see cref="SwiftNodeType"/>, a <see cref="SwiftProp"/> or a
-/// <see cref="SwiftEvent"/> as the announcement is read, so nothing here
+/// and <see cref="WireDictionary"/> resolves it to a
+/// <see cref="HostNodeType"/>, a <see cref="HostProp"/> or a
+/// <see cref="HostEvent"/> as the announcement is read, so nothing here
 /// compares a spelling. Only two things still need one - a control an
 /// application registered, found in the registry by name, and a diagnostic that
 /// has to say WHICH type it could not make sense of.
@@ -62,7 +62,7 @@ namespace StateUI.Maui.Rendering;
 /// </para>
 /// <para>
 /// Adding a control means a struct and a <c>NodeType</c> token on the Swift
-/// side, the matching <see cref="SwiftNodeType"/> member, a case here and an arm
+/// side, the matching <see cref="HostNodeType"/> member, a case here and an arm
 /// in <c>SwiftStyles.Property</c>. The wire itself does not change.
 /// </para>
 /// </remarks>
@@ -89,7 +89,7 @@ public sealed class StateUIRenderer
     private sealed class RenderedElement
     {
         /// <summary>
-        /// The identity as it is matched - see <see cref="SwiftNode.Key"/>: a
+        /// The identity as it is matched - see <see cref="HostPatch.Key"/>: a
         /// renderer-assigned number as its digits, an author's id in quotes.
         /// Compared against the next message's, which is how a control is
         /// matched to its node.
@@ -101,11 +101,11 @@ public sealed class StateUIRenderer
         /// switches on. A node of another type cannot reuse the control,
         /// whatever its identity says.
         /// </summary>
-        public required SwiftNodeType Type { get; init; }
+        public required HostNodeType Type { get; init; }
 
         /// <summary>
         /// The same, spelled - which is what tells two REGISTERED controls
-        /// apart, both of them being <see cref="SwiftNodeType.None"/>, and what
+        /// apart, both of them being <see cref="HostNodeType.None"/>, and what
         /// a diagnostic names a control by.
         /// </summary>
         public required string TypeName { get; init; }
@@ -114,7 +114,7 @@ public sealed class StateUIRenderer
         /// The handler ids this control reports with, kept because a message
         /// mentions them only when the set of handled events changes.
         /// </summary>
-        public Dictionary<SwiftEvent, int>? Events { get; set; }
+        public Dictionary<HostEvent, int>? Events { get; set; }
 
         /// <summary>
         /// The same, for the events an APPLICATION raises from a control of its
@@ -127,18 +127,18 @@ public sealed class StateUIRenderer
         /// The properties this control is already reporting, so it is subscribed
         /// to each of them once - see <see cref="StateUIRenderer.Watch"/>.
         /// </summary>
-        public HashSet<SwiftEvent>? Observed { get; set; }
+        public HashSet<HostEvent>? Observed { get; set; }
 
         /// <summary>
         /// What this control's subtree LOOKS like - see
-        /// <see cref="SwiftNode.Shape"/>. Zero on everything but the rows of a
+        /// <see cref="HostPatch.Shape"/>. Zero on everything but the rows of a
         /// recycling layout, and on a row that may not be pooled.
         /// </summary>
         public ulong Shape { get; set; }
 
         /// <summary>
         /// Whether this control's children are rows it keeps a pool for - see
-        /// <see cref="SwiftNode.Recycles"/>. Kept because a message says it
+        /// <see cref="HostPatch.Recycles"/>. Kept because a message says it
         /// only when it changes.
         /// </summary>
         public bool Recycles { get; set; }
@@ -642,7 +642,7 @@ public sealed class StateUIRenderer
             _walker,
             new NativeCycleCrossing(),
             (waiter, whole) =>
-                _dispatch(waiter, SwiftWire.WriteReply([SwiftWireValue.Of(whole)])))
+                _dispatch(waiter, WireCodec.WriteReply([HostValue.Of(whole)])))
         {
             Held = () => _rendering,
         };
@@ -692,7 +692,7 @@ public sealed class StateUIRenderer
     /// renderer did not build - and everything is built from scratch, which is
     /// what Swift sends when the two sides are out of step.
     /// </remarks>
-    public View Render(View? existing, SwiftNode node)
+    public View Render(View? existing, HostPatch node)
     {
         // Restored rather than cleared: a window applying its node holds a
         // scope of its own around this, and clearing here would let the rest of
@@ -733,7 +733,7 @@ public sealed class StateUIRenderer
     /// throwing, so a Swift side that has run ahead is visible without the rest
     /// of the interface disappearing with it.
     /// </remarks>
-    private View Reconcile(View? existing, SwiftNode node)
+    private View Reconcile(View? existing, HostPatch node)
     {
         if (RenderTally.Counting) { RenderTally.Nodes++; }
 
@@ -741,7 +741,7 @@ public sealed class StateUIRenderer
         // there is, since the assignment that would snap has to be prevented
         // before it happens and the control it is about may not exist until it
         // does. See DescribedMotion.
-        List<(SwiftTransition Transition, SwiftWireValue Target)> walked = _describedMotion.Take(node);
+        List<(HostTransition Transition, HostValue Target)> walked = _describedMotion.Take(node);
         View view = Made(existing, node);
 
         _describedMotion.Apply(view, node, walked);
@@ -782,14 +782,14 @@ public sealed class StateUIRenderer
     /// </remarks>
     /// <param name="target">The control the node was applied to.</param>
     /// <param name="node">The node, whose <c>Cleared</c> list this is about.</param>
-    private void Clear(BindableObject target, SwiftNode node)
+    private void Clear(BindableObject target, HostPatch node)
     {
         if (node.Cleared is not { Count: > 0 } cleared)
         {
             return;
         }
 
-        foreach (SwiftKey key in cleared)
+        foreach (HostPropKey key in cleared)
         {
             if (SwiftStyles.Property(node.Type, node.TypeName, key, target) is BindableProperty property)
             {
@@ -806,7 +806,7 @@ public sealed class StateUIRenderer
 
                 // One background in StateUI, two properties in MAUI - see
                 // SwiftValues.SetBackground - and a background let go of is both.
-                if (key.Prop == SwiftProp.Background)
+                if (key.Prop == HostProp.Background)
                 {
                     target.ClearValue(VisualElement.BackgroundProperty);
                 }
@@ -820,7 +820,7 @@ public sealed class StateUIRenderer
                 // describes - the failure a reader would otherwise hunt for.
                 StateUISession.Report(
                     $"'{node.TypeName}' stopped describing " +
-                    $"'{key.Name ?? SwiftTokenNames<SwiftProp>.Spelling(key.Prop)}' and " +
+                    $"'{key.Name ?? TokenNames<HostProp>.Spelling(key.Prop)}' and " +
                     "nothing here knows what to put back, so the old value stands.\n\n" +
                     "Add the property to that control's arm in SwiftStyles, or name it in " +
                     "Prop.notCleared on the Swift side so the control is built again instead.");
@@ -829,46 +829,46 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>The control this node is about, made or reused and applied.</summary>
-    private View Made(View? existing, SwiftNode node)
+    private View Made(View? existing, HostPatch node)
     {
         return node.Type switch
         {
-            SwiftNodeType.Label => ReconcileLabel(node, existing),
-            SwiftNodeType.Button => ReconcileButton(node, existing),
-            SwiftNodeType.TextField => ReconcileTextField(node, existing),
-            SwiftNodeType.Image => ReconcileImage(node, existing),
-            SwiftNodeType.TextEditor => ReconcileTextEditor(node, existing),
-            SwiftNodeType.Picker => ReconcilePicker(node, existing),
-            SwiftNodeType.DatePicker => ReconcileDatePicker(node, existing),
-            SwiftNodeType.ColorBox => ReconcileColorBox(node, existing),
-            SwiftNodeType.Border => ReconcileBorder(node, existing),
-            SwiftNodeType.TimePicker => ReconcileTimePicker(node, existing),
-            SwiftNodeType.Switch => ReconcileSwitch(node, existing),
-            SwiftNodeType.CheckBox => ReconcileCheckBox(node, existing),
-            SwiftNodeType.RadioButton => ReconcileRadioButton(node, existing),
-            SwiftNodeType.Slider => ReconcileSlider(node, existing),
-            SwiftNodeType.Stepper => ReconcileStepper(node, existing),
-            SwiftNodeType.SearchField => ReconcileSearchField(node, existing),
-            SwiftNodeType.ActivityIndicator => ReconcileActivityIndicator(node, existing),
-            SwiftNodeType.ProgressBar => ReconcileProgressBar(node, existing),
-            SwiftNodeType.Grid => ReconcileGrid(node, existing),
-            SwiftNodeType.VStack => ReconcileStack(node, existing, () => new TravellingLayouts.Vertical { Walker = _walker }),
-            SwiftNodeType.HStack => ReconcileStack(node, existing, () => new TravellingLayouts.Horizontal { Walker = _walker }),
-            SwiftNodeType.AbsoluteLayout => ReconcileAbsoluteLayout(node, existing),
-            SwiftNodeType.ScrollView => ReconcileScrollView(node, existing),
-            SwiftNodeType.WebView => ReconcileWebView(node, existing),
-            SwiftNodeType.Map => ReconcileMap(node, existing),
-            SwiftNodeType.TitleBar => ReconcileTitleBar(node, existing),
-            SwiftNodeType.RefreshView => ReconcileRefreshView(node, existing),
-            SwiftNodeType.SwipeView => ReconcileSwipeView(node, existing),
-            SwiftNodeType.Rectangle => ReconcileRectangle(node, existing),
-            SwiftNodeType.Ellipse => ReconcileEllipse(node, existing),
-            SwiftNodeType.Line => ReconcileLine(node, existing),
-            SwiftNodeType.Path => ReconcilePath(node, existing),
-            SwiftNodeType.Polygon => ReconcilePolygon(node, existing),
-            SwiftNodeType.Polyline => ReconcilePolyline(node, existing),
-            SwiftNodeType.Canvas => ReconcileCanvas(node, existing),
-            SwiftNodeType.PositionIndicator => ReconcilePositionIndicator(node, existing),
+            HostNodeType.Label => ReconcileLabel(node, existing),
+            HostNodeType.Button => ReconcileButton(node, existing),
+            HostNodeType.TextField => ReconcileTextField(node, existing),
+            HostNodeType.Image => ReconcileImage(node, existing),
+            HostNodeType.TextEditor => ReconcileTextEditor(node, existing),
+            HostNodeType.Picker => ReconcilePicker(node, existing),
+            HostNodeType.DatePicker => ReconcileDatePicker(node, existing),
+            HostNodeType.ColorBox => ReconcileColorBox(node, existing),
+            HostNodeType.Border => ReconcileBorder(node, existing),
+            HostNodeType.TimePicker => ReconcileTimePicker(node, existing),
+            HostNodeType.Switch => ReconcileSwitch(node, existing),
+            HostNodeType.CheckBox => ReconcileCheckBox(node, existing),
+            HostNodeType.RadioButton => ReconcileRadioButton(node, existing),
+            HostNodeType.Slider => ReconcileSlider(node, existing),
+            HostNodeType.Stepper => ReconcileStepper(node, existing),
+            HostNodeType.SearchField => ReconcileSearchField(node, existing),
+            HostNodeType.ActivityIndicator => ReconcileActivityIndicator(node, existing),
+            HostNodeType.ProgressBar => ReconcileProgressBar(node, existing),
+            HostNodeType.Grid => ReconcileGrid(node, existing),
+            HostNodeType.VStack => ReconcileStack(node, existing, () => new TravellingLayouts.Vertical { Walker = _walker }),
+            HostNodeType.HStack => ReconcileStack(node, existing, () => new TravellingLayouts.Horizontal { Walker = _walker }),
+            HostNodeType.AbsoluteLayout => ReconcileAbsoluteLayout(node, existing),
+            HostNodeType.ScrollView => ReconcileScrollView(node, existing),
+            HostNodeType.WebView => ReconcileWebView(node, existing),
+            HostNodeType.Map => ReconcileMap(node, existing),
+            HostNodeType.TitleBar => ReconcileTitleBar(node, existing),
+            HostNodeType.RefreshView => ReconcileRefreshView(node, existing),
+            HostNodeType.SwipeView => ReconcileSwipeView(node, existing),
+            HostNodeType.Rectangle => ReconcileRectangle(node, existing),
+            HostNodeType.Ellipse => ReconcileEllipse(node, existing),
+            HostNodeType.Line => ReconcileLine(node, existing),
+            HostNodeType.Path => ReconcilePath(node, existing),
+            HostNodeType.Polygon => ReconcilePolygon(node, existing),
+            HostNodeType.Polyline => ReconcilePolyline(node, existing),
+            HostNodeType.Canvas => ReconcileCanvas(node, existing),
+            HostNodeType.PositionIndicator => ReconcilePositionIndicator(node, existing),
             _ => ReconcileRegistered(node, existing),
         };
     }
@@ -888,12 +888,12 @@ public sealed class StateUIRenderer
     /// <para>
     /// The SPELLING is compared as well when the type has no member, and only
     /// then: every control an application registered reads as
-    /// <see cref="SwiftNodeType.None"/>, so the member alone would let a
+    /// <see cref="HostNodeType.None"/>, so the member alone would let a
     /// <c>Gallery.TrafficLight</c> be reused as the <c>Gallery.Badge</c> that
     /// took its place at the same identity.
     /// </para>
     /// </remarks>
-    private T? Reuse<T>(T? existing, SwiftNode node) where T : BindableObject
+    private T? Reuse<T>(T? existing, HostPatch node) where T : BindableObject
     {
         T? kept = Kept(existing, node);
 
@@ -915,7 +915,7 @@ public sealed class StateUIRenderer
     /// belongs to something else, and it lasts exactly as long as the one
     /// <see cref="Reconcile"/> that started it.
     /// </remarks>
-    private T? Kept<T>(T? existing, SwiftNode node) where T : BindableObject
+    private T? Kept<T>(T? existing, HostPatch node) where T : BindableObject
     {
         if (node.Replace || existing?.GetValue(ElementProperty) is not RenderedElement element)
         {
@@ -927,7 +927,7 @@ public sealed class StateUIRenderer
             return null;
         }
 
-        return element.Type != SwiftNodeType.None || element.TypeName == node.TypeName
+        return element.Type != HostNodeType.None || element.TypeName == node.TypeName
             ? existing
             : null;
     }
@@ -943,7 +943,7 @@ public sealed class StateUIRenderer
     /// only true of a view - an entry in the aiming maps, the properties worth
     /// observing, the gestures - is asked for rather than assumed.
     /// </remarks>
-    internal T Track<T>(T view, SwiftNode node) where T : BindableObject
+    internal T Track<T>(T view, HostPatch node) where T : BindableObject
     {
         // Here because everything the renderer applies passes through here -
         // a control, a page, a window, a toolbar item - and every one of them
@@ -980,8 +980,8 @@ public sealed class StateUIRenderer
         }
 
         // Both are said only when they change, so an absent one leaves what
-        // the control already carries - see SwiftNode.Recycles and
-        // SwiftNode.Shape.
+        // the control already carries - see HostPatch.Recycles and
+        // HostPatch.Shape.
         if (node.Recycles is bool recycles) { element.Recycles = recycles; }
         if (node.Shape is ulong shape) { element.Shape = shape; }
 
@@ -1029,7 +1029,7 @@ public sealed class StateUIRenderer
     /// quoted against a tree that has let it go.
     /// </summary>
     /// <remarks>
-    /// The handler ids live on the element, and <see cref="Raise(object?, SwiftEvent, byte[])"/>
+    /// The handler ids live on the element, and <see cref="Raise(object?, HostEvent, byte[])"/>
     /// quotes them at the moment a report arrives - so a control the tree has
     /// stopped describing goes on reporting to ids the Swift side has already
     /// forgotten. The one caller is a window the TREE closes, which the
@@ -1210,27 +1210,27 @@ public sealed class StateUIRenderer
     /// change what a tap does without anything being rebuilt.
     /// </para>
     /// </remarks>
-    private void ApplyGestures(View view, SwiftNode node, RenderedElement element)
+    private void ApplyGestures(View view, HostPatch node, RenderedElement element)
     {
-        Dictionary<SwiftEvent, int>? events = element.Events;
+        Dictionary<HostEvent, int>? events = element.Events;
 
         // No early return on an empty event map: a view that can be DRAGGED says
         // so with a property, whether or not it wants to hear about it.
-        bool Handles(SwiftEvent name) => events?.ContainsKey(name) == true;
+        bool Handles(HostEvent name) => events?.ContainsKey(name) == true;
 
-        if (Handles(SwiftEvent.Tapped))
+        if (Handles(HostEvent.Tapped))
         {
             TapGestureRecognizer tap = Recognizer(view, () =>
             {
                 var recognizer = new TapGestureRecognizer();
-                recognizer.Tapped += (_, _) => Raise(view, SwiftEvent.Tapped);
+                recognizer.Tapped += (_, _) => Raise(view, HostEvent.Tapped);
                 return recognizer;
             });
 
-            if (node.GetInt(SwiftProp.TapCount) is int taps) { tap.NumberOfTapsRequired = taps; }
+            if (node.GetInt(HostProp.TapCount) is int taps) { tap.NumberOfTapsRequired = taps; }
         }
 
-        if (Handles(SwiftEvent.Swiped))
+        if (Handles(HostEvent.Swiped))
         {
             ApplySwipe(view, node);
         }
@@ -1238,13 +1238,13 @@ public sealed class StateUIRenderer
         // WHERE A DRAG IS WRITTEN, when the tree gave it channels to write
         // into - kept on the view, because the recognizer is made once and a
         // render may change the numbers.
-        if (node.GetNumber(SwiftProp.PanXChannel) is double panX) { view.SetValue(PanXChannelProperty, (int)panX); }
-        if (node.GetNumber(SwiftProp.PanYChannel) is double panY) { view.SetValue(PanYChannelProperty, (int)panY); }
+        if (node.GetNumber(HostProp.PanXChannel) is double panX) { view.SetValue(PanXChannelProperty, (int)panX); }
+        if (node.GetNumber(HostProp.PanYChannel) is double panY) { view.SetValue(PanYChannelProperty, (int)panY); }
 
         bool written = (int)view.GetValue(PanXChannelProperty) != 0
             || (int)view.GetValue(PanYChannelProperty) != 0;
 
-        if (Handles(SwiftEvent.PanUpdated) || written)
+        if (Handles(HostEvent.PanUpdated) || written)
         {
             PanGestureRecognizer pan = Recognizer(view, () =>
             {
@@ -1301,28 +1301,28 @@ public sealed class StateUIRenderer
                         }
                     }
 
-                    Raise(view, SwiftEvent.PanUpdated,
-                        SwiftWireValue.OfMember((int)Member(e.StatusType)),
-                        SwiftWireValue.Of(totalX),
-                        SwiftWireValue.Of(totalY));
+                    Raise(view, HostEvent.PanUpdated,
+                        HostValue.OfMember((int)Member(e.StatusType)),
+                        HostValue.Of(totalX),
+                        HostValue.Of(totalY));
                 };
 
                 return recognizer;
             });
 
-            if (node.GetInt(SwiftProp.PanTouchCount) is int touches) { pan.TouchPoints = touches; }
+            if (node.GetInt(HostProp.PanTouchCount) is int touches) { pan.TouchPoints = touches; }
         }
 
-        if (Handles(SwiftEvent.PinchUpdated))
+        if (Handles(HostEvent.PinchUpdated))
         {
             Recognizer(view, () =>
             {
                 var recognizer = new PinchGestureRecognizer();
 
-                recognizer.PinchUpdated += (_, e) => Raise(view, SwiftEvent.PinchUpdated,
-                    SwiftWireValue.OfMember((int)Member(e.Status)),
-                    SwiftWireValue.Of(e.Scale),
-                    SwiftWireValue.Of(e.ScaleOrigin.X, e.ScaleOrigin.Y));
+                recognizer.PinchUpdated += (_, e) => Raise(view, HostEvent.PinchUpdated,
+                    HostValue.OfMember((int)Member(e.Status)),
+                    HostValue.Of(e.Scale),
+                    HostValue.Of(e.ScaleOrigin.X, e.ScaleOrigin.Y));
 
                 return recognizer;
             });
@@ -1331,25 +1331,25 @@ public sealed class StateUIRenderer
         // One recognizer answers all five, so any of them is reason to attach
         // it - named out rather than matched on a prefix, which is what a
         // vocabulary of members buys.
-        if (Handles(SwiftEvent.PointerEntered) || Handles(SwiftEvent.PointerExited)
-            || Handles(SwiftEvent.PointerMoved) || Handles(SwiftEvent.PointerPressed)
-            || Handles(SwiftEvent.PointerReleased))
+        if (Handles(HostEvent.PointerEntered) || Handles(HostEvent.PointerExited)
+            || Handles(HostEvent.PointerMoved) || Handles(HostEvent.PointerPressed)
+            || Handles(HostEvent.PointerReleased))
         {
             Recognizer(view, () =>
             {
                 var recognizer = new PointerGestureRecognizer();
 
-                recognizer.PointerEntered += (_, _) => Raise(view, SwiftEvent.PointerEntered);
-                recognizer.PointerExited += (_, _) => Raise(view, SwiftEvent.PointerExited);
-                recognizer.PointerMoved += (_, e) => Raise(view, SwiftEvent.PointerMoved, At(e, view));
-                recognizer.PointerPressed += (_, e) => Raise(view, SwiftEvent.PointerPressed, At(e, view));
-                recognizer.PointerReleased += (_, e) => Raise(view, SwiftEvent.PointerReleased, At(e, view));
+                recognizer.PointerEntered += (_, _) => Raise(view, HostEvent.PointerEntered);
+                recognizer.PointerExited += (_, _) => Raise(view, HostEvent.PointerExited);
+                recognizer.PointerMoved += (_, e) => Raise(view, HostEvent.PointerMoved, At(e, view));
+                recognizer.PointerPressed += (_, e) => Raise(view, HostEvent.PointerPressed, At(e, view));
+                recognizer.PointerReleased += (_, e) => Raise(view, HostEvent.PointerReleased, At(e, view));
 
                 return recognizer;
             });
         }
 
-        if (node.GetBool(SwiftProp.CanDrag) is bool canDrag)
+        if (node.GetBool(HostProp.CanDrag) is bool canDrag)
         {
             DragGestureRecognizer drag = Recognizer(view, () =>
             {
@@ -1366,26 +1366,26 @@ public sealed class StateUIRenderer
                         e.Data.Text = recognizer.GetValue(DragTextProperty) as string;
                     }
 
-                    Raise(view, SwiftEvent.DragStarting);
+                    Raise(view, HostEvent.DragStarting);
                 };
 
-                recognizer.DropCompleted += (_, _) => Raise(view, SwiftEvent.DropCompleted);
+                recognizer.DropCompleted += (_, _) => Raise(view, HostEvent.DropCompleted);
 
                 return recognizer;
             });
 
             drag.CanDrag = canDrag;
-            drag.SetValue(DragTextProperty, node.GetString(SwiftProp.DragText) ?? drag.GetValue(DragTextProperty));
+            drag.SetValue(DragTextProperty, node.GetString(HostProp.DragText) ?? drag.GetValue(DragTextProperty));
         }
 
-        if (node.GetBool(SwiftProp.AllowDrop) is bool allowDrop)
+        if (node.GetBool(HostProp.AllowDrop) is bool allowDrop)
         {
             DropGestureRecognizer drop = Recognizer(view, () =>
             {
                 var recognizer = new DropGestureRecognizer();
 
-                recognizer.DragOver += (_, _) => Raise(view, SwiftEvent.DragOver);
-                recognizer.DragLeave += (_, _) => Raise(view, SwiftEvent.DragLeave);
+                recognizer.DragOver += (_, _) => Raise(view, HostEvent.DragOver);
+                recognizer.DragLeave += (_, _) => Raise(view, HostEvent.DragLeave);
 
                 // Reading a data package is asynchronous - it may be coming
                 // from another application - so the await happens HERE, on the
@@ -1393,7 +1393,7 @@ public sealed class StateUIRenderer
                 // ordinary event dispatch once there is something to tell it.
                 // The same rule as every act; see Core/ActCall.swift.
                 recognizer.Drop += async (_, e) =>
-                    Raise(view, SwiftEvent.Drop, await e.Data.GetTextAsync() ?? "");
+                    Raise(view, HostEvent.Drop, await e.Data.GetTextAsync() ?? "");
 
                 return recognizer;
             });
@@ -1442,9 +1442,9 @@ public sealed class StateUIRenderer
     /// and only a view carrying none at all falls back to every direction.
     /// </para>
     /// </remarks>
-    private void ApplySwipe(View view, SwiftNode node)
+    private void ApplySwipe(View view, HostPatch node)
     {
-        SwipeDirection wanted = node.GetSwipeDirection(SwiftProp.SwipeDirection)
+        SwipeDirection wanted = node.GetSwipeDirection(HostProp.SwipeDirection)
             ?? Listening(view)
             ?? EverySwipeWay;
 
@@ -1452,7 +1452,7 @@ public sealed class StateUIRenderer
         // the threshold its siblings already carry - otherwise it would be the
         // one direction that wanted a longer finger, for no reason a reader
         // could see.
-        uint? threshold = node.GetNumber(SwiftProp.SwipeThreshold) is double given
+        uint? threshold = node.GetNumber(HostProp.SwipeThreshold) is double given
             ? (uint)given
             : view.GestureRecognizers.OfType<SwipeGestureRecognizer>().FirstOrDefault()?.Threshold;
 
@@ -1478,7 +1478,7 @@ public sealed class StateUIRenderer
                 // member: that OUR four bits and MAUI's happen to agree is a
                 // coincidence this side must not spend.
                 carried.Swiped += (_, _) =>
-                    Raise(view, SwiftEvent.Swiped, SwiftWireValue.OfMember((int)Member(way)));
+                    Raise(view, HostEvent.Swiped, HostValue.OfMember((int)Member(way)));
 
                 view.GestureRecognizers.Add(carried);
             }
@@ -1532,9 +1532,9 @@ public sealed class StateUIRenderer
     /// nothing when the platform did not say, which the Swift side reads as
     /// no point rather than inventing one.
     /// </summary>
-    private static SwiftWireValue[] At(PointerEventArgs e, View view) =>
+    private static HostValue[] At(PointerEventArgs e, View view) =>
         e.GetPosition(view) is Point point
-            ? [SwiftWireValue.Of(point.X, point.Y)]
+            ? [HostValue.Of(point.X, point.Y)]
             : [];
 
     // ---- Properties that report themselves ---------------------------------
@@ -1565,8 +1565,8 @@ public sealed class StateUIRenderer
     /// </remarks>
     private void Observe<T>(T view, RenderedElement element) where T : View
     {
-        Watch(view, SwiftEvent.IsFocusedChanged, VisualElement.IsFocusedProperty,
-            () => SwiftWireValue.Of(view.IsFocused));
+        Watch(view, HostEvent.IsFocusedChanged, VisualElement.IsFocusedProperty,
+            () => HostValue.Of(view.IsFocused));
 
         if (view is ScrollView scroll)
         {
@@ -1578,11 +1578,11 @@ public sealed class StateUIRenderer
         // property, the way a binding follows IsRefreshing below.
         if (view is WebView web)
         {
-            Watch(web, SwiftEvent.CanGoBackChanged, WebView.CanGoBackProperty,
-                () => SwiftWireValue.Of(web.CanGoBack));
+            Watch(web, HostEvent.CanGoBackChanged, WebView.CanGoBackProperty,
+                () => HostValue.Of(web.CanGoBack));
 
-            Watch(web, SwiftEvent.CanGoForwardChanged, WebView.CanGoForwardProperty,
-                () => SwiftWireValue.Of(web.CanGoForward));
+            Watch(web, HostEvent.CanGoForwardChanged, WebView.CanGoForwardProperty,
+                () => HostValue.Of(web.CanGoForward));
         }
 
         // A pull sets IsRefreshing, and so does a pull the platform gave up on.
@@ -1590,8 +1590,8 @@ public sealed class StateUIRenderer
         // second did, so the property itself is what a binding follows.
         if (view is RefreshView refresh)
         {
-            Watch(refresh, SwiftEvent.IsRefreshingChanged, RefreshView.IsRefreshingProperty,
-                () => SwiftWireValue.Of(refresh.IsRefreshing));
+            Watch(refresh, HostEvent.IsRefreshingChanged, RefreshView.IsRefreshingProperty,
+                () => HostValue.Of(refresh.IsRefreshing));
         }
 
         // The frame, on ANY view that asked - `.onFrameChanged` is a View-tier
@@ -1619,9 +1619,9 @@ public sealed class StateUIRenderer
     /// </remarks>
     private void Watch(
         BindableObject control,
-        SwiftEvent name,
+        HostEvent name,
         BindableProperty property,
-        Func<SwiftWireValue> read,
+        Func<HostValue> read,
         bool deferred = false)
     {
         // Nobody is listening, or this control is listening already.
@@ -1684,15 +1684,15 @@ public sealed class StateUIRenderer
     /// </remarks>
     private void ObserveScroll(ScrollView scroll, RenderedElement element)
     {
-        WatchOffset(scroll, element, SwiftEvent.ScrollXChanged, ScrollView.ScrollXProperty, () => scroll.ScrollX);
-        WatchOffset(scroll, element, SwiftEvent.ScrollYChanged, ScrollView.ScrollYProperty, () => scroll.ScrollY);
+        WatchOffset(scroll, element, HostEvent.ScrollXChanged, ScrollView.ScrollXProperty, () => scroll.ScrollX);
+        WatchOffset(scroll, element, HostEvent.ScrollYChanged, ScrollView.ScrollYProperty, () => scroll.ScrollY);
 
         // The movement is what hears a movement of the reader's end, and what
         // tells a reader's report from a relayout's clamp and from the frames
         // of a travel the application wrote - so a handler for the stop asks
         // for it, and so does a CHANNEL, which must hear only the reader's
         // reports and moves the scroller through it.
-        bool stops = element.Events?.ContainsKey(SwiftEvent.ScrollStopped) == true;
+        bool stops = element.Events?.ContainsKey(HostEvent.ScrollStopped) == true;
         bool channelled = (bool)scroll.GetValue(ScrolledProperty);
 
         if (!stops && !channelled)
@@ -1702,9 +1702,9 @@ public sealed class StateUIRenderer
 
         ScrollMovement movement = MovementOf(scroll);
 
-        if (stops && (element.Observed ??= []).Add(SwiftEvent.ScrollStopped))
+        if (stops && (element.Observed ??= []).Add(HostEvent.ScrollStopped))
         {
-            movement.Rested += () => Raise(scroll, SwiftEvent.ScrollStopped);
+            movement.Rested += () => Raise(scroll, HostEvent.ScrollStopped);
         }
 
         if (channelled)
@@ -1750,7 +1750,7 @@ public sealed class StateUIRenderer
     private void WatchOffset(
         ScrollView scroll,
         RenderedElement element,
-        SwiftEvent name,
+        HostEvent name,
         BindableProperty property,
         Func<double> read)
     {
@@ -1809,15 +1809,15 @@ public sealed class StateUIRenderer
     /// picker holds none, which the Swift side reads as no date rather than
     /// inventing one.
     /// </summary>
-    private static SwiftWireValue[] Day(DateTime? value) =>
-        value is DateTime date ? [SwiftWireValue.Of(date.Year, date.Month, date.Day)] : [];
+    private static HostValue[] Day(DateTime? value) =>
+        value is DateTime date ? [HostValue.Of(date.Year, date.Month, date.Day)] : [];
 
     /// <summary>
     /// And a time of day as its three - hour, minute, second. A TimeSpan can
     /// hold whole days; a time of day cannot, so only the day's part crosses.
     /// </summary>
-    private static SwiftWireValue[] Clock(TimeSpan? value) =>
-        value is TimeSpan time ? [SwiftWireValue.Of(time.Hours, time.Minutes, time.Seconds)] : [];
+    private static HostValue[] Clock(TimeSpan? value) =>
+        value is TimeSpan time ? [HostValue.Of(time.Hours, time.Minutes, time.Seconds)] : [];
 
     /// <summary>
     /// The identity a control was built with, or null when the renderer did not
@@ -1835,10 +1835,10 @@ public sealed class StateUIRenderer
 
     /// <summary>
     /// The handler ids an object is carrying - what
-    /// <see cref="Raise(object?, SwiftEvent, byte[])"/> quotes back
+    /// <see cref="Raise(object?, HostEvent, byte[])"/> quotes back
     /// when one of its events fires.
     /// </summary>
-    internal static IReadOnlyDictionary<SwiftEvent, int>? EventsOf(BindableObject control)
+    internal static IReadOnlyDictionary<HostEvent, int>? EventsOf(BindableObject control)
     {
         return (control.GetValue(ElementProperty) as RenderedElement)?.Events;
     }
@@ -1873,7 +1873,7 @@ public sealed class StateUIRenderer
     /// event. A watcher writes its dedup cache only on true, so a report lost
     /// here is retried when the value settles.
     /// </returns>
-    internal bool Raise(object? sender, SwiftEvent name, byte[]? payload = null)
+    internal bool Raise(object? sender, HostEvent name, byte[]? payload = null)
     {
         if (_rendering || Walker.Writing > 0)
         {
@@ -1898,7 +1898,7 @@ public sealed class StateUIRenderer
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The motion guard on <see cref="Raise(object?, SwiftEvent, byte[])"/>
+    /// The motion guard on <see cref="Raise(object?, HostEvent, byte[])"/>
     /// is there for a property that is DESCRIBED and CARRIED at once: the
     /// journey's own frame would come back as a report, be written into the
     /// state the property was described from, and snap the journey it came
@@ -1923,7 +1923,7 @@ public sealed class StateUIRenderer
     /// <param name="name">Which offset it is.</param>
     /// <param name="value">Where the scroller stands, in device units.</param>
     /// <returns>Whether anything was listening.</returns>
-    private bool Report(object? sender, SwiftEvent name, double value)
+    private bool Report(object? sender, HostEvent name, double value)
     {
         if (_rendering)
         {
@@ -1934,7 +1934,7 @@ public sealed class StateUIRenderer
             && control.GetValue(ElementProperty) is RenderedElement element
             && element.Events?.TryGetValue(name, out int id) == true)
         {
-            _dispatch(id, SwiftWire.WritePayload(SwiftWireValue.Of(value)));
+            _dispatch(id, WireCodec.WritePayload(HostValue.Of(value)));
 
             return true;
         }
@@ -1958,7 +1958,7 @@ public sealed class StateUIRenderer
     /// <param name="sender">The control whose event fired.</param>
     /// <param name="name">The event's name, as the Swift side listens for it.</param>
     /// <param name="payload">One typed value per interesting fact, in a fixed order.</param>
-    internal void Raise(object? sender, string name, params SwiftWireValue[] payload)
+    internal void Raise(object? sender, string name, params HostValue[] payload)
     {
         // The same two writes of ours that the typed form refuses - an apply,
         // and a motion's or a cycle's own write.
@@ -1975,15 +1975,15 @@ public sealed class StateUIRenderer
 
         if (element.OwnEvents?.TryGetValue(name, out int own) == true)
         {
-            _dispatch(own, SwiftWire.WritePayload(payload));
+            _dispatch(own, WireCodec.WritePayload(payload));
             return;
         }
 
-        if (SwiftTokenNames<SwiftEvent>.Parse(name) is SwiftEvent raised
-            && raised != SwiftEvent.None
+        if (TokenNames<HostEvent>.Parse(name) is HostEvent raised
+            && raised != HostEvent.None
             && element.Events?.TryGetValue(raised, out int id) == true)
         {
-            _dispatch(id, SwiftWire.WritePayload(payload));
+            _dispatch(id, WireCodec.WritePayload(payload));
         }
     }
 
@@ -1995,14 +1995,14 @@ public sealed class StateUIRenderer
     /// </summary>
     /// <param name="handler">The id the scene's node carries.</param>
     /// <param name="payload">The values, in the order the handler reads them.</param>
-    internal void Announce(int handler, params SwiftWireValue[] payload)
+    internal void Announce(int handler, params HostValue[] payload)
     {
         if (_rendering)
         {
             return;
         }
 
-        _dispatch(handler, payload.Length == 0 ? null : SwiftWire.WritePayload(payload));
+        _dispatch(handler, payload.Length == 0 ? null : WireCodec.WritePayload(payload));
     }
 
     /// <summary>
@@ -2057,27 +2057,27 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>The event carried one text - an Entry's new value, a query.</summary>
-    internal bool Raise(object? sender, SwiftEvent name, string payload) =>
-        Raise(sender, name, SwiftWire.WritePayload(SwiftWireValue.Of(payload)));
+    internal bool Raise(object? sender, HostEvent name, string payload) =>
+        Raise(sender, name, WireCodec.WritePayload(HostValue.Of(payload)));
 
     /// <summary>
     /// The event carried one QUANTITY - a slider's value, an index, a
     /// position. A member of a vocabulary is not one: see
-    /// <see cref="SwiftWireValue.OfMember"/>.
+    /// <see cref="HostValue.OfMember"/>.
     /// </summary>
-    internal bool Raise(object? sender, SwiftEvent name, double payload) =>
-        Raise(sender, name, SwiftWire.WritePayload(SwiftWireValue.Of(payload)));
+    internal bool Raise(object? sender, HostEvent name, double payload) =>
+        Raise(sender, name, WireCodec.WritePayload(HostValue.Of(payload)));
 
     /// <summary>The event carried one true-or-false - a toggle, a focus.</summary>
-    internal bool Raise(object? sender, SwiftEvent name, bool payload) =>
-        Raise(sender, name, SwiftWire.WritePayload(SwiftWireValue.Of(payload)));
+    internal bool Raise(object? sender, HostEvent name, bool payload) =>
+        Raise(sender, name, WireCodec.WritePayload(HostValue.Of(payload)));
 
     /// <summary>
     /// The event carried typed values - one per property of its EventArgs, in
     /// the order MAUI declares them. None crosses no bytes at all.
     /// </summary>
-    internal bool Raise(object? sender, SwiftEvent name, params SwiftWireValue[] payload) =>
-        Raise(sender, name, SwiftWire.WritePayload(payload));
+    internal bool Raise(object? sender, HostEvent name, params HostValue[] payload) =>
+        Raise(sender, name, WireCodec.WritePayload(payload));
 
     /// <summary>
     /// Subscribes a window's lifecycle events, once, when the window is made.
@@ -2087,7 +2087,7 @@ public sealed class StateUIRenderer
     /// The same subscribe-once rule every control follows: the handler id is
     /// read off the window when the event fires, so a render can change the
     /// handlers without rewiring anything - and a window with no node tracked
-    /// on it yet reports nothing, <see cref="Raise(object?, SwiftEvent, byte[])"/>
+    /// on it yet reports nothing, <see cref="Raise(object?, HostEvent, byte[])"/>
     /// finding no id to quote. Every described window carries all six
     /// handlers, which the library writes to move that window's
     /// <c>WindowSession.phase</c>.
@@ -2114,12 +2114,12 @@ public sealed class StateUIRenderer
     /// </remarks>
     internal void WireWindow(Window window)
     {
-        window.Created += (sender, _) => Raise(sender, SwiftEvent.Created);
-        window.Activated += (sender, _) => Raise(sender, SwiftEvent.Activated);
-        window.Deactivated += (sender, _) => Raise(sender, SwiftEvent.Deactivated);
-        window.Stopped += (sender, _) => Raise(sender, SwiftEvent.Stopped);
-        window.Resumed += (sender, _) => Raise(sender, SwiftEvent.Resumed);
-        window.Destroying += (sender, _) => Raise(sender, SwiftEvent.Destroying);
+        window.Created += (sender, _) => Raise(sender, HostEvent.Created);
+        window.Activated += (sender, _) => Raise(sender, HostEvent.Activated);
+        window.Deactivated += (sender, _) => Raise(sender, HostEvent.Deactivated);
+        window.Stopped += (sender, _) => Raise(sender, HostEvent.Stopped);
+        window.Resumed += (sender, _) => Raise(sender, HostEvent.Resumed);
+        window.Destroying += (sender, _) => Raise(sender, HostEvent.Destroying);
 
         // And the same moments as the APPLICATION's phase - domain 7,
         // ApplicationSession.phase on the Swift side - moved by whichever
@@ -2132,18 +2132,18 @@ public sealed class StateUIRenderer
         // A window a scene HID, because another scene is in front, says it was
         // deactivated and stopped - which is true of that window and untrue of
         // the application, so it moves no phase. See SceneFocus.
-        window.Activated += (_, _) => StateUIEnvironment.ApplicationPhase(SwiftApplicationPhase.Active);
+        window.Activated += (_, _) => StateUIEnvironment.ApplicationPhase(HostApplicationPhase.Active);
         window.Deactivated += (sender, _) =>
         {
-            if (!HiddenByScene(sender)) StateUIEnvironment.ApplicationPhase(SwiftApplicationPhase.Inactive);
+            if (!HiddenByScene(sender)) StateUIEnvironment.ApplicationPhase(HostApplicationPhase.Inactive);
         };
         window.Stopped += (sender, _) =>
         {
-            if (!HiddenByScene(sender)) StateUIEnvironment.ApplicationPhase(SwiftApplicationPhase.Background);
+            if (!HiddenByScene(sender)) StateUIEnvironment.ApplicationPhase(HostApplicationPhase.Background);
         };
         window.Resumed += (sender, _) =>
         {
-            if (!HiddenByScene(sender)) StateUIEnvironment.ApplicationPhase(SwiftApplicationPhase.Inactive);
+            if (!HiddenByScene(sender)) StateUIEnvironment.ApplicationPhase(HostApplicationPhase.Inactive);
         };
 
         // AND A TURN OF THE DEVICE, which reaches this side as a RESIZE. The
@@ -2169,33 +2169,33 @@ public sealed class StateUIRenderer
     // ---- Controls ----------------------------------------------------------
 
     /// <summary>A Label: MAUI's read-only text.</summary>
-    private Label ReconcileLabel(SwiftNode node, View? existing)
+    private Label ReconcileLabel(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not Label label)
         {
             label = new Label();
         }
 
-        if (node.GetString(SwiftProp.Text) is string text) { label.Text = text; }
-        node.SetColor(SwiftProp.TextColor, label, Label.TextColorProperty);
-        if (node.GetNumber(SwiftProp.CharacterSpacing) is double characterSpacing) { label.CharacterSpacing = characterSpacing; }
-        if (node.GetTextTransform(SwiftProp.TextCase) is TextTransform labelCase) { label.TextTransform = labelCase; }
-        if (node.GetTextAlignment(SwiftProp.HorizontalTextAlignment) is TextAlignment horizontal) { label.HorizontalTextAlignment = horizontal; }
-        if (node.GetTextAlignment(SwiftProp.VerticalTextAlignment) is TextAlignment vertical) { label.VerticalTextAlignment = vertical; }
-        if (node.GetLineBreakMode(SwiftProp.LineBreak) is LineBreakMode lineBreakMode) { label.LineBreakMode = lineBreakMode; }
-        if (node.GetNumber(SwiftProp.LineHeight) is double lineHeight) { label.LineHeight = lineHeight; }
-        if (node.GetInt(SwiftProp.MaximumLines) is int maxLines) { label.MaxLines = maxLines; }
-        if (node.GetTextDecorations(SwiftProp.TextDecorations) is TextDecorations decorations) { label.TextDecorations = decorations; }
-        if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { label.Padding = padding; }
+        if (node.GetString(HostProp.Text) is string text) { label.Text = text; }
+        node.SetColor(HostProp.TextColor, label, Label.TextColorProperty);
+        if (node.GetNumber(HostProp.CharacterSpacing) is double characterSpacing) { label.CharacterSpacing = characterSpacing; }
+        if (node.GetTextTransform(HostProp.TextCase) is TextTransform labelCase) { label.TextTransform = labelCase; }
+        if (node.GetTextAlignment(HostProp.HorizontalTextAlignment) is TextAlignment horizontal) { label.HorizontalTextAlignment = horizontal; }
+        if (node.GetTextAlignment(HostProp.VerticalTextAlignment) is TextAlignment vertical) { label.VerticalTextAlignment = vertical; }
+        if (node.GetLineBreakMode(HostProp.LineBreak) is LineBreakMode lineBreakMode) { label.LineBreakMode = lineBreakMode; }
+        if (node.GetNumber(HostProp.LineHeight) is double lineHeight) { label.LineHeight = lineHeight; }
+        if (node.GetInt(HostProp.MaximumLines) is int maxLines) { label.MaxLines = maxLines; }
+        if (node.GetTextDecorations(HostProp.TextDecorations) is TextDecorations decorations) { label.TextDecorations = decorations; }
+        if (node.GetThickness(HostProp.Padding) is Thickness padding) { label.Padding = padding; }
 
         ApplyFont(node, label);
         ApplyView(node, label);
 
         // Read by TYPE, the way a page's TitleView is: a Label has no children
         // of its own, and FormattedText is a sub-object rather than a value.
-        foreach (SwiftNode child in node.Children ?? [])
+        foreach (HostPatch child in node.Children ?? [])
         {
-            if (child.Type == SwiftNodeType.Spans)
+            if (child.Type == HostNodeType.Spans)
             {
                 ApplyFormattedString(label, child);
             }
@@ -2220,7 +2220,7 @@ public sealed class StateUIRenderer
     /// the same mistake one level up.
     /// </para>
     /// </remarks>
-    private void ApplyFormattedString(Label label, SwiftNode node)
+    private void ApplyFormattedString(Label label, HostPatch node)
     {
         FormattedString formatted = label.FormattedText ?? new FormattedString();
         label.FormattedText = formatted;
@@ -2236,17 +2236,17 @@ public sealed class StateUIRenderer
     /// carries text and font properties and nothing else. It is Tracked all the
     /// same, which is what gives it the identity the list above matches on.
     /// </remarks>
-    private Span? ApplySpan(SwiftNode node, Span? existing)
+    private Span? ApplySpan(HostPatch node, Span? existing)
     {
         Span span = Reuse(existing, node) ?? new Span();
 
-        if (node.GetString(SwiftProp.Text) is string text) { span.Text = text; }
-        node.SetColor(SwiftProp.TextColor, span, Span.TextColorProperty);
-        node.SetColor(SwiftProp.Background, span, Span.BackgroundColorProperty);
-        if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { span.CharacterSpacing = spacing; }
-        if (node.GetTextTransform(SwiftProp.TextCase) is TextTransform spanCase) { span.TextTransform = spanCase; }
-        if (node.GetNumber(SwiftProp.LineHeight) is double lineHeight) { span.LineHeight = lineHeight; }
-        if (node.GetTextDecorations(SwiftProp.TextDecorations) is TextDecorations decorations)
+        if (node.GetString(HostProp.Text) is string text) { span.Text = text; }
+        node.SetColor(HostProp.TextColor, span, Span.TextColorProperty);
+        node.SetColor(HostProp.Background, span, Span.BackgroundColorProperty);
+        if (node.GetNumber(HostProp.CharacterSpacing) is double spacing) { span.CharacterSpacing = spacing; }
+        if (node.GetTextTransform(HostProp.TextCase) is TextTransform spanCase) { span.TextTransform = spanCase; }
+        if (node.GetNumber(HostProp.LineHeight) is double lineHeight) { span.LineHeight = lineHeight; }
+        if (node.GetTextDecorations(HostProp.TextDecorations) is TextDecorations decorations)
         {
             span.TextDecorations = decorations;
         }
@@ -2260,33 +2260,33 @@ public sealed class StateUIRenderer
     /// A Button. Its three events are subscribed where the control is CREATED,
     /// once - the handler id is read from the control when the event fires.
     /// </summary>
-    private Button ReconcileButton(SwiftNode node, View? existing)
+    private Button ReconcileButton(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not Button button)
         {
             button = new Button();
 
             // Subscribed once, for the life of the control - see Raise.
-            button.Clicked += (sender, _) => Raise(sender, SwiftEvent.Clicked);
-            button.Pressed += (sender, _) => Raise(sender, SwiftEvent.Pressed);
-            button.Released += (sender, _) => Raise(sender, SwiftEvent.Released);
+            button.Clicked += (sender, _) => Raise(sender, HostEvent.Clicked);
+            button.Pressed += (sender, _) => Raise(sender, HostEvent.Pressed);
+            button.Released += (sender, _) => Raise(sender, HostEvent.Released);
         }
 
-        if (node.GetString(SwiftProp.Text) is string text) { button.Text = text; }
-        node.SetColor(SwiftProp.TextColor, button, Button.TextColorProperty);
-        if (node.GetNumber(SwiftProp.CharacterSpacing) is double characterSpacing) { button.CharacterSpacing = characterSpacing; }
-        if (node.GetTextTransform(SwiftProp.TextCase) is TextTransform buttonCase) { button.TextTransform = buttonCase; }
-        node.SetColor(SwiftProp.BorderColor, button, Button.BorderColorProperty);
-        if (node.GetNumber(SwiftProp.BorderWidth) is double borderWidth) { button.BorderWidth = borderWidth; }
-        if (node.GetInt(SwiftProp.CornerRadius) is int cornerRadius) { button.CornerRadius = cornerRadius; }
-        if (node.GetLineBreakMode(SwiftProp.LineBreak) is LineBreakMode lineBreakMode) { button.LineBreakMode = lineBreakMode; }
-        if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { button.Padding = padding; }
+        if (node.GetString(HostProp.Text) is string text) { button.Text = text; }
+        node.SetColor(HostProp.TextColor, button, Button.TextColorProperty);
+        if (node.GetNumber(HostProp.CharacterSpacing) is double characterSpacing) { button.CharacterSpacing = characterSpacing; }
+        if (node.GetTextTransform(HostProp.TextCase) is TextTransform buttonCase) { button.TextTransform = buttonCase; }
+        node.SetColor(HostProp.BorderColor, button, Button.BorderColorProperty);
+        if (node.GetNumber(HostProp.BorderWidth) is double borderWidth) { button.BorderWidth = borderWidth; }
+        if (node.GetInt(HostProp.CornerRadius) is int cornerRadius) { button.CornerRadius = cornerRadius; }
+        if (node.GetLineBreakMode(HostProp.LineBreak) is LineBreakMode lineBreakMode) { button.LineBreakMode = lineBreakMode; }
+        if (node.GetThickness(HostProp.Padding) is Thickness padding) { button.Padding = padding; }
 
-        node.SetImageSource(SwiftProp.Icon, button, Button.ImageSourceProperty);
+        node.SetImageSource(HostProp.Icon, button, Button.ImageSourceProperty);
 
         // Two properties here and one ContentLayout in MAUI - see ComposedProperties.
-        if (node.GetIconPosition(SwiftProp.IconPosition) is { } iconPosition) { button.SetValue(ComposedProperties.IconPositionProperty, iconPosition); }
-        if (node.GetNumber(SwiftProp.IconSpacing) is double iconSpacing) { button.SetValue(ComposedProperties.IconSpacingProperty, iconSpacing); }
+        if (node.GetIconPosition(HostProp.IconPosition) is { } iconPosition) { button.SetValue(ComposedProperties.IconPositionProperty, iconPosition); }
+        if (node.GetNumber(HostProp.IconSpacing) is double iconSpacing) { button.SetValue(ComposedProperties.IconSpacingProperty, iconSpacing); }
 
         ApplyFont(node, button);
         ApplyView(node, button);
@@ -2299,27 +2299,27 @@ public sealed class StateUIRenderer
     /// <c>_rendering</c> guard swallows - otherwise Swift would hear its own
     /// value back on every render.
     /// </summary>
-    private Entry ReconcileTextField(SwiftNode node, View? existing)
+    private Entry ReconcileTextField(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not Entry entry)
         {
             entry = new Entry();
 
             entry.TextChanged += (sender, e) => Typed(sender, e.NewTextValue);
-            entry.Completed += (sender, _) => Raise(sender, SwiftEvent.Submitted);
+            entry.Completed += (sender, _) => Raise(sender, HostEvent.Submitted);
         }
 
         // Text arrives only when it actually changed, so an Entry the user is
         // typing in is left alone - which is what keeps the caret where it is.
         ApplyInputView(node, entry);
-        node.SetColor(SwiftProp.TextColor, entry, Entry.TextColorProperty);
-        if (node.GetNumber(SwiftProp.CharacterSpacing) is double characterSpacing) { entry.CharacterSpacing = characterSpacing; }
-        if (node.GetTextTransform(SwiftProp.TextCase) is TextTransform entryCase) { entry.TextTransform = entryCase; }
-        if (node.GetBool(SwiftProp.IsPassword) is bool isPassword) { entry.IsPassword = isPassword; }
-        if (node.GetReturnType(SwiftProp.ReturnKey) is ReturnType returnType) { entry.ReturnType = returnType; }
-        if (node.GetBool(SwiftProp.ShowsClearButton) is bool clears) { entry.ClearButtonVisibility = clears ? ClearButtonVisibility.WhileEditing : ClearButtonVisibility.Never; }
-        if (node.GetTextAlignment(SwiftProp.HorizontalTextAlignment) is TextAlignment horizontal) { entry.HorizontalTextAlignment = horizontal; }
-        if (node.GetTextAlignment(SwiftProp.VerticalTextAlignment) is TextAlignment vertical) { entry.VerticalTextAlignment = vertical; }
+        node.SetColor(HostProp.TextColor, entry, Entry.TextColorProperty);
+        if (node.GetNumber(HostProp.CharacterSpacing) is double characterSpacing) { entry.CharacterSpacing = characterSpacing; }
+        if (node.GetTextTransform(HostProp.TextCase) is TextTransform entryCase) { entry.TextTransform = entryCase; }
+        if (node.GetBool(HostProp.IsPassword) is bool isPassword) { entry.IsPassword = isPassword; }
+        if (node.GetReturnType(HostProp.ReturnKey) is ReturnType returnType) { entry.ReturnType = returnType; }
+        if (node.GetBool(HostProp.ShowsClearButton) is bool clears) { entry.ClearButtonVisibility = clears ? ClearButtonVisibility.WhileEditing : ClearButtonVisibility.Never; }
+        if (node.GetTextAlignment(HostProp.HorizontalTextAlignment) is TextAlignment horizontal) { entry.HorizontalTextAlignment = horizontal; }
+        if (node.GetTextAlignment(HostProp.VerticalTextAlignment) is TextAlignment vertical) { entry.VerticalTextAlignment = vertical; }
 
         ApplyFont(node, entry);
         ApplyView(node, entry);
@@ -2333,7 +2333,7 @@ public sealed class StateUIRenderer
     /// and goes through <see cref="SwiftValues.SetImageSource"/> like every
     /// picture.
     /// </summary>
-    private Image ReconcileImage(SwiftNode node, View? existing)
+    private Image ReconcileImage(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not Image image)
         {
@@ -2342,9 +2342,9 @@ public sealed class StateUIRenderer
 
         // A file in Resources/Images, by the name MAUI gives it once built -
         // for a picture drawn per theme, the half the differ picked.
-        node.SetImageSource(SwiftProp.Source, image, Image.SourceProperty);
-        if (node.GetAspect(SwiftProp.Aspect) is Aspect aspect) { image.Aspect = aspect; }
-        if (node.GetBool(SwiftProp.IsAnimating) is bool playing) { image.IsAnimationPlaying = playing; }
+        node.SetImageSource(HostProp.Source, image, Image.SourceProperty);
+        if (node.GetAspect(HostProp.Aspect) is Aspect aspect) { image.Aspect = aspect; }
+        if (node.GetBool(HostProp.IsAnimating) is bool playing) { image.IsAnimationPlaying = playing; }
 
         ApplyView(node, image);
 
@@ -2352,7 +2352,7 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>An Editor: an Entry with room, and the same guard on Text.</summary>
-    private Editor ReconcileTextEditor(SwiftNode node, View? existing)
+    private Editor ReconcileTextEditor(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not Editor editor)
         {
@@ -2362,12 +2362,12 @@ public sealed class StateUIRenderer
         }
 
         ApplyInputView(node, editor);
-        node.SetColor(SwiftProp.TextColor, editor, Editor.TextColorProperty);
-        if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { editor.CharacterSpacing = spacing; }
-        if (node.GetTextTransform(SwiftProp.TextCase) is TextTransform editorCase) { editor.TextTransform = editorCase; }
-        if (node.GetBool(SwiftProp.GrowsWithText) is bool grows) { editor.AutoSize = grows ? EditorAutoSizeOption.TextChanges : EditorAutoSizeOption.Disabled; }
-        if (node.GetTextAlignment(SwiftProp.HorizontalTextAlignment) is TextAlignment horizontal) { editor.HorizontalTextAlignment = horizontal; }
-        if (node.GetTextAlignment(SwiftProp.VerticalTextAlignment) is TextAlignment vertical) { editor.VerticalTextAlignment = vertical; }
+        node.SetColor(HostProp.TextColor, editor, Editor.TextColorProperty);
+        if (node.GetNumber(HostProp.CharacterSpacing) is double spacing) { editor.CharacterSpacing = spacing; }
+        if (node.GetTextTransform(HostProp.TextCase) is TextTransform editorCase) { editor.TextTransform = editorCase; }
+        if (node.GetBool(HostProp.GrowsWithText) is bool grows) { editor.AutoSize = grows ? EditorAutoSizeOption.TextChanges : EditorAutoSizeOption.Disabled; }
+        if (node.GetTextAlignment(HostProp.HorizontalTextAlignment) is TextAlignment horizontal) { editor.HorizontalTextAlignment = horizontal; }
+        if (node.GetTextAlignment(HostProp.VerticalTextAlignment) is TextAlignment vertical) { editor.VerticalTextAlignment = vertical; }
 
         ApplyFont(node, editor);
         ApplyView(node, editor);
@@ -2376,7 +2376,7 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A Picker. The list goes in before the chosen index.</summary>
-    private Picker ReconcilePicker(SwiftNode node, View? existing)
+    private Picker ReconcilePicker(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not Picker picker)
         {
@@ -2385,24 +2385,24 @@ public sealed class StateUIRenderer
             picker.SelectedIndexChanged += (sender, _) =>
             {
                 Reported(sender, Picker.SelectedIndexProperty, picker.SelectedIndex);
-                Raise(sender, SwiftEvent.SelectedIndexChanged, (double)picker.SelectedIndex);
+                Raise(sender, HostEvent.SelectedIndexChanged, (double)picker.SelectedIndex);
             };
             // Opening and closing, which the platform does as well as the
             // reader - a tap outside closes it and nothing on this side asked.
-            picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
-            picker.Closed += (sender, _) => Raise(sender, SwiftEvent.Closed);
+            picker.Opened += (sender, _) => Raise(sender, HostEvent.Opened);
+            picker.Closed += (sender, _) => Raise(sender, HostEvent.Closed);
         }
 
         // The list before the choice: an index means nothing until there is
         // something to count.
-        if (node.GetStrings(SwiftProp.Options) is string[] items) { picker.ItemsSource = items; }
-        if (node.GetInt(SwiftProp.SelectedIndex) is int selected) { picker.SelectedIndex = selected; }
-        if (node.GetBool(SwiftProp.IsOpen) is bool pickerOpen) { picker.IsOpen = pickerOpen; }
-        if (node.GetString(SwiftProp.Title) is string title) { picker.Title = title; }
-        node.SetColor(SwiftProp.TextColor, picker, Picker.TextColorProperty);
-        if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
-        if (node.GetTextAlignment(SwiftProp.HorizontalTextAlignment) is TextAlignment horizontal) { picker.HorizontalTextAlignment = horizontal; }
-        if (node.GetTextAlignment(SwiftProp.VerticalTextAlignment) is TextAlignment vertical) { picker.VerticalTextAlignment = vertical; }
+        if (node.GetStrings(HostProp.Options) is string[] items) { picker.ItemsSource = items; }
+        if (node.GetInt(HostProp.SelectedIndex) is int selected) { picker.SelectedIndex = selected; }
+        if (node.GetBool(HostProp.IsOpen) is bool pickerOpen) { picker.IsOpen = pickerOpen; }
+        if (node.GetString(HostProp.Title) is string title) { picker.Title = title; }
+        node.SetColor(HostProp.TextColor, picker, Picker.TextColorProperty);
+        if (node.GetNumber(HostProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
+        if (node.GetTextAlignment(HostProp.HorizontalTextAlignment) is TextAlignment horizontal) { picker.HorizontalTextAlignment = horizontal; }
+        if (node.GetTextAlignment(HostProp.VerticalTextAlignment) is TextAlignment vertical) { picker.VerticalTextAlignment = vertical; }
 
         ApplyFont(node, picker);
         ApplyView(node, picker);
@@ -2414,7 +2414,7 @@ public sealed class StateUIRenderer
     /// A DatePicker. The range goes in before the date, since MAUI clamps a
     /// date into it as it is set.
     /// </summary>
-    private DatePicker ReconcileDatePicker(SwiftNode node, View? existing)
+    private DatePicker ReconcileDatePicker(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not DatePicker picker)
         {
@@ -2424,23 +2424,23 @@ public sealed class StateUIRenderer
             {
                 // Onto the state first, so a handler reads the day already landed.
                 if (picker.Date is DateTime day) { Reported(sender, DatePicker.DateProperty, [day.Year, day.Month, day.Day]); }
-                Raise(sender, SwiftEvent.DateChanged, Day(picker.Date));
+                Raise(sender, HostEvent.DateChanged, Day(picker.Date));
             };
             // Opening and closing, which the platform does as well as the
             // reader - a tap outside closes it and nothing on this side asked.
-            picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
-            picker.Closed += (sender, _) => Raise(sender, SwiftEvent.Closed);
+            picker.Opened += (sender, _) => Raise(sender, HostEvent.Opened);
+            picker.Closed += (sender, _) => Raise(sender, HostEvent.Closed);
         }
 
         // The range before the date, for the same reason a Slider takes its
         // range before its value: MAUI clamps what is outside it.
-        if (node.GetDate(SwiftProp.MinimumDate) is DateTime minimum) { picker.MinimumDate = minimum; }
-        if (node.GetDate(SwiftProp.MaximumDate) is DateTime maximum) { picker.MaximumDate = maximum; }
-        if (node.GetDate(SwiftProp.Date) is DateTime date) { picker.Date = date; }
-        if (node.GetBool(SwiftProp.IsOpen) is bool dateOpen) { picker.IsOpen = dateOpen; }
-        if (node.GetString(SwiftProp.Format) is string format) { picker.Format = format; }
-        node.SetColor(SwiftProp.TextColor, picker, DatePicker.TextColorProperty);
-        if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
+        if (node.GetDate(HostProp.MinimumDate) is DateTime minimum) { picker.MinimumDate = minimum; }
+        if (node.GetDate(HostProp.MaximumDate) is DateTime maximum) { picker.MaximumDate = maximum; }
+        if (node.GetDate(HostProp.Date) is DateTime date) { picker.Date = date; }
+        if (node.GetBool(HostProp.IsOpen) is bool dateOpen) { picker.IsOpen = dateOpen; }
+        if (node.GetString(HostProp.Format) is string format) { picker.Format = format; }
+        node.SetColor(HostProp.TextColor, picker, DatePicker.TextColorProperty);
+        if (node.GetNumber(HostProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
 
         ApplyFont(node, picker);
         ApplyView(node, picker);
@@ -2469,8 +2469,8 @@ public sealed class StateUIRenderer
     /// </remarks>
     private void WatchFrame(VisualElement view, RenderedElement element)
     {
-        if (element.Events?.ContainsKey(SwiftEvent.FrameChanged) != true
-            || !(element.Observed ??= []).Add(SwiftEvent.FrameChanged))
+        if (element.Events?.ContainsKey(HostEvent.FrameChanged) != true
+            || !(element.Observed ??= []).Add(HostEvent.FrameChanged))
         {
             return;
         }
@@ -2579,7 +2579,7 @@ public sealed class StateUIRenderer
 
             // Remembered only once the report went out: one dropped under an
             // apply must not dedup the retry the settled frame makes.
-            if (Raise(watched, SwiftEvent.FrameChanged, SwiftWireValue.Of(payload)))
+            if (Raise(watched, HostEvent.FrameChanged, HostValue.Of(payload)))
             {
                 reported = payload;
             }
@@ -2859,15 +2859,15 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A BoxView: a rectangle of colour.</summary>
-    private BoxView ReconcileColorBox(SwiftNode node, View? existing)
+    private BoxView ReconcileColorBox(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not BoxView box)
         {
             box = new BoxView();
         }
 
-        node.SetColor(SwiftProp.Color, box, BoxView.ColorProperty);
-        if (node.GetCornerRadius(SwiftProp.CornerRadius) is CornerRadius radius) { box.CornerRadius = radius; }
+        node.SetColor(HostProp.Color, box, BoxView.ColorProperty);
+        if (node.GetCornerRadius(HostProp.CornerRadius) is CornerRadius radius) { box.CornerRadius = radius; }
 
         ApplyView(node, box);
 
@@ -2875,7 +2875,7 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A Border, and the single view it holds.</summary>
-    private Border ReconcileBorder(SwiftNode node, View? existing)
+    private Border ReconcileBorder(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not Border border)
         {
@@ -2884,19 +2884,19 @@ public sealed class StateUIRenderer
 
         // A Border's stroke is a Brush, so it takes a gradient as readily as a
         // colour - and SetBrush is what tells the two apart.
-        node.SetBrush(SwiftProp.Stroke, border, Border.StrokeProperty);
-        if (node.GetNumber(SwiftProp.StrokeWidth) is double thickness) { border.StrokeThickness = thickness; }
-        if (node.GetStrokeShape(SwiftProp.Shape) is IShape shape) { border.StrokeShape = shape; }
-        if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { border.Padding = padding; }
+        node.SetBrush(HostProp.Stroke, border, Border.StrokeProperty);
+        if (node.GetNumber(HostProp.StrokeWidth) is double thickness) { border.StrokeThickness = thickness; }
+        if (node.GetStrokeShape(HostProp.Shape) is IShape shape) { border.StrokeShape = shape; }
+        if (node.GetThickness(HostProp.Padding) is Thickness padding) { border.Padding = padding; }
 
         // The rest of the stroke, which MAUI declares on Border separately from
         // the identical set on Shape - two classes sharing only IStroke, so
         // these are Border's own properties and not the shape arm's.
-        if (node.GetDoubleCollection(SwiftProp.StrokeDashPattern) is DoubleCollection dashes) { border.StrokeDashArray = dashes; }
-        if (node.GetNumber(SwiftProp.StrokeDashOffset) is double dashOffset) { border.StrokeDashOffset = dashOffset; }
-        if (node.GetPenLineCap(SwiftProp.StrokeLineCap) is PenLineCap cap) { border.StrokeLineCap = cap; }
-        if (node.GetPenLineJoin(SwiftProp.StrokeLineJoin) is PenLineJoin join) { border.StrokeLineJoin = join; }
-        if (node.GetNumber(SwiftProp.StrokeMiterLimit) is double miter) { border.StrokeMiterLimit = miter; }
+        if (node.GetDoubleCollection(HostProp.StrokeDashPattern) is DoubleCollection dashes) { border.StrokeDashArray = dashes; }
+        if (node.GetNumber(HostProp.StrokeDashOffset) is double dashOffset) { border.StrokeDashOffset = dashOffset; }
+        if (node.GetPenLineCap(HostProp.StrokeLineCap) is PenLineCap cap) { border.StrokeLineCap = cap; }
+        if (node.GetPenLineJoin(HostProp.StrokeLineJoin) is PenLineJoin join) { border.StrokeLineJoin = join; }
+        if (node.GetNumber(HostProp.StrokeMiterLimit) is double miter) { border.StrokeMiterLimit = miter; }
 
         ApplyView(node, border);
         Track(border, node);
@@ -2930,22 +2930,22 @@ public sealed class StateUIRenderer
     /// The properties MAUI declares on <see cref="Shape"/>, which every shape
     /// has.
     /// </summary>
-    private static void ApplyShape(SwiftNode node, Shape shape)
+    private static void ApplyShape(HostPatch node, Shape shape)
     {
-        node.SetBrush(SwiftProp.Fill, shape, Shape.FillProperty);
-        node.SetBrush(SwiftProp.Stroke, shape, Shape.StrokeProperty);
+        node.SetBrush(HostProp.Fill, shape, Shape.FillProperty);
+        node.SetBrush(HostProp.Stroke, shape, Shape.StrokeProperty);
 
-        if (node.GetNumber(SwiftProp.StrokeWidth) is double thickness) { shape.StrokeThickness = thickness; }
-        if (node.GetDoubleCollection(SwiftProp.StrokeDashPattern) is DoubleCollection dashes) { shape.StrokeDashArray = dashes; }
-        if (node.GetNumber(SwiftProp.StrokeDashOffset) is double dashOffset) { shape.StrokeDashOffset = dashOffset; }
-        if (node.GetPenLineCap(SwiftProp.StrokeLineCap) is PenLineCap cap) { shape.StrokeLineCap = cap; }
-        if (node.GetPenLineJoin(SwiftProp.StrokeLineJoin) is PenLineJoin join) { shape.StrokeLineJoin = join; }
-        if (node.GetNumber(SwiftProp.StrokeMiterLimit) is double miter) { shape.StrokeMiterLimit = miter; }
-        if (node.GetShapeAspect(SwiftProp.Aspect) is Stretch aspect) { shape.Aspect = aspect; }
+        if (node.GetNumber(HostProp.StrokeWidth) is double thickness) { shape.StrokeThickness = thickness; }
+        if (node.GetDoubleCollection(HostProp.StrokeDashPattern) is DoubleCollection dashes) { shape.StrokeDashArray = dashes; }
+        if (node.GetNumber(HostProp.StrokeDashOffset) is double dashOffset) { shape.StrokeDashOffset = dashOffset; }
+        if (node.GetPenLineCap(HostProp.StrokeLineCap) is PenLineCap cap) { shape.StrokeLineCap = cap; }
+        if (node.GetPenLineJoin(HostProp.StrokeLineJoin) is PenLineJoin join) { shape.StrokeLineJoin = join; }
+        if (node.GetNumber(HostProp.StrokeMiterLimit) is double miter) { shape.StrokeMiterLimit = miter; }
+        if (node.GetShapeAspect(HostProp.Aspect) is Stretch aspect) { shape.Aspect = aspect; }
 
         // The one transform, on the geometry the shape makes - every shape is
         // built as a subclass whose GetPath() runs it through this matrix.
-        if (node.GetGeometryTransform(SwiftProp.RenderTransform) is Matrix3x2 turned)
+        if (node.GetGeometryTransform(HostProp.RenderTransform) is Matrix3x2 turned)
         {
             shape.SetValue(SwiftShapes.GeometryTransformProperty, turned);
         }
@@ -2955,14 +2955,14 @@ public sealed class StateUIRenderer
     /// A rectangle, whose corners round by one radius or by four - MAUI's
     /// RoundRectangle, which a radius of nought draws square.
     /// </summary>
-    private SwiftRoundRectangle ReconcileRectangle(SwiftNode node, View? existing)
+    private SwiftRoundRectangle ReconcileRectangle(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not SwiftRoundRectangle rectangle)
         {
             rectangle = new SwiftRoundRectangle();
         }
 
-        if (node.GetCornerRadius(SwiftProp.CornerRadius) is CornerRadius radius) { rectangle.CornerRadius = radius; }
+        if (node.GetCornerRadius(HostProp.CornerRadius) is CornerRadius radius) { rectangle.CornerRadius = radius; }
 
         ApplyShape(node, rectangle);
         ApplyView(node, rectangle);
@@ -2971,7 +2971,7 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>An oval filling the room it is given.</summary>
-    private SwiftEllipse ReconcileEllipse(SwiftNode node, View? existing)
+    private SwiftEllipse ReconcileEllipse(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not SwiftEllipse ellipse)
         {
@@ -2985,17 +2985,17 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A straight line between two points.</summary>
-    private SwiftLine ReconcileLine(SwiftNode node, View? existing)
+    private SwiftLine ReconcileLine(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not SwiftLine line)
         {
             line = new SwiftLine();
         }
 
-        if (node.GetNumber(SwiftProp.X1) is double x1) { line.X1 = x1; }
-        if (node.GetNumber(SwiftProp.Y1) is double y1) { line.Y1 = y1; }
-        if (node.GetNumber(SwiftProp.X2) is double x2) { line.X2 = x2; }
-        if (node.GetNumber(SwiftProp.Y2) is double y2) { line.Y2 = y2; }
+        if (node.GetNumber(HostProp.X1) is double x1) { line.X1 = x1; }
+        if (node.GetNumber(HostProp.Y1) is double y1) { line.Y1 = y1; }
+        if (node.GetNumber(HostProp.X2) is double x2) { line.X2 = x2; }
+        if (node.GetNumber(HostProp.Y2) is double y2) { line.Y2 = y2; }
 
         ApplyShape(node, line);
         ApplyView(node, line);
@@ -3004,14 +3004,14 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>An outline written in SVG path syntax.</summary>
-    private SwiftPath ReconcilePath(SwiftNode node, View? existing)
+    private SwiftPath ReconcilePath(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not SwiftPath path)
         {
             path = new SwiftPath();
         }
 
-        if (node.GetGeometry(SwiftProp.Data) is Geometry data) { path.Data = data; }
+        if (node.GetGeometry(HostProp.Data) is Geometry data) { path.Data = data; }
 
         ApplyShape(node, path);
         ApplyView(node, path);
@@ -3020,15 +3020,15 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A closed outline through a list of points.</summary>
-    private SwiftPolygon ReconcilePolygon(SwiftNode node, View? existing)
+    private SwiftPolygon ReconcilePolygon(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not SwiftPolygon polygon)
         {
             polygon = new SwiftPolygon();
         }
 
-        if (node.GetPoints(SwiftProp.Points) is PointCollection points) { polygon.Points = points; }
-        if (node.GetFillRule(SwiftProp.FillRule) is FillRule rule) { polygon.FillRule = rule; }
+        if (node.GetPoints(HostProp.Points) is PointCollection points) { polygon.Points = points; }
+        if (node.GetFillRule(HostProp.FillRule) is FillRule rule) { polygon.FillRule = rule; }
 
         ApplyShape(node, polygon);
         ApplyView(node, polygon);
@@ -3037,15 +3037,15 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>The same list, left open.</summary>
-    private SwiftPolyline ReconcilePolyline(SwiftNode node, View? existing)
+    private SwiftPolyline ReconcilePolyline(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not SwiftPolyline polyline)
         {
             polyline = new SwiftPolyline();
         }
 
-        if (node.GetPoints(SwiftProp.Points) is PointCollection points) { polyline.Points = points; }
-        if (node.GetFillRule(SwiftProp.FillRule) is FillRule rule) { polyline.FillRule = rule; }
+        if (node.GetPoints(HostProp.Points) is PointCollection points) { polyline.Points = points; }
+        if (node.GetFillRule(HostProp.FillRule) is FillRule rule) { polyline.FillRule = rule; }
 
         ApplyShape(node, polyline);
         ApplyView(node, polyline);
@@ -3061,7 +3061,7 @@ public sealed class StateUIRenderer
     /// the message only carries one when it differs - and the view is told to
     /// redraw, which nothing else would do for it.
     /// </remarks>
-    private GraphicsView ReconcileCanvas(SwiftNode node, View? existing)
+    private GraphicsView ReconcileCanvas(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not GraphicsView graphics)
         {
@@ -3070,12 +3070,12 @@ public sealed class StateUIRenderer
             // Subscribed where the view is made, once, and reading the handler
             // id off the view when the touch arrives - the rule every event
             // here follows.
-            graphics.StartInteraction += (_, e) => Raise(graphics, SwiftEvent.Pressed, At(e));
-            graphics.DragInteraction += (_, e) => Raise(graphics, SwiftEvent.Dragged, At(e));
-            graphics.EndInteraction += (_, e) => Raise(graphics, SwiftEvent.Released, At(e));
+            graphics.StartInteraction += (_, e) => Raise(graphics, HostEvent.Pressed, At(e));
+            graphics.DragInteraction += (_, e) => Raise(graphics, HostEvent.Dragged, At(e));
+            graphics.EndInteraction += (_, e) => Raise(graphics, HostEvent.Released, At(e));
         }
 
-        if (node.GetDrawable(SwiftProp.Drawable) is IDrawable drawable)
+        if (node.GetDrawable(HostProp.Drawable) is IDrawable drawable)
         {
             graphics.Drawable = drawable;
             graphics.Invalidate();
@@ -3095,8 +3095,8 @@ public sealed class StateUIRenderer
     /// drawing surface acts on. A report with none is left empty, and the Swift
     /// side drops a payload it cannot read rather than inventing a point.
     /// </remarks>
-    private static SwiftWireValue[] At(TouchEventArgs e) =>
-        e.Touches is [PointF point, ..] ? [SwiftWireValue.Of(point.X, point.Y)] : [];
+    private static HostValue[] At(TouchEventArgs e) =>
+        e.Touches is [PointF point, ..] ? [HostValue.Of(point.X, point.Y)] : [];
 
     /// <summary>
     /// A template that shows the view it is handed, rather than building one.
@@ -3122,7 +3122,7 @@ public sealed class StateUIRenderer
     /// wrapper's leaving is recognized, there being no removal list to name
     /// it in.
     /// </summary>
-    private static bool Absent(SwiftNode node, string key) =>
+    private static bool Absent(HostPatch node, string key) =>
         node.Children?.Any(child => child.Key == key) != true;
 
     /// <summary>
@@ -3130,13 +3130,13 @@ public sealed class StateUIRenderer
     /// that arrives without its child keeps the view already there: an unchanged
     /// slot need not be repeated, the rule every patch follows.
     /// </summary>
-    private View? Slot(View? existing, SwiftNode node)
+    private View? Slot(View? existing, HostPatch node)
     {
-        return node.Children is [SwiftNode content, ..] ? Reconcile(existing, content) : existing;
+        return node.Children is [HostPatch content, ..] ? Reconcile(existing, content) : existing;
     }
 
     /// <summary>The row of dots under a run of cards. MAUI: IndicatorView.</summary>
-    private IndicatorView ReconcilePositionIndicator(SwiftNode node, View? existing)
+    private IndicatorView ReconcilePositionIndicator(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not IndicatorView indicator)
         {
@@ -3163,14 +3163,14 @@ public sealed class StateUIRenderer
             ApplyChildren(dots, node);
         }
 
-        if (node.GetInt(SwiftProp.Count) is int count) { indicator.Count = count; }
-        if (node.GetInt(SwiftProp.Position) is int position) { indicator.Position = position; }
-        node.SetColor(SwiftProp.IndicatorColor, indicator, IndicatorView.IndicatorColorProperty);
-        node.SetColor(SwiftProp.SelectedIndicatorColor, indicator, IndicatorView.SelectedIndicatorColorProperty);
-        if (node.GetNumber(SwiftProp.IndicatorSize) is double size) { indicator.IndicatorSize = size; }
-        if (node.GetInt(SwiftProp.MaximumVisible) is int maximum) { indicator.MaximumVisible = maximum; }
-        if (node.GetIndicatorShape(SwiftProp.IndicatorsShape) is IndicatorShape shape) { indicator.IndicatorsShape = shape; }
-        if (node.GetBool(SwiftProp.HideSingle) is bool hide) { indicator.HideSingle = hide; }
+        if (node.GetInt(HostProp.Count) is int count) { indicator.Count = count; }
+        if (node.GetInt(HostProp.Position) is int position) { indicator.Position = position; }
+        node.SetColor(HostProp.IndicatorColor, indicator, IndicatorView.IndicatorColorProperty);
+        node.SetColor(HostProp.SelectedIndicatorColor, indicator, IndicatorView.SelectedIndicatorColorProperty);
+        if (node.GetNumber(HostProp.IndicatorSize) is double size) { indicator.IndicatorSize = size; }
+        if (node.GetInt(HostProp.MaximumVisible) is int maximum) { indicator.MaximumVisible = maximum; }
+        if (node.GetIndicatorShape(HostProp.IndicatorsShape) is IndicatorShape shape) { indicator.IndicatorsShape = shape; }
+        if (node.GetBool(HostProp.HideSingle) is bool hide) { indicator.HideSingle = hide; }
 
         ApplyView(node, indicator);
 
@@ -3181,7 +3181,7 @@ public sealed class StateUIRenderer
     /// A TimePicker. Its time is a <c>TimeSpan</c> - a length since midnight -
     /// which is what the three integers Swift sends describe.
     /// </summary>
-    private TimePicker ReconcileTimePicker(SwiftNode node, View? existing)
+    private TimePicker ReconcileTimePicker(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not TimePicker picker)
         {
@@ -3190,19 +3190,19 @@ public sealed class StateUIRenderer
             picker.TimeSelected += (sender, e) =>
             {
                 if (e.NewTime is TimeSpan time) { Reported(sender, TimePicker.TimeProperty, [time.Hours, time.Minutes, time.Seconds]); }
-                Raise(sender, SwiftEvent.TimeChanged, Clock(e.NewTime));
+                Raise(sender, HostEvent.TimeChanged, Clock(e.NewTime));
             };
             // Opening and closing, which the platform does as well as the
             // reader - a tap outside closes it and nothing on this side asked.
-            picker.Opened += (sender, _) => Raise(sender, SwiftEvent.Opened);
-            picker.Closed += (sender, _) => Raise(sender, SwiftEvent.Closed);
+            picker.Opened += (sender, _) => Raise(sender, HostEvent.Opened);
+            picker.Closed += (sender, _) => Raise(sender, HostEvent.Closed);
         }
 
-        if (node.GetTime(SwiftProp.Time) is TimeSpan time) { picker.Time = time; }
-        if (node.GetBool(SwiftProp.IsOpen) is bool timeOpen) { picker.IsOpen = timeOpen; }
-        if (node.GetString(SwiftProp.Format) is string format) { picker.Format = format; }
-        node.SetColor(SwiftProp.TextColor, picker, TimePicker.TextColorProperty);
-        if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
+        if (node.GetTime(HostProp.Time) is TimeSpan time) { picker.Time = time; }
+        if (node.GetBool(HostProp.IsOpen) is bool timeOpen) { picker.IsOpen = timeOpen; }
+        if (node.GetString(HostProp.Format) is string format) { picker.Format = format; }
+        node.SetColor(HostProp.TextColor, picker, TimePicker.TextColorProperty);
+        if (node.GetNumber(HostProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
 
         ApplyFont(node, picker);
         ApplyView(node, picker);
@@ -3211,7 +3211,7 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A Switch.</summary>
-    private Switch ReconcileSwitch(SwiftNode node, View? existing)
+    private Switch ReconcileSwitch(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not Switch control)
         {
@@ -3221,11 +3221,11 @@ public sealed class StateUIRenderer
             control.Toggled += (sender, e) =>
             {
                 Reported(sender, Switch.IsToggledProperty, e.Value ? 1 : 0);
-                Raise(sender, SwiftEvent.Toggled, e.Value);
+                Raise(sender, HostEvent.Toggled, e.Value);
             };
         }
 
-        if (node.GetBool(SwiftProp.IsOn) is bool isToggled) { control.IsToggled = isToggled; }
+        if (node.GetBool(HostProp.IsOn) is bool isToggled) { control.IsToggled = isToggled; }
 
         ApplyView(node, control);
 
@@ -3233,7 +3233,7 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A CheckBox.</summary>
-    private CheckBox ReconcileCheckBox(SwiftNode node, View? existing)
+    private CheckBox ReconcileCheckBox(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not CheckBox box)
         {
@@ -3244,11 +3244,11 @@ public sealed class StateUIRenderer
             box.CheckedChanged += (sender, e) =>
             {
                 Reported(sender, CheckBox.IsCheckedProperty, e.Value ? 1 : 0);
-                Raise(sender, SwiftEvent.Toggled, e.Value);
+                Raise(sender, HostEvent.Toggled, e.Value);
             };
         }
 
-        if (node.GetBool(SwiftProp.IsOn) is bool isChecked) { box.IsChecked = isChecked; }
+        if (node.GetBool(HostProp.IsOn) is bool isChecked) { box.IsChecked = isChecked; }
 
         ApplyView(node, box);
 
@@ -3260,7 +3260,7 @@ public sealed class StateUIRenderer
     /// so the false arrives on the button that lost, with the id that button was
     /// given.
     /// </summary>
-    private RadioButton ReconcileRadioButton(SwiftNode node, View? existing)
+    private RadioButton ReconcileRadioButton(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not RadioButton button)
         {
@@ -3269,7 +3269,7 @@ public sealed class StateUIRenderer
             button.CheckedChanged += (sender, e) =>
             {
                 Reported(sender, RadioButton.IsCheckedProperty, e.Value ? 1 : 0);
-                Raise(sender, SwiftEvent.Toggled, e.Value);
+                Raise(sender, HostEvent.Toggled, e.Value);
             };
         }
 
@@ -3278,16 +3278,16 @@ public sealed class StateUIRenderer
         // group this is.
         // A NAME, riding the session's dictionary - a group is written by an
         // author and repeats across a tree, which is what a name is here.
-        if (node.GetName(SwiftProp.GroupName) is string group) { button.GroupName = group; }
-        if (node.GetString(SwiftProp.Text) is string text) { button.Content = text; }
-        if (node.GetBool(SwiftProp.IsOn) is bool isChecked) { button.IsChecked = isChecked; }
-        node.SetColor(SwiftProp.TextColor, button, RadioButton.TextColorProperty);
-        if (node.GetNumber(SwiftProp.CharacterSpacing) is double spacing) { button.CharacterSpacing = spacing; }
-        if (node.GetTextTransform(SwiftProp.TextCase) is TextTransform buttonCase) { button.TextTransform = buttonCase; }
-        node.SetColor(SwiftProp.BorderColor, button, RadioButton.BorderColorProperty);
-        if (node.GetNumber(SwiftProp.BorderWidth) is double borderWidth) { button.BorderWidth = borderWidth; }
-        if (node.GetInt(SwiftProp.CornerRadius) is int cornerRadius) { button.CornerRadius = cornerRadius; }
-        if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { button.Padding = padding; }
+        if (node.GetName(HostProp.GroupName) is string group) { button.GroupName = group; }
+        if (node.GetString(HostProp.Text) is string text) { button.Content = text; }
+        if (node.GetBool(HostProp.IsOn) is bool isChecked) { button.IsChecked = isChecked; }
+        node.SetColor(HostProp.TextColor, button, RadioButton.TextColorProperty);
+        if (node.GetNumber(HostProp.CharacterSpacing) is double spacing) { button.CharacterSpacing = spacing; }
+        if (node.GetTextTransform(HostProp.TextCase) is TextTransform buttonCase) { button.TextTransform = buttonCase; }
+        node.SetColor(HostProp.BorderColor, button, RadioButton.BorderColorProperty);
+        if (node.GetNumber(HostProp.BorderWidth) is double borderWidth) { button.BorderWidth = borderWidth; }
+        if (node.GetInt(HostProp.CornerRadius) is int cornerRadius) { button.CornerRadius = cornerRadius; }
+        if (node.GetThickness(HostProp.Padding) is Thickness padding) { button.Padding = padding; }
 
         ApplyFont(node, button);
         ApplyView(node, button);
@@ -3299,7 +3299,7 @@ public sealed class StateUIRenderer
     /// A Slider. Maximum, then Minimum, then Value - MAUI clamps as it goes, so
     /// the range has to be right before the value arrives.
     /// </summary>
-    private Slider ReconcileSlider(SwiftNode node, View? existing)
+    private Slider ReconcileSlider(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not Slider slider)
         {
@@ -3310,18 +3310,18 @@ public sealed class StateUIRenderer
             slider.ValueChanged += (sender, e) =>
             {
                 Moved(sender, Slider.ValueProperty, e.NewValue);
-                Raise(sender, SwiftEvent.ValueChanged, e.NewValue);
+                Raise(sender, HostEvent.ValueChanged, e.NewValue);
             };
 
-            slider.DragStarted += (sender, _) => Raise(sender, SwiftEvent.DragStarted);
-            slider.DragCompleted += (sender, _) => Raise(sender, SwiftEvent.DragCompleted);
+            slider.DragStarted += (sender, _) => Raise(sender, HostEvent.DragStarted);
+            slider.DragCompleted += (sender, _) => Raise(sender, HostEvent.DragCompleted);
         }
 
         // Maximum, then Minimum, then Value: MAUI clamps a value into the range
         // as it is set, so the range has to be right before the value goes in.
-        if (node.GetNumber(SwiftProp.Maximum) is double maximum) { slider.Maximum = maximum; }
-        if (node.GetNumber(SwiftProp.Minimum) is double minimum) { slider.Minimum = minimum; }
-        if (node.GetNumber(SwiftProp.Value) is double value) { slider.Value = value; }
+        if (node.GetNumber(HostProp.Maximum) is double maximum) { slider.Maximum = maximum; }
+        if (node.GetNumber(HostProp.Minimum) is double minimum) { slider.Minimum = minimum; }
+        if (node.GetNumber(HostProp.Value) is double value) { slider.Value = value; }
 
 
         ApplyView(node, slider);
@@ -3333,7 +3333,7 @@ public sealed class StateUIRenderer
     /// A Stepper. The range goes in before the value, for the reason a Slider's
     /// does: MAUI clamps what is outside it.
     /// </summary>
-    private Stepper ReconcileStepper(SwiftNode node, View? existing)
+    private Stepper ReconcileStepper(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not Stepper stepper)
         {
@@ -3343,14 +3343,14 @@ public sealed class StateUIRenderer
             stepper.ValueChanged += (sender, e) =>
             {
                 Moved(sender, Stepper.ValueProperty, e.NewValue);
-                Raise(sender, SwiftEvent.ValueChanged, e.NewValue);
+                Raise(sender, HostEvent.ValueChanged, e.NewValue);
             };
         }
 
-        if (node.GetNumber(SwiftProp.Maximum) is double maximum) { stepper.Maximum = maximum; }
-        if (node.GetNumber(SwiftProp.Minimum) is double minimum) { stepper.Minimum = minimum; }
-        if (node.GetNumber(SwiftProp.Step) is double increment) { stepper.Increment = increment; }
-        if (node.GetNumber(SwiftProp.Value) is double value) { stepper.Value = value; }
+        if (node.GetNumber(HostProp.Maximum) is double maximum) { stepper.Maximum = maximum; }
+        if (node.GetNumber(HostProp.Minimum) is double minimum) { stepper.Minimum = minimum; }
+        if (node.GetNumber(HostProp.Step) is double increment) { stepper.Increment = increment; }
+        if (node.GetNumber(HostProp.Value) is double value) { stepper.Value = value; }
 
         ApplyView(node, stepper);
 
@@ -3361,23 +3361,23 @@ public sealed class StateUIRenderer
     /// A SearchBar. Assigning <c>Text</c> raises <c>TextChanged</c>, which the
     /// <c>_rendering</c> guard swallows - the same story as an Entry's.
     /// </summary>
-    private SearchBar ReconcileSearchField(SwiftNode node, View? existing)
+    private SearchBar ReconcileSearchField(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not SearchBar search)
         {
             search = new SearchBar();
 
             search.TextChanged += (sender, e) => Typed(sender, e.NewTextValue);
-            search.SearchButtonPressed += (sender, _) => Raise(sender, SwiftEvent.Submitted);
+            search.SearchButtonPressed += (sender, _) => Raise(sender, HostEvent.Submitted);
         }
 
         ApplyInputView(node, search);
-        node.SetColor(SwiftProp.TextColor, search, SearchBar.TextColorProperty);
-        if (node.GetNumber(SwiftProp.CharacterSpacing) is double characterSpacing) { search.CharacterSpacing = characterSpacing; }
-        if (node.GetTextTransform(SwiftProp.TextCase) is TextTransform searchCase) { search.TextTransform = searchCase; }
-        if (node.GetReturnType(SwiftProp.ReturnKey) is ReturnType returnType) { search.ReturnType = returnType; }
-        if (node.GetTextAlignment(SwiftProp.HorizontalTextAlignment) is TextAlignment horizontal) { search.HorizontalTextAlignment = horizontal; }
-        if (node.GetTextAlignment(SwiftProp.VerticalTextAlignment) is TextAlignment vertical) { search.VerticalTextAlignment = vertical; }
+        node.SetColor(HostProp.TextColor, search, SearchBar.TextColorProperty);
+        if (node.GetNumber(HostProp.CharacterSpacing) is double characterSpacing) { search.CharacterSpacing = characterSpacing; }
+        if (node.GetTextTransform(HostProp.TextCase) is TextTransform searchCase) { search.TextTransform = searchCase; }
+        if (node.GetReturnType(HostProp.ReturnKey) is ReturnType returnType) { search.ReturnType = returnType; }
+        if (node.GetTextAlignment(HostProp.HorizontalTextAlignment) is TextAlignment horizontal) { search.HorizontalTextAlignment = horizontal; }
+        if (node.GetTextAlignment(HostProp.VerticalTextAlignment) is TextAlignment vertical) { search.VerticalTextAlignment = vertical; }
 
         ApplyFont(node, search);
         ApplyView(node, search);
@@ -3386,14 +3386,14 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>An ActivityIndicator: the spinner, and whether it spins.</summary>
-    private ActivityIndicator ReconcileActivityIndicator(SwiftNode node, View? existing)
+    private ActivityIndicator ReconcileActivityIndicator(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not ActivityIndicator indicator)
         {
             indicator = new ActivityIndicator();
         }
 
-        if (node.GetBool(SwiftProp.IsRunning) is bool isRunning) { indicator.IsRunning = isRunning; }
+        if (node.GetBool(HostProp.IsRunning) is bool isRunning) { indicator.IsRunning = isRunning; }
 
         ApplyView(node, indicator);
 
@@ -3401,14 +3401,14 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A ProgressBar: how far along, from 0 to 1.</summary>
-    private ProgressBar ReconcileProgressBar(SwiftNode node, View? existing)
+    private ProgressBar ReconcileProgressBar(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not ProgressBar bar)
         {
             bar = new ProgressBar();
         }
 
-        if (node.GetNumber(SwiftProp.Progress) is double progress) { bar.Progress = progress; }
+        if (node.GetNumber(HostProp.Progress) is double progress) { bar.Progress = progress; }
 
         ApplyView(node, bar);
 
@@ -3452,7 +3452,7 @@ public sealed class StateUIRenderer
             _cycle.Typed(typed, InputView.TextProperty, text ?? "");
         }
 
-        Raise(sender, SwiftEvent.TextChanged, text ?? "");
+        Raise(sender, HostEvent.TextChanged, text ?? "");
     }
 
     /// <summary>
@@ -3465,25 +3465,25 @@ public sealed class StateUIRenderer
     /// of these on the derived classes, but each redeclaration is the SAME
     /// BindableProperty instance, so naming InputView's reaches all three.
     /// </remarks>
-    private static void ApplyInputView(SwiftNode node, InputView view)
+    private static void ApplyInputView(HostPatch node, InputView view)
     {
         // Text arrives only when it actually changed, so a field the reader is
         // typing in is left alone - which is what keeps the caret where it is.
-        if (node.GetString(SwiftProp.Text) is string text) { view.Text = text; }
-        if (node.GetString(SwiftProp.Placeholder) is string placeholder) { view.Placeholder = placeholder; }
-        node.SetColor(SwiftProp.PlaceholderColor, view, InputView.PlaceholderColorProperty);
-        if (node.GetBool(SwiftProp.IsReadOnly) is bool isReadOnly) { view.IsReadOnly = isReadOnly; }
-        if (node.GetInt(SwiftProp.MaximumLength) is int maxLength) { view.SetValue(MaxLengthProperty, maxLength); }
-        if (node.GetKeyboard(SwiftProp.InputPurpose) is Keyboard keyboard) { view.Keyboard = keyboard; }
-        if (node.GetBool(SwiftProp.IsSpellCheckEnabled) is bool spelling) { view.IsSpellCheckEnabled = spelling; }
-        if (node.GetBool(SwiftProp.IsTextPredictionEnabled) is bool predicting) { view.IsTextPredictionEnabled = predicting; }
+        if (node.GetString(HostProp.Text) is string text) { view.Text = text; }
+        if (node.GetString(HostProp.Placeholder) is string placeholder) { view.Placeholder = placeholder; }
+        node.SetColor(HostProp.PlaceholderColor, view, InputView.PlaceholderColorProperty);
+        if (node.GetBool(HostProp.IsReadOnly) is bool isReadOnly) { view.IsReadOnly = isReadOnly; }
+        if (node.GetInt(HostProp.MaximumLength) is int maxLength) { view.SetValue(MaxLengthProperty, maxLength); }
+        if (node.GetKeyboard(HostProp.InputPurpose) is Keyboard keyboard) { view.Keyboard = keyboard; }
+        if (node.GetBool(HostProp.IsSpellCheckEnabled) is bool spelling) { view.IsSpellCheckEnabled = spelling; }
+        if (node.GetBool(HostProp.IsTextPredictionEnabled) is bool predicting) { view.IsTextPredictionEnabled = predicting; }
 
         // The caret and the selection AFTER the text: MAUI clamps both to what
         // the field is holding, so a caret written before the text arrives is
         // clamped against the old value.
-        if (node.GetInt(SwiftProp.CursorPosition) is int cursor) { view.CursorPosition = cursor; }
+        if (node.GetInt(HostProp.CursorPosition) is int cursor) { view.CursorPosition = cursor; }
 
-        if (node.GetInt(SwiftProp.SelectionLength) is int selection)
+        if (node.GetInt(HostProp.SelectionLength) is int selection)
         {
             view.SelectionLength = selection;
 #if WINDOWS
@@ -3503,10 +3503,10 @@ public sealed class StateUIRenderer
     /// declared on LayoutProperties on the Swift side lands here once, for the
     /// stacks, the Grid, the AbsoluteLayout and the FlexLayout alike.
     /// </remarks>
-    private static void ApplyLayout(SwiftNode node, Layout layout)
+    private static void ApplyLayout(HostPatch node, Layout layout)
     {
-        if (node.GetSafeAreaEdges(SwiftProp.AvoidsSafeArea) is SafeAreaEdges safeArea) { layout.SafeAreaEdges = safeArea; }
-        if (node.GetBool(SwiftProp.ClipsContent) is bool clipped) { layout.IsClippedToBounds = clipped; }
+        if (node.GetSafeAreaEdges(HostProp.AvoidsSafeArea) is SafeAreaEdges safeArea) { layout.SafeAreaEdges = safeArea; }
+        if (node.GetBool(HostProp.ClipsContent) is bool clipped) { layout.IsClippedToBounds = clipped; }
 
 #if WINDOWS
         // WINDOWS READS THE CASCADE NOWHERE, so it is answered here - each
@@ -3521,18 +3521,18 @@ public sealed class StateUIRenderer
     /// A Grid. Where each child sits is an attached property on the child, read
     /// in <see cref="ApplyView"/>.
     /// </summary>
-    private Grid ReconcileGrid(SwiftNode node, View? existing)
+    private Grid ReconcileGrid(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not Grid grid)
         {
             grid = new TravellingLayouts.Rows { Walker = _walker };
         }
 
-        if (node.GetRowDefinitions(SwiftProp.Rows) is RowDefinitionCollection rows) { grid.RowDefinitions = rows; }
-        if (node.GetColumnDefinitions(SwiftProp.Columns) is ColumnDefinitionCollection columns) { grid.ColumnDefinitions = columns; }
-        if (node.GetNumber(SwiftProp.RowSpacing) is double rowSpacing) { grid.RowSpacing = rowSpacing; }
-        if (node.GetNumber(SwiftProp.ColumnSpacing) is double columnSpacing) { grid.ColumnSpacing = columnSpacing; }
-        if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { grid.Padding = padding; }
+        if (node.GetRowDefinitions(HostProp.Rows) is RowDefinitionCollection rows) { grid.RowDefinitions = rows; }
+        if (node.GetColumnDefinitions(HostProp.Columns) is ColumnDefinitionCollection columns) { grid.ColumnDefinitions = columns; }
+        if (node.GetNumber(HostProp.RowSpacing) is double rowSpacing) { grid.RowSpacing = rowSpacing; }
+        if (node.GetNumber(HostProp.ColumnSpacing) is double columnSpacing) { grid.ColumnSpacing = columnSpacing; }
+        if (node.GetThickness(HostProp.Padding) is Thickness padding) { grid.Padding = padding; }
         ApplyLayout(node, grid);
 
         ApplyView(node, grid);
@@ -3546,15 +3546,15 @@ public sealed class StateUIRenderer
     /// A vertical or horizontal stack. One method for both: the difference is
     /// the MAUI type, and nothing else about them differs.
     /// </summary>
-    private T ReconcileStack<T>(SwiftNode node, View? existing, Func<T> make) where T : StackBase
+    private T ReconcileStack<T>(HostPatch node, View? existing, Func<T> make) where T : StackBase
     {
         if (Reuse(existing, node) is not T stack)
         {
             stack = make();
         }
 
-        if (node.GetNumber(SwiftProp.Spacing) is double spacing) { stack.Spacing = spacing; }
-        if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { stack.Padding = padding; }
+        if (node.GetNumber(HostProp.Spacing) is double spacing) { stack.Spacing = spacing; }
+        if (node.GetThickness(HostProp.Padding) is Thickness padding) { stack.Padding = padding; }
         ApplyLayout(node, stack);
 
         ApplyView(node, stack);
@@ -3569,14 +3569,14 @@ public sealed class StateUIRenderer
     /// child, read in <see cref="ApplyView"/> - the layout itself has nothing of
     /// its own but a Padding.
     /// </summary>
-    private AbsoluteLayout ReconcileAbsoluteLayout(SwiftNode node, View? existing)
+    private AbsoluteLayout ReconcileAbsoluteLayout(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not AbsoluteLayout layout)
         {
             layout = new TravellingLayouts.Placed { Walker = _walker };
         }
 
-        if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { layout.Padding = padding; }
+        if (node.GetThickness(HostProp.Padding) is Thickness padding) { layout.Padding = padding; }
         ApplyLayout(node, layout);
 
         ApplyView(node, layout);
@@ -3592,7 +3592,7 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>A ScrollView, and whatever has to go in its single Content.</summary>
-    private ScrollView ReconcileScrollView(SwiftNode node, View? existing)
+    private ScrollView ReconcileScrollView(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not ScrollView scroll)
         {
@@ -3639,15 +3639,15 @@ public sealed class StateUIRenderer
 #endif
         }
 
-        if (node.GetScrollOrientation(SwiftProp.Orientation) is ScrollOrientation orientation) { scroll.Orientation = orientation; }
-        if (node.GetThickness(SwiftProp.Padding) is Thickness padding) { scroll.Padding = padding; }
+        if (node.GetScrollOrientation(HostProp.Orientation) is ScrollOrientation orientation) { scroll.Orientation = orientation; }
+        if (node.GetThickness(HostProp.Padding) is Thickness padding) { scroll.Padding = padding; }
 
-        if (node.GetScrollBarVisibility(SwiftProp.VerticalScrollBarVisibility) is ScrollBarVisibility down)
+        if (node.GetScrollBarVisibility(HostProp.VerticalScrollBarVisibility) is ScrollBarVisibility down)
         {
             scroll.VerticalScrollBarVisibility = down;
         }
 
-        if (node.GetScrollBarVisibility(SwiftProp.HorizontalScrollBarVisibility) is ScrollBarVisibility across)
+        if (node.GetScrollBarVisibility(HostProp.HorizontalScrollBarVisibility) is ScrollBarVisibility across)
         {
             scroll.HorizontalScrollBarVisibility = across;
         }
@@ -3657,9 +3657,9 @@ public sealed class StateUIRenderer
         // and the watcher below has to be armed before it.
         bool carried = false;
 
-        foreach (SwiftStateEntry entry in node.States ?? [])
+        foreach (HostStateBinding entry in node.States ?? [])
         {
-            carried |= entry.Key.Prop == SwiftProp.ScrollOffset;
+            carried |= entry.Key.Prop == HostProp.ScrollOffset;
         }
 
         scroll.SetValue(ScrolledProperty, carried);
@@ -3681,7 +3681,7 @@ public sealed class StateUIRenderer
     /// a wrapper that keeps appearing and disappearing. The wrapper stands for no
     /// node, which is how it is told from a stack the Swift side asked for.
     /// </remarks>
-    private void ApplyScrollContent(ScrollView scroll, SwiftNode node)
+    private void ApplyScrollContent(ScrollView scroll, HostPatch node)
     {
         if (node.Children is null)
         {
@@ -3741,7 +3741,7 @@ public sealed class StateUIRenderer
     /// all pins - bar the context-menu slot, which <see cref="ApplyView"/>
     /// reads by type and <c>ApplyPin</c> leaves alone.
     /// </remarks>
-    private View ReconcileMap(SwiftNode node, View? existing)
+    private View ReconcileMap(HostPatch node, View? existing)
     {
         // A control MAUI cannot make here draws the marker rather than taking
         // the page down with it - see CanBeMade, which is written for this one
@@ -3756,8 +3756,8 @@ public sealed class StateUIRenderer
         {
             map = new Map();
 
-            map.MapClicked += (sender, e) => Raise(sender, SwiftEvent.MapClicked,
-                SwiftWireValue.Of(e.Location.Latitude, e.Location.Longitude));
+            map.MapClicked += (sender, e) => Raise(sender, HostEvent.MapClicked,
+                HostValue.Of(e.Location.Latitude, e.Location.Longitude));
         }
 
         // Arrives once - a field that is not there did not change - and lands
@@ -3766,13 +3766,13 @@ public sealed class StateUIRenderer
         // applies it at the right moment, which is exactly what an act sent
         // as the map appears arrives too late for - measured on Mac Catalyst, where the
         // platform's own opening region overwrote it.
-        if (node.GetMapSpan(SwiftProp.Region) is Microsoft.Maui.Maps.MapSpan region) { map.MoveToRegion(region); }
+        if (node.GetMapSpan(HostProp.Region) is Microsoft.Maui.Maps.MapSpan region) { map.MoveToRegion(region); }
 
-        if (node.GetMapType(SwiftProp.MapType) is Microsoft.Maui.Maps.MapType mapType) { map.MapType = mapType; }
-        if (node.GetBool(SwiftProp.IsScrollEnabled) is bool isScrollEnabled) { map.IsScrollEnabled = isScrollEnabled; }
-        if (node.GetBool(SwiftProp.IsZoomEnabled) is bool isZoomEnabled) { map.IsZoomEnabled = isZoomEnabled; }
-        if (node.GetBool(SwiftProp.IsTrafficEnabled) is bool isTrafficEnabled) { map.IsTrafficEnabled = isTrafficEnabled; }
-        if (node.GetBool(SwiftProp.ShowsUserLocation) is bool isShowingUser) { map.IsShowingUser = isShowingUser; }
+        if (node.GetMapType(HostProp.MapType) is Microsoft.Maui.Maps.MapType mapType) { map.MapType = mapType; }
+        if (node.GetBool(HostProp.IsScrollEnabled) is bool isScrollEnabled) { map.IsScrollEnabled = isScrollEnabled; }
+        if (node.GetBool(HostProp.IsZoomEnabled) is bool isZoomEnabled) { map.IsZoomEnabled = isZoomEnabled; }
+        if (node.GetBool(HostProp.IsTrafficEnabled) is bool isTrafficEnabled) { map.IsTrafficEnabled = isTrafficEnabled; }
+        if (node.GetBool(HostProp.ShowsUserLocation) is bool isShowingUser) { map.IsShowingUser = isShowingUser; }
 
         ApplyView(node, map);
         Track(map, node);
@@ -3784,11 +3784,11 @@ public sealed class StateUIRenderer
     /// <summary>
     /// One marker on a map, kept by identity so its handlers survive a patch.
     /// </summary>
-    private Pin? ApplyPin(SwiftNode node, Pin? existing)
+    private Pin? ApplyPin(HostPatch node, Pin? existing)
     {
         // The context-menu slot travels among the children and is not a pin -
         // ApplyView already gave it to the control.
-        if (node.Type != SwiftNodeType.Pin)
+        if (node.Type != HostNodeType.Pin)
         {
             return null;
         }
@@ -3799,14 +3799,14 @@ public sealed class StateUIRenderer
 
             // Subscribed once, where the pin is created; the handler id is
             // read off the pin when the event fires, never captured here.
-            pin.MarkerClicked += (sender, _) => Raise(sender, SwiftEvent.PinClicked);
-            pin.InfoWindowClicked += (sender, _) => Raise(sender, SwiftEvent.PinDetailsClicked);
+            pin.MarkerClicked += (sender, _) => Raise(sender, HostEvent.PinClicked);
+            pin.InfoWindowClicked += (sender, _) => Raise(sender, HostEvent.PinDetailsClicked);
         }
 
-        if (node.GetString(SwiftProp.Label) is string label) { pin.Label = label; }
-        if (node.GetString(SwiftProp.Address) is string address) { pin.Address = address; }
-        if (node.GetPinType(SwiftProp.Type) is Microsoft.Maui.Controls.Maps.PinType kind) { pin.Type = kind; }
-        if (node.GetLocation(SwiftProp.Location) is Location location) { pin.Location = location; }
+        if (node.GetString(HostProp.Label) is string label) { pin.Label = label; }
+        if (node.GetString(HostProp.Address) is string address) { pin.Address = address; }
+        if (node.GetPinType(HostProp.Type) is Microsoft.Maui.Controls.Maps.PinType kind) { pin.Type = kind; }
+        if (node.GetLocation(HostProp.Location) is Location location) { pin.Location = location; }
 
         return Track(pin, node);
     }
@@ -3825,28 +3825,28 @@ public sealed class StateUIRenderer
     /// declares them - why, then where; how it ended, why, then where - and
     /// the Swift side reads them by position.
     /// </remarks>
-    private WebView ReconcileWebView(SwiftNode node, View? existing)
+    private WebView ReconcileWebView(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not WebView web)
         {
             web = new WebView();
 
-            web.Navigating += (sender, e) => Raise(sender, SwiftEvent.Navigating,
-                SwiftWireValue.OfMember((int)Member(e.NavigationEvent)),
-                SwiftWireValue.Of(e.Url ?? ""));
-            web.Navigated += (sender, e) => Raise(sender, SwiftEvent.Navigated,
-                SwiftWireValue.OfMember((int)Member(e.Result)),
-                SwiftWireValue.OfMember((int)Member(e.NavigationEvent)),
-                SwiftWireValue.Of(e.Url ?? ""));
-            web.ProcessTerminated += (sender, _) => Raise(sender, SwiftEvent.ProcessTerminated);
+            web.Navigating += (sender, e) => Raise(sender, HostEvent.Navigating,
+                HostValue.OfMember((int)Member(e.NavigationEvent)),
+                HostValue.Of(e.Url ?? ""));
+            web.Navigated += (sender, e) => Raise(sender, HostEvent.Navigated,
+                HostValue.OfMember((int)Member(e.Result)),
+                HostValue.OfMember((int)Member(e.NavigationEvent)),
+                HostValue.Of(e.Url ?? ""));
+            web.ProcessTerminated += (sender, _) => Raise(sender, HostEvent.ProcessTerminated);
         }
 
         // Before the source, so the first request already carries it.
-        if (node.GetString(SwiftProp.UserAgent) is string agent) { web.UserAgent = agent; }
+        if (node.GetString(HostProp.UserAgent) is string agent) { web.UserAgent = agent; }
 
         // Assigned only when the message carries it - a source that did not
         // change must not navigate the view again.
-        if (node.GetWebViewSource(SwiftProp.Source) is WebViewSource source) { web.Source = source; }
+        if (node.GetWebViewSource(HostProp.Source) is WebViewSource source) { web.Source = source; }
 
         ApplyView(node, web);
 
@@ -3872,17 +3872,17 @@ public sealed class StateUIRenderer
     /// a configuration. The rest of the bar keeps dragging.
     /// </para>
     /// </remarks>
-    private TitleBar ReconcileTitleBar(SwiftNode node, View? existing)
+    private TitleBar ReconcileTitleBar(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not StateUITitleBar bar)
         {
             bar = new StateUITitleBar();
         }
 
-        if (node.GetString(SwiftProp.Title) is string title) { bar.Title = title; }
-        if (node.GetString(SwiftProp.Subtitle) is string subtitle) { bar.Subtitle = subtitle; }
-        node.SetImageSource(SwiftProp.Icon, bar, TitleBar.IconProperty);
-        node.SetColor(SwiftProp.BarForegroundColor, bar, TitleBar.ForegroundColorProperty);
+        if (node.GetString(HostProp.Title) is string title) { bar.Title = title; }
+        if (node.GetString(HostProp.Subtitle) is string subtitle) { bar.Subtitle = subtitle; }
+        node.SetImageSource(HostProp.Icon, bar, TitleBar.IconProperty);
+        node.SetColor(HostProp.BarForegroundColor, bar, TitleBar.ForegroundColorProperty);
 
         ApplyView(node, bar);
         Track(bar, node);
@@ -3893,41 +3893,41 @@ public sealed class StateUIRenderer
         // a sibling slot appears or leaves - matched by key, a leading slot
         // emptying beside a surviving trailing one nulled the trailing slot
         // and left the leading view standing in the chrome.
-        HashSet<SwiftNodeType> filled = _titleBarSlots.GetOrCreateValue(bar);
+        HashSet<HostNodeType> filled = _titleBarSlots.GetOrCreateValue(bar);
 
         if (node.Arranged)
         {
-            foreach (SwiftNodeType slot in filled.Where(slot =>
+            foreach (HostNodeType slot in filled.Where(slot =>
                 node.Children?.Any(child => child.Type == slot) != true).ToList())
             {
                 switch (slot)
                 {
-                    case SwiftNodeType.LeadingContent: bar.LeadingContent = null; break;
-                    case SwiftNodeType.Content: bar.Content = null; break;
-                    case SwiftNodeType.TrailingContent: bar.TrailingContent = null; break;
+                    case HostNodeType.LeadingContent: bar.LeadingContent = null; break;
+                    case HostNodeType.Content: bar.Content = null; break;
+                    case HostNodeType.TrailingContent: bar.TrailingContent = null; break;
                 }
 
                 filled.Remove(slot);
             }
         }
 
-        foreach (SwiftNode child in node.Children ?? [])
+        foreach (HostPatch child in node.Children ?? [])
         {
             switch (child.Type)
             {
-                case SwiftNodeType.LeadingContent:
+                case HostNodeType.LeadingContent:
                     bar.LeadingContent = Slot(bar.LeadingContent as View, child);
-                    filled.Add(SwiftNodeType.LeadingContent);
+                    filled.Add(HostNodeType.LeadingContent);
                     break;
 
-                case SwiftNodeType.Content:
+                case HostNodeType.Content:
                     bar.Content = Slot(bar.Content as View, child);
-                    filled.Add(SwiftNodeType.Content);
+                    filled.Add(HostNodeType.Content);
                     break;
 
-                case SwiftNodeType.TrailingContent:
+                case HostNodeType.TrailingContent:
                     bar.TrailingContent = Slot(bar.TrailingContent as View, child);
-                    filled.Add(SwiftNodeType.TrailingContent);
+                    filled.Add(HostNodeType.TrailingContent);
                     break;
             }
         }
@@ -3952,7 +3952,7 @@ public sealed class StateUIRenderer
     /// Weak for the reason <c>_named</c> is: there is no one place a bar is
     /// dropped.
     /// </summary>
-    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<TitleBar, HashSet<SwiftNodeType>> _titleBarSlots = new();
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<TitleBar, HashSet<HostNodeType>> _titleBarSlots = new();
 
     /// <summary>
     /// A RefreshView, and the single view it refreshes.
@@ -3964,13 +3964,13 @@ public sealed class StateUIRenderer
     /// assigning it during a render does not report itself, the <c>_rendering</c>
     /// guard being the same one an Entry's Text relies on.
     /// </remarks>
-    private RefreshView ReconcileRefreshView(SwiftNode node, View? existing)
+    private RefreshView ReconcileRefreshView(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not RefreshView refresh)
         {
             refresh = new RefreshView();
 
-            refresh.Refreshing += (sender, _) => Raise(sender, SwiftEvent.RefreshRequested);
+            refresh.Refreshing += (sender, _) => Raise(sender, HostEvent.RefreshRequested);
 
             // BOTH SIDES of the flag are the state's: a pull sets it, and the
             // handler that finished clears it - MAUI raises Refreshing for
@@ -3984,8 +3984,8 @@ public sealed class StateUIRenderer
             };
         }
 
-        if (node.GetBool(SwiftProp.IsRefreshing) is bool isRefreshing) { refresh.IsRefreshing = isRefreshing; }
-        if (node.GetBool(SwiftProp.IsRefreshEnabled) is bool enabled) { refresh.IsRefreshEnabled = enabled; }
+        if (node.GetBool(HostProp.IsRefreshing) is bool isRefreshing) { refresh.IsRefreshing = isRefreshing; }
+        if (node.GetBool(HostProp.IsRefreshEnabled) is bool enabled) { refresh.IsRefreshEnabled = enabled; }
 
         ApplyView(node, refresh);
         Track(refresh, node);
@@ -4017,7 +4017,7 @@ public sealed class StateUIRenderer
     /// one item arrives as a single child and taking <c>children[0]</c> as the
     /// content would hand the view a set of buttons.
     /// </remarks>
-    private SwipeView ReconcileSwipeView(SwiftNode node, View? existing)
+    private SwipeView ReconcileSwipeView(HostPatch node, View? existing)
     {
         if (Reuse(existing, node) is not SwipeView swipe)
         {
@@ -4030,30 +4030,30 @@ public sealed class StateUIRenderer
             SwipeView made = swipe;
 
             made.SwipeStarted += (_, e) => Raise(
-                made, SwiftEvent.SwipeStarted,
-                SwiftWireValue.OfMember((int)Member(e.SwipeDirection)));
+                made, HostEvent.SwipeStarted,
+                HostValue.OfMember((int)Member(e.SwipeDirection)));
 
             made.SwipeChanging += (_, e) => Raise(
-                made, SwiftEvent.SwipeChanging,
-                SwiftWireValue.OfMember((int)Member(e.SwipeDirection)),
-                SwiftWireValue.Of(e.Offset));
+                made, HostEvent.SwipeChanging,
+                HostValue.OfMember((int)Member(e.SwipeDirection)),
+                HostValue.Of(e.Offset));
 
             made.SwipeEnded += (_, e) => Raise(
-                made, SwiftEvent.SwipeEnded,
-                SwiftWireValue.OfMember((int)Member(e.SwipeDirection)),
-                SwiftWireValue.Of(e.IsOpen));
+                made, HostEvent.SwipeEnded,
+                HostValue.OfMember((int)Member(e.SwipeDirection)),
+                HostValue.Of(e.IsOpen));
         }
 
-        if (node.GetNumber(SwiftProp.Threshold) is double threshold) { swipe.Threshold = threshold; }
+        if (node.GetNumber(HostProp.Threshold) is double threshold) { swipe.Threshold = threshold; }
 
         ApplyView(node, swipe);
         Track(swipe, node);
 
         bool held = false;
 
-        foreach (SwiftNode child in node.Children ?? [])
+        foreach (HostPatch child in node.Children ?? [])
         {
-            if (child.Type == SwiftNodeType.SwipeActions)
+            if (child.Type == HostNodeType.SwipeActions)
             {
                 ApplySwipeItems(swipe, child);
             }
@@ -4091,9 +4091,9 @@ public sealed class StateUIRenderer
     /// therefore found the way everything else is: by identity.
     /// </para>
     /// </remarks>
-    private void ApplySwipeItems(SwipeView swipe, SwiftNode node)
+    private void ApplySwipeItems(SwipeView swipe, HostPatch node)
     {
-        SwipeItems? items = node.GetSwipeSide(SwiftProp.Side) is SwiftSwipeSide side
+        SwipeItems? items = node.GetSwipeSide(HostProp.Side) is HostSwipeSide side
             ? Collection(swipe, side)
             : Held(swipe, node.Key);
 
@@ -4102,8 +4102,8 @@ public sealed class StateUIRenderer
             return;
         }
 
-        if (node.GetSwipeMode(SwiftProp.Mode) is SwipeMode mode) { items.Mode = mode; }
-        if (node.GetSwipeBehaviorOnInvoked(SwiftProp.SwipeBehaviorOnInvoked) is SwipeBehaviorOnInvoked behavior)
+        if (node.GetSwipeMode(HostProp.Mode) is SwipeMode mode) { items.Mode = mode; }
+        if (node.GetSwipeBehaviorOnInvoked(HostProp.SwipeBehaviorOnInvoked) is SwipeBehaviorOnInvoked behavior)
         {
             items.SwipeBehaviorOnInvoked = behavior;
         }
@@ -4121,14 +4121,14 @@ public sealed class StateUIRenderer
     /// <see cref="Held"/> branch instead, which is a wrong collection rather
     /// than a failure.
     /// </remarks>
-    private static SwipeItems? Collection(SwipeView swipe, SwiftSwipeSide side)
+    private static SwipeItems? Collection(SwipeView swipe, HostSwipeSide side)
     {
         return side switch
         {
-            SwiftSwipeSide.Left => swipe.LeftItems ??= [],
-            SwiftSwipeSide.Right => swipe.RightItems ??= [],
-            SwiftSwipeSide.Top => swipe.TopItems ??= [],
-            SwiftSwipeSide.Bottom => swipe.BottomItems ??= [],
+            HostSwipeSide.Left => swipe.LeftItems ??= [],
+            HostSwipeSide.Right => swipe.RightItems ??= [],
+            HostSwipeSide.Top => swipe.TopItems ??= [],
+            HostSwipeSide.Bottom => swipe.BottomItems ??= [],
             _ => null,
         };
     }
@@ -4153,39 +4153,39 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>One button in a page's navigation bar.</summary>
-    internal ToolbarItem ApplyToolbarItem(SwiftNode node, ToolbarItem? existing)
+    internal ToolbarItem ApplyToolbarItem(HostPatch node, ToolbarItem? existing)
     {
         if (Reuse(existing, node) is not ToolbarItem item)
         {
             item = new ToolbarItem();
-            item.Clicked += (sender, _) => Raise(sender, SwiftEvent.Clicked);
+            item.Clicked += (sender, _) => Raise(sender, HostEvent.Clicked);
         }
 
-        if (node.GetString(SwiftProp.Text) is string text) { item.Text = text; }
+        if (node.GetString(HostProp.Text) is string text) { item.Text = text; }
         // A TOOLBAR ITEM IS AN ELEMENT, so it carries a handle like anything
         // else - and the button in a page's bar is one of the two or three
         // things a driver needs on every page. The three a screen reader
         // hears are a VIEW's, MAUI mapping them for an IView alone.
-        if (node.GetString(SwiftProp.AccessibilityIdentifier) is string automationId) { Identify(item, automationId); }
-        node.SetImageSource(SwiftProp.Icon, item, MenuItem.IconImageSourceProperty);
-        if (node.GetToolbarItemOrder(SwiftProp.Placement) is ToolbarItemOrder order) { item.Order = order; }
-        if (node.GetInt(SwiftProp.Priority) is int priority) { item.Priority = priority; }
-        if (node.GetBool(SwiftProp.IsDestructive) is bool destructive) { item.IsDestructive = destructive; }
-        if (node.GetBool(SwiftProp.IsEnabled) is bool enabled) { item.IsEnabled = enabled; }
+        if (node.GetString(HostProp.AccessibilityIdentifier) is string automationId) { Identify(item, automationId); }
+        node.SetImageSource(HostProp.Icon, item, MenuItem.IconImageSourceProperty);
+        if (node.GetToolbarItemOrder(HostProp.Placement) is ToolbarItemOrder order) { item.Order = order; }
+        if (node.GetInt(HostProp.Priority) is int priority) { item.Priority = priority; }
+        if (node.GetBool(HostProp.IsDestructive) is bool destructive) { item.IsDestructive = destructive; }
+        if (node.GetBool(HostProp.IsEnabled) is bool enabled) { item.IsEnabled = enabled; }
 
         return Track(item, node);
     }
 
     /// <summary>One menu on the menu bar, and the entries in it.</summary>
-    internal MenuBarItem ApplyMenuBarItem(SwiftNode node, MenuBarItem? existing)
+    internal MenuBarItem ApplyMenuBarItem(HostPatch node, MenuBarItem? existing)
     {
         if (Reuse(existing, node) is not MenuBarItem menu)
         {
             menu = new MenuBarItem();
         }
 
-        if (node.GetString(SwiftProp.Text) is string text) { menu.Text = text; }
-        if (node.GetBool(SwiftProp.IsEnabled) is bool enabled) { menu.IsEnabled = enabled; }
+        if (node.GetString(HostProp.Text) is string text) { menu.Text = text; }
+        if (node.GetBool(HostProp.IsEnabled) is bool enabled) { menu.IsEnabled = enabled; }
 
         Track(menu, node);
         ApplyList(menu, node, ApplyMenuEntry);
@@ -4201,22 +4201,22 @@ public sealed class StateUIRenderer
     /// lets one list hold all three - and what makes the node's TYPE the only
     /// thing that says which is which.
     /// </remarks>
-    internal IMenuElement? ApplyMenuEntry(SwiftNode node, IMenuElement? existing)
+    internal IMenuElement? ApplyMenuEntry(HostPatch node, IMenuElement? existing)
     {
         switch (node.Type)
         {
-            case SwiftNodeType.MenuSeparator:
+            case HostNodeType.MenuSeparator:
                 return Track(Reuse(existing as MenuFlyoutSeparator, node) ?? new MenuFlyoutSeparator(), node);
 
-            case SwiftNodeType.Menu:
+            case HostNodeType.Menu:
             {
                 if (Reuse(existing as MenuFlyoutSubItem, node) is not MenuFlyoutSubItem submenu)
                 {
                     submenu = new MenuFlyoutSubItem();
                 }
 
-                if (node.GetString(SwiftProp.Text) is string caption) { submenu.Text = caption; }
-                if (node.GetBool(SwiftProp.IsEnabled) is bool open) { submenu.IsEnabled = open; }
+                if (node.GetString(HostProp.Text) is string caption) { submenu.Text = caption; }
+                if (node.GetBool(HostProp.IsEnabled) is bool open) { submenu.IsEnabled = open; }
 
                 Track(submenu, node);
                 ApplyList(submenu, node, ApplyMenuEntry);
@@ -4224,18 +4224,18 @@ public sealed class StateUIRenderer
                 return submenu;
             }
 
-            case SwiftNodeType.MenuItem:
+            case HostNodeType.MenuItem:
             {
                 if (Reuse(existing as MenuFlyoutItem, node) is not MenuFlyoutItem item)
                 {
                     item = new MenuFlyoutItem();
-                    item.Clicked += (sender, _) => Raise(sender, SwiftEvent.Clicked);
+                    item.Clicked += (sender, _) => Raise(sender, HostEvent.Clicked);
                 }
 
-                if (node.GetString(SwiftProp.Text) is string text) { item.Text = text; }
-                node.SetImageSource(SwiftProp.Icon, item, MenuItem.IconImageSourceProperty);
-                if (node.GetBool(SwiftProp.IsDestructive) is bool destructive) { item.IsDestructive = destructive; }
-                if (node.GetBool(SwiftProp.IsEnabled) is bool enabled) { item.IsEnabled = enabled; }
+                if (node.GetString(HostProp.Text) is string text) { item.Text = text; }
+                node.SetImageSource(HostProp.Icon, item, MenuItem.IconImageSourceProperty);
+                if (node.GetBool(HostProp.IsDestructive) is bool destructive) { item.IsDestructive = destructive; }
+                if (node.GetBool(HostProp.IsEnabled) is bool enabled) { item.IsEnabled = enabled; }
 
                 return Track(item, node);
             }
@@ -4246,21 +4246,21 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>One SwipeItem: a caption, a picture, a colour and something to run.</summary>
-    private SwipeItem ApplySwipeItem(SwiftNode node, SwipeItem? existing)
+    private SwipeItem ApplySwipeItem(HostPatch node, SwipeItem? existing)
     {
         if (Reuse(existing, node) is not SwipeItem item)
         {
             item = new SwipeItem();
 
-            item.Invoked += (sender, _) => Raise(sender, SwiftEvent.Clicked);
+            item.Invoked += (sender, _) => Raise(sender, HostEvent.Clicked);
         }
 
-        if (node.GetString(SwiftProp.Text) is string text) { item.Text = text; }
-        node.SetImageSource(SwiftProp.Icon, item, MenuItem.IconImageSourceProperty);
-        node.SetColor(SwiftProp.Background, item, SwipeItem.BackgroundColorProperty);
-        if (node.GetBool(SwiftProp.IsDestructive) is bool isDestructive) { item.IsDestructive = isDestructive; }
-        if (node.GetBool(SwiftProp.IsEnabled) is bool isEnabled) { item.IsEnabled = isEnabled; }
-        if (node.GetBool(SwiftProp.IsVisible) is bool isVisible) { item.IsVisible = isVisible; }
+        if (node.GetString(HostProp.Text) is string text) { item.Text = text; }
+        node.SetImageSource(HostProp.Icon, item, MenuItem.IconImageSourceProperty);
+        node.SetColor(HostProp.Background, item, SwipeItem.BackgroundColorProperty);
+        if (node.GetBool(HostProp.IsDestructive) is bool isDestructive) { item.IsDestructive = isDestructive; }
+        if (node.GetBool(HostProp.IsEnabled) is bool isEnabled) { item.IsEnabled = isEnabled; }
+        if (node.GetBool(HostProp.IsVisible) is bool isVisible) { item.IsVisible = isVisible; }
 
         return Track(item, node);
     }
@@ -4284,7 +4284,7 @@ public sealed class StateUIRenderer
     /// </param>
     private void ApplyChildren<TChild>(
         IList<TChild> children,
-        SwiftNode node,
+        HostPatch node,
         BindableObject? parent = null)
         where TChild : class
     {
@@ -4350,7 +4350,7 @@ public sealed class StateUIRenderer
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The message speaks two shapes, and <see cref="SwiftNode.Arranged"/>
+    /// The message speaks two shapes, and <see cref="HostPatch.Arranged"/>
     /// says which. A sparse message names only the children whose content
     /// changed, each matched to its item by identity - nothing else in the
     /// list is touched, which is what makes a thousand-row list cost one
@@ -4380,8 +4380,8 @@ public sealed class StateUIRenderer
     /// </param>
     internal void ApplyList<T>(
         IList<T> items,
-        SwiftNode node,
-        Func<SwiftNode, T?, T?> apply,
+        HostPatch node,
+        Func<HostPatch, T?, T?> apply,
         BindableObject? parent = null)
         where T : class
     {
@@ -4419,7 +4419,7 @@ public sealed class StateUIRenderer
         List<T>? target = node.Arranged ? new(node.Children.Count) : null;
         int slot = 0;
 
-        foreach (SwiftNode child in node.Children)
+        foreach (HostPatch child in node.Children)
         {
             T? match;
 
@@ -4638,7 +4638,7 @@ public sealed class StateUIRenderer
     /// <para>
     /// Three rows are left alone. One with no key - a spare already waiting,
     /// or a control this renderer did not build. One with no shape - see
-    /// <see cref="SwiftNode.Shape"/> - is one the Swift side says holds state
+    /// <see cref="HostPatch.Shape"/> - is one the Swift side says holds state
     /// nothing describes. And one past the pool's cap is not kept:
     /// <see cref="Settle{T}"/> removes it like a row under any other layout. A
     /// row still travelling is kept,
@@ -4652,7 +4652,7 @@ public sealed class StateUIRenderer
     /// <returns>The pool, or null when this parent does not keep one.</returns>
     private RowPool? Retire<T>(
         IList<T> items,
-        SwiftNode node,
+        HostPatch node,
         Func<T, string?> keyOf,
         BindableObject? parent)
         where T : class
@@ -4683,7 +4683,7 @@ public sealed class StateUIRenderer
 
         var named = new HashSet<string>(node.Children.Count);
 
-        foreach (SwiftNode child in node.Children)
+        foreach (HostPatch child in node.Children)
         {
             named.Add(child.Key);
         }
@@ -4919,7 +4919,7 @@ public sealed class StateUIRenderer
     /// side buy: a modifier declared on VisualElement lands here for every
     /// control, and the per-control tests do not have to repeat it.
     /// </remarks>
-    private void ApplyView(SwiftNode node, View view)
+    private void ApplyView(HostPatch node, View view)
     {
         // No style is read here, and there is nothing to read: a style is
         // resolved on the Swift side, into the properties below. What arrives is
@@ -4958,33 +4958,33 @@ public sealed class StateUIRenderer
         }
 
         // VisualElement
-        if (node.GetBool(SwiftProp.IsEnabled) is bool isEnabled) { view.IsEnabled = isEnabled; }
+        if (node.GetBool(HostProp.IsEnabled) is bool isEnabled) { view.IsEnabled = isEnabled; }
 
         // Two properties, one MAUI transparency: each is kept on the view and
         // the pair decides it, so a sparse patch or a cleared one leaves the
         // other standing. See ComposedProperties.
-        if (node.GetBool(SwiftProp.IgnoresInput) is bool ignoresInput) { view.SetValue(ComposedProperties.IgnoresInputProperty, ignoresInput); }
-        if (node.GetBool(SwiftProp.LetsInputThrough) is bool letsInputThrough) { view.SetValue(ComposedProperties.LetsInputThroughProperty, letsInputThrough); }
+        if (node.GetBool(HostProp.IgnoresInput) is bool ignoresInput) { view.SetValue(ComposedProperties.IgnoresInputProperty, ignoresInput); }
+        if (node.GetBool(HostProp.LetsInputThrough) is bool letsInputThrough) { view.SetValue(ComposedProperties.LetsInputThroughProperty, letsInputThrough); }
 
-        if (node.GetFlowDirection(SwiftProp.LayoutDirection) is FlowDirection flowDirection) { view.FlowDirection = flowDirection; }
+        if (node.GetFlowDirection(HostProp.LayoutDirection) is FlowDirection flowDirection) { view.FlowDirection = flowDirection; }
 
         // WHAT THE VIEW SAYS ABOUT ITSELF. The id is a handle nothing reads
         // out; the other three are what a screen reader says. Written through
         // SetValue because three of the four are attached properties, which is
         // where MAUI keeps everything a view can be told about accessibility.
-        if (node.GetString(SwiftProp.AccessibilityIdentifier) is string automationId) { Identify(view, automationId); }
-        if (node.GetString(SwiftProp.AccessibilityLabel) is string description) { SemanticProperties.SetDescription(view, description); }
-        if (node.GetString(SwiftProp.AccessibilityHint) is string hint) { SemanticProperties.SetHint(view, hint); }
-        if (node.GetSemanticHeadingLevel(SwiftProp.AccessibilityHeadingLevel) is SemanticHeadingLevel heading) { SemanticProperties.SetHeadingLevel(view, heading); }
+        if (node.GetString(HostProp.AccessibilityIdentifier) is string automationId) { Identify(view, automationId); }
+        if (node.GetString(HostProp.AccessibilityLabel) is string description) { SemanticProperties.SetDescription(view, description); }
+        if (node.GetString(HostProp.AccessibilityHint) is string hint) { SemanticProperties.SetHint(view, hint); }
+        if (node.GetSemanticHeadingLevel(HostProp.AccessibilityHeadingLevel) is SemanticHeadingLevel heading) { SemanticProperties.SetHeadingLevel(view, heading); }
 
         // WHAT A SCREEN READER IS NOT SHOWN. MAUI holds both as a nullable
         // bool, so an absent field is the platform's own answer rather than
         // false - which is what makes a modifier written under a condition
         // cost the property and not the view.
-        if (node.GetBool(SwiftProp.IsAccessibilityHidden) is bool hidden) { view.SetValue(ComposedProperties.IsAccessibilityHiddenProperty, hidden); }
-        if (node.GetBool(SwiftProp.AutomationExcludedWithChildren) is bool excluded) { AutomationProperties.SetExcludedWithChildren(view, excluded); }
+        if (node.GetBool(HostProp.IsAccessibilityHidden) is bool hidden) { view.SetValue(ComposedProperties.IsAccessibilityHiddenProperty, hidden); }
+        if (node.GetBool(HostProp.AutomationExcludedWithChildren) is bool excluded) { AutomationProperties.SetExcludedWithChildren(view, excluded); }
 
-        if (node.GetNumber(SwiftProp.Opacity) is double opacity)
+        if (node.GetNumber(HostProp.Opacity) is double opacity)
         {
             // Remembered as well as written: it is what a view fades BACK to
             // when it is shown again, and by then the control is showing
@@ -4995,30 +4995,30 @@ public sealed class StateUIRenderer
 
         // AFTER the opacity, because showing and hiding is a fade between the
         // two - and what it fades to is the value this message just described.
-        if (node.GetBool(SwiftProp.IsVisible) is bool isVisible)
+        if (node.GetBool(HostProp.IsVisible) is bool isVisible)
         {
             Shown(view, isVisible, Travelling(view));
         }
-        node.SetBackground(SwiftProp.Background, view);
-        node.SetColor(SwiftProp.Tint, view, ComposedProperties.TintProperty);
-        if (node.GetNumber(SwiftProp.Width) is double widthRequest) { view.WidthRequest = widthRequest; }
-        if (node.GetNumber(SwiftProp.Height) is double heightRequest) { view.HeightRequest = heightRequest; }
-        if (node.GetNumber(SwiftProp.MinimumWidth) is double minimumWidth) { view.MinimumWidthRequest = minimumWidth; }
-        if (node.GetNumber(SwiftProp.MinimumHeight) is double minimumHeight) { view.MinimumHeightRequest = minimumHeight; }
-        if (node.GetNumber(SwiftProp.MaximumWidth) is double maximumWidth) { view.MaximumWidthRequest = maximumWidth; }
-        if (node.GetNumber(SwiftProp.MaximumHeight) is double maximumHeight) { view.MaximumHeightRequest = maximumHeight; }
-        if (node.GetNumber(SwiftProp.Rotation) is double rotation) { view.Rotation = rotation; }
-        if (node.GetNumber(SwiftProp.RotationX) is double rotationX) { view.RotationX = rotationX; }
-        if (node.GetNumber(SwiftProp.RotationY) is double rotationY) { view.RotationY = rotationY; }
-        if (node.GetNumber(SwiftProp.Scale) is double scale) { view.Scale = scale; }
-        if (node.GetNumber(SwiftProp.ScaleX) is double scaleX) { view.ScaleX = scaleX; }
-        if (node.GetNumber(SwiftProp.ScaleY) is double scaleY) { view.ScaleY = scaleY; }
-        if (node.GetNumber(SwiftProp.TranslationX) is double translationX) { view.TranslationX = translationX; }
-        if (node.GetNumber(SwiftProp.TranslationY) is double translationY) { view.TranslationY = translationY; }
+        node.SetBackground(HostProp.Background, view);
+        node.SetColor(HostProp.Tint, view, ComposedProperties.TintProperty);
+        if (node.GetNumber(HostProp.Width) is double widthRequest) { view.WidthRequest = widthRequest; }
+        if (node.GetNumber(HostProp.Height) is double heightRequest) { view.HeightRequest = heightRequest; }
+        if (node.GetNumber(HostProp.MinimumWidth) is double minimumWidth) { view.MinimumWidthRequest = minimumWidth; }
+        if (node.GetNumber(HostProp.MinimumHeight) is double minimumHeight) { view.MinimumHeightRequest = minimumHeight; }
+        if (node.GetNumber(HostProp.MaximumWidth) is double maximumWidth) { view.MaximumWidthRequest = maximumWidth; }
+        if (node.GetNumber(HostProp.MaximumHeight) is double maximumHeight) { view.MaximumHeightRequest = maximumHeight; }
+        if (node.GetNumber(HostProp.Rotation) is double rotation) { view.Rotation = rotation; }
+        if (node.GetNumber(HostProp.RotationX) is double rotationX) { view.RotationX = rotationX; }
+        if (node.GetNumber(HostProp.RotationY) is double rotationY) { view.RotationY = rotationY; }
+        if (node.GetNumber(HostProp.Scale) is double scale) { view.Scale = scale; }
+        if (node.GetNumber(HostProp.ScaleX) is double scaleX) { view.ScaleX = scaleX; }
+        if (node.GetNumber(HostProp.ScaleY) is double scaleY) { view.ScaleY = scaleY; }
+        if (node.GetNumber(HostProp.TranslationX) is double translationX) { view.TranslationX = translationX; }
+        if (node.GetNumber(HostProp.TranslationY) is double translationY) { view.TranslationY = translationY; }
         bool anchored = false;
-        if (node.GetNumber(SwiftProp.PivotX) is double anchorX) { view.AnchorX = anchorX; anchored = true; }
-        if (node.GetNumber(SwiftProp.PivotY) is double anchorY) { view.AnchorY = anchorY; anchored = true; }
-        if (node.GetInt(SwiftProp.ZIndex) is int zIndex) { view.ZIndex = zIndex; }
+        if (node.GetNumber(HostProp.PivotX) is double anchorX) { view.AnchorX = anchorX; anchored = true; }
+        if (node.GetNumber(HostProp.PivotY) is double anchorY) { view.AnchorY = anchorY; anchored = true; }
+        if (node.GetInt(HostProp.ZIndex) is int zIndex) { view.ZIndex = zIndex; }
 
         if (anchored && (view.Width < 0 || view.Height < 0))
         {
@@ -5026,30 +5026,30 @@ public sealed class StateUIRenderer
         }
 
         // View
-        if (node.GetThickness(SwiftProp.Margin) is Thickness margin) { view.Margin = margin; }
-        if (node.GetLayoutOptions(SwiftProp.HorizontalAlignment) is LayoutOptions horizontal) { view.HorizontalOptions = horizontal; }
-        if (node.GetLayoutOptions(SwiftProp.VerticalAlignment) is LayoutOptions vertical) { view.VerticalOptions = vertical; }
+        if (node.GetThickness(HostProp.Margin) is Thickness margin) { view.Margin = margin; }
+        if (node.GetLayoutOptions(HostProp.HorizontalAlignment) is LayoutOptions horizontal) { view.HorizontalOptions = horizontal; }
+        if (node.GetLayoutOptions(HostProp.VerticalAlignment) is LayoutOptions vertical) { view.VerticalOptions = vertical; }
 
         // Where a view sits in a Grid. Attached properties: declared by Grid,
         // written on the child, and harmless on a view that is not in one.
-        if (node.GetInt(SwiftProp.GridRow) is int row) { Grid.SetRow(view, row); }
-        if (node.GetInt(SwiftProp.GridColumn) is int column) { Grid.SetColumn(view, column); }
-        if (node.GetInt(SwiftProp.GridRowSpan) is int rowSpan) { Grid.SetRowSpan(view, rowSpan); }
-        if (node.GetInt(SwiftProp.GridColumnSpan) is int columnSpan) { Grid.SetColumnSpan(view, columnSpan); }
+        if (node.GetInt(HostProp.GridRow) is int row) { Grid.SetRow(view, row); }
+        if (node.GetInt(HostProp.GridColumn) is int column) { Grid.SetColumn(view, column); }
+        if (node.GetInt(HostProp.GridRowSpan) is int rowSpan) { Grid.SetRowSpan(view, rowSpan); }
+        if (node.GetInt(HostProp.GridColumnSpan) is int columnSpan) { Grid.SetColumnSpan(view, columnSpan); }
 
         // The same, for the layout that asks a child where it goes: an
         // AbsoluteLayout reads a rectangle and which of its parts are fractions.
-        if (node.GetRect(SwiftProp.AbsoluteLayoutBounds) is Rect bounds) { AbsoluteLayout.SetLayoutBounds(view, bounds); }
-        if (node.GetAbsoluteLayoutFlags(SwiftProp.AbsoluteLayoutProportions) is AbsoluteLayoutFlags flags) { AbsoluteLayout.SetLayoutFlags(view, flags); }
+        if (node.GetRect(HostProp.AbsoluteLayoutBounds) is Rect bounds) { AbsoluteLayout.SetLayoutBounds(view, bounds); }
+        if (node.GetAbsoluteLayoutFlags(HostProp.AbsoluteLayoutProportions) is AbsoluteLayoutFlags flags) { AbsoluteLayout.SetLayoutFlags(view, flags); }
 
         // A menu on the view itself. Read by TYPE here rather than by whatever
         // handles this control's children, because it can arrive on ANY view -
         // see IsSlot, which is what keeps it out of every arrangement. One
         // written under an `if` that turned false is recognized the way every
         // slot's leaving is: its wrapper is absent from an arranged list.
-        foreach (SwiftNode child in node.Children ?? [])
+        foreach (HostPatch child in node.Children ?? [])
         {
-            if (child.Type == SwiftNodeType.ContextMenu)
+            if (child.Type == HostNodeType.ContextMenu)
             {
                 ApplyContextFlyout(view, child);
             }
@@ -5092,10 +5092,10 @@ public sealed class StateUIRenderer
     /// it took the mouse to move again.
     /// </para>
     /// </remarks>
-    private void ApplyVisualStates(View view, SwiftNode node)
+    private void ApplyVisualStates(View view, HostPatch node)
     {
-        List<SwiftNode> arriving = (node.Children ?? [])
-            .Where(child => child.Type == SwiftNodeType.VisualState)
+        List<HostPatch> arriving = (node.Children ?? [])
+            .Where(child => child.Type == HostNodeType.VisualState)
             .ToList();
 
         bool held = _states.TryGetValue(view, out Described? described);
@@ -5108,8 +5108,8 @@ public sealed class StateUIRenderer
 
         described ??= new Described();
 
-        List<SwiftNode> was = described.States;
-        List<SwiftNode> now = was;
+        List<HostPatch> was = described.States;
+        List<HostPatch> now = was;
 
         // Only an arranged message can say that a state has LEFT, absence from
         // the complete list being how every slot's leaving is recognized - so a
@@ -5119,7 +5119,7 @@ public sealed class StateUIRenderer
         {
             if (node.Arranged)
             {
-                Dictionary<string, SwiftNode> byKey = was.ToDictionary(state => state.Key);
+                Dictionary<string, HostPatch> byKey = was.ToDictionary(state => state.Key);
 
                 now = arriving
                     .Select(child => Merged(byKey.GetValueOrDefault(child.Key), child))
@@ -5129,7 +5129,7 @@ public sealed class StateUIRenderer
             {
                 now = [.. was];
 
-                foreach (SwiftNode child in arriving)
+                foreach (HostPatch child in arriving)
                 {
                     int at = now.FindIndex(state => state.Key == child.Key);
 
@@ -5204,12 +5204,12 @@ public sealed class StateUIRenderer
     /// <param name="node">The message about this control.</param>
     /// <param name="described">What is known about this control's states.</param>
     /// <returns>True when at least one travelled property was restated.</returns>
-    private static bool Restated(SwiftNode node, Described described)
+    private static bool Restated(HostPatch node, Described described)
     {
-        foreach (List<(SwiftKey Key, BindableProperty Property, object Value)> state
+        foreach (List<(HostPropKey Key, BindableProperty Property, object Value)> state
             in described.Travelling.Values)
         {
-            foreach ((SwiftKey key, BindableProperty property, object _) in state)
+            foreach ((HostPropKey key, BindableProperty property, object _) in state)
             {
                 if (SwiftStyles.Value(property, node, key) is not null)
                 {
@@ -5240,7 +5240,7 @@ public sealed class StateUIRenderer
     /// where that change was going, not to where it had reached.
     /// </para>
     /// </remarks>
-    private void Travel(View view, SwiftNode node, Described described)
+    private void Travel(View view, HostPatch node, Described described)
     {
         if (described.Travelling.Count == 0)
         {
@@ -5251,10 +5251,10 @@ public sealed class StateUIRenderer
         // message itself - never from the control, which by now is showing
         // whatever state the platform put it in. A property this message did
         // not name has not changed, so what was read last time still stands.
-        foreach (List<(SwiftKey Key, BindableProperty Property, object Value)> state
+        foreach (List<(HostPropKey Key, BindableProperty Property, object Value)> state
             in described.Travelling.Values)
         {
-            foreach ((SwiftKey key, BindableProperty property, object _) in state)
+            foreach ((HostPropKey key, BindableProperty property, object _) in state)
             {
                 if (SwiftStyles.Value(property, node, key) is object resting)
                 {
@@ -5280,7 +5280,7 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>What the state this control is in asks for, or nothing.</summary>
-    private static List<(SwiftKey Key, BindableProperty Property, object Value)>? Entered(
+    private static List<(HostPropKey Key, BindableProperty Property, object Value)>? Entered(
         View view, Described described) =>
         view.GetValue(StateProperty) is string name
             ? described.Travelling.GetValueOrDefault(name)
@@ -5292,16 +5292,16 @@ public sealed class StateUIRenderer
     /// </summary>
     private void Restate(View view, Described described)
     {
-        List<(SwiftKey Key, BindableProperty Property, object Value)>? entered =
+        List<(HostPropKey Key, BindableProperty Property, object Value)>? entered =
             Entered(view, described);
 
         HostMotion spec = Travelling(view);
         var settled = new HashSet<BindableProperty>();
 
-        foreach (List<(SwiftKey Key, BindableProperty Property, object Value)> state
+        foreach (List<(HostPropKey Key, BindableProperty Property, object Value)> state
             in described.Travelling.Values)
         {
-            foreach ((SwiftKey _, BindableProperty property, object _) in state)
+            foreach ((HostPropKey _, BindableProperty property, object _) in state)
             {
                 if (!settled.Add(property))
                 {
@@ -5310,7 +5310,7 @@ public sealed class StateUIRenderer
 
                 object? target = null;
 
-                foreach ((SwiftKey _, BindableProperty asked, object value) in entered ?? [])
+                foreach ((HostPropKey _, BindableProperty asked, object value) in entered ?? [])
                 {
                     if (asked == property)
                     {
@@ -5524,10 +5524,10 @@ public sealed class StateUIRenderer
     /// changes, and <see cref="Track"/>, which has already run when the states
     /// are applied, keeps the last one on the element.
     /// </remarks>
-    private static bool Announces(View view, SwiftNode node) =>
-        node.Events?.ContainsKey(SwiftEvent.VisualStateChanged)
+    private static bool Announces(View view, HostPatch node) =>
+        node.Events?.ContainsKey(HostEvent.VisualStateChanged)
             ?? (view.GetValue(ElementProperty) as RenderedElement)?
-                .Events?.ContainsKey(SwiftEvent.VisualStateChanged)
+                .Events?.ContainsKey(HostEvent.VisualStateChanged)
             ?? false;
 
     /// <summary>
@@ -5581,7 +5581,7 @@ public sealed class StateUIRenderer
     /// And the report is DEFERRED one dispatcher turn, coalesced with an armed
     /// flag. Two reasons, and the first is load-bearing: a control enters
     /// Disabled because the renderer assigned <c>IsEnabled</c>, INSIDE a
-    /// render, where <see cref="Raise(object?, SwiftEvent, byte[])"/>
+    /// render, where <see cref="Raise(object?, HostEvent, byte[])"/>
     /// answers nothing - the guard that stops the renderer reporting its own
     /// writes. Reporting from there anyway would start a handler inside a
     /// render, which is the re-entrancy <see cref="Applying"/> guards against
@@ -5597,8 +5597,8 @@ public sealed class StateUIRenderer
     /// </remarks>
     private void WatchVisualState(View view, RenderedElement element)
     {
-        if (element.Events?.ContainsKey(SwiftEvent.VisualStateChanged) != true
-            || !(element.Observed ??= []).Add(SwiftEvent.VisualStateChanged))
+        if (element.Events?.ContainsKey(HostEvent.VisualStateChanged) != true
+            || !(element.Observed ??= []).Add(HostEvent.VisualStateChanged))
         {
             return;
         }
@@ -5628,7 +5628,7 @@ public sealed class StateUIRenderer
 
                 reported = entered;
 
-                Raise(view, SwiftEvent.VisualStateChanged, entered);
+                Raise(view, HostEvent.VisualStateChanged, entered);
             });
         };
     }
@@ -5640,7 +5640,7 @@ public sealed class StateUIRenderer
     private sealed class Described
     {
         /// <summary>Complete described states, in the order they were written.</summary>
-        public List<SwiftNode> States { get; set; } = [];
+        public List<HostPatch> States { get; set; } = [];
 
         /// <summary>Whether each of them carries the announcing setter.</summary>
         public bool Announcing { get; set; }
@@ -5654,7 +5654,7 @@ public sealed class StateUIRenderer
         /// half-way is taken out of the state and carried by the walker
         /// instead. See <c>SwiftStyles.AddSetters</c>.
         /// </remarks>
-        public Dictionary<string, List<(SwiftKey Key, BindableProperty Property, object Value)>> Travelling
+        public Dictionary<string, List<(HostPropKey Key, BindableProperty Property, object Value)>> Travelling
         { get; } = [];
 
         /// <summary>
@@ -5685,15 +5685,15 @@ public sealed class StateUIRenderer
     /// go on painting the state the author took it out of. The state's own
     /// name and group are never cleared - every state has both.
     /// </remarks>
-    private static SwiftNode Merged(SwiftNode? kept, SwiftNode arriving)
+    private static HostPatch Merged(HostPatch? kept, HostPatch arriving)
     {
-        SwiftNode? setters = (arriving.Children ?? []).FirstOrDefault(child => child.Type == SwiftNodeType.Setters);
-        SwiftNode? had = (kept?.Children ?? []).FirstOrDefault(child => child.Type == SwiftNodeType.Setters);
+        HostPatch? setters = (arriving.Children ?? []).FirstOrDefault(child => child.Type == HostNodeType.Setters);
+        HostPatch? had = (kept?.Children ?? []).FirstOrDefault(child => child.Type == HostNodeType.Setters);
 
         bool fresh = kept is null || arriving.Replace;
         bool freshSetters = had is null || setters?.Replace == true;
 
-        return new SwiftNode
+        return new HostPatch
         {
             Id = arriving.Id,
             Type = arriving.Type,
@@ -5715,25 +5715,25 @@ public sealed class StateUIRenderer
     /// <param name="had">The setters kept so far, or null where there were none.</param>
     /// <param name="arriving">The setters this message carries, or null where it says nothing about them.</param>
     /// <param name="fresh">Whether what arrived is the complete bag rather than a change to it.</param>
-    private static SwiftNode KeptSetters(SwiftNode? had, SwiftNode? arriving, bool fresh)
+    private static HostPatch KeptSetters(HostPatch? had, HostPatch? arriving, bool fresh)
     {
         if (arriving is null || fresh)
         {
-            SwiftNode whole = arriving ?? had!;
+            HostPatch whole = arriving ?? had!;
 
-            return new SwiftNode
+            return new HostPatch
             {
                 Id = had?.Id ?? whole.Id,
-                Type = SwiftNodeType.Setters,
+                Type = HostNodeType.Setters,
                 Props = whole.Props,
                 OwnProps = whole.OwnProps,
             };
         }
 
-        Dictionary<SwiftProp, SwiftWireValue>? props = Overlaid(had!.Props, arriving.Props);
-        Dictionary<string, SwiftWireValue>? own = Overlaid(had.OwnProps, arriving.OwnProps);
+        Dictionary<HostProp, HostValue>? props = Overlaid(had!.Props, arriving.Props);
+        Dictionary<string, HostValue>? own = Overlaid(had.OwnProps, arriving.OwnProps);
 
-        foreach (SwiftKey gone in arriving.Cleared ?? [])
+        foreach (HostPropKey gone in arriving.Cleared ?? [])
         {
             props?.Remove(gone.Prop);
 
@@ -5743,7 +5743,7 @@ public sealed class StateUIRenderer
             }
         }
 
-        return new SwiftNode { Id = had.Id, Type = SwiftNodeType.Setters, Props = props, OwnProps = own };
+        return new HostPatch { Id = had.Id, Type = HostNodeType.Setters, Props = props, OwnProps = own };
     }
 
     /// <summary>
@@ -5751,9 +5751,9 @@ public sealed class StateUIRenderer
     /// side ever spoke, so that a bag's presence goes on meaning "this was
     /// said about".
     /// </summary>
-    private static Dictionary<TKey, SwiftWireValue>? Overlaid<TKey>(
-        Dictionary<TKey, SwiftWireValue>? was,
-        Dictionary<TKey, SwiftWireValue>? arrived)
+    private static Dictionary<TKey, HostValue>? Overlaid<TKey>(
+        Dictionary<TKey, HostValue>? was,
+        Dictionary<TKey, HostValue>? arrived)
         where TKey : notnull
     {
         if (was is null && arrived is null)
@@ -5761,9 +5761,9 @@ public sealed class StateUIRenderer
             return null;
         }
 
-        var result = new Dictionary<TKey, SwiftWireValue>(was ?? []);
+        var result = new Dictionary<TKey, HostValue>(was ?? []);
 
-        foreach (KeyValuePair<TKey, SwiftWireValue> pair in arrived ?? [])
+        foreach (KeyValuePair<TKey, HostValue> pair in arrived ?? [])
         {
             result[pair.Key] = pair.Value;
         }
@@ -5782,10 +5782,10 @@ public sealed class StateUIRenderer
     /// the differ gave them. A <c>VisualState</c> is the same story: written on any control,
     /// and never one of the things it lays out.
     /// </remarks>
-    private static bool IsSlot(SwiftNode node) => node.Type is SwiftNodeType.ContextMenu or SwiftNodeType.VisualState;
+    private static bool IsSlot(HostPatch node) => node.Type is HostNodeType.ContextMenu or HostNodeType.VisualState;
 
     /// <summary>The children a control lays out: the slots left out.</summary>
-    private static List<SwiftNode> Laid(SwiftNode node) =>
+    private static List<HostPatch> Laid(HostPatch node) =>
         (node.Children ?? []).Where(child => !IsSlot(child)).ToList();
 
     /// <summary>The menu a view opens when it is right-clicked or held down.</summary>
@@ -5802,7 +5802,7 @@ public sealed class StateUIRenderer
     /// the handler ids the message did not repeat.
     /// </para>
     /// </remarks>
-    private void ApplyContextFlyout(View view, SwiftNode node)
+    private void ApplyContextFlyout(View view, HostPatch node)
     {
         if (Reuse(FlyoutBase.GetContextFlyout(view) as MenuFlyout, node) is not MenuFlyout flyout)
         {
@@ -5827,97 +5827,97 @@ public sealed class StateUIRenderer
     /// <para>
     /// The family is a NAME and not text - it names a font an author registered
     /// and repeats on every control wearing it, so it rides the session's
-    /// dictionary. <see cref="SwiftNode.GetString(string)"/> answers null for one, which
+    /// dictionary. <see cref="HostPatch.GetString(string)"/> answers null for one, which
     /// is a font silently not applied on ten controls at once.
     /// </para>
     /// </remarks>
-    private static void ApplyFont(SwiftNode node, Label label)
+    private static void ApplyFont(HostPatch node, Label label)
     {
-        if (node.GetNumber(SwiftProp.FontSize) is double size) { label.FontSize = size; }
-        if (node.GetName(SwiftProp.FontFamily) is string family) { label.FontFamily = family; }
-        if (node.GetFontAttributes(SwiftProp.FontAttributes) is FontAttributes attributes) { label.FontAttributes = attributes; }
-        if (node.GetBool(SwiftProp.FontAutoScalingEnabled) is bool scaling) { label.FontAutoScalingEnabled = scaling; }
+        if (node.GetNumber(HostProp.FontSize) is double size) { label.FontSize = size; }
+        if (node.GetName(HostProp.FontFamily) is string family) { label.FontFamily = family; }
+        if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { label.FontAttributes = attributes; }
+        if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { label.FontAutoScalingEnabled = scaling; }
     }
 
     /// <summary>The font properties, for one run of a formatted Label.</summary>
-    private static void ApplyFont(SwiftNode node, Span span)
+    private static void ApplyFont(HostPatch node, Span span)
     {
-        if (node.GetNumber(SwiftProp.FontSize) is double size) { span.FontSize = size; }
-        if (node.GetName(SwiftProp.FontFamily) is string family) { span.FontFamily = family; }
-        if (node.GetFontAttributes(SwiftProp.FontAttributes) is FontAttributes attributes) { span.FontAttributes = attributes; }
-        if (node.GetBool(SwiftProp.FontAutoScalingEnabled) is bool scaling) { span.FontAutoScalingEnabled = scaling; }
+        if (node.GetNumber(HostProp.FontSize) is double size) { span.FontSize = size; }
+        if (node.GetName(HostProp.FontFamily) is string family) { span.FontFamily = family; }
+        if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { span.FontAttributes = attributes; }
+        if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { span.FontAutoScalingEnabled = scaling; }
     }
 
     /// <summary>The font properties, for a Button.</summary>
-    private static void ApplyFont(SwiftNode node, Button button)
+    private static void ApplyFont(HostPatch node, Button button)
     {
-        if (node.GetNumber(SwiftProp.FontSize) is double size) { button.FontSize = size; }
-        if (node.GetName(SwiftProp.FontFamily) is string family) { button.FontFamily = family; }
-        if (node.GetFontAttributes(SwiftProp.FontAttributes) is FontAttributes attributes) { button.FontAttributes = attributes; }
-        if (node.GetBool(SwiftProp.FontAutoScalingEnabled) is bool scaling) { button.FontAutoScalingEnabled = scaling; }
+        if (node.GetNumber(HostProp.FontSize) is double size) { button.FontSize = size; }
+        if (node.GetName(HostProp.FontFamily) is string family) { button.FontFamily = family; }
+        if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { button.FontAttributes = attributes; }
+        if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { button.FontAutoScalingEnabled = scaling; }
     }
 
     /// <summary>The font properties, for an Entry.</summary>
-    private static void ApplyFont(SwiftNode node, Entry entry)
+    private static void ApplyFont(HostPatch node, Entry entry)
     {
-        if (node.GetNumber(SwiftProp.FontSize) is double size) { entry.FontSize = size; }
-        if (node.GetName(SwiftProp.FontFamily) is string family) { entry.FontFamily = family; }
-        if (node.GetFontAttributes(SwiftProp.FontAttributes) is FontAttributes attributes) { entry.FontAttributes = attributes; }
-        if (node.GetBool(SwiftProp.FontAutoScalingEnabled) is bool scaling) { entry.FontAutoScalingEnabled = scaling; }
+        if (node.GetNumber(HostProp.FontSize) is double size) { entry.FontSize = size; }
+        if (node.GetName(HostProp.FontFamily) is string family) { entry.FontFamily = family; }
+        if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { entry.FontAttributes = attributes; }
+        if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { entry.FontAutoScalingEnabled = scaling; }
     }
 
     /// <summary>The font properties, for an Editor.</summary>
-    private static void ApplyFont(SwiftNode node, Editor editor)
+    private static void ApplyFont(HostPatch node, Editor editor)
     {
-        if (node.GetNumber(SwiftProp.FontSize) is double size) { editor.FontSize = size; }
-        if (node.GetName(SwiftProp.FontFamily) is string family) { editor.FontFamily = family; }
-        if (node.GetFontAttributes(SwiftProp.FontAttributes) is FontAttributes attributes) { editor.FontAttributes = attributes; }
-        if (node.GetBool(SwiftProp.FontAutoScalingEnabled) is bool scaling) { editor.FontAutoScalingEnabled = scaling; }
+        if (node.GetNumber(HostProp.FontSize) is double size) { editor.FontSize = size; }
+        if (node.GetName(HostProp.FontFamily) is string family) { editor.FontFamily = family; }
+        if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { editor.FontAttributes = attributes; }
+        if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { editor.FontAutoScalingEnabled = scaling; }
     }
 
     /// <summary>The font properties, for a Picker.</summary>
-    private static void ApplyFont(SwiftNode node, Picker picker)
+    private static void ApplyFont(HostPatch node, Picker picker)
     {
-        if (node.GetNumber(SwiftProp.FontSize) is double size) { picker.FontSize = size; }
-        if (node.GetName(SwiftProp.FontFamily) is string family) { picker.FontFamily = family; }
-        if (node.GetFontAttributes(SwiftProp.FontAttributes) is FontAttributes attributes) { picker.FontAttributes = attributes; }
-        if (node.GetBool(SwiftProp.FontAutoScalingEnabled) is bool scaling) { picker.FontAutoScalingEnabled = scaling; }
+        if (node.GetNumber(HostProp.FontSize) is double size) { picker.FontSize = size; }
+        if (node.GetName(HostProp.FontFamily) is string family) { picker.FontFamily = family; }
+        if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { picker.FontAttributes = attributes; }
+        if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { picker.FontAutoScalingEnabled = scaling; }
     }
 
     /// <summary>The font properties, for a DatePicker.</summary>
-    private static void ApplyFont(SwiftNode node, DatePicker picker)
+    private static void ApplyFont(HostPatch node, DatePicker picker)
     {
-        if (node.GetNumber(SwiftProp.FontSize) is double size) { picker.FontSize = size; }
-        if (node.GetName(SwiftProp.FontFamily) is string family) { picker.FontFamily = family; }
-        if (node.GetFontAttributes(SwiftProp.FontAttributes) is FontAttributes attributes) { picker.FontAttributes = attributes; }
-        if (node.GetBool(SwiftProp.FontAutoScalingEnabled) is bool scaling) { picker.FontAutoScalingEnabled = scaling; }
+        if (node.GetNumber(HostProp.FontSize) is double size) { picker.FontSize = size; }
+        if (node.GetName(HostProp.FontFamily) is string family) { picker.FontFamily = family; }
+        if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { picker.FontAttributes = attributes; }
+        if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { picker.FontAutoScalingEnabled = scaling; }
     }
 
     /// <summary>The font properties, for a TimePicker.</summary>
-    private static void ApplyFont(SwiftNode node, TimePicker picker)
+    private static void ApplyFont(HostPatch node, TimePicker picker)
     {
-        if (node.GetNumber(SwiftProp.FontSize) is double size) { picker.FontSize = size; }
-        if (node.GetName(SwiftProp.FontFamily) is string family) { picker.FontFamily = family; }
-        if (node.GetFontAttributes(SwiftProp.FontAttributes) is FontAttributes attributes) { picker.FontAttributes = attributes; }
-        if (node.GetBool(SwiftProp.FontAutoScalingEnabled) is bool scaling) { picker.FontAutoScalingEnabled = scaling; }
+        if (node.GetNumber(HostProp.FontSize) is double size) { picker.FontSize = size; }
+        if (node.GetName(HostProp.FontFamily) is string family) { picker.FontFamily = family; }
+        if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { picker.FontAttributes = attributes; }
+        if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { picker.FontAutoScalingEnabled = scaling; }
     }
 
     /// <summary>The font properties, for a RadioButton.</summary>
-    private static void ApplyFont(SwiftNode node, RadioButton button)
+    private static void ApplyFont(HostPatch node, RadioButton button)
     {
-        if (node.GetNumber(SwiftProp.FontSize) is double size) { button.FontSize = size; }
-        if (node.GetName(SwiftProp.FontFamily) is string family) { button.FontFamily = family; }
-        if (node.GetFontAttributes(SwiftProp.FontAttributes) is FontAttributes attributes) { button.FontAttributes = attributes; }
-        if (node.GetBool(SwiftProp.FontAutoScalingEnabled) is bool scaling) { button.FontAutoScalingEnabled = scaling; }
+        if (node.GetNumber(HostProp.FontSize) is double size) { button.FontSize = size; }
+        if (node.GetName(HostProp.FontFamily) is string family) { button.FontFamily = family; }
+        if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { button.FontAttributes = attributes; }
+        if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { button.FontAutoScalingEnabled = scaling; }
     }
 
     /// <summary>The font properties, for a SearchBar.</summary>
-    private static void ApplyFont(SwiftNode node, SearchBar search)
+    private static void ApplyFont(HostPatch node, SearchBar search)
     {
-        if (node.GetNumber(SwiftProp.FontSize) is double size) { search.FontSize = size; }
-        if (node.GetName(SwiftProp.FontFamily) is string family) { search.FontFamily = family; }
-        if (node.GetFontAttributes(SwiftProp.FontAttributes) is FontAttributes attributes) { search.FontAttributes = attributes; }
-        if (node.GetBool(SwiftProp.FontAutoScalingEnabled) is bool scaling) { search.FontAutoScalingEnabled = scaling; }
+        if (node.GetNumber(HostProp.FontSize) is double size) { search.FontSize = size; }
+        if (node.GetName(HostProp.FontFamily) is string family) { search.FontFamily = family; }
+        if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { search.FontAttributes = attributes; }
+        if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { search.FontAutoScalingEnabled = scaling; }
     }
 
     /// <summary>
@@ -5930,7 +5930,7 @@ public sealed class StateUIRenderer
     /// the interface. The marker records the unknown type as its own, so it can
     /// never be mistaken later for the Label it is made of.
     /// </remarks>
-    private Label ReconcileUnknown(SwiftNode node, View? existing, string? why = null)
+    private Label ReconcileUnknown(HostPatch node, View? existing, string? why = null)
     {
         if (Reuse(existing, node) is not Label label)
         {
@@ -5982,7 +5982,7 @@ public sealed class StateUIRenderer
     /// <summary>
     /// The delegate a registered control's <c>create</c> wires its events
     /// through - this renderer's
-    /// <see cref="Raise(object?, SwiftEvent, byte[])"/> family, made
+    /// <see cref="Raise(object?, HostEvent, byte[])"/> family, made
     /// once and shared by every registration.
     /// </summary>
     private StateUIRaise? _registeredRaise;
@@ -5995,7 +5995,7 @@ public sealed class StateUIRenderer
     /// type nobody registered draws the unknown-control marker - see
     /// <c>ReconcileUnknown</c>.
     /// </summary>
-    private View ReconcileRegistered(SwiftNode node, View? existing)
+    private View ReconcileRegistered(HostPatch node, View? existing)
     {
         if (StateUIControls.Find(node.TypeName) is not { } registration)
         {
@@ -6013,13 +6013,13 @@ public sealed class StateUIRenderer
         // The DECLARED properties first, generically - the same value
         // conversion a style's setter takes - then whatever the imperative
         // applier wants on top. By NAME, which is the only form an
-        // application's own property has: SwiftKey.Own finds it in the bag it
+        // application's own property has: HostPropKey.Own finds it in the bag it
         // arrived in.
         if (registration.Properties is not null && (node.Props is not null || node.OwnProps is not null))
         {
             foreach ((string name, BindableProperty property) in registration.Properties)
             {
-                SwiftKey key = SwiftKey.Own(name);
+                HostPropKey key = HostPropKey.Own(name);
 
                 if (SwiftStyles.Value(property, node, key) is object value)
                 {
@@ -6078,7 +6078,7 @@ public sealed class StateUIRenderer
     // ---- MAUI's members, translated onto ours -----------------------------
     //
     // What a payload REPORTS, going the way the tree comes: the mirrors in
-    // Protocol/SwiftWireEnums.cs carry this repository's numbers, and a switch
+    // Protocol/HostEnums.cs carry this repository's numbers, and a switch
     // naming the MAUI member literally is what puts one on the wire. Never a
     // cast. It is the same argument the tree's own values make - MAUI's
     // numbers are MAUI's business, and a release that renumbered one would
@@ -6100,13 +6100,13 @@ public sealed class StateUIRenderer
     /// "unknown" status to degrade to, and inventing one would have a handler
     /// act on a report nobody understood.
     /// </remarks>
-    internal static SwiftGesturePhase Member(GestureStatus status) => status switch
+    internal static HostGesturePhase Member(GestureStatus status) => status switch
     {
-        GestureStatus.Started => SwiftGesturePhase.Started,
-        GestureStatus.Running => SwiftGesturePhase.Running,
-        GestureStatus.Completed => SwiftGesturePhase.Completed,
-        GestureStatus.Canceled => SwiftGesturePhase.Canceled,
-        _ => (SwiftGesturePhase)(-1),
+        GestureStatus.Started => HostGesturePhase.Started,
+        GestureStatus.Running => HostGesturePhase.Running,
+        GestureStatus.Completed => HostGesturePhase.Completed,
+        GestureStatus.Canceled => HostGesturePhase.Canceled,
+        _ => (HostGesturePhase)(-1),
     };
 
     /// <summary>
@@ -6116,32 +6116,32 @@ public sealed class StateUIRenderer
     /// set, and a `way` that is somehow neither is refused by the Swift reader
     /// rather than guessed at here.
     /// </summary>
-    internal static SwiftSwipeDirection Member(SwipeDirection way) => way switch
+    internal static HostSwipeDirection Member(SwipeDirection way) => way switch
     {
-        SwipeDirection.Right => SwiftSwipeDirection.Right,
-        SwipeDirection.Left => SwiftSwipeDirection.Left,
-        SwipeDirection.Up => SwiftSwipeDirection.Up,
-        SwipeDirection.Down => SwiftSwipeDirection.Down,
+        SwipeDirection.Right => HostSwipeDirection.Right,
+        SwipeDirection.Left => HostSwipeDirection.Left,
+        SwipeDirection.Up => HostSwipeDirection.Up,
+        SwipeDirection.Down => HostSwipeDirection.Down,
         _ => 0,
     };
 
     /// <summary>Why a navigation happened, as this side's member.</summary>
-    internal static SwiftWebNavigationEvent Member(WebNavigationEvent why) => why switch
+    internal static HostWebNavigationEvent Member(WebNavigationEvent why) => why switch
     {
-        WebNavigationEvent.Back => SwiftWebNavigationEvent.Back,
-        WebNavigationEvent.Forward => SwiftWebNavigationEvent.Forward,
-        WebNavigationEvent.NewPage => SwiftWebNavigationEvent.NewPage,
-        WebNavigationEvent.Refresh => SwiftWebNavigationEvent.Refresh,
-        _ => SwiftWebNavigationEvent.Unknown,
+        WebNavigationEvent.Back => HostWebNavigationEvent.Back,
+        WebNavigationEvent.Forward => HostWebNavigationEvent.Forward,
+        WebNavigationEvent.NewPage => HostWebNavigationEvent.NewPage,
+        WebNavigationEvent.Refresh => HostWebNavigationEvent.Refresh,
+        _ => HostWebNavigationEvent.Unknown,
     };
 
     /// <summary>How a navigation ended, as this side's member.</summary>
-    internal static SwiftWebNavigationResult Member(WebNavigationResult outcome) => outcome switch
+    internal static HostWebNavigationResult Member(WebNavigationResult outcome) => outcome switch
     {
-        WebNavigationResult.Success => SwiftWebNavigationResult.Success,
-        WebNavigationResult.Cancel => SwiftWebNavigationResult.Cancel,
-        WebNavigationResult.Timeout => SwiftWebNavigationResult.Timeout,
-        WebNavigationResult.Failure => SwiftWebNavigationResult.Failure,
-        _ => SwiftWebNavigationResult.Unknown,
+        WebNavigationResult.Success => HostWebNavigationResult.Success,
+        WebNavigationResult.Cancel => HostWebNavigationResult.Cancel,
+        WebNavigationResult.Timeout => HostWebNavigationResult.Timeout,
+        WebNavigationResult.Failure => HostWebNavigationResult.Failure,
+        _ => HostWebNavigationResult.Unknown,
     };
 }

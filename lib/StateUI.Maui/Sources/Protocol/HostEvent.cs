@@ -11,13 +11,13 @@ namespace StateUI.Maui.Protocol;
 /// <para>
 /// <see cref="None"/> is an event an APPLICATION raises from its own
 /// registered control, which keeps its spelling in
-/// <c>SwiftNode.OwnEvents</c> for the same reason a property does.
+/// <c>HostPatch.OwnEvents</c> for the same reason a property does.
 /// </para>
 /// <para>
-/// These numbers never cross the wire; see <see cref="SwiftNodeType"/>.
+/// These numbers never cross the wire; see <see cref="HostNodeType"/>.
 /// </para>
 /// </remarks>
-internal enum SwiftEvent : ushort
+internal enum HostEvent : ushort
 {
     /// <summary>A name this runtime has no member for.</summary>
     None = 0,

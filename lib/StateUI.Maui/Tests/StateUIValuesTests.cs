@@ -68,7 +68,7 @@ public class StateUIValuesTests
                 "inset":[1,2,3,4],
                 "face":[0,0,120,40],
                 "needle":"needle.png",
-                "fill":[{{{Host.Member(SwiftBrushKind.SolidColor)}}},"#0000FF"],
+                "fill":[{{{Host.Member(HostBrushKind.SolidColor)}}},"#0000FF"],
                 "day":[2026,8,15],
                 "moment":[9,30,15]}}
             """));
@@ -133,7 +133,7 @@ public class StateUIValuesTests
     /// are the library's too: <c>padding</c>, <c>text</c>, <c>value</c>. Such a
     /// name resolves to a member on the way in and lands in the library's bag,
     /// where a reader looking only under the spelling would find nothing. See
-    /// <see cref="SwiftKey"/>.
+    /// <see cref="HostPropKey"/>.
     /// </remarks>
     [Fact]
     public void AReaderFindsAPropertyWhoseNameTheLibraryAlsoUses()

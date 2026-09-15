@@ -18,7 +18,7 @@ namespace StateUI.Maui.Rendering;
 /// <code>
 /// // C#, MauiProgram.CreateMauiApp:
 /// StateUIActs.Add("Gallery.BatteryLevel",
-///     call => [SwiftWireValue.Of(Battery.Default.ChargeLevel)]);
+///     call => [HostValue.Of(Battery.Default.ChargeLevel)]);
 ///
 /// // Swift, anywhere:
 /// extension Act {
@@ -30,7 +30,7 @@ namespace StateUI.Maui.Rendering;
 /// <para>
 /// A performer reads its arguments off the <see cref="HostActCall"/> with
 /// the typed accessors and answers values built with
-/// <see cref="SwiftWireValue"/>'s factories - empty for a function with
+/// <see cref="HostValue"/>'s factories - empty for a function with
 /// nothing to say. One that throws fails the act: the awaiting Swift handler
 /// resumes by throwing <c>StateUIError</c> with the exception's message,
 /// which is the same road every act of the library's takes.
@@ -47,7 +47,7 @@ namespace StateUI.Maui.Rendering;
 public static class StateUIActs
 {
     private static readonly Lock Guard = new();
-    private static readonly Dictionary<string, Func<HostActCall, Task<SwiftWireValue[]>>> Performers = [];
+    private static readonly Dictionary<string, Func<HostActCall, Task<HostValue[]>>> Performers = [];
 
     /// <summary>
     /// Registers an async function under a name. Registering the same name
@@ -55,7 +55,7 @@ public static class StateUIActs
     /// </summary>
     /// <param name="name">The name Swift calls, e.g. <c>"Gallery.BatteryLevel"</c>.</param>
     /// <param name="performer">What to run; its values answer the Swift <c>try await</c>.</param>
-    public static void Add(string name, Func<HostActCall, Task<SwiftWireValue[]>> performer)
+    public static void Add(string name, Func<HostActCall, Task<HostValue[]>> performer)
     {
         lock (Guard)
         {
@@ -69,7 +69,7 @@ public static class StateUIActs
     /// </summary>
     /// <param name="name">The name Swift calls, e.g. <c>"Gallery.BatteryLevel"</c>.</param>
     /// <param name="performer">What to run; its values answer the Swift <c>try await</c>.</param>
-    public static void Add(string name, Func<HostActCall, SwiftWireValue[]> performer)
+    public static void Add(string name, Func<HostActCall, HostValue[]> performer)
     {
         Add(name, call => Task.FromResult(performer(call)));
     }
@@ -122,7 +122,7 @@ public static class StateUIActs
 
     /// <summary>The performer for a name, or null - consulted by
     /// <c>Perform</c>'s default arm before it reports an unknown act.</summary>
-    internal static Func<HostActCall, Task<SwiftWireValue[]>>? Find(string name)
+    internal static Func<HostActCall, Task<HostValue[]>>? Find(string name)
     {
         lock (Guard)
         {

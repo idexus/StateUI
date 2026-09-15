@@ -27,12 +27,12 @@ public static class MauiProgram
         });
 
         StateUIActs.Add("Gallery.ReadClipboard", async call =>
-            [SwiftWireValue.Of(await Clipboard.Default.GetTextAsync() ?? "")]);
+            [HostValue.Of(await Clipboard.Default.GetTextAsync() ?? "")]);
 
         StateUIActs.Add("Gallery.BatteryLevel", call =>
             [
-                SwiftWireValue.Of(Battery.Default.ChargeLevel),
-                SwiftWireValue.Of(Battery.Default.State == BatteryState.Charging),
+                HostValue.Of(Battery.Default.ChargeLevel),
+                HostValue.Of(Battery.Default.State == BatteryState.Charging),
             ]);
 
         // An act aimed at a control: argument 0 is the control's identity, and
@@ -55,12 +55,12 @@ public static class MauiProgram
         // answer, so the sources are wired unconditionally.
         Battery.Default.BatteryInfoChanged += (_, e) =>
             StateUIEvents.Raise("Gallery.BatteryChanged",
-                SwiftWireValue.Of(e.ChargeLevel),
-                SwiftWireValue.Of(e.State == BatteryState.Charging));
+                HostValue.Of(e.ChargeLevel),
+                HostValue.Of(e.State == BatteryState.Charging));
 
         Connectivity.Current.ConnectivityChanged += (_, e) =>
             StateUIEvents.Raise("Gallery.ConnectivityChanged",
-                SwiftWireValue.Of(e.NetworkAccess == NetworkAccess.Internet));
+                HostValue.Of(e.NetworkAccess == NetworkAccess.Internet));
 
         // The gallery's own control. `create` runs once per element and wires
         // its events; `apply` runs on every message that touches it and reads
@@ -72,7 +72,7 @@ public static class MauiProgram
             {
                 var light = new TrafficLight();
                 light.LampTapped += (_, index) =>
-                    raise(light, "lampTapped", SwiftWireValue.Of(index));
+                    raise(light, "lampTapped", HostValue.Of(index));
                 return light;
             },
             apply: (light, node) =>
@@ -104,7 +104,7 @@ public static class MauiProgram
             {
                 var stars = new RatingBar();
                 stars.RatingChanged += (_, rating) =>
-                    raise(stars, "ratingChanged", SwiftWireValue.Of(rating));
+                    raise(stars, "ratingChanged", HostValue.Of(rating));
                 return stars;
             },
             properties: new Dictionary<string, BindableProperty>

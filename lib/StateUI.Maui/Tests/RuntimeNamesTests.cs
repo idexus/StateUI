@@ -6,6 +6,11 @@ using System.Text.RegularExpressions;
 
 namespace StateUI.Maui.Tests;
 
+/// <summary>
+/// The runtime's names, read off the SOURCES rather than the assembly, so the
+/// arms this suite does not compile - Android, Apple, Windows and Linux - keep
+/// them too.
+/// </summary>
 public partial class RuntimeNamesTests
 {
     /// <summary>
@@ -13,16 +18,43 @@ public partial class RuntimeNamesTests
     /// the runtime is an ENGINE - that word is the application's frame code -
     /// and a CHANNEL is only the state channel, one per <c>@State</c>.
     /// </summary>
-    /// <remarks>
-    /// Read off the SOURCES rather than the assembly, so the arms this suite
-    /// does not compile - Android, Apple, Windows and Linux - keep them too.
-    /// </remarks>
     [Fact]
     public void TheRuntimesTypesKeepTheReservedWords()
     {
-        List<string> found = [];
+        List<string> found = [.. Declarations("Sources", "Linux")
+            .Where(declared => declared.Type.EndsWith("Engine", StringComparison.Ordinal)
+                || (declared.Type.Contains("Channel", StringComparison.Ordinal)
+                    && !declared.Type.StartsWith("StateChannel", StringComparison.Ordinal)))
+            .Select(declared => declared.Where)];
 
-        foreach (string folder in new[] { "Sources", "Linux" })
+        Assert.True(
+            found.Count == 0,
+            "an engine is application code, and a channel is a state's: " + string.Join(", ", found));
+    }
+
+    /// <summary>
+    /// A mirror of what crosses the wire takes the typed patch's name -
+    /// <c>Host</c> and the Swift type's own - and the codec and its helpers the
+    /// Wire element's, never the name of the language on the other side.
+    /// </summary>
+    [Fact]
+    public void TheWireMirrorsCarryTheTypedPatchsNames()
+    {
+        List<string> found = [.. Declarations(Path.Combine("Sources", "Protocol"))
+            .Where(declared => declared.Type.StartsWith("Swift", StringComparison.Ordinal))
+            .Select(declared => declared.Where)];
+
+        Assert.True(
+            found.Count == 0,
+            "a wire mirror takes the typed patch's Host name: " + string.Join(", ", found));
+    }
+
+    /// <summary>Every type declared under the given folders of this host's project.</summary>
+    /// <param name="folders">Folders beside this one's, such as <c>Sources</c>.</param>
+    /// <returns>Each type's name, and where it is declared.</returns>
+    private static IEnumerable<(string Type, string Where)> Declarations(params string[] folders)
+    {
+        foreach (string folder in folders)
         {
             string root = Beside(folder);
 
@@ -38,20 +70,10 @@ public partial class RuntimeNamesTests
                 foreach (Match match in Declaration().Matches(File.ReadAllText(file)))
                 {
                     string type = match.Groups[1].Value;
-
-                    if (type.EndsWith("Engine", StringComparison.Ordinal)
-                        || (type.Contains("Channel", StringComparison.Ordinal)
-                            && !type.StartsWith("StateChannel", StringComparison.Ordinal)))
-                    {
-                        found.Add($"{folder}/{Path.GetRelativePath(root, file)}: {type}");
-                    }
+                    yield return (type, $"{folder}/{Path.GetRelativePath(root, file)}: {type}");
                 }
             }
         }
-
-        Assert.True(
-            found.Count == 0,
-            "an engine is application code, and a channel is a state's: " + string.Join(", ", found));
     }
 
     /// <summary>A type's declaration, its name captured.</summary>

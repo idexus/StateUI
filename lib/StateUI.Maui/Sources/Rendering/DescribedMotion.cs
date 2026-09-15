@@ -12,7 +12,7 @@ using StateUI.Maui.Protocol;
 /// <remarks>
 /// <para>
 /// A transition arrives as an ordinary property change with a
-/// <see cref="SwiftTransition"/> beside it. This takes those properties out of
+/// <see cref="HostTransition"/> beside it. This takes those properties out of
 /// the node before the renderer applies it - so the assignment that would have
 /// snapped never happens - and aims the walker at the value that arrived, from
 /// wherever the control is now.
@@ -60,22 +60,22 @@ internal sealed class DescribedMotion
     /// </remarks>
     /// <param name="node">The node about to be applied.</param>
     /// <returns>What was lifted, empty when nothing was.</returns>
-    internal List<(SwiftTransition Transition, SwiftWireValue Target)> Take(SwiftNode node)
+    internal List<(HostTransition Transition, HostValue Target)> Take(HostPatch node)
     {
         if (node.Transitions is not { Count: > 0 } transitions || node.Props is null)
         {
             return [];
         }
 
-        var taken = new List<(SwiftTransition, SwiftWireValue)>(transitions.Count);
+        var taken = new List<(HostTransition, HostValue)>(transitions.Count);
 
-        foreach (SwiftTransition transition in transitions)
+        foreach (HostTransition transition in transitions)
         {
             // Out of the bag the property arrived in - the library's by
             // member, an application's own by the name it declared it under.
-            SwiftWireValue target = default;
+            HostValue target = default;
 
-            bool named = transition.Property != SwiftProp.None
+            bool named = transition.Property != HostProp.None
                 ? node.Props.TryGetValue(transition.Property, out target)
                 : node.OwnProps is not null
                     && node.OwnProps.TryGetValue(transition.PropertyName, out target);
@@ -98,7 +98,7 @@ internal sealed class DescribedMotion
                 continue;
             }
 
-            if (transition.Property != SwiftProp.None)
+            if (transition.Property != HostProp.None)
             {
                 node.Props.Remove(transition.Property);
             }
@@ -117,16 +117,16 @@ internal sealed class DescribedMotion
     /// Whether this property is one the walker can carry a control through -
     /// it has a MAUI property behind it, and its value has a half-way.
     /// </summary>
-    private static bool Walkable(SwiftNode node, SwiftTransition transition, SwiftWireValue target)
+    private static bool Walkable(HostPatch node, HostTransition transition, HostValue target)
     {
-        SwiftKey key = transition.Key;
+        HostPropKey key = transition.Key;
 
         if (SwiftStyles.Property(node.Type, node.TypeName, key) is not BindableProperty property)
         {
             return false;
         }
 
-        SwiftNode carrier = Carrier(transition, target);
+        HostPatch carrier = Carrier(transition, target);
 
         return SwiftStyles.Value(property, carrier, key) is object value
             && MotionProperty.Of(
@@ -141,12 +141,12 @@ internal sealed class DescribedMotion
     /// <param name="taken">What <see cref="Take"/> answered.</param>
     internal void Apply(
         View view,
-        SwiftNode node,
-        List<(SwiftTransition Transition, SwiftWireValue Target)> taken)
+        HostPatch node,
+        List<(HostTransition Transition, HostValue Target)> taken)
     {
         Interrupt(view, node, taken);
 
-        foreach ((SwiftTransition transition, SwiftWireValue target) in taken)
+        foreach ((HostTransition transition, HostValue target) in taken)
         {
             Start(view, node.Type, node.TypeName, transition, target);
         }
@@ -172,8 +172,8 @@ internal sealed class DescribedMotion
     /// </remarks>
     private void Interrupt(
         View view,
-        SwiftNode node,
-        List<(SwiftTransition Transition, SwiftWireValue Target)> taken)
+        HostPatch node,
+        List<(HostTransition Transition, HostValue Target)> taken)
     {
         if (!_walker.Stirring(view))
         {
@@ -182,14 +182,14 @@ internal sealed class DescribedMotion
 
         if (node.Props is not null)
         {
-            foreach (SwiftProp property in node.Props.Keys)
+            foreach (HostProp property in node.Props.Keys)
             {
                 if (Walked(taken, property, null))
                 {
                     continue;
                 }
 
-                if (SwiftStyles.Property(node.Type, node.TypeName, SwiftKey.Of(property, string.Empty))
+                if (SwiftStyles.Property(node.Type, node.TypeName, HostPropKey.Of(property, string.Empty))
                     is BindableProperty bindable
                     && _walker.Driven?.Invoke(view, bindable) != true)
                 {
@@ -205,12 +205,12 @@ internal sealed class DescribedMotion
 
         foreach (string spelling in node.OwnProps.Keys)
         {
-            if (Walked(taken, SwiftProp.None, spelling))
+            if (Walked(taken, HostProp.None, spelling))
             {
                 continue;
             }
 
-            if (SwiftStyles.Property(node.Type, node.TypeName, SwiftKey.Of(SwiftProp.None, spelling))
+            if (SwiftStyles.Property(node.Type, node.TypeName, HostPropKey.Of(HostProp.None, spelling))
                 is BindableProperty bindable
                 && _walker.Driven?.Invoke(view, bindable) != true)
             {
@@ -221,15 +221,15 @@ internal sealed class DescribedMotion
 
     /// <summary>Whether this message says to WALK to the named property.</summary>
     private static bool Walked(
-        List<(SwiftTransition Transition, SwiftWireValue Target)> taken,
-        SwiftProp property,
+        List<(HostTransition Transition, HostValue Target)> taken,
+        HostProp property,
         string? spelling)
     {
-        foreach ((SwiftTransition transition, SwiftWireValue _) in taken)
+        foreach ((HostTransition transition, HostValue _) in taken)
         {
             if (spelling is null
                 ? transition.Property == property
-                : transition.Property == SwiftProp.None && transition.PropertyName == spelling)
+                : transition.Property == HostProp.None && transition.PropertyName == spelling)
             {
                 return true;
             }
@@ -241,19 +241,19 @@ internal sealed class DescribedMotion
     /// <summary>Aims the walker at one property's target, under the stated law.</summary>
     private void Start(
         View view,
-        SwiftNodeType type,
+        HostNodeType type,
         string typeName,
-        SwiftTransition transition,
-        SwiftWireValue target)
+        HostTransition transition,
+        HostValue target)
     {
-        SwiftKey key = transition.Key;
+        HostPropKey key = transition.Key;
 
         if (SwiftStyles.Property(type, typeName, key) is not BindableProperty property)
         {
             return;
         }
 
-        SwiftNode carrier = Carrier(transition, target);
+        HostPatch carrier = Carrier(transition, target);
 
         if (SwiftStyles.Value(property, carrier, key) is not object destination)
         {
@@ -313,20 +313,20 @@ internal sealed class DescribedMotion
     /// The same conversion a style setter takes, which is what makes a property
     /// walkable the moment it is styleable.
     /// </remarks>
-    private static SwiftNode Carrier(SwiftTransition transition, SwiftWireValue target)
+    private static HostPatch Carrier(HostTransition transition, HostValue target)
     {
-        var carrier = new SwiftNode();
+        var carrier = new HostPatch();
 
-        if (transition.Property != SwiftProp.None)
+        if (transition.Property != HostProp.None)
         {
-            carrier.Props = new Dictionary<SwiftProp, SwiftWireValue>
+            carrier.Props = new Dictionary<HostProp, HostValue>
             {
                 [transition.Property] = target,
             };
         }
         else
         {
-            carrier.OwnProps = new Dictionary<string, SwiftWireValue>
+            carrier.OwnProps = new Dictionary<string, HostValue>
             {
                 [transition.PropertyName] = target,
             };

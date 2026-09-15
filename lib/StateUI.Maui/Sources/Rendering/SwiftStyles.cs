@@ -59,21 +59,21 @@ internal static class SwiftStyles
     /// style, the Swift side has already merged them into one arranged list.
     /// </remarks>
     internal static VisualStateGroupList BuildStates(
-        SwiftNodeType targetType,
+        HostNodeType targetType,
         string typeName,
-        List<SwiftNode> states,
-        Dictionary<string, List<(SwiftKey Key, BindableProperty Property, object Value)>>? travelling = null)
+        List<HostPatch> states,
+        Dictionary<string, List<(HostPropKey Key, BindableProperty Property, object Value)>>? travelling = null)
     {
         var groups = new VisualStateGroupList();
 
-        foreach (SwiftNode node in states)
+        foreach (HostPatch node in states)
         {
             // A visual state's group and its name are NAMES: they ride the
             // session dictionary, so they read back through GetName. Read as
             // strings they would both answer null, and every state would land
             // in CommonStates under the empty name - which is to say every
             // state would be the same state.
-            string name = node.GetName(SwiftProp.Group) ?? "CommonStates";
+            string name = node.GetName(HostProp.Group) ?? "CommonStates";
             VisualStateGroup? group = groups.FirstOrDefault(candidate => candidate.Name == name);
 
             if (group is null)
@@ -82,13 +82,13 @@ internal static class SwiftStyles
                 groups.Add(group);
             }
 
-            var state = new VisualState { Name = node.GetName(SwiftProp.Name) ?? "" };
+            var state = new VisualState { Name = node.GetName(HostProp.Name) ?? "" };
 
-            foreach (SwiftNode child in node.Children ?? [])
+            foreach (HostPatch child in node.Children ?? [])
             {
-                if (child.Type == SwiftNodeType.Setters)
+                if (child.Type == HostNodeType.Setters)
                 {
-                    List<(SwiftKey Key, BindableProperty Property, object Value)>? moves = null;
+                    List<(HostPropKey Key, BindableProperty Property, object Value)>? moves = null;
 
                     if (travelling is not null)
                     {
@@ -122,32 +122,32 @@ internal static class SwiftStyles
     /// </para>
     /// <para>
     /// The order is by NAME, so a member's spelling is what it is read from -
-    /// derived once per member by <see cref="SwiftTokenNames{TToken}"/> rather
+    /// derived once per member by <see cref="TokenNames{TToken}"/> rather
     /// than per setter. Both bags go in: a registered control's own properties
     /// are as settable in a state as a Label's, and they sort among them.
     /// </para>
     /// </remarks>
     private static void AddSetters(
         IList<Setter> setters,
-        SwiftNodeType targetType,
+        HostNodeType targetType,
         string typeName,
-        SwiftNode node,
-        IList<(SwiftKey Key, BindableProperty Property, object Value)>? travelling = null)
+        HostPatch node,
+        IList<(HostPropKey Key, BindableProperty Property, object Value)>? travelling = null)
     {
-        List<(SwiftKey Key, string Name)> keys = [];
+        List<(HostPropKey Key, string Name)> keys = [];
 
-        foreach (SwiftProp prop in node.Props?.Keys ?? Enumerable.Empty<SwiftProp>())
+        foreach (HostProp prop in node.Props?.Keys ?? Enumerable.Empty<HostProp>())
         {
-            string spelling = SwiftTokenNames<SwiftProp>.Spelling(prop);
-            keys.Add((SwiftKey.Of(prop, spelling), spelling));
+            string spelling = TokenNames<HostProp>.Spelling(prop);
+            keys.Add((HostPropKey.Of(prop, spelling), spelling));
         }
 
         foreach (string name in node.OwnProps?.Keys ?? Enumerable.Empty<string>())
         {
-            keys.Add((SwiftKey.Own(name), name));
+            keys.Add((HostPropKey.Own(name), name));
         }
 
-        foreach ((SwiftKey key, string _) in keys
+        foreach ((HostPropKey key, string _) in keys
             .OrderBy(entry => entry.Name.StartsWith("min", StringComparison.Ordinal)
                 || entry.Name.StartsWith("max", StringComparison.Ordinal) ? 0 : 1)
             .ThenBy(entry => entry.Name, StringComparer.Ordinal))
@@ -201,7 +201,7 @@ internal static class SwiftStyles
     /// moment it becomes styleable.
     /// </para>
     /// </remarks>
-    internal static object? Value(BindableProperty property, SwiftNode node, SwiftKey key)
+    internal static object? Value(BindableProperty property, HostPatch node, HostPropKey key)
     {
         // Unwrapped, because MAUI 10 declares some of these nullable -
         // DatePicker.Date is a DateTime? - and a nullable type is equal to
@@ -311,7 +311,7 @@ internal static class SwiftStyles
     /// <para>
     /// The registry last, and it is the one door here that takes STRINGS - the
     /// only one that can, an application's control being
-    /// <see cref="SwiftNodeType.None"/> with property names of its own
+    /// <see cref="HostNodeType.None"/> with property names of its own
     /// invention. A key with no name never reaches it, which is every key the
     /// renderer itself asks with.
     /// </para>
@@ -325,7 +325,7 @@ internal static class SwiftStyles
     /// anywhere else, and the two declare their properties separately.
     /// </param>
     internal static BindableProperty? Property(
-        SwiftNodeType targetType, string typeName, SwiftKey key, BindableObject? target = null)
+        HostNodeType targetType, string typeName, HostPropKey key, BindableObject? target = null)
     {
         return Shared(key.Prop)
             ?? Own(targetType, key.Prop, target)
@@ -336,65 +336,65 @@ internal static class SwiftStyles
     /// The properties MAUI declares once, high up, and every control inherits -
     /// the same tiers the Swift protocols mirror.
     /// </summary>
-    private static BindableProperty? Shared(SwiftProp name)
+    private static BindableProperty? Shared(HostProp name)
     {
         return name switch
         {
             // VisualElement
-            SwiftProp.IsVisible => VisualElement.IsVisibleProperty,
-            SwiftProp.IsEnabled => VisualElement.IsEnabledProperty,
-            SwiftProp.IgnoresInput => ComposedProperties.IgnoresInputProperty,
-            SwiftProp.LetsInputThrough => ComposedProperties.LetsInputThroughProperty,
-            SwiftProp.PanXChannel => StateUIRenderer.PanXChannelProperty,
-            SwiftProp.PanYChannel => StateUIRenderer.PanYChannelProperty,
-            SwiftProp.LayoutDirection => VisualElement.FlowDirectionProperty,
+            HostProp.IsVisible => VisualElement.IsVisibleProperty,
+            HostProp.IsEnabled => VisualElement.IsEnabledProperty,
+            HostProp.IgnoresInput => ComposedProperties.IgnoresInputProperty,
+            HostProp.LetsInputThrough => ComposedProperties.LetsInputThroughProperty,
+            HostProp.PanXChannel => StateUIRenderer.PanXChannelProperty,
+            HostProp.PanYChannel => StateUIRenderer.PanYChannelProperty,
+            HostProp.LayoutDirection => VisualElement.FlowDirectionProperty,
 
             // What the view says about itself, rather than how it is drawn.
             // Element declares the id and SemanticProperties the three the
             // reader hears; all four are cleared back the ordinary way, so a
             // description written under an `if` goes when the `if` does.
-            SwiftProp.AccessibilityIdentifier => Element.AutomationIdProperty,
-            SwiftProp.AccessibilityLabel => SemanticProperties.DescriptionProperty,
-            SwiftProp.AccessibilityHint => SemanticProperties.HintProperty,
-            SwiftProp.AccessibilityHeadingLevel => SemanticProperties.HeadingLevelProperty,
-            SwiftProp.IsAccessibilityHidden => ComposedProperties.IsAccessibilityHiddenProperty,
-            SwiftProp.AutomationExcludedWithChildren => AutomationProperties.ExcludedWithChildrenProperty,
-            SwiftProp.Opacity => VisualElement.OpacityProperty,
-            SwiftProp.Background => VisualElement.BackgroundColorProperty,
-            SwiftProp.Tint => ComposedProperties.TintProperty,
-            SwiftProp.Width => VisualElement.WidthRequestProperty,
-            SwiftProp.Height => VisualElement.HeightRequestProperty,
-            SwiftProp.MinimumWidth => VisualElement.MinimumWidthRequestProperty,
-            SwiftProp.MinimumHeight => VisualElement.MinimumHeightRequestProperty,
-            SwiftProp.MaximumWidth => VisualElement.MaximumWidthRequestProperty,
-            SwiftProp.MaximumHeight => VisualElement.MaximumHeightRequestProperty,
-            SwiftProp.Rotation => VisualElement.RotationProperty,
-            SwiftProp.RotationX => VisualElement.RotationXProperty,
-            SwiftProp.RotationY => VisualElement.RotationYProperty,
-            SwiftProp.Scale => VisualElement.ScaleProperty,
-            SwiftProp.ScaleX => VisualElement.ScaleXProperty,
-            SwiftProp.ScaleY => VisualElement.ScaleYProperty,
-            SwiftProp.TranslationX => VisualElement.TranslationXProperty,
-            SwiftProp.TranslationY => VisualElement.TranslationYProperty,
-            SwiftProp.PivotX => VisualElement.AnchorXProperty,
-            SwiftProp.PivotY => VisualElement.AnchorYProperty,
-            SwiftProp.ZIndex => VisualElement.ZIndexProperty,
+            HostProp.AccessibilityIdentifier => Element.AutomationIdProperty,
+            HostProp.AccessibilityLabel => SemanticProperties.DescriptionProperty,
+            HostProp.AccessibilityHint => SemanticProperties.HintProperty,
+            HostProp.AccessibilityHeadingLevel => SemanticProperties.HeadingLevelProperty,
+            HostProp.IsAccessibilityHidden => ComposedProperties.IsAccessibilityHiddenProperty,
+            HostProp.AutomationExcludedWithChildren => AutomationProperties.ExcludedWithChildrenProperty,
+            HostProp.Opacity => VisualElement.OpacityProperty,
+            HostProp.Background => VisualElement.BackgroundColorProperty,
+            HostProp.Tint => ComposedProperties.TintProperty,
+            HostProp.Width => VisualElement.WidthRequestProperty,
+            HostProp.Height => VisualElement.HeightRequestProperty,
+            HostProp.MinimumWidth => VisualElement.MinimumWidthRequestProperty,
+            HostProp.MinimumHeight => VisualElement.MinimumHeightRequestProperty,
+            HostProp.MaximumWidth => VisualElement.MaximumWidthRequestProperty,
+            HostProp.MaximumHeight => VisualElement.MaximumHeightRequestProperty,
+            HostProp.Rotation => VisualElement.RotationProperty,
+            HostProp.RotationX => VisualElement.RotationXProperty,
+            HostProp.RotationY => VisualElement.RotationYProperty,
+            HostProp.Scale => VisualElement.ScaleProperty,
+            HostProp.ScaleX => VisualElement.ScaleXProperty,
+            HostProp.ScaleY => VisualElement.ScaleYProperty,
+            HostProp.TranslationX => VisualElement.TranslationXProperty,
+            HostProp.TranslationY => VisualElement.TranslationYProperty,
+            HostProp.PivotX => VisualElement.AnchorXProperty,
+            HostProp.PivotY => VisualElement.AnchorYProperty,
+            HostProp.ZIndex => VisualElement.ZIndexProperty,
 
             // View
-            SwiftProp.Margin => View.MarginProperty,
-            SwiftProp.HorizontalAlignment => View.HorizontalOptionsProperty,
-            SwiftProp.VerticalAlignment => View.VerticalOptionsProperty,
+            HostProp.Margin => View.MarginProperty,
+            HostProp.HorizontalAlignment => View.HorizontalOptionsProperty,
+            HostProp.VerticalAlignment => View.VerticalOptionsProperty,
 
             // Where a view sits in a Grid - attached, and written on the child.
-            SwiftProp.GridRow => Grid.RowProperty,
-            SwiftProp.GridColumn => Grid.ColumnProperty,
-            SwiftProp.GridRowSpan => Grid.RowSpanProperty,
-            SwiftProp.GridColumnSpan => Grid.ColumnSpanProperty,
+            HostProp.GridRow => Grid.RowProperty,
+            HostProp.GridColumn => Grid.ColumnProperty,
+            HostProp.GridRowSpan => Grid.RowSpanProperty,
+            HostProp.GridColumnSpan => Grid.ColumnSpanProperty,
 
             // And in an AbsoluteLayout, which reads a rectangle and which of
             // its numbers are fractions.
-            SwiftProp.AbsoluteLayoutBounds => AbsoluteLayout.LayoutBoundsProperty,
-            SwiftProp.AbsoluteLayoutProportions => AbsoluteLayout.LayoutFlagsProperty,
+            HostProp.AbsoluteLayoutBounds => AbsoluteLayout.LayoutBoundsProperty,
+            HostProp.AbsoluteLayoutProportions => AbsoluteLayout.LayoutFlagsProperty,
 
             _ => null,
         };
@@ -404,48 +404,48 @@ internal static class SwiftStyles
     /// What a control declares itself. One arm per <c>Reconcile…</c> method, with
     /// the same names in it.
     /// </summary>
-    private static BindableProperty? Own(SwiftNodeType targetType, SwiftProp name, BindableObject? target)
+    private static BindableProperty? Own(HostNodeType targetType, HostProp name, BindableObject? target)
     {
         return targetType switch
         {
             // A page is not a style target - a Style in this library is
             // written against a control - but it stops describing properties
             // like anything else, and a property with no name here is one that
-            // could never be CLEARED off it. See SwiftNode.Cleared.
-            SwiftNodeType.Page => PageProperty(name),
+            // could never be CLEARED off it. See HostPatch.Cleared.
+            HostNodeType.Page => PageProperty(name),
 
-            SwiftNodeType.NavigationStack => PageProperty(name) ?? name switch
+            HostNodeType.NavigationStack => PageProperty(name) ?? name switch
             {
-                SwiftProp.BarBackgroundColor => NavigationPage.BarBackgroundColorProperty,
-                SwiftProp.BarForegroundColor => NavigationPage.BarTextColorProperty,
+                HostProp.BarBackgroundColor => NavigationPage.BarBackgroundColorProperty,
+                HostProp.BarForegroundColor => NavigationPage.BarTextColorProperty,
                 _ => null,
             },
 
-            SwiftNodeType.TabbedView => PageProperty(name) ?? name switch
+            HostNodeType.TabbedView => PageProperty(name) ?? name switch
             {
-                SwiftProp.BarBackgroundColor => TabbedPage.BarBackgroundColorProperty,
+                HostProp.BarBackgroundColor => TabbedPage.BarBackgroundColorProperty,
                 _ => null,
             },
 
-            SwiftNodeType.SplitView => PageProperty(name) ?? name switch
+            HostNodeType.SplitView => PageProperty(name) ?? name switch
             {
-                SwiftProp.IsSidebarVisible => FlyoutPage.IsPresentedProperty,
+                HostProp.IsSidebarVisible => FlyoutPage.IsPresentedProperty,
                 _ => null,
             },
 
-            SwiftNodeType.Window => name switch
+            HostNodeType.Window => name switch
             {
-                SwiftProp.Title => Window.TitleProperty,
-                SwiftProp.X => Window.XProperty,
-                SwiftProp.Y => Window.YProperty,
-                SwiftProp.Width => Window.WidthProperty,
-                SwiftProp.Height => Window.HeightProperty,
-                SwiftProp.IsMaximizable => Window.IsMaximizableProperty,
-                SwiftProp.IsMinimizable => Window.IsMinimizableProperty,
-                SwiftProp.MinimumWidth => Window.MinimumWidthProperty,
-                SwiftProp.MinimumHeight => Window.MinimumHeightProperty,
-                SwiftProp.MaximumWidth => Window.MaximumWidthProperty,
-                SwiftProp.MaximumHeight => Window.MaximumHeightProperty,
+                HostProp.Title => Window.TitleProperty,
+                HostProp.X => Window.XProperty,
+                HostProp.Y => Window.YProperty,
+                HostProp.Width => Window.WidthProperty,
+                HostProp.Height => Window.HeightProperty,
+                HostProp.IsMaximizable => Window.IsMaximizableProperty,
+                HostProp.IsMinimizable => Window.IsMinimizableProperty,
+                HostProp.MinimumWidth => Window.MinimumWidthProperty,
+                HostProp.MinimumHeight => Window.MinimumHeightProperty,
+                HostProp.MaximumWidth => Window.MaximumWidthProperty,
+                HostProp.MaximumHeight => Window.MaximumHeightProperty,
                 _ => null,
             },
 
@@ -453,451 +453,451 @@ internal static class SwiftStyles
             // ToolbarItem, so there is no default to put back and no name to
             // do it by: Swift keeps them in Prop.notCleared and sends the item
             // again instead.
-            SwiftNodeType.ToolbarItem => MenuItemProperty(name),
+            HostNodeType.ToolbarItem => MenuItemProperty(name),
 
             // One Menu, two MAUI classes: MenuBarItem on the bar and
             // MenuFlyoutSubItem inside another menu, each declaring its own.
-            SwiftNodeType.Menu => target is MenuBarItem ? MenuBarProperty(name) : MenuItemProperty(name),
+            HostNodeType.Menu => target is MenuBarItem ? MenuBarProperty(name) : MenuItemProperty(name),
 
-            SwiftNodeType.MenuItem => MenuItemProperty(name),
+            HostNodeType.MenuItem => MenuItemProperty(name),
 
             // A SwipeItem is a MenuItem too, which is why it needs no arm of
             // its own beyond that.
-            SwiftNodeType.SwipeAction => MenuItemProperty(name),
+            HostNodeType.SwipeAction => MenuItemProperty(name),
 
             // Not a View either - it is the collection a SwipeView keeps its
             // items in. `side` is not MAUI's at all: it says WHICH of the four
             // collections these are, which is a decision the renderer makes
             // rather than a value it writes, so Swift keeps it in notCleared.
-            SwiftNodeType.SwipeActions => name switch
+            HostNodeType.SwipeActions => name switch
             {
-                SwiftProp.Mode => SwipeItems.ModeProperty,
-                SwiftProp.SwipeBehaviorOnInvoked => SwipeItems.SwipeBehaviorOnInvokedProperty,
+                HostProp.Mode => SwipeItems.ModeProperty,
+                HostProp.SwipeBehaviorOnInvoked => SwipeItems.SwipeBehaviorOnInvokedProperty,
                 _ => null,
             },
 
             // One run of a formatted string. MAUI declares the text and the
             // font on Span itself rather than through the interfaces a Label
             // wears, so none of it is answered by Shared.
-            SwiftNodeType.Span => name switch
+            HostNodeType.Span => name switch
             {
-                SwiftProp.Text => Span.TextProperty,
-                SwiftProp.TextColor => Span.TextColorProperty,
-                SwiftProp.CharacterSpacing => Span.CharacterSpacingProperty,
-                SwiftProp.TextDecorations => Span.TextDecorationsProperty,
-                SwiftProp.LineHeight => Span.LineHeightProperty,
-                SwiftProp.FontSize => Span.FontSizeProperty,
-                SwiftProp.FontFamily => Span.FontFamilyProperty,
-                SwiftProp.FontAttributes => Span.FontAttributesProperty,
-                SwiftProp.FontAutoScalingEnabled => Span.FontAutoScalingEnabledProperty,
+                HostProp.Text => Span.TextProperty,
+                HostProp.TextColor => Span.TextColorProperty,
+                HostProp.CharacterSpacing => Span.CharacterSpacingProperty,
+                HostProp.TextDecorations => Span.TextDecorationsProperty,
+                HostProp.LineHeight => Span.LineHeightProperty,
+                HostProp.FontSize => Span.FontSizeProperty,
+                HostProp.FontFamily => Span.FontFamilyProperty,
+                HostProp.FontAttributes => Span.FontAttributesProperty,
+                HostProp.FontAutoScalingEnabled => Span.FontAutoScalingEnabledProperty,
                 _ => null,
             },
 
             // One marker on a map.
-            SwiftNodeType.Pin => name switch
+            HostNodeType.Pin => name switch
             {
-                SwiftProp.Label => Microsoft.Maui.Controls.Maps.Pin.LabelProperty,
-                SwiftProp.Address => Microsoft.Maui.Controls.Maps.Pin.AddressProperty,
-                SwiftProp.Type => Microsoft.Maui.Controls.Maps.Pin.TypeProperty,
-                SwiftProp.Location => Microsoft.Maui.Controls.Maps.Pin.LocationProperty,
+                HostProp.Label => Microsoft.Maui.Controls.Maps.Pin.LabelProperty,
+                HostProp.Address => Microsoft.Maui.Controls.Maps.Pin.AddressProperty,
+                HostProp.Type => Microsoft.Maui.Controls.Maps.Pin.TypeProperty,
+                HostProp.Location => Microsoft.Maui.Controls.Maps.Pin.LocationProperty,
                 _ => null,
             },
 
-            SwiftNodeType.Label => name switch
+            HostNodeType.Label => name switch
             {
-                SwiftProp.Text => Label.TextProperty,
-                SwiftProp.TextColor => Label.TextColorProperty,
-                SwiftProp.CharacterSpacing => Label.CharacterSpacingProperty,
-                SwiftProp.TextCase => Label.TextTransformProperty,
-                SwiftProp.HorizontalTextAlignment => Label.HorizontalTextAlignmentProperty,
-                SwiftProp.VerticalTextAlignment => Label.VerticalTextAlignmentProperty,
-                SwiftProp.LineBreak => Label.LineBreakModeProperty,
-                SwiftProp.LineHeight => Label.LineHeightProperty,
-                SwiftProp.MaximumLines => Label.MaxLinesProperty,
-                SwiftProp.TextDecorations => Label.TextDecorationsProperty,
-                SwiftProp.Padding => Label.PaddingProperty,
-                SwiftProp.FontSize => Label.FontSizeProperty,
-                SwiftProp.FontFamily => Label.FontFamilyProperty,
-                SwiftProp.FontAttributes => Label.FontAttributesProperty,
-                SwiftProp.FontAutoScalingEnabled => Label.FontAutoScalingEnabledProperty,
+                HostProp.Text => Label.TextProperty,
+                HostProp.TextColor => Label.TextColorProperty,
+                HostProp.CharacterSpacing => Label.CharacterSpacingProperty,
+                HostProp.TextCase => Label.TextTransformProperty,
+                HostProp.HorizontalTextAlignment => Label.HorizontalTextAlignmentProperty,
+                HostProp.VerticalTextAlignment => Label.VerticalTextAlignmentProperty,
+                HostProp.LineBreak => Label.LineBreakModeProperty,
+                HostProp.LineHeight => Label.LineHeightProperty,
+                HostProp.MaximumLines => Label.MaxLinesProperty,
+                HostProp.TextDecorations => Label.TextDecorationsProperty,
+                HostProp.Padding => Label.PaddingProperty,
+                HostProp.FontSize => Label.FontSizeProperty,
+                HostProp.FontFamily => Label.FontFamilyProperty,
+                HostProp.FontAttributes => Label.FontAttributesProperty,
+                HostProp.FontAutoScalingEnabled => Label.FontAutoScalingEnabledProperty,
                 _ => null,
             },
 
-            SwiftNodeType.Button => name switch
+            HostNodeType.Button => name switch
             {
-                SwiftProp.Text => Button.TextProperty,
-                SwiftProp.TextColor => Button.TextColorProperty,
-                SwiftProp.CharacterSpacing => Button.CharacterSpacingProperty,
-                SwiftProp.TextCase => Button.TextTransformProperty,
-                SwiftProp.BorderColor => Button.BorderColorProperty,
-                SwiftProp.BorderWidth => Button.BorderWidthProperty,
-                SwiftProp.CornerRadius => Button.CornerRadiusProperty,
-                SwiftProp.LineBreak => Button.LineBreakModeProperty,
-                SwiftProp.Icon => Button.ImageSourceProperty,
-                SwiftProp.IconPosition => ComposedProperties.IconPositionProperty,
-                SwiftProp.IconSpacing => ComposedProperties.IconSpacingProperty,
-                SwiftProp.Padding => Button.PaddingProperty,
-                SwiftProp.FontSize => Button.FontSizeProperty,
-                SwiftProp.FontFamily => Button.FontFamilyProperty,
-                SwiftProp.FontAttributes => Button.FontAttributesProperty,
-                SwiftProp.FontAutoScalingEnabled => Button.FontAutoScalingEnabledProperty,
+                HostProp.Text => Button.TextProperty,
+                HostProp.TextColor => Button.TextColorProperty,
+                HostProp.CharacterSpacing => Button.CharacterSpacingProperty,
+                HostProp.TextCase => Button.TextTransformProperty,
+                HostProp.BorderColor => Button.BorderColorProperty,
+                HostProp.BorderWidth => Button.BorderWidthProperty,
+                HostProp.CornerRadius => Button.CornerRadiusProperty,
+                HostProp.LineBreak => Button.LineBreakModeProperty,
+                HostProp.Icon => Button.ImageSourceProperty,
+                HostProp.IconPosition => ComposedProperties.IconPositionProperty,
+                HostProp.IconSpacing => ComposedProperties.IconSpacingProperty,
+                HostProp.Padding => Button.PaddingProperty,
+                HostProp.FontSize => Button.FontSizeProperty,
+                HostProp.FontFamily => Button.FontFamilyProperty,
+                HostProp.FontAttributes => Button.FontAttributesProperty,
+                HostProp.FontAutoScalingEnabled => Button.FontAutoScalingEnabledProperty,
                 _ => null,
             },
 
-            SwiftNodeType.TextField => name switch
+            HostNodeType.TextField => name switch
             {
-                SwiftProp.Text => Entry.TextProperty,
-                SwiftProp.TextColor => Entry.TextColorProperty,
-                SwiftProp.CharacterSpacing => Entry.CharacterSpacingProperty,
-                SwiftProp.TextCase => Entry.TextTransformProperty,
-                SwiftProp.Placeholder => Entry.PlaceholderProperty,
-                SwiftProp.PlaceholderColor => Entry.PlaceholderColorProperty,
-                SwiftProp.IsPassword => Entry.IsPasswordProperty,
-                SwiftProp.IsReadOnly => Entry.IsReadOnlyProperty,
-                SwiftProp.CursorPosition => InputView.CursorPositionProperty,
-                SwiftProp.SelectionLength => InputView.SelectionLengthProperty,
-                SwiftProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
-                SwiftProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
-                SwiftProp.InputPurpose => Entry.KeyboardProperty,
-                SwiftProp.MaximumLength => StateUIRenderer.MaxLengthProperty,
-                SwiftProp.ReturnKey => Entry.ReturnTypeProperty,
-                SwiftProp.ShowsClearButton => Entry.ClearButtonVisibilityProperty,
-                SwiftProp.HorizontalTextAlignment => Entry.HorizontalTextAlignmentProperty,
-                SwiftProp.VerticalTextAlignment => Entry.VerticalTextAlignmentProperty,
-                SwiftProp.FontSize => Entry.FontSizeProperty,
-                SwiftProp.FontFamily => Entry.FontFamilyProperty,
-                SwiftProp.FontAttributes => Entry.FontAttributesProperty,
-                SwiftProp.FontAutoScalingEnabled => Entry.FontAutoScalingEnabledProperty,
+                HostProp.Text => Entry.TextProperty,
+                HostProp.TextColor => Entry.TextColorProperty,
+                HostProp.CharacterSpacing => Entry.CharacterSpacingProperty,
+                HostProp.TextCase => Entry.TextTransformProperty,
+                HostProp.Placeholder => Entry.PlaceholderProperty,
+                HostProp.PlaceholderColor => Entry.PlaceholderColorProperty,
+                HostProp.IsPassword => Entry.IsPasswordProperty,
+                HostProp.IsReadOnly => Entry.IsReadOnlyProperty,
+                HostProp.CursorPosition => InputView.CursorPositionProperty,
+                HostProp.SelectionLength => InputView.SelectionLengthProperty,
+                HostProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
+                HostProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
+                HostProp.InputPurpose => Entry.KeyboardProperty,
+                HostProp.MaximumLength => StateUIRenderer.MaxLengthProperty,
+                HostProp.ReturnKey => Entry.ReturnTypeProperty,
+                HostProp.ShowsClearButton => Entry.ClearButtonVisibilityProperty,
+                HostProp.HorizontalTextAlignment => Entry.HorizontalTextAlignmentProperty,
+                HostProp.VerticalTextAlignment => Entry.VerticalTextAlignmentProperty,
+                HostProp.FontSize => Entry.FontSizeProperty,
+                HostProp.FontFamily => Entry.FontFamilyProperty,
+                HostProp.FontAttributes => Entry.FontAttributesProperty,
+                HostProp.FontAutoScalingEnabled => Entry.FontAutoScalingEnabledProperty,
                 _ => null,
             },
 
-            SwiftNodeType.TextEditor => name switch
+            HostNodeType.TextEditor => name switch
             {
-                SwiftProp.Text => Editor.TextProperty,
-                SwiftProp.TextColor => Editor.TextColorProperty,
-                SwiftProp.CharacterSpacing => Editor.CharacterSpacingProperty,
-                SwiftProp.TextCase => Editor.TextTransformProperty,
-                SwiftProp.Placeholder => Editor.PlaceholderProperty,
-                SwiftProp.PlaceholderColor => Editor.PlaceholderColorProperty,
-                SwiftProp.IsReadOnly => Editor.IsReadOnlyProperty,
-                SwiftProp.CursorPosition => InputView.CursorPositionProperty,
-                SwiftProp.SelectionLength => InputView.SelectionLengthProperty,
-                SwiftProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
-                SwiftProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
-                SwiftProp.MaximumLength => StateUIRenderer.MaxLengthProperty,
-                SwiftProp.InputPurpose => Editor.KeyboardProperty,
-                SwiftProp.GrowsWithText => Editor.AutoSizeProperty,
-                SwiftProp.HorizontalTextAlignment => Editor.HorizontalTextAlignmentProperty,
-                SwiftProp.VerticalTextAlignment => Editor.VerticalTextAlignmentProperty,
-                SwiftProp.FontSize => Editor.FontSizeProperty,
-                SwiftProp.FontFamily => Editor.FontFamilyProperty,
-                SwiftProp.FontAttributes => Editor.FontAttributesProperty,
-                SwiftProp.FontAutoScalingEnabled => Editor.FontAutoScalingEnabledProperty,
+                HostProp.Text => Editor.TextProperty,
+                HostProp.TextColor => Editor.TextColorProperty,
+                HostProp.CharacterSpacing => Editor.CharacterSpacingProperty,
+                HostProp.TextCase => Editor.TextTransformProperty,
+                HostProp.Placeholder => Editor.PlaceholderProperty,
+                HostProp.PlaceholderColor => Editor.PlaceholderColorProperty,
+                HostProp.IsReadOnly => Editor.IsReadOnlyProperty,
+                HostProp.CursorPosition => InputView.CursorPositionProperty,
+                HostProp.SelectionLength => InputView.SelectionLengthProperty,
+                HostProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
+                HostProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
+                HostProp.MaximumLength => StateUIRenderer.MaxLengthProperty,
+                HostProp.InputPurpose => Editor.KeyboardProperty,
+                HostProp.GrowsWithText => Editor.AutoSizeProperty,
+                HostProp.HorizontalTextAlignment => Editor.HorizontalTextAlignmentProperty,
+                HostProp.VerticalTextAlignment => Editor.VerticalTextAlignmentProperty,
+                HostProp.FontSize => Editor.FontSizeProperty,
+                HostProp.FontFamily => Editor.FontFamilyProperty,
+                HostProp.FontAttributes => Editor.FontAttributesProperty,
+                HostProp.FontAutoScalingEnabled => Editor.FontAutoScalingEnabledProperty,
                 _ => null,
             },
 
-            SwiftNodeType.Picker => name switch
+            HostNodeType.Picker => name switch
             {
-                SwiftProp.SelectedIndex => Picker.SelectedIndexProperty,
-                SwiftProp.IsOpen => Picker.IsOpenProperty,
-                SwiftProp.Title => Picker.TitleProperty,
-                SwiftProp.TextColor => Picker.TextColorProperty,
-                SwiftProp.CharacterSpacing => Picker.CharacterSpacingProperty,
-                SwiftProp.HorizontalTextAlignment => Picker.HorizontalTextAlignmentProperty,
-                SwiftProp.VerticalTextAlignment => Picker.VerticalTextAlignmentProperty,
-                SwiftProp.FontSize => Picker.FontSizeProperty,
-                SwiftProp.FontFamily => Picker.FontFamilyProperty,
-                SwiftProp.FontAttributes => Picker.FontAttributesProperty,
-                SwiftProp.FontAutoScalingEnabled => Picker.FontAutoScalingEnabledProperty,
+                HostProp.SelectedIndex => Picker.SelectedIndexProperty,
+                HostProp.IsOpen => Picker.IsOpenProperty,
+                HostProp.Title => Picker.TitleProperty,
+                HostProp.TextColor => Picker.TextColorProperty,
+                HostProp.CharacterSpacing => Picker.CharacterSpacingProperty,
+                HostProp.HorizontalTextAlignment => Picker.HorizontalTextAlignmentProperty,
+                HostProp.VerticalTextAlignment => Picker.VerticalTextAlignmentProperty,
+                HostProp.FontSize => Picker.FontSizeProperty,
+                HostProp.FontFamily => Picker.FontFamilyProperty,
+                HostProp.FontAttributes => Picker.FontAttributesProperty,
+                HostProp.FontAutoScalingEnabled => Picker.FontAutoScalingEnabledProperty,
                 _ => null,
             },
 
-            SwiftNodeType.DatePicker => name switch
+            HostNodeType.DatePicker => name switch
             {
-                SwiftProp.Date => DatePicker.DateProperty,
-                SwiftProp.IsOpen => DatePicker.IsOpenProperty,
-                SwiftProp.MinimumDate => DatePicker.MinimumDateProperty,
-                SwiftProp.MaximumDate => DatePicker.MaximumDateProperty,
-                SwiftProp.Format => DatePicker.FormatProperty,
-                SwiftProp.TextColor => DatePicker.TextColorProperty,
-                SwiftProp.CharacterSpacing => DatePicker.CharacterSpacingProperty,
-                SwiftProp.FontSize => DatePicker.FontSizeProperty,
-                SwiftProp.FontFamily => DatePicker.FontFamilyProperty,
-                SwiftProp.FontAttributes => DatePicker.FontAttributesProperty,
-                SwiftProp.FontAutoScalingEnabled => DatePicker.FontAutoScalingEnabledProperty,
+                HostProp.Date => DatePicker.DateProperty,
+                HostProp.IsOpen => DatePicker.IsOpenProperty,
+                HostProp.MinimumDate => DatePicker.MinimumDateProperty,
+                HostProp.MaximumDate => DatePicker.MaximumDateProperty,
+                HostProp.Format => DatePicker.FormatProperty,
+                HostProp.TextColor => DatePicker.TextColorProperty,
+                HostProp.CharacterSpacing => DatePicker.CharacterSpacingProperty,
+                HostProp.FontSize => DatePicker.FontSizeProperty,
+                HostProp.FontFamily => DatePicker.FontFamilyProperty,
+                HostProp.FontAttributes => DatePicker.FontAttributesProperty,
+                HostProp.FontAutoScalingEnabled => DatePicker.FontAutoScalingEnabledProperty,
                 _ => null,
             },
 
-            SwiftNodeType.TimePicker => name switch
+            HostNodeType.TimePicker => name switch
             {
-                SwiftProp.Time => TimePicker.TimeProperty,
-                SwiftProp.IsOpen => TimePicker.IsOpenProperty,
-                SwiftProp.Format => TimePicker.FormatProperty,
-                SwiftProp.TextColor => TimePicker.TextColorProperty,
-                SwiftProp.CharacterSpacing => TimePicker.CharacterSpacingProperty,
-                SwiftProp.FontSize => TimePicker.FontSizeProperty,
-                SwiftProp.FontFamily => TimePicker.FontFamilyProperty,
-                SwiftProp.FontAttributes => TimePicker.FontAttributesProperty,
-                SwiftProp.FontAutoScalingEnabled => TimePicker.FontAutoScalingEnabledProperty,
+                HostProp.Time => TimePicker.TimeProperty,
+                HostProp.IsOpen => TimePicker.IsOpenProperty,
+                HostProp.Format => TimePicker.FormatProperty,
+                HostProp.TextColor => TimePicker.TextColorProperty,
+                HostProp.CharacterSpacing => TimePicker.CharacterSpacingProperty,
+                HostProp.FontSize => TimePicker.FontSizeProperty,
+                HostProp.FontFamily => TimePicker.FontFamilyProperty,
+                HostProp.FontAttributes => TimePicker.FontAttributesProperty,
+                HostProp.FontAutoScalingEnabled => TimePicker.FontAutoScalingEnabledProperty,
                 _ => null,
             },
 
-            SwiftNodeType.Switch => name switch
+            HostNodeType.Switch => name switch
             {
-                SwiftProp.IsOn => Switch.IsToggledProperty,
+                HostProp.IsOn => Switch.IsToggledProperty,
                 _ => null,
             },
 
-            SwiftNodeType.CheckBox => name switch
+            HostNodeType.CheckBox => name switch
             {
-                SwiftProp.IsOn => CheckBox.IsCheckedProperty,
+                HostProp.IsOn => CheckBox.IsCheckedProperty,
                 _ => null,
             },
 
-            SwiftNodeType.RadioButton => name switch
+            HostNodeType.RadioButton => name switch
             {
-                SwiftProp.Text => RadioButton.ContentProperty,
-                SwiftProp.IsOn => RadioButton.IsCheckedProperty,
-                SwiftProp.GroupName => RadioButton.GroupNameProperty,
-                SwiftProp.TextColor => RadioButton.TextColorProperty,
-                SwiftProp.CharacterSpacing => RadioButton.CharacterSpacingProperty,
-                SwiftProp.TextCase => RadioButton.TextTransformProperty,
-                SwiftProp.BorderColor => RadioButton.BorderColorProperty,
-                SwiftProp.BorderWidth => RadioButton.BorderWidthProperty,
-                SwiftProp.CornerRadius => RadioButton.CornerRadiusProperty,
-                SwiftProp.Padding => RadioButton.PaddingProperty,
-                SwiftProp.FontSize => RadioButton.FontSizeProperty,
-                SwiftProp.FontFamily => RadioButton.FontFamilyProperty,
-                SwiftProp.FontAttributes => RadioButton.FontAttributesProperty,
-                SwiftProp.FontAutoScalingEnabled => RadioButton.FontAutoScalingEnabledProperty,
+                HostProp.Text => RadioButton.ContentProperty,
+                HostProp.IsOn => RadioButton.IsCheckedProperty,
+                HostProp.GroupName => RadioButton.GroupNameProperty,
+                HostProp.TextColor => RadioButton.TextColorProperty,
+                HostProp.CharacterSpacing => RadioButton.CharacterSpacingProperty,
+                HostProp.TextCase => RadioButton.TextTransformProperty,
+                HostProp.BorderColor => RadioButton.BorderColorProperty,
+                HostProp.BorderWidth => RadioButton.BorderWidthProperty,
+                HostProp.CornerRadius => RadioButton.CornerRadiusProperty,
+                HostProp.Padding => RadioButton.PaddingProperty,
+                HostProp.FontSize => RadioButton.FontSizeProperty,
+                HostProp.FontFamily => RadioButton.FontFamilyProperty,
+                HostProp.FontAttributes => RadioButton.FontAttributesProperty,
+                HostProp.FontAutoScalingEnabled => RadioButton.FontAutoScalingEnabledProperty,
                 _ => null,
             },
 
-            SwiftNodeType.Slider => name switch
+            HostNodeType.Slider => name switch
             {
-                SwiftProp.Minimum => Slider.MinimumProperty,
-                SwiftProp.Maximum => Slider.MaximumProperty,
-                SwiftProp.Value => Slider.ValueProperty,
+                HostProp.Minimum => Slider.MinimumProperty,
+                HostProp.Maximum => Slider.MaximumProperty,
+                HostProp.Value => Slider.ValueProperty,
                 _ => null,
             },
 
-            SwiftNodeType.Stepper => name switch
+            HostNodeType.Stepper => name switch
             {
-                SwiftProp.Minimum => Stepper.MinimumProperty,
-                SwiftProp.Maximum => Stepper.MaximumProperty,
-                SwiftProp.Step => Stepper.IncrementProperty,
-                SwiftProp.Value => Stepper.ValueProperty,
+                HostProp.Minimum => Stepper.MinimumProperty,
+                HostProp.Maximum => Stepper.MaximumProperty,
+                HostProp.Step => Stepper.IncrementProperty,
+                HostProp.Value => Stepper.ValueProperty,
                 _ => null,
             },
 
-            SwiftNodeType.SearchField => name switch
+            HostNodeType.SearchField => name switch
             {
-                SwiftProp.Text => SearchBar.TextProperty,
-                SwiftProp.TextColor => SearchBar.TextColorProperty,
-                SwiftProp.CharacterSpacing => SearchBar.CharacterSpacingProperty,
-                SwiftProp.TextCase => SearchBar.TextTransformProperty,
-                SwiftProp.Placeholder => SearchBar.PlaceholderProperty,
-                SwiftProp.PlaceholderColor => SearchBar.PlaceholderColorProperty,
-                SwiftProp.IsReadOnly => SearchBar.IsReadOnlyProperty,
-                SwiftProp.CursorPosition => InputView.CursorPositionProperty,
-                SwiftProp.SelectionLength => InputView.SelectionLengthProperty,
-                SwiftProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
-                SwiftProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
-                SwiftProp.MaximumLength => StateUIRenderer.MaxLengthProperty,
-                SwiftProp.InputPurpose => SearchBar.KeyboardProperty,
-                SwiftProp.ReturnKey => SearchBar.ReturnTypeProperty,
-                SwiftProp.HorizontalTextAlignment => SearchBar.HorizontalTextAlignmentProperty,
-                SwiftProp.VerticalTextAlignment => SearchBar.VerticalTextAlignmentProperty,
-                SwiftProp.FontSize => SearchBar.FontSizeProperty,
-                SwiftProp.FontFamily => SearchBar.FontFamilyProperty,
-                SwiftProp.FontAttributes => SearchBar.FontAttributesProperty,
-                SwiftProp.FontAutoScalingEnabled => SearchBar.FontAutoScalingEnabledProperty,
+                HostProp.Text => SearchBar.TextProperty,
+                HostProp.TextColor => SearchBar.TextColorProperty,
+                HostProp.CharacterSpacing => SearchBar.CharacterSpacingProperty,
+                HostProp.TextCase => SearchBar.TextTransformProperty,
+                HostProp.Placeholder => SearchBar.PlaceholderProperty,
+                HostProp.PlaceholderColor => SearchBar.PlaceholderColorProperty,
+                HostProp.IsReadOnly => SearchBar.IsReadOnlyProperty,
+                HostProp.CursorPosition => InputView.CursorPositionProperty,
+                HostProp.SelectionLength => InputView.SelectionLengthProperty,
+                HostProp.IsSpellCheckEnabled => InputView.IsSpellCheckEnabledProperty,
+                HostProp.IsTextPredictionEnabled => InputView.IsTextPredictionEnabledProperty,
+                HostProp.MaximumLength => StateUIRenderer.MaxLengthProperty,
+                HostProp.InputPurpose => SearchBar.KeyboardProperty,
+                HostProp.ReturnKey => SearchBar.ReturnTypeProperty,
+                HostProp.HorizontalTextAlignment => SearchBar.HorizontalTextAlignmentProperty,
+                HostProp.VerticalTextAlignment => SearchBar.VerticalTextAlignmentProperty,
+                HostProp.FontSize => SearchBar.FontSizeProperty,
+                HostProp.FontFamily => SearchBar.FontFamilyProperty,
+                HostProp.FontAttributes => SearchBar.FontAttributesProperty,
+                HostProp.FontAutoScalingEnabled => SearchBar.FontAutoScalingEnabledProperty,
                 _ => null,
             },
 
-            SwiftNodeType.ActivityIndicator => name switch
+            HostNodeType.ActivityIndicator => name switch
             {
-                SwiftProp.IsRunning => ActivityIndicator.IsRunningProperty,
+                HostProp.IsRunning => ActivityIndicator.IsRunningProperty,
                 _ => null,
             },
 
-            SwiftNodeType.ProgressBar => name switch
+            HostNodeType.ProgressBar => name switch
             {
-                SwiftProp.Progress => ProgressBar.ProgressProperty,
+                HostProp.Progress => ProgressBar.ProgressProperty,
                 _ => null,
             },
 
-            SwiftNodeType.Image => name switch
+            HostNodeType.Image => name switch
             {
-                SwiftProp.Source => Image.SourceProperty,
-                SwiftProp.Aspect => Image.AspectProperty,
-                SwiftProp.IsAnimating => Image.IsAnimationPlayingProperty,
+                HostProp.Source => Image.SourceProperty,
+                HostProp.Aspect => Image.AspectProperty,
+                HostProp.IsAnimating => Image.IsAnimationPlayingProperty,
                 _ => null,
             },
 
-            SwiftNodeType.ColorBox => name switch
+            HostNodeType.ColorBox => name switch
             {
-                SwiftProp.Color => BoxView.ColorProperty,
-                SwiftProp.CornerRadius => BoxView.CornerRadiusProperty,
+                HostProp.Color => BoxView.ColorProperty,
+                HostProp.CornerRadius => BoxView.CornerRadiusProperty,
                 _ => null,
             },
 
-            SwiftNodeType.Border => name switch
+            HostNodeType.Border => name switch
             {
-                SwiftProp.Stroke => Border.StrokeProperty,
-                SwiftProp.StrokeWidth => Border.StrokeThicknessProperty,
-                SwiftProp.Shape => Border.StrokeShapeProperty,
-                SwiftProp.StrokeDashPattern => Border.StrokeDashArrayProperty,
-                SwiftProp.StrokeDashOffset => Border.StrokeDashOffsetProperty,
-                SwiftProp.StrokeLineCap => Border.StrokeLineCapProperty,
-                SwiftProp.StrokeLineJoin => Border.StrokeLineJoinProperty,
-                SwiftProp.StrokeMiterLimit => Border.StrokeMiterLimitProperty,
-                SwiftProp.Padding => Border.PaddingProperty,
+                HostProp.Stroke => Border.StrokeProperty,
+                HostProp.StrokeWidth => Border.StrokeThicknessProperty,
+                HostProp.Shape => Border.StrokeShapeProperty,
+                HostProp.StrokeDashPattern => Border.StrokeDashArrayProperty,
+                HostProp.StrokeDashOffset => Border.StrokeDashOffsetProperty,
+                HostProp.StrokeLineCap => Border.StrokeLineCapProperty,
+                HostProp.StrokeLineJoin => Border.StrokeLineJoinProperty,
+                HostProp.StrokeMiterLimit => Border.StrokeMiterLimitProperty,
+                HostProp.Padding => Border.PaddingProperty,
                 _ => null,
             },
 
-            SwiftNodeType.PositionIndicator => name switch
+            HostNodeType.PositionIndicator => name switch
             {
-                SwiftProp.Count => IndicatorView.CountProperty,
-                SwiftProp.Position => IndicatorView.PositionProperty,
-                SwiftProp.IndicatorColor => IndicatorView.IndicatorColorProperty,
-                SwiftProp.SelectedIndicatorColor => IndicatorView.SelectedIndicatorColorProperty,
-                SwiftProp.IndicatorSize => IndicatorView.IndicatorSizeProperty,
-                SwiftProp.MaximumVisible => IndicatorView.MaximumVisibleProperty,
-                SwiftProp.IndicatorsShape => IndicatorView.IndicatorsShapeProperty,
-                SwiftProp.HideSingle => IndicatorView.HideSingleProperty,
+                HostProp.Count => IndicatorView.CountProperty,
+                HostProp.Position => IndicatorView.PositionProperty,
+                HostProp.IndicatorColor => IndicatorView.IndicatorColorProperty,
+                HostProp.SelectedIndicatorColor => IndicatorView.SelectedIndicatorColorProperty,
+                HostProp.IndicatorSize => IndicatorView.IndicatorSizeProperty,
+                HostProp.MaximumVisible => IndicatorView.MaximumVisibleProperty,
+                HostProp.IndicatorsShape => IndicatorView.IndicatorsShapeProperty,
+                HostProp.HideSingle => IndicatorView.HideSingleProperty,
                 _ => null,
             },
 
-            SwiftNodeType.Grid => name switch
+            HostNodeType.Grid => name switch
             {
-                SwiftProp.Rows => Grid.RowDefinitionsProperty,
-                SwiftProp.Columns => Grid.ColumnDefinitionsProperty,
-                SwiftProp.RowSpacing => Grid.RowSpacingProperty,
-                SwiftProp.ColumnSpacing => Grid.ColumnSpacingProperty,
-                SwiftProp.Padding => Grid.PaddingProperty,
-                SwiftProp.AvoidsSafeArea => Grid.SafeAreaEdgesProperty,
-                SwiftProp.ClipsContent => Grid.IsClippedToBoundsProperty,
+                HostProp.Rows => Grid.RowDefinitionsProperty,
+                HostProp.Columns => Grid.ColumnDefinitionsProperty,
+                HostProp.RowSpacing => Grid.RowSpacingProperty,
+                HostProp.ColumnSpacing => Grid.ColumnSpacingProperty,
+                HostProp.Padding => Grid.PaddingProperty,
+                HostProp.AvoidsSafeArea => Grid.SafeAreaEdgesProperty,
+                HostProp.ClipsContent => Grid.IsClippedToBoundsProperty,
                 _ => null,
             },
 
-            SwiftNodeType.VStack => name switch
+            HostNodeType.VStack => name switch
             {
-                SwiftProp.Spacing => VerticalStackLayout.SpacingProperty,
-                SwiftProp.Padding => VerticalStackLayout.PaddingProperty,
-                SwiftProp.AvoidsSafeArea => VerticalStackLayout.SafeAreaEdgesProperty,
-                SwiftProp.ClipsContent => VerticalStackLayout.IsClippedToBoundsProperty,
+                HostProp.Spacing => VerticalStackLayout.SpacingProperty,
+                HostProp.Padding => VerticalStackLayout.PaddingProperty,
+                HostProp.AvoidsSafeArea => VerticalStackLayout.SafeAreaEdgesProperty,
+                HostProp.ClipsContent => VerticalStackLayout.IsClippedToBoundsProperty,
                 _ => null,
             },
 
-            SwiftNodeType.HStack => name switch
+            HostNodeType.HStack => name switch
             {
-                SwiftProp.Spacing => HorizontalStackLayout.SpacingProperty,
-                SwiftProp.Padding => HorizontalStackLayout.PaddingProperty,
-                SwiftProp.AvoidsSafeArea => HorizontalStackLayout.SafeAreaEdgesProperty,
-                SwiftProp.ClipsContent => HorizontalStackLayout.IsClippedToBoundsProperty,
+                HostProp.Spacing => HorizontalStackLayout.SpacingProperty,
+                HostProp.Padding => HorizontalStackLayout.PaddingProperty,
+                HostProp.AvoidsSafeArea => HorizontalStackLayout.SafeAreaEdgesProperty,
+                HostProp.ClipsContent => HorizontalStackLayout.IsClippedToBoundsProperty,
                 _ => null,
             },
 
-            SwiftNodeType.ScrollView => name switch
+            HostNodeType.ScrollView => name switch
             {
-                SwiftProp.Orientation => ScrollView.OrientationProperty,
-                SwiftProp.Padding => ScrollView.PaddingProperty,
-                SwiftProp.VerticalScrollBarVisibility => ScrollView.VerticalScrollBarVisibilityProperty,
-                SwiftProp.HorizontalScrollBarVisibility => ScrollView.HorizontalScrollBarVisibilityProperty,
+                HostProp.Orientation => ScrollView.OrientationProperty,
+                HostProp.Padding => ScrollView.PaddingProperty,
+                HostProp.VerticalScrollBarVisibility => ScrollView.VerticalScrollBarVisibilityProperty,
+                HostProp.HorizontalScrollBarVisibility => ScrollView.HorizontalScrollBarVisibilityProperty,
                 _ => null,
             },
 
-            SwiftNodeType.WebView => name switch
+            HostNodeType.WebView => name switch
             {
-                SwiftProp.Source => WebView.SourceProperty,
-                SwiftProp.UserAgent => WebView.UserAgentProperty,
+                HostProp.Source => WebView.SourceProperty,
+                HostProp.UserAgent => WebView.UserAgentProperty,
                 _ => null,
             },
 
-            SwiftNodeType.TitleBar => name switch
+            HostNodeType.TitleBar => name switch
             {
-                SwiftProp.Title => TitleBar.TitleProperty,
-                SwiftProp.Subtitle => TitleBar.SubtitleProperty,
-                SwiftProp.Icon => TitleBar.IconProperty,
-                SwiftProp.BarForegroundColor => TitleBar.ForegroundColorProperty,
+                HostProp.Title => TitleBar.TitleProperty,
+                HostProp.Subtitle => TitleBar.SubtitleProperty,
+                HostProp.Icon => TitleBar.IconProperty,
+                HostProp.BarForegroundColor => TitleBar.ForegroundColorProperty,
                 _ => null,
             },
 
-            SwiftNodeType.Map => name switch
+            HostNodeType.Map => name switch
             {
-                SwiftProp.MapType => Microsoft.Maui.Controls.Maps.Map.MapTypeProperty,
-                SwiftProp.IsScrollEnabled => Microsoft.Maui.Controls.Maps.Map.IsScrollEnabledProperty,
-                SwiftProp.IsZoomEnabled => Microsoft.Maui.Controls.Maps.Map.IsZoomEnabledProperty,
-                SwiftProp.IsTrafficEnabled => Microsoft.Maui.Controls.Maps.Map.IsTrafficEnabledProperty,
-                SwiftProp.ShowsUserLocation => Microsoft.Maui.Controls.Maps.Map.IsShowingUserProperty,
+                HostProp.MapType => Microsoft.Maui.Controls.Maps.Map.MapTypeProperty,
+                HostProp.IsScrollEnabled => Microsoft.Maui.Controls.Maps.Map.IsScrollEnabledProperty,
+                HostProp.IsZoomEnabled => Microsoft.Maui.Controls.Maps.Map.IsZoomEnabledProperty,
+                HostProp.IsTrafficEnabled => Microsoft.Maui.Controls.Maps.Map.IsTrafficEnabledProperty,
+                HostProp.ShowsUserLocation => Microsoft.Maui.Controls.Maps.Map.IsShowingUserProperty,
                 _ => null,
             },
 
-            SwiftNodeType.AbsoluteLayout => name switch
+            HostNodeType.AbsoluteLayout => name switch
             {
-                SwiftProp.Padding => AbsoluteLayout.PaddingProperty,
-                SwiftProp.AvoidsSafeArea => AbsoluteLayout.SafeAreaEdgesProperty,
-                SwiftProp.ClipsContent => AbsoluteLayout.IsClippedToBoundsProperty,
+                HostProp.Padding => AbsoluteLayout.PaddingProperty,
+                HostProp.AvoidsSafeArea => AbsoluteLayout.SafeAreaEdgesProperty,
+                HostProp.ClipsContent => AbsoluteLayout.IsClippedToBoundsProperty,
                 _ => null,
             },
 
-            SwiftNodeType.RefreshView => name switch
+            HostNodeType.RefreshView => name switch
             {
-                SwiftProp.IsRefreshing => RefreshView.IsRefreshingProperty,
-                SwiftProp.IsRefreshEnabled => RefreshView.IsRefreshEnabledProperty,
+                HostProp.IsRefreshing => RefreshView.IsRefreshingProperty,
+                HostProp.IsRefreshEnabled => RefreshView.IsRefreshEnabledProperty,
                 _ => null,
             },
 
-            SwiftNodeType.SwipeView => name switch
+            HostNodeType.SwipeView => name switch
             {
-                SwiftProp.Threshold => SwipeView.ThresholdProperty,
+                HostProp.Threshold => SwipeView.ThresholdProperty,
                 _ => null,
             },
 
             // The shapes. Each falls through to the tier MAUI declares once, on
             // Shape - which is why there is a method for it rather than seven
             // copies of the same nine names.
-            SwiftNodeType.Rectangle => name switch
+            HostNodeType.Rectangle => name switch
             {
-                SwiftProp.CornerRadius => SwiftRoundRectangle.CornerRadiusProperty,
+                HostProp.CornerRadius => SwiftRoundRectangle.CornerRadiusProperty,
                 _ => ShapeProperty(name),
             },
 
-            SwiftNodeType.Ellipse => ShapeProperty(name),
+            HostNodeType.Ellipse => ShapeProperty(name),
 
-            SwiftNodeType.Line => name switch
+            HostNodeType.Line => name switch
             {
-                SwiftProp.X1 => SwiftLine.X1Property,
-                SwiftProp.Y1 => SwiftLine.Y1Property,
-                SwiftProp.X2 => SwiftLine.X2Property,
-                SwiftProp.Y2 => SwiftLine.Y2Property,
+                HostProp.X1 => SwiftLine.X1Property,
+                HostProp.Y1 => SwiftLine.Y1Property,
+                HostProp.X2 => SwiftLine.X2Property,
+                HostProp.Y2 => SwiftLine.Y2Property,
                 _ => ShapeProperty(name),
             },
 
-            SwiftNodeType.Path => name switch
+            HostNodeType.Path => name switch
             {
-                SwiftProp.Data => SwiftPath.DataProperty,
+                HostProp.Data => SwiftPath.DataProperty,
                 _ => ShapeProperty(name),
             },
 
-            SwiftNodeType.Polygon => name switch
+            HostNodeType.Polygon => name switch
             {
-                SwiftProp.Points => SwiftPolygon.PointsProperty,
-                SwiftProp.FillRule => SwiftPolygon.FillRuleProperty,
+                HostProp.Points => SwiftPolygon.PointsProperty,
+                HostProp.FillRule => SwiftPolygon.FillRuleProperty,
                 _ => ShapeProperty(name),
             },
 
-            SwiftNodeType.Polyline => name switch
+            HostNodeType.Polyline => name switch
             {
-                SwiftProp.Points => SwiftPolyline.PointsProperty,
-                SwiftProp.FillRule => SwiftPolyline.FillRuleProperty,
+                HostProp.Points => SwiftPolyline.PointsProperty,
+                HostProp.FillRule => SwiftPolyline.FillRuleProperty,
                 _ => ShapeProperty(name),
             },
 
-            SwiftNodeType.Canvas => name switch
+            HostNodeType.Canvas => name switch
             {
-                SwiftProp.Drawable => GraphicsView.DrawableProperty,
+                HostProp.Drawable => GraphicsView.DrawableProperty,
                 _ => null,
             },
 
@@ -920,16 +920,16 @@ internal static class SwiftStyles
     /// stack it lands in.
     /// </remarks>
     /// <param name="name">The property, by member.</param>
-    private static BindableProperty? PageProperty(SwiftProp name)
+    private static BindableProperty? PageProperty(HostProp name)
     {
         return name switch
         {
-            SwiftProp.Title => Page.TitleProperty,
-            SwiftProp.Icon => Page.IconImageSourceProperty,
-            SwiftProp.Padding => Page.PaddingProperty,
-            SwiftProp.HasNavigationBar => NavigationPage.HasNavigationBarProperty,
-            SwiftProp.HasBackButton => NavigationPage.HasBackButtonProperty,
-            SwiftProp.BackButtonTitle => NavigationPage.BackButtonTitleProperty,
+            HostProp.Title => Page.TitleProperty,
+            HostProp.Icon => Page.IconImageSourceProperty,
+            HostProp.Padding => Page.PaddingProperty,
+            HostProp.HasNavigationBar => NavigationPage.HasNavigationBarProperty,
+            HostProp.HasBackButton => NavigationPage.HasBackButtonProperty,
+            HostProp.BackButtonTitle => NavigationPage.BackButtonTitleProperty,
 
             _ => null,
         };
@@ -937,12 +937,12 @@ internal static class SwiftStyles
 
     /// <summary>What a Menu on the menu bar has - MAUI's MenuBarItem.</summary>
     /// <param name="name">The property, by member.</param>
-    private static BindableProperty? MenuBarProperty(SwiftProp name)
+    private static BindableProperty? MenuBarProperty(HostProp name)
     {
         return name switch
         {
-            SwiftProp.Text => MenuBarItem.TextProperty,
-            SwiftProp.IsEnabled => MenuBarItem.IsEnabledProperty,
+            HostProp.Text => MenuBarItem.TextProperty,
+            HostProp.IsEnabled => MenuBarItem.IsEnabledProperty,
             _ => null,
         };
     }
@@ -957,14 +957,14 @@ internal static class SwiftStyles
     /// that property cleared rather than the whole item rebuilt.
     /// </remarks>
     /// <param name="name">The property, by member.</param>
-    private static BindableProperty? MenuItemProperty(SwiftProp name)
+    private static BindableProperty? MenuItemProperty(HostProp name)
     {
         return name switch
         {
-            SwiftProp.Text => MenuItem.TextProperty,
-            SwiftProp.Icon => MenuItem.IconImageSourceProperty,
-            SwiftProp.IsDestructive => MenuItem.IsDestructiveProperty,
-            SwiftProp.IsEnabled => MenuItem.IsEnabledProperty,
+            HostProp.Text => MenuItem.TextProperty,
+            HostProp.Icon => MenuItem.IconImageSourceProperty,
+            HostProp.IsDestructive => MenuItem.IsDestructiveProperty,
+            HostProp.IsEnabled => MenuItem.IsEnabledProperty,
             _ => null,
         };
     }
@@ -977,20 +977,20 @@ internal static class SwiftStyles
     /// Not in <see cref="Shared"/>, where it would answer for a Label as well:
     /// these belong to the shapes and to nothing else.
     /// </remarks>
-    private static BindableProperty? ShapeProperty(SwiftProp name)
+    private static BindableProperty? ShapeProperty(HostProp name)
     {
         return name switch
         {
-            SwiftProp.Fill => Shape.FillProperty,
-            SwiftProp.Stroke => Shape.StrokeProperty,
-            SwiftProp.StrokeWidth => Shape.StrokeThicknessProperty,
-            SwiftProp.StrokeDashPattern => Shape.StrokeDashArrayProperty,
-            SwiftProp.StrokeDashOffset => Shape.StrokeDashOffsetProperty,
-            SwiftProp.StrokeLineCap => Shape.StrokeLineCapProperty,
-            SwiftProp.StrokeLineJoin => Shape.StrokeLineJoinProperty,
-            SwiftProp.StrokeMiterLimit => Shape.StrokeMiterLimitProperty,
-            SwiftProp.Aspect => Shape.AspectProperty,
-            SwiftProp.RenderTransform => SwiftShapes.GeometryTransformProperty,
+            HostProp.Fill => Shape.FillProperty,
+            HostProp.Stroke => Shape.StrokeProperty,
+            HostProp.StrokeWidth => Shape.StrokeThicknessProperty,
+            HostProp.StrokeDashPattern => Shape.StrokeDashArrayProperty,
+            HostProp.StrokeDashOffset => Shape.StrokeDashOffsetProperty,
+            HostProp.StrokeLineCap => Shape.StrokeLineCapProperty,
+            HostProp.StrokeLineJoin => Shape.StrokeLineJoinProperty,
+            HostProp.StrokeMiterLimit => Shape.StrokeMiterLimitProperty,
+            HostProp.Aspect => Shape.AspectProperty,
+            HostProp.RenderTransform => SwiftShapes.GeometryTransformProperty,
             _ => null,
         };
     }

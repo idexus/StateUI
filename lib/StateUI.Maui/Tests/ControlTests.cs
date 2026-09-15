@@ -739,7 +739,7 @@ public class ControlTests
             // the things they ARE: numbers as numbers, colours as colours, text
             // as text. So nothing has to be parsed back out of a joined string,
             // and a record carrying a comma is no different from any other.
-            SwiftWireValue[] commands = Assert.IsType<SwiftDrawable>(graphics.Drawable).Commands;
+            HostValue[] commands = Assert.IsType<SwiftDrawable>(graphics.Drawable).Commands;
 
             Assert.Equal(
                 (int)SwiftDrawable.Kind.FillColor,
@@ -749,7 +749,7 @@ public class ControlTests
                 commands[^1].Values![0].Member);
 
             // The one record that carries text, read as the last of its values.
-            SwiftWireValue drawString = Assert.Single(
+            HostValue drawString = Assert.Single(
                 commands,
                 record => record.Values![0].Member == (int)SwiftDrawable.Kind.DrawText);
 

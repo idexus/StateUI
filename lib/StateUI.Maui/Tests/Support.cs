@@ -226,7 +226,7 @@ internal sealed class Host
     /// never the same string as the text <c>"#FF3366CC"</c>.
     /// </para>
     /// <para>
-    /// The arms are exactly what <c>SwiftWire.Write</c> can produce: a property
+    /// The arms are exactly what <c>WireCodec.Write</c> can produce: a property
     /// token, a name and a nothing are read by this side and never written by
     /// it, so a tag carrying one is a writer bug and says so.
     /// </para>
@@ -291,7 +291,7 @@ internal sealed class Host
         }
 
         byte version = U8();
-        Assert.Equal(SwiftWire.Version, version);
+        Assert.Equal(WireCodec.Version, version);
 
         int count = U8();
         var values = new List<string>(count);
@@ -310,7 +310,7 @@ internal sealed class Host
     /// <summary>Applies one message, the way StateUIHost does.</summary>
     public View Apply(string json)
     {
-        SwiftNode root = Parse(json);
+        HostPatch root = Parse(json);
         Current = Renderer.Render(Current, root);
         return Current;
     }
@@ -320,20 +320,20 @@ internal sealed class Host
     /// binary message applied to it - one per host, exactly as the session
     /// keeps one. A SEQUENCE of fixtures teaches it message by message.
     /// </summary>
-    internal SwiftWireDictionary Names { get; } = new();
+    internal WireDictionary Names { get; } = new();
 
     /// <summary>Applies a whole binary fixture, envelope and all.</summary>
     public View ApplyMessage(byte[] bytes) =>
-        ApplyMessage(SwiftWire.ReadMessage(bytes, Names).Root!);
+        ApplyMessage(WireCodec.ReadMessage(bytes, Names).Root!);
 
     /// <summary>Applies a whole message written as inline JSON - see <see cref="Parse"/>.</summary>
     public View ApplyMessage(string json) => ApplyMessage(Parse(json));
 
-    internal View ApplyMessage(SwiftNode root)
+    internal View ApplyMessage(HostPatch root)
     {
         // A fixture describes an Application, a Scene, a Window and a Page above
         // the view tree, the way the real one does; the renderer is given the view.
-        SwiftNode node = root;
+        HostPatch node = root;
 
         while (IsChrome(node))
         {
@@ -350,9 +350,9 @@ internal sealed class Host
     }
 
     /// <summary>The four the renderer is never handed: it is given the view.</summary>
-    private static bool IsChrome(SwiftNode node) =>
-        node.Type is SwiftNodeType.Application or SwiftNodeType.Scene
-            or SwiftNodeType.Window or SwiftNodeType.Page;
+    private static bool IsChrome(HostPatch node) =>
+        node.Type is HostNodeType.Application or HostNodeType.Scene
+            or HostNodeType.Window or HostNodeType.Page;
 
     /// <summary>
     /// A window with a Swift application behind it, the way the platform makes
@@ -405,16 +405,16 @@ internal sealed class Host
     /// name it uses, which is what a fresh dictionary per file checks. A
     /// fixture from a sequence goes through a host's <see cref="ApplyMessage(byte[])"/>.
     /// </summary>
-    public static SwiftNode Parse(byte[] bytes) =>
-        SwiftWire.ReadMessage(bytes, new SwiftWireDictionary()).Root!;
+    public static HostPatch Parse(byte[] bytes) =>
+        WireCodec.ReadMessage(bytes, new WireDictionary()).Root!;
 
     /// <summary>
     /// A node written as JSON - the AUTHORING notation the tests keep, because
     /// an inline tree is worth reading. The wire itself is binary; this bridge
     /// exists on the test side only, translating the notation into the same
-    /// <see cref="SwiftNode"/> the reader produces.
+    /// <see cref="HostPatch"/> the reader produces.
     /// </summary>
-    public static SwiftNode Parse(string json)
+    public static HostPatch Parse(string json)
     {
         using JsonDocument document = JsonDocument.Parse(json);
         JsonElement root = document.RootElement;
@@ -427,9 +427,9 @@ internal sealed class Host
         return NodeFrom(root);
     }
 
-    private static SwiftNode NodeFrom(JsonElement element)
+    private static HostPatch NodeFrom(JsonElement element)
     {
-        var node = new SwiftNode();
+        var node = new HostPatch();
 
         if (element.TryGetProperty("id", out JsonElement id))
         {
@@ -444,7 +444,7 @@ internal sealed class Host
         if (element.TryGetProperty("type", out JsonElement type))
         {
             node.TypeName = type.GetString() ?? "";
-            node.Type = SwiftTokenNames<SwiftNodeType>.Parse(node.TypeName);
+            node.Type = TokenNames<HostNodeType>.Parse(node.TypeName);
         }
 
         if (element.TryGetProperty("replace", out JsonElement replace))
@@ -457,9 +457,9 @@ internal sealed class Host
             node.Props = [];
             foreach (JsonProperty property in props.EnumerateObject())
             {
-                SwiftProp key = SwiftTokenNames<SwiftProp>.Parse(property.Name);
+                HostProp key = TokenNames<HostProp>.Parse(property.Name);
 
-                if (key != SwiftProp.None)
+                if (key != HostProp.None)
                 {
                     node.Props[key] = ValueFrom(property.Value);
                 }
@@ -477,7 +477,7 @@ internal sealed class Host
         {
             node.Cleared =
             [
-                .. cleared.EnumerateArray().Select(key => SwiftKey.Own(key.GetString() ?? "")),
+                .. cleared.EnumerateArray().Select(key => HostPropKey.Own(key.GetString() ?? "")),
             ];
         }
 
@@ -486,9 +486,9 @@ internal sealed class Host
             node.Events = [];
             foreach (JsonProperty handler in events.EnumerateObject())
             {
-                SwiftEvent raised = SwiftTokenNames<SwiftEvent>.Parse(handler.Name);
+                HostEvent raised = TokenNames<HostEvent>.Parse(handler.Name);
 
-                if (raised != SwiftEvent.None)
+                if (raised != HostEvent.None)
                 {
                     node.Events[raised] = handler.Value.GetInt32();
                 }
@@ -530,10 +530,10 @@ internal sealed class Host
         return node;
     }
 
-    private static SwiftId IdFrom(JsonElement id) =>
+    private static HostElementId IdFrom(JsonElement id) =>
         id.ValueKind == JsonValueKind.String
-            ? new SwiftId(id.GetString() ?? "")
-            : new SwiftId(id.GetInt32());
+            ? new HostElementId(id.GetString() ?? "")
+            : new HostElementId(id.GetInt32());
 
     /// <summary>
     /// One member of a closed vocabulary, written the way the notation spells
@@ -542,7 +542,7 @@ internal sealed class Host
     /// <remarks>
     /// <para>
     /// Takes the MIRROR MEMBER rather than a number, so a test reads
-    /// <c>Member(SwiftLineBreak.TailTruncation)</c> and never a bare 4 -
+    /// <c>Member(HostLineBreak.TailTruncation)</c> and never a bare 4 -
     /// which in a JSON blob says nothing about which member it is, or even
     /// which vocabulary. A bit set is the members ORed, since that is one
     /// number too.
@@ -560,7 +560,7 @@ internal sealed class Host
     /// hole.
     /// </para>
     /// </remarks>
-    /// <typeparam name="T">The mirror enum in <c>Protocol/SwiftWireEnums.cs</c>.</typeparam>
+    /// <typeparam name="T">The mirror enum in <c>Protocol/HostEnums.cs</c>.</typeparam>
     /// <param name="member">The member, or the OR of several for a bit set.</param>
     /// <returns>The notation's spelling of that member.</returns>
     public static string Member<T>(T member)
@@ -574,36 +574,36 @@ internal sealed class Host
     /// One VALUE written as JSON - the same authoring notation
     /// <see cref="Parse(string)"/> reads, for a test that builds a value alone.
     /// </summary>
-    public static SwiftWireValue Value(string json)
+    public static HostValue Value(string json)
     {
         using JsonDocument document = JsonDocument.Parse(json);
         return ValueFrom(document.RootElement);
     }
 
-    private static SwiftWireValue ValueFrom(JsonElement value) => value.ValueKind switch
+    private static HostValue ValueFrom(JsonElement value) => value.ValueKind switch
     {
         // "#RRGGBB" is a COLOUR in this notation, the way [1,2,3,4] is a
         // Thickness - the wire carries four bytes of its own and has no
         // spelling for one, so the tests need a way to write what they mean.
-        JsonValueKind.String when Colour(value.GetString()) is SwiftWireValue colour => colour,
+        JsonValueKind.String when Colour(value.GetString()) is HostValue colour => colour,
 
-        JsonValueKind.String => new SwiftWireValue(value.GetString() ?? ""),
-        JsonValueKind.Number => new SwiftWireValue(value.GetDouble()),
-        JsonValueKind.True => new SwiftWireValue(SwiftWireValue.TagTrue),
-        JsonValueKind.False => new SwiftWireValue(SwiftWireValue.TagFalse),
+        JsonValueKind.String => new HostValue(value.GetString() ?? ""),
+        JsonValueKind.Number => new HostValue(value.GetDouble()),
+        JsonValueKind.True => new HostValue(HostValue.TagTrue),
+        JsonValueKind.False => new HostValue(HostValue.TagFalse),
         // An EMPTY array reads as strings: the one empty list a test writes
         // is a list of ids, and the binary wire's tag would have said so.
         JsonValueKind.Array when value.GetArrayLength() > 0 && value.EnumerateArray().All(
             item => item.ValueKind == JsonValueKind.Number) =>
-            new SwiftWireValue([.. value.EnumerateArray().Select(item => item.GetDouble())]),
+            new HostValue([.. value.EnumerateArray().Select(item => item.GetDouble())]),
         JsonValueKind.Array when value.EnumerateArray().All(
             item => item.ValueKind == JsonValueKind.String) =>
-            new SwiftWireValue([.. value.EnumerateArray().Select(item => item.GetString() ?? "")]),
+            new HostValue([.. value.EnumerateArray().Select(item => item.GetString() ?? "")]),
 
         // Anything else in an array is a list of VALUES of mixed kinds, which
         // is what a brush travels as, and every value made of parts: a grid's
         // lengths, a stroke shape, a WebView's source, a drawing.
-        JsonValueKind.Array => new SwiftWireValue(
+        JsonValueKind.Array => new HostValue(
             [.. value.EnumerateArray().Select(ValueFrom)]),
 
         // {"enum": 4} is a member of a closed vocabulary and {"name": "Row"} is
@@ -612,14 +612,14 @@ internal sealed class Host
         // notation has to be able to say it, or a test could only write values
         // the wire does not carry.
         JsonValueKind.Object when value.TryGetProperty("enum", out JsonElement member) =>
-            new SwiftWireValue(SwiftWireValue.TagEnumeration, member.GetInt32()),
+            new HostValue(HostValue.TagEnumeration, member.GetInt32()),
         JsonValueKind.Object when value.TryGetProperty("name", out JsonElement name) =>
-            new SwiftWireValue(SwiftWireValue.TagName, name.GetString() ?? ""),
+            new HostValue(HostValue.TagName, name.GetString() ?? ""),
 
         // JSON null is the wire's own NOTHING - an argument or a list element
         // that is not there. It answers null from every accessor, which is what
         // an absent value has to do.
-        _ => new SwiftWireValue(SwiftWireValue.TagNothing),
+        _ => new HostValue(HostValue.TagNothing),
     };
 
     /// <summary>
@@ -627,7 +627,7 @@ internal sealed class Host
     /// when the text is not one - the same four lengths Types/Color.swift
     /// reads, since this notation stands in for what Swift would have written.
     /// </summary>
-    private static SwiftWireValue? Colour(string? text)
+    private static HostValue? Colour(string? text)
     {
         if (text is null || !text.StartsWith('#'))
         {
@@ -658,7 +658,7 @@ internal sealed class Host
 
         byte Channel(int at) => Convert.ToByte(full.Substring(at, 2), 16);
 
-        return new SwiftWireValue(Channel(2), Channel(4), Channel(6), Channel(0));
+        return new HostValue(Channel(2), Channel(4), Channel(6), Channel(0));
     }
 
     /// <summary>Each digit written twice - the hex shorthand, expanded.</summary>

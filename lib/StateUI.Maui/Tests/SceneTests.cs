@@ -187,7 +187,7 @@ public class SceneTests
         """;
 
     /// <summary>A name - what a scene's number and a key travel as.</summary>
-    private static SwiftWireValue Name(string name) => new(SwiftWireValue.TagName, name);
+    private static HostValue Name(string name) => new(HostValue.TagName, name);
 
     /// <summary>The titles of the windows an application is showing, in order.</summary>
     private static string[] Titles(StateUIApplication application) =>
@@ -694,7 +694,7 @@ public class SceneTests
         var heard = new Heard();
 
         heard.Adopted(new SceneOrigin(
-            "S1", null, null, null, [("accent", SwiftWireValue.Of("teal")), ("size", SwiftWireValue.Of(3.0))]));
+            "S1", null, null, null, [("accent", HostValue.Of("teal")), ("size", HostValue.Of(3.0))]));
 
         Assert.Equal(["\"accent\", \"teal\", \"size\", 3"], heard.Connected);
     }
@@ -710,14 +710,14 @@ public class SceneTests
         var heard = new Heard();
 
         StateUIWindow main = heard.Adopted(
-            new SceneOrigin("S1", null, null, null, [("accent", SwiftWireValue.Of("teal"))]));
+            new SceneOrigin("S1", null, null, null, [("accent", HostValue.Of("teal"))]));
 
         heard.Apply(Tree(Scene(1, MainWindow(100, "Main"))));
 
         heard.Application.Keep(new HostActCall(
-            SwiftAct.PersistSceneValue,
+            HostAct.PersistSceneValue,
             "persistSceneValue",
-            [Name("1"), Name("shade"), SwiftWireValue.Of("dusk")],
+            [Name("1"), Name("shade"), HostValue.Of("dusk")],
             null));
 
         SceneOrigin kept = Assert.IsType<SceneOrigin>(heard.Application.Remembered(main));
@@ -872,18 +872,18 @@ public class SceneTests
     [Fact]
     public void AKeptValueComesBackAsTheKindItWentAs()
     {
-        static string Said(SwiftWireValue value) => $"{value.Tag} {value.Number} {value.Text}";
+        static string Said(HostValue value) => $"{value.Tag} {value.Number} {value.Text}";
 
-        foreach (SwiftWireValue value in new[]
+        foreach (HostValue value in new[]
         {
-            SwiftWireValue.Of(true), SwiftWireValue.Of(false), SwiftWireValue.Of(0.25),
-            SwiftWireValue.Of(7.0), SwiftWireValue.Of("s1, with a letter first"),
+            HostValue.Of(true), HostValue.Of(false), HostValue.Of(0.25),
+            HostValue.Of(7.0), HostValue.Of("s1, with a letter first"),
         })
         {
             string? text = SceneOrigin.Write(value);
 
             Assert.NotNull(text);
-            Assert.True(SceneOrigin.Read(text) is SwiftWireValue back && Said(back) == Said(value), text);
+            Assert.True(SceneOrigin.Read(text) is HostValue back && Said(back) == Said(value), text);
         }
 
         Assert.Null(SceneOrigin.Read(""));
@@ -918,17 +918,17 @@ public class SceneTests
     public void TheFixtureOpensTwoScenesAndClosesAWindow()
     {
         var platform = new Platform();
-        var names = new SwiftWireDictionary();
+        var names = new WireDictionary();
         var heard = new Heard();
 
-        SwiftMessage opened = SwiftWire.ReadMessage(Fixtures.ReadBytes("scenes/1-opens.bin"), names);
+        HostRender opened = WireCodec.ReadMessage(Fixtures.ReadBytes("scenes/1-opens.bin"), names);
         ((IStateUITarget)heard.Application).Apply(opened.Root!, opened.Complete);
 
         Assert.Equal(["Studio", "Fonts", "Studio 2"], Titles(heard.Application));
 
         StateUIWindow[] before = [.. heard.Application.Windows];
 
-        SwiftMessage closed = SwiftWire.ReadMessage(Fixtures.ReadBytes("scenes/2-closes.bin"), names);
+        HostRender closed = WireCodec.ReadMessage(Fixtures.ReadBytes("scenes/2-closes.bin"), names);
         ((IStateUITarget)heard.Application).Apply(closed.Root!, closed.Complete);
 
         Assert.Equal([before[0], before[2]], heard.Application.Windows);

@@ -118,7 +118,7 @@ public class FixtureTests
         var z = rows.Children[0];
         var b = rows.Children[1];
 
-        SwiftMessage message = SwiftWire.ReadMessage(Read("resync.bin"), host.Names);
+        HostRender message = WireCodec.ReadMessage(Read("resync.bin"), host.Names);
         Assert.True(message.Complete, "the envelope says it, so nobody has to infer it");
 
         var after = (VerticalStackLayout)host.ApplyMessage(Read("resync.bin"));
@@ -208,13 +208,13 @@ public class FixtureTests
     {
         var host = new Host();
         byte[] bytes = Read("first-render.bin");
-        bytes[0] = SwiftWire.Version + 1;
+        bytes[0] = WireCodec.Version + 1;
 
         var refusal = Assert.Throws<InvalidDataException>(
-            () => SwiftWire.ReadMessage(bytes, host.Names));
+            () => WireCodec.ReadMessage(bytes, host.Names));
 
-        Assert.Contains($"wire version {SwiftWire.Version + 1}", refusal.Message);
-        Assert.Contains($"reads {SwiftWire.Version}", refusal.Message);
+        Assert.Contains($"wire version {WireCodec.Version + 1}", refusal.Message);
+        Assert.Contains($"reads {WireCodec.Version}", refusal.Message);
     }
 
     /// <summary>
@@ -229,7 +229,7 @@ public class FixtureTests
         byte[] whole = Read("first-render.bin");
 
         Assert.Throws<InvalidDataException>(
-            () => SwiftWire.ReadMessage(
+            () => WireCodec.ReadMessage(
                 whole.AsSpan(0, whole.Length - 3).ToArray(), host.Names));
     }
 

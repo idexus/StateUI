@@ -43,7 +43,7 @@ public class PageBarTests
                           "icon":"nav_media.png"},
                  "events":{"clicked":11}},
                 {"id":"delete","type":"ToolbarItem",
-                 "props":{"placement":{{{Host.Member(SwiftToolbarItemPlacement.Overflow)}}},
+                 "props":{"placement":{{{Host.Member(HostToolbarItemPlacement.Overflow)}}},
                           "text":"Delete","isDestructive":true}}]},
               {"id":8,"type":"MenuBar","arranged":true,"children":[
                 {"id":"file","type":"Menu","props":{"text":"File"},"arranged":true,"children":[
@@ -145,7 +145,7 @@ public class PageBarTests
             {"id":"t","type":"ToolbarItem","events":{"clicked":4}}
             """));
 
-        host.Renderer.Raise(item, SwiftEvent.Clicked);
+        host.Renderer.Raise(item, HostEvent.Clicked);
 
         Assert.Equal((4, (string?)null), host.Dispatched[^1]);
     }

@@ -149,7 +149,7 @@ public class StateUIWindow : Window
     /// False to ask for the whole tree instead, which is what a window does
     /// when a patch names a page it does not have.
     /// </returns>
-    internal bool Apply(SwiftNode window, bool complete)
+    internal bool Apply(HostPatch window, bool complete)
     {
         // Nothing written below here is news to the Swift side - it is what the
         // Swift side just asked for. The renderer keeps this guard for the views
@@ -194,7 +194,7 @@ public class StateUIWindow : Window
             && window.Children?.Any(child => child.Key == modals) != true)
         {
             _pageRenderer.ApplyModals(
-                Navigation, this, new SwiftNode { Type = SwiftNodeType.ModalStack, Arranged = true, Children = [] });
+                Navigation, this, new HostPatch { Type = HostNodeType.ModalStack, Arranged = true, Children = [] });
             _modalKey = null;
         }
 
@@ -211,14 +211,14 @@ public class StateUIWindow : Window
         // And read to the END rather than returned from: a window has more than
         // one child, the page is the FIRST of them, and a `return` in that arm
         // would be a modal stack nobody ever applies.
-        foreach (SwiftNode child in children)
+        foreach (HostPatch child in children)
         {
             switch (child.Type)
             {
                 // The window's own chrome, when the tree carries one - a real
                 // MAUI TitleBar, so the renderer reconciles it like any other
                 // view and the window hands MAUI the result.
-                case SwiftNodeType.TitleBar:
+                case HostNodeType.TitleBar:
                     TitleBar = _application.Renderer.Render(TitleBar as View, child) as TitleBar;
                     _titleBarKey = child.Key;
                     break;
@@ -226,7 +226,7 @@ public class StateUIWindow : Window
                 // A view laid over the whole window, above its page: rendered
                 // like any view, then handed to the platform's own window. A
                 // stub in an arranged list says nothing changed under it.
-                case SwiftNodeType.Overlay:
+                case HostNodeType.Overlay:
                     if (child.Children is { Count: > 0 } laid)
                     {
                         Overlay = _application.Renderer.Render(Overlay, laid[0]);
@@ -240,7 +240,7 @@ public class StateUIWindow : Window
                 // list: MAUI keeps modals on the window's navigation, and the
                 // page renderer is handed both that and this window to report
                 // a dismissal through.
-                case SwiftNodeType.ModalStack:
+                case HostNodeType.ModalStack:
                     _pageRenderer.ApplyModals(Navigation, this, child);
                     _modalKey = child.Key;
                     break;
@@ -335,7 +335,7 @@ public class StateUIWindow : Window
     /// this window does is notice when the page it is SHOWING has changed and
     /// hand MAUI the new one.
     /// </remarks>
-    private bool ApplyOnlyPage(SwiftNode node, bool complete)
+    private bool ApplyOnlyPage(HostPatch node, bool complete)
     {
         // A page nobody has built yet needs the whole description, and a patch
         // does not carry one - unless it is describing an element that is NEW,

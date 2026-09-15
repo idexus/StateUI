@@ -36,7 +36,7 @@ public class WireFuzzTests
     /// </summary>
     private static List<string> Messages() => Corpus(under: null);
 
-    /// <summary>The act batches, read by <see cref="SwiftWire.ReadActCalls"/>.</summary>
+    /// <summary>The act batches, read by <see cref="WireCodec.ReadActCalls"/>.</summary>
     private static List<string> ActCalls() => Corpus(under: "act-calls");
 
     private static List<string> Corpus(string? under)
@@ -105,7 +105,7 @@ public class WireFuzzTests
                 byte[] cut = whole.AsSpan(0, length).ToArray();
 
                 Refused(
-                    () => SwiftWire.ReadMessage(cut, new SwiftWireDictionary()),
+                    () => WireCodec.ReadMessage(cut, new WireDictionary()),
                     mustRefuse: true,
                     $"{name} cut to {length} of {whole.Length} bytes");
             }
@@ -133,7 +133,7 @@ public class WireFuzzTests
                     changed[at] ^= change;
 
                     Refused(
-                        () => SwiftWire.ReadMessage(changed, new SwiftWireDictionary()),
+                        () => WireCodec.ReadMessage(changed, new WireDictionary()),
                         mustRefuse: false,
                         $"{name} with byte {at} of {whole.Length} changed by 0x{change:X2}");
                 }
@@ -153,7 +153,7 @@ public class WireFuzzTests
     {
         byte[] bytes =
         [
-            SwiftWire.Version,
+            WireCodec.Version,
             1,                          // complete
             0, 0, 0, 0,                 // generation 0
             1, 0,                       // one announcement
@@ -162,7 +162,7 @@ public class WireFuzzTests
         ];
 
         Assert.Throws<InvalidDataException>(
-            () => SwiftWire.ReadMessage(bytes, new SwiftWireDictionary()));
+            () => WireCodec.ReadMessage(bytes, new WireDictionary()));
     }
 
     /// <summary>
@@ -182,7 +182,7 @@ public class WireFuzzTests
 
         var bytes = new List<byte>
         {
-            SwiftWire.Version,
+            WireCodec.Version,
             1,                          // complete
             0, 0, 0, 0,                 // generation 0
             1, 0,                       // one announcement
@@ -207,7 +207,7 @@ public class WireFuzzTests
         bytes.Add(0);
 
         InvalidDataException refused = Assert.Throws<InvalidDataException>(
-            () => SwiftWire.ReadMessage([.. bytes], new SwiftWireDictionary()));
+            () => WireCodec.ReadMessage([.. bytes], new WireDictionary()));
 
         Assert.Contains("nests deeper", refused.Message);
     }
@@ -226,18 +226,18 @@ public class WireFuzzTests
     [Fact]
     public void APayloadWithMoreValuesThanTheCountCanSayIsRefused()
     {
-        SwiftWireValue[] many =
-            [.. Enumerable.Range(0, 256).Select(number => SwiftWireValue.Of((double)number))];
+        HostValue[] many =
+            [.. Enumerable.Range(0, 256).Select(number => HostValue.Of((double)number))];
 
         ArgumentException refused = Assert.Throws<ArgumentException>(
-            () => SwiftWire.WritePayload(many));
+            () => WireCodec.WritePayload(many));
 
         Assert.Contains("256", refused.Message);
         Assert.Contains("values in one payload", refused.Message);
 
         // And the one below the limit is written, so the refusal is about the
         // limit rather than about a list this side cannot write at all.
-        Assert.NotNull(SwiftWire.WritePayload([.. many.Take(255)]));
+        Assert.NotNull(WireCodec.WritePayload([.. many.Take(255)]));
     }
 
     /// <summary>
@@ -256,7 +256,7 @@ public class WireFuzzTests
                 byte[] cut = whole.AsSpan(0, length).ToArray();
 
                 Refused(
-                    () => SwiftWire.ReadActCalls(cut, new SwiftWireDictionary()),
+                    () => WireCodec.ReadActCalls(cut, new WireDictionary()),
                     mustRefuse: true,
                     $"{name} cut to {length} of {whole.Length} bytes");
             }
@@ -278,7 +278,7 @@ public class WireFuzzTests
                     changed[at] ^= change;
 
                     Refused(
-                        () => SwiftWire.ReadActCalls(changed, new SwiftWireDictionary()),
+                        () => WireCodec.ReadActCalls(changed, new WireDictionary()),
                         mustRefuse: false,
                         $"{name} with byte {at} of {whole.Length} changed by 0x{change:X2}");
                 }

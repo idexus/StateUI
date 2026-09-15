@@ -64,7 +64,7 @@ public class MotionLawTests
         uint millis = (uint)Number(words[3]);
         HostMotion motion = words[1] == "spring"
             ? HostMotion.Spring(millis, Number(words[4]))
-            : HostMotion.Eased(millis, Enum.Parse<SwiftEasing>(words[2], ignoreCase: true));
+            : HostMotion.Eased(millis, Enum.Parse<HostEasing>(words[2], ignoreCase: true));
         double[] from = Lanes(words[6]);
 
         return new Trip

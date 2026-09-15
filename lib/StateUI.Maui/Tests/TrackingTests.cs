@@ -18,7 +18,7 @@ namespace StateUI.Maui.Tests;
 
 public class TrackingTests
 {
-    private static SwiftWireValue Value(string json) => Host.Value(json);
+    private static HostValue Value(string json) => Host.Value(json);
 
     // ---- Finding the view ---------------------------------------------------
 

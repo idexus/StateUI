@@ -84,7 +84,7 @@ internal sealed class StateChannel : ITripTarget
         {
             foreach (StateAttachment attachment in _attachments)
             {
-                if (attachment.Kind == SwiftStateKind.Property)
+                if (attachment.Kind == HostStateKind.Property)
                 {
                     return $"state{Number}.{attachment.Property?.PropertyName ?? "scroll"}";
                 }
@@ -107,12 +107,12 @@ internal sealed class StateChannel : ITripTarget
 
             foreach (StateAttachment attachment in _attachments)
             {
-                if (attachment.Kind != SwiftStateKind.Property)
+                if (attachment.Kind != HostStateKind.Property)
                 {
                     continue;
                 }
 
-                if (attachment.Mode != SwiftStateMode.Out)
+                if (attachment.Mode != HostStateMode.Out)
                 {
                     return true;
                 }
@@ -131,8 +131,8 @@ internal sealed class StateChannel : ITripTarget
         {
             foreach (StateAttachment attachment in _attachments)
             {
-                if (attachment.Kind == SwiftStateKind.Property
-                    && attachment.Mode != SwiftStateMode.In
+                if (attachment.Kind == HostStateKind.Property
+                    && attachment.Mode != HostStateMode.In
                     && attachment.View is not null)
                 {
                     return true;
@@ -150,7 +150,7 @@ internal sealed class StateChannel : ITripTarget
         {
             foreach (StateAttachment attachment in _attachments)
             {
-                if (attachment.Kind == SwiftStateKind.Property)
+                if (attachment.Kind == HostStateKind.Property)
                 {
                     return true;
                 }
@@ -179,7 +179,7 @@ internal sealed class StateChannel : ITripTarget
     {
         attachment.Channel = this;
 
-        if (!_shaped && attachment.Kind == SwiftStateKind.Property)
+        if (!_shaped && attachment.Kind == HostStateKind.Property)
         {
             _lanes = attachment.Lanes;
             _shaped = true;
@@ -210,7 +210,7 @@ internal sealed class StateChannel : ITripTarget
     {
         foreach (StateAttachment attachment in _attachments)
         {
-            if (attachment.Kind == SwiftStateKind.Property && attachment.Read(into))
+            if (attachment.Kind == HostStateKind.Property && attachment.Read(into))
             {
                 return true;
             }
@@ -224,7 +224,7 @@ internal sealed class StateChannel : ITripTarget
     {
         foreach (StateAttachment attachment in _attachments)
         {
-            if (attachment.Kind != SwiftStateKind.Property || attachment.Mode == SwiftStateMode.In)
+            if (attachment.Kind != HostStateKind.Property || attachment.Mode == HostStateMode.In)
             {
                 continue;
             }
@@ -246,7 +246,7 @@ internal sealed class StateChannel : ITripTarget
     {
         foreach (StateAttachment attachment in _attachments)
         {
-            if (attachment.Kind == SwiftStateKind.Property && attachment.Compose(from) is object value)
+            if (attachment.Kind == HostStateKind.Property && attachment.Compose(from) is object value)
             {
                 return value;
             }
@@ -361,8 +361,8 @@ internal sealed class StateChannel : ITripTarget
             foreach (StateAttachment attachment in _attachments)
             {
                 if (ReferenceEquals(attachment, by)
-                    || attachment.Kind != SwiftStateKind.Property
-                    || attachment.Mode == SwiftStateMode.In
+                    || attachment.Kind != HostStateKind.Property
+                    || attachment.Mode == HostStateMode.In
                     || attachment.Lanes != lanes.Length)
                 {
                     continue;

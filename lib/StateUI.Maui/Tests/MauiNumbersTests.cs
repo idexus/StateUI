@@ -6,7 +6,7 @@
 //
 // A member of a closed vocabulary crosses this wire as THIS REPOSITORY's number
 // for it, in both directions, and a report the host raises is translated onto
-// the mirrors in Protocol/SwiftWireEnums.cs by a switch naming the MAUI member
+// the mirrors in Protocol/HostEnums.cs by a switch naming the MAUI member
 // literally - StateUIEnvironment.Member and StateUIRenderer.Member. What
 // MAUI numbers its own members with never reaches the wire, which is what keeps
 // a MAUI release free to renumber them; WireEnumTests holds the mirrors against
@@ -39,21 +39,21 @@ public class MauiNumbersTests
     {
         List<string> lost =
         [
-            .. Untranslated<BatteryState, SwiftBatteryState>(StateUIEnvironment.Member),
-            .. Untranslated<BatteryPowerSource, SwiftBatteryPowerSource>(StateUIEnvironment.Member),
-            .. Untranslated<EnergySaverStatus, SwiftEnergySaverStatus>(StateUIEnvironment.Member),
-            .. Untranslated<NetworkAccess, SwiftNetworkAccess>(StateUIEnvironment.Member),
-            .. Untranslated<ConnectionProfile, SwiftConnectionProfile>(StateUIEnvironment.Member),
-            .. Untranslated<DisplayOrientation, SwiftDisplayOrientation>(StateUIEnvironment.Member),
-            .. Untranslated<DisplayRotation, SwiftDisplayRotation>(StateUIEnvironment.Member),
-            .. Untranslated<Microsoft.Maui.ApplicationModel.AppTheme, SwiftTheme>(
+            .. Untranslated<BatteryState, HostBatteryState>(StateUIEnvironment.Member),
+            .. Untranslated<BatteryPowerSource, HostBatteryPowerSource>(StateUIEnvironment.Member),
+            .. Untranslated<EnergySaverStatus, HostEnergySaverStatus>(StateUIEnvironment.Member),
+            .. Untranslated<NetworkAccess, HostNetworkAccess>(StateUIEnvironment.Member),
+            .. Untranslated<ConnectionProfile, HostConnectionProfile>(StateUIEnvironment.Member),
+            .. Untranslated<DisplayOrientation, HostDisplayOrientation>(StateUIEnvironment.Member),
+            .. Untranslated<DisplayRotation, HostDisplayRotation>(StateUIEnvironment.Member),
+            .. Untranslated<Microsoft.Maui.ApplicationModel.AppTheme, HostTheme>(
                 StateUIEnvironment.Member),
-            .. Untranslated<DeviceType, SwiftDeviceType>(StateUIEnvironment.Member),
-            .. Untranslated<DayOfWeek, SwiftWeekday>(StateUIEnvironment.Member),
-            .. Untranslated<GestureStatus, SwiftGesturePhase>(StateUIRenderer.Member),
-            .. Untranslated<SwipeDirection, SwiftSwipeDirection>(StateUIRenderer.Member),
-            .. Untranslated<WebNavigationEvent, SwiftWebNavigationEvent>(StateUIRenderer.Member),
-            .. Untranslated<WebNavigationResult, SwiftWebNavigationResult>(StateUIRenderer.Member),
+            .. Untranslated<DeviceType, HostDeviceType>(StateUIEnvironment.Member),
+            .. Untranslated<DayOfWeek, HostWeekday>(StateUIEnvironment.Member),
+            .. Untranslated<GestureStatus, HostGesturePhase>(StateUIRenderer.Member),
+            .. Untranslated<SwipeDirection, HostSwipeDirection>(StateUIRenderer.Member),
+            .. Untranslated<WebNavigationEvent, HostWebNavigationEvent>(StateUIRenderer.Member),
+            .. Untranslated<WebNavigationResult, HostWebNavigationResult>(StateUIRenderer.Member),
         ];
 
         Assert.Equal([], lost);
@@ -64,24 +64,24 @@ public class MauiNumbersTests
     {
         List<string> orphaned =
         [
-            .. Unreachable<BatteryState, SwiftBatteryState>(StateUIEnvironment.Member),
-            .. Unreachable<BatteryPowerSource, SwiftBatteryPowerSource>(StateUIEnvironment.Member),
-            .. Unreachable<EnergySaverStatus, SwiftEnergySaverStatus>(StateUIEnvironment.Member),
-            .. Unreachable<NetworkAccess, SwiftNetworkAccess>(StateUIEnvironment.Member),
-            .. Unreachable<ConnectionProfile, SwiftConnectionProfile>(StateUIEnvironment.Member),
-            .. Unreachable<DisplayOrientation, SwiftDisplayOrientation>(StateUIEnvironment.Member),
-            .. Unreachable<DisplayRotation, SwiftDisplayRotation>(StateUIEnvironment.Member),
-            .. Unreachable<Microsoft.Maui.ApplicationModel.AppTheme, SwiftTheme>(
+            .. Unreachable<BatteryState, HostBatteryState>(StateUIEnvironment.Member),
+            .. Unreachable<BatteryPowerSource, HostBatteryPowerSource>(StateUIEnvironment.Member),
+            .. Unreachable<EnergySaverStatus, HostEnergySaverStatus>(StateUIEnvironment.Member),
+            .. Unreachable<NetworkAccess, HostNetworkAccess>(StateUIEnvironment.Member),
+            .. Unreachable<ConnectionProfile, HostConnectionProfile>(StateUIEnvironment.Member),
+            .. Unreachable<DisplayOrientation, HostDisplayOrientation>(StateUIEnvironment.Member),
+            .. Unreachable<DisplayRotation, HostDisplayRotation>(StateUIEnvironment.Member),
+            .. Unreachable<Microsoft.Maui.ApplicationModel.AppTheme, HostTheme>(
                 StateUIEnvironment.Member),
-            .. Unreachable<DeviceType, SwiftDeviceType>(StateUIEnvironment.Member),
-            .. Unreachable<DayOfWeek, SwiftWeekday>(StateUIEnvironment.Member),
-            .. Unreachable<GestureStatus, SwiftGesturePhase>(StateUIRenderer.Member),
+            .. Unreachable<DeviceType, HostDeviceType>(StateUIEnvironment.Member),
+            .. Unreachable<DayOfWeek, HostWeekday>(StateUIEnvironment.Member),
+            .. Unreachable<GestureStatus, HostGesturePhase>(StateUIRenderer.Member),
 
             // `All` is the four bits together - a set an author writes to say
             // which ways a view LISTENS, never a direction a swipe went. One
             // recognizer per direction is what makes a report a single bit.
-            .. Unreachable<SwipeDirection, SwiftSwipeDirection>(
-                StateUIRenderer.Member, SwiftSwipeDirection.All),
+            .. Unreachable<SwipeDirection, HostSwipeDirection>(
+                StateUIRenderer.Member, HostSwipeDirection.All),
 
             // MAUI names no "unknown" reason and no "unknown" outcome. Ours
             // exist because a report has to be readable even when the platform
@@ -89,10 +89,10 @@ public class MauiNumbersTests
             // navigation for a view's first source before its browser exists -
             // so they are what the default arm answers and nothing MAUI has
             // reaches them.
-            .. Unreachable<WebNavigationEvent, SwiftWebNavigationEvent>(
-                StateUIRenderer.Member, SwiftWebNavigationEvent.Unknown),
-            .. Unreachable<WebNavigationResult, SwiftWebNavigationResult>(
-                StateUIRenderer.Member, SwiftWebNavigationResult.Unknown),
+            .. Unreachable<WebNavigationEvent, HostWebNavigationEvent>(
+                StateUIRenderer.Member, HostWebNavigationEvent.Unknown),
+            .. Unreachable<WebNavigationResult, HostWebNavigationResult>(
+                StateUIRenderer.Member, HostWebNavigationResult.Unknown),
         ];
 
         Assert.Equal([], orphaned);
@@ -106,10 +106,10 @@ public class MauiNumbersTests
     [Fact]
     public void TheVocabulariesAreActuallyBeingRead()
     {
-        Assert.Equal(6, Enum.GetValues<SwiftBatteryState>().Length);
+        Assert.Equal(6, Enum.GetValues<HostBatteryState>().Length);
         Assert.Equal(7, Enum.GetValues<DayOfWeek>().Length);
         Assert.Equal(4, Enum.GetValues<GestureStatus>().Length);
-        Assert.Equal(5, Enum.GetValues<SwiftWebNavigationResult>().Length);
+        Assert.Equal(5, Enum.GetValues<HostWebNavigationResult>().Length);
     }
 
     /// <summary>

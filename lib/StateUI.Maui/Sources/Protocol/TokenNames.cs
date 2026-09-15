@@ -7,7 +7,7 @@ namespace StateUI.Maui.Protocol;
 /// The one place a token's NAME meets its member, for all four vocabularies -
 /// consulted as an announcement is read for a node type, a property and an
 /// event, as each act is read for an act, and wherever an application names its
-/// own property by spelling (<c>SwiftKey.Own</c>).
+/// own property by spelling (<c>HostPropKey.Own</c>).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -29,12 +29,12 @@ namespace StateUI.Maui.Protocol;
 /// </para>
 /// </remarks>
 /// <typeparam name="TToken">
-/// One of <see cref="SwiftNodeType"/>, <see cref="SwiftProp"/>,
-/// <see cref="SwiftEvent"/> or <see cref="SwiftAct"/>. Each declares
+/// One of <see cref="HostNodeType"/>, <see cref="HostProp"/>,
+/// <see cref="HostEvent"/> or <see cref="HostAct"/>. Each declares
 /// <c>None = 0</c> for a name this runtime has no member for - an
 /// application's own, or one from a Swift side newer than this host.
 /// </typeparam>
-internal static class SwiftTokenNames<TToken>
+internal static class TokenNames<TToken>
     where TToken : struct, Enum
 {
     private static readonly Dictionary<string, TToken> Names = Build();
@@ -70,7 +70,7 @@ internal static class SwiftTokenNames<TToken>
     {
         // A node type is the one vocabulary whose spelling is the member
         // VERBATIM, because it names a MAUI class - `Label`, not `label`.
-        bool capitalized = typeof(TToken) == typeof(SwiftNodeType);
+        bool capitalized = typeof(TToken) == typeof(HostNodeType);
 
         Dictionary<string, TToken> names = [];
 

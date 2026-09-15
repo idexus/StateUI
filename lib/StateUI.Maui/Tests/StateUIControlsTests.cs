@@ -72,7 +72,7 @@ public class StateUIControlsTests
         var beacon = host.Apply(
             """{"id":1,"type":"Test.Beacon","events":{"blinked":7}}""");
 
-        raise!(beacon, "blinked", SwiftWireValue.Of(2));
+        raise!(beacon, "blinked", HostValue.Of(2));
 
         Assert.Equal([(7, "2")], host.Dispatched);
     }
@@ -146,9 +146,9 @@ public class StateUIControlsTests
 
         Assert.Same(
             Gauge.LevelProperty,
-            SwiftStyles.Property(SwiftNodeType.None, "Test.Dial", SwiftKey.Own("level")));
+            SwiftStyles.Property(HostNodeType.None, "Test.Dial", HostPropKey.Own("level")));
 
-        Assert.Null(SwiftStyles.Property(SwiftNodeType.None, "Test.Dial", SwiftKey.Own("volume")));
+        Assert.Null(SwiftStyles.Property(HostNodeType.None, "Test.Dial", HostPropKey.Own("volume")));
     }
 
     /// <summary>
@@ -158,7 +158,7 @@ public class StateUIControlsTests
     /// </summary>
     /// <remarks>
     /// The reader cannot tell whose a name is: it resolves <c>count</c> to
-    /// <see cref="SwiftProp.Count"/> and puts the value in the library's bag,
+    /// <see cref="HostProp.Count"/> and puts the value in the library's bag,
     /// whoever declared it. A lookup that read only the application's bag would
     /// find nothing here and the control would go unwritten, silently - which
     /// the gallery's own Badge, with a <c>count</c>, would have shown.
@@ -185,7 +185,7 @@ public class StateUIControlsTests
     /// is BUILT rather than handed the first.
     /// </summary>
     /// <remarks>
-    /// Every registered type is <see cref="SwiftNodeType.None"/> - that is what
+    /// Every registered type is <see cref="HostNodeType.None"/> - that is what
     /// the member means - so the type member alone says two different
     /// registrations are the same control. The spelling is what separates them,
     /// and it is compared exactly where the member cannot decide.

@@ -69,9 +69,9 @@ internal static partial class NativeMethods
     /// <summary>
     /// Reports that an event fired or an act finished - positive ids are an
     /// element's events, negative ids are completions. <paramref name="payload"/>
-    /// carries the binary payload (<see cref="SwiftWire.WritePayload"/> for an
-    /// event, <see cref="SwiftWire.WriteReply"/> or
-    /// <see cref="SwiftWire.WriteFailure"/> for a completion), or null for an
+    /// carries the binary payload (<see cref="WireCodec.WritePayload"/> for an
+    /// event, <see cref="WireCodec.WriteReply"/> or
+    /// <see cref="WireCodec.WriteFailure"/> for a completion), or null for an
     /// event with nothing to say. Returns 1 if a handler ran, 0 if the id was
     /// unknown - which happens for events arriving against a replaced tree and
     /// is not an error.
@@ -89,7 +89,7 @@ internal static partial class NativeMethods
     /// <summary>
     /// Reports an event the host raised by NAME, with no element behind it -
     /// the application's own pushes, written with
-    /// <see cref="SwiftWire.WriteHostEvent"/> and heard by whatever the Swift
+    /// <see cref="WireCodec.WriteHostEvent"/> and heard by whatever the Swift
     /// side subscribed with <c>HostEvents.on</c>. Returns how many handlers
     /// heard it - zero is ordinary - and -1 for a buffer the library could
     /// not read, which the session reports as version skew.
@@ -305,7 +305,7 @@ internal static partial class NativeMethods
     /// Tells Swift the platform has handed over a window nobody asked for - the
     /// first at launch, one for File ▸ New Window, one the system restored -
     /// and what the platform kept for that scene's keys, written with
-    /// <see cref="SwiftWire.WritePayload"/> as name, value, name, value.
+    /// <see cref="WireCodec.WritePayload"/> as name, value, name, value.
     /// </summary>
     /// <remarks>
     /// Called BEFORE the render that puts the scene in the window, so a kept
@@ -399,7 +399,7 @@ internal static partial class NativeMethods
 
     /// <summary>
     /// Tells Swift what the host knows - one standard provider's values per
-    /// call, written with <see cref="SwiftWire.WriteEnvironment"/>. Called for
+    /// call, written with <see cref="WireCodec.WriteEnvironment"/>. Called for
     /// every domain before the first render, so the first tree already knows
     /// its idiom and its locale - which is the whole point: an act could only
     /// answer a handler, and which pages EXIST is decided while the tree is
@@ -432,7 +432,7 @@ internal static partial class NativeMethods
 
     /// <summary>
     /// Tells Swift what the store held - a name and a value per key that was
-    /// there, written with <see cref="SwiftWire.WritePersistent"/>.
+    /// there, written with <see cref="WireCodec.WritePersistent"/>.
     /// </summary>
     /// <remarks>
     /// Returns 1 applied, -1 for a buffer that would not read, which is

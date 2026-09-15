@@ -29,7 +29,7 @@
 // Swift cases PascalCased. The prefix is load-bearing rather than decoration -
 // without it this file would declare an `Aspect` beside
 // `Microsoft.Maui.Aspect` and every use of either would need qualifying
-// - and it is the house prefix already, as `SwiftAct` and `SwiftNode` are. The
+// - and it is the house prefix already, as `HostAct` and `HostPatch` are. The
 // rule is what lets `WireEnumTests` find each mirror by reflection and check it
 // against the Swift declaration member for member, so a vocabulary added over
 // there with no mirror over here FAILS rather than going unnoticed.
@@ -42,13 +42,13 @@
 //
 // A file-level comment rather than a `<summary>` on a type, because there is no
 // type here to put one on: the enums are top-level so that a use reads
-// `SwiftLineBreak` rather than a carrier class and a dot, and an empty class
+// `HostLineBreak` rather than a carrier class and a dot, and an empty class
 // existing only to hold documentation would be worse than this.
 
 namespace StateUI.Maui.Protocol;
 
 /// <summary>Where a view sits in the space its layout gives it.</summary>
-internal enum SwiftAlignment
+internal enum HostAlignment
 {
     Start = 0,
     Center = 1,
@@ -57,7 +57,7 @@ internal enum SwiftAlignment
 }
 
 /// <summary>Where text sits within a control's own bounds, and where a drawn text sits in the room it is given.</summary>
-internal enum SwiftTextAlignment
+internal enum HostTextAlignment
 {
     Start = 0,
     Center = 1,
@@ -65,7 +65,7 @@ internal enum SwiftTextAlignment
 }
 
 /// <summary>What happens to text too long for its space.</summary>
-internal enum SwiftLineBreak
+internal enum HostLineBreak
 {
     NoWrap = 0,
     WordWrap = 1,
@@ -76,7 +76,7 @@ internal enum SwiftLineBreak
 }
 
 /// <summary>Whether text is drawn as written or in one case throughout.</summary>
-internal enum SwiftTextCase
+internal enum HostTextCase
 {
     None = 0,
     Default = 1,
@@ -85,7 +85,7 @@ internal enum SwiftTextCase
 }
 
 /// <summary>Which keyboard a text input asks for.</summary>
-internal enum SwiftInputPurpose
+internal enum HostInputPurpose
 {
     Default = 0,
     Plain = 1,
@@ -98,7 +98,7 @@ internal enum SwiftInputPurpose
 }
 
 /// <summary>What the keyboard's return key says.</summary>
-internal enum SwiftReturnKey
+internal enum HostReturnKey
 {
     Default = 0,
     Done = 1,
@@ -109,7 +109,7 @@ internal enum SwiftReturnKey
 }
 
 /// <summary>Which way a ScrollView scrolls.</summary>
-internal enum SwiftScrollOrientation
+internal enum HostScrollOrientation
 {
     Vertical = 0,
     Horizontal = 1,
@@ -118,7 +118,7 @@ internal enum SwiftScrollOrientation
 }
 
 /// <summary>Which way a view lays its content out, and which edge it starts from.</summary>
-internal enum SwiftLayoutDirection
+internal enum HostLayoutDirection
 {
     Inherited = 0,
     LeftToRight = 1,
@@ -126,7 +126,7 @@ internal enum SwiftLayoutDirection
 }
 
 /// <summary>How deep a heading is, or that a view is not one.</summary>
-internal enum SwiftHeadingLevel
+internal enum HostHeadingLevel
 {
     None = 0,
     Level1 = 1,
@@ -141,7 +141,7 @@ internal enum SwiftHeadingLevel
 }
 
 /// <summary>What a map pin stands for.</summary>
-internal enum SwiftPinType
+internal enum HostPinType
 {
     Generic = 0,
     Place = 1,
@@ -150,7 +150,7 @@ internal enum SwiftPinType
 }
 
 /// <summary>How an image or a shape fills the room it is given.</summary>
-internal enum SwiftAspect
+internal enum HostAspect
 {
     Fit = 0,
     Fill = 1,
@@ -159,7 +159,7 @@ internal enum SwiftAspect
 }
 
 /// <summary>Whether a scroll bar is shown, hidden, or left to the platform.</summary>
-internal enum SwiftScrollBarVisibility
+internal enum HostScrollBarVisibility
 {
     Default = 0,
     Always = 1,
@@ -167,14 +167,14 @@ internal enum SwiftScrollBarVisibility
 }
 
 /// <summary>Whether a swipe reveals its items or runs the first of them.</summary>
-internal enum SwiftSwipeMode
+internal enum HostSwipeMode
 {
     Reveal = 0,
     Execute = 1,
 }
 
 /// <summary>What the open swipe items do once one of them has run.</summary>
-internal enum SwiftSwipeBehaviorOnInvoked
+internal enum HostSwipeBehaviorOnInvoked
 {
     Auto = 0,
     Close = 1,
@@ -182,7 +182,7 @@ internal enum SwiftSwipeBehaviorOnInvoked
 }
 
 /// <summary>How the end of an open line is drawn.</summary>
-internal enum SwiftLineCap
+internal enum HostLineCap
 {
     Flat = 0,
     Round = 1,
@@ -190,7 +190,7 @@ internal enum SwiftLineCap
 }
 
 /// <summary>How two segments of a line meet at a corner.</summary>
-internal enum SwiftLineJoin
+internal enum HostLineJoin
 {
     Miter = 0,
     Bevel = 1,
@@ -198,21 +198,21 @@ internal enum SwiftLineJoin
 }
 
 /// <summary>Which parts of a self-crossing outline count as inside it.</summary>
-internal enum SwiftFillRule
+internal enum HostFillRule
 {
     EvenOdd = 0,
     Nonzero = 1,
 }
 
 /// <summary>What one dot of an IndicatorView is drawn as.</summary>
-internal enum SwiftIndicatorShape
+internal enum HostIndicatorShape
 {
     Circle = 0,
     Square = 1,
 }
 
 /// <summary>Where a toolbar item goes - where the platform puts it, on the bar, or behind the overflow.</summary>
-internal enum SwiftToolbarItemPlacement
+internal enum HostToolbarItemPlacement
 {
     Automatic = 0,
     Bar = 1,
@@ -220,7 +220,7 @@ internal enum SwiftToolbarItemPlacement
 }
 
 /// <summary>What one edge of a layout stays clear of on the unsafe strip.</summary>
-internal enum SwiftSafeArea
+internal enum HostSafeArea
 {
     None = 0,
     Keyboard = 1,
@@ -232,7 +232,7 @@ internal enum SwiftSafeArea
 /// Which parts of a child's place travel when a layout puts it somewhere new.
 /// </summary>
 [Flags]
-internal enum SwiftMotionLanes
+internal enum HostMotionLanes
 {
     X = 1 << 0,
     Y = 1 << 1,
@@ -243,7 +243,7 @@ internal enum SwiftMotionLanes
 }
 
 /// <summary>Which way a state crosses at an attachment.</summary>
-internal enum SwiftStateMode
+internal enum HostStateMode
 {
     In = 0,
     Out = 1,
@@ -251,7 +251,7 @@ internal enum SwiftStateMode
 }
 
 /// <summary>Which of this side's doors a state-carried value goes through.</summary>
-internal enum SwiftStateKind
+internal enum HostStateKind
 {
     Property = 0,
     Placement = 1,
@@ -266,7 +266,7 @@ internal enum SwiftStateKind
 }
 
 /// <summary>The curve an animation follows.</summary>
-internal enum SwiftEasing
+internal enum HostEasing
 {
     Linear = 0,
     SineOut = 1,
@@ -282,7 +282,7 @@ internal enum SwiftEasing
 }
 
 /// <summary>How the world is drawn - streets, photography, or both.</summary>
-internal enum SwiftMapType
+internal enum HostMapType
 {
     Street = 0,
     Satellite = 1,
@@ -290,7 +290,7 @@ internal enum SwiftMapType
 }
 
 /// <summary>Which side of a button's caption its icon is on.</summary>
-internal enum SwiftIconPosition
+internal enum HostIconPosition
 {
     Leading = 0,
     Top = 1,
@@ -300,7 +300,7 @@ internal enum SwiftIconPosition
 
 /// <summary>Bold, italic, both or neither.</summary>
 [Flags]
-internal enum SwiftFontAttributes
+internal enum HostFontAttributes
 {
     None = 0,
     Bold = 1,
@@ -309,7 +309,7 @@ internal enum SwiftFontAttributes
 
 /// <summary>Underlined, struck through, both or neither.</summary>
 [Flags]
-internal enum SwiftTextDecorations
+internal enum HostTextDecorations
 {
     None = 0,
     Underline = 1,
@@ -318,7 +318,7 @@ internal enum SwiftTextDecorations
 
 /// <summary>Which ways a swipe went, or is listened for.</summary>
 [Flags]
-internal enum SwiftSwipeDirection
+internal enum HostSwipeDirection
 {
     Right = 1,
     Left = 2,
@@ -331,7 +331,7 @@ internal enum SwiftSwipeDirection
 /// Which parts of a child's bounds an AbsoluteLayout reads as fractions.
 /// </summary>
 [Flags]
-internal enum SwiftAbsoluteLayoutProportions
+internal enum HostAbsoluteLayoutProportions
 {
     None = 0,
     X = 1,
@@ -348,7 +348,7 @@ internal enum SwiftAbsoluteLayoutProportions
 /// numbered from 1 rather than 0: a wire contract asks only that both sides say
 /// the same number, never where the count begins.
 /// </summary>
-internal enum SwiftBrushKind
+internal enum HostBrushKind
 {
     SolidColor = 1,
     LinearGradient = 2,
@@ -356,7 +356,7 @@ internal enum SwiftBrushKind
 }
 
 /// <summary>Which outline a Border draws.</summary>
-internal enum SwiftBorderShapeKind
+internal enum HostBorderShapeKind
 {
     Rectangle = 0,
     RoundedRectangle = 1,
@@ -364,7 +364,7 @@ internal enum SwiftBorderShapeKind
 }
 
 /// <summary>How much room a grid row or column takes.</summary>
-internal enum SwiftGridLengthKind
+internal enum HostGridLengthKind
 {
     Fixed = 0,
     Proportional = 1,
@@ -372,14 +372,14 @@ internal enum SwiftGridLengthKind
 }
 
 /// <summary>Which of the two things a WebView's source is.</summary>
-internal enum SwiftWebViewSourceKind
+internal enum HostWebViewSourceKind
 {
     Url = 0,
     Html = 1,
 }
 
 /// <summary>Which of a SwipeView's four collections a set of items is.</summary>
-internal enum SwiftSwipeSide
+internal enum HostSwipeSide
 {
     Left = 0,
     Right = 1,
@@ -395,7 +395,7 @@ internal enum SwiftSwipeSide
 // a handler is given.
 
 /// <summary>How far along a continuous gesture is.</summary>
-internal enum SwiftGesturePhase
+internal enum HostGesturePhase
 {
     Started = 0,
     Running = 1,
@@ -404,7 +404,7 @@ internal enum SwiftGesturePhase
 }
 
 /// <summary>How the battery is doing.</summary>
-internal enum SwiftBatteryState
+internal enum HostBatteryState
 {
     Unknown = 0,
     Charging = 1,
@@ -415,7 +415,7 @@ internal enum SwiftBatteryState
 }
 
 /// <summary>Where the power is coming from.</summary>
-internal enum SwiftBatteryPowerSource
+internal enum HostBatteryPowerSource
 {
     Unknown = 0,
     Battery = 1,
@@ -425,7 +425,7 @@ internal enum SwiftBatteryPowerSource
 }
 
 /// <summary>Whether the platform's battery saver is on.</summary>
-internal enum SwiftEnergySaverStatus
+internal enum HostEnergySaverStatus
 {
     Unknown = 0,
     On = 1,
@@ -433,7 +433,7 @@ internal enum SwiftEnergySaverStatus
 }
 
 /// <summary>What the network can reach.</summary>
-internal enum SwiftNetworkAccess
+internal enum HostNetworkAccess
 {
     Unknown = 0,
     None = 1,
@@ -443,7 +443,7 @@ internal enum SwiftNetworkAccess
 }
 
 /// <summary>One way the device is connected.</summary>
-internal enum SwiftConnectionProfile
+internal enum HostConnectionProfile
 {
     Unknown = 0,
     Bluetooth = 1,
@@ -453,7 +453,7 @@ internal enum SwiftConnectionProfile
 }
 
 /// <summary>Which way the screen is turned, coarsely.</summary>
-internal enum SwiftDisplayOrientation
+internal enum HostDisplayOrientation
 {
     Unknown = 0,
     Portrait = 1,
@@ -461,7 +461,7 @@ internal enum SwiftDisplayOrientation
 }
 
 /// <summary>How far the screen is rotated from its natural position.</summary>
-internal enum SwiftDisplayRotation
+internal enum HostDisplayRotation
 {
     Unknown = 0,
     Rotation0 = 1,
@@ -471,7 +471,7 @@ internal enum SwiftDisplayRotation
 }
 
 /// <summary>Which look the system asked for.</summary>
-internal enum SwiftTheme
+internal enum HostTheme
 {
     System = 0,
     Light = 1,
@@ -479,7 +479,7 @@ internal enum SwiftTheme
 }
 
 /// <summary>Whether this is real hardware.</summary>
-internal enum SwiftDeviceType
+internal enum HostDeviceType
 {
     Unknown = 0,
     Physical = 1,
@@ -492,7 +492,7 @@ internal enum SwiftDeviceType
 /// same reason: that the two lists agree today is a coincidence, not a
 /// contract.
 /// </summary>
-internal enum SwiftWeekday
+internal enum HostWeekday
 {
     Sunday = 0,
     Monday = 1,
@@ -504,7 +504,7 @@ internal enum SwiftWeekday
 }
 
 /// <summary>Why a navigation happened.</summary>
-internal enum SwiftWebNavigationEvent
+internal enum HostWebNavigationEvent
 {
     Unknown = 0,
     Back = 1,
@@ -514,7 +514,7 @@ internal enum SwiftWebNavigationEvent
 }
 
 /// <summary>How a navigation ended.</summary>
-internal enum SwiftWebNavigationResult
+internal enum HostWebNavigationResult
 {
     Unknown = 0,
     Success = 1,
@@ -524,7 +524,7 @@ internal enum SwiftWebNavigationResult
 }
 
 /// <summary>What kind of machine the interface is on. Swift: FormFactor.</summary>
-internal enum SwiftFormFactor
+internal enum HostFormFactor
 {
     Unknown = 0,
     Phone = 1,
@@ -535,7 +535,7 @@ internal enum SwiftFormFactor
 }
 
 /// <summary>Where the application stands. Swift: ApplicationPhase.</summary>
-internal enum SwiftApplicationPhase
+internal enum HostApplicationPhase
 {
     Active = 0,
     Inactive = 1,
@@ -547,7 +547,7 @@ internal enum SwiftApplicationPhase
 /// Swift, one byte per key in the persistent-key announcement - the one
 /// vocabulary here the host does not report.
 /// </summary>
-internal enum SwiftPersistentKind
+internal enum HostPersistentKind
 {
     Boolean = 0,
     Integer = 1,

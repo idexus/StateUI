@@ -26,12 +26,12 @@ public class PayloadFixtureTests
     [Fact]
     public void EveryReplyShapeMatchesItsFixture()
     {
-        Matches(SwiftWire.WriteReply(), "reply-void");
-        Matches(SwiftWire.WriteReply(SwiftWireValue.Of(true)), "reply-bool");
-        Matches(SwiftWire.WriteReply(SwiftWireValue.Of(14, 45, 44, 123)), "reply-clock");
-        Matches(SwiftWire.WriteReply(SwiftWireValue.Of("Europe/Warsaw")), "reply-text");
+        Matches(WireCodec.WriteReply(), "reply-void");
+        Matches(WireCodec.WriteReply(HostValue.Of(true)), "reply-bool");
+        Matches(WireCodec.WriteReply(HostValue.Of(14, 45, 44, 123)), "reply-clock");
+        Matches(WireCodec.WriteReply(HostValue.Of("Europe/Warsaw")), "reply-text");
         Matches(
-            SwiftWire.WriteFailure("a focus act has to say which view it is for"),
+            WireCodec.WriteFailure("a focus act has to say which view it is for"),
             "reply-failure");
 
         // A reader who dismissed a dialog. The value IS the answer, so the
@@ -39,32 +39,32 @@ public class PayloadFixtureTests
         // where the reply is built, and the awaiting Swift handler - which has
         // no timeout by design - would never resume.
         Matches(
-            SwiftWire.WriteReply(new SwiftWireValue(SwiftWireValue.TagNothing)),
+            WireCodec.WriteReply(new HostValue(HostValue.TagNothing)),
             "reply-nothing");
     }
 
     [Fact]
     public void EveryPayloadShapeMatchesItsFixture()
     {
-        Matches(SwiftWire.WritePayload(SwiftWireValue.Of("Hello, world")), "event-text");
-        Matches(SwiftWire.WritePayload(SwiftWireValue.Of(true)), "event-toggle");
-        Matches(SwiftWire.WritePayload(SwiftWireValue.Of(12.5)), "event-number");
-        Matches(SwiftWire.WritePayload(SwiftWireValue.Of(0, 2)), "event-selection");
-        Matches(SwiftWire.WritePayload(SwiftWireValue.Of()), "event-selection-empty");
+        Matches(WireCodec.WritePayload(HostValue.Of("Hello, world")), "event-text");
+        Matches(WireCodec.WritePayload(HostValue.Of(true)), "event-toggle");
+        Matches(WireCodec.WritePayload(HostValue.Of(12.5)), "event-number");
+        Matches(WireCodec.WritePayload(HostValue.Of(0, 2)), "event-selection");
+        Matches(WireCodec.WritePayload(HostValue.Of()), "event-selection-empty");
         Matches(
-            SwiftWire.WritePayload(
-                SwiftWireValue.OfMember((int)SwiftGesturePhase.Running),
-                SwiftWireValue.Of(12.5),
-                SwiftWireValue.Of(-3)),
+            WireCodec.WritePayload(
+                HostValue.OfMember((int)HostGesturePhase.Running),
+                HostValue.Of(12.5),
+                HostValue.Of(-3)),
             "event-pan");
         Matches(
-            SwiftWire.WritePayload(SwiftWireValue.Of(10, 20, 300, 400, 110, 220, 110, 176)),
+            WireCodec.WritePayload(HostValue.Of(10, 20, 300, 400, 110, 220, 110, 176)),
             "event-frame");
         Matches(
-            SwiftWire.WritePayload(
-                SwiftWireValue.OfMember((int)SwiftWebNavigationResult.Success),
-                SwiftWireValue.OfMember((int)SwiftWebNavigationEvent.NewPage),
-                SwiftWireValue.Of("https://example.com/a,b")),
+            WireCodec.WritePayload(
+                HostValue.OfMember((int)HostWebNavigationResult.Success),
+                HostValue.OfMember((int)HostWebNavigationEvent.NewPage),
+                HostValue.Of("https://example.com/a,b")),
             "event-navigated");
     }
 
@@ -76,10 +76,10 @@ public class PayloadFixtureTests
     public void EveryHostEventShapeMatchesItsFixture()
     {
         Matches(
-            SwiftWire.WriteHostEvent(
-                "Gallery.BatteryChanged", SwiftWireValue.Of(0.87), SwiftWireValue.Of(true)),
+            WireCodec.WriteHostEvent(
+                "Gallery.BatteryChanged", HostValue.Of(0.87), HostValue.Of(true)),
             "host-event");
-        Matches(SwiftWire.WriteHostEvent("Gallery.Ping"), "host-event-empty");
+        Matches(WireCodec.WriteHostEvent("Gallery.Ping"), "host-event-empty");
     }
 
     /// <summary>
@@ -90,21 +90,21 @@ public class PayloadFixtureTests
     public void EveryEnvironmentShapeMatchesItsFixture()
     {
         Matches(
-            SwiftWire.WriteEnvironment(
+            WireCodec.WriteEnvironment(
                 Rendering.StateUIEnvironment.BatteryDomain,
-                SwiftWireValue.Of(0.87),
-                SwiftWireValue.OfMember((int)SwiftBatteryState.Charging),
-                SwiftWireValue.OfMember((int)SwiftBatteryPowerSource.Ac),
-                SwiftWireValue.OfMember((int)SwiftEnergySaverStatus.On)),
+                HostValue.Of(0.87),
+                HostValue.OfMember((int)HostBatteryState.Charging),
+                HostValue.OfMember((int)HostBatteryPowerSource.Ac),
+                HostValue.OfMember((int)HostEnergySaverStatus.On)),
             "environment-battery");
         Matches(
-            SwiftWire.WriteEnvironment(
+            WireCodec.WriteEnvironment(
                 Rendering.StateUIEnvironment.LocaleDomain,
-                SwiftWireValue.Of("pl"), SwiftWireValue.Of("PL"),
-                SwiftWireValue.Of("pl-PL"), SwiftWireValue.Of("Europe/Warsaw"),
-                SwiftWireValue.Of(true),
-                SwiftWireValue.OfMember((int)SwiftWeekday.Monday),
-                SwiftWireValue.Of(true)),
+                HostValue.Of("pl"), HostValue.Of("PL"),
+                HostValue.Of("pl-PL"), HostValue.Of("Europe/Warsaw"),
+                HostValue.Of(true),
+                HostValue.OfMember((int)HostWeekday.Monday),
+                HostValue.Of(true)),
             "environment-locale");
     }
 
@@ -116,10 +116,10 @@ public class PayloadFixtureTests
     [Fact]
     public void TheSameValuesWriteTheSameBytesEveryTime()
     {
-        byte[]? first = SwiftWire.WritePayload(
-            SwiftWireValue.Of("text"), SwiftWireValue.Of(12.5), SwiftWireValue.Of(1, 2));
-        byte[]? again = SwiftWire.WritePayload(
-            SwiftWireValue.Of("text"), SwiftWireValue.Of(12.5), SwiftWireValue.Of(1, 2));
+        byte[]? first = WireCodec.WritePayload(
+            HostValue.Of("text"), HostValue.Of(12.5), HostValue.Of(1, 2));
+        byte[]? again = WireCodec.WritePayload(
+            HostValue.Of("text"), HostValue.Of(12.5), HostValue.Of(1, 2));
 
         Assert.Equal(first, again);
     }
@@ -131,7 +131,7 @@ public class PayloadFixtureTests
     [Fact]
     public void NoValuesIsNoPayload()
     {
-        Assert.Null(SwiftWire.WritePayload());
+        Assert.Null(WireCodec.WritePayload());
     }
 
     /// <summary>

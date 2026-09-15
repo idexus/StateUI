@@ -49,12 +49,12 @@ public class SessionTests
 
         foreach (string file in Messages())
         {
-            SwiftNode root = SwiftWire.ReadMessage(File.ReadAllBytes(file), host.Names).Root!;
+            HostPatch root = WireCodec.ReadMessage(File.ReadAllBytes(file), host.Names).Root!;
 
             // The application, its scene and the scene's main window are above
             // the page, as they are in a real message; what a page renderer is
             // given is the page.
-            SwiftNode? window = root.Children is [{ Children: [SwiftNode main, ..] }, ..] ? main : null;
+            HostPatch? window = root.Children is [{ Children: [HostPatch main, ..] }, ..] ? main : null;
 
             if (window?.Children is { Count: > 0 } children)
             {
@@ -160,14 +160,14 @@ public class SessionTests
         string[] files = Messages();
 
         // The first message announces every name it uses, so it reads alone.
-        Assert.NotNull(SwiftWire.ReadMessage(
-            File.ReadAllBytes(files[0]), new SwiftWireDictionary()).Root);
+        Assert.NotNull(WireCodec.ReadMessage(
+            File.ReadAllBytes(files[0]), new WireDictionary()).Root);
 
         // A later one speaks numbers nobody announced to a fresh reader, and
         // says so rather than reading them as anything.
         InvalidDataException refused = Assert.Throws<InvalidDataException>(
-            () => SwiftWire.ReadMessage(
-                File.ReadAllBytes(files[2]), new SwiftWireDictionary()));
+            () => WireCodec.ReadMessage(
+                File.ReadAllBytes(files[2]), new WireDictionary()));
 
         Assert.Contains("never announced", refused.Message);
     }
@@ -257,7 +257,7 @@ public class SessionTests
     {
         public List<string> Failures { get; } = [];
 
-        public bool Apply(SwiftNode application, bool complete) => true;
+        public bool Apply(HostPatch application, bool complete) => true;
 
         public void Fail(string message, Exception? exception) => Failures.Add(message);
 

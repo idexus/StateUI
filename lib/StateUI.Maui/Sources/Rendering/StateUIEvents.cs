@@ -20,7 +20,7 @@ namespace StateUI.Maui.Rendering;
 /// <code>
 /// Battery.Default.BatteryInfoChanged += (_, e) =>
 ///     StateUIEvents.Raise("Gallery.BatteryChanged",
-///         SwiftWireValue.Of(e.ChargeLevel));
+///         HostValue.Of(e.ChargeLevel));
 ///
 /// // Swift, wherever the value is shown:
 /// extension Event { static let batteryChanged = Event("Gallery.BatteryChanged") }
@@ -55,7 +55,7 @@ public static class StateUIEvents
     /// <c>"Gallery.BatteryChanged"</c>.</param>
     /// <param name="payload">The raise's typed values, in a fixed order the
     /// two sides agree on.</param>
-    public static void Raise(string eventName, params SwiftWireValue[] payload)
+    public static void Raise(string eventName, params HostValue[] payload)
     {
         Session?.RaiseHostEvent(eventName, payload);
     }

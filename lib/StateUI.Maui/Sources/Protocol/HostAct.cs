@@ -7,7 +7,7 @@ namespace StateUI.Maui.Protocol;
 /// Every act this runtime performs itself - the dispatch table behind
 /// <c>Perform</c>'s switch. The values are this enum's own: on the wire an
 /// act travels as its number from the SESSION's dictionary, and
-/// <see cref="SwiftTokenNames{TToken}"/> maps the name to a member as each act
+/// <see cref="TokenNames{TToken}"/> maps the name to a member as each act
 /// is read - so <c>Perform</c> switches on the member and compares no spelling.
 /// </summary>
 /// <remarks>
@@ -15,14 +15,14 @@ namespace StateUI.Maui.Protocol;
 /// application's registered act, answered by the registry consulted in
 /// <c>Perform</c>'s default arm, or an unknown act reported as one.
 /// </remarks>
-public enum SwiftAct : ushort
+public enum HostAct : ushort
 {
     /// <summary>A name with no case here - the registry's, or unknown.</summary>
     None = 0,
 
     // The numbering is not contiguous, and nothing needs it to be: these
     // values never leave this assembly - an act rides the wire as the number
-    // the SESSION gave its NAME, and SwiftTokenNames turns that name back into
+    // the SESSION gave its NAME, and TokenNames turns that name back into
     // a member - so a gap costs nothing and a member keeps whatever number it
     // has.
 

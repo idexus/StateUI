@@ -56,7 +56,7 @@ public class StateUIHost : ContentView, IStateUITarget
     /// whole, because a window node carries its session's title, position
     /// and size, and a patch names only what changed.
     /// </summary>
-    private SwiftNode? _window;
+    private HostPatch? _window;
 
     /// <summary>
     /// Called once before the first render, to let the application's Swift
@@ -120,7 +120,7 @@ public class StateUIHost : ContentView, IStateUITarget
         }
     }
 
-    bool IStateUITarget.Apply(SwiftNode application, bool complete)
+    bool IStateUITarget.Apply(HostPatch application, bool complete)
     {
         try
         {
@@ -141,7 +141,7 @@ public class StateUIHost : ContentView, IStateUITarget
 
     /// <summary>The one window this host stands for, out of what arrived.</summary>
     /// <param name="application">The application node - the root of a message.</param>
-    private bool ApplyApplication(SwiftNode application)
+    private bool ApplyApplication(HostPatch application)
     {
         // ONE window's worth, whatever the application describes: this host is a
         // view inside a page someone else opened, so there is nowhere to put a
@@ -175,7 +175,7 @@ public class StateUIHost : ContentView, IStateUITarget
     /// Applies the one window this host stands for: its own properties, kept
     /// until there is somewhere to write them, and the page it shows.
     /// </summary>
-    private bool ApplyWindow(SwiftNode window)
+    private bool ApplyWindow(HostPatch window)
     {
         // Kept rather than applied: there may be no MAUI window above this host
         // yet. What arrives is merged into what was already known, because a
@@ -184,11 +184,11 @@ public class StateUIHost : ContentView, IStateUITarget
 
         // No child means nothing below the window changed. Read by TYPE, the
         // rule a page's own children follow.
-        foreach (SwiftNode child in window.Children ?? [])
+        foreach (HostPatch child in window.Children ?? [])
         {
             switch (child.Type)
             {
-                case SwiftNodeType.Page:
+                case HostNodeType.Page:
                     ApplyPage(child);
                     break;
 
@@ -216,11 +216,11 @@ public class StateUIHost : ContentView, IStateUITarget
     /// Applies the ContentPage node: the page's own properties onto this view,
     /// and its content through the renderer.
     /// </summary>
-    private void ApplyPage(SwiftNode page)
+    private void ApplyPage(HostPatch page)
     {
-        if (page.GetString(SwiftProp.Title) is string title) { _pageTitle = title; }
-        if (page.GetThickness(SwiftProp.Padding) is Thickness padding) { Padding = padding; }
-        page.SetBackground(SwiftProp.Background, this);
+        if (page.GetString(HostProp.Title) is string title) { _pageTitle = title; }
+        if (page.GetThickness(HostProp.Padding) is Thickness padding) { Padding = padding; }
+        page.SetBackground(HostProp.Background, this);
 
         // The current content goes back in, so the renderer can keep every
         // control the message does not speak about. An error view from a
@@ -241,16 +241,16 @@ public class StateUIHost : ContentView, IStateUITarget
     /// the first render. A node marked <c>replace</c> is complete by definition
     /// and starts again.
     /// </remarks>
-    private static SwiftNode Merge(SwiftNode? kept, SwiftNode arrived)
+    private static HostPatch Merge(HostPatch? kept, HostPatch arrived)
     {
         if (kept?.Props is null || arrived.Replace)
         {
             return arrived;
         }
 
-        var merged = new Dictionary<SwiftProp, SwiftWireValue>(kept.Props);
+        var merged = new Dictionary<HostProp, HostValue>(kept.Props);
 
-        foreach (KeyValuePair<SwiftProp, SwiftWireValue> property in arrived.Props ?? [])
+        foreach (KeyValuePair<HostProp, HostValue> property in arrived.Props ?? [])
         {
             merged[property.Key] = property.Value;
         }
@@ -263,9 +263,9 @@ public class StateUIHost : ContentView, IStateUITarget
         // node.
         if (kept.OwnProps is not null)
         {
-            var own = new Dictionary<string, SwiftWireValue>(kept.OwnProps);
+            var own = new Dictionary<string, HostValue>(kept.OwnProps);
 
-            foreach (KeyValuePair<string, SwiftWireValue> property in arrived.OwnProps ?? [])
+            foreach (KeyValuePair<string, HostValue> property in arrived.OwnProps ?? [])
             {
                 own[property.Key] = property.Value;
             }

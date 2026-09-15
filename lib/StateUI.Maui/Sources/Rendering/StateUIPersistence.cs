@@ -44,11 +44,11 @@ internal static class StateUIPersistence
     /// <summary>What the application keeps, by name - filled at startup, and
     /// what tells a save which overload to write with. A store is typed, and
     /// the value on the wire cannot say whether a number was declared whole.</summary>
-    private static readonly Dictionary<string, SwiftPersistentKind> Kinds = [];
+    private static readonly Dictionary<string, HostPersistentKind> Kinds = [];
 
     /// <summary>The same keys in the order the application declared them, so
     /// what is read back reads in that order too.</summary>
-    private static List<SwiftPersistentKey> _keys = [];
+    private static List<HostPersistentKey> _keys = [];
 
     /// <summary>Where it is kept, resolved once from the name Swift
     /// announced.</summary>
@@ -73,7 +73,7 @@ internal static class StateUIPersistence
     {
         Forget();
 
-        (string storage, List<SwiftPersistentKey> keys) = Announced();
+        (string storage, List<HostPersistentKey> keys) = Announced();
 
         if (keys.Count == 0)
         {
@@ -91,7 +91,7 @@ internal static class StateUIPersistence
 
         Adopt(store, keys);
 
-        byte[] bytes = SwiftWire.WritePersistent(Hydrate());
+        byte[] bytes = WireCodec.WritePersistent(Hydrate());
 
         try
         {
@@ -114,7 +114,7 @@ internal static class StateUIPersistence
 
     /// <summary>
     /// Writes one key's new value into the store - what the
-    /// <see cref="SwiftAct.PersistValue"/> act asks for.
+    /// <see cref="HostAct.PersistValue"/> act asks for.
     /// </summary>
     /// <remarks>
     /// The KIND comes from the announcement rather than from the value, so a
@@ -132,7 +132,7 @@ internal static class StateUIPersistence
             return;
         }
 
-        if (_store is null || !Kinds.TryGetValue(name, out SwiftPersistentKind kind))
+        if (_store is null || !Kinds.TryGetValue(name, out HostPersistentKind kind))
         {
             Complain(
                 $"'{name}' is kept state that the application does not list in " +
@@ -145,19 +145,19 @@ internal static class StateUIPersistence
         {
             switch (kind)
             {
-                case SwiftPersistentKind.Boolean when call.GetBool(1) is { } value:
+                case HostPersistentKind.Boolean when call.GetBool(1) is { } value:
                     _store.Set(name, value, null);
                     break;
 
-                case SwiftPersistentKind.Integer when call.GetDouble(1) is { } value:
+                case HostPersistentKind.Integer when call.GetDouble(1) is { } value:
                     _store.Set(name, (long)value, null);
                     break;
 
-                case SwiftPersistentKind.Number when call.GetDouble(1) is { } value:
+                case HostPersistentKind.Number when call.GetDouble(1) is { } value:
                     _store.Set(name, value, null);
                     break;
 
-                case SwiftPersistentKind.Text when call.GetString(1) is { } value:
+                case HostPersistentKind.Text when call.GetString(1) is { } value:
                     _store.Set(name, value, null);
                     break;
             }
@@ -179,13 +179,13 @@ internal static class StateUIPersistence
     /// </summary>
     /// <param name="store">Where the state is kept.</param>
     /// <param name="keys">Every key, in the order they were declared.</param>
-    internal static void Adopt(IPreferences store, IReadOnlyList<SwiftPersistentKey> keys)
+    internal static void Adopt(IPreferences store, IReadOnlyList<HostPersistentKey> keys)
     {
         _store = store;
         _keys = [];
         Kinds.Clear();
 
-        foreach (SwiftPersistentKey key in keys)
+        foreach (HostPersistentKey key in keys)
         {
             // A NAME is a storage, so the same name declared twice is one key
             // however many times it is written down - which is the rule two
@@ -193,7 +193,7 @@ internal static class StateUIPersistence
             // and then the two declarations disagree about what the one
             // storage holds; the first is kept, because whichever were second
             // would leave the other's state reading its default forever.
-            if (Kinds.TryGetValue(key.Name, out SwiftPersistentKind first))
+            if (Kinds.TryGetValue(key.Name, out HostPersistentKind first))
             {
                 if (first != key.Kind)
                 {
@@ -222,11 +222,11 @@ internal static class StateUIPersistence
     /// What the store holds for the declared keys - a name and a value per key
     /// that was THERE, in the order the application declared them.
     /// </summary>
-    internal static List<(string Name, SwiftWireValue Value)> Hydrate()
+    internal static List<(string Name, HostValue Value)> Hydrate()
     {
-        List<(string Name, SwiftWireValue Value)> found = [];
+        List<(string Name, HostValue Value)> found = [];
 
-        foreach (SwiftPersistentKey key in _keys)
+        foreach (HostPersistentKey key in _keys)
         {
             if (Read(key) is { } value)
             {
@@ -251,7 +251,7 @@ internal static class StateUIPersistence
     /// What Swift announced: the store's name and every key, or nothing at all
     /// for an application that keeps nothing.
     /// </summary>
-    private static (string Storage, List<SwiftPersistentKey> Keys) Announced()
+    private static (string Storage, List<HostPersistentKey> Keys) Announced()
     {
         IntPtr raw;
         int length;
@@ -276,7 +276,7 @@ internal static class StateUIPersistence
         {
             unsafe
             {
-                return SwiftWire.ReadPersistentKeys(new ReadOnlySpan<byte>((void*)raw, length));
+                return WireCodec.ReadPersistentKeys(new ReadOnlySpan<byte>((void*)raw, length));
             }
         }
         catch (InvalidDataException exception)
@@ -295,7 +295,7 @@ internal static class StateUIPersistence
     /// nothing under that name - which is what leaves the Swift state holding
     /// the value written beside it.
     /// </summary>
-    private static SwiftWireValue? Read(SwiftPersistentKey key)
+    private static HostValue? Read(HostPersistentKey key)
     {
         try
         {
@@ -306,11 +306,11 @@ internal static class StateUIPersistence
 
             return key.Kind switch
             {
-                SwiftPersistentKind.Boolean => SwiftWireValue.Of(store.Get(key.Name, false, null)),
-                SwiftPersistentKind.Integer => SwiftWireValue.Of(
+                HostPersistentKind.Boolean => HostValue.Of(store.Get(key.Name, false, null)),
+                HostPersistentKind.Integer => HostValue.Of(
                     (double)store.Get(key.Name, 0L, null)),
-                SwiftPersistentKind.Number => SwiftWireValue.Of(store.Get(key.Name, 0d, null)),
-                SwiftPersistentKind.Text => SwiftWireValue.Of(
+                HostPersistentKind.Number => HostValue.Of(store.Get(key.Name, 0d, null)),
+                HostPersistentKind.Text => HostValue.Of(
                     store.Get(key.Name, string.Empty, null)),
                 _ => null,
             };

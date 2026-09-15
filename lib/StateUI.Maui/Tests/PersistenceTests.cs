@@ -36,17 +36,17 @@ public class PersistenceTests : IDisposable
     }
 
     // The four keys the cases below keep, one of each kind.
-    private static readonly SwiftPersistentKey Count =
-        new("test.count", SwiftPersistentKind.Integer);
+    private static readonly HostPersistentKey Count =
+        new("test.count", HostPersistentKind.Integer);
 
-    private static readonly SwiftPersistentKey Name =
-        new("test.name", SwiftPersistentKind.Text);
+    private static readonly HostPersistentKey Name =
+        new("test.name", HostPersistentKind.Text);
 
-    private static readonly SwiftPersistentKey Loud =
-        new("test.loud", SwiftPersistentKind.Boolean);
+    private static readonly HostPersistentKey Loud =
+        new("test.loud", HostPersistentKind.Boolean);
 
-    private static readonly SwiftPersistentKey Level =
-        new("test.level", SwiftPersistentKind.Number);
+    private static readonly HostPersistentKey Level =
+        new("test.level", HostPersistentKind.Number);
 
     // MARK: - What Swift announced
 
@@ -58,16 +58,16 @@ public class PersistenceTests : IDisposable
     [Fact]
     public void TheAnnouncementCarriesTheStoreAndEveryKeyWithItsKind()
     {
-        List<byte> bytes = [SwiftWire.Version];
+        List<byte> bytes = [WireCodec.Version];
         Str(bytes, "preferences");
         bytes.AddRange([2, 0]);
         Str(bytes, "test.count");
-        bytes.Add((byte)SwiftPersistentKind.Integer);
+        bytes.Add((byte)HostPersistentKind.Integer);
         Str(bytes, "test.name");
-        bytes.Add((byte)SwiftPersistentKind.Text);
+        bytes.Add((byte)HostPersistentKind.Text);
 
-        (string storage, List<SwiftPersistentKey> keys) =
-            SwiftWire.ReadPersistentKeys([.. bytes]);
+        (string storage, List<HostPersistentKey> keys) =
+            WireCodec.ReadPersistentKeys([.. bytes]);
 
         Assert.Equal("preferences", storage);
         Assert.Equal([Count, Name], keys);
@@ -80,9 +80,9 @@ public class PersistenceTests : IDisposable
     [Fact]
     public void AnAnnouncementFromAnotherWireVersionIsRefused()
     {
-        byte[] bytes = [SwiftWire.Version + 1, 0, 0, 0, 0, 0, 0];
+        byte[] bytes = [WireCodec.Version + 1, 0, 0, 0, 0, 0, 0];
 
-        Assert.Throws<InvalidDataException>(() => SwiftWire.ReadPersistentKeys(bytes));
+        Assert.Throws<InvalidDataException>(() => WireCodec.ReadPersistentKeys(bytes));
     }
 
     // MARK: - Reading the store
@@ -103,10 +103,10 @@ public class PersistenceTests : IDisposable
 
         Assert.Equal(
             [
-                ("test.count", SwiftWireValue.Of(7d)),
-                ("test.name", SwiftWireValue.Of("Ada")),
-                ("test.loud", SwiftWireValue.Of(true)),
-                ("test.level", SwiftWireValue.Of(0.25)),
+                ("test.count", HostValue.Of(7d)),
+                ("test.name", HostValue.Of("Ada")),
+                ("test.loud", HostValue.Of(true)),
+                ("test.level", HostValue.Of(0.25)),
             ],
             StateUIPersistence.Hydrate());
     }
@@ -129,12 +129,12 @@ public class PersistenceTests : IDisposable
             _store.Set("test.count", 7L, null);
 
             StateUIPersistence.Adopt(
-                _store, [Count, new SwiftPersistentKey("test.count", SwiftPersistentKind.Text)]);
+                _store, [Count, new HostPersistentKey("test.count", HostPersistentKind.Text)]);
 
             // Once, as one key, read as the Integer it was first declared -
             // not twice, and not as text.
             Assert.Equal(
-                [("test.count", SwiftWireValue.Of(7d))], StateUIPersistence.Hydrate());
+                [("test.count", HostValue.Of(7d))], StateUIPersistence.Hydrate());
         }
         finally
         {
@@ -164,7 +164,7 @@ public class PersistenceTests : IDisposable
             StateUIPersistence.Adopt(_store, [Count, Count]);
 
             Assert.Equal(
-                [("test.count", SwiftWireValue.Of(7d))], StateUIPersistence.Hydrate());
+                [("test.count", HostValue.Of(7d))], StateUIPersistence.Hydrate());
         }
         finally
         {
@@ -186,7 +186,7 @@ public class PersistenceTests : IDisposable
 
         StateUIPersistence.Adopt(_store, [Count, Name]);
 
-        Assert.Equal([("test.name", SwiftWireValue.Of("Ada"))], StateUIPersistence.Hydrate());
+        Assert.Equal([("test.name", HostValue.Of("Ada"))], StateUIPersistence.Hydrate());
     }
 
     /// <summary>
@@ -213,15 +213,15 @@ public class PersistenceTests : IDisposable
     [Fact]
     public void WhatWasFoundIsWrittenBackByName()
     {
-        byte[] bytes = SwiftWire.WritePersistent(
-            [("test.count", SwiftWireValue.Of(4d)), ("test.loud", SwiftWireValue.Of(true))]);
+        byte[] bytes = WireCodec.WritePersistent(
+            [("test.count", HostValue.Of(4d)), ("test.loud", HostValue.Of(true))]);
 
-        List<byte> expected = [SwiftWire.Version, 2, 0];
+        List<byte> expected = [WireCodec.Version, 2, 0];
         Str(expected, "test.count");
-        expected.Add(SwiftWireValue.TagNumber);
+        expected.Add(HostValue.TagNumber);
         expected.AddRange(BitConverter.GetBytes(4d));
         Str(expected, "test.loud");
-        expected.Add(SwiftWireValue.TagTrue);
+        expected.Add(HostValue.TagTrue);
 
         Assert.Equal(expected, bytes);
     }
@@ -241,21 +241,21 @@ public class PersistenceTests : IDisposable
 
         StateUIPersistence.Save(Saving("test.count", bytes =>
         {
-            bytes.Add(SwiftWireValue.TagNumber);
+            bytes.Add(HostValue.TagNumber);
             bytes.AddRange(BitConverter.GetBytes(7d));
         }));
 
         StateUIPersistence.Save(Saving("test.name", bytes =>
         {
-            bytes.Add(SwiftWireValue.TagString);
+            bytes.Add(HostValue.TagString);
             Str(bytes, "Grace");
         }));
 
-        StateUIPersistence.Save(Saving("test.loud", bytes => bytes.Add(SwiftWireValue.TagTrue)));
+        StateUIPersistence.Save(Saving("test.loud", bytes => bytes.Add(HostValue.TagTrue)));
 
         StateUIPersistence.Save(Saving("test.level", bytes =>
         {
-            bytes.Add(SwiftWireValue.TagNumber);
+            bytes.Add(HostValue.TagNumber);
             bytes.AddRange(BitConverter.GetBytes(0.75));
         }));
 
@@ -278,7 +278,7 @@ public class PersistenceTests : IDisposable
 
         StateUIPersistence.Save(Saving("test.name", bytes =>
         {
-            bytes.Add(SwiftWireValue.TagString);
+            bytes.Add(HostValue.TagString);
             Str(bytes, "Grace");
         }));
 
@@ -297,7 +297,7 @@ public class PersistenceTests : IDisposable
 
         StateUIPersistence.Save(Saving("test.name", bytes =>
         {
-            bytes.Add(SwiftWireValue.TagString);
+            bytes.Add(HostValue.TagString);
             Str(bytes, "Grace");
         }));
 
@@ -327,7 +327,7 @@ public class PersistenceTests : IDisposable
     /// <see cref="HostActCall.GetName"/> reads.</summary>
     private static HostActCall Saving(string key, Action<List<byte>> value)
     {
-        List<byte> bytes = [SwiftWire.Version];
+        List<byte> bytes = [WireCodec.Version];
 
         bytes.AddRange([2, 0]);                 // two announcements:
         bytes.AddRange([1, 0]);
@@ -340,11 +340,11 @@ public class PersistenceTests : IDisposable
         bytes.AddRange([0, 0, 0, 0]);           // nobody is waiting
         bytes.Add(2);                           // two arguments
 
-        bytes.Add(SwiftWireValue.TagName);
+        bytes.Add(HostValue.TagName);
         bytes.AddRange([2, 0]);                 // name #2
         value(bytes);
 
-        return SwiftWire.ReadActCalls([.. bytes], new SwiftWireDictionary()).Single();
+        return WireCodec.ReadActCalls([.. bytes], new WireDictionary()).Single();
     }
 
     private static void Str(List<byte> bytes, string text)

@@ -27,7 +27,7 @@ internal sealed record SceneOrigin(
     string? Owner,
     string? Kind,
     string? Value,
-    IReadOnlyList<(string Name, SwiftWireValue Value)> Kept)
+    IReadOnlyList<(string Name, HostValue Value)> Kept)
 {
     /// <summary>A kept value as the text the platform keeps it as.</summary>
     /// <remarks>
@@ -39,19 +39,19 @@ internal sealed record SceneOrigin(
     /// </remarks>
     /// <param name="value">A value as it came off the wire.</param>
     /// <returns>Its text; null for a kind a scene key does not hold.</returns>
-    internal static string? Write(SwiftWireValue value) => value.Tag switch
+    internal static string? Write(HostValue value) => value.Tag switch
     {
-        SwiftWireValue.TagTrue => "b1",
-        SwiftWireValue.TagFalse => "b0",
-        SwiftWireValue.TagNumber => "n" + value.Number.ToString("R", CultureInfo.InvariantCulture),
-        SwiftWireValue.TagString => "s" + value.Text,
+        HostValue.TagTrue => "b1",
+        HostValue.TagFalse => "b0",
+        HostValue.TagNumber => "n" + value.Number.ToString("R", CultureInfo.InvariantCulture),
+        HostValue.TagString => "s" + value.Text,
         _ => null,
     };
 
     /// <summary>A kept value back from its text - see <see cref="Write"/>.</summary>
     /// <param name="text">What the platform kept.</param>
     /// <returns>The value; null for text this library did not write.</returns>
-    internal static SwiftWireValue? Read(string text)
+    internal static HostValue? Read(string text)
     {
         if (text.Length == 0)
         {
@@ -62,11 +62,11 @@ internal sealed record SceneOrigin(
 
         return text[0] switch
         {
-            'b' when rest == "1" => SwiftWireValue.Of(true),
-            'b' when rest == "0" => SwiftWireValue.Of(false),
+            'b' when rest == "1" => HostValue.Of(true),
+            'b' when rest == "0" => HostValue.Of(false),
             'n' when double.TryParse(rest, NumberStyles.Float, CultureInfo.InvariantCulture, out double number) =>
-                SwiftWireValue.Of(number),
-            's' => SwiftWireValue.Of(rest),
+                HostValue.Of(number),
+            's' => HostValue.Of(rest),
             _ => null,
         };
     }

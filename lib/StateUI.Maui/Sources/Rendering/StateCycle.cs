@@ -249,7 +249,7 @@ internal sealed class StateCycle
     private readonly Dictionary<int, StateChannel> _byNumber = [];
 
     /// <summary>And by the control, which is how a host writer asks about one.</summary>
-    private readonly ConditionalWeakTable<BindableObject, Dictionary<SwiftKey, StateAttachment>> _byView = new();
+    private readonly ConditionalWeakTable<BindableObject, Dictionary<HostPropKey, StateAttachment>> _byView = new();
 
     /// <summary>What a cycle reads into, kept rather than made per frame.</summary>
     private byte[] _buffer = new byte[Room];
@@ -301,7 +301,7 @@ internal sealed class StateCycle
     /// The element as the message describes it - its registrations, and the
     /// type that resolves each property the way a style setter is resolved.
     /// </param>
-    internal void Register(BindableObject view, SwiftNode node)
+    internal void Register(BindableObject view, HostPatch node)
     {
         Detach(view);
 
@@ -310,10 +310,10 @@ internal sealed class StateCycle
             return;
         }
 
-        Dictionary<SwiftKey, StateAttachment> tied = [];
+        Dictionary<HostPropKey, StateAttachment> tied = [];
         bool fed = false;
 
-        foreach (SwiftStateEntry entry in entries)
+        foreach (HostStateBinding entry in entries)
         {
             if (StateAttachment.Of(view, entry, node.Type, node.TypeName) is not StateAttachment attachment)
             {
@@ -332,13 +332,13 @@ internal sealed class StateCycle
             // AND THE LAYOUT IS TOLD IT IS PLACED, before anything measures
             // it: its children stand where arithmetic over the room puts them,
             // so their reach says nothing about how big it should be.
-            if (attachment.Kind == SwiftStateKind.Placement)
+            if (attachment.Kind == HostStateKind.Placement)
             {
                 view.SetValue(MotionPlacement.PlacedProperty, true);
             }
 
-            if (attachment.Kind == SwiftStateKind.Feed
-                && entry.Key.Prop == SwiftProp.Frame
+            if (attachment.Kind == HostStateKind.Feed
+                && entry.Key.Prop == HostProp.Frame
                 && view is VisualElement reporting)
             {
                 Fed(reporting, attachment);
@@ -512,10 +512,10 @@ internal sealed class StateCycle
     /// <summary>What this control's properties are tied to, if anything.</summary>
     /// <param name="view">The control.</param>
     /// <returns>The attachments, by property.</returns>
-    internal IReadOnlyDictionary<SwiftKey, StateAttachment> Registered(BindableObject view) =>
-        _byView.TryGetValue(view, out Dictionary<SwiftKey, StateAttachment>? tied)
+    internal IReadOnlyDictionary<HostPropKey, StateAttachment> Registered(BindableObject view) =>
+        _byView.TryGetValue(view, out Dictionary<HostPropKey, StateAttachment>? tied)
             ? tied
-            : new Dictionary<SwiftKey, StateAttachment>();
+            : new Dictionary<HostPropKey, StateAttachment>();
 
     /// <summary>
     /// The attachment carrying one named value on a control, or null - the
@@ -524,9 +524,9 @@ internal sealed class StateCycle
     /// <param name="view">The control.</param>
     /// <param name="named">Which value.</param>
     /// <returns>The attachment, or null where no state carries it.</returns>
-    internal StateAttachment? Sink(BindableObject view, SwiftProp named)
+    internal StateAttachment? Sink(BindableObject view, HostProp named)
     {
-        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, StateAttachment>? tied))
+        if (!_byView.TryGetValue(view, out Dictionary<HostPropKey, StateAttachment>? tied))
         {
             return null;
         }
@@ -557,7 +557,7 @@ internal sealed class StateCycle
     /// <returns>The attachment, or null.</returns>
     internal StateAttachment? Sink(BindableObject view, BindableProperty property)
     {
-        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, StateAttachment>? tied))
+        if (!_byView.TryGetValue(view, out Dictionary<HostPropKey, StateAttachment>? tied))
         {
             return null;
         }
@@ -631,8 +631,8 @@ internal sealed class StateCycle
 
         if (_byNumber.Count == 0
             || Sink(view, property) is not StateAttachment attachment
-            || attachment.Kind != SwiftStateKind.Property
-            || attachment.Mode == SwiftStateMode.Out
+            || attachment.Kind != HostStateKind.Property
+            || attachment.Mode == HostStateMode.Out
             || attachment.Lanes != lanes.Length)
         {
             return false;
@@ -708,8 +708,8 @@ internal sealed class StateCycle
     internal bool Slid(BindableObject view, double[] lanes)
     {
         if (_byNumber.Count == 0
-            || Sink(view, SwiftProp.ScrollOffset) is not StateAttachment attachment
-            || attachment.Mode == SwiftStateMode.Out
+            || Sink(view, HostProp.ScrollOffset) is not StateAttachment attachment
+            || attachment.Mode == HostStateMode.Out
             || attachment.Lanes != lanes.Length)
         {
             return false;
@@ -759,8 +759,8 @@ internal sealed class StateCycle
     {
         if (_byNumber.Count == 0
             || Sink(view, property) is not StateAttachment attachment
-            || attachment.Kind != SwiftStateKind.Plain
-            || attachment.Mode != SwiftStateMode.InOut)
+            || attachment.Kind != HostStateKind.Plain
+            || attachment.Mode != HostStateMode.InOut)
         {
             return false;
         }
@@ -776,7 +776,7 @@ internal sealed class StateCycle
         {
             foreach (StateAttachment other in channel.Attachments)
             {
-                if (!ReferenceEquals(other, attachment) && other.Kind == SwiftStateKind.Plain)
+                if (!ReferenceEquals(other, attachment) && other.Kind == HostStateKind.Plain)
                 {
                     other.Set(lanes);
                 }
@@ -809,8 +809,8 @@ internal sealed class StateCycle
     {
         if (_byNumber.Count == 0
             || Sink(view, property) is not StateAttachment attachment
-            || attachment.Kind != SwiftStateKind.Text
-            || attachment.Mode != SwiftStateMode.InOut)
+            || attachment.Kind != HostStateKind.Text
+            || attachment.Mode != HostStateMode.InOut)
         {
             return false;
         }
@@ -827,7 +827,7 @@ internal sealed class StateCycle
         {
             foreach (StateAttachment other in channel.Attachments)
             {
-                if (!ReferenceEquals(other, attachment) && other.Kind == SwiftStateKind.Text)
+                if (!ReferenceEquals(other, attachment) && other.Kind == HostStateKind.Text)
                 {
                     other.Wear(words);
                 }
@@ -880,8 +880,8 @@ internal sealed class StateCycle
         owner is BindableObject view
         && key is BindableProperty property
         && Sink(view, property) is StateAttachment attachment
-        && attachment.Kind is SwiftStateKind.Property or SwiftStateKind.Text or SwiftStateKind.Plain
-        && attachment.Mode != SwiftStateMode.In;
+        && attachment.Kind is HostStateKind.Property or HostStateKind.Text or HostStateKind.Plain
+        && attachment.Mode != HostStateMode.In;
 
     /// <summary>
     /// Puts a state-driven property back where its state says it belongs, and
@@ -1020,7 +1020,7 @@ internal sealed class StateCycle
     /// <param name="view">The control.</param>
     internal void Detach(BindableObject view)
     {
-        if (!_byView.TryGetValue(view, out Dictionary<SwiftKey, StateAttachment>? tied))
+        if (!_byView.TryGetValue(view, out Dictionary<HostPropKey, StateAttachment>? tied))
         {
             return;
         }
@@ -1210,7 +1210,7 @@ internal sealed class StateCycle
 
             foreach (StateAttachment attachment in channel.Attachments.ToArray())
             {
-                if (attachment.Kind != SwiftStateKind.Property)
+                if (attachment.Kind != HostStateKind.Property)
                 {
                     attachment.Wear(bytes, mask, _walker, _land);
                 }
@@ -1434,17 +1434,17 @@ internal sealed class StateAttachment
     /// <param name="key">Which property it is about.</param>
     /// <param name="member">The member's number, this library's own.</param>
     /// <returns>A node carrying that one value under that one key.</returns>
-    private static SwiftNode Said(SwiftKey key, int member)
+    private static HostPatch Said(HostPropKey key, int member)
     {
-        var said = new SwiftNode();
+        var said = new HostPatch();
 
         if (key.Name is string own)
         {
-            said.OwnProps = new Dictionary<string, SwiftWireValue> { [own] = SwiftWireValue.OfMember(member) };
+            said.OwnProps = new Dictionary<string, HostValue> { [own] = HostValue.OfMember(member) };
         }
         else
         {
-            said.Props = new Dictionary<SwiftProp, SwiftWireValue> { [key.Prop] = SwiftWireValue.OfMember(member) };
+            said.Props = new Dictionary<HostProp, HostValue> { [key.Prop] = HostValue.OfMember(member) };
         }
 
         return said;
@@ -1491,7 +1491,7 @@ internal sealed class StateAttachment
 
     private StateAttachment(
         BindableObject view,
-        SwiftStateEntry entry,
+        HostStateBinding entry,
         BindableProperty? property,
         MotionValue shape)
     {
@@ -1506,16 +1506,16 @@ internal sealed class StateAttachment
     }
 
     /// <summary>Which property, as a key that reads either bag.</summary>
-    internal SwiftKey Key { get; }
+    internal HostPropKey Key { get; }
 
     /// <summary>The number the value rides on.</summary>
     internal int Number { get; }
 
     /// <summary>Which way it crosses.</summary>
-    internal SwiftStateMode Mode { get; }
+    internal HostStateMode Mode { get; }
 
     /// <summary>Which of this side's doors the value goes through.</summary>
-    internal SwiftStateKind Kind { get; }
+    internal HostStateKind Kind { get; }
 
     /// <summary>The property itself, or null for a kind that is not one.</summary>
     internal BindableProperty? Property { get; }
@@ -1558,21 +1558,21 @@ internal sealed class StateAttachment
     /// <returns>The attachment, or null.</returns>
     internal static StateAttachment? Of(
         BindableObject view,
-        SwiftStateEntry entry,
-        SwiftNodeType type,
+        HostStateBinding entry,
+        HostNodeType type,
         string typeName)
     {
         // A PLACEMENT IS ABOUT THE LAYOUT'S CHILDREN, and a FEED is the
         // platform's own answer about the control - a room, an offset, a drag.
         // Neither is a property of anything, so neither is looked up as one.
-        if (entry.Kind == SwiftStateKind.Placement)
+        if (entry.Kind == HostStateKind.Placement)
         {
             return view is Microsoft.Maui.Controls.Layout
                 ? new StateAttachment(view, entry, null, MotionValue.Number)
                 : null;
         }
 
-        if (entry.Kind == SwiftStateKind.Feed)
+        if (entry.Kind == HostStateKind.Feed)
         {
             return new StateAttachment(view, entry, null, MotionValue.Number);
         }
@@ -1581,7 +1581,7 @@ internal sealed class StateAttachment
         // platform declares ScrollX and ScrollY read-only, so this attachment
         // carries no property at all and aims at the scroller itself, which the
         // walker moves as a two-lane target. See ScrollMovement.Walked.
-        if (entry.Key.Prop == SwiftProp.ScrollOffset)
+        if (entry.Key.Prop == HostProp.ScrollOffset)
         {
             return view is ScrollView ? new StateAttachment(view, entry, null, MotionValue.Offset) : null;
         }
@@ -1594,14 +1594,14 @@ internal sealed class StateAttachment
         // TEXT HAS NO LANES: it is dirty or it is not, and nothing walks it -
         // out onto a label's caption, and both ways on a field the reader
         // types into, where the typed words cross back whole.
-        if (entry.Kind == SwiftStateKind.Text)
+        if (entry.Kind == HostStateKind.Text)
         {
             return new StateAttachment(view, entry, property, MotionValue.Number);
         }
 
         // A PLAIN value is one lane set as it stands - a flag, a count, a
         // number that never travels - on whatever property it names.
-        if (entry.Kind == SwiftStateKind.Plain)
+        if (entry.Kind == HostStateKind.Plain)
         {
             return new StateAttachment(view, entry, property, MotionValue.Number);
         }
@@ -1633,13 +1633,13 @@ internal sealed class StateAttachment
     /// <param name="walker">What moves the values.</param>
     internal void Landed(byte[] bytes, Walker walker)
     {
-        if (Kind == SwiftStateKind.Plain)
+        if (Kind == HostStateKind.Plain)
         {
             Wear(bytes, ~0UL, walker, static (_, _) => { });
             return;
         }
 
-        if (Kind == SwiftStateKind.Placement)
+        if (Kind == HostStateKind.Placement)
         {
             // WHOLE, because nothing has been placed yet - and every one of
             // them arrives rather than travelling, a view nobody has placed
@@ -1648,13 +1648,13 @@ internal sealed class StateAttachment
             return;
         }
 
-        if (Kind == SwiftStateKind.Text)
+        if (Kind == HostStateKind.Text)
         {
             Wear(bytes, 1, walker, static (_, _) => { });
             return;
         }
 
-        if (Mode == SwiftStateMode.In || Channel is not StateChannel channel)
+        if (Mode == HostStateMode.In || Channel is not StateChannel channel)
         {
             return;
         }
@@ -1688,8 +1688,8 @@ internal sealed class StateAttachment
     internal void Resting(byte[] bytes, Walker walker, in HostMotion spec)
     {
         if (Property is null
-            || Kind != SwiftStateKind.Property
-            || Mode == SwiftStateMode.In
+            || Kind != HostStateKind.Property
+            || Mode == HostStateMode.In
             || View is not BindableObject view
             || Channel is not StateChannel channel)
         {
@@ -1726,7 +1726,7 @@ internal sealed class StateAttachment
     /// <param name="land">Told a completion is done, and whether it finished.</param>
     internal void Wear(byte[] bytes, ulong mask, Walker walker, Action<int, bool> land)
     {
-        if (Kind == SwiftStateKind.Placement)
+        if (Kind == HostStateKind.Placement)
         {
             Placed(bytes, mask, walker);
             return;
@@ -1737,13 +1737,13 @@ internal sealed class StateAttachment
             return;
         }
 
-        if (Kind == SwiftStateKind.Text)
+        if (Kind == HostStateKind.Text)
         {
             Wear(StateBatch.Text(bytes));
             return;
         }
 
-        if (Kind == SwiftStateKind.Plain)
+        if (Kind == HostStateKind.Plain)
         {
             Set(StateBatch.Lanes(bytes));
         }
@@ -2003,9 +2003,9 @@ internal sealed class StateAttachment
         return (int)lanes[at] switch
         {
             1 => walker.Travel,
-            2 => HostMotion.Eased(Millis(lanes[at + 1]), (SwiftEasing)(int)lanes[at + 2]),
+            2 => HostMotion.Eased(Millis(lanes[at + 1]), (HostEasing)(int)lanes[at + 2]),
             3 => HostMotion.Spring(Millis(lanes[at + 1]), lanes[at + 2]),
-            _ => HostMotion.Eased(0, SwiftEasing.Linear),
+            _ => HostMotion.Eased(0, HostEasing.Linear),
         };
     }
 

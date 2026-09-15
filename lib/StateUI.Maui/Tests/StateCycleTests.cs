@@ -98,8 +98,8 @@ public class StateCycleTests
         StateAttachment attachment = Assert.Single(host.Renderer.Cycle.Registered(border).Values);
 
         Assert.Equal(1, attachment.Number);
-        Assert.Equal(SwiftStateMode.InOut, attachment.Mode);
-        Assert.Equal(SwiftStateKind.Property, attachment.Kind);
+        Assert.Equal(HostStateMode.InOut, attachment.Mode);
+        Assert.Equal(HostStateKind.Property, attachment.Kind);
         Assert.Equal(VisualElement.OpacityProperty, attachment.Property);
     }
 
@@ -156,8 +156,8 @@ public class StateCycleTests
         {
             StateAttachment attachment = Assert.Single(host.Renderer.Cycle.Registered(view).Values);
 
-            Assert.Equal(SwiftStateKind.Text, attachment.Kind);
-            Assert.Equal(SwiftStateMode.Out, attachment.Mode);
+            Assert.Equal(HostStateKind.Text, attachment.Kind);
+            Assert.Equal(HostStateMode.Out, attachment.Mode);
             Assert.Equal(1, attachment.Number);
         }
     }
@@ -183,9 +183,9 @@ public class StateCycleTests
         StateAttachment stepper = Assert.Single(
             host.Renderer.Cycle.Registered((View)stack.Children[1]).Values);
 
-        Assert.Equal(SwiftStateMode.InOut, slider.Mode);
+        Assert.Equal(HostStateMode.InOut, slider.Mode);
         Assert.Equal(Slider.ValueProperty, slider.Property);
-        Assert.Equal(SwiftStateMode.InOut, stepper.Mode);
+        Assert.Equal(HostStateMode.InOut, stepper.Mode);
         Assert.Equal(Stepper.ValueProperty, stepper.Property);
     }
 
@@ -322,14 +322,14 @@ public class StateCycleTests
 
         host.Renderer.Cycle.Crossing = crossing;
 
-        static SwiftNode Bound(SwiftNodeType type, int id) => new()
+        static HostPatch Bound(HostNodeType type, int id) => new()
         {
-            Id = new SwiftId(id),
+            Id = new HostElementId(id),
             Type = type,
-            States = [new SwiftStateEntry(SwiftProp.IsOn, "isOn", 6, SwiftStateMode.InOut, SwiftStateKind.Plain)],
+            States = [new HostStateBinding(HostProp.IsOn, "isOn", 6, HostStateMode.InOut, HostStateKind.Plain)],
         };
 
-        var box = (CheckBox)host.ApplyMessage(Bound(SwiftNodeType.CheckBox, 1));
+        var box = (CheckBox)host.ApplyMessage(Bound(HostNodeType.CheckBox, 1));
 
         box.IsChecked = true;
 
@@ -338,7 +338,7 @@ public class StateCycleTests
         Assert.Equal(6, number);
         Assert.Equal([1.0], lanes);
 
-        var radio = (RadioButton)host.ApplyMessage(Bound(SwiftNodeType.RadioButton, 2));
+        var radio = (RadioButton)host.ApplyMessage(Bound(HostNodeType.RadioButton, 2));
 
         radio.IsChecked = true;
 
@@ -392,7 +392,7 @@ public class StateCycleTests
         // Sent somewhere over a fifth of a second, and half way there.
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, Lanes(
-            value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)SwiftEasing.Linear));
+            value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)HostEasing.Linear));
 
         host.Renderer.Cycle.Run(CycleReason.Told);
         clock.Tick(100);
@@ -428,7 +428,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint | (1UL << 6), Lanes(
-            value: 1, setPoint: 0, law: 2, a: 200, b: (int)SwiftEasing.Linear, completion: -3));
+            value: 1, setPoint: 0, law: 2, a: 200, b: (int)HostEasing.Linear, completion: -3));
 
         host.Renderer.Cycle.Run(CycleReason.Told);
 
@@ -463,7 +463,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint | (1UL << 6), Lanes(
-            value: 1, setPoint: 0, law: 2, a: 400, b: (int)SwiftEasing.Linear, completion: -4));
+            value: 1, setPoint: 0, law: 2, a: 400, b: (int)HostEasing.Linear, completion: -4));
 
         host.Renderer.Cycle.Run(CycleReason.Told);
         clock.Tick(100);
@@ -761,7 +761,7 @@ public class StateCycleTests
         host.Renderer.Walker.Aim(
             new MotionProperty(border, VisualElement.OpacityProperty, MotionValue.Number, true),
             [0.1],
-            HostMotion.Eased(200, SwiftEasing.Linear));
+            HostMotion.Eased(200, HostEasing.Linear));
 
         // The control travels, on a trip of its own.
         Assert.NotNull(host.Renderer.Walker.Moving(border, VisualElement.OpacityProperty));
@@ -793,7 +793,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, Lanes(
-            value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)SwiftEasing.Linear));
+            value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)HostEasing.Linear));
 
         host.Renderer.Cycle.Run(CycleReason.Told);
         clock.Tick(100);
@@ -830,7 +830,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, Lanes(
-            value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)SwiftEasing.Linear));
+            value: 0.5, setPoint: 0, law: 2, a: 200, b: (int)HostEasing.Linear));
 
         host.Renderer.Cycle.Run(CycleReason.Told);
         clock.Tick(100);
@@ -889,7 +889,7 @@ public class StateCycleTests
 
         // The law the application would have stated, which a harness handed
         // the view alone never sees.
-        host.Renderer.Walker.Travel = HostMotion.Eased(200, SwiftEasing.Linear);
+        host.Renderer.Walker.Travel = HostMotion.Eased(200, HostEasing.Linear);
         crossing.Whole[1] = Batch(1, ~0UL, Lanes(value: 0.5, setPoint: 0.5));
 
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
@@ -897,7 +897,7 @@ public class StateCycleTests
         // The number sends it down to nothing over 400 ms, and the image it would
         // now answer with says so.
         byte[] going = Lanes(
-            value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)SwiftEasing.Linear);
+            value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)HostEasing.Linear);
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, going);
@@ -940,18 +940,18 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, Lanes(
-            value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)SwiftEasing.Linear));
+            value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)HostEasing.Linear));
 
         host.Renderer.Cycle.Run(CycleReason.Told);
         clock.Tick(100);
 
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(4),
-            Type = SwiftNodeType.Border,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(4),
+            Type = HostNodeType.Border,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.Opacity] = SwiftWireValue.Of(0.5),
+                [HostProp.Opacity] = HostValue.Of(0.5),
             },
         });
 
@@ -986,11 +986,11 @@ public class StateCycleTests
 
         // The same element again, with the opacity STOPPED being described and
         // the registration standing.
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(4),
-            Type = SwiftNodeType.Border,
-            Cleared = [SwiftKey.Of(SwiftProp.Opacity, string.Empty)],
+            Id = new HostElementId(4),
+            Type = HostNodeType.Border,
+            Cleared = [HostPropKey.Of(HostProp.Opacity, string.Empty)],
         });
 
         Assert.Equal(0.3, border.Opacity, 6);
@@ -1018,13 +1018,13 @@ public class StateCycleTests
         Assert.True(border.IsVisible);
         Assert.Equal(0.4, border.Opacity, 6);
 
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(3),
-            Type = SwiftNodeType.Border,
-            Props = new Dictionary<SwiftProp, SwiftWireValue>
+            Id = new HostElementId(3),
+            Type = HostNodeType.Border,
+            Props = new Dictionary<HostProp, HostValue>
             {
-                [SwiftProp.IsVisible] = SwiftWireValue.Of(false),
+                [HostProp.IsVisible] = HostValue.Of(false),
             },
         });
 
@@ -1082,10 +1082,10 @@ public class StateCycleTests
 
         // The tree stops describing it: another control takes its place, so
         // nothing in the test or the host holds the old one any more.
-        host.ApplyMessage(new SwiftNode
+        host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(4),
-            Type = SwiftNodeType.Label,
+            Id = new HostElementId(4),
+            Type = HostNodeType.Label,
             Replace = true,
         });
 
@@ -1118,13 +1118,13 @@ public class StateCycleTests
     {
         var host = new Host();
 
-        var layout = (VerticalStackLayout)host.ApplyMessage(new SwiftNode
+        var layout = (VerticalStackLayout)host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(4),
-            Type = SwiftNodeType.VStack,
+            Id = new HostElementId(4),
+            Type = HostNodeType.VStack,
             States =
             [
-                new SwiftStateEntry(SwiftProp.Frame, "frame", 7, SwiftStateMode.In, SwiftStateKind.Feed),
+                new HostStateBinding(HostProp.Frame, "frame", 7, HostStateMode.In, HostStateKind.Feed),
             ],
         });
 
@@ -1298,7 +1298,7 @@ public class StateCycleTests
         // Sent to 1 over a fifth of a second, and half way there.
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, Lanes(
-            value: 0, setPoint: 1, law: 2, a: 200, b: (int)SwiftEasing.Linear));
+            value: 0, setPoint: 1, law: 2, a: 200, b: (int)HostEasing.Linear));
 
         host.Renderer.Cycle.Run(CycleReason.Told);
         clock.Tick(100);
@@ -1354,7 +1354,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, Lanes(
-            value: 0, setPoint: 1, law: 2, a: 200, b: (int)SwiftEasing.Linear));
+            value: 0, setPoint: 1, law: 2, a: 200, b: (int)HostEasing.Linear));
 
         host.Renderer.Cycle.Run(CycleReason.Told);
 
@@ -1395,7 +1395,7 @@ public class StateCycleTests
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, Lanes(
-            value: 0, setPoint: 1, law: 2, a: 200, b: (int)SwiftEasing.Linear));
+            value: 0, setPoint: 1, law: 2, a: 200, b: (int)HostEasing.Linear));
 
         host.Renderer.Cycle.Run(CycleReason.Told);
 
@@ -1487,7 +1487,7 @@ public class StateCycleTests
         // Sent from 0 to 1 over a fifth of a second.
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, Lanes(
-            value: 0, setPoint: 1, law: 2, a: 200, b: (int)SwiftEasing.Linear));
+            value: 0, setPoint: 1, law: 2, a: 200, b: (int)HostEasing.Linear));
 
         host.Renderer.Cycle.Run(CycleReason.Told);
 
@@ -1526,7 +1526,7 @@ public class StateCycleTests
         var border = (Border)host.ApplyMessage(Read("state-sink.bin"));
 
         // Sent from 0.5 down to nothing over 400 ms, and a quarter of the way.
-        byte[] going = Lanes(value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)SwiftEasing.Linear);
+        byte[] going = Lanes(value: 0.5, setPoint: 0, law: 2, a: 400, b: (int)HostEasing.Linear);
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(1, SetPoint, going);
@@ -1538,14 +1538,14 @@ public class StateCycleTests
 
         // A label is described with its opacity on the same number, while the
         // value is still travelling.
-        var label = (Label)host.ApplyMessage(new SwiftNode
+        var label = (Label)host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(9),
-            Type = SwiftNodeType.Label,
+            Id = new HostElementId(9),
+            Type = HostNodeType.Label,
             States =
             [
-                new SwiftStateEntry(
-                    SwiftProp.Opacity, "opacity", 1, SwiftStateMode.InOut, SwiftStateKind.Property),
+                new HostStateBinding(
+                    HostProp.Opacity, "opacity", 1, HostStateMode.InOut, HostStateKind.Property),
             ],
         });
 
@@ -1718,28 +1718,28 @@ public class StateCycleTests
     /// </summary>
     private static ScrollView TiedScroller(Host host)
     {
-        var scroll = (ScrollView)host.ApplyMessage(new SwiftNode
+        var scroll = (ScrollView)host.ApplyMessage(new HostPatch
         {
-            Id = new SwiftId(1),
-            Type = SwiftNodeType.ScrollView,
+            Id = new HostElementId(1),
+            Type = HostNodeType.ScrollView,
             Arranged = true,
             Children =
             [
-                new SwiftNode
+                new HostPatch
                 {
-                    Id = new SwiftId(2),
-                    Type = SwiftNodeType.ColorBox,
-                    Props = new Dictionary<SwiftProp, SwiftWireValue>
+                    Id = new HostElementId(2),
+                    Type = HostNodeType.ColorBox,
+                    Props = new Dictionary<HostProp, HostValue>
                     {
-                        [SwiftProp.Width] = SwiftWireValue.Of(100),
-                        [SwiftProp.Height] = SwiftWireValue.Of(900),
+                        [HostProp.Width] = HostValue.Of(100),
+                        [HostProp.Height] = HostValue.Of(900),
                     },
                 },
             ],
             States =
             [
-                new SwiftStateEntry(
-                    SwiftProp.ScrollOffset, "scrollOffset", 3, SwiftStateMode.InOut, SwiftStateKind.Property),
+                new HostStateBinding(
+                    HostProp.ScrollOffset, "scrollOffset", 3, HostStateMode.InOut, HostStateKind.Property),
             ],
         });
 
@@ -1761,7 +1761,7 @@ public class StateCycleTests
     private static void Travel(Host host, HandCrossing crossing, double down, double ms)
     {
         byte[] going = Lanes(
-            value: (0, 0), setPoint: (0, down), law: 2, a: ms, b: (int)SwiftEasing.Linear);
+            value: (0, 0), setPoint: (0, down), law: 2, a: ms, b: (int)HostEasing.Linear);
 
         crossing.Answers = 1;
         crossing.Dirty = Batch(3, PointSetPoint, going);
