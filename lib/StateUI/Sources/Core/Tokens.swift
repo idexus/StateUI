@@ -492,6 +492,7 @@ public extension Prop {
     static let isEnabled = Prop("isEnabled")
     static let isMaximizable = Prop("isMaximizable")
     static let isMinimizable = Prop("isMinimizable")
+    static let isTranslucent = Prop("isTranslucent")
     static let isOpaque = Prop("isOpaque")
     static let isOpen = Prop("isOpen")
     static let isPassword = Prop("isPassword")

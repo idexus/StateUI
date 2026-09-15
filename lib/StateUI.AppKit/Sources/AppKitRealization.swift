@@ -395,6 +395,7 @@ enum AppKitRealization {
         .complete("Window", "hidesWhenInactive"),
         .complete("Window", "isMaximizable"),
         .complete("Window", "isMinimizable"),
+        .complete("Window", "isTranslucent"),
         .complete("Window", "maximumHeight"),
         .complete("Window", "maximumWidth"),
         .complete("Window", "minimumHeight"),

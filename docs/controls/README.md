@@ -56,7 +56,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | Part | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Scene](Scene.md) | 6 | 6 ✅ | 6 ✅ |  |  |  |  |  |
-| [Window](Window.md) | 22 | 20 ✅ · 1 ✅* | 22 ✅ |  |  |  |  |  |
+| [Window](Window.md) | 23 | 20 ✅ · 1 ✅* | 23 ✅ |  |  |  |  |  |
 | [Page](Page.md) | 12 | 12 ✅ | 12 ✅ |  |  |  |  |  |
 | [NavigationStack](NavigationStack.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |
 | [TabbedView](TabbedView.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |

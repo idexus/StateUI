@@ -275,6 +275,62 @@ final class AppKitPageTests: XCTestCase {
                        "with no colour written the window is the system's")
     }
 
+    /// A window asked to be translucent lets the desktop show through it: it
+    /// is not opaque, keeps no background of its own and lays a material that
+    /// blends with what is behind the window under its page - and all of it
+    /// goes when nothing asks for it any more.
+    @MainActor
+    func testATranslucentWindowLaysItsMaterialUnderThePage() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        renderer.applyForTesting(windowTree(page("home", title: "Home"), translucent: true))
+
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        XCTAssertFalse(window.isOpaque)
+        XCTAssertEqual(window.backgroundColor, .clear)
+        let material = try XCTUnwrap(content.materialForTesting, "no material under the page")
+        XCTAssertEqual(material.blendingMode, .behindWindow)
+        XCTAssertTrue(content.subviews.first === material, "the material lies under the page")
+
+        renderer.applyForTesting(windowTree(page("home", title: "Home"), translucent: nil))
+
+        XCTAssertTrue(window.isOpaque)
+        XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
+        XCTAssertNil(content.materialForTesting)
+    }
+
+    /// On a translucent window a written bar colour still paints the detail's
+    /// band, and the window keeps no background: the desktop, not the colour,
+    /// shows around the floating sidebar.
+    @MainActor
+    func testATranslucentWindowShowsTheDesktopAroundTheSidebar() throws {
+        let renderer = AppKitRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            eventSink: { _, _ in })
+        defer { renderer.closeForTesting() }
+
+        var stack = navigation([page("home", title: "Home")])
+        stack.properties[.barBackgroundColor] = .color(
+            red: 54, green: 42, blue: 86, alpha: 255)
+        renderer.applyForTesting(windowTree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu"),
+            detail: stack), translucent: true))
+
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let split = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
+        XCTAssertEqual(window.backgroundColor, .clear)
+        XCTAssertEqual(split.detailBarColorForTesting, NSColor(
+            srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+    }
+
     @MainActor
     func testTabSelectionChangesVisibilityWithoutInventingNavigation() {
         var reported: [(Int32, [HostValue])] = []
@@ -1223,6 +1279,25 @@ private extension AppKitPageTests {
         ])
         page.children = .arranged([label])
         return page
+    }
+
+    /// One window holding `content`, asked - or, given nil, no longer asked -
+    /// to let the desktop show through it.
+    func windowTree(_ content: HostPatch, translucent: Bool?) -> HostPatch {
+        var window = HostPatch(id: .manual("window"), type: .window)
+        if let translucent {
+            window.properties[.isTranslucent] = .bool(translucent)
+        } else {
+            window.properties[.isTranslucent] = .nothing
+        }
+        window.children = .arranged([content])
+
+        var scene = HostPatch(id: .manual("scene"), type: .scene)
+        scene.children = .arranged([window])
+
+        var application = HostPatch(id: .manual("application"), type: .application)
+        application.children = .arranged([scene])
+        return application
     }
 
     func page(_ id: String, title: String) -> HostPatch {

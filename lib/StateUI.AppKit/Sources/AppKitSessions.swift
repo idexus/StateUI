@@ -386,6 +386,10 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private let nativeAllowsMinimizing: Bool
     private var sceneIsActive = false
 
+    /// Whether the window lets the desktop show through it - see
+    /// `AppKitWindowContentView.isTranslucent`.
+    private var isTranslucent = false
+
     var pageMenuItems: [NSMenuItem] {
         modals.last?.node.pageMenuItems ?? node?.pageMenuItems ?? []
     }
@@ -603,6 +607,9 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
             window.styleMask.remove(.miniaturizable)
         }
         window.standardWindowButton(.miniaturizeButton)?.isEnabled = allowsMinimizing
+        isTranslucent = node.bool(.isTranslucent) == true
+        window.isOpaque = !isTranslucent
+        content.isTranslucent = isTranslucent
         window.isExcludedFromWindowsMenu = !isMain
         window.level = node.bool(.floatsOnTop) == true ? .floating : .normal
         window.hidesOnDeactivate = node.bool(.floatsOnTop) == true
@@ -793,9 +800,11 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     /// toolbar and the window's background around a floating sidebar are one
     /// surface, so the sidebar stands framed in the bars' colour, its glass
     /// taking a tint of it. With none written the window keeps the system's.
+    /// A translucent window keeps no background at all: the desktop shows
+    /// around the sidebar, through the window's material.
     private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
         window.titlebarAppearsTransparent = color != nil
-        let background = color ?? .windowBackgroundColor
+        let background = isTranslucent ? NSColor.clear : (color ?? .windowBackgroundColor)
         if window.backgroundColor != background { window.backgroundColor = background }
         content.barColor = split == nil ? color : nil
         split?.setDetailBarColor(color)

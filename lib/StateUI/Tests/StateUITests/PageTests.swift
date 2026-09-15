@@ -97,6 +97,7 @@ private struct EveryPropertyWindow: Window {
         session.maximumHeight = 1200
         session.isMaximizable = false
         session.isMinimizable = true
+        session.isTranslucent = true
 
         return EveryPropertyWindow().body(panel: nil, session: session).built
     }

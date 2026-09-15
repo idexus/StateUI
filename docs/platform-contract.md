@@ -354,7 +354,7 @@ Every control, and every part an application, its windows and its pages are made
 | Part | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Scene](controls/Scene.md) | 6 | 6 ✅ | 6 ✅ |  |  |  |  |  |
-| [Window](controls/Window.md) | 22 | 20 ✅ · 1 ✅* | 22 ✅ |  |  |  |  |  |
+| [Window](controls/Window.md) | 23 | 20 ✅ · 1 ✅* | 23 ✅ |  |  |  |  |  |
 | [Page](controls/Page.md) | 12 | 12 ✅ | 12 ✅ |  |  |  |  |  |
 | [NavigationStack](controls/NavigationStack.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |
 | [TabbedView](controls/TabbedView.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |
@@ -374,6 +374,7 @@ token in parentheses.
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | `Application` / `Scene` / `Window` | sessions | multiple scenes, owned windows, restoration, focus, close | ✅ | ✅ | — | — | — | — | — |
 | `Window` | properties | `title`, `x`, `y`, `width`, `height`, `minimumWidth`, `minimumHeight`, `maximumWidth`, `maximumHeight`, `isMaximizable`, `isMinimizable` | ✅ | ✅ | — | — | — | — | — |
+| `Window` | properties | `isTranslucent` |  | ✅ | — | — | — | — | — |
 | `WindowGroup` / `Window` | session metadata | `windowType`, `windowValue`, `hidesWhenInactive`, `floatsOnTop` | — | ✅ | — | — | — | — | — |
 | `Window` | handlers | `created`, `activated`, `deactivated`, `stopped`, `resumed`, `destroying` | ✅ | ✅ | — | — | — | — | — |
 | `Scene` | handlers | `activated`, `deactivated`, `stopped`, `destroying`, `windowClosed`, `windowRestored` | ✅ | ✅ | — | — | — | — | — |

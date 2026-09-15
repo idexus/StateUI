@@ -641,10 +641,38 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     private var pageSpansTitleBar = false
     private let overlaySurface = AppKitOverlaySurfaceView()
 
+    /// The window's own material, under the page, while the window lets the
+    /// desktop show through it.
+    private var material: NSVisualEffectView?
+
+    /// Whether the desktop shows through the window: its material lies under
+    /// the page, wherever the page leaves it uncovered or paints a colour it
+    /// shows through - below the band a written bar colour paints.
+    var isTranslucent = false {
+        didSet {
+            guard isTranslucent != oldValue else { return }
+
+            if isTranslucent {
+                let material = NSVisualEffectView()
+                material.material = .underWindowBackground
+                material.blendingMode = .behindWindow
+                material.state = .followsWindowActiveState
+                addSubview(material, positioned: .below, relativeTo: nil)
+                self.material = material
+            } else {
+                material?.removeFromSuperview()
+                material = nil
+            }
+            needsLayout = true
+        }
+    }
+
+    var materialForTesting: NSVisualEffectView? { material }
+
     /// The colour the window's bars are written in, painted over `barBand`.
     /// Nil leaves the title bar and toolbar the system's material.
     var barColor: NSColor? {
-        didSet { if barColor != oldValue { needsDisplay = true } }
+        didSet { if barColor != oldValue { needsDisplay = true; needsLayout = true } }
     }
 
     /// The part of the window the title bar and toolbar cover.
@@ -671,7 +699,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
             self.page = page
             if let page {
                 page.translatesAutoresizingMaskIntoConstraints = true
-                addSubview(page, positioned: .below, relativeTo: nil)
+                addSubview(page, positioned: material == nil ? .below : .above, relativeTo: material)
             }
         }
 
@@ -692,6 +720,10 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     override func layout() {
         super.layout()
+        material?.frame = barColor == nil
+            ? bounds
+            : NSRect(x: 0, y: barBand.maxY, width: bounds.width,
+                     height: max(0, bounds.height - barBand.maxY))
         page?.frame = pageSpansTitleBar ? bounds : safeAreaRect
         overlaySurface.frame = safeAreaRect
         overlaySurface.layoutSubtreeIfNeeded()

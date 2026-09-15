@@ -249,7 +249,7 @@ as a newly opened one.
 ## Window session
 
 `WindowSession` owns one running window's phase, title, geometry requests,
-authored title area, modal stack, and `close()` operation.
+translucency, authored title area, modal stack, and `close()` operation.
 
 | Member | Meaning |
 | --- | --- |
@@ -260,6 +260,7 @@ authored title area, modal stack, and `close()` operation.
 | `minimumWidth`, `minimumHeight` | optional lower content-size bounds |
 | `maximumWidth`, `maximumHeight` | optional upper content-size bounds |
 | `isMaximizable`, `isMinimizable` | whether the corresponding native operation is permitted |
+| `isTranslucent` | whether the desktop shows through the window, where the platform can show it |
 | `titleBar` | optional authored title-area content |
 | `modalStack` | pages presented over this window, with the last one on top |
 | `close()` | closes this exact window; closing the main window ends its scene |
@@ -305,6 +306,19 @@ describe only that visible area.
 the appearance of one button. A host blocks equivalent native commands while
 the corresponding value is `false`. `nil` preserves the platform's existing
 capability.
+
+`isTranslucent` asks for a window the desktop shows through, blurred, under
+whatever its pages leave uncovered or paint in a colour with an alpha - on
+AppKit the window's own material lies under the page, and the margin around a
+floating sidebar shows it. It is a desktop semantic: a host whose windows
+cannot show what is behind them keeps them opaque, and the application's
+colours read as written. Text belongs on a surface of its own rather than
+straight over the desktop. `nil` keeps the platform's opaque window.
+
+```swift quote
+window.isTranslucent = true
+page.background = Color("#CC0D0B14")
+```
 
 The host reports `WindowPhase` through the same session:
 

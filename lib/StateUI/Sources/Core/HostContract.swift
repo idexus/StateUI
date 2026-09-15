@@ -137,7 +137,7 @@
             .fontAutoScalingEnabled, .hidesWhenInactive,
             .horizontalScrollBarVisibility, .icon,
             .isDestructive,
-            .isMaximizable, .isMinimizable, .inputPurpose,
+            .isMaximizable, .isMinimizable, .isTranslucent, .inputPurpose,
             .backButtonTitle,
             .hasBackButton, .hasNavigationBar,
             .placement, .priority, .returnKey, .avoidsSafeArea,

@@ -210,4 +210,5 @@ internal enum HostProp : ushort
     LetsInputThrough = 246,
     IgnoresInput = 247,
     Tint = 248,
+    IsTranslucent = 249,
 }

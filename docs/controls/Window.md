@@ -21,6 +21,7 @@ Declared in `lib/StateUI/Sources/Views/Application.swift`, `lib/StateUI/Sources/
 | `hidesWhenInactive` | property |  | ✅ |  |  |  |  |  |  |
 | `isMaximizable` | property | ✅ | ✅ |  |  |  |  |  |  |
 | `isMinimizable` | property | ✅ | ✅ |  |  |  |  |  |  |
+| `isTranslucent` | property |  | ✅ |  |  |  |  |  |  |
 | `maximumHeight` | property | ✅ | ✅ |  |  |  |  |  |  |
 | `maximumWidth` | property | ✅ | ✅ |  |  |  |  |  |  |
 | `minimumHeight` | property | ✅ | ✅ |  |  |  |  |  |  |

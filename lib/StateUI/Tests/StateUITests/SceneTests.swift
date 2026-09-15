@@ -602,7 +602,7 @@ final class SceneTests: XCTestCase {
             ("Window", [
                 "title", "x", "y", "width", "height",
                 "minimumWidth", "minimumHeight", "maximumWidth", "maximumHeight",
-                "isMaximizable", "isMinimizable", "titleBar", "modalStack", "environment",
+                "isMaximizable", "isMinimizable", "isTranslucent", "titleBar", "modalStack", "environment",
                 "onCreated", "onActivated", "onDeactivated", "onStopped", "onResumed", "onDestroying",
             ]),
             ("ContentView", onPage + [

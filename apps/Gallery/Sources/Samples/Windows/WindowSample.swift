@@ -1,12 +1,13 @@
 import StateUI
 
-/// Native window identity, geometry, constraints, and operations.
+/// Native window identity, geometry, constraints, operations and translucency.
 struct WindowSample: SampleContent, ExampleContent {
     @Environment private var window: WindowSession
 
     @State private var renames = 0
     @State private var maximizable = true
     @State private var minimizable = true
+    @State private var translucent = false
     @State private var width = 0.0
     @State private var height = 0.0
 
@@ -37,6 +38,7 @@ struct WindowSample: SampleContent, ExampleContent {
         @Environment private var window: WindowSession
         @State private var maximizable = true
         @State private var minimizable = true
+        @State private var translucent = false
 
         DebugInfoLabel()
 
@@ -56,6 +58,10 @@ struct WindowSample: SampleContent, ExampleContent {
 
         Switch($minimizable).onChanged(minimizable) {
             window.isMinimizable = minimizable
+        }
+
+        Switch($translucent).onChanged(translucent) {
+            window.isTranslucent = translucent
         }
         """
 
@@ -107,6 +113,11 @@ struct WindowSample: SampleContent, ExampleContent {
             option("Minimize", id: "window.minimize", value: $minimizable)
                 .onChanged(minimizable) {
                     window.isMinimizable = minimizable
+                }
+
+            option("Translucent", id: "window.translucent", value: $translucent)
+                .onChanged(translucent) {
+                    window.isTranslucent = translucent
                 }
 
             Label("Sample frame: \(Int(width)) × \(Int(height))")

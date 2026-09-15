@@ -33,6 +33,9 @@ struct MenuPage: ContentView {
     /// The page itself.
     @Environment private var page: PageSession
 
+    /// The window the menu stands in - whether the desktop shows through it.
+    @Environment private var window: WindowSession
+
     var content: any View {
         Grid {
             header
@@ -61,9 +64,16 @@ struct MenuPage: ContentView {
 
             // The image hosts use for the pane's navigation affordance.
             page.icon = "nav_menu_dark.png"
-            page.background = Palette.surface
-
+            page.background = surface
         }
+        // A window the desktop shows through lets it through the menu as well.
+        .onChanged(window.isTranslucent) { page.background = surface }
+    }
+
+    /// What the menu is drawn on: the gallery's surface, a fifth let through
+    /// where the window shows the desktop.
+    private var surface: Color {
+        window.isTranslucent == true ? Palette.translucentSurface : Palette.surface
     }
 
     /// The mark, the name and what this is - on the gradient the home page opens

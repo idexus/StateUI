@@ -753,6 +753,19 @@ public final class WindowSession {
     /// native affordance for that operation.
     @State public var isMinimizable: Bool? = nil
 
+    /// Whether the desktop shows through the window, blurred - under whatever
+    /// its pages leave uncovered or paint in a colour that lets it through,
+    /// such as a background with an alpha or the margin around a floating
+    /// sidebar.
+    ///
+    ///     window.isTranslucent = true
+    ///
+    /// A desktop host lays its windows' own material under the pages; a host
+    /// whose windows cannot show what is behind them keeps them opaque, and
+    /// the application's colours read as they are written. `nil` keeps the
+    /// platform's opaque window.
+    @State public var isTranslucent: Bool? = nil
+
     /// Authored window chrome presented by hosts that support a custom title
     /// area.
     ///
@@ -838,6 +851,7 @@ public final class WindowSession {
         props[.height] = height.map { .number($0) }
         props[.isMaximizable] = isMaximizable.map { .bool($0) }
         props[.isMinimizable] = isMinimizable.map { .bool($0) }
+        props[.isTranslucent] = isTranslucent.map { .bool($0) }
         props[.minimumWidth] = minimumWidth.map { .number($0) }
         props[.minimumHeight] = minimumHeight.map { .number($0) }
         props[.maximumWidth] = maximumWidth.map { .number($0) }
