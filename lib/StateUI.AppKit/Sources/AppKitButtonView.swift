@@ -6,10 +6,14 @@ import AppKit
 
 /// The native AppKit button behind StateUI's `Button` - a caption, an icon or both.
 @MainActor
-final class AppKitButtonView: NSButton {
+final class AppKitButtonView: NSButton, AppKitPictureResolving {
     var onPressed: (() -> Void)?
     var onReleased: (() -> Void)?
     var onClicked: (() -> Void)?
+
+    /// Resolves an icon's file name against the application's resources - the
+    /// host's to answer, since the files and the cache over them are its.
+    var picture: ((String) -> NSImage?)?
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)

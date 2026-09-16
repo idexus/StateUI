@@ -2131,15 +2131,7 @@ final class MountedNode: NSObject {
         host?.dispatch(handler)
     }
 
-    private func pressed() {
-        guard let handler = events[.pressed] else { return }
-        host?.dispatch(handler)
-    }
 
-    private func released() {
-        guard let handler = events[.released] else { return }
-        host?.dispatch(handler)
-    }
 
     /// A value the reader of a registered view changed, by member.
     private func report(_ property: Prop, _ event: Event, _ value: HostValue) {
@@ -2380,13 +2372,6 @@ final class MountedNode: NSObject {
         case .label:
             return AppKitLabelView()
 
-        case .button:
-            let button = AppKitButtonView()
-            button.onClicked = { [weak self] in self?.clicked(nil) }
-            button.onPressed = { [weak self] in self?.pressed() }
-            button.onReleased = { [weak self] in self?.released() }
-            return button
-
         case .toolbarItem:
             // The window's toolbar makes the native item; see visibleToolbarActions.
             return nil
@@ -2448,26 +2433,6 @@ final class MountedNode: NSObject {
             button.wantsLayer = background != nil
             button.layer?.backgroundColor = background?.cgColor
             button.layer?.cornerRadius = value(.cornerRadius)?.number ?? 0
-        }
-
-        if let button = view as? AppKitButtonView {
-            let caption = string(.text) ?? ""
-            let foreground = value(.isDestructive)?.bool == true
-                ? NSColor.systemRed
-                : (color(.textColor) ?? .controlTextColor)
-            button.apply(
-                text: caption,
-                image: string(.icon).flatMap { image(named: $0) },
-                imagePosition: buttonImagePosition(imageOnly: caption.isEmpty),
-                imageScaling: imageScaling(enumeration(.aspect)),
-                font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
-                textColor: foreground,
-                backgroundColor: color(.background),
-                borderColor: color(.borderColor),
-                borderWidth: value(.borderWidth)?.number ?? 0,
-                cornerRadius: value(.cornerRadius)?.number ?? 0,
-                lineBreakMode: lineBreakMode(enumeration(.lineBreak)),
-                enabled: value(.isEnabled)?.bool ?? true)
         }
 
         if let split = view as? AppKitSplitView {
@@ -3164,25 +3129,7 @@ final class MountedNode: NSObject {
         appKitTextAlignment(value)
     }
 
-    private func buttonImagePosition(imageOnly: Bool) -> NSControl.ImagePosition {
-        guard !imageOnly else { return .imageOnly }
-        let position = enumeration(.iconPosition)
 
-        switch position {
-        case 1: return .imageAbove
-        case 2: return .imageTrailing
-        case 3: return .imageBelow
-        default: return .imageLeading
-        }
-    }
-
-    private func imageScaling(_ aspect: Int32?) -> NSImageScaling {
-        switch aspect {
-        case 2: return .scaleAxesIndependently
-        case 3: return .scaleNone
-        default: return .scaleProportionallyUpOrDown
-        }
-    }
 
 
     private func lineBreakMode(_ mode: Int32?) -> NSLineBreakMode {
