@@ -38,8 +38,14 @@ final class Catalog {
         ]
 
         #if MAUI
-        // The MAUI host's list, compiled for that host alone.
-        collections.insert(Sample(ItemsViewSample()), at: 0)
+        // The MAUI host's lists, compiled for that host alone.
+        collections.insert(
+            contentsOf: [
+                Sample(ItemsViewSample()),
+                Sample(ChoosingItemsSample()),
+                Sample(LoadingItemsSample()),
+            ],
+            at: 0)
         #endif
 
         var groups: [SampleGroup] = [
@@ -203,8 +209,8 @@ final class Catalog {
 
             SampleGroup(
                 route: "collections",
-                title: "Cards & actions",
-                summary: "Swipe and refresh actions, cards, and position indicators.",
+                title: "Items & cards",
+                summary: "Lists of items, swipe and refresh actions, cards, and position indicators.",
                 icon: ImageSource(light: "nav_collections.png", dark: "nav_collections_dark.png"),
                 card: ImageSource("cat_collections.png"),
                 samples: collections),
