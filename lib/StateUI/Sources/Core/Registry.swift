@@ -73,15 +73,31 @@ import Dispatch
     ///         reports.report(SwitchContract.isOn, on, as: SwitchContract.toggled)
     ///     }
     ///
+    /// The two members need not come from one contract: a field's words are
+    /// `TextElementContract.text` and the change it reports is
+    /// `InputViewContract.textChanged`, and the element wears both. A member of
+    /// a contract it does not wear is refused, and said once.
+    ///
     /// - Parameters:
     ///   - property: the value's member, written with its contract.
     ///   - value: what the reader made it.
     ///   - event: the member the element raises for that change.
-    public func report<Value: HostRepresentable>(
-        _ property: ElementProperty<Realized, Value>,
+    public func report<Owner: Contract, Raised: Contract, Value: HostRepresentable>(
+        _ property: ElementProperty<Owner, Value>,
         _ value: Value,
-        as event: ElementEvent<Realized, Value>
+        as event: ElementEvent<Raised, Value>
     ) {
+        guard Realized.wears(Owner.self) else {
+            return complain("\(Realized.name) reported `\(Owner.name).\(property.name)`, and "
+                + "\(Realized.name) wears no \(Owner.name): nothing was reported.")
+        }
+
+        guard Realized.wears(Raised.self) else {
+            return complain("\(Realized.name) reported `\(property.name)` as "
+                + "`\(Raised.name).\(event.name)`, and \(Realized.name) wears no \(Raised.name): "
+                + "nothing was reported.")
+        }
+
         carry(property.token, event.token, value.propValue)
     }
 }
@@ -94,19 +110,44 @@ import Dispatch
     /// The element's current value for a key, as the host presents it.
     private let read: (Prop) -> HostValue?
 
+    /// Whether a key's value is carried IN - the host's to write.
+    private let carried: (Prop) -> Bool
+
     /// The properties that changed.
     private let changes: Set<Prop>
 
-    /// The element's values: those that changed, and each current value as
-    /// `read` answers it.
+    /// The element's values: those that changed, each current value as `read`
+    /// answers it, and whose each value is.
     ///
     /// - Parameters:
     ///   - changed: the properties that changed.
     ///   - read: the element's current value for a key, as the host presents
     ///     it - nil where it is not described.
-    public init(changed: Set<Prop>, reading read: @escaping (Prop) -> HostValue?) {
+    ///   - carried: whether a key's value is carried in - written by the host
+    ///     and only read back by this side. Nothing carried in by default.
+    public init(
+        changed: Set<Prop>,
+        reading read: @escaping (Prop) -> HostValue?,
+        carriedIn carried: @escaping (Prop) -> Bool = { _ in false }
+    ) {
         self.read = read
+        self.carried = carried
         changes = changed
+    }
+
+    /// Whether this member's value is the HOST'S to write - a field fed from
+    /// the platform, a frame a layout reports. What the tree describes beside
+    /// such a value is not put on the control: the control is the source.
+    ///
+    ///     let words = values.carriedIn(TextElementContract.text)
+    ///         ? nil
+    ///         : values[TextElementContract.text]
+    ///
+    /// - Parameter member: the property, written with its contract.
+    public func carriedIn<Owner: Contract, Value: HostRepresentable>(
+        _ member: ElementProperty<Owner, Value>
+    ) -> Bool {
+        carried(member.token)
     }
 
     /// A member's current value as the type its contract declares - nil where
@@ -221,24 +262,37 @@ import Dispatch
         wholes.append((keys: keys, apply: apply))
     }
 
-    /// An event of its own the view raises through its `Raise` - recorded, so
-    /// the core knows the host reports it.
+    /// An event the view raises through its `Reports` - its own, or one a tier
+    /// it wears declares, as a field's text change is. Recorded, so the core
+    /// knows the host reports it; an event of a contract the element does not
+    /// wear is refused, and said once.
     ///
     /// - Parameter event: the member, written with its contract.
-    public func raises<Payload>(_ event: ElementEvent<Realized, Payload>) {
-        members.insert(HostRealizedMember(element: Realized.name, owner: Realized.name, member: event.name))
+    public func raises<Owner: Contract, Payload>(_ event: ElementEvent<Owner, Payload>) {
+        guard Self.wears(Owner.self, for: event.name) else { return }
+
+        members.insert(HostRealizedMember(element: Realized.name, owner: Owner.name, member: event.name))
     }
 
     /// Whether the element wears the contract a member was declared in - said
     /// once where it does not.
     private static func wears(_ owner: any Contract.Type, for member: String) -> Bool {
-        guard Realized.worn.contains(where: { ObjectIdentifier($0) == ObjectIdentifier(owner) }) else {
+        guard Realized.wears(owner) else {
             complain("\(Realized.name) was registered with `\(owner.name).\(member)`, and "
                 + "\(Realized.name) wears no \(owner.name): it was not registered.")
             return false
         }
 
         return true
+    }
+}
+
+extension ElementContract {
+    /// Whether this element wears `contract` - its own, or a tier it carries.
+    /// A member of anything else is not this element's to realize, and the
+    /// registration and the report both answer that question here.
+    static func wears(_ contract: any Contract.Type) -> Bool {
+        worn.contains { ObjectIdentifier($0) == ObjectIdentifier(contract) }
     }
 }
 
@@ -270,8 +324,8 @@ extension ElementProperty: RegisteredProperty {
         let make: (@escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void) -> View?
 
         /// Puts the changed properties it takes on the view, each read through
-        /// the function given, and answers them.
-        let apply: (View, Set<Prop>, @escaping (Prop) -> HostValue?) -> Set<Prop>
+        /// the functions given, and answers them.
+        let apply: (View, Set<Prop>, @escaping (Prop) -> HostValue?, @escaping (Prop) -> Bool) -> Set<Prop>
 
         /// Every member registered.
         let members: Set<HostRealizedMember>
@@ -327,7 +381,7 @@ extension ElementProperty: RegisteredProperty {
 
                 return view
             },
-            apply: { view, changed, read in
+            apply: { view, changed, read, carried in
                 guard let made = view as? Made else { return [] }
 
                 var applied: Set<Prop> = []
@@ -339,7 +393,7 @@ extension ElementProperty: RegisteredProperty {
                     applied.insert(key)
                 }
 
-                let values = ElementValues<Realized>(changed: changed, reading: read)
+                let values = ElementValues<Realized>(changed: changed, reading: read, carriedIn: carried)
 
                 for whole in wholes where !whole.keys.isDisjoint(with: changed) {
                     whole.apply(made, values)
@@ -413,15 +467,17 @@ extension ElementProperty: RegisteredProperty {
     ///   - type: the element's node type.
     ///   - read: the element's current value for a key, as the host presents
     ///     it.
+    ///   - carried: whether a key's value is carried in - the host's to write.
     /// - Returns: the properties a registration took.
     @discardableResult
     public func apply(
         _ changed: Set<Prop>,
         to view: View,
         of type: NodeType,
-        reading read: @escaping (Prop) -> HostValue?
+        reading read: @escaping (Prop) -> HostValue?,
+        carriedIn carried: @escaping (Prop) -> Bool = { _ in false }
     ) -> Set<Prop> {
-        entries[type]?.apply(view, changed, read) ?? []
+        entries[type]?.apply(view, changed, read, carried) ?? []
     }
 
     /// What these registrations realize: every element they make a view for,

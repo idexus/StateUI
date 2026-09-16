@@ -25,6 +25,8 @@ final class RegistryTests: XCTestCase {
         var captions = 0
         var tapped: ((Int) -> Void)?
         var dialled: ((Int) -> Void)?
+        var tuned: ((Double) -> Void)?
+        var strayed: ((Double) -> Void)?
     }
 
     /// Something that is no platform view - what a registration must not make.
@@ -136,6 +138,31 @@ final class RegistryTests: XCTestCase {
         XCTAssertTrue(told.events.isEmpty, "a reported value raises its event through the report")
     }
 
+    /// A value and the change it reports may be declared on a TIER the element
+    /// wears rather than on the element itself - which is how a field's words
+    /// and its text change are written.
+    func testAValueOfATierItWearsIsReportedAsThatTiersEvent() throws {
+        let registry = Self.lamps()
+        let told = Told()
+        let view = try XCTUnwrap(Self.view(of: LampContract.nodeType, in: registry, told: told) as? LampView)
+
+        view.tuned?(0.5)
+
+        XCTAssertEqual(told.values, ["setting settingChanged \(0.5.propValue)"])
+    }
+
+    /// A member of a contract the element does not wear reports nothing at all,
+    /// and is said once.
+    func testAMemberOfAContractItDoesNotWearReportsNothing() throws {
+        let registry = Self.lamps()
+        let told = Told()
+        let view = try XCTUnwrap(Self.view(of: LampContract.nodeType, in: registry, told: told) as? LampView)
+
+        view.strayed?(0.5)
+
+        XCTAssertTrue(told.values.isEmpty, "the lamp wears no StrayDial, so nothing is reported")
+    }
+
     /// A view taking several members at once is applied whole, once, when any
     /// of them changes - and not at all when none of them does.
     func testTheElementIsAppliedWholeWhenOneOfItsMembersChanges() throws {
@@ -230,6 +257,12 @@ final class RegistryTests: XCTestCase {
             lamp.dialled = { signal in
                 reports.report(LampContract.signal, signal, as: LampContract.signalChanged)
             }
+            lamp.tuned = { level in
+                reports.report(DialContract.setting, level, as: DialContract.settingChanged)
+            }
+            lamp.strayed = { level in
+                reports.report(StrayDialContract.setting, level, as: StrayDialContract.settingChanged)
+            }
             return lamp
         }, members: { lamp in
             lamp.property(LampContract.signal) { view, signal in view.signal = signal }
@@ -273,11 +306,32 @@ final class RegistryTests: XCTestCase {
     }
 }
 
+/// A tier the lamp wears: a value and the change it reports, declared apart
+/// from the element itself - as a field's words and its text change are.
+private enum DialContract: Contract {
+    static let name = "TestDial"
+
+    static let setting = ElementProperty<Self, Double>("setting")
+    static let settingChanged = ElementEvent<Self, Double>("settingChanged")
+
+    static let members: [any ContractMember] = [setting, settingChanged]
+}
+
+/// The same shape, worn by nothing here.
+private enum StrayDialContract: Contract {
+    static let name = "StrayDial"
+
+    static let setting = ElementProperty<Self, Double>("setting")
+    static let settingChanged = ElementEvent<Self, Double>("settingChanged")
+
+    static let members: [any ContractMember] = [setting, settingChanged]
+}
+
 /// An element a host realizes, declared the way an application declares its
 /// own.
 private enum LampContract: ElementContract {
     static let nodeType: NodeType = "Test.Lamp"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
+    static let tiers: [any Contract.Type] = [ViewContract.self, DialContract.self]
 
     static let signal = ElementProperty<Self, Int>("signal")
     static let caption = ElementProperty<Self, String>("caption")

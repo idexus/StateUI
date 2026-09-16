@@ -2131,23 +2131,6 @@ final class MountedNode: NSObject {
         host?.dispatch(handler)
     }
 
-    private func typed(_ text: String) {
-        guard let host else { return }
-
-        let reported = driven[.text].map { host.report(.text(text), through: $0) } ?? false
-
-        if let handler = events[.textChanged] {
-            host.dispatch(handler, payload: [.string(text)])
-        } else if reported {
-            host.pump()
-        }
-    }
-
-    private func submitted() {
-        guard let handler = events[.submitted] else { return }
-        host?.dispatch(handler)
-    }
-
     private func pressed() {
         guard let handler = events[.pressed] else { return }
         host?.dispatch(handler)
@@ -2412,23 +2395,6 @@ final class MountedNode: NSObject {
             // The window's toolbar makes the native item; see visibleToolbarActions.
             return nil
 
-        case .textField:
-            let entry = AppKitTextFieldView()
-            entry.onTextChanged = { [weak self] in self?.typed($0) }
-            entry.onSubmitted = { [weak self] in self?.submitted() }
-            return entry
-
-        case .textEditor:
-            let editor = AppKitTextEditorView()
-            editor.onTextChanged = { [weak self] in self?.typed($0) }
-            return editor
-
-        case .searchField:
-            let search = AppKitSearchFieldView()
-            search.onTextChanged = { [weak self] in self?.typed($0) }
-            search.onSubmitted = { [weak self] in self?.submitted() }
-            return search
-
         case .colorBox:
             return AppKitColorBoxView()
 
@@ -2496,7 +2462,10 @@ final class MountedNode: NSObject {
         // A family the registry realizes takes its own members there, each read
         // as this element presents it; the arms below are the families still
         // to move.
-        AppKitRegistrations.registry.apply(changed, to: view, of: type, reading: { self.value($0) })
+        AppKitRegistrations.registry.apply(
+            changed, to: view, of: type,
+            reading: { self.value($0) },
+            carriedIn: { self.driven[$0]?.mode == .in })
 
         if type == .toolbarItem, let button = view as? NSButton {
             button.title = string(.text) ?? ""
@@ -2591,77 +2560,6 @@ final class MountedNode: NSObject {
                 image: string(.source).flatMap { image(named: $0) },
                 aspect: imageAspect(enumeration(.aspect)),
                 animationPlaying: value(.isAnimating)?.bool ?? false)
-        }
-
-        if let entry = view as? AppKitTextFieldView {
-            let attachedText = attachedTextValue()
-
-            entry.apply(
-                text: attachedText,
-                writeText: changed.contains(.text) && attachedText != nil,
-                placeholder: string(.placeholder),
-                placeholderColor: color(.placeholderColor),
-                foregroundColor: color(.textColor) ?? .controlTextColor,
-                backgroundColor: color(.background),
-                font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
-                horizontalAlignment: enumeration(.horizontalTextAlignment),
-                enabled: value(.isEnabled)?.bool ?? true,
-                readOnly: value(.isReadOnly)?.bool ?? false,
-                secure: value(.isPassword)?.bool ?? false,
-                maximumLength: whole(.maximumLength),
-                spellChecking: value(.isSpellCheckEnabled)?.bool ?? true,
-                textPrediction: value(.isTextPredictionEnabled)?.bool ?? true,
-                cursorPosition: whole(.cursorPosition),
-                selectionLength: whole(.selectionLength),
-                writeSelection: changed.contains(.cursorPosition)
-                    || changed.contains(.selectionLength))
-        }
-
-        if let editor = view as? AppKitTextEditorView {
-            let attachedText = attachedTextValue()
-
-            editor.apply(
-                text: attachedText,
-                writeText: changed.contains(.text) && attachedText != nil,
-                placeholder: string(.placeholder),
-                placeholderColor: color(.placeholderColor),
-                foregroundColor: color(.textColor) ?? .controlTextColor,
-                backgroundColor: color(.background),
-                font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
-                horizontalAlignment: enumeration(.horizontalTextAlignment),
-                enabled: value(.isEnabled)?.bool ?? true,
-                readOnly: value(.isReadOnly)?.bool ?? false,
-                maximumLength: whole(.maximumLength),
-                spellChecking: value(.isSpellCheckEnabled)?.bool ?? true,
-                textPrediction: value(.isTextPredictionEnabled)?.bool ?? true,
-                cursorPosition: whole(.cursorPosition),
-                selectionLength: whole(.selectionLength),
-                writeSelection: changed.contains(.cursorPosition)
-                    || changed.contains(.selectionLength),
-                growsWithText: value(.growsWithText)?.bool == true)
-        }
-
-        if let search = view as? AppKitSearchFieldView {
-            let attachedText = attachedTextValue()
-
-            search.apply(
-                text: attachedText,
-                writeText: changed.contains(.text) && attachedText != nil,
-                placeholder: string(.placeholder),
-                placeholderColor: color(.placeholderColor),
-                foregroundColor: color(.textColor) ?? .controlTextColor,
-                backgroundColor: color(.background),
-                font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
-                horizontalAlignment: enumeration(.horizontalTextAlignment),
-                enabled: value(.isEnabled)?.bool ?? true,
-                readOnly: value(.isReadOnly)?.bool ?? false,
-                maximumLength: whole(.maximumLength),
-                spellChecking: value(.isSpellCheckEnabled)?.bool ?? true,
-                textPrediction: value(.isTextPredictionEnabled)?.bool ?? true,
-                cursorPosition: whole(.cursorPosition),
-                selectionLength: whole(.selectionLength),
-                writeSelection: changed.contains(.cursorPosition)
-                    || changed.contains(.selectionLength))
         }
 
         if let box = view as? AppKitColorBoxView {
@@ -3214,16 +3112,6 @@ final class MountedNode: NSObject {
     /// comes first: a reader's report reaches the core's store only when its
     /// jobs run, so reading the store here would write the field back one
     /// keystroke behind the reader.
-    private func attachedTextValue() -> String? {
-        if let binding = driven[.text], binding.mode != .in,
-           case .text(let text)? = drivenValues[.text] ?? core.value(for: binding) {
-            return text
-        }
-
-        if driven[.text] == nil { return string(.text) ?? "" }
-        return nil
-    }
-
     private func transformed(_ text: String, by transform: Int32?) -> String {
         appKitTextCased(text, transform)
     }
