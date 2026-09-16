@@ -34,6 +34,16 @@
         "category": "StateUI"
       },
       {
+        "command": "stateui.selectApplication",
+        "title": "Select Application",
+        "category": "StateUI"
+      },
+      {
+        "command": "stateui.runTests",
+        "title": "Run Tests",
+        "category": "StateUI"
+      },
+      {
         "command": "stateui.cleanIndex",
         "title": "Clean Index",
         "category": "StateUI"
@@ -60,7 +70,7 @@
               },
               "application": {
                 "type": "string",
-                "description": "The application to run - its name, `Gallery`. Asked at every launch when absent, the last one run offered first."
+                "description": "The application to run - its name, `Gallery`. The one chosen with StateUI: Select Application when absent."
               }
             }
           }
@@ -104,10 +114,7 @@
     "taskDefinitions": [
       {
         "type": "stateui",
-        "required": [
-          "application",
-          "configuration"
-        ],
+        "required": [],
         "properties": {
           "application": {
             "type": "string",
@@ -119,6 +126,10 @@
               "debug",
               "release"
             ]
+          },
+          "suite": {
+            "type": "string",
+            "description": "The test suite run."
           }
         }
       }

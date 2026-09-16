@@ -9,23 +9,27 @@
 // on the device that extension's own picker chose. Resolved in the FIRST hook,
 // so the new type's resolvers still run over it.
 //
-// Every launch asks which application to run, the last one run offered first;
-// a launch configuration naming its `application` asks nothing.
+// The application is the one chosen with StateUI: Select Application; a launch
+// naming its `application` runs that one instead.
 
 import * as vscode from "vscode";
-import { Application, appKitProgram, findApplications } from "./applications";
+import { Application, appKitProgram } from "./applications";
 import { environment, Host } from "./hosts";
+import { runTask } from "./tasks";
 
 /** Which build a launch runs. */
 export type Configuration = "debug" | "release";
 
-/** The host chosen in the status bar, and where the last application run is kept. */
+/** The choices a launch runs: the host, and the application for it. */
 export interface Choices {
     host(): Host;
-    readonly state: vscode.Memento;
-}
 
-const lastRunKey = "stateui.lastApplication";
+    /**
+     * The application to run on `host` - the one named, else the one chosen,
+     * else asked for - or nothing, where there is none or the reader declined.
+     */
+    application(folder: vscode.WorkspaceFolder, host: Host, named?: string): Promise<Application | undefined>;
+}
 
 /** The two configurations every workspace offers. */
 export function configurations(): vscode.DebugConfiguration[] {
@@ -57,7 +61,8 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return undefined;
         }
 
-        const application = await this.application(root, host, launch.application);
+        const named = typeof launch.application === "string" ? launch.application : undefined;
+        const application = await this.choices.application(root, host, named);
         if (!application) {
             return undefined;
         }
@@ -87,55 +92,6 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             stopOnEntry: false,
         };
     }
-
-    /**
-     * The application a launch runs on `host`: the one it names, the only one
-     * there is, or the one picked - with the last one run offered first.
-     */
-    private async application(
-        folder: vscode.WorkspaceFolder,
-        host: Host,
-        named: unknown,
-    ): Promise<Application | undefined> {
-        const candidates = findApplications(folder.uri.fsPath)
-            .filter((each) => (host === "appkit" ? each.hasAppKitHead : each.mauiProject !== undefined));
-        const head = host === "appkit" ? "an AppKit head (Platforms/AppKit/main.swift)" : "a MAUI head (Platforms/Maui/*.csproj)";
-
-        if (candidates.length === 0) {
-            void vscode.window.showErrorMessage(`StateUI: no application here has ${head}.`);
-            return undefined;
-        }
-
-        if (typeof named === "string") {
-            const found = candidates.find((each) => each.name === named);
-            if (!found) {
-                void vscode.window.showErrorMessage(`StateUI: no application named ${named} has ${head}.`);
-            }
-            return found;
-        }
-
-        let chosen = candidates[0];
-        if (candidates.length > 1) {
-            const last = this.choices.state.get<string>(lastRunKey);
-            const ordered = [...candidates].sort((a, b) => Number(b.name === last) - Number(a.name === last));
-            const picked = await vscode.window.showQuickPick(
-                ordered.map((each) => ({
-                    label: each.name,
-                    description: each.name === last ? "last run" : undefined,
-                    detail: vscode.workspace.asRelativePath(each.directory),
-                    application: each,
-                })),
-                { placeHolder: "Which application?", ignoreFocusOut: true });
-
-            if (!picked) {
-                return undefined;
-            }
-            chosen = picked.application;
-        }
-
-        await this.choices.state.update(lastRunKey, chosen.name);
-        return chosen;
-    }
 }
 
 /**
@@ -150,7 +106,8 @@ export async function buildAppKitHead(
     application: Application,
     configuration: Configuration,
 ): Promise<boolean> {
-    const env = defined(environment("appkit"));
+    const env = Object.fromEntries(
+        Object.entries(environment("appkit")).filter((entry): entry is [string, string] => entry[1] !== undefined));
     const execution = application.bundleScript
         ? new vscode.ShellExecution(application.bundleScript, [configuration], { cwd: folder.uri.fsPath, env })
         : new vscode.ShellExecution(
@@ -164,29 +121,5 @@ export async function buildAppKitHead(
         definition, folder, `Build ${application.name} (AppKit, ${configuration})`, "StateUI", execution, []);
     task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
 
-    return (await run(task)) === 0;
-}
-
-/** Runs a task and answers its exit code - listening before it starts, so a quick one is not missed. */
-function run(task: vscode.Task): Promise<number | undefined> {
-    return new Promise((resolve, reject) => {
-        let started: vscode.TaskExecution | undefined;
-        let ended = false;
-
-        const listener = vscode.tasks.onDidEndTaskProcess((event) => {
-            if (started ? event.execution === started : event.execution.task.definition === task.definition) {
-                listener.dispose();
-                ended = true;
-                resolve(event.exitCode);
-            }
-        });
-
-        vscode.tasks.executeTask(task).then(
-            (execution) => { started = execution; },
-            (error) => { listener.dispose(); if (!ended) { reject(error); } });
-    });
-}
-
-function defined(values: Record<string, string | undefined>): Record<string, string> {
-    return Object.fromEntries(Object.entries(values).filter((entry): entry is [string, string] => entry[1] !== undefined));
+    return (await runTask(task)) === 0;
 }

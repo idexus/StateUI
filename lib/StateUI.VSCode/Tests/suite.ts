@@ -12,7 +12,9 @@ import { execSync } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
+import { findApplications } from "../Sources/applications";
 import { StateUIDebugConfigurationProvider } from "../Sources/debug";
+import { findSuites } from "../Sources/tests";
 import { StateUIApi } from "../Sources/extension";
 
 const started = Date.now();
@@ -92,22 +94,33 @@ export async function run(): Promise<void> {
 
         // 4. A MAUI launch becomes the MAUI extension's, naming the chosen
         //    application's project and no device - that extension's picker's.
-        const memory = new Map<string, unknown>();
-        const state = {
-            keys: () => [...memory.keys()],
-            get: <T>(key: string, fallback?: T) => (memory.has(key) ? memory.get(key) as T : fallback),
-            update: async (key: string, value: unknown) => { memory.set(key, value); },
-        } as vscode.Memento;
-        const maui = new StateUIDebugConfigurationProvider({ host: () => "maui", state });
+        const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery");
+        const maui = new StateUIDebugConfigurationProvider({ host: () => "maui", application: async () => gallery_ });
         const release = await maui.resolveDebugConfiguration(root,
-            { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release", application: "Gallery" });
+            { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
         check("maui release resolves to the maui type, in Release, on Gallery's project, with no device",
             release?.type === "maui" && release.configuration === "Release"
             && String(release.project).endsWith("/apps/Gallery/Platforms/Maui/Gallery.csproj")
             && release.device === undefined);
 
-        // 5. StateUI: Debug on AppKit builds HelloWorld and runs it under lldb-dap.
+        // 5. The suites, found for each host the way test-native.sh runs them.
+        const appkitSuites = findSuites(root.uri.fsPath, "appkit").map((each) => each.label);
+        const mauiSuites = findSuites(root.uri.fsPath, "maui").map((each) => each.label);
+        say(`appkit suites: ${appkitSuites.join(", ")}`);
+        say(`maui suites: ${mauiSuites.join(", ")}`);
+        check("appkit runs the core, StateUI.AppKit and the Gallery, and no C#",
+            appkitSuites.includes("StateUI") && appkitSuites.includes("lib/StateUI.AppKit")
+            && appkitSuites.includes("apps/Gallery") && !mauiSuites.includes("lib/StateUI.AppKit")
+            && !appkitSuites.some((each) => each.endsWith("Tests")));
+        check("maui runs the core, the Gallery and the C# suite, and not StateUI.AppKit",
+            mauiSuites.includes("StateUI") && mauiSuites.includes("apps/Gallery")
+            && mauiSuites.includes("lib/StateUI.Maui/Tests") && !mauiSuites.includes("lib/StateUI.AppKit"));
+
+        // 6. StateUI: Debug on AppKit runs the REMEMBERED application - no
+        //    question asked - built, under lldb-dap.
         await api.selectHost("appkit");
+        await api.selectApplication("HelloWorld");
+        check("the chosen application is remembered", api.application() === "HelloWorld");
         const session = new Promise<vscode.DebugSession>((resolve) => {
             const listener = vscode.debug.onDidStartDebugSession((each) => {
                 if (each.type === "lldb-dap") {
@@ -117,7 +130,7 @@ export async function run(): Promise<void> {
             });
         });
         check("StateUI: Debug starts", await vscode.debug.startDebugging(root,
-            { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug", application: "HelloWorld" }));
+            { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
         const running = await Promise.race([session, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 600_000))]);
         check("an lldb-dap session starts on HelloWorldAppKit", String(running?.configuration.program ?? "").endsWith("/apps/HelloWorld/.build/debug/HelloWorldAppKit"));
         await new Promise((resume) => setTimeout(resume, 4000));
