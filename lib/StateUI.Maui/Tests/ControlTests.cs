@@ -1079,6 +1079,7 @@ public class ControlTests
         Assert.Contains("Picker", known);
         Assert.Contains("DatePicker", known);
         Assert.Contains("TimePicker", known);
+        Assert.Contains("Button", known);
 
         Assert.DoesNotContain(
             typeof(StateUIRenderer).GetMethods(

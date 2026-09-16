@@ -858,7 +858,6 @@ public sealed class StateUIRenderer
         return node.Type switch
         {
             HostNodeType.Label => ReconcileLabel(node, existing),
-            HostNodeType.Button => ReconcileButton(node, existing),
             HostNodeType.Border => ReconcileBorder(node, existing),
             HostNodeType.Grid => ReconcileGrid(node, existing),
             HostNodeType.VStack => ReconcileStack(node, existing, () => new TravellingLayouts.Vertical { Walker = _walker }),
@@ -2237,44 +2236,6 @@ public sealed class StateUIRenderer
         ApplyFont(node, span);
 
         return Track(span, node);
-    }
-
-    /// <summary>
-    /// A Button. Its three events are subscribed where the control is CREATED,
-    /// once - the handler id is read from the control when the event fires.
-    /// </summary>
-    private Button ReconcileButton(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not Button button)
-        {
-            button = new Button();
-
-            // Subscribed once, for the life of the control - see Raise.
-            button.Clicked += (sender, _) => Raise(sender, HostEvent.Clicked);
-            button.Pressed += (sender, _) => Raise(sender, HostEvent.Pressed);
-            button.Released += (sender, _) => Raise(sender, HostEvent.Released);
-        }
-
-        if (node.GetString(HostProp.Text) is string text) { button.Text = text; }
-        node.SetColor(HostProp.TextColor, button, Button.TextColorProperty);
-        if (node.GetNumber(HostProp.CharacterSpacing) is double characterSpacing) { button.CharacterSpacing = characterSpacing; }
-        if (node.GetTextTransform(HostProp.TextCase) is TextTransform buttonCase) { button.TextTransform = buttonCase; }
-        node.SetColor(HostProp.BorderColor, button, Button.BorderColorProperty);
-        if (node.GetNumber(HostProp.BorderWidth) is double borderWidth) { button.BorderWidth = borderWidth; }
-        if (node.GetInt(HostProp.CornerRadius) is int cornerRadius) { button.CornerRadius = cornerRadius; }
-        if (node.GetLineBreakMode(HostProp.LineBreak) is LineBreakMode lineBreakMode) { button.LineBreakMode = lineBreakMode; }
-        if (node.GetThickness(HostProp.Padding) is Thickness padding) { button.Padding = padding; }
-
-        node.SetImageSource(HostProp.Icon, button, Button.ImageSourceProperty);
-
-        // Two properties here and one ContentLayout in MAUI - see ComposedProperties.
-        if (node.GetIconPosition(HostProp.IconPosition) is { } iconPosition) { button.SetValue(ComposedProperties.IconPositionProperty, iconPosition); }
-        if (node.GetNumber(HostProp.IconSpacing) is double iconSpacing) { button.SetValue(ComposedProperties.IconSpacingProperty, iconSpacing); }
-
-        ApplyFont(node, button);
-        ApplyView(node, button);
-
-        return Track(button, node);
     }
 
     /// <summary>

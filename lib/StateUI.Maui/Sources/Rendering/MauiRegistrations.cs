@@ -36,6 +36,64 @@ internal static class MauiRegistrations
         Shapes();
         Pictures();
         Pickers();
+        Buttons();
+    }
+
+    /// <summary>
+    /// The control a reader presses: a caption, a picture beside it, and the
+    /// three moments of a press.
+    /// </summary>
+    /// <remarks>
+    /// Where the icon sits and how far it stands from the caption are two
+    /// members here and one <c>ContentLayout</c> in MAUI - so each is written
+    /// on its own, and <c>ComposedProperties</c> makes the pair into the one
+    /// object, the way it makes one tint into whichever colour a control keeps
+    /// it in.
+    /// </remarks>
+    private static void Buttons()
+    {
+        StateUIControls.Add("Button",
+            create: _ => new Button(),
+            realize: button => button
+                .Property<string>(HostProp.Text, (view, text) => view.Text = text)
+                .TextStyle(
+                    (view, colour) => view.TextColor = colour,
+                    (view, spacing) => view.CharacterSpacing = spacing)
+                .Property(HostProp.TextCase,
+                    static (node, member) => node.GetTextTransform(member),
+                    (view, transform) => view.TextTransform = transform)
+                .Held(HostProp.BorderColor,
+                    static (node, member) => node.GetColor(member),
+                    (view, colour) => view.BorderColor = colour)
+                .Property<double>(HostProp.BorderWidth, (view, width) => view.BorderWidth = width)
+                .Property(HostProp.CornerRadius,
+                    static (node, member) => node.GetInt(member),
+                    (view, radius) => view.CornerRadius = radius)
+                .Property(HostProp.LineBreak,
+                    static (node, member) => node.GetLineBreakMode(member),
+                    (view, mode) => view.LineBreakMode = mode)
+                .Property(HostProp.Padding,
+                    static (node, member) => node.GetThickness(member),
+                    (view, padding) => view.Padding = padding)
+                .Held(HostProp.Icon,
+                    static (node, member) => node.GetImageSource(member),
+                    (view, icon) => view.ImageSource = icon)
+                .Property(HostProp.IconPosition,
+                    static (node, member) => node.GetIconPosition(member),
+                    (view, position) =>
+                        view.SetValue(ComposedProperties.IconPositionProperty, position))
+                .Property<double>(HostProp.IconSpacing,
+                    (view, spacing) =>
+                        view.SetValue(ComposedProperties.IconSpacingProperty, spacing))
+                .Font(
+                    (view, size) => view.FontSize = size,
+                    (view, family) => view.FontFamily = family,
+                    (view, attributes) => view.FontAttributes = attributes,
+                    (view, scaling) => view.FontAutoScalingEnabled = scaling)
+                .Raises(HostEvent.Clicked, (view, clicked) => view.Clicked += (_, _) => clicked())
+                .Raises(HostEvent.Pressed, (view, pressed) => view.Pressed += (_, _) => pressed())
+                .Raises(HostEvent.Released,
+                    (view, released) => view.Released += (_, _) => released()));
     }
 
     /// <summary>
