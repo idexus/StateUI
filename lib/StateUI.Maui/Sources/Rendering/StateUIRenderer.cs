@@ -867,8 +867,6 @@ public sealed class StateUIRenderer
             HostNodeType.ColorBox => ReconcileColorBox(node, existing),
             HostNodeType.Border => ReconcileBorder(node, existing),
             HostNodeType.TimePicker => ReconcileTimePicker(node, existing),
-            HostNodeType.Switch => ReconcileSwitch(node, existing),
-            HostNodeType.CheckBox => ReconcileCheckBox(node, existing),
             HostNodeType.RadioButton => ReconcileRadioButton(node, existing),
             HostNodeType.Slider => ReconcileSlider(node, existing),
             HostNodeType.Stepper => ReconcileStepper(node, existing),
@@ -2049,7 +2047,7 @@ public sealed class StateUIRenderer
     /// <param name="sender">The control.</param>
     /// <param name="property">Which of its properties moved.</param>
     /// <param name="lanes">Where the reader left it, lane by lane.</param>
-    private void Reported(object? sender, BindableProperty property, double[] lanes)
+    internal void Reported(object? sender, BindableProperty property, double[] lanes)
     {
         if (!_rendering && sender is BindableObject control)
         {
@@ -3225,51 +3223,6 @@ public sealed class StateUIRenderer
         ApplyView(node, picker);
 
         return Track(picker, node);
-    }
-
-    /// <summary>A Switch.</summary>
-    private Switch ReconcileSwitch(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not Switch control)
-        {
-            control = new Switch();
-
-            // MAUI's ToggledEventArgs.Value, as the payload every event carries.
-            control.Toggled += (sender, e) =>
-            {
-                Reported(sender, Switch.IsToggledProperty, e.Value ? 1 : 0);
-                Raise(sender, HostEvent.Toggled, e.Value);
-            };
-        }
-
-        if (node.GetBool(HostProp.IsOn) is bool isToggled) { control.IsToggled = isToggled; }
-
-        ApplyView(node, control);
-
-        return Track(control, node);
-    }
-
-    /// <summary>A CheckBox.</summary>
-    private CheckBox ReconcileCheckBox(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not CheckBox box)
-        {
-            box = new CheckBox();
-
-            // MAUI's CheckedChangedEventArgs.Value, as the payload every event
-            // carries.
-            box.CheckedChanged += (sender, e) =>
-            {
-                Reported(sender, CheckBox.IsCheckedProperty, e.Value ? 1 : 0);
-                Raise(sender, HostEvent.Toggled, e.Value);
-            };
-        }
-
-        if (node.GetBool(HostProp.IsOn) is bool isChecked) { box.IsChecked = isChecked; }
-
-        ApplyView(node, box);
-
-        return Track(box, node);
     }
 
     /// <summary>
@@ -5995,6 +5948,11 @@ public sealed class StateUIRenderer
         {
             _registeredRaise ??= (sender, eventName, payload) => Raise(sender, eventName, payload);
             view = registration.Create(_registeredRaise);
+
+            // Where a control is MADE is where it is subscribed to what it
+            // reports - once, for as long as it lives, the rule every built-in
+            // follows.
+            registration.Realized?.Wire(view, this);
         }
 
         // The DECLARED properties first, generically - the same value

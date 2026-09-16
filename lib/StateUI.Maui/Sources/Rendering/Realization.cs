@@ -34,6 +34,23 @@ internal abstract class Realization
     /// <summary>The members this realization writes, in the order registered.</summary>
     internal List<Applier> Appliers { get; } = [];
 
+    /// <summary>What the control is subscribed to, once, where it is made.</summary>
+    internal List<Action<View, StateUIRenderer>> Wiring { get; } = [];
+
+    /// <summary>
+    /// Subscribes the control to what it reports, once - where it is made,
+    /// the rule every built-in follows.
+    /// </summary>
+    /// <param name="view">The control.</param>
+    /// <param name="renderer">The renderer its reports go to.</param>
+    internal void Wire(View view, StateUIRenderer renderer)
+    {
+        foreach (Action<View, StateUIRenderer> wire in Wiring)
+        {
+            wire(view, renderer);
+        }
+    }
+
     /// <summary>
     /// Writes every member the message carries onto the control.
     /// </summary>
@@ -93,6 +110,76 @@ internal sealed class Realization<TControl> : Realization
 
         return this;
     }
+
+    /// <summary>
+    /// Registers what the READER changes: the member whose value they moved,
+    /// the control's own property carrying it, and the event the tree hears.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// ONE call, because the two halves have ONE order and it is not the
+    /// registration's to choose: the value goes onto the state that carries it
+    /// FIRST, and only then does the event reach its handler - which is what
+    /// every arm of this renderer that reports a reader's value does, from a
+    /// picker's choice to a switch's flip. A registration that could write them
+    /// the other way round would be a registration that could get it wrong.
+    /// </para>
+    /// <para>
+    /// The subscription is made where the control is MADE, once, and lives as
+    /// long as it does.
+    /// </para>
+    /// </remarks>
+    /// <typeparam name="TReported">What the reader's value is, as the event carries it.</typeparam>
+    /// <param name="property">The control's own property carrying the value.</param>
+    /// <param name="raised">The event the tree hears.</param>
+    /// <param name="subscribe">
+    /// Subscribes to the control's own notification, and hands back what the
+    /// reader made it.
+    /// </param>
+    /// <remarks>
+    /// The MEMBER is not named again here: <see cref="Property{TValue}"/>
+    /// already declares which member this control realizes, and a second
+    /// spelling of it would be a second place to get it wrong.
+    /// </remarks>
+    internal Realization<TControl> Reports<TReported>(
+        BindableProperty property,
+        HostEvent raised,
+        Action<TControl, Action<TReported>> subscribe)
+    {
+        Wiring.Add((view, renderer) =>
+        {
+            var control = (TControl)view;
+
+            subscribe(control, reported =>
+            {
+                renderer.Reported(control, property, Lanes(reported));
+                renderer.Raise(control, raised, Value(reported));
+            });
+        });
+
+        return this;
+    }
+
+    /// <summary>A reported value as the lanes a state carries it in.</summary>
+    private static double[] Lanes<TReported>(TReported reported) => reported switch
+    {
+        bool flag => [flag ? 1 : 0],
+        double number => [number],
+        int member => [member],
+        _ => throw new NotSupportedException(
+            $"a reader's value cannot be carried as {typeof(TReported).Name}: a state "
+            + "carries flags, numbers and members of a closed vocabulary."),
+    };
+
+    /// <summary>The same value as the event's payload.</summary>
+    private static HostValue Value<TReported>(TReported reported) => reported switch
+    {
+        bool flag => HostValue.Of(flag),
+        double number => HostValue.Of(number),
+        int member => HostValue.Of((double)member),
+        _ => throw new NotSupportedException(
+            $"an event cannot carry {typeof(TReported).Name}."),
+    };
 
     /// <summary>
     /// A member's value in the type it is declared as, or null where the

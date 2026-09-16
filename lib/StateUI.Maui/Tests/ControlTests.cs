@@ -1060,12 +1060,15 @@ public class ControlTests
 
         Assert.Contains("ProgressBar", known);
         Assert.Contains("ActivityIndicator", known);
+        Assert.Contains("Switch", known);
+        Assert.Contains("CheckBox", known);
 
         Assert.DoesNotContain(
             typeof(StateUIRenderer).GetMethods(
                 BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
                 .Select(method => method.Name),
-            name => name is "ReconcileProgressBar" or "ReconcileActivityIndicator");
+            name => name is "ReconcileProgressBar" or "ReconcileActivityIndicator"
+                or "ReconcileSwitch" or "ReconcileCheckBox");
     }
 
     /// <summary>And the same hole from the other end: a fixture nothing reads.</summary>

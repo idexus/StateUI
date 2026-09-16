@@ -30,6 +30,32 @@ internal static class MauiRegistrations
     internal static void Install()
     {
         Indicators();
+        Toggles();
+    }
+
+    /// <summary>
+    /// The two-state controls a reader operates: one value each, reported back
+    /// as the reader leaves it.
+    /// </summary>
+    /// <remarks>
+    /// A radio button is one of these too, and moves with the family that can
+    /// carry its text, its group and its border.
+    /// </remarks>
+    private static void Toggles()
+    {
+        StateUIControls.Add("Switch",
+            create: _ => new Switch(),
+            realize: toggle => toggle
+                .Property<bool>(HostProp.IsOn, (view, on) => view.IsToggled = on)
+                .Reports<bool>(Switch.IsToggledProperty, HostEvent.Toggled,
+                    (view, reported) => view.Toggled += (_, e) => reported(e.Value)));
+
+        StateUIControls.Add("CheckBox",
+            create: _ => new CheckBox(),
+            realize: box => box
+                .Property<bool>(HostProp.IsOn, (view, on) => view.IsChecked = on)
+                .Reports<bool>(CheckBox.IsCheckedProperty, HostEvent.Toggled,
+                    (view, reported) => view.CheckedChanged += (_, e) => reported(e.Value)));
     }
 
     /// <summary>
