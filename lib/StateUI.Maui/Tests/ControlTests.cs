@@ -1063,13 +1063,16 @@ public class ControlTests
         Assert.Contains("Switch", known);
         Assert.Contains("CheckBox", known);
         Assert.Contains("RadioButton", known);
+        Assert.Contains("Slider", known);
+        Assert.Contains("Stepper", known);
 
         Assert.DoesNotContain(
             typeof(StateUIRenderer).GetMethods(
                 BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
                 .Select(method => method.Name),
             name => name is "ReconcileProgressBar" or "ReconcileActivityIndicator"
-                or "ReconcileSwitch" or "ReconcileCheckBox" or "ReconcileRadioButton");
+                or "ReconcileSwitch" or "ReconcileCheckBox" or "ReconcileRadioButton"
+                or "ReconcileSlider" or "ReconcileStepper");
     }
 
     /// <summary>

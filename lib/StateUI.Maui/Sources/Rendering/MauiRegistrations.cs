@@ -31,6 +31,46 @@ internal static class MauiRegistrations
     {
         Indicators();
         Toggles();
+        Values();
+    }
+
+    /// <summary>
+    /// The controls a reader moves a number with: a slider dragged along its
+    /// track, a stepper stepped through its range.
+    /// </summary>
+    /// <remarks>
+    /// The range is declared before the value it holds, and a registration's
+    /// members are applied in the order they are declared. MAUI clamps a value
+    /// into the range as it is set - but it keeps what it was given and clamps
+    /// again whenever a bound moves, so a value that arrived first comes back
+    /// once the range widens. Measured both ways, on both controls: the order
+    /// reads as the range holding the value, which is what it means, rather
+    /// than standing between a reader and their number.
+    /// </remarks>
+    private static void Values()
+    {
+        StateUIControls.Add("Slider",
+            create: _ => new Slider(),
+            realize: slider => slider
+                .Property<double>(HostProp.Maximum, (view, maximum) => view.Maximum = maximum)
+                .Property<double>(HostProp.Minimum, (view, minimum) => view.Minimum = minimum)
+                .Property<double>(HostProp.Value, (view, value) => view.Value = value)
+                .Moves(Slider.ValueProperty, HostEvent.ValueChanged,
+                    (view, moved) => view.ValueChanged += (_, e) => moved(e.NewValue))
+                .Raises(HostEvent.DragStarted,
+                    (view, began) => view.DragStarted += (_, _) => began())
+                .Raises(HostEvent.DragCompleted,
+                    (view, ended) => view.DragCompleted += (_, _) => ended()));
+
+        StateUIControls.Add("Stepper",
+            create: _ => new Stepper(),
+            realize: stepper => stepper
+                .Property<double>(HostProp.Maximum, (view, maximum) => view.Maximum = maximum)
+                .Property<double>(HostProp.Minimum, (view, minimum) => view.Minimum = minimum)
+                .Property<double>(HostProp.Step, (view, step) => view.Increment = step)
+                .Property<double>(HostProp.Value, (view, value) => view.Value = value)
+                .Moves(Stepper.ValueProperty, HostEvent.ValueChanged,
+                    (view, moved) => view.ValueChanged += (_, e) => moved(e.NewValue)));
     }
 
     /// <summary>

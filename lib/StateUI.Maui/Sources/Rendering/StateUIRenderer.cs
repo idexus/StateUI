@@ -867,8 +867,6 @@ public sealed class StateUIRenderer
             HostNodeType.ColorBox => ReconcileColorBox(node, existing),
             HostNodeType.Border => ReconcileBorder(node, existing),
             HostNodeType.TimePicker => ReconcileTimePicker(node, existing),
-            HostNodeType.Slider => ReconcileSlider(node, existing),
-            HostNodeType.Stepper => ReconcileStepper(node, existing),
             HostNodeType.SearchField => ReconcileSearchField(node, existing),
             HostNodeType.Grid => ReconcileGrid(node, existing),
             HostNodeType.VStack => ReconcileStack(node, existing, () => new TravellingLayouts.Vertical { Walker = _walker }),
@@ -2057,7 +2055,7 @@ public sealed class StateUIRenderer
     /// <param name="sender">The control.</param>
     /// <param name="property">Which of its properties moved.</param>
     /// <param name="value">Where the reader left it.</param>
-    private void Moved(object? sender, BindableProperty property, double value)
+    internal void Moved(object? sender, BindableProperty property, double value)
     {
         if (_rendering && MotionTrace.Watching)
         {
@@ -3222,68 +3220,6 @@ public sealed class StateUIRenderer
         ApplyView(node, picker);
 
         return Track(picker, node);
-    }
-
-    /// <summary>
-    /// A Slider. Maximum, then Minimum, then Value - MAUI clamps as it goes, so
-    /// the range has to be right before the value arrives.
-    /// </summary>
-    private Slider ReconcileSlider(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not Slider slider)
-        {
-            slider = new Slider();
-
-            // The value crosses as its own bits - nothing is formatted, so
-            // no locale can creep in anywhere.
-            slider.ValueChanged += (sender, e) =>
-            {
-                Moved(sender, Slider.ValueProperty, e.NewValue);
-                Raise(sender, HostEvent.ValueChanged, e.NewValue);
-            };
-
-            slider.DragStarted += (sender, _) => Raise(sender, HostEvent.DragStarted);
-            slider.DragCompleted += (sender, _) => Raise(sender, HostEvent.DragCompleted);
-        }
-
-        // Maximum, then Minimum, then Value: MAUI clamps a value into the range
-        // as it is set, so the range has to be right before the value goes in.
-        if (node.GetNumber(HostProp.Maximum) is double maximum) { slider.Maximum = maximum; }
-        if (node.GetNumber(HostProp.Minimum) is double minimum) { slider.Minimum = minimum; }
-        if (node.GetNumber(HostProp.Value) is double value) { slider.Value = value; }
-
-
-        ApplyView(node, slider);
-
-        return Track(slider, node);
-    }
-
-    /// <summary>
-    /// A Stepper. The range goes in before the value, for the reason a Slider's
-    /// does: MAUI clamps what is outside it.
-    /// </summary>
-    private Stepper ReconcileStepper(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not Stepper stepper)
-        {
-            stepper = new Stepper();
-
-            // The value crosses as its own bits, like the Slider's.
-            stepper.ValueChanged += (sender, e) =>
-            {
-                Moved(sender, Stepper.ValueProperty, e.NewValue);
-                Raise(sender, HostEvent.ValueChanged, e.NewValue);
-            };
-        }
-
-        if (node.GetNumber(HostProp.Maximum) is double maximum) { stepper.Maximum = maximum; }
-        if (node.GetNumber(HostProp.Minimum) is double minimum) { stepper.Minimum = minimum; }
-        if (node.GetNumber(HostProp.Step) is double increment) { stepper.Increment = increment; }
-        if (node.GetNumber(HostProp.Value) is double value) { stepper.Value = value; }
-
-        ApplyView(node, stepper);
-
-        return Track(stepper, node);
     }
 
     /// <summary>

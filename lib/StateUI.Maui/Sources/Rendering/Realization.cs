@@ -274,6 +274,70 @@ internal sealed class Realization<TControl> : Realization
         return this;
     }
 
+    /// <summary>
+    /// Registers a value the reader MOVES - a slider dragged, a stepper
+    /// stepped - which is a different channel from a value they merely change.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A moved value lands on the state WITH ITS DESTINATION: the reader has
+    /// just put it where it stands, so whatever was carrying it there stops
+    /// pulling, and every other control on the same number is written the
+    /// reader's own number. That is what <c>CarriedReports.Reader</c> does and
+    /// <c>Reported</c> does not - and the two are told apart by the attachment
+    /// the state wears, not by the control, so a registration has to say which
+    /// it means.
+    /// </para>
+    /// <para>
+    /// The event follows the landing, the order every arm of this renderer
+    /// keeps.
+    /// </para>
+    /// </remarks>
+    /// <param name="property">The control's own property carrying the value.</param>
+    /// <param name="raised">The event the tree hears.</param>
+    /// <param name="subscribe">Subscribes to the control's own notification.</param>
+    internal Realization<TControl> Moves(
+        BindableProperty property,
+        HostEvent raised,
+        Action<TControl, Action<double>> subscribe)
+    {
+        Wiring.Add((view, renderer) =>
+        {
+            var control = (TControl)view;
+
+            subscribe(control, moved =>
+            {
+                renderer.Moved(control, property, moved);
+                renderer.Raise(control, raised, HostValue.Of(moved));
+            });
+        });
+
+        return this;
+    }
+
+    /// <summary>
+    /// Registers an event the control raises with NOTHING to say - a drag
+    /// begun, a drag ended.
+    /// </summary>
+    /// <remarks>
+    /// No value goes onto a state here, because none was moved: the two ends of
+    /// a drag are moments, not values, and the value between them has already
+    /// travelled through <see cref="Moves"/>.
+    /// </remarks>
+    /// <param name="raised">The event the tree hears.</param>
+    /// <param name="subscribe">Subscribes to the control's own notification.</param>
+    internal Realization<TControl> Raises(HostEvent raised, Action<TControl, Action> subscribe)
+    {
+        Wiring.Add((view, renderer) =>
+        {
+            var control = (TControl)view;
+
+            subscribe(control, () => renderer.Raise(control, raised));
+        });
+
+        return this;
+    }
+
     /// <summary>A reported value as the lanes a state carries it in.</summary>
     private static double[] Lanes<TReported>(TReported reported) => reported switch
     {
