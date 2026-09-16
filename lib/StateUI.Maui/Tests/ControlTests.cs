@@ -1074,6 +1074,8 @@ public class ControlTests
         Assert.Contains("Path", known);
         Assert.Contains("Polygon", known);
         Assert.Contains("Polyline", known);
+        Assert.Contains("Image", known);
+        Assert.Contains("ColorBox", known);
 
         Assert.DoesNotContain(
             typeof(StateUIRenderer).GetMethods(

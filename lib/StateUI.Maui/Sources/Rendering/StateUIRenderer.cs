@@ -859,10 +859,8 @@ public sealed class StateUIRenderer
         {
             HostNodeType.Label => ReconcileLabel(node, existing),
             HostNodeType.Button => ReconcileButton(node, existing),
-            HostNodeType.Image => ReconcileImage(node, existing),
             HostNodeType.Picker => ReconcilePicker(node, existing),
             HostNodeType.DatePicker => ReconcileDatePicker(node, existing),
-            HostNodeType.ColorBox => ReconcileColorBox(node, existing),
             HostNodeType.Border => ReconcileBorder(node, existing),
             HostNodeType.TimePicker => ReconcileTimePicker(node, existing),
             HostNodeType.Grid => ReconcileGrid(node, existing),
@@ -2297,30 +2295,6 @@ public sealed class StateUIRenderer
         return Track(button, node);
     }
 
-    /// <summary>
-    /// An Image. Its source is one file, by the name MAUI gives it once built -
-    /// the differ has already picked the half of a picture drawn per theme -
-    /// and goes through <see cref="Values.SetImageSource"/> like every
-    /// picture.
-    /// </summary>
-    private Image ReconcileImage(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not Image image)
-        {
-            image = new Image();
-        }
-
-        // A file in Resources/Images, by the name MAUI gives it once built -
-        // for a picture drawn per theme, the half the differ picked.
-        node.SetImageSource(HostProp.Source, image, Image.SourceProperty);
-        if (node.GetAspect(HostProp.Aspect) is Aspect aspect) { image.Aspect = aspect; }
-        if (node.GetBool(HostProp.IsAnimating) is bool playing) { image.IsAnimationPlaying = playing; }
-
-        ApplyView(node, image);
-
-        return Track(image, node);
-    }
-
     /// <summary>A Picker. The list goes in before the chosen index.</summary>
     private Picker ReconcilePicker(HostPatch node, View? existing)
     {
@@ -2802,22 +2776,6 @@ public sealed class StateUIRenderer
         _ = view;
 #endif
         return (0, 0);
-    }
-
-    /// <summary>A BoxView: a rectangle of colour.</summary>
-    private BoxView ReconcileColorBox(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not BoxView box)
-        {
-            box = new BoxView();
-        }
-
-        node.SetColor(HostProp.Color, box, BoxView.ColorProperty);
-        if (node.GetCornerRadius(HostProp.CornerRadius) is CornerRadius radius) { box.CornerRadius = radius; }
-
-        ApplyView(node, box);
-
-        return Track(box, node);
     }
 
     /// <summary>A Border, and the single view it holds.</summary>

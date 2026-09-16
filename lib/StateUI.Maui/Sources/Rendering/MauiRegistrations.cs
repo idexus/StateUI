@@ -34,6 +34,41 @@ internal static class MauiRegistrations
         Values();
         Fields();
         Shapes();
+        Pictures();
+    }
+
+    /// <summary>
+    /// What is drawn rather than operated: a picture from the application's
+    /// resources, and a rectangle of plain colour.
+    /// </summary>
+    /// <remarks>
+    /// A picture's file is named rather than carried - the differ has already
+    /// picked the half of a picture drawn per theme, so what arrives is one
+    /// name MAUI resolves against what it built.
+    /// </remarks>
+    private static void Pictures()
+    {
+        StateUIControls.Add("Image",
+            create: _ => new Image(),
+            realize: image => image
+                .Held(HostProp.Source,
+                    static (node, member) => node.GetImageSource(member),
+                    (view, source) => view.Source = source)
+                .Property(HostProp.Aspect,
+                    static (node, member) => node.GetAspect(member),
+                    (view, aspect) => view.Aspect = aspect)
+                .Property<bool>(HostProp.IsAnimating,
+                    (view, playing) => view.IsAnimationPlaying = playing));
+
+        StateUIControls.Add("ColorBox",
+            create: _ => new BoxView(),
+            realize: box => box
+                .Held(HostProp.Color,
+                    static (node, member) => node.GetColor(member),
+                    (view, colour) => view.Color = colour)
+                .Property(HostProp.CornerRadius,
+                    static (node, member) => node.GetCornerRadius(member),
+                    (view, radius) => view.CornerRadius = radius));
     }
 
     /// <summary>
