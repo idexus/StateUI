@@ -691,6 +691,28 @@ extension ElementProperty: RegisteredProperty {
         return HostRealization(elements: elements, members: members)
     }
 
+    /// The shared members and the acts, each under the contract DECLARING it -
+    /// the tier, or the one element whose contract declares the act.
+    ///
+    /// Answered from the contracts rather than through the elements, because
+    /// that is what these are: a fact about a CONTRACT. A tier worn only by
+    /// elements this host declares no registration for - `Layout`, worn by the
+    /// layouts - is realized just as truly as one worn by a registered
+    /// element, and going through the elements would lose exactly those.
+    public var tierMembers: [(owner: String, member: String)] {
+        var found: [(owner: String, member: String)] = []
+
+        for member in shared.members.union(shared.events).union(acts).sorted() {
+            guard let owner = LibraryContracts.all.first(where: { owner in
+                owner.members.contains { $0.name == member }
+            }) else { continue }
+
+            found.append((owner: owner.name, member: member))
+        }
+
+        return found
+    }
+
     /// What this declaration names that no contract declares: the element, and
     /// the member under it - a host and the contracts disagreeing, which is
     /// always a mistake on one side and never something to render.

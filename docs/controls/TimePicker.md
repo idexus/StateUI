@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # TimePicker
 
@@ -8,7 +8,7 @@ Layer: `native`. Every base host presents it with its native toolkit.
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextStyleElement](tiers/TextStyleElement.md) · [FontElement](tiers/FontElement.md)
 
-Marks: ✅ realized by that host and covered by its tests · ✅* realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
+Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/TimePickerContract.swift`.
 
@@ -51,8 +51,8 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `background` | property | `Background` | native | ✅ | ✅* |  |  |  |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
-| `focus` | act | `() -> Bool` |  |  | ✅ |  |  |  |  |  |  |
+| `background` | property | `Background` | native | ✅ | ☑️ |  |  |  |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
+| `focus` | act | `() -> Bool` |  | ✅ | ✅ |  |  |  |  |  |  |
 | `frame` | property | `Rect` | structure | ✅ | ✅ |  |  |  |  |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
@@ -77,7 +77,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |  |
 | `translationX` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `translationY` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `unfocus` | act | `() -> Void` |  |  | ✅ |  |  |  |  |  |  |
+| `unfocus` | act | `() -> Void` |  | ✅ | ✅ |  |  |  |  |  |  |
 | `onVisualStateChanged` (`visualStateChanged`) | event | `String` | stateUI | ✅ |  |  |  |  |  |  |  |
 | `width` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `zIndex` | property | `Int` | native | ✅ |  |  |  |  |  |  |  |
@@ -105,7 +105,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
 | `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `margin` | property | `Insets` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `panTouchCount` | property | `Int` | structure | ✅ | ✅* |  |  |  |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
+| `panTouchCount` | property | `Int` | structure | ✅ | ☑️ |  |  |  |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
 | `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `panXChannel` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
 | `panYChannel` | property | `Int` | structure | ✅ |  |  |  |  |  |  |  |

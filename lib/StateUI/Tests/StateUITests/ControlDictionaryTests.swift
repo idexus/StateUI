@@ -160,7 +160,7 @@ final class ControlDictionaryTests: XCTestCase {
         }
     }
 
-    /// A member realized in part says what is missing: a ✅* nobody can check
+    /// A member realized in part says what is missing: a ☑️ nobody can check
     /// is no mark at all.
     func testAPartialRecordSaysWhatIsMissing() throws {
         for declaration in try ControlDictionary.declarations() {

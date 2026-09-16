@@ -106,13 +106,7 @@ final class HostDeclarationTests: XCTestCase {
     // MARK: - Support
 
     /// `exports/maui.bin`, written by the MAUI suite from its registrations.
-    private static let export = URL(fileURLWithPath: #filePath)
-        .deletingLastPathComponent()
-        .deletingLastPathComponent()
-        .deletingLastPathComponent()
-        .deletingLastPathComponent()
-        .deletingLastPathComponent()
-        .appendingPathComponent("exports/maui.bin")
+    private static let export = Fixtures.repository.appendingPathComponent("exports/maui.bin")
 
     /// A host declaring a label with a member of its own and one of a tier it
     /// wears, and a slider with the value a reader moves.

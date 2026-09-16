@@ -77,11 +77,16 @@ Treat one control, property, event, or host action as one vertical change:
 4. Implement every host claimed by the change, keeping native adapters thin.
 5. Add focused core tests and direct native-host tests.
 6. Add or update the smallest Gallery demonstration and handbook section.
-7. Record each realized member in the host's declaration - `AppKitRealization`
-   or `MauiRealization` - only after host tests pass, a partial one saying what
-   is still missing; `STATEUI_UPDATE_DOCS=1 swift test --filter
-   ControlDictionaryTests` then writes `docs/controls/` and its counts. Mark the
-   rows of `platform-contract.md`'s own tables in the same change.
+7. Let the host say what it realizes, only after its tests pass. A member a
+   MAUI registration takes or raises records itself: `STATEUI_UPDATE_EXPORTS=1
+   dotnet test lib/StateUI.Maui/Tests` writes `exports/maui.bin` and its
+   readable sidecar, and the contracts name each member's owner when the
+   documents are rendered. What a registry cannot know stays written by hand -
+   an element the renderer serves itself, and every judgement: a partial record
+   saying what is missing, what a host realizes none of, and what it presents
+   with no view of its own. `AppKitRealization` is written that way in full.
+   Then `STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests`
+   writes `docs/controls/` and the tables of `platform-contract.md`.
 
 Removing a capability follows the same path: remove stale vocabulary, host
 branches, tests, samples, and documentation together. Do not leave an inert

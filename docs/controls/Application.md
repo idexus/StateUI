@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Application
 
@@ -8,7 +8,7 @@ Layer: `structure`. It carries structure or protocol data rather than configurin
 
 Inherits nothing: every member below is its own.
 
-Marks: ✅ realized by that host and covered by its tests · ✅* realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
+Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/ApplicationContract.swift`.
 
@@ -16,14 +16,14 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/ApplicationContract.swift`.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `alert` | act | `(String, String, String) -> Void` |  |  |  |  |  |  |  |  |  |
-| `announce` | act | `(String) -> Void` |  |  |  |  |  |  |  |  |  |
+| `alert` | act | `(String, String, String) -> Void` |  | ✅ |  |  |  |  |  |  |  |
+| `announce` | act | `(String) -> Void` |  | ✅ |  |  |  |  |  |  |  |
 | `chooseAction` | act | `(String, String?, String?, [String]) -> String?` |  |  |  |  |  |  |  |  |  |
-| `confirm` | act | `(String, String, String, String) -> Bool` |  |  |  |  |  |  |  |  |  |
+| `confirm` | act | `(String, String, String, String) -> Bool` |  | ✅ |  |  |  |  |  |  |  |
 | `currentTime` | act | `() -> [Double]` |  | ✅ |  |  |  |  |  |  |  |
 | `currentTimeZone` | act | `() -> String` |  | ✅ |  |  |  |  |  |  |  |
 | `handlerFailed` | act | `(String) -> Void` |  |  |  |  |  |  |  |  |  |
-| `hideOnScreenKeyboard` | act | `() -> Bool` |  |  | ✅ |  |  |  |  |  |  |
+| `hideOnScreenKeyboard` | act | `() -> Bool` |  | ✅ | ✅ |  |  |  |  |  |  |
 | `persistSceneValue` | act | `(Name, Name, PropValue) -> Void` |  | ✅ | ✅ |  |  |  |  |  |  |
 | `persistValue` | act | `(Name, PropValue) -> Void` |  | ✅ | ✅ |  |  |  |  |  |  |
 | `prompt` | act | `(String, String, String, String, String?, Int?, InputPurpose, String) -> String?` |  |  |  |  |  |  |  |  |  |

@@ -1,4 +1,4 @@
-<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
+<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
 # Map
 
@@ -8,7 +8,7 @@ Layer: `provider`. An optional provider supplies it: a package, or the applicati
 
 Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md)
 
-Marks: ✅ realized by that host and covered by its tests · ✅* realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
+Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
 
 Declared in `lib/StateUI/Sources/Contracts/Elements/MapContract.swift`.
 
@@ -16,14 +16,14 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/MapContract.swift`.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isScrollEnabled` | property | `Bool` | native | ✅* |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `isTrafficEnabled` | property | `Bool` | provider | ✅* |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `isZoomEnabled` | property | `Bool` | provider | ✅* |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `onMapClicked` (`mapClicked`) | event | `Location` | provider | ✅* |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `mapType` | property | `MapType` | provider | ✅* |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
-| `moveToRegion` | act | `(Double, Double, Double) -> Void` |  |  |  |  |  |  |  |  |  |
+| `isScrollEnabled` | property | `Bool` | native | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
+| `isTrafficEnabled` | property | `Bool` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
+| `isZoomEnabled` | property | `Bool` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
+| `onMapClicked` (`mapClicked`) | event | `Location` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
+| `mapType` | property | `MapType` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
+| `moveToRegion` | act | `(Double, Double, Double) -> Void` |  | ✅ |  |  |  |  |  |  |  |
 | `region` | property | `MapRegion` | provider |  |  |  |  |  |  |  |  |
-| `showsUserLocation` | property | `Bool` | provider | ✅* |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
+| `showsUserLocation` | property | `Bool` | provider | ☑️ |  |  |  |  |  |  | MAUI: Windows and Linux have no map; the Map draws the unknown-control marker there. |
 
 Realization:
 
@@ -54,7 +54,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityLabel` | property | `String` | native | ✅ |  |  |  |  |  |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
 | `background` | property | `Background` | native | ✅ |  |  |  |  |  |  |  |
-| `focus` | act | `() -> Bool` |  |  |  |  |  |  |  |  |  |
+| `focus` | act | `() -> Bool` |  | ✅ |  |  |  |  |  |  |  |
 | `frame` | property | `Rect` | structure | ✅ |  |  |  |  |  |  |  |
 | `height` | property | `Double` | native | ✅ |  |  |  |  |  |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
@@ -79,7 +79,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |  |
 | `translationX` | property | `Double` | native | ✅ |  |  |  |  |  |  |  |
 | `translationY` | property | `Double` | native | ✅ |  |  |  |  |  |  |  |
-| `unfocus` | act | `() -> Void` |  |  |  |  |  |  |  |  |  |
+| `unfocus` | act | `() -> Void` |  | ✅ |  |  |  |  |  |  |  |
 | `onVisualStateChanged` (`visualStateChanged`) | event | `String` | stateUI | ✅ |  |  |  |  |  |  |  |
 | `width` | property | `Double` | native | ✅ |  |  |  |  |  |  |  |
 | `zIndex` | property | `Int` | native | ✅ |  |  |  |  |  |  |  |

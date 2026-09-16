@@ -8,9 +8,15 @@
 // platform contract are written by hand around the tables rendered here, which
 // stand between `<!-- name:begin -->` and `<!-- name:end -->`.
 //
-// What is not this module's to run is read as text: each host's declaration
-// of what it realizes, `AppKitRealization` and `MauiRealization`; the doc
-// comments over the contracts and over `ElementLayer`'s cases; the platform
+// A host's column comes from its RUNTIME wherever it can: MAUI writes what it
+// realizes to `exports/maui.bin`, read here and joined with the contracts, so
+// each member is named under the contract declaring it and no owner is typed
+// by hand. What a registry cannot know stays written - the elements a renderer
+// serves itself, and every judgement: what a realization is missing, what a
+// host realizes none of, and what it presents with no view of its own.
+//
+// The rest is read as text: `AppKitRealization`, which has no export yet; the
+// doc comments over the contracts and over `ElementLayer`'s cases; the platform
 // contract's "Native control mapping", the one hand-written input; and, from
 // the sources declaring them, the `on…` modifiers events are heard through.
 
@@ -43,12 +49,13 @@ struct ControlDictionary {
     static let platforms = ["MAUI", "AppKit", "UIKit", "GTK 4", "Android Views", "WinUI 3", "Web"]
 
     /// What a mark means.
-    static let legend = "✅ realized by that host and covered by its tests · ✅* realized and tested, but "
+    static let legend = "✅ realized by that host and covered by its tests · ☑️ realized and tested, but "
         + "incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet"
 
     /// The line over every page: that it is rendered, and how it is rendered again.
-    static let rendered = "<!-- Rendered by ControlDictionaryTests from the contracts and the hosts' declarations "
-        + "of what they realize: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->"
+    static let rendered = "<!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what "
+        + "its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter "
+        + "ControlDictionaryTests writes it again. -->"
 
     /// The sources outside Views/ that declare an element's `on…` modifiers.
     static let modifierSources: Set<String> = ["Core/Scenes.swift", "Types/HostEnvironment.swift", "Types/PageSession.swift"]
@@ -94,7 +101,7 @@ struct ControlDictionary {
 
             for owner in owners {
                 if let record = records.first(where: { $0.owner == owner && $0.member == member }) {
-                    return record.missing.map { ("✅*", $0) } ?? ("✅", "")
+                    return record.missing.map { ("☑️", $0) } ?? ("✅", "")
                 }
             }
 
@@ -197,7 +204,7 @@ struct ControlDictionary {
                     notes[platform] = note
 
                     if mark == "✅" { marks[platform, default: (0, 0)].done += 1 }
-                    if mark == "✅*" { marks[platform, default: (0, 0)].partial += 1 }
+                    if mark == "☑️" { marks[platform, default: (0, 0)].partial += 1 }
                 }
 
                 lines.append("| " + (cells + [Self.notes(notes)]).joined(separator: " | ") + " |")
@@ -473,13 +480,13 @@ struct ControlDictionary {
     }
 
     /// The mark of a row naming several members, or of one member across
-    /// several elements: ✅ when every one is realized in full, ✅* when every
+    /// several elements: ✅ when every one is realized in full, ☑️ when every
     /// one is realized and some only in part, and nothing otherwise - or where
     /// there is nothing to count.
     static func grouped(_ marks: [String]) -> String {
-        guard !marks.isEmpty, marks.allSatisfy({ $0 == "✅" || $0 == "✅*" }) else { return "" }
+        guard !marks.isEmpty, marks.allSatisfy({ $0 == "✅" || $0 == "☑️" }) else { return "" }
 
-        return marks.contains("✅*") ? "✅*" : "✅"
+        return marks.contains("☑️") ? "☑️" : "✅"
     }
 
     /// A contract's properties and events: every member but its acts.
@@ -555,7 +562,7 @@ struct ControlDictionary {
 
                 guard done + partial > 0 else { return "" }
 
-                return partial > 0 ? "\(done) ✅ · \(partial) ✅*" : "\(done) ✅"
+                return partial > 0 ? "\(done) ✅ · \(partial) ☑️" : "\(done) ✅"
             }
 
             lines.append("| [\(element.name)](\(prefix)\(element.name).md) | \(page.members) | "
@@ -580,8 +587,21 @@ struct ControlDictionary {
     // MARK: - What the pages are rendered from
 
     /// What AppKit and MAUI declare they realize.
+    ///
+    /// MAUI's is read twice over: what its RUNTIME wrote to `exports/maui.bin`
+    /// - every element it registers, with the owner of each member worked out
+    /// against the contracts - and then what is still said by hand, which is
+    /// the elements the renderer serves itself and the notes saying what a
+    /// realization is missing. A registry knows presence and nothing else, so
+    /// a judgement stays written.
     static func declarations() throws -> [Declaration] {
         let record = #"\("(\w+)", "(\w+)"(?:, missing: "((?:[^"\\]|\\.)*)")?\)"#
+
+        let written = try Declaration(
+            host: "MAUI", reading: "lib/StateUI.Maui/Sources/Rendering/MauiRealization.cs",
+            records: #"\b(Complete|Partial)"# + record,
+            unrealized: #"Unrealized = \[([^\]]*)\]"#,
+            viewless: nil)
 
         return [
             try Declaration(
@@ -589,12 +609,48 @@ struct ControlDictionary {
                 records: #"\.(complete|partial)"# + record,
                 unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
                 viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#),
-            try Declaration(
-                host: "MAUI", reading: "lib/StateUI.Maui/Sources/Rendering/MauiRealization.cs",
-                records: #"\b(Complete|Partial)"# + record,
-                unrealized: #"Unrealized = \[([^\]]*)\]"#,
-                viewless: nil),
+            Declaration(
+                host: written.host, source: written.source,
+                records: try exported("exports/maui.bin") + written.records,
+                unrealized: written.unrealized, viewless: written.viewless),
         ]
+    }
+
+    /// The records a host's own export carries: its declaration joined with
+    /// the contracts, so each member is named under the contract DECLARING it.
+    ///
+    /// A tier's member reaches every element wearing it, and the dictionary
+    /// asks about a tier once - so the join's members are reduced to the pairs
+    /// they are made of, which is also what keeps each record written once.
+    static func exported(_ path: String) throws -> [Declaration.Record] {
+        let url = Fixtures.repository.appendingPathComponent(path)
+
+        guard let declaration = Wire.decodeDeclaration([UInt8](try Data(contentsOf: url))) else {
+            throw Unreadable(description: "\(path) did not read as a host declaration. Write it again with "
+                + "STATEUI_UPDATE_EXPORTS=1 dotnet test lib/StateUI.Maui/Tests.")
+        }
+
+        // The elements' own, and then the tiers': a shared member and an act
+        // belong to a CONTRACT, so they are taken straight from it. Through
+        // the elements they would reach only the ones this host registers, and
+        // a tier worn by the elements its renderer still serves itself -
+        // `Layout`, worn by the layouts - would lose every mark it has.
+        var pairs = Set(declaration.realization.members.map { Pair(owner: $0.owner, member: $0.member) })
+
+        for tier in declaration.tierMembers {
+            pairs.insert(Pair(owner: tier.owner, member: tier.member))
+        }
+
+        return pairs
+            .sorted { ($0.owner, $0.member) < ($1.owner, $1.member) }
+            .map { Declaration.Record(owner: $0.owner, member: $0.member, missing: nil) }
+    }
+
+    /// One owner and one member, to reduce a join's per-element members to the
+    /// records a dictionary reads.
+    private struct Pair: Hashable {
+        let owner: String
+        let member: String
     }
 
     /// The `on…` modifier each event is heard through, read from the sources

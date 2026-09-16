@@ -17,7 +17,7 @@ the native contract is settled.
 
 | MAUI - Catalyst, iOS, Android, Windows, Linux | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| ✅ | ✅* | — | — | — | — | — |
+| ✅ | ☑️ | — | — | — | — | — |
 
 ## In Code
 
