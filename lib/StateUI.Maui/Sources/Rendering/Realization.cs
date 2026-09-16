@@ -116,19 +116,22 @@ internal sealed class Realization<TControl> : Realization
     /// a thickness, a member of a vocabulary this side maps onto MAUI's.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The conversions live in <see cref="Values"/>, one per kind, and this
     /// takes one rather than growing a second copy of that table: the
     /// mechanism does not know the library's vocabulary, it carries it. A
     /// reader answering null is a value of another kind, and writes nothing -
     /// the same answer every reader on this side gives.
-    /// </remarks>
-    /// <remarks>
-    /// TWO of them, one per kind of type, and that is the C# of it rather than
-    /// a choice: <c>TValue?</c> means <c>Nullable&lt;TValue&gt;</c> for a
-    /// struct and the plain reference for a class, so one method taking both
-    /// leaves the compiler unable to infer which - and it then guesses at the
-    /// other overload, reporting the failure as a reader called on the control.
-    /// The constraints tell the two apart; a call site names neither.
+    /// </para>
+    /// <para>
+    /// This one takes a VALUE and <see cref="Held{TValue}"/> a reference, and
+    /// that is the C# of it rather than a choice: <c>TValue?</c> means
+    /// <c>Nullable&lt;TValue&gt;</c> for a struct and the plain reference for a
+    /// class, so one method taking both leaves the compiler unable to infer
+    /// which - and it then guesses at the other overload, reporting the failure
+    /// as a reader called on the control. The constraints tell the two apart; a
+    /// call site names neither.
+    /// </para>
     /// </remarks>
     /// <typeparam name="TValue">What the reader answers.</typeparam>
     /// <param name="member">The member this host realizes.</param>
@@ -242,6 +245,11 @@ internal sealed class Realization<TControl> : Realization
     /// The subscription is made where the control is MADE, once, and lives as
     /// long as it does.
     /// </para>
+    /// <para>
+    /// The MEMBER is not named again here: <c>Property</c> already declares
+    /// which member this control realizes, and a second spelling of it would
+    /// be a second place to get it wrong.
+    /// </para>
     /// </remarks>
     /// <typeparam name="TReported">What the reader's value is, as the event carries it.</typeparam>
     /// <param name="property">The control's own property carrying the value.</param>
@@ -250,11 +258,6 @@ internal sealed class Realization<TControl> : Realization
     /// Subscribes to the control's own notification, and hands back what the
     /// reader made it.
     /// </param>
-    /// <remarks>
-    /// The MEMBER is not named again here: <c>Property</c> already declares
-    /// which member this control realizes, and a second spelling of it would
-    /// be a second place to get it wrong.
-    /// </remarks>
     internal Realization<TControl> Reports<TReported>(
         BindableProperty property,
         HostEvent raised,
@@ -338,6 +341,39 @@ internal sealed class Realization<TControl> : Realization
         return this;
     }
 
+    /// <summary>
+    /// Registers the two members of the text-style tier - the colour text is
+    /// drawn in, and the room between its letters.
+    /// </summary>
+    /// <param name="colour">Takes the text's colour.</param>
+    /// <param name="spacing">Takes the space between letters.</param>
+    internal Realization<TControl> TextStyle(
+        Action<TControl, Color> colour,
+        Action<TControl, double> spacing) =>
+        Held(HostProp.TextColor, static (node, member) => node.GetColor(member), colour)
+            .Property(
+                HostProp.CharacterSpacing,
+                static (node, member) => node.GetNumber(member),
+                spacing);
+
+    /// <summary>
+    /// Registers the two members of the text-alignment tier - where the text
+    /// sits across its control, and down it.
+    /// </summary>
+    /// <param name="across">Takes the alignment across.</param>
+    /// <param name="down">Takes the alignment down.</param>
+    internal Realization<TControl> TextAligned(
+        Action<TControl, TextAlignment> across,
+        Action<TControl, TextAlignment> down) =>
+        Property(
+                HostProp.HorizontalTextAlignment,
+                static (node, member) => node.GetTextAlignment(member),
+                across)
+            .Property(
+                HostProp.VerticalTextAlignment,
+                static (node, member) => node.GetTextAlignment(member),
+                down);
+
     /// <summary>A reported value as the lanes a state carries it in.</summary>
     private static double[] Lanes<TReported>(TReported reported) => reported switch
     {
@@ -380,4 +416,90 @@ internal sealed class Realization<TControl> : Realization
 
         return value is TValue read ? read : default;
     }
+}
+
+/// <summary>
+/// The tiers a realization can only declare for a control of a certain KIND.
+/// </summary>
+/// <remarks>
+/// Extensions rather than methods on the realization itself, because a
+/// constraint cannot be added to the class's own type parameter one method at a
+/// time. The font tier needs none of this - its setters belong to the
+/// registration, so the mechanism never has to know the class - while the input
+/// tier's belong here, MAUI having a real <c>InputView</c> base class to assign
+/// through.
+/// </remarks>
+internal static class RealizedTiers
+{
+    /// <summary>
+    /// Registers what a reader TYPES, and with it the whole of the input tier -
+    /// the members every field wears, and the one channel a text goes down.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// A text is a third channel, neither of the other two: it crosses WHOLE,
+    /// its length and its letters, and the attachment remembers the words so
+    /// the state's echo is not written back under the reader's caret. The
+    /// renderer owns that call because it owns the two things around it - the
+    /// cap a field was given, which the platform does not keep on its own, and
+    /// the <c>textChanged</c> the tier declares. So a registration says the
+    /// tier is worn; it does not say them again one at a time.
+    /// </para>
+    /// <para>
+    /// Every member here belongs to <c>InputView</c>, which MAUI has as a real
+    /// base class - so, unlike the font tier, the setters are this method's
+    /// rather than the registration's.
+    /// </para>
+    /// </remarks>
+    /// <param name="realization">The realization the tier is declared on.</param>
+    /// <param name="subscribe">Subscribes to the control's own text notification.</param>
+    internal static Realization<TControl> Input<TControl>(
+        this Realization<TControl> realization,
+        Action<TControl, Action<string?>> subscribe)
+        where TControl : InputView
+    {
+        realization.Wiring.Add((view, renderer) =>
+        {
+            var control = (TControl)view;
+
+            subscribe(control, words => renderer.Typed(control, words));
+        });
+
+        return realization
+            .Held(HostProp.Text,
+                static (node, member) => node.GetString(member),
+                static (view, text) => view.Text = text)
+            .Held(HostProp.Placeholder,
+                static (node, member) => node.GetString(member),
+                static (view, placeholder) => view.Placeholder = placeholder)
+            .Held(HostProp.PlaceholderColor,
+                static (node, member) => node.GetColor(member),
+                static (view, colour) => view.PlaceholderColor = colour)
+            .Property(HostProp.IsReadOnly,
+                static (node, member) => node.GetBool(member),
+                static (view, only) => view.IsReadOnly = only)
+
+            // The cap is kept on the control rather than handed to MAUI, whose
+            // own MaxLength holds the value and lets the platform view show
+            // what was typed. See StateUIRenderer.MaxLengthProperty.
+            .Property(HostProp.MaximumLength,
+                static (node, member) => node.GetInt(member),
+                static (view, length) => view.SetValue(StateUIRenderer.MaxLengthProperty, length))
+            .Held(HostProp.InputPurpose,
+                static (node, member) => node.GetKeyboard(member),
+                static (view, keyboard) => view.Keyboard = keyboard)
+            .Property(HostProp.IsSpellCheckEnabled,
+                static (node, member) => node.GetBool(member),
+                static (view, checking) => view.IsSpellCheckEnabled = checking)
+            .Property(HostProp.IsTextPredictionEnabled,
+                static (node, member) => node.GetBool(member),
+                static (view, predicting) => view.IsTextPredictionEnabled = predicting)
+            .Property(HostProp.CursorPosition,
+                static (node, member) => node.GetInt(member),
+                static (view, caret) => view.CursorPosition = caret)
+            .Property(HostProp.SelectionLength,
+                static (node, member) => node.GetInt(member),
+                static (view, length) => view.SelectionLength = length);
+    }
+
 }

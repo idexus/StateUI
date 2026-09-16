@@ -859,15 +859,12 @@ public sealed class StateUIRenderer
         {
             HostNodeType.Label => ReconcileLabel(node, existing),
             HostNodeType.Button => ReconcileButton(node, existing),
-            HostNodeType.TextField => ReconcileTextField(node, existing),
             HostNodeType.Image => ReconcileImage(node, existing),
-            HostNodeType.TextEditor => ReconcileTextEditor(node, existing),
             HostNodeType.Picker => ReconcilePicker(node, existing),
             HostNodeType.DatePicker => ReconcileDatePicker(node, existing),
             HostNodeType.ColorBox => ReconcileColorBox(node, existing),
             HostNodeType.Border => ReconcileBorder(node, existing),
             HostNodeType.TimePicker => ReconcileTimePicker(node, existing),
-            HostNodeType.SearchField => ReconcileSearchField(node, existing),
             HostNodeType.Grid => ReconcileGrid(node, existing),
             HostNodeType.VStack => ReconcileStack(node, existing, () => new TravellingLayouts.Vertical { Walker = _walker }),
             HostNodeType.HStack => ReconcileStack(node, existing, () => new TravellingLayouts.Horizontal { Walker = _walker }),
@@ -2307,39 +2304,6 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
-    /// An Entry. Assigning <c>Text</c> raises <c>TextChanged</c>, which the
-    /// <c>_rendering</c> guard swallows - otherwise Swift would hear its own
-    /// value back on every render.
-    /// </summary>
-    private Entry ReconcileTextField(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not Entry entry)
-        {
-            entry = new Entry();
-
-            entry.TextChanged += (sender, e) => Typed(sender, e.NewTextValue);
-            entry.Completed += (sender, _) => Raise(sender, HostEvent.Submitted);
-        }
-
-        // Text arrives only when it actually changed, so an Entry the user is
-        // typing in is left alone - which is what keeps the caret where it is.
-        ApplyInputView(node, entry);
-        node.SetColor(HostProp.TextColor, entry, Entry.TextColorProperty);
-        if (node.GetNumber(HostProp.CharacterSpacing) is double characterSpacing) { entry.CharacterSpacing = characterSpacing; }
-        if (node.GetTextTransform(HostProp.TextCase) is TextTransform entryCase) { entry.TextTransform = entryCase; }
-        if (node.GetBool(HostProp.IsPassword) is bool isPassword) { entry.IsPassword = isPassword; }
-        if (node.GetReturnType(HostProp.ReturnKey) is ReturnType returnType) { entry.ReturnType = returnType; }
-        if (node.GetBool(HostProp.ShowsClearButton) is bool clears) { entry.ClearButtonVisibility = clears ? ClearButtonVisibility.WhileEditing : ClearButtonVisibility.Never; }
-        if (node.GetTextAlignment(HostProp.HorizontalTextAlignment) is TextAlignment horizontal) { entry.HorizontalTextAlignment = horizontal; }
-        if (node.GetTextAlignment(HostProp.VerticalTextAlignment) is TextAlignment vertical) { entry.VerticalTextAlignment = vertical; }
-
-        ApplyFont(node, entry);
-        ApplyView(node, entry);
-
-        return Track(entry, node);
-    }
-
-    /// <summary>
     /// An Image. Its source is one file, by the name MAUI gives it once built -
     /// the differ has already picked the half of a picture drawn per theme -
     /// and goes through <see cref="Values.SetImageSource"/> like every
@@ -2361,30 +2325,6 @@ public sealed class StateUIRenderer
         ApplyView(node, image);
 
         return Track(image, node);
-    }
-
-    /// <summary>An Editor: an Entry with room, and the same guard on Text.</summary>
-    private Editor ReconcileTextEditor(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not Editor editor)
-        {
-            editor = new Editor();
-
-            editor.TextChanged += (sender, e) => Typed(sender, e.NewTextValue);
-        }
-
-        ApplyInputView(node, editor);
-        node.SetColor(HostProp.TextColor, editor, Editor.TextColorProperty);
-        if (node.GetNumber(HostProp.CharacterSpacing) is double spacing) { editor.CharacterSpacing = spacing; }
-        if (node.GetTextTransform(HostProp.TextCase) is TextTransform editorCase) { editor.TextTransform = editorCase; }
-        if (node.GetBool(HostProp.GrowsWithText) is bool grows) { editor.AutoSize = grows ? EditorAutoSizeOption.TextChanges : EditorAutoSizeOption.Disabled; }
-        if (node.GetTextAlignment(HostProp.HorizontalTextAlignment) is TextAlignment horizontal) { editor.HorizontalTextAlignment = horizontal; }
-        if (node.GetTextAlignment(HostProp.VerticalTextAlignment) is TextAlignment vertical) { editor.VerticalTextAlignment = vertical; }
-
-        ApplyFont(node, editor);
-        ApplyView(node, editor);
-
-        return Track(editor, node);
     }
 
     /// <summary>A Picker. The list goes in before the chosen index.</summary>
@@ -3222,34 +3162,6 @@ public sealed class StateUIRenderer
         return Track(picker, node);
     }
 
-    /// <summary>
-    /// A SearchBar. Assigning <c>Text</c> raises <c>TextChanged</c>, which the
-    /// <c>_rendering</c> guard swallows - the same story as an Entry's.
-    /// </summary>
-    private SearchBar ReconcileSearchField(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not SearchBar search)
-        {
-            search = new SearchBar();
-
-            search.TextChanged += (sender, e) => Typed(sender, e.NewTextValue);
-            search.SearchButtonPressed += (sender, _) => Raise(sender, HostEvent.Submitted);
-        }
-
-        ApplyInputView(node, search);
-        node.SetColor(HostProp.TextColor, search, SearchBar.TextColorProperty);
-        if (node.GetNumber(HostProp.CharacterSpacing) is double characterSpacing) { search.CharacterSpacing = characterSpacing; }
-        if (node.GetTextTransform(HostProp.TextCase) is TextTransform searchCase) { search.TextTransform = searchCase; }
-        if (node.GetReturnType(HostProp.ReturnKey) is ReturnType returnType) { search.ReturnType = returnType; }
-        if (node.GetTextAlignment(HostProp.HorizontalTextAlignment) is TextAlignment horizontal) { search.HorizontalTextAlignment = horizontal; }
-        if (node.GetTextAlignment(HostProp.VerticalTextAlignment) is TextAlignment vertical) { search.VerticalTextAlignment = vertical; }
-
-        ApplyFont(node, search);
-        ApplyView(node, search);
-
-        return Track(search, node);
-    }
-
     /// <summary>What a reader typed, held to the length the field was given.</summary>
     /// <remarks>
     /// <para>
@@ -3265,7 +3177,7 @@ public sealed class StateUIRenderer
     /// and the control never disagree, and the recursion is one deep.
     /// </para>
     /// </remarks>
-    private void Typed(object? sender, string? text)
+    internal void Typed(object? sender, string? text)
     {
         if (sender is InputView field
             && text is not null
@@ -3288,46 +3200,6 @@ public sealed class StateUIRenderer
         }
 
         Raise(sender, HostEvent.TextChanged, text ?? "");
-    }
-
-    /// <summary>
-    /// The properties every text field has, whichever field it is.
-    /// </summary>
-    /// <remarks>
-    /// The InputView tier's counterpart to <see cref="ApplyView"/>: a modifier
-    /// declared on InputViewProperties on the Swift side lands here once, for
-    /// the Entry, the Editor and the SearchBar alike. MAUI redeclares several
-    /// of these on the derived classes, but each redeclaration is the SAME
-    /// BindableProperty instance, so naming InputView's reaches all three.
-    /// </remarks>
-    private static void ApplyInputView(HostPatch node, InputView view)
-    {
-        // Text arrives only when it actually changed, so a field the reader is
-        // typing in is left alone - which is what keeps the caret where it is.
-        if (node.GetString(HostProp.Text) is string text) { view.Text = text; }
-        if (node.GetString(HostProp.Placeholder) is string placeholder) { view.Placeholder = placeholder; }
-        node.SetColor(HostProp.PlaceholderColor, view, InputView.PlaceholderColorProperty);
-        if (node.GetBool(HostProp.IsReadOnly) is bool isReadOnly) { view.IsReadOnly = isReadOnly; }
-        if (node.GetInt(HostProp.MaximumLength) is int maxLength) { view.SetValue(MaxLengthProperty, maxLength); }
-        if (node.GetKeyboard(HostProp.InputPurpose) is Keyboard keyboard) { view.Keyboard = keyboard; }
-        if (node.GetBool(HostProp.IsSpellCheckEnabled) is bool spelling) { view.IsSpellCheckEnabled = spelling; }
-        if (node.GetBool(HostProp.IsTextPredictionEnabled) is bool predicting) { view.IsTextPredictionEnabled = predicting; }
-
-        // The caret and the selection AFTER the text: MAUI clamps both to what
-        // the field is holding, so a caret written before the text arrives is
-        // clamped against the old value.
-        if (node.GetInt(HostProp.CursorPosition) is int cursor) { view.CursorPosition = cursor; }
-
-        if (node.GetInt(HostProp.SelectionLength) is int selection)
-        {
-            view.SelectionLength = selection;
-#if WINDOWS
-            // WinUI paints NO selection in a field that has not got the focus,
-            // and a selection the tree writes is written while the reader is
-            // somewhere else - so it lands and cannot be seen.
-            TextSelection.Show(view, selection > 0);
-#endif
-        }
     }
 
     /// <summary>

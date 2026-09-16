@@ -32,6 +32,98 @@ internal static class MauiRegistrations
         Indicators();
         Toggles();
         Values();
+        Fields();
+    }
+
+    /// <summary>
+    /// The three controls a reader types into: a line, a page, and a line that
+    /// asks a question.
+    /// </summary>
+    /// <remarks>
+    /// All three wear the input tier, which carries the text itself and the
+    /// event the typing raises - so none of them declares <c>textChanged</c>
+    /// of its own. What differs is the little each adds: whether the letters
+    /// are hidden, what the return key says, whether the field clears itself,
+    /// and whether it grows with what it holds.
+    /// </remarks>
+    private static void Fields()
+    {
+        StateUIControls.Add("TextField",
+            create: _ => new Entry(),
+            realize: field => field
+                .Input((view, typed) => view.TextChanged += (_, e) => typed(e.NewTextValue))
+                .TextStyle(
+                    (view, colour) => view.TextColor = colour,
+                    (view, spacing) => view.CharacterSpacing = spacing)
+                .TextAligned(
+                    (view, across) => view.HorizontalTextAlignment = across,
+                    (view, down) => view.VerticalTextAlignment = down)
+                .Property(HostProp.TextCase,
+                    static (node, member) => node.GetTextTransform(member),
+                    (view, transform) => view.TextTransform = transform)
+                .Property<bool>(HostProp.IsPassword, (view, hidden) => view.IsPassword = hidden)
+                .Property(HostProp.ReturnKey,
+                    static (node, member) => node.GetReturnType(member),
+                    (view, key) => view.ReturnType = key)
+
+                // One flag here, two states in MAUI: the button shows while the
+                // reader is in the field, or it does not show at all.
+                .Property<bool>(HostProp.ShowsClearButton,
+                    (view, clears) => view.ClearButtonVisibility =
+                        clears ? ClearButtonVisibility.WhileEditing : ClearButtonVisibility.Never)
+                .Font(
+                    (view, size) => view.FontSize = size,
+                    (view, family) => view.FontFamily = family,
+                    (view, attributes) => view.FontAttributes = attributes,
+                    (view, scaling) => view.FontAutoScalingEnabled = scaling)
+                .Raises(HostEvent.Submitted,
+                    (view, submitted) => view.Completed += (_, _) => submitted()));
+
+        StateUIControls.Add("TextEditor",
+            create: _ => new Editor(),
+            realize: editor => editor
+                .Input((view, typed) => view.TextChanged += (_, e) => typed(e.NewTextValue))
+                .TextStyle(
+                    (view, colour) => view.TextColor = colour,
+                    (view, spacing) => view.CharacterSpacing = spacing)
+                .TextAligned(
+                    (view, across) => view.HorizontalTextAlignment = across,
+                    (view, down) => view.VerticalTextAlignment = down)
+                .Property(HostProp.TextCase,
+                    static (node, member) => node.GetTextTransform(member),
+                    (view, transform) => view.TextTransform = transform)
+                .Property<bool>(HostProp.GrowsWithText,
+                    (view, grows) => view.AutoSize =
+                        grows ? EditorAutoSizeOption.TextChanges : EditorAutoSizeOption.Disabled)
+                .Font(
+                    (view, size) => view.FontSize = size,
+                    (view, family) => view.FontFamily = family,
+                    (view, attributes) => view.FontAttributes = attributes,
+                    (view, scaling) => view.FontAutoScalingEnabled = scaling));
+
+        StateUIControls.Add("SearchField",
+            create: _ => new SearchBar(),
+            realize: search => search
+                .Input((view, typed) => view.TextChanged += (_, e) => typed(e.NewTextValue))
+                .TextStyle(
+                    (view, colour) => view.TextColor = colour,
+                    (view, spacing) => view.CharacterSpacing = spacing)
+                .TextAligned(
+                    (view, across) => view.HorizontalTextAlignment = across,
+                    (view, down) => view.VerticalTextAlignment = down)
+                .Property(HostProp.TextCase,
+                    static (node, member) => node.GetTextTransform(member),
+                    (view, transform) => view.TextTransform = transform)
+                .Property(HostProp.ReturnKey,
+                    static (node, member) => node.GetReturnType(member),
+                    (view, key) => view.ReturnType = key)
+                .Font(
+                    (view, size) => view.FontSize = size,
+                    (view, family) => view.FontFamily = family,
+                    (view, attributes) => view.FontAttributes = attributes,
+                    (view, scaling) => view.FontAutoScalingEnabled = scaling)
+                .Raises(HostEvent.Submitted,
+                    (view, submitted) => view.SearchButtonPressed += (_, _) => submitted()));
     }
 
     /// <summary>

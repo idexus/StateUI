@@ -1065,6 +1065,9 @@ public class ControlTests
         Assert.Contains("RadioButton", known);
         Assert.Contains("Slider", known);
         Assert.Contains("Stepper", known);
+        Assert.Contains("TextField", known);
+        Assert.Contains("TextEditor", known);
+        Assert.Contains("SearchField", known);
 
         Assert.DoesNotContain(
             typeof(StateUIRenderer).GetMethods(
@@ -1072,7 +1075,8 @@ public class ControlTests
                 .Select(method => method.Name),
             name => name is "ReconcileProgressBar" or "ReconcileActivityIndicator"
                 or "ReconcileSwitch" or "ReconcileCheckBox" or "ReconcileRadioButton"
-                or "ReconcileSlider" or "ReconcileStepper");
+                or "ReconcileSlider" or "ReconcileStepper" or "ReconcileTextField"
+                or "ReconcileTextEditor" or "ReconcileSearchField");
     }
 
     /// <summary>
