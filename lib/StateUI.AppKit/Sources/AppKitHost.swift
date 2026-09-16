@@ -2323,6 +2323,15 @@ final class MountedNode: NSObject {
             sending: { [weak self] event, values in self?.send(event, values) },
             reporting: { [weak self] property, event, value in self?.report(property, event, value) }
         ) {
+            // A picture crosses as a file NAME, and the files are the
+            // renderer's: it holds the resource directory and the cache over
+            // it. A registration is made once for the process and has no
+            // renderer to ask, so a view that draws pictures is given the way
+            // to resolve one here, where it is made.
+            if let drawing = registered as? any AppKitPictureResolving {
+                drawing.picture = { [weak self] name in self?.image(named: name) }
+            }
+
             return registered
         }
 
@@ -2381,9 +2390,6 @@ final class MountedNode: NSObject {
         case .toolbarItem:
             // The window's toolbar makes the native item; see visibleToolbarActions.
             return nil
-
-        case .image:
-            return AppKitImageView()
 
         default:
             return AppKitUnsupportedView(type)
@@ -2475,13 +2481,6 @@ final class MountedNode: NSObject {
 
         if let absolute = view as? AppKitAbsoluteLayoutView {
             absolute.placement = placement(.absoluteLayoutBounds)
-        }
-
-        if let imageView = view as? AppKitImageView {
-            imageView.apply(
-                image: string(.source).flatMap { image(named: $0) },
-                aspect: imageAspect(enumeration(.aspect)),
-                animationPlaying: value(.isAnimating)?.bool ?? false)
         }
 
         if let border = view as? AppKitBorderView {
@@ -3185,9 +3184,6 @@ final class MountedNode: NSObject {
         }
     }
 
-    private func imageAspect(_ value: Int32?) -> Aspect {
-        value.flatMap(Aspect.init(rawValue:)) ?? .fit
-    }
 
     private func lineBreakMode(_ mode: Int32?) -> NSLineBreakMode {
         switch mode {

@@ -7,7 +7,7 @@ import StateUI
 
 /// A native image surface with the same four scaling choices on every host.
 @MainActor
-final class AppKitImageView: AppKitHitTestView {
+final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     private let imageView = NSImageView()
 
     private(set) var aspect: Aspect = .fit
@@ -34,6 +34,10 @@ final class AppKitImageView: AppKitHitTestView {
         fatalError("AppKitImageView is created in code")
     }
 
+    /// Resolves a picture's file name against the application's resources -
+    /// the host's to answer, since the files and the cache over them are its.
+    var picture: ((String) -> NSImage?)?
+
     func apply(image: NSImage?, aspect: Aspect, animationPlaying: Bool) {
         let imageChanged = imageView.image !== image
         imageView.image = image
@@ -42,6 +46,24 @@ final class AppKitImageView: AppKitHitTestView {
 
         if imageChanged { invalidateMeasurements() }
         needsLayout = true
+    }
+
+    /// The picture as its contract names it: a file this host resolves.
+    ///
+    /// A registration hands a view the values its members declare, and a file
+    /// NAME is what an `ImageSource` crosses as - so resolving it belongs to
+    /// the side holding the application's resources, which is why `picture` is
+    /// given rather than found.
+    ///
+    /// - Parameters:
+    ///   - source: the picture's file, or none to show nothing.
+    ///   - aspect: how it fills the room it is given.
+    ///   - animationPlaying: whether an animated picture runs.
+    func apply(source: ImageSource?, aspect: Aspect, animationPlaying: Bool) {
+        apply(
+            image: source.flatMap { $0.isEmpty ? nil : picture?($0.file) },
+            aspect: aspect,
+            animationPlaying: animationPlaying)
     }
 
     override var intrinsicContentSize: NSSize {

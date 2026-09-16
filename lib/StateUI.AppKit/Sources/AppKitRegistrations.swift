@@ -21,6 +21,7 @@ enum AppKitRegistrations {
         pickers(registry)
         fields(registry)
         shapes(registry)
+        pictures(registry)
         drawing(registry)
         layouts(registry)
         presentation(registry)
@@ -453,6 +454,25 @@ enum AppKitRegistrations {
                     background: values[VisualElementContract.background].flatMap { nsColor($0.propValue) },
                     fill: values[ColorBoxContract.color].flatMap { nsColor($0.propValue) },
                     cornerRadius: values[ColorBoxContract.cornerRadius]?.propValue)
+            }
+        }
+    }
+
+    /// A picture from the application's resources.
+    ///
+    /// What crosses is the FILE'S NAME, so the view is handed the name and
+    /// resolves it through the picture the host gave it - the resources and
+    /// the cache over them are the renderer's, and a registration is made once
+    /// for the whole process.
+    private static func pictures(_ registry: Registry<NSView>) {
+        registry.add(ImageContract.self, create: { _ in AppKitImageView() }) { image in
+            image.applies([
+                ImageContract.source, ImageElementContract.aspect, ImageContract.isAnimating,
+            ]) { view, values in
+                view.apply(
+                    source: values[ImageContract.source],
+                    aspect: values[ImageElementContract.aspect] ?? .fit,
+                    animationPlaying: values[ImageContract.isAnimating] ?? false)
             }
         }
     }
