@@ -279,6 +279,55 @@ internal sealed class Realization<TControl> : Realization
     }
 
     /// <summary>
+    /// Registers a value the reader changes that is WIDER THAN ONE NUMBER, or
+    /// whose event carries a different shape from what lands on the state - a
+    /// day as its year, month and day; a time as its hour, minute and second.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Both halves are read FROM THE CONTROL rather than from the
+    /// notification, because that is where the value has settled by the time
+    /// the platform says so - and a picker's index is only there at all.
+    /// </para>
+    /// <para>
+    /// The state takes LANES, one per part, while the event carries the parts
+    /// as one value: the two shapes are not the same and
+    /// <see cref="Reports{TReported}"/> cannot say so, which is the whole
+    /// reason this exists beside it. The order is the order every arm keeps -
+    /// the state first, the handler second.
+    /// </para>
+    /// </remarks>
+    /// <param name="property">The control's own property carrying the value.</param>
+    /// <param name="raised">The event the tree hears.</param>
+    /// <param name="lanes">The value as the lanes a state carries it in.</param>
+    /// <param name="payload">The same value as the event's own.</param>
+    /// <param name="subscribe">Subscribes to the control's own notification.</param>
+    internal Realization<TControl> Changes(
+        BindableProperty property,
+        HostEvent raised,
+        Func<TControl, double[]> lanes,
+        Func<TControl, HostValue[]> payload,
+        Action<TControl, Action> subscribe)
+    {
+        Wiring.Add((view, renderer) =>
+        {
+            var control = (TControl)view;
+
+            subscribe(control, () =>
+            {
+                if (lanes(control) is { Length: > 0 } parts)
+                {
+                    renderer.Reported(control, property, parts);
+                }
+
+                renderer.Raise(control, raised, payload(control));
+            });
+        });
+
+        return this;
+    }
+
+    /// <summary>
     /// Registers a value the reader MOVES - a slider dragged, a stepper
     /// stepped - which is a different channel from a value they merely change.
     /// </summary>

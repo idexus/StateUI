@@ -859,10 +859,7 @@ public sealed class StateUIRenderer
         {
             HostNodeType.Label => ReconcileLabel(node, existing),
             HostNodeType.Button => ReconcileButton(node, existing),
-            HostNodeType.Picker => ReconcilePicker(node, existing),
-            HostNodeType.DatePicker => ReconcileDatePicker(node, existing),
             HostNodeType.Border => ReconcileBorder(node, existing),
-            HostNodeType.TimePicker => ReconcileTimePicker(node, existing),
             HostNodeType.Grid => ReconcileGrid(node, existing),
             HostNodeType.VStack => ReconcileStack(node, existing, () => new TravellingLayouts.Vertical { Walker = _walker }),
             HostNodeType.HStack => ReconcileStack(node, existing, () => new TravellingLayouts.Horizontal { Walker = _walker }),
@@ -1811,21 +1808,6 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
-    /// A date as its three numbers - year, month, day - or nothing when the
-    /// picker holds none, which the Swift side reads as no date rather than
-    /// inventing one.
-    /// </summary>
-    private static HostValue[] Day(DateTime? value) =>
-        value is DateTime date ? [HostValue.Of(date.Year, date.Month, date.Day)] : [];
-
-    /// <summary>
-    /// And a time of day as its three - hour, minute, second. A TimeSpan can
-    /// hold whole days; a time of day cannot, so only the day's part crosses.
-    /// </summary>
-    private static HostValue[] Clock(TimeSpan? value) =>
-        value is TimeSpan time ? [HostValue.Of(time.Hours, time.Minutes, time.Seconds)] : [];
-
-    /// <summary>
     /// The identity a control was built with, or null when the renderer did not
     /// build it - a wrapper it invented, or a control from somewhere else.
     /// </summary>
@@ -2293,79 +2275,6 @@ public sealed class StateUIRenderer
         ApplyView(node, button);
 
         return Track(button, node);
-    }
-
-    /// <summary>A Picker. The list goes in before the chosen index.</summary>
-    private Picker ReconcilePicker(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not Picker picker)
-        {
-            picker = new Picker();
-
-            picker.SelectedIndexChanged += (sender, _) =>
-            {
-                Reported(sender, Picker.SelectedIndexProperty, picker.SelectedIndex);
-                Raise(sender, HostEvent.SelectedIndexChanged, (double)picker.SelectedIndex);
-            };
-            // Opening and closing, which the platform does as well as the
-            // reader - a tap outside closes it and nothing on this side asked.
-            picker.Opened += (sender, _) => Raise(sender, HostEvent.Opened);
-            picker.Closed += (sender, _) => Raise(sender, HostEvent.Closed);
-        }
-
-        // The list before the choice: an index means nothing until there is
-        // something to count.
-        if (node.GetStrings(HostProp.Options) is string[] items) { picker.ItemsSource = items; }
-        if (node.GetInt(HostProp.SelectedIndex) is int selected) { picker.SelectedIndex = selected; }
-        if (node.GetBool(HostProp.IsOpen) is bool pickerOpen) { picker.IsOpen = pickerOpen; }
-        if (node.GetString(HostProp.Title) is string title) { picker.Title = title; }
-        node.SetColor(HostProp.TextColor, picker, Picker.TextColorProperty);
-        if (node.GetNumber(HostProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
-        if (node.GetTextAlignment(HostProp.HorizontalTextAlignment) is TextAlignment horizontal) { picker.HorizontalTextAlignment = horizontal; }
-        if (node.GetTextAlignment(HostProp.VerticalTextAlignment) is TextAlignment vertical) { picker.VerticalTextAlignment = vertical; }
-
-        ApplyFont(node, picker);
-        ApplyView(node, picker);
-
-        return Track(picker, node);
-    }
-
-    /// <summary>
-    /// A DatePicker. The range goes in before the date, since MAUI clamps a
-    /// date into it as it is set.
-    /// </summary>
-    private DatePicker ReconcileDatePicker(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not DatePicker picker)
-        {
-            picker = new DatePicker();
-
-            picker.DateSelected += (sender, _) =>
-            {
-                // Onto the state first, so a handler reads the day already landed.
-                if (picker.Date is DateTime day) { Reported(sender, DatePicker.DateProperty, [day.Year, day.Month, day.Day]); }
-                Raise(sender, HostEvent.DateChanged, Day(picker.Date));
-            };
-            // Opening and closing, which the platform does as well as the
-            // reader - a tap outside closes it and nothing on this side asked.
-            picker.Opened += (sender, _) => Raise(sender, HostEvent.Opened);
-            picker.Closed += (sender, _) => Raise(sender, HostEvent.Closed);
-        }
-
-        // The range before the date, for the same reason a Slider takes its
-        // range before its value: MAUI clamps what is outside it.
-        if (node.GetDate(HostProp.MinimumDate) is DateTime minimum) { picker.MinimumDate = minimum; }
-        if (node.GetDate(HostProp.MaximumDate) is DateTime maximum) { picker.MaximumDate = maximum; }
-        if (node.GetDate(HostProp.Date) is DateTime date) { picker.Date = date; }
-        if (node.GetBool(HostProp.IsOpen) is bool dateOpen) { picker.IsOpen = dateOpen; }
-        if (node.GetString(HostProp.Format) is string format) { picker.Format = format; }
-        node.SetColor(HostProp.TextColor, picker, DatePicker.TextColorProperty);
-        if (node.GetNumber(HostProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
-
-        ApplyFont(node, picker);
-        ApplyView(node, picker);
-
-        return Track(picker, node);
     }
 
     /// <summary>
@@ -2952,39 +2861,6 @@ public sealed class StateUIRenderer
         ApplyView(node, indicator);
 
         return Track(indicator, node);
-    }
-
-    /// <summary>
-    /// A TimePicker. Its time is a <c>TimeSpan</c> - a length since midnight -
-    /// which is what the three integers Swift sends describe.
-    /// </summary>
-    private TimePicker ReconcileTimePicker(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not TimePicker picker)
-        {
-            picker = new TimePicker();
-
-            picker.TimeSelected += (sender, e) =>
-            {
-                if (e.NewTime is TimeSpan time) { Reported(sender, TimePicker.TimeProperty, [time.Hours, time.Minutes, time.Seconds]); }
-                Raise(sender, HostEvent.TimeChanged, Clock(e.NewTime));
-            };
-            // Opening and closing, which the platform does as well as the
-            // reader - a tap outside closes it and nothing on this side asked.
-            picker.Opened += (sender, _) => Raise(sender, HostEvent.Opened);
-            picker.Closed += (sender, _) => Raise(sender, HostEvent.Closed);
-        }
-
-        if (node.GetTime(HostProp.Time) is TimeSpan time) { picker.Time = time; }
-        if (node.GetBool(HostProp.IsOpen) is bool timeOpen) { picker.IsOpen = timeOpen; }
-        if (node.GetString(HostProp.Format) is string format) { picker.Format = format; }
-        node.SetColor(HostProp.TextColor, picker, TimePicker.TextColorProperty);
-        if (node.GetNumber(HostProp.CharacterSpacing) is double spacing) { picker.CharacterSpacing = spacing; }
-
-        ApplyFont(node, picker);
-        ApplyView(node, picker);
-
-        return Track(picker, node);
     }
 
     /// <summary>What a reader typed, held to the length the field was given.</summary>

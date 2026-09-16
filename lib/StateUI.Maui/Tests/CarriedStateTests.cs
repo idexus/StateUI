@@ -656,6 +656,55 @@ public class CarriedStateTests
     }
 
     /// <summary>
+    /// A day the READER picks reaches its state through the control's own
+    /// notification - not through a report made by hand.
+    /// </summary>
+    /// <remarks>
+    /// The test below drives <c>Reports.Reported</c> directly, which proves the
+    /// CHANNEL and not the subscription: a registration that stopped telling
+    /// the state anything would leave it green. Here the date is set on the
+    /// control, as a reader setting it would, and the three lanes have to
+    /// arrive on their own.
+    /// </remarks>
+    [Fact]
+    public void ADayThePickerItselfReportsReachesItsState()
+    {
+        var host = new Host();
+        var crossing = new HandCrossing();
+
+        host.Renderer.Crossing = crossing;
+
+        static HostPatch Bound(HostNodeType type, HostProp property, string name, int id) => new()
+        {
+            Id = new HostElementId(id),
+            Type = type,
+            States = [new HostStateBinding(property, name, 4, HostStateMode.InOut, HostStateKind.Plain)],
+        };
+
+        var picker = (DatePicker)host.ApplyMessage(
+            Bound(HostNodeType.DatePicker, HostProp.Date, "date", 1));
+
+        picker.Date = new DateTime(2026, 9, 15);
+
+        (int number, ulong mask, double[] lanes) = Told(crossing)!.Value;
+
+        Assert.Equal(4, number);
+        Assert.Equal(0b111UL, mask);
+        Assert.Equal([2026.0, 9, 15], lanes);
+
+        var time = (TimePicker)host.ApplyMessage(
+            Bound(HostNodeType.TimePicker, HostProp.Time, "time", 2));
+
+        time.Time = new TimeSpan(7, 45, 0);
+
+        (number, mask, lanes) = Told(crossing)!.Value;
+
+        Assert.Equal(4, number);
+        Assert.Equal(0b111UL, mask);
+        Assert.Equal([7.0, 45, 0], lanes);
+    }
+
+    /// <summary>
     /// A CHOSEN DAY IS TOLD AS THREE LANES, a chosen time likewise - the way a
     /// flipped switch is told as one - and the state's own day landing on the
     /// picker raises no event and reports nothing back.

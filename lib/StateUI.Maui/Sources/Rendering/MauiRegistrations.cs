@@ -35,6 +35,123 @@ internal static class MauiRegistrations
         Fields();
         Shapes();
         Pictures();
+        Pickers();
+    }
+
+    /// <summary>
+    /// The controls that offer a reader a choice and then show it: one of a
+    /// list, a day of a calendar, a time of a clock.
+    /// </summary>
+    /// <remarks>
+    /// All three open and shut, and MAUI reports those two moments only for a
+    /// control a handler stands behind - so the events are registered whether
+    /// or not a given platform ever raises them, which is what the contract
+    /// promises and what each host honours as it can.
+    /// </remarks>
+    private static void Pickers()
+    {
+        StateUIControls.Add("Picker",
+            create: _ => new Picker(),
+            realize: picker => picker
+
+                // THE LIST BEFORE THE CHOICE, and the order here is the order
+                // the members are applied in: an index means nothing until
+                // there is something to count. Measured: an index set on an
+                // empty picker reads back as -1, and comes back as itself once
+                // the list arrives - so the order reads as the list holding
+                // the choice, which is what it means.
+                .Held(HostProp.Options,
+                    static (node, member) => node.GetStrings(member),
+                    (view, options) => view.ItemsSource = options)
+                .Property(HostProp.SelectedIndex,
+                    static (node, member) => node.GetInt(member),
+                    (view, index) => view.SelectedIndex = index)
+                .Property<bool>(HostProp.IsOpen, (view, open) => view.IsOpen = open)
+                .Property<string>(HostProp.Title, (view, title) => view.Title = title)
+                .TextStyle(
+                    (view, colour) => view.TextColor = colour,
+                    (view, spacing) => view.CharacterSpacing = spacing)
+                .TextAligned(
+                    (view, across) => view.HorizontalTextAlignment = across,
+                    (view, down) => view.VerticalTextAlignment = down)
+                .Font(
+                    (view, size) => view.FontSize = size,
+                    (view, family) => view.FontFamily = family,
+                    (view, attributes) => view.FontAttributes = attributes,
+                    (view, scaling) => view.FontAutoScalingEnabled = scaling)
+
+                // The chosen index is read off the CONTROL: the notification
+                // carries nothing, and the index is what settled.
+                .Changes(Picker.SelectedIndexProperty, HostEvent.SelectedIndexChanged,
+                    view => [view.SelectedIndex],
+                    view => [HostValue.Of(view.SelectedIndex)],
+                    (view, chosen) => view.SelectedIndexChanged += (_, _) => chosen())
+                .Raises(HostEvent.Opened, (view, opened) => view.Opened += (_, _) => opened())
+                .Raises(HostEvent.Closed, (view, closed) => view.Closed += (_, _) => closed()));
+
+        StateUIControls.Add("DatePicker",
+            create: _ => new DatePicker(),
+            realize: picker => picker
+                .Property(HostProp.MinimumDate,
+                    static (node, member) => node.GetDate(member),
+                    (view, day) => view.MinimumDate = day)
+                .Property(HostProp.MaximumDate,
+                    static (node, member) => node.GetDate(member),
+                    (view, day) => view.MaximumDate = day)
+                .Property(HostProp.Date,
+                    static (node, member) => node.GetDate(member),
+                    (view, day) => view.Date = day)
+                .Property<bool>(HostProp.IsOpen, (view, open) => view.IsOpen = open)
+                .Property<string>(HostProp.Format, (view, format) => view.Format = format)
+                .TextStyle(
+                    (view, colour) => view.TextColor = colour,
+                    (view, spacing) => view.CharacterSpacing = spacing)
+                .Font(
+                    (view, size) => view.FontSize = size,
+                    (view, family) => view.FontFamily = family,
+                    (view, attributes) => view.FontAttributes = attributes,
+                    (view, scaling) => view.FontAutoScalingEnabled = scaling)
+
+                // A day lands on the state as its three parts and reaches the
+                // handler as one value of three.
+                .Changes(DatePicker.DateProperty, HostEvent.DateChanged,
+                    view => view.Date is DateTime day ? [day.Year, day.Month, day.Day] : [],
+                    view => view.Date is DateTime day
+                        ? [HostValue.Of(day.Year, day.Month, day.Day)]
+                        : [],
+                    (view, chosen) => view.DateSelected += (_, _) => chosen())
+                .Raises(HostEvent.Opened, (view, opened) => view.Opened += (_, _) => opened())
+                .Raises(HostEvent.Closed, (view, closed) => view.Closed += (_, _) => closed()));
+
+        StateUIControls.Add("TimePicker",
+            create: _ => new TimePicker(),
+            realize: picker => picker
+                .Property(HostProp.Time,
+                    static (node, member) => node.GetTime(member),
+                    (view, time) => view.Time = time)
+                .Property<bool>(HostProp.IsOpen, (view, open) => view.IsOpen = open)
+                .Property<string>(HostProp.Format, (view, format) => view.Format = format)
+                .TextStyle(
+                    (view, colour) => view.TextColor = colour,
+                    (view, spacing) => view.CharacterSpacing = spacing)
+                .Font(
+                    (view, size) => view.FontSize = size,
+                    (view, family) => view.FontFamily = family,
+                    (view, attributes) => view.FontAttributes = attributes,
+                    (view, scaling) => view.FontAutoScalingEnabled = scaling)
+
+                // A TimeSpan can hold whole days; a time of day cannot, so
+                // only the day's part crosses - hours, minutes, seconds.
+                .Changes(TimePicker.TimeProperty, HostEvent.TimeChanged,
+                    view => view.Time is TimeSpan time
+                        ? [time.Hours, time.Minutes, time.Seconds]
+                        : [],
+                    view => view.Time is TimeSpan time
+                        ? [HostValue.Of(time.Hours, time.Minutes, time.Seconds)]
+                        : [],
+                    (view, chosen) => view.TimeSelected += (_, _) => chosen())
+                .Raises(HostEvent.Opened, (view, opened) => view.Opened += (_, _) => opened())
+                .Raises(HostEvent.Closed, (view, closed) => view.Closed += (_, _) => closed()));
     }
 
     /// <summary>

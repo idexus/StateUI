@@ -1076,6 +1076,9 @@ public class ControlTests
         Assert.Contains("Polyline", known);
         Assert.Contains("Image", known);
         Assert.Contains("ColorBox", known);
+        Assert.Contains("Picker", known);
+        Assert.Contains("DatePicker", known);
+        Assert.Contains("TimePicker", known);
 
         Assert.DoesNotContain(
             typeof(StateUIRenderer).GetMethods(
