@@ -342,21 +342,25 @@ final class Catalog {
         // Calling the host, hearing from it, and a control the application
         // registers with it - each described like the library's own.
         //
-        // The Swift half of every one of these is the SAME file the C# interop
+        // The Swift half of the first three is the SAME file the C# interop
         // group shows: one contract, one `View`, and a host of its own at each
         // end. What differs is the other half.
+        //
+        // The Metal cube is the exception, and deliberately: its view draws on
+        // the GPU, so it is declared for this host alone.
         groups.append(
             SampleGroup(
                 route: "appKitInterop",
                 title: "AppKit interop",
-                summary: "Calling the host, hearing from it, and a control the app registers - "
-                    + "described like the library's own.",
+                summary: "Calling the host, hearing from it, and controls the app registers - "
+                    + "one of them drawn on the GPU.",
                 icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
                 card: ImageSource("cat_interop.png"),
                 samples: [
                     Sample(AppKitActsSample()),
                     Sample(AppKitEventsSample()),
                     Sample(AppKitControlSample()),
+                    Sample(AppKitMetalSample()),
                 ]))
         #endif
 

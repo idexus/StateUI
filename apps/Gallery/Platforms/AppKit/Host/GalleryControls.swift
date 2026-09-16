@@ -49,5 +49,33 @@ enum GalleryControls {
             }
             bar.raises(RatingBarContract.ratingChanged)
         }
+
+        // A view that draws with the GPU registers exactly like one that draws
+        // with a layer: the registration says what the element IS, and an
+        // `MTKView` is an `NSView`. It reports nothing, so `create` only makes
+        // it - every member here goes one way, from the description to the
+        // frames.
+        //
+        // UNDER THE CONDITION, in a file only this host runs: a plain
+        // `swift test` builds this target too, and builds it WITHOUT -DAPPKIT,
+        // so the module it links against declares no Metal cube then. The
+        // element is declared for this host alone - see
+        // Sources/Samples/Interop/MetalCube.swift - and its registration
+        // stands under the same condition its contract does.
+        #if APPKIT
+        StateUIAppKit.realizes(MetalCubeContract.self, create: { _ -> MetalCubeView in
+            MetalCubeView()
+        }) { cube in
+            cube.property(MetalCubeContract.size) { view, size in
+                view.cubeSize = size ?? 0.6
+            }
+            cube.property(MetalCubeContract.color) { view, color in
+                view.color = (color ?? .teal).rawValue
+            }
+            cube.property(MetalCubeContract.isSpinning) { view, spinning in
+                view.isSpinning = spinning ?? true
+            }
+        }
+        #endif
     }
 }
