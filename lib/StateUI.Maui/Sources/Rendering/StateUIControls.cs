@@ -104,13 +104,35 @@ public static class StateUIControls
     private static readonly Lock Guard = new();
     private static readonly Dictionary<string, Registration> Registered = [];
 
+    /// <summary>
+    /// Installs the library's own registrations once, before the first lookup.
+    /// </summary>
+    /// <remarks>
+    /// A class of its own, and touched OUTSIDE <see cref="Guard"/>, because the
+    /// installer registers by calling <c>Add</c> - which takes
+    /// that same lock. Run from a static constructor on this class instead, the
+    /// installer would be entered from inside the very lookup that asked for
+    /// it.
+    /// </remarks>
+    private static class Library
+    {
+        internal static readonly bool Installed = Install();
+
+        private static bool Install()
+        {
+            MauiRegistrations.Install();
+            return true;
+        }
+    }
+
     /// <summary>A registered control's parts, the control type erased -
-    /// <see cref="Add{TControl}"/> is where the casts live.</summary>
+    /// <c>Add</c> is where the casts live.</summary>
     internal sealed record Registration(
         Func<StateUIRaise, View> Create,
         Action<View, HostPatch>? Apply,
         IReadOnlyDictionary<string, BindableProperty>? Properties,
-        Action<View, View?>? Content);
+        Action<View, View?>? Content,
+        Realization? Realized = null);
 
     /// <summary>
     /// Registers a control under a node type name. Registering the same name
@@ -163,13 +185,77 @@ public static class StateUIControls
         }
     }
 
+    /// <summary>
+    /// Registers one of the LIBRARY's own elements: the control it is made
+    /// with, and the members that control realizes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The same road, the same store and the same dispatch arm an application's
+    /// control takes - what differs is only how a member is NAMED. The library
+    /// names one by its <see cref="HostProp"/>, which is internal on purpose:
+    /// the token mirrors carry this repository's own wire numbers and are
+    /// deliberately unstable, so they are not published. An application names
+    /// one by spelling until the contracts are generated as typed C#
+    /// accessors, when this overload and the public one become the same call.
+    /// </para>
+    /// <para>
+    /// Registering a type a <c>Reconcile…</c> method still serves has no
+    /// effect: the dispatch reaches the registry through its default arm, so a
+    /// family moves when its arm goes.
+    /// </para>
+    /// </remarks>
+    /// <typeparam name="TControl">The MAUI control this element is made with.</typeparam>
+    /// <param name="type">The element's node type, as the contract declares it.</param>
+    /// <param name="create">Makes the control, once per element.</param>
+    /// <param name="realize">Registers the members the control realizes.</param>
+    internal static void Add<TControl>(
+        string type,
+        Func<StateUIRaise, TControl> create,
+        Action<Realization<TControl>> realize)
+        where TControl : View
+    {
+        var realized = new Realization<TControl>();
+        realize(realized);
+
+        lock (Guard)
+        {
+            Registered[type] = new Registration(
+                raise => create(raise), null, null, null, realized);
+        }
+    }
+
     /// <summary>The registration for a type, or null - consulted by the
     /// renderer before the unknown-control marker.</summary>
     internal static Registration? Find(string type)
     {
+        // The library's own registrations, installed once - outside the lock,
+        // because installing them takes it. See Library.
+        _ = Library.Installed;
+
         lock (Guard)
         {
             return Registered.GetValueOrDefault(type);
+        }
+    }
+
+    /// <summary>
+    /// Every node type a registration answers for - the library's own and an
+    /// application's alike.
+    /// </summary>
+    /// <remarks>
+    /// What the guard over the control fixtures reads, so that an element
+    /// moved out of the renderer's own <c>Reconcile…</c> methods and into a
+    /// registration is still held to having a fixture and a check. Without it
+    /// the guard would quietly shrink with every family that moves.
+    /// </remarks>
+    internal static IEnumerable<string> Realizing()
+    {
+        _ = Library.Installed;
+
+        lock (Guard)
+        {
+            return [.. Registered.Keys];
         }
     }
 

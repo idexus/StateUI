@@ -1042,6 +1042,32 @@ public class ControlTests
         }
     }
 
+    /// <summary>
+    /// A control MOVED into a registration is still one the renderer knows -
+    /// so the guard above goes on holding it to a fixture and a check.
+    /// </summary>
+    /// <remarks>
+    /// The guard reads the renderer's <c>Reconcile…</c> methods, and a family
+    /// that moves has none any more. Without the registry beside them the list
+    /// would shrink by one control per family moved, and the guard would end up
+    /// proving nothing while staying green - which is the failure this whole
+    /// suite exists to catch.
+    /// </remarks>
+    [Fact]
+    public void AControlMovedIntoARegistrationIsStillHeldToItsFixture()
+    {
+        List<string> known = [.. RendererControls()];
+
+        Assert.Contains("ProgressBar", known);
+        Assert.Contains("ActivityIndicator", known);
+
+        Assert.DoesNotContain(
+            typeof(StateUIRenderer).GetMethods(
+                BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
+                .Select(method => method.Name),
+            name => name is "ReconcileProgressBar" or "ReconcileActivityIndicator");
+    }
+
     /// <summary>And the same hole from the other end: a fixture nothing reads.</summary>
     [Fact]
     public void EveryFixtureIsChecked()
@@ -1065,6 +1091,21 @@ public class ControlTests
     /// </remarks>
     private static IEnumerable<string> RendererControls()
     {
+        // A family that has moved into a registration has no Reconcile method
+        // any more, and its fixture still has to be checked - so the registry
+        // is read beside the methods. Without this the guard would shrink by
+        // one control with every family that moves, which is the opposite of
+        // what it is for. An application's own registered type is left out: its
+        // fixture would be the application's to write, and
+        // StateUIControlsTests covers the registry's promises.
+        foreach (string registered in StateUIControls.Realizing())
+        {
+            if (TokenNames<HostNodeType>.Parse(registered) != HostNodeType.None)
+            {
+                yield return registered;
+            }
+        }
+
         IEnumerable<string> names = typeof(StateUIRenderer)
             .GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
             .Select(method => method.Name)

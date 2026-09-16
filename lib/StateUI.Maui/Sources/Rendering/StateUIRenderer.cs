@@ -873,8 +873,6 @@ public sealed class StateUIRenderer
             HostNodeType.Slider => ReconcileSlider(node, existing),
             HostNodeType.Stepper => ReconcileStepper(node, existing),
             HostNodeType.SearchField => ReconcileSearchField(node, existing),
-            HostNodeType.ActivityIndicator => ReconcileActivityIndicator(node, existing),
-            HostNodeType.ProgressBar => ReconcileProgressBar(node, existing),
             HostNodeType.Grid => ReconcileGrid(node, existing),
             HostNodeType.VStack => ReconcileStack(node, existing, () => new TravellingLayouts.Vertical { Walker = _walker }),
             HostNodeType.HStack => ReconcileStack(node, existing, () => new TravellingLayouts.Horizontal { Walker = _walker }),
@@ -3402,36 +3400,6 @@ public sealed class StateUIRenderer
         ApplyView(node, search);
 
         return Track(search, node);
-    }
-
-    /// <summary>An ActivityIndicator: the spinner, and whether it spins.</summary>
-    private ActivityIndicator ReconcileActivityIndicator(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not ActivityIndicator indicator)
-        {
-            indicator = new ActivityIndicator();
-        }
-
-        if (node.GetBool(HostProp.IsRunning) is bool isRunning) { indicator.IsRunning = isRunning; }
-
-        ApplyView(node, indicator);
-
-        return Track(indicator, node);
-    }
-
-    /// <summary>A ProgressBar: how far along, from 0 to 1.</summary>
-    private ProgressBar ReconcileProgressBar(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not ProgressBar bar)
-        {
-            bar = new ProgressBar();
-        }
-
-        if (node.GetNumber(HostProp.Progress) is double progress) { bar.Progress = progress; }
-
-        ApplyView(node, bar);
-
-        return Track(bar, node);
     }
 
     /// <summary>What a reader typed, held to the length the field was given.</summary>
@@ -6047,6 +6015,7 @@ public sealed class StateUIRenderer
             }
         }
 
+        registration.Realized?.Apply(view, node);
         registration.Apply?.Invoke(view, node);
         ApplyView(node, view);
         Track(view, node);
