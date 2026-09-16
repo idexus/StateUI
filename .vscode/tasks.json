@@ -97,6 +97,9 @@
         "--product",
         "HelloWorldAppKit"
       ],
+      // The manifest declares the AppKit head only for an AppKit build, and a
+      // manifest cannot read the -DAPPKIT above - see apps/Gallery/Package.swift.
+      "options": { "env": { "STATEUI_APPKIT": "1" } },
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
@@ -115,6 +118,7 @@
         "--product",
         "HelloWorldAppKit"
       ],
+      "options": { "env": { "STATEUI_APPKIT": "1" } },
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },

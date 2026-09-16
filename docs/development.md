@@ -33,6 +33,15 @@ which every AppKit build of an application defines. `NativeProjectTests`
 refuses any other mention of either host in the library and in the
 applications' `Sources/`.
 
+A `Platforms/AppKit/` folder needs no such condition inside it, because nothing
+else compiles it. An application's manifest declares that target, the product
+it makes and the `StateUIAppKit` dependency it needs only when
+`STATEUI_APPKIT=1` is set - `.scripts/AppKit/build-gallery-appkit.sh` sets it
+for a build and `.vscode/settings.json` for the editor. A manifest cannot read
+`-DAPPKIT`: that flag reaches the targets of a build, never the manifest
+describing them. So `swift test` resolves no host package and compiles no line
+of one host's half.
+
 ## Gallery
 
 Gallery is the acceptance surface for the element contracts. Its examples
@@ -106,7 +115,8 @@ Build the runnable Gallery bundle:
 Build the smaller example:
 
 ```bash
-swift build --package-path apps/HelloWorld --product HelloWorldAppKit
+STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld \
+    --product HelloWorldAppKit -Xswiftc -DAPPKIT
 ```
 
 VS Code exposes Debug and Release F5 configurations for both applications.

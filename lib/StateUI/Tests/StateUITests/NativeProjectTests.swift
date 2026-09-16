@@ -211,9 +211,7 @@ final class NativeProjectTests: XCTestCase {
                 .replacingOccurrences(of: "\\\n", with: " ")
                 .components(separatedBy: "\n")
                 .map { $0.trimmingCharacters(in: .whitespaces) }
-                .filter {
-                    $0.hasPrefix("swift build") || $0.hasPrefix("swift run") || $0.contains("$(swift build")
-                }
+                .filter { Self.runsSwift($0) }
             XCTAssertFalse(commands.isEmpty, "\(relative) runs no swift build")
             for command in commands {
                 XCTAssertTrue(
@@ -234,6 +232,73 @@ final class NativeProjectTests: XCTestCase {
                 XCTAssertTrue(
                     task.contains("\"-Xswiftc\"") && task.contains("\"-DAPPKIT\""),
                     "\(relative) builds an AppKit head without APPKIT")
+            }
+        }
+    }
+
+    /// Whether a line RUNS SwiftPM, read past any variables it sets first.
+    ///
+    /// An AppKit head needs one set - see the test below - and a command that
+    /// sets it inline is still that command, so the name is looked for after
+    /// each leading `NAME=value`. Without this, prefixing a command would drop
+    /// it out of the list above and the guard would stop asking anything of it.
+    private static func runsSwift(_ line: String) -> Bool {
+        var rest = line
+
+        while let space = rest.firstIndex(of: " ") {
+            let first = String(rest[rest.startIndex..<space])
+
+            guard first.contains("="), !first.contains("/"), !first.contains("\"") else { break }
+
+            rest = String(rest[rest.index(after: space)...]).trimmingCharacters(in: .whitespaces)
+        }
+
+        return rest.hasPrefix("swift build") || rest.hasPrefix("swift run")
+            || rest.contains("$(swift build")
+    }
+
+    /// Every build of an application's AppKit head TELLS ITS MANIFEST there is
+    /// one.
+    ///
+    /// An application declares that target, the product it makes and the
+    /// StateUIAppKit dependency only when `STATEUI_APPKIT` is set, so that
+    /// `swift test` compiles no part of one host's half. A build that leaves
+    /// the variable out asks for a product the manifest never declared, and a
+    /// page that leaves it out hands a reader a command that cannot work.
+    ///
+    /// Asked of the FILE rather than of each command, because a script may
+    /// export it once above the builds it runs.
+    func testEveryAppKitBuildTellsTheManifestItHasAnAppKitHead() throws {
+        let repository = Fixtures.repository
+        let template = "lib/StateUI.Maui/Template/templates/StateUIStarter"
+        func text(_ relative: String) throws -> String {
+            try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
+        }
+
+        for relative in [
+            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/new-app.sh",
+            "\(template)/README.md", "docs/development.md", "docs/getting-started.md",
+        ] {
+            XCTAssertTrue(
+                try text(relative).contains("STATEUI_APPKIT=1"),
+                "\(relative) builds an AppKit head without telling the manifest there is one")
+        }
+
+        // A task sets it in the environment it runs the build in.
+        for relative in [".vscode/tasks.json", "\(template)/.vscode/tasks.json"] {
+            let tasks = try text(relative).components(separatedBy: "\"label\"").filter { task in
+                let lines = task.components(separatedBy: "\n").map { $0.trimmingCharacters(in: .whitespaces) }
+                guard let product = lines.firstIndex(of: "\"--product\","), product + 1 < lines.count
+                else { return false }
+                return lines[product + 1].hasSuffix("AppKit\"")
+            }
+
+            XCTAssertFalse(tasks.isEmpty, "\(relative) builds no AppKit head")
+
+            for task in tasks {
+                XCTAssertTrue(
+                    task.contains("\"STATEUI_APPKIT\": \"1\""),
+                    "\(relative) builds an AppKit head without telling the manifest there is one")
             }
         }
     }

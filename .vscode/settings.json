@@ -23,6 +23,16 @@
     "**/Template/templates/**": true
   },
 
+  // AN APPLICATION'S AppKit HEAD IS DECLARED ONLY FOR AN APPKIT BUILD - the
+  // target, its product and the StateUIAppKit dependency - so that `swift
+  // test` neither resolves that package nor compiles a folder belonging to one
+  // host. See apps/Gallery/Package.swift. The build script sets this for
+  // itself; set here so the editor still resolves Platforms/AppKit and offers
+  // completion inside it.
+  "swift.swiftEnvironmentVariables": {
+    "STATEUI_APPKIT": "1"
+  },
+
   // WITHOUT THIS, "Launch app (Release)" BUILDS DEBUG: the MAUI extension
   // replaces a launch's "configuration" with its own active one unless this
   // says launch.json is to be believed. Window-scoped, so the repository can

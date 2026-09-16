@@ -56,13 +56,10 @@ enum GalleryControls {
         // it - every member here goes one way, from the description to the
         // frames.
         //
-        // UNDER THE CONDITION, in a file only this host runs: a plain
-        // `swift test` builds this target too, and builds it WITHOUT -DAPPKIT,
-        // so the module it links against declares no Metal cube then. The
-        // element is declared for this host alone - see
-        // Sources/Samples/Interop/MetalCube.swift - and its registration
-        // stands under the same condition its contract does.
-        #if APPKIT
+        // The cube is declared for this host alone - see
+        // Sources/Samples/Interop/MetalCube.swift - and this file names it
+        // with no condition around it, because nothing but an AppKit build
+        // compiles this folder: the manifest declares the target only then.
         StateUIAppKit.realizes(MetalCubeContract.self, create: { _ -> MetalCubeView in
             MetalCubeView()
         }) { cube in
@@ -76,6 +73,5 @@ enum GalleryControls {
                 view.isSpinning = spinning ?? true
             }
         }
-        #endif
     }
 }

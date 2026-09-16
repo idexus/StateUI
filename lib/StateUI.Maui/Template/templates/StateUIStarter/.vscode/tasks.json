@@ -31,6 +31,11 @@
         "--product",
         "StateUIStarterAppKit"
       ],
+      // Package.swift declares the AppKit head only when a build says it has
+      // one, so `swift test` compiles no part of one host's half. A manifest
+      // cannot read the -DAPPKIT above, which reaches a build's targets and
+      // never the manifest describing them.
+      "options": { "env": { "STATEUI_APPKIT": "1" } },
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
@@ -49,6 +54,7 @@
         "--product",
         "StateUIStarterAppKit"
       ],
+      "options": { "env": { "STATEUI_APPKIT": "1" } },
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },

@@ -44,12 +44,18 @@ on, which is not the target.
 The AppKit host, when the application has one:
 
 ```bash
-swift run -Xswiftc -DAPPKIT StateUIStarterAppKit
+STATEUI_APPKIT=1 swift run -Xswiftc -DAPPKIT StateUIStarterAppKit
 ```
 
 Run it from the application's root, which is where it reads `Resources/` from.
 `-Xswiftc -DAPPKIT` defines `#if APPKIT`, the condition Swift written for the
 AppKit host alone stands under.
+
+`STATEUI_APPKIT=1` is what tells `Package.swift` this build has an AppKit head.
+The manifest declares that target, the product it makes and its StateUIAppKit
+dependency only then, so `swift test` compiles no part of one host's half. A
+manifest cannot read `-DAPPKIT`: that flag reaches the targets of a build and
+never the manifest describing them.
 
 In VS Code, press **F5**. "Debug app (C#)" follows the device picker in the
 status bar; "Debug app (AppKit)" starts the macOS host. `.vscode/launch.json`

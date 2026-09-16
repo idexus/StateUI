@@ -15,6 +15,13 @@ product="GalleryAppKit"
 # otherwise rebuild from scratch at every switch.
 scratch_dir="$gallery_dir/.build-appkit"
 
+# THE MANIFEST DECLARES THE APPKIT HEAD ONLY FOR AN APPKIT BUILD - the target,
+# the product it makes and the StateUIAppKit dependency it needs. A manifest
+# cannot read the -DAPPKIT above, which reaches the targets of a build and
+# never the manifest describing them, so this is how it is told. See
+# apps/Gallery/Package.swift.
+export STATEUI_APPKIT=1
+
 swift build \
     --package-path "$gallery_dir" \
     --scratch-path "$scratch_dir" \
