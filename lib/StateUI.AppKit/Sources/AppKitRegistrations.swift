@@ -68,14 +68,11 @@ enum AppKitRegistrations {
         registry.everyElementRealizes(VisualElementContract.accessibilityHint)
         registry.everyElementRealizes(VisualElementContract.accessibilityLabel)
         registry.everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
-        registry.everyElementRealizes(VisualElementContract.background)
         registry.everyElementRealizes(VisualElementContract.frame)
         registry.everyElementRealizes(VisualElementContract.height)
         registry.everyElementRealizes(VisualElementContract.ignoresInput)
         registry.everyElementRealizes(VisualElementContract.isAccessibilityHidden)
-        registry.everyElementRealizes(VisualElementContract.isEnabled)
         registry.everyElementRealizes(VisualElementContract.isVisible)
-        registry.everyElementRealizes(VisualElementContract.layoutDirection)
         registry.everyElementRealizes(VisualElementContract.maximumHeight)
         registry.everyElementRealizes(VisualElementContract.maximumWidth)
         registry.everyElementRealizes(VisualElementContract.minimumHeight)
@@ -84,6 +81,8 @@ enum AppKitRegistrations {
         registry.everyElementRealizes(VisualElementContract.pivotX)
         registry.everyElementRealizes(VisualElementContract.pivotY)
         registry.everyElementRealizes(VisualElementContract.rotation)
+        registry.everyElementRealizes(VisualElementContract.rotationX)
+        registry.everyElementRealizes(VisualElementContract.rotationY)
         registry.everyElementRealizes(VisualElementContract.scale)
         registry.everyElementRealizes(VisualElementContract.scaleX)
         registry.everyElementRealizes(VisualElementContract.scaleY)
@@ -101,7 +100,22 @@ enum AppKitRegistrations {
         registry.everyElementRealizes(ViewContract.margin)
         registry.everyElementRealizes(ViewContract.verticalAlignment)
 
-        registry.everyElementRealizes(LayoutContract.clipsContent)
+        // What a gesture is CONFIGURED with, read where the recognizers are
+        // made. `panTouchCount` is not here: this host recognises a one-finger
+        // pan only, which is a partial realization and only a record with its
+        // note can say so. Nor are `allowDrop`, `canDrag` and `dragText` -
+        // AppKit realizes no dragging at all.
+        registry.everyElementRealizes(ViewContract.panXChannel)
+        registry.everyElementRealizes(ViewContract.panYChannel)
+        registry.everyElementRealizes(ViewContract.swipeDirection)
+        registry.everyElementRealizes(ViewContract.swipeThreshold)
+        registry.everyElementRealizes(ViewContract.tapCount)
+
+        // `clipsContent` and `avoidsSafeArea` are NOT here: this host reads
+        // neither, and a declaration says what it does rather than what its
+        // tier offers. Nor are `background` and `isEnabled`, which registrations
+        // take on the controls that have them - a background is a PARTIAL
+        // realization on this host, which only a record with its note can say.
         registry.everyElementRealizes(LayoutContract.letsInputThrough)
 
         registry.everyElementRaises(ViewContract.frameChanged)
