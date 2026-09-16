@@ -209,10 +209,28 @@ result; use it only when no later decision depends on success.
 A batch of actions is not a transaction. Use ordinary Swift control flow and
 `await` for ordering.
 
+Both halves are always needed: a declaration alone reaches nothing, and a host
+refuses by name an act nobody registered.
+
 The MAUI host registers an application's acts in C# with `StateUIActs.Add`;
-[MAUI host](maui-host.md#an-act) shows both halves. The AppKit host exposes no
-action-handler registry: declaring the act is not enough there, and AppKit
-rejects an act it does not own.
+[MAUI host](maui-host.md#an-act) shows both halves. The AppKit host registers
+them in Swift, typed by the same contract the call is written against:
+
+```swift quote
+StateUIAppKit.performs(NotesContract.exportDocument) { draft in
+    "~/Documents/\(draft).pdf"
+}
+```
+
+An act aimed at a control names that control at argument 0, and the host turns
+the identity back into the view its registration made - so the performer is
+handed the view itself:
+
+```swift quote
+StateUIAppKit.performs(RatingBarContract.flash, on: RatingBarView.self) { bar in
+    bar.flash()
+}
+```
 
 ## Host-extension events
 
@@ -247,9 +265,16 @@ instead. Use an application's events only for provider-owned notifications
 that genuinely have no element identity.
 
 The MAUI host raises such an event from C# with `StateUIEvents.Raise`; see
-[MAUI host](maui-host.md#an-event-without-a-control). The typed AppKit SPI
-does not expose emission of an arbitrary host event, so there a declaration and
-a subscription alone reach nothing.
+[MAUI host](maui-host.md#an-event-without-a-control). The AppKit host raises it
+in Swift, typed by the same contract the subscription is written against, and
+from any thread - so a source is wired where the platform reports it:
+
+```swift quote
+StateUIAppKit.raise(NotesContract.importFinished, location)
+```
+
+A raise nobody hears is an ordinary answer rather than a failure, so a host
+wires its sources unconditionally.
 
 ## Accessibility and automation
 
