@@ -165,4 +165,24 @@ func firstInkColumn(of view: NSView) throws -> Int {
 
     return bitmap.pixelsWide
 }
+
+/// The first row of `view` holding ink, drawn WITH everything under it.
+///
+/// The other half of `firstInkColumn(of:)`, for the question of where words sit
+/// down the height they were given.
+@MainActor
+func firstInkRow(of view: NSView) throws -> Int {
+    let bitmap = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in: view.bounds))
+    view.cacheDisplay(in: view.bounds, to: bitmap)
+
+    for y in 0..<bitmap.pixelsHigh {
+        for x in 0..<bitmap.pixelsWide {
+            guard let pixel = bitmap.colorAt(x: x, y: y) else { continue }
+
+            if pixel.alphaComponent > 0.1 { return y }
+        }
+    }
+
+    return bitmap.pixelsHigh
+}
 #endif

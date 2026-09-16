@@ -79,6 +79,39 @@ final class AppKitLabelViewTests: XCTestCase {
                 + "(\(ink[2]) against \(ink[1]))")
     }
 
+    /// Where a label's words sit DOWN the height it was given. This one moves
+    /// the native field's frame rather than the text inside it, so it answers a
+    /// different question from the alignment across the width - and it is
+    /// measured the same way, as ink.
+    @MainActor
+    func testALabelsVerticalTextAlignmentMovesTheWordsItDraws() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Label("short").verticalTextAlignment(.start).height(60)
+                Label("short").verticalTextAlignment(.center).height(60)
+                Label("short").verticalTextAlignment(.end).height(60)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let content = try XCTUnwrap(renderer.windowsForTesting.first?.window?.contentView)
+        content.frame = NSRect(x: 0, y: 0, width: 400, height: 220)
+        content.layoutSubtreeIfNeeded()
+
+        let labels = renderer.nativeViews(AppKitLabelView.self)
+        XCTAssertEqual(labels.count, 3)
+        XCTAssertEqual(labels[1].bounds.height, 60, "a label keeps the height it asked for")
+        let ink = try labels.map { try firstInkRow(of: $0) }
+
+        XCTAssertGreaterThan(
+            ink[1], ink[0] + 10,
+            "centred words sit below words at the start "
+                + "(\(ink[1]) against \(ink[0]))")
+        XCTAssertGreaterThan(
+            ink[2], ink[1] + 10,
+            "words at the end sit below centred words "
+                + "(\(ink[2]) against \(ink[1]))")
+    }
+
     @MainActor
     func testFormattedSpansBecomeOneAttributedNativeString() throws {
         let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
