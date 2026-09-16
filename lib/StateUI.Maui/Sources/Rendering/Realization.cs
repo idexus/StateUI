@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+using Microsoft.Maui.Controls.Shapes;
 using StateUI.Maui.Protocol;
 
 namespace StateUI.Maui.Rendering;
@@ -502,4 +503,57 @@ internal static class RealizedTiers
                 static (view, length) => view.SelectionLength = length);
     }
 
+    /// <summary>
+    /// Registers the SHAPE tier - what every drawn outline has, whichever
+    /// outline it is: how it is filled, how it is stroked, and the one matrix
+    /// its path is run through.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The setters are this method's, not the registration's, for the reason
+    /// the input tier's are: MAUI has a real <c>Shape</c> base class to assign
+    /// through, so six registrations say the tier is worn rather than writing
+    /// ten members out apiece.
+    /// </para>
+    /// <para>
+    /// The transform does not land on the shape but BESIDE it, on the attached
+    /// matrix each wrapper runs its own path through - which is why a shape
+    /// can be turned without MAUI having a per-shape handler for it.
+    /// </para>
+    /// </remarks>
+    /// <param name="realization">The realization the tier is declared on.</param>
+    internal static Realization<TControl> Shaped<TControl>(this Realization<TControl> realization)
+        where TControl : Shape =>
+        realization
+            .Property(HostProp.Aspect,
+                static (node, member) => node.GetShapeAspect(member),
+                static (view, aspect) => view.Aspect = aspect)
+            .Held(HostProp.Fill,
+                static (node, member) => node.GetBrush(member),
+                static (view, brush) => view.Fill = brush)
+            .Property(HostProp.RenderTransform,
+                static (node, member) => node.GetGeometryTransform(member),
+                static (view, matrix) =>
+                    view.SetValue(ShapeTransform.GeometryTransformProperty, matrix))
+            .Held(HostProp.Stroke,
+                static (node, member) => node.GetBrush(member),
+                static (view, brush) => view.Stroke = brush)
+            .Property(HostProp.StrokeDashOffset,
+                static (node, member) => node.GetNumber(member),
+                static (view, offset) => view.StrokeDashOffset = offset)
+            .Held(HostProp.StrokeDashPattern,
+                static (node, member) => node.GetDoubleCollection(member),
+                static (view, dashes) => view.StrokeDashArray = dashes)
+            .Property(HostProp.StrokeLineCap,
+                static (node, member) => node.GetPenLineCap(member),
+                static (view, cap) => view.StrokeLineCap = cap)
+            .Property(HostProp.StrokeLineJoin,
+                static (node, member) => node.GetPenLineJoin(member),
+                static (view, join) => view.StrokeLineJoin = join)
+            .Property(HostProp.StrokeMiterLimit,
+                static (node, member) => node.GetNumber(member),
+                static (view, miter) => view.StrokeMiterLimit = miter)
+            .Property(HostProp.StrokeWidth,
+                static (node, member) => node.GetNumber(member),
+                static (view, width) => view.StrokeThickness = width);
 }

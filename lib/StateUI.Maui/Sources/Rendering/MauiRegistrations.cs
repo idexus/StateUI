@@ -33,6 +33,71 @@ internal static class MauiRegistrations
         Toggles();
         Values();
         Fields();
+        Shapes();
+    }
+
+    /// <summary>
+    /// The drawn outlines. Six elements, one tier, and between them almost
+    /// nothing: what each adds is the geometry it IS.
+    /// </summary>
+    /// <remarks>
+    /// An ellipse adds nothing at all - it is the room it is given, and
+    /// everything it can do is the tier's. Each is made as this host's own
+    /// wrapper over MAUI's shape, so the one matrix beside it reaches the path
+    /// the shape draws.
+    /// </remarks>
+    private static void Shapes()
+    {
+        StateUIControls.Add("Rectangle",
+            create: _ => new TransformedRoundRectangle(),
+            realize: rectangle => rectangle
+                .Property(HostProp.CornerRadius,
+                    static (node, member) => node.GetCornerRadius(member),
+                    (view, radius) => view.CornerRadius = radius)
+                .Shaped());
+
+        StateUIControls.Add("Ellipse",
+            create: _ => new TransformedEllipse(),
+            realize: ellipse => ellipse.Shaped());
+
+        StateUIControls.Add("Line",
+            create: _ => new TransformedLine(),
+            realize: line => line
+                .Property<double>(HostProp.X1, (view, x) => view.X1 = x)
+                .Property<double>(HostProp.X2, (view, x) => view.X2 = x)
+                .Property<double>(HostProp.Y1, (view, y) => view.Y1 = y)
+                .Property<double>(HostProp.Y2, (view, y) => view.Y2 = y)
+                .Shaped());
+
+        StateUIControls.Add("Path",
+            create: _ => new TransformedPath(),
+            realize: path => path
+                .Held(HostProp.Data,
+                    static (node, member) => node.GetGeometry(member),
+                    (view, data) => view.Data = data)
+                .Shaped());
+
+        StateUIControls.Add("Polygon",
+            create: _ => new TransformedPolygon(),
+            realize: polygon => polygon
+                .Property(HostProp.FillRule,
+                    static (node, member) => node.GetFillRule(member),
+                    (view, rule) => view.FillRule = rule)
+                .Held(HostProp.Points,
+                    static (node, member) => node.GetPoints(member),
+                    (view, points) => view.Points = points)
+                .Shaped());
+
+        StateUIControls.Add("Polyline",
+            create: _ => new TransformedPolyline(),
+            realize: polyline => polyline
+                .Property(HostProp.FillRule,
+                    static (node, member) => node.GetFillRule(member),
+                    (view, rule) => view.FillRule = rule)
+                .Held(HostProp.Points,
+                    static (node, member) => node.GetPoints(member),
+                    (view, points) => view.Points = points)
+                .Shaped());
     }
 
     /// <summary>

@@ -1068,6 +1068,12 @@ public class ControlTests
         Assert.Contains("TextField", known);
         Assert.Contains("TextEditor", known);
         Assert.Contains("SearchField", known);
+        Assert.Contains("Rectangle", known);
+        Assert.Contains("Ellipse", known);
+        Assert.Contains("Line", known);
+        Assert.Contains("Path", known);
+        Assert.Contains("Polygon", known);
+        Assert.Contains("Polyline", known);
 
         Assert.DoesNotContain(
             typeof(StateUIRenderer).GetMethods(
