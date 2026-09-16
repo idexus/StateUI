@@ -67,6 +67,26 @@ public struct MetalCube: View {
         setValue(MetalCubeContract.size, value)
     }
 
+    /// The same edge, walked by the host from a state.
+    ///
+    ///     @State private var size = 0.6
+    ///
+    ///     MetalCube().size($size)
+    ///
+    ///     Slider($size).minimum(0.2).maximum(1)
+    ///
+    /// The state is handed to the host, which carries the property from it, so
+    /// the view writing this line is not a reader of it: a slider bound to the
+    /// same state grows the cube on the host's own frames, and nothing here is
+    /// built again for it.
+    ///
+    /// `.inOut`, because the host reports where a walk has got to, which is
+    /// what `$size.journey.value` reads - so `$size.journey.move(to: 1)` grows
+    /// the cube the way it moves any other walked value.
+    public func size(_ state: Binding<Double>) -> Modified {
+        setValue(MetalCubeContract.size, on: state, mode: .inOut, kind: .property)
+    }
+
     /// Which colour the cube is painted.
     public func color(_ value: CubeColor) -> Self {
         setValue(MetalCubeContract.color, value)

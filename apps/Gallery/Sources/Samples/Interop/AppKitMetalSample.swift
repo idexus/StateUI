@@ -45,6 +45,13 @@ struct AppKitMetalSample: SampleContent, ExampleContent {
                 setValue(MetalCubeContract.size, value)
             }
 
+            // HANDED OVER: the host carries the property from the state, so
+            // the view writing the line is not a reader of it. `.inOut`,
+            // because the host reports where a walk has got to.
+            public func size(_ state: Binding<Double>) -> Modified {
+                setValue(MetalCubeContract.size, on: state, mode: .inOut, kind: .property)
+            }
+
             public func color(_ value: CubeColor) -> Self {
                 setValue(MetalCubeContract.color, value)
             }
@@ -61,16 +68,19 @@ struct AppKitMetalSample: SampleContent, ExampleContent {
         static let colors = ["Teal", "Amber", "Violet"]
 
         VStack {
-            // The size is read here, so every step of the drag builds this
-            // closure - which is what a get on a dragged value costs.
+            // NOTHING here reads `size`. The cube is handed the state, and the
+            // caption is a CONVERSION of that same journey - both worked out
+            // by the host on its own frames. So dragging the thumb the width
+            // of the page builds this closure not once.
             DebugInfoLabel()
 
             MetalCube()
-                .size(size)
+                .size($size)
                 .color(CubeColor(rawValue: Int32(color)) ?? .teal)
                 .isSpinning(spinning)
 
-            Label("Edge: \\(Int(size * 100))% of the view")
+            Label()
+                .text($size.journey.convert { "Edge: \\(Int($0.value * 100))% of the view" })
 
             Slider($size)
                 .minimum(0.2)
@@ -225,14 +235,15 @@ struct AppKitMetalSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             MetalCube()
-                .size(size)
+                .size($size)
                 .color(CubeColor(rawValue: Int32(color)) ?? .teal)
                 .isSpinning(spinning)
                 .accessibilityIdentifier("metal.cube")
                 .accessibilityLabel("Cube")
                 .horizontalAlignment(.center)
 
-            Label("Edge: \(Int(size * 100))% of the view")
+            Label()
+                .text($size.journey.convert { "Edge: \(Int($0.value * 100))% of the view" })
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
 
@@ -271,6 +282,15 @@ struct AppKitMetalSample: SampleContent, ExampleContent {
                 + "`StateUIAppKit.realizes`, exactly as it registers a view that draws "
                 + "with a layer. A view that draws on the GPU is still an `NSView`, so "
                 + "the registration has nothing extra to say.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("The edge is HANDED OVER: `.size($size)` gives the host the state "
+                + "itself, and the caption is a conversion of that same journey. Nothing "
+                + "here reads `size`, so a drag builds this example not once - the cube "
+                + "grows and the number counts up on the host's own frames. The colour "
+                + "and the spin are plain values, described again on the one build a "
+                + "pick or a flip costs.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
