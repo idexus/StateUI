@@ -667,13 +667,22 @@ internal sealed class Host
 }
 
 /// <summary>
-/// The files the Swift tests write and these read.
+/// Where the files these tests read and write live, in the repository above
+/// the test assembly.
 /// </summary>
 internal static class Fixtures
 {
     /// <summary>`lib/StateUI/Tests/Fixtures`, in the repository above the test assembly.</summary>
     public static string Directory =>
         Path.Combine(Repository.Value, "lib", "StateUI", "Tests", "Fixtures");
+
+    /// <summary>
+    /// `exports`, a directory of its own because what is in it runs the OTHER
+    /// way: every fixture is authored by the Swift tests and checked here,
+    /// while an export is written by a RUNTIME saying what it realizes, and
+    /// read by the side that holds the contracts.
+    /// </summary>
+    public static string Exports => Path.Combine(Repository.Value, "exports");
 
     /// <summary>
     /// `lib/StateUI.Maui/Tests`, this project's own sources - what a guard

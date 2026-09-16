@@ -613,6 +613,73 @@ internal static partial class WireCodec
     }
 
     /// <summary>
+    /// Serializes what this host DECLARES: the elements it makes a view for
+    /// and, on each, the members it takes and the events it raises - read off
+    /// the registrations themselves, written to <c>exports/</c>, and joined
+    /// with the contracts on the Swift side.
+    /// </summary>
+    /// <remarks>
+    /// <code>
+    /// [version: U8][elements: U16] per element: [name: string]
+    ///   [members: U16] per member: [name: string]
+    ///   [events: U16] per event: [name: string]
+    /// </code>
+    /// <para>
+    /// A declaration states PRESENCE and never ownership, and that is the
+    /// whole difference from <see cref="WriteRealization"/>: whether
+    /// <c>borderColor</c> is a button's own member or one of a tier it wears
+    /// is a fact of the CONTRACT, which this host does not hold. So each
+    /// member rides under its element and the side holding the contracts names
+    /// its owner - an owner never written by hand cannot be written wrong.
+    /// </para>
+    /// <para>
+    /// Elements, members and events are each sorted ordinally, so one
+    /// declaration is one run of bytes whatever order the registry was built
+    /// in. Names in full: nothing has announced a dictionary here.
+    /// </para>
+    /// </remarks>
+    /// <param name="elements">
+    /// Each element, with the members its registration takes and the events it
+    /// raises.
+    /// </param>
+    internal static byte[] WriteDeclaration(
+        IEnumerable<(string Element, IEnumerable<string> Members, IEnumerable<string> Events)> elements)
+    {
+        (string Element, string[] Members, string[] Events)[] declared =
+        [
+            .. elements
+                .Select(element => (
+                    element.Element,
+                    Members: element.Members.Distinct().Order(StringComparer.Ordinal).ToArray(),
+                    Events: element.Events.Distinct().Order(StringComparer.Ordinal).ToArray()))
+                .OrderBy(element => element.Element, StringComparer.Ordinal),
+        ];
+
+        var bytes = new List<byte>(256) { Version };
+        Write(bytes, Count16(declared.Length, "declared elements"));
+
+        foreach ((string element, string[] members, string[] events) in declared)
+        {
+            Write(bytes, element);
+            Write(bytes, Count16(members.Length, "members on one element"));
+
+            foreach (string member in members)
+            {
+                Write(bytes, member);
+            }
+
+            Write(bytes, Count16(events.Length, "events on one element"));
+
+            foreach (string raised in events)
+            {
+                Write(bytes, raised);
+            }
+        }
+
+        return [.. bytes];
+    }
+
+    /// <summary>
     /// Serializes a standard-environment push: which provider the values are
     /// for - one byte, the closed vocabulary both sides of the repository
     /// spell, see <see cref="Rendering.StateUIEnvironment"/> - then the

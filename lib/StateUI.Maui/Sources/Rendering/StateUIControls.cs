@@ -260,6 +260,31 @@ public static class StateUIControls
     }
 
     /// <summary>
+    /// Every element the LIBRARY realizes, with the realization recording what
+    /// its control takes and raises - what this host's declaration is read
+    /// from.
+    /// </summary>
+    /// <remarks>
+    /// An application's own control is not here: it is registered through the
+    /// public <c>Add</c>, which records no members, and what it realizes would
+    /// be the application's to declare rather than this library's.
+    /// </remarks>
+    internal static IEnumerable<(string Type, Realization Realized)> Realizations()
+    {
+        _ = Library.Installed;
+
+        lock (Guard)
+        {
+            return
+            [
+                .. Registered
+                    .Where(pair => pair.Value.Realized is not null)
+                    .Select(pair => (pair.Key, pair.Value.Realized!)),
+            ];
+        }
+    }
+
+    /// <summary>
     /// A declared property of a registered type, or null - the registry's arm
     /// of <c>PropertyTable.Property</c>, which is what lets an animation walk
     /// an application control's own property.
