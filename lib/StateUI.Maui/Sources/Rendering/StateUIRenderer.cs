@@ -868,7 +868,6 @@ public sealed class StateUIRenderer
             HostNodeType.TitleBar => ReconcileTitleBar(node, existing),
             HostNodeType.RefreshView => ReconcileRefreshView(node, existing),
             HostNodeType.SwipeView => ReconcileSwipeView(node, existing),
-            HostNodeType.Canvas => ReconcileCanvas(node, existing),
             HostNodeType.PositionIndicator => ReconcilePositionIndicator(node, existing),
             _ => ReconcileRegistered(node, existing),
         };
@@ -2698,51 +2697,6 @@ public sealed class StateUIRenderer
     // inherits them - so they are applied by one method here, exactly as the
     // View tier is. What each Reconcile below carries is only what that one
     // shape has of its own.
-
-    /// <summary>
-    /// A canvas, and the instructions the Swift side sent for drawing on it.
-    /// </summary>
-    /// <remarks>
-    /// The drawable is replaced rather than changed - a drawing is a value, and
-    /// the message only carries one when it differs - and the view is told to
-    /// redraw, which nothing else would do for it.
-    /// </remarks>
-    private GraphicsView ReconcileCanvas(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not GraphicsView graphics)
-        {
-            graphics = new GraphicsView();
-
-            // Subscribed where the view is made, once, and reading the handler
-            // id off the view when the touch arrives - the rule every event
-            // here follows.
-            graphics.StartInteraction += (_, e) => Raise(graphics, HostEvent.Pressed, At(e));
-            graphics.DragInteraction += (_, e) => Raise(graphics, HostEvent.Dragged, At(e));
-            graphics.EndInteraction += (_, e) => Raise(graphics, HostEvent.Released, At(e));
-        }
-
-        if (node.GetDrawable(HostProp.Drawable) is IDrawable drawable)
-        {
-            graphics.Drawable = drawable;
-            graphics.Invalidate();
-        }
-
-        ApplyView(node, graphics);
-
-        return Track(graphics, node);
-    }
-
-    /// <summary>
-    /// Where a touch was, in the canvas's own coordinates - the ones the drawing
-    /// instructions use.
-    /// </summary>
-    /// <remarks>
-    /// MAUI reports every finger; this carries the first, which is what a
-    /// drawing surface acts on. A report with none is left empty, and the Swift
-    /// side drops a payload it cannot read rather than inventing a point.
-    /// </remarks>
-    private static HostValue[] At(TouchEventArgs e) =>
-        e.Touches is [PointF point, ..] ? [HostValue.Of(point.X, point.Y)] : [];
 
     /// <summary>
     /// A template that shows the view it is handed, rather than building one.

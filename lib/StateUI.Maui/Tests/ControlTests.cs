@@ -1081,6 +1081,7 @@ public class ControlTests
         Assert.Contains("TimePicker", known);
         Assert.Contains("Button", known);
         Assert.Contains("WebView", known);
+        Assert.Contains("Canvas", known);
 
         Assert.DoesNotContain(
             typeof(StateUIRenderer).GetMethods(

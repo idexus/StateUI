@@ -38,7 +38,46 @@ internal static class MauiRegistrations
         Pickers();
         Buttons();
         Web();
+        Drawing();
     }
+
+    /// <summary>
+    /// A surface the Swift side draws on, and the touches it answers.
+    /// </summary>
+    /// <remarks>
+    /// The drawing is a VALUE: a list of records, one per canvas call, read
+    /// whole by <c>Values.GetDrawable</c> - so nothing here has to know what a
+    /// drawing is, only that it replaces the one before it. A canvas is told to
+    /// redraw as the new one lands, which nothing else would do for it.
+    /// </remarks>
+    private static void Drawing()
+    {
+        StateUIControls.Add("Canvas",
+            create: _ => new GraphicsView(),
+            realize: canvas => canvas
+                .Held(HostProp.Drawable,
+                    static (node, member) => node.GetDrawable(member),
+                    (view, drawable) =>
+                    {
+                        view.Drawable = drawable;
+                        view.Invalidate();
+                    })
+
+                // Where a touch was, in the canvas's own coordinates - the ones
+                // the drawing instructions use. MAUI reports every finger; this
+                // carries the first, which is what a drawing surface acts on,
+                // and a report with none is left empty rather than invented.
+                .Carries(HostEvent.Pressed,
+                    (view, at) => view.StartInteraction += (_, e) => at(Touch(e)))
+                .Carries(HostEvent.Dragged,
+                    (view, at) => view.DragInteraction += (_, e) => at(Touch(e)))
+                .Carries(HostEvent.Released,
+                    (view, at) => view.EndInteraction += (_, e) => at(Touch(e))));
+    }
+
+    /// <summary>Where a touch happened, or nothing where no finger is named.</summary>
+    private static HostValue[] Touch(TouchEventArgs e) =>
+        e.Touches is [PointF point, ..] ? [HostValue.Of(point.X, point.Y)] : [];
 
     /// <summary>
     /// A page of the web, and the journeys it makes.
