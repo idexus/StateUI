@@ -39,7 +39,14 @@ enum AppKitInterop {
     }
 }
 
-extension StateUIAppKit {
+/// The acts an application performs on this host - what its own calls,
+/// `stateUICall` and an `Aim`, reach.
+///
+/// Said once, from the application's AppKit head, before
+/// `StateUIAppKit.run(resourceDirectory:applicationIcon:)`. The MAUI host's
+/// registry of the same name takes the same acts by their names.
+@MainActor
+public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind -
     /// when the application calls it with `stateUICall`.
     ///
@@ -47,7 +54,7 @@ extension StateUIAppKit {
     /// performer of another shape does not compile and a call carrying
     /// anything else fails with the reason rather than running on a guess.
     ///
-    ///     StateUIAppKit.performs(GalleryContract.setClipboard) { text in
+    ///     StateUIActs.add(GalleryContract.setClipboard) { text in
     ///         NSPasteboard.general.clearContents()
     ///         NSPasteboard.general.setString(text, forType: .string)
     ///     }
@@ -59,7 +66,7 @@ extension StateUIAppKit {
     ///   - perform: given the arguments the contract declares, answering the
     ///     values it declares. What it throws fails the call, and the caller
     ///     throws that reason.
-    public static func performs<
+    public static func add<
         Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
         _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
@@ -85,7 +92,7 @@ extension StateUIAppKit {
     /// handed the view itself. An aim at nothing, or at an element no longer
     /// on screen, fails the call with that reason.
     ///
-    ///     StateUIAppKit.performs(RatingBarContract.flash, on: RatingBarView.self) { bar in
+    ///     StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
     ///         bar.flash()
     ///     }
     ///
@@ -94,7 +101,7 @@ extension StateUIAppKit {
     ///   - view: the class this host makes for the element.
     ///   - perform: given the element's view and the arguments the contract
     ///     declares, answering the values it declares.
-    public static func performs<
+    public static func add<
         Owner: Contract, Made: NSView,
         each Argument: HostRepresentable, each Answer: HostRepresentable
     >(
@@ -118,7 +125,14 @@ extension StateUIAppKit {
             return MemberValues.encode(repeat each answer)
         }
     }
+}
 
+/// The events an application raises through this host - the ones no control
+/// raises, heard by every `HostEvents.on`.
+///
+/// The MAUI host's registry of the same name raises the same events by their
+/// names.
+public enum StateUIEvents {
     /// Raises an event of the application's - one no control raises - with the
     /// values its contract declares.
     ///
@@ -126,7 +140,7 @@ extension StateUIAppKit {
     /// queued on this library's executor. Safe from any thread, so an
     /// application wires its sources where the platform reports them.
     ///
-    ///     StateUIAppKit.raise(GalleryContract.batteryChanged, level, charging)
+    ///     StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
@@ -140,8 +154,17 @@ extension StateUIAppKit {
     ) -> Int {
         AppKitCoreLink().raise(event, repeat each value)
     }
+}
 
-    /// Realizes an element of the APPLICATION'S OWN with a view of its own:
+/// The controls an application adds to this host - its own elements, each
+/// realized with a view of its own.
+///
+/// Said once, from the application's AppKit head, before
+/// `StateUIAppKit.run(resourceDirectory:applicationIcon:)`. The MAUI host's
+/// registry of the same name adds the same elements by their node types.
+@MainActor
+public enum StateUIControls {
+    /// Adds an element of the APPLICATION'S OWN, realized with a view of its own:
     /// how the view is made, and which of the element's members it takes and
     /// raises.
     ///
@@ -152,7 +175,7 @@ extension StateUIAppKit {
     /// The view's own class is named where the closure makes it, so every
     /// applier below is handed that class rather than a bare `NSView`.
     ///
-    ///     StateUIAppKit.realizes(TrafficLightContract.self, create: { reports -> TrafficLightView in
+    ///     StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
     ///         let light = TrafficLightView()
     ///         light.onLampTapped = { index in
     ///             reports.raise(TrafficLightContract.lampTapped, index)
@@ -174,15 +197,15 @@ extension StateUIAppKit {
     ///   - create: makes the view, once per element, handed what it reports
     ///     through.
     ///   - members: registers the members the view takes and raises.
-    public static func realizes<Realized: ElementContract, Made: NSView>(
+    public static func add<Realized: ElementContract, Made: NSView>(
         _ contract: Realized.Type,
         create: @escaping (AppKitReports<Realized>) -> Made,
-        members: (AppKitRealizing<Realized, Made>) -> Void = { _ in }
+        members: (AppKitRegistration<Realized, Made>) -> Void = { _ in }
     ) {
         AppKitRegistrations.registry.add(
             contract,
             create: { reports in create(AppKitReports(reports)) },
-            members: { registration in members(AppKitRealizing(registration)) })
+            members: { registration in members(AppKitRegistration(registration)) })
     }
 }
 
@@ -232,7 +255,7 @@ public struct AppKitReports<Realized: ElementContract> {
 
 /// How an application's own element is realized on this host, member by
 /// member: the properties its view takes, and the events of its own it raises.
-public final class AppKitRealizing<Realized: ElementContract, Made: NSView> {
+public final class AppKitRegistration<Realized: ElementContract, Made: NSView> {
     private let registration: Registration<Realized, Made>
 
     /// Made where the element is registered.

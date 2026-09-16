@@ -92,7 +92,7 @@ final class AppKitInteropTests: XCTestCase {
         AppKitInterop.forgetPerformers()
         defer { AppKitInterop.forgetPerformers() }
 
-        StateUIAppKit.performs(InteropTestContract.doubled) { number in number * 2 }
+        StateUIActs.add(InteropTestContract.doubled) { number in number * 2 }
 
         let renderer = AppKitRenderer.running { Calling() }
         defer { renderer.closeForTesting() }
@@ -135,7 +135,7 @@ final class AppKitInteropTests: XCTestCase {
         defer { renderer.closeForTesting() }
         XCTAssertEqual(said(renderer), "-")
 
-        let heard = StateUIAppKit.raise(InteropTestContract.spoke, "hello")
+        let heard = StateUIEvents.raise(InteropTestContract.spoke, "hello")
         settle(renderer) { said(renderer) != "-" }
 
         XCTAssertEqual(heard, 1, "the page subscribed while it is in the tree")

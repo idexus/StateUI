@@ -215,7 +215,7 @@ struct AppKitMetalSample: SampleContent, ExampleContent {
             // And the registration, in GalleryControls.register(). The cube
             // reports nothing, so `create` only makes the view: every member
             // here goes one way, from the description to the frames.
-            StateUIAppKit.realizes(MetalCubeContract.self, create: { _ -> MetalCubeView in
+            StateUIControls.add(MetalCubeContract.self, create: { _ -> MetalCubeView in
                 MetalCubeView()
             }) { cube in
                 cube.property(MetalCubeContract.size) { view, size in
@@ -279,7 +279,7 @@ struct AppKitMetalSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("The cube is an `MTKView` the gallery registers with "
-                + "`StateUIAppKit.realizes`, exactly as it registers a view that draws "
+                + "`StateUIControls.add`, exactly as it registers a view that draws "
                 + "with a layer. A view that draws on the GPU is still an `NSView`, so "
                 + "the registration has nothing extra to say.")
                 .fontSize(12)

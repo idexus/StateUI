@@ -217,7 +217,7 @@ The MAUI host registers an application's acts in C# with `StateUIActs.Add`;
 them in Swift, typed by the same contract the call is written against:
 
 ```swift quote
-StateUIAppKit.performs(NotesContract.exportDocument) { draft in
+StateUIActs.add(NotesContract.exportDocument) { draft in
     "~/Documents/\(draft).pdf"
 }
 ```
@@ -227,7 +227,7 @@ the identity back into the view its registration made - so the performer is
 handed the view itself:
 
 ```swift quote
-StateUIAppKit.performs(RatingBarContract.flash, on: RatingBarView.self) { bar in
+StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
     bar.flash()
 }
 ```
@@ -270,7 +270,7 @@ in Swift, typed by the same contract the subscription is written against, and
 from any thread - so a source is wired where the platform reports it:
 
 ```swift quote
-StateUIAppKit.raise(NotesContract.importFinished, location)
+StateUIEvents.raise(NotesContract.importFinished, location)
 ```
 
 A raise nobody hears is an ordinary answer rather than a failure, so a host

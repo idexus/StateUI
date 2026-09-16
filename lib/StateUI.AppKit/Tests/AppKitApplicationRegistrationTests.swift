@@ -103,7 +103,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
     /// told, so registering it per test would only replace the same entry.
     @MainActor
     private func registerLamp() {
-        StateUIAppKit.realizes(LampContract.self, create: { reports -> LampView in
+        StateUIControls.add(LampContract.self, create: { reports -> LampView in
             let lamp = LampView()
             lamp.onPulled = { pulls in reports.raise(LampContract.pulled, pulls) }
             return lamp
@@ -114,7 +114,7 @@ final class AppKitApplicationRegistrationTests: XCTestCase {
             lamp.raises(LampContract.pulled)
         }
 
-        StateUIAppKit.performs(LampContract.flash, on: LampView.self) { lamp in
+        StateUIActs.add(LampContract.flash, on: LampView.self) { lamp in
             lamp.flashes += 1
         }
     }

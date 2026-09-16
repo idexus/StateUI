@@ -18,7 +18,7 @@ enum GalleryControls {
     /// application runs.
     @MainActor
     static func register() {
-        StateUIAppKit.realizes(TrafficLightContract.self, create: { reports -> TrafficLightView in
+        StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
             let light = TrafficLightView()
             light.onLampTapped = { index in
                 reports.raise(TrafficLightContract.lampTapped, index)
@@ -31,7 +31,7 @@ enum GalleryControls {
             light.raises(TrafficLightContract.lampTapped)
         }
 
-        StateUIAppKit.realizes(RatingBarContract.self, create: { reports -> RatingBarView in
+        StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
             let bar = RatingBarView()
 
             // A tapped star is the READER's change: it lands on the state the
@@ -60,7 +60,7 @@ enum GalleryControls {
         // Sources/Samples/Interop/MetalCube.swift - and this file names it
         // with no condition around it, because nothing but an AppKit build
         // compiles this folder: the manifest declares the target only then.
-        StateUIAppKit.realizes(MetalCubeContract.self, create: { _ -> MetalCubeView in
+        StateUIControls.add(MetalCubeContract.self, create: { _ -> MetalCubeView in
             MetalCubeView()
         }) { cube in
             cube.property(MetalCubeContract.size) { view, size in

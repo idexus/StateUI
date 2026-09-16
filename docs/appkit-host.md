@@ -60,13 +60,13 @@ halves are in `apps/Gallery/Platforms/AppKit/Host/`.
 
 ### A control
 
-`StateUIAppKit.realizes` says what an application's own element IS on screen:
+`StateUIControls.add` says what an application's own element IS on screen:
 
 ```swift quote
-public static func realizes<Realized: ElementContract, Made: NSView>(
+public static func add<Realized: ElementContract, Made: NSView>(
     _ contract: Realized.Type,
     create: @escaping (AppKitReports<Realized>) -> Made,
-    members: (AppKitRealizing<Realized, Made>) -> Void = { _ in })
+    members: (AppKitRegistration<Realized, Made>) -> Void = { _ in })
 ```
 
 - **`create`** makes the view once per element, and wires what the view
@@ -83,7 +83,7 @@ TrafficLightView in … }` - so every applier is handed that class rather than a
 bare `NSView`.
 
 ```swift quote
-StateUIAppKit.realizes(TrafficLightContract.self, create: { reports -> TrafficLightView in
+StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
     let light = TrafficLightView()
     light.onLampTapped = { index in
         reports.raise(TrafficLightContract.lampTapped, index)
@@ -132,10 +132,10 @@ answered.
 
 ### An act
 
-`StateUIAppKit.performs` registers a function the application calls by its act:
+`StateUIActs.add` registers a function the application calls by its act:
 
 ```swift quote
-public static func performs<
+public static func add<
     Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
 >(
     _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
@@ -143,12 +143,12 @@ public static func performs<
 ```
 
 ```swift quote
-StateUIAppKit.performs(NotesContract.setClipboard) { text in
+StateUIActs.add(NotesContract.setClipboard) { text in
     NSPasteboard.general.clearContents()
     NSPasteboard.general.setString(text, forType: .string)
 }
 
-StateUIAppKit.performs(NotesContract.batteryLevel) {
+StateUIActs.add(NotesContract.batteryLevel) {
     battery()
 }
 ```
@@ -158,7 +158,7 @@ the aim puts the element's identity in argument 0, and this host turns it back
 into the view its registration made.
 
 ```swift quote
-StateUIAppKit.performs(RatingBarContract.flash, on: RatingBarView.self) { bar in
+StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
     bar.flash()
 }
 ```
@@ -176,7 +176,7 @@ The Swift half is under
 
 ### An event without a control
 
-`StateUIAppKit.raise` pushes an event of the application's that belongs to no
+`StateUIEvents.raise` pushes an event of the application's that belongs to no
 element, such as a power or network change:
 
 ```swift quote
@@ -190,7 +190,7 @@ public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRep
 NotificationCenter.default.addObserver(
     forName: .NSProcessInfoPowerStateDidChange, object: nil, queue: nil
 ) { _ in
-    StateUIAppKit.raise(
+    StateUIEvents.raise(
         NotesContract.lowPowerChanged, ProcessInfo.processInfo.isLowPowerModeEnabled)
 }
 ```

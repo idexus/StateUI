@@ -108,23 +108,23 @@ struct AppKitActsSample: SampleContent, ExampleContent {
             enum GalleryActs {
                 @MainActor
                 static func register() {
-                    StateUIAppKit.performs(GalleryContract.setClipboard) { text in
+                    StateUIActs.add(GalleryContract.setClipboard) { text in
                         NSPasteboard.general.clearContents()
                         NSPasteboard.general.setString(text, forType: .string)
                     }
 
-                    StateUIAppKit.performs(GalleryContract.readClipboard) {
+                    StateUIActs.add(GalleryContract.readClipboard) {
                         NSPasteboard.general.string(forType: .string) ?? ""
                     }
 
-                    StateUIAppKit.performs(GalleryContract.batteryLevel) {
+                    StateUIActs.add(GalleryContract.batteryLevel) {
                         battery()
                     }
 
                     // Aimed at one bar: the identity the aim sent is turned
                     // back into the view this host made, and the performer is
                     // handed that view.
-                    StateUIAppKit.performs(RatingBarContract.flash, on: RatingBarView.self) { bar in
+                    StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
                         bar.flash()
                     }
                 }
@@ -196,7 +196,7 @@ struct AppKitActsSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("`StateUIAppKit.performs` registers a function under an act the "
+            Label("`StateUIActs.add` registers a function under an act the "
                 + "application's contract declares, with what it takes and answers. "
                 + "`stateUICall` calls it from any handler: typed arguments in, typed "
                 + "values back, and the compiler refuses a performer of another shape.")

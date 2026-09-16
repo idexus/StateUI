@@ -111,7 +111,7 @@ struct AppKitControlSample: SampleContent, ExampleContent {
             // And the registration, in GalleryControls.register(). `create`
             // runs once per element and wires what it reports; each `property`
             // puts a described value on the view.
-            StateUIAppKit.realizes(TrafficLightContract.self, create: { reports -> TrafficLightView in
+            StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
                 let light = TrafficLightView()
                 light.onLampTapped = { index in
                     reports.raise(TrafficLightContract.lampTapped, index)
@@ -152,7 +152,7 @@ struct AppKitControlSample: SampleContent, ExampleContent {
     var notes: Element? {
         VStack {
             Label("The lamps are an `NSView` the gallery registers with "
-                + "`StateUIAppKit.realizes`, under the members `TrafficLightContract` "
+                + "`StateUIControls.add`, under the members `TrafficLightContract` "
                 + "declares with the type of each value. The host creates it once, keeps "
                 + "it by identity between renders, puts each described value on it, and "
                 + "then applies what every view shares - margins, alignment, opacity, "

@@ -88,7 +88,7 @@ struct AppKitEventsSample: SampleContent, ExampleContent {
                     guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
 
                     lastSaid = (level, charging)
-                    StateUIAppKit.raise(GalleryContract.batteryChanged, level, charging)
+                    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
                 }
             }
 
@@ -127,7 +127,7 @@ struct AppKitEventsSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("The host calls `StateUIAppKit.raise(event, values)` when the platform "
+            Label("The host calls `StateUIEvents.raise(event, values)` when the platform "
                 + "reports something, from any thread. Every `HostEvents.on` subscription "
                 + "to that member runs like a control's handler: on the library's "
                 + "executor, handed the values the contract declares, free to await and to "

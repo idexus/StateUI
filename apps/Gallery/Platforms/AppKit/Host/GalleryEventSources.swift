@@ -41,6 +41,6 @@ enum GalleryEventSources {
         guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
 
         lastSaid = (level, charging)
-        StateUIAppKit.raise(GalleryContract.batteryChanged, level, charging)
+        StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     }
 }
