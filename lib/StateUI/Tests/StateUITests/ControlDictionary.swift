@@ -357,7 +357,13 @@ struct ControlDictionary {
     /// The platform contract's rendered tables, by the block each stands in.
     func contractBlocks() -> [String: String] {
         [
-            "dictionary": summary(of: split.controls, heading: "Control", linking: "controls/") + "\n\n"
+            // Two tables in one block, so each is titled where it is
+            // rendered: the index puts its own under headings of its own, and
+            // a reader meeting the second table here has nothing else to tell
+            // them it counts the parts rather than the controls.
+            "dictionary": "### Controls\n\n"
+                + summary(of: split.controls, heading: "Control", linking: "controls/")
+                + "\n\n### Application structure\n\n"
                 + summary(of: split.structure, heading: "Part", linking: "controls/"),
             "creation": creationTable(),
             "members": memberTable(),

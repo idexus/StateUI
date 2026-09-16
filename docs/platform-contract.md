@@ -432,6 +432,8 @@ which a host serves without a member of its own.
 Every control, and every part an application, its windows and its pages are made of, has its members in [the control dictionary](controls/README.md): one row per property, event and act, with a mark per platform. The counts below are rendered with it.
 
 <!-- dictionary:begin -->
+### Controls
+
 | Control | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [AbsoluteLayout](controls/AbsoluteLayout.md) | 72 | 71 ✅ | 56 ✅ · 2 ☑️ |  |  |  |  |  |
@@ -470,6 +472,8 @@ Every control, and every part an application, its windows and its pages are made
 | [TitleBar](controls/TitleBar.md) | 72 | 71 ✅ | 4 ✅ · 1 ☑️ |  |  |  |  |  |
 | [VStack](controls/VStack.md) | 73 | 72 ✅ | 57 ✅ · 2 ☑️ |  |  |  |  |  |
 | [WebView](controls/WebView.md) | 79 | 78 ✅ |  |  |  |  |  |  |
+
+### Application structure
 
 | Part | Members | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
