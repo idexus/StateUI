@@ -1,6 +1,6 @@
 // The gallery's own acts and events, declared once for every host that
 // answers them. Each host registers a performer or a source of its own under
-// these names - see Platforms/AppKit/Host and Platforms/Maui/Host.
+// these names, beside its own head under Platforms/.
 //
 // PUBLIC, because a host in the same process registers BY TYPE and lives in a
 // module of its own: these declarations are the application's API towards its

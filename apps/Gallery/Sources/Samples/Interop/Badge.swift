@@ -2,8 +2,8 @@
 // realizes it.
 //
 // This file is the whole Swift half, and it is the same wherever the gallery
-// runs. What the badge IS on screen each host says for itself, in
-// Platforms/AppKit/Host and Platforms/Maui/Host.
+// runs. What the badge IS on screen each host says for itself, beside its own
+// head under Platforms/.
 
 import StateUI
 

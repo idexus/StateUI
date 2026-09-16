@@ -2,8 +2,8 @@
 // realizes it - shared by the samples that call, bind, style and animate it.
 //
 // This file is the whole Swift half, and it is the same wherever the gallery
-// runs. What the bar IS on screen each host says for itself, in
-// Platforms/AppKit/Host and Platforms/Maui/Host.
+// runs. What the bar IS on screen each host says for itself, beside its own
+// head under Platforms/.
 //
 // PUBLIC, because a host in the same process registers BY TYPE and lives in a
 // module of its own - see GalleryContract.swift.
