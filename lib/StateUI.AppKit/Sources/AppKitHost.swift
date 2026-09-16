@@ -2395,9 +2395,6 @@ final class MountedNode: NSObject {
             // The window's toolbar makes the native item; see visibleToolbarActions.
             return nil
 
-        case .colorBox:
-            return AppKitColorBoxView()
-
         case .image:
             return AppKitImageView()
 
@@ -2413,25 +2410,6 @@ final class MountedNode: NSObject {
                 self?.canvasPointer(.released, at: point)
             }
             return canvas
-
-        case .rectangle:
-            return AppKitShapeView(kind: .rectangle)
-
-
-        case .ellipse:
-            return AppKitShapeView(kind: .ellipse)
-
-        case .line:
-            return AppKitShapeView(kind: .line)
-
-        case .path:
-            return AppKitShapeView(kind: .path)
-
-        case .polygon:
-            return AppKitShapeView(kind: .polygon)
-
-        case .polyline:
-            return AppKitShapeView(kind: .polyline)
 
         default:
             return AppKitUnsupportedView(type)
@@ -2562,13 +2540,6 @@ final class MountedNode: NSObject {
                 animationPlaying: value(.isAnimating)?.bool ?? false)
         }
 
-        if let box = view as? AppKitColorBoxView {
-            box.apply(
-                background: color(.background),
-                fill: color(.color),
-                cornerRadius: value(.cornerRadius))
-        }
-
         if let border = view as? AppKitBorderView {
             border.apply(
                 backgroundColor: color(.background),
@@ -2576,41 +2547,6 @@ final class MountedNode: NSObject {
                 stroke: value(.stroke),
                 strokeWidth: value(.strokeWidth)?.number,
                 shape: value(.shape))
-        }
-
-        if let shape = view as? AppKitShapeView {
-            let geometry: AppKitShapeGeometry = switch type {
-            case .rectangle:
-                .rectangle(AppKitCornerRadii(value(.cornerRadius)))
-            case .ellipse:
-                .ellipse
-            case .line:
-                .line(
-                    x1: number(.x1).map { CGFloat($0) } ?? 0,
-                    y1: number(.y1).map { CGFloat($0) } ?? 0,
-                    x2: number(.x2).map { CGFloat($0) } ?? 0,
-                    y2: number(.y2).map { CGFloat($0) } ?? 0)
-            case .path:
-                .path(string(.data) ?? "")
-            case .polygon, .polyline:
-                .points(
-                    value(.points)?.numbers ?? [],
-                    fillRule: enumeration(.fillRule) ?? 0)
-            default:
-                .points([], fillRule: 0)
-            }
-            shape.apply(
-                fill: value(.fill),
-                stroke: value(.stroke),
-                strokeWidth: number(.strokeWidth) ?? 1,
-                dash: value(.strokeDashPattern)?.numbers ?? [],
-                dashOffset: number(.strokeDashOffset) ?? 0,
-                lineCap: enumeration(.strokeLineCap) ?? 0,
-                lineJoin: enumeration(.strokeLineJoin) ?? 0,
-                miterLimit: number(.strokeMiterLimit) ?? 10,
-                aspect: enumeration(.aspect) ?? 0,
-                renderTransform: transformComponents(.renderTransform),
-                geometry: geometry)
         }
 
         if let canvas = view as? AppKitCanvasView {
