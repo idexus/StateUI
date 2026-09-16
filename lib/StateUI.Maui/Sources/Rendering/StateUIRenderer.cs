@@ -864,7 +864,6 @@ public sealed class StateUIRenderer
             HostNodeType.HStack => ReconcileStack(node, existing, () => new TravellingLayouts.Horizontal { Walker = _walker }),
             HostNodeType.AbsoluteLayout => ReconcileAbsoluteLayout(node, existing),
             HostNodeType.ScrollView => ReconcileScrollView(node, existing),
-            HostNodeType.WebView => ReconcileWebView(node, existing),
             HostNodeType.Map => ReconcileMap(node, existing),
             HostNodeType.TitleBar => ReconcileTitleBar(node, existing),
             HostNodeType.RefreshView => ReconcileRefreshView(node, existing),
@@ -3178,48 +3177,6 @@ public sealed class StateUIRenderer
         if (node.GetLocation(HostProp.Location) is Location location) { pin.Location = location; }
 
         return Track(pin, node);
-    }
-
-    /// <summary>
-    /// A WebView. Its source is a URL or HTML written in place - see
-    /// <see cref="Values.GetWebViewSource"/> - and CanGoBack and
-    /// CanGoForward are reported through the property watch, MAUI giving
-    /// neither an event.
-    /// </summary>
-    /// <remarks>
-    /// GoBack, GoForward, Reload and EvaluateJavaScriptAsync are ACTS on the
-    /// view's id, performed by the session - a description has no control to
-    /// call a method on. The navigation events are subscribed where the
-    /// control is created, once; each payload's values ride in the order MAUI
-    /// declares them - why, then where; how it ended, why, then where - and
-    /// the Swift side reads them by position.
-    /// </remarks>
-    private WebView ReconcileWebView(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not WebView web)
-        {
-            web = new WebView();
-
-            web.Navigating += (sender, e) => Raise(sender, HostEvent.Navigating,
-                HostValue.OfMember((int)Member(e.NavigationEvent)),
-                HostValue.Of(e.Url ?? ""));
-            web.Navigated += (sender, e) => Raise(sender, HostEvent.Navigated,
-                HostValue.OfMember((int)Member(e.Result)),
-                HostValue.OfMember((int)Member(e.NavigationEvent)),
-                HostValue.Of(e.Url ?? ""));
-            web.ProcessTerminated += (sender, _) => Raise(sender, HostEvent.ProcessTerminated);
-        }
-
-        // Before the source, so the first request already carries it.
-        if (node.GetString(HostProp.UserAgent) is string agent) { web.UserAgent = agent; }
-
-        // Assigned only when the message carries it - a source that did not
-        // change must not navigate the view again.
-        if (node.GetWebViewSource(HostProp.Source) is WebViewSource source) { web.Source = source; }
-
-        ApplyView(node, web);
-
-        return Track(web, node);
     }
 
     /// <summary>

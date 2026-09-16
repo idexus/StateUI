@@ -37,6 +37,60 @@ internal static class MauiRegistrations
         Pictures();
         Pickers();
         Buttons();
+        Web();
+    }
+
+    /// <summary>
+    /// A page of the web, and the journeys it makes.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Its four acts - back, forward, reload, and running a script - are NOT
+    /// registered here. An act names the view it is aimed at and is performed
+    /// by the session against that identity, because a description has no
+    /// control to call a method on; see <c>ActPerformer</c>.
+    /// </para>
+    /// <para>
+    /// Nor are <c>canGoBackChanged</c> and <c>canGoForwardChanged</c>: MAUI
+    /// gives neither an event, so both are heard by watching the property, and
+    /// that watch is set on every view the tree asks it of - a registration
+    /// and a renderer arm alike.
+    /// </para>
+    /// </remarks>
+    private static void Web()
+    {
+        StateUIControls.Add("WebView",
+            create: _ => new WebView(),
+            realize: web => web
+
+                // The agent before the source: a page that starts loading as
+                // its address arrives should already carry who is asking.
+                .Property<string>(HostProp.UserAgent, (view, agent) => view.UserAgent = agent)
+
+                // Assigned only when the message carries it - a source that
+                // did not change must not navigate the view again.
+                .Held(HostProp.Source,
+                    static (node, member) => node.GetWebViewSource(member),
+                    (view, source) => view.Source = source)
+
+                // Each payload's values ride in the order MAUI declares them -
+                // why, then where; how it ended, why, then where - and the
+                // Swift side reads them by position.
+                .Carries(HostEvent.Navigating,
+                    (view, carried) => view.Navigating += (_, e) => carried(
+                    [
+                        HostValue.OfMember((int)StateUIRenderer.Member(e.NavigationEvent)),
+                        HostValue.Of(e.Url ?? ""),
+                    ]))
+                .Carries(HostEvent.Navigated,
+                    (view, carried) => view.Navigated += (_, e) => carried(
+                    [
+                        HostValue.OfMember((int)StateUIRenderer.Member(e.Result)),
+                        HostValue.OfMember((int)StateUIRenderer.Member(e.NavigationEvent)),
+                        HostValue.Of(e.Url ?? ""),
+                    ]))
+                .Raises(HostEvent.ProcessTerminated,
+                    (view, gone) => view.ProcessTerminated += (_, _) => gone()));
     }
 
     /// <summary>

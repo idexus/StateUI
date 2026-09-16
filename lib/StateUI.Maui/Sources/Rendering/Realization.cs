@@ -392,6 +392,36 @@ internal sealed class Realization<TControl> : Realization
     }
 
     /// <summary>
+    /// Registers an event that CARRIES something - a navigation's reason and
+    /// its address, an outcome and both.
+    /// </summary>
+    /// <remarks>
+    /// The values ride in a fixed order and the Swift side reads them BY
+    /// POSITION, so the order a registration writes them in is part of what
+    /// the element promises - not a detail of this host. Nothing lands on a
+    /// state here: an event that carries a fact is not a value the reader
+    /// moved.
+    /// </remarks>
+    /// <param name="raised">The event the tree hears.</param>
+    /// <param name="subscribe">
+    /// Subscribes to the control's own notification, and hands back what the
+    /// event carries, in order.
+    /// </param>
+    internal Realization<TControl> Carries(
+        HostEvent raised,
+        Action<TControl, Action<HostValue[]>> subscribe)
+    {
+        Wiring.Add((view, renderer) =>
+        {
+            var control = (TControl)view;
+
+            subscribe(control, carried => renderer.Raise(control, raised, carried));
+        });
+
+        return this;
+    }
+
+    /// <summary>
     /// Registers the two members of the text-style tier - the colour text is
     /// drawn in, and the room between its letters.
     /// </summary>
