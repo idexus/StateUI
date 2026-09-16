@@ -2151,6 +2151,15 @@ func appKitFont(family: String?, size: Double?, attributes: Int32?, fallback: NS
     return font
 }
 
+/// Where text sits across its element, as AppKit draws it.
+func appKitTextAlignment(_ value: Int32?) -> NSTextAlignment {
+    switch value {
+    case 1: return .center
+    case 2: return .right
+    default: return .left
+    }
+}
+
 /// Words drawn as written, or in the one case the tree asks for.
 func appKitTextCased(_ text: String, _ transform: Int32?) -> String {
     switch transform {

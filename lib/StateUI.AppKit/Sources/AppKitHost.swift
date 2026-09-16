@@ -2227,44 +2227,6 @@ final class MountedNode: NSObject {
         }
     }
 
-    private func changedSelection(to index: Int) {
-        guard let host else { return }
-
-        let reported = driven[.selectedIndex].map {
-            host.report(.lanes([Double(index)]), through: $0)
-        } ?? false
-
-        if let handler = events[.selectedIndexChanged] {
-            host.dispatch(handler, payload: [.number(Double(index))])
-        } else if reported {
-            host.pump()
-        }
-    }
-
-    private func changedLanes(_ lanes: [Double], property: Prop, event: Event) {
-        guard let host else { return }
-
-        let reported = driven[property].map {
-            host.report(.lanes(lanes), through: $0)
-        } ?? false
-
-        if let handler = events[event] {
-            host.dispatch(handler, payload: [.numbers(lanes)])
-        } else if reported {
-            host.pump()
-        }
-    }
-
-    private func pickerOpened() {
-        guard let handler = events[.opened] else { return }
-        host?.dispatch(handler)
-    }
-
-    private func pickerClosed() {
-        guard let handler = events[.closed] else { return }
-        host?.dispatch(handler)
-    }
-
     private func tapped() {
         guard let handler = events[.tapped] else { return }
         host?.dispatch(handler)
@@ -2466,27 +2428,6 @@ final class MountedNode: NSObject {
             search.onTextChanged = { [weak self] in self?.typed($0) }
             search.onSubmitted = { [weak self] in self?.submitted() }
             return search
-
-        case .picker:
-            let picker = AppKitPickerView()
-            picker.onSelectionChanged = { [weak self] in self?.changedSelection(to: $0) }
-            picker.onOpened = { [weak self] in self?.pickerOpened() }
-            picker.onClosed = { [weak self] in self?.pickerClosed() }
-            return picker
-
-        case .datePicker:
-            let picker = AppKitDateTimePickerView(mode: .date)
-            picker.onValueChanged = { [weak self] in
-                self?.changedLanes($0, property: .date, event: .dateChanged)
-            }
-            return picker
-
-        case .timePicker:
-            let picker = AppKitDateTimePickerView(mode: .time)
-            picker.onValueChanged = { [weak self] in
-                self?.changedLanes($0, property: .time, event: .timeChanged)
-            }
-            return picker
 
         case .colorBox:
             return AppKitColorBoxView()
@@ -2721,41 +2662,6 @@ final class MountedNode: NSObject {
                 selectionLength: whole(.selectionLength),
                 writeSelection: changed.contains(.cursorPosition)
                     || changed.contains(.selectionLength))
-        }
-
-        if let picker = view as? AppKitPickerView {
-            picker.apply(
-                items: value(.options)?.strings ?? [],
-                selectedIndex: whole(.selectedIndex) ?? -1,
-                writeSelection: changed.contains(.selectedIndex),
-                title: string(.title),
-                font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
-                textColor: color(.textColor) ?? .controlTextColor,
-                tint: color(.tint),
-                alignment: textAlignment(enumeration(.horizontalTextAlignment)),
-                enabled: value(.isEnabled)?.bool ?? true,
-                open: value(.isOpen)?.bool ?? false,
-                writeOpen: changed.contains(.isOpen))
-        }
-        if type == .datePicker, let picker = view as? AppKitDateTimePickerView {
-            picker.apply(
-                value: value(.date)?.numbers,
-                writeValue: changed.contains(.date),
-                minimum: value(.minimumDate)?.numbers,
-                maximum: value(.maximumDate)?.numbers,
-                font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
-                textColor: color(.textColor) ?? .controlTextColor,
-                enabled: value(.isEnabled)?.bool ?? true)
-        }
-        if type == .timePicker, let picker = view as? AppKitDateTimePickerView {
-            picker.apply(
-                value: value(.time)?.numbers,
-                writeValue: changed.contains(.time),
-                minimum: nil,
-                maximum: nil,
-                font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
-                textColor: color(.textColor) ?? .controlTextColor,
-                enabled: value(.isEnabled)?.bool ?? true)
         }
 
         if let box = view as? AppKitColorBoxView {
@@ -3491,11 +3397,7 @@ final class MountedNode: NSObject {
     }
 
     private func textAlignment(_ value: Int32?) -> NSTextAlignment {
-        switch value {
-        case 1: return .center
-        case 2: return .right
-        default: return .left
-        }
+        appKitTextAlignment(value)
     }
 
     private func buttonImagePosition(imageOnly: Bool) -> NSControl.ImagePosition {
