@@ -16,13 +16,9 @@ const code = process.env.STATEUI_VSCODE ?? "/Applications/Visual Studio Code.app
 const profile = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-vscode-"));
 const results = path.join(profile, "results.txt");
 
-// Every run starts from no index at all, so no run inherits what an earlier one
-// left behind.
-for (const app of fs.readdirSync(path.join(repository, "apps"))) {
-    for (const build of [".build-appkit", ".build-maui"]) {
-        fs.rmSync(path.join(repository, "apps", app, build, "index-build"), { recursive: true, force: true });
-    }
-}
+// The index directories are NOT cleared first: an editor open on this
+// repository with the extension installed indexes in the same ones. The
+// extension's own switches wait for any build running there.
 
 const env: NodeJS.ProcessEnv = { ...process.env, STATEUI_TEST_RESULTS: results };
 // The suite starts from no host at all; an inherited one would decide the first answer.

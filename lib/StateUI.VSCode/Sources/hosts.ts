@@ -58,3 +58,40 @@ export function environment(host: Host): Record<string, string | undefined> {
 
     return values;
 }
+
+/** How a MAUI head is debugged. */
+export type MauiDebugger = "csharp" | "swift-ios" | "swift-maccatalyst" | "csharp-swift-maccatalyst" | "swift";
+
+/** What the extension knows about one way of debugging a MAUI head. */
+export interface MauiDebuggerDescription {
+    readonly id: MauiDebugger;
+    readonly label: string;
+    readonly detail: string;
+
+    /** The machines it runs on - a Swift debugger attaches only to a process on this one. */
+    readonly platforms: readonly NodeJS.Platform[];
+}
+
+/**
+ * Every way of debugging a MAUI head, in the order the picker offers them.
+ *
+ * C# on iOS, Android and Mac Catalyst is the MAUI extension's: those run on
+ * Mono, which only its debugger attaches to. Swift is lldb-dap's, on a process
+ * this machine runs - the iOS Simulator, Mac Catalyst, Windows, Linux - and on
+ * the iOS Simulator it attaches only AFTER the app is running, because the
+ * simulator's watchdog kills an app a debugger holds stopped at launch. Both
+ * at once only on Mac Catalyst: Windows allows one native debugger per process,
+ * and the simulator's watchdog forbids it.
+ */
+export const mauiDebuggers: readonly MauiDebuggerDescription[] = [
+    { id: "csharp", label: "C#", detail: "the MAUI extension's debugger, on the device its picker chose - coreclr on Linux", platforms: ["darwin", "win32", "linux"] },
+    { id: "swift-ios", label: "Swift · iOS Simulator", detail: "built and started by run-app.sh, then lldb-dap attaches", platforms: ["darwin"] },
+    { id: "swift-maccatalyst", label: "Swift · Mac Catalyst", detail: "built and started by run-app.sh, then lldb-dap attaches", platforms: ["darwin"] },
+    { id: "csharp-swift-maccatalyst", label: "C# + Swift · Mac Catalyst", detail: "the C# session starts the app, then lldb-dap attaches beside it", platforms: ["darwin"] },
+    { id: "swift", label: "Swift", detail: "lldb-dap - launched on Linux, attached on Windows after run-app.ps1", platforms: ["linux", "win32"] },
+];
+
+/** The ways of debugging a MAUI head this machine offers. */
+export function availableMauiDebuggers(platform: NodeJS.Platform = process.platform): MauiDebuggerDescription[] {
+    return mauiDebuggers.filter((each) => each.platforms.includes(platform));
+}

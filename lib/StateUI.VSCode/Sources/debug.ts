@@ -10,12 +10,13 @@
 // so the new type's resolvers still run over it.
 //
 // The application is the one chosen with StateUI: Select Application; a launch
-// naming its `application` runs that one instead.
+// naming its `application` runs that one instead. A MAUI head is debugged the
+// way StateUI: Select Debugger chose - C#, Swift, or both on Mac Catalyst.
 
+import * as path from "path";
 import * as vscode from "vscode";
 import { Application, appKitProgram } from "./applications";
-import { environment, Host } from "./hosts";
-import { runTask } from "./tasks";
+import { environment, Host, MauiDebugger } from "./hosts";
 
 /** Which build a launch runs. */
 export type Configuration = "debug" | "release";
@@ -29,6 +30,21 @@ export interface Choices {
      * else asked for - or nothing, where there is none or the reader declined.
      */
     application(folder: vscode.WorkspaceFolder, host: Host, named?: string): Promise<Application | undefined>;
+
+    /** How a MAUI head is debugged. */
+    debugger(): MauiDebugger;
+
+    /** Runs a build as a task and answers its exit code. */
+    run(task: vscode.Task): Promise<number | undefined>;
+
+    /**
+     * Attaches lldb-dap to `processName` once the C# session named
+     * `sessionName` has started it - both debuggers against one process.
+     */
+    attachSwiftWhenStarted(sessionName: string, processName: string): void;
+
+    /** The machine the launch runs on; the tests name one. */
+    readonly platform?: NodeJS.Platform;
 }
 
 /** The two configurations every workspace offers. */
@@ -68,16 +84,10 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         }
 
         if (host === "maui") {
-            return {
-                type: "maui",
-                request: "launch",
-                name,
-                project: application.mauiProject,
-                ...(configuration === "release" ? { configuration: "Release" } : {}),
-            };
+            return this.maui(root, application, configuration, name);
         }
 
-        if (!(await buildAppKitHead(root, application, configuration))) {
+        if (!(await buildAppKitHead(root, application, configuration, (task) => this.choices.run(task)))) {
             void vscode.window.showErrorMessage(
                 `StateUI: the AppKit build of ${application.name} failed - its output is in the terminal.`);
             return undefined;
@@ -92,6 +102,92 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             stopOnEntry: false,
         };
     }
+
+    /** A MAUI head, debugged the way StateUI: Select Debugger chose. */
+    private async maui(
+        root: vscode.WorkspaceFolder,
+        application: Application,
+        configuration: Configuration,
+        name: string,
+    ): Promise<vscode.DebugConfiguration | undefined> {
+        const project = application.mauiProject!;
+        const build = configuration === "release" ? "Release" : "Debug";
+        const platform = this.choices.platform ?? process.platform;
+        const csharp: vscode.DebugConfiguration = {
+            type: "maui", request: "launch", name, project,
+            ...(configuration === "release" ? { configuration: "Release" } : {}),
+            // ON WINDOWS A RELEASE LAUNCH NAMES ITS EXECUTABLE: the MAUI
+            // extension works the executable out without the configuration and
+            // looks in bin/Debug. No architecture in the path, because the
+            // project keeps the runtime identifier out of its output path.
+            ...(configuration === "release" && platform === "win32"
+                ? { program: path.join(path.dirname(project), "bin", "Release", "net10.0-windows10.0.19041.0", `${application.name}.exe`) }
+                : {}),
+        };
+
+        // Linux's head is a plain net10.0 executable, beside its runtime and
+        // artwork, which no MAUI extension launches.
+        const linuxProgram = path.join(path.dirname(project), "bin", build, "net10.0", application.name);
+        const linuxBuild = (): Promise<boolean> => this.succeeds(root, application, `Build ${application.name} (MAUI, Linux, ${configuration})`,
+            new vscode.ShellExecution("dotnet", ["build", project, "-c", build, "-nodeReuse:false"], { cwd: root.uri.fsPath }));
+
+        const attach = (processName: string): vscode.DebugConfiguration => ({
+            type: "lldb-dap", request: "attach", name, stopOnEntry: false,
+            attachCommands: [`process attach --name ${processName}`],
+        });
+
+        switch (this.choices.debugger()) {
+        case "csharp":
+            if (platform !== "linux") {
+                return csharp;
+            }
+            return (await linuxBuild())
+                ? { type: "coreclr", request: "launch", name, program: linuxProgram, cwd: path.dirname(linuxProgram), console: "internalConsole", stopAtEntry: false }
+                : undefined;
+
+        case "swift-ios":
+        case "swift-maccatalyst": {
+            // Started WITHOUT a debugger, then attached to: the simulator's
+            // watchdog kills an app a debugger holds stopped at launch.
+            const target = this.choices.debugger() === "swift-ios" ? "ios" : "maccatalyst";
+            const script = path.join(root.uri.fsPath, ".scripts", "Maui", "run-app.sh");
+            const started = await this.succeeds(root, application, `Run ${application.name} (${target}, ${configuration})`,
+                new vscode.ShellExecution("bash", [script, target, build, project], { cwd: root.uri.fsPath }));
+            return started ? attach(application.name) : undefined;
+        }
+
+        case "csharp-swift-maccatalyst":
+            this.choices.attachSwiftWhenStarted(name, application.name);
+            return { ...csharp, targetFramework: "net10.0-maccatalyst" };
+
+        case "swift":
+            if (platform === "linux") {
+                return (await linuxBuild())
+                    ? { type: "lldb-dap", request: "launch", name, program: linuxProgram, cwd: path.dirname(linuxProgram), stopOnEntry: false }
+                    : undefined;
+            }
+            {
+                const script = path.join(root.uri.fsPath, ".scripts", "Maui", "run-app.ps1");
+                const started = await this.succeeds(root, application, `Run ${application.name} (Windows, ${configuration})`,
+                    new vscode.ShellExecution("powershell", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script,
+                        "-Configuration", build, "-Project", project], { cwd: root.uri.fsPath }));
+                // LLDB on Windows matches a process name WITH its extension.
+                return started ? attach(`${application.name}.exe`) : undefined;
+            }
+        }
+    }
+
+    /** Runs one step before a launch as a task, and says so where it failed. */
+    private async succeeds(root: vscode.WorkspaceFolder, application: Application, label: string, execution: vscode.ShellExecution): Promise<boolean> {
+        const task = new vscode.Task({ type: "stateui", application: application.name }, root, label, "StateUI", execution, []);
+        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+
+        if ((await this.choices.run(task)) === 0) {
+            return true;
+        }
+        void vscode.window.showErrorMessage(`StateUI: ${label} failed - its output is in the terminal.`);
+        return false;
+    }
 }
 
 /**
@@ -105,6 +201,7 @@ export async function buildAppKitHead(
     folder: vscode.WorkspaceFolder,
     application: Application,
     configuration: Configuration,
+    run: (task: vscode.Task) => Promise<number | undefined>,
 ): Promise<boolean> {
     const env = Object.fromEntries(
         Object.entries(environment("appkit")).filter((entry): entry is [string, string] => entry[1] !== undefined));
@@ -121,5 +218,5 @@ export async function buildAppKitHead(
         definition, folder, `Build ${application.name} (AppKit, ${configuration})`, "StateUI", execution, []);
     task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
 
-    return (await runTask(task)) === 0;
+    return (await run(task)) === 0;
 }

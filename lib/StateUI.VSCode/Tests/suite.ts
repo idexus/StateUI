@@ -15,6 +15,7 @@ import * as vscode from "vscode";
 import { findApplications } from "../Sources/applications";
 import { StateUIDebugConfigurationProvider } from "../Sources/debug";
 import { findSuites } from "../Sources/tests";
+import { MauiDebugger } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 
 const started = Date.now();
@@ -92,16 +93,73 @@ export async function run(): Promise<void> {
             (await resolves(plain, "Palette.accent"))
             && !(await resolves(conditional, "MetalCube()", "var content: any View")), 900);
 
-        // 4. A MAUI launch becomes the MAUI extension's, naming the chosen
-        //    application's project and no device - that extension's picker's.
-        const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery");
-        const maui = new StateUIDebugConfigurationProvider({ host: () => "maui", application: async () => gallery_ });
-        const release = await maui.resolveDebugConfiguration(root,
-            { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
-        check("maui release resolves to the maui type, in Release, on Gallery's project, with no device",
-            release?.type === "maui" && release.configuration === "Release"
-            && String(release.project).endsWith("/apps/Gallery/Platforms/Maui/Gallery.csproj")
-            && release.device === undefined);
+        // 4. Every MAUI debugger resolves into the launch it names - the
+        //    commands a build would run captured, not run.
+        const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery")!;
+        const resolveAs = async (chosen: MauiDebugger, platform: NodeJS.Platform, configuration = "debug") => {
+            const ran: string[] = [];
+            const attached: string[] = [];
+            const provider = new StateUIDebugConfigurationProvider({
+                host: () => "maui", application: async () => gallery_, debugger: () => chosen, platform,
+                run: async (task) => {
+                    const shell = task.execution as vscode.ShellExecution;
+                    ran.push([shell.command, ...(shell.args ?? [])].map(String).join(" "));
+                    return 0;
+                },
+                attachSwiftWhenStarted: (session, processName) => { attached.push(`${session}->${processName}`); },
+            });
+            const resolved = await provider.resolveDebugConfiguration(root,
+                { name: "StateUI: Debug", type: "stateui", request: "launch", configuration });
+            return { resolved, ran, attached };
+        };
+        const project = "/apps/Gallery/Platforms/Maui/Gallery.csproj";
+
+        {
+            const { resolved, ran } = await resolveAs("csharp", "darwin", "release");
+            check("C#: the maui type, in Release, on Gallery's project, with no device, and nothing run first",
+                resolved?.type === "maui" && resolved.configuration === "Release" && String(resolved.project).endsWith(project)
+                && resolved.device === undefined && ran.length === 0);
+        }
+        {
+            const { resolved } = await resolveAs("csharp", "win32", "release");
+            check("C# on Windows, Release: the executable is named, with no runtime identifier",
+                String(resolved?.program).endsWith("/apps/Gallery/Platforms/Maui/bin/Release/net10.0-windows10.0.19041.0/Gallery.exe"));
+        }
+        {
+            const { resolved, ran } = await resolveAs("swift-ios", "darwin");
+            say(`     swift-ios ran: ${ran.join(" | ")}`);
+            check("Swift · iOS Simulator: run-app.sh ios Debug <project>, then lldb-dap attaches to Gallery",
+                ran.length === 1 && /run-app\.sh ios Debug .*Gallery\.csproj$/.test(ran[0])
+                && resolved?.type === "lldb-dap" && resolved.request === "attach"
+                && JSON.stringify(resolved.attachCommands) === JSON.stringify(["process attach --name Gallery"]));
+        }
+        {
+            const { resolved, ran } = await resolveAs("swift-maccatalyst", "darwin", "release");
+            check("Swift · Mac Catalyst, Release: run-app.sh maccatalyst Release, then an attach",
+                ran.length === 1 && /run-app\.sh maccatalyst Release /.test(ran[0]) && resolved?.request === "attach");
+        }
+        {
+            const { resolved, ran, attached } = await resolveAs("csharp-swift-maccatalyst", "darwin");
+            check("C# + Swift · Mac Catalyst: a maui session pinned to Mac Catalyst, with Swift promised beside it",
+                resolved?.type === "maui" && resolved.targetFramework === "net10.0-maccatalyst"
+                && ran.length === 0 && JSON.stringify(attached) === JSON.stringify(["StateUI: Debug->Gallery"]));
+        }
+        {
+            const { resolved, ran } = await resolveAs("csharp", "linux");
+            check("C# on Linux: dotnet build, then coreclr on bin/Debug/net10.0/Gallery",
+                /^dotnet build .*Gallery\.csproj -c Debug/.test(ran[0] ?? "") && resolved?.type === "coreclr"
+                && String(resolved.program).endsWith("/apps/Gallery/Platforms/Maui/bin/Debug/net10.0/Gallery"));
+        }
+        {
+            const { resolved } = await resolveAs("swift", "linux");
+            check("Swift on Linux: lldb-dap LAUNCHES the head", resolved?.type === "lldb-dap" && resolved.request === "launch");
+        }
+        {
+            const { resolved, ran } = await resolveAs("swift", "win32");
+            check("Swift on Windows: run-app.ps1, then lldb-dap attaches to Gallery.exe",
+                /run-app\.ps1 -Configuration Debug -Project .*Gallery\.csproj$/.test(ran[0] ?? "")
+                && JSON.stringify(resolved?.attachCommands) === JSON.stringify(["process attach --name Gallery.exe"]));
+        }
 
         // 5. The suites, found for each host the way test-native.sh runs them.
         const appkitSuites = findSuites(root.uri.fsPath, "appkit").map((each) => each.label);
@@ -137,6 +195,30 @@ export async function run(): Promise<void> {
         const alive = (() => { try { return execSync("pgrep -f apps/HelloWorld/.build/debug/HelloWorldAppKit").toString().trim().length > 0; } catch { return false; } })();
         check("the HelloWorldAppKit process is running", alive);
         await vscode.debug.stopDebugging(running);
+
+
+        // 7. LIVE: Swift · Mac Catalyst - run-app.sh builds and starts the
+        //    Gallery's MAUI head, and lldb-dap attaches to the running app.
+        await api.selectHost("maui");
+        await api.selectApplication("Gallery");
+        await api.selectDebugger("swift-maccatalyst");
+        const attaching = new Promise<vscode.DebugSession>((resolve) => {
+            const listener = vscode.debug.onDidStartDebugSession((each) => {
+                if (each.type === "lldb-dap") {
+                    listener.dispose();
+                    resolve(each);
+                }
+            });
+        });
+        check("StateUI: Debug starts on Mac Catalyst", await vscode.debug.startDebugging(root,
+            { name: "StateUI: Debug", type: "stateui", request: "launch", configuration: "debug" }));
+        const catalyst = await Promise.race([attaching, new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 1_500_000))]);
+        check("lldb-dap attaches to Gallery", JSON.stringify(catalyst?.configuration.attachCommands) === JSON.stringify(["process attach --name Gallery"]));
+        await new Promise((resume) => setTimeout(resume, 5000));
+        const catalystAlive = (() => { try { return execSync("pgrep -x Gallery").toString().trim().length > 0; } catch { return false; } })();
+        check("the Mac Catalyst Gallery process is running", catalystAlive);
+        await vscode.debug.stopDebugging(catalyst);
+        try { execSync("pkill -x Gallery"); } catch { /* already gone */ }
 
         say("PASS");
     } catch (error) {

@@ -26,6 +26,26 @@ It is remembered for the workspace, so a launch asks only when nothing is
 chosen yet, or when the chosen application has no head for the host. A launch
 configuration naming `"application": "Gallery"` runs that one instead.
 
+## The debugger
+
+For a .NET MAUI head, **StateUI: Select Debugger** chooses how it is debugged,
+and the host item in the status bar shows the choice:
+
+| Debugger | What a launch does | On |
+| --- | --- | --- |
+| C# | the MAUI extension's launch, on the device its picker chose | macOS, Windows |
+| C# | `dotnet build`, then `coreclr` on the Linux head | Linux |
+| Swift · iOS Simulator | `.scripts/Maui/run-app.sh ios`, then lldb-dap attaches | macOS |
+| Swift · Mac Catalyst | `.scripts/Maui/run-app.sh maccatalyst`, then lldb-dap attaches | macOS |
+| C# + Swift · Mac Catalyst | the C# launch, and lldb-dap attaches beside it once the app runs | macOS |
+| Swift | `.scripts/Maui/run-app.ps1`, then lldb-dap attaches | Windows |
+| Swift | `dotnet build`, then lldb-dap launches the head | Linux |
+
+C# on iOS, Android and Mac Catalyst needs the MAUI extension's debugger: those
+heads run on Mono. Swift attaches only to a process this machine runs, and on the
+iOS Simulator only after the app has started, because the simulator's watchdog
+kills an app a debugger holds stopped.
+
 ## Tests
 
 **StateUI: Run Tests** offers the workspace's suites, every one ticked, and runs

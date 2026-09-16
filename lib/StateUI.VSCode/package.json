@@ -39,6 +39,11 @@
         "category": "StateUI"
       },
       {
+        "command": "stateui.selectDebugger",
+        "title": "Select Debugger",
+        "category": "StateUI"
+      },
+      {
         "command": "stateui.runTests",
         "title": "Run Tests",
         "category": "StateUI"
