@@ -1,8 +1,9 @@
 {
   // Tests, builds and cleans for both hosts.
   //
-  // The MAUI tasks are for manual use as well as for the launches: "Debug app
-  // (C#)" builds through the MAUI extension, which respects the device picker,
+  // For running by hand: the launches are the StateUI extension's "StateUI:
+  // Debug" and "StateUI: Release", which build the same way these do. A MAUI
+  // launch builds through the MAUI extension, which respects the device picker,
   // and the Swift side is compiled for that platform as part of the build by
   // .scripts/Maui/StateUI.targets.
   //
@@ -129,7 +130,7 @@
     },
     {
       // The Linux head, the only framework a Linux host builds - nothing to
-      // pick. The preLaunchTask of "Debug app (Linux)".
+      // pick.
       "label": "Build app (Linux)",
       "type": "shell",
       "command": "dotnet",
@@ -169,7 +170,8 @@
     },
     {
       // Builds and launches the MAUI app WITHOUT a debugger, then returns once
-      // the process exists: the preLaunchTask of "Debug app (Swift)".
+      // the process exists - what the StateUI extension runs before a Swift
+      // debugger attaches.
       "label": "Run app (no debugger)",
       "type": "shell",
       "problemMatcher": [],
@@ -189,8 +191,8 @@
     },
     {
       // The same launch with the OPTIMIZED build. For Android, or for a
-      // Release build that follows the device picker, take "Launch app
-      // (Release)" in launch.json.
+      // Release build that follows the device picker, take "StateUI: Release"
+      // with the C# debugger.
       "label": "Run app (Release, no debugger)",
       "type": "shell",
       "problemMatcher": [],
@@ -206,26 +208,6 @@
       "windows": {
         "command": "powershell",
         "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "run-app.ps1", "-Configuration", "Release"]
-      }
-    },
-    {
-      // Waits until the app process exists, for the attaching half of a
-      // compound. Polls rather than sleeping: no constant fits a cold build
-      // and a warm one.
-      "label": "Wait for app startup",
-      "type": "shell",
-      "problemMatcher": [],
-      "osx": {
-        "command": "bash",
-        "args": ["${workspaceFolder}/.vscode/wait-for-app.sh"]
-      },
-      "linux": {
-        "command": "bash",
-        "args": ["${workspaceFolder}/.vscode/wait-for-app.sh"]
-      },
-      "windows": {
-        "command": "powershell",
-        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/.vscode/wait-for-app.ps1"]
       }
     },
     {

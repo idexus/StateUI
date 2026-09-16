@@ -19,6 +19,11 @@ extension Fixtures {
         ".build-appkit", ".build-maui", ".sourcekit-lsp",
     ]
 
+    /// The endings of byproducts named after their project: an editor writes
+    /// `Gallery.csproj.user` when a head is chosen to run - `*.user`, which
+    /// .gitignore ignores for the same reason.
+    static let byproductEndings: [String] = [".user"]
+
     /// `lib/StateUI.Maui/Template/templates/StateUIStarter`, the application
     /// the `dotnet new` template writes out - a whole application kept as one,
     /// named by the token the template replaces.
@@ -69,7 +74,8 @@ extension Fixtures {
             guard let names = try? FileManager.default.contentsOfDirectory(atPath: here.path)
             else { return }
 
-            for name in names where !leftOut.contains(name) {
+            for name in names where !leftOut.contains(name)
+                && !Fixtures.byproductEndings.contains(where: name.hasSuffix) {
                 let path = relative.isEmpty ? name : relative + "/" + name
                 var isDirectory: ObjCBool = false
 

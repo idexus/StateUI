@@ -95,9 +95,9 @@ Run every active suite:
 dotnet test lib/StateUI.Maui/Tests
 ```
 
-VS Code exposes F5 configurations for Gallery and HelloWorld under "1 AppKit",
-and the MAUI launches under "2 MAUI", which run on the device chosen in the
-status bar.
+In VS Code, the StateUI extension in `lib/StateUI.VSCode` offers "StateUI:
+Debug" and "StateUI: Release" for every application and host - chosen in its
+status bar - and **StateUI: Run Tests** for the suites.
 
 ## Continuous integration
 

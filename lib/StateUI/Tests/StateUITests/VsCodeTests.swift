@@ -5,9 +5,8 @@
 // anywhere.
 //
 // Everything here is a NAME in one JSON file pointing at a name in another: a
-// launch names its preLaunchTask, a compound names its configurations, a
-// Release launch names a field the MAUI extension only believes behind a
-// setting. No build reads any of it, so a rename that misses a file does not
+// launch names its preLaunchTask, a task names a script, a Release launch
+// becomes a field the MAUI extension only believes behind a setting. No build reads any of it, so a rename that misses a file does not
 // fail - the button simply does nothing when pressed, which reads as "the
 // debugger is broken" rather than as a stale string.
 
@@ -33,26 +32,30 @@ final class VsCodeTests: XCTestCase {
         }
     }
 
-    /// Both hosts have their launches: the AppKit applications and every MAUI
-    /// platform, Linux's three included - the MAUI extension's launch type
-    /// cannot serve a plain net10.0 head, so Linux's are entries of their own.
-    func testEveryHostHasItsLaunches() throws {
+    /// The launches are the StateUI extension's: ONE Debug and ONE Release of
+    /// type `stateui`, which the extension resolves into the chosen host's own
+    /// debugger - AppKit, every MAUI platform, Linux's included. No launch
+    /// names a host or an application of its own any more, so none can drift
+    /// from the extension that chooses them.
+    func testTheLaunchesAreTheExtensions() throws {
         for layout in layouts {
             let launch = try json(at: layout.directory.appendingPathComponent("launch.json"))
-            let names = Set(array(launch, "configurations").compactMap { $0["name"] as? String })
-                .union(array(launch, "compounds").compactMap { $0["name"] as? String })
+            let configurations = array(launch, "configurations")
+            let stateUI = configurations.filter { ($0["type"] as? String) == "stateui" }
 
-            for name in [
-                "Debug Gallery (AppKit)", "Release Gallery (AppKit)",
-                "Debug HelloWorld (AppKit)", "Release HelloWorld (AppKit)",
-                "Debug app (C#)", "Launch app (Release)", "Debug app (Swift)",
-                "Debug app (C# + Swift, Mac Catalyst)",
-                "Debug app (Linux)", "Debug app (Swift, Linux)", "Launch app (Release, Linux)",
-            ] {
-                XCTAssertTrue(
-                    names.contains(name),
-                    "\(layout.name) has no \"\(name)\" - F5 offers nothing for it.")
+            XCTAssertEqual(
+                stateUI.compactMap { $0["name"] as? String }, ["StateUI: Debug", "StateUI: Release"],
+                "\(layout.name) does not offer exactly StateUI: Debug and StateUI: Release.")
+            XCTAssertEqual(stateUI.compactMap { $0["configuration"] as? String }, ["debug", "release"])
+
+            for entry in configurations {
+                let name = entry["name"] as? String ?? "?"
+                XCTAssertFalse(
+                    ["lldb-dap", "maui"].contains(entry["type"] as? String),
+                    "\(layout.name) launches \"\(name)\" itself - the extension resolves launches.")
             }
+            XCTAssertTrue(array(launch, "compounds").isEmpty,
+                          "\(layout.name) has a compound - C# with Swift is the extension's debugger.")
 
             let tasks = try String(
                 contentsOf: layout.directory.appendingPathComponent("tasks.json"), encoding: .utf8)
@@ -85,54 +88,17 @@ final class VsCodeTests: XCTestCase {
         }
     }
 
-    /// Every configuration a compound names exists in the same launch.json. A
-    /// member VS Code cannot find starts nothing, and the compound comes up
-    /// with only its other half.
-    func testEveryCompoundMemberIsAConfigurationThatExists() throws {
-        for layout in layouts {
-            let launch = try json(at: layout.directory.appendingPathComponent("launch.json"))
-            let names = Set(array(launch, "configurations").compactMap { $0["name"] as? String })
-
-            let compounds = array(launch, "compounds")
-            XCTAssertFalse(
-                compounds.isEmpty,
-                "\(layout.name) has no compound - \"Debug app (C# + Swift, Mac Catalyst)\" is one.")
-
-            for compound in compounds {
-                let members = compound["configurations"] as? [String] ?? []
-                let name = compound["name"] as? String ?? "an unnamed compound"
-
-                XCTAssertGreaterThan(
-                    members.count, 1,
-                    "compound \"\(name)\" in \(layout.name) has fewer than two members.")
-
-                for member in members {
-                    XCTAssertTrue(
-                        names.contains(member),
-                        "compound \"\(name)\" in \(layout.name) names \"\(member)\", which is "
-                            + "no configuration in its launch.json.")
-                }
-            }
-        }
-    }
-
-    /// THE RELEASE LAUNCH IS BELIEVED, which takes two files agreeing:
-    /// `"configuration": "Release"` is read by the MAUI extension only while
-    /// `maui.configuration.useLaunchJsonConfigurations` is on, a setting that
-    /// defaults to OFF - and with it off the Release launch quietly builds
-    /// Debug.
+    /// THE RELEASE LAUNCH IS BELIEVED, which takes the extension and a setting
+    /// agreeing: on MAUI "StateUI: Release" becomes a `maui` launch carrying
+    /// `"configuration": "Release"`, which the MAUI extension reads only while
+    /// `maui.configuration.useLaunchJsonConfigurations` is on - a setting that
+    /// defaults to OFF, and with it off the Release launch quietly builds Debug.
     func testTheReleaseLaunchIsBelieved() throws {
         for layout in layouts {
             let launch = try json(at: layout.directory.appendingPathComponent("launch.json"))
-            let release = array(launch, "configurations").first {
-                ($0["configuration"] as? String) == "Release"
-            }
-
-            XCTAssertNotNil(release, "\(layout.name) has no launch against the Release build.")
-            XCTAssertEqual(
-                release?["type"] as? String, "maui",
-                "the Release launch in \(layout.name) is not the MAUI type, the one that "
-                    + "reads the \"configuration\" field.")
+            XCTAssertNotNil(
+                array(launch, "configurations").first { ($0["configuration"] as? String) == "release" },
+                "\(layout.name) has no launch against the Release build.")
 
             let settings = try json(at: layout.directory.appendingPathComponent("settings.json"))
             XCTAssertEqual(
@@ -142,29 +108,17 @@ final class VsCodeTests: XCTestCase {
         }
     }
 
-    /// AND ON WINDOWS IT FINDS THE EXECUTABLE: the extension works out the
-    /// executable without the configuration, so the Release launch spells the
-    /// program out - and the path carries no architecture only because the
-    /// project keeps the runtime identifier out of its output path.
-    func testTheReleaseLaunchFindsTheExecutableOnWindows() throws {
-        let launch = try json(
-            at: Fixtures.repository.appendingPathComponent(".vscode/launch.json"))
-        let release = try XCTUnwrap(
-            array(launch, "configurations").first { ($0["configuration"] as? String) == "Release" },
-            "the repository has no launch against the Release build.")
-
-        let program = try XCTUnwrap(
-            (release["windows"] as? [String: Any])?["program"] as? String,
-            "the Release launch has no \"windows\": { \"program\" }.")
-
-        XCTAssertEqual(
-            program,
-            "${workspaceFolder}/apps/Gallery/Platforms/Maui/bin/Release/"
-                + "net10.0-windows10.0.19041.0/Gallery.exe")
-
-        for rid in ["win-arm64", "win-x64", "win10-"] {
-            XCTAssertFalse(program.contains(rid), "the Release program names \(rid).")
-        }
+    /// AND ON WINDOWS IT FINDS THE EXECUTABLE: the MAUI extension works the
+    /// executable out without the configuration, so the extension names the
+    /// Release program - and the path it builds carries no architecture only
+    /// because the project keeps the runtime identifier out of its output path.
+    /// The extension's own suite asserts the path; this holds the project to it.
+    func testTheWindowsReleaseExecutableHasTheExtensionsPath() throws {
+        let debug = try String(
+            contentsOf: Fixtures.repository.appendingPathComponent("lib/StateUI.VSCode/Sources/debug.ts"),
+            encoding: .utf8)
+        XCTAssertTrue(debug.contains("\"bin\", \"Release\", \"net10.0-windows10.0.19041.0\""),
+                      "the extension no longer names the Windows Release executable.")
 
         let csproj = try String(
             contentsOf: Fixtures.repository.appendingPathComponent(
@@ -267,8 +221,7 @@ final class VsCodeTests: XCTestCase {
     }
 
     /// THE PICKER'S ORDER IS `presentation.order`, NOT THE ORDER IN THE FILE,
-    /// and each host's widest launch is first in its group: the AppKit
-    /// Gallery, and the MAUI launch that runs on every platform and device.
+    /// and StateUI: Debug is the first launch offered.
     /// Two orders that collide are VS Code's to break however it likes.
     func testTheWidestLaunchIsFirstInItsGroup() throws {
         for layout in layouts {
@@ -299,8 +252,7 @@ final class VsCodeTests: XCTestCase {
                 entries.filter { $0.group == group }.min { $0.order < $1.order }?.name
             }
 
-            XCTAssertEqual(first("1 AppKit"), "Debug Gallery (AppKit)")
-            XCTAssertEqual(first("2 MAUI"), "Debug app (C#)")
+            XCTAssertEqual(first("0 StateUI"), "StateUI: Debug")
         }
     }
 

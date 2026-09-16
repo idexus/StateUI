@@ -15,8 +15,9 @@
 # ---------------------------------------------------------------------------
 # Builds and launches the app WITHOUT a debugger, then returns.
 #
-# Used as the preLaunchTask of "Debug app (Swift)", which is the working way to
-# debug Swift on the iOS Simulator: iOS kills an app that stays stopped, and the
+# Run before a Swift debugger attaches - by the StateUI extension's Swift
+# debuggers, and by a generated application's "Debug app (Swift)" - which is the
+# working way to debug Swift on the iOS Simulator: iOS kills an app that stays stopped, and the
 # C# debugger starting at the same moment widens that window enough to make it
 # near-certain. Launching first, attaching second, avoids it. The "Run app (no
 # debugger)" and "Run app (Release, no debugger)" tasks call it for the launch

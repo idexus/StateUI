@@ -312,49 +312,55 @@ accept:
 
 ## Debugging in VS Code
 
-`.vscode/launch.json` groups its entries as "1 AppKit", "2 MAUI", and "3 tests".
+Debugging runs through the StateUI extension, in `lib/StateUI.VSCode`. Build it
+with `npm run package` there, and install the `.vsix` it writes. `launch.json`
+offers two launches, "StateUI: Debug" and "StateUI: Release", and three
+choices in the status bar decide what they do:
 
-| Goal | Configuration |
-| --- | --- |
-| The AppKit host | "Debug Gallery (AppKit)", "Debug HelloWorld (AppKit)", and their Release entries |
-| Any MAUI platform except Linux, C# | "Debug app (C#)" |
-| Any MAUI platform except Linux, the Release build | "Launch app (Release)" |
-| iOS Simulator, Swift | "Debug app (Swift)" |
-| Windows, Swift | "Debug app (Swift)" |
-| Mac Catalyst, C# and Swift | "Debug app (C# + Swift, Mac Catalyst)" |
-| Linux, C# | "Debug app (Linux)" |
-| Linux, the Release build | "Launch app (Release, Linux)" |
-| Linux, Swift | "Debug app (Swift, Linux)" |
-| Windows, C# and Swift in one session | Visual Studio, with `SwiftDebugFormat=codeview` |
-| Android, or any physical device, Swift | not available: LLDB here reaches only local processes |
-| The suites | "Test: all (Swift + C#)", "Test: C#", "Test: C# (debug)" |
+- **The host**, AppKit or .NET MAUI. The editor works as that host too: code
+  under `#if APPKIT` compiles and completes only while AppKit is chosen.
+- **The application**, remembered for the workspace. A launch asks only when
+  none is chosen, or when the chosen one has no head for the host.
+- **The debugger**, for a MAUI head:
 
-- **"Debug app (C#)" and "Launch app (Release)" name no project.** ".NET MAUI:
-  Select Startup Project" chooses the head, and the status bar chooses the
-  device. They build Release only because `.vscode/settings.json` sets
+| Debugger | What the launch does | Where |
+| --- | --- | --- |
+| C# | the MAUI extension's launch, on the device its status bar chose | macOS, Windows |
+| C# | `dotnet build`, then `coreclr` on `bin/<Configuration>/net10.0/<App>` | Linux |
+| Swift · iOS Simulator | `run-app.sh ios`, then lldb-dap attaches to the process | macOS |
+| Swift · Mac Catalyst | `run-app.sh maccatalyst`, then lldb-dap attaches | macOS |
+| C# + Swift · Mac Catalyst | the C# launch, then lldb-dap attaches beside it once the process runs | macOS |
+| Swift | `run-app.ps1`, then lldb-dap attaches to `<App>.exe` | Windows |
+| Swift | `dotnet build`, then lldb-dap launches the head | Linux |
+
+Android and physical devices have no Swift debugger here: LLDB reaches only
+local processes. For Windows with C# and Swift in one session, use Visual
+Studio with `SwiftDebugFormat=codeview`. "Test: C# (debug)" steps through the
+C# suite; **StateUI: Run Tests** runs every suite as the chosen host.
+
+- **A C# launch names the application's project and no device.** The MAUI
+  extension's status bar chooses the device. The launch builds Release only
+  because `.vscode/settings.json` sets
   `maui.configuration.useLaunchJsonConfigurations`; without it the extension
-  builds Debug. On Windows the Release entry names its executable,
-  `apps/Gallery/Platforms/Maui/bin/Release/net10.0-windows10.0.19041.0/Gallery.exe`.
-- **The Swift attach entries attach by process name.** In this repository that
-  name is `Gallery` (`Gallery.exe` on Windows). The Linux entries start
-  `apps/Gallery/Platforms/Maui/bin/<Configuration>/net10.0/Gallery`. A
-  generated application's `.vscode` names its own project instead.
-- **Attaching stops the application; press Continue.** Never add `--continue`
-  to an attach command: lldb-dap registers breakpoints while the process is
-  stopped.
+  builds Debug. On Windows a Release launch names its executable,
+  `bin/Release/net10.0-windows10.0.19041.0/<App>.exe`.
+- **Swift attaches by process name**: the application's name, with `.exe` on
+  Windows.
+- **Attaching stops the application; press Continue.** lldb-dap registers
+  breakpoints while the process is stopped.
 - **iOS Simulator.** The simulator's watchdog kills an application a debugger
-  holds stopped. So "Debug app (Swift)" first launches the application without
-  a debugger, through the task "Run app (no debugger)", and attaches afterwards.
-- **Mac Catalyst.** In the compound, C# launches the application and Swift
-  attaches once the task "Wait for app startup" finds the process. The two
-  sessions stay separate: stepping in C# does not enter Swift.
+  holds stopped, so Swift attaches only after `run-app.sh` has started the
+  application without one. C# and Swift together are not offered there.
+- **Mac Catalyst.** In C# + Swift, the C# session starts the application and
+  Swift attaches when the process appears. The sessions stay separate:
+  stepping in C# does not enter Swift. Stopping one stops both.
 - **Windows.** A process accepts one native debugger. VS Code therefore debugs
   Swift and C# in separate sessions. Visual Studio debugs both in one, with the
   `"nativeDebugging": true` profile in `Properties/launchSettings.json` and a
   CodeView build. DWARF stays the default because LLDB reads it; a Debug build
   links with lld-link to keep the DWARF sections LLDB needs.
 - **Linux.** Ubuntu and Debian set `kernel.yama.ptrace_scope = 1`, so the Swift
-  entry launches the application under LLDB instead of attaching. C#
+  debugger launches the application under LLDB instead of attaching. C#
   breakpoints do not bind in that session.
 
 Several tasks in `.vscode/tasks.json` serve the MAUI host:
@@ -378,8 +384,9 @@ Several tasks in `.vscode/tasks.json` serve the MAUI host:
 - **New applications:** "New app (in apps/)".
 
 The build and clean tasks name the Gallery's head. A generated application's
-`.vscode` names its own, and with `--appkit` it adds "Debug app (AppKit)" and
-"Release app (AppKit)".
+`.vscode` names its own launches - "Debug app (C#)", "Debug app (Swift)" and the
+Linux ones - and with `--appkit` it adds "Debug app (AppKit)" and "Release app
+(AppKit)".
 
 ## Controls, acts, events, and stores registered in C#
 

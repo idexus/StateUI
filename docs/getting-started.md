@@ -36,9 +36,10 @@ Build the signed Gallery bundle with its resources and icon:
 .scripts/AppKit/build-gallery-appkit.sh debug
 ```
 
-VS Code also exposes Debug and Release F5 configurations for both
-applications. [Starting with the MAUI host](#starting-with-the-maui-host) lists
-what the MAUI host needs.
+In VS Code, the StateUI extension (`lib/StateUI.VSCode`) offers "StateUI:
+Debug" and "StateUI: Release" for either application.
+[Starting with the MAUI host](#starting-with-the-maui-host) lists what the MAUI
+host needs.
 
 ## Application shape
 

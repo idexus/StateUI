@@ -44,10 +44,12 @@ resolves no host package and compiles no line of one host's half, and a
 `Platforms/AppKit/` folder needs no condition inside it.
 
 `.scripts/AppKit/build-gallery-appkit.sh` and the AppKit tasks set the variable
-for a build, and `.vscode/settings.json` sets it for the editor, whose language
-server therefore resolves `Platforms/AppKit` and completes the code inside
-`#if APPKIT`. The editor works in one mode at a time, and the language server
-reads the variable when it starts: changing it asks for the window to reload.
+for a build. The editor gets it from the StateUI extension (`lib/StateUI.VSCode`):
+choosing AppKit in its status bar sets the variable for the Swift language
+server and restarts it, which then resolves `Platforms/AppKit` and completes the
+code inside `#if APPKIT`, with no window reload. A
+`swift.swiftEnvironmentVariables` setting naming the variable would override
+that choice, so `.vscode/settings.json` sets none.
 
 ## Gallery
 
@@ -125,9 +127,10 @@ Build the smaller example:
 STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld --product HelloWorldAppKit
 ```
 
-VS Code exposes Debug and Release F5 configurations for both applications.
-The Gallery build task assembles its resources, icon, runtime libraries, and
-ad-hoc signature.
+In VS Code, the StateUI extension (`lib/StateUI.VSCode`) runs either
+application: "StateUI: Debug" and "StateUI: Release" build and start the one
+chosen in its status bar, on the host chosen there. The Gallery's build
+assembles its resources, icon, runtime libraries, and ad-hoc signature.
 
 The MAUI host requires the .NET 10 SDK and, except on Linux, the MAUI workload.
 A head compiles the library and its application's Swift module for the
@@ -138,8 +141,8 @@ dotnet build apps/Gallery/Platforms/Maui -f net10.0-maccatalyst
 dotnet build apps/Gallery/Platforms/Maui -f net10.0-android -t:Run
 ```
 
-VS Code groups those launches under "2 MAUI". [MAUI host](maui-host.md) lists
-every platform, launch, and task.
+[MAUI host](maui-host.md) lists every platform, how each is debugged, and the
+tasks.
 
 ## Test
 
@@ -163,7 +166,7 @@ drives native AppKit objects. The third treats Gallery as application behavior
 and compiles the documentation examples. The fourth drives MAUI controls as
 ordinary .NET objects over the fixtures the first writes; it needs the .NET 10
 SDK and, except on Linux, the MAUI workload, and runs its classes one at a
-time. The VS Code launch "Test: all (Swift + C#)" runs all four.
+time. In VS Code, **StateUI: Run Tests** runs them as the chosen host.
 
 A passing unit suite does not prove native drawing or interaction. Exercise a
 user-visible change in the running Gallery on the affected platform. Run only
