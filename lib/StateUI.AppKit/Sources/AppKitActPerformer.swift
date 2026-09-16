@@ -48,7 +48,42 @@ final class AppKitActPerformer {
             reply(call, [.bool(hideKeyboard())])
 
         default:
+            perform(registered: call)
+        }
+    }
+
+    /// Performs an act the APPLICATION registered with this host - or fails the
+    /// call where nothing did, which is what a name nobody answers means.
+    ///
+    /// An aimed act names its element at argument 0, exactly as the library's
+    /// own do, so the identity is turned back into the view here and the
+    /// performer is handed the view and the arguments after it.
+    private func perform(registered call: HostActCall) {
+        guard let performer = AppKitInterop.performers[call.act] else {
             fail(call, "the AppKit host does not perform the act '\(call.act.name)'")
+            return
+        }
+
+        do {
+            switch performer {
+            case .application(let perform):
+                reply(call, try perform(call.arguments))
+
+            case .aimed(let perform):
+                guard let target = Self.target(of: call) else {
+                    fail(call, "`\(call.act.name)` has to say which view it is for")
+                    return
+                }
+
+                guard let view = renderer.presentedView(id: target) else {
+                    fail(call, "there is no view \(target) on screen")
+                    return
+                }
+
+                reply(call, try perform(view, Array(call.arguments.dropFirst())))
+            }
+        } catch {
+            fail(call, "\(error)")
         }
     }
 

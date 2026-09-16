@@ -105,6 +105,17 @@ struct AppKitCoreLink: Sendable {
         StateUIHost.fail(completion, reason: reason)
     }
 
+    /// Raises an event of the application's - one no control raises - with the
+    /// values its contract declares, and answers how many subscriptions heard
+    /// it. Safe from any thread, as the sources reporting one are.
+    @discardableResult
+    func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
+        _ value: repeat each Value
+    ) -> Int {
+        StateUIHost.raise(event, repeat each value)
+    }
+
     // MARK: - The application, its scenes and its kept values
 
     /// Reports the appearance themed values resolve against.
