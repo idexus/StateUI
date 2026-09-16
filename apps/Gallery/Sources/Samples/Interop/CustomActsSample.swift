@@ -108,6 +108,42 @@ struct CustomActsSample: SampleContent, ExampleContent {
         }
         """
 
+    static let hostCode = HostCode(
+        heading: "In C#",
+        language: .csharp,
+        code: """
+            // In MauiProgram.CreateMauiApp. A performer is a plain or an async
+            // function - the two shapes Add takes - and answers with values.
+            StateUIActs.Add("Gallery.SetClipboard", async call =>
+            {
+                await Clipboard.Default.SetTextAsync(call.GetString(0) ?? "");
+                return [];
+            });
+
+            StateUIActs.Add("Gallery.ReadClipboard", async call =>
+                [HostValue.Of(await Clipboard.Default.GetTextAsync() ?? "")]);
+
+            StateUIActs.Add("Gallery.BatteryLevel", call =>
+                [
+                    HostValue.Of(Battery.Default.ChargeLevel),
+                    HostValue.Of(Battery.Default.State == BatteryState.Charging),
+                ]);
+
+            // The aimed one: argument 0 is the control the Swift side named,
+            // and TargetOf turns it back into the control - null once that
+            // control has left the screen, which is an ordinary answer.
+            StateUIActs.Add("Gallery.FlashRating", async call =>
+            {
+                if (StateUIActs.TargetOf(call) is RatingBar bar)
+                {
+                    await bar.FadeToAsync(0.25, 120);
+                    await bar.FadeToAsync(1, 120);
+                }
+
+                return [];
+            });
+            """)
+
     var content: any View {
         VStack {
             DebugInfoLabel()

@@ -68,6 +68,89 @@ struct CustomBindingSample: SampleContent, ExampleContent {
         }
         """
 
+    static let hostCode = HostCode(
+        heading: "In C#",
+        language: .csharp,
+        code: """
+            public sealed class RatingBar : ContentView
+            {
+                public event EventHandler<double>? RatingChanged;
+
+                public static readonly BindableProperty RatingProperty = BindableProperty.Create(
+                    nameof(Rating), typeof(double), typeof(RatingBar), 0.0,
+                    propertyChanged: (bindable, _, now) =>
+                    {
+                        var bar = (RatingBar)bindable;
+                        bar.Repaint();
+                        bar.RatingChanged?.Invoke(bar, (double)now);
+                    });
+
+                public double Rating
+                {
+                    get => (double)GetValue(RatingProperty);
+                    set => SetValue(RatingProperty, value);
+                }
+
+                public RatingBar()
+                {
+                    var row = new HorizontalStackLayout { Spacing = 6 };
+
+                    for (int index = 0; index < _stars.Length; index++)
+                    {
+                        _stars[index] = new Label { Text = "*", FontSize = 34 };
+                        row.Children.Add(_stars[index]);
+                    }
+
+                    // One recognizer on the row, the star read from the tap's
+                    // position: a TapGestureRecognizer on a Label does not
+                    // fire on Mac Catalyst, and the position needs no
+                    // per-platform hit-testing.
+                    var tap = new TapGestureRecognizer();
+                    tap.Tapped += (_, e) =>
+                    {
+                        if (e.GetPosition(row) is Point at && row.Width > 0)
+                        {
+                            int star = (int)(at.X / (row.Width / _stars.Length));
+                            Rating = Math.Clamp(star, 0, _stars.Length - 1) + 1;
+                        }
+                    };
+                    row.GestureRecognizers.Add(tap);
+
+                    Content = row;
+                    Repaint();
+                }
+
+                private void Repaint()
+                {
+                    for (int index = 0; index < _stars.Length; index++)
+                    {
+                        _stars[index].TextColor = Rating >= index + 1 ? Lit : Ember;
+                    }
+                }
+
+                private static readonly Color Lit = Color.FromArgb("#F5B546");
+                private static readonly Color Ember = Lit.WithAlpha(0.22f);
+                private readonly Label[] _stars = new Label[5];
+            }
+
+            // And the registration, in MauiProgram.CreateMauiApp. The value is
+            // DECLARED rather than applied by hand, so the renderer assigns it
+            // whenever a message carries it - and a style and a walk reach it
+            // through the same table.
+            StateUIControls.Add("Gallery.RatingBar",
+                create: raise =>
+                {
+                    var stars = new RatingBar();
+                    stars.RatingChanged += (_, rating) =>
+                        raise(stars, "ratingChanged", HostValue.Of(rating));
+                    return stars;
+                },
+                properties: new Dictionary<string, BindableProperty>
+                {
+                    ["rating"] = RatingBar.RatingProperty,
+                });
+            """)
+
     var content: any View {
         VStack {
             DebugInfoLabel()

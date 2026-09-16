@@ -68,6 +68,26 @@ struct CustomEventsSample: SampleContent, ExampleContent {
         }
         """
 
+    static let hostCode = HostCode(
+        heading: "In C#",
+        language: .csharp,
+        code: """
+            // In MauiProgram.CreateMauiApp. Raising is safe from any thread,
+            // and a raise nobody hears is an ordinary answer, so the sources
+            // are wired unconditionally.
+            Battery.Default.BatteryInfoChanged += (_, e) =>
+                StateUIEvents.Raise("Gallery.BatteryChanged",
+                    HostValue.Of(e.ChargeLevel),
+                    HostValue.Of(e.State == BatteryState.Charging));
+
+            Connectivity.Current.ConnectivityChanged += (_, e) =>
+                StateUIEvents.Raise("Gallery.ConnectivityChanged",
+                    HostValue.Of(e.NetworkAccess == NetworkAccess.Internet));
+
+            // Android also wants ACCESS_NETWORK_STATE declared in its manifest
+            // for Connectivity to read the network state; the gallery's says so.
+            """)
+
     var content: any View {
         VStack {
             DebugInfoLabel()

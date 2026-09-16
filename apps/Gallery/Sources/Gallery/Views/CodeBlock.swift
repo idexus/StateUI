@@ -9,9 +9,20 @@ import StateUI
 struct CodeBlock: ContentView {
     private let code: String
 
+    private var spoken: CodeLanguage = .swift
+
     /// - Parameter code: The snippet, as a reader would write it.
     init(_ code: String) {
         self.code = code
+    }
+
+    /// What the snippet is written in - Swift unless a block says otherwise,
+    /// which only a listing beside an example's own code does. Steers the
+    /// highlighter's vocabulary and nothing else.
+    func language(_ value: CodeLanguage) -> Self {
+        var copy = self
+        copy.spoken = value
+        return copy
     }
 
     var content: any View {
@@ -44,7 +55,7 @@ struct CodeBlock: ContentView {
                     // in the same colour, and the snippet never changes, so
                     // the offsets never move.
                     ForEach(
-                        Array(CodeHighlight.runs(in: code).enumerated()),
+                        Array(CodeHighlight.runs(in: code, language: spoken).enumerated()),
                         id: \.offset
                     ) { run in
                         // The size goes on every run rather than on the

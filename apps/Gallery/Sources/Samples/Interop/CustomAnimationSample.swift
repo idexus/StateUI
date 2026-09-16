@@ -56,6 +56,34 @@ struct CustomAnimationSample: SampleContent, ExampleContent {
         }
         """
 
+    static let hostCode = HostCode(
+        heading: "In C#",
+        language: .csharp,
+        code: """
+            // In MauiProgram.CreateMauiApp - the same registration again, and
+            // nothing in it mentions animation.
+            StateUIControls.Add("Gallery.RatingBar",
+                create: raise =>
+                {
+                    var stars = new RatingBar();
+                    stars.RatingChanged += (_, rating) =>
+                        raise(stars, "ratingChanged", HostValue.Of(rating));
+                    return stars;
+                },
+                properties: new Dictionary<string, BindableProperty>
+                {
+                    ["rating"] = RatingBar.RatingProperty,
+                });
+
+            // A walked value arrives as a REGISTRATION and never as a value:
+            // the host resolves RatingProperty through the same table a style
+            // setter uses, and from then on reads the value off the state on
+            // its own frames. No message after that one mentions the rating.
+            // Every frame assigns RatingProperty under the host's own write,
+            // so the RatingChanged it raises is refused before it reaches
+            // Swift, and nothing on this page listens for a tapped star.
+            """)
+
     var content: any View {
         VStack {
             DebugInfoLabel()

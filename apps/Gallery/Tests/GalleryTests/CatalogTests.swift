@@ -72,6 +72,26 @@ private struct Filling: SampleContent, ExampleContent {
     var notes: Element? { nil }
 }
 
+/// A sample whose example has a half on the host - the shape an interop sample
+/// has, without being one, so the second section is guarded on every host.
+private struct TwoSided: SampleContent, ExampleContent {
+    static let id = "twoSided"
+    static let title = "Two sides"
+    static let summary = "An example with a half written on the host."
+    static let code = "Label(\"row\")"
+
+    static let hostCode = HostCode(
+        heading: "In the host",
+        language: .csharp,
+        code: "var row = new Label();")
+
+    var content: any View {
+        Label("row")
+    }
+
+    var notes: Element? { nil }
+}
+
 private extension Sample {
     /// Every listing on the sample's page as one text - what a check over all
     /// of a sample's Swift reads.
@@ -686,6 +706,48 @@ final class CatalogTests: XCTestCase {
             "an example's name heads its group, above the sections under it")
         XCTAssertEqual(verticalScrollers(in: page), 1, "a scroller inside the page's scroller")
     }
+
+    /// An example with a half on the host shows it after its Swift, under the
+    /// heading the example itself gives it - on the scrolling page and on a
+    /// held sample's code tab alike.
+    ///
+    /// This is the guard that was missing: the section was taken out and every
+    /// suite stayed green, because nothing here asked whether the page drew
+    /// it. An example with one half still draws one section, which is the
+    /// other half of the same question.
+    func testAnExamplesHostHalfIsShownUnderItsOwnHeading() {
+        let sample = Sample(TwoSided())
+
+        let page = SamplePage(sample: sample, nav: Place().nav).body.built
+        XCTAssertEqual(headings(in: page), ["Example", "In Swift", "In the host"])
+
+        let tab = SampleTabPage(sample: sample, tab: .code, nav: Place().nav).body.built
+        XCTAssertEqual(headings(in: tab), ["In Swift", "In the host"])
+
+        let plain = SamplePage(sample: Sample(Filling()), nav: Place().nav).body.built
+        XCTAssertEqual(
+            headings(in: plain), ["Example", "In Swift"],
+            "an example written in Swift alone draws no second section")
+    }
+
+    #if MAUI
+    /// Every interop example shows both halves: the Swift a reader writes, and
+    /// what answers it on the host.
+    ///
+    /// The interop group is the only one whose examples have a second half, so
+    /// losing it would show up nowhere else.
+    func testEveryInteropExampleShowsItsHostHalf() throws {
+        let interop = try XCTUnwrap(catalog().groups.first { $0.route == "interop" })
+
+        for sample in interop.samples {
+            for (index, example) in sample.examples.enumerated() {
+                XCTAssertFalse(
+                    example.hostCode.isEmpty,
+                    "\(sample.id) example \(index + 1) shows no host half")
+            }
+        }
+    }
+    #endif
 
     /// A held sample's code tab is one scroller: each example's name, then its
     /// notes and its Swift, in turn - the notes in no scroller of their own.

@@ -107,6 +107,48 @@ protocol ExampleContent: ContentView {
     /// other view here is. Required with no default, so a `notes` of any other
     /// type is a compile error rather than a property nothing reads.
     var notes: Element? { get }
+
+    /// The far side of the example, where it has one: the code that answers
+    /// this example on the host, under a heading and in a language the
+    /// example itself names.
+    ///
+    /// `.nothing` where the example is Swift alone, which is almost every one,
+    /// and the page then draws no second section.
+    ///
+    /// NOT an optional, and that is the point: `static let hostCode =
+    /// HostCode(…)` does not satisfy an optional requirement at all - the two
+    /// types differ - so the default below would answer for it in silence,
+    /// and the example would show one half while reading as if it showed two.
+    static var hostCode: HostCode { get }
+}
+
+extension ExampleContent {
+    /// Swift alone, which is what almost every example is.
+    static var hostCode: HostCode { .nothing }
+}
+
+/// One listing beside an example's own code: what answers it on the other
+/// side of the boundary.
+///
+/// The heading and the language belong to the EXAMPLE. A sample compiled for
+/// one host alone names that host in its own words; this file, which every
+/// host compiles, names none.
+struct HostCode {
+    /// What heads the section.
+    let heading: String
+
+    /// Which vocabulary colours it.
+    let language: CodeLanguage
+
+    /// The code itself, as its author wrote it.
+    let code: String
+
+    /// No far side at all - what an example written in Swift alone has, and
+    /// what the page draws nothing for.
+    static let nothing = HostCode(heading: "", language: .swift, code: "")
+
+    /// Whether there is anything to draw.
+    var isEmpty: Bool { code.isEmpty }
 }
 
 /// One example as its page shows it: the view, the words about it, and its
@@ -121,10 +163,14 @@ struct Example {
     /// The Swift that wrote it.
     let code: String
 
+    /// What answers it on the host, where the example has such a half.
+    let hostCode: HostCode
+
     init<Content: ExampleContent>(_ content: Content) {
         view = content
         notes = content.notes
         code = Content.code
+        hostCode = Content.hostCode
     }
 }
 
@@ -160,7 +206,8 @@ struct Sample {
 
     /// What the page calls example `index`: "Example" where it is the only one,
     /// "Example 2" among several. Its words and its code are always "Notes"
-    /// and "In Swift"; among several examples the example's name heads them.
+    /// and "In Swift", followed by the heading an example gives its host half
+    /// where it has one; among several examples the example's name heads them.
     func name(ofExample index: Int) -> String {
         examples.count == 1 ? "Example" : "Example \(index + 1)"
     }

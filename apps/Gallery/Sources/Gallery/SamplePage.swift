@@ -86,6 +86,14 @@ struct SamplePage: ContentView {
             }
 
             Self.section("In Swift", CodeBlock(example.code))
+
+            // The far side of the example, where it has one - under the
+            // heading the example gives it.
+            if !example.hostCode.isEmpty {
+                Self.section(
+                    example.hostCode.heading,
+                    CodeBlock(example.hostCode.code).language(example.hostCode.language))
+            }
         }
         .spacing(16)
     }

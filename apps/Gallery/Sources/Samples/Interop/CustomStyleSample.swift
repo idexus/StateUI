@@ -45,6 +45,31 @@ struct CustomStyleSample: SampleContent, ExampleContent {
         }
         """
 
+    static let hostCode = HostCode(
+        heading: "In C#",
+        language: .csharp,
+        code: """
+            // In MauiProgram.CreateMauiApp - the same registration the other
+            // samples use, and nothing in it mentions styling.
+            StateUIControls.Add("Gallery.RatingBar",
+                create: raise =>
+                {
+                    var stars = new RatingBar();
+                    stars.RatingChanged += (_, rating) =>
+                        raise(stars, "ratingChanged", HostValue.Of(rating));
+                    return stars;
+                },
+                properties: new Dictionary<string, BindableProperty>
+                {
+                    ["rating"] = RatingBar.RatingProperty,
+                });
+
+            // A style is resolved on the Swift side, by node type, and arrives
+            // here as the control's own values: "rating" lands because it is
+            // declared above, through the same table a walked value goes
+            // through.
+            """)
+
     var content: any View {
         VStack {
             DebugInfoLabel()

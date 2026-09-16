@@ -109,6 +109,95 @@ struct CustomControlSample: SampleContent, ExampleContent {
         }
         """
 
+    static let hostCode = HostCode(
+        heading: "In C#",
+        language: .csharp,
+        code: """
+            public sealed class TrafficLight : ContentView
+            {
+                public event EventHandler<int>? LampTapped;
+
+                // A number, because a closed vocabulary crosses as its
+                // member: stop 0, caution 1, go 2. Anything else lights
+                // nothing.
+                public int Signal
+                {
+                    get;
+                    set { field = value; Repaint(); }
+                } = -1;
+
+                public TrafficLight()
+                {
+                    var column = new VerticalStackLayout { Spacing = 10 };
+
+                    for (int index = 0; index < _lamps.Length; index++)
+                    {
+                        var lamp = new BoxView
+                        {
+                            WidthRequest = 44,
+                            HeightRequest = 44,
+                            CornerRadius = 22,
+
+                            // Set locally, so nothing behind a dimmed lamp
+                            // shows through its alpha in any application
+                            // that adopts the control.
+                            BackgroundColor = Colors.Transparent,
+                        };
+
+                        int tapped = index;
+                        var tap = new TapGestureRecognizer();
+                        tap.Tapped += (_, _) => LampTapped?.Invoke(this, tapped);
+                        lamp.GestureRecognizers.Add(tap);
+
+                        _lamps[index] = lamp;
+                        column.Children.Add(lamp);
+                    }
+
+                    Content = new Border { Content = column };
+                    Repaint();
+                }
+
+                // The lit lamp at full colour, the others dimmed to embers.
+                private void Repaint()
+                {
+                    for (int index = 0; index < _lamps.Length; index++)
+                    {
+                        _lamps[index].Color = index == Signal
+                            ? LampColors[index]
+                            : LampColors[index].WithAlpha(0.18f);
+                    }
+                }
+
+                private static readonly Color[] LampColors =
+                [
+                    Color.FromArgb("#E5484D"),
+                    Color.FromArgb("#F5B546"),
+                    Color.FromArgb("#46B45F"),
+                ];
+
+                private readonly BoxView[] _lamps = new BoxView[3];
+            }
+
+            // And the registration, in MauiProgram.CreateMauiApp. `create`
+            // runs once per element and wires its events; `apply` runs on
+            // every message that touches it and reads only what arrived.
+            StateUIControls.Add("Gallery.TrafficLight",
+                create: raise =>
+                {
+                    var light = new TrafficLight();
+                    light.LampTapped += (_, index) =>
+                        raise(light, "lampTapped", HostValue.Of(index));
+                    return light;
+                },
+                apply: (light, node) =>
+                {
+                    if (node.GetEnumeration("signal") is int signal)
+                    {
+                        light.Signal = signal;
+                    }
+                });
+            """)
+
     var content: any View {
         VStack {
             DebugInfoLabel()

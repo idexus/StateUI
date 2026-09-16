@@ -129,6 +129,12 @@ struct SampleTabPage: ContentView {
             }
 
             SamplePage.section("In Swift", CodeBlock(example.code))
+
+            if !example.hostCode.isEmpty {
+                SamplePage.section(
+                    example.hostCode.heading,
+                    CodeBlock(example.hostCode.code).language(example.hostCode.language))
+            }
         }
         .spacing(16)
     }
