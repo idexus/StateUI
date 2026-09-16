@@ -1,0 +1,141 @@
+{
+  "name": "stateui",
+  "displayName": "StateUI",
+  "description": "Build, run and debug StateUI applications on AppKit and .NET MAUI.",
+  "version": "0.3.1",
+  "publisher": "idexus",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/idexus/StateUI.git"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Debuggers",
+    "Other"
+  ],
+  "extensionDependencies": [
+    "swiftlang.swift-vscode"
+  ],
+  "main": "./out/Sources/extension.js",
+  "activationEvents": [
+    "workspaceContains:**/Platforms/AppKit/main.swift",
+    "workspaceContains:**/Platforms/Maui/*.csproj",
+    "onDebugResolve:stateui",
+    "onDebugDynamicConfigurations:stateui"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "stateui.selectHost",
+        "title": "Select Host",
+        "category": "StateUI"
+      },
+      {
+        "command": "stateui.cleanIndex",
+        "title": "Clean Index",
+        "category": "StateUI"
+      }
+    ],
+    "debuggers": [
+      {
+        "type": "stateui",
+        "label": "StateUI",
+        "languages": [
+          "swift"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "properties": {
+              "configuration": {
+                "type": "string",
+                "enum": [
+                  "debug",
+                  "release"
+                ],
+                "default": "debug",
+                "description": "Which build to run on the host chosen in the status bar."
+              },
+              "application": {
+                "type": "string",
+                "description": "The application to run - its name, `Gallery`. Asked at every launch when absent, the last one run offered first."
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "name": "StateUI: Debug",
+            "type": "stateui",
+            "request": "launch",
+            "configuration": "debug"
+          },
+          {
+            "name": "StateUI: Release",
+            "type": "stateui",
+            "request": "launch",
+            "configuration": "release"
+          }
+        ],
+        "configurationSnippets": [
+          {
+            "label": "StateUI: Debug",
+            "body": {
+              "name": "StateUI: Debug",
+              "type": "stateui",
+              "request": "launch",
+              "configuration": "debug"
+            }
+          },
+          {
+            "label": "StateUI: Release",
+            "body": {
+              "name": "StateUI: Release",
+              "type": "stateui",
+              "request": "launch",
+              "configuration": "release"
+            }
+          }
+        ]
+      }
+    ],
+    "taskDefinitions": [
+      {
+        "type": "stateui",
+        "required": [
+          "application",
+          "configuration"
+        ],
+        "properties": {
+          "application": {
+            "type": "string",
+            "description": "The application whose AppKit head is built."
+          },
+          "configuration": {
+            "type": "string",
+            "enum": [
+              "debug",
+              "release"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p .",
+    "test": "tsc -p . && node out/Tests/run.js",
+    "package": "tsc -p . && cp ../../LICENSE LICENSE && vsce package; rm -f LICENSE"
+  },
+  "devDependencies": {
+    "@types/node": "20.19.43",
+    "@types/vscode": "1.90.0",
+    "@vscode/vsce": "2.32.0",
+    "typescript": "5.9.3"
+  },
+  "overrides": {
+    "cheerio": "1.0.0-rc.12"
+  }
+}

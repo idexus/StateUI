@@ -5,14 +5,16 @@ import Foundation
 import XCTest
 
 final class LicenceTests: XCTestCase {
-    /// Every Swift and C# source under `lib/` starts with the two SPDX lines.
+    /// Every Swift, C# and TypeScript source under `lib/` starts with the two
+    /// SPDX lines.
     ///
     /// Outside the rule: `Package.swift`, whose first line must be the tools
     /// version, the template an application is generated from, and what a
-    /// build writes.
+    /// build writes - `node_modules` and `out` among it, which the editor
+    /// extension's tools install and compile into.
     func testEverySourceUnderLibCarriesTheLicenceHeader() throws {
         let lib = Fixtures.repository.appendingPathComponent("lib")
-        let generated: Set<String> = ["bin", "obj", ".build", "templates"]
+        let generated: Set<String> = ["bin", "obj", ".build", "templates", "node_modules", "out"]
 
         guard let walk = FileManager.default.enumerator(
             at: lib,
@@ -30,7 +32,7 @@ final class LicenceTests: XCTestCase {
                 continue
             }
 
-            guard ["swift", "cs"].contains(file.pathExtension),
+            guard ["swift", "cs", "ts"].contains(file.pathExtension),
                   file.lastPathComponent != "Package.swift" else { continue }
 
             read += 1

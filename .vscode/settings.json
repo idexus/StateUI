@@ -23,16 +23,11 @@
     "**/Template/templates/**": true
   },
 
-  // AN APPLICATION'S AppKit HEAD IS DECLARED ONLY FOR AN APPKIT BUILD - the
-  // target, its product and the StateUIAppKit dependency - so that `swift
-  // test` neither resolves that package nor compiles a folder belonging to one
-  // host, and it defines APPKIT only then. See apps/Gallery/Package.swift. The
-  // build script sets this for itself; set here, the language server resolves
-  // Platforms/AppKit and completes the code inside `#if APPKIT`. It is read
-  // when the server starts, so a change asks for the window to reload.
-  "swift.swiftEnvironmentVariables": {
-    "STATEUI_APPKIT": "1"
-  },
+  // NO swift.swiftEnvironmentVariables HERE. The editor's host - which of
+  // STATEUI_APPKIT and its siblings SourceKit-LSP starts with - is chosen in the
+  // StateUI extension's status bar (lib/StateUI.VSCode), which sets it on the
+  // extension host's own environment. A value here is laid OVER that and would
+  // decide the host whatever is chosen.
 
   // WITHOUT THIS, "Launch app (Release)" BUILDS DEBUG: the MAUI extension
   // replaces a launch's "configuration" with its own active one unless this

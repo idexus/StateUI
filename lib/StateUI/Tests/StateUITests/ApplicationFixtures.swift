@@ -14,6 +14,9 @@ extension Fixtures {
     /// belong to one machine, and a fresh clone has none of them.
     static let byproducts: Set<String> = [
         "bin", "obj", ".build", ".swiftpm", "Package.resolved", ".DS_Store",
+        // A host's own build directories, and the language server's settings
+        // the editor extension writes beside each application.
+        ".build-appkit", ".build-maui", ".sourcekit-lsp",
     ]
 
     /// `lib/StateUI.Maui/Template/templates/StateUIStarter`, the application

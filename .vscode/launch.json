@@ -37,6 +37,24 @@
   "version": "0.2.0",
   "configurations": [
     {
+      // ONE Debug and ONE Release for every host, with the StateUI extension
+      // (lib/StateUI.VSCode): the host is chosen in its status bar item, and
+      // each launch asks which application to run. The configurations below
+      // stay for what it does not do yet.
+      "name": "StateUI: Debug",
+      "type": "stateui",
+      "request": "launch",
+      "configuration": "debug",
+      "presentation": { "group": "0 StateUI", "order": 1 }
+    },
+    {
+      "name": "StateUI: Release",
+      "type": "stateui",
+      "request": "launch",
+      "configuration": "release",
+      "presentation": { "group": "0 StateUI", "order": 2 }
+    },
+    {
       "name": "Debug Gallery (AppKit)",
       "type": "lldb-dap",
       "request": "launch",

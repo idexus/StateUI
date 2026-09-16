@@ -12,3 +12,7 @@ artifacts/
 # IDE / OS
 *.user
 .DS_Store
+
+# The language server's own settings, written by the StateUI editor extension:
+# the index directory of the host the editor works as.
+.sourcekit-lsp/
