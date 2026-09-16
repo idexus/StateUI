@@ -76,14 +76,21 @@ final class RatingBarView: NSView {
     }
 
     /// Fades the bar and back - what the aimed act performs.
+    ///
+    /// The completion arrives on the main queue but is not isolated to it, so
+    /// the way back is put on the main actor explicitly rather than mutating
+    /// the view from a context the compiler cannot vouch for.
+    @MainActor
     func flash() {
         NSAnimationContext.runAnimationGroup { context in
             context.duration = 0.12
             animator().alphaValue = 0.25
         } completionHandler: { [weak self] in
-            NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.12
-                self?.animator().alphaValue = 1
+            MainActor.assumeIsolated {
+                NSAnimationContext.runAnimationGroup { context in
+                    context.duration = 0.12
+                    self?.animator().alphaValue = 1
+                }
             }
         }
     }
