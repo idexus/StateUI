@@ -623,7 +623,17 @@ internal static partial class WireCodec
     /// [version: U8][elements: U16] per element: [name: string]
     ///   [members: U16] per member: [name: string]
     ///   [events: U16] per event: [name: string]
+    /// [shared members: U16] per member: [name: string]
+    /// [shared events: U16] per event: [name: string]
+    /// [acts: U16] per act: [name: string]
     /// </code>
+    /// <para>
+    /// The SHARED members ride last and under no element: this host applies
+    /// margins, opacity, the gestures and the focus and frame reports AROUND
+    /// every view it makes rather than in a registration, so each of them
+    /// belongs to a tier and reaches whichever elements wear it - which the
+    /// side holding the contracts works out.
+    /// </para>
     /// <para>
     /// A declaration states PRESENCE and never ownership, and that is the
     /// whole difference from <see cref="WriteRealization"/>: whether
@@ -642,8 +652,21 @@ internal static partial class WireCodec
     /// Each element, with the members its registration takes and the events it
     /// raises.
     /// </param>
+    /// <param name="sharedMembers">
+    /// The members the shared machinery takes on every element wearing the
+    /// contract declaring them.
+    /// </param>
+    /// <param name="sharedEvents">The events it raises on every one of them.</param>
+    /// <param name="acts">
+    /// The acts this host performs, whichever element they are aimed at - an
+    /// act names its view and is performed against that identity, so nothing
+    /// about the call says which element declares it.
+    /// </param>
     internal static byte[] WriteDeclaration(
-        IEnumerable<(string Element, IEnumerable<string> Members, IEnumerable<string> Events)> elements)
+        IEnumerable<(string Element, IEnumerable<string> Members, IEnumerable<string> Events)> elements,
+        IEnumerable<string> sharedMembers,
+        IEnumerable<string> sharedEvents,
+        IEnumerable<string> acts)
     {
         (string Element, string[] Members, string[] Events)[] declared =
         [
@@ -661,22 +684,26 @@ internal static partial class WireCodec
         foreach ((string element, string[] members, string[] events) in declared)
         {
             Write(bytes, element);
-            Write(bytes, Count16(members.Length, "members on one element"));
-
-            foreach (string member in members)
-            {
-                Write(bytes, member);
-            }
-
-            Write(bytes, Count16(events.Length, "events on one element"));
-
-            foreach (string raised in events)
-            {
-                Write(bytes, raised);
-            }
+            Write(bytes, members, "members on one element");
+            Write(bytes, events, "events on one element");
         }
 
+        Write(bytes, [.. sharedMembers.Distinct().Order(StringComparer.Ordinal)], "shared members");
+        Write(bytes, [.. sharedEvents.Distinct().Order(StringComparer.Ordinal)], "shared events");
+        Write(bytes, [.. acts.Distinct().Order(StringComparer.Ordinal)], "performed acts");
+
         return [.. bytes];
+    }
+
+    /// <summary>A counted run of names, as a declaration writes them.</summary>
+    private static void Write(List<byte> bytes, string[] names, string of)
+    {
+        Write(bytes, Count16(names.Length, of));
+
+        foreach (string name in names)
+        {
+            Write(bytes, name);
+        }
     }
 
     /// <summary>

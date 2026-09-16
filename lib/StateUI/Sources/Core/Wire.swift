@@ -668,6 +668,117 @@ public enum Wire {
         return out
     }
 
+    /// What a host DECLARES, read off its own runtime and written to
+    /// `exports/`: the elements it makes a view for and, on each, the members
+    /// it takes and the events it raises.
+    ///
+    ///   [version: U8][elements: U16] per element: [name: string]
+    ///     [members: U16] per member: [name: string]
+    ///     [events: U16] per event: [name: string]
+    ///   [shared members: U16] per member: [name: string]
+    ///   [shared events: U16] per event: [name: string]
+    ///   [acts: U16] per act: [name: string]
+    ///
+    /// A declaration states PRESENCE and never ownership, which is the whole
+    /// difference from `encodeRealization`: whether `borderColor` is a
+    /// button's own member or one of a tier it wears is a fact of the
+    /// CONTRACT, which a host does not hold. `HostDeclaration.realization`
+    /// names each owner here, where the contracts are.
+    ///
+    /// The shared members ride last and unattached because a host realizes
+    /// them around EVERY view rather than in a registration, so each belongs
+    /// to a tier and reaches whichever elements wear it.
+    static func encodeDeclaration(_ declaration: HostDeclaration) -> [UInt8] {
+        var out: [UInt8] = []
+        out.u8(version)
+        out.u16(count(declaration.elements.count, of: "declared elements"))
+
+        for element in declaration.elements.keys.sorted() {
+            let declared = declaration.elements[element] ?? HostDeclaration.Element()
+            out.string(element)
+            write(declared, into: &out, of: "element")
+        }
+
+        write(declaration.shared, into: &out, of: "shared")
+
+        out.u16(count(declaration.acts.count, of: "performed acts"))
+
+        for act in declaration.acts.sorted() {
+            out.string(act)
+        }
+
+        return out
+    }
+
+    /// One element's members and then its events, each counted and sorted.
+    private static func write(
+        _ declared: HostDeclaration.Element, into out: inout [UInt8], of what: String
+    ) {
+        out.u16(count(declared.members.count, of: "members on one \(what)"))
+
+        for member in declared.members.sorted() {
+            out.string(member)
+        }
+
+        out.u16(count(declared.events.count, of: "events on one \(what)"))
+
+        for event in declared.events.sorted() {
+            out.string(event)
+        }
+    }
+
+    /// Decodes what `encodeDeclaration` writes, and what a foreign runtime
+    /// wrote with the same layout. Nil for a buffer that would not read.
+    static func decodeDeclaration(_ bytes: [UInt8]) -> HostDeclaration? {
+        var reader = Reader(bytes)
+
+        guard reader.u8() == version, let elements = reader.u16() else { return nil }
+
+        var declaration = HostDeclaration()
+
+        for _ in 0..<elements {
+            guard let element = reader.string(), let declared = read(&reader) else { return nil }
+
+            declaration.elements[element] = declared
+        }
+
+        guard let shared = read(&reader), let acts = reader.u16() else { return nil }
+
+        declaration.shared = shared
+
+        for _ in 0..<acts {
+            guard let act = reader.string() else { return nil }
+
+            declaration.acts.insert(act)
+        }
+
+        return reader.atEnd ? declaration : nil
+    }
+
+    /// One element's members and then its events, as `encodeDeclaration`
+    /// wrote them.
+    private static func read(_ reader: inout Reader) -> HostDeclaration.Element? {
+        guard let members = reader.u16() else { return nil }
+
+        var declared = HostDeclaration.Element()
+
+        for _ in 0..<members {
+            guard let member = reader.string() else { return nil }
+
+            declared.members.insert(member)
+        }
+
+        guard let events = reader.u16() else { return nil }
+
+        for _ in 0..<events {
+            guard let event = reader.string() else { return nil }
+
+            declared.events.insert(event)
+        }
+
+        return declared
+    }
+
     /// Decodes what `encodeRealization` writes. Nil for a buffer that would
     /// not read, which the caller answers with -1 so the host can say version
     /// skew rather than nothing.

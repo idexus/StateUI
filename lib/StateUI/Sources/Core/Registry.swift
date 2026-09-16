@@ -586,6 +586,149 @@ extension ElementProperty: RegisteredProperty {
     }
 }
 
+/// What a host DECLARES, read off its own runtime: the elements it makes a
+/// view for and, on each, the members it takes and the events it raises.
+///
+/// A declaration says PRESENCE. It does not say who declares a member, because
+/// a runtime does not hold the contracts - `borderColor` on a button is the
+/// same call whether the button declares it or a tier it wears does.
+/// `realization` is where that is answered, against the contracts themselves,
+/// so an owner is never written by hand and cannot be written wrong.
+@_spi(Host) public struct HostDeclaration: Equatable, Sendable {
+    /// What one element's registration takes and raises.
+    public struct Element: Equatable, Sendable {
+        /// The members its view takes.
+        public var members: Set<String>
+
+        /// The events it raises.
+        public var events: Set<String>
+
+        /// An element declaring nothing, unless said.
+        ///
+        /// - Parameters:
+        ///   - members: the members its view takes.
+        ///   - events: the events it raises.
+        public init(members: Set<String> = [], events: Set<String> = []) {
+            self.members = members
+            self.events = events
+        }
+    }
+
+    /// Each element, by node type name.
+    public var elements: [String: Element]
+
+    /// What the host's SHARED machinery realizes on every element wearing the
+    /// contract declaring it - margins, opacity, the gestures, the focus and
+    /// frame reports - rather than one registration.
+    ///
+    /// Said apart because it is realized apart: a host applies these around
+    /// every view it makes, so naming them under one element would be false
+    /// and naming them under all of them would be a list nobody maintains.
+    /// Which tier each belongs to is answered here, against the contracts,
+    /// exactly as an element's own members are.
+    public var shared: Element
+
+    /// The acts this host performs, whichever element they are aimed at.
+    ///
+    /// Said whole rather than per element because that is how a host performs
+    /// them: an act names the view it is aimed at and the session performs it
+    /// against that identity, so nothing about the call says which element it
+    /// belongs to. The contracts do - `focus` is declared by a tier every
+    /// element wears, `goBack` by one element - so each act reaches whatever
+    /// wears the contract declaring it, exactly as a shared member does.
+    public var acts: Set<String>
+
+    /// A declaration - nothing, unless said.
+    ///
+    /// - Parameters:
+    ///   - elements: each element, by node type name.
+    ///   - shared: what the shared machinery realizes on every wearer.
+    ///   - acts: the acts the host performs.
+    public init(
+        elements: [String: Element] = [:],
+        shared: Element = Element(),
+        acts: Set<String> = []
+    ) {
+        self.elements = elements
+        self.shared = shared
+        self.acts = acts
+    }
+
+    /// What this declaration means against the contracts: the same members,
+    /// each under the contract DECLARING it - the element's own, or the
+    /// nearest tier it wears that declares a member of that name.
+    ///
+    /// A member no contract declares is left out rather than guessed at: it is
+    /// a host and a contract that disagree, and the guard reading this says so
+    /// by name. `Contract.worn` answers the element first and its tiers
+    /// nearest-first, so a member an element redeclares belongs to the
+    /// element.
+    public var realization: HostRealization {
+        var members: Set<HostRealizedMember> = []
+        var elements: Set<String> = []
+        let sharedNames = shared.members.union(shared.events).union(acts)
+
+        for (name, declared) in self.elements {
+            elements.insert(name)
+
+            guard let contract = LibraryContracts.elements.first(where: { $0.nodeType.name == name })
+            else { continue }
+
+            // The element's own, and then everything the shared machinery
+            // realizes on it - which is every shared member whose contract
+            // this element wears. A host applies those around the view rather
+            // than inside the registration, so they reach the element here.
+            for member in declared.members.union(declared.events).union(sharedNames) {
+                guard let owner = contract.worn.first(where: { owner in
+                    owner.members.contains { $0.name == member }
+                }) else { continue }
+
+                members.insert(
+                    HostRealizedMember(element: name, owner: owner.name, member: member))
+            }
+        }
+
+        return HostRealization(elements: elements, members: members)
+    }
+
+    /// What this declaration names that no contract declares: the element, and
+    /// the member under it - a host and the contracts disagreeing, which is
+    /// always a mistake on one side and never something to render.
+    public var undeclared: [(element: String, member: String)] {
+        var unknown: [(element: String, member: String)] = []
+
+        // A shared member belongs to a TIER, so it is held to every contract
+        // rather than to one element: one no contract declares at all is a
+        // host and the contracts disagreeing, said under the empty element.
+        // An ACT is held the same way and deliberately NOT listed here: a host
+        // performs some of its own - a chooser, a prompt - that no contract
+        // declares, and those are the host's business rather than a drift.
+        for member in shared.members.union(shared.events).sorted()
+        where !LibraryContracts.all.contains(where: { owner in
+            owner.members.contains { $0.name == member }
+        }) {
+            unknown.append((element: "", member: member))
+        }
+
+        for (name, declared) in elements.sorted(by: { $0.key < $1.key }) {
+            guard let contract = LibraryContracts.elements.first(where: { $0.nodeType.name == name })
+            else {
+                unknown.append((element: name, member: ""))
+                continue
+            }
+
+            for member in declared.members.union(declared.events).sorted()
+            where !contract.worn.contains(where: { owner in
+                owner.members.contains { $0.name == member }
+            }) {
+                unknown.append((element: name, member: member))
+            }
+        }
+
+        return unknown
+    }
+}
+
 /// What the host told the core it realizes - nothing until it says.
 enum HostRealizations {
     /// The realization, behind the lock: the host says it once at start-up,
