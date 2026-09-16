@@ -91,6 +91,20 @@ final class AppKitCanvasView: AppKitHitTestView {
         needsDisplay = true
     }
 
+    /// The drawing as its contract declares it - one record per instruction,
+    /// in the order they were authored.
+    ///
+    /// A registration hands a view the value its member declares, so this
+    /// takes the typed records and reads them through the one decoder above:
+    /// `DrawCommand` writes itself as the same record the wire carries, and a
+    /// second table of twenty-three instructions would be a second place to
+    /// get one wrong.
+    ///
+    /// - Parameter drawing: the instructions, or none to draw nothing.
+    func apply(_ drawing: [DrawCommand]?) {
+        apply(drawing.map { PropValue.values($0.map(\.propValue)) })
+    }
+
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         guard let context = NSGraphicsContext.current else { return }

@@ -2285,10 +2285,6 @@ final class MountedNode: NSObject {
         host?.dispatch(handler, payload: payload)
     }
 
-    private func canvasPointer(_ event: Event, at point: NSPoint) {
-        guard let handler = events[event] else { return }
-        host?.dispatch(handler, payload: [.numbers([Double(point.x), Double(point.y)])])
-    }
 
     private func scrolled(from old: NSPoint, to new: NSPoint) {
         guard let host else { return }
@@ -2388,19 +2384,6 @@ final class MountedNode: NSObject {
 
         case .image:
             return AppKitImageView()
-
-        case .canvas:
-            let canvas = AppKitCanvasView()
-            canvas.onPressed = { [weak self] point in
-                self?.canvasPointer(.pressed, at: point)
-            }
-            canvas.onDragged = { [weak self] point in
-                self?.canvasPointer(.dragged, at: point)
-            }
-            canvas.onReleased = { [weak self] point in
-                self?.canvasPointer(.released, at: point)
-            }
-            return canvas
 
         default:
             return AppKitUnsupportedView(type)
@@ -2513,10 +2496,6 @@ final class MountedNode: NSObject {
                 stroke: value(.stroke),
                 strokeWidth: value(.strokeWidth)?.number,
                 shape: value(.shape))
-        }
-
-        if let canvas = view as? AppKitCanvasView {
-            canvas.apply(value(.drawable))
         }
 
         let minimumWidth = requested(.minimumWidth)
