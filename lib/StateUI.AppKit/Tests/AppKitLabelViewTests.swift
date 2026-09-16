@@ -46,6 +46,39 @@ final class AppKitLabelViewTests: XCTestCase {
         XCTAssertEqual(native.verticalTextAlignment, .end)
     }
 
+    /// Where a label's words LAND, which is a different question from which
+    /// alignment the view was handed: a cell draws attributed text by the
+    /// paragraph style inside that text, so a stored `.center` proves nothing
+    /// on its own.
+    @MainActor
+    func testALabelsTextAlignmentMovesTheWordsItDraws() throws {
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Label("short").horizontalTextAlignment(.start)
+                Label("short").horizontalTextAlignment(.center)
+                Label("short").horizontalTextAlignment(.end)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let content = try XCTUnwrap(renderer.windowsForTesting.first?.window?.contentView)
+        content.frame = NSRect(x: 0, y: 0, width: 400, height: 180)
+        content.layoutSubtreeIfNeeded()
+
+        let labels = renderer.nativeViews(AppKitLabelView.self)
+        XCTAssertEqual(labels.count, 3)
+        XCTAssertEqual(labels[1].bounds.width, 400, "a label fills the stack it sits in")
+        let ink = try labels.map { try firstInkColumn(of: $0) }
+
+        XCTAssertGreaterThan(
+            ink[1], ink[0] + 40,
+            "centred words start well right of words at the start "
+                + "(\(ink[1]) against \(ink[0]))")
+        XCTAssertGreaterThan(
+            ink[2], ink[1] + 40,
+            "words at the end start well right of centred words "
+                + "(\(ink[2]) against \(ink[1]))")
+    }
+
     @MainActor
     func testFormattedSpansBecomeOneAttributedNativeString() throws {
         let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)

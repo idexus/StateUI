@@ -143,4 +143,26 @@ func bitmap(of view: NSView, width: Int? = nil) throws -> NSBitmapImageRep {
     NSGraphicsContext.restoreGraphicsState()
     return bitmap
 }
+
+/// The first column of `view` holding ink, drawn WITH everything under it.
+///
+/// `bitmap(of:)` above asks what one view's own `draw(_:)` puts down. This asks
+/// what the whole subtree shows, which is the only way to see where a native
+/// control beneath a StateUI view placed its words: a stored alignment says
+/// what the view was told, never where the glyphs landed.
+@MainActor
+func firstInkColumn(of view: NSView) throws -> Int {
+    let bitmap = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in: view.bounds))
+    view.cacheDisplay(in: view.bounds, to: bitmap)
+
+    for x in 0..<bitmap.pixelsWide {
+        for y in 0..<bitmap.pixelsHigh {
+            guard let pixel = bitmap.colorAt(x: x, y: y) else { continue }
+
+            if pixel.alphaComponent > 0.1 { return x }
+        }
+    }
+
+    return bitmap.pixelsWide
+}
 #endif

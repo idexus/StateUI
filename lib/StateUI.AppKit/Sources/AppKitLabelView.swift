@@ -60,7 +60,9 @@ final class AppKitLabelView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         lineBreakMode: NSLineBreakMode,
         maximumNumberOfLines: Int
     ) {
-        let unchanged = textField.attributedStringValue.isEqual(to: attributedText)
+        let styled = paragraphStyled(
+            attributedText, alignment: horizontalAlignment, breaking: lineBreakMode)
+        let unchanged = textField.attributedStringValue.isEqual(to: styled)
             && horizontalTextAlignment == horizontalAlignment
             && verticalTextAlignment == verticalAlignment
             && self.lineBreakMode == lineBreakMode
@@ -68,7 +70,7 @@ final class AppKitLabelView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
             && NSEdgeInsetsEqual(self.padding, padding)
         guard !unchanged else { return }
 
-        textField.attributedStringValue = attributedText
+        textField.attributedStringValue = styled
         textField.alignment = horizontalAlignment
         textField.maximumNumberOfLines = max(0, maximumNumberOfLines)
         textField.lineBreakMode = lineBreakMode
@@ -82,6 +84,35 @@ final class AppKitLabelView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         self.lineBreakMode = lineBreakMode
         self.maximumNumberOfLines = max(0, maximumNumberOfLines)
         invalidateMeasurements()
+    }
+
+    /// `text` carrying the paragraph rules this label draws by.
+    ///
+    /// A cell draws an attributed string by the style inside that string, so a
+    /// text field's own `alignment` moves nothing once the words arrive
+    /// attributed. `.left` becomes `.natural`, leaving words written right to
+    /// left starting at their own edge.
+    private func paragraphStyled(
+        _ text: NSAttributedString,
+        alignment: NSTextAlignment,
+        breaking lineBreakMode: NSLineBreakMode
+    ) -> NSAttributedString {
+        let styled = NSMutableAttributedString(attributedString: text)
+        let whole = NSRange(location: 0, length: styled.length)
+        var runs: [(range: NSRange, paragraph: NSParagraphStyle?)] = []
+        styled.enumerateAttribute(.paragraphStyle, in: whole) { value, range, _ in
+            runs.append((range, value as? NSParagraphStyle))
+        }
+
+        for run in runs {
+            let paragraph = run.paragraph?.mutableCopy() as? NSMutableParagraphStyle
+                ?? NSMutableParagraphStyle()
+            paragraph.alignment = alignment == .left ? .natural : alignment
+            paragraph.lineBreakMode = lineBreakMode
+            styled.addAttribute(.paragraphStyle, value: paragraph, range: run.range)
+        }
+
+        return styled
     }
 
     override var intrinsicContentSize: NSSize {
