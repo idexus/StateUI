@@ -2158,18 +2158,6 @@ final class MountedNode: NSObject {
         host?.dispatch(handler)
     }
 
-    private func changedNumericValue(to value: Double) {
-        guard let host else { return }
-
-        let reported = driven[.value].map { host.take([value], through: $0) } ?? false
-
-        if let handler = events[.valueChanged] {
-            host.dispatch(handler, payload: [.number(value)])
-        } else if reported {
-            host.pump()
-        }
-    }
-
     /// A value the reader of a registered view changed, by member.
     private func report(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host else { return }
@@ -2221,7 +2209,15 @@ final class MountedNode: NSObject {
         var reported = false
 
         if let carried, let binding = driven[property] {
-            reported = host.report(carried, through: binding)
+            // A JOURNEY THE HOST CARRIES is taken at the position the reader has
+            // just established - the old destination and velocity stop pulling
+            // against the hand. A value the host merely sets is reported as it
+            // stands.
+            if case .lanes(let lanes) = carried, binding.kind == .property {
+                reported = host.take(lanes, through: binding)
+            } else {
+                reported = host.report(carried, through: binding)
+            }
         }
 
         if let handler = events[event] {
@@ -2266,16 +2262,6 @@ final class MountedNode: NSObject {
 
     private func pickerClosed() {
         guard let handler = events[.closed] else { return }
-        host?.dispatch(handler)
-    }
-
-    private func beganSliderDrag() {
-        guard let handler = events[.dragStarted] else { return }
-        host?.dispatch(handler)
-    }
-
-    private func completedSliderDrag() {
-        guard let handler = events[.dragCompleted] else { return }
         host?.dispatch(handler)
     }
 
@@ -2480,18 +2466,6 @@ final class MountedNode: NSObject {
             search.onTextChanged = { [weak self] in self?.typed($0) }
             search.onSubmitted = { [weak self] in self?.submitted() }
             return search
-
-        case .slider:
-            let slider = AppKitSliderView()
-            slider.onValueChanged = { [weak self] in self?.changedNumericValue(to: $0) }
-            slider.onDragStarted = { [weak self] in self?.beganSliderDrag() }
-            slider.onDragCompleted = { [weak self] in self?.completedSliderDrag() }
-            return slider
-
-        case .stepper:
-            let stepper = AppKitStepperView()
-            stepper.onValueChanged = { [weak self] in self?.changedNumericValue(to: $0) }
-            return stepper
 
         case .picker:
             let picker = AppKitPickerView()
@@ -2749,33 +2723,6 @@ final class MountedNode: NSObject {
                     || changed.contains(.selectionLength))
         }
 
-        if let slider = view as? AppKitSliderView {
-            let attachedValue: Double?
-
-            if driven[.value] != nil {
-                attachedValue = value(.value)?.number
-            } else {
-                attachedValue = number(.value) ?? 0
-            }
-
-            slider.apply(
-                value: attachedValue,
-                writeValue: changed.contains(.value) && attachedValue != nil,
-                minimum: number(.minimum) ?? 0,
-                maximum: number(.maximum) ?? 1,
-                tint: color(.tint),
-                enabled: value(.isEnabled)?.bool ?? true)
-        }
-
-        if let stepper = view as? AppKitStepperView {
-            stepper.apply(
-                value: value(.value)?.number,
-                writeValue: changed.contains(.value),
-                minimum: value(.minimum)?.number ?? 0,
-                maximum: value(.maximum)?.number ?? 100,
-                step: value(.step)?.number ?? 1,
-                enabled: value(.isEnabled)?.bool ?? true)
-        }
         if let picker = view as? AppKitPickerView {
             picker.apply(
                 items: value(.options)?.strings ?? [],
