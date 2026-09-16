@@ -288,4 +288,72 @@ public class StateUIControlsTests
         Assert.Equal(0.6, gauge.Level);
         Assert.Equal(0.5, gauge.Opacity);
     }
+
+    /// <summary>
+    /// A registration says which members it takes and which events it raises -
+    /// asked, rather than run.
+    /// </summary>
+    /// <remarks>
+    /// What this host realizes is read off the registrations themselves, so a
+    /// member has to be recorded as it is registered. A property records
+    /// itself, being named to write a value; an event has to be recorded
+    /// BESIDE its subscription, a subscription being a closure that nothing
+    /// can read back out of.
+    /// </remarks>
+    [Fact]
+    public void ARegistrationSaysWhichMembersItTakesAndWhichEventsItRaises()
+    {
+        Realization slider = Assert.IsAssignableFrom<Realization>(
+            StateUIControls.Find("Slider")?.Realized);
+
+        Assert.Equal([HostProp.Maximum, HostProp.Minimum, HostProp.Value], slider.Members);
+        Assert.Equal(
+            [HostEvent.ValueChanged, HostEvent.DragStarted, HostEvent.DragCompleted],
+            slider.Raised);
+    }
+
+    /// <summary>
+    /// A tier records what it raises as well as what it takes, so an element
+    /// wearing one says the whole of it.
+    /// </summary>
+    /// <remarks>
+    /// The input tier carries the text and the typing that changes it
+    /// together, which is why no field declares either on its own - and why a
+    /// tier recording only its properties would leave this host realizing an
+    /// event it cannot report.
+    /// </remarks>
+    [Fact]
+    public void AnElementWearingATierSaysTheTiersEventsToo()
+    {
+        Realization field = Assert.IsAssignableFrom<Realization>(
+            StateUIControls.Find("TextField")?.Realized);
+
+        Assert.Contains(HostProp.Text, field.Members);
+        Assert.Contains(HostEvent.TextChanged, field.Raised);
+    }
+
+    /// <summary>
+    /// Every member a registration records is one this runtime has a member
+    /// for.
+    /// </summary>
+    /// <remarks>
+    /// The type refuses a subscription that names no event at all, so what is
+    /// left to guard is the one thing it cannot: a registration naming
+    /// <c>None</c>, which stands for a name this runtime has no member for and
+    /// would leave a realization reporting a member with no spelling.
+    /// </remarks>
+    [Fact]
+    public void NoRegistrationRecordsAMemberThisRuntimeHasNoNameFor()
+    {
+        foreach (string type in StateUIControls.Realizing())
+        {
+            if (StateUIControls.Find(type)?.Realized is not Realization realized)
+            {
+                continue;
+            }
+
+            Assert.DoesNotContain(HostProp.None, realized.Members);
+            Assert.DoesNotContain(HostEvent.None, realized.Raised);
+        }
+    }
 }

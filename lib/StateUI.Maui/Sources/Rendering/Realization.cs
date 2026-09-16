@@ -32,11 +32,29 @@ internal abstract class Realization
     /// <param name="Write">Writes the member's value onto the control.</param>
     internal sealed record Applier(HostProp Member, Action<View, HostPatch> Write);
 
+    /// <summary>One event and the subscription that raises it.</summary>
+    /// <remarks>
+    /// The event is named BESIDE the subscription rather than only inside it,
+    /// so a realization can say what it raises without being run: a
+    /// subscription is a closure, and nothing can be read back out of one. The
+    /// two travel as one thing because a subscription raising an event nothing
+    /// can name is a member this host realizes and cannot report.
+    /// </remarks>
+    /// <param name="Raised">The event, as this side names it.</param>
+    /// <param name="Subscribe">Subscribes the control to what raises it.</param>
+    internal sealed record Wirer(HostEvent Raised, Action<View, StateUIRenderer> Subscribe);
+
     /// <summary>The members this realization writes, in the order registered.</summary>
     internal List<Applier> Appliers { get; } = [];
 
     /// <summary>What the control is subscribed to, once, where it is made.</summary>
-    internal List<Action<View, StateUIRenderer>> Wiring { get; } = [];
+    internal List<Wirer> Wiring { get; } = [];
+
+    /// <summary>The members this realization takes, each named once.</summary>
+    internal IEnumerable<HostProp> Members => Appliers.Select(applier => applier.Member).Distinct();
+
+    /// <summary>The events this realization raises, each named once.</summary>
+    internal IEnumerable<HostEvent> Raised => Wiring.Select(wirer => wirer.Raised).Distinct();
 
     /// <summary>
     /// Subscribes the control to what it reports, once - where it is made,
@@ -46,9 +64,9 @@ internal abstract class Realization
     /// <param name="renderer">The renderer its reports go to.</param>
     internal void Wire(View view, StateUIRenderer renderer)
     {
-        foreach (Action<View, StateUIRenderer> wire in Wiring)
+        foreach (Wirer wirer in Wiring)
         {
-            wire(view, renderer);
+            wirer.Subscribe(view, renderer);
         }
     }
 
@@ -264,7 +282,7 @@ internal sealed class Realization<TControl> : Realization
         HostEvent raised,
         Action<TControl, Action<TReported>> subscribe)
     {
-        Wiring.Add((view, renderer) =>
+        Wiring.Add(new Wirer(raised, (view, renderer) =>
         {
             var control = (TControl)view;
 
@@ -273,7 +291,7 @@ internal sealed class Realization<TControl> : Realization
                 renderer.Reported(control, property, Lanes(reported));
                 renderer.Raise(control, raised, Value(reported));
             });
-        });
+        }));
 
         return this;
     }
@@ -309,7 +327,7 @@ internal sealed class Realization<TControl> : Realization
         Func<TControl, HostValue[]> payload,
         Action<TControl, Action> subscribe)
     {
-        Wiring.Add((view, renderer) =>
+        Wiring.Add(new Wirer(raised, (view, renderer) =>
         {
             var control = (TControl)view;
 
@@ -322,7 +340,7 @@ internal sealed class Realization<TControl> : Realization
 
                 renderer.Raise(control, raised, payload(control));
             });
-        });
+        }));
 
         return this;
     }
@@ -354,7 +372,7 @@ internal sealed class Realization<TControl> : Realization
         HostEvent raised,
         Action<TControl, Action<double>> subscribe)
     {
-        Wiring.Add((view, renderer) =>
+        Wiring.Add(new Wirer(raised, (view, renderer) =>
         {
             var control = (TControl)view;
 
@@ -363,7 +381,7 @@ internal sealed class Realization<TControl> : Realization
                 renderer.Moved(control, property, moved);
                 renderer.Raise(control, raised, HostValue.Of(moved));
             });
-        });
+        }));
 
         return this;
     }
@@ -381,12 +399,12 @@ internal sealed class Realization<TControl> : Realization
     /// <param name="subscribe">Subscribes to the control's own notification.</param>
     internal Realization<TControl> Raises(HostEvent raised, Action<TControl, Action> subscribe)
     {
-        Wiring.Add((view, renderer) =>
+        Wiring.Add(new Wirer(raised, (view, renderer) =>
         {
             var control = (TControl)view;
 
             subscribe(control, () => renderer.Raise(control, raised));
-        });
+        }));
 
         return this;
     }
@@ -411,12 +429,12 @@ internal sealed class Realization<TControl> : Realization
         HostEvent raised,
         Action<TControl, Action<HostValue[]>> subscribe)
     {
-        Wiring.Add((view, renderer) =>
+        Wiring.Add(new Wirer(raised, (view, renderer) =>
         {
             var control = (TControl)view;
 
             subscribe(control, carried => renderer.Raise(control, raised, carried));
-        });
+        }));
 
         return this;
     }
@@ -538,12 +556,12 @@ internal static class RealizedTiers
         Action<TControl, Action<string?>> subscribe)
         where TControl : InputView
     {
-        realization.Wiring.Add((view, renderer) =>
+        realization.Wiring.Add(new Realization.Wirer(HostEvent.TextChanged, (view, renderer) =>
         {
             var control = (TControl)view;
 
             subscribe(control, words => renderer.Typed(control, words));
-        });
+        }));
 
         return realization
             .Held(HostProp.Text,
