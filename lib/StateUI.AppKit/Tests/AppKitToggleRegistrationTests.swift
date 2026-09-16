@@ -129,5 +129,70 @@ final class AppKitToggleRegistrationTests: XCTestCase {
 
         XCTAssertEqual(native.state, .off, "the tree describing it again does")
     }
+
+    /// The registry realizes the radio button too - its own value and event,
+    /// and the caption members it draws from the tiers it wears.
+    @MainActor
+    func testTheRegistryRealizesTheRadioButton() {
+        let realization = AppKitRegistrations.registry.realization
+
+        XCTAssertTrue(realization.elements.contains("RadioButton"))
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: "RadioButton", owner: "RadioButton", member: "isOn")))
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: "RadioButton", owner: "RadioButton", member: "toggled")))
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: "RadioButton", owner: "TextElement", member: "text")))
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: "RadioButton", owner: "TextStyleElement", member: "textColor")))
+    }
+
+    /// A radio button draws the caption the tree describes, in the case it
+    /// asks for, and wears its check.
+    @MainActor
+    func testARadioButtonShowsItsCaptionAndItsCheck() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var large = HostPatch(id: .manual("large"), type: .radioButton)
+        large.properties[.isOn] = .bool(true)
+        large.properties[.text] = .string("Large")
+        large.properties[.textCase] = .enumeration(3)
+        renderer.applyForTesting(tree(large))
+
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("large")) as? AppKitRadioButtonView)
+
+        XCTAssertEqual(native.state, .on)
+        XCTAssertEqual(native.title, "LARGE")
+    }
+
+    /// Picking one button of a set takes the check off the others, wherever in
+    /// the window they stand: the button reports that it is on, and the host
+    /// answers for the set.
+    @MainActor
+    func testPickingOneOfASetClearsTheOthers() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var small = HostPatch(id: .manual("small"), type: .radioButton)
+        small.properties[.isOn] = .bool(true)
+        small.properties[.text] = .string("Small")
+        small.properties[.groupName] = .name("size")
+        var large = HostPatch(id: .manual("large"), type: .radioButton)
+        large.properties[.isOn] = .bool(false)
+        large.properties[.text] = .string("Large")
+        large.properties[.groupName] = .name("size")
+        var row = HostPatch(id: .manual("row"), type: .vStack)
+        row.children = .arranged([small, large])
+        renderer.applyForTesting(tree(row))
+
+        let first = try XCTUnwrap(renderer.viewForTesting(id: .manual("small")) as? AppKitRadioButtonView)
+        let second = try XCTUnwrap(renderer.viewForTesting(id: .manual("large")) as? AppKitRadioButtonView)
+
+        second.selectForTesting()
+
+        XCTAssertEqual(second.state, .on)
+        XCTAssertEqual(first.state, .off, "the set's other button lost its check")
+    }
 }
 #endif

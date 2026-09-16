@@ -2170,11 +2170,42 @@ final class MountedNode: NSObject {
         }
     }
 
-    /// A value the reader of a registered view changed: it lands on the state
-    /// the element carries that value in - text where the value is text, lanes
-    /// where it is a number, a flag or a choice - and the element's handler for
-    /// `event` hears it. A value of a kind no state carries is raised alone.
+    /// A value the reader of a registered view changed, by member.
     private func report(_ property: Prop, _ event: Event, _ value: HostValue) {
+        guard let host else { return }
+
+        // A RADIO BUTTON'S SET LIVES ACROSS THE WINDOW, where AppKit clears only
+        // the buttons of one superview: the button reports that it is on, and
+        // the host - which holds the tree - takes the check off the others in
+        // the same breath.
+        guard type == .radioButton, property == .isOn, value.bool == true else {
+            return carry(property, event, value)
+        }
+
+        host.performReaderTransaction {
+            clearRadioPeers()
+            carry(property, event, value)
+        }
+    }
+
+    /// The other buttons of this one's set lose their check, each reporting
+    /// what it became.
+    private func clearRadioPeers() {
+        let group = name(.groupName).flatMap { $0.isEmpty ? nil : $0 }
+        let scope = radioScope(named: group)
+        let peers = group.map { scope.radioButtons(named: $0) }
+            ?? (parent?.children.filter { $0.type == .radioButton } ?? [self])
+
+        for peer in peers where peer !== self && peer.bool(.isOn) == true {
+            peer.setRadioChecked(false)
+            peer.carry(.isOn, .toggled, .bool(false))
+        }
+    }
+
+    /// One reported value: onto the state the element carries it in - text
+    /// where the value is text, lanes where it is a number, a flag or a choice
+    /// - and to the element's handler for the event.
+    private func carry(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host else { return }
 
         let carried: HostStateValue? = switch value {
@@ -2197,45 +2228,6 @@ final class MountedNode: NSObject {
             host.dispatch(handler, payload: [value])
         } else if reported {
             host.settleReaderWrite(true)
-        }
-    }
-
-    private func changedBoolean(_ value: Bool, property: Prop, event: Event) {
-        guard let host else { return }
-
-        let reported = driven[property].map {
-            host.report(.lanes([value ? 1 : 0]), through: $0)
-        } ?? false
-
-        if let handler = events[event] {
-            host.dispatch(handler, payload: [.bool(value)])
-        } else if reported {
-            host.settleReaderWrite(true)
-        }
-    }
-
-    private func selectedRadio() {
-        guard type == .radioButton, let host else { return }
-
-        let group = name(.groupName).flatMap { $0.isEmpty ? nil : $0 }
-        let scope = radioScope(named: group)
-        let peers = group.map { scope.radioButtons(named: $0) }
-            ?? (parent?.children.filter { $0.type == .radioButton } ?? [self])
-        let formerlySelected = peers.filter { $0 !== self && $0.bool(.isOn) == true }
-        let alreadySelected = bool(.isOn) == true
-
-        guard !formerlySelected.isEmpty || !alreadySelected else { return }
-
-        host.performReaderTransaction {
-            for peer in formerlySelected {
-                peer.setRadioChecked(false)
-                peer.changedBoolean(false, property: .isOn, event: .toggled)
-            }
-
-            if !alreadySelected {
-                setRadioChecked(true)
-                changedBoolean(true, property: .isOn, event: .toggled)
-            }
         }
     }
 
@@ -2495,11 +2487,6 @@ final class MountedNode: NSObject {
             slider.onDragStarted = { [weak self] in self?.beganSliderDrag() }
             slider.onDragCompleted = { [weak self] in self?.completedSliderDrag() }
             return slider
-
-        case .radioButton:
-            let radio = AppKitRadioButtonView()
-            radio.onSelected = { [weak self] in self?.selectedRadio() }
-            return radio
 
         case .stepper:
             let stepper = AppKitStepperView()
@@ -2780,16 +2767,6 @@ final class MountedNode: NSObject {
                 enabled: value(.isEnabled)?.bool ?? true)
         }
 
-        if let radio = view as? AppKitRadioButtonView {
-            radio.apply(
-                checked: value(.isOn)?.bool ?? false,
-                text: transformed(
-                    string(.text) ?? "",
-                    by: enumeration(.textCase)),
-                font: font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize)),
-                textColor: color(.textColor) ?? .controlTextColor,
-                enabled: value(.isEnabled)?.bool ?? true)
-        }
         if let stepper = view as? AppKitStepperView {
             stepper.apply(
                 value: value(.value)?.number,
@@ -3321,22 +3298,11 @@ final class MountedNode: NSObject {
     }
 
     private func font(fallback: NSFont) -> NSFont {
-        let size = value(.fontSize)?.number ?? fallback.pointSize
-        let traits = value(.fontAttributes)?.enumeration ?? 0
-        var font = name(.fontFamily).flatMap { NSFont(name: $0, size: size) }
-            ?? NSFont.systemFont(ofSize: size)
-
-        if traits & 1 == 1,
-           let bold = NSFontManager.shared.convert(font, toHaveTrait: .boldFontMask) as NSFont? {
-            font = bold
-        }
-
-        if traits & 2 == 2,
-           let italic = NSFontManager.shared.convert(font, toHaveTrait: .italicFontMask) as NSFont? {
-            font = italic
-        }
-
-        return font
+        appKitFont(
+            family: name(.fontFamily),
+            size: value(.fontSize)?.number,
+            attributes: value(.fontAttributes)?.enumeration,
+            fallback: fallback)
     }
 
     private func attributedLabelText() -> NSAttributedString {
@@ -3406,11 +3372,7 @@ final class MountedNode: NSObject {
     }
 
     private func transformed(_ text: String, by transform: Int32?) -> String {
-        switch transform {
-        case 2: return text.lowercased()
-        case 3: return text.uppercased()
-        default: return text
-        }
+        appKitTextCased(text, transform)
     }
 
     func color(_ property: Prop) -> NSColor? {
