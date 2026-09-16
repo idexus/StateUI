@@ -26,9 +26,96 @@ enum AppKitRegistrations {
         drawing(registry)
         layouts(registry)
         presentation(registry)
+        shared(registry)
 
         return registry
     }()
+
+    /// The acts this host performs, whichever element each is aimed at.
+    ///
+    /// A registry takes properties and events, never acts: an act names the
+    /// view it is aimed at and the session performs it against that identity,
+    /// so nothing about the call belongs to one registration. They are said
+    /// here, beside the registry, and read where this host's export is
+    /// written. `AppKitActPerformer` answers exactly these; every other act
+    /// it refuses by name.
+    static let acts: [any ContractMember] = [
+        VisualElementContract.focus, VisualElementContract.unfocus,
+        ApplicationContract.hideOnScreenKeyboard,
+        ApplicationContract.persistValue, ApplicationContract.persistSceneValue,
+    ]
+
+    /// What this host realizes AROUND every view rather than inside a
+    /// registration: the room a view is given, how it is drawn and turned,
+    /// what a screen reader says about it, and the gestures it answers.
+    ///
+    /// Said with the contracts' own members, so the compiler refuses a member
+    /// of a tier an element cannot wear - which is the whole advantage of
+    /// declaring shared machinery here rather than as a list of names. Each
+    /// reaches exactly the elements wearing the contract declaring it, so
+    /// `Layout`'s two go to the layouts alone.
+    ///
+    /// One call per member, and it cannot be a loop: these are declared with
+    /// the TYPE each carries, so a list of them is a list of `Any` and the
+    /// registry's `Owner` and `Value` can no longer be inferred. The length is
+    /// what the typing costs, and it is the same typing that refuses a wrong
+    /// tier where a list of names would go quietly on.
+    private static func shared(_ registry: Registry<NSView>) {
+        registry.everyElementRealizes(PropertyContainerContract.accessibilityIdentifier)
+        registry.everyElementRealizes(TintElementContract.tint)
+
+        registry.everyElementRealizes(VisualElementContract.accessibilityHeadingLevel)
+        registry.everyElementRealizes(VisualElementContract.accessibilityHint)
+        registry.everyElementRealizes(VisualElementContract.accessibilityLabel)
+        registry.everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
+        registry.everyElementRealizes(VisualElementContract.background)
+        registry.everyElementRealizes(VisualElementContract.frame)
+        registry.everyElementRealizes(VisualElementContract.height)
+        registry.everyElementRealizes(VisualElementContract.ignoresInput)
+        registry.everyElementRealizes(VisualElementContract.isAccessibilityHidden)
+        registry.everyElementRealizes(VisualElementContract.isEnabled)
+        registry.everyElementRealizes(VisualElementContract.isVisible)
+        registry.everyElementRealizes(VisualElementContract.layoutDirection)
+        registry.everyElementRealizes(VisualElementContract.maximumHeight)
+        registry.everyElementRealizes(VisualElementContract.maximumWidth)
+        registry.everyElementRealizes(VisualElementContract.minimumHeight)
+        registry.everyElementRealizes(VisualElementContract.minimumWidth)
+        registry.everyElementRealizes(VisualElementContract.opacity)
+        registry.everyElementRealizes(VisualElementContract.pivotX)
+        registry.everyElementRealizes(VisualElementContract.pivotY)
+        registry.everyElementRealizes(VisualElementContract.rotation)
+        registry.everyElementRealizes(VisualElementContract.scale)
+        registry.everyElementRealizes(VisualElementContract.scaleX)
+        registry.everyElementRealizes(VisualElementContract.scaleY)
+        registry.everyElementRealizes(VisualElementContract.translationX)
+        registry.everyElementRealizes(VisualElementContract.translationY)
+        registry.everyElementRealizes(VisualElementContract.width)
+
+        registry.everyElementRealizes(ViewContract.absoluteLayoutBounds)
+        registry.everyElementRealizes(ViewContract.absoluteLayoutProportions)
+        registry.everyElementRealizes(ViewContract.gridColumn)
+        registry.everyElementRealizes(ViewContract.gridColumnSpan)
+        registry.everyElementRealizes(ViewContract.gridRow)
+        registry.everyElementRealizes(ViewContract.gridRowSpan)
+        registry.everyElementRealizes(ViewContract.horizontalAlignment)
+        registry.everyElementRealizes(ViewContract.margin)
+        registry.everyElementRealizes(ViewContract.verticalAlignment)
+
+        registry.everyElementRealizes(LayoutContract.clipsContent)
+        registry.everyElementRealizes(LayoutContract.letsInputThrough)
+
+        registry.everyElementRaises(ViewContract.frameChanged)
+        registry.everyElementRaises(ViewContract.panUpdated)
+        registry.everyElementRaises(ViewContract.pinchUpdated)
+        registry.everyElementRaises(ViewContract.pointerEntered)
+        registry.everyElementRaises(ViewContract.pointerExited)
+        registry.everyElementRaises(ViewContract.pointerMoved)
+        registry.everyElementRaises(ViewContract.pointerPressed)
+        registry.everyElementRaises(ViewContract.pointerReleased)
+        registry.everyElementRaises(ViewContract.swiped)
+        registry.everyElementRaises(ViewContract.tapped)
+        registry.everyElementRaises(VisualElementContract.isFocusedChanged)
+    }
 
     /// Progress and activity: one value each, and no event.
     private static func indicators(_ registry: Registry<NSView>) {
