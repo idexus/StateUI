@@ -2354,20 +2354,11 @@ final class MountedNode: NSObject {
         case .splitView:
             return AppKitSplitView()
 
-        case .grid:
-            return AppKitGridView()
-
         case .absoluteLayout:
             return AppKitAbsoluteLayoutView()
 
         case .border:
             return AppKitBorderView()
-
-        case .vStack:
-            return AppKitStackView(axis: .vertical)
-
-        case .hStack:
-            return AppKitStackView(axis: .horizontal)
 
         case .scrollView:
             let scroll = AppKitScrollView()
@@ -2490,11 +2481,6 @@ final class MountedNode: NSObject {
                 enabled: value(.isEnabled)?.bool ?? true)
         }
 
-        if let stack = view as? AppKitStackView {
-            stack.spacing = value(.spacing)?.number ?? 0
-            stack.padding = insets(.padding)
-        }
-
         if let page = view as? AppKitSingleChildView {
             page.padding = insets(.padding)
         }
@@ -2504,14 +2490,6 @@ final class MountedNode: NSObject {
                 self?.changeSidebarVisibility(to: presented)
             }
             split.apply(presented: value(.isSidebarVisible)?.bool ?? false)
-        }
-
-        if let grid = view as? AppKitGridView {
-            grid.rows = gridLengths(.rows)
-            grid.columns = gridLengths(.columns)
-            grid.rowSpacing = value(.rowSpacing)?.number ?? 0
-            grid.columnSpacing = value(.columnSpacing)?.number ?? 0
-            grid.padding = insets(.padding)
         }
 
         if let absolute = view as? AppKitAbsoluteLayoutView {
@@ -3206,10 +3184,6 @@ final class MountedNode: NSObject {
     private func requested(_ property: Prop) -> CGFloat? {
         guard let value = number(property), value.isFinite, value >= 0 else { return nil }
         return CGFloat(value)
-    }
-
-    private func gridLengths(_ property: Prop) -> [AppKitGridLength] {
-        value(property)?.values?.compactMap(AppKitGridLength.init) ?? []
     }
 
     private func placement(_ property: Prop) -> HostPlacementRun? {

@@ -21,6 +21,7 @@ enum AppKitRegistrations {
         pickers(registry)
         fields(registry)
         shapes(registry)
+        layouts(registry)
 
         return registry
     }()
@@ -461,6 +462,60 @@ enum AppKitRegistrations {
         ShapeContract.strokeLineCap, ShapeContract.strokeLineJoin, ShapeContract.strokeMiterLimit,
         ShapeContract.aspect, ShapeContract.renderTransform,
     ]
+
+    /// The stacks and the grid: the room a layout leaves around and between
+    /// its children. What ARRANGES the children is not here - a layout walks
+    /// its own rows and keeps the ones it recycles, which is the host's work,
+    /// and a registration describes one view.
+    private static func layouts(_ registry: Registry<NSView>) {
+        registry.add(VStackContract.self, create: { _ in AppKitStackView(axis: .vertical) }) { stack in
+            stack.applies(Self.stackMembers) { view, values in
+                view.spacing = CGFloat(values[StackBaseContract.spacing] ?? 0)
+                view.padding = Self.edgeInsets(values[PaddingElementContract.padding])
+            }
+        }
+
+        registry.add(HStackContract.self, create: { _ in AppKitStackView(axis: .horizontal) }) { stack in
+            stack.applies(Self.stackMembers) { view, values in
+                view.spacing = CGFloat(values[StackBaseContract.spacing] ?? 0)
+                view.padding = Self.edgeInsets(values[PaddingElementContract.padding])
+            }
+        }
+
+        registry.add(GridContract.self, create: { _ in AppKitGridView() }) { grid in
+            grid.applies([
+                GridContract.rows, GridContract.columns,
+                GridContract.rowSpacing, GridContract.columnSpacing,
+                PaddingElementContract.padding,
+            ]) { view, values in
+                view.rows = Self.gridLengths(values[GridContract.rows])
+                view.columns = Self.gridLengths(values[GridContract.columns])
+                view.rowSpacing = CGFloat(values[GridContract.rowSpacing] ?? 0)
+                view.columnSpacing = CGFloat(values[GridContract.columnSpacing] ?? 0)
+                view.padding = Self.edgeInsets(values[PaddingElementContract.padding])
+            }
+        }
+    }
+
+    /// What both stacks take: the space between their children, and the space
+    /// kept inside their own edge.
+    private static let stackMembers: [any ContractMember] = [
+        StackBaseContract.spacing, PaddingElementContract.padding,
+    ]
+
+    /// Insets travel as left, top, right, bottom.
+    private static func edgeInsets(_ value: Insets?) -> NSEdgeInsets {
+        guard let numbers = value?.propValue.numbers, numbers.count >= 4 else { return NSEdgeInsets() }
+
+        return NSEdgeInsets(
+            top: numbers[1], left: numbers[0], bottom: numbers[3], right: numbers[2])
+    }
+
+    /// A row or a column is a kind and an amount, and travels as the two of
+    /// them - a LIST OF VALUES, as a render transform does.
+    private static func gridLengths(_ value: [GridLength]?) -> [AppKitGridLength] {
+        value?.propValue.values?.compactMap(AppKitGridLength.init) ?? []
+    }
 
     /// The six components a render transform travels as - a LIST OF VALUES, not
     /// a list of numbers - or none where it is not six numbers.
