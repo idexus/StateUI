@@ -91,15 +91,19 @@ final class AppKitDeclarationExportTests: XCTestCase {
                 continue
             }
 
-            let wearers = realization.elements.filter { element in
+            let wearers = Self.ofTheLibrary(realization.elements).filter { element in
                 LibraryContracts.elements
                     .first { $0.nodeType.name == element }?
                     .worn.contains { ObjectIdentifier($0) == ObjectIdentifier(contract) } == true
             }
-            let realized = Set(
+            // Both sides of the comparison are the LIBRARY's elements. The
+            // registry spreads a shared member over everything wearing its
+            // contract, an application's own element included, and that one is
+            // not this host's to declare.
+            let realized = Self.ofTheLibrary(Set(
                 realization.members
                     .filter { $0.owner == contract.name && $0.member == member.name }
-                    .map(\.element))
+                    .map(\.element)))
 
             XCTAssertEqual(
                 realized, wearers,
@@ -161,6 +165,18 @@ final class AppKitDeclarationExportTests: XCTestCase {
     /// It cannot be worked out from the realization instead - "a member every
     /// element has" is empty here, because `Page` and `SplitView` wear no
     /// `ViewContract` and take none of the view tier at all.
+    /// What an export is ABOUT: the elements of the LIBRARY. An application
+    /// registers elements of its own with this host too - a control it wrote,
+    /// realized by a view it wrote - and those are the application's, not this
+    /// host's to declare. They are left out here rather than filtered where
+    /// the bytes are written, because this is where the question belongs: an
+    /// export says which of the library's elements this host presents.
+    private static func ofTheLibrary(_ elements: Set<String>) -> Set<String> {
+        elements.filter { element in
+            LibraryContracts.elements.contains { $0.nodeType.name == element }
+        }
+    }
+
     @MainActor
     private static func declaration() -> HostDeclaration {
         let realization = AppKitRegistrations.registry.realization
@@ -168,7 +184,7 @@ final class AppKitDeclarationExportTests: XCTestCase {
             (AppKitRegistrations.sharedMembers + AppKitRegistrations.sharedEvents).map(\.name))
         var byElement: [String: Set<String>] = [:]
 
-        for element in realization.elements {
+        for element in ofTheLibrary(realization.elements) {
             byElement[element] = []
         }
 
