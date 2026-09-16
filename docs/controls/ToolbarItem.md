@@ -35,7 +35,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `accessibilityIdentifier` | property | `String` | native | ✅ |  |  |  |  |  |  |  |
+| `accessibilityIdentifier` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 

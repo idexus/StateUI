@@ -91,6 +91,28 @@ struct ControlDictionary {
         /// tier's record reaches.
         let viewless: Set<String>
 
+        /// The same declaration with a host's own export behind it.
+        ///
+        /// WHAT IS WRITTEN COMES FIRST, and the order is the whole of it:
+        /// `mark` takes the first record for a member; an export says PRESENCE
+        /// and nothing else, while a written record may say the realization is
+        /// partial and what is missing. Exported first, a bare ✅ would quietly
+        /// replace every such note - so a judgement stays written and wins.
+        ///
+        /// A member the written half already speaks for is dropped from the
+        /// export rather than added behind it: one member of one contract is
+        /// recorded ONCE, and the record that says more is the one kept.
+        ///
+        /// - Parameter runtime: what the host's runtime says it realizes.
+        func and(_ runtime: [Record]) -> Declaration {
+            let written = Set(records.map { "\($0.owner).\($0.member)" })
+
+            return Declaration(
+                host: host, source: source,
+                records: records + runtime.filter { !written.contains("\($0.owner).\($0.member)") },
+                unrealized: unrealized, viewless: viewless)
+        }
+
         /// The mark and the note one member of `element` has on this host: the
         /// element's own record, else the record of the tier the member comes
         /// from.
@@ -597,22 +619,21 @@ struct ControlDictionary {
     static func declarations() throws -> [Declaration] {
         let record = #"\("(\w+)", "(\w+)"(?:, missing: "((?:[^"\\]|\\.)*)")?\)"#
 
-        let written = try Declaration(
+        let maui = try Declaration(
             host: "MAUI", reading: "lib/StateUI.Maui/Sources/Rendering/MauiRealization.cs",
             records: #"\b(Complete|Partial)"# + record,
             unrealized: #"Unrealized = \[([^\]]*)\]"#,
             viewless: nil)
 
+        let appKit = try Declaration(
+            host: "AppKit", reading: "lib/StateUI.AppKit/Sources/AppKitRealization.swift",
+            records: #"\.(complete|partial)"# + record,
+            unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
+            viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#)
+
         return [
-            try Declaration(
-                host: "AppKit", reading: "lib/StateUI.AppKit/Sources/AppKitRealization.swift",
-                records: #"\.(complete|partial)"# + record,
-                unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
-                viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#),
-            Declaration(
-                host: written.host, source: written.source,
-                records: try exported("exports/maui.bin") + written.records,
-                unrealized: written.unrealized, viewless: written.viewless),
+            try appKit.and(exported("exports/appkit.bin")),
+            try maui.and(exported("exports/maui.bin")),
         ]
     }
 
@@ -626,8 +647,9 @@ struct ControlDictionary {
         let url = Fixtures.repository.appendingPathComponent(path)
 
         guard let declaration = Wire.decodeDeclaration([UInt8](try Data(contentsOf: url))) else {
-            throw Unreadable(description: "\(path) did not read as a host declaration. Write it again with "
-                + "STATEUI_UPDATE_EXPORTS=1 dotnet test lib/StateUI.Maui/Tests.")
+            throw Unreadable(description: "\(path) did not read as a host declaration. Write it again "
+                + "with STATEUI_UPDATE_EXPORTS=1, through the suite of the host that writes it - "
+                + "`dotnet test lib/StateUI.Maui/Tests` or `swift test --package-path lib/StateUI.AppKit`.")
         }
 
         // The elements' own, and then the tiers': a shared member and an act

@@ -50,9 +50,9 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `focus` | act | `() -> Bool` |  | ✅ | ✅ |  |  |  |  |  |  |
 | `frame` | property | `Rect` | structure | ✅ | ✅ |  |  |  |  |  |  |
 | `height` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `ignoresInput` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
+| `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  |  |  |
@@ -103,7 +103,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `panTouchCount` | property | `Int` | structure | ✅ | ☑️ |  |  |  |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
 | `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `panXChannel` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
-| `panYChannel` | property | `Int` | structure | ✅ |  |  |  |  |  |  |  |
+| `panYChannel` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
 | `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
 | `onPointerExited` (`pointerExited`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
@@ -123,4 +123,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive | ✅ |  |  |  |  |  |  |  |
+| `tint` | property | `Color` | adaptive | ✅ | ✅ |  |  |  |  |  |  |

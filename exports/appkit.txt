@@ -1,0 +1,316 @@
+ActivityIndicator
+  isRunning
+Button
+  aspect
+  background
+  borderColor
+  borderWidth
+  cornerRadius
+  fontAttributes
+  fontFamily
+  fontSize
+  icon
+  iconPosition
+  isEnabled
+  lineBreak
+  text
+  textColor
+  clicked()
+  pressed()
+  released()
+Canvas
+  drawable
+  dragged()
+  pressed()
+  released()
+CheckBox
+  isEnabled
+  isOn
+  toggled()
+ColorBox
+  background
+  color
+  cornerRadius
+DatePicker
+  date
+  fontAttributes
+  fontFamily
+  fontSize
+  isEnabled
+  maximumDate
+  minimumDate
+  textColor
+  dateChanged()
+Ellipse
+  aspect
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+Grid
+  columnSpacing
+  columns
+  padding
+  rowSpacing
+  rows
+HStack
+  padding
+  spacing
+Image
+  aspect
+  isAnimating
+  source
+Line
+  aspect
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+  x1
+  x2
+  y1
+  y2
+Page
+  padding
+Path
+  aspect
+  data
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+Picker
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
+  isEnabled
+  isOpen
+  options
+  selectedIndex
+  textColor
+  title
+  closed()
+  opened()
+  selectedIndexChanged()
+Polygon
+  aspect
+  fill
+  fillRule
+  points
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+Polyline
+  aspect
+  fill
+  fillRule
+  points
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+ProgressBar
+  progress
+RadioButton
+  fontAttributes
+  fontFamily
+  fontSize
+  isEnabled
+  isOn
+  text
+  textCase
+  textColor
+  toggled()
+Rectangle
+  aspect
+  cornerRadius
+  fill
+  renderTransform
+  stroke
+  strokeDashOffset
+  strokeDashPattern
+  strokeLineCap
+  strokeLineJoin
+  strokeMiterLimit
+  strokeWidth
+ScrollView
+  horizontalScrollBarVisibility
+  orientation
+  padding
+  scrollOffset
+  verticalScrollBarVisibility
+SearchField
+  background
+  cursorPosition
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
+  isEnabled
+  isReadOnly
+  isSpellCheckEnabled
+  isTextPredictionEnabled
+  maximumLength
+  placeholder
+  placeholderColor
+  selectionLength
+  text
+  textColor
+  submitted()
+  textChanged()
+Slider
+  isEnabled
+  maximum
+  minimum
+  value
+  dragCompleted()
+  dragStarted()
+  valueChanged()
+SplitView
+  isSidebarVisible
+Stepper
+  isEnabled
+  maximum
+  minimum
+  step
+  value
+  valueChanged()
+Switch
+  isEnabled
+  isOn
+  toggled()
+TextEditor
+  background
+  cursorPosition
+  fontAttributes
+  fontFamily
+  fontSize
+  growsWithText
+  horizontalTextAlignment
+  isEnabled
+  isReadOnly
+  isSpellCheckEnabled
+  isTextPredictionEnabled
+  maximumLength
+  placeholder
+  placeholderColor
+  selectionLength
+  text
+  textColor
+  textChanged()
+TextField
+  background
+  cursorPosition
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
+  isEnabled
+  isPassword
+  isReadOnly
+  isSpellCheckEnabled
+  isTextPredictionEnabled
+  maximumLength
+  placeholder
+  placeholderColor
+  selectionLength
+  text
+  textColor
+  submitted()
+  textChanged()
+TimePicker
+  fontAttributes
+  fontFamily
+  fontSize
+  isEnabled
+  textColor
+  time
+  timeChanged()
+VStack
+  padding
+  spacing
+(every element)
+  absoluteLayoutBounds
+  absoluteLayoutProportions
+  accessibilityHeadingLevel
+  accessibilityHint
+  accessibilityIdentifier
+  accessibilityLabel
+  automationExcludedWithChildren
+  frame
+  gridColumn
+  gridColumnSpan
+  gridRow
+  gridRowSpan
+  height
+  horizontalAlignment
+  ignoresInput
+  isAccessibilityHidden
+  isVisible
+  letsInputThrough
+  margin
+  maximumHeight
+  maximumWidth
+  minimumHeight
+  minimumWidth
+  opacity
+  panXChannel
+  panYChannel
+  pivotX
+  pivotY
+  rotation
+  rotationX
+  rotationY
+  scale
+  scaleX
+  scaleY
+  swipeDirection
+  swipeThreshold
+  tapCount
+  tint
+  translationX
+  translationY
+  verticalAlignment
+  width
+  frameChanged()
+  isFocusedChanged()
+  panUpdated()
+  pinchUpdated()
+  pointerEntered()
+  pointerExited()
+  pointerMoved()
+  pointerPressed()
+  pointerReleased()
+  swiped()
+  tapped()
+(acts)
+  focus()
+  hideOnScreenKeyboard()
+  persistSceneValue()
+  persistValue()
+  unfocus()

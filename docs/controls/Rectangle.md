@@ -52,7 +52,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `height` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `isVisible` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  |  |  |
@@ -103,7 +103,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `panTouchCount` | property | `Int` | structure | ✅ | ☑️ |  |  |  |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
 | `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `panXChannel` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
-| `panYChannel` | property | `Int` | structure | ✅ |  |  |  |  |  |  |  |
+| `panYChannel` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
 | `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `onPointerEntered` (`pointerEntered`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
 | `onPointerExited` (`pointerExited`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
@@ -123,9 +123,9 @@ What every drawn shape has: what fills it, the line around it, how it fits its r
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native | ✅ |  |  |  |  |  |  |  |
+| `aspect` | property | `Aspect` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `fill` | property | `Brush` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
-| `renderTransform` | property | `ViewTransform` | native | ✅ |  |  |  |  |  |  |  |
+| `renderTransform` | property | `ViewTransform` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `stroke` | property | `Brush` | stateUI | ✅ | ☑️ |  |  |  |  |  | AppKit strokes with a colour; a gradient brush draws no outline. |
 | `strokeDashOffset` | property | `Double` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
 | `strokeDashPattern` | property | `[Double]` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
