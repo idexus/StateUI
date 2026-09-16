@@ -9,17 +9,16 @@ repository_dir="$(cd "$script_dir/../.." && pwd)"
 gallery_dir="$repository_dir/apps/Gallery"
 configuration="${1:-debug}"
 product="GalleryAppKit"
-# Swift written for the AppKit host alone stands under `#if APPKIT`, which
-# -Xswiftc -DAPPKIT defines for every module of the build - on a build
-# directory of its own, which the Gallery's tests, compiled without it, would
+# On a build directory of its own: an AppKit build compiles the application
+# under `#if APPKIT`, and the Gallery's tests, compiled without it, would
 # otherwise rebuild from scratch at every switch.
 scratch_dir="$gallery_dir/.build-appkit"
 
-# THE MANIFEST DECLARES THE APPKIT HEAD ONLY FOR AN APPKIT BUILD - the target,
-# the product it makes and the StateUIAppKit dependency it needs. A manifest
-# cannot read the -DAPPKIT above, which reaches the targets of a build and
-# never the manifest describing them, so this is how it is told. See
-# apps/Gallery/Package.swift.
+# THE ONE THING THAT MAKES THIS AN APPKIT BUILD. The manifest reads it and then
+# declares the AppKit head - the target, its product and the StateUIAppKit
+# dependency - and defines APPKIT for every module of the application. A
+# manifest cannot read a compiler flag, so it is told this way, and no flag is
+# given beside it. See apps/Gallery/Package.swift.
 export STATEUI_APPKIT=1
 
 swift build \
@@ -27,7 +26,6 @@ swift build \
     --scratch-path "$scratch_dir" \
     --disable-build-manifest-caching \
     --configuration "$configuration" \
-    -Xswiftc -DAPPKIT \
     --product "$product"
 
 binary_dir="$(swift build \
@@ -35,7 +33,6 @@ binary_dir="$(swift build \
     --scratch-path "$scratch_dir" \
     --disable-build-manifest-caching \
     --configuration "$configuration" \
-    -Xswiftc -DAPPKIT \
     --show-bin-path)"
 application_dir="$scratch_dir/$configuration/$product.app"
 contents_dir="$application_dir/Contents"

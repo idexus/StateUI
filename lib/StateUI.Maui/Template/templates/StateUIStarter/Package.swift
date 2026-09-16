@@ -34,11 +34,22 @@ import PackageDescription
 // AppKit build asks for them, and `swift test` neither resolves that package
 // nor compiles a line of that folder.
 //
-// AN ENVIRONMENT VARIABLE, because a manifest cannot read the compilation
-// condition: `-Xswiftc -DAPPKIT` reaches the targets of a build and never the
+// AN ENVIRONMENT VARIABLE, because a manifest cannot read a compilation
+// condition: a flag given to a build reaches its targets and never the
 // manifest that describes them. .vscode/tasks.json sets it for the build and
 // .vscode/settings.json for the editor.
 let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
+
+// What every module of the application is compiled with. In an AppKit build
+// that includes APPKIT, the condition Swift written for that host alone stands
+// under - defined here, so the one variable says both things and an editor
+// that sets it completes the code inside `#if APPKIT` like any other.
+let settings: [SwiftSetting] =
+    [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+    + (hasAppKitHead ? [.define("APPKIT")] : [])
+
+//#else
+let settings: [SwiftSetting] = [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
 
 //#endif
 var products: [Product] = [
@@ -76,7 +87,7 @@ var targets: [Target] = [
         path: "Sources",
         // A plain `async` function written here resumes on its caller's
         // executor rather than on Swift's cooperative pool.
-        swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        swiftSettings: settings
     ),
 ]
 
@@ -100,7 +111,7 @@ if hasAppKitHead {
                 .product(name: "StateUIAppKit", package: "StateUIAppKit"),
             ],
             path: "Platforms/AppKit",
-            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+            swiftSettings: settings
         ))
 }
 

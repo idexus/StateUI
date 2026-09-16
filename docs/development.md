@@ -28,19 +28,26 @@ may import Foundation. Platform frameworks remain inside host packages and
 platform entry points.
 
 Swift written for one host alone stands under the condition named for it:
-`#if MAUI`, which every MAUI build of a Swift module defines, and `#if APPKIT`,
-which every AppKit build of an application defines. `NativeProjectTests`
+`#if MAUI`, which every MAUI build of a Swift module defines with
+`-Xswiftc -DMAUI`, and `#if APPKIT`, which every AppKit build of an application
+defines through its manifest. `NativeProjectTests`
 refuses any other mention of either host in the library and in the
 applications' `Sources/`.
 
-A `Platforms/AppKit/` folder needs no such condition inside it, because nothing
-else compiles it. An application's manifest declares that target, the product
-it makes and the `StateUIAppKit` dependency it needs only when
-`STATEUI_APPKIT=1` is set - `.scripts/AppKit/build-gallery-appkit.sh` sets it
-for a build and `.vscode/settings.json` for the editor. A manifest cannot read
-`-DAPPKIT`: that flag reaches the targets of a build, never the manifest
-describing them. So `swift test` resolves no host package and compiles no line
-of one host's half.
+`STATEUI_APPKIT=1` is what makes a build an AppKit one. An application's
+manifest reads it and then declares the `Platforms/AppKit` target, the product
+it makes and the `StateUIAppKit` dependency, and defines `APPKIT` for every
+module of the application. A manifest cannot read a compiler flag - a flag
+reaches the targets of a build, never the manifest describing them - so no
+`-Xswiftc -DAPPKIT` is given beside the variable. Without it, `swift test`
+resolves no host package and compiles no line of one host's half, and a
+`Platforms/AppKit/` folder needs no condition inside it.
+
+`.scripts/AppKit/build-gallery-appkit.sh` and the AppKit tasks set the variable
+for a build, and `.vscode/settings.json` sets it for the editor, whose language
+server therefore resolves `Platforms/AppKit` and completes the code inside
+`#if APPKIT`. The editor works in one mode at a time, and the language server
+reads the variable when it starts: changing it asks for the window to reload.
 
 ## Gallery
 
@@ -115,8 +122,7 @@ Build the runnable Gallery bundle:
 Build the smaller example:
 
 ```bash
-STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld \
-    --product HelloWorldAppKit -Xswiftc -DAPPKIT
+STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld --product HelloWorldAppKit
 ```
 
 VS Code exposes Debug and Release F5 configurations for both applications.

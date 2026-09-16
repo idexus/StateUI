@@ -19,9 +19,15 @@ import PackageDescription
 // WHETHER THIS BUILD HAS AN APPKIT HEAD - the same question, and the same
 // answer, as apps/Gallery/Package.swift. Platforms/AppKit is one host's half,
 // it imports StateUIAppKit, and nothing else has any business compiling it; a
-// manifest cannot read `-Xswiftc -DAPPKIT`, which reaches a build's targets and
-// never the manifest describing them, so an AppKit build says so here instead.
+// manifest cannot read a compilation condition, which reaches a build's targets
+// and never the manifest describing them, so an AppKit build says so here.
 let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
+
+// What every module of the application is compiled with - in an AppKit build
+// including APPKIT, defined here and nowhere else. See apps/Gallery/Package.swift.
+let settings: [SwiftSetting] =
+    [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+    + (hasAppKitHead ? [.define("APPKIT")] : [])
 
 var products: [Product] = [
     // Dynamic so an executable and its host share exactly one StateUI
@@ -63,7 +69,7 @@ var targets: [Target] = [
         // in ../../Package.swift. Handlers are safe either way,
         // their type coming from the library; an `async func` written HERE
         // is not, and would resume away from its caller's executor.
-        swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        swiftSettings: settings
     ),
 ]
 
@@ -86,7 +92,7 @@ if hasAppKitHead {
                 .product(name: "StateUIAppKit", package: "StateUIAppKit"),
             ],
             path: "Platforms/AppKit",
-            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+            swiftSettings: settings
         ))
 }
 

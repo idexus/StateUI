@@ -92,13 +92,11 @@
         "${workspaceFolder}/apps/HelloWorld",
         "--configuration",
         "debug",
-        "-Xswiftc",
-        "-DAPPKIT",
         "--product",
         "HelloWorldAppKit"
       ],
-      // The manifest declares the AppKit head only for an AppKit build, and a
-      // manifest cannot read the -DAPPKIT above - see apps/Gallery/Package.swift.
+      // What makes this an AppKit build: the manifest declares the head and
+      // defines APPKIT only then - see apps/Gallery/Package.swift.
       "options": { "env": { "STATEUI_APPKIT": "1" } },
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
@@ -113,8 +111,6 @@
         "${workspaceFolder}/apps/HelloWorld",
         "--configuration",
         "release",
-        "-Xswiftc",
-        "-DAPPKIT",
         "--product",
         "HelloWorldAppKit"
       ],

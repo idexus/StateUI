@@ -26,13 +26,22 @@ import PackageDescription
 // `swift test` neither resolves that package nor compiles a line of that
 // folder. Which is what putting a host's half in a folder of its own was for.
 //
-// AN ENVIRONMENT VARIABLE, because a manifest cannot read the compilation
-// condition: `-Xswiftc -DAPPKIT` reaches the targets of a build and never the
+// AN ENVIRONMENT VARIABLE, because a manifest cannot read a compilation
+// condition: a flag given to a build reaches its targets and never the
 // manifest that describes them.
 //
-// .vscode/settings.json sets it as well, so an editor still resolves the
-// folder and offers completion inside it.
+// .vscode/settings.json sets it as well, so an editor resolves the folder and
+// - through the definition below - completes the code inside `#if APPKIT`.
 let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
+
+// What every module of the application is compiled with. In an AppKit build
+// that includes APPKIT, the condition Swift written for that host alone stands
+// under - defined HERE rather than by a compiler flag, so the one variable
+// says both things, and an editor that sets it compiles and completes the code
+// inside `#if APPKIT` like any other.
+let settings: [SwiftSetting] =
+    [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+    + (hasAppKitHead ? [.define("APPKIT")] : [])
 
 var products: [Product] = [
     // Dynamic so an executable and its host share exactly one StateUI
@@ -73,7 +82,7 @@ var targets: [Target] = [
         // The one setting an application must not leave out - see the note
         // in ../../Package.swift. Handlers carry the library's executor;
         // an `async func` written here must inherit its caller's executor too.
-        swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        swiftSettings: settings
     ),
     .testTarget(
         name: "GalleryTests",
@@ -82,7 +91,7 @@ var targets: [Target] = [
             .product(name: "StateUI", package: "StateUI"),
         ],
         path: "Tests/GalleryTests",
-        swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+        swiftSettings: settings
     ),
 ]
 
@@ -105,7 +114,7 @@ if hasAppKitHead {
                 .product(name: "StateUIAppKit", package: "StateUIAppKit"),
             ],
             path: "Platforms/AppKit",
-            swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
+            swiftSettings: settings
         ))
 }
 

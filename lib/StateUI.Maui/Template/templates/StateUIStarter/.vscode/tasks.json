@@ -26,15 +26,12 @@
         "${workspaceFolder}",
         "--configuration",
         "debug",
-        "-Xswiftc",
-        "-DAPPKIT",
         "--product",
         "StateUIStarterAppKit"
       ],
-      // Package.swift declares the AppKit head only when a build says it has
-      // one, so `swift test` compiles no part of one host's half. A manifest
-      // cannot read the -DAPPKIT above, which reaches a build's targets and
-      // never the manifest describing them.
+      // What makes this an AppKit build: Package.swift declares the head and
+      // defines APPKIT only then, so `swift test` compiles no part of one
+      // host's half.
       "options": { "env": { "STATEUI_APPKIT": "1" } },
       "problemMatcher": [],
       "presentation": { "reveal": "always", "panel": "dedicated" }
@@ -49,8 +46,6 @@
         "${workspaceFolder}",
         "--configuration",
         "release",
-        "-Xswiftc",
-        "-DAPPKIT",
         "--product",
         "StateUIStarterAppKit"
       ],

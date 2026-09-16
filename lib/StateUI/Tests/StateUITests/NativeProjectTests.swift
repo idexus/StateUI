@@ -191,48 +191,60 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertTrue(windows.allSatisfy { $0.contains("-D MAUI") }, "build-windows.ps1 compiles without MAUI")
     }
 
-    /// Every Swift build of an application's AppKit head is compiled with the
-    /// AppKit condition, so no block under `#if APPKIT` is left out of one of
-    /// them: the Gallery's script, the tasks that build HelloWorld and a new
-    /// application's head, and the commands `new-app` and the template print.
-    func testEveryAppKitSwiftBuildDefinesTheAppKitCondition() throws {
+    /// Every application DEFINES THE APPKIT CONDITION IN ITS MANIFEST, for
+    /// every module it compiles, exactly when a build says it is an AppKit one.
+    ///
+    /// One variable says both things - that the build has an AppKit head, and
+    /// that code under `#if APPKIT` compiles - so a build and an editor that
+    /// set it agree, and the editor completes that code like any other. The
+    /// flag it replaced, `-Xswiftc -DAPPKIT`, is refused wherever a build is
+    /// written down: a second spelling of the same switch is how the two
+    /// drift apart.
+    func testEveryApplicationDefinesTheAppKitConditionInItsManifest() throws {
         let repository = Fixtures.repository
         let template = "lib/StateUI.Maui/Template/templates/StateUIStarter"
         func text(_ relative: String) throws -> String {
             try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
         }
 
-        // A command on one line, a shell line continued with a backslash
-        // joined back up.
+        for relative in ["apps/Gallery/Package.swift", "apps/HelloWorld/Package.swift", "\(template)/Package.swift"] {
+            let manifest = try text(relative)
+
+            XCTAssertTrue(
+                manifest.contains("hasAppKitHead ? [.define(\"APPKIT\")] : []"),
+                "\(relative) does not define APPKIT for an AppKit build")
+
+            // No module is left compiling without it.
+            let settings = manifest.components(separatedBy: "swiftSettings:").dropFirst()
+            XCTAssertFalse(settings.isEmpty, "\(relative) declares no target")
+            for setting in settings {
+                XCTAssertTrue(
+                    setting.trimmingCharacters(in: .whitespaces).hasPrefix("settings"),
+                    "\(relative) compiles a module with settings of its own")
+            }
+        }
+
         for relative in [
-            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/new-app.sh", "\(template)/README.md",
+            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/new-app.sh", ".scripts/test-native.sh",
+            "\(template)/README.md", "docs/development.md", "docs/getting-started.md",
         ] {
             let commands = try text(relative)
                 .replacingOccurrences(of: "\\\n", with: " ")
                 .components(separatedBy: "\n")
                 .map { $0.trimmingCharacters(in: .whitespaces) }
                 .filter { Self.runsSwift($0) }
-            XCTAssertFalse(commands.isEmpty, "\(relative) runs no swift build")
+
             for command in commands {
-                XCTAssertTrue(
-                    command.contains("-Xswiftc -DAPPKIT"), "\(relative) builds without APPKIT: \(command)")
+                XCTAssertFalse(
+                    command.contains("-DAPPKIT"),
+                    "\(relative) still gives -DAPPKIT, which the manifest now defines: \(command)")
             }
         }
 
-        // A task names the head it builds right after `--product`.
         for relative in [".vscode/tasks.json", "\(template)/.vscode/tasks.json"] {
-            let tasks = try text(relative).components(separatedBy: "\"label\"").filter { task in
-                let lines = task.components(separatedBy: "\n").map { $0.trimmingCharacters(in: .whitespaces) }
-                guard let product = lines.firstIndex(of: "\"--product\","), product + 1 < lines.count
-                else { return false }
-                return lines[product + 1].hasSuffix("AppKit\"")
-            }
-            XCTAssertFalse(tasks.isEmpty, "\(relative) builds no AppKit head")
-            for task in tasks {
-                XCTAssertTrue(
-                    task.contains("\"-Xswiftc\"") && task.contains("\"-DAPPKIT\""),
-                    "\(relative) builds an AppKit head without APPKIT")
-            }
+            XCTAssertFalse(
+                try text(relative).contains("\"-DAPPKIT\""),
+                "\(relative) still gives -DAPPKIT, which the manifest now defines")
         }
     }
 
@@ -276,7 +288,7 @@ final class NativeProjectTests: XCTestCase {
         }
 
         for relative in [
-            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/new-app.sh",
+            ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/new-app.sh", ".scripts/test-native.sh",
             "\(template)/README.md", "docs/development.md", "docs/getting-started.md",
         ] {
             XCTAssertTrue(

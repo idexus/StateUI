@@ -22,12 +22,12 @@ The AppKit host needs:
 Build the small application from the repository root:
 
 ```bash
-STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld \
-    --product HelloWorldAppKit -Xswiftc -DAPPKIT
+STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld --product HelloWorldAppKit
 ```
 
-The variable is what tells the manifest this build has an AppKit head, so that
-`swift test` compiles no part of one host's half; see
+The variable is what makes it an AppKit build: the manifest then declares the
+AppKit head and defines `APPKIT`, and without it `swift test` compiles no part
+of one host's half; see
 [Project structure and development](development.md).
 
 Build the signed Gallery bundle with its resources and icon:

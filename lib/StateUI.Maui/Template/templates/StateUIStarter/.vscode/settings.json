@@ -8,10 +8,11 @@
   // "lldb-dap.executable-path": "/Users/<you>/Library/Developer/Toolchains/swift-6.3.3-RELEASE.xctoolchain/usr/bin/lldb-dap",
 
 //#if (AppKit)
-  // Package.swift declares this application's AppKit head only when a build
-  // says it has one, so that `swift test` compiles no part of one host's half.
-  // Set here as well, or the editor resolves nothing inside Platforms/AppKit;
-  // the build tasks set it for themselves.
+  // Package.swift declares this application's AppKit head, and defines APPKIT,
+  // only when a build says it has one - so `swift test` compiles no part of one
+  // host's half. Set here as well, the editor resolves Platforms/AppKit and
+  // completes the code inside `#if APPKIT`; the build tasks set it for
+  // themselves. Read when the language server starts.
   "swift.swiftEnvironmentVariables": {
     "STATEUI_APPKIT": "1"
   },

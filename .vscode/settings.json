@@ -26,9 +26,10 @@
   // AN APPLICATION'S AppKit HEAD IS DECLARED ONLY FOR AN APPKIT BUILD - the
   // target, its product and the StateUIAppKit dependency - so that `swift
   // test` neither resolves that package nor compiles a folder belonging to one
-  // host. See apps/Gallery/Package.swift. The build script sets this for
-  // itself; set here so the editor still resolves Platforms/AppKit and offers
-  // completion inside it.
+  // host, and it defines APPKIT only then. See apps/Gallery/Package.swift. The
+  // build script sets this for itself; set here, the language server resolves
+  // Platforms/AppKit and completes the code inside `#if APPKIT`. It is read
+  // when the server starts, so a change asks for the window to reload.
   "swift.swiftEnvironmentVariables": {
     "STATEUI_APPKIT": "1"
   },
