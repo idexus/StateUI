@@ -15,38 +15,74 @@
 // Dispatch and not Foundation, for the lock - the Renderer's own reasoning.
 import Dispatch
 
-/// How one element's own events leave the host: handed to its view where the
-/// view is made, so the view raises a member of its contract and never names a
-/// handler - bound to the element, as a C# control's raise is.
+/// What one element tells the application: an event of its own, and a value
+/// its reader changed. Handed to the view where the view is made, so the view
+/// names members of its contract and never a handler - bound to the element,
+/// as a C# control's raise is.
 ///
-///     registry.add(TrafficLightContract.self, create: { raise in
+///     registry.add(TrafficLightContract.self, create: { reports in
 ///         let light = TrafficLightView()
-///         light.onLampTapped = { index in raise(TrafficLightContract.lampTapped, index) }
+///         light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+///         light.onSignalPicked = { signal in
+///             reports.report(TrafficLightContract.signal, signal, as: TrafficLightContract.signalChanged)
+///         }
 ///         return light
 ///     })
-@_spi(Host) public struct Raise<Realized: ElementContract> {
+@_spi(Host) public struct Reports<Realized: ElementContract> {
     /// Hands an event and its encoded values on - to the element's handler.
     private let send: (Event, [HostValue]) -> Void
 
-    /// A raise that hands each event, its values encoded, to `send`, which
-    /// finds the element's handler for it.
+    /// Hands a value the reader changed on - to the state the element's value
+    /// is carried in, and to the element's handler for the event.
+    private let carry: (Prop, Event, HostValue) -> Void
+
+    /// The reports of one element: `send` finds the element's handler for an
+    /// event, `carry` writes a reader's value where the element carries it and
+    /// raises the event with it.
     ///
-    /// - Parameter send: given the event's key and what it carries.
-    public init(_ send: @escaping (Event, [HostValue]) -> Void) {
+    /// - Parameters:
+    ///   - send: given the event's key and what it carries.
+    ///   - carry: given the property's key, the event's key, and the value.
+    public init(
+        sending send: @escaping (Event, [HostValue]) -> Void,
+        reporting carry: @escaping (Prop, Event, HostValue) -> Void
+    ) {
         self.send = send
+        self.carry = carry
     }
 
     /// Raises one of the element's own events with the values its contract
-    /// declares.
+    /// declares - an event that carries no value of the element's own.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
     ///   - value: what it carries, in the order its contract declares.
-    public func callAsFunction<each Value: HostRepresentable>(
+    public func raise<each Value: HostRepresentable>(
         _ event: ElementEvent<Realized, (repeat each Value)>,
         _ value: repeat each Value
     ) {
         send(event.token, MemberValues.encode(repeat each value))
+    }
+
+    /// A value the reader changed: it lands on the state the element's value is
+    /// carried in - the one place a host-carried value lives - and the event is
+    /// raised with it, so an application hears the change once whether it holds
+    /// the value in a state or in a handler.
+    ///
+    ///     toggle.onToggled = { on in
+    ///         reports.report(SwitchContract.isOn, on, as: SwitchContract.toggled)
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - property: the value's member, written with its contract.
+    ///   - value: what the reader made it.
+    ///   - event: the member the element raises for that change.
+    public func report<Value: HostRepresentable>(
+        _ property: ElementProperty<Realized, Value>,
+        _ value: Value,
+        as event: ElementEvent<Realized, Value>
+    ) {
+        carry(property.token, event.token, value.propValue)
     }
 }
 
@@ -229,9 +265,9 @@ extension ElementProperty: RegisteredProperty {
 @_spi(Host) public final class Registry<View: AnyObject> {
     /// One registered contract.
     private struct Entry {
-        /// Makes the element's view, its events handed to the function given -
-        /// nil where the registration made something that is no `View`.
-        let make: (@escaping (Event, [HostValue]) -> Void) -> View?
+        /// Makes the element's view, its reports handed to the functions given
+        /// - nil where the registration made something that is no `View`.
+        let make: (@escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void) -> View?
 
         /// Puts the changed properties it takes on the view, each read through
         /// the function given, and answers them.
@@ -264,12 +300,12 @@ extension ElementProperty: RegisteredProperty {
     ///
     /// - Parameters:
     ///   - contract: the element's contract.
-    ///   - create: makes the view, once per element, handed the raise its
-    ///     events leave through.
+    ///   - create: makes the view, once per element, handed the reports its
+    ///     events and its reader's values leave through.
     ///   - members: registers the members the view realizes.
     public func add<Realized: ElementContract, Made: AnyObject>(
         _ contract: Realized.Type,
-        create: @escaping (Raise<Realized>) -> Made,
+        create: @escaping (Reports<Realized>) -> Made,
         members: (Registration<Realized, Made>) -> Void = { _ in }
     ) {
         let registration = Registration<Realized, Made>()
@@ -280,8 +316,8 @@ extension ElementProperty: RegisteredProperty {
         let wholes = registration.wholes
 
         entries[Realized.nodeType] = Entry(
-            make: { send in
-                let made = create(Raise(send))
+            make: { send, carry in
+                let made = create(Reports(sending: send, reporting: carry))
 
                 guard let view = made as? View else {
                     complain("\(Realized.name)'s registration made a \(type(of: made)), which is no "
@@ -346,15 +382,21 @@ extension ElementProperty: RegisteredProperty {
             HostRealizedMember(element: ApplicationContract.name, owner: Owner.name, member: event.name))
     }
 
-    /// A view for a node type, made by its registration, its events handed to
-    /// `send` - nil where nothing registered the type.
+    /// A view for a node type, made by its registration, its reports handed to
+    /// `send` and `carry` - nil where nothing registered the type.
     ///
     /// - Parameters:
     ///   - type: the node type.
     ///   - send: given each event the view raises, and what it carries.
+    ///   - carry: given each value the view's reader changed: the property, the
+    ///     event to raise for it, and the value.
     /// - Returns: the view, or nil.
-    public func makeView(for type: NodeType, sending send: @escaping (Event, [HostValue]) -> Void) -> View? {
-        entries[type].flatMap { $0.make(send) }
+    public func makeView(
+        for type: NodeType,
+        sending send: @escaping (Event, [HostValue]) -> Void,
+        reporting carry: @escaping (Prop, Event, HostValue) -> Void
+    ) -> View? {
+        entries[type].flatMap { $0.make(send, carry) }
     }
 
     /// Puts what changed - a patch's properties, or a display frame's moving

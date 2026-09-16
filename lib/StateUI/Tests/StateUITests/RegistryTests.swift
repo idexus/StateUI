@@ -5,8 +5,9 @@
 // test double for a platform view: views made through their registration,
 // properties handed over as their declared types - one at a time, or the
 // element whole where a view takes several at once - an element's own events
-// raised by member, what a host's shared machinery realizes on every element
-// wearing a tier, and what the host realizes told to the core.
+// raised by member and its reader's values reported by member, what a host's
+// shared machinery realizes on every element wearing a tier, and what the host
+// realizes told to the core.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -23,14 +24,16 @@ final class RegistryTests: XCTestCase {
         var caption = ""
         var captions = 0
         var tapped: ((Int) -> Void)?
+        var dialled: ((Int) -> Void)?
     }
 
     /// Something that is no platform view - what a registration must not make.
     private final class Stray {}
 
-    /// What a raise handed on.
-    private final class Sent {
+    /// What the element's reports handed on.
+    private final class Told {
         var events: [String] = []
+        var values: [String] = []
     }
 
     override func tearDown() {
@@ -43,8 +46,8 @@ final class RegistryTests: XCTestCase {
     func testARegisteredContractMakesItsView() {
         let registry = Self.lamps()
 
-        XCTAssertTrue(registry.makeView(for: LampContract.nodeType) { _, _ in } is LampView)
-        XCTAssertNil(registry.makeView(for: LabelContract.nodeType) { _, _ in })
+        XCTAssertTrue(Self.view(of: LampContract.nodeType, in: registry) is LampView)
+        XCTAssertNil(Self.view(of: LabelContract.nodeType, in: registry))
     }
 
     /// A property registered alone reaches the view as the type its contract
@@ -110,14 +113,27 @@ final class RegistryTests: XCTestCase {
     /// event's key and its values, encoded, to the element's sender.
     func testTheViewRaisesItsOwnEventByMember() throws {
         let registry = Self.lamps()
-        let sent = Sent()
-        let view = try XCTUnwrap(registry.makeView(for: LampContract.nodeType) { event, values in
-            sent.events.append("\(event.name) \(values)")
-        } as? LampView)
+        let told = Told()
+        let view = try XCTUnwrap(Self.view(of: LampContract.nodeType, in: registry, told: told) as? LampView)
 
         view.tapped?(2)
 
-        XCTAssertEqual(sent.events, ["lampTapped \([2.propValue])"])
+        XCTAssertEqual(told.events, ["lampTapped \([2.propValue])"])
+        XCTAssertTrue(told.values.isEmpty, "an event of its own carries no value of the element's")
+    }
+
+    /// A value the reader changed is reported by member: the element is handed
+    /// the property, the event to raise for it, and the value - so the host
+    /// writes it where the value is carried and raises the event once.
+    func testTheViewReportsItsReadersValueByMember() throws {
+        let registry = Self.lamps()
+        let told = Told()
+        let view = try XCTUnwrap(Self.view(of: LampContract.nodeType, in: registry, told: told) as? LampView)
+
+        view.dialled?(3)
+
+        XCTAssertEqual(told.values, ["signal signalChanged \(3.propValue)"])
+        XCTAssertTrue(told.events.isEmpty, "a reported value raises its event through the report")
     }
 
     /// A view taking several members at once is applied whole, once, when any
@@ -181,7 +197,7 @@ final class RegistryTests: XCTestCase {
 
         registry.add(PlainContract.self, create: { _ in Stray() })
 
-        XCTAssertNil(registry.makeView(for: PlainContract.nodeType) { _, _ in })
+        XCTAssertNil(Self.view(of: PlainContract.nodeType, in: registry))
     }
 
     /// The core answers what the host realizes once the host has said it -
@@ -202,14 +218,18 @@ final class RegistryTests: XCTestCase {
     // MARK: - Support
 
     /// A registry realizing the lamp: its signal and the opacity it wears one
-    /// at a time, its caption and emphasis whole, the lamp tap it raises - and
-    /// a member of a contract it does not wear, which the registry refuses.
+    /// at a time, its caption and emphasis whole, the lamp tap it raises, the
+    /// signal its reader dials - and a member of a contract it does not wear,
+    /// which the registry refuses.
     private static func lamps() -> Registry<PlatformView> {
         let registry = Registry<PlatformView>()
 
-        registry.add(LampContract.self, create: { raise in
+        registry.add(LampContract.self, create: { reports in
             let lamp = LampView()
-            lamp.tapped = { index in raise(LampContract.lampTapped, index) }
+            lamp.tapped = { index in reports.raise(LampContract.lampTapped, index) }
+            lamp.dialled = { signal in
+                reports.report(LampContract.signal, signal, as: LampContract.signalChanged)
+            }
             return lamp
         }, members: { lamp in
             lamp.property(LampContract.signal) { view, signal in view.signal = signal }
@@ -226,9 +246,21 @@ final class RegistryTests: XCTestCase {
         return registry
     }
 
+    /// A view of `type`, its reports written into `told`.
+    private static func view(
+        of type: NodeType, in registry: Registry<PlatformView>, told: Told = Told()
+    ) -> PlatformView? {
+        registry.makeView(
+            for: type,
+            sending: { event, values in told.events.append("\(event.name) \(values)") },
+            reporting: { property, event, value in
+                told.values.append("\(property.name) \(event.name) \(value)")
+            })
+    }
+
     /// The lamp's view, made by its registration.
     private static func lamp(_ registry: Registry<PlatformView>) throws -> LampView {
-        try XCTUnwrap(registry.makeView(for: LampContract.nodeType) { _, _ in } as? LampView)
+        try XCTUnwrap(view(of: LampContract.nodeType, in: registry) as? LampView)
     }
 
     /// Puts what changed on the lamp's view, the element's current values
@@ -252,8 +284,9 @@ private enum LampContract: ElementContract {
     static let emphasis = ElementProperty<Self, Bool>("emphasis")
     static let unrealized = ElementProperty<Self, Bool>("unrealized")
     static let lampTapped = ElementEvent<Self, Int>("lampTapped")
+    static let signalChanged = ElementEvent<Self, Int>("signalChanged")
 
-    static let members: [any ContractMember] = [signal, caption, emphasis, unrealized, lampTapped]
+    static let members: [any ContractMember] = [signal, caption, emphasis, unrealized, lampTapped, signalChanged]
 }
 
 /// An element wearing no tier.

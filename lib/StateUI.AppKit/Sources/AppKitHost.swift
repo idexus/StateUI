@@ -2170,6 +2170,36 @@ final class MountedNode: NSObject {
         }
     }
 
+    /// A value the reader of a registered view changed: it lands on the state
+    /// the element carries that value in - text where the value is text, lanes
+    /// where it is a number, a flag or a choice - and the element's handler for
+    /// `event` hears it. A value of a kind no state carries is raised alone.
+    private func report(_ property: Prop, _ event: Event, _ value: HostValue) {
+        guard let host else { return }
+
+        let carried: HostStateValue? = switch value {
+        case .string(let text): .text(text)
+        case .name(let name): .text(name)
+        case .bool(let flag): .lanes([flag ? 1 : 0])
+        case .number(let number): .lanes([number])
+        case .numbers(let numbers): .lanes(numbers)
+        case .enumeration(let choice): .lanes([Double(choice)])
+        default: nil
+        }
+
+        var reported = false
+
+        if let carried, let binding = driven[property] {
+            reported = host.report(carried, through: binding)
+        }
+
+        if let handler = events[event] {
+            host.dispatch(handler, payload: [value])
+        } else if reported {
+            host.settleReaderWrite(true)
+        }
+    }
+
     private func changedBoolean(_ value: Bool, property: Prop, event: Event) {
         guard let host else { return }
 
@@ -2369,9 +2399,11 @@ final class MountedNode: NSObject {
     }
 
     private func makeView() -> NSView? {
-        if let registered = AppKitRegistrations.registry.makeView(for: type, sending: { [weak self] event, values in
-            self?.send(event, values)
-        }) {
+        if let registered = AppKitRegistrations.registry.makeView(
+            for: type,
+            sending: { [weak self] event, values in self?.send(event, values) },
+            reporting: { [weak self] property, event, value in self?.report(property, event, value) }
+        ) {
             return registered
         }
 
@@ -2463,20 +2495,6 @@ final class MountedNode: NSObject {
             slider.onDragStarted = { [weak self] in self?.beganSliderDrag() }
             slider.onDragCompleted = { [weak self] in self?.completedSliderDrag() }
             return slider
-
-        case .switch:
-            let toggle = AppKitSwitchView()
-            toggle.onToggled = { [weak self] in
-                self?.changedBoolean($0, property: .isOn, event: .toggled)
-            }
-            return toggle
-
-        case .checkBox:
-            let checkBox = AppKitCheckBoxView()
-            checkBox.onToggled = { [weak self] in
-                self?.changedBoolean($0, property: .isOn, event: .toggled)
-            }
-            return checkBox
 
         case .radioButton:
             let radio = AppKitRadioButtonView()
@@ -2762,17 +2780,6 @@ final class MountedNode: NSObject {
                 enabled: value(.isEnabled)?.bool ?? true)
         }
 
-        if let toggle = view as? AppKitSwitchView {
-            toggle.apply(
-                toggled: value(.isOn)?.bool ?? false,
-                enabled: value(.isEnabled)?.bool ?? true)
-        }
-        if let checkBox = view as? AppKitCheckBoxView {
-            checkBox.apply(
-                checked: value(.isOn)?.bool ?? false,
-                enabled: value(.isEnabled)?.bool ?? true,
-                tint: color(.tint))
-        }
         if let radio = view as? AppKitRadioButtonView {
             radio.apply(
                 checked: value(.isOn)?.bool ?? false,
