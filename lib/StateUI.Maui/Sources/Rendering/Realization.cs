@@ -112,6 +112,120 @@ internal sealed class Realization<TControl> : Realization
     }
 
     /// <summary>
+    /// Registers a property whose value has a READER of its own - a colour,
+    /// a thickness, a member of a vocabulary this side maps onto MAUI's.
+    /// </summary>
+    /// <remarks>
+    /// The conversions live in <see cref="Values"/>, one per kind, and this
+    /// takes one rather than growing a second copy of that table: the
+    /// mechanism does not know the library's vocabulary, it carries it. A
+    /// reader answering null is a value of another kind, and writes nothing -
+    /// the same answer every reader on this side gives.
+    /// </remarks>
+    /// <remarks>
+    /// TWO of them, one per kind of type, and that is the C# of it rather than
+    /// a choice: <c>TValue?</c> means <c>Nullable&lt;TValue&gt;</c> for a
+    /// struct and the plain reference for a class, so one method taking both
+    /// leaves the compiler unable to infer which - and it then guesses at the
+    /// other overload, reporting the failure as a reader called on the control.
+    /// The constraints tell the two apart; a call site names neither.
+    /// </remarks>
+    /// <typeparam name="TValue">What the reader answers.</typeparam>
+    /// <param name="member">The member this host realizes.</param>
+    /// <param name="read">Reads the member's value out of the message.</param>
+    /// <param name="write">What the value does to the control.</param>
+    internal Realization<TControl> Property<TValue>(
+        HostProp member,
+        Func<HostPatch, HostProp, TValue?> read,
+        Action<TControl, TValue> write)
+        where TValue : struct
+    {
+        Appliers.Add(new Applier(member, (view, node) =>
+        {
+            if (read(node, member) is TValue value)
+            {
+                write((TControl)view, value);
+            }
+        }));
+
+        return this;
+    }
+
+    /// <summary>
+    /// The same, for a value whose reader answers a REFERENCE - a colour, a
+    /// name, a text.
+    /// </summary>
+    /// <remarks>
+    /// A name of its own rather than another <c>Property</c>: <c>TValue?</c>
+    /// means <c>Nullable&lt;TValue&gt;</c> for a struct and the plain reference
+    /// for a class, so two overloads of one name leave the compiler unable to
+    /// infer which is meant - and it then reports the failure as a reader
+    /// called on the control, which says nothing about the real cause. Two
+    /// names cost one word at each call site and nothing anywhere else.
+    /// </remarks>
+    /// <typeparam name="TValue">What the reader answers.</typeparam>
+    /// <param name="member">The member this host realizes.</param>
+    /// <param name="read">Reads the member's value out of the message.</param>
+    /// <param name="write">What the value does to the control.</param>
+    internal Realization<TControl> Held<TValue>(
+        HostProp member,
+        Func<HostPatch, HostProp, TValue?> read,
+        Action<TControl, TValue> write)
+        where TValue : class
+    {
+        Appliers.Add(new Applier(member, (view, node) =>
+        {
+            if (read(node, member) is TValue value)
+            {
+                write((TControl)view, value);
+            }
+        }));
+
+        return this;
+    }
+
+    /// <summary>
+    /// Registers the FONT the control draws its text in - the four members of
+    /// the font tier, together, because they are one tier and not four
+    /// properties of this control.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The setters are the registration's because MAUI's
+    /// <c>IFontElement</c> declares these GET-ONLY and the controls wearing
+    /// them share no base class, so only a caller that knows the class can
+    /// assign them. That is the whole reason this host had one font method per
+    /// control; here the tier is declared once and the class is named four
+    /// times instead of ten methods being written out.
+    /// </para>
+    /// <para>
+    /// The FAMILY is a NAME, never text: it names a font an author registered
+    /// and repeats on every control wearing it, so it rides the session's
+    /// dictionary. Read as text it answers null, which is a font silently not
+    /// applied.
+    /// </para>
+    /// </remarks>
+    /// <param name="size">Takes the font's size.</param>
+    /// <param name="family">Takes the font's family, by name.</param>
+    /// <param name="attributes">Takes bold and italic.</param>
+    /// <param name="scaling">Takes whether it follows the reader's text size.</param>
+    internal Realization<TControl> Font(
+        Action<TControl, double> size,
+        Action<TControl, string> family,
+        Action<TControl, FontAttributes> attributes,
+        Action<TControl, bool> scaling) =>
+        Property(HostProp.FontSize, static (node, member) => node.GetNumber(member), size)
+            .Held(HostProp.FontFamily, static (node, member) => node.GetName(member), family)
+            .Property(
+                HostProp.FontAttributes,
+                static (node, member) => node.GetFontAttributes(member),
+                attributes)
+            .Property(
+                HostProp.FontAutoScalingEnabled,
+                static (node, member) => node.GetBool(member),
+                scaling);
+
+    /// <summary>
     /// Registers what the READER changes: the member whose value they moved,
     /// the control's own property carrying it, and the event the tree hears.
     /// </summary>
@@ -137,9 +251,9 @@ internal sealed class Realization<TControl> : Realization
     /// reader made it.
     /// </param>
     /// <remarks>
-    /// The MEMBER is not named again here: <see cref="Property{TValue}"/>
-    /// already declares which member this control realizes, and a second
-    /// spelling of it would be a second place to get it wrong.
+    /// The MEMBER is not named again here: <c>Property</c> already declares
+    /// which member this control realizes, and a second spelling of it would
+    /// be a second place to get it wrong.
     /// </remarks>
     internal Realization<TControl> Reports<TReported>(
         BindableProperty property,

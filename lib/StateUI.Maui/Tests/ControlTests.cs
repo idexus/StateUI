@@ -1062,13 +1062,42 @@ public class ControlTests
         Assert.Contains("ActivityIndicator", known);
         Assert.Contains("Switch", known);
         Assert.Contains("CheckBox", known);
+        Assert.Contains("RadioButton", known);
 
         Assert.DoesNotContain(
             typeof(StateUIRenderer).GetMethods(
                 BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic)
                 .Select(method => method.Name),
             name => name is "ReconcileProgressBar" or "ReconcileActivityIndicator"
-                or "ReconcileSwitch" or "ReconcileCheckBox");
+                or "ReconcileSwitch" or "ReconcileCheckBox" or "ReconcileRadioButton");
+    }
+
+    /// <summary>
+    /// A registered control takes the FONT TIER - and the family by its NAME,
+    /// which is the half no fixture here carries.
+    /// </summary>
+    /// <remarks>
+    /// The control fixtures describe no font on the controls that wear one, so
+    /// a registration that dropped the tier, or read the family as text, would
+    /// pass every other check in this file while ten controls quietly lost
+    /// their font. Read as text a name answers null - which is exactly how that
+    /// failure looks from here: nothing assigned, nothing said.
+    /// </remarks>
+    [Fact]
+    public void ARegisteredControlTakesItsFontAndReadsTheFamilyAsAName()
+    {
+        var host = new Host();
+
+        var button = Assert.IsType<RadioButton>(host.Apply("""
+            {"id":1,"type":"RadioButton","props":{
+              "fontSize":19,"fontFamily":{"name":"Charter"},
+              "fontAttributes":{"enum":1},"fontAutoScalingEnabled":true}}
+            """));
+
+        Assert.Equal(19, button.FontSize);
+        Assert.Equal("Charter", button.FontFamily);
+        Assert.Equal(FontAttributes.Bold, button.FontAttributes);
+        Assert.True(button.FontAutoScalingEnabled);
     }
 
     /// <summary>And the same hole from the other end: a fixture nothing reads.</summary>

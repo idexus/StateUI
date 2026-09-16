@@ -38,11 +38,51 @@ internal static class MauiRegistrations
     /// as the reader leaves it.
     /// </summary>
     /// <remarks>
-    /// A radio button is one of these too, and moves with the family that can
-    /// carry its text, its group and its border.
+    /// A radio button is one of these too, and carries far more with it: a
+    /// caption, a group, a border and a font.
     /// </remarks>
     private static void Toggles()
     {
+        // THE GROUP BEFORE THE STATE, and the order here is the order the
+        // members are applied in: MAUI clears the others in the group as a
+        // button becomes checked, and it can only do that once it knows which
+        // group this is. The group is a NAME - written by an author and
+        // repeated across a tree - so it rides the session's dictionary.
+        StateUIControls.Add("RadioButton",
+            create: _ => new RadioButton(),
+            realize: radio => radio
+                .Held(HostProp.GroupName,
+                    static (node, member) => node.GetName(member),
+                    (view, group) => view.GroupName = group)
+                .Property<string>(HostProp.Text, (view, text) => view.Content = text)
+                .Property<bool>(HostProp.IsOn, (view, on) => view.IsChecked = on)
+                .Held(HostProp.TextColor,
+                    static (node, member) => node.GetColor(member),
+                    (view, colour) => view.TextColor = colour)
+                .Property<double>(HostProp.CharacterSpacing,
+                    (view, spacing) => view.CharacterSpacing = spacing)
+                .Property(HostProp.TextCase,
+                    static (node, member) => node.GetTextTransform(member),
+                    (view, transform) => view.TextTransform = transform)
+                .Held(HostProp.BorderColor,
+                    static (node, member) => node.GetColor(member),
+                    (view, colour) => view.BorderColor = colour)
+                .Property<double>(HostProp.BorderWidth,
+                    (view, width) => view.BorderWidth = width)
+                .Property(HostProp.CornerRadius,
+                    static (node, member) => node.GetInt(member),
+                    (view, radius) => view.CornerRadius = radius)
+                .Property(HostProp.Padding,
+                    static (node, member) => node.GetThickness(member),
+                    (view, padding) => view.Padding = padding)
+                .Font(
+                    (view, size) => view.FontSize = size,
+                    (view, family) => view.FontFamily = family,
+                    (view, attributes) => view.FontAttributes = attributes,
+                    (view, scaling) => view.FontAutoScalingEnabled = scaling)
+                .Reports<bool>(RadioButton.IsCheckedProperty, HostEvent.Toggled,
+                    (view, reported) => view.CheckedChanged += (_, e) => reported(e.Value)));
+
         StateUIControls.Add("Switch",
             create: _ => new Switch(),
             realize: toggle => toggle

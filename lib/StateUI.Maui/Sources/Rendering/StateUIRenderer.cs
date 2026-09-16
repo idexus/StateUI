@@ -867,7 +867,6 @@ public sealed class StateUIRenderer
             HostNodeType.ColorBox => ReconcileColorBox(node, existing),
             HostNodeType.Border => ReconcileBorder(node, existing),
             HostNodeType.TimePicker => ReconcileTimePicker(node, existing),
-            HostNodeType.RadioButton => ReconcileRadioButton(node, existing),
             HostNodeType.Slider => ReconcileSlider(node, existing),
             HostNodeType.Stepper => ReconcileStepper(node, existing),
             HostNodeType.SearchField => ReconcileSearchField(node, existing),
@@ -3223,46 +3222,6 @@ public sealed class StateUIRenderer
         ApplyView(node, picker);
 
         return Track(picker, node);
-    }
-
-    /// <summary>
-    /// A RadioButton. Picking one clears its neighbours, and MAUI reports both -
-    /// so the false arrives on the button that lost, with the id that button was
-    /// given.
-    /// </summary>
-    private RadioButton ReconcileRadioButton(HostPatch node, View? existing)
-    {
-        if (Reuse(existing, node) is not RadioButton button)
-        {
-            button = new RadioButton();
-
-            button.CheckedChanged += (sender, e) =>
-            {
-                Reported(sender, RadioButton.IsCheckedProperty, e.Value ? 1 : 0);
-                Raise(sender, HostEvent.Toggled, e.Value);
-            };
-        }
-
-        // The group before the state: MAUI clears the others in the group as a
-        // button becomes checked, and it can only do that once it knows which
-        // group this is.
-        // A NAME, riding the session's dictionary - a group is written by an
-        // author and repeats across a tree, which is what a name is here.
-        if (node.GetName(HostProp.GroupName) is string group) { button.GroupName = group; }
-        if (node.GetString(HostProp.Text) is string text) { button.Content = text; }
-        if (node.GetBool(HostProp.IsOn) is bool isChecked) { button.IsChecked = isChecked; }
-        node.SetColor(HostProp.TextColor, button, RadioButton.TextColorProperty);
-        if (node.GetNumber(HostProp.CharacterSpacing) is double spacing) { button.CharacterSpacing = spacing; }
-        if (node.GetTextTransform(HostProp.TextCase) is TextTransform buttonCase) { button.TextTransform = buttonCase; }
-        node.SetColor(HostProp.BorderColor, button, RadioButton.BorderColorProperty);
-        if (node.GetNumber(HostProp.BorderWidth) is double borderWidth) { button.BorderWidth = borderWidth; }
-        if (node.GetInt(HostProp.CornerRadius) is int cornerRadius) { button.CornerRadius = cornerRadius; }
-        if (node.GetThickness(HostProp.Padding) is Thickness padding) { button.Padding = padding; }
-
-        ApplyFont(node, button);
-        ApplyView(node, button);
-
-        return Track(button, node);
     }
 
     /// <summary>
@@ -5840,15 +5799,6 @@ public sealed class StateUIRenderer
         if (node.GetName(HostProp.FontFamily) is string family) { picker.FontFamily = family; }
         if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { picker.FontAttributes = attributes; }
         if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { picker.FontAutoScalingEnabled = scaling; }
-    }
-
-    /// <summary>The font properties, for a RadioButton.</summary>
-    private static void ApplyFont(HostPatch node, RadioButton button)
-    {
-        if (node.GetNumber(HostProp.FontSize) is double size) { button.FontSize = size; }
-        if (node.GetName(HostProp.FontFamily) is string family) { button.FontFamily = family; }
-        if (node.GetFontAttributes(HostProp.FontAttributes) is FontAttributes attributes) { button.FontAttributes = attributes; }
-        if (node.GetBool(HostProp.FontAutoScalingEnabled) is bool scaling) { button.FontAutoScalingEnabled = scaling; }
     }
 
     /// <summary>The font properties, for a SearchBar.</summary>
