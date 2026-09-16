@@ -1,18 +1,6 @@
 #if MAUI
 import StateUI
 
-/// An act of the bar's contract, aimed at one bar.
-///
-/// `call` puts the control's identity in argument 0; the C# half turns it
-/// back into the control with `StateUIActs.TargetOf(command)`. Two bars on one
-/// page each answer to their own aim.
-extension Aim where Target == RatingBar {
-    /// Flashes the bar this aim is on.
-    func flash() async throws {
-        try await call(RatingBarContract.flash)
-    }
-}
-
 /// C# functions the application registers, called like the acts the library
 /// ships: typed arguments in, typed values back, a thrown error on failure.
 struct CustomActsSample: SampleContent, ExampleContent {

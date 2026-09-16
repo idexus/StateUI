@@ -62,16 +62,15 @@ enum AppStyles {
 
             // MARK: Buttons
 
-            #if MAUI
-            // A style for a control the application registers: a style
-            // resolves on this side by the node type `RatingBar()` makes, and
-            // `rating` comes from the protocol the control and its style both
-            // wear. Keyed, so only the bar that asks wears it - see
-            // Samples/Interop/CustomStyleSample.swift.
+            // A style for a control the application registers with its host: a
+            // style resolves on THIS side by the node type `RatingBar()`
+            // makes, and `rating` comes from the protocol the control and its
+            // style both wear - so the host receives a control with the values
+            // already on it. Keyed, so only the bar that asks wears it; the
+            // control is Samples/Interop/RatingBar.swift.
             Style<RatingBar>("FourStars")
                 .rating(4)
                 .background(Palette.selected)
-            #endif
 
             Style<Button>()
                 .textColor(Palette.onAccent)

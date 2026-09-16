@@ -18,19 +18,15 @@ final class ResourceTests: XCTestCase {
         AppStyles.sheet(on: .unknown).written
     }
 
-    /// Every element a style may target, by its node type: the library's,
-    /// and on the MAUI host the Gallery's own controls, which
-    /// `MauiProgramTests` holds to what MauiProgram registers. A style for a
-    /// control of the MAUI host alone is compiled out under any other
-    /// condition.
+    /// Every element a style may target, by its node type: the library's, and
+    /// the Gallery's own.
+    ///
+    /// The Gallery's own are declared once for every host - a contract and a
+    /// `View`, shared - and each host registers what they ARE for itself. So
+    /// they belong here whichever host this build is for, and the list comes
+    /// from `GalleryElements` rather than from a copy that could fall behind.
     private static var elements: Set<String> {
-        var names = Set(LibraryContracts.elements.map { $0.nodeType.name })
-
-        #if MAUI
-        names.formUnion(MauiProgramTests.elements.map { $0.nodeType.name })
-        #endif
-
-        return names
+        Set(LibraryContracts.elements.map { $0.nodeType.name }).union(GalleryElements.names)
     }
 
     func testEveryStyleTargetsAnElementAContractDeclares() {

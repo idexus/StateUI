@@ -1,28 +1,28 @@
-#if MAUI
-// The Swift half of the C# RatingBar, shared by the samples that call, bind,
-// style and animate it. The C# class is Platforms/Maui/Host/RatingBar.cs, and
-// Platforms/Maui/Host/MauiProgram.cs registers it.
+// A control of the application's OWN, declared once for every host that
+// realizes it - shared by the samples that call, bind, style and animate it.
+//
+// This file is the whole Swift half, and it is the same wherever the gallery
+// runs. What the bar IS on screen each host says for itself, in
+// Platforms/AppKit/Host and Platforms/Maui/Host.
 
 import StateUI
 
-/// The C# RatingBar, declared: its node type, the tier it wears, and its
-/// members under the names MauiProgram registers, each with its value's type.
+/// The gallery's own rating bar, declared: its node type, the tier it wears,
+/// and its members, each with its value's type.
 enum RatingBarContract: ElementContract {
     static let nodeType: NodeType = "Gallery.RatingBar"
     static let tiers: [any Contract.Type] = [ViewContract.self]
 
-    /// How many stars are filled. C#: `RatingBar.RatingProperty`, declared in
-    /// the registration, so the host assigns it, walks it and lets a style
-    /// set it.
+    /// How many stars are filled. Declared by every host's registration, so
+    /// the host assigns it, walks it and lets a style set it.
     static let rating = ElementProperty<Self, Double>("rating")
 
-    /// A star was tapped. C#: `RatingBar.RatingChanged`. A value this side
-    /// assigns - described, styled or walked - never comes back as this
-    /// event.
+    /// A star was tapped. A value this side assigns - described, styled or
+    /// walked - never comes back as this event.
     static let ratingChanged = ElementEvent<Self, Double>("ratingChanged")
 
-    /// Draws attention to one bar. C#: the performer fades the control
-    /// `StateUIActs.TargetOf` answers.
+    /// Draws attention to one bar: the performer the aim reaches fades the
+    /// view it is aimed at.
     static let flash = ElementAct<Self, Void, Void>("Gallery.FlashRating")
 
     static let members: [any ContractMember] = [rating, ratingChanged, flash]
@@ -33,14 +33,14 @@ enum RatingBarContract: ElementContract {
 protocol RatingBarProperties: PropertyContainer {}
 
 extension RatingBarProperties {
-    /// How many stars are filled, 0 through 5. C#: `RatingBar.Rating`.
+    /// How many stars are filled, 0 through 5.
     func rating(_ value: Double) -> Modified {
         setValue(RatingBarContract.rating, value)
     }
 }
 
-/// Five stars drawn by a control written in C#, described here like a
-/// built-in one.
+/// Five stars drawn by a control the application registered with its host,
+/// described here like a built-in one.
 struct RatingBar: View, RatingBarProperties {
     var node = Node(contract: RatingBarContract.self)
 
@@ -89,10 +89,21 @@ struct RatingBar: View, RatingBarProperties {
     }
 }
 
+/// An act of the bar's contract, aimed at one bar.
+///
+/// `call` puts the control's identity in argument 0, and the host half turns
+/// it back into the control it made. Two bars on one page each answer to
+/// their own aim.
+extension Aim where Target == RatingBar {
+    /// Flashes the bar this aim is on.
+    func flash() async throws {
+        try await call(RatingBarContract.flash)
+    }
+}
+
 /// A style can target the bar: a style target is a control with an empty
 /// initializer, and a style resolves by the node type `RatingBar()` makes.
 extension RatingBar: StyleTarget {}
 
 /// A style of the bar offers the bar's own setters.
 extension StyleBag: RatingBarProperties where Target == RatingBar {}
-#endif

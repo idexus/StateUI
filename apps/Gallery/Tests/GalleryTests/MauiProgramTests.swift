@@ -17,11 +17,10 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 final class MauiProgramTests: XCTestCase {
-    /// The Gallery's element contracts. A registration beside none of them
-    /// fails below, so the list cannot fall behind MauiProgram.
-    static let elements: [any ElementContract.Type] = [
-        TrafficLightContract.self, RatingBarContract.self, BadgeContract.self,
-    ]
+    /// The Gallery's element contracts, as the application declares them. A
+    /// registration beside none of them fails below, so MauiProgram cannot
+    /// name a control the Gallery does not declare.
+    static let elements: [any ElementContract.Type] = GalleryElements.all
 
     /// Every contract the Gallery declares: its elements', and the tier the
     /// application wears.

@@ -1,57 +1,9 @@
 #if MAUI
 import StateUI
 
-/// What the light can show.
-///
-/// A closed vocabulary, so it crosses as its member's number. The numbers are
-/// this application's own contract, and the C# control mirrors them.
-enum TrafficSignal: Int32, CaseIterable, HostRepresentable {
-    /// Red. C#: 0.
-    case stop = 0
-
-    /// Amber. C#: 1.
-    case caution = 1
-
-    /// Green. C#: 2.
-    case go = 2
-}
-
-/// The C# TrafficLight, declared: its node type, the tier it wears, and its
-/// members under the names MauiProgram registers, each with its value's type.
-enum TrafficLightContract: ElementContract {
-    static let nodeType: NodeType = "Gallery.TrafficLight"
-    static let tiers: [any Contract.Type] = [ViewContract.self]
-
-    /// Which lamp is lit. C#: `TrafficLight.Signal`.
-    static let signal = ElementProperty<Self, TrafficSignal>("signal")
-
-    /// A lamp was tapped, with its index from the top.
-    /// C#: `TrafficLight.LampTapped`.
-    static let lampTapped = ElementEvent<Self, Int>("lampTapped")
-
-    static let members: [any ContractMember] = [signal, lampTapped]
-}
-
-/// The Swift half of the C# TrafficLight: a view whose node its contract
-/// makes. `setValue` writes its property and `onEvent` hears its event;
-/// margins, alignment, opacity and gestures come with `View`.
-struct TrafficLight: View {
-    var node = Node(contract: TrafficLightContract.self)
-
-    /// Which lamp is lit. C#: `TrafficLight.Signal`.
-    func signal(_ value: TrafficSignal) -> Self {
-        setValue(TrafficLightContract.signal, value)
-    }
-
-    /// A lamp was tapped, with its index from the top.
-    /// C#: `TrafficLight.LampTapped`.
-    func onLampTapped(_ handler: @escaping ValueEventHandler<Int>) -> Self {
-        onEvent(TrafficLightContract.lampTapped, handler)
-    }
-}
-
 /// A control written in C#, registered by the application and described here
-/// like any other.
+/// like any other. Its contract and its Swift half are in
+/// Samples/Interop/TrafficLight.swift, shared with every other host.
 struct CustomControlSample: SampleContent, ExampleContent {
     @State private var signal = TrafficSignal.stop
 
