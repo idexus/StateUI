@@ -338,6 +338,28 @@ final class Catalog {
                 ]))
         #endif
 
+        #if APPKIT
+        // Calling the host, hearing from it, and a control the application
+        // registers with it - each described like the library's own.
+        //
+        // The Swift half of every one of these is the SAME file the C# interop
+        // group shows: one contract, one `View`, and a host of its own at each
+        // end. What differs is the other half.
+        groups.append(
+            SampleGroup(
+                route: "appKitInterop",
+                title: "AppKit interop",
+                summary: "Calling the host, hearing from it, and a control the app registers - "
+                    + "described like the library's own.",
+                icon: ImageSource(light: "nav_interop.png", dark: "nav_interop_dark.png"),
+                card: ImageSource("cat_interop.png"),
+                samples: [
+                    Sample(AppKitActsSample()),
+                    Sample(AppKitEventsSample()),
+                    Sample(AppKitControlSample()),
+                ]))
+        #endif
+
         self.groups = groups
     }
 

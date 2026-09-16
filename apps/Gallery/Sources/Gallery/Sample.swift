@@ -108,6 +108,14 @@ protocol ExampleContent: ContentView {
     /// type is a compile error rather than a property nothing reads.
     var notes: Element? { get }
 
+    /// What heads the example's own code.
+    ///
+    /// "In Swift" for almost every example, which is all a reader needs where
+    /// the example is Swift alone. An example whose far side is ALSO Swift -
+    /// a host in the same process - says "In StateUI" instead, so the two
+    /// listings are told apart by what they ARE rather than by their language.
+    static var codeHeading: String { get }
+
     /// The far side of the example, where it has one: the code that answers
     /// this example on the host, under a heading and in a language the
     /// example itself names.
@@ -125,6 +133,9 @@ protocol ExampleContent: ContentView {
 extension ExampleContent {
     /// Swift alone, which is what almost every example is.
     static var hostCode: HostCode { .nothing }
+
+    /// What heads an example written in Swift alone.
+    static var codeHeading: String { "In Swift" }
 }
 
 /// One listing beside an example's own code: what answers it on the other
@@ -163,6 +174,9 @@ struct Example {
     /// The Swift that wrote it.
     let code: String
 
+    /// What heads that code.
+    let codeHeading: String
+
     /// What answers it on the host, where the example has such a half.
     let hostCode: HostCode
 
@@ -170,6 +184,7 @@ struct Example {
         view = content
         notes = content.notes
         code = Content.code
+        codeHeading = Content.codeHeading
         hostCode = Content.hostCode
     }
 }

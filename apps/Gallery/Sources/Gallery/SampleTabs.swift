@@ -128,7 +128,7 @@ struct SampleTabPage: ContentView {
                 SamplePage.section("Notes", notes)
             }
 
-            SamplePage.section("In Swift", CodeBlock(example.code))
+            SamplePage.section(example.codeHeading, CodeBlock(example.code))
 
             if !example.hostCode.isEmpty {
                 SamplePage.section(

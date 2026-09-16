@@ -749,6 +749,32 @@ final class CatalogTests: XCTestCase {
     }
     #endif
 
+    #if APPKIT
+    /// Every example of the AppKit interop group shows both halves, and names
+    /// them by what they ARE.
+    ///
+    /// Both halves are Swift on this host, so "In Swift" would tell a reader
+    /// nothing: the application's half is "In StateUI" and the host's is "In
+    /// AppKit". Nothing else in the gallery asks that, so a heading lost here
+    /// would show up nowhere else - which is exactly how the C# half went
+    /// missing once.
+    func testEveryAppKitInteropExampleShowsBothHalves() throws {
+        let interop = try XCTUnwrap(catalog().groups.first { $0.route == "appKitInterop" })
+
+        XCTAssertFalse(interop.samples.isEmpty, "the group lists nothing")
+
+        for sample in interop.samples {
+            for (index, example) in sample.examples.enumerated() {
+                let where_ = "\(sample.id) example \(index + 1)"
+
+                XCTAssertEqual(example.codeHeading, "In StateUI", "\(where_) heads its own code")
+                XCTAssertFalse(example.hostCode.isEmpty, "\(where_) shows no host half")
+                XCTAssertEqual(example.hostCode.heading, "In AppKit", "\(where_) heads the far side")
+            }
+        }
+    }
+    #endif
+
     /// A held sample's code tab is one scroller: each example's name, then its
     /// notes and its Swift, in turn - the notes in no scroller of their own.
     func testAHeldSamplesCodeTabGivesEachExamplesNotesThenItsSwift() throws {

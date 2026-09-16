@@ -85,7 +85,7 @@ struct SamplePage: ContentView {
                 Self.section("Notes", notes)
             }
 
-            Self.section("In Swift", CodeBlock(example.code))
+            Self.section(example.codeHeading, CodeBlock(example.code))
 
             // The far side of the example, where it has one - under the
             // heading the example gives it.
