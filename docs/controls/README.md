@@ -77,7 +77,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Setters](Setters.md) | 0 |  |  |  |  |  |  |  |
 | [Span](Span.md) | 12 | 11 ✅ | 3 ✅ |  |  |  |  |  |
 | [Spans](Spans.md) | 0 |  |  |  |  |  |  |  |
-| [SplitView](SplitView.md) | 5 | 4 ✅ | 4 ✅ |  |  |  |  |  |
+| [SplitView](SplitView.md) | 5 | 4 ✅ | 5 ✅ |  |  |  |  |  |
 | [SwipeAction](SwipeAction.md) | 8 | 7 ✅ |  |  |  |  |  |  |
 | [SwipeActions](SwipeActions.md) | 3 | 3 ✅ |  |  |  |  |  |  |
 | [TabbedView](TabbedView.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |

@@ -242,6 +242,35 @@ final class RegistryTests: XCTestCase {
         XCTAssertFalse(StateUIHost.realizes(LampContract.unrealized))
     }
 
+    /// An element whose VIEW THE HOST MAKES takes its members and records what
+    /// it realizes, while the registry makes nothing for it: the host's own arm
+    /// makes that view, where making it needs machinery no contract describes -
+    /// a scroll view's reader transaction and the frames it asks the host for.
+    func testAnElementTheHostMakesTakesItsMembersAndMakesNoView() {
+        let registry = Registry<PlatformView>()
+
+        registry.add(LampContract.self, madeByHost: LampView.self) { lamp in
+            lamp.property(LampContract.signal) { view, signal in view.signal = signal }
+        }
+
+        XCTAssertNil(
+            Self.view(of: LampContract.nodeType, in: registry),
+            "the host makes this view, so the registry makes none for it")
+        XCTAssertTrue(
+            registry.realization.elements.contains(LampContract.name),
+            "the host realizes the element whoever makes its view")
+        XCTAssertTrue(registry.realization.members.contains(
+            HostRealizedMember(element: LampContract.name, owner: LampContract.name, member: "signal")))
+
+        let view = LampView()
+        let signal = LampContract.signal.token
+        let applied = registry.apply(
+            [signal], to: view, of: LampContract.nodeType, reading: { _ in 2.propValue })
+
+        XCTAssertEqual(view.signal, 2, "the registration applies to the view the host made")
+        XCTAssertEqual(applied, [signal])
+    }
+
     // MARK: - Support
 
     /// A registry realizing the lamp: its signal and the opacity it wears one

@@ -28,11 +28,61 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
             HostRealizedMember(element: "Grid", owner: "Grid", member: "rows")))
 
         XCTAssertFalse(
-            realization.elements.contains("ScrollView"),
-            "a scroll view is made with the host's own closures, and is not the registry's yet")
-        XCTAssertFalse(
             realization.elements.contains("AbsoluteLayout"),
             "an absolute layout's placement is carried by a binding, and is not the registry's yet")
+    }
+
+    /// A scroll view's members come through the registry though its VIEW IS
+    /// THE HOST'S: the registry realizes the element and makes nothing for it,
+    /// so the host's own arm - which binds the reports that go through a
+    /// reader transaction, and the request for display frames - still stands.
+    @MainActor
+    func testTheRegistryRealizesAScrollViewWithoutMakingIt() {
+        let realization = AppKitRegistrations.registry.realization
+
+        XCTAssertTrue(realization.elements.contains("ScrollView"))
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: "ScrollView", owner: "ScrollView", member: "orientation")))
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: "ScrollView", owner: "ScrollView", member: "scrollOffset")))
+        XCTAssertTrue(realization.members.contains(
+            HostRealizedMember(element: "ScrollView", owner: "PaddingElement", member: "padding")))
+
+        XCTAssertNil(
+            AppKitRegistrations.registry.makeView(
+                for: .scrollView, sending: { _, _ in }, reporting: { _, _, _ in }),
+            "the host makes this view, so the registry makes none for it")
+    }
+
+    /// A scroll view takes the members its registration names, and rests in
+    /// its contract's default state where the tree describes none of them - a
+    /// registration applies on CHANGE, so the view is born as the contract
+    /// says rather than as AppKit would leave it.
+    @MainActor
+    func testAScrollViewTakesItsMembersAndRestsAtItsContractsDefault() throws {
+        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        let bare = HostPatch(id: .manual("bare"), type: .scrollView)
+        renderer.applyForTesting(tree(bare))
+
+        let resting = try XCTUnwrap(renderer.viewForTesting(id: .manual("bare")) as? AppKitScrollView)
+        XCTAssertEqual(resting.orientation, .vertical, "the contract scrolls vertically unless told otherwise")
+        XCTAssertTrue(resting.hasVerticalScroller, "which is a vertical scroller, described or not")
+
+        var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
+        scroll.properties[.orientation] = .enumeration(ScrollOrientation.horizontal.rawValue)
+        scroll.properties[.padding] = .numbers([4, 8, 12, 16])
+        scroll.properties[.verticalScrollBarVisibility] = .enumeration(ScrollBarVisibility.never.rawValue)
+        renderer.applyForTesting(tree(scroll))
+
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
+        XCTAssertEqual(native.orientation, .horizontal)
+        XCTAssertEqual(native.padding.left, 4)
+        XCTAssertEqual(native.padding.top, 8)
+        XCTAssertEqual(native.padding.right, 12)
+        XCTAssertEqual(native.padding.bottom, 16)
+        XCTAssertFalse(native.hasVerticalScroller, "`.never` takes the bar away")
     }
 
     /// A stack takes the space between its children and the space inside its

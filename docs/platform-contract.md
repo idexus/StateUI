@@ -490,7 +490,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Setters](controls/Setters.md) | 0 |  |  |  |  |  |  |  |
 | [Span](controls/Span.md) | 12 | 11 ✅ | 3 ✅ |  |  |  |  |  |
 | [Spans](controls/Spans.md) | 0 |  |  |  |  |  |  |  |
-| [SplitView](controls/SplitView.md) | 5 | 4 ✅ | 4 ✅ |  |  |  |  |  |
+| [SplitView](controls/SplitView.md) | 5 | 4 ✅ | 5 ✅ |  |  |  |  |  |
 | [SwipeAction](controls/SwipeAction.md) | 8 | 7 ✅ |  |  |  |  |  |  |
 | [SwipeActions](controls/SwipeActions.md) | 3 | 3 ✅ |  |  |  |  |  |  |
 | [TabbedView](controls/TabbedView.md) | 6 | 5 ✅ | 6 ✅ |  |  |  |  |  |
@@ -563,7 +563,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [SearchField](controls/SearchField.md) | `returnKey`, `onSubmitted` (`submitted`) | ✅ |  |  |  |  |  |  |
 | [Slider](controls/Slider.md) | `onDragCompleted` (`dragCompleted`), `onDragStarted` (`dragStarted`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | ✅ | ✅ |  |  |  |  |  |
 | [Span](controls/Span.md) | `background` | ✅ |  |  |  |  |  |  |
-| [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | ✅ |  |  |  |  |  |  |
+| [SplitView](controls/SplitView.md) | `isSidebarVisible`, `isSidebarVisibleChanged` | ✅ | ✅ |  |  |  |  |  |
 | [Stepper](controls/Stepper.md) | `maximum`, `minimum`, `step`, `value`, `onValueChanged` (`valueChanged`) | ✅ | ✅ |  |  |  |  |  |
 | [SwipeAction](controls/SwipeAction.md) | `background`, `isVisible` | ✅ |  |  |  |  |  |  |
 | [SwipeActions](controls/SwipeActions.md) | `mode`, `side`, `swipeBehaviorOnInvoked` | ✅ |  |  |  |  |  |  |

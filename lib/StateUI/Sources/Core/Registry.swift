@@ -362,6 +362,58 @@ extension ElementProperty: RegisteredProperty {
         create: @escaping (Reports<Realized>) -> Made,
         members: (Registration<Realized, Made>) -> Void = { _ in }
     ) {
+        register(contract, members: members) { send, carry in
+            let made = create(Reports(sending: send, reporting: carry))
+
+            guard let view = made as? View else {
+                complain("\(Realized.name)'s registration made a \(type(of: made)), which is no "
+                    + "\(View.self): no view stands for it.")
+                return nil
+            }
+
+            return view
+        }
+    }
+
+    /// Registers the realization of one element contract whose VIEW THE HOST
+    /// MAKES: the registration takes its members and records what it realizes,
+    /// and the host goes on making the view itself.
+    ///
+    /// For an element whose making needs host machinery no contract describes -
+    /// a scroll view reports through a reader transaction and asks the host for
+    /// display frames, and neither is an event of its contract. `makeView`
+    /// answers nothing for such a type, and says nothing about it: the host's
+    /// own arm stands. Everything else is a registration like any other, and
+    /// the realization claims the element and every member registered here.
+    ///
+    ///     registry.add(TrafficLightContract.self, madeByHost: TrafficLightView.self) { light in
+    ///         light.property(TrafficLightContract.signal) { view, signal in
+    ///             view.signal = signal ?? .stop
+    ///         }
+    ///     }
+    ///
+    /// - Parameters:
+    ///   - contract: the element's contract.
+    ///   - view: the class the host makes for it, which every applier takes.
+    ///   - members: registers the members this registration realizes.
+    public func add<Realized: ElementContract, Made: AnyObject>(
+        _ contract: Realized.Type,
+        madeByHost view: Made.Type,
+        members: (Registration<Realized, Made>) -> Void
+    ) {
+        register(contract, members: members) { _, _ in nil }
+    }
+
+    /// One contract's registration, entered under its node type: `members` says
+    /// what it realizes, and `make` makes its view - answering nil, silently,
+    /// where the host makes that view instead.
+    private func register<Realized: ElementContract, Made: AnyObject>(
+        _ contract: Realized.Type,
+        members: (Registration<Realized, Made>) -> Void,
+        making make: @escaping (
+            @escaping (Event, [HostValue]) -> Void, @escaping (Prop, Event, HostValue) -> Void
+        ) -> View?
+    ) {
         let registration = Registration<Realized, Made>()
 
         members(registration)
@@ -370,17 +422,7 @@ extension ElementProperty: RegisteredProperty {
         let wholes = registration.wholes
 
         entries[Realized.nodeType] = Entry(
-            make: { send, carry in
-                let made = create(Reports(sending: send, reporting: carry))
-
-                guard let view = made as? View else {
-                    complain("\(Realized.name)'s registration made a \(type(of: made)), which is no "
-                        + "\(View.self): no view stands for it.")
-                    return nil
-                }
-
-                return view
-            },
+            make: make,
             apply: { view, changed, read, carried in
                 guard let made = view as? Made else { return [] }
 

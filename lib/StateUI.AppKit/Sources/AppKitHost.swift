@@ -2481,34 +2481,17 @@ final class MountedNode: NSObject {
                 enabled: value(.isEnabled)?.bool ?? true)
         }
 
-        if let page = view as? AppKitSingleChildView {
-            page.padding = insets(.padding)
-        }
-
         if let split = view as? AppKitSplitView {
+            // THE VALUE IS THE REGISTRY'S; THIS REPORT IS THE HOST'S. A change
+            // the reader makes walks into the first child's page lifetime,
+            // which no contract describes, so the closure stays here.
             split.onPresentationChanged = { [weak self] presented in
                 self?.changeSidebarVisibility(to: presented)
             }
-            split.apply(presented: value(.isSidebarVisible)?.bool ?? false)
         }
 
         if let absolute = view as? AppKitAbsoluteLayoutView {
             absolute.placement = placement(.absoluteLayoutBounds)
-        }
-
-        if let scroll = view as? AppKitScrollView {
-            let offset = changed.contains(.scrollOffset)
-                ? value(.scrollOffset)?.numbers.flatMap { values -> NSPoint? in
-                    guard values.count >= 2 else { return nil }
-                    return NSPoint(x: values[0], y: values[1])
-                }
-                : nil
-            scroll.apply(
-                orientation: enumeration(.orientation) ?? ScrollOrientation.vertical.rawValue,
-                padding: insets(.padding),
-                verticalBarVisibility: enumeration(.verticalScrollBarVisibility) ?? 0,
-                horizontalBarVisibility: enumeration(.horizontalScrollBarVisibility) ?? 0,
-                offset: offset)
         }
 
         if let imageView = view as? AppKitImageView {
@@ -2519,6 +2502,11 @@ final class MountedNode: NSObject {
         }
 
         if let border = view as? AppKitBorderView {
+            // ITS OWN PADDING, NOT A PAGE'S. This view descends from
+            // `AppKitSingleChildView` and took its padding from the page's arm
+            // until the page's value moved to the registry, where a
+            // registration answers for one node type rather than one class.
+            border.padding = insets(.padding)
             border.apply(
                 backgroundColor: color(.background),
                 background: value(.background),

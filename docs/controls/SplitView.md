@@ -16,7 +16,7 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/SplitViewContract.swift`.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isSidebarVisible` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
+| `isSidebarVisible` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `isSidebarVisibleChanged` | event | `Bool` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
 
 Realization:

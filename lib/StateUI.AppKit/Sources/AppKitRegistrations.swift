@@ -22,6 +22,7 @@ enum AppKitRegistrations {
         fields(registry)
         shapes(registry)
         layouts(registry)
+        presentation(registry)
 
         return registry
     }()
@@ -482,6 +483,37 @@ enum AppKitRegistrations {
             }
         }
 
+        // THE HOST MAKES THIS ONE. A scroll view reports through a reader
+        // transaction and asks the host for display frames, and neither is an
+        // event of its contract - so its making stays in `AppKitHost`, and the
+        // registration takes the members alone.
+        registry.add(ScrollViewContract.self, madeByHost: AppKitScrollView.self) { scroll in
+            scroll.applies([
+                ScrollViewContract.orientation,
+                ScrollViewContract.verticalScrollBarVisibility,
+                ScrollViewContract.horizontalScrollBarVisibility,
+                ScrollViewContract.scrollOffset,
+                PaddingElementContract.padding,
+            ]) { view, values in
+                // THE OFFSET IS WRITTEN ONLY WHERE THE TREE MOVED IT: a
+                // reader's own scrolling comes back as the state it wrote, and
+                // putting the clip view back where it already stands
+                // interrupts the platform's own scroll mid-gesture.
+                let offset = values.changed(ScrollViewContract.scrollOffset)
+                    ? values[ScrollViewContract.scrollOffset].map { NSPoint(x: $0.x, y: $0.y) }
+                    : nil
+
+                view.apply(
+                    orientation: (values[ScrollViewContract.orientation] ?? .vertical).rawValue,
+                    padding: Self.edgeInsets(values[PaddingElementContract.padding]),
+                    verticalBarVisibility:
+                        (values[ScrollViewContract.verticalScrollBarVisibility] ?? .default).rawValue,
+                    horizontalBarVisibility:
+                        (values[ScrollViewContract.horizontalScrollBarVisibility] ?? .default).rawValue,
+                    offset: offset)
+            }
+        }
+
         registry.add(GridContract.self, create: { _ in AppKitGridView() }) { grid in
             grid.applies([
                 GridContract.rows, GridContract.columns,
@@ -504,6 +536,25 @@ enum AppKitRegistrations {
     ]
 
     /// Insets travel as left, top, right, bottom.
+    /// The presentation elements whose VIEWS THE HOST MAKES: a page and a
+    /// split view are woven through its page machinery - a split view's report
+    /// walks into its first child's page lifetime, which no contract describes
+    /// - so a registration takes their values alone, and both the making and
+    /// the arranging of their children stay the host's.
+    private static func presentation(_ registry: Registry<NSView>) {
+        registry.add(PageContract.self, madeByHost: AppKitSingleChildView.self) { page in
+            page.property(PageContract.padding) { view, padding in
+                view.padding = Self.edgeInsets(padding)
+            }
+        }
+
+        registry.add(SplitViewContract.self, madeByHost: AppKitSplitView.self) { split in
+            split.property(SplitViewContract.isSidebarVisible) { view, visible in
+                view.apply(presented: visible ?? false)
+            }
+        }
+    }
+
     private static func edgeInsets(_ value: Insets?) -> NSEdgeInsets {
         guard let numbers = value?.propValue.numbers, numbers.count >= 4 else { return NSEdgeInsets() }
 

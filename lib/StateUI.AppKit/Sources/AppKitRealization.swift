@@ -354,6 +354,7 @@ enum AppKitRealization {
         .complete("Span", "text"),
         .complete("Span", "textCase"),
         .complete("SplitView", "accessibilityIdentifier"),
+        .complete("SplitView", "isSidebarVisible"),
         .complete("SplitView", "isSidebarVisibleChanged"),
         .complete("Stepper", "accessibilityIdentifier"),
         .partial("Stepper", "background", missing: "AppKit paints a colour on this view; a brush is drawn only by `Border`."),

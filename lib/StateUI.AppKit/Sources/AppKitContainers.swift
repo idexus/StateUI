@@ -1594,6 +1594,18 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         documentView = documentSurface
         movement.onFramesWanted = { [weak self] in self?.onFramesWanted?() }
 
+        // BORN IN ITS CONTRACT'S DEFAULT STATE. A registration applies on
+        // CHANGE, so a scroller nothing describes would otherwise keep
+        // AppKit's own resting state - no vertical scroller - where the
+        // contract says a scroller scrolls vertically. Applied through the
+        // same path, so the two can never drift apart.
+        apply(
+            orientation: ScrollOrientation.vertical.rawValue,
+            padding: NSEdgeInsets(),
+            verticalBarVisibility: 0,
+            horizontalBarVisibility: 0,
+            offset: nil)
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(clipBoundsChanged(_:)),
