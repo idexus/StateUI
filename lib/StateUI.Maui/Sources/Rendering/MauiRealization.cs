@@ -63,7 +63,6 @@ internal static class MauiRealization
         Complete("Grid", "columns"),
         Complete("Grid", "rowSpacing"),
         Complete("Grid", "rows"),
-        Complete("Image", "aspect"),
         Complete("Label", "background"),
         Complete("Label", "lineBreak"),
         Complete("Label", "maximumLines"),
