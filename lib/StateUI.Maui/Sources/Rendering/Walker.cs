@@ -147,6 +147,9 @@ internal sealed class Walker
     /// <summary>The trips that are moving, which is what a frame steps.</summary>
     private readonly List<Trip> _moving = [];
 
+    /// <summary>Every window that has gone - see <see cref="Bury"/>. Weak, so none is kept.</summary>
+    private readonly ConditionalWeakTable<object, object> _buried = new();
+
     /// <summary>How many motions this walker is carrying - the tally's own.</summary>
     internal int Carrying => _moving.Count;
 
@@ -416,6 +419,13 @@ internal sealed class Walker
         double[]? from = null,
         double[]? velocity = null)
     {
+        // Nothing is written under a window that has gone: see Bury.
+        if (UnderBuried(moves.Owner))
+        {
+            done?.Invoke(false);
+            return null;
+        }
+
         Dictionary<object, Trip> owned = _table.GetValue(moves.Owner, static _ => []);
         bool had = owned.TryGetValue(moves.Key, out Trip? trip);
 
@@ -739,6 +749,57 @@ internal sealed class Walker
             if (child is IView below)
             {
                 Drop(below);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Ends every trip under a window that has gone, and refuses every motion
+    /// aimed there after it.
+    /// </summary>
+    /// <remarks>
+    /// A window that has gone is still asked for motion - a layout pass placing
+    /// its children as the platform takes it down, a visual state leaving
+    /// focus. A trip started there is written by the next frame on views whose
+    /// window has disposed its services; on Windows that write throws inside
+    /// the platform's frame callback and the process ends. So the window is
+    /// remembered, weakly, and <see cref="Aim"/> writes nothing beneath it.
+    /// </remarks>
+    /// <param name="root">The window, and then whatever it holds.</param>
+    internal void Bury(IVisualTreeElement root)
+    {
+        _buried.AddOrUpdate(root, root);
+        DropBelow(root);
+    }
+
+    /// <summary>Whether an owner of a value stands under a window that has gone.</summary>
+    /// <param name="owner">The control a trip moves, or any other owner of a value.</param>
+    private bool UnderBuried(object owner)
+    {
+        for (Element? element = owner as Element; element is not null; element = element.Parent)
+        {
+            if (_buried.TryGetValue(element, out _))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>Ends every trip under an element that is not itself a view.</summary>
+    /// <param name="root">The window, and then whatever it holds.</param>
+    private void DropBelow(IVisualTreeElement root)
+    {
+        foreach (IVisualTreeElement child in root.GetVisualChildren())
+        {
+            if (child is IView view)
+            {
+                Drop(view);
+            }
+            else
+            {
+                DropBelow(child);
             }
         }
     }

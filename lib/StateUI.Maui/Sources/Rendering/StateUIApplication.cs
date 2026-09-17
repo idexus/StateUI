@@ -403,6 +403,10 @@ internal sealed class StateUIApplication : IStateUITarget
             return;
         }
 
+        // Whatever was on its way inside it stops where it stands, and nothing
+        // starts there again: a frame would write it on views whose window is gone.
+        Renderer.Walker.Bury(window);
+
         Drop(window);
         _restored.RemoveAll(restored => ReferenceEquals(restored.Window, window));
 

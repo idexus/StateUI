@@ -2059,6 +2059,52 @@ public class MotionTests
     }
 
     /// <summary>
+    /// A WINDOW THAT HAS GONE STARTS NO MOTION AGAIN: a trip under it ends
+    /// writing nothing as it goes, and one aimed there after is never written.
+    /// </summary>
+    /// <remarks>
+    /// A closing window is still asked for motion after it has gone - a layout
+    /// pass placing its rows, a visual state leaving focus - none of it a
+    /// render. On Windows the next frame arranged those rows against the
+    /// window's disposed services, inside the platform's frame callback, and
+    /// the process ended: measured closing the Gallery on the Window lifecycle
+    /// sample, six trips started 41 ms after the window was buried.
+    /// </remarks>
+    [Fact]
+    public void AMotionUnderAWindowThatHasGoneWritesNothing()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+        var window = new Window(new ContentPage { Content = new VerticalStackLayout { label } });
+        bool? first = null;
+        bool? second = null;
+
+        walker.Aim(
+            new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [1.0],
+            HostMotion.Eased(100, HostEasing.Linear),
+            whole => first = whole);
+
+        clock.Tick(50);
+        walker.Bury(window);
+
+        Assert.False(first, "the waiter is told it did not run to the end");
+        Assert.Equal(0.5, label.Opacity, 3);
+
+        walker.Aim(
+            new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [0.0],
+            HostMotion.Eased(100, HostEasing.Linear),
+            whole => second = whole);
+
+        Assert.False(second, "a motion aimed under a window that has gone does not run");
+        Assert.Equal(0, walker.Carrying);
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 3);
+    }
+
+    /// <summary>
     /// The end is written EXACTLY, never the last thing the curve worked out:
     /// a value that stops a thousandth short has stopped somewhere nobody
     /// described.

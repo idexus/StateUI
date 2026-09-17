@@ -99,9 +99,12 @@ public class SceneTests
         internal List<string> Connected { get; } = [];
 
         /// <summary>Applies one message, the way the session does.</summary>
-        internal Heard Apply(string json, bool complete = true)
+        internal Heard Apply(string json, bool complete = true) => Apply(Host.Parse(json), complete);
+
+        /// <summary>Applies one message already parsed - and, where a test wrote on it, changed.</summary>
+        internal Heard Apply(HostPatch tree, bool complete = true)
         {
-            ((IStateUITarget)Application).Apply(Host.Parse(json), complete);
+            ((IStateUITarget)Application).Apply(tree, complete);
             return this;
         }
 
@@ -371,6 +374,87 @@ public class SceneTests
 
         Assert.Equal(2, heard.Application.Windows.Count());
         Assert.Equal(3, platform.Opened.Count);
+    }
+
+    /// <summary>
+    /// A window the READER closes takes the trips under it with it: a value
+    /// still on its way inside that window is left where it stands, and no
+    /// frame writes it again.
+    /// </summary>
+    /// <remarks>
+    /// A written trip arranges or assigns on a view whose window is gone. On
+    /// Windows that arrange asks the window's disposed services, and the
+    /// exception, thrown inside the platform's frame callback, takes the
+    /// process down. What the walker refuses after the window has gone is
+    /// MotionTests' <c>AMotionUnderAWindowThatHasGoneWritesNothing</c>.
+    /// </remarks>
+    [Fact]
+    public void AWindowTheReaderClosesTakesItsTripsWithIt()
+    {
+        _ = new Platform();
+
+        Heard heard = new Heard().Apply(Tree(Scene(1, MainWindow(100, "Main"))));
+
+        // A clock, or the walker lands every value at once and carries nothing.
+        heard.Application.Renderer.Walker.Clock = new HandFrameClock();
+        heard.Apply(MovingLabel(Tree(Scene(1, MainWindow(100, "Main")))));
+
+        Assert.Equal(1, heard.Application.Renderer.Walker.Carrying);
+
+        IWindow closing = heard.Application.Windows.Single();
+        closing.Created();
+        closing.Activated();
+        closing.Deactivated();
+        closing.Stopped();
+        closing.Destroying();
+
+        Assert.Equal(0, heard.Application.Renderer.Walker.Carrying);
+    }
+
+    /// <summary>
+    /// And a window the TREE closes the same - though its slot is gone by the
+    /// time the platform says the window is.
+    /// </summary>
+    [Fact]
+    public void AWindowTheTreeClosesTakesItsTripsWithIt()
+    {
+        _ = new Platform();
+
+        Heard heard = new Heard().Apply(Tree(Scene(1, MainWindow(100, "Main"))));
+
+        // A clock, or the walker lands every value at once and carries nothing.
+        heard.Application.Renderer.Walker.Clock = new HandFrameClock();
+        heard.Apply(MovingLabel(Tree(Scene(1, MainWindow(100, "Main")))));
+
+        Assert.Equal(1, heard.Application.Renderer.Walker.Carrying);
+
+        IWindow closing = heard.Application.Windows.Single();
+        heard.Apply("""{"id":1,"type":"Application","arranged":true,"children":[]}""");
+
+        // The platform closes the window it was asked to, and says so after.
+        closing.Destroying();
+
+        Assert.Equal(0, heard.Application.Renderer.Walker.Carrying);
+    }
+
+    /// <summary>
+    /// The same tree, with the label under the first window's page sent on a
+    /// journey: its opacity changed, and a transition beside it.
+    /// </summary>
+    private static HostPatch MovingLabel(string json)
+    {
+        HostPatch tree = Host.Parse(json);
+        HostPatch label = tree.Children![0].Children![0].Children![0].Children![0];
+
+        label.Props![HostProp.Opacity] = HostValue.Of(0.2);
+        label.Transitions =
+        [
+            new HostTransition(
+                HostProp.Opacity, "opacity",
+                (int)HostMotion.Law.Eased, 100, (int)HostEasing.Linear, 0),
+        ];
+
+        return tree;
     }
 
     /// <summary>
