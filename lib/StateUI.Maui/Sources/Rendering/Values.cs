@@ -185,10 +185,11 @@ internal static class Values
     /// </para>
     /// <para>
     /// Position and size are the desktop properties; a phone ignores them, the
-    /// app being the whole screen. Windows applies all of them itself. Mac
-    /// Catalyst applies the minimum and the maximum, ignores <c>X</c> and
-    /// <c>Y</c>, and would ignore <c>Width</c> and <c>Height</c> - which is
-    /// what <see cref="WindowSize"/> is for.
+    /// app being the whole screen. On Windows they are written on the platform
+    /// window itself - see <c>WindowGeometry</c>. Mac Catalyst applies
+    /// the minimum and the maximum, ignores <c>X</c> and <c>Y</c>, and would
+    /// ignore <c>Width</c> and <c>Height</c> - which is what
+    /// <see cref="WindowSize"/> is for.
     /// </para>
     /// <para>
     /// Assigned only when the property arrived, like everywhere else: a message
@@ -199,11 +200,17 @@ internal static class Values
     {
         if (node.GetString(HostProp.Title) is string title) { window.Title = title; }
 
+#if WINDOWS
+        // WINUI'S FRAME REPORT RE-ENTERS THESE FOUR SETTERS and moves the
+        // window for ever. See WindowGeometry.
+        WindowGeometry.Apply(window, node);
+#else
         if (node.GetNumber(HostProp.X) is double x) { window.X = x; }
         if (node.GetNumber(HostProp.Y) is double y) { window.Y = y; }
 
         if (node.GetNumber(HostProp.Width) is double width) { window.Width = width; }
         if (node.GetNumber(HostProp.Height) is double height) { window.Height = height; }
+#endif
 
         if (node.GetBool(HostProp.IsMaximizable) is bool maximizable) { window.IsMaximizable = maximizable; }
         if (node.GetBool(HostProp.IsMinimizable) is bool minimizable) { window.IsMinimizable = minimizable; }
