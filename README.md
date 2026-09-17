@@ -21,21 +21,21 @@ the native contract is settled.
 
 ## In Action
 
-One application, described once in Swift, on two hosts. The AppKit host draws
-it with macOS controls, in the same process as the application module - here
-the Gallery's Metal sample: the cube is an `MTKView` the application registers
-with the host, and its size, colour and spin are described from StateUI. The
-edge is handed over as a state, so dragging the slider rebuilds nothing:
+One application, described once in Swift, on two hosts. The .NET MAUI host
+renders it from the wire - here on Windows, under the debugger:
 
-<video src="https://github.com/idexus/StateUI/raw/main/docs/assets/appkit.mp4" controls muted loop width="840">
-  <a href="https://github.com/idexus/StateUI/raw/main/docs/assets/appkit.mp4">The Gallery's Metal sample on the AppKit host (mp4)</a>
+<video src="https://github.com/idexus/StateUI/raw/main/docs/assets/win.mp4" controls muted loop width="960" height="540">
+  <a href="https://github.com/idexus/StateUI/raw/main/docs/assets/win.mp4">The Gallery on the MAUI host, on Windows (mp4)</a>
 </video>
 
-The .NET MAUI host renders the same application from the wire - here on
-Windows, under the debugger:
+The AppKit host draws the same application with macOS controls, in the same
+process as the application module - here the Gallery's Metal sample: the cube
+is an `MTKView` the application registers with the host, and its size, colour
+and spin are described from StateUI. The edge is handed over as a state, so
+dragging the slider rebuilds nothing:
 
-<video src="https://github.com/idexus/StateUI/raw/main/docs/assets/win.mp4" controls muted loop width="840">
-  <a href="https://github.com/idexus/StateUI/raw/main/docs/assets/win.mp4">The Gallery on the MAUI host, on Windows (mp4)</a>
+<video src="https://github.com/idexus/StateUI/raw/main/docs/assets/appkit.mp4" controls muted loop width="960" height="540">
+  <a href="https://github.com/idexus/StateUI/raw/main/docs/assets/appkit.mp4">The Gallery's Metal sample on the AppKit host (mp4)</a>
 </video>
 
 ## In Code
