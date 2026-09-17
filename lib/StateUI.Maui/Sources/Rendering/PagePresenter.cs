@@ -1090,13 +1090,25 @@ internal sealed class PagePresenter
             // Once, where the page is created - the rule every control follows.
             built.IsPresentedChanged += (_, _) => Announce(flyout);
 
-#if WINDOWS
-            // A POPOVER ON WINDOWS. MAUI's default locks a wide window's
-            // sidebar open - a Left pane with its button hidden, and
-            // IsPresented refusing every write - so neither the reader nor the
-            // application could hide it. As a popover the pane's button stands
-            // beside the back button in the title bar, and the sidebar opens
-            // over the detail and closes again.
+#if WINDOWS || LINUX
+            // THE SIDEBAR IS THE APPLICATION'S TO HIDE. MAUI's default layout
+            // makes a wide window's flyout a LOCKED split, under which
+            // IsPresented refuses every write - and a split view promises that
+            // once both pages are showing, the reader and the application
+            // decide. The popover is the behavior that leaves that decision
+            // here.
+            //
+            // What each desktop head draws under it: WinUI gives the pane a
+            // toggle of its own beside the back button and opens it over the
+            // detail, while the GTK4 backend reads the behavior nowhere and
+            // lays the two pages in a Gtk.Paned whose start child collapses, so
+            // there the pane stays beside the detail. Both of them close.
+            //
+            // THE TRAP the lock sets is the GTK4 backend's toggle, which writes
+            // IsPresented from inside a GObject signal callback: the refusal is
+            // an exception with nothing of ours over it, and it ends the
+            // process. Present below catches the same refusal because the write
+            // is ours; that button's is not.
             built.FlyoutLayoutBehavior = FlyoutLayoutBehavior.Popover;
 #endif
         }

@@ -29,6 +29,16 @@
          block is compiled out exactly as it is for the tests. -->
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('linux'))">net10.0</TargetFrameworks>
 
+    <!-- LINUX names the plain head the way the workload names the other four.
+         The MAUI workload defines WINDOWS, ANDROID, IOS and MACCATALYST for its
+         own frameworks and has nothing to say about net10.0, which is what the
+         GTK4 backend runs and what the headless suite compiles against. The
+         constant follows the FRAMEWORK and not the machine doing the building:
+         a pack from Windows carries this same net10.0 lib to a Linux consumer,
+         so a condition on the build host would leave that consumer without the
+         blocks the backend needs. -->
+    <DefineConstants Condition="'$(TargetFramework)' == 'net10.0'">$(DefineConstants);LINUX</DefineConstants>
+
     <!-- Not on Linux: UseMaui asks the SDK for the MAUI workload. Without it
          MAUI arrives as the ordinary package references below, and the
          workload's implicit usings are stated as Using items instead. -->

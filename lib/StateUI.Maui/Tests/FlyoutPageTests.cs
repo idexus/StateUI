@@ -295,6 +295,32 @@ public class FlyoutPageTests
         Assert.Equal([(5, "true")], host.Dispatched);
     }
 
+    /// <summary>
+    /// The layout the renderer builds leaves the sidebar to the application.
+    /// </summary>
+    /// <remarks>
+    /// A split view's promise is that once both pages are showing, hiding the
+    /// sidebar is the reader's and the application's to ask for. MAUI's default
+    /// layout makes a wide window's flyout a locked split instead, under which
+    /// IsPresented refuses every write - and the platform's OWN pane toggle
+    /// writes it from a place no catch here reaches. So what is asserted is
+    /// both halves: the behavior the page is built with, and that a hide
+    /// written straight onto the page takes.
+    /// </remarks>
+    [Fact]
+    public void TheBuiltLayoutLeavesTheSidebarToTheApplication()
+    {
+        (PagePresenter pages, _) = Renderer();
+
+        var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(Flyout(true))));
+
+        Assert.Equal(FlyoutLayoutBehavior.Popover, flyout.FlyoutLayoutBehavior);
+
+        flyout.IsPresented = false;
+
+        Assert.False(flyout.IsPresented);
+    }
+
     // ---- What the renderer forgets ------------------------------------------
 
     [Fact]
