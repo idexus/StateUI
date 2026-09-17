@@ -98,11 +98,11 @@ export async function run(): Promise<void> {
         // 4. Every MAUI debugger resolves into the launch it names - the
         //    commands a build would run captured, not run.
         const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery")!;
-        const resolveAs = async (chosen: MauiDebugger, platform: NodeJS.Platform, configuration = "debug") => {
+        const resolveAs = async (chosen: MauiDebugger, platform: NodeJS.Platform, configuration = "debug", application = gallery_) => {
             const ran: string[] = [];
             const attached: string[] = [];
             const provider = new StateUIDebugConfigurationProvider({
-                host: () => "maui", application: async () => gallery_, debugger: () => chosen, platform,
+                host: () => "maui", application: async () => application, debugger: () => chosen, platform,
                 run: async (task) => {
                     const shell = task.execution as vscode.ShellExecution;
                     ran.push([shell.command, ...(shell.args ?? [])].map(String).join(" "));
@@ -126,6 +126,14 @@ export async function run(): Promise<void> {
             const { resolved } = await resolveAs("csharp", "win32", "release");
             check("C# on Windows, Release: the executable is named, with no runtime identifier",
                 String(resolved?.program).endsWith("/apps/Gallery/Platforms/Maui/bin/Release/net10.0-windows10.0.19041.0/Gallery.exe"));
+        }
+        {
+            // A Windows workspace folder's fsPath names its drive `c:`, and the
+            // MAUI extension finds a launch's project only as C# Dev Kit loaded it.
+            const onWindows = { ...gallery_, mauiProject: "c:\\Projects\\StateUI\\apps\\Gallery\\Platforms\\Maui\\Gallery.csproj" };
+            const launches = [await resolveAs("csharp", "win32", "debug", onWindows), await resolveAs("csharp", "win32", "release", onWindows)];
+            check("C# on Windows: the project's drive letter is upper case, as C# Dev Kit loads it",
+                launches.every(({ resolved }) => resolved?.project === "C:\\Projects\\StateUI\\apps\\Gallery\\Platforms\\Maui\\Gallery.csproj"));
         }
         {
             const { resolved, ran } = await resolveAs("swift-ios", "darwin");

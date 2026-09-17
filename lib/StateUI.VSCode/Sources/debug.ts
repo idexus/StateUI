@@ -110,9 +110,9 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         configuration: Configuration,
         name: string,
     ): Promise<vscode.DebugConfiguration | undefined> {
-        const project = application.mauiProject!;
-        const build = configuration === "release" ? "Release" : "Debug";
         const platform = this.choices.platform ?? process.platform;
+        const project = asLoaded(application.mauiProject!, platform);
+        const build = configuration === "release" ? "Release" : "Debug";
         const csharp: vscode.DebugConfiguration = {
             type: "maui", request: "launch", name, project,
             ...(configuration === "release" ? { configuration: "Release" } : {}),
@@ -188,6 +188,16 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         void vscode.window.showErrorMessage(`StateUI: ${label} failed - its output is in the terminal.`);
         return false;
     }
+}
+
+/**
+ * `project` spelled as C# Dev Kit loads it. The MAUI extension finds a launch's
+ * project by comparing that text with the path of each project loaded, and on
+ * Windows those name the drive in upper case, where a workspace folder's
+ * `fsPath` names it in lower case.
+ */
+function asLoaded(project: string, platform: NodeJS.Platform): string {
+    return platform === "win32" ? project.replace(/^[a-z]:/, (drive) => drive.toUpperCase()) : project;
 }
 
 /**
