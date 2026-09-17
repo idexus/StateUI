@@ -22,18 +22,21 @@ the native contract is settled.
 ## In Action
 
 One application, described once in Swift, on two hosts. The .NET MAUI host
-renders it from the wire - here on Windows, under the debugger. Both
-recordings play on their own page; the picture opens it:
+renders it from the wire - here on Windows, under the debugger:
 
-[![The Gallery on the MAUI host, on Windows](docs/assets/win-poster.png)](https://github.com/idexus/StateUI/blob/main/docs/assets/win.mp4)
+<video src="https://github.com/user-attachments/assets/72b2af72-24d5-41b8-a393-4bcd972b7fd9" controls muted loop width="960" height="540" poster="docs/assets/win-poster.png">
+  <a href="https://github.com/idexus/StateUI/blob/main/docs/assets/win.mp4"><img src="docs/assets/win-poster.png" alt="The Gallery on the MAUI host, on Windows" width="960" height="540"></a>
+</video>
 
 The AppKit host draws the same application with macOS controls, in the same
 process as the application module - here the Gallery's Metal sample: the cube
 is an `MTKView` the application registers with the host, and its size, colour
 and spin are described from StateUI. The edge is handed over as a state, so
-dragging the slider rebuilds nothing.
+dragging the slider rebuilds nothing:
 
-[![The Gallery's Metal sample on the AppKit host](docs/assets/appkit-poster.png)](https://github.com/idexus/StateUI/blob/main/docs/assets/appkit.mp4)
+<video src="https://github.com/user-attachments/assets/05ef0718-b3b5-4f67-8c66-7a9c9b1d2ba2" controls muted loop width="960" height="540" poster="docs/assets/appkit-poster.png">
+  <a href="https://github.com/idexus/StateUI/blob/main/docs/assets/appkit.mp4"><img src="docs/assets/appkit-poster.png" alt="The Gallery's Metal sample on the AppKit host" width="960" height="540"></a>
+</video>
 
 ## In Code
 
