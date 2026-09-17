@@ -14,13 +14,15 @@
 # ---------------------------------------------------------------------------
 # Builds and launches the app WITHOUT a debugger, then returns.
 #
-# The Windows counterpart of run-app.sh, and the preLaunchTask of "Debug app
-# (Swift)". Launching first and attaching second buys less here than on Apple -
-# Windows has no watchdog to kill an app a debugger stopped - but the attach
-# still needs a process to find, and this is the ONLY route to a Swift debugger
-# on Windows: the compound cannot run there, since Windows gives a process one
-# native debugger and VS Code runs the two languages as two adapters. The full
-# account is in .vscode/launch.json.
+# The Windows counterpart of run-app.sh, run by the StateUI extension's Swift
+# debugger on Windows before it attaches. Launching first and attaching second
+# buys less here than on Apple - Windows has no watchdog to kill an app a
+# debugger stopped - but the attach still needs a process to find, and C# and
+# Swift cannot share one: Windows gives a process one native debugger.
+#
+# It is part of StateUI's build, so it lives beside StateUI.targets: in a
+# checkout's .scripts\Maui, and in the StateUI.Maui package's
+# buildTransitive\Maui. Outside this repository, name the project.
 #
 # USAGE:
 #   .\run-app.ps1
@@ -46,26 +48,15 @@ $ErrorActionPreference = "Stop"
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $rootDir   = Split-Path -Parent (Split-Path -Parent $scriptDir)
 
-# WHICH PROJECT, and it is FOUND rather than spelled out - because this script
-# ships in two layouts. In the StateUI repository the apps live under apps\ and
-# the gallery is the one to run; in an app made by "dotnet new stateui-maui" the
-# MAUI head sits in Platforms\Maui\ and is the only project there.
+# WHICH PROJECT: the one named, else the Gallery when this script runs from
+# this repository's .scripts\Maui.
 if (-not $Project) {
     $gallery = Join-Path $rootDir "apps\Gallery\Platforms\Maui\Gallery.csproj"
-    if (Test-Path $gallery) {
-        $Project = $gallery
-    } else {
-        $heads = Join-Path $rootDir "Platforms\Maui"
-        $found = @(Get-ChildItem -Path $heads -Filter *.csproj -File -ErrorAction SilentlyContinue)
-        if ($found.Count -gt 1) {
-            Write-Error "More than one .csproj in $heads - name the one to run with -Project."
-        }
-        if ($found.Count -eq 1) { $Project = $found[0].FullName }
-    }
+    if (Test-Path $gallery) { $Project = $gallery }
 }
 
 if (-not $Project -or -not (Test-Path $Project)) {
-    Write-Error "No project to run. Expected one .csproj in $rootDir\Platforms\Maui."
+    Write-Error "No project to run - name it with -Project path\to\Platforms\Maui\App.csproj."
 }
 
 $appDir = Split-Path -Parent $Project

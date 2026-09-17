@@ -104,8 +104,12 @@ apps/HelloWorld/
 ```
 
 - **The project imports the StateUI targets.** In this repository the line is
-  `<Import Project="../../../../.scripts/Maui/StateUI.targets" />`; a generated
-  application imports `../../.scripts/Maui/StateUI.targets`. Those targets
+  `<Import Project="../../../../.scripts/Maui/StateUI.targets" />`. An
+  application made against a checkout imports that checkout's
+  `.scripts/Maui/StateUI.targets`, and one made from the packages imports
+  nothing: NuGet imports the same build from the `StateUI.Maui` package, which
+  carries it under `buildTransitive/`. An application keeps no build of its
+  own, so the build always matches the library it compiles. Those targets
   compile the StateUI library and the application module for the platform
   being built, attach the results to the build, and stop it when a Swift
   library is missing. Nothing else in the project names Swift.
@@ -181,7 +185,7 @@ Some platform features need entries in the head itself:
 
 In VS Code, **StateUI: New Application from Template** writes a complete
 application with no template installed: the layout above at its own root,
-`.scripts/Maui/`, `.vscode/`, a solution, and a README. It asks for the
+`.vscode/`, a solution, and a README. It asks for the
 directory, the name, and either a StateUI checkout or a release offered both
 on NuGet and as a tag in the repository, and reads a checkout's own template or
 the copy the extension carries for a release.
@@ -298,15 +302,12 @@ exists:
 - a configuration: `Debug` or `Release`;
 - the path of a project.
 
-Without a project it runs the Gallery in this repository, and the one
-`Platforms/Maui/*.csproj` in a generated application. It stops a previous
-instance first.
+Without a project it runs the Gallery in this repository; outside it, name the
+project. It stops a previous instance first.
 
 - **iOS.** It boots the newest installed iPhone simulator when none is
   running, then installs and launches the application.
 - **Linux.** The application's output goes to `${TMPDIR:-/tmp}/stateui-run.log`.
-- **In a generated application.** NuGet does not carry the execute bit, so
-  there run the script as `bash .scripts/Maui/run-app.sh`.
 
 The Swift half follows MSBuild's configuration: `-c Debug` compiles it without
 optimization and with symbols, `-c Release` optimizes it. The targets also
@@ -1045,11 +1046,11 @@ dotnet pack lib/StateUI.Maui/Template -c Release -o artifacts
   library, and a Windows application consuming it silently binds the plain
   `net10.0` library, where every `#if WINDOWS` block is compiled out. A Linux
   host packs `net10.0` alone.
-- **The template takes `.scripts/Maui/` from the repository as it packs**, so
-  the package never carries a second copy that drifts. `template.json` copies
-  those scripts byte for byte (`copyOnly`), because the templating engine
-  would otherwise evaluate the MSBuild conditions in them and drop the
-  missing-library errors.
+- **`StateUI.Maui` carries the MAUI build.** It packs `.scripts/Maui/` under
+  `buildTransitive/Maui/` beside `buildTransitive/StateUI.Maui.targets`, which
+  NuGet imports into every application that references the package. The
+  template carries no build: the application it writes takes the build of the
+  release it references.
 - **Each package carries `LICENSE`, `NOTICE`, and its `README.md`.**
 
 To try the packages before they are published:

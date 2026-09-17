@@ -82,7 +82,6 @@ Resources/                 artwork: icon, splash, images - placeholder art
 Platforms/Maui/            the MAUI host: StateUIStarter.csproj, Host/ with
                            App.cs and MauiProgram.cs, one folder per platform
 Platforms/AppKit/          the macOS host: main.swift (with --appkit)
-.scripts/Maui/             the MAUI build: one .targets file and the compilers
 .vscode/                   launch and build configurations
 ```
 

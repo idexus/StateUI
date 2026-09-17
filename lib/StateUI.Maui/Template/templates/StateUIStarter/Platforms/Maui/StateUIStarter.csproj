@@ -297,29 +297,32 @@
     -->
   </ItemGroup>
 
-  <!-- All native build logic lives in one place: .scripts/Maui/ at the
-       application's root. It compiles the Swift library and this app's own
-       Swift module for whichever platform is being built, and attaches them -
-       so nothing about Swift appears anywhere else in this project.
+  <!-- THE NATIVE BUILD is StateUI's own: StateUI.targets compiles the Swift
+       library and this app's own Swift module for whichever platform is being
+       built, and attaches them - so nothing about Swift appears anywhere else
+       in this project. It comes with the StateUI this application is built
+       against, so it always matches the library's sources; the application
+       keeps no copy of its own.
 
        WHERE THE SWIFT LIBRARY COMES FROM is Package.swift at the application's
        root, naming it as a SwiftPM dependency. -->
 <!--#if (UseCheckout) -->
-  <!-- A path dependency is never copied into .build/checkouts, which is where
-       the build looks by default, so the checkout is named here as well. -->
-  <PropertyGroup>
-    <StateUIPackagePath>STATEUI_CHECKOUT/</StateUIPackagePath>
-  </PropertyGroup>
+  <!-- From the checkout both halves come from - which also tells the build that
+       the library's sources are there, since a path dependency is never copied
+       into .build/checkouts. -->
+  <Import Project="STATEUI_CHECKOUT/.scripts/Maui/StateUI.targets" />
 <!--#else -->
-  <!-- Point Package.swift at a checkout on disk with `.package(path:)` and name
-       it here too - a path dependency is never copied into .build/checkouts,
-       which is where the build looks by default:
+  <!-- From the StateUI.Maui package above: NuGet imports its build into this
+       project, and it finds the library's sources where SwiftPM checked out the
+       same release, in .build/checkouts.
+
+       Point Package.swift at a checkout on disk with `.package(path:)` and name
+       it here too - a path dependency is never copied into .build/checkouts:
 
     <PropertyGroup>
       <StateUIPackagePath>/path/to/StateUI/</StateUIPackagePath>
     </PropertyGroup>
        -->
 <!--#endif -->
-  <Import Project="../../.scripts/Maui/StateUI.targets" />
 
 </Project>

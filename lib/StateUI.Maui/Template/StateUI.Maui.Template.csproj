@@ -40,90 +40,28 @@
          dependencies, no symbols.
 
          NU5128 is the warning about a package with a lib/ folder and no
-         dependency group, which is exactly what this is. NU5110 and NU5111 are
-         about .ps1 files outside tools/: NuGet is telling us it will not RUN
-         them on install, which is the whole point - build-windows.ps1 and
-         run-app.ps1 are the app's, to be run from the app. -->
+         dependency group, which is exactly what this is. -->
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
-    <NoWarn>$(NoWarn);NU5128;NU5110;NU5111</NoWarn>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
     <EnableDefaultItems>false</EnableDefaultItems>
     <NoDefaultExcludes>true</NoDefaultExcludes>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <!-- ======================================================================
-       THE BUILD SCRIPTS ARE NOT COPIED INTO THIS DIRECTORY BY HAND.
-       ======================================================================
-       An app made from this template compiles Swift with the same .targets file
-       and the same scripts the applications in this repository use - they were
-       written to work in either layout, with nothing about apps/ in them. So
-       they are taken from .scripts/ as this project builds, rather than kept
-       here as a second copy that would drift the first time one of them
-       changed.
-
-       The copy is gitignored, which is what makes staleness impossible rather
-       than merely unlikely. It also means `dotnet new install` against the
-       FOLDER wants this project built first; installing the .nupkg does not.
-
-       Repository-only scripts are deliberately left out: new-app scaffolds
-       into apps/, while build-gallery-appkit bundles one named sample. Neither
-       describes how an application generated elsewhere is built.
-       ====================================================================== -->
-  <PropertyGroup>
-    <_TemplateRoot>$(MSBuildProjectDirectory)/templates/StateUIStarter/</_TemplateRoot>
-
-    <!-- The hook NuGet gives for files a project decides on rather than
-         declares. Needed because a wildcard over the COPY below is expanded
-         during evaluation, before any target has run - so on a clean tree it
-         would find nothing and the package would ship without a build in it,
-         quietly. The same trap StateUI.targets carries a note about. -->
-    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);PackStateUIScripts</TargetsForTfmSpecificContentInPackage>
-  </PropertyGroup>
-
-  <!-- The originals, in .scripts/ at the root of this repository. They exist
-       when this project is evaluated, which is why this glob is out here and
-       the one over the copy is not. -->
-  <ItemGroup>
-    <_StateUIScript Include="$(MSBuildProjectDirectory)/../../../.scripts/Maui/**/*" />
-  </ItemGroup>
-
-  <Target Name="CheckStateUIScripts" BeforeTargets="Build;PackStateUIScripts">
-    <Error Condition="'@(_StateUIScript)' == ''"
-           Text="StateUI.Maui.Template: nothing was found under .scripts/Maui/ - the template would ship without a build in it." />
-  </Target>
-
-  <!-- Into the package, from the originals - so packing needs no copy to have
-       happened first. -->
-  <Target Name="PackStateUIScripts" DependsOnTargets="CheckStateUIScripts">
-    <ItemGroup>
-      <TfmSpecificPackageFile Include="@(_StateUIScript)">
-        <PackagePath>templates/StateUIStarter/.scripts/Maui/%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
-      </TfmSpecificPackageFile>
-    </ItemGroup>
-  </Target>
-
-  <!-- And onto disk, so `dotnet new install` against the FOLDER works too -
-       which is how the tests here check the template, and the quickest way to
-       try a change to it without packing. -->
-  <Target Name="CopyStateUIScripts" AfterTargets="Build" DependsOnTargets="CheckStateUIScripts">
-    <Copy SourceFiles="@(_StateUIScript)"
-          DestinationFiles="@(_StateUIScript->'$(_TemplateRoot).scripts/Maui/%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true" />
-  </Target>
-
-  <!-- Everything else under templates/ is the package's payload. Listed with one
+  <!-- Everything under templates/ is the package's payload. Listed with one
        wildcard for the reason nothing else in this repository lists sources
        either: a file added to the template is shipped without being named.
 
        PackagePath keeps the tree as it is - `dotnet new` reads
-       .template.config/template.json wherever it finds one. The copied .scripts
-       is excluded here because the target above ships the originals; including
-       both would put every file in the package twice. -->
+       .template.config/template.json wherever it finds one. The application it
+       writes carries no build of its own: its project imports StateUI.targets
+       from the checkout it is made against, or takes it from the StateUI.Maui
+       package. -->
   <ItemGroup>
     <Content Include="templates/**/*"
-             Exclude="templates/**/bin/**;templates/**/obj/**;templates/**/.build/**;templates/**/.scripts/**;templates/**/.DS_Store;templates/**/Package.resolved"
+             Exclude="templates/**/bin/**;templates/**/obj/**;templates/**/.build/**;templates/**/.DS_Store;templates/**/Package.resolved"
              PackagePath="templates/"
              Pack="true" />
     <!-- LICENSE AND NOTICE TRAVEL WITH THE PACKAGE. A .nupkg is a distribution

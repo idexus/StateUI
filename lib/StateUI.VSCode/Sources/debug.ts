@@ -13,6 +13,8 @@
 // naming its `application` runs that one instead. A MAUI head is debugged the
 // way StateUI: Select Debugger chose - C#, Swift, or both on Mac Catalyst.
 
+import { execFile } from "child_process";
+import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { Application, appKitProgram } from "./applications";
@@ -150,7 +152,10 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             // Started WITHOUT a debugger, then attached to: the simulator's
             // watchdog kills an app a debugger holds stopped at launch.
             const target = this.choices.debugger() === "swift-ios" ? "ios" : "maccatalyst";
-            const script = path.join(root.uri.fsPath, ".scripts", "Maui", "run-app.sh");
+            const script = await this.buildScript(project, `net10.0-${target}`, "run-app.sh");
+            if (!script) {
+                return undefined;
+            }
             const started = await this.succeeds(root, application, `Run ${application.name} (${target}, ${configuration})`,
                 new vscode.ShellExecution("bash", [script, target, build, project], { cwd: root.uri.fsPath }));
             return started ? attach(application.name) : undefined;
@@ -167,7 +172,10 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
                     : undefined;
             }
             {
-                const script = path.join(root.uri.fsPath, ".scripts", "Maui", "run-app.ps1");
+                const script = await this.buildScript(project, "net10.0-windows10.0.19041.0", "run-app.ps1");
+                if (!script) {
+                    return undefined;
+                }
                 const started = await this.succeeds(root, application, `Run ${application.name} (Windows, ${configuration})`,
                     new vscode.ShellExecution("powershell", ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script,
                         "-Configuration", build, "-Project", project], { cwd: root.uri.fsPath }));
@@ -175,6 +183,22 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
                 return started ? attach(`${application.name}.exe`) : undefined;
             }
         }
+    }
+
+    /**
+     * A script of the StateUI build `project` imports - the one its own build
+     * runs with, whether that is a checkout's or the StateUI.Maui package's -
+     * or nothing, said, where the project imports none.
+     */
+    private async buildScript(project: string, targetFramework: string, script: string): Promise<string | undefined> {
+        const directory = await stateUIBuildDirectory(project, targetFramework);
+        const found = directory && path.join(directory, script);
+        if (found && fs.existsSync(found)) {
+            return found;
+        }
+        void vscode.window.showErrorMessage(
+            `StateUI: ${path.basename(project)} imports no StateUI build with ${script} - it references neither a StateUI checkout's .scripts/Maui/StateUI.targets nor the StateUI.Maui package.`);
+        return undefined;
     }
 
     /** Runs one step before a launch as a task, and says so where it failed. */
@@ -229,4 +253,27 @@ export async function buildAppKitHead(
     task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
 
     return (await run(task)) === 0;
+}
+
+/**
+ * Where the StateUI build a MAUI project imports lives, for `targetFramework`:
+ * `.scripts/Maui/` of the checkout it is built against, or
+ * `buildTransitive/Maui/` of the StateUI.Maui package it references. Asked of
+ * MSBuild, so it is the directory the project's own build runs from.
+ *
+ * Restored first and without the framework - a restore handed one framework
+ * restores that one alone - since a restore is what brings a package's build
+ * into the project. Then asked WITH it: NuGet imports a package's build per
+ * target framework, so a project evaluated for none of them has none.
+ */
+export async function stateUIBuildDirectory(project: string, targetFramework: string): Promise<string | undefined> {
+    // No node reuse: a worker left behind would hold these calls' output open.
+    const msbuild = (args: string[]): Promise<{ failed: boolean; output: string }> => new Promise((resolve) =>
+        execFile("dotnet", ["msbuild", project, ...args, "-nologo", "-nodeReuse:false"], { cwd: path.dirname(project) },
+            (error, stdout) => resolve({ failed: error !== null, output: stdout })));
+
+    await msbuild(["-t:Restore"]);
+    const asked = await msbuild(["-getProperty:StateUIBuildDir", `-p:TargetFramework=${targetFramework}`]);
+    const directory = asked.output.trim().split(/\r?\n/).pop()?.trim();
+    return !asked.failed && directory ? directory : undefined;
 }

@@ -18,10 +18,11 @@
   <!-- ======================================================================
        StateUI native build integration
        ======================================================================
-       Compiles the Swift side and attaches it to the app. Import it from the
-       application's MAUI project, in Platforms/Maui/, with a single line:
+       Compiles the Swift side and attaches it to the app. The application's
+       MAUI project, in Platforms/Maui/, imports it with a single line from the
+       StateUI checkout it is built against:
 
-           <Import Project="../../.scripts/Maui/StateUI.targets" />
+           <Import Project="/path/to/StateUI/.scripts/Maui/StateUI.targets" />
 
        TWO SWIFT MODULES ARE BUILT:
 
@@ -44,16 +45,16 @@
            SwiftConfig           debug | release
            SwiftDebugFormat      codeview | dwarf (defaults per platform)
 
-       TWO LAYOUTS, ONE FILE. In this repository an application sits under
-       apps/<Name>/ and its MAUI project imports
-       ../../../../.scripts/Maui/StateUI.targets, with the library's sources a
-       few directories away. An application made by `dotnet new stateui-maui`
-       carries .scripts/ at its own root, and the library arrives as a SwiftPM
-       dependency its manifest names - by URL, or by path when the application
-       was made against a checkout, with the template's stateui-path option.
-       Everything below that could differ between
-       the two is DERIVED rather than assumed, so the same scripts ship in both
-       places.
+       ONE FILE, IMPORTED FROM WHERE THE LIBRARY IS. An application in this
+       repository, under apps/<Name>/, imports
+       ../../../../.scripts/Maui/StateUI.targets. One made against a checkout
+       imports that checkout's .scripts/Maui/StateUI.targets. One made from the
+       packages imports nothing itself: NuGet imports this file from the
+       StateUI.Maui package, under buildTransitive/Maui/, and the library's
+       Swift sources arrive as the SwiftPM dependency its manifest names by
+       URL. An application keeps no copy, so the build always belongs to the
+       library it compiles. Everything below that could differ between those
+       places is DERIVED rather than assumed.
 
        NOTE: forward slashes everywhere, deliberately. MSBuild accepts them on
        Windows, but a backslash on macOS or Linux is an ordinary character -
@@ -62,8 +63,10 @@
        ====================================================================== -->
 
   <PropertyGroup>
-    <!-- This file lives in <root>/.scripts/Maui/, so the root is two up - the
-         repository's in a source tree, the app's in a scaffolded one. -->
+    <!-- This file lives in <root>/.scripts/Maui/ of a checkout, or
+         <package>/buildTransitive/Maui/ of StateUI.Maui, so the root is two
+         up: the checkout, whose library sources are then used directly, or
+         the package, which has none. -->
     <StateUIRoot Condition="'$(StateUIRoot)' == ''">$(MSBuildThisFileDirectory)../../</StateUIRoot>
     <StateUIBuildDir>$(MSBuildThisFileDirectory)</StateUIBuildDir>
 

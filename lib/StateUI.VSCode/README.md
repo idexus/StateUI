@@ -77,11 +77,16 @@ and the host item in the status bar shows the choice:
 | --- | --- | --- |
 | C# | the MAUI extension's launch, on the device its picker chose | macOS, Windows |
 | C# | `dotnet build`, then `coreclr` on the Linux head | Linux |
-| Swift · iOS Simulator | `.scripts/Maui/run-app.sh ios`, then lldb-dap attaches | macOS |
-| Swift · Mac Catalyst | `.scripts/Maui/run-app.sh maccatalyst`, then lldb-dap attaches | macOS |
+| Swift · iOS Simulator | `run-app.sh ios`, then lldb-dap attaches | macOS |
+| Swift · Mac Catalyst | `run-app.sh maccatalyst`, then lldb-dap attaches | macOS |
 | C# + Swift · Mac Catalyst | the C# launch, and lldb-dap attaches beside it once the app runs | macOS |
-| Swift | `.scripts/Maui/run-app.ps1`, then lldb-dap attaches | Windows |
+| Swift | `run-app.ps1`, then lldb-dap attaches | Windows |
 | Swift | `dotnet build`, then lldb-dap launches the head | Linux |
+
+`run-app.sh` and `run-app.ps1` are part of the StateUI build the application's
+project imports - a checkout's `.scripts/Maui`, or the StateUI.Maui package's
+`buildTransitive/Maui` - found by asking MSBuild for the launched framework, so
+they always belong to the library the application builds.
 
 C# on iOS, Android and Mac Catalyst needs the MAUI extension's debugger: those
 heads run on Mono. Swift attaches only to a process this machine runs, and on the

@@ -9,7 +9,7 @@ import PackageDescription
 //#endif
 // The application's own Swift module, which every head of this application
 // compiles: the MAUI project in Platforms/Maui builds it for each of its
-// platforms through .scripts/Maui, and the AppKit executable in
+// platforms through StateUI's build, and the AppKit executable in
 // Platforms/AppKit - where the application has one - launches it on macOS.
 //
 // WHY THIS FILE EXISTS:

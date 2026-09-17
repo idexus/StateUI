@@ -154,17 +154,15 @@ final class TemplateTests: XCTestCase {
                 continue
             }
 
-            // The build is packed from the repository's .scripts, so that is
-            // where it is looked for.
-            let inside = String(target.path.dropFirst(root.count))
-            let shipped = inside.hasPrefix(".scripts/")
-                ? Fixtures.repository.appendingPathComponent(inside)
-                : target
-
             XCTAssertTrue(
-                Fixtures.resolves(shipped),
+                Fixtures.resolves(target),
                 "\(token).csproj points at \(relative), which the template does not ship.")
         }
+
+        XCTAssertFalse(
+            project.contains("<Import Project="),
+            "the project imports a build of its own - an application made from the packages takes "
+                + "StateUI's build from the StateUI.Maui package, which NuGet imports.")
 
         XCTAssertTrue(
             project.contains("<PackageReference Include=\"StateUI.Maui\" Version=\""),
@@ -230,10 +228,17 @@ final class TemplateTests: XCTestCase {
             XCTAssertFalse(
                 project.contains("<PackageReference Include=\"StateUI"),
                 "\(said): the project takes StateUI from a package as well as from the checkout.")
-            XCTAssertTrue(
-                project.contains("<StateUIPackagePath>\(checkout)/</StateUIPackagePath>"),
-                "\(said): the build is not told where the checkout is - a path dependency is never "
-                    + "checked out, so the build finds no library sources.")
+            let imported = project.occurrences(between: "<Import Project=\"", and: "\"")
+            XCTAssertEqual(
+                imported, ["\(checkout)/.scripts/Maui/StateUI.targets"],
+                "\(said): the project does not import StateUI's build from the checkout - the one "
+                    + "that finds the library's sources there, since a path dependency is never "
+                    + "checked out.")
+            for build in imported {
+                XCTAssertTrue(
+                    FileManager.default.fileExists(atPath: here(build).path),
+                    "\(said): \(token).csproj imports \(build), which a StateUI checkout does not hold.")
+            }
 
             let manifest = try generated("Package.swift", options: options)
             XCTAssertFalse(
@@ -273,30 +278,6 @@ final class TemplateTests: XCTestCase {
         XCTAssertTrue(
             try generated("Package.swift", options: ["AppKit"]).contains("#error("),
             "--appkit without --stateui-path builds, and fails later for want of the AppKit host.")
-    }
-
-    /// The token appears nowhere in the build the template ships, which is
-    /// why it is not simply `StateUIApp`: StateUI.targets is full of
-    /// `$(StateUIAppModule)`, `$(StateUIAppSources)` and their kind - the
-    /// build's own properties rather than any application's. A token that
-    /// collided with them would be replaced in every file the engine
-    /// processes that names one, leaving names the build does not read - a
-    /// build that compiles no Swift and says nothing about why.
-    func testTheTokenCollidesWithNothingInTheBuild() throws {
-        let build = Fixtures.repository.appendingPathComponent(".scripts/Maui")
-        let files = Fixtures.files(under: build)
-        XCTAssertFalse(files.isEmpty, ".scripts/Maui holds no build to read.")
-
-        for relative in files {
-            guard let text = try? String(
-                contentsOf: build.appendingPathComponent(relative), encoding: .utf8)
-            else { continue }
-
-            XCTAssertFalse(
-                text.contains(token),
-                ".scripts/Maui/\(relative) contains \(token), the token the template replaces - "
-                    + "pick a token that appears in no build script.")
-        }
     }
 
     /// The template ships no `Package.resolved`. A resolve file pins a
@@ -378,94 +359,71 @@ final class TemplateTests: XCTestCase {
             "the artifact guards are Apple's pair, Android's one, and Windows' and Linux's pairs.")
     }
 
-    /// The build the template ships is copied out byte for byte. The
-    /// templating engine evaluates MSBuild `Condition` attributes in the files
-    /// it processes: in StateUI.targets it reads `'@(x)' == ''` as false and
-    /// takes the whole element away, and it strips `'@(x)' != ''` as true -
-    /// and what goes are the `<Error>` guards that say a Swift build produced
-    /// no native library, so an application packages silently with no Swift
-    /// in it. An unconditional `copyOnly` over `.scripts/**` turns the
-    /// processing off, and nothing there carries an application's name.
-    func testTheBuildScriptsAreCopiedRatherThanProcessed() throws {
-        let config = try configuration()
+    /// AN APPLICATION KEEPS NO BUILD OF ITS OWN. Its project takes
+    /// StateUI.targets from the StateUI it is built against, so the scripts
+    /// that compile the library always belong to the library's own sources:
+    ///
+    /// - made against a checkout, it imports that checkout's
+    ///   `.scripts/Maui/StateUI.targets` (asked of the generated project in
+    ///   the test above);
+    /// - made from the packages, it imports nothing, and NuGet imports
+    ///   `buildTransitive/StateUI.Maui.targets` from the StateUI.Maui package,
+    ///   which carries `.scripts/Maui` - packed from the one copy - beside it.
+    ///
+    /// So the template holds no `.scripts`, and neither its package nor its
+    /// template.json says anything about one. The scripts that describe this
+    /// repository rather than an application - new-app, which scaffolds into
+    /// apps/, and the Gallery's AppKit bundler - stand outside `.scripts/Maui`,
+    /// so the package never carries them.
+    func testAnApplicationTakesItsBuildFromTheStateUIItIsBuiltAgainst() throws {
+        XCTAssertFalse(
+            FileManager.default.fileExists(atPath: template.appendingPathComponent(".scripts").path),
+            "the template holds a .scripts - a copy an application would keep, and let go stale "
+                + "against the library it builds.")
 
+        let config = try configuration()
         XCTAssertEqual(
             config["sourceName"] as? String, token,
             "template.json's sourceName is not \(token), which everything here is named after.")
-
-        let modifiers = (config["sources"] as? [[String: Any]] ?? [])
-            .flatMap { $0["modifiers"] as? [[String: Any]] ?? [] }
-        let copying = modifiers.filter {
-            $0["condition"] == nil && ($0["copyOnly"] as? [String] ?? []).contains(".scripts/**")
-        }
-
         XCTAssertFalse(
-            copying.isEmpty,
-            "template.json does not mark .scripts/** copyOnly for every application - the engine "
-                + "rewrites StateUI.targets on its way out.")
-    }
+            try String(
+                contentsOf: template.appendingPathComponent(".template.config/template.json"), encoding: .utf8
+            ).contains(".scripts"),
+            "template.json still treats a .scripts the template no longer has.")
 
-    /// The template ships the build this repository's applications use,
-    /// packed from .scripts/Maui rather than kept as a second copy, and
-    /// unpacked where the application's project imports it:
-    /// `.scripts/Maui/StateUI.targets` beside `Platforms/`. The scripts that
-    /// describe this repository rather than an application - new-app, which
-    /// scaffolds into apps/, and the Gallery's AppKit bundler - stand outside
-    /// .scripts/Maui, so the package never carries them.
-    ///
-    /// The copy the template project writes beside the template, for
-    /// `dotnet new install <folder>`, is ignored by git, which keeps it from
-    /// going stale against the original, and left out of the pack, so no file
-    /// ships twice.
-    func testTheTemplateShipsTheRepositorysOwnBuild() throws {
         let pack = try packageProject()
-        let glob = try XCTUnwrap(
-            pack.occurrences(
-                between: "<_StateUIScript Include=\"$(MSBuildProjectDirectory)/", and: "\"").first,
-            "the template no longer takes its build from the repository.")
-
-        XCTAssertTrue(
-            glob.hasSuffix("/**/*"), "the template packs \(glob) rather than a whole folder of the build.")
-
-        let originals = project.appendingPathComponent(String(glob.dropLast("/**/*".count)))
-            .standardizedFileURL
-        let build = Fixtures.repository.appendingPathComponent(".scripts/Maui")
-        XCTAssertEqual(
-            originals.path, build.standardizedFileURL.path,
-            "the template packs \(originals.path), which is not the repository's .scripts/Maui.")
-
-        let shipped = Fixtures.files(under: build)
-        XCTAssertTrue(shipped.contains("StateUI.targets"), ".scripts/Maui holds no StateUI.targets to ship.")
-
-        for script in ["new-app.sh", "new-app.ps1", "build-gallery-appkit.sh"] {
-            XCTAssertFalse(
-                shipped.contains { $0.hasSuffix(script) },
-                "\(script) is under .scripts/Maui, so every application made from the template "
-                    + "ships it - and it describes this repository, not the application.")
-        }
-
-        XCTAssertTrue(
-            pack.contains(
-                "<PackagePath>templates/\(token)/.scripts/Maui/%(RecursiveDir)%(Filename)%(Extension)</PackagePath>"),
-            "the pack does not put the build where the application's project imports it.")
-        XCTAssertTrue(
-            try text(at: "Platforms/Maui/\(token).csproj")
-                .contains("<Import Project=\"../../.scripts/Maui/StateUI.targets\" />"),
-            "the application's project does not import the build that ships beside it.")
+        XCTAssertFalse(pack.contains(".scripts"), "the template's package still carries a build.")
         XCTAssertTrue(
             pack.contains("<PackageType>Template</PackageType>"),
             "the package is not a template, so the SDK installs no template from it.")
 
-        let ignored = try String(
-            contentsOf: Fixtures.repository.appendingPathComponent(".gitignore"), encoding: .utf8)
+        let runtime = Fixtures.repository.appendingPathComponent("lib/StateUI.Maui/Sources")
+        let runtimeProject = try String(
+            contentsOf: runtime.appendingPathComponent("StateUI.Maui.csproj"), encoding: .utf8)
         XCTAssertTrue(
-            ignored.contains("/lib/StateUI.Maui/Template/templates/*/.scripts/"),
-            "the copied .scripts is not ignored - it gets committed and goes stale against the "
-                + "original.")
+            runtimeProject.contains(
+                "<None Include=\"buildTransitive/StateUI.Maui.targets\" Pack=\"true\" PackagePath=\"buildTransitive/\" />"),
+            "StateUI.Maui does not pack buildTransitive/StateUI.Maui.targets, so NuGet imports no "
+                + "build into an application made from the packages.")
         XCTAssertTrue(
-            pack.contains("templates/**/.scripts/**"),
-            "the pack takes the copied .scripts as well as the originals, so every build file "
-                + "ships twice.")
+            runtimeProject.contains(
+                "<None Include=\"../../../.scripts/Maui/**/*\" Exclude=\"../../../.scripts/Maui/**/.DS_Store\" Pack=\"true\" PackagePath=\"buildTransitive/Maui/%(RecursiveDir)\" />"),
+            "StateUI.Maui does not pack the repository's .scripts/Maui beside its build targets.")
+
+        let transitive = try String(
+            contentsOf: runtime.appendingPathComponent("buildTransitive/StateUI.Maui.targets"), encoding: .utf8)
+        XCTAssertTrue(
+            transitive.contains("<Import Project=\"$(MSBuildThisFileDirectory)Maui/StateUI.targets\" />"),
+            "buildTransitive/StateUI.Maui.targets does not import the build packed beside it.")
+
+        let build = Fixtures.files(under: Fixtures.repository.appendingPathComponent(".scripts/Maui"))
+        XCTAssertTrue(build.contains("StateUI.targets"), ".scripts/Maui holds no StateUI.targets to pack.")
+        for script in ["new-app.sh", "new-app.ps1", "build-gallery-appkit.sh"] {
+            XCTAssertFalse(
+                build.contains { $0.hasSuffix(script) },
+                "\(script) is under .scripts/Maui, so the StateUI.Maui package carries it into every "
+                    + "application - and it describes this repository, not the application.")
+        }
     }
 
     /// Every condition in the template names a symbol template.json declares.
@@ -481,7 +439,7 @@ final class TemplateTests: XCTestCase {
         var conditions: [(place: String, condition: String)] = []
 
         for relative in Fixtures.files(
-            under: template, leavingOut: Fixtures.byproducts.union([".scripts"])) {
+            under: template, leavingOut: Fixtures.byproducts) {
             guard let text = try? String(
                 contentsOf: template.appendingPathComponent(relative), encoding: .utf8)
             else { continue }
@@ -586,13 +544,12 @@ final class TemplateTests: XCTestCase {
             "the template project names no package.")
 
         let repository = Fixtures.repository
-        let copy = "lib/StateUI.Maui/Template/templates/\(token)/.scripts/"
         let leftOut = Fixtures.byproducts.union([".git", "artifacts", ".vs", "AGENTS.md", "CLAUDE.md"])
 
         var said = 0
         var wrong: [String] = []
 
-        for relative in Fixtures.files(under: repository, leavingOut: leftOut) where !relative.hasPrefix(copy) {
+        for relative in Fixtures.files(under: repository, leavingOut: leftOut) {
             guard let text = try? String(
                 contentsOf: repository.appendingPathComponent(relative), encoding: .utf8),
                 text.contains(command)

@@ -15,13 +15,16 @@
 # ---------------------------------------------------------------------------
 # Builds and launches the app WITHOUT a debugger, then returns.
 #
-# Run before a Swift debugger attaches - by the StateUI extension's Swift
-# debuggers, and by a generated application's "Debug app (Swift)" - which is the
-# working way to debug Swift on the iOS Simulator: iOS kills an app that stays stopped, and the
-# C# debugger starting at the same moment widens that window enough to make it
-# near-certain. Launching first, attaching second, avoids it. The "Run app (no
-# debugger)" and "Run app (Release, no debugger)" tasks call it for the launch
-# alone.
+# Run before a Swift debugger attaches, by the StateUI extension's Swift
+# debuggers - the working way to debug Swift on the iOS Simulator: iOS kills an
+# app that stays stopped, and the C# debugger starting at the same moment widens
+# that window enough to make it near-certain. Launching first, attaching second,
+# avoids it. The "Run app (no debugger)" and "Run app (Release, no debugger)"
+# tasks call it for the launch alone.
+#
+# It is part of StateUI's build, so it lives beside StateUI.targets: in a
+# checkout's .scripts/Maui, and in the StateUI.Maui package's
+# buildTransitive/Maui. Outside this repository, name the project.
 #
 # THE APPLE PLATFORMS NEED macOS AND LINUX NEEDS LINUX, which is checked below:
 # each platform this offers runs the app as a local process on the host that
@@ -32,7 +35,8 @@
 #
 #     ios | maccatalyst | linux   where to run it; the iOS Simulator unless said
 #     Debug | Release             what to build; Debug unless said
-#     a path                      the project, when it is not the obvious one
+#     a path                      the project; the Gallery in this repository
+#                                 unless said
 #
 # Bash 3.2 compatible - macOS ships that version and has not moved since.
 # ---------------------------------------------------------------------------
@@ -71,30 +75,15 @@ for arg; do
   esac
 done
 
-# WHICH PROJECT, and it is FOUND rather than spelled out - because this script
-# ships in two layouts. In this repository the apps live under apps/ and the
-# gallery is the one to run; in an app made by `dotnet new stateui-maui` the
-# MAUI head sits in Platforms/Maui/ and is the only project there.
-if [[ -z "$PROJECT" ]]; then
-  if [[ -f "$ROOT_DIR/apps/Gallery/Platforms/Maui/Gallery.csproj" ]]; then
-    PROJECT="$ROOT_DIR/apps/Gallery/Platforms/Maui/Gallery.csproj"
-  else
-    found=""
-    for candidate in "$ROOT_DIR"/Platforms/Maui/*.csproj; do
-      [[ -f "$candidate" ]] || continue
-      if [[ -n "$found" ]]; then
-        echo "ERROR: more than one .csproj in $ROOT_DIR/Platforms/Maui - name the one to run:"
-        echo "       $0 $PLATFORM path/to/App.csproj"
-        exit 1
-      fi
-      found="$candidate"
-    done
-    PROJECT="$found"
-  fi
+# WHICH PROJECT: the one named, else the Gallery when this script runs from
+# this repository's .scripts/Maui.
+if [[ -z "$PROJECT" && -f "$ROOT_DIR/apps/Gallery/Platforms/Maui/Gallery.csproj" ]]; then
+  PROJECT="$ROOT_DIR/apps/Gallery/Platforms/Maui/Gallery.csproj"
 fi
 
 if [[ -z "$PROJECT" || ! -f "$PROJECT" ]]; then
-  echo "ERROR: no project to run. Expected one .csproj in $ROOT_DIR/Platforms/Maui."
+  echo "ERROR: no project to run - name it:"
+  echo "       $0 $PLATFORM path/to/Platforms/Maui/App.csproj"
   exit 1
 fi
 

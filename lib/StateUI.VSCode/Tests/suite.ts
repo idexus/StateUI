@@ -14,7 +14,7 @@ import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 import { findApplications } from "../Sources/applications";
-import { StateUIDebugConfigurationProvider } from "../Sources/debug";
+import { StateUIDebugConfigurationProvider, stateUIBuildDirectory } from "../Sources/debug";
 import { findSuites } from "../Sources/tests";
 import { availableHosts, MauiDebugger } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
@@ -228,19 +228,19 @@ export async function run(): Promise<void> {
                 const theirs = path.join(scratch, `theirs-${path.basename(each.starter.parent)}`, "Probe");
                 execFileSync("dotnet", ["new", "stateui-maui", "-n", "Probe", "-o", theirs, ...each.options, "--debug:custom-hive", hive]);
 
-                // The template folder's own .scripts is a copy made by a build;
-                // the build shipped is the repository's .scripts/Maui.
-                const mineFiles = files(mine).filter((file) => !file.startsWith(".scripts"));
-                const theirFiles = files(theirs).filter((file) => !file.startsWith(".scripts"));
+                const mineFiles = files(mine);
+                const theirFiles = files(theirs);
                 const differing = mineFiles.filter((file) => !theirFiles.includes(file)
                     || !fs.readFileSync(path.join(mine, file)).equals(fs.readFileSync(path.join(theirs, file))));
-                const scripts = templateIn(repository).scripts;
-                const scriptsDiffer = files(scripts).filter((file) => !file.endsWith(".DS_Store")).some((file) =>
-                    !fs.existsSync(path.join(mine, ".scripts", "Maui", file))
-                    || !fs.readFileSync(path.join(scripts, file)).equals(fs.readFileSync(path.join(mine, ".scripts", "Maui", file))));
                 say(`     ${each.label}: ${mineFiles.length} files, differing: ${differing.join(", ") || "none"}`);
-                check(`${each.label}: what is written is what \`dotnet new stateui-maui\` writes, and the build is .scripts/Maui`,
-                    differing.length === 0 && mineFiles.length === theirFiles.length && !scriptsDiffer);
+                check(`${each.label}: what is written is what \`dotnet new stateui-maui\` writes, and it carries no build of its own`,
+                    differing.length === 0 && mineFiles.length === theirFiles.length && !mineFiles.some((file) => file.startsWith(".scripts")));
+
+                const made = fs.readFileSync(path.join(mine, "Platforms", "Maui", "Probe.csproj"), "utf8");
+                check(`${each.label}: the project takes StateUI's build from ${each.starter.source.kind === "checkout" ? "the checkout" : "the StateUI.Maui package"}`,
+                    each.starter.source.kind === "checkout"
+                        ? made.includes(`<Import Project="${repository}/.scripts/Maui/StateUI.targets" />`)
+                        : !made.includes("<Import Project=") && made.includes('<PackageReference Include="StateUI.Maui" Version="0.3.1" />'));
             }
 
             const other = writeStarter({ name: "Later", parent: path.join(scratch, "later"), source: { kind: "release", version: "9.8.7" }, appKit: false },
@@ -250,24 +250,33 @@ export async function run(): Promise<void> {
             check("a release names its version in Package.swift's tag and both NuGet references",
                 manifest.includes('exact: "9.8.7"') && project.includes('Include="StateUI.Maui" Version="9.8.7"')
                 && project.includes('Include="StateUI.Maui.Linux" Version="9.8.7"') && !/\d+\.\d+\.\d+/.test(manifest.replace("9.8.7", "")));
-            // A template whose scripts lost their execute bit - as a package
-            // made on Windows carries them - still writes runnable scripts.
-            if (process.platform !== "win32") {
-                const stripped = path.join(scratch, "stripped");
-                fs.cpSync(carriedTemplate(extensionPath), stripped, { recursive: true });
-                for (const file of fs.readdirSync(stripped, { recursive: true, encoding: "utf8" }).filter((each) => each.endsWith(".sh"))) {
-                    fs.chmodSync(path.join(stripped, file), 0o644);
-                }
-                const runnable = writeStarter({ name: "Runnable", parent: path.join(scratch, "runnable"), source: { kind: "release", version: "0.3.1" }, appKit: false }, stripped);
-                const scripts = fs.readdirSync(runnable, { recursive: true, encoding: "utf8" }).filter((each) => each.endsWith(".sh"));
-                say(`     scripts written: ${scripts.map((each) => `${path.basename(each)} ${(fs.statSync(path.join(runnable, each)).mode & 0o777).toString(8)}`).join(", ")}`);
-                check("every shell script a new application gets is executable, whatever its source kept",
-                    scripts.length > 0 && scripts.every((each) => (fs.statSync(path.join(runnable, each)).mode & 0o111) === 0o111));
-            }
-
             let refused = false;
             try { writeStarter({ name: "Later", parent: path.join(scratch, "later"), source: { kind: "release", version: "9.8.7" }, appKit: false }, carriedTemplate(extensionPath)); } catch { refused = true; }
             check("an application is never written over a directory that exists", refused);
+
+            // The scripts a launch runs are the ones the project's own build
+            // imports - asked of MSBuild, for the repository's application and
+            // for one made against the checkout alike.
+            const repositoryBuild = await stateUIBuildDirectory(path.join(repository, "apps", "Gallery", "Platforms", "Maui", "Gallery.csproj"), "net10.0-maccatalyst");
+            const checkoutBuild = await stateUIBuildDirectory(path.join(scratch, "mine-checkout", "Probe", "Platforms", "Maui", "Probe.csproj"), "net10.0-maccatalyst");
+            // NuGet imports a package's build per target framework - an
+            // ImportGroup conditioned on it - so it is asked of the framework
+            // the launch builds, as a project made from the packages needs.
+            const perFramework = path.join(scratch, "per-framework", "PerFramework.proj");
+            fs.mkdirSync(path.dirname(perFramework), { recursive: true });
+            fs.writeFileSync(perFramework, `<Project>
+  <ImportGroup Condition="'$(TargetFramework)' == 'net10.0-maccatalyst'">
+    <Import Project="${repository}/.scripts/Maui/StateUI.targets" />
+  </ImportGroup>
+  <Target Name="Restore" />
+</Project>
+`);
+            const packageBuild = await stateUIBuildDirectory(perFramework, "net10.0-maccatalyst");
+            say(`     build directories: ${repositoryBuild} | ${checkoutBuild} | ${packageBuild}`);
+            check("a build imported per target framework, as NuGet imports a package's, is found for the framework launched",
+                packageBuild === repositoryBuild);
+            check("the build a launch runs is the one the project imports: the checkout's .scripts/Maui, in the repository and outside it",
+                repositoryBuild === path.join(repository, ".scripts", "Maui") + path.sep && checkoutBuild === repositoryBuild);
             fs.rmSync(scratch, { recursive: true, force: true });
         }
 

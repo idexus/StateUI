@@ -136,9 +136,11 @@ final class VsCodeTests: XCTestCase {
 
     /// The Release task passes what the scripts read. run-app.sh takes its
     /// arguments by SHAPE, so the task says "Release" and the script has to
-    /// recognize that word - and refuse one it does not recognize.
+    /// recognize that word - and refuse one it does not recognize. The
+    /// repository's task alone: an application made from the template keeps
+    /// no scripts, and runs without a debugger through StateUI: Release.
     func testTheReleaseTaskSpeaksTheScriptsLanguage() throws {
-        for layout in layouts {
+        for layout in layouts.prefix(1) {
             let tasks = try json(at: layout.directory.appendingPathComponent("tasks.json"))
             let task = try XCTUnwrap(
                 array(tasks, "tasks").first {

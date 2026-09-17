@@ -9,6 +9,8 @@
 // another release's. The template's own files are the one source - a
 // checkout's, or the copy this extension carries - and what is written from
 // them is what `dotnet new stateui-maui` writes, which the suite compares.
+// The application carries no build: its project imports the one of the
+// StateUI it is built against.
 
 import { execFile } from "child_process";
 import * as fs from "fs";
@@ -77,12 +79,9 @@ export function checkoutProblem(directory: string): string | undefined {
     return undefined;
 }
 
-/** The template and the build it ships with, laid out as in a checkout. */
-export function templateIn(root: string): { template: string; scripts: string } {
-    return {
-        template: path.join(root, "lib", "StateUI.Maui", "Template", "templates", token),
-        scripts: path.join(root, ".scripts", "Maui"),
-    };
+/** The template, laid out as in a checkout. */
+export function templateIn(root: string): { template: string } {
+    return { template: path.join(root, "lib", "StateUI.Maui", "Template", "templates", token) };
 }
 
 /** Where this extension carries its copy of the template: `out/Template/`, laid out as in a checkout. */
@@ -91,7 +90,7 @@ export function carriedTemplate(extensionPath: string): string {
 }
 
 /** What a template directory holds that is never an application's. */
-export const leftOut = new Set([".template.config", ".scripts", ".build", "bin", "obj", ".vs", ".sourcekit-lsp", ".DS_Store", "Package.resolved"]);
+export const leftOut = new Set([".template.config", ".build", "bin", "obj", ".vs", ".sourcekit-lsp", ".DS_Store", "Package.resolved"]);
 
 /** The command line that makes `name` in a checkout's apps/. */
 export function inAppsCommand(checkout: string, name: string, platform: NodeJS.Platform = process.platform): { command: string; args: string[] } {
@@ -106,7 +105,7 @@ export function inAppsCommand(checkout: string, name: string, platform: NodeJS.P
  * answers its directory.
  */
 export function writeStarter(starter: Starter, templateRoot: string): string {
-    const { template, scripts } = templateIn(templateRoot);
+    const { template } = templateIn(templateRoot);
     const destination = path.join(starter.parent, starter.name);
     if (fs.existsSync(destination)) {
         throw new Error(`${destination} already exists.`);
@@ -155,23 +154,6 @@ export function writeStarter(starter: Starter, templateRoot: string): string {
 
     fs.mkdirSync(destination, { recursive: true });
     walk(template, destination);
-
-    // The build, byte for byte: nothing in it names the application.
-    fs.cpSync(scripts, path.join(destination, ".scripts", "Maui"), { recursive: true });
-    for (const found of listFiles(path.join(destination, ".scripts"))) {
-        if (path.basename(found) === ".DS_Store") {
-            fs.rmSync(found);
-        }
-    }
-
-    // Every shell script runs by itself - `./run-app.sh` - whatever the copy
-    // it came from kept: a package made on Windows, or a checkout on a file
-    // system with no execute bit, carries none.
-    for (const found of listFiles(destination)) {
-        if (found.endsWith(".sh")) {
-            fs.chmodSync(found, fs.statSync(found).mode | 0o111);
-        }
-    }
 
     return destination;
 }
@@ -252,15 +234,6 @@ function repinned(text: string, pinned: string, version: string): string {
         .split(`exact: "${pinned}"`).join(`exact: "${version}"`)
         .replace(/(<PackageReference Include="StateUI\.Maui(?:\.Linux)?" Version=")([^"]+)(")/g,
             (_whole, before: string, _old: string, after: string) => `${before}${version}${after}`);
-}
-
-function listFiles(directory: string): string[] {
-    return fs.existsSync(directory)
-        ? fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-            const full = path.join(directory, entry.name);
-            return entry.isDirectory() ? listFiles(full) : [full];
-        })
-        : [];
 }
 
 /**

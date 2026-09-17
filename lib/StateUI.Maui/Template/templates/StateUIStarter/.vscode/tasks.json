@@ -4,7 +4,8 @@
   // The usual workflow needs none of these: "StateUI: Debug" builds the head
   // of the host chosen in the StateUI extension's status bar, and on MAUI the
   // Swift side is compiled for the platform as part of the build by
-  // .scripts/Maui/StateUI.targets. The target platform is a PROMPT rather than
+  // StateUI.targets, which comes with the StateUI this application is built
+  // against. Running without a debugger is "StateUI: Release". The target platform is a PROMPT rather than
   // a fixed value, so a task cannot quietly build Mac Catalyst while an Android
   // device is selected.
   //
@@ -105,46 +106,6 @@
       "args": ["build", "-t:StateUIDiagnose", "-f", "${input:targetFramework}"]
     },
     {
-      // Builds and launches the MAUI app WITHOUT a debugger, then returns once
-      // the process exists.
-      "label": "Run app (no debugger)",
-      "type": "shell",
-      "problemMatcher": [],
-      "options": { "cwd": "${workspaceFolder}/.scripts/Maui" },
-      "osx": {
-        "command": "bash",
-        "args": ["run-app.sh", "${input:applePlatform}"]
-      },
-      "linux": {
-        "command": "bash",
-        "args": ["run-app.sh", "linux"]
-      },
-      "windows": {
-        "command": "powershell",
-        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "run-app.ps1"]
-      }
-    },
-    {
-      // The same launch with the OPTIMIZED build. For Android, or for a
-      // Release build that follows the device picker, take "StateUI: Release".
-      "label": "Run app (Release, no debugger)",
-      "type": "shell",
-      "problemMatcher": [],
-      "options": { "cwd": "${workspaceFolder}/.scripts/Maui" },
-      "osx": {
-        "command": "bash",
-        "args": ["run-app.sh", "${input:applePlatform}", "Release"]
-      },
-      "linux": {
-        "command": "bash",
-        "args": ["run-app.sh", "linux", "Release"]
-      },
-      "windows": {
-        "command": "powershell",
-        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "run-app.ps1", "-Configuration", "Release"]
-      }
-    },
-    {
       // EVERYTHING the builds ever wrote: the MAUI head's obj/ and bin/, every
       // configuration and every framework at once, and SwiftPM's .build/. An
       // edited Info.plist re-merges only when the obj/ that cached it is gone,
@@ -205,13 +166,6 @@
         "net10.0-windows10.0.19041.0",
         "net10.0"
       ]
-    },
-    {
-      "id": "applePlatform",
-      "type": "pickString",
-      "description": "Where to run the app",
-      "default": "ios",
-      "options": ["ios", "maccatalyst"]
     }
   ]
 }

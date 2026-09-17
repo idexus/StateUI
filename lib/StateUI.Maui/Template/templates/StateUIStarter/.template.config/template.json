@@ -16,8 +16,8 @@
   "//sourceName": [
     "Every occurrence of StateUIStarter becomes the name given to -n, in file",
     "names as well as in the files themselves. The token is deliberately not",
-    "'StateUIApp': .scripts/Maui/StateUI.targets is full of $(StateUIApp...)",
-    "properties, and they are the build's own, not this application's."
+    "'StateUIApp': StateUI.targets, which the application's project imports, is",
+    "full of $(StateUIApp...) properties, and they are the build's own."
   ],
   "sourceName": "StateUIStarter",
 
@@ -84,16 +84,6 @@
           "//": "The AppKit head, only when asked for.",
           "condition": "(!AppKit)",
           "exclude": [ "Platforms/AppKit/**" ]
-        },
-        {
-          "//": [
-            "THE BUILD SCRIPTS ARE COPIED BYTE FOR BYTE. The templating engine",
-            "EVALUATES MSBuild Condition attributes in the files it writes: measured",
-            "on StateUI.targets, it took the <Error> guards that say a Swift build",
-            "produced no native library with it. Nothing under .scripts/ carries the",
-            "application's name, so there is nothing to replace there."
-          ],
-          "copyOnly": [ ".scripts/**" ]
         }
       ]
     }

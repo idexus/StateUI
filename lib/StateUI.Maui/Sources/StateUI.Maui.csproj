@@ -3,8 +3,9 @@
   <PropertyGroup>
     <!-- Targets every platform the app does. This is a plain MAUI class library:
          it contains the bridge and the renderer, but no native code - the Swift
-         library is built by the scripts in .scripts/ and attached by the app
-         project, since native references have to be resolved there.
+         library is built by the scripts in .scripts/Maui - which this package
+         carries under buildTransitive/ - and attached by the app project,
+         since native references have to be resolved there.
 
          The plain net10.0 target is for the TESTS. MAUI's controls are ordinary
          managed objects that exist without a platform underneath them, so the
@@ -80,6 +81,11 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <!-- NU5110 and NU5111 are NuGet saying it will not RUN the .ps1 files under
+         buildTransitive/Maui on install, which is the point: build-windows.ps1
+         and run-app.ps1 are the build's, run by StateUI.targets and by the
+         editor extension. -->
+    <NoWarn>$(NoWarn);NU5110;NU5111</NoWarn>
   </PropertyGroup>
 
   <!-- THE MAUI VERSION IS CHOSEN BY THE TARGET, NEVER BY THE MACHINE BUILDING.
@@ -166,6 +172,18 @@
     <None Include="../../../LICENSE" Pack="true" PackagePath="\" />
     <None Include="../../../NOTICE" Pack="true" PackagePath="\" />
     <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <!-- THE BUILD TRAVELS WITH THE PACKAGE. An application that references
+       StateUI.Maui by version compiles its Swift with the build of that same
+       release: buildTransitive/StateUI.Maui.targets imports
+       buildTransitive/Maui/StateUI.targets, and NuGet imports the first into
+       the application's project. Packed from .scripts/Maui, the one copy, so
+       an application never keeps a build of its own to go stale. -->
+  <ItemGroup>
+    <None Remove="buildTransitive/**" />
+    <None Include="buildTransitive/StateUI.Maui.targets" Pack="true" PackagePath="buildTransitive/" />
+    <None Include="../../../.scripts/Maui/**/*" Exclude="../../../.scripts/Maui/**/.DS_Store" Pack="true" PackagePath="buildTransitive/Maui/%(RecursiveDir)" />
   </ItemGroup>
 
 </Project>
