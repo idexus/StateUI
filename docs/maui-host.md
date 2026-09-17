@@ -179,8 +179,14 @@ Some platform features need entries in the head itself:
 
 ### From the template
 
-`StateUI.Maui.Template` writes a complete application: the layout above at
-its own root, `.scripts/Maui/`, `.vscode/`, a solution, and a README. Install
+In VS Code, **StateUI: New Application from Template** writes a complete
+application with no template installed: the layout above at its own root,
+`.scripts/Maui/`, `.vscode/`, a solution, and a README. It asks for the
+directory, the name, and either a StateUI checkout or a release offered both
+on NuGet and as a tag in the repository, and reads a checkout's own template or
+the copy the extension carries for a release.
+
+Outside VS Code, `StateUI.Maui.Template` writes the same application. Install
 it from a pack of this repository:
 
 ```bash
@@ -225,26 +231,24 @@ dotnet new stateui-maui -n Notes --stateui-path ~/src/StateUI --appkit
 - **Reinstalling.** Before installing a rebuilt template of the same version,
   remove the previous one with `dotnet new uninstall StateUI.Maui.Template`.
 
-In VS Code, "StateUI: New Application from Template" writes the same
-application with no template installed. It asks for the directory, the name,
-and either a StateUI checkout or a release offered both on NuGet and as a tag
-in the repository. It reads a checkout's own template, or the copy the
-extension carries for a release.
-
 The generated README describes the application's own builds; its source is
 `lib/StateUI.Maui/Template/templates/StateUIStarter/README.md`.
 
 ### In this repository
 
 An application inside this repository is wired to it by relative paths rather
-than to packages. `.scripts/new-app.sh Notes` creates `apps/Notes/` in
-HelloWorld's layout and registers its MAUI project in `StateUI.slnx`. On
-Windows the same script is `.scripts\new-app.ps1 -Name Notes`, and in VS Code
-it is "StateUI: New Application in apps/". The name rule is the template's.
+than to packages. In VS Code, **StateUI: New Application in apps/** creates
+`apps/Notes/` in HelloWorld's layout, registers its MAUI project in
+`StateUI.slnx`, and chooses it for **StateUI: Debug**. From a terminal the same
+is `.scripts/new-app.sh Notes`, or `.scripts\new-app.ps1 -Name Notes` on
+Windows. The name rule is the template's.
 
 ## Building and running
 
-These commands build the Gallery from the repository root. Every head builds the
+In VS Code, **StateUI: Debug** and **StateUI: Release** build and start the
+chosen application on the chosen host; see
+[Debugging in VS Code](#debugging-in-vs-code). From a terminal, these commands
+build the Gallery from the repository root. Every head builds the
 same way from its own `Platforms/Maui` directory.
 
 ```bash
@@ -323,7 +327,8 @@ accept:
 ## Debugging in VS Code
 
 Debugging runs through the StateUI extension, in `lib/StateUI.VSCode`. Build it
-with `npm run package` there, and install the `.vsix` it writes. `launch.json`
+with `npm ci` and `npm run package` there and install the `.vsix` it writes;
+see [Working in VS Code](getting-started.md#working-in-vs-code). `launch.json`
 offers two launches, "StateUI: Debug" and "StateUI: Release", and three
 choices in the status bar decide what they do:
 
@@ -431,8 +436,10 @@ public static class MauiProgram
 
 The Swift half of each registration is a contract - the control's own, or the
 application's for an act or an event with no control behind it - written with
-ordinary StateUI API. Only the registries on this page are specific to the
-MAUI host; the AppKit host has no equivalent. The Gallery's "C# interop"
+ordinary StateUI API. The registries on this page are the MAUI host's; the
+AppKit host registers the same contracts by type in Swift, as
+[AppKit host](appkit-host.md#controls-acts-and-events-registered-in-swift)
+describes. The Gallery's "C# interop"
 group, compiled under `#if MAUI`, shows every kind of registration working.
 
 ### A control
@@ -1162,8 +1169,9 @@ running. Add one in Xcode under Window > Devices and Simulators.
 
 **iOS Simulator: "Terminated due to signal 9" after the Swift debugger
 attaches.**
-The watchdog killed an application that a debugger held stopped. Use "Debug app
-(Swift)", which launches first and attaches afterwards.
+The watchdog killed an application that a debugger held stopped. Choose the
+debugger **Swift · iOS Simulator** and run **StateUI: Debug**: it starts the
+application with `run-app.sh ios` first and attaches afterwards.
 
 **iOS: the application aborts during runtime start-up after builds for
 different runtime identifiers in one tree.**
@@ -1210,7 +1218,9 @@ Use a Swift toolchain that ships lld, or build with `-p:SwiftDebugFormat=codevie
 **The editor reports "No such module 'StateUI'" while the build succeeds.**
 SourceKit resolves imports through the application's `Package.swift`, at the
 application's root. Check that the manifest and its StateUI dependency resolve,
-then reload the window.
+then run **StateUI: Clean Index**. Code of a head that belongs to the other
+host, such as `import StateUIAppKit`, resolves only while that host is chosen
+in the StateUI extension's status bar.
 
 **A VS Code task never reports that it finished.**
 MSBuild's worker processes outlive a build and hold the terminal of the task

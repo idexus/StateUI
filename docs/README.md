@@ -12,9 +12,9 @@ usable platform promise.
 
 ## Start here
 
-- [Getting started](getting-started.md) builds the smallest application and
-  explains the application module, native host, resources, and registration
-  boundary.
+- [Getting started](getting-started.md) sets up VS Code and the StateUI
+  extension, builds the smallest application, and explains the application
+  module, native host, resources, and registration boundary.
 - [Architecture](architecture.md) defines StateUI's two reactive paths,
   `Journey`, host-side motion, engines, and ownership split.
 - [State and reactivity](state-and-reactivity.md) is the practical guide to

@@ -4,6 +4,21 @@ Build, run and debug [StateUI](https://github.com/idexus/StateUI) applications
 from VS Code: choose a host once, and the editor, **StateUI: Debug** and
 **StateUI: Release** all work as that host.
 
+## Installing
+
+From a StateUI checkout, with Node.js 20 or newer:
+
+```bash
+cd lib/StateUI.VSCode
+npm ci
+npm run package
+code --install-extension stateui-*.vsix
+```
+
+`npm run package` compiles the extension, copies in the template it carries,
+and writes `stateui-<version>.vsix`. **Extensions: Install from VSIX…** installs
+that file without the `code` command.
+
 ## A new application
 
 - **StateUI: New Application in apps/** - in a StateUI checkout, asks for a
@@ -39,8 +54,10 @@ The status bar shows the host - **AppKit** or **.NET MAUI**. Click it, or run
   server; the window does not reload and no settings file is written.
 - **StateUI: Debug and StateUI: Release run on it.** On AppKit the application's
   head is built - with its bundling script where it has one, with SwiftPM
-  otherwise - and started under `lldb-dap`. On .NET MAUI the launch is the MAUI
-  extension's: its startup-project and device pickers choose what runs.
+  otherwise - and started under `lldb-dap`. On .NET MAUI the debugger chosen
+  below decides the launch; with C# on macOS and Windows it is the MAUI
+  extension's launch of the chosen application, on the device that extension's
+  picker chose.
 
 ## The application
 

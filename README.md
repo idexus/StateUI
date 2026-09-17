@@ -72,32 +72,38 @@ Public API declarations provide the focused reference beside the code.
 
 ## Quick start
 
-Build the native Gallery application:
+StateUI is developed and used in VS Code, through the StateUI extension in
+`lib/StateUI.VSCode`. Build and install it from the checkout (Node.js 20 or
+newer):
 
 ```bash
-.scripts/AppKit/build-gallery-appkit.sh debug
+cd lib/StateUI.VSCode
+npm ci
+npm run package
+code --install-extension stateui-*.vsix
 ```
 
-The Gallery bundle is written to
-`apps/Gallery/.build-appkit/debug/GalleryAppKit.app`.
+Then open the repository in VS Code:
 
-Build and start the Gallery with the MAUI host on Mac Catalyst (`ios` starts it
-in the iOS Simulator, `linux` on a Linux machine):
+1. Choose the host in the status bar - **AppKit** or **.NET MAUI** - and the
+   application, **Gallery**.
+2. Press **F5**. **StateUI: Debug** builds the Gallery for that host and starts
+   it under the debugger; **StateUI: Release** runs the optimized build.
+3. Run **StateUI: Run Tests** from the Command Palette for every suite of that
+   host.
+
+[Working in VS Code](docs/getting-started.md#working-in-vs-code) covers the
+extension's hosts, debuggers, and commands, including **StateUI: New
+Application**.
+
+From a terminal, the same builds are:
 
 ```bash
-.scripts/Maui/run-app.sh maccatalyst
+.scripts/AppKit/build-gallery-appkit.sh debug   # the AppKit Gallery bundle
+.scripts/Maui/run-app.sh maccatalyst            # the MAUI Gallery: ios, linux
+.scripts/test-native.sh                         # the Swift suites
+dotnet test lib/StateUI.Maui/Tests              # the C# suite
 ```
-
-Run every active suite:
-
-```bash
-.scripts/test-native.sh
-dotnet test lib/StateUI.Maui/Tests
-```
-
-In VS Code, the StateUI extension in `lib/StateUI.VSCode` offers "StateUI:
-Debug" and "StateUI: Release" for every application and host - chosen in its
-status bar - and **StateUI: Run Tests** for the suites.
 
 ## Continuous integration
 

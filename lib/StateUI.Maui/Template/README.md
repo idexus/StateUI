@@ -12,6 +12,10 @@ dotnet new install StateUI.Maui.Template
 dotnet new stateui-maui -n MyApp --stateui-path /path/to/StateUI
 ```
 
+In VS Code, the StateUI extension's **StateUI: New Application from Template**
+writes the same application with no template installed, and its **StateUI:
+Debug** and **StateUI: Release** launches run it.
+
 - `--stateui-path` builds the application against a StateUI checkout, whose
   directory is named `StateUI`.
 - `--appkit` adds a native macOS head beside the MAUI one; it needs

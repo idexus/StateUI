@@ -26,7 +26,13 @@ completion under it - it brings **Swift** (swiftlang) along - **.NET MAUI**
 
 ## Building
 
-The MAUI host, from the application's root:
+In VS Code, press **F5** for "StateUI: Debug" or pick "StateUI: Release". The
+StateUI extension's status bar chooses the host - AppKit or .NET MAUI - and,
+for MAUI, the debugger; the editor works as that host, so completion works
+inside `#if APPKIT` while AppKit is chosen. On MAUI the debugger decides the
+launch; with C#, the .NET MAUI extension's device picker chooses the device.
+
+From a terminal, the MAUI host, from the application's root:
 
 ```bash
 dotnet build Platforms/Maui -f net10.0-maccatalyst
@@ -55,12 +61,6 @@ and then declares the AppKit head - its target, product and StateUIAppKit
 dependency - and defines `APPKIT`, the condition Swift written for the AppKit
 host alone stands under. Without it, `swift test` compiles no part of one
 host's half.
-
-In VS Code, press **F5** for "StateUI: Debug" or pick "StateUI: Release". The
-StateUI extension's status bar chooses the host - AppKit or .NET MAUI - and,
-for MAUI, the debugger; the editor works as that host, so completion works
-inside `#if APPKIT` while AppKit is chosen. On MAUI the launch follows the
-device picker.
 
 When the app reports a missing native library, run the diagnostic before
 guessing - it prints every resolved path and what actually exists:

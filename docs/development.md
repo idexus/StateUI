@@ -129,8 +129,9 @@ STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld --product HelloWorld
 
 In VS Code, the StateUI extension (`lib/StateUI.VSCode`) runs either
 application: "StateUI: Debug" and "StateUI: Release" build and start the one
-chosen in its status bar, on the host chosen there. The Gallery's build
-assembles its resources, icon, runtime libraries, and ad-hoc signature.
+chosen in its status bar, on the host chosen there; installing it is under
+[Working in VS Code](getting-started.md#working-in-vs-code). The Gallery's
+build assembles its resources, icon, runtime libraries, and ad-hoc signature.
 
 The MAUI host requires the .NET 10 SDK and, except on Linux, the MAUI workload.
 A head compiles the library and its application's Swift module for the
@@ -155,7 +156,9 @@ swift test --package-path apps/Gallery
 dotnet test lib/StateUI.Maui/Tests
 ```
 
-Run the three Swift suites in that order with:
+`.scripts/test-native.sh` runs the three Swift suites, then the library and the
+Gallery again as MAUI builds (`-Xswiftc -DMAUI`) and the Gallery as an AppKit
+build (`STATEUI_APPKIT=1`), each on a build directory of its own:
 
 ```bash
 .scripts/test-native.sh

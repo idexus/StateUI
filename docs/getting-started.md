@@ -13,13 +13,87 @@ Neither host has a published package route yet.
 
 ## Requirements
 
-The AppKit host needs:
+- macOS 14 or newer, with Xcode and its Swift 6 toolchain, for the AppKit host;
+- a checkout of this repository;
+- VS Code and Node.js 20 or newer, for the StateUI extension.
 
-- macOS 14 or newer;
-- a Swift 6 toolchain supplied by Xcode;
-- a checkout of this repository.
+[Starting with the MAUI host](#starting-with-the-maui-host) lists what the MAUI
+host needs as well.
 
-Build the small application from the repository root:
+## Working in VS Code
+
+VS Code is where StateUI applications are built, run, debugged, and tested. The
+StateUI extension in `lib/StateUI.VSCode` chooses the host and the application
+once, and everything after that - the editor's completion, the launches, and
+the suites - works as that host.
+
+### Installing the extension
+
+The extension is built from the checkout. From the repository root:
+
+```bash
+cd lib/StateUI.VSCode
+npm ci
+npm run package
+code --install-extension stateui-*.vsix
+```
+
+`npm run package` writes `stateui-<version>.vsix` beside `package.json`.
+Without the `code` command on the path, use **Extensions: Install from VSIX…**
+in the Command Palette and pick that file. Build and install it again after
+pulling changes to the extension or to the template it carries.
+
+The extension installs the **Swift** extension (swiftlang) with it. Install
+**LLDB DAP** for the Swift debugger, and **.NET MAUI** (Microsoft) for the MAUI
+host's device picker and C# debugger.
+
+### Running an application
+
+Open the repository folder. The status bar shows two StateUI items:
+
+- **the host** - AppKit or .NET MAUI, and for MAUI the debugger. The editor
+  works as that host: code under `#if APPKIT` is completed only while AppKit
+  is chosen, and switching restarts the Swift language server without reloading
+  the window.
+- **the application** - Gallery, HelloWorld, or any other under `apps/`. It is
+  remembered for the workspace.
+
+Press **F5** to run **StateUI: Debug**, or choose **StateUI: Release** in Run
+and Debug. On AppKit the application's head is built and started under
+`lldb-dap`. On .NET MAUI the launch follows the MAUI extension's device picker,
+and the debugger chosen in the status bar decides how it is debugged:
+
+- **C#** - the MAUI extension's debugger on macOS and Windows, and `coreclr`
+  on Linux;
+- **Swift · iOS Simulator**, **Swift · Mac Catalyst**, and **Swift** on
+  Windows - attached to the process once it runs; **Swift** on Linux launches
+  the head under `lldb-dap`;
+- **C# + Swift · Mac Catalyst** - both at once.
+
+`.vscode/launch.json` holds only those two launches. The extension resolves
+each one into the chosen host's own debugger.
+
+### Commands
+
+The Command Palette offers the rest under **StateUI:**
+
+| Command | What it does |
+| --- | --- |
+| Select Host | AppKit or .NET MAUI, as the status bar item does |
+| Select Application | the application F5 runs |
+| Select Debugger | how a MAUI head is debugged |
+| Run Tests | the workspace's suites, run as the chosen host |
+| New Application in apps/ | a new application beside Gallery and HelloWorld, made by `.scripts/new-app.sh` |
+| New Application from Template | a new application in a directory of its own, built against a StateUI checkout or a release |
+| Clean Index | removes the language server's index and builds it again |
+
+The extension's own README, `lib/StateUI.VSCode/README.md`, describes each of
+them in detail.
+
+### From the command line
+
+Every launch has a command-line equivalent. Build HelloWorld's AppKit head from
+the repository root:
 
 ```bash
 STATEUI_APPKIT=1 swift build --package-path apps/HelloWorld --product HelloWorldAppKit
@@ -35,11 +109,6 @@ Build the signed Gallery bundle with its resources and icon:
 ```bash
 .scripts/AppKit/build-gallery-appkit.sh debug
 ```
-
-In VS Code, the StateUI extension (`lib/StateUI.VSCode`) offers "StateUI:
-Debug" and "StateUI: Release" for either application.
-[Starting with the MAUI host](#starting-with-the-maui-host) lists what the MAUI
-host needs.
 
 ## Application shape
 
@@ -129,11 +198,20 @@ import StateUIAppKit
 
 stateui_app_register()
 
-let resources = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-    .appendingPathComponent("apps/Notes/Resources/Images", isDirectory: true)
+let application = URL(fileURLWithPath: #filePath)
+    .deletingLastPathComponent()
+    .deletingLastPathComponent()
+    .deletingLastPathComponent()
+let resources = application.appendingPathComponent("Resources/Images", isDirectory: true)
 
-StateUIAppKit.run(resourceDirectory: resources)
+StateUIAppKit.run(
+    resourceDirectory: resources,
+    applicationIcon: application.appendingPathComponent("Resources/AppIcon/appicon_macos.svg"))
 ```
+
+The head finds its artwork from its own source file, so it runs from any
+directory. Its icon is drawn on macOS's icon grid; see
+[AppKit host](appkit-host.md).
 
 Registration and `run` happen once per process. All scenes and windows then
 belong to one application tree, renderer generation, and native host. Opening a
@@ -160,7 +238,9 @@ apps/Notes/
       Notes.csproj
       Host/
   Resources/
+    AppIcon/
     Images/
+    Splash/
   Tests/
 ```
 
@@ -214,9 +294,9 @@ Image("stateui_tile.png")
     .horizontalAlignment(.center)
 ```
 
-The native bundling script is responsible for copying those files and the app
-icon into the application bundle. StateUI's core does not read a filesystem or
-choose a platform image class.
+The AppKit head reads `Resources/` beside its own sources, and the MAUI head
+packages it at build time. StateUI's core does not read a filesystem or choose
+a platform image class.
 
 ## Starting with the MAUI host
 
@@ -228,15 +308,19 @@ MAUI workload:
 dotnet workload install maui
 ```
 
-Build and start HelloWorld's MAUI head on Mac Catalyst:
+In VS Code, choose **.NET MAUI** and **HelloWorld** in the status bar and press
+**F5**. From a terminal, build and start HelloWorld's MAUI head on Mac
+Catalyst:
 
 ```bash
 .scripts/Maui/run-app.sh maccatalyst apps/HelloWorld/Platforms/Maui/HelloWorld.csproj
 ```
 
-An application outside this repository comes from the `stateui-maui` template.
-From the repository root, a directory named `StateUI`, pack and install the
-template, then create an application beside the checkout:
+An application outside this repository comes from **StateUI: New Application
+from Template**, which needs no template installed. Outside VS Code, the
+`stateui-maui` template writes the same: from the repository root, a directory
+named `StateUI`, pack and install the template, then create an application
+beside the checkout:
 
 ```bash
 dotnet pack lib/StateUI.Maui/Template -c Release -o artifacts
@@ -245,8 +329,9 @@ dotnet new stateui-maui -n Notes -o ../Notes --stateui-path "$PWD" --appkit
 ```
 
 `--appkit` adds the AppKit head beside the MAUI one. [MAUI host](maui-host.md)
-covers every platform, the F5 configurations, controls and acts registered in
-C#, and troubleshooting.
+covers every platform, the **StateUI: Debug** and **StateUI: Release**
+launches and their debuggers, controls and acts registered in C#, and
+troubleshooting.
 
 ## Next steps
 

@@ -163,7 +163,7 @@
   "scripts": {
     "compile": "tsc -p . && node out/Build/bundleTemplate.js",
     "test": "npm run compile && node out/Tests/run.js",
-    "package": "npm run compile && cp ../../LICENSE LICENSE && sips -s format png -z 256 256 ../StateUI.Maui/Template/templates/StateUIStarter/Resources/Images/stateui_tile.svg --out icon.png >/dev/null && vsce package; rm -f LICENSE icon.png"
+    "package": "npm run compile && node out/Build/package.js"
   },
   "devDependencies": {
     "@types/node": "20.19.43",

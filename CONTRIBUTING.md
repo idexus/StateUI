@@ -58,18 +58,21 @@ CS1573 are errors in its projects.
 
 ## Test
 
-Run the suite owned by the area while iterating, then all four before handing
-off a complete vertical change:
+Run the suite owned by the area while iterating, then every suite before
+handing off a complete vertical change. In VS Code, run **StateUI: Run Tests**
+once with AppKit and once with .NET MAUI chosen. From a terminal,
+`.scripts/test-native.sh` runs every Swift suite under both conditions:
 
 ```bash
-swift test
-swift test --package-path lib/StateUI.AppKit
-swift test --package-path apps/Gallery
+.scripts/test-native.sh
 dotnet test lib/StateUI.Maui/Tests
 ```
 
-Build the native Gallery bundle, and the Gallery's MAUI head for a platform the
-change reaches:
+A plain `swift test` compiles neither `#if APPKIT` nor `#if MAUI` code, so it
+does not test either host's half on its own.
+
+Run the Gallery with **StateUI: Debug** on each host the change reaches:
+AppKit, and .NET MAUI on the affected platform. From a terminal:
 
 ```bash
 .scripts/AppKit/build-gallery-appkit.sh debug

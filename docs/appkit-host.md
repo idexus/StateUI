@@ -157,12 +157,11 @@ The Metal cube's contract and its `View` stand under `#if APPKIT` beside its
 samples, so a test reading an application's elements against another host's
 registrations never demands of that host a control it cannot draw.
 
-**What this host does not realize yet: a control with a slot.** The MAUI
+**A registered control has no slot on this host.** The MAUI
 registration takes a `content:` that places the one child the Swift side
 describes. This host arranges children by the container classes it makes
 itself, so a registered view is handed none - a registered element's children
-reach nothing. An application's own element is a leaf here until that is
-answered.
+reach nothing. An application's own element is a leaf here.
 
 ### An act
 
