@@ -320,6 +320,37 @@ enum Fixtures {
             .deletingLastPathComponent()    // the repository
     }
 
+    /// Every file under `root`, as a path relative to it written with forward
+    /// slashes, sorted - never entering a directory whose relative path
+    /// `enters` refuses.
+    ///
+    /// Walked directory by directory rather than with `FileManager`'s
+    /// enumerator: on Windows its `skipDescendants()` stops the walk entering
+    /// any directory after the first one it skips, so a guard reads the first
+    /// few files and nothing else.
+    static func files(under root: URL, entering enters: (String) -> Bool) throws -> [String] {
+        var found: [String] = []
+        var pending = [""]
+
+        while let directory = pending.popLast() {
+            let url = directory.isEmpty ? root : root.appendingPathComponent(directory)
+            let entries = try FileManager.default.contentsOfDirectory(
+                at: url, includingPropertiesForKeys: [.isDirectoryKey])
+
+            for entry in entries {
+                let relative = directory.isEmpty ? entry.lastPathComponent : "\(directory)/\(entry.lastPathComponent)"
+
+                if try entry.resourceValues(forKeys: [.isDirectoryKey]).isDirectory == true {
+                    if enters(relative) { pending.append(relative) }
+                } else {
+                    found.append(relative)
+                }
+            }
+        }
+
+        return found.sorted()
+    }
+
     /// Every C# source of the MAUI host, `lib/StateUI.Maui/Sources`, for the
     /// guards that read both languages - a name leaves Swift as a token and
     /// arrives there as a lookup, so only a reader of both can hold the two

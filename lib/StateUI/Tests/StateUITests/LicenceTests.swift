@@ -14,36 +14,28 @@ final class LicenceTests: XCTestCase {
     /// extension's tools install and compile into.
     func testEverySourceUnderLibCarriesTheLicenceHeader() throws {
         let lib = Fixtures.repository.appendingPathComponent("lib")
-        let generated: Set<String> = ["bin", "obj", ".build", "templates", "node_modules", "out"]
-
-        guard let walk = FileManager.default.enumerator(
-            at: lib,
-            includingPropertiesForKeys: [.isRegularFileKey],
-            options: [.skipsHiddenFiles]
-        ) else {
-            return XCTFail("lib could not be enumerated")
+        let generated: Set<String> = ["bin", "obj", "templates", "node_modules", "out"]
+        let entered = { (path: String) -> Bool in
+            let name = String(path.split(separator: "/").last ?? "")
+            return !name.hasPrefix(".") && !generated.contains(name)
         }
 
         var read = 0
         var missing: [String] = []
-        for case let file as URL in walk {
-            if generated.contains(file.lastPathComponent) {
-                walk.skipDescendants()
-                continue
-            }
-
-            guard ["swift", "cs", "ts"].contains(file.pathExtension),
-                  file.lastPathComponent != "Package.swift" else { continue }
+        for path in try Fixtures.files(under: lib, entering: entered) {
+            let name = String(path.split(separator: "/").last ?? "")
+            guard !name.hasPrefix("."),
+                  ["swift", "cs", "ts"].contains(URL(fileURLWithPath: name).pathExtension),
+                  name != "Package.swift" else { continue }
 
             read += 1
-            let relative = file.path.replacingOccurrences(of: Fixtures.repository.path + "/", with: "")
-            let lines = try String(contentsOf: file, encoding: .utf8)
+            let lines = try String(contentsOf: lib.appendingPathComponent(path), encoding: .utf8)
                 .split(separator: "\n", omittingEmptySubsequences: false)
 
             if lines.count < 2
                 || lines[0] != "// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors"
                 || lines[1] != "// SPDX-License-Identifier: Apache-2.0" {
-                missing.append(relative)
+                missing.append("lib/\(path)")
             }
         }
 

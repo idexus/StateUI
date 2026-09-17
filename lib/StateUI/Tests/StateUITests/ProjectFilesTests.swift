@@ -19,38 +19,26 @@ final class ProjectFilesTests: XCTestCase {
         let repository = Fixtures.repository
         let kinds: Set<String> = ["csproj", "targets", "props", "slnx"]
 
-        // What a build or a pack writes is not the build's own file: bin/, obj/
-        // and .build/, and the template's copy of .scripts/, which its project
-        // makes as it builds.
-        let written: Set<String> = [".build", ".git", "bin", "obj"]
+        // What a build or a pack writes is not the build's own file: bin/, obj/,
+        // .build/ and each host's .build-appkit/ and .build-maui/, the editor
+        // extension's node_modules/, and the template's copy of .scripts/,
+        // which its project makes as it builds.
+        let written: Set<String> = [".build", ".build-appkit", ".build-maui", ".git", "bin", "node_modules", "obj"]
 
-        guard let walk = FileManager.default.enumerator(
-            at: repository, includingPropertiesForKeys: nil)
-        else {
-            return XCTFail("the repository at \(repository.path) could not be walked")
+        let entered = { (relative: String) -> Bool in
+            let name = String(relative.split(separator: "/").last ?? "")
+            return !written.contains(name)
+                && !(name == ".scripts" && relative.contains("/Template/templates/"))
         }
 
         var read = 0
         var malformed: [String] = []
 
-        // Forward slashes on every host: a walk on Windows yields backslashes.
-        let root = repository.path.replacingOccurrences(of: "\\", with: "/")
-
-        for case let file as URL in walk {
-            let path = file.path.replacingOccurrences(of: "\\", with: "/")
-            let relative = String(path.dropFirst(root.count + 1))
-
-            if written.contains(file.lastPathComponent)
-                || (file.lastPathComponent == ".scripts" && relative.contains("/Template/templates/"))
-            {
-                walk.skipDescendants()
-                continue
-            }
-
-            guard kinds.contains(file.pathExtension) else { continue }
+        for relative in try Fixtures.files(under: repository, entering: entered) {
+            guard kinds.contains(URL(fileURLWithPath: relative).pathExtension) else { continue }
 
             read += 1
-            let parser = XMLParser(data: try Data(contentsOf: file))
+            let parser = XMLParser(data: try Data(contentsOf: repository.appendingPathComponent(relative)))
 
             if !parser.parse() {
                 malformed.append("\(relative):\(parser.lineNumber)")
