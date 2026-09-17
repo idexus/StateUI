@@ -17,6 +17,9 @@ extension Fixtures {
         // A host's own build directories, and the language server's settings
         // the editor extension writes beside each application.
         ".build-appkit", ".build-maui", ".sourcekit-lsp",
+        // What the editor extension's own build writes: its packages, and its
+        // compiled code with the copy of the template it carries.
+        "node_modules", "out",
     ]
 
     /// The endings of byproducts named after their project: an editor writes

@@ -8,5 +8,5 @@
     "strict": true,
     "sourceMap": true
   },
-  "include": ["Sources", "Tests"]
+  "include": ["Build", "Sources", "Tests"]
 }

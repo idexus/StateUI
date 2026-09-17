@@ -8,8 +8,9 @@
 // STATEUI_APPKIT, and a symbol under no condition resolves in either mode -
 // which is what tells "not this host" from "not ready yet".
 
-import { execSync } from "child_process";
+import { execFileSync, execSync } from "child_process";
 import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
 import { findApplications } from "../Sources/applications";
@@ -17,6 +18,7 @@ import { StateUIDebugConfigurationProvider } from "../Sources/debug";
 import { findSuites } from "../Sources/tests";
 import { MauiDebugger } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
+import { carriedTemplate, inAppsCommand, nameProblem, Starter, templateIn, writeStarter } from "../Sources/newApplication";
 
 const started = Date.now();
 
@@ -68,7 +70,7 @@ export async function run(): Promise<void> {
         const gallery = path.join(root.uri.fsPath, "apps", "Gallery");
         const plain = path.join(gallery, "Sources", "Samples", "BasicInput", "SliderSample.swift");
         const conditional = path.join(gallery, "Sources", "Samples", "Interop", "AppKitMetalSample.swift");
-        const head = path.join(gallery, "Platforms", "AppKit", "Host", "GalleryControls.swift");
+        const head = path.join(gallery, "Platforms", "AppKit", "Host", "MetalCubeView.swift");
 
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
@@ -174,7 +176,73 @@ export async function run(): Promise<void> {
             mauiSuites.includes("StateUI") && mauiSuites.includes("apps/Gallery")
             && mauiSuites.includes("lib/StateUI.Maui/Tests") && !mauiSuites.includes("lib/StateUI.AppKit"));
 
-        // 6. StateUI: Debug on AppKit runs the REMEMBERED application - no
+        // 6. A new application. What the extension writes from the template is
+        //    what `dotnet new stateui-maui` writes, file for file, for each
+        //    source and head - the template read by two readers, checked as one.
+        const commands = await vscode.commands.getCommands(true);
+        check("the palette has New Application in apps/ and New Application from Template",
+            commands.includes("stateui.newApplicationInApps") && commands.includes("stateui.newApplication"));
+        check("a name is letters and digits, starting with a letter, and not StateUI",
+            nameProblem("MyApp2") === undefined && nameProblem("My-App") !== undefined
+            && nameProblem("2App") !== undefined && nameProblem("StateUI") !== undefined);
+        {
+            const made = inAppsCommand(root.uri.fsPath, "Notes", "darwin");
+            const windows = inAppsCommand(root.uri.fsPath, "Notes", "win32");
+            check("in apps/ it is the checkout's scaffolder: new-app.sh Notes, new-app.ps1 -Name Notes",
+                made.command === "bash" && made.args[0].endsWith("/.scripts/new-app.sh") && made.args[1] === "Notes"
+                && windows.command === "powershell" && windows.args.slice(-3).join(" ").endsWith("new-app.ps1 -Name Notes"));
+        }
+        {
+            const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-starter-"));
+            const hive = path.join(scratch, "hive");
+            const repository = root.uri.fsPath;
+            const extensionPath = vscode.extensions.getExtension("idexus.stateui")!.extensionPath;
+            execFileSync("dotnet", ["new", "install", templateIn(repository).template, "--debug:custom-hive", hive]);
+
+            const files = (directory: string): string[] => fs.readdirSync(directory, { recursive: true, encoding: "utf8" })
+               .filter((each) => fs.statSync(path.join(directory, each)).isFile()).sort();
+            const cases: { label: string; starter: Starter; templateRoot: string; options: string[] }[] = [
+                { label: "a checkout, with AppKit", templateRoot: repository, options: ["--stateui-path", repository, "--appkit"],
+                  starter: { name: "Probe", parent: path.join(scratch, "mine-appkit"), source: { kind: "checkout", checkout: repository }, appKit: true } },
+                { label: "a checkout", templateRoot: repository, options: ["--stateui-path", repository],
+                  starter: { name: "Probe", parent: path.join(scratch, "mine-checkout"), source: { kind: "checkout", checkout: repository }, appKit: false } },
+                { label: "the release, from the template this extension carries", templateRoot: carriedTemplate(extensionPath), options: [],
+                  starter: { name: "Probe", parent: path.join(scratch, "mine-release"), source: { kind: "release", version: "0.3.1" }, appKit: false } },
+            ];
+            for (const each of cases) {
+                const mine = writeStarter(each.starter, each.templateRoot);
+                const theirs = path.join(scratch, `theirs-${path.basename(each.starter.parent)}`, "Probe");
+                execFileSync("dotnet", ["new", "stateui-maui", "-n", "Probe", "-o", theirs, ...each.options, "--debug:custom-hive", hive]);
+
+                // The template folder's own .scripts is a copy made by a build;
+                // the build shipped is the repository's .scripts/Maui.
+                const mineFiles = files(mine).filter((file) => !file.startsWith(".scripts"));
+                const theirFiles = files(theirs).filter((file) => !file.startsWith(".scripts"));
+                const differing = mineFiles.filter((file) => !theirFiles.includes(file)
+                    || !fs.readFileSync(path.join(mine, file)).equals(fs.readFileSync(path.join(theirs, file))));
+                const scripts = templateIn(repository).scripts;
+                const scriptsDiffer = files(scripts).filter((file) => !file.endsWith(".DS_Store")).some((file) =>
+                    !fs.existsSync(path.join(mine, ".scripts", "Maui", file))
+                    || !fs.readFileSync(path.join(scripts, file)).equals(fs.readFileSync(path.join(mine, ".scripts", "Maui", file))));
+                say(`     ${each.label}: ${mineFiles.length} files, differing: ${differing.join(", ") || "none"}`);
+                check(`${each.label}: what is written is what \`dotnet new stateui-maui\` writes, and the build is .scripts/Maui`,
+                    differing.length === 0 && mineFiles.length === theirFiles.length && !scriptsDiffer);
+            }
+
+            const other = writeStarter({ name: "Later", parent: path.join(scratch, "later"), source: { kind: "release", version: "9.8.7" }, appKit: false },
+                carriedTemplate(extensionPath));
+            const manifest = fs.readFileSync(path.join(other, "Package.swift"), "utf8");
+            const project = fs.readFileSync(path.join(other, "Platforms", "Maui", "Later.csproj"), "utf8");
+            check("a release names its version in Package.swift's tag and both NuGet references",
+                manifest.includes('exact: "9.8.7"') && project.includes('Include="StateUI.Maui" Version="9.8.7"')
+                && project.includes('Include="StateUI.Maui.Linux" Version="9.8.7"') && !/\d+\.\d+\.\d+/.test(manifest.replace("9.8.7", "")));
+            let refused = false;
+            try { writeStarter({ name: "Later", parent: path.join(scratch, "later"), source: { kind: "release", version: "9.8.7" }, appKit: false }, carriedTemplate(extensionPath)); } catch { refused = true; }
+            check("an application is never written over a directory that exists", refused);
+            fs.rmSync(scratch, { recursive: true, force: true });
+        }
+
+        // 7. StateUI: Debug on AppKit runs the REMEMBERED application - no
         //    question asked - built, under lldb-dap.
         await api.selectHost("appkit");
         await api.selectApplication("HelloWorld");
@@ -197,7 +265,7 @@ export async function run(): Promise<void> {
         await vscode.debug.stopDebugging(running);
 
 
-        // 7. LIVE: Swift · Mac Catalyst - run-app.sh builds and starts the
+        // 8. LIVE: Swift · Mac Catalyst - run-app.sh builds and starts the
         //    Gallery's MAUI head, and lldb-dap attaches to the running app.
         await api.selectHost("maui");
         await api.selectApplication("Gallery");

@@ -85,8 +85,13 @@ export function templateIn(root: string): { template: string; scripts: string } 
     };
 }
 
+/** Where this extension carries its copy of the template: `out/Template/`, laid out as in a checkout. */
+export function carriedTemplate(extensionPath: string): string {
+    return path.join(extensionPath, "out", "Template");
+}
+
 /** What a template directory holds that is never an application's. */
-const leftOut = new Set([".template.config", ".scripts", ".build", "bin", "obj", ".vs", ".sourcekit-lsp", ".DS_Store", "Package.resolved"]);
+export const leftOut = new Set([".template.config", ".scripts", ".build", "bin", "obj", ".vs", ".sourcekit-lsp", ".DS_Store", "Package.resolved"]);
 
 /** The command line that makes `name` in a checkout's apps/. */
 export function inAppsCommand(checkout: string, name: string, platform: NodeJS.Platform = process.platform): { command: string; args: string[] } {
@@ -111,7 +116,7 @@ export function writeStarter(starter: Starter, templateRoot: string): string {
     // string literal, where a backslash is an escape.
     const checkout = starter.source.kind === "checkout" ? starter.source.checkout.split(path.sep).join("/") : "";
     const symbols: Record<string, boolean> = { AppKit: starter.appKit, UseCheckout: starter.source.kind === "checkout" };
-    const pinned = starter.source.kind === "release" ? releaseIn(template) : undefined;
+    const pinned = starter.source.kind === "release" ? pinnedRelease(templateRoot) : undefined;
 
     const rename = (text: string): string => text
         .split(token).join(starter.name)
@@ -222,9 +227,9 @@ function evaluate(condition: string, symbols: Record<string, boolean>, file: str
     }));
 }
 
-/** The release the template pins: its Package.swift's `exact:`. */
-function releaseIn(template: string): string {
-    const manifest = fs.readFileSync(path.join(template, "Package.swift"), "utf8");
+/** The release the template under `templateRoot` pins: its Package.swift's `exact:`. */
+export function pinnedRelease(templateRoot: string): string {
+    const manifest = fs.readFileSync(path.join(templateIn(templateRoot).template, "Package.swift"), "utf8");
     const found = /exact: "([^"]+)"/.exec(manifest);
     if (!found) {
         throw new Error("the template's Package.swift pins no release.");

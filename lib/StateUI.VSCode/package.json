@@ -44,6 +44,17 @@
         "category": "StateUI"
       },
       {
+        "command": "stateui.newApplicationInApps",
+        "title": "New Application in apps/",
+        "category": "StateUI",
+        "enablement": "stateui.hasCheckout"
+      },
+      {
+        "command": "stateui.newApplication",
+        "title": "New Application from Template",
+        "category": "StateUI"
+      },
+      {
         "command": "stateui.runTests",
         "title": "Run Tests",
         "category": "StateUI"
@@ -138,12 +149,20 @@
           }
         }
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "stateui.newApplicationInApps",
+          "when": "stateui.hasCheckout"
+        }
+      ]
+    }
   },
   "scripts": {
-    "compile": "tsc -p .",
-    "test": "tsc -p . && node out/Tests/run.js",
-    "package": "tsc -p . && cp ../../LICENSE LICENSE && vsce package; rm -f LICENSE"
+    "compile": "tsc -p . && node out/Build/bundleTemplate.js",
+    "test": "npm run compile && node out/Tests/run.js",
+    "package": "npm run compile && cp ../../LICENSE LICENSE && vsce package; rm -f LICENSE"
   },
   "devDependencies": {
     "@types/node": "20.19.43",

@@ -211,27 +211,6 @@
       }
     },
     {
-      // Creates a new application in apps/, with a head for every host, from
-      // HelloWorld's shape. See .scripts/new-app.sh.
-      "label": "New app (in apps/)",
-      "type": "shell",
-      "problemMatcher": [],
-      "options": { "cwd": "${workspaceFolder}/.scripts" },
-      "osx": {
-        "command": "bash",
-        "args": ["new-app.sh", "${input:newAppName}"]
-      },
-      "linux": {
-        "command": "bash",
-        "args": ["new-app.sh", "${input:newAppName}"]
-      },
-      "windows": {
-        "command": "powershell",
-        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "new-app.ps1", "-Name", "${input:newAppName}"]
-      },
-      "presentation": { "reveal": "always", "panel": "dedicated" }
-    },
-    {
       // THE MAUI HEAD, WHOLE - obj/, bin/ and SwiftPM's .build/ go, every
       // configuration and every framework at once. An edited Info.plist
       // re-merges only when the obj/ that cached it is gone, and obj/ is per
@@ -307,11 +286,6 @@
         "net10.0-windows10.0.19041.0",
         "net10.0"
       ]
-    },
-    {
-      "id": "newAppName",
-      "type": "promptString",
-      "description": "Name of the new app project: letters and digits, starting with a letter (e.g. MyApp)"
     },
     {
       "id": "applePlatform",

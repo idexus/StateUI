@@ -221,6 +221,12 @@ dotnet new stateui-maui -n Notes --stateui-path ~/src/StateUI --appkit
 - **Reinstalling.** Before installing a rebuilt template of the same version,
   remove the previous one with `dotnet new uninstall StateUI.Maui.Template`.
 
+In VS Code, "StateUI: New Application from Template" writes the same
+application with no template installed. It asks for the directory, the name,
+and either a StateUI checkout or a release offered both on NuGet and as a tag
+in the repository. It reads a checkout's own template, or the copy the
+extension carries for a release.
+
 The generated README describes the application's own builds; its source is
 `lib/StateUI.Maui/Template/templates/StateUIStarter/README.md`.
 
@@ -230,7 +236,7 @@ An application inside this repository is wired to it by relative paths rather
 than to packages. `.scripts/new-app.sh Notes` creates `apps/Notes/` in
 HelloWorld's layout and registers its MAUI project in `StateUI.slnx`. On
 Windows the same script is `.scripts\new-app.ps1 -Name Notes`, and in VS Code
-it is the task "New app (in apps/)". The name rule is the template's.
+it is "StateUI: New Application in apps/". The name rule is the template's.
 
 ## Building and running
 
@@ -381,7 +387,6 @@ Several tasks in `.vscode/tasks.json` serve the MAUI host:
     `bin/` and the root `.build/`.
 - **Tests:** "Test StateUI.Maui" runs the C# suite, and "Test (update wire
   fixtures)" regenerates the Wire fixtures and then runs it.
-- **New applications:** "New app (in apps/)".
 
 The build and clean tasks name the Gallery's head. A generated application's
 `.vscode` names its own launches - "Debug app (C#)", "Debug app (Swift)" and the

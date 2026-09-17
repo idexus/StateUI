@@ -5,3 +5,4 @@ out/Tests/**
 tsconfig.json
 .gitignore
 node_modules/**
+out/Build/**
