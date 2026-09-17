@@ -1,0 +1,146 @@
+import StateUI
+
+/// Children placed at bounds of their own, in device units or as fractions.
+struct AbsoluteLayoutSample: SampleContent, ExampleContent {
+    @State private var proportional = true
+
+    static let id = "absoluteLayout"
+    static let title = "AbsoluteLayout"
+    static let summary = "Each child exactly where it is told - in device units, or as a fraction of the layout."
+
+    static let code = """
+        @State private var proportional = true
+
+        VStack {
+            // No build reading here: `proportional` is read inside the layout's
+            // own braces, which is the only closure this switch rebuilds.
+            AbsoluteLayout {
+
+                // 1 by 1 with .all means "as big as the layout", whatever the
+                // layout turns out to be.
+                ColorBox(Palette.outline)
+                    .absoluteLayoutBounds(Rect(0, 0, 1, 1))
+                    .absoluteLayoutProportions(.all)
+
+                Marker(text: "0, 0", color: "#E53935")
+                    .absoluteLayoutBounds(bounds(x: 0, y: 0))
+                    .absoluteLayoutProportions(flags)
+
+                Marker(text: "middle", color: "#1E88E5")
+                    .absoluteLayoutBounds(bounds(x: 0.5, y: 0.5))
+                    .absoluteLayoutProportions(flags)
+
+                Marker(text: "1, 1", color: "#00897B")
+                    .absoluteLayoutBounds(bounds(x: 1, y: 1))
+                    .absoluteLayoutProportions(flags)
+            }
+            .height(180)
+
+            SwitchRow("Position: proportional", $proportional)
+        }
+
+        /// The size is left to the child either way - that is what autoSize means.
+        private func bounds(x: Double, y: Double) -> Rect {
+            Rect(
+                x: proportional ? x : x * 140,
+                y: proportional ? y : y * 120,
+                width: AbsoluteLayout.autoSize,
+                height: AbsoluteLayout.autoSize)
+        }
+
+        private var flags: AbsoluteLayoutProportions {
+            proportional ? .position : .none
+        }
+
+        private struct Marker: ContentView {
+            let text: String
+            let color: String
+
+            var content: any View {
+                Label(text)
+                    .textColor(.white)
+                    .background(Color(color))
+                    .padding(10, 6)
+            }
+        }
+        """
+
+    var content: any View {
+        VStack {
+            // NO BUILD READING HERE. `proportional` is read inside the layout's
+            // own braces - each child's bounds and flags ask it - and a
+            // container describes its children when the differ asks, so the
+            // only closure this switch rebuilds is that one. A reading taken
+            // anywhere a label can be seen would stand at one for ever.
+            AbsoluteLayout {
+                // The whole area, as a fraction of it: 1 by 1 with .all means
+                // "as big as the layout", whatever the layout turns out to be.
+                ColorBox(Palette.outline)
+                    .absoluteLayoutBounds(Rect(0, 0, 1, 1))
+                    .absoluteLayoutProportions(.all)
+
+                Marker(text: "0, 0", color: "#E53935")
+                    .absoluteLayoutBounds(bounds(x: 0, y: 0))
+                    .absoluteLayoutProportions(flags)
+
+                Marker(text: "middle", color: "#1E88E5")
+                    .absoluteLayoutBounds(bounds(x: 0.5, y: 0.5))
+                    .absoluteLayoutProportions(flags)
+
+                Marker(text: "1, 1", color: "#00897B")
+                    .absoluteLayoutBounds(bounds(x: 1, y: 1))
+                    .absoluteLayoutProportions(flags)
+            }
+            .height(180)
+
+            SwitchRow("Position: proportional", $proportional)
+                .horizontalAlignment(.center)
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("The flags decide how the four numbers are read. A proportional 1 is the "
+                + "far edge, and the layout keeps the child inside itself; the same 1 in "
+                + "device units is one pixel from the left.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("A size of `AbsoluteLayout.autoSize` leaves the size to the child: it "
+                + "measures itself, and only its position is dictated.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
+    }
+
+    /// The bounds for one marker, in whichever way the switch is set. The size
+    /// is left to the child either way - which is what `autoSize` means.
+    private func bounds(x: Double, y: Double) -> Rect {
+        Rect(
+            x: proportional ? x : x * 140,
+            y: proportional ? y : y * 120,
+            width: AbsoluteLayout.autoSize,
+            height: AbsoluteLayout.autoSize)
+    }
+
+    private var flags: AbsoluteLayoutProportions {
+        proportional ? .position : .none
+    }
+}
+
+/// One labelled marker, so the sample says what is being positioned rather than
+/// how it is drawn.
+private struct Marker: ContentView {
+    let text: String
+    let color: String
+
+    var content: any View {
+        Label(text)
+            .fontSize(12)
+            .textColor(.white)
+            .background(Color(color))
+            .padding(10, 6)
+    }
+}

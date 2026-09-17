@@ -1,0 +1,5 @@
+Gallery.TrafficLight
+  Gallery.TrafficLight.lampTapped
+Label
+  FontElement.fontSize
+  Label.maximumLines

@@ -1,0 +1,387 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// State that outlives the process.
+//
+// `@State(persistentKey: .key) var group = 0` is an ordinary piece of state with one addition:
+// it is KEPT. The value the reader left behind is there on the next launch, and
+// nothing about reading or writing it changes - no load to await, no save to
+// remember.
+//
+// WHY THE KEYS ARE DECLARED UP FRONT. Reading a `@State` is synchronous, so the
+// value has to be in memory before the first view is built; asking the host at
+// read time would answer a render too late, and the reader would see the
+// default flash past. The host therefore hydrates the whole store BEFORE the
+// first render - and to read a store it has to know what to ask for, because
+// it reads key by key, each with the kind of value it holds. So the
+// application names its keys, in one list, and the three steps that follow all
+// happen inside the same startup window:
+//
+//   1. the host asks Swift for the keys      (stateui_persistent_keys)
+//   2. it reads exactly those from the store
+//   3. it pushes what it found back          (stateui_set_persistent)
+//
+// A key the store has no value for is simply absent from the push, and the
+// state keeps the value written beside it - which is what makes the default
+// live at the declaration, where it can be seen.
+//
+// WRITING is the other direction and needs nothing awaited: the value lands in
+// memory at once, so the read after the write is right, and the key is marked
+// for saving. What actually goes out is one act per key per drain, sorted by
+// name - see `Renderer.takeActCallsWire` - so a key written five times inside
+// one handler is saved once. It is a collapse PER DRAIN and not a delay: an
+// event drains, so a `TextField` bound to kept state does reach the store once a
+// letter. A view that wants the store touched when the typing stops keeps the
+// text in ordinary state and writes the kept one from `.onSubmitted`.
+//
+// ONE KEY IS ONE PIECE OF STATE, everywhere in the application. Two views that
+// declare the same key share the storage itself, not a copy of the value, so a
+// write in one rebuilds the readers in the other - the ordinary invalidation,
+// which already keys on storage identity. It is the one place in this library
+// where two unrelated views share state without `$` being written, and it is
+// what a key IS: a name for a value the whole application means.
+
+// Dispatch and not Foundation, for the lock below - the Renderer's reason: it
+// exists on every platform this targets, and Foundation on Windows links ICU.
+import Dispatch
+
+/// What kind of value a persistent key holds.
+///
+/// The host needs this before any state exists, because a store is typed: an
+/// entry is read as the kind it was written as, and on some platforms asking
+/// for the wrong one is an error rather than a conversion. It comes from the
+/// Swift type named at the key's declaration - `of: Int.self` - so there is
+/// no second vocabulary to keep in step.
+///
+/// THE NUMBERS ARE THIS LIBRARY'S OWN, the wire's rule: declaration order from
+/// 0, read by every host exactly as declared here.
+public enum PersistentKind: Int32, Sendable {
+    /// True or false.
+    case boolean = 0
+
+    /// A whole number - exact to 2^53, every number on this wire being a
+    /// Double.
+    case integer = 1
+
+    /// A number with a fraction.
+    case number = 2
+
+    /// Text.
+    case text = 3
+}
+
+/// A value a `@State` can be KEPT as.
+///
+/// Conformed to by `Bool`, `Int`, `Double` and `String` - what a platform's own
+/// settings store holds, which is deliberately the whole list: kept state lives
+/// where the rest of the application's settings live, so it can only be what
+/// that store can hold.
+///
+/// An enum over one of those four is one line, the raw value carrying it:
+///
+///     enum Appearance: String, PersistentValue { case light, dark, system }
+///
+/// Anything larger belongs in a model the application saves itself. A struct
+/// squeezed through this as text would be a format nobody versioned.
+public protocol PersistentValue {
+    /// Which of the four this is - what the host reads the store with.
+    static var persistentKind: PersistentKind { get }
+
+    /// The value, as the wire carries it.
+    var persistentValue: PropValue { get }
+
+    /// The value back from the wire, or nil when the store held something
+    /// else - an entry written by an older version of the application under
+    /// the same name. The state then keeps its declared value.
+    /// - Parameter persisted: what the host read out of the store.
+    init?(persisted: PropValue)
+}
+
+extension Bool: PersistentValue {
+    /// True or false.
+    public static var persistentKind: PersistentKind { .boolean }
+
+    /// The value, as the wire carries it.
+    public var persistentValue: PropValue { .bool(self) }
+
+    /// The value back from the wire, or nil for anything that is not a
+    /// boolean.
+    /// - Parameter persisted: what the host read out of the store.
+    public init?(persisted: PropValue) {
+        guard case .bool(let value) = persisted else { return nil }
+
+        self = value
+    }
+}
+
+extension Int: PersistentValue {
+    /// A whole number.
+    public static var persistentKind: PersistentKind { .integer }
+
+    /// The value, as the wire carries it - a Double, as everything numeric
+    /// here does.
+    public var persistentValue: PropValue { .number(Double(self)) }
+
+    /// The value back from the wire, or nil for anything that is not a number.
+    /// - Parameter persisted: what the host read out of the store.
+    public init?(persisted: PropValue) {
+        guard case .number(let value) = persisted else { return nil }
+
+        self = Int(value)
+    }
+}
+
+extension Double: PersistentValue {
+    /// A number with a fraction.
+    public static var persistentKind: PersistentKind { .number }
+
+    /// The value, as the wire carries it.
+    public var persistentValue: PropValue { .number(self) }
+
+    /// The value back from the wire, or nil for anything that is not a number.
+    /// - Parameter persisted: what the host read out of the store.
+    public init?(persisted: PropValue) {
+        guard case .number(let value) = persisted else { return nil }
+
+        self = value
+    }
+}
+
+extension String: PersistentValue {
+    /// Text.
+    public static var persistentKind: PersistentKind { .text }
+
+    /// The value, as the wire carries it.
+    public var persistentValue: PropValue { .string(self) }
+
+    /// The value back from the wire, or nil for anything that is not text.
+    /// - Parameter persisted: what the host read out of the store.
+    public init?(persisted: PropValue) {
+        guard case .string(let value) = persisted else { return nil }
+
+        self = value
+    }
+}
+
+extension PersistentValue where Self: RawRepresentable, Self.RawValue: PersistentValue {
+    /// Whatever the raw value is - an enum is kept as the thing it is spelled
+    /// with.
+    public static var persistentKind: PersistentKind { RawValue.persistentKind }
+
+    /// The raw value, as the wire carries it.
+    public var persistentValue: PropValue { rawValue.persistentValue }
+
+    /// The case the stored raw value names, or nil when it names none - a case
+    /// removed since the value was written, which is the ordinary way an
+    /// application's vocabulary changes between releases.
+    /// - Parameter persisted: what the host read out of the store.
+    public init?(persisted: PropValue) {
+        guard let raw = RawValue(persisted: persisted) else { return nil }
+
+        self.init(rawValue: raw)
+    }
+}
+
+/// The name a piece of state is KEPT under, and what kind of value it is.
+///
+///     extension PersistentKey {
+///         static let lastGroup = PersistentKey("com.example.lastGroup", of: Int.self)
+///         static let appearance = PersistentKey("com.example.appearance", of: Appearance.self)
+///     }
+///
+/// Declared the way every vocabulary in this library is - static members on an
+/// extension - and used in two places: the application lists them in
+/// `persistentKeys`, and a view writes one on the state it keeps.
+///
+///     @State(persistentKey: .lastGroup) private var group = 0
+///
+/// **The name is the application's and belongs to the whole platform**, not to
+/// this library: it sits beside whatever else the app keeps in the platform's
+/// settings, so a reverse-DNS prefix is what stops it from meeting another
+/// application's `theme`.
+///
+/// The kind comes from the Swift type rather than a vocabulary of its own, so
+/// `of: Int.self` and `var group = 0` are the same word twice and a mismatch
+/// between them is caught the first time the view is built.
+public struct PersistentKey: Hashable, Sendable, CustomStringConvertible {
+    /// The name in the store - what the host reads and writes under.
+    public let name: String
+
+    /// What kind of value it holds, taken from the type it was declared with.
+    public let kind: PersistentKind
+
+    /// A key from its name and the type of the value it keeps.
+    ///
+    ///     static let lastGroup = PersistentKey("com.example.lastGroup", of: Int.self)
+    ///
+    /// - Parameters:
+    ///   - name: the name in the platform's store, the application's own.
+    ///   - type: the type of the state kept under it.
+    public init<Value: PersistentValue>(_ name: String, of type: Value.Type) {
+        self.name = name
+        self.kind = Value.persistentKind
+    }
+
+    /// The name, so an interpolated diagnostic prints it plainly.
+    public var description: String { name }
+}
+
+/// WHERE kept state is kept.
+///
+/// An application says nothing and gets `.preferences`, the platform's own
+/// settings store. Naming any other store names one the host registered under
+/// that name, which is how an application keeps its state somewhere of its
+/// own without this side knowing what a file is. Written into the
+/// application's session as it is made:
+///
+///     application.persistentStorage = PersistentStorage("Gallery.Json")
+public struct PersistentStorage: Hashable, Sendable, CustomStringConvertible {
+    /// The store's name - what the host resolves it by.
+    public let name: String
+
+    /// A store by name - one the application registered on the host side.
+    /// - Parameter name: the name it was registered under.
+    public init(_ name: String) {
+        self.name = name
+    }
+
+    /// The platform's own settings store, and the answer an application that
+    /// says nothing gets.
+    public static let preferences = PersistentStorage("preferences")
+
+    /// The name, so an interpolated diagnostic prints it plainly.
+    public var description: String { name }
+}
+
+/// Where kept state lives on this side: what the host hydrated, which storage
+/// stands for each key, and which keys are waiting to be saved.
+///
+/// `@unchecked Sendable` over its own lock, the Renderer's arrangement: a write
+/// can come from a child task a handler started, exactly as a queued act can.
+final class PersistentStore: @unchecked Sendable {
+    /// The one store. There is a single host per process, and the keys name
+    /// values that whole process shares.
+    static let shared = PersistentStore()
+
+    private let guarded = DispatchQueue(label: "StateUI.PersistentStore")
+
+    /// What the host read out of the store before the first render, by key
+    /// name. Read once per key, as the first state declaring it is built.
+    private var hydrated: [String: PropValue] = [:]
+
+    /// The storage standing for each key - a `State.Storage`, held as the
+    /// opaque object this file is allowed to know about - and the typed write
+    /// that puts a restored value into it. The FIRST state declaring a key
+    /// puts its own here, and every later one takes it, which is what makes
+    /// one key one piece of state; the write is how a storage claimed BEFORE
+    /// the host's read arrives still takes the stored value - an application's
+    /// own keyed state is built as the app registers, ahead of `hydrate`.
+    private var storages: [String: (storage: AnyObject, land: (PropValue) -> Void)] = [:]
+
+    /// The keys written since the last drain, with the value to save. A key
+    /// written five times is here once, holding the last value - which is what
+    /// keeps a slider or an entry from saving on every report.
+    private var waiting: [String: PropValue] = [:]
+
+    /// Takes what the host read out of the store. Called once, before the
+    /// first render, so a state built later finds its value already here -
+    /// and a storage claimed EARLIER, an application's own keyed state, takes
+    /// its value now, still ahead of the first view.
+    /// - Parameter values: name and value, for the keys the store had.
+    func hydrate(_ values: [(name: String, value: PropValue)]) {
+        let landings: [((PropValue) -> Void, PropValue)] = guarded.sync {
+            var landings: [((PropValue) -> Void, PropValue)] = []
+
+            for pair in values {
+                hydrated[pair.name] = pair.value
+
+                if let standing = storages[pair.name] {
+                    landings.append((standing.land, pair.value))
+                }
+            }
+
+            return landings
+        }
+
+        // Outside the hold: a landing takes the STORAGE's lock, and the order
+        // between the two is the storage's first everywhere else - a save
+        // reaches `record` from under it - so this side must never hold its
+        // own while asking for the other.
+        for (land, value) in landings {
+            land(value)
+        }
+    }
+
+    /// The storage this key means, decided under ONE hold: the one already
+    /// standing, or the offered one, adopted. Lookup and adoption must not
+    /// come apart - as two holds, two states first declaring one key from two
+    /// tasks could each see nothing standing and each adopt its own, leaving
+    /// two live storages under one name.
+    ///
+    /// A value the host already read lands in the offered storage through
+    /// `land` on the way; when the read has not happened yet, `land` is kept
+    /// and `hydrate` makes the same write - so a key claimed at any moment
+    /// holds the stored value before the first view is built.
+    ///
+    /// - Parameters:
+    ///   - key: the name being claimed.
+    ///   - storage: the claimant's own storage, adopted when none stands.
+    ///   - land: the typed write putting a restored value into `storage`,
+    ///     recording no save. Runs outside this store's hold.
+    /// - Returns: the storage the key means - the offered one, or the one
+    ///   that was standing already.
+    func claim(
+        _ key: PersistentKey,
+        orAdopt storage: AnyObject,
+        landing land: @escaping (PropValue) -> Void
+    ) -> AnyObject {
+        let (owner, held): (AnyObject, PropValue?) = guarded.sync {
+            if let standing = storages[key.name] {
+                return (standing.storage, nil)
+            }
+
+            storages[key.name] = (storage, land)
+            return (storage, hydrated[key.name])
+        }
+
+        if let held {
+            land(held)
+        }
+
+        return owner
+    }
+
+    /// Marks a key as needing a save, replacing whatever value was waiting.
+    ///
+    /// Runs under the STATE's lock, so it records and nothing else; the wake
+    /// that gets the save taken is the write's to make, after it lets go -
+    /// see `State.wrappedValue`.
+    func record(_ key: PersistentKey, _ value: PropValue) {
+        guarded.sync { waiting[key.name] = value }
+    }
+
+    /// How many keys are waiting to be saved - counted as pending work by
+    /// `Renderer.actCallsPending`, so the host takes them whether or not the
+    /// write that recorded them asked for a render.
+    var pending: Int { guarded.sync { waiting.count } }
+
+    /// The keys waiting to be saved, SORTED BY NAME, and forgets them - the
+    /// determinism rule, so two runs of one session write the same bytes.
+    func takeWaiting() -> [(name: String, value: PropValue)] {
+        guarded.sync {
+            let taken = waiting.sorted { $0.key < $1.key }
+            waiting.removeAll(keepingCapacity: true)
+            return taken.map { (name: $0.key, value: $0.value) }
+        }
+    }
+
+    /// Forgets everything - for tests, which build many sessions in one
+    /// process and must not inherit the last one's keys.
+    func forgetAll() {
+        guarded.sync {
+            hydrated.removeAll()
+            storages.removeAll()
+            waiting.removeAll()
+        }
+    }
+}

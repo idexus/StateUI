@@ -44,26 +44,23 @@ different name.** You are welcome to say that it is *based on StateUI* or *a for
 of StateUI*; please do not release it as StateUI, because someone downloading it
 will reasonably expect the original.
 
-The name is not scattered through the sources. It is in five places, and a fork
+The name is not scattered through the sources. It is in two places, and a fork
 that changes them is rebranded:
 
-- `Package.swift` - the Swift module name, which is what `import StateUI` reads.
-- `src/StateUI/Sources/Bridge/Exports.swift` - the `@_cdecl("stateui_…")` names.
-  They are the C ABI between the Swift half and its host, so a fork that does not
-  also fork the host can leave them alone.
-- `src/StateUI.Runtime/StateUI.Runtime.csproj` - the NuGet package id.
-- `.scripts/StateUI.targets` - the `StateUIApp*` MSBuild properties and the
-  native artifact names.
-- `src/StateUI.Template/` - the id `dotnet new` installs.
+- the `Package.swift` manifests - the Swift module names, which is what
+  `import StateUI` reads.
+- `lib/StateUI/Sources/Bridge/Exports.swift` - the `@_cdecl("stateui_…")` names.
+  They are the C ABI between the Swift library and a host written in another
+  language, so a fork that does not also fork such a host can leave them alone.
 
 ## The logo
 
 Use it to point at this project. Do not alter its shape, proportions or colours,
 and do not use it as the icon of your own application.
 
-The artwork a scaffolded app starts with - the icon, the splash, the tile - is
-placeholder art carrying the mark, there so a new project builds and runs before
-any design work. Replace it with your own before you ship.
+The artwork of the sample applications - the application icon and the tiles -
+carries the mark. An application started from a sample replaces it with its own
+before it ships.
 
 ## Asking
 

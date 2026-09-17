@@ -1,0 +1,160 @@
+import StateUI
+
+/// Native window identity, geometry, constraints, operations and translucency.
+struct WindowSample: SampleContent, ExampleContent {
+    @Environment private var window: WindowSession
+
+    @State private var renames = 0
+    @State private var maximizable = true
+    @State private var minimizable = true
+    @State private var translucent = false
+    @State private var width = 0.0
+    @State private var height = 0.0
+
+    static let id = "window"
+    static let title = "Window"
+    static let summary = "Change the native window while it stays on screen."
+
+    static let code = """
+        struct MainWindow: Window {
+            @Environment private var window: WindowSession
+
+            var page: any Page {
+                HomePage()
+                    .onCreated {
+                        window.title = "Notes"
+                        window.width = 1100
+                        window.height = 800
+                        window.minimumWidth = 700
+                        window.minimumHeight = 500
+                        window.maximumWidth = 1600
+                        window.maximumHeight = 1200
+                        window.isMaximizable = true
+                        window.isMinimizable = true
+                        #if APPKIT
+                        window.isTranslucent = true
+                        #endif
+                    }
+            }
+        }
+
+        @Environment private var window: WindowSession
+        @State private var maximizable = true
+        @State private var minimizable = true
+        @State private var translucent = false
+
+        DebugInfoLabel()
+
+        Button("Move to 80, 80").onClicked {
+            window.x = 80
+            window.y = 80
+        }
+
+        Button("900 × 650").onClicked {
+            window.width = 900
+            window.height = 650
+        }
+
+        Switch($maximizable).onChanged(maximizable) {
+            window.isMaximizable = maximizable
+        }
+
+        Switch($minimizable).onChanged(minimizable) {
+            window.isMinimizable = minimizable
+        }
+
+        Switch($translucent)
+            .onChanged(translucent) {
+                window.isTranslucent = translucent
+            }
+            .onCreated { translucent = window.isTranslucent == true }
+        """
+
+    var notes: Element? { nil }
+
+    var content: any View {
+        VStack {
+            DebugInfoLabel()
+
+            Label(window.title ?? "Platform title")
+                .fontSize(15)
+                .fontAttributes(.bold)
+
+            HStack {
+                action("Rename") {
+                    renames += 1
+                    window.title = "Gallery \(renames)"
+                }
+                .accessibilityIdentifier("window.rename")
+
+                action("Move to 80, 80") {
+                    window.x = 80
+                    window.y = 80
+                }
+                .accessibilityIdentifier("window.move")
+            }
+            .spacing(10)
+
+            HStack {
+                action("900 × 650") {
+                    window.width = 900
+                    window.height = 650
+                }
+                .accessibilityIdentifier("window.compact")
+
+                action("1100 × 800") {
+                    window.width = 1100
+                    window.height = 800
+                }
+                .accessibilityIdentifier("window.regular")
+            }
+            .spacing(10)
+
+            option("Maximize", id: "window.maximize", value: $maximizable)
+                .onChanged(maximizable) {
+                    window.isMaximizable = maximizable
+                }
+
+            option("Minimize", id: "window.minimize", value: $minimizable)
+                .onChanged(minimizable) {
+                    window.isMinimizable = minimizable
+                }
+
+            option("Translucent", id: "window.translucent", value: $translucent)
+                .onChanged(translucent) {
+                    window.isTranslucent = translucent
+                }
+
+            Label("Sample frame: \(Int(width)) × \(Int(height))")
+                .fontSize(13)
+                .textColor(Palette.accent)
+        }
+        .spacing(12)
+        .onFrameChanged(in: .global) { frame in
+            width = frame.width
+            height = frame.height
+        }
+        // The switch starts where the window stands - on, where the gallery's
+        // window opens translucent.
+        .onCreated { translucent = window.isTranslucent == true }
+    }
+
+    /// An action that writes the surrounding window session.
+    private func action(_ title: String, _ write: @escaping () -> Void) -> any View {
+        Button(title)
+            .fontSize(13)
+            .padding(16, 6)
+            .onClicked { write() }
+    }
+
+    /// A native boolean window capability.
+    private func option(_ title: String, id: String, value: Binding<Bool>) -> any View {
+        HStack {
+            Switch(value)
+                .accessibilityIdentifier(id)
+                .accessibilityLabel(title)
+            Label(title).verticalAlignment(.center)
+        }
+        .spacing(8)
+    }
+}

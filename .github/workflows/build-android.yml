@@ -123,4 +123,4 @@ jobs:
       # if a DT_NEEDED entry is left unpackaged, so a green run here means the
       # APK would load.
       - name: Build the gallery
-        run: dotnet build apps/Gallery/Gallery.csproj -c Release -f net10.0-android
+        run: dotnet build apps/Gallery/Platforms/Maui/Gallery.csproj -c Release -f net10.0-android

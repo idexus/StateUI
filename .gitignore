@@ -3,6 +3,12 @@ bin/
 obj/
 artifacts/
 .build/
+.build-maui/
+.build-appkit/
+
+# The language server's own settings, written by the StateUI editor extension:
+# the index directory of the host the editor works as.
+.sourcekit-lsp/
 .vs/
 
 # Debug symbols
@@ -13,16 +19,18 @@ artifacts/
 *.user
 .DS_Store
 
-# What the SDK leaves behind when a workload it was asked for is not installed -
-# one file per evaluation, beside the project. A Linux host has no MAUI workload
-# and evaluates the other four heads anyway, so these arrive by the dozen there.
+# The recordings the README shows travel as the mp4 beside them; the originals
+# are large and stay on the machine that made them.
+/docs/assets/*.mov
+
+# SDK evaluation leftovers MSBuild may leave beside a project.
 *.SdkResolver.*.proj.Backup.tmp
 
-# The template ships the SAME build scripts the apps here use, copied in as
-# StateUI.Template builds. Ignored rather than committed so the copy cannot go
-# stale against .scripts/, which is the original.
-/src/StateUI.Template/templates/*/.scripts/
-/src/StateUI.Template/templates/*/Package.resolved
+# A resolve file a local build writes beside the template's manifest would pin
+# every application made from it.
+/lib/StateUI.Maui/Template/templates/*/Package.resolved
 
 CLAUDE.md
 CLAUDE.md.lnk
+AGENTS.md
+AGENTS.md.lnk

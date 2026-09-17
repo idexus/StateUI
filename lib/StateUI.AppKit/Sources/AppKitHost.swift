@@ -1,0 +1,3400 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+#if os(macOS)
+import AppKit
+import Foundation
+import QuartzCore
+@_spi(Host) import StateUI
+
+/// Runs a StateUI application as native AppKit controls in the current process.
+///
+/// The host materializes StateUI's application structure, page containers,
+/// foundational layouts and controls as AppKit objects. Unsupported controls
+/// remain visible as diagnostic labels, so each subsequent adapter can be
+/// delivered as a complete vertical slice.
+@MainActor
+public enum StateUIAppKit {
+    /// Starts `NSApplication` and displays the application already registered
+    /// with `stateUIUseApp(_:)`.
+    ///
+    /// - Parameters:
+    ///   - resourceDirectory: A directory containing image resources.
+    ///   - applicationIcon: The complete image shown for the running application.
+    public static func run(
+        resourceDirectory: URL? = nil,
+        applicationIcon: URL? = nil
+    ) {
+        let application = NSApplication.shared
+        let delegate = AppDelegate(resourceDirectory: resourceDirectory)
+
+        application.setActivationPolicy(.regular)
+        if let applicationIcon, let icon = NSImage(contentsOf: applicationIcon) {
+            application.applicationIconImage = icon
+        }
+        application.delegate = delegate
+        configureMainMenu(application: application, delegate: delegate)
+        application.run()
+
+        withExtendedLifetime(delegate) {}
+    }
+
+    private static func configureMainMenu(
+        application: NSApplication,
+        delegate: AppDelegate
+    ) {
+        let main = NSMenu()
+        let applicationItem = NSMenuItem(
+            title: ProcessInfo.processInfo.processName, action: nil, keyEquivalent: "")
+        let fileItem = NSMenuItem(title: "File", action: nil, keyEquivalent: "")
+        let windowItem = NSMenuItem(title: "Window", action: nil, keyEquivalent: "")
+        main.addItem(applicationItem)
+        main.addItem(fileItem)
+        main.addItem(windowItem)
+
+        let applicationMenu = NSMenu()
+        applicationMenu.addItem(withTitle: "Quit \(ProcessInfo.processInfo.processName)",
+                                action: #selector(NSApplication.terminate(_:)),
+                                keyEquivalent: "q")
+        applicationItem.submenu = applicationMenu
+
+        let fileMenu = NSMenu(title: "File")
+        let newWindow = NSMenuItem(
+            title: "New Window",
+            action: #selector(AppDelegate.newScene(_:)),
+            keyEquivalent: "n")
+        newWindow.target = delegate
+        fileMenu.addItem(newWindow)
+        fileItem.submenu = fileMenu
+
+        let windowMenu = NSMenu(title: "Window")
+        windowMenu.addItem(withTitle: "Minimize",
+                           action: #selector(NSWindow.performMiniaturize(_:)),
+                           keyEquivalent: "m")
+        windowMenu.addItem(withTitle: "Bring All to Front",
+                           action: #selector(NSApplication.arrangeInFront(_:)),
+                           keyEquivalent: "")
+        windowItem.submenu = windowMenu
+        application.windowsMenu = windowMenu
+        application.mainMenu = main
+    }
+}
+
+@MainActor
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    private let host: AppKitRenderer
+
+    init(resourceDirectory: URL?) {
+        host = AppKitRenderer(resourceDirectory: resourceDirectory)
+        super.init()
+        AppKitRestorationBroker.shared.host = host
+    }
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        host.start()
+        NSApplication.shared.activate(ignoringOtherApps: true)
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        false
+    }
+
+    func applicationShouldHandleReopen(
+        _ sender: NSApplication,
+        hasVisibleWindows flag: Bool
+    ) -> Bool {
+        host.reopen(hasVisibleWindows: flag)
+        return true
+    }
+
+    func applicationDidBecomeActive(_ notification: Notification) {
+        host.applicationBecameActive()
+    }
+
+    func applicationDidResignActive(_ notification: Notification) {
+        host.applicationResignedActive()
+    }
+
+    func applicationDidHide(_ notification: Notification) {
+        host.applicationWasHidden()
+    }
+
+    func applicationDidUnhide(_ notification: Notification) {
+        host.applicationWasUnhidden()
+    }
+
+    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+        true
+    }
+
+    @objc func newScene(_ sender: Any?) {
+        host.openPlatformScene()
+    }
+}
+
+/// The unchecked promise is narrow: every mutation and every AppKit call is in
+/// a `@MainActor` method. The only cross-thread capture posts `pump()` onto the
+/// main queue after the blocking doorbell returns.
+struct AppKitPresentationImpact: OptionSet {
+    let rawValue: UInt8
+
+    static let content = AppKitPresentationImpact(rawValue: 1 << 0)
+    static let windowShell = AppKitPresentationImpact(rawValue: 1 << 1)
+
+    /// The element's own layout item changed, so its parent arranges again.
+    static let arrangement = AppKitPresentationImpact(rawValue: 1 << 2)
+}
+
+@MainActor
+final class AppKitRenderer: @unchecked Sendable {
+    private struct QueuedEvent {
+        let handler: Int32
+        let payload: [HostValue]
+        let restorationIdentifier: String?
+
+        /// A phase report, rendered before the next report moves the phase
+        /// again.
+        var isPhase = false
+    }
+
+    private let resourceDirectory: URL?
+    private let presentsWindows: Bool
+    private let eventSink: ((Int32, [HostValue]) -> Void)?
+    private let preferences: UserDefaults
+    private let core = AppKitCoreLink()
+    private let walker: AppKitWalker
+    fileprivate let stateChannels: AppKitStateChannels
+    private let describedMotion: AppKitDescribedMotion
+    fileprivate let layoutMotion: AppKitLayoutMotion
+    private let displayCycle: AppKitDisplayCycle
+    private let images = NSCache<NSString, NSImage>()
+    private let frameClock: AppKitFrameClock
+    private let reducesMotion: () -> Bool
+    fileprivate let intake = AppKitPatchIntake()
+    private lazy var actPerformer = AppKitActPerformer(renderer: self)
+    private var focusReportQueued = false
+    private var nextMount: UInt64 = 0
+    private var patchTime: Double?
+    private var patchReducesMotion: Bool?
+    private var root: MountedNode?
+    private var scenes: [ElementId: AppKitSceneController] = [:]
+    private var sceneOrder: [ElementId] = []
+
+    /// The scrollers moving or waiting to report, each given the display's
+    /// frames until it stands and has said everything.
+    private let framedScrollers = NSHashTable<AppKitScrollView>.weakObjects()
+    private var doorbellStarted = false
+    private var connectedInitialScene = false
+    private var started = false
+    private var synchronizingWindows = false
+
+    /// Whether the queue is being delivered. A render inside the delivery
+    /// queues what it raises behind what already waits, in order.
+    private var deliveringEvents = false
+    private var readerTransactionDepth = 0
+    private var readerTransactionChangedState = false
+    private var queuedEvents: [QueuedEvent] = []
+    private weak var activeWindow: AppKitWindowController?
+    private var applicationIsHidden = false
+    private let restorationQueue = AppKitRestorationQueue()
+    private var restoredWindows: [String: NSWindow] = [:]
+    private var offeredRestorations = Set<String>()
+    private var abandonmentScheduled = false
+    private var pageMenuInsertions: [(menu: NSMenu, item: NSMenuItem)] = []
+    private(set) var windowSynchronizationCountForTesting = 0
+
+    init(
+        resourceDirectory: URL?,
+        presentsWindows: Bool = true,
+        eventSink: ((Int32, [HostValue]) -> Void)? = nil,
+        preferences: UserDefaults = .standard,
+        clock: (() -> Double)? = nil,
+        reducesMotion: @escaping () -> Bool = {
+            NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
+        }
+    ) {
+        self.resourceDirectory = resourceDirectory
+        self.presentsWindows = presentsWindows
+        self.eventSink = eventSink
+        self.preferences = preferences
+        let frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
+        self.frameClock = frameClock
+        self.reducesMotion = reducesMotion
+        let walker = AppKitWalker()
+        self.walker = walker
+        stateChannels = AppKitStateChannels(walker: walker)
+        describedMotion = AppKitDescribedMotion(walker: walker)
+        layoutMotion = AppKitLayoutMotion(
+            walker: walker, now: frameClock.now, reducesMotion: reducesMotion)
+        displayCycle = AppKitDisplayCycle(
+            core: core,
+            clock: frameClock,
+            walker: walker,
+            stateChannels: stateChannels,
+            describedMotion: describedMotion,
+            layoutMotion: layoutMotion,
+            reducesMotion: reducesMotion)
+        frameClock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
+        layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
+        displayCycle.presenter = self
+    }
+
+    func start() {
+        startRuntime()
+        startDoorbell()
+    }
+
+    private func startRuntime() {
+        started = true
+        configureEnvironment()
+        let appearance = NSApplication.shared.effectiveAppearance
+            .bestMatch(from: [.darkAqua, .aqua])
+        core.setTheme(appearance == .darkAqua ? .dark : .light)
+        hydratePersistentState()
+        if !connectedInitialScene {
+            connectPlatformScene(restoring: [:])
+        }
+        pump()
+    }
+
+    func startForTesting() { startRuntime() }
+
+    private func configureEnvironment() {
+        let process = ProcessInfo.processInfo
+        let bundle = Bundle.main
+
+        core.setDeviceInfo(HostDeviceInfo(
+            formFactor: .desktop,
+            platform: "macOS",
+            model: machineModel(),
+            manufacturer: "Apple",
+            name: Host.current().localizedName ?? "",
+            versionString: process.operatingSystemVersionString,
+            deviceType: .physical))
+
+        if let screen = NSScreen.main {
+            let scale = screen.backingScaleFactor
+            core.setDisplayInfo(HostDisplayInfo(
+                width: screen.frame.width * scale,
+                height: screen.frame.height * scale,
+                density: scale,
+                orientation: screen.frame.width >= screen.frame.height ? .landscape : .portrait,
+                rotation: .rotation0,
+                refreshRate: Double(screen.maximumFramesPerSecond)))
+        }
+
+        core.setApplicationInfo(HostApplicationInfo(
+            name: bundle.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String
+                ?? bundle.object(forInfoDictionaryKey: "CFBundleName") as? String
+                ?? process.processName,
+            packageName: bundle.bundleIdentifier ?? "",
+            versionString: bundle.object(forInfoDictionaryKey: "CFBundleShortVersionString")
+                as? String ?? "",
+            buildString: bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""))
+    }
+
+    private func machineModel() -> String {
+        var size = 0
+        guard sysctlbyname("hw.model", nil, &size, nil, 0) == 0, size > 0 else { return "" }
+
+        var bytes = [CChar](repeating: 0, count: size)
+        guard sysctlbyname("hw.model", &bytes, &size, nil, 0) == 0 else { return "" }
+        let end = bytes.firstIndex(of: 0) ?? bytes.endIndex
+        return String(decoding: bytes[..<end].map(UInt8.init(bitPattern:)), as: UTF8.self)
+    }
+
+    func dispatch(_ handler: Int32, payload: [HostValue] = [], isPhase: Bool = false) {
+        if synchronizingWindows || readerTransactionDepth > 0 || intake.isApplying {
+            queuedEvents.append(QueuedEvent(
+                handler: handler,
+                payload: payload,
+                restorationIdentifier: nil,
+                isPhase: isPhase))
+            return
+        }
+
+        if let eventSink {
+            eventSink(handler, payload)
+            return
+        }
+
+        _ = core.dispatch(handler, payload: payload)
+        pump()
+    }
+
+    /// Defers a platform notification until the current tree is fully applied.
+    /// Page visibility can change while children are being reconciled; running
+    /// Swift from inside that mutation would make the next render observe a
+    /// half-old, half-new native tree.
+    func enqueue(_ handler: Int32, payload: [HostValue] = [], isPhase: Bool = false) {
+        queuedEvents.append(QueuedEvent(
+            handler: handler,
+            payload: payload,
+            restorationIdentifier: nil,
+            isPhase: isPhase))
+    }
+
+    /// Composes every window's chrome again from what it shows now - after a
+    /// change the reader made on a native control, which the application may
+    /// not render for.
+    func refreshWindowChrome() {
+        for controller in orderedWindowControllers {
+            controller.refreshChrome()
+        }
+    }
+
+    /// Commits a reader-driven page change and its lifecycle as one ordered
+    /// batch. The native control has already settled before this is called.
+    func commit(_ handler: Int32?, payload: [HostValue] = []) {
+        if let handler { enqueue(handler, payload: payload) }
+        if !synchronizingWindows, readerTransactionDepth == 0 { flushQueuedEvents() }
+    }
+
+    /// Makes a compound reader gesture visible to Swift as one settled native
+    /// transaction. Radio groups use it to report the old false before the new
+    /// true without rendering between those two halves.
+    func performReaderTransaction(_ body: () -> Void) {
+        readerTransactionDepth += 1
+        body()
+        readerTransactionDepth -= 1
+
+        guard readerTransactionDepth == 0, !synchronizingWindows else { return }
+        let changedState = readerTransactionChangedState
+        readerTransactionChangedState = false
+
+        if !queuedEvents.isEmpty {
+            flushQueuedEvents()
+        } else if changedState, eventSink == nil {
+            pump()
+        }
+    }
+
+    func settleReaderWrite(_ changedState: Bool) {
+        guard changedState, readerTransactionDepth == 0 else { return }
+        if eventSink == nil { pump() }
+    }
+
+    /// Keeps the display's frames coming for `scroller` until it stands and
+    /// has said everything - see `AppKitScrollView.frame(now:)`.
+    fileprivate func requestFrames(for scroller: AppKitScrollView) {
+        framedScrollers.add(scroller)
+        displayCycle.hold()
+    }
+
+    /// Lets `scroller` go of the display's frames, as it leaves the tree.
+    fileprivate func stopFrames(for scroller: AppKitScrollView) {
+        framedScrollers.remove(scroller)
+        displayCycle.hold()
+    }
+
+    func openPlatformScene() {
+        connectPlatformScene(restoring: [:])
+        pump()
+    }
+
+    func reopen(hasVisibleWindows: Bool) {
+        if hasVisibleWindows {
+            activeWindow?.window?.makeKeyAndOrderFront(nil)
+            return
+        }
+
+        if let first = orderedWindowControllers.first?.window {
+            first.makeKeyAndOrderFront(nil)
+        } else {
+            openPlatformScene()
+        }
+    }
+
+    func applicationBecameActive() {
+        core.setApplicationPhase(.active)
+        if let activeWindow {
+            activeWindow.scene?.report(.activated)
+            arrangeOwnedWindows(for: activeWindow.scene)
+            installPageMenus(activeWindow.pageMenuItems)
+        }
+        pump()
+    }
+
+    func applicationResignedActive() {
+        guard !applicationIsHidden else { return }
+        core.setApplicationPhase(.inactive)
+        activeWindow?.scene?.report(.deactivated)
+        pump()
+    }
+
+    func applicationWasHidden() {
+        applicationIsHidden = true
+        core.setApplicationPhase(.background)
+
+        for scene in orderedScenes {
+            scene.applicationWasHidden()
+        }
+
+        pump()
+    }
+
+    func applicationWasUnhidden() {
+        applicationIsHidden = false
+        core.setApplicationPhase(.inactive)
+
+        for scene in orderedScenes {
+            scene.applicationWasUnhidden()
+        }
+
+        pump()
+    }
+
+    private func connectPlatformScene(restoring values: [String: HostValue]) {
+        core.connectScene(restoring: values)
+        connectedInitialScene = true
+    }
+
+    @discardableResult
+    func report(_ value: HostStateValue, through binding: HostStateBinding) -> Bool {
+        guard core.report(value, through: binding) else { return false }
+
+        if readerTransactionDepth > 0 { readerTransactionChangedState = true }
+
+        displayCycle.drain(now: frameClock.now(), reported: [binding.state: value])
+        return true
+    }
+
+    @discardableResult
+    func take(_ value: [Double], through binding: HostStateBinding) -> Bool {
+        guard stateChannels.take(value, through: binding) else { return false }
+
+        displayCycle.drain(now: frameClock.now())
+        return true
+    }
+
+    /// Reads a numerical state named directly by a gesture channel.
+    func standingGestureValue(state: Int32) -> Double? {
+        core.gestureValue(state: state)
+    }
+
+    @discardableResult
+    func takeGestureValue(_ value: Double, state: Int32) -> Bool {
+        guard core.moveGestureValue(value, state: state) else { return false }
+        displayCycle.drain(now: frameClock.now())
+        return true
+    }
+
+    /// One turn of the host: the jobs a resumed handler left, a pending cycle,
+    /// a render when the core needs one, then the acts - on the interface the
+    /// render has just brought up to date.
+    func pump() {
+        _ = core.runJobs()
+
+        if root != nil, core.cyclesPending {
+            displayCycle.drain(now: frameClock.now())
+        }
+
+        if root == nil || core.needsRender {
+            let rendered = core.render(baseline: intake.baseline)
+
+            if !intake.take(rendered.root, generation: rendered.generation, apply: {
+                applyRoot($0, complete: rendered.complete)
+            }) {
+                // REFUSED, then asked for whole once: a complete render is
+                // reconciled against the tree the core holds, so every identity,
+                // handler and state survives it.
+                NSLog("StateUI AppKit: the interface drifted and is asked for whole: %@",
+                      intake.lastDrift ?? "")
+                let complete = core.render(baseline: 0)
+                intake.take(complete.root, generation: complete.generation, apply: {
+                    applyRoot($0, complete: complete.complete)
+                })
+            }
+
+            displayCycle.presentStateChannels()
+
+            let created = root?.takeCreatedHandlers() ?? []
+            if !created.isEmpty {
+                for handler in created {
+                    _ = core.dispatch(handler)
+                }
+                pump()
+                return
+            }
+
+            synchronizeWindows()
+            flushQueuedEvents()
+        }
+
+        // THE ACTS LAND ON THE INTERFACE THEIR HANDLER CHANGED: taken once the
+        // render is in, so a handler that enables a field and focuses it in the
+        // same breath finds it enabled.
+        for call in core.takeActCalls() {
+            actPerformer.perform(call)
+        }
+    }
+
+    private func startDoorbell() {
+        guard !doorbellStarted else { return }
+        doorbellStarted = true
+
+        DispatchQueue.global(qos: .userInteractive).async { [self] in
+            while true {
+                _ = core.waitForWork()
+                DispatchQueue.main.async { [self] in pump() }
+            }
+        }
+    }
+
+    private func synchronizeWindows() {
+        guard let root, root.type == .application else { return }
+        windowSynchronizationCountForTesting += 1
+
+        synchronizingWindows = true
+        defer { synchronizingWindows = false }
+
+        let sceneNodes = root.children.filter { $0.type == .scene }
+        let nextIDs = sceneNodes.map(\.id)
+        let nextSet = Set(nextIDs)
+
+        for id in sceneOrder where !nextSet.contains(id) {
+            scenes.removeValue(forKey: id)?.closeFromTree()
+        }
+
+        var cascade = 0
+        for sceneNode in sceneNodes {
+            let scene = scenes[sceneNode.id] ?? AppKitSceneController(
+                id: sceneNode.id,
+                host: self,
+                presentsWindows: presentsWindows,
+                restoredMain: takeRestoredMainWindow())
+            scenes[sceneNode.id] = scene
+            scene.synchronize(sceneNode, cascadeFrom: cascade)
+            cascade += sceneNode.children.filter { $0.type == .window }.count
+        }
+
+        sceneOrder = nextIDs
+
+        if let window = orderedWindowControllers.compactMap(\.window).first {
+            frameClock.attach(to: window)
+        }
+        offerRestoredWindows()
+        displayCycle.hold()
+    }
+
+    /// Delivers what waits, in order. A phase is state the application
+    /// watches, so each phase report is rendered before the next report moves
+    /// the phase again: a push that reports a page's arrival and its
+    /// navigation in one native move still shows both.
+    private func flushQueuedEvents() {
+        guard !deliveringEvents, !queuedEvents.isEmpty else { return }
+        deliveringEvents = true
+        var restored: [String] = []
+
+        while !queuedEvents.isEmpty {
+            let event = queuedEvents.removeFirst()
+            if let eventSink {
+                eventSink(event.handler, event.payload)
+            } else {
+                _ = core.dispatch(event.handler, payload: event.payload)
+            }
+            if let identifier = event.restorationIdentifier { restored.append(identifier) }
+            if event.isPhase, eventSink == nil { pump() }
+        }
+
+        deliveringEvents = false
+        if eventSink == nil { pump() }
+
+        for identifier in restored {
+            declineRestorationIfUnclaimed(identifier)
+        }
+    }
+
+    func keepSceneValue(_ call: HostActCall) {
+        guard call.arguments.count >= 3,
+              let sceneID = call.arguments[0].name,
+              let name = call.arguments[1].name
+        else { return }
+
+        orderedScenes.first { $0.stateUIID == .manual(sceneID) }?
+            .keep(name: name, value: call.arguments[2])
+    }
+
+    func hydratePersistentState() {
+        guard core.persistentStorage == .preferences else {
+            if !core.persistentKeys.isEmpty {
+                NSLog(
+                    "StateUI AppKit: no store is registered as %@; kept state uses its declared values",
+                    core.persistentStorage.name)
+            }
+            return
+        }
+
+        var restored: [String: HostValue] = [:]
+
+        for key in core.persistentKeys {
+            guard preferences.object(forKey: key.name) != nil else { continue }
+
+            switch key.kind {
+            case .boolean:
+                restored[key.name] = .bool(preferences.bool(forKey: key.name))
+            case .integer, .number:
+                restored[key.name] = .number(preferences.double(forKey: key.name))
+            case .text:
+                if let value = preferences.string(forKey: key.name) {
+                    restored[key.name] = .string(value)
+                }
+            }
+        }
+
+        core.restorePersistent(restored)
+    }
+
+    func savePersistent(_ call: HostActCall) {
+        guard core.persistentStorage == .preferences,
+              call.arguments.count >= 2,
+              let name = call.arguments[0].name,
+              let key = core.persistentKeys.first(where: { $0.name == name })
+        else { return }
+
+        let value = call.arguments[1]
+        switch key.kind {
+        case .boolean:
+            if let value = value.bool { preferences.set(value, forKey: name) }
+        case .integer:
+            if let value = value.number { preferences.set(Int64(value), forKey: name) }
+        case .number:
+            if let value = value.number { preferences.set(value, forKey: name) }
+        case .text:
+            if let value = value.string { preferences.set(value, forKey: name) }
+        }
+    }
+
+    func acceptRestoredWindow(_ record: AppKitRestorationRecord) -> NSWindow {
+        if let standing = restoredWindows[record.windowIdentifier] { return standing }
+
+        let window = AppKitWindowController.makeWindow()
+        window.isReleasedWhenClosed = false
+        window.identifier = NSUserInterfaceItemIdentifier(record.windowIdentifier)
+        window.isRestorable = true
+        window.restorationClass = AppKitWindowRestorer.self
+        window.setFrameAutosaveName("StateUI.\(record.windowIdentifier)")
+
+        restorationQueue.append(record)
+        restoredWindows[record.windowIdentifier] = window
+
+        if record.ownerIdentifier == nil {
+            connectPlatformScene(restoring: record.kept)
+            if started { pump() }
+        }
+
+        scheduleRestorationAbandonment()
+        return window
+    }
+
+    func takeRestoredWindow(
+        owner: String,
+        kind: String?,
+        value: String?
+    ) -> AppKitRestoredWindow? {
+        guard let record = restorationQueue.takeOwned(by: owner, kind: kind, value: value),
+              let window = restoredWindows.removeValue(forKey: record.windowIdentifier)
+        else { return nil }
+
+        offeredRestorations.remove(record.windowIdentifier)
+        return AppKitRestoredWindow(record: record, window: window)
+    }
+
+    private func takeRestoredMainWindow() -> AppKitRestoredWindow? {
+        guard let record = restorationQueue.takeMain(),
+              let window = restoredWindows.removeValue(forKey: record.windowIdentifier)
+        else { return nil }
+
+        return AppKitRestoredWindow(record: record, window: window)
+    }
+
+    private func offerRestoredWindows() {
+        for scene in orderedScenes {
+            guard let owner = scene.sessionIdentifier,
+                  let handler = scene.restoredWindowHandler
+            else { continue }
+
+            for record in restorationQueue.owned(by: owner) {
+                guard let kind = record.kind,
+                      offeredRestorations.insert(record.windowIdentifier).inserted
+                else { continue }
+
+                var payload: [HostValue] = [.string(kind)]
+                if let value = record.value { payload.append(.string(value)) }
+                queuedEvents.append(QueuedEvent(
+                    handler: handler,
+                    payload: payload,
+                    restorationIdentifier: record.windowIdentifier))
+            }
+        }
+    }
+
+    private func declineRestorationIfUnclaimed(_ identifier: String) {
+        guard let record = restorationQueue.remove(windowIdentifier: identifier) else { return }
+        offeredRestorations.remove(identifier)
+        restoredWindows.removeValue(forKey: record.windowIdentifier)?.close()
+    }
+
+    private func scheduleRestorationAbandonment() {
+        guard !abandonmentScheduled else { return }
+        abandonmentScheduled = true
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in
+            guard let self else { return }
+            self.abandonmentScheduled = false
+            let owners = Set(self.orderedScenes.compactMap(\.sessionIdentifier))
+
+            for record in self.restorationQueue.all
+            where record.ownerIdentifier.map({ !owners.contains($0) }) ?? false {
+                self.declineRestorationIfUnclaimed(record.windowIdentifier)
+            }
+        }
+    }
+
+    func windowBecameKey(_ controller: AppKitWindowController) {
+        let previousScene = activeWindow?.scene
+        activeWindow = controller
+        installPageMenus(controller.pageMenuItems)
+
+        controller.reportWindow(.activated)
+
+        if previousScene !== controller.scene {
+            previousScene?.report(.deactivated)
+            controller.scene?.report(.activated)
+            arrangeOwnedWindows(for: controller.scene)
+        }
+
+        core.setApplicationPhase(.active)
+    }
+
+    func windowResignedKey(_ controller: AppKitWindowController) {
+        controller.reportWindow(.deactivated)
+
+        DispatchQueue.main.async { [weak self, weak controller] in
+            guard let self, let controller, self.activeWindow === controller,
+                  NSApplication.shared.keyWindow == nil,
+                  !self.applicationIsHidden
+            else { return }
+
+            controller.scene?.report(.deactivated)
+            core.setApplicationPhase(.inactive)
+            self.pump()
+        }
+    }
+
+    func windowWillClose(_ controller: AppKitWindowController) {
+        if activeWindow === controller {
+            activeWindow = nil
+            installPageMenus([])
+        }
+
+        if let closing = controller.window {
+            frameClock.release(closing, next: orderedWindowControllers
+                .filter { $0 !== controller }
+                .compactMap(\.window)
+                .first)
+        }
+
+        guard !controller.closingFromTree else { return }
+
+        controller.reportWindow(.destroying)
+
+        if controller.isMain {
+            controller.scene?.report(.destroying)
+        } else {
+            controller.scene?.report(.windowClosed, payload: [controller.stateUIID.hostPayload])
+        }
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.orderedWindowControllers.isEmpty,
+                  NSApplication.shared.keyWindow == nil,
+                  !self.applicationIsHidden
+            else { return }
+
+            core.setApplicationPhase(.inactive)
+            self.pump()
+        }
+    }
+
+    func nativeWindowAvailable(_ window: NSWindow) {
+        frameClock.attach(to: window)
+    }
+
+    func pageMenusChanged(in controller: AppKitWindowController) {
+        guard activeWindow === controller || controller.window?.isKeyWindow == true else { return }
+        installPageMenus(controller.pageMenuItems)
+    }
+
+    /// Replaces only commands contributed by the visible StateUI page. The
+    /// standard application, File and Window commands remain host-owned.
+    private func installPageMenus(_ roots: [NSMenuItem]) {
+        for insertion in pageMenuInsertions.reversed() {
+            insertion.menu.removeItem(insertion.item)
+        }
+        pageMenuInsertions.removeAll(keepingCapacity: true)
+
+        guard let main = NSApplication.shared.mainMenu else { return }
+
+        for root in roots {
+            if let standing = main.items.first(where: { $0.title == root.title }),
+               let target = standing.submenu,
+               let source = root.submenu {
+                if !target.items.isEmpty {
+                    let separator = NSMenuItem.separator()
+                    target.addItem(separator)
+                    pageMenuInsertions.append((target, separator))
+                }
+
+                for sourceItem in source.items {
+                    let item = cloneMenuItem(sourceItem)
+                    target.addItem(item)
+                    pageMenuInsertions.append((target, item))
+                }
+            } else {
+                let item = cloneMenuItem(root)
+                let windowIndex = main.items.firstIndex(where: { $0.title == "Window" })
+                    ?? main.items.count
+                main.insertItem(item, at: windowIndex)
+                pageMenuInsertions.append((main, item))
+            }
+        }
+    }
+
+    private func cloneMenuItem(_ source: NSMenuItem) -> NSMenuItem {
+        guard !source.isSeparatorItem else { return .separator() }
+
+        let item = NSMenuItem(
+            title: source.title,
+            action: source.action,
+            keyEquivalent: source.keyEquivalent)
+        item.target = source.target
+        item.attributedTitle = source.attributedTitle
+        item.image = source.image
+        item.isEnabled = source.isEnabled
+        item.state = source.state
+
+        if let sourceMenu = source.submenu {
+            let menu = NSMenu(title: sourceMenu.title)
+            for child in sourceMenu.items {
+                menu.addItem(cloneMenuItem(child))
+            }
+            item.submenu = menu
+        }
+
+        return item
+    }
+
+    private func arrangeOwnedWindows(for front: AppKitSceneController?) {
+        for scene in orderedScenes {
+            scene.setActive(scene === front)
+        }
+    }
+
+    private var orderedScenes: [AppKitSceneController] {
+        sceneOrder.compactMap { scenes[$0] }
+    }
+
+    var sceneCountForTesting: Int { scenes.count }
+
+    private var orderedWindowControllers: [AppKitWindowController] {
+        orderedScenes.flatMap(\.orderedWindows)
+    }
+
+    var windowsForTesting: [AppKitWindowController] { orderedWindowControllers }
+
+    /// The native view of the element with `id`, as the tree stands.
+    func presentedView(id: ElementId) -> NSView? {
+        root?.first(id: id)?.view
+    }
+
+    /// The window the reader is looking at: the key window, else the main one.
+    var readerWindow: NSWindow? {
+        NSApp.keyWindow ?? orderedWindowControllers.first?.window
+    }
+
+    /// A window's first responder moved. Every element that follows its focus
+    /// is told once the move has settled: AppKit hands the focus through
+    /// passing holders on its way - the window among them - within one turn.
+    func focusMoved() {
+        guard !focusReportQueued else { return }
+        focusReportQueued = true
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+            focusReportQueued = false
+            root?.reportFocus()
+        }
+    }
+
+    var frameClockWindowForTesting: NSWindow? { frameClock.window }
+
+    var describedMotionActiveForTesting: Bool { describedMotion.isActive }
+
+    func viewForTesting(id: ElementId) -> NSView? {
+        root?.first(id: id)?.view
+    }
+
+    func viewsForTesting(id: ElementId) -> [NSView] {
+        root?.all(id: id).compactMap(\.view) ?? []
+    }
+
+    func applyForTesting(_ patch: HostPatch) {
+        intake.take(patch, generation: intake.baseline &+ 1) { applyRoot($0, complete: true) }
+
+        synchronizeWindows()
+        flushQueuedEvents()
+    }
+
+    private func applyRoot(_ patch: HostPatch, complete: Bool) {
+        let previousPatchTime = patchTime
+        let previousPatchReducesMotion = patchReducesMotion
+        if patchTime == nil { patchTime = frameClock.now() }
+        if patchReducesMotion == nil { patchReducesMotion = reducesMotion() }
+        defer {
+            patchTime = previousPatchTime
+            patchReducesMotion = previousPatchReducesMotion
+        }
+
+        if let root, root.id == patch.id, root.type == patch.type, !patch.replace {
+            root.apply(patch)
+        } else if root == nil || complete || patch.replace {
+            root?.leave()
+            root = MountedNode(patch, host: self)
+        } else {
+            intake.drifted("a sparse message describes a root '\(patch.id)' the tree does not hold")
+        }
+    }
+
+    /// What made the last refused message drift.
+    var driftForTesting: String? { intake.lastDrift }
+
+    /// The generation the host quotes on its next render.
+    var baselineForTesting: Int32 { intake.baseline }
+
+    /// Loses the element that presents `view`, as a host that dropped part of
+    /// its tree would.
+    func forgetForTesting(_ view: NSView) {
+        root?.forgetForTesting(view)
+    }
+
+    func stepTripsForTesting() {
+        displayCycle.stepTrips(now: frameClock.now(), reducesMotion: reducesMotion())
+        displayCycle.hold()
+    }
+
+    func displayFrameForTesting() {
+        displayCycle.frame(now: frameClock.now())
+    }
+
+    var frameClockRunningForTesting: Bool { frameClock.isRunning }
+
+    var tripsMovingForTesting: Bool { walker.isMoving }
+
+    var channelCountForTesting: Int { stateChannels.count }
+
+    func applyStateForTesting(_ state: Int32, value: HostStateValue) {
+        let impact = root?.applyState(state, value: value) ?? []
+        if impact.contains(.windowShell) { synchronizeWindows() }
+    }
+
+    func applyStatesForTesting(_ valuesByState: [Int32: HostStateValue]) {
+        let impact = valuesByState.isEmpty
+            ? []
+            : (root?.applyStates(valuesByState) ?? [])
+        if impact.contains(.windowShell) { synchronizeWindows() }
+    }
+
+    func closeForTesting() {
+        for scene in orderedScenes.reversed() { scene.closeFromTree() }
+        scenes.removeAll()
+        sceneOrder.removeAll()
+        for window in restoredWindows.values { window.close() }
+        restoredWindows.removeAll()
+        root?.leave()
+        frameClock.stop()
+    }
+
+    fileprivate func presentedValue(
+        for binding: HostStateBinding,
+        from carried: HostStateValue
+    ) -> HostStateValue {
+        stateChannels.presentedValue(
+            for: binding,
+            from: carried,
+            now: frameClock.now(),
+            reducesMotion: reducesMotion())
+    }
+
+    fileprivate func allocateMount() -> UInt64 {
+        precondition(nextMount < .max, "AppKit mounted identity exhausted")
+        nextMount += 1
+        return nextMount
+    }
+
+    /// The native image for one resource name, loaded once for this
+    /// renderer. Reapplying an unchanged source hands a native view the image
+    /// it already shows, so nothing reads the file again and no measurement is
+    /// forgotten.
+    fileprivate func image(named name: String) -> NSImage? {
+        if let kept = images.object(forKey: name as NSString) { return kept }
+        guard let loaded = loadImage(named: name) else { return nil }
+        images.setObject(loaded, forKey: name as NSString)
+        return loaded
+    }
+
+    private func loadImage(named name: String) -> NSImage? {
+        let url = resourceDirectory?.appendingPathComponent(name)
+
+        if let url, let image = NSImage(contentsOf: url) {
+            return image
+        }
+
+        if let url, url.pathExtension.lowercased() == "png" {
+            let svg = url.deletingPathExtension().appendingPathExtension("svg")
+            if let image = NSImage(contentsOf: svg) { return image }
+        }
+
+        return NSImage(systemSymbolName: "swift", accessibilityDescription: name)
+    }
+
+    fileprivate func presentedPropertyValue(mount: UInt64, property: Prop) -> HostValue? {
+        describedMotion.presentedValue(for: AppKitDescribedKey(
+            mount: mount,
+            property: property))
+    }
+
+    @discardableResult
+    fileprivate func receiveProperty(
+        mount: UInt64,
+        property: Prop,
+        standing: HostValue?,
+        target: HostValue?,
+        motion: Motion?,
+        landed: (() -> Void)? = nil
+    ) -> Bool {
+        let started = describedMotion.receive(
+            key: AppKitDescribedKey(mount: mount, property: property),
+            standing: standing,
+            target: target,
+            motion: motion,
+            landed: landed,
+            now: patchTime ?? frameClock.now(),
+            reducesMotion: patchReducesMotion ?? reducesMotion())
+        displayCycle.hold()
+        return started
+    }
+
+    /// Drops the motions of an element that leaves the tree, or is adopted -
+    /// its described properties' and its place's.
+    fileprivate func removeMotions(mount: UInt64) {
+        describedMotion.remove(mount: mount)
+        layoutMotion.remove(mount: mount)
+    }
+
+    fileprivate func standingWindowValue(
+        for node: MountedNode,
+        property: Prop
+    ) -> HostValue? {
+        orderedWindowControllers.first(where: { $0.presents(node) })?
+            .standingValue(property)
+    }
+
+}
+
+extension AppKitRenderer: AppKitFramePresenter {
+    var wantsFrames: Bool { framedScrollers.anyObject != nil }
+
+    /// Lets every moving scroller say what the frame saw it do, all of them as
+    /// one reader transaction; a scroller that stands and has said everything
+    /// lets the clock go.
+    func commitReaderReports(now: Double) {
+        let scrollers = framedScrollers.allObjects
+        guard !scrollers.isEmpty else { return }
+
+        performReaderTransaction {
+            for scroller in scrollers {
+                scroller.frame(now: now)
+                if !scroller.wantsFrames { framedScrollers.remove(scroller) }
+            }
+        }
+    }
+
+    func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
+        let impact = root?.applyFrame(states: states, properties: properties) ?? []
+        if impact.contains(.windowShell) { synchronizeWindows() }
+    }
+
+    func renderIfNeeded() {
+        if eventSink == nil, core.needsRender { pump() }
+    }
+}
+
+/// Why a page became visible or stopped being visible.
+///
+/// A navigation move carries the three navigation phases. Window and tab
+/// presentation are appearances, so they deliberately carry only the two
+/// visibility phases.
+enum AppKitPagePresentationReason {
+    case appearance
+    case navigation
+    case window
+}
+
+@MainActor
+final class MountedNode: NSObject {
+    private(set) var id: ElementId
+    private(set) var type: NodeType
+    private(set) var view: NSView?
+
+    /// How StateUI draws the view over the frame AppKit gives it.
+    private var drawing: AppKitViewDrawing?
+
+    private weak var host: AppKitRenderer?
+    private let core = AppKitCoreLink()
+    private weak var parent: MountedNode?
+    private let mount: UInt64
+    private var properties: [Prop: HostValue] = [:]
+    private var driven: [Prop: HostStateBinding] = [:]
+
+    /// The states this element's properties wear, one entry per property.
+    private var wornStates: [Int32] = []
+    private var drivenValues: [Prop: HostStateValue] = [:]
+    private var events: [Event: Int32] = [:]
+    private(set) var children: [MountedNode] = []
+    private var recycledChildren: [MountedNode] = []
+    private var recycles = false
+    private var shape: UInt64 = 0
+
+    /// How this element's children travel, as its patches said it; nil while
+    /// it says nothing of its own.
+    private var motion: HostLayoutMotion?
+
+    /// Whether this element's frame, or any frame under it, is read.
+    private var framesRead = false
+    private var created = false
+    private var widthConstraint: NSLayoutConstraint?
+    private var heightConstraint: NSLayoutConstraint?
+    private var minimumWidthConstraint: NSLayoutConstraint?
+    private var minimumHeightConstraint: NSLayoutConstraint?
+    private var maximumWidthConstraint: NSLayoutConstraint?
+    private var maximumHeightConstraint: NSLayoutConstraint?
+    private var buttonWidthConstraint: NSLayoutConstraint?
+    private var buttonHeightConstraint: NSLayoutConstraint?
+    private var observesFrame = false
+    private var frameObservedViews: [NSView] = []
+    private var frameQueued = false
+    private var lastFrameReport: [Double]?
+
+    /// The focus this element last reported, where it follows its focus.
+    private var reportedFocus = false
+
+    /// Whether this element has been described once: showing and hiding cross
+    /// only on an element that was already there.
+    private var described = false
+
+    /// Whether this element is fading out: still visible, deaf to input, and
+    /// hidden once the fade lands.
+    private var leaving = false
+    private var tapRecognizer: AppKitTapRecognizer?
+    private var swipeRecognizer: AppKitSwipeRecognizer?
+    private var panRecognizer: AppKitPanRecognizer?
+    private var pinchRecognizer: AppKitPinchRecognizer?
+    private var pointerRecognizer: AppKitPointerRecognizer?
+    private var accessibilityDefaults: (
+        isElement: Bool,
+        role: NSAccessibility.Role?
+    )?
+    private var accessibilityThroughCell: Bool?
+    private var accessibilityChildrenSuppressed = false
+    private var panFromX: Double = 0
+    private var panFromY: Double = 0
+    private var pagePresented = false
+    private var pendingTabFallback: Int?
+    private var platformMenuItem: NSMenuItem?
+
+    init(
+        _ patch: HostPatch,
+        host: AppKitRenderer,
+        parent: MountedNode? = nil
+    ) {
+        id = patch.id
+        type = patch.type
+        self.host = host
+        self.parent = parent
+        mount = host.allocateMount()
+        super.init()
+
+        view = makeView()
+        drawing = view.map { AppKitViewDrawing($0) }
+        apply(patch)
+    }
+
+    func apply(_ patch: HostPatch) {
+        apply(patch, adopting: false)
+    }
+
+    /// Gives a complete arriving row to a native subtree retained by a
+    /// recycling layout. The row shape guarantees that types, property keys,
+    /// event keys and child positions line up; identities and values do not,
+    /// so all of those are stamped from the arriving patch.
+    private func apply(_ patch: HostPatch, adopting: Bool) {
+        guard let host else { return }
+
+        let previousShown = shownChildren
+        var changed: Set<Prop>
+
+        if adopting {
+            changed = Set(properties.keys)
+            changed.formUnion(patch.properties.keys)
+            changed.formUnion(driven.keys)
+            if case .replace(let replacement)? = patch.driven {
+                changed.formUnion(replacement.keys)
+            }
+        } else {
+            changed = Set(patch.clearedProperties)
+            changed.formUnion(patch.properties.keys)
+            if case .replace(let replacement) = patch.driven {
+                changed.formUnion(driven.keys)
+                changed.formUnion(replacement.keys)
+            }
+        }
+
+        let standing = Dictionary(uniqueKeysWithValues: changed.compactMap { property in
+            standingValue(property, target: patch.properties[property]).map { (property, $0) }
+        })
+
+        if adopting {
+            host.removeMotions(mount: mount)
+            id = patch.id
+        }
+        type = patch.type
+
+        if adopting {
+            properties = patch.properties
+            if case .replace(let replacement)? = patch.events {
+                events = replacement
+            } else {
+                events = [:]
+            }
+            if case .replace(let replacement)? = patch.driven {
+                driven = replacement
+            } else {
+                driven = [:]
+            }
+            drivenValues.removeAll(keepingCapacity: true)
+            created = false
+            described = false
+            leaving = false
+            lastFrameReport = nil
+            reportedFocus = false
+            pagePresented = false
+            pendingTabFallback = nil
+            for child in recycledChildren { child.leave() }
+            recycledChildren.removeAll(keepingCapacity: true)
+        } else {
+            for property in patch.clearedProperties {
+                properties[property] = nil
+            }
+
+            for (property, value) in patch.properties {
+                properties[property] = value
+            }
+
+            if case .replace(let events) = patch.events {
+                self.events = events
+            }
+        }
+
+        if !adopting, case .replace(let driven) = patch.driven {
+            self.driven = driven
+            drivenValues = drivenValues.filter { driven[$0.key] != nil }
+        }
+        wear(driven)
+
+        for (property, binding) in driven where binding.mode != .in {
+            drivenValues[property] = core.value(for: binding)
+        }
+
+        if let recycles = patch.recycles { self.recycles = recycles }
+        if let shape = patch.shape { self.shape = shape }
+        if let motion = patch.motion {
+            self.motion = motion
+            // The application says its own motion once, and every layout that
+            // says nothing of its own travels that way.
+            if type == .application { host.layoutMotion.applicationMotion = motion.motion }
+        }
+        if !recycles, !recycledChildren.isEmpty {
+            for child in recycledChildren { child.leave() }
+            recycledChildren.removeAll(keepingCapacity: true)
+        }
+
+        switch patch.children {
+        case .unchanged:
+            break
+
+        case .arranged(let childPatches):
+            arrange(childPatches, host: host, adopting: adopting)
+
+        case .changed(let childPatches):
+            for childPatch in childPatches {
+                // A NEW CHILD ALWAYS ARRIVES IN AN ARRANGED LIST: a sparse list
+                // naming one this element does not hold, or holds as something
+                // else, was computed against another tree, and nothing is
+                // mounted from its partial description.
+                guard let index = children.firstIndex(where: { $0.id == childPatch.id }) else {
+                    host.intake.drifted(
+                        "a patch names child '\(childPatch.id)' that '\(id)' does not have")
+                    continue
+                }
+                let child = children[index]
+
+                if child.type == childPatch.type, !childPatch.replace {
+                    child.apply(childPatch)
+                } else if childPatch.replace {
+                    child.leave()
+                    children[index] = MountedNode(childPatch, host: host, parent: self)
+                } else {
+                    host.intake.drifted(
+                        "a patch describes '\(childPatch.id)' as \(childPatch.type) where '\(id)' holds \(child.type)")
+                }
+            }
+        }
+
+        for property in changed.sorted() {
+            let hasDrivenPresentation = driven[property].map { $0.mode != .in } ?? false
+            host.receiveProperty(
+                mount: mount,
+                property: property,
+                standing: standing[property],
+                target: resolvedValue(property),
+                motion: adopting || hasDrivenPresentation
+                    || !AppKitTransitionSurface.presents(property, on: type)
+                    ? nil
+                    : patch.transitions[property]?.motion)
+        }
+
+        if described, changed.contains(.isVisible) { crossVisibility() }
+        applyProperties(changed: changed)
+        configureContextMenu()
+        configureGestures()
+        configureLayoutMotion()
+        arrangeChildren()
+        configureFrameObservation()
+        reconcilePresentation(from: previousShown)
+        reportTabFallback()
+        described = true
+    }
+
+    /// Crosses a change of visibility on an element already shown: out -
+    /// fading to nothing, deaf to input, hidden when the fade lands - or in,
+    /// from nothing up to the opacity the tree describes. Under the element's
+    /// own motion, or the application's where it says nothing; at once under
+    /// `.motion(.none)`, an engine's value, or a reader who asked for less.
+    private func crossVisibility() {
+        guard let host, let view else { return }
+        let visible = value(.isVisible)?.bool != false
+        let law = host.layoutMotion.law(of: motion)
+        let opacity = resolvedValue(.opacity) ?? .number(1)
+
+        if !visible {
+            guard !view.isHidden, !leaving, let law else { return }
+            leaving = true
+            let started = host.receiveProperty(
+                mount: mount,
+                property: .opacity,
+                standing: .number(Double(view.alphaValue)),
+                target: .number(0),
+                motion: law,
+                landed: { [weak self] in self?.crossed() })
+            if !started { leaving = false }
+        } else if leaving {
+            // BACK BEFORE IT WENT: up again from where the fade has reached,
+            // or at once where nothing moves.
+            leaving = false
+            host.receiveProperty(
+                mount: mount,
+                property: .opacity,
+                standing: .number(Double(view.alphaValue)),
+                target: opacity,
+                motion: law)
+        } else if view.isHidden, let law {
+            view.isHidden = false
+            host.receiveProperty(
+                mount: mount,
+                property: .opacity,
+                standing: .number(0),
+                target: opacity,
+                motion: law)
+        }
+    }
+
+    /// The fade out ended - landed, or cut short - and the element goes,
+    /// unless it was shown again on the way.
+    ///
+    /// THE REST OF THE CHANGE the patch began: the layout that places the
+    /// element closes over it the way a patch moves its children, rather than
+    /// snapping the rows below into the gap.
+    private func crossed() {
+        guard leaving, let view else { return }
+        leaving = false
+        (view.superview as? AppKitTravellingLayout)?.patchArrived()
+        applyVisibility()
+        view.invalidateMeasurements()
+    }
+
+    /// Shows, hides and fades the view as the tree says - kept visible and
+    /// deaf to input while it fades out.
+    private func applyVisibility() {
+        guard let view else { return }
+        view.isHidden = !leaving && value(.isVisible)?.bool == false
+        view.alphaValue = value(.opacity)?.number ?? 1
+        if let hitTestView = view as? AppKitHitTestView {
+            // The whole view and its children, or only its own empty area.
+            let ignores = value(.ignoresInput)?.bool ?? false
+            hitTestView.applyInputTransparency(
+                leaving || ignores || value(.letsInputThrough)?.bool == true,
+                cascades: leaving || ignores)
+        }
+    }
+
+    /// Reconciles a complete child arrangement. Ordinary children match by
+    /// identity. During adoption descendants match by position, because the
+    /// matching shape already proved the two complete subtrees equivalent.
+    private func arrange(
+        _ patches: [HostPatch],
+        host: AppKitRenderer,
+        adopting: Bool
+    ) {
+        if adopting {
+            let previous = children
+            children = patches.enumerated().map { index, patch in
+                guard index < previous.count,
+                      previous[index].type == patch.type,
+                      !patch.replace
+                else {
+                    return MountedNode(patch, host: host, parent: self)
+                }
+
+                let child = previous[index]
+                child.parent = self
+                child.apply(patch, adopting: true)
+                return child
+            }
+            leave(previous)
+            return
+        }
+
+        let before = children
+        let previous = Dictionary(uniqueKeysWithValues: children.map { ($0.id, $0) })
+
+        if recycles {
+            let named = Set(patches.map(\.id))
+            for child in children where !named.contains(child.id) {
+                guard child.shape != 0,
+                      recycledChildren.count < Self.recyclingCapacity
+                else { continue }
+                child.setRecycled(true)
+                child.park()
+                recycledChildren.append(child)
+            }
+        }
+
+        children = patches.map { patch in
+            if let child = previous[patch.id], child.type == patch.type, !patch.replace {
+                child.parent = self
+                child.apply(patch)
+                return child
+            }
+
+            if recycles, let shape = patch.shape, shape != 0,
+               let index = recycledChildren.lastIndex(where: { $0.shape == shape }) {
+                let child = recycledChildren.remove(at: index)
+                child.parent = self
+                child.setRecycled(false)
+                child.apply(patch, adopting: true)
+                return child
+            }
+
+            return MountedNode(patch, host: host, parent: self)
+        }
+        leave(before)
+    }
+
+    /// Detaches every one of `previous` that is no longer a child of this
+    /// element or a row it keeps for recycling.
+    private func leave(_ previous: [MountedNode]) {
+        let staying = Set((children + recycledChildren).map(ObjectIdentifier.init))
+        for child in previous where !staying.contains(ObjectIdentifier(child)) {
+            child.leave()
+        }
+    }
+
+    private func setRecycled(_ recycled: Bool) {
+        for native in presentableViews { native.isHidden = recycled }
+    }
+
+    func first(type sought: NodeType) -> MountedNode? {
+        if type == sought { return self }
+
+        for child in children {
+            if let found = child.first(type: sought) { return found }
+        }
+
+        return nil
+    }
+
+    func first(id sought: ElementId) -> MountedNode? {
+        if id == sought { return self }
+
+        for child in children {
+            if let found = child.first(id: sought) { return found }
+        }
+
+        return nil
+    }
+
+    func all(id sought: ElementId) -> [MountedNode] {
+        var found = id == sought ? [self] : []
+        for child in children {
+            found.append(contentsOf: child.all(id: sought))
+        }
+        return found
+    }
+
+    /// Ties this element to the channels of the states its properties wear,
+    /// letting go of the ones it no longer does.
+    private func wear(_ driven: [Prop: HostStateBinding]) {
+        let worn = driven.values.filter { $0.kind == .property }.map(\.state).sorted()
+        guard worn != wornStates, let host else { return }
+
+        for state in wornStates { host.stateChannels.detach(state) }
+        for state in worn { host.stateChannels.attach(state) }
+        wornStates = worn
+    }
+
+    /// Detaches this element and everything under it from every part of the
+    /// runtime as it leaves the tree: the channels it wears, its motions and its
+    /// place, and what it attached outside the tree - frame observers,
+    /// recognizers, a scroller's hold on the frame clock.
+    func leave() {
+        letGo()
+        releaseNativeAttachments()
+        for child in children + recycledChildren { child.leave() }
+    }
+
+    /// Lets go of what a parked row no longer shows - the channels it wears,
+    /// its motions and its place - while its views wait to be adopted.
+    private func park() {
+        letGo()
+        for child in children { child.park() }
+    }
+
+    private func letGo() {
+        leaving = false
+        if let host {
+            for state in wornStates { host.stateChannels.detach(state) }
+            host.removeMotions(mount: mount)
+        }
+        wornStates = []
+    }
+
+    private func releaseNativeAttachments() {
+        if observesFrame {
+            NotificationCenter.default.removeObserver(
+                self, name: NSView.frameDidChangeNotification, object: nil)
+            NotificationCenter.default.removeObserver(
+                self, name: NSView.boundsDidChangeNotification, object: nil)
+            frameObservedViews.removeAll()
+            observesFrame = false
+        }
+
+        let recognizers: [NSGestureRecognizer?] = [
+            tapRecognizer, swipeRecognizer, panRecognizer, pinchRecognizer,
+        ]
+        for recognizer in recognizers.compactMap({ $0 }) {
+            view?.removeGestureRecognizer(recognizer)
+        }
+        tapRecognizer = nil
+        swipeRecognizer = nil
+        panRecognizer = nil
+        pinchRecognizer = nil
+        pointerRecognizer?.detach()
+        pointerRecognizer = nil
+
+        if let scroller = view as? AppKitScrollView { host?.stopFrames(for: scroller) }
+    }
+
+    /// Drops the element that presents `view` from this subtree.
+    func forgetForTesting(_ view: NSView) {
+        if let index = children.firstIndex(where: { $0.view === view }) {
+            children[index].leave()
+            children[index].view?.removeFromSuperview()
+            children.remove(at: index)
+            return
+        }
+        for child in children { child.forgetForTesting(view) }
+    }
+
+    /// Tells every element in this subtree that follows its focus where the
+    /// focus now is, where that has changed.
+    func reportFocus() {
+        if let handler = events[.isFocusedChanged], let view {
+            let focused = AppKitFocus.holds(view, view.window?.firstResponder)
+            if focused != reportedFocus {
+                reportedFocus = focused
+                host?.dispatch(handler, payload: [.bool(focused)])
+            }
+        }
+        for child in children { child.reportFocus() }
+    }
+
+    /// Hands a layout what its children travel under, and tells it a patch
+    /// reached it: its next arrangement places what the patch changed.
+    ///
+    /// Only a patch says so. A frame the display cycle presents arranges the
+    /// same children in a room that is moving, and they follow it.
+    private func configureLayoutMotion() {
+        framesRead = driven[.frame] != nil || events[.frameChanged] != nil
+            || children.contains { $0.framesRead }
+
+        guard let layout = view as? AppKitTravellingLayout else { return }
+        layout.layoutMotion = host?.layoutMotion
+        layout.motion = motion
+        layout.framesRead = framesRead
+        layout.patchArrived()
+    }
+
+    /// Whether this element can fade in as it joins a standing layout: its
+    /// view presents its opacity, and no state owns that opacity.
+    private var fadesIn: Bool {
+        view != nil && driven[.opacity] == nil
+            && AppKitTransitionSurface.presents(.opacity, on: type)
+    }
+
+    /// Fades this element in as it joins a layout that was already standing:
+    /// the other half of the children around it sliding to make room.
+    ///
+    /// Not an opacity already travelling: the patch that set it said how it
+    /// moves, and a fade over it would be a second answer for one value.
+    private func fadeIn(under motion: Motion) {
+        guard fadesIn, let host, let view,
+              host.presentedPropertyValue(mount: mount, property: .opacity) == nil
+        else { return }
+
+        host.receiveProperty(
+            mount: mount,
+            property: .opacity,
+            standing: .number(0),
+            target: resolvedValue(.opacity) ?? .number(1),
+            motion: motion)
+        view.alphaValue = value(.opacity)?.number ?? 1
+    }
+
+    /// Presents one frame in one walk: the states' images on the properties
+    /// tied to them and the described properties that moved, each element's
+    /// together, and each ancestor arranged once.
+    @discardableResult
+    func applyFrame(
+        states valuesByState: [Int32: HostStateValue],
+        properties propertiesByMount: [UInt64: Set<Prop>]
+    ) -> AppKitPresentationImpact {
+        var changed = propertiesByMount[mount] ?? []
+
+        for (property, binding) in driven where binding.mode != .in {
+            guard let value = valuesByState[binding.state] else { continue }
+            drivenValues[property] = value
+            changed.insert(property)
+        }
+
+        let own: AppKitPresentationImpact = changed.isEmpty ? [] : presentFrame(changed)
+        var descendants: AppKitPresentationImpact = []
+
+        for child in children {
+            descendants.formUnion(
+                child.applyFrame(states: valuesByState, properties: propertiesByMount))
+        }
+
+        return settleFrame(own, descendants: descendants)
+    }
+
+    /// Presents one display frame of this element's own changed properties.
+    private func presentFrame(_ properties: Set<Prop>) -> AppKitPresentationImpact {
+        applyProperties(changed: properties)
+
+        var impact: AppKitPresentationImpact = .content
+        // An element without a native view - a span, a formatted string - is
+        // drawn by the nearest ancestor that has one, which arranges again. A
+        // layout's own placement run moves its children inside the room it
+        // already has, so it arranges the layout and not its parent.
+        let arranged = properties.subtracting(ownPlacementRun)
+        if view == nil || !arranged.isDisjoint(with: Self.arrangedProperties) {
+            impact.insert(.arrangement)
+        }
+        if needsWindowSynchronization(for: properties) {
+            impact.insert(.windowShell)
+        }
+        return impact
+    }
+
+    /// Arranges this element once its descendants have their frame, and says
+    /// what the frame asks of its parent.
+    ///
+    /// A child's layout item is its parent's business alone. The ancestors
+    /// above learn of a changed size through the measurements the change
+    /// forgot, so a frame that moves presentation only arranges nothing, and a
+    /// frame that moves a size arranges the one parent that places it. An
+    /// element without a view draws nothing itself, so a child's arrangement
+    /// passes through it to the element that presents them both.
+    private func settleFrame(
+        _ own: AppKitPresentationImpact,
+        descendants: AppKitPresentationImpact
+    ) -> AppKitPresentationImpact {
+        if own.contains(.content) || descendants.contains(.arrangement) {
+            arrangeChildren()
+        }
+        guard view != nil else { return own.union(descendants) }
+        return own.union(descendants.subtracting(.arrangement))
+    }
+
+    var pageView: NSView? {
+        pageNode?.presentableViews.first
+    }
+
+    var presentablePageView: NSView? { presentableViews.first }
+
+    var pageNode: MountedNode? {
+        children.first(where: { Self.pageTypes.contains($0.type) })
+    }
+
+    var modalStackNode: MountedNode? {
+        children.first { $0.type == .modalStack }
+    }
+
+    var overlayItem: AppKitLayoutItem? {
+        slot(.overlay)?.children.first?.layoutItem
+    }
+
+    var visiblePage: MountedNode? {
+        switch type {
+        case .page:
+            return self
+        case .navigationStack:
+            return children.last?.visiblePage
+        case .tabbedView:
+            return selectedTab?.visiblePage
+        case .splitView:
+            return children.dropFirst().first?.visiblePage
+        default:
+            return pageNode?.visiblePage
+        }
+    }
+
+    /// The native navigation container currently surrounding the visible
+    /// content, if this page arrangement has one.
+    var visibleNavigationStack: MountedNode? {
+        switch type {
+        case .navigationStack:
+            return self
+        case .tabbedView:
+            return selectedTab?.visibleNavigationStack
+        case .splitView:
+            return children.dropFirst().first?.visibleNavigationStack
+        default:
+            return pageNode?.visibleNavigationStack
+        }
+    }
+
+    /// The colour written for the bars over the visible content: its
+    /// navigation stack's, else its tabbed view's.
+    var visibleBarBackground: NSColor? {
+        visibleNavigationStack?.color(.barBackgroundColor)
+            ?? visibleTabbedView?.color(.barBackgroundColor)
+    }
+
+    /// The colour written for what stands on those bars.
+    var visibleBarForeground: NSColor? {
+        visibleNavigationStack?.color(.barForegroundColor)
+    }
+
+    /// The tabs the window shows beneath its toolbar - those of the tabbed
+    /// view on the visible page path, where its tabs are the window's - and
+    /// the split view whose detail it stands in, if any.
+    var visibleWindowTabs: AppKitTabsPlacement? {
+        guard let tabbed = visibleTabbedView,
+              let tabs = tabbed.view as? AppKitTabbedView,
+              tabs.tabsShownByWindow
+        else { return nil }
+
+        var ancestor = tabbed.parent
+        while let node = ancestor, node.type != .splitView {
+            ancestor = node.parent
+        }
+
+        let segments = tabs.segments
+        return AppKitTabsPlacement(
+            tabs: AppKitWindowTabs(
+                titles: segments.map(\.title),
+                images: segments.map(\.image),
+                selected: tabs.selectedIndex,
+                select: { [weak tabs] index in tabs?.selectByReader(index) }),
+            split: ancestor?.view as? AppKitSplitView)
+    }
+
+    /// The first tabbed view on the visible page path.
+    private var visibleTabbedView: MountedNode? {
+        switch type {
+        case .page:
+            return nil
+        case .tabbedView:
+            return self
+        case .navigationStack:
+            return children.last?.visibleTabbedView
+        case .splitView:
+            return children.dropFirst().first?.visibleTabbedView
+        default:
+            return pageNode?.visibleTabbedView
+        }
+    }
+
+    /// Tells each tabbed view on this page path that its tabs are the
+    /// window's, in the row beneath its toolbar: the first tabbed view down
+    /// any path of stacks and split view details - the row stands beside a
+    /// sidebar, never over it. Asked of the window's page once the whole tree
+    /// is arranged, so what stands where is the tree's final word. A tabbed
+    /// view in a sidebar, a sheet, a tab of another or inside content is never
+    /// told, and keeps its tabs on its own content.
+    func markTabsShownByWindow() {
+        switch type {
+        case .tabbedView:
+            (view as? AppKitTabbedView)?.tabsShownByWindow = true
+        case .navigationStack:
+            children.forEach { $0.markTabsShownByWindow() }
+        case .splitView:
+            children.dropFirst().forEach { $0.markTabsShownByWindow() }
+        default:
+            break
+        }
+    }
+
+    /// The native split view controller of a split page.
+    var sidebarController: NSSplitViewController? {
+        (view as? AppKitSplitView)?.splitController
+    }
+
+    /// The way back the visible navigation stack offers, while its top page
+    /// can go back.
+    var visibleBackAction: AppKitToolbarAction? {
+        guard let navigation = visibleNavigationStack,
+              navigation.children.count > 1,
+              let top = navigation.children.last,
+              top.bool(.hasNavigationBar) ?? true,
+              top.bool(.hasBackButton) ?? true
+        else { return nil }
+
+        let previous = navigation.children[navigation.children.count - 2]
+        let title = previous.string(.backButtonTitle) ?? "Back"
+        return AppKitToolbarAction(
+            identifier: AppKitWindowToolbar.back,
+            title: title,
+            image: AppKitWindowToolbar.backImage,
+            isEnabled: true,
+            perform: { [weak navigation] in navigation?.popNavigation() })
+    }
+
+    /// The visible page's actions: the primary ones, then those behind
+    /// native overflow, each group by priority and then source order. A page
+    /// that hides its navigation furniture puts none of them in the toolbar.
+    var visibleToolbarActions: (primary: [AppKitToolbarAction], overflow: [AppKitToolbarAction]) {
+        guard let page = visiblePage,
+              page.bool(.hasNavigationBar) ?? true,
+              let items = page.slot(.toolbarItems)?.children
+        else { return ([], []) }
+
+        let ordered = items.enumerated().sorted {
+            let left = $0.element.whole(.priority) ?? 0
+            let right = $1.element.whole(.priority) ?? 0
+            return left == right ? $0.offset < $1.offset : left < right
+        }.map(\.element)
+        let actions = ordered.map { item in
+            (overflows: item.enumeration(.placement) == 2, action: AppKitToolbarAction(
+                identifier: NSToolbarItem.Identifier("StateUI.action.\(item.mount)"),
+                title: item.string(.text) ?? "",
+                image: item.image(.icon),
+                isEnabled: item.bool(.isEnabled) ?? true,
+                perform: { [weak item] in item?.clicked(nil) }))
+        }
+        return (
+            actions.filter { !$0.overflows }.map(\.action),
+            actions.filter(\.overflows).map(\.action))
+    }
+
+    /// The view the visible page shows in place of its title.
+    var visibleTitleView: NSView? {
+        visiblePage?.slot(.titleView)?.presentableViews.first
+    }
+
+    var pageMenuItems: [NSMenuItem] {
+        visiblePage?.slot(.menuBar)?.children.compactMap { $0.nativeMenuItem } ?? []
+    }
+
+    /// Makes this page tree visible or hidden, reporting phases only after the
+    /// native tree has reached the same state.
+    func setPagePresented(_ presented: Bool, reason: AppKitPagePresentationReason) {
+        guard Self.pageTypes.contains(type), pagePresented != presented else { return }
+        pagePresented = presented
+
+        switch type {
+        case .page:
+            if presented {
+                announce(.appearing)
+                if reason == .navigation { announce(.navigatedTo) }
+            } else {
+                if reason == .navigation { announce(.navigatingFrom) }
+                announce(.disappearing)
+                if reason == .navigation { announce(.navigatedFrom) }
+            }
+
+        case .navigationStack:
+            children.last?.setPagePresented(
+                presented,
+                reason: reason == .window && presented ? .navigation
+                    : (reason == .window ? .appearance : reason))
+
+        case .tabbedView:
+            selectedTab?.setPagePresented(presented, reason: .appearance)
+
+        case .splitView:
+            children.dropFirst().first?.setPagePresented(presented, reason: .appearance)
+            if sidebarIsVisible {
+                children.first?.setPagePresented(presented, reason: .appearance)
+            }
+
+        default:
+            break
+        }
+    }
+
+    private func announce(_ event: Event) {
+        guard let handler = events[event] else { return }
+        host?.enqueue(handler, isPhase: true)
+    }
+
+    /// What this arrangement shows while it is shown itself: a stack's top
+    /// page, a tabbed view's selected tab, a split view's detail and - while
+    /// it shows - its sidebar. Nothing, for anything else.
+    private var shownChildren: [MountedNode] {
+        switch type {
+        case .navigationStack:
+            return children.last.map { [$0] } ?? []
+        case .tabbedView:
+            return selectedTab.map { [$0] } ?? []
+        case .splitView:
+            let detail = Array(children.dropFirst().prefix(1))
+            return sidebarIsVisible ? detail + children.prefix(1) : detail
+        default:
+            return []
+        }
+    }
+
+    /// Moves presentation to follow a change of the arrangement - a push or a
+    /// pop, another tab, the sidebar showing or hiding, or a shown child
+    /// replaced outright: what stopped showing leaves first, then what started
+    /// showing arrives. On a stack that is a navigation; anywhere else it is a
+    /// change of what is visible.
+    private func reconcilePresentation(from previous: [MountedNode]) {
+        guard pagePresented else { return }
+        let current = shownChildren
+        let reason: AppKitPagePresentationReason =
+            type == .navigationStack ? .navigation : .appearance
+
+        for child in previous where !current.contains(where: { $0 === child }) {
+            child.setPagePresented(false, reason: reason)
+        }
+        for child in current where !previous.contains(where: { $0 === child }) {
+            child.setPagePresented(true, reason: reason)
+        }
+    }
+
+    /// Reports the tab a tabbed view fell back to when its selected tab went
+    /// away.
+    private func reportTabFallback() {
+        if let fallback = pendingTabFallback,
+           let handler = events[.currentPageChanged] {
+            host?.enqueue(handler, payload: [.number(Double(fallback))])
+        }
+        pendingTabFallback = nil
+    }
+
+    private var selectedTab: MountedNode? {
+        guard !children.isEmpty else { return nil }
+        let requested = (view as? AppKitTabbedView)?.selectedIndex ?? whole(.currentPage) ?? 0
+        return children[min(max(requested, 0), children.count - 1)]
+    }
+
+    private var sidebarIsVisible: Bool {
+        if let split = view as? AppKitSplitView {
+            return split.isEffectivelyPresented
+        }
+        return value(.isSidebarVisible)?.bool == true
+    }
+
+    func takeCreatedHandlers() -> [Int32] {
+        var handlers: [Int32] = []
+
+        if !created {
+            created = true
+            if type != .window, let handler = events[.created] {
+                handlers.append(handler)
+            }
+        }
+
+        for child in children {
+            handlers.append(contentsOf: child.takeCreatedHandlers())
+        }
+
+        return handlers
+    }
+
+    func string(_ property: Prop) -> String? {
+        value(property)?.string
+    }
+
+    func name(_ property: Prop) -> String? {
+        value(property)?.name
+    }
+
+    func number(_ property: Prop) -> Double? {
+        value(property)?.number
+    }
+
+    func bool(_ property: Prop) -> Bool? {
+        value(property)?.bool
+    }
+
+    func handler(_ event: Event) -> Int32? {
+        events[event]
+    }
+
+    @discardableResult
+    func applyState(_ state: Int32, value: HostStateValue) -> AppKitPresentationImpact {
+        applyStates([state: value])
+    }
+
+    @discardableResult
+    func applyStates(
+        _ valuesByState: [Int32: HostStateValue]
+    ) -> AppKitPresentationImpact {
+        applyFrame(states: valuesByState, properties: [:])
+    }
+
+    /// Properties a parent reads into its child's layout item. A frame that
+    /// moves one of them makes the parent arrange again; no other frame
+    /// arranges an ancestor.
+    private static let arrangedProperties: Set<Prop> = [
+        .margin, .horizontalAlignment, .verticalAlignment,
+        .width, .height,
+        .minimumWidth, .minimumHeight,
+        .maximumWidth, .maximumHeight,
+        .gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan,
+        .absoluteLayoutBounds, .absoluteLayoutProportions,
+    ]
+
+    /// Properties whose change is drawn without changing any native
+    /// measurement. Applying any other property may change a view's size, so
+    /// it forgets the measurements from that view up to its window.
+    private static let unmeasuredProperties: Set<Prop> = [
+        .opacity, .translationX, .translationY,
+        .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY,
+        .pivotX, .pivotY,
+        .background, .color, .textColor, .placeholderColor,
+        .tint, .borderColor, .stroke, .fill, .strokeWidth,
+        .strokeDashPattern, .strokeDashOffset, .strokeLineCap, .strokeLineJoin,
+        .strokeMiterLimit, .shape, .cornerRadius, .renderTransform,
+        .barBackgroundColor, .barForegroundColor,
+        .drawable, .value, .progress, .scrollOffset, .isOn, .isEnabled,
+        .ignoresInput, .letsInputThrough,
+        .accessibilityIdentifier, .isAccessibilityHidden, .automationExcludedWithChildren,
+        .accessibilityLabel, .accessibilityHint, .accessibilityHeadingLevel,
+    ]
+
+    /// Only properties whose native presentation lives outside the mounted
+    /// content view need the scene/window reconciliation path. Ordinary view
+    /// frames are already applied in place and AppKit lays them out before the
+    /// display link's frame is drawn.
+    private func needsWindowSynchronization(for properties: Set<Prop>) -> Bool {
+        guard !properties.isEmpty else { return false }
+        return type == .window || type == .titleBar || type == .navigationStack
+    }
+
+    @objc private func clicked(_ sender: Any?) {
+        guard let handler = events[.clicked] else { return }
+        host?.dispatch(handler)
+    }
+
+
+
+    /// A value the reader of a registered view changed, by member.
+    private func report(_ property: Prop, _ event: Event, _ value: HostValue) {
+        guard let host else { return }
+
+        // A RADIO BUTTON'S SET LIVES ACROSS THE WINDOW, where AppKit clears only
+        // the buttons of one superview: the button reports that it is on, and
+        // the host - which holds the tree - takes the check off the others in
+        // the same breath.
+        guard type == .radioButton, property == .isOn, value.bool == true else {
+            return carry(property, event, value)
+        }
+
+        host.performReaderTransaction {
+            clearRadioPeers()
+            carry(property, event, value)
+        }
+    }
+
+    /// The other buttons of this one's set lose their check, each reporting
+    /// what it became.
+    private func clearRadioPeers() {
+        let group = name(.groupName).flatMap { $0.isEmpty ? nil : $0 }
+        let scope = radioScope(named: group)
+        let peers = group.map { scope.radioButtons(named: $0) }
+            ?? (parent?.children.filter { $0.type == .radioButton } ?? [self])
+
+        for peer in peers where peer !== self && peer.bool(.isOn) == true {
+            peer.setRadioChecked(false)
+            peer.carry(.isOn, .toggled, .bool(false))
+        }
+    }
+
+    /// One reported value: onto the state the element carries it in - text
+    /// where the value is text, lanes where it is a number, a flag or a choice
+    /// - and to the element's handler for the event.
+    private func carry(_ property: Prop, _ event: Event, _ value: HostValue) {
+        guard let host else { return }
+
+        let carried: HostStateValue? = switch value {
+        case .string(let text): .text(text)
+        case .name(let name): .text(name)
+        case .bool(let flag): .lanes([flag ? 1 : 0])
+        case .number(let number): .lanes([number])
+        case .numbers(let numbers): .lanes(numbers)
+        case .enumeration(let choice): .lanes([Double(choice)])
+        default: nil
+        }
+
+        var reported = false
+
+        if let carried, let binding = driven[property] {
+            // A JOURNEY THE HOST CARRIES is taken at the position the reader has
+            // just established - the old destination and velocity stop pulling
+            // against the hand. A value the host merely sets is reported as it
+            // stands.
+            if case .lanes(let lanes) = carried, binding.kind == .property {
+                reported = host.take(lanes, through: binding)
+            } else {
+                reported = host.report(carried, through: binding)
+            }
+        }
+
+        if let handler = events[event] {
+            host.dispatch(handler, payload: [value])
+        } else if reported {
+            host.settleReaderWrite(true)
+        }
+    }
+
+    private func tapped() {
+        guard let handler = events[.tapped] else { return }
+        host?.dispatch(handler)
+    }
+
+    private func swiped(_ direction: Int32) {
+        guard let handler = events[.swiped] else { return }
+        host?.dispatch(handler, payload: [.enumeration(direction)])
+    }
+
+    private func panChanged(_ phase: AppKitGesturePhase, total: NSPoint) {
+        guard let host else { return }
+        let across = whole(.panXChannel).flatMap { $0 == 0 ? nil : Int32($0) }
+        let down = whole(.panYChannel).flatMap { $0 == 0 ? nil : Int32($0) }
+
+        if phase == .started {
+            panFromX = across.flatMap(host.standingGestureValue(state:)) ?? 0
+            panFromY = down.flatMap(host.standingGestureValue(state:)) ?? 0
+        }
+
+        var changedState = false
+        host.performReaderTransaction {
+            if phase == .running {
+                if let across {
+                    changedState = host.takeGestureValue(
+                        panFromX + Double(total.x), state: across) || changedState
+                }
+                if let down {
+                    changedState = host.takeGestureValue(
+                        panFromY + Double(total.y), state: down) || changedState
+                }
+            }
+
+            if let handler = events[.panUpdated] {
+                host.dispatch(handler, payload: [
+                    .enumeration(phase.rawValue),
+                    .number(Double(total.x)),
+                    .number(Double(total.y)),
+                ])
+            }
+        }
+        host.settleReaderWrite(changedState)
+    }
+
+    private func pinchChanged(
+        _ phase: AppKitGesturePhase,
+        scale: CGFloat,
+        origin: NSPoint
+    ) {
+        guard let handler = events[.pinchUpdated] else { return }
+        host?.dispatch(handler, payload: [
+            .enumeration(phase.rawValue),
+            .number(Double(scale)),
+            .numbers([Double(origin.x), Double(origin.y)]),
+        ])
+    }
+
+    private func pointerChanged(
+        _ report: AppKitPointerRecognizer.Report,
+        point: NSPoint?
+    ) {
+        let event: Event = switch report {
+        case .entered: .pointerEntered
+        case .exited: .pointerExited
+        case .moved: .pointerMoved
+        case .pressed: .pointerPressed
+        case .released: .pointerReleased
+        }
+        guard let handler = events[event] else { return }
+        let payload: [HostValue] = point.map {
+            [.numbers([Double($0.x), Double($0.y)])]
+        } ?? []
+        host?.dispatch(handler, payload: payload)
+    }
+
+
+    private func scrolled(from old: NSPoint, to new: NSPoint) {
+        guard let host else { return }
+        var tookState = false
+        host.performReaderTransaction {
+            if old != new, let binding = driven[.scrollOffset] {
+                tookState = host.take([Double(new.x), Double(new.y)], through: binding)
+            }
+
+            if old.x != new.x, let handler = events[.scrollXChanged] {
+                host.dispatch(handler, payload: [.number(Double(new.x))])
+            }
+            if old.y != new.y, let handler = events[.scrollYChanged] {
+                host.dispatch(handler, payload: [.number(Double(new.y))])
+            }
+        }
+        host.settleReaderWrite(tookState)
+    }
+
+    private func scrollStopped() {
+        guard let handler = events[.scrollStopped] else { return }
+        host?.dispatch(handler)
+    }
+
+    /// Hands an event a registered view raised to this element's handler for
+    /// it - nothing where the tree subscribed none.
+    private func send(_ event: Event, _ values: [HostValue]) {
+        guard let handler = events[event] else { return }
+
+        host?.dispatch(handler, payload: values)
+    }
+
+    private func makeView() -> NSView? {
+        if let registered = AppKitRegistrations.registry.makeView(
+            for: type,
+            sending: { [weak self] event, values in self?.send(event, values) },
+            reporting: { [weak self] property, event, value in self?.report(property, event, value) }
+        ) {
+            // A picture crosses as a file NAME, and the files are the
+            // renderer's: it holds the resource directory and the cache over
+            // it. A registration is made once for the process and has no
+            // renderer to ask, so a view that draws pictures is given the way
+            // to resolve one here, where it is made.
+            if let drawing = registered as? any AppKitPictureResolving {
+                drawing.picture = { [weak self] name in self?.image(named: name) }
+            }
+
+            return registered
+        }
+
+        switch type {
+        case .application, .scene, .window:
+            return nil
+
+        case .page:
+            let page = AppKitSingleChildView()
+            page.translatesAutoresizingMaskIntoConstraints = true
+            return page
+
+        case .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
+             .titleView, .toolbarItems, .menuBar, .contextMenu,
+             .menu, .menuItem,
+             .menuSeparator, .spans, .span:
+            return nil
+
+        case .navigationStack:
+            return AppKitNavigationView()
+
+        case .tabbedView:
+            return AppKitTabbedView()
+
+        case .splitView:
+            return AppKitSplitView()
+
+        case .absoluteLayout:
+            return AppKitAbsoluteLayoutView()
+
+        case .border:
+            return AppKitBorderView()
+
+        case .scrollView:
+            let scroll = AppKitScrollView()
+            scroll.onOffsetChanged = { [weak self] old, new in
+                self?.scrolled(from: old, to: new)
+            }
+            scroll.onScrollStopped = { [weak self] in self?.scrollStopped() }
+            scroll.onFramesWanted = { [weak self, weak scroll] in
+                guard let scroll else { return }
+                self?.host?.requestFrames(for: scroll)
+            }
+            return scroll
+
+        case .label:
+            return AppKitLabelView()
+
+        case .toolbarItem:
+            // The window's toolbar makes the native item; see visibleToolbarActions.
+            return nil
+
+        default:
+            return AppKitUnsupportedView(type)
+        }
+    }
+
+    /// The layout's own placement run, where a state drives one: the room's
+    /// arithmetic over the children, which moves them without changing what
+    /// the layout measures - a run is not part of its natural size.
+    private var ownPlacementRun: Set<Prop> {
+        driven[.absoluteLayoutBounds]?.kind == .placement ? [.absoluteLayoutBounds] : []
+    }
+
+    private func applyProperties(changed: Set<Prop>) {
+        guard let view else { return }
+
+        if !changed.subtracting(ownPlacementRun).isSubset(of: Self.unmeasuredProperties) {
+            view.invalidateMeasurements()
+        }
+
+        applyVisibility()
+        if !(view is AppKitBorderView) && !(view is AppKitColorBoxView) {
+            let background = color(.background)
+            view.wantsLayer = true
+            view.layer?.backgroundColor = background?.cgColor
+        }
+
+        // A family the registry realizes takes its own members there, each read
+        // as this element presents it; the arms below are the families still
+        // to move.
+        AppKitRegistrations.registry.apply(
+            changed, to: view, of: type,
+            reading: { self.value($0) },
+            carriedIn: { self.driven[$0]?.mode == .in })
+
+        if type == .toolbarItem, let button = view as? NSButton {
+            button.title = string(.text) ?? ""
+            let buttonFont = font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize))
+            button.font = buttonFont
+            button.isEnabled = value(.isEnabled)?.bool ?? true
+
+            let foreground = value(.isDestructive)?.bool == true
+                ? NSColor.systemRed
+                : (color(.textColor) ?? .controlTextColor)
+            button.attributedTitle = NSAttributedString(
+                string: button.title,
+                attributes: [.font: buttonFont, .foregroundColor: foreground])
+
+            button.image = string(.icon).flatMap { image(named: $0) }
+            button.imagePosition = button.image == nil
+                ? .noImage
+                : (button.title.isEmpty ? .imageOnly : .imageLeading)
+
+            let background = color(.background)
+            button.isBordered = background == nil
+            button.wantsLayer = background != nil
+            button.layer?.backgroundColor = background?.cgColor
+            button.layer?.cornerRadius = value(.cornerRadius)?.number ?? 0
+        }
+
+        if let split = view as? AppKitSplitView {
+            // THE VALUE IS THE REGISTRY'S; THIS REPORT IS THE HOST'S. A change
+            // the reader makes walks into the first child's page lifetime,
+            // which no contract describes, so the closure stays here.
+            split.onPresentationChanged = { [weak self] presented in
+                self?.changeSidebarVisibility(to: presented)
+            }
+        }
+
+        if let absolute = view as? AppKitAbsoluteLayoutView {
+            absolute.placement = placement(.absoluteLayoutBounds)
+        }
+
+        if let border = view as? AppKitBorderView {
+            // ITS OWN PADDING, NOT A PAGE'S. This view descends from
+            // `AppKitSingleChildView` and took its padding from the page's arm
+            // until the page's value moved to the registry, where a
+            // registration answers for one node type rather than one class.
+            border.padding = insets(.padding)
+            border.apply(
+                backgroundColor: color(.background),
+                background: value(.background),
+                stroke: value(.stroke),
+                strokeWidth: value(.strokeWidth)?.number,
+                shape: value(.shape))
+        }
+
+        let minimumWidth = requested(.minimumWidth)
+        let minimumHeight = requested(.minimumHeight)
+        let maximumWidth = requested(.maximumWidth).map { max($0, minimumWidth ?? 0) }
+        let maximumHeight = requested(.maximumHeight).map { max($0, minimumHeight ?? 0) }
+        widthConstraint = reconciledConstraint(
+            widthConstraint,
+            value: requested(.width).map {
+                appKitBoundedExtent($0, minimum: minimumWidth, maximum: maximumWidth)
+            },
+            make: { view.widthAnchor.constraint(equalToConstant: $0) })
+        heightConstraint = reconciledConstraint(
+            heightConstraint,
+            value: requested(.height).map {
+                appKitBoundedExtent($0, minimum: minimumHeight, maximum: maximumHeight)
+            },
+            make: { view.heightAnchor.constraint(equalToConstant: $0) })
+        minimumWidthConstraint = reconciledConstraint(
+            minimumWidthConstraint,
+            value: minimumWidth,
+            make: { view.widthAnchor.constraint(greaterThanOrEqualToConstant: $0) })
+        minimumHeightConstraint = reconciledConstraint(
+            minimumHeightConstraint,
+            value: minimumHeight,
+            make: { view.heightAnchor.constraint(greaterThanOrEqualToConstant: $0) })
+        maximumWidthConstraint = reconciledConstraint(
+            maximumWidthConstraint,
+            value: maximumWidth,
+            make: { view.widthAnchor.constraint(lessThanOrEqualToConstant: $0) })
+        maximumHeightConstraint = reconciledConstraint(
+            maximumHeightConstraint,
+            value: maximumHeight,
+            make: { view.heightAnchor.constraint(lessThanOrEqualToConstant: $0) })
+
+        if let button = view as? NSButton,
+           let padding = value(.padding)?.numbers, padding.count >= 4 {
+            let intrinsic = button.intrinsicContentSize
+            buttonWidthConstraint = reconciledConstraint(
+                buttonWidthConstraint,
+                value: intrinsic.width + padding[0] + padding[2],
+                make: {
+                    let constraint = button.widthAnchor.constraint(
+                        greaterThanOrEqualToConstant: $0)
+                    constraint.priority = .defaultHigh
+                    return constraint
+                })
+            buttonHeightConstraint = reconciledConstraint(
+                buttonHeightConstraint,
+                value: intrinsic.height + padding[1] + padding[3],
+                make: {
+                    let constraint = button.heightAnchor.constraint(
+                        greaterThanOrEqualToConstant: $0)
+                    constraint.priority = .defaultHigh
+                    return constraint
+                })
+        } else {
+            buttonWidthConstraint?.isActive = false
+            buttonWidthConstraint = nil
+            buttonHeightConstraint?.isActive = false
+            buttonHeightConstraint = nil
+        }
+
+        drawing?.own = drawingTransform()
+        // Last, so the words meet the control as configured above - a text
+        // field may just have swapped in a password field.
+        applyAccessibility(to: view)
+    }
+
+    /// The view's own drawing transform. `scale` multiplies both axes on
+    /// top of `scaleX` and `scaleY`.
+    private func drawingTransform() -> HostDrawingTransform {
+        let scale = value(.scale)?.number ?? 1
+        return HostDrawingTransform(
+            translationX: value(.translationX)?.number ?? 0,
+            translationY: value(.translationY)?.number ?? 0,
+            rotation: value(.rotation)?.number ?? 0,
+            rotationX: value(.rotationX)?.number ?? 0,
+            rotationY: value(.rotationY)?.number ?? 0,
+            scaleX: scale * (value(.scaleX)?.number ?? 1),
+            scaleY: scale * (value(.scaleY)?.number ?? 1),
+            pivotX: value(.pivotX)?.number ?? 0.5,
+            pivotY: value(.pivotY)?.number ?? 0.5)
+    }
+
+    /// Keeps the native constraint identity stable while a host channel moves
+    /// its constant. Creating and tearing down the Auto Layout graph on every
+    /// display frame is both unnecessary work and visible as uneven motion.
+    private func reconciledConstraint(
+        _ existing: NSLayoutConstraint?,
+        value: CGFloat?,
+        make: (CGFloat) -> NSLayoutConstraint
+    ) -> NSLayoutConstraint? {
+        guard let value else {
+            existing?.isActive = false
+            return nil
+        }
+
+        if let existing {
+            existing.constant = value
+            return existing
+        }
+
+        let constraint = make(value)
+        constraint.isActive = true
+        return constraint
+    }
+
+    private func arrangeChildren() {
+        guard let view else { return }
+        let items = children.compactMap(\.layoutItem)
+
+        if let label = view as? AppKitLabelView {
+            label.apply(
+                attributedText: attributedLabelText(),
+                padding: insets(.padding),
+                horizontalAlignment: textAlignment(enumeration(.horizontalTextAlignment)),
+                verticalAlignment: AppKitVerticalTextAlignment(
+                    rawValue: enumeration(.verticalTextAlignment) ?? 0) ?? .start,
+                lineBreakMode: lineBreakMode(enumeration(.lineBreak)),
+                maximumNumberOfLines: effectiveMaximumLines())
+            return
+        }
+
+        if let stack = view as? AppKitStackView {
+            stack.setItems(items)
+            return
+        }
+
+        if let split = view as? AppKitSplitView {
+            split.setItems(items)
+            return
+        }
+
+        if let navigation = view as? AppKitNavigationView {
+            navigation.setItems(items)
+            return
+        }
+
+        if let tabs = view as? AppKitTabbedView {
+            let tabItems = children.compactMap { child -> AppKitTabItem? in
+                guard let layout = child.layoutItem else { return nil }
+                return AppKitTabItem(
+                    layout: layout,
+                    title: child.string(.title),
+                    image: child.string(.icon).flatMap { image(named: $0) })
+            }
+            tabs.onSelection = { [weak self] previous, selected in
+                self?.selectTab(from: previous, to: selected)
+            }
+            pendingTabFallback = tabs.setItems(
+                tabItems,
+                requestedIndex: whole(.currentPage))
+            return
+        }
+
+        if let page = view as? AppKitSingleChildView {
+            page.setItem(items.first)
+            return
+        }
+
+        if let grid = view as? AppKitGridView {
+            grid.setItems(items)
+            return
+        }
+
+        if let absolute = view as? AppKitAbsoluteLayoutView {
+            absolute.setItems(
+                items,
+                retaining: recycledChildren.compactMap(\.layoutItem),
+                preservesSubviewOrder: recycles)
+            return
+        }
+
+        if let scroll = view as? AppKitScrollView {
+            scroll.setItems(items)
+        }
+    }
+
+    private var layoutItem: AppKitLayoutItem? {
+        guard let view = presentableViews.first else { return nil }
+        var item = AppKitLayoutItem(view: view)
+        item.margin = insets(.margin)
+        item.horizontal = enumeration(.horizontalAlignment) ?? 3
+        item.vertical = enumeration(.verticalAlignment) ?? 3
+        item.width = requested(.width)
+        item.height = requested(.height)
+        item.minimumWidth = requested(.minimumWidth)
+        item.minimumHeight = requested(.minimumHeight)
+        item.maximumWidth = requested(.maximumWidth)
+        item.maximumHeight = requested(.maximumHeight)
+        item.row = whole(.gridRow) ?? 0
+        item.column = whole(.gridColumn) ?? 0
+        item.rowSpan = max(whole(.gridRowSpan) ?? 1, 1)
+        item.columnSpan = max(whole(.gridColumnSpan) ?? 1, 1)
+        item.absoluteBounds = value(.absoluteLayoutBounds)?.numbers
+        item.absoluteProportions = enumeration(.absoluteLayoutProportions) ?? 0
+        item.drawing = presentableDrawing
+        item.mount = mount
+        if fadesIn {
+            item.fadeIn = { [weak self] motion in self?.fadeIn(under: motion) }
+        }
+        return item
+    }
+
+    /// The drawing of the view `presentableViews` puts first.
+    private var presentableDrawing: AppKitViewDrawing? {
+        if view != nil { return drawing }
+        return children.lazy.compactMap(\.presentableDrawing).first
+    }
+
+    /// Applies StateUI's semantic surface without replacing the native
+    /// control's ordinary role or participation when the author says nothing.
+    private func applyAccessibility(to view: NSView) {
+        let target = accessibilityTarget(of: view)
+        if accessibilityDefaults == nil {
+            accessibilityDefaults = (
+                isElement: target.isAccessibilityElement(),
+                role: target.accessibilityRole())
+        }
+        guard let defaults = accessibilityDefaults else { return }
+
+        target.setAccessibilityIdentifier(string(.accessibilityIdentifier))
+        target.setAccessibilityLabel(string(.accessibilityLabel))
+        target.setAccessibilityHelp(string(.accessibilityHint))
+
+        let excludesChildren = value(.automationExcludedWithChildren)?.bool == true
+        if excludesChildren {
+            view.setAccessibilityChildren([])
+            accessibilityChildrenSuppressed = true
+        } else if accessibilityChildrenSuppressed {
+            view.setAccessibilityChildren(nil)
+            accessibilityChildrenSuppressed = false
+        }
+
+        let headingLevel = max(0, enumeration(.accessibilityHeadingLevel) ?? 0)
+        let carriesSemantics = string(.accessibilityLabel) != nil
+            || string(.accessibilityHint) != nil
+            || headingLevel > 0
+        // An element that answers a tap is a button to assistive technology,
+        // pressed by the handler a click runs. See `AppKitHitTestView`.
+        let pressable = events[.tapped] != nil && view is AppKitHitTestView
+        // The author says whether the view is hidden; an element is the opposite.
+        let authoredElement = value(.isAccessibilityHidden)?.bool.map { !$0 }
+        target.setAccessibilityElement(
+            excludesChildren
+                ? false
+                : (authoredElement ?? (carriesSemantics || pressable ? true : defaults.isElement)))
+
+        if #available(macOS 26.0, *), headingLevel > 0 {
+            target.setAccessibilityRole(NSAccessibility.Role(rawValue: "AXHeading"))
+        } else if pressable {
+            target.setAccessibilityRole(.button)
+        } else {
+            target.setAccessibilityRole(defaults.role)
+        }
+    }
+
+    /// The object assistive technology meets for `view`: the native control a
+    /// wrapping view presents in its place (`AppKitAccessibilityPresenting`),
+    /// or the view itself - and for a control AppKit presents through its
+    /// cell, a button, a slider or a stepper, that cell. The cell is the
+    /// element there and the view is not, so words written on the view would
+    /// reach nobody, and making the view the element would hide the control's
+    /// own role. Whether it is the cell is decided once, before any authored
+    /// word moves it; the control is looked up each time, because a wrapper
+    /// may replace it - a text field becoming a password field.
+    private func accessibilityTarget(of view: NSView) -> NSAccessibilityProtocol {
+        let control = (view as? AppKitAccessibilityPresenting)?.presentedControl ?? view
+        let cell = (control as? NSControl)?.cell
+        if accessibilityThroughCell == nil {
+            accessibilityThroughCell = cell?.isAccessibilityElement() == true
+        }
+        if accessibilityThroughCell == true, let cell {
+            return cell
+        }
+        return control
+    }
+
+    private var presentableViews: [NSView] {
+        if let view { return [view] }
+        return children.flatMap(\.presentableViews)
+    }
+
+    /// The first native view authored into one structural child slot.
+    func firstView(in slot: NodeType) -> NSView? {
+        self.slot(slot)?.presentableViews.first
+    }
+
+    /// Resolves an image-valued property through the host's resource policy.
+    func image(_ property: Prop) -> NSImage? {
+        string(property).flatMap { image(named: $0) }
+    }
+
+    private func slot(_ type: NodeType) -> MountedNode? {
+        children.first { $0.type == type }
+    }
+
+    private func radioScope(named group: String?) -> MountedNode {
+        guard group != nil else { return parent ?? self }
+
+        var scope = self
+        while let ancestor = scope.parent {
+            scope = ancestor
+            if scope.type == .window { break }
+        }
+        return scope
+    }
+
+    private func radioButtons(named group: String) -> [MountedNode] {
+        var matches: [MountedNode] = []
+        if type == .radioButton, name(.groupName) == group { matches.append(self) }
+        for child in children { matches.append(contentsOf: child.radioButtons(named: group)) }
+        return matches
+    }
+
+    private func setRadioChecked(_ checked: Bool) {
+        (view as? AppKitRadioButtonView)?.setCheckedFromGroup(checked)
+    }
+
+    private var nativeMenuItem: NSMenuItem? {
+        if type == .menuSeparator {
+            if let platformMenuItem { return platformMenuItem }
+            let item = NSMenuItem.separator()
+            platformMenuItem = item
+            return item
+        }
+
+        guard type == .menu || type == .menuItem else { return nil }
+
+        let item = platformMenuItem ?? NSMenuItem()
+        platformMenuItem = item
+        item.title = string(.text) ?? ""
+        item.isEnabled = value(.isEnabled)?.bool ?? true
+        item.setAccessibilityIdentifier(string(.accessibilityIdentifier))
+        item.image = string(.icon).flatMap { image(named: $0) }
+
+        if value(.isDestructive)?.bool == true {
+            item.attributedTitle = NSAttributedString(
+                string: item.title,
+                attributes: [.foregroundColor: NSColor.systemRed])
+        } else {
+            item.attributedTitle = NSAttributedString(string: item.title)
+        }
+
+        if type == .menuItem {
+            item.target = self
+            item.action = #selector(clicked(_:))
+            item.submenu = nil
+        } else {
+            item.target = nil
+            item.action = nil
+            let menu = item.submenu ?? NSMenu(title: item.title)
+            menu.title = item.title
+            menu.autoenablesItems = false
+            menu.removeAllItems()
+            for child in children {
+                if let child = child.nativeMenuItem { menu.addItem(child) }
+            }
+            item.submenu = menu
+        }
+
+        return item
+    }
+
+    /// Attaches the view's menu slot directly to AppKit. The slot remains a
+    /// StateUI child for identity and sparse updates, but never becomes a
+    /// visual child in the native layout.
+    private func configureContextMenu() {
+        guard let view else { return }
+        guard let slot = slot(.contextMenu) else {
+            view.menu = nil
+            return
+        }
+
+        let items = slot.children.compactMap(\.nativeMenuItem)
+        guard !items.isEmpty else {
+            view.menu = nil
+            return
+        }
+
+        let menu = view.menu ?? NSMenu()
+        menu.autoenablesItems = false
+        menu.removeAllItems()
+        for item in items { menu.addItem(item) }
+        view.menu = menu
+    }
+
+    private func popNavigation() {
+        guard type == .navigationStack, children.count > 1,
+              let handler = events[.popped]
+        else { return }
+
+        host?.dispatch(handler, payload: [.number(Double(children.count - 2))])
+    }
+
+    private func selectTab(from previous: Int, to selected: Int) {
+        guard type == .tabbedView, children.indices.contains(selected) else { return }
+
+        if pagePresented {
+            if children.indices.contains(previous) {
+                children[previous].setPagePresented(false, reason: .appearance)
+            }
+            children[selected].setPagePresented(true, reason: .appearance)
+        }
+
+        host?.commit(events[.currentPageChanged], payload: [.number(Double(selected))])
+
+        // The window's chrome follows what the reader sees now - its title,
+        // its actions, its row of tabs - whether or not the application binds
+        // the selection and renders again.
+        host?.refreshWindowChrome()
+    }
+
+    private func changeSidebarVisibility(to presented: Bool) {
+        guard type == .splitView else { return }
+
+        if pagePresented {
+            children.first?.setPagePresented(presented, reason: .appearance)
+        }
+
+        host?.commit(events[.isSidebarVisibleChanged], payload: [.bool(presented)])
+    }
+
+    private func enumeration(_ property: Prop) -> Int32? {
+        value(property)?.enumeration
+    }
+
+    private func whole(_ property: Prop) -> Int? {
+        guard let number = value(property)?.number, number.isFinite else { return nil }
+        return Int(number.rounded())
+    }
+
+    private func font(fallback: NSFont) -> NSFont {
+        appKitFont(
+            family: name(.fontFamily),
+            size: value(.fontSize)?.number,
+            attributes: value(.fontAttributes)?.enumeration,
+            fallback: fallback)
+    }
+
+    private func attributedLabelText() -> NSAttributedString {
+        let baseFont = font(fallback: NSFont.systemFont(ofSize: NSFont.systemFontSize))
+        let baseColor = color(.textColor) ?? .labelColor
+        let formatted = slot(.spans)
+        let runs = formatted?.children ?? [self]
+        let result = NSMutableAttributedString()
+
+        for run in runs where run.type == .span || run === self {
+            let source = run.string(.text) ?? ""
+            let text = run.transformed(source, by: run.enumeration(.textCase))
+            let font = run === self ? baseFont : run.font(fallback: baseFont)
+            let color = run === self ? baseColor : (run.color(.textColor) ?? baseColor)
+            let spacing = run.number(.characterSpacing) ?? number(.characterSpacing) ?? 0
+            let decorations = run.enumeration(.textDecorations)
+                ?? enumeration(.textDecorations) ?? 0
+            let lineHeight = run.number(.lineHeight) ?? number(.lineHeight)
+            var attributes: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: color,
+                .kern: spacing,
+            ]
+
+            if run !== self, let background = run.color(.background) {
+                attributes[.backgroundColor] = background
+            }
+            if decorations & 1 == 1 {
+                attributes[.underlineStyle] = NSUnderlineStyle.single.rawValue
+            }
+            if decorations & 2 == 2 {
+                attributes[.strikethroughStyle] = NSUnderlineStyle.single.rawValue
+            }
+            if let lineHeight, lineHeight.isFinite, lineHeight > 0 {
+                let paragraph = NSMutableParagraphStyle()
+                let height = font.boundingRectForFont.height * lineHeight
+                paragraph.minimumLineHeight = height
+                paragraph.maximumLineHeight = height
+                attributes[.paragraphStyle] = paragraph
+            }
+
+            result.append(NSAttributedString(string: text, attributes: attributes))
+        }
+
+        return result
+    }
+
+    private func effectiveMaximumLines() -> Int {
+        switch enumeration(.lineBreak) {
+        case 0, 3, 4, 5: return 1
+        default: return max(0, whole(.maximumLines) ?? 0)
+        }
+    }
+
+    /// The text a field shows from its state. The value this frame carries
+    /// comes first: a reader's report reaches the core's store only when its
+    /// jobs run, so reading the store here would write the field back one
+    /// keystroke behind the reader.
+    private func transformed(_ text: String, by transform: Int32?) -> String {
+        appKitTextCased(text, transform)
+    }
+
+    func color(_ property: Prop) -> NSColor? {
+        value(property).flatMap(nsColor)
+    }
+
+    private func image(named name: String) -> NSImage? {
+        host?.image(named: name)
+    }
+
+    private func value(_ property: Prop) -> HostValue? {
+        if driven[property].map({ $0.mode != .in }) == true {
+            return resolvedValue(property)
+        }
+
+        return host?.presentedPropertyValue(mount: mount, property: property)
+            ?? resolvedValue(property)
+    }
+
+    private func standingValue(_ property: Prop, target: HostValue?) -> HostValue? {
+        if let presented = host?.presentedPropertyValue(mount: mount, property: property) {
+            return presented
+        }
+
+        if type == .window,
+           let value = host?.standingWindowValue(for: self, property: property) {
+            return value
+        }
+
+        switch (type, property) {
+        case (_, .opacity):
+            return .number(Double(view?.alphaValue ?? 1))
+        case (.slider, .value):
+            return (view as? AppKitSliderView).map { .number($0.doubleValue) }
+        case (.progressBar, .progress):
+            return (view as? AppKitProgressView).map { .number($0.doubleValue) }
+        default:
+            break
+        }
+
+        if let value = resolvedValue(property) { return value }
+        guard AppKitTransitionSurface.presents(property, on: type) else { return nil }
+
+        switch property {
+        case .margin, .padding:
+            return .numbers([0, 0, 0, 0])
+        case .spacing, .rowSpacing, .columnSpacing:
+            return .number(0)
+        case .strokeWidth:
+            return .number(1)
+        case .strokeDashOffset, .x1, .y1, .x2, .y2:
+            return .number(0)
+        case .strokeMiterLimit:
+            return .number(10)
+        case .cornerRadius:
+            if target?.number != nil {
+                return .number(0)
+            }
+            if let radii = target?.numbers, radii.count == 4 {
+                return .numbers(Array(repeating: 0, count: radii.count))
+            }
+            return nil
+        case .rotation, .translationX, .translationY:
+            return .number(0)
+        case .scale:
+            return .number(1)
+        case .scaleX, .scaleY:
+            return .number(resolvedValue(.scale)?.number ?? 1)
+        case .renderTransform:
+            return .values([
+                .number(1), .number(0), .number(0),
+                .number(1), .number(0), .number(0),
+            ])
+        default:
+            return nil
+        }
+    }
+
+    private func transformComponents(_ property: Prop) -> [Double]? {
+        guard let components = value(property)?.values, components.count == 6 else {
+            return nil
+        }
+
+        let numbers = components.compactMap(\.number)
+        return numbers.count == components.count ? numbers : nil
+    }
+
+    private func resolvedValue(_ property: Prop) -> HostValue? {
+        guard let binding = driven[property], binding.mode != .in else {
+            return properties[property]
+        }
+
+        guard let state = drivenValues[property] ?? core.value(for: binding) else {
+            return properties[property]
+        }
+
+        switch (binding.kind, state) {
+        case (.text, .text(let text)):
+            return .string(text)
+
+        case (.plain, .lanes(let lanes)):
+            return value(property, lanes: lanes)
+
+        case (.property, let carried):
+            let presented = host?.presentedValue(for: binding, from: carried) ?? carried
+            guard let journey = StateUIHost.journey(from: presented) else {
+                return properties[property]
+            }
+            return value(property, lanes: journey.value)
+
+        default:
+            return properties[property]
+        }
+    }
+
+    private func value(_ property: Prop, lanes: [Double]) -> HostValue? {
+        guard !lanes.isEmpty else { return nil }
+
+        if Self.colorProperties.contains(property), lanes.count >= 4 {
+            func channel(_ value: Double) -> UInt8 {
+                UInt8(min(max((value * 255).rounded(), 0), 255))
+            }
+
+            return .color(
+                red: channel(lanes[0]),
+                green: channel(lanes[1]),
+                blue: channel(lanes[2]),
+                alpha: channel(lanes[3]))
+        }
+
+        if Self.booleanProperties.contains(property) {
+            return .bool(lanes[0] != 0)
+        }
+
+        if Self.enumerationProperties.contains(property) {
+            return .enumeration(Int32(lanes[0].rounded()))
+        }
+
+        return lanes.count == 1 ? .number(lanes[0]) : .numbers(lanes)
+    }
+
+    private func insets(_ property: Prop) -> NSEdgeInsets {
+        guard let numbers = value(property)?.numbers, numbers.count >= 4 else {
+            return NSEdgeInsets()
+        }
+
+        return NSEdgeInsets(
+            top: numbers[1], left: numbers[0], bottom: numbers[3], right: numbers[2])
+    }
+
+    /// A negative request is StateUI's explicit "measure me" sentinel. Keep
+    /// it out of both Auto Layout and the frame-based layout algorithms so the
+    /// native control's fitting size remains authoritative.
+    private func requested(_ property: Prop) -> CGFloat? {
+        guard let value = number(property), value.isFinite, value >= 0 else { return nil }
+        return CGFloat(value)
+    }
+
+    private func placement(_ property: Prop) -> HostPlacementRun? {
+        guard let binding = driven[property], binding.kind == .placement,
+              let carried = drivenValues[property] ?? core.value(for: binding)
+        else { return nil }
+
+        return StateUIHost.placements(from: carried)
+    }
+
+    private func textAlignment(_ value: Int32?) -> NSTextAlignment {
+        appKitTextAlignment(value)
+    }
+
+
+
+
+    private func lineBreakMode(_ mode: Int32?) -> NSLineBreakMode {
+        switch mode {
+        case 0: return .byClipping
+        case 1: return .byWordWrapping
+        case 2: return .byCharWrapping
+        case 3: return .byTruncatingHead
+        case 4: return .byTruncatingTail
+        case 5: return .byTruncatingMiddle
+        default: return .byWordWrapping
+        }
+    }
+
+    private func configureFrameObservation() {
+        guard view != nil else { return }
+        let wanted = driven[.frame] != nil || events[.frameChanged] != nil
+
+        if !wanted {
+            if observesFrame {
+                NotificationCenter.default.removeObserver(
+                    self, name: NSView.frameDidChangeNotification, object: nil)
+                NotificationCenter.default.removeObserver(
+                    self, name: NSView.boundsDidChangeNotification, object: nil)
+                frameObservedViews.removeAll(keepingCapacity: true)
+                observesFrame = false
+            }
+            return
+        }
+
+        if !observesFrame {
+            observesFrame = true
+        }
+
+        refreshFrameObservationChain()
+        queueFrameReport()
+    }
+
+    /// A stationary child's window-space origin changes when an ancestor moves
+    /// or a clip view scrolls. Observe the current native chain and rebuild it
+    /// after reparenting instead of treating the child's frame as sufficient.
+    private func refreshFrameObservationChain() {
+        guard observesFrame, let view else { return }
+        var chain: [NSView] = []
+        var current: NSView? = view
+
+        while let candidate = current {
+            chain.append(candidate)
+            if candidate === view.window?.contentView { break }
+            current = candidate.superview
+        }
+
+        let unchanged = chain.count == frameObservedViews.count
+            && zip(chain, frameObservedViews).allSatisfy { $0 === $1 }
+        guard !unchanged else { return }
+
+        NotificationCenter.default.removeObserver(
+            self, name: NSView.frameDidChangeNotification, object: nil)
+        NotificationCenter.default.removeObserver(
+            self, name: NSView.boundsDidChangeNotification, object: nil)
+        frameObservedViews = chain
+
+        for observed in chain {
+            observed.postsFrameChangedNotifications = true
+            observed.postsBoundsChangedNotifications = true
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(frameDidChange(_:)),
+                name: NSView.frameDidChangeNotification,
+                object: observed)
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(frameDidChange(_:)),
+                name: NSView.boundsDidChangeNotification,
+                object: observed)
+        }
+    }
+
+    private func configureGestures() {
+        guard let view else { return }
+
+        if events[.tapped] != nil {
+            let recognizer: AppKitTapRecognizer
+
+            if let existing = tapRecognizer {
+                recognizer = existing
+            } else {
+                recognizer = AppKitTapRecognizer { [weak self] in self?.tapped() }
+                tapRecognizer = recognizer
+                view.addGestureRecognizer(recognizer)
+            }
+
+            recognizer.apply(tapCount: whole(.tapCount) ?? 1)
+        } else if let recognizer = tapRecognizer {
+            view.removeGestureRecognizer(recognizer)
+            tapRecognizer = nil
+        }
+
+        (view as? AppKitHitTestView)?.pressAction = events[.tapped] == nil
+            ? nil
+            : { [weak self] in self?.tapped() }
+
+        if events[.swiped] != nil {
+            let recognizer: AppKitSwipeRecognizer
+            if let existing = swipeRecognizer {
+                recognizer = existing
+            } else {
+                recognizer = AppKitSwipeRecognizer { [weak self] direction in
+                    self?.swiped(direction)
+                }
+                swipeRecognizer = recognizer
+                view.addGestureRecognizer(recognizer)
+            }
+            recognizer.directions = enumeration(.swipeDirection) ?? 15
+            recognizer.threshold = max(
+                0,
+                number(.swipeThreshold).map { CGFloat($0) } ?? 40)
+        } else if let recognizer = swipeRecognizer {
+            view.removeGestureRecognizer(recognizer)
+            swipeRecognizer = nil
+        }
+
+        let panX = whole(.panXChannel).flatMap { $0 == 0 ? nil : Int32($0) }
+        let panY = whole(.panYChannel).flatMap { $0 == 0 ? nil : Int32($0) }
+        let wantsPan = events[.panUpdated] != nil || panX != nil || panY != nil
+        if wantsPan {
+            let recognizer: AppKitPanRecognizer
+            if let existing = panRecognizer {
+                recognizer = existing
+            } else {
+                recognizer = AppKitPanRecognizer { [weak self] phase, total in
+                    self?.panChanged(phase, total: total)
+                }
+                panRecognizer = recognizer
+                view.addGestureRecognizer(recognizer)
+            }
+
+            // AppKit's stable pan contract is a primary-pointer drag. The
+            // multi-touch count API before macOS 26 refers to Touch Bar input,
+            // so an authored count other than one cannot truthfully match here.
+            recognizer.isEnabled = whole(.panTouchCount).map { $0 == 1 } ?? true
+        } else if let recognizer = panRecognizer {
+            view.removeGestureRecognizer(recognizer)
+            panRecognizer = nil
+        }
+
+        if events[.pinchUpdated] != nil {
+            if pinchRecognizer == nil {
+                let recognizer = AppKitPinchRecognizer { [weak self] phase, scale, origin in
+                    self?.pinchChanged(phase, scale: scale, origin: origin)
+                }
+                pinchRecognizer = recognizer
+                view.addGestureRecognizer(recognizer)
+            }
+        } else if let recognizer = pinchRecognizer {
+            view.removeGestureRecognizer(recognizer)
+            pinchRecognizer = nil
+        }
+
+        let pointerEvents = [
+            Event.pointerEntered, .pointerExited, .pointerMoved, .pointerPressed, .pointerReleased,
+        ]
+        if pointerEvents.contains(where: { events[$0] != nil }) {
+            let recognizer: AppKitPointerRecognizer
+            if let existing = pointerRecognizer {
+                recognizer = existing
+            } else {
+                recognizer = AppKitPointerRecognizer { [weak self] report, point in
+                    self?.pointerChanged(report, point: point)
+                }
+                pointerRecognizer = recognizer
+            }
+            recognizer.install(on: view)
+        } else if let recognizer = pointerRecognizer {
+            recognizer.detach()
+            pointerRecognizer = nil
+        }
+    }
+
+    @objc private func frameDidChange(_ notification: Notification) {
+        queueFrameReport()
+    }
+
+    private func queueFrameReport() {
+        guard !frameQueued else { return }
+        frameQueued = true
+
+        DispatchQueue.main.async { [weak self] in
+            self?.flushFrameReport()
+        }
+    }
+
+    private func flushFrameReport() {
+        frameQueued = false
+        refreshFrameObservationChain()
+        guard let view, let content = view.window?.contentView else { return }
+
+        let parentFrame = topLeftFrame(view.frame, in: view.superview)
+        let windowFrame = topLeftFrame(view.convert(view.bounds, to: content), in: content)
+        let safeArea = topLeftFrame(content.safeAreaRect, in: content)
+        let report = [
+            parentFrame.minX, parentFrame.minY, parentFrame.width, parentFrame.height,
+            windowFrame.minX, windowFrame.minY,
+            windowFrame.minX - safeArea.minX, windowFrame.minY - safeArea.minY,
+        ].map(Double.init)
+
+        guard report != lastFrameReport else { return }
+        lastFrameReport = report
+
+        let reported = driven[.frame].map {
+            host?.report(.lanes(Array(report.prefix(4))), through: $0) ?? false
+        } ?? false
+
+        if let handler = events[.frameChanged] {
+            host?.dispatch(handler, payload: [.numbers(report)])
+        } else if reported {
+            host?.pump()
+        }
+    }
+
+    func flushFrameReportForTesting() {
+        flushFrameReport()
+    }
+
+    var frameReportQueuedForTesting: Bool { frameQueued }
+
+    private func topLeftFrame(_ frame: NSRect, in parent: NSView?) -> NSRect {
+        guard let parent, !parent.isFlipped else { return frame }
+        return NSRect(
+            x: frame.minX,
+            y: parent.bounds.height - frame.maxY,
+            width: frame.width,
+            height: frame.height)
+    }
+
+    private static let colorProperties: Set<Prop> = [
+        .background, .barBackgroundColor, .barForegroundColor, .borderColor, .color,
+        .indicatorColor, .placeholderColor, .selectedIndicatorColor, .textColor, .tint,
+    ]
+
+    private static let pageTypes: Set<NodeType> = [
+        .page, .navigationStack, .tabbedView, .splitView,
+    ]
+
+    /// Several visible windows' worth, but never an unbounded history of rows.
+    private static let recyclingCapacity = 32
+
+    private static let booleanProperties: Set<Prop> = [
+        .allowDrop, .hidesWhenInactive, .canDrag, .floatsOnTop, .growsWithText, .ignoresInput,
+        .isAnimating, .clipsContent, .isDestructive,
+        .isEnabled, .isMaximizable, .isMinimizable, .isTranslucent,
+        .isOpen, .isPassword, .isSidebarVisible, .isReadOnly,
+        .isRefreshEnabled, .isRefreshing, .isRunning, .isScrollEnabled,
+        .showsUserLocation, .isSpellCheckEnabled, .isTextPredictionEnabled,
+        .isOn, .isTrafficEnabled, .isVisible, .isZoomEnabled, .letsInputThrough,
+        .showsClearButton,
+    ]
+
+    private static let enumerationProperties: Set<Prop> = [
+        .aspect, .layoutDirection, .fontAttributes,
+        .horizontalAlignment, .horizontalScrollBarVisibility,
+        .horizontalTextAlignment, .inputPurpose,
+        .lineBreak, .orientation, .returnKey, .textDecorations, .textCase,
+        .verticalAlignment, .verticalScrollBarVisibility, .verticalTextAlignment,
+    ]
+}
+
+#endif

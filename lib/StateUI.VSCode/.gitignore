@@ -1,0 +1,5 @@
+node_modules/
+out/
+*.vsix
+# Copied from the repository root while packaging.
+LICENSE

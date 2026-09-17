@@ -1,0 +1,18 @@
+generation 1 names +15
+Map 1 arranged(2)
+  isScrollEnabled: true
+  isTrafficEnabled: false
+  isZoomEnabled: true
+  mapType: enum hybrid(2)
+  region: numbers 52.2297,21.0122,3000
+  showsUserLocation: false
+  on mapClicked=1
+  Pin 2
+    address: string "Plac Zamkowy 4"
+    label: string "Royal Castle"
+    location: numbers 52.2479,21.0155
+    type: enum place(1)
+    on pinClicked=2 pinDetailsClicked=3
+  Pin 3
+    label: string "Lazienki Park"
+    location: numbers 52.2151,21.0355

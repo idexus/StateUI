@@ -20,14 +20,15 @@ body:
     attributes:
       label: Where you saw it
       description: >
-        The Swift/C# boundary behaves differently on each, and several of this
-        library's sharpest edges are one platform's alone.
+        Native toolkits differ, so name every host on which the behavior was
+        exercised.
       options:
-        - label: iOS
-        - label: Android
-        - label: Mac Catalyst
-        - label: Windows
-        - label: Linux
+        - label: AppKit / macOS
+        - label: .NET MAUI / Android
+        - label: .NET MAUI / iOS
+        - label: .NET MAUI / Mac Catalyst
+        - label: .NET MAUI / Windows
+        - label: .NET MAUI / Linux
 
   - type: textarea
     id: repro
@@ -43,7 +44,7 @@ body:
     id: version
     attributes:
       label: Version
-      description: The StateUI version, and the .NET and Swift toolchains if the build is what failed.
-      placeholder: StateUI 0.3.0, .NET 10.0.100, Swift 6.3.3
+      description: The StateUI version and Swift toolchain if the build is what failed.
+      placeholder: StateUI 0.3.1, Swift 6.3.3
     validations:
       required: true

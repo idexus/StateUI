@@ -1,0 +1,34 @@
+{
+  // NOTE: no "swift.searchSubfoldersForPackages" here, and none is needed - the
+  // manifest sits at the root of this folder, which the Swift extension always
+  // looks at. Turn it on if you add a second Swift package somewhere below.
+
+  // Set only if the lldb-dap extension cannot find the adapter itself - it ships
+  // with the Swift toolchain rather than with VS Code.
+  // "lldb-dap.executable-path": "/Users/<you>/Library/Developer/Toolchains/swift-6.3.3-RELEASE.xctoolchain/usr/bin/lldb-dap",
+
+  // Every launch is the StateUI extension's: the Swift extension adds none of
+  // its own for the AppKit executable.
+  "swift.autoGenerateLaunchConfigurations": false,
+
+  // NO swift.swiftEnvironmentVariables HERE. The editor's host - whether
+  // SourceKit-LSP starts with STATEUI_APPKIT, and so resolves Platforms/AppKit
+  // and completes the code inside `#if APPKIT` - is chosen in the StateUI
+  // extension's status bar. A value here is laid OVER that and would decide
+  // the host whatever is chosen.
+
+  // WITHOUT THIS, "StateUI: Release" BUILDS DEBUG ON MAUI: the StateUI
+  // extension hands the MAUI extension `"configuration": "Release"`, and that
+  // extension replaces a launch's "configuration" with its own active one
+  // unless this says launch.json is to be believed.
+  "maui.configuration.useLaunchJsonConfigurations": true,
+
+  "files.associations": {
+    "*.swift": "swift"
+  },
+  "files.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    "**/.build": true
+  }
+}

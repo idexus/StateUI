@@ -19,9 +19,9 @@ and a private channel will be arranged.
 
 ## What makes a report actionable
 
-- The version, and the platform - iOS, Android, Mac Catalyst, Windows or
-  Linux. A Swift/C# boundary behaves differently on each, and several of this
-  library's sharpest edges are one platform's alone.
+- The version, and the platform - macOS, iOS, Android, Windows or Linux. Each
+  native host behaves differently, and several of this library's sharpest edges
+  are one platform's alone.
 - What an attacker can actually do with it, and what they need first.
 - The smallest thing that reproduces it. A failing test or a few lines of Swift
   is worth more than a description.
@@ -50,15 +50,14 @@ line and nothing to backport to - a fix ships in the next version.
 
 ## What is in scope
 
-The Swift library, the C# renderer, the protocol between them, and the build
-scripts. That is what this project controls.
+The Swift library, its native hosts, the Wire protocol that carries a render to
+a host, and the build scripts. That is what this project controls.
 
-**Not in scope, and better reported where they belong:** .NET MAUI
-([dotnet/maui](https://github.com/dotnet/maui/security)), the .NET runtime
-([dotnet/runtime](https://github.com/dotnet/runtime/security)), and the Swift
-toolchain ([swift.org/security](https://www.swift.org/security/)). A wrapper
-attracts reports about the things it wraps; those projects can fix them and this
-one cannot.
+**Not in scope, and better reported where they belong:** the Swift toolchain
+([swift.org/security](https://www.swift.org/security/)) and the platform
+toolkits a host drives - AppKit, UIKit, GTK, Android and WinUI - which their own
+vendors fix. A library that drives a toolkit attracts reports about the toolkit;
+its vendor can fix them and this project cannot.
 
 ## Good-faith research
 

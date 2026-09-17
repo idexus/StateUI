@@ -1,0 +1,2339 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// The host's half of "a value that changes TRAVELS": the walker that carries
+// it, the laws it travels under, and the layout whose children travel to their
+// new places instead of appearing there.
+//
+// Every trajectory here is a pure function of the time since it began, so the
+// clock is wound by hand and every number below is exact. The Swift half is
+// MotionTests.swift.
+
+using Microsoft.Maui.Layouts;
+using StateUI.Maui.Protocol;
+using StateUI.Maui.Rendering;
+
+namespace StateUI.Maui.Tests;
+
+public class MotionTests
+{
+    private static (Walker Walker, HandFrameClock Clock) Winding()
+    {
+        var clock = new HandFrameClock();
+        var walker = new Walker { Clock = clock };
+        return (walker, clock);
+    }
+
+    private static MotionProperty Opacity(View view) =>
+        new(view, VisualElement.OpacityProperty, MotionValue.Number, true);
+
+    // ---- The walker ---------------------------------------------------------
+
+    /// <summary>
+    /// The clock runs only while something is moving. A signal arriving sixty
+    /// times a second over a still screen is a battery being spent on nothing.
+    /// </summary>
+    [Fact]
+    public void TheClockSleepsWhenNothingIsMoving()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+
+        Assert.False(clock.Running);
+
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, HostEasing.Linear));
+        Assert.True(clock.Running);
+
+        clock.Tick(100);
+        Assert.False(clock.Running, "the last motion landed, so the clock stops");
+    }
+
+    /// <summary>
+    /// A target changed halfway BENDS the motion: it starts again from where the
+    /// value is and how fast it is going, so nothing is cut. That is the whole
+    /// difference between a positioner and an animation being restarted.
+    /// </summary>
+    [Fact]
+    public void ATargetChangedHalfwayCarriesTheSpeedItHad()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Scale = 0 };
+
+        MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
+
+        walker.Aim(scale, [100.0], HostMotion.Eased(100, HostEasing.Linear));
+        clock.Tick(50);
+
+        double atTurn = label.Scale;
+        Assert.Equal(50, atTurn, 1);
+
+        // Sent somewhere else entirely, and the very next frame must still be
+        // going the way it was: a cut would show as the value standing still
+        // for a frame, or worse, jumping back.
+        walker.Aim(scale, [0.0], HostMotion.Eased(400, HostEasing.Linear));
+        clock.Tick(8);
+
+        Assert.True(
+            label.Scale > atTurn,
+            $"the motion bends rather than cutting: {atTurn} -> {label.Scale}");
+
+        clock.Tick(400);
+        Assert.Equal(0, label.Scale, 3);
+    }
+
+    /// <summary>
+    /// A journey replaced while it is running is armed even though telling the
+    /// old waiter set something ELSE moving.
+    /// </summary>
+    /// <remarks>
+    /// Being told resumes a Swift handler, and a handler that renders aims
+    /// every trip that message touches - a visual state, a transition, a
+    /// layout's children. None of that is this value being sent somewhere new,
+    /// so none of it may take this call's turn: the aim that is speaking still
+    /// owns the property it is aiming.
+    /// </remarks>
+    [Fact]
+    public void AnAimSurvivesAnotherValueMovingWhileItSpeaks()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var carried = new Label { Opacity = 0 };
+        var bystander = new Label { Opacity = 0 };
+
+        // The first journey's waiter does what a resumed handler does: it
+        // renders, and the render aims a DIFFERENT control.
+        walker.Aim(
+            Opacity(carried),
+            [1.0],
+            HostMotion.Eased(100, HostEasing.Linear),
+            _ => walker.Aim(
+                Opacity(bystander), [1.0], HostMotion.Eased(100, HostEasing.Linear)));
+
+        clock.Tick(50);
+
+        bool answered = false;
+
+        walker.Aim(
+            Opacity(carried),
+            [0.25],
+            HostMotion.Eased(100, HostEasing.Linear),
+            _ => answered = true);
+
+        clock.Tick(200);
+
+        Assert.Equal(0.25, carried.Opacity, 3);
+        Assert.True(answered, "the replacing journey answered whoever awaited it");
+    }
+
+    /// <summary>
+    /// Sending THIS value somewhere else while an aim speaks does take the
+    /// turn - and the aim that gave it up still answers whoever awaited it.
+    /// </summary>
+    [Fact]
+    public void AnAimThatGivesUpItsTurnStillAnswersItsWaiter()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var carried = new Label { Opacity = 0 };
+
+        // The waiter does what a resumed handler doing `$x.animateTo(...)`
+        // does: it sends this very value somewhere new.
+        walker.Aim(
+            Opacity(carried),
+            [1.0],
+            HostMotion.Eased(100, HostEasing.Linear),
+            _ => walker.Aim(
+                Opacity(carried), [0.9], HostMotion.Eased(100, HostEasing.Linear)));
+
+        clock.Tick(50);
+
+        bool answered = false;
+        bool arrived = true;
+
+        walker.Aim(
+            Opacity(carried),
+            [0.25],
+            HostMotion.Eased(100, HostEasing.Linear),
+            whole => { answered = true; arrived = whole; });
+
+        clock.Tick(200);
+
+        Assert.Equal(0.9, carried.Opacity, 3);
+        Assert.True(answered, "the overtaken aim was answered rather than dropped");
+        Assert.False(arrived, "and it was told it did not arrive");
+    }
+
+    /// <summary>
+    /// A motion that nothing interrupted draws exactly the curve it was asked
+    /// for - the same numbers this library has always drawn.
+    /// </summary>
+    [Fact]
+    public void AMotionFromRestFollowsTheCurveExactly()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Scale = 0 };
+
+        walker.Aim(
+            new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
+            [1.0],
+            HostMotion.Eased(1000, HostEasing.CubicOut));
+
+        clock.Tick(250);
+
+        // CubicOut at a quarter of the way: 1 - (1 - t)^3.
+        Assert.Equal(1 - Math.Pow(0.75, 3), label.Scale, 4);
+    }
+
+    /// <summary>
+    /// A spring has no length: it settles when it is done, and one that is not
+    /// asked to overshoot does not.
+    /// </summary>
+    [Fact]
+    public void ASpringSettlesWithoutOvershooting()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Scale = 0 };
+
+        walker.Aim(
+            new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
+            [1.0],
+            HostMotion.Spring(200, 1));
+
+        double most = 0;
+
+        for (int frame = 0; frame < 120; frame++)
+        {
+            clock.Tick(8);
+            most = Math.Max(most, label.Scale);
+        }
+
+        Assert.Equal(1, label.Scale, 3);
+        Assert.True(most <= 1.0001, $"a critically damped spring does not pass its target: {most}");
+        Assert.False(clock.Running, "and it comes to rest by itself");
+    }
+
+    /// <summary>
+    /// BEING TOLD A MOTION ENDED RESUMES A HANDLER, and that handler may send
+    /// the same value somewhere else before the call that told it has finished
+    /// arming. The newer setpoint is the one that stands.
+    /// </summary>
+    [Fact]
+    public void ASetpointOvertakenWhileItSpeaksGivesUpItsTurn()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Scale = 0 };
+
+        MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
+
+        walker.Aim(
+            scale,
+            [10.0],
+            HostMotion.Eased(100, HostEasing.Linear),
+            done: _ =>
+            {
+                // The handler resumed by the ending motion sends the value
+                // somewhere else - from inside the very call that is replacing
+                // it.
+                walker.Aim(scale, [99.0], HostMotion.Eased(100, HostEasing.Linear));
+            });
+
+        walker.Aim(scale, [50.0], HostMotion.Eased(100, HostEasing.Linear));
+
+        clock.Tick(200);
+
+        Assert.Equal(99, label.Scale, 3);
+    }
+
+    /// <summary>
+    /// A motion nobody can tick lands at once. A build with no clock is a build
+    /// with no screen, and a value that never arrived would be worse than one
+    /// that arrived without moving.
+    /// </summary>
+    [Fact]
+    public void WithNoClockAValueSimplyArrives()
+    {
+        var walker = new Walker { Clock = null };
+        var label = new Label { Opacity = 0 };
+
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(400, HostEasing.Linear));
+
+        Assert.Equal(1, label.Opacity);
+    }
+
+    /// <summary>
+    /// NOTHING MOVES for a reader who asked for less movement - and an author
+    /// who awaited the motion is told TRUE, because the target was reached,
+    /// which is the whole of what they asked about.
+    /// </summary>
+    [Fact]
+    public void AReaderWhoAskedForLessMovementGetsNone()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+
+        MotionMood.Provided = () => true;
+
+        try
+        {
+            bool? answered = null;
+
+            walker.Aim(
+                Opacity(label),
+                [1.0],
+                HostMotion.Eased(400, HostEasing.Linear),
+                done: whole => answered = whole);
+
+            Assert.Equal(1, label.Opacity);
+            Assert.True(answered, "the target was reached, which is what was asked");
+            Assert.False(clock.Running, "and nothing is being drawn frame by frame");
+        }
+        finally
+        {
+            MotionMood.Provided = null;
+        }
+    }
+
+    /// <summary>
+    /// A curve that overshoots must not ask a platform for something it cannot
+    /// draw: an opacity is a fraction of one.
+    /// </summary>
+    [Fact]
+    public void AFractionIsHeldInsideItsOwnRange()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+
+        walker.Aim(Opacity(label), [1.0], HostMotion.Spring(200, 0.3));
+
+        for (int frame = 0; frame < 120; frame++)
+        {
+            clock.Tick(8);
+            Assert.InRange(label.Opacity, 0, 1);
+        }
+    }
+
+    /// <summary>
+    /// A speed handed in with the setpoint bends the law the same way a motion
+    /// being replaced does: the same duration, beginning at the speed the value
+    /// is actually going at. What a value handed over from arithmetic beside
+    /// the walker needs, and what a reader's release means.
+    /// </summary>
+    [Fact]
+    public void AVelocityHandedInBendsAnEasedLawIntoAHermite()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Scale = 0 };
+
+        MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
+
+        walker.Aim(
+            scale,
+            [100.0],
+            HostMotion.Eased(100, HostEasing.Linear),
+            velocity: [2.0]);
+
+        clock.Tick(50);
+
+        // Half way along, a value that came in at two units a millisecond is at
+        // 75 where a straight line from a standstill would be at 50.
+        Assert.Equal(75, label.Scale, 6);
+
+        clock.Tick(50);
+        Assert.Equal(100, label.Scale, 6);
+    }
+
+    /// <summary>
+    /// A spring is SEEDED with the speed: one thrown backwards leaves the way
+    /// it was going before it turns round, which is the whole of what makes a
+    /// hand-over look like one movement.
+    /// </summary>
+    [Fact]
+    public void AVelocityHandedInSeedsASpring()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Scale = 0 };
+
+        MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
+
+        walker.Aim(scale, [100.0], HostMotion.Spring(200, 1), velocity: [-2.0]);
+        clock.Tick(8);
+
+        Assert.True(
+            label.Scale < 0,
+            $"thrown away from its target, it goes that way first: {label.Scale}");
+
+        for (int frame = 0; frame < 200; frame++)
+        {
+            clock.Tick(8);
+        }
+
+        Assert.Equal(100, label.Scale, 3);
+    }
+
+    /// <summary>
+    /// A speed given where the value is ALREADY at its target is a nudge: it
+    /// leaves and comes back. A distance of nothing is an arrival only from a
+    /// standstill.
+    /// </summary>
+    [Fact]
+    public void AStartVelocityOnAStillValueReturnsToWhereItWas()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Scale = 100 };
+
+        MotionProperty scale = new(label, VisualElement.ScaleProperty, MotionValue.Number);
+        bool? answered = null;
+
+        walker.Aim(
+            scale,
+            [100.0],
+            HostMotion.Eased(200, HostEasing.Linear),
+            done: whole => answered = whole,
+            velocity: [1.0]);
+
+        Assert.Null(answered);
+        Assert.True(clock.Running, "a value going somewhere has a motion to draw");
+
+        clock.Tick(50);
+        Assert.True(label.Scale > 100, $"out: {label.Scale}");
+
+        clock.Tick(150);
+        Assert.Equal(100, label.Scale, 6);
+        Assert.True(answered, "and back where it was, which is where it was sent");
+    }
+
+    /// <summary>
+    /// A frame is the step and then whatever else rides the display's rhythm.
+    /// With nothing else claiming it, a frame is exactly the step it always
+    /// was.
+    /// </summary>
+    [Fact]
+    public void AWalkerWithNothingBesideItStepsAsBefore()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, HostEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 6);
+
+        clock.Tick(50);
+        Assert.Equal(1, label.Opacity, 6);
+        Assert.False(clock.Running, "the last motion landed, so the clock stops");
+    }
+
+    /// <summary>
+    /// What else rides the frame runs AFTER the writes, so it reads the picture
+    /// this frame drew; and while it says it is not finished the clock goes on,
+    /// though nothing at all is moving.
+    /// </summary>
+    [Fact]
+    public void WhatRidesTheFrameRunsAfterTheWritesAndCanHoldTheClock()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+
+        List<double> read = [];
+        bool busy = true;
+
+        walker.Cycle = () => read.Add(label.Opacity);
+        walker.Idle = () => !busy;
+
+        walker.Aim(Opacity(label), [1.0], HostMotion.Eased(100, HostEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal([0.5], read);
+
+        clock.Tick(50);
+        Assert.Equal([0.5, 1], read);
+        Assert.True(clock.Running, "nothing moves, but the frame is still wanted");
+
+        busy = false;
+        clock.Tick(16);
+        Assert.False(clock.Running);
+        Assert.Equal(3, read.Count);
+    }
+
+    /// <summary>
+    /// A clock stopped and started again inside one frame asks for exactly one
+    /// more - which is what a value landing beside another starting does, every
+    /// frame, on a platform that answers one frame at a time.
+    /// </summary>
+    [Fact]
+    public void AClockStoppedAndStartedInOneFrameTicksOnceNextFrame()
+    {
+        int asked = 0;
+        FrameSignal signal = new(() => asked++);
+
+        signal.Start();
+        Assert.Equal(1, asked);
+
+        // Stopped and started while the first signal is still on its way: it is
+        // that signal that arrives, and nothing else is asked for.
+        signal.Stop();
+        signal.Start();
+        Assert.Equal(1, asked);
+
+        // It arrives, and answering it stops the clock and starts it again.
+        Assert.True(signal.Arrived());
+        signal.Stop();
+        signal.Start();
+        signal.Again();
+
+        Assert.Equal(2, asked);
+        Assert.True(signal.Running);
+
+        // And one that is not wanted any more asks for nothing.
+        Assert.True(signal.Arrived());
+        signal.Stop();
+        signal.Again();
+
+        Assert.Equal(2, asked);
+        Assert.False(signal.Running);
+    }
+
+    // ---- What the wire says -------------------------------------------------
+
+    /// <summary>
+    /// A motion nobody started answers nobody. Zero is not a completion
+    /// id: it is the ordinary motion of a value that changed.
+    /// </summary>
+    [Fact]
+    public void AMotionUnderCompletionZeroAnswersNobody()
+    {
+        var host = new Host();
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+
+        var border = (Border)host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Border,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.Opacity] = HostValue.Of(1.0),
+            },
+        });
+
+        host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Border,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.Opacity] = HostValue.Of(0.2),
+            },
+            Transitions =
+            [
+                new HostTransition(
+                    HostProp.Opacity, "opacity",
+                    (int)HostMotion.Law.Eased, 100, (int)HostEasing.Linear, 0),
+            ],
+        });
+
+        Assert.Equal(1, border.Opacity, 3);
+        Assert.Empty(host.Raw);
+
+        clock.Tick(50);
+        Assert.Equal(0.6, border.Opacity, 2);
+
+        clock.Tick(50);
+        Assert.Equal(0.2, border.Opacity, 3);
+        Assert.Empty(host.Raw);
+    }
+
+    /// <summary>
+    /// A SIZE WORKED OUT FROM A MEASUREMENT DOES NOT TRAVEL. Where a layout is
+    /// being measured, none of its children is carried through a size - the
+    /// arranger already holds the lanes for the same reason, and this is the
+    /// half the WALKER owes, because a size the tree DESCRIBES is carried by
+    /// the walker rather than by the arrangement.
+    /// </summary>
+    /// <remarks>
+    /// What a measurement reports is what the views in it leave it, so a size
+    /// crawling to its answer hands whoever is measuring a run of rooms nobody
+    /// chose - and every one of them re-measures the whole layout. Measured on
+    /// the gallery's held sample pages, which are built from a FrameReader's
+    /// frame: the caption under a list flew onto the window's edge on two
+    /// frames of every scroll. The mark is <c>WatchedProperty</c>, which the
+    /// frame watcher sets on any view whose frame somebody reads.
+    /// </remarks>
+    [Fact]
+    public void ASizeDoesNotTravelWhereTheLayoutIsBeingMeasured()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var transitions = new DescribedMotion(walker);
+
+        var watched = new Grid();
+        var child = new Grid { HeightRequest = 100 };
+        watched.Add(child);
+        watched.SetValue(StateUIRenderer.WatchedProperty, true);
+
+        var loose = new Grid();
+        var free = new Grid { HeightRequest = 100 };
+        loose.Add(free);
+
+        HostPatch Said() => new()
+        {
+            Type = HostNodeType.Grid,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.Height] = HostValue.Of(300.0),
+            },
+            Transitions =
+            [
+                new HostTransition(
+                    HostProp.Height, "heightRequest",
+                    (int)HostMotion.Law.Eased, 100, (int)HostEasing.Linear, 0),
+            ],
+        };
+
+        HostPatch inside = Said();
+        transitions.Apply(child, inside, transitions.Take(inside));
+
+        HostPatch outside = Said();
+        transitions.Apply(free, outside, transitions.Take(outside));
+
+        // The measured one ARRIVES; the ordinary one is still where it began
+        // and walks there over the hundred milliseconds it was given.
+        Assert.Equal(300, child.HeightRequest, 3);
+        Assert.Equal(100, free.HeightRequest, 3);
+
+        clock.Tick(100);
+
+        Assert.Equal(300, child.HeightRequest, 3);
+        Assert.Equal(300, free.HeightRequest, 3);
+    }
+
+    /// <summary>
+    /// A property with no MAUI property behind it, or one whose value has no
+    /// half-way, is APPLIED - never lifted out of the message and lost.
+    /// </summary>
+    [Fact]
+    public void APropertyThatCannotTravelIsStillApplied()
+    {
+        var host = new Host();
+        host.Renderer.Walker.Clock = new HandFrameClock();
+
+        var label = (Label)host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.Text] = HostValue.Of("said"),
+            },
+            Transitions =
+            [
+                new HostTransition(
+                    HostProp.Text, "text",
+                    (int)HostMotion.Law.Eased, 200, (int)HostEasing.Linear, 0),
+            ],
+        });
+
+        Assert.Equal("said", label.Text);
+        Assert.Empty(host.Raw);
+    }
+
+    // ---- A visual state -----------------------------------------------------
+
+    /// <summary>
+    /// A VISUAL STATE TRAVELS TOO. MAUI applies a state by assigning, which is
+    /// the one thing this library cannot animate from the outside - so the
+    /// values with a half-way are taken out of the state and carried by the
+    /// walker, and a control pressed is a control crossing to its pressed
+    /// colour rather than appearing in it.
+    /// </summary>
+    [Fact]
+    public void AVisualStateTravelsToItsValuesAndBackAgain()
+    {
+        var host = new Host();
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, HostEasing.Linear);
+
+        var label = (Label)host.Apply(Stateful);
+
+        Assert.Equal(Colors.Black, label.TextColor);
+
+        label.IsEnabled = false;
+
+        Assert.Equal(Colors.Black, label.TextColor);
+
+        clock.Tick(50);
+        Assert.Equal(0.5f, label.TextColor.Red, 2);
+
+        clock.Tick(50);
+        Assert.Equal(Colors.White, label.TextColor);
+
+        // And back to what the TREE says, which is where it came from - never
+        // to what the control happened to be showing when the state was entered.
+        label.IsEnabled = true;
+        clock.Tick(100);
+
+        Assert.Equal(Colors.Black, label.TextColor);
+    }
+
+    /// <summary>
+    /// A state entered while the value is still on its way bends the motion
+    /// rather than cutting it - a reader tapping twice in quick succession sees
+    /// one movement, not two halves.
+    /// </summary>
+    [Fact]
+    public void AStateEnteredMidTravelBends()
+    {
+        var host = new Host();
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+        host.Renderer.Walker.Travel = HostMotion.Eased(200, HostEasing.Linear);
+
+        var label = (Label)host.Apply(Stateful);
+
+        label.IsEnabled = false;
+        clock.Tick(100);
+
+        float half = label.TextColor.Red;
+        Assert.InRange(half, 0.4f, 0.6f);
+
+        label.IsEnabled = true;
+        clock.Tick(8);
+
+        Assert.True(
+            label.TextColor.Red > half,
+            $"the colour is still going the way it was: {half} -> {label.TextColor.Red}");
+    }
+
+    /// <summary>A label that goes white when it is disabled.</summary>
+    private const string Stateful = """
+        {"id":1,"type":"Label","props":{"text":"one","textColor":"#000000"},
+         "arranged":true,"children":[
+          {"id":2,"type":"VisualState",
+           "props":{"name":{"name":"Normal"},"group":{"name":"CommonStates"}}},
+          {"id":3,"type":"VisualState",
+           "props":{"name":{"name":"Disabled"},"group":{"name":"CommonStates"}},
+           "children":[{"id":4,"type":"Setters","props":{"textColor":"#FFFFFF"}}]}]}
+        """;
+
+    // ---- Showing, hiding, and a picture -------------------------------------
+
+    /// SHOWING AND HIDING CROSSES. MAUI's own flag blinks a view in and out of
+    /// existence; here a view being hidden fades to nothing FIRST and goes when
+    /// it gets there, so two views in one slot change over rather than blink.
+    [Fact]
+    public void HidingAViewFadesItAndOnlyThenHidesIt()
+    {
+        var host = new Host();
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, HostEasing.Linear);
+
+        var label = (Label)host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.Text] = HostValue.Of("here"),
+            },
+        });
+
+        Assert.True(label.IsVisible);
+
+        host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.IsVisible] = HostValue.Of(false),
+            },
+        });
+
+        Assert.True(label.IsVisible, "still there, on its way out");
+        Assert.True(label.InputTransparent, "and answering no touch while it goes");
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 1);
+        Assert.True(label.IsVisible);
+
+        clock.Tick(50);
+        Assert.False(label.IsVisible, "hidden when the fade landed");
+
+        // And left at what the tree describes, so the next showing starts from
+        // somewhere honest.
+        Assert.Equal(1, label.Opacity, 3);
+    }
+
+    /// And a view SHOWN appears at nothing and comes up, which is the other
+    /// half of the change-over.
+    [Fact]
+    public void ShowingAViewBringsItUpFromNothing()
+    {
+        var host = new Host();
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, HostEasing.Linear);
+
+        var label = (Label)host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.Text] = HostValue.Of("here"),
+                [HostProp.IsVisible] = HostValue.Of(false),
+            },
+        });
+
+        Assert.False(label.IsVisible, "a view described for the first time is simply there or not");
+
+        host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.IsVisible] = HostValue.Of(true),
+            },
+        });
+
+        Assert.True(label.IsVisible);
+        Assert.Equal(0, label.Opacity, 3);
+
+        clock.Tick(100);
+        Assert.Equal(1, label.Opacity, 3);
+    }
+
+    /// A VIEW THAT COMES BACK ANSWERS A TOUCH. Fading one out makes it
+    /// transparent to touch while it goes, and a message that shows it again
+    /// AND tells it not to travel takes the other road out of the same
+    /// method - so a view could be back on screen and deaf for good.
+    [Fact]
+    public void AViewShownAgainWithoutTravellingAnswersATouch()
+    {
+        var host = new Host();
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, HostEasing.Linear);
+
+        var label = (Label)host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.Text] = HostValue.Of("here"),
+            },
+        });
+
+        // Away it goes, fading, and deaf while it does.
+        host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.IsVisible] = HostValue.Of(false),
+            },
+        });
+
+        clock.Tick(100);
+
+        Assert.False(label.IsVisible);
+        Assert.True(label.InputTransparent);
+
+        // And back, by a message that also says this view does not travel.
+        host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Moves = true,
+            Motion = HostMotion.Eased(0, HostEasing.Linear),
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.IsVisible] = HostValue.Of(true),
+            },
+        });
+
+        Assert.True(label.IsVisible);
+        Assert.False(label.InputTransparent, "back on screen and answering again");
+    }
+
+    /// A view told to travel at no motion is hidden AT ONCE, which is what
+    /// `.motion(.none)` on it means: what the host decides for itself - where
+    /// it puts children, what a visual state changes, and whether showing
+    /// crosses - follows the plain form.
+    [Fact]
+    public void AViewToldToStayStillIsHiddenAtOnce()
+    {
+        var host = new Host();
+        host.Renderer.Walker.Clock = new HandFrameClock();
+        host.Renderer.Walker.Travel = HostMotion.Eased(100, HostEasing.Linear);
+
+        var label = (Label)host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.Text] = HostValue.Of("here"),
+            },
+        });
+
+        host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Moves = true,
+            Motion = HostMotion.Eased(0, HostEasing.Linear),
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.IsVisible] = HostValue.Of(false),
+            },
+        });
+
+        Assert.False(label.IsVisible);
+        Assert.Equal(1, label.Opacity, 3);
+    }
+
+    /// <summary>
+    /// A VIEW TOLD IT DOES NOT TRAVEL IS AT ITS VALUE, even when it was half
+    /// way somewhere when it was told.
+    /// </summary>
+    /// <remarks>
+    /// The law arrives with the message and is per node, so it can arrive while
+    /// a value of that control is still crossing. Left alone, that value is one
+    /// nothing ever puts right: an absent field means unchanged, so a property
+    /// the TREE has already finished with is never restated, and the control
+    /// stays turned, scaled or faded wrongly for the rest of the session.
+    /// Measured on Android, in a layout of seven cards changing shape: cards
+    /// kept the previous shape's rotation for good.
+    /// </remarks>
+    [Fact]
+    public void AViewToldItDoesNotTravelLandsWhateverWasStillCrossing()
+    {
+        var host = new Host();
+        var clock = new HandFrameClock();
+        host.Renderer.Walker.Clock = clock;
+
+        var label = (Label)host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.Rotation] = HostValue.Of(0d),
+            },
+        });
+
+        host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Props = new Dictionary<HostProp, HostValue>
+            {
+                [HostProp.Rotation] = HostValue.Of(90d),
+            },
+            Transitions =
+            [
+                new HostTransition(
+                    HostProp.Rotation, "rotation",
+                    (int)HostMotion.Law.Eased, 100, (int)HostEasing.Linear, 0),
+            ],
+        });
+
+        clock.Tick(50);
+        Assert.Equal(45, label.Rotation, 1);
+
+        // The tree says this view does not travel - and says NOTHING about the
+        // rotation, which as far as it is concerned arrived a message ago.
+        host.ApplyMessage(new HostPatch
+        {
+            Id = new HostElementId(1),
+            Type = HostNodeType.Label,
+            Moves = true,
+            Motion = HostMotion.Eased(0, HostEasing.Linear),
+        });
+
+        Assert.Equal(90, label.Rotation, 3);
+
+        // And nothing is left ticking behind it.
+        clock.Tick(100);
+        Assert.Equal(90, label.Rotation, 3);
+    }
+
+    /// A GRADIENT is the same picture in different colours, so it crosses -
+    /// which is what keeps a theme change uniform, a header having been the one
+    /// thing on the screen that blinked.
+    [Fact]
+    public void AGradientCrossesItsColours()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var stack = new VerticalStackLayout();
+
+        var was = new LinearGradientBrush(
+            [new GradientStop(Colors.Black, 0), new GradientStop(Colors.Black, 1)],
+            new Point(0, 0),
+            new Point(1, 1));
+
+        stack.Background = was;
+
+        var going = new LinearGradientBrush(
+            [new GradientStop(Colors.White, 0), new GradientStop(Colors.White, 1)],
+            new Point(0, 0),
+            new Point(1, 1));
+
+        Assert.True(MotionProperty.Of(
+            stack, VisualElement.BackgroundProperty, going, false,
+            out ITripTarget moves, out double[] to));
+
+        walker.Aim(moves, to, HostMotion.Eased(100, HostEasing.Linear));
+
+        clock.Tick(50);
+
+        var half = Assert.IsType<LinearGradientBrush>(stack.Background);
+        Assert.Equal(0.5f, half.GradientStops[0].Color.Red, 2);
+        Assert.Equal(0.5f, half.GradientStops[1].Color.Red, 2);
+
+        clock.Tick(50);
+        Assert.Equal(1f, ((LinearGradientBrush)stack.Background).GradientStops[0].Color.Red, 3);
+    }
+
+    /// A gradient of a DIFFERENT shape is a different picture rather than the
+    /// same one somewhere else, so it arrives.
+    [Fact]
+    public void AGradientOfAnotherShapeArrives()
+    {
+        var stack = new VerticalStackLayout
+        {
+            Background = new LinearGradientBrush(
+                [new GradientStop(Colors.Black, 0)], new Point(0, 0), new Point(1, 1)),
+        };
+
+        var going = new LinearGradientBrush(
+            [new GradientStop(Colors.White, 0), new GradientStop(Colors.White, 1)],
+            new Point(0, 0),
+            new Point(1, 1));
+
+        Assert.True(MotionProperty.Of(
+            stack, VisualElement.BackgroundProperty, going, false,
+            out ITripTarget moves, out double[] _));
+
+        // Two stops against one: the walker reads nothing to come from, and
+        // Aim then puts the value where it was told at once.
+        Assert.False(moves.Read(new double[moves.Lanes]));
+    }
+
+    /// A LENGTH MAUI happens to type as a whole number travels like any other
+    /// length: what makes a value travel is whether there is a half-way between
+    /// two of them on screen, never which C# type it has.
+    [Fact]
+    public void ALengthTypedAsAWholeNumberStillTravels()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var button = new Button { CornerRadius = 0 };
+
+        Assert.True(MotionProperty.Of(
+            button, Button.CornerRadiusProperty, 20, false,
+            out ITripTarget moves, out double[] to));
+
+        walker.Aim(moves, to, HostMotion.Eased(100, HostEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal(10, button.CornerRadius);
+
+        clock.Tick(50);
+        Assert.Equal(20, button.CornerRadius);
+    }
+
+    // ---- The bytes ----------------------------------------------------------
+
+    /// <summary>
+    /// THE ORDINARY CASE, APPLIED FROM THE BYTES SWIFT WROTE. Every other test
+    /// here builds a node by hand; this one reads the fixture the Swift half
+    /// records, so the two sides cannot agree on the design and differ on the
+    /// message.
+    /// </summary>
+    [Fact]
+    public void AValueThatTravelsArrivesAsBytesAndIsCarriedThere()
+    {
+        var host = new Host();
+        var clock = new HandFrameClock();
+
+        host.Renderer.Walker.Clock = clock;
+
+        var panel = (Border)host.ApplyMessage(Fixtures.ReadBytes("travelling-first.bin"));
+
+        Assert.Equal(1, panel.Opacity, 3);
+
+        host.ApplyMessage(Fixtures.ReadBytes("travelling.bin"));
+
+        // The TARGET is on the wire as an ordinary value; the walk to it is
+        // the field beside it, and the control has not got there yet.
+        Assert.Equal(1, panel.Opacity, 3);
+
+        Trip walk = host.Renderer.Walker.Moving(panel, VisualElement.OpacityProperty)!;
+
+        Assert.Equal(0.25, walk.Target[0], 3);
+
+        clock.Tick(100);
+        Assert.InRange(panel.Opacity, 0.25, 0.999);
+
+        clock.Tick(100);
+        Assert.Equal(0.25, panel.Opacity, 3);
+    }
+
+    /// <summary>
+    /// And what crosses is the LAW: a length and a curve beside the property,
+    /// which is the whole of what one of these says.
+    /// </summary>
+    [Fact]
+    public void TheOrdinaryMotionOnTheWireIsALawAndNothingElse()
+    {
+        var names = new WireDictionary();
+
+        _ = WireCodec.ReadMessage(Fixtures.ReadBytes("travelling-first.bin"), names);
+
+        HostPatch panel = WireCodec.ReadMessage(
+            Fixtures.ReadBytes("travelling.bin"), names).Root!;
+
+        HostTransition transition = Assert.Single(panel.Transitions!);
+
+        Assert.Equal(200u, transition.Millis);
+        Assert.Equal((int)HostMotion.Law.Eased, transition.Law);
+    }
+
+    // ---- The layout ---------------------------------------------------------
+
+    /// <summary>
+    /// An inner manager that puts each child exactly where it is told - which
+    /// is what a stack, a grid and a flex all are once their arithmetic has
+    /// answered.
+    /// </summary>
+    /// <remarks>
+    /// A real one cannot be used here: MAUI measures a control through its
+    /// HANDLER, and a test has none, so every child would be nothing by nothing.
+    /// What the arranger adds happens after the measuring anyway - this is
+    /// exactly the seam it wraps.
+    /// </remarks>
+    private sealed class Places : ILayoutManager
+    {
+        internal Rect[] Where { get; set; } = [];
+
+        /// <summary>Run from inside the pass, where a test wants to look.</summary>
+        internal Action? Watching { get; set; }
+
+        private readonly Layout _layout;
+
+        internal Places(Layout layout) => _layout = layout;
+
+        public Size Measure(double widthConstraint, double heightConstraint) =>
+            new(widthConstraint, heightConstraint);
+
+        public Size ArrangeChildren(Rect bounds)
+        {
+            Watching?.Invoke();
+
+            for (int i = 0; i < _layout.Count && i < Where.Length; i++)
+            {
+                ((IView)_layout[i]).Arrange(Where[i]);
+            }
+
+            return bounds.Size;
+        }
+    }
+
+    /// <summary>
+    /// A child that answers a MEASURE, which a real one does through its
+    /// handler and a test has none of.
+    /// </summary>
+    /// <remarks>
+    /// Needed only where a child STATES a size: MAUI clamps the arrange of
+    /// such a view to what it measured, so one that measured nothing is
+    /// arranged at nothing and the arranger never sees a place at all.
+    /// </remarks>
+    private sealed class Sized : BoxView
+    {
+        /// <inheritdoc/>
+        protected override Size MeasureOverride(double widthConstraint, double heightConstraint) =>
+            new(
+                WidthRequest >= 0 ? WidthRequest : widthConstraint,
+                HeightRequest >= 0 ? HeightRequest : heightConstraint);
+    }
+
+    private sealed class Laid
+    {
+        internal required LayoutMotion Arranger { get; init; }
+
+        internal required Places Inner { get; init; }
+
+        internal required HandFrameClock Clock { get; init; }
+
+        internal required Layout Layout { get; init; }
+
+        internal required Walker Walker { get; init; }
+
+        /// <summary>
+        /// Arranges as a MESSAGE would - what the interface holds changed, so
+        /// the children travel.
+        /// </summary>
+        internal void Arrange(Rect bounds, params Rect[] places)
+        {
+            Walker.Said();
+            Place(bounds, places);
+        }
+
+        /// <summary>
+        /// And as the ROOM would - a window dragged, a scroller settling.
+        /// Nothing was applied, so everything tracks it exactly.
+        /// </summary>
+        internal void Place(Rect bounds, params Rect[] places)
+        {
+            Inner.Where = places;
+            Arranger.ArrangeChildren(bounds);
+        }
+    }
+
+    private static Laid Laying(HostMotion spec, int children)
+    {
+        var clock = new HandFrameClock();
+        var walker = new Walker { Clock = clock };
+        var layout = new VerticalStackLayout();
+
+        for (int i = 0; i < children; i++)
+        {
+            layout.Children.Add(new BoxView());
+        }
+
+        var inner = new Places(layout);
+
+        layout.SetValue(LayoutMotion.TravelProperty, spec);
+
+        return new Laid
+        {
+            Arranger = new LayoutMotion(layout, inner, walker),
+            Inner = inner,
+            Clock = clock,
+            Layout = layout,
+            Walker = walker,
+        };
+    }
+
+    private static readonly HostMotion Travelling = HostMotion.Eased(200, HostEasing.Linear);
+
+    /// <summary>
+    /// The first arrangement is an arrival: the first thing anyone sees is
+    /// always the thing itself.
+    /// </summary>
+    [Fact]
+    public void AChildIsFirstPlacedWhereItBelongs()
+    {
+        Laid laid = Laying(Travelling, 1);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 40, 100, 40));
+
+        Assert.Equal(40, ((IView)laid.Layout[0]).Frame.Y, 1);
+    }
+
+    /// <summary>
+    /// A RESIZE ARRIVES. The layout's own room changing is a reader dragging
+    /// the window, and a child gliding after it is late on every frame of the
+    /// drag - so a pass whose bounds differ from the pass before it places its
+    /// children at once, where the same bounds a second time travel them.
+    /// </summary>
+    [Fact]
+    public void AChildArrivesWhereTheLayoutsOwnRoomChanged()
+    {
+        Laid travels = Laying(Travelling, 1);
+        travels.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        travels.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 40, 100, 40));
+
+        // The same room, a new place: it walks, and is still on its way.
+        Assert.Equal(0, ((IView)travels.Layout[0]).Frame.Y, 1);
+
+        Laid resized = Laying(Travelling, 1);
+        resized.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        resized.Arrange(new Rect(0, 0, 140, 200), new Rect(0, 40, 140, 40));
+
+        // A room of another width: there at once.
+        Assert.Equal(40, ((IView)resized.Layout[0]).Frame.Y, 1);
+    }
+
+    /// <summary>
+    /// A child that changes place TRAVELS there - which is what a row sliding
+    /// down when something is inserted above it actually is.
+    /// </summary>
+    [Fact]
+    public void AChildThatChangesPlaceTravelsThere()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 60, 100, 40));
+
+        Assert.Equal(0, child.Frame.Y, 1);
+
+        laid.Clock.Tick(100);
+        Assert.Equal(30, child.Frame.Y, 0);
+
+        laid.Clock.Tick(100);
+        Assert.Equal(60, child.Frame.Y, 1);
+    }
+
+    /// <summary>
+    /// A child that has to grow travels through the sizes in between, so a card
+    /// that opens is a card opening rather than a card replaced.
+    /// </summary>
+    [Fact]
+    public void AChildThatChangesSizeTravelsThroughTheSizesBetween()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 140));
+
+        laid.Clock.Tick(100);
+        Assert.Equal(90, child.Frame.Height, 0);
+    }
+
+    /// <summary>
+    /// THE ROOM MOVING ARRIVES. An arrangement with no message behind it is a
+    /// window being dragged, a keyboard rising or a scroller settling, and a
+    /// child that glides after a reader's own hand is late every single frame.
+    /// </summary>
+    [Fact]
+    public void TheRoomMovingArrivesRatherThanTravelling()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Place(new Rect(0, 0, 140, 200), new Rect(0, 60, 140, 40));
+
+        Assert.Equal(60, child.Frame.Y, 1);
+        Assert.False(laid.Clock.Running, "nothing is moving, so nothing is ticking");
+    }
+
+    /// <summary>
+    /// A LAYOUT THAT GREW BECAUSE OF WHAT IT HOLDS still travels. A stack is
+    /// as tall as its rows, so inserting one changes the layout's own size -
+    /// which is not a reader dragging anything, and reading it as one was
+    /// measured on the gallery as a row that appeared with no slide at all.
+    /// </summary>
+    [Fact]
+    public void ALayoutThatGrewBecauseOfWhatItHoldsStillTravels()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 40), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 86), new Rect(0, 46, 100, 40));
+
+        Assert.Equal(0, child.Frame.Y, 1);
+
+        laid.Clock.Tick(100);
+        Assert.Equal(23, child.Frame.Y, 0);
+    }
+
+    /// <summary>
+    /// A layout told to stay still places its children at once, which is what
+    /// this library's own list asks for: where a slot sits is arithmetic
+    /// answering a measurement, not something a reader watches change.
+    /// </summary>
+    [Fact]
+    public void ALayoutToldToStayStillPlacesItsChildrenAtOnce()
+    {
+        Laid laid = Laying(HostMotion.Eased(0, HostEasing.Linear), 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 60, 100, 40));
+
+        Assert.Equal(60, child.Frame.Y, 1);
+        Assert.False(laid.Clock.Running);
+    }
+
+    /// <summary>
+    /// A layout pass that moves nothing starts nothing: an arrangement is asked
+    /// for whenever anything anywhere invalidates, and a motion begun for a
+    /// child that has not moved would be a frame clock running over a still
+    /// screen.
+    /// </summary>
+    [Fact]
+    public void AnArrangementThatMovesNothingStartsNothing()
+    {
+        Laid laid = Laying(Travelling, 1);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 40, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 40, 100, 40));
+
+        Assert.False(laid.Clock.Running);
+    }
+
+    /// <summary>
+    /// AN ARRANGEMENT THAT SAYS THE SAME THING LEAVES THE MOTION ALONE. A
+    /// layout is asked to arrange whenever anything anywhere invalidates - a
+    /// label remeasured, a scroll settled, a motion of ours writing a frame -
+    /// and a motion re-aimed on every one of those would never arrive: its
+    /// clock would start again each time and the value would creep at the head
+    /// of a curve it never finishes.
+    /// </summary>
+    [Fact]
+    public void ArrangingAgainWithTheSamePlanDoesNotRestartTheMotion()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 40));
+
+        // Every frame arranges again, which is what a layout under a moving
+        // child actually does - and no message is behind any of them.
+        for (int frame = 0; frame < 14; frame++)
+        {
+            laid.Clock.Tick(16);
+            laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 40));
+        }
+
+        Assert.Equal(100, child.Frame.Y, 1);
+        Assert.False(laid.Clock.Running, "and it is over, rather than creeping");
+    }
+
+    /// <summary>
+    /// THERE IS NO HALF-WAY BETWEEN NOWHERE AND SOMEWHERE. A view being placed
+    /// for the first time - a tab just chosen, a page just pushed - has no
+    /// previous place to come from, and a size grown out of nothing is the one
+    /// movement a reader reads as a fault.
+    /// </summary>
+    [Fact]
+    public void AViewPlacedForTheFirstTimeArrivesRatherThanGrowing()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        // What MAUI wears before it has laid a child out at all.
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, -1, -1));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        Assert.Equal(new Rect(0, 0, 100, 40), child.Frame);
+        // Nothing grew out of nothing, though it may still fade in.
+        Assert.Null(laid.Walker.Moving(child, MotionFrame.Place));
+    }
+
+    /// <summary>
+    /// And a child a layout gave NOTHING is the same thing said another way.
+    /// </summary>
+    [Fact]
+    public void AChildGivenNoRoomArrivesWhenItIsGivenSome()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 0, 614));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 439, 614));
+
+        Assert.Equal(439, child.Frame.Width, 1);
+        Assert.Null(laid.Walker.Moving(child, MotionFrame.Place));
+    }
+
+    /// <summary>
+    /// A view APPEARING is the other half of a view moving: everything around
+    /// it slides to make room, and it arrives rather than being suddenly there.
+    /// </summary>
+    [Fact]
+    public void AChildJoiningALayoutThatWasStandingArrives()
+    {
+        Laid laid = Laying(Travelling, 1);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        var joining = new BoxView();
+        laid.Layout.Children.Add(joining);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40), new Rect(0, 40, 100, 40));
+
+        Assert.Equal(0, joining.Opacity, 2);
+
+        laid.Clock.Tick(100);
+        Assert.Equal(0.5, joining.Opacity, 1);
+
+        laid.Clock.Tick(100);
+        Assert.Equal(1, joining.Opacity, 2);
+    }
+
+    /// <summary>
+    /// NOR ONE SOMEBODY ELSE OWNS. A child whose opacity is on a number wears
+    /// whatever the number says from the frame it arrives, so a fade in over the
+    /// top of that would be a second writer on one value.
+    /// </summary>
+    [Fact]
+    public void AChildJoiningOnADrivenOpacityIsNotFadedIn()
+    {
+        Laid laid = Laying(Travelling, 1);
+
+        laid.Walker.Driven = (_, key) => ReferenceEquals(key, VisualElement.OpacityProperty);
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        var joining = new BoxView { Opacity = 0.3 };
+        laid.Layout.Children.Add(joining);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40), new Rect(0, 40, 100, 40));
+
+        Assert.Equal(0.3, joining.Opacity, 3);
+        Assert.Null(laid.Walker.Moving(joining, VisualElement.OpacityProperty));
+    }
+
+    /// <summary>
+    /// AND A CHILD THAT LEAVES KEEPS IT. A fade this layout never started is
+    /// not this layout's to land: the child's place stops travelling, because
+    /// nothing can see it any more, and its opacity goes on being whatever the
+    /// number is doing with it.
+    /// </summary>
+    [Fact]
+    public void AChildLeavingOnADrivenOpacityKeepsWhatIsCarryingIt()
+    {
+        Laid laid = Laying(Travelling, 1);
+        var child = (BoxView)laid.Layout[0];
+
+        laid.Walker.Driven = (_, key) => ReferenceEquals(key, VisualElement.OpacityProperty);
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        laid.Walker.Aim(
+            new MotionProperty(child, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [0],
+            Travelling);
+
+        laid.Layout.Children.Remove(child);
+
+        Assert.NotNull(laid.Walker.Moving(child, VisualElement.OpacityProperty));
+        Assert.Null(laid.Walker.Moving(child, MotionFrame.Place));
+    }
+
+    /// <summary>
+    /// Not on the FIRST arrangement, where every child is new: a whole page
+    /// fading in is not what anyone asked for.
+    /// </summary>
+    [Fact]
+    public void TheFirstChildrenOfALayoutAreSimplyThere()
+    {
+        Laid laid = Laying(Travelling, 2);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40), new Rect(0, 40, 100, 40));
+
+        Assert.Equal(1, ((VisualElement)laid.Layout[0]).Opacity, 3);
+        Assert.Equal(1, ((VisualElement)laid.Layout[1]).Opacity, 3);
+        Assert.False(laid.Clock.Running);
+    }
+
+    /// <summary>
+    /// A REORDER IS A REMOVAL AND AN INSERT: bringing a list into the order a
+    /// message asked for takes a child out and puts it back, and a child that
+    /// was travelling at the time must carry on from where it had reached
+    /// rather than jump back to the place it was last aimed at.
+    /// </summary>
+    [Fact]
+    public void AChildTakenOutAndPutBackCarriesOnFromWhereItWas()
+    {
+        Laid laid = Laying(Travelling, 1);
+        var child = (BoxView)laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 40));
+
+        laid.Clock.Tick(100);
+        double half = ((IView)child).Frame.Y;
+
+        Assert.InRange(half, 40, 60);
+
+        // What Align does to put a list in order.
+        laid.Layout.Children.Remove(child);
+        laid.Layout.Children.Add(child);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 40));
+
+        Assert.Equal(half, ((IView)child).Frame.Y, 1);
+
+        laid.Clock.Tick(16);
+
+        Assert.True(
+            ((IView)child).Frame.Y > half,
+            $"and it goes on the way it was: {half} -> {((IView)child).Frame.Y}");
+    }
+
+    /// <summary>
+    /// A place changed WHILE a child is travelling bends its motion, the way
+    /// every other setpoint does - so a list that changes twice does not stop
+    /// in between.
+    /// </summary>
+    [Fact]
+    public void APlaceChangedMidTravelBendsRatherThanRestarting()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 40));
+
+        laid.Clock.Tick(100);
+        double half = child.Frame.Y;
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Clock.Tick(8);
+
+        Assert.True(
+            child.Frame.Y > half,
+            $"the child is still going the way it was: {half} -> {child.Frame.Y}");
+    }
+
+    /// <summary>
+    /// A VIEW ALREADY CROSSING IS NOT ALSO FADED IN BY ITS LAYOUT. Showing and
+    /// hiding is a crossing of the same value, decided by what the tree said -
+    /// so a row inserted into a live layout and described as HIDDEN is on its
+    /// way out, and a fade in over the top of it would replace that motion and
+    /// leave the view standing there.
+    /// </summary>
+    [Fact]
+    public void AViewOnItsWayOutIsNotFadedInByTheLayoutItJoined()
+    {
+        Laid laid = Laying(Travelling, 1);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        // A second child, already being crossed out by the renderer as it
+        // joins - which is what a row described as hidden looks like here.
+        var joining = new BoxView();
+        var fading = new MotionProperty(
+            joining, VisualElement.OpacityProperty, MotionValue.Number, true);
+
+        laid.Layout.Children.Add(joining);
+        laid.Walker.Aim(fading, [0], Travelling);
+
+        Trip? crossing = laid.Walker.Moving(joining, VisualElement.OpacityProperty);
+        Assert.NotNull(crossing);
+
+        laid.Arrange(
+            new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40), new Rect(0, 40, 100, 40));
+
+        Assert.Same(
+            crossing,
+            laid.Walker.Moving(joining, VisualElement.OpacityProperty));
+
+        laid.Clock.Tick(200);
+        Assert.Equal(0, joining.Opacity, 3);
+    }
+
+    /// <summary>
+    /// A FOLLOWED LAYOUT IS THE SIZE IT IS GIVEN. Its children stand where
+    /// arithmetic over the room puts them and are free to reach outside it, so
+    /// a layout that answered with their union would feed its own measure -
+    /// measured on Mac Catalyst as a pass oscillating at a whole core.
+    /// </summary>
+    [Fact]
+    public void AFollowedLayoutAnswersTheRoomItWasGivenRatherThanItsChildrensReach()
+    {
+        Laid laid = Laying(Travelling, 1);
+
+        // The inner manager here asks for whatever it is offered; what matters
+        // is that a followed layout does not go looking past the constraint.
+        Assert.Equal(new Size(300, 400), laid.Arranger.Measure(300, 400));
+
+        laid.Layout.SetValue(MotionPlacement.PlacedProperty, true);
+
+        Assert.Equal(new Size(300, 400), laid.Arranger.Measure(300, 400));
+
+        // A side nothing constrains keeps the children's answer, there being
+        // nothing else to say.
+        Size open = laid.Arranger.Measure(300, double.PositiveInfinity);
+
+        Assert.Equal(300, open.Width);
+        Assert.True(double.IsInfinity(open.Height) == false || true);
+    }
+
+    /// <summary>
+    /// A LAYOUT SOMEBODY IS MEASURING PLACES ITS CHILDREN AT ONCE - every
+    /// lane, the place as well as the size.
+    /// </summary>
+    /// <remarks>
+    /// What comes back from a measurement is a number an application works its
+    /// interface out from, so every step of a walk to it is a page laid out at
+    /// a size nobody chose. Holding the SIZE lanes alone reads like the
+    /// narrower rule and is measured to be wrong: a measured page here is also
+    /// a page that FOLLOWS a channel, and a place in the air is a place two
+    /// writers are aiming at - on Android that left the gallery's run resting
+    /// a card's width off centre, for good.
+    /// </remarks>
+    [Fact]
+    public void AMeasuredLayoutPlacesItsChildrenAtOnce()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        ((VisualElement)child).SetValue(StateUIRenderer.WatchedProperty, true);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 90));
+
+        Assert.Null(laid.Walker.Moving(child, MotionFrame.Place));
+        Assert.Equal(new Rect(0, 100, 100, 90), child.Frame);
+    }
+
+    /// <summary>
+    /// A PLACE IS THE CHILD'S FRAME, AND ITS MARGIN GOES AROUND IT. The
+    /// arranger reads where a child stands from its frame, while arranging a
+    /// view hands it a SLOT - the frame with the margin around it - out of
+    /// which the view takes its margin again. A place written as a slot loses
+    /// the margin twice: a button with a margin of 20, walked to a new width
+    /// after its caption changed, stood at a height of nothing - measured on
+    /// Android, iOS and Mac Catalyst alike.
+    /// </summary>
+    [Fact]
+    public void AChildWithAMarginTravelsAtTheSizeItHas()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+        ((View)laid.Layout[0]).Margin = new Thickness(20);
+
+        laid.Arrange(new Rect(0, 0, 200, 200), new Rect(0, 0, 100, 80));
+        Assert.Equal(new Rect(20, 20, 60, 40), child.Frame);
+
+        // Wider and lower: the width and the place travel, and the height,
+        // which has nowhere to go, goes nowhere on the way.
+        laid.Arrange(new Rect(0, 0, 200, 200), new Rect(0, 60, 140, 80));
+        laid.Clock.Tick(100);
+
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
+        Assert.Equal(40, child.Frame.Height, 1);
+
+        laid.Clock.Tick(300);
+
+        Assert.Equal(new Rect(20, 80, 100, 40), child.Frame);
+    }
+
+    /// <summary>
+    /// A MOTION CANNOT OUTLIVE A PASS THAT WILL NOT END. The frame clock runs
+    /// on the thread that lays out, so a platform repeating one layout pass -
+    /// UIKit rotating a window - holds the thread the motion needs, and the
+    /// undo the arranger writes to keep the child off its target is what keeps
+    /// the pass dirty. Repeated with no frame made in between, the place
+    /// arrives instead.
+    /// </summary>
+    [Fact]
+    public void APlaceArrivesWhenTheClockCannotReachIt()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+
+        // In flight, and one frame in - so the child is between the two.
+        laid.Clock.Tick(60);
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
+
+        // The pass runs again and again, saying the same thing, with the clock
+        // never reaching another frame. A window resized on Windows does this
+        // until the platform gives up on the layout and takes the application
+        // with it, so the count that ends it has a ceiling as well as a floor.
+        // The SIZE is given up first - see the test below - and then the place.
+        for (int again = 0; again < 100; again++)
+        {
+            laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+        }
+
+        Assert.Null(laid.Walker.Moving(child, MotionFrame.Place));
+        Assert.Equal(new Rect(0, 120, 100, 40), child.Frame);
+    }
+
+    /// <summary>
+    /// AND THE SIZE IS WHAT IT GIVES UP FIRST, because a size being walked is
+    /// what a pass fails to settle on. Measured on Windows both ways: a grid
+    /// whose columns changed width re-arranged every 0.45 ms for as long as it
+    /// was allowed to and never moved at all, while the same page's rows -
+    /// which change only their place - travelled perfectly; holding the two
+    /// size lanes made the same grid converge at one arrangement a frame.
+    /// </summary>
+    [Fact]
+    public void ASizeIsGivenUpBeforeThePlaceIs()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 90));
+
+        laid.Clock.Tick(60);
+
+        for (int again = 0; again < 40; again++)
+        {
+            laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 90));
+        }
+
+        // The size is there at once, and the place is still on its way.
+        Assert.Equal(90, child.Frame.Height, 1);
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
+        Assert.True(
+            child.Frame.Y is > 0 and < 120,
+            $"the place goes on travelling: {child.Frame.Y}");
+
+        // And a size asked for after that is simply there, this layout having
+        // been measured refusing to settle on one.
+        laid.Clock.Tick(200);
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 20));
+
+        Assert.Equal(20, child.Frame.Height, 1);
+
+        // And the place still travels, all the way back up.
+        laid.Clock.Tick(100);
+
+        Assert.Equal(60, child.Frame.Y, 0);
+        Assert.Equal(20, child.Frame.Height, 1);
+    }
+
+    /// <summary>
+    /// AND A BURST OF PASSES INSIDE ONE FRAME IS NOT A PASS THAT WILL NOT END.
+    /// A page settling after a message arranges itself several times over
+    /// before the first frame of what it just started, and every one of those
+    /// is an honest pass. Measured on Windows, where a place asks for the pass
+    /// it lands in: the gallery's three-column grid was aimed, arranged six
+    /// more times, and snapped to its target when the count ran out.
+    /// </summary>
+    [Fact]
+    public void APlaceTheClockHasNotReachedYetGoesOnWaitingForIt()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        // A motion of this layout's that is over, so the walker's last frame is
+        // an instant in the past rather than nothing at all.
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 20, 100, 40));
+        laid.Clock.Tick(200);
+
+        // And now a new one, with the page settling around it: pass after pass
+        // saying the same thing, before any frame of THIS motion. Six of them
+        // is what the gallery's three-column grid measured; twice that is still
+        // a page settling and not a pass that will not end.
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+
+        for (int again = 0; again < 12; again++)
+        {
+            laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+        }
+
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
+        Assert.Equal(20, child.Frame.Y, 0);
+
+        // And it travels the moment the clock does reach it.
+        laid.Clock.Tick(100);
+        Assert.Equal(70, child.Frame.Y, 0);
+    }
+
+    /// <summary>
+    /// And a pass repeated WITH frames in between is an ordinary motion: the
+    /// clock is reaching it, so nothing is landed early.
+    /// </summary>
+    [Fact]
+    public void APlaceThatTheClockKeepsReachingGoesOnTravelling()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+
+        for (int again = 0; again < 8; again++)
+        {
+            laid.Clock.Tick(5);
+            laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 120, 100, 40));
+        }
+
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
+    }
+
+    /// <summary>
+    /// A PLACE KNOWS WHETHER IT IS BEING WRITTEN INSIDE A PASS. Windows arranges
+    /// by asking the XAML layout system, and between passes nothing is listening
+    /// - so a place written from the frame clock has to ask for a pass, and one
+    /// written from inside a pass must not, having landed already and having
+    /// only the running pass to dirty. That answer is this counter, and it is
+    /// nought again however the pass ends.
+    /// </summary>
+    [Fact]
+    public void AnArrangementSaysWhileItIsHappening()
+    {
+        Laid laid = Laying(Travelling, 1);
+
+        Assert.Equal(0, LayoutMotion.Arranging);
+
+        int inside = -1;
+
+        laid.Inner.Watching = () => inside = LayoutMotion.Arranging;
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        Assert.Equal(1, inside);
+        Assert.Equal(0, LayoutMotion.Arranging);
+
+        // However it ends - a manager that throws is still a pass that is over.
+        laid.Inner.Watching = () => throw new InvalidOperationException("no room");
+
+        Assert.Throws<InvalidOperationException>(
+            () => laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 60, 100, 40)));
+
+        Assert.Equal(0, LayoutMotion.Arranging);
+    }
+
+    /// <summary>
+    /// AND IT COUNTS RATHER THAN SAYING YES OR NO, because arrangements NEST: a
+    /// layout inside a layout is arranged from inside the outer one's pass, and
+    /// an answer cleared when the inner pass ends would tell every write made in
+    /// the rest of the outer one that no pass was running. On Windows such a
+    /// write asks for a pass, and asking for one from inside the pass that is
+    /// making it is the whole of what this prevents.
+    /// </summary>
+    [Fact]
+    public void ArrangementsInsideArrangementsCountUp()
+    {
+        Laid outer = Laying(Travelling, 1);
+        Laid inner = Laying(Travelling, 1);
+
+        int deep = -1;
+        int after = -1;
+
+        inner.Inner.Watching = () => deep = LayoutMotion.Arranging;
+
+        outer.Inner.Watching = () =>
+        {
+            inner.Arrange(new Rect(0, 0, 50, 50), new Rect(0, 0, 50, 20));
+            after = LayoutMotion.Arranging;
+        };
+
+        outer.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        Assert.Equal(2, deep);
+        Assert.Equal(1, after);
+        Assert.Equal(0, LayoutMotion.Arranging);
+    }
+
+    /// <summary>
+    /// A PASS IN THE MIDDLE OF A MOTION PUTS THE CHILD BACK WHERE THE MOTION HAS
+    /// REACHED. The inner manager has just put it AT the target, and undoing that
+    /// is what keeps a travelling child off its destination - and on Windows,
+    /// where a place lands only from inside a pass, it is also the whole of how a
+    /// frame reaches the screen.
+    /// </summary>
+    [Fact]
+    public void AnArrangementMidMotionPutsTheChildBackWhereItHasReached()
+    {
+        Laid laid = Laying(Travelling, 1);
+        IView child = laid.Layout[0];
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 40));
+
+        laid.Clock.Tick(100);
+        Assert.Equal(50, child.Frame.Y, 0);
+
+        // The same plan again, and the inner manager puts the child at 100 on
+        // its way through.
+        laid.Place(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 40));
+
+        Assert.Equal(50, child.Frame.Y, 0);
+        Assert.NotNull(laid.Walker.Moving(child, MotionFrame.Place));
+    }
+
+    /// <summary>
+    /// AND IT IS THE WHOLE LAYOUT'S ANSWER, not the watched child's: what a
+    /// measurement reports is what the views BESIDE it leave it, so a sibling
+    /// walked through a size moves the very number being read.
+    /// </summary>
+    [Fact]
+    public void AMeasuredSiblingHoldsEveryChildOfTheLayoutAtItsSize()
+    {
+        Laid laid = Laying(Travelling, 2);
+
+        laid.Arrange(
+            new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40), new Rect(0, 40, 100, 40));
+
+        ((VisualElement)laid.Layout[0]).SetValue(StateUIRenderer.WatchedProperty, true);
+
+        laid.Arrange(
+            new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 90), new Rect(0, 90, 100, 90));
+
+        laid.Clock.Tick(100);
+
+        Assert.Equal(90, ((IView)laid.Layout[1]).Frame.Height, 1);
+    }
+
+    /// <summary>
+    /// A SIZE THE CHILD ASKED FOR ARRIVES TOO. A request is a value somebody
+    /// worked out, most sharply where they worked it out from a measurement.
+    /// </summary>
+    [Fact]
+    public void ASizeTheChildAskedForArrivesRatherThanTravelling()
+    {
+        Laid laid = Laying(Travelling, 0);
+        var child = new Sized { HeightRequest = 40 };
+
+        laid.Layout.Children.Add(child);
+
+        ((IView)child).Measure(100, 200);
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 0, 100, 40));
+
+        child.HeightRequest = 90;
+        ((IView)child).Measure(100, 200);
+
+        laid.Arrange(new Rect(0, 0, 100, 200), new Rect(0, 100, 100, 90));
+        laid.Clock.Tick(100);
+
+        Assert.Equal(90, ((IView)child).Frame.Height, 1);
+        Assert.True(
+            ((IView)child).Frame.Y is > 0 and < 100,
+            $"the place it was given still travels: {((IView)child).Frame.Y}");
+    }
+
+    // ---- What walking from one value to another means ----------------------
+    //
+    // The lane arithmetic every motion here rides on, and the curve table the
+    // whole system shares: what a walked value IS, told apart from what any one
+    // message asks for.
+
+    [Fact]
+    public void ANumberIsWalkedInAStraightLine()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+
+        walker.Aim(
+            new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [1.0],
+            HostMotion.Eased(100, HostEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 3);
+
+        clock.Tick(50);
+        Assert.Equal(1.0, label.Opacity, 3);
+    }
+
+    /// <summary>
+    /// A CONTROL THE TREE HAS DROPPED IS NOT WRITTEN TO AGAIN, and its motion
+    /// does not land either.
+    /// </summary>
+    /// <remarks>
+    /// A trip holds its control for as long as it moves, so a view removed
+    /// from the tree goes on being stepped. On Apple the write is fatal rather
+    /// than merely wrong - a place lands by ARRANGING, arranging reads the
+    /// platform view's superview, and the runtime cannot marshal a native
+    /// layout whose managed side has been collected - which took the gallery
+    /// down within four sweeps of a recycling list whose rows travelled.
+    /// `Drop` ends the trip writing NOTHING, which is what this holds: the
+    /// opacity stands where the last frame left it, the clock stops, and
+    /// whoever awaited it hears that it did not run to the end.
+    /// </remarks>
+    [Fact]
+    public void AMotionOnAControlTheTreeDropsWritesNothingMore()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+        bool? answered = null;
+
+        walker.Aim(
+            new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [1.0],
+            HostMotion.Eased(100, HostEasing.Linear),
+            whole => answered = whole);
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 3);
+
+        walker.Drop(label);
+
+        Assert.False(answered, "the waiter is told it did not run to the end");
+        Assert.Equal(0.5, label.Opacity, 3);
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 3);
+    }
+
+    /// <summary>
+    /// A WINDOW THAT HAS GONE STARTS NO MOTION AGAIN: a trip under it ends
+    /// writing nothing as it goes, and one aimed there after is never written.
+    /// </summary>
+    /// <remarks>
+    /// A closing window is still asked for motion after it has gone - a layout
+    /// pass placing its rows, a visual state leaving focus - none of it a
+    /// render. On Windows the next frame arranged those rows against the
+    /// window's disposed services, inside the platform's frame callback, and
+    /// the process ended: measured closing the Gallery on the Window lifecycle
+    /// sample, six trips started 41 ms after the window was buried.
+    /// </remarks>
+    [Fact]
+    public void AMotionUnderAWindowThatHasGoneWritesNothing()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Opacity = 0 };
+        var window = new Window(new ContentPage { Content = new VerticalStackLayout { label } });
+        bool? first = null;
+        bool? second = null;
+
+        walker.Aim(
+            new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [1.0],
+            HostMotion.Eased(100, HostEasing.Linear),
+            whole => first = whole);
+
+        clock.Tick(50);
+        walker.Bury(window);
+
+        Assert.False(first, "the waiter is told it did not run to the end");
+        Assert.Equal(0.5, label.Opacity, 3);
+
+        walker.Aim(
+            new MotionProperty(label, VisualElement.OpacityProperty, MotionValue.Number, true),
+            [0.0],
+            HostMotion.Eased(100, HostEasing.Linear),
+            whole => second = whole);
+
+        Assert.False(second, "a motion aimed under a window that has gone does not run");
+        Assert.Equal(0, walker.Carrying);
+
+        clock.Tick(50);
+        Assert.Equal(0.5, label.Opacity, 3);
+    }
+
+    /// <summary>
+    /// The end is written EXACTLY, never the last thing the curve worked out:
+    /// a value that stops a thousandth short has stopped somewhere nobody
+    /// described.
+    /// </summary>
+    [Fact]
+    public void AWalkLandsOnTheNumberItWasGiven()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var label = new Label { Scale = 1 };
+
+        walker.Aim(
+            new MotionProperty(label, VisualElement.ScaleProperty, MotionValue.Number),
+            [3.0],
+            HostMotion.Eased(100, HostEasing.CubicOut));
+
+        clock.Tick(97);
+        Assert.NotEqual(3.0, label.Scale);
+
+        clock.Tick(20);
+        Assert.Equal(3.0, label.Scale);
+    }
+
+    [Fact]
+    public void AColourIsWalkedChannelByChannel()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var border = new Border { BackgroundColor = Colors.Black };
+
+        walker.Aim(
+            new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
+            [1, 1, 1, 1],
+            HostMotion.Eased(100, HostEasing.Linear));
+
+        clock.Tick(50);
+
+        Assert.Equal(0.5f, border.BackgroundColor.Red, 3);
+        Assert.Equal(0.5f, border.BackgroundColor.Green, 3);
+        Assert.Equal(0.5f, border.BackgroundColor.Blue, 3);
+        Assert.Equal(1f, border.BackgroundColor.Alpha, 3);
+    }
+
+    /// <summary>
+    /// Alpha is a channel like any other, which is what makes a colour fade to
+    /// nothing rather than to black.
+    /// </summary>
+    [Fact]
+    public void AColourWalksItsAlphaAsWell()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var border = new Border { BackgroundColor = Colors.Red };
+
+        walker.Aim(
+            new MotionProperty(border, VisualElement.BackgroundColorProperty, MotionValue.Colour),
+            [1, 0, 0, 0],
+            HostMotion.Eased(100, HostEasing.Linear));
+
+        clock.Tick(50);
+        Assert.Equal(0.5f, border.BackgroundColor.Alpha, 3);
+
+        clock.Tick(50);
+        Assert.Equal(0f, border.BackgroundColor.Alpha, 3);
+    }
+
+    [Fact]
+    public void FourEdgesAreWalkedOneByOne()
+    {
+        (Walker walker, HandFrameClock clock) = Winding();
+        var stack = new VerticalStackLayout { Padding = new Thickness(0) };
+
+        walker.Aim(
+            new MotionProperty(stack, Layout.PaddingProperty, MotionValue.Edges),
+            [4, 8, 12, 16],
+            HostMotion.Eased(100, HostEasing.Linear));
+
+        clock.Tick(50);
+
+        Assert.Equal(new Thickness(2, 4, 6, 8), stack.Padding);
+    }
+
+    /// <summary>
+    /// A property that has never been set reads as MAUI's default, which for a
+    /// colour is null - so the walk starts from transparent rather than
+    /// refusing.
+    /// </summary>
+    [Fact]
+    public void AColourThatWasNeverSetIsWalkedFromTransparent()
+    {
+        var lanes = new double[4];
+
+        Assert.True(MotionProperty.Split(null, MotionValue.Colour, lanes));
+        Assert.Equal(0, lanes[3]);
+    }
+
+    /// <summary>
+    /// Three kinds walk and a fourth places: a number, a colour, a set of
+    /// edges, a rectangle. Everything else is assigned.
+    /// </summary>
+    [Fact]
+    public void AValueOfNoWalkableKindHasNoShape()
+    {
+        Assert.Equal(MotionValue.Number, MotionProperty.ShapeOf(1.0));
+        Assert.Equal(MotionValue.Colour, MotionProperty.ShapeOf(Colors.Red));
+        Assert.Equal(MotionValue.Edges, MotionProperty.ShapeOf(new Thickness(1)));
+        Assert.Equal(MotionValue.Bounds, MotionProperty.ShapeOf(new Rect(0, 0, 1, 1)));
+
+        Assert.Null(MotionProperty.ShapeOf("one"));
+        Assert.Null(MotionProperty.ShapeOf(FontAttributes.Bold));
+        Assert.Null(MotionProperty.ShapeOf(null));
+    }
+
+    // ---- The curves ---------------------------------------------------------
+
+    /// <summary>
+    /// Every member of the easing vocabulary, so a case added to the mirror
+    /// without an arm behind it fails here rather than animating linearly.
+    /// </summary>
+    /// <remarks>
+    /// The members as plain numbers, because <c>HostEasing</c> is internal
+    /// and a theory's data has to be public - which is honest enough here:
+    /// what crosses the wire IS the number.
+    /// </remarks>
+    public static TheoryData<int> Easings =>
+        [.. Enum.GetValues<HostEasing>().Select(kind => (int)kind)];
+
+    [Theory]
+    [MemberData(nameof(Easings))]
+    public void EveryEasingSwiftCanWriteHasACurveBehindIt(int member)
+    {
+        // Whatever a curve does on the way, it starts and ends with the change.
+        Assert.Equal(0, MotionLaw.Ease((HostEasing)member, 0), 12);
+        Assert.Equal(1, MotionLaw.Ease((HostEasing)member, 1), 12);
+
+        // And every arm but linear is a DIFFERENT curve, or a missing case
+        // would read as a pass.
+        Assert.Equal(member == (int)HostEasing.Linear, MotionLaw.Ease((HostEasing)member, 0.3) == 0.3);
+    }
+
+    /// <summary>
+    /// An easing member from a newer Swift side than this runtime is the
+    /// straight line. The curve is a closed vocabulary, so what arrives is the
+    /// number both sides give the member.
+    /// </summary>
+    [Fact]
+    public void AnEasingThisSideDoesNotKnowIsLinear()
+    {
+        // 9999 rather than a null: an easing is a slot in the transition
+        // record, always present, so the only way to be handed one this side
+        // does not know is a Swift side that has grown a curve.
+        Assert.Equal(0.3, MotionLaw.Ease((HostEasing)9999, 0.3));
+        Assert.Equal(0.3, MotionLaw.Ease((HostEasing)(-1), 0.3));
+    }
+
+    /// <summary>
+    /// The one bool in a reply - <c>[version][ok][count][tag]</c>, read by hand
+    /// the way the tests read a payload rather than through the writer.
+    /// </summary>
+    private static bool Answer(byte[]? reply)
+    {
+        Assert.NotNull(reply);
+        Assert.Equal(4, reply.Length);
+        Assert.Equal(WireCodec.Version, reply[0]);
+        Assert.Equal(1, reply[1]);
+        Assert.Equal(1, reply[2]);
+        return reply[3] == 2;
+    }
+
+    /// <summary>
+    /// A size that LANDS asks for its measure again, outside the frame.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Android coalesces <c>requestLayout</c>: one asked for while the platform
+    /// is in its own layout or draw phase - which is where the frame clock runs
+    /// - is served on the NEXT frame, and a landing has no next frame, the
+    /// clock stopping with it. The child therefore keeps the desired size it
+    /// was last measured at, a value from the MIDDLE of the journey, and
+    /// nothing puts it right. Measured on the gallery's <i>Motion</i> sample as
+    /// a panel drawn 138 wide and 62 tall with its WidthRequest standing at
+    /// 300, unchanged by ten idle seconds or by a scroll, while the two panels
+    /// beside it - whose size the MESSAGE assigns - were right every time.
+    /// </para>
+    /// <para>
+    /// Read off the SOURCE because the arm is <c>#if ANDROID</c>: this suite
+    /// builds plain net10.0 and cannot compile it, let alone run a
+    /// Choreographer. What can be pinned is that the arm is there and that it
+    /// asks a TURN later rather than inline, which is the whole of the fix.
+    /// </para>
+    /// </remarks>
+    [Fact]
+    public void ASizeThatLandsAsksForItsMeasureAgainOnAndroid()
+    {
+        string source = Source("Walker.cs");
+        int lands = source.IndexOf("private void Land(", StringComparison.Ordinal);
+
+        Assert.True(lands > 0, "Land was not found in Walker.cs");
+
+        string body = source[lands..];
+        int arm = body.IndexOf("#if ANDROID", StringComparison.Ordinal);
+
+        Assert.True(arm > 0, "Land has no Android arm");
+
+        string android = body[arm..(body.IndexOf("#endif", arm, StringComparison.Ordinal))];
+
+        Assert.Contains("WidthRequestProperty", android);
+        Assert.Contains("HeightRequestProperty", android);
+        Assert.Contains("Dispatcher.Dispatch", android);
+        Assert.Contains("InvalidateMeasure", android);
+    }
+
+    /// <summary>One of the renderer's own sources, read whole.</summary>
+    /// <param name="file">The file's name under Rendering.</param>
+    /// <returns>Everything it says.</returns>
+    private static string Source(string file)
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+
+        while (directory is not null)
+        {
+            string candidate = Path.Combine(
+                directory.FullName, "lib", "StateUI.Maui", "Sources", "Rendering", file);
+
+            if (File.Exists(candidate))
+            {
+                return File.ReadAllText(candidate);
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new FileNotFoundException(file + " was not found above " + AppContext.BaseDirectory);
+    }
+}

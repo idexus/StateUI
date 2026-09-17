@@ -1,0 +1,110 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// A native single-line text entry and the properties specific to it.
+
+/// TextField's own properties - the half a `Style<TextField>` shares with the
+/// control, beside what its tiers already carry. The control conforms on the
+/// element side and the style on the property side, which is what makes the
+/// same modifiers compile on both.
+public protocol TextFieldProperties: PropertyContainer {}
+
+extension TextFieldProperties {
+    /// Whether what is typed is hidden behind the platform's secure-entry marks.
+    public func isPassword(_ value: Bool) -> Modified {
+        setValue(TextFieldContract.isPassword, value)
+    }
+
+    /// What the keyboard's return key is captioned - Go, Search, Send, Next.
+    /// The caption only; what the key does is `.onSubmitted`, which it raises
+    /// whatever it says. A host with a hardware keyboard may have no caption
+    /// to change and still reports the submission.
+    public func returnKey(_ value: ReturnKey) -> Modified {
+        setValue(TextFieldContract.returnKey, value)
+    }
+
+    /// Whether the field shows the native button that empties it - while
+    /// there is text and the field has the focus, on platforms whose ordinary
+    /// text field provides one. It does unless told otherwise.
+    public func showsClearButton(_ value: Bool) -> Modified {
+        setValue(TextFieldContract.showsClearButton, value)
+    }
+}
+
+/// A native single-line text field.
+///
+///     @State private var name = ""
+///
+///     TextField($name)
+///         .placeholder("Type your name")
+///         .inputPurpose(.text)
+///
+/// Given a binding the field shows the value and writes every edit back. Given a
+/// plain string it shows that and nothing else, and `.onTextChanged` is how what
+/// is typed gets anywhere:
+///
+///     TextField(name)
+///         .onTextChanged { edited in name = edited }
+///
+/// The handler receives the whole text as it stands after the edit. It runs
+/// beside a binding rather than instead of one, so a field may have both.
+public struct TextField: InputView, TextElement, FontElement, TextAlignmentElement, TextFieldProperties {
+    /// The node this control describes.
+    public var node: Node
+
+    /// An empty one - what a `Style<TextField>` is written against.
+    public init() {
+        node = Node(contract: TextFieldContract.self)
+    }
+
+    /// A field showing `text`. One-way: what is typed goes nowhere without
+    /// `.onTextChanged`, which is what the binding form does for you.
+    public init(_ text: String) {
+        node = Node(contract: TextFieldContract.self)
+        node.write(TextElementContract.text, text)
+    }
+
+    /// Two-way: shows what the binding holds, and writes back what is typed.
+    public init(_ text: Binding<String>) {
+        self = TextField().text(text)
+    }
+
+    /// The same two-way text as `TextField($text)`, written as a modifier.
+    ///
+    ///     TextField($query)
+    ///     TextField().text($query)
+    ///
+    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
+    /// the short way to say what gives this control its purpose, and the
+    /// modifier is the way every other property is written. Neither is the
+    /// real one.
+    ///
+    /// HANDED OVER, so the field is no reader of the state: the host writes
+    /// the field's text from the state on its own frames and lands what the
+    /// reader types back on it, whole, as its own write. What a keystroke
+    /// COSTS is decided by who reads the state at build - nothing where nobody
+    /// prints it, a render per keystroke for the body that does. A part of a
+    /// state or a binding made from closures has no storage for the host to
+    /// carry and takes the described road instead: shown from the value read
+    /// at build, written back through the binding on every report, the
+    /// closure that wrote the field a reader of it.
+    ///
+    /// - Parameter value: the state shown, and written back into as the reader
+    ///   types.
+    /// - Returns: the control, wearing and reporting that text.
+    public func text(_ value: Binding<String>) -> Modified {
+        value.image == nil
+            ? described(TextElementContract.text.token, value, on: .textChanged)
+            : words(TextElementContract.text.token, by: value, mode: .inOut)
+    }
+
+    // MARK: Properties
+
+    // MARK: Events
+
+    /// Fires when the return key is pressed - the moment to move to the next
+    /// field or run the search.
+    public func onSubmitted(_ handler: @escaping EventHandler) -> Self {
+        onEvent(TextFieldContract.submitted, handler)
+    }
+}

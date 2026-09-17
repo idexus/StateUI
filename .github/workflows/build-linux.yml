@@ -8,8 +8,8 @@
 # The container is swift.org's own image, so the Swift half compiles with the
 # release this library is written against; .NET goes in beside it. The apt list
 # is what a GTK4 application needs at BUILD time: the development files for the
-# backend's own dependencies, and graphene for the small C shim StateUI.Linux
-# compiles beside the Swift libraries.
+# backend's own dependencies, and graphene for the small C shim
+# StateUI.Maui.Linux compiles beside the Swift libraries.
 #
 # NOTHING RUNS THE APPLICATION HERE - a GTK4 app needs a display, and a build
 # that produces the executable and its native payload is what this job proves.
@@ -75,12 +75,12 @@ jobs:
       # No MAUI workload: `UseMaui` is off for every project on this host, and
       # asking for the workload here would fail - it has no Linux packs.
       - name: Build the gallery
-        run: dotnet build apps/Gallery -c Debug -f net10.0
+        run: dotnet build apps/Gallery/Platforms/Maui -c Debug -f net10.0
 
-      # The starter application, built exactly as `dotnet new stateui` leaves
-      # it: one hosting call, one entry point, and StateUI.Linux under both.
+      # The starter application, built exactly as `dotnet new stateui-maui` leaves
+      # it: one hosting call, one entry point, and StateUI.Maui.Linux under both.
       - name: Build HelloWorld
-        run: dotnet build apps/HelloWorld -c Debug -f net10.0
+        run: dotnet build apps/HelloWorld/Platforms/Maui -c Debug -f net10.0
 
   tests:
     name: Tests
@@ -103,7 +103,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Swift tests
-        run: swift test --package-path src/Tests
+        run: swift test
 
       - name: C# tests
-        run: dotnet test src/Tests/StateUIRuntime.Tests
+        run: dotnet test lib/StateUI.Maui/Tests

@@ -1,32 +1,15 @@
 {
-  // Set only if the lldb-dap extension cannot find the adapter itself.
-  // The "Locate lldb-dap" task prints the correct path for the active toolchain.
-
-  // "lldb-dap.executable-path": "/Users/<you>/Library/Developer/Toolchains/swift-6.3.3-RELEASE.xctoolchain/usr/bin/lldb-dap",
-
   // SourceKit resolves imports through SwiftPM manifests, and this repository
-  // has several: the library at the root, one per app, and the tests'. Without
-  // this the editor finds only the root one, and "import StateUI" in an app
-  // shows "No such module" even though the build succeeds - the build passes
-  // -I explicitly and the editor never sees those flags.
+  // has several: the library at the root, the AppKit host, one per app.
   "swift.searchSubfoldersForPackages": true,
+  "swift.autoGenerateLaunchConfigurations": false,
 
-  // EXCEPT THE TEMPLATE'S. src/StateUI.Template/templates/StateUIStarter is
-  // a real application with a real Package.swift, and it is CONTENT here -
+  // EXCEPT THE TEMPLATE'S. lib/StateUI.Maui/Template/templates/StateUIStarter
+  // is a real application with a real Package.swift, and it is CONTENT here:
   // `dotnet new` writes it out somewhere else. Found by the search above, the
-  // extension treats it as a package of this workspace and runs
-  // `swift package resolve` on it, which downloads a second copy of the
-  // library for a package nothing in this workspace builds - and fails
-  // outright wherever the URL cannot be reached.
-  //
-  // Matched by DIRECTORY BASENAME, exactly - the extension reads this into a Set
-  // and asks it about each subdirectory's name, whatever the documentation says
-  // about glob expressions. So the defaults have to be repeated: a value here
-  // REPLACES that list rather than adding to it.
-  //
-  // Nothing else is affected. StateUIStarter names one directory in this
-  // repository, so the gallery, apps/HelloWorld, the tests and the library all go
-  // on being found.
+  // extension would resolve a second copy of the library for a package
+  // nothing in this workspace builds. Matched by directory BASENAME, and a
+  // value here REPLACES the defaults, so they are repeated.
   "swift.ignoreSearchingForPackagesInSubfolders": [
     ".",
     ".build",
@@ -36,25 +19,25 @@
     "bazel-bin",
     "StateUIStarter"
   ],
-
-  // The other gate, for anything that reaches the template folder without going
-  // through that search - opening its Package.swift in the editor, say. This one
-  // IS globs, and is merged with files.exclude below.
   "swift.excludePathsFromActivation": {
-    "**/StateUI.Template/templates/**": true
+    "**/Template/templates/**": true
   },
 
-  // WITHOUT THIS, "Launch app (Release)" BUILDS DEBUG. The MAUI extension
-  // replaces a launch configuration's "configuration" field with its own
-  // active configuration - Debug - unless this setting says launch.json is to
-  // be believed, and it defaults to OFF. Measured on 1.16.88: the field is in
-  // the extension's own schema, and the flag is read at exactly one place in
-  // the bundle, that replacement - so nothing else changes with it.
-  //
-  // It lives HERE rather than in user settings so that it travels with the
-  // repository. The setting is window-scoped, which is what lets a workspace
-  // file decide it; the extension's own toggle writes it globally.
+  // NO swift.swiftEnvironmentVariables HERE. The editor's host - which of
+  // STATEUI_APPKIT and its siblings SourceKit-LSP starts with - is chosen in the
+  // StateUI extension's status bar (lib/StateUI.VSCode), which sets it on the
+  // extension host's own environment. A value here is laid OVER that and would
+  // decide the host whatever is chosen.
+
+  // WITHOUT THIS, "StateUI: Release" BUILDS DEBUG ON MAUI: the StateUI
+  // extension hands the MAUI extension `"configuration": "Release"`, and that
+  // extension replaces a launch's "configuration" with its own active one
+  // unless this says launch.json is to be believed. Window-scoped, so the
+  // repository can decide it.
   "maui.configuration.useLaunchJsonConfigurations": true,
+
+  // The solution the C# extension and ".NET MAUI: Select Startup Project" read.
+  "dotnet.defaultSolution": "StateUI.slnx",
 
   "files.associations": {
     "*.swift": "swift"
@@ -63,6 +46,5 @@
     "**/bin": true,
     "**/obj": true,
     "**/.build": true
-  },
-  "dotnet.defaultSolution": "StateUI.slnx"
+  }
 }

@@ -1,0 +1,12 @@
+generation 1 names +11
+Border 1 arranged(1)
+  shape: values [enum 1, number 12]
+  stroke: values [enum 1, color FFD3D3D3]
+  strokeDashOffset: number 2
+  strokeDashPattern: numbers 6,3
+  strokeLineCap: enum round(1)
+  strokeLineJoin: enum bevel(1)
+  strokeMiterLimit: number 4
+  strokeWidth: number 1
+  Label 2
+    text: string "Inside"

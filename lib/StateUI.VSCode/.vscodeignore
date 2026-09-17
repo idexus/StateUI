@@ -1,0 +1,9 @@
+Build/**
+Sources/**
+Tests/**
+out/Tests/**
+**/*.map
+tsconfig.json
+.gitignore
+node_modules/**
+out/Build/**

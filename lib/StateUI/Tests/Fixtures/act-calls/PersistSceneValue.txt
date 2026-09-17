@@ -1,0 +1,4 @@
+persistSceneValue
+  name "2"
+  name "shade"
+  string "dusk"

@@ -1,0 +1,155 @@
+import StateUI
+
+/// A value that changes TRAVELS - the default, and the three laws it can travel
+/// under.
+struct MotionSample: SampleContent, ExampleContent {
+    static let id = "motion"
+    static let title = "Motion"
+    static let summary = "Assign the state and the control travels there - at a length, on a spring, or not at all."
+
+    static let laws = ["Eased 200ms", "Spring", "Long and slow", "None"]
+
+    static func law(_ index: Int) -> Motion {
+        switch index {
+        case 1: .spring(response: 320)
+        case 2: .eased(900, .sineInOut)
+        case 3: .none
+        default: .standard
+        }
+    }
+
+    @State private var law = 2
+    @State private var wide = false
+    @State private var warm = false
+
+    static let code = """
+        @State private var law = 2
+        @State private var wide = false
+        @State private var warm = false
+
+        static let laws = ["Eased 200ms", "Spring", "Long and slow", "None"]
+
+        static func law(_ index: Int) -> Motion {
+            switch index {
+            case 1: .spring(response: 320)
+            case 2: .eased(900, .sineInOut)
+            case 3: .none
+            default: .standard
+            }
+        }
+
+        // NOTHING HERE SAYS "ANIMATE". A value that changes is a setpoint: the
+        // tree says where the panel is going and the host carries it there.
+        VStack {
+            // The panels are described from `wide`, `warm` and `law`, read
+            // here, so a press builds this closure once and the host walks
+            // the rest.
+            DebugInfoLabel()
+
+            ColorBox()
+                .color(warm ? Palette.accent : Palette.brand)
+                .width(wide ? 300 : 120)
+                .height(wide ? 120 : 60)
+                .cornerRadius(wide ? 32 : 8)
+                .motion(Self.law(law))
+
+            // The same panel, told to stay still. `.motion` is per view.
+            ColorBox()
+                .color(warm ? Palette.accent : Palette.brand)
+                .width(wide ? 300 : 120)
+                .height(wide ? 120 : 60)
+                .cornerRadius(wide ? 32 : 8)
+                .motion(.none)
+
+            // And the same panel again, with a rule: everything travels
+            // EXCEPT how big it is, which arrives. The last rule that names a
+            // value is the one that answers for it.
+            ColorBox()
+                .color(warm ? Palette.accent : Palette.brand)
+                .width(wide ? 300 : 120)
+                .height(wide ? 120 : 60)
+                .cornerRadius(wide ? 32 : 8)
+                .motion(Self.law(law))
+                .motion(.none, .size)
+
+            HStack {
+                Button("Size").onClicked { wide.toggle() }
+                Button("Colour").onClicked { warm.toggle() }
+                Button(Self.laws[law]).onClicked { law = (law + 1) % Self.laws.count }
+            }
+        }
+        """
+
+    var content: any View {
+        VStack {
+            DebugInfoLabel()
+
+            Label("A change that travels")
+                .fontSize(11)
+                .characterSpacing(1)
+                .textColor(Palette.subtle)
+
+            panel(travels: true)
+
+            Label("The same, told to stay still")
+                .fontSize(11)
+                .characterSpacing(1)
+                .textColor(Palette.subtle)
+
+            panel(travels: false)
+
+            Label("The same, holding only its size still")
+                .fontSize(11)
+                .characterSpacing(1)
+                .textColor(Palette.subtle)
+
+            sized()
+
+            HStack {
+                Button("Size").onClicked { wide.toggle() }
+                Button("Colour").onClicked { warm.toggle() }
+                Button(Self.laws[law]).onClicked { law = (law + 1) % Self.laws.count }
+            }
+            .spacing(8)
+        }
+        .spacing(10)
+    }
+
+    /// One panel, either travelling at the chosen law or arriving at once.
+    private func panel(travels: Bool) -> any View {
+        ColorBox()
+            .color(warm ? Palette.accent : Palette.brand)
+            .width(wide ? 300 : 120)
+            .height(wide ? 110 : 56)
+            .cornerRadius(wide ? 28 : 8)
+            .horizontalAlignment(.start)
+            .motion(travels ? Self.law(law) : .none)
+    }
+
+    /// The same panel with a RULE: everything travels except how big it is.
+    private func sized() -> any View {
+        ColorBox()
+            .color(warm ? Palette.accent : Palette.brand)
+            .width(wide ? 300 : 120)
+            .height(wide ? 110 : 56)
+            .cornerRadius(wide ? 28 : 8)
+            .horizontalAlignment(.start)
+            .motion(Self.law(law))
+            .motion(.none, .size)
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("Press Size or Colour. The first panel travels, the second "
+                + "arrives immediately, and the third holds only its size still.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Change the law to compare eased, spring, slow and immediate "
+                + "motion. StateUI sends destinations; the host supplies the frames.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(8)
+    }
+}

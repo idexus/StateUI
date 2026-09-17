@@ -7,6 +7,6 @@
 #
 # The pattern is every file, because every file in this repository is one
 # person's to answer for. A second maintainer is added by putting their handle
-# on a line of its own, scoped to what they own - `/src/StateUI.Runtime/ @them`.
+# on a line of its own, scoped to what they own.
 
 * @idexus

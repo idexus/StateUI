@@ -68,7 +68,7 @@ jobs:
       # configuration that ships, and the optimizer is a pass Debug never runs.
       - name: Build the gallery
         run: >
-          dotnet build apps/Gallery/Gallery.csproj
+          dotnet build apps/Gallery/Platforms/Maui/Gallery.csproj
           -c Release
           -f ${{ matrix.framework }}
           -r ${{ matrix.rid }}

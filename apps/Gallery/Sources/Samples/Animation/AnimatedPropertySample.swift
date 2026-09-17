@@ -1,0 +1,169 @@
+import StateUI
+
+/// A colour, a size, a padding and a font size, each read off a state the host
+/// moves on its own frames.
+struct AnimatedPropertySample: SampleContent, ExampleContent {
+    @State private var wide = false
+
+    @State private var panelColor = AppColors.lineDark
+    @State private var panelHeight = 90.0
+    @State private var panelPadding = Insets(16)
+    @State private var captionColor = AppColors.ink
+    @State private var captionSize = 17.0
+
+    static let id = "animatedProperty"
+    static let title = "Animated properties"
+    static let summary = "A colour, a size and a padding carried to a new value by the host."
+
+    static let code = """
+        @State private var wide = false
+
+        @State private var panelColor = AppColors.lineDark
+        @State private var panelHeight = 90.0
+        @State private var panelPadding = Insets(16)
+        @State private var captionColor = AppColors.ink
+        @State private var captionSize = 17.0
+
+        VStack {
+            // Every property below is driven, and `wide` is read by the
+            // handler alone - so this stands at one build while five of them
+            // travel at once.
+            DebugInfoLabel()
+
+            Border {
+                Label("A property, carried")
+                    .fontSize($captionSize)
+                    .textColor($captionColor)
+            }
+            .background($panelColor)
+            .padding($panelPadding)
+            .height($panelHeight)
+
+            Button("Colour").onClicked {
+                try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500))
+                try await $captionColor.journey.move(to: AppColors.white, .eased(500))
+            }
+
+            Button("Size").onClicked {
+                wide.toggle()
+                try await $panelHeight.journey.move(to: wide ? 160 : 90,
+                                                 .eased(400, .cubicInOut))
+            }
+
+            Button("Padding").onClicked {
+                try await $panelPadding.journey.move(to: Insets(48), .eased(400))
+                try await $panelPadding.journey.move(to: Insets(16), .eased(400))
+            }
+
+            Button("Text size").onClicked {
+                try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut))
+                try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn))
+            }
+
+            Button("Back").onClicked {
+                // EVERYTHING THE OTHER BUTTONS LEAVE CHANGED - the height and
+                // the two colours. The padding and the text size send
+                // themselves back, so there is nothing here for them; and
+                // `wide` is put right with the height, or the next press of
+                // Size would ask for the value it already has.
+                wide = false
+
+                try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut))
+                try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400))
+                try await $captionColor.journey.move(to: AppColors.ink, .eased(400))
+            }
+        }
+        """
+
+    var content: any View {
+        VStack {
+            DebugInfoLabel()
+
+            Border {
+                Grid {
+                    Label("A property, carried")
+                        .fontSize($captionSize)
+                        .textColor($captionColor)
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
+                }
+                .background(AppColors.violetLight)
+            }
+            .background($panelColor)
+            .padding($panelPadding)
+            .height($panelHeight)
+            .stroke(.transparent)
+            .shape(.roundedRectangle(12))
+
+            HStack {
+                button("Colour") {
+                    try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(500))
+
+                    // The caption sits on the brand field inside the panel
+                    // rather than on the panel itself, so what it goes to is
+                    // the colour that reads on the brand.
+                    try await $captionColor.journey.move(to: AppColors.white, .eased(500))
+                }
+
+                button("Size") {
+                    wide.toggle()
+                    try await $panelHeight.journey.move(to: wide ? 160 : 90,
+                                                     .eased(400, .cubicInOut))
+                }
+
+                button("Padding") {
+                    try await $panelPadding.journey.move(to: Insets(48), .eased(400))
+                    try await $panelPadding.journey.move(to: Insets(16), .eased(400))
+                }
+            }
+            .spacing(8)
+            .horizontalAlignment(.center)
+
+            HStack {
+                button("Text size") {
+                    try await $captionSize.journey.move(to: 28, .eased(400, .cubicOut))
+                    try await $captionSize.journey.move(to: 17, .eased(400, .cubicIn))
+                }
+
+                button("Back") {
+                    // EVERYTHING THE OTHER BUTTONS LEAVE CHANGED - the height
+                    // and the two colours. The padding and the text size send
+                    // themselves back, so there is nothing here for them; and
+                    // `wide` is put right with the height, or the next press
+                    // of Size would ask for the value it already has.
+                    wide = false
+
+                    try await $panelHeight.journey.move(to: 90, .eased(400, .cubicInOut))
+                    try await $panelColor.journey.move(to: AppColors.lineDark, .eased(400))
+                    try await $captionColor.journey.move(to: AppColors.ink, .eased(400))
+                }
+            }
+            .spacing(8)
+            .horizontalAlignment(.center)
+        }
+        .spacing(12)
+    }
+
+    var notes: Element? {
+        VStack {
+            Label("Each button moves a bound property on host frames. The build "
+                + "counter stays still while colour, size, padding and text move.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Label("Size moves the panel between 90 and 160 points. Back restores "
+                + "the values that remain after their journeys.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(12)
+    }
+
+    /// One of the buttons, all of which look the same.
+    private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
+        Button(caption)
+            .fontSize(13)
+            .padding(14, 6)
+            .onClicked(act)
+    }
+}

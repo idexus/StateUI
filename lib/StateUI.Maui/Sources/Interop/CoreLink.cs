@@ -1,0 +1,462 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+using System.Runtime.InteropServices;
+using StateUI.Maui.Protocol;
+
+namespace StateUI.Maui.Interop;
+
+/// <summary>
+/// The link to the running core: every entry point of the StateUI library
+/// this host calls, and the one way any part of it calls one.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Everything here has a counterpart marked <c>@_cdecl</c> in the library's
+/// <c>Bridge/Exports.swift</c>, and the two are read together:
+/// <c>BridgeTests.swift</c> holds every export to its import here and
+/// <c>CoreLinkTests</c> holds that no other file declares an entry point of
+/// the core, so a change of transport is a change of this one file.
+/// </para>
+/// <para>
+/// The application's own Swift module is a separate native library with a name
+/// derived from the project, so it cannot be referenced by a compile-time
+/// constant here. It is reached through <see cref="Rendering.StateUIHost.RegisterApp"/>,
+/// which the app project's generated interop file supplies.
+/// </para>
+/// <para>
+/// Uses <c>[LibraryImport]</c> (a source generator, .NET 7+) rather than
+/// <c>[DllImport]</c>: the marshalling code is produced at compile time, making
+/// it faster and fully compatible with Native AOT. That is why the class and its
+/// methods are <c>partial</c>.
+/// </para>
+/// <para>
+/// The library name differs by platform because of how the library is linked.
+/// On Apple platforms it is a static archive linked into the app binary, so the
+/// symbols live in the executable itself - which is what the magic
+/// <c>__Internal</c> name means. Elsewhere it is a real shared library and .NET
+/// resolves the platform convention itself (libStateUI.so, StateUI.dll).
+/// </para>
+/// </remarks>
+internal static partial class CoreLink
+{
+    /// <summary>
+    /// Where the exports live. See the remarks on this class for why it differs
+    /// by platform.
+    /// </summary>
+#if IOS || MACCATALYST
+    private const string Lib = "__Internal";
+#else
+    private const string Lib = "StateUI";
+#endif
+
+    /// <summary>
+    /// Builds the current UI tree and returns what changed, in the binary wire
+    /// format. Writes the byte count into <paramref name="length"/>. The
+    /// caller owns the memory and must release it with <see cref="FreeBuffer"/>.
+    /// </summary>
+    /// <param name="baseline">
+    /// The generation the caller is holding - the one that came with the last
+    /// message it applied successfully, or 0 for nothing. A caller still holding
+    /// the current generation is sent a patch; anyone else is sent the whole
+    /// tree.
+    /// </param>
+    /// <param name="length">The message's byte count.</param>
+    /// <remarks>
+    /// Named <c>_wire</c> for the reason <see cref="TakeActCallsWire"/> is: a
+    /// half built before this format fails with
+    /// <see cref="EntryPointNotFoundException"/> instead of reading a register
+    /// as a pointer.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_render_wire")]
+    internal static partial IntPtr RenderWire(int baseline, out int length);
+
+    /// <summary>
+    /// Reports that an event fired or an act finished - positive ids are an
+    /// element's events, negative ids are completions. <paramref name="payload"/>
+    /// carries the binary payload (<see cref="WireCodec.WritePayload"/> for an
+    /// event, <see cref="WireCodec.WriteReply"/> or
+    /// <see cref="WireCodec.WriteFailure"/> for a completion), or null for an
+    /// event with nothing to say. Returns 1 if a handler ran, 0 if the id was
+    /// unknown - which happens for events arriving against a replaced tree and
+    /// is not an error.
+    /// </summary>
+    /// <remarks>
+    /// The buffer is read before the call returns, so nothing is pinned past
+    /// it and nothing is freed. Named <c>_wire</c> for the reason the other
+    /// wire exports are: a half built before this format fails with
+    /// <see cref="EntryPointNotFoundException"/> instead of reading bytes as
+    /// a C string.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_dispatch_wire")]
+    internal static partial int DispatchWire(int handlerId, byte[]? payload, int length);
+
+    /// <summary>
+    /// Reports an event the host raised by NAME, with no element behind it -
+    /// the application's own pushes, written with
+    /// <see cref="WireCodec.WriteHostEvent"/> and heard by whatever the Swift
+    /// side subscribed with <c>HostEvents.on</c>. Returns how many handlers
+    /// heard it - zero is ordinary - and -1 for a buffer the library could
+    /// not read, which the session reports as version skew.
+    /// </summary>
+    /// <remarks>
+    /// The buffer is read before the call returns, so nothing is pinned past
+    /// it and nothing is freed.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_dispatch_host_event")]
+    internal static partial int DispatchHostEvent(byte[] bytes, int length);
+
+    /// <summary>
+    /// Tells the Swift side what this host realizes - the elements it makes a
+    /// view for and the members it realizes on each - in the layout the Swift
+    /// side's <c>Wire.encodeRealization</c> writes and
+    /// <see cref="Protocol.WireCodec.WriteRealization"/> writes here, both held
+    /// to <c>fixtures/payloads/realization.bin</c>. Answers 0, or -1 for a
+    /// buffer that would not read.
+    /// </summary>
+    /// <remarks>
+    /// The buffer is read before the call returns, so nothing is pinned past
+    /// it and nothing is freed.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_set_realization_wire")]
+    internal static partial int SetRealization(byte[] bytes, int length);
+
+    /// <summary>
+    /// Takes the acts queued by the Swift side since the last call, in the
+    /// binary wire format, and clears the queue. Writes the byte count into
+    /// <paramref name="length"/> and returns <see cref="IntPtr.Zero"/> for an
+    /// empty queue - the common case, every pump, allocating nothing.
+    /// </summary>
+    /// <remarks>
+    /// The caller owns the memory and must release it with
+    /// <see cref="FreeBuffer"/>. Named <c>_wire</c> on purpose: a half built
+    /// for another format fails with <see cref="EntryPointNotFoundException"/>
+    /// - a clean, nameable error - where the same name with a changed
+    /// signature would read a register as a pointer.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_take_act_calls_wire")]
+    internal static partial IntPtr TakeActCallsWire(out int length);
+
+    /// <summary>
+    /// Which version of the binary wire format the native library writes.
+    /// Checked before the first render, so two halves built from different
+    /// versions fail at startup with a sentence instead of reading each
+    /// other's bytes wrong.
+    /// </summary>
+    [LibraryImport(Lib, EntryPoint = "stateui_wire_version")]
+    internal static partial int WireVersion();
+
+    /// <summary>
+    /// Releases a buffer any of the four buffer exports returned -
+    /// <see cref="RenderWire"/>, <see cref="TakeActCallsWire"/>,
+    /// <see cref="PersistentKeys"/> and <see cref="InspectLog"/>. Memory
+    /// allocated in Swift is freed in Swift - the <see cref="FreeString"/>
+    /// rule.
+    /// </summary>
+    [LibraryImport(Lib, EntryPoint = "stateui_free_buffer")]
+    internal static partial void FreeBuffer(IntPtr pointer);
+
+    /// <summary>
+    /// Reports that the last taken batch could not be read at all, so the
+    /// Swift side fails every act in it with <paramref name="reason"/> and
+    /// each awaiting handler resumes by throwing.
+    /// </summary>
+    /// <remarks>
+    /// The host cannot name the acts itself - their completion ids are inside
+    /// the very bytes that would not read - so the take keeps a receipt on the
+    /// Swift side, and this is how a failed read cashes it.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_fail_taken_act_calls", StringMarshalling = StringMarshalling.Utf8)]
+    internal static partial void FailTakenActCalls(string reason);
+
+/// <summary>
+    /// Takes a batch of state writes into the Swift side's image.
+    /// </summary>
+    /// <remarks>
+    /// <c>[count: U16]</c> then, per entry,
+    /// <c>[number: I32][mask: U64][length: U32]</c> and the bytes. The mask says
+    /// which LANES this side actually wrote, so a report about where a value
+    /// has got to does not read as a report about the law beside it - and
+    /// those lanes' dirty bits are cleared over there, a lane we wrote never
+    /// being read back out as Swift's.
+    /// </remarks>
+    /// <param name="batch">The bytes.</param>
+    /// <param name="length">How many of them.</param>
+    /// <returns>
+    /// How many states were written, or -1 where the bytes ran out part way
+    /// through - a boundary fault rather than a value.
+    /// </returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_write")]
+    internal static unsafe partial int CycleWrite(byte* batch, int length);
+
+    /// <summary>
+    /// Runs one cycle: everything written taken in, the engines that have a
+    /// reason run, and what they wrote published.
+    /// </summary>
+    /// <param name="sync">
+    /// Which board, by the order they were made. 0 is the display's own frame,
+    /// which is the only one there is.
+    /// </param>
+    /// <param name="now">The instant, in milliseconds on this side's clock.</param>
+    /// <param name="reducesMotion">1 where the reader has asked for less movement.</param>
+    /// <returns>
+    /// How many states have lanes waiting to be read, with <c>0x4000_0000</c>
+    /// set where any engine says it has more to do - so one call answers both
+    /// "is there anything to write onto a control" and "keep the clock
+    /// running". -1 where there is no such board.
+    /// </returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_run")]
+    internal static partial int CycleRun(int sync, double now, int reducesMotion);
+
+    /// <summary>
+    /// Reads out what the last cycle wrote.
+    /// </summary>
+    /// <remarks>
+    /// Two questions, one call. <paramref name="number"/> 0 asks for every number
+    /// with dirty lanes, in ascending order, and clears the bits it answers -
+    /// that is the per-frame read. A number asks for that one state whole and
+    /// clears nothing, which is what a registration needs: the value AND where
+    /// it is going. The layout is <see cref="CycleWrite"/>'s exactly.
+    /// </remarks>
+    /// <param name="number">Which number, or 0 for every dirty one.</param>
+    /// <param name="into">Where to write the bytes.</param>
+    /// <param name="capacity">How many bytes fit there.</param>
+    /// <returns>
+    /// How many bytes were written, 0 for a state that has gone, and -1 where
+    /// the buffer is too small - nothing having been cleared, so the call can
+    /// be made again with room.
+    /// </returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_read")]
+    internal static unsafe partial int CycleRead(int number, byte* into, int capacity);
+
+    /// <summary>
+    /// Whether anything at all is waiting for a cycle - a write not yet
+    /// latched, a lane not yet read, an engine armed by a render or one that
+    /// says it has more to do.
+    /// </summary>
+    /// <returns>How many boards have something waiting.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_awake")]
+    internal static partial int CycleAwake();
+
+    /// <summary>
+    /// The last cycle of every board, as one line: what it latched, what ran,
+    /// what was skipped and what it wrote.
+    /// </summary>
+    /// <remarks>
+    /// Called only while the frame trace is being kept - the Swift side has no
+    /// environment to read, so the line is built for whoever asks. The string
+    /// is Swift's and is freed with <see cref="FreeString"/>.
+    /// </remarks>
+    /// <returns>The line.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_cycle_trace")]
+    internal static partial IntPtr CycleTrace();
+
+/// <summary>Whether state changed since the last render.</summary>
+    [LibraryImport(Lib, EntryPoint = "stateui_needs_render")]
+    internal static partial int NeedsRender();
+
+    /// <summary>
+    /// How many renders the Swift side has made, with two counts beside it:
+    /// <paramref name="empty"/>, how many of them carried nothing - a message
+    /// with no patch in it, made for a write that changed no property - and
+    /// <paramref name="refused"/>, how many writes asked for nothing because no
+    /// live element read the state. The tally's <c>empty</c> and <c>refused</c>
+    /// columns.
+    /// </summary>
+    /// <param name="empty">Receives the count of renders that carried nothing.</param>
+    /// <param name="refused">Receives the count of writes that asked for nothing.</param>
+    /// <returns>The count of renders.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_renders")]
+    internal static partial int Renders(out int empty, out int refused);
+
+    /// <summary>
+    /// How many rendered nodes are alive on the Swift side right now - the
+    /// tally's <c>alive</c> column, which tells a page left standing in memory
+    /// from garbage a collector has not got to yet.
+    /// </summary>
+    /// <returns>The count of live rendered nodes.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_alive")]
+    internal static partial int Alive();
+
+    /// <summary>
+    /// Whether an inspector is recording on the Swift side - asked once a
+    /// render, since this side measures and reports its half of a message only
+    /// while one is.
+    /// </summary>
+    /// <returns>1 while one is recording, 0 otherwise.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspecting")]
+    internal static partial int Inspecting();
+
+    /// <summary>
+    /// This side's half of one message, for the inspector - sent after every
+    /// scene's own report on the same message.
+    /// </summary>
+    /// <param name="generation">The message's generation.</param>
+    /// <param name="read">Microseconds reading it off the buffer.</param>
+    /// <param name="apply">Microseconds applying it.</param>
+    /// <param name="nodes">Nodes the apply walked.</param>
+    /// <param name="made">Controls it had to build.</param>
+    /// <param name="kept">Controls it found already standing.</param>
+    /// <param name="adopted">Controls it took out of a pool.</param>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspect_applied")]
+    internal static partial void InspectApplied(
+        int generation, double read, double apply, int nodes, int made, int kept, int adopted);
+
+    /// <summary>How long one scene's part of a message took to apply.</summary>
+    /// <param name="generation">The message's generation.</param>
+    /// <param name="index">The scene's place in the application's list.</param>
+    /// <param name="micros">Microseconds its apply took.</param>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspect_scene")]
+    internal static partial void InspectScene(int generation, int index, double micros);
+
+    /// <summary>
+    /// Every pass an inspector recorded and this side reported on since the
+    /// last call, as UTF-8 text - what <c>STATEUI_INSPECT=1</c> writes out
+    /// beside the tally. The first call starts the Swift side recording, and
+    /// it stays on. Returns <see cref="IntPtr.Zero"/> with nothing new to
+    /// say; a buffer is released with <see cref="FreeBuffer"/>.
+    /// </summary>
+    /// <param name="length">Receives the byte count.</param>
+    /// <returns>The text, or <see cref="IntPtr.Zero"/>.</returns>
+    [LibraryImport(Lib, EntryPoint = "stateui_inspect_log")]
+    internal static partial IntPtr InspectLog(out int length);
+
+    /// <summary>
+    /// Tells Swift the platform has handed over a window nobody asked for - the
+    /// first at launch, one for File ▸ New Window, one the system restored -
+    /// and what the platform kept for that scene's keys, written with
+    /// <see cref="WireCodec.WritePayload"/> as name, value, name, value.
+    /// </summary>
+    /// <remarks>
+    /// Called BEFORE the render that puts the scene in the window, so a kept
+    /// value is what the scene's first build reads. Returns 1, or -1 for a
+    /// buffer that would not read. The buffer is read before the call returns.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_connect_scene")]
+    internal static partial int ConnectScene(byte[] bytes, int length);
+
+    /// <summary>
+    /// Runs whatever a suspended Swift handler has waiting, and returns how many
+    /// jobs ran. This is where a handler comes back to life after an
+    /// <c>await</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Must be called on the thread MAUI draws on: whatever the handler does
+    /// next happens inside this call.
+    /// </para>
+    /// <para>
+    /// A call IN rather than a callback out, deliberately. Swift produces the
+    /// resumed job on a cooperative-pool thread, and entering .NET from a thread
+    /// it has never seen makes Mono attach that thread - which deadlocks the UI
+    /// thread when a debugger is attached, on Android. Measured. See
+    /// <c>Core/MainThread.swift</c>.
+    /// </para>
+    /// <para>
+    /// The job does not exist yet when the completion is reported: it lands a
+    /// moment later, and its landing rings the doorbell - see
+    /// <see cref="Rendering.Pump.StartDoorbell"/>.
+    /// </para>
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_run_jobs")]
+    internal static partial int RunJobs();
+
+    /// <summary>
+    /// Parks the calling thread inside Swift until work lands, and returns how
+    /// much is waiting - jobs in its queue, plus acts not yet taken, plus
+    /// one for a tree a write from the pool left dirty - possibly 0, when
+    /// another turn got there first.
+    /// </summary>
+    /// <remarks>
+    /// BLOCKS, by design - call it only from the thread the pump dedicates
+    /// to it. That thread is created by .NET, which is the whole point: Mono
+    /// deadlocks when native code enters managed from a thread it has never
+    /// seen, so instead of Swift calling out, the host sends a thread IN to
+    /// wait. It is how every resumed handler comes back - after an act's reply,
+    /// a journey's answer, a <c>Task.sleep</c>, an author's own task - see
+    /// <see cref="Rendering.Pump.StartDoorbell"/>.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_wait_work")]
+    internal static partial int WaitWork();
+
+    /// <summary>
+    /// Releases a string Swift allocated. Memory allocated in Swift is freed in
+    /// Swift: several C runtimes can coexist on Windows, and freeing across them
+    /// crashes unpredictably.
+    /// </summary>
+    [LibraryImport(Lib, EntryPoint = "stateui_free_string")]
+    internal static partial void FreeString(IntPtr pointer);
+
+    /// <summary>Platform and architecture the Swift side was compiled for.</summary>
+    [LibraryImport(Lib, EntryPoint = "stateui_platform")]
+    internal static partial IntPtr Platform();
+
+    /// <summary>
+    /// Tells Swift what the host knows - one standard provider's values per
+    /// call, written with <see cref="WireCodec.WriteEnvironment"/>. Called for
+    /// every domain before the first render, so the first tree already knows
+    /// its idiom and its locale - which is the whole point: an act could only
+    /// answer a handler, and which pages EXIST is decided while the tree is
+    /// built - and again whenever a platform event reports a change.
+    /// </summary>
+    /// <remarks>
+    /// Returns 1 applied, 0 for a domain or shape the library does not know
+    /// (refused whole), -1 for a buffer that would not read - either failure
+    /// is reported once as version skew. The buffer is read before the call
+    /// returns, so nothing is pinned past it and nothing is freed.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_set_environment")]
+    internal static partial int SetEnvironment(byte[] bytes, int length);
+
+    /// <summary>
+    /// Asks which store the application keeps state in and every key it keeps
+    /// there. Writes the byte count into <paramref name="length"/> and returns
+    /// <see cref="IntPtr.Zero"/> for an application that keeps nothing.
+    /// </summary>
+    /// <remarks>
+    /// Called once, after the app registers and before the first render: a
+    /// settings store is read key by key and never enumerated, so this is the
+    /// only way the host can learn what to ask it for - and the state has to
+    /// hold the kept value before the first view reads it. The caller owns the
+    /// memory and must release it with <see cref="FreeBuffer"/>.
+    /// </remarks>
+    /// <param name="length">The announcement's byte count.</param>
+    [LibraryImport(Lib, EntryPoint = "stateui_persistent_keys")]
+    internal static partial IntPtr PersistentKeys(out int length);
+
+    /// <summary>
+    /// Tells Swift what the store held - a name and a value per key that was
+    /// there, written with <see cref="WireCodec.WritePersistent"/>.
+    /// </summary>
+    /// <remarks>
+    /// Returns 1 applied, -1 for a buffer that would not read, which is
+    /// reported once as version skew. The buffer is read before the call
+    /// returns, so nothing is pinned past it and nothing is freed.
+    /// </remarks>
+    [LibraryImport(Lib, EntryPoint = "stateui_set_persistent")]
+    internal static partial int SetPersistent(byte[] bytes, int length);
+
+    /// <summary>
+    /// Copies a string returned by Swift and releases the native allocation.
+    /// </summary>
+    /// <remarks>
+    /// The release happens in a <c>finally</c> so the memory returns to Swift
+    /// even if the conversion throws.
+    /// </remarks>
+    internal static string TakeString(IntPtr pointer)
+    {
+        if (pointer == IntPtr.Zero)
+        {
+            return string.Empty;
+        }
+
+        try
+        {
+            return Marshal.PtrToStringUTF8(pointer) ?? string.Empty;
+        }
+        finally
+        {
+            FreeString(pointer);
+        }
+    }
+}

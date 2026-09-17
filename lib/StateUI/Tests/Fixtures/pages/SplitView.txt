@@ -1,0 +1,28 @@
+generation 1 names +18
+SplitView 1 arranged(2)
+  isSidebarVisible: true
+  on isSidebarVisibleChanged=1
+  Page "sidebar" arranged(1)
+    title: string "Sections"
+    on appearing=2 disappearing=3 navigatedFrom=4 navigatedTo=5 navigatingFrom=6
+    VStack 2 arranged(2)
+      Button 3
+        text: string "Today"
+        on clicked=7
+      Button 4
+        text: string "Archive"
+        on clicked=8
+  NavigationStack "detail" arranged(2)
+    barBackgroundColor: color FF512BD4
+    title: string "Diary"
+    on popped=9
+    Page "root" arranged(1)
+      title: string "today"
+      on appearing=10 disappearing=11 navigatedFrom=12 navigatedTo=13 navigatingFrom=14
+      Label 5
+        text: string "today"
+    Page "0/1" arranged(1)
+      title: string "level 1"
+      on appearing=15 disappearing=16 navigatedFrom=17 navigatedTo=18 navigatingFrom=19
+      Label 6
+        text: string "level 1"
