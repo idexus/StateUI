@@ -22,21 +22,18 @@ the native contract is settled.
 ## In Action
 
 One application, described once in Swift, on two hosts. The .NET MAUI host
-renders it from the wire - here on Windows, under the debugger:
+renders it from the wire - here on Windows, under the debugger. Both
+recordings play on their own page; the picture opens it:
 
-<video src="https://github.com/idexus/StateUI/raw/main/docs/assets/win.mp4" controls muted loop width="960" height="540">
-  <a href="https://github.com/idexus/StateUI/raw/main/docs/assets/win.mp4">The Gallery on the MAUI host, on Windows (mp4)</a>
-</video>
+[![The Gallery on the MAUI host, on Windows](docs/assets/win-poster.png)](https://github.com/idexus/StateUI/blob/main/docs/assets/win.mp4)
 
 The AppKit host draws the same application with macOS controls, in the same
 process as the application module - here the Gallery's Metal sample: the cube
 is an `MTKView` the application registers with the host, and its size, colour
 and spin are described from StateUI. The edge is handed over as a state, so
-dragging the slider rebuilds nothing:
+dragging the slider rebuilds nothing.
 
-<video src="https://github.com/idexus/StateUI/raw/main/docs/assets/appkit.mp4" controls muted loop width="960" height="540">
-  <a href="https://github.com/idexus/StateUI/raw/main/docs/assets/appkit.mp4">The Gallery's Metal sample on the AppKit host (mp4)</a>
-</video>
+[![The Gallery's Metal sample on the AppKit host](docs/assets/appkit-poster.png)](https://github.com/idexus/StateUI/blob/main/docs/assets/appkit.mp4)
 
 ## In Code
 
