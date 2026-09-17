@@ -1139,23 +1139,18 @@ internal sealed class PagePresenter
     {
         if (asked is bool presented)
         {
-            if (flyout.Page.IsPresented == presented)
-            {
-                flyout.Desired = presented;
-            }
-            else
+            // What Swift believes from here on, whatever the platform does with
+            // it: a refusal below leaves the flyout where it was, and the report
+            // tells Swift so.
+            flyout.Desired = presented;
+
+            if (flyout.Page.IsPresented != presented)
             {
                 flyout.Applying = true;
 
                 try
                 {
                     flyout.Page.IsPresented = presented;
-
-                    // Written only where the assignment TOOK. A refusal leaves
-                    // Swift believing what the platform holds, so the report
-                    // below has nothing to say - one report per change, rather
-                    // than one for the refusal and one for the truth.
-                    flyout.Desired = presented;
                 }
                 catch (InvalidOperationException)
                 {

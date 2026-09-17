@@ -264,6 +264,37 @@ public class FlyoutPageTests
         Assert.Equal([(5, "true")], host.Dispatched);
     }
 
+    /// <summary>
+    /// A close the layout refuses is answered with what the platform shows, so
+    /// Swift does not go on believing the sidebar it asked to hide is hidden.
+    /// </summary>
+    /// <remarks>
+    /// Side by side, MAUI refuses the write outright; the binding settles on
+    /// the sidebar that is still there.
+    /// </remarks>
+    [Fact]
+    public void AHideTheLayoutRefusesIsAnsweredWithTheSidebarShown()
+    {
+        (PagePresenter pages, Host host) = Renderer();
+
+        var flyout = Assert.IsType<FlyoutPage>(pages.Render(null, Host.Parse(Flyout(true))));
+        flyout.FlyoutLayoutBehavior = FlyoutLayoutBehavior.Split;
+
+        host.Dispatched.Clear();
+        TestDispatcher.Hold();
+
+        using (StateUIRenderer.Suppressed applying = host.Renderer.Applying())
+        {
+            pages.Render(flyout, Host.Parse(
+                "{\"id\":1,\"type\":\"SplitView\",\"props\":{\"isSidebarVisible\":false}}"));
+        }
+
+        TestDispatcher.Drain();
+
+        Assert.True(flyout.IsPresented);
+        Assert.Equal([(5, "true")], host.Dispatched);
+    }
+
     // ---- What the renderer forgets ------------------------------------------
 
     [Fact]
