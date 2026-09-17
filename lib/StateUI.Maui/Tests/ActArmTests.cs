@@ -318,6 +318,36 @@ public class ActArmTests
     }
 
     /// <summary>
+    /// A Map a platform does not draw is refused by saying so: the tree
+    /// describes a Map, and what stands in its place is the unknown-control
+    /// marker.
+    /// </summary>
+    /// <remarks>
+    /// Named by the node's type, the refusal read "the view called 'map' is a
+    /// Map, not a Map" - measured on Windows, Map ▸ Old Town.
+    /// </remarks>
+    [Fact]
+    public void MoveToRegionOnAMapThisPlatformDoesNotDrawSaysSo()
+    {
+        (_, byte[] reply) = Answer(
+            "MoveToRegion", (new Label(), """{"id":"map","type":"Map"}"""));
+
+        Assert.Equal(
+            WireCodec.WriteFailure("the view called 'map' is a Map this platform does not draw"), reply);
+    }
+
+    /// <summary>And a WebView the same.</summary>
+    [Fact]
+    public void AWebViewActOnAWebViewThisPlatformDoesNotDrawSaysSo()
+    {
+        (_, byte[] reply) = Answer(
+            "WebViewReload", (new Label(), """{"id":"browser","type":"WebView"}"""));
+
+        Assert.Equal(
+            WireCodec.WriteFailure("the view called 'browser' is a WebView this platform does not draw"), reply);
+    }
+
+    /// <summary>
     /// An aimed focus answers MAUI's OWN answer, and a view with no platform
     /// underneath says no - which crosses as a VALUE, not a failure: a view
     /// refusing the focus is an ordinary outcome.

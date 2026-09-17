@@ -360,6 +360,23 @@ internal sealed class ActPerformer
         target.ByIdentity ? _renderer.Tracked(target.Key) : _renderer.Named(target.Key);
 
     /// <summary>
+    /// Why an act for one kind of control cannot run on the view it named.
+    /// </summary>
+    /// <remarks>
+    /// Two cases, told apart by the node's type: a view of another kind, and a
+    /// control of the right kind that this platform does not draw - where the
+    /// unknown-control marker stands in its place.
+    /// </remarks>
+    /// <param name="target">The act's view argument.</param>
+    /// <param name="type">The type of the node the view was built for.</param>
+    /// <param name="expected">The node type the act is for.</param>
+    /// <returns>The sentence the act fails with.</returns>
+    private static string NotA(ActTarget target, string type, string expected) =>
+        type == expected
+            ? $"the view {target.Label} is a {expected} this platform does not draw"
+            : $"the view {target.Label} is a {type}, not a {expected}";
+
+    /// <summary>
     /// The same lookup, for an APPLICATION's registered act - reached through
     /// <see cref="StateUIActs.TargetOf"/>, which is the only thing that calls
     /// this.
@@ -402,7 +419,7 @@ internal sealed class ActPerformer
 
         if (found.View is not Microsoft.Maui.Controls.Maps.Map map)
         {
-            return ([], $"the view {target.Label} is a {found.Type}, not a Map");
+            return ([], NotA(target, found.Type, "Map"));
         }
 
         if (call.GetDouble(1) is not double latitude
@@ -443,7 +460,7 @@ internal sealed class ActPerformer
 
         if (found.View is not WebView web)
         {
-            return ([], $"the view {target.Label} is a {found.Type}, not a WebView");
+            return ([], NotA(target, found.Type, "WebView"));
         }
 
         switch (call.Act)
