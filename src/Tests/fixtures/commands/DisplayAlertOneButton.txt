@@ -1,4 +1,0 @@
-displayAlertAsync completion=-1
-  string "Saved"
-  string "The draft is safe"
-  string "OK"

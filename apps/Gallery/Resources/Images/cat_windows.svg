@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Windows - the category card the gallery opens with.</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#2B3A55"/><stop offset="1" stop-color="#9FB8D8"/></linearGradient>
+<radialGradient id="s" cx="0.24" cy="0.18" r="0.85"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<rect width="400" height="560" fill="url(#s)"/>
+<g fill="#101A2E"><path d="M150 120h150a20 20 0 0 1 20 20v128a20 20 0 0 1-20 20h-22V186a32 32 0 0 0-32-32H130v-14a20 20 0 0 1 20-20z" opacity="0.42"/><path d="M92 186h156a24 24 0 0 1 24 24v150a24 24 0 0 1-24 24H92a24 24 0 0 1-24-24V210a24 24 0 0 1 24-24zm-8 62h172v112a8 8 0 0 1-8 8H92a8 8 0 0 1-8-8z"/></g>
+</svg>

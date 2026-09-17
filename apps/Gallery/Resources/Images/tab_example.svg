@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- A window with something playing in it: the tab of a sample that shows
+       one of its examples working. -->
+  <g fill="#000000">
+    <path d="M6 8h36a2 2 0 0 1 2 2v28a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2zm2 4v24h32V12z" />
+    <path d="M20 17v14l11-7z"/>
+  </g>
+</svg>

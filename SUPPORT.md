@@ -6,10 +6,10 @@ the whole answer.
 
 ## What there is instead
 
-- **The documentation.** [README.md](README.md) is long on purpose: it carries
-  the architecture, a troubleshooting list, and the reason behind most of the
-  decisions that look odd from outside. Search it first - the answer is often
-  already there, with the measurement that produced it.
+- **The documentation.** The [handbook](docs/README.md) carries the model, the
+  architecture and the reason behind most of the decisions that look odd from
+  outside, and the public API documentation sits beside every declaration.
+  Search it first - the answer is often already there.
 - **The issue tracker, as a place to leave a report.** A bug with a
   reproduction is useful to the project whether or not anybody replies to it,
   and a proposal there is how a change to the API starts - see
@@ -21,10 +21,9 @@ the whole answer.
   answer; none is promised one.
 - **A response time.** There is none, and nothing here implies one.
 - **Help with your own application's code.** Questions about StateUI's own
-  behaviour are the interesting kind; questions about why your page does not lay
-  out the way you want are usually MAUI questions, and MAUI's documentation is
-  the better place for them.
-- **A stable API.** This is version 0.1 and the shape of things is still being
+  behaviour are the interesting kind; an application's own design is its
+  author's to answer.
+- **A stable API.** This is version 0.3 and the shape of things is still being
   found, so **using StateUI in a project is at your own risk**: names and
   signatures move between versions, and there is no deprecation cycle yet to
   soften it.
@@ -48,8 +47,8 @@ Most of the traps in this project are platform-specific, so a report that names
 the platform is worth several that do not:
 
 - what you did, what happened, and what you expected instead
-- the platform and its version - iOS, Android, Mac Catalyst or Windows
-- the StateUI version, and the .NET MAUI version if you changed it
+- the platform and its version - macOS, iOS, Android, Windows or Linux
+- the StateUI version, and the Swift toolchain's
 - the smallest piece of code that shows it
 
 A stack trace or the exact error text beats a description of it.

@@ -1,0 +1,5 @@
+generation 1 names +4
+Switch 1
+  isOn: true
+  tint: color FF008000
+  on toggled=1

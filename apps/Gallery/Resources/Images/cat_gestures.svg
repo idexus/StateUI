@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Gestures - the category card the gallery opens with.</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#7A2E12"/><stop offset="1" stop-color="#FFB020"/></linearGradient>
+<radialGradient id="s" cx="0.24" cy="0.18" r="0.85"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<rect width="400" height="560" fill="url(#s)"/>
+<circle cx="200" cy="286" r="120" fill="none" stroke="#3A1400" stroke-width="6" opacity="0.28"/><circle cx="200" cy="286" r="84" fill="none" stroke="#3A1400" stroke-width="7" opacity="0.5"/><circle cx="200" cy="286" r="46" fill="#3A1400" opacity="0.9"/><path d="M112 150l38 10-10 38z" fill="#3A1400" opacity="0.8"/><path d="M288 422l-38-10 10-38z" fill="#3A1400" opacity="0.8"/>
+</svg>

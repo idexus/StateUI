@@ -1,126 +1,181 @@
 {
-  // Build tasks.
+  // Tests, builds and cleans for both hosts.
   //
-  // The target platform is a PROMPT, not a hardcoded value. Hardcoding
-  // "-f net10.0-maccatalyst" meant every task built Mac Catalyst no matter which
-  // device was selected, which is confusing and wastes time.
+  // For running by hand: the launches are the StateUI extension's "StateUI:
+  // Debug" and "StateUI: Release", which build the same way these do. A MAUI
+  // launch builds through the MAUI extension, which respects the device picker,
+  // and the Swift side is compiled for that platform as part of the build by
+  // .scripts/Maui/StateUI.targets.
   //
-  // Note that these are for manual use. The usual workflow does not need them:
-  // "Debug app (C#)" builds through the MAUI extension, which respects the
-  // device picker, and the Swift library is compiled automatically as part of
-  // that build - for the correct platform - by .scripts/StateUI.targets.
+  // -nodeReuse:false on every dotnet build: MSBuild's workers outlive the build
+  // and hold the task terminal's handles, so a task used before a debug session
+  // would never report that it finished.
   "version": "2.0.0",
   "tasks": [
     {
-      // Both suites, the way CI would run them. The Swift tests need swift on
-      // the PATH; the C# ones need nothing but the SDK.
-      "label": "Test (all)",
+      "label": "Test StateUI",
       "type": "shell",
-      "command": "swift test --package-path src/Tests && dotnet test src/Tests/StateUIRuntime.Tests",
+      "command": "swift",
+      "args": ["test", "--package-path", "${workspaceFolder}"],
+      "problemMatcher": [],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "Test StateUI.AppKit",
+      "type": "shell",
+      "command": "swift",
+      "args": ["test", "--package-path", "${workspaceFolder}/lib/StateUI.AppKit"],
+      "problemMatcher": [],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "Test StateUI.Maui",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["test", "${workspaceFolder}/lib/StateUI.Maui/Tests"],
+      "problemMatcher": "$msCompile",
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "Test Gallery",
+      "type": "shell",
+      "command": "swift",
+      "args": ["test", "--package-path", "${workspaceFolder}/apps/Gallery"],
+      "problemMatcher": [],
+      "group": "test",
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "Test native",
+      "type": "shell",
+      "command": "${workspaceFolder}/.scripts/test-native.sh",
       "problemMatcher": [],
       "group": { "kind": "test", "isDefault": true },
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
-      // The Swift half: the differ, the wire format, memoization, state,
-      // commands and navigation.
-      "label": "Test (Swift)",
-      "type": "shell",
-      "command": "swift test --package-path src/Tests",
-      "problemMatcher": [],
-      "group": "test",
-      "presentation": { "reveal": "always", "panel": "dedicated" }
-    },
-    {
-      // The C# half: the renderer, the value conversions, and the fixtures the
-      // Swift side wrote.
-      "label": "Test (C#)",
-      "type": "shell",
-      "command": "dotnet",
-      "args": ["test", "src/Tests/StateUIRuntime.Tests"],
-      "problemMatcher": "$msCompile",
-      "group": "test",
-      "presentation": { "reveal": "always", "panel": "dedicated" }
-    },
-    {
-      // After a deliberate change to the wire format, or a modifier added to a
-      // control: rewrites src/Tests/fixtures/ from what the Swift side now
-      // produces - the message shapes and the per-control files both - so the C#
-      // tests are checked against it. Read the diff before committing.
+      // After a deliberate change to the wire or to a control's modifiers:
+      // rewrites lib/StateUI/Tests/Fixtures from what the Swift side now
+      // produces, then checks the C# host against it. Read the diff.
       "label": "Test (update wire fixtures)",
       "type": "shell",
-      "command": "STATEUI_UPDATE_FIXTURES=1 swift test --package-path src/Tests && dotnet test src/Tests/StateUIRuntime.Tests",
+      "command": "STATEUI_UPDATE_FIXTURES=1 swift test --package-path ${workspaceFolder} && dotnet test ${workspaceFolder}/lib/StateUI.Maui/Tests",
       "problemMatcher": [],
       "group": "test",
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
-      // Builds the app AND the Swift modules for the chosen target framework.
-      //
-      // The Swift build is part of the normal MSBuild flow now - the targets
-      // compile both modules for the right platform, so there is no separate
-      // "build Swift" step to keep in sync.
-      // -nodeReuse:false, here and in every other dotnet build in this file:
-      // MSBuild's worker processes outlive the build and inherit the task
-      // terminal's handles, which keeps the task from ever reporting that it
-      // finished. Harmless for a task you watch; fatal for one used as a
-      // preLaunchTask, since the debug session waits on it forever.
+      "label": "Build Gallery (AppKit, Debug)",
+      "type": "shell",
+      "command": "${workspaceFolder}/.scripts/AppKit/build-gallery-appkit.sh",
+      "args": ["debug"],
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "Build Gallery (AppKit, Release)",
+      "type": "shell",
+      "command": "${workspaceFolder}/.scripts/AppKit/build-gallery-appkit.sh",
+      "args": ["release"],
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "Build HelloWorld (AppKit, Debug)",
+      "type": "shell",
+      "command": "swift",
+      "args": [
+        "build",
+        "--package-path",
+        "${workspaceFolder}/apps/HelloWorld",
+        "--configuration",
+        "debug",
+        "--product",
+        "HelloWorldAppKit"
+      ],
+      // What makes this an AppKit build: the manifest declares the head and
+      // defines APPKIT only then - see apps/Gallery/Package.swift.
+      "options": { "env": { "STATEUI_APPKIT": "1" } },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      "label": "Build HelloWorld (AppKit, Release)",
+      "type": "shell",
+      "command": "swift",
+      "args": [
+        "build",
+        "--package-path",
+        "${workspaceFolder}/apps/HelloWorld",
+        "--configuration",
+        "release",
+        "--product",
+        "HelloWorldAppKit"
+      ],
+      "options": { "env": { "STATEUI_APPKIT": "1" } },
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" }
+    },
+    {
+      // The MAUI head AND its Swift modules, for the chosen target framework.
       "label": "Build (debug)",
       "type": "shell",
       "command": "dotnet",
       "problemMatcher": "$msCompile",
-      "options": { "cwd": "${workspaceFolder}/apps/Gallery" },
+      "options": { "cwd": "${workspaceFolder}/apps/Gallery/Platforms/Maui" },
       "args": ["build", "-c", "Debug", "-f", "${input:targetFramework}", "-nodeReuse:false"]
     },
     {
-      // THE LINUX HEAD, WITH NOTHING TO PICK. It is the only framework a Linux
-      // host builds - the MAUI workload does not exist there, so Gallery.csproj
-      // offers plain net10.0 and nothing else - and a prompt with one answer in
-      // it is a keystroke that cannot go anywhere but right.
-      //
-      // The preLaunchTask of "Debug app (Linux)". -nodeReuse:false for the
-      // reason "Build (debug)" carries: MSBuild's workers outlive the build and
-      // hold the task terminal's handles, so a task used before a debug session
-      // never reports that it finished and the session waits for ever.
+      // The Linux head, the only framework a Linux host builds - nothing to
+      // pick.
       "label": "Build app (Linux)",
       "type": "shell",
       "command": "dotnet",
       "problemMatcher": "$msCompile",
       "args": [
         "build",
-        "${workspaceFolder}/apps/Gallery/Gallery.csproj",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/Gallery.csproj",
         "-c",
         "Debug",
         "-nodeReuse:false"
       ]
     },
     {
-      // Prints every resolved path and what actually exists. The first thing to
-      // run when the app reports a missing native library.
+      // The same head, optimized - Swift's configuration is MSBuild's, so -c
+      // Release compiles the Swift modules with -O as well.
+      "label": "Build app (Release, Linux)",
+      "type": "shell",
+      "command": "dotnet",
+      "problemMatcher": "$msCompile",
+      "args": [
+        "build",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/Gallery.csproj",
+        "-c",
+        "Release",
+        "-nodeReuse:false"
+      ]
+    },
+    {
+      // Every resolved path and what actually exists - the first thing to run
+      // when an app reports a missing native library.
       "label": "Diagnose native build",
       "type": "shell",
       "command": "dotnet",
       "problemMatcher": [],
-      "options": { "cwd": "${workspaceFolder}/apps/Gallery" },
+      "options": { "cwd": "${workspaceFolder}/apps/Gallery/Platforms/Maui" },
       "args": ["build", "-t:StateUIDiagnose", "-f", "${input:targetFramework}"]
     },
     {
-      // Builds and launches the app WITHOUT a debugger, then returns once the
-      // process exists.
-      //
-      // This is the preLaunchTask of "Debug app (Swift)". Launching first and
-      // attaching second is what makes Swift debugging work on the iOS
-      // Simulator: iOS kills an app that stays stopped, and a C# debugger
-      // starting at the same time widens that window enough to make it likely.
-      //
-      // Windows has no such watchdog, so the launch-first order buys less there
-      // - but the task exists for both, because without it this configuration
-      // simply does nothing on Windows and the attach then has no process to
-      // find.
+      // Builds and launches the MAUI app WITHOUT a debugger, then returns once
+      // the process exists - what the StateUI extension runs before a Swift
+      // debugger attaches.
       "label": "Run app (no debugger)",
       "type": "shell",
       "problemMatcher": [],
-      "options": { "cwd": "${workspaceFolder}/.scripts" },
+      "options": { "cwd": "${workspaceFolder}/.scripts/Maui" },
       "osx": {
         "command": "bash",
         "args": ["run-app.sh", "${input:applePlatform}"]
@@ -135,17 +190,13 @@
       }
     },
     {
-      // The same launch with the OPTIMIZED build: the scripts take the
-      // configuration, so this is one argument's difference, and nothing is
-      // attached to what it starts.
-      //
-      // WHERE IT RUNS is what the scripts know - the two Apple platforms,
-      // Windows and Linux. For Android, or for a Release build that follows the
-      // device picker, take "Launch app (Release)" in launch.json.
+      // The same launch with the OPTIMIZED build. For Android, or for a
+      // Release build that follows the device picker, take "StateUI: Release"
+      // with the C# debugger.
       "label": "Run app (Release, no debugger)",
       "type": "shell",
       "problemMatcher": [],
-      "options": { "cwd": "${workspaceFolder}/.scripts" },
+      "options": { "cwd": "${workspaceFolder}/.scripts/Maui" },
       "osx": {
         "command": "bash",
         "args": ["run-app.sh", "${input:applePlatform}", "Release"]
@@ -160,140 +211,65 @@
       }
     },
     {
-      // Waits until the app process exists, used by the attaching half of a
-      // compound. Polls rather than sleeping a fixed time: a cold build takes
-      // far longer than a warm one, so no constant fits both.
-      "label": "Wait for app startup",
-      "type": "shell",
-      "problemMatcher": [],
-      "osx": {
-        "command": "bash",
-        "args": ["${workspaceFolder}/.vscode/wait-for-app.sh"]
-      },
-      "linux": {
-        "command": "bash",
-        "args": ["${workspaceFolder}/.vscode/wait-for-app.sh"]
-      },
-      "windows": {
-        "command": "powershell",
-        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/.vscode/wait-for-app.ps1"]
-      }
-    },
-    {
-      // Creates a new application in apps/ - the gallery's project files and
-      // artwork plus one template page with a counter, renamed to the name
-      // typed into the prompt. See .scripts/new-app.sh for what is copied and
-      // what deliberately is not.
-      "label": "New app (in apps/)",
-      "type": "shell",
-      "problemMatcher": [],
-      "options": { "cwd": "${workspaceFolder}/.scripts" },
-      "osx": {
-        "command": "bash",
-        "args": ["new-app.sh", "${input:newAppName}"]
-      },
-      "linux": {
-        "command": "bash",
-        "args": ["new-app.sh", "${input:newAppName}"]
-      },
-      "windows": {
-        "command": "powershell",
-        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "new-app.ps1", "-Name", "${input:newAppName}"]
-      },
-      "presentation": { "reveal": "always", "panel": "dedicated" }
-    },
-    {
-      // THE APP, WHOLE - obj/, bin/ and .build/ go, in every configuration and
-      // every framework at once. An edited Info.plist re-merges only when the
-      // obj/ that cached it is gone, and obj/ is per configuration AND per
-      // framework, so anything narrower leaves exactly the stale copy that is
-      // about to be run.
-      //
-      // The LIBRARY is left alone, which is what makes this the everyday cut:
-      // the C# runtime and the macro plugin are not rebuilt. Reach for "Clean
-      // all" when the two halves are suspected of coming from different
-      // moments - an await that never returns is what that looks like.
+      // THE MAUI HEAD, WHOLE - obj/, bin/ and SwiftPM's .build/ go, every
+      // configuration and every framework at once. An edited Info.plist
+      // re-merges only when the obj/ that cached it is gone, and obj/ is per
+      // configuration AND per framework, so anything narrower leaves exactly
+      // the stale copy that is about to be run.
       "label": "Clean app (everything)",
       "type": "shell",
       "command": "rm",
       "problemMatcher": [],
       "args": [
         "-rf",
-        "${workspaceFolder}/apps/Gallery/obj",
-        "${workspaceFolder}/apps/Gallery/bin",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/obj",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/bin",
         "${workspaceFolder}/apps/Gallery/.build"
       ],
       "windows": {
         "command": "powershell",
-        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/obj','${workspaceFolder}/apps/Gallery/bin','${workspaceFolder}/apps/Gallery/.build' -ErrorAction SilentlyContinue"]
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/Platforms/Maui/obj','${workspaceFolder}/apps/Gallery/Platforms/Maui/bin','${workspaceFolder}/apps/Gallery/.build' -ErrorAction SilentlyContinue"]
       },
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
-      // Removes everything the app's build ever wrote: obj/ and bin/ whole -
-      // every configuration, every framework, the native artifacts under
-      // obj/stateui with them - and .build/, SwiftPM's scratch beside the
-      // manifest. What is left is what a fresh clone has: Package.resolved sits
-      // beside the manifest rather than inside any of the three, and it is the
-      // app's own pin rather than something a build wrote, so it stays.
-      //
-      // IT ASKS NOTHING ON PURPOSE. A clean that takes one framework and one
-      // configuration is a clean that misses: obj/ is per configuration AND per
-      // framework, MAUI merges Info.plist once and never again on an
-      // incremental build, and whichever copy is stale is the one about to be
-      // run. Symptom: the app behaves as if the key were never added. Measured
-      // four times; the last was a Release Mac Catalyst build with no scene
-      // manifest silently refusing a second window while Debug opened it
-      // happily - and a picker offering four frameworks is four ways to keep
-      // that.
-      //
-      // The price is a full rebuild, the Swift half included. "Clean native
-      // artifacts" below is the cheaper cut when only that half is suspect.
-      //
-      // ALL means the LIBRARY too, and that is the half a clean named after the
-      // app quietly leaves standing. The app's Swift is compiled into its own
-      // obj/, but the C# runtime beside it builds in src/StateUI.Runtime/, the
-      // Linux platform package in src/StateUI.Runtime.Linux/, and the macro
-      // plugin in the library package's .build/ - so cleaning the app alone
-      // rebuilds one half against a copy of the other from a different moment,
-      // which is the shape that parks every await that crosses and reports
-      // nothing. A generated app has none of those directories, which is why
-      // the template's task is "Clean app" and stops there.
+      // AND THE LIBRARY: the MAUI host builds in lib/StateUI.Maui/Sources and
+      // its Linux platform in lib/StateUI.Maui/Linux, so a clean named after
+      // the app would rebuild one half against a copy of the other from a
+      // different moment - the shape that parks every await that crosses.
       "label": "Clean all (app and library)",
       "type": "shell",
       "command": "rm",
       "problemMatcher": [],
       "args": [
         "-rf",
-        "${workspaceFolder}/apps/Gallery/obj",
-        "${workspaceFolder}/apps/Gallery/bin",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/obj",
+        "${workspaceFolder}/apps/Gallery/Platforms/Maui/bin",
         "${workspaceFolder}/apps/Gallery/.build",
-        "${workspaceFolder}/src/StateUI.Runtime/obj",
-        "${workspaceFolder}/src/StateUI.Runtime/bin",
-        "${workspaceFolder}/src/StateUI.Runtime.Linux/obj",
-        "${workspaceFolder}/src/StateUI.Runtime.Linux/bin",
+        "${workspaceFolder}/lib/StateUI.Maui/Sources/obj",
+        "${workspaceFolder}/lib/StateUI.Maui/Sources/bin",
+        "${workspaceFolder}/lib/StateUI.Maui/Linux/obj",
+        "${workspaceFolder}/lib/StateUI.Maui/Linux/bin",
         "${workspaceFolder}/.build"
       ],
       "windows": {
         "command": "powershell",
-        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/obj','${workspaceFolder}/apps/Gallery/bin','${workspaceFolder}/apps/Gallery/.build','${workspaceFolder}/src/StateUI.Runtime/obj','${workspaceFolder}/src/StateUI.Runtime/bin','${workspaceFolder}/src/StateUI.Runtime.Linux/obj','${workspaceFolder}/src/StateUI.Runtime.Linux/bin','${workspaceFolder}/.build' -ErrorAction SilentlyContinue"]
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/Platforms/Maui/obj','${workspaceFolder}/apps/Gallery/Platforms/Maui/bin','${workspaceFolder}/apps/Gallery/.build','${workspaceFolder}/lib/StateUI.Maui/Sources/obj','${workspaceFolder}/lib/StateUI.Maui/Sources/bin','${workspaceFolder}/lib/StateUI.Maui/Linux/obj','${workspaceFolder}/lib/StateUI.Maui/Linux/bin','${workspaceFolder}/.build' -ErrorAction SilentlyContinue"]
       },
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
-      // Removes the native build products, forcing a full rebuild.
-      //
-      // Needed after changing a build script: the targets compare timestamps
-      // against .swift sources, so a script change alone leaves the previous
-      // library in place and looks like the fix did nothing.
+      // The native build products alone, after a build script changed: the
+      // targets compare timestamps against .swift sources, so a script change
+      // leaves the previous library in place.
       "label": "Clean native artifacts",
       "type": "shell",
       "command": "rm",
       "problemMatcher": [],
-      "args": ["-rf", "${workspaceFolder}/apps/Gallery/obj/stateui"],
+      "args": ["-rf", "${workspaceFolder}/apps/Gallery/Platforms/Maui/obj/stateui"],
       "windows": {
         "command": "powershell",
-        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/obj/stateui' -ErrorAction SilentlyContinue"]
+        "args": ["-NoProfile", "-Command", "Remove-Item -Recurse -Force '${workspaceFolder}/apps/Gallery/Platforms/Maui/obj/stateui' -ErrorAction SilentlyContinue"]
       }
     }
   ],
@@ -310,11 +286,6 @@
         "net10.0-windows10.0.19041.0",
         "net10.0"
       ]
-    },
-    {
-      "id": "newAppName",
-      "type": "promptString",
-      "description": "Name of the new app project: letters and digits, starting with a letter (e.g. MyApp)"
     },
     {
       "id": "applePlatform",

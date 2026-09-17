@@ -1,0 +1,8 @@
+generation 2
+Application 1
+  Scene "1"
+    Window "main"
+      Page 2
+        VStack 3
+          Label 4
+            text: string "Count: 1"

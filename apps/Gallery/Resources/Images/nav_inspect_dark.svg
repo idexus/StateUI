@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- A circled i: the button that shows what every render cost. Drawn white,
+       which is what reads on the accent bar - and there is no light twin
+       because nothing but that bar asks for it.
+
+       THE RING IS 3 OF THESE 48 UNITS, AND THE MARK 36, both taken off the bar
+       rather than chosen. A ToolbarItem has no font of its own, so the
+       library's own ⓘ is drawn at whatever the bar's caption font says - 14 px
+       across, measured - while an icon is given the bar's own 22 px slot: 36
+       units of this box draw 16.5 there, which is the bigger mark that was
+       asked for and the same size as the house beside it. The ring is thin on
+       purpose, a hair over a pixel, so the mark reads as the glyph it replaces
+       and not as a filled disc. -->
+  <g fill="#FFFFFF">
+    <path fill-rule="evenodd"
+          d="M24 6a18 18 0 1 0 0 36 18 18 0 1 0 0-36zm0 3a15 15 0 1 1 0 30 15 15 0 1 1 0-30z"/>
+    <circle cx="24" cy="16.2" r="2.6"/>
+    <rect x="21.5" y="21.6" width="5" height="12.6" rx="2.5"/>
+  </g>
+</svg>

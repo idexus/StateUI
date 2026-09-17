@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Environment - the category card the gallery opens with.</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#0B3B78"/><stop offset="1" stop-color="#3FC1F0"/></linearGradient>
+<radialGradient id="s" cx="0.24" cy="0.18" r="0.85"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<rect width="400" height="560" fill="url(#s)"/>
+<circle cx="200" cy="280" r="104" fill="none" stroke="#FFFFFF" stroke-width="8" opacity="0.9"/><ellipse cx="200" cy="280" rx="104" ry="42" fill="none" stroke="#FFFFFF" stroke-width="6" opacity="0.75"/><path d="M200 176v208" stroke="#FFFFFF" stroke-width="6" opacity="0.75"/><path d="M124 214a150 150 0 0 0 152 0M124 346a150 150 0 0 1 152 0" fill="none" stroke="#FFFFFF" stroke-width="5" opacity="0.55"/>
+</svg>

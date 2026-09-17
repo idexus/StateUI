@@ -1,0 +1,33 @@
+# Overview
+
+A StateUI application: its interface written in Swift, with a .NET MAUI head
+for Android, iOS, Mac Catalyst, Windows and Linux.
+
+**Version 0.3 - the API is still changing.** Use in a project is at your own
+risk: names and signatures move between versions while the design is being
+found.
+
+```
+dotnet new install StateUI.Maui.Template
+dotnet new stateui-maui -n MyApp --stateui-path /path/to/StateUI
+```
+
+In VS Code, the StateUI extension's **StateUI: New Application from Template**
+writes the same application with no template installed, and its **StateUI:
+Debug** and **StateUI: Release** launches run it.
+
+- `--stateui-path` builds the application against a StateUI checkout, whose
+  directory is named `StateUI`.
+- `--appkit` adds a native macOS head beside the MAUI one; it needs
+  `--stateui-path`.
+
+Name the app with letters and digits only: the name becomes the Swift module
+and the Android application id, and a hyphen or space in either fails far from
+its cause.
+
+The FIRST build compiles the whole of the Swift library once; every build
+after it compiles only what changed.
+
+# License
+
+Apache License 2.0, Copyright 2026 Paweł Krzywdziński and Contributors

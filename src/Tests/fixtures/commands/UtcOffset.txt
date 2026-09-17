@@ -1,3 +1,0 @@
-getUtcOffset completion=-1
-  string "Europe/Warsaw"
-  numbers 2026,1,15

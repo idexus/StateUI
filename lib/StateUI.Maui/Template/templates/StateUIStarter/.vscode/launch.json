@@ -1,0 +1,36 @@
+{
+  // Debugging this application - through the StateUI extension (idexus.stateui),
+  // which .vscode/extensions.json recommends.
+  //
+  // "StateUI: Debug" and "StateUI: Release" are the whole of it. The extension's
+  // status bar chooses:
+  //
+  //   the host         AppKit, or .NET MAUI - and the editor works as it
+  //   the debugger     for MAUI: C#; Swift on the iOS Simulator or Mac Catalyst;
+  //                    C# and Swift together on Mac Catalyst; Swift on Linux
+  //                    and Windows
+  //
+  // A MAUI C# launch is the MAUI extension's, on the device its status bar
+  // chose; its Release build is believed only because settings.json sets
+  // maui.configuration.useLaunchJsonConfigurations. Swift attaches to a process
+  // this machine runs - never to Android or a physical device.
+  //
+  // THE PICKER'S ORDER IS `presentation.order`, not the order in this file.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "StateUI: Debug",
+      "type": "stateui",
+      "request": "launch",
+      "configuration": "debug",
+      "presentation": { "group": "0 StateUI", "order": 1 }
+    },
+    {
+      "name": "StateUI: Release",
+      "type": "stateui",
+      "request": "launch",
+      "configuration": "release",
+      "presentation": { "group": "0 StateUI", "order": 2 }
+    }
+  ]
+}

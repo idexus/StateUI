@@ -121,7 +121,7 @@ jobs:
       # which the project also lists on Windows, and asks for a Mono runtime pack
       # that does not exist. The project picks the host architecture itself.
       - name: Build the gallery
-        run: dotnet build apps/Gallery/Gallery.csproj -c Release -f net10.0-windows10.0.19041.0
+        run: dotnet build apps/Gallery/Platforms/Maui/Gallery.csproj -c Release -f net10.0-windows10.0.19041.0
 
   tests:
     name: Tests
@@ -191,7 +191,7 @@ jobs:
       # is LF on every machine - .gitattributes says so - so a red test here is
       # about the code and not about the checkout.
       - name: Swift tests
-        run: swift test --package-path src/Tests
+        run: swift test
 
       - uses: actions/setup-dotnet@v6.0.0
         with:
@@ -201,4 +201,4 @@ jobs:
         run: dotnet workload install maui
 
       - name: C# tests
-        run: dotnet test src/Tests/StateUIRuntime.Tests
+        run: dotnet test lib/StateUI.Maui/Tests

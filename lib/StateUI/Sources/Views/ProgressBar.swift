@@ -1,0 +1,54 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+// How far along something is, as a bar.
+
+/// ProgressBar's own properties - the half a `Style<ProgressBar>` shares with the
+/// control, beside what its tiers already carry. The control conforms on
+/// the element side and the style on the property side, which is what
+/// makes the same modifiers compile on both.
+public protocol ProgressBarProperties: PropertyContainer {}
+
+extension ProgressBarProperties {
+    /// How far along, as a FRACTION from 0 to 1 - not a percentage and not a
+    /// count of items. The host clamps anything outside that range.
+    public func progress(_ value: Double) -> Modified {
+        setValue(ProgressBarContract.progress, value)
+    }
+}
+
+/// How far along something is, from 0 to 1.
+///
+///     @State private var done = 0.0
+///
+///     ProgressBar(done)
+///         .tint(.firebrick)
+///
+/// A FRACTION, not a percentage and not a count: 0.4 is four tenths of the way
+/// through, whatever the work is measured in - so a job counting files divides
+/// by the total itself. For work with no measurable length, use an
+/// `ActivityIndicator`.
+///
+/// It takes no TWO-WAY binding, unlike the inputs: nothing about it is the
+/// reader's to change, so the value only ever goes one way - written into the
+/// `@State` it is built from, or handed on as `.progress($done)`, which the
+/// host walks there.
+public struct ProgressBar: View, TintElement, ProgressBarProperties {
+    /// The node this control describes.
+    public var node: Node
+
+    /// An empty one - what a `Style<ProgressBar>` is written against.
+    public init() {
+        node = Node(contract: ProgressBarContract.self)
+    }
+
+    /// A bar filled `progress` of the way, from 0 to 1. The host clamps
+    /// anything outside that.
+    public init(_ progress: Double) {
+        node = Node(contract: ProgressBarContract.self)
+        node.write(ProgressBarContract.progress, progress)
+    }
+
+    // MARK: Properties
+
+}

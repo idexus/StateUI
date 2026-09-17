@@ -1,0 +1,79 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+/// CheckBox's own properties - the half a `Style<CheckBox>` shares with the
+/// control, beside what its tiers already carry. The control conforms on
+/// the element side and the style on the property side, which is what
+/// makes the same modifiers compile on both.
+public protocol CheckBoxProperties: PropertyContainer {}
+
+extension CheckBoxProperties {
+    /// Whether the box is ticked.
+    ///
+    /// Usually given in the initializer instead; this is the way to set it in a
+    /// style, or to change it on a checkbox built elsewhere.
+    public func isOn(_ value: Bool) -> Modified {
+        setValue(CheckBoxContract.isOn, value)
+    }
+}
+
+/// A box that is ticked or not.
+///
+///     @State private var agreed = false
+///     …
+///     HStack {
+///         CheckBox($agreed).tint(.firebrick)
+///         Label("I agree").verticalAlignment(.center)
+///     }
+///
+/// Given a binding it shows what the binding holds and writes every tick back.
+/// Given a plain `Bool` it only shows: `.onToggled` is then the one way
+/// a tick reaches anywhere.
+///
+/// No caption of its own - a CheckBox is the box and nothing else. Put a
+/// Label beside it, as above.
+public struct CheckBox: View, TintElement, CheckBoxProperties {
+    /// The node this control describes.
+    public var node: Node
+
+    /// An empty one - what a `Style<CheckBox>` is written against.
+    public init() {
+        node = Node(contract: CheckBoxContract.self)
+    }
+
+    /// A box that is ticked or not. One-way: what is ticked goes nowhere
+    /// without `.onToggled`.
+    public init(_ isOn: Bool) {
+        node = Node(contract: CheckBoxContract.self)
+        node.write(CheckBoxContract.isOn, isOn)
+    }
+
+    /// Two-way: shows what the binding holds, and writes back what is ticked.
+    public init(_ isOn: Binding<Bool>) {
+        self = CheckBox().isOn(isOn)
+    }
+
+    /// Two-way: shows what the state holds and writes back what is ticked -
+    /// and HANDED OVER, so the box is no reader of the state; what a tick
+    /// costs is decided by who reads the state at build; a part of a state or
+    /// a binding made from closures is shown by the tree instead.
+    ///
+    /// - Parameter value: the state shown, and written back into as the
+    ///   reader ticks it.
+    /// - Returns: the box, wearing and reporting that value.
+    public func isOn(_ value: Binding<Bool>) -> Modified {
+        value.image == nil
+            ? described(CheckBoxContract.isOn.token, value, on: CheckBoxContract.toggled.token)
+            : plain(CheckBoxContract.isOn.token, by: value, mode: .inOut)
+    }
+
+    // MARK: Properties
+
+    // MARK: Events
+
+    /// Fires when it is ticked or unticked, with the new value. Runs after a
+    /// binding's write, if there is one.
+    public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
+        onEvent(CheckBoxContract.toggled, handler)
+    }
+}

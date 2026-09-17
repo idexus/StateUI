@@ -1,4 +1,0 @@
-generation 2
-Border 1
-  opacity: number 0.25
-  opacity flies over 400ms cubicOut(5) on -1

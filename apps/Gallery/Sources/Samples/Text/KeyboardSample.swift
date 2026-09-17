@@ -1,0 +1,98 @@
+import StateUI
+
+/// Explicit native focus and soft-input actions.
+struct KeyboardSample: SampleContent, ExampleContent {
+    @State private var name = ""
+    @State private var note = ""
+    @State private var said = ""
+
+    @Aim(TextField.self) private var first
+
+    static let id = "keyboard"
+    static let title = "Keyboard"
+    static let summary = "Aim at one field, or release whichever input is focused."
+
+    static let code = """
+        @State private var name = ""
+        @State private var note = ""
+        @State private var said = ""
+        @Aim(TextField.self) private var first
+
+        VStack {
+            // `said` is read here, so the answer below builds this closure.
+            DebugInfoLabel()
+
+            TextField($name)
+                .placeholder("Name")
+                .aim(first)
+
+            TextField($note)
+                .placeholder("Note")
+
+            HStack {
+                Button("Focus first")
+                    .onClicked { try await first.focus() }
+
+                Button("Unfocus first")
+                    .onClicked { try await first.unfocus() }
+            }
+
+            Button("Close keyboard")
+                .onClicked {
+                    said = try await OnScreenKeyboard.hide()
+                        ? "Focus released"
+                        : "Nothing was focused"
+                }
+
+            Label(said.isEmpty ? "Nothing said yet." : said)
+        }
+        """
+
+    var notes: Element? {
+        Label("`focus()` and `unfocus()` are acts aimed at one field with `@Aim`. "
+            + "`OnScreenKeyboard.hide()` releases whichever input holds the focus, and answers "
+            + "whether anything did.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
+
+    var content: any View {
+        VStack {
+            DebugInfoLabel()
+
+            TextField($name)
+                .accessibilityIdentifier("keyboard.name")
+                .accessibilityLabel("Name")
+                .placeholder("Name")
+                .aim(first)
+
+            TextField($note)
+                .accessibilityIdentifier("keyboard.note")
+                .accessibilityLabel("Note")
+                .placeholder("Note")
+
+            HStack {
+                Button("Focus first")
+                    .horizontalAlignment(.fill)
+                    .onClicked { try await first.focus() }
+
+                Button("Unfocus first")
+                    .horizontalAlignment(.fill)
+                    .onClicked { try await first.unfocus() }
+            }
+            .spacing(8)
+
+            Button("Close keyboard")
+                .onClicked {
+                    said = try await OnScreenKeyboard.hide()
+                        ? "Focus released"
+                        : "Nothing was focused"
+                }
+
+            Label(said.isEmpty ? "Nothing said yet." : said)
+                .fontSize(12)
+                .textColor(Palette.subtle)
+        }
+        .spacing(12)
+    }
+}

@@ -1,0 +1,40 @@
+generation 1 names +28
+Application 1 moves over 200ms cubicOut arranged(1)
+  Scene "1" arranged(1)
+    Window "main" arranged(1)
+      Page 2 arranged(1)
+        VStack 3 arranged(4)
+          Label 4
+            fontAttributes: enum bold(1)
+            fontSize: number 32
+            horizontalTextAlignment: enum center(1)
+            text: string "Welcome"
+          Label 5
+            fontSize: number 14
+            text: string "Body text"
+            textColor: color FF212121
+          Button 6 arranged(2)
+            background: color FF512BD4
+            cornerRadius: number 8
+            isEnabled: false
+            minimumHeight: number 44
+            padding: numbers 14,10,14,10
+            text: string "Save"
+            textColor: color FFFFFFFF
+            VisualState 7
+              group: name "CommonStates"
+              name: name "Normal"
+            VisualState 8 arranged(1)
+              group: name "CommonStates"
+              name: name "Disabled"
+              Setters 9
+                background: color FFC8C8C8
+                textColor: color FF141414
+          Border 10 arranged(1)
+            shape: values [enum 1, number 12]
+            stroke: values [enum 1, color FFC8C8C8]
+            strokeWidth: number 1
+            Label 11
+              fontSize: number 14
+              text: string "in a border"
+              textColor: color FF212121

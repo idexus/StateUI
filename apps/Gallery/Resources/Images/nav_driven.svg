@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- A value LENT and then CARRIED: the filled box of nav_state.svg, an arrow
+       leaving it, and a rail the value travels along under its own power - one
+       dot per frame, growing as it goes. The second layer, where the host moves
+       the value and nothing is described for it. -->
+  <g fill="#000000">
+    <rect x="4" y="7" width="15" height="15" rx="4"/>
+    <path d="M22 12h9v-4l7 6-7 6v-4h-9z"/>
+    <rect x="4" y="30" width="40" height="5" rx="2.5" opacity="0.45"/>
+    <circle cx="11" cy="32.5" r="2.5"/>
+    <circle cx="22" cy="32.5" r="3.5"/>
+    <circle cx="36" cy="32.5" r="5.5"/>
+  </g>
+</svg>

@@ -4,11 +4,11 @@
   <!-- A SIDEBAR: the panel that slides in from the left, drawn the way every
        desktop draws the button that shows it - an outline with a column split
        off the leading edge. Three bars would have said "a list"; this says
-       "the thing beside the page", which is what the flyout is.
+       "the thing beside the page", which is what the sidebar is.
 
        One path with three subpaths and `evenodd`, rather than a stroke: every
-       other icon here is a plain fill, and a fill is what MAUI's rasterizer is
-       known to draw at every size the app asks for. Odd crossings fill, so the
+       other icon here is a plain fill, and a fill draws the same at every size
+       the app asks for. Odd crossings fill, so the
        ring is the outer rectangle minus the inner one, and the divider - a
        rectangle INSIDE the hole - is filled again. -->
   <g fill="#FFFFFF" fill-rule="evenodd">

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Driven values - the category card the gallery opens with.</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#123B7A"/><stop offset="1" stop-color="#7CD4FF"/></linearGradient>
+<radialGradient id="s" cx="0.24" cy="0.18" r="0.85"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<rect width="400" height="560" fill="url(#s)"/>
+<g fill="#06203F"><rect x="60" y="168" width="96" height="96" rx="24"/><path d="M176 200h56v-26l44 38-44 38v-26h-56z"/><rect x="60" y="330" width="280" height="26" rx="13" opacity="0.42"/><circle cx="96" cy="343" r="16"/><circle cx="184" cy="343" r="24"/><circle cx="292" cy="343" r="38"/></g>
+</svg>

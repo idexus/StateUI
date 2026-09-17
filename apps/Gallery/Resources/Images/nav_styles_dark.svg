@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- The dark twin of nav_styles.svg: the same shape, drawn white. Edit both. -->
+  <!-- One description of a look, worn by every control of a type: a swatch
+       stack, three bars of one shape drawn from one declaration - and the brush
+       stroke that applied them. -->
+  <g fill="#FFFFFF">
+    <rect x="5" y="8" width="26" height="8" rx="4"/>
+    <rect x="5" y="20" width="26" height="8" rx="4" opacity="0.62"/>
+    <rect x="5" y="32" width="26" height="8" rx="4" opacity="0.34"/>
+    <path d="M37 6a4 4 0 0 1 4 4v18a5 5 0 0 1-10 0V10a4 4 0 0 1 4-4zm-1 28.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0z"/>
+  </g>
+</svg>

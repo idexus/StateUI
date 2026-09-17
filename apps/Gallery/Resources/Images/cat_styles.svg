@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 560" width="400" height="560"><title>Styles - the category card the gallery opens with.</title>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="#6A1B4D"/><stop offset="1" stop-color="#FF7AC8"/></linearGradient>
+<radialGradient id="s" cx="0.24" cy="0.18" r="0.85"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="400" height="560" fill="url(#g)"/>
+<rect width="400" height="560" fill="url(#s)"/>
+<g fill="#3A0B28"><rect x="72" y="176" width="180" height="54" rx="27"/><rect x="72" y="252" width="180" height="54" rx="27" opacity="0.62"/><rect x="72" y="328" width="180" height="54" rx="27" opacity="0.34"/><path d="M300 150a26 26 0 0 1 26 26v122a31 31 0 0 1-62 0V176a26 26 0 0 1 26-26zm-5 178a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"/></g>
+</svg>

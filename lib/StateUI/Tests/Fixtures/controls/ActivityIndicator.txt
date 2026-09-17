@@ -1,0 +1,4 @@
+generation 1 names +3
+ActivityIndicator 1
+  isRunning: true
+  tint: color FF6495ED

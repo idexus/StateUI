@@ -22,14 +22,14 @@ body:
     validations:
       required: true
 
-  - type: input
-    id: maui
+  - type: textarea
+    id: platforms
     attributes:
-      label: The MAUI member it stands for
+      label: Native platform evidence
       description: >
-        The API here is MAUI's, camelCased - so a name is looked up rather than
-        invented. Say which class and property, method or event this mirrors.
-      placeholder: Label.LineBreakMode
+        Name the equivalent capability in the applicable native host families,
+        including any semantic mismatch StateUI must resolve.
+      placeholder: AppKit NSTextField, UIKit UILabel, Android TextView...
     validations:
       required: true
 
