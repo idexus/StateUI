@@ -63,7 +63,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
     /// the same: the tier it wears is the whole of what it takes.
     @MainActor
     func testAnEllipseIsMadeAndDrawnFromItsTierAlone() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var ellipse = HostPatch(id: .manual("ellipse"), type: .ellipse)

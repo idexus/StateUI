@@ -10,7 +10,7 @@ import XCTest
 final class AppKitLabelViewTests: XCTestCase {
     @MainActor
     func testPlainLabelMapsTypographySpacingDecorationAndPadding() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties = [
@@ -114,7 +114,7 @@ final class AppKitLabelViewTests: XCTestCase {
 
     @MainActor
     func testFormattedSpansBecomeOneAttributedNativeString() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var first = HostPatch(id: .manual("first"), type: .span)
         first.properties = [
@@ -150,7 +150,7 @@ final class AppKitLabelViewTests: XCTestCase {
 
     @MainActor
     func testSparseSpanPatchLeavesEveryOtherRunUnchanged() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var first = HostPatch(id: .manual("first"), type: .span)
         first.properties = [.text: .string("A"), .textColor: .color(

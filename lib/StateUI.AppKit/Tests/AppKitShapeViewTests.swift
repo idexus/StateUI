@@ -132,7 +132,7 @@ final class AppKitShapeViewTests: XCTestCase {
 
     @MainActor
     func testHostPatchMapsShapeGeometryAndStrokeProperties() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var line = HostPatch(id: .manual("line"), type: .line)
@@ -156,7 +156,7 @@ final class AppKitShapeViewTests: XCTestCase {
 
     @MainActor
     func testHostPatchMapsTheStructuredShapeRenderTransform() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var line = HostPatch(id: .manual("line"), type: .line)
@@ -185,7 +185,7 @@ final class AppKitShapeViewTests: XCTestCase {
     @MainActor
     func testHostPatchStrokesEveryShapeAsItsPropertiesSay() throws {
         for (type, geometry) in Self.shapes {
-            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var shape = HostPatch(id: .manual("shape"), type: type)
             shape.properties = geometry.merging([
@@ -215,7 +215,7 @@ final class AppKitShapeViewTests: XCTestCase {
     @MainActor
     func testEveryShapeDrawsItsFillAndItsStroke() throws {
         for (type, geometry) in Self.shapes {
-            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var shape = HostPatch(id: .manual("shape"), type: type)
             shape.properties = geometry.merging([
@@ -260,7 +260,7 @@ final class AppKitShapeViewTests: XCTestCase {
         let room = NSRect(x: 0, y: 0, width: 200, height: 200)
 
         for (type, geometry) in authored {
-            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var fitted = HostPatch(id: .manual("fitted"), type: type)
             fitted.properties = geometry.merging([.aspect: .enumeration(Aspect.fit.rawValue)]) { $1 }
@@ -296,7 +296,7 @@ final class AppKitShapeViewTests: XCTestCase {
     /// corners stay square.
     @MainActor
     func testARectanglesCornerRadiusRoundsItsOutline() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var rounded = HostPatch(id: .manual("rounded"), type: .rectangle)
         rounded.properties[.cornerRadius] = .number(8)

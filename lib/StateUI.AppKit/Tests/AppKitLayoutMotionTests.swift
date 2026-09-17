@@ -47,7 +47,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     @MainActor
     func testAChildAPatchMovesTravelsToItsNewPlace() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -83,7 +83,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     @MainActor
     func testARoomThatResizesSnapsItsChildren() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -117,7 +117,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     @MainActor
     func testAStatedSizeArrivesWhileThePlacesItMovesTravel() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -145,7 +145,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     /// a walk would hand the reader a room nobody chose.
     @MainActor
     func testALayoutWhoseFramesAreReadPlacesItsChildrenAtOnce() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { 0 },
@@ -170,7 +170,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     @MainActor
     func testAChildThatJoinsAStandingLayoutFadesIn() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -203,7 +203,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     /// that joins it is simply there - which is what a list says of its rows.
     @MainActor
     func testALayoutToldToMoveNothingPlacesAtOnce() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { 0 },
@@ -230,7 +230,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     @MainActor
     func testALayoutThatSaysNothingTravelsTheApplicationsWay() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -270,7 +270,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     /// an element the tree no longer holds.
     @MainActor
     func testAChildThatLeavesEndsItsTrip() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { 0 },
@@ -295,7 +295,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     @MainActor
     func testAPlaceChangedMidWalkBendsFromWhereTheChildStands() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -333,7 +333,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
     /// fades in.
     @MainActor
     func testUnderReducedMotionEveryChildArrives() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { 0 },

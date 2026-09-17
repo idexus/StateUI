@@ -11,7 +11,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testAWindowPresentsItsPageExactlyOnce() {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -26,7 +26,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testNavigationMovesReportEachPagePhaseInDeterministicOrder() {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -54,7 +54,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testNavigationBackReportsTheCommittedSurvivingDepth() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -79,7 +79,7 @@ final class AppKitPageTests: XCTestCase {
     /// navigational toolbar item, labelled by the page it returns to.
     @MainActor
     func testTheWindowToolbarCarriesTheTopPageAndTheWayBack() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -112,7 +112,7 @@ final class AppKitPageTests: XCTestCase {
     /// material.
     @MainActor
     func testANavigationStackStandsUnderTheWindowsNativeToolbar() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -144,7 +144,7 @@ final class AppKitPageTests: XCTestCase {
     /// window's own background back.
     @MainActor
     func testAWrittenBarColourPaintsTheBandAboveThePage() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -191,7 +191,7 @@ final class AppKitPageTests: XCTestCase {
     /// foreground the stack writes for its bars.
     @MainActor
     func testAWrittenBarForegroundColoursThePagesTitleOnTheBand() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -214,7 +214,7 @@ final class AppKitPageTests: XCTestCase {
     /// paints it, and the sidebar keeps its own glass.
     @MainActor
     func testAWrittenBarColourPaintsOnlyTheSplitDetailsBand() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -246,7 +246,7 @@ final class AppKitPageTests: XCTestCase {
     /// the window takes the system's background back when the colour goes.
     @MainActor
     func testAWrittenBarColourIsTheWindowsBackgroundToo() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -281,7 +281,7 @@ final class AppKitPageTests: XCTestCase {
     /// goes when nothing asks for it any more.
     @MainActor
     func testATranslucentWindowLaysItsMaterialUnderThePage() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -311,7 +311,7 @@ final class AppKitPageTests: XCTestCase {
     /// opaque window again paints the band and frames the sidebar in the colour.
     @MainActor
     func testATranslucentWindowsBarColourTintsItsMaterial() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -349,7 +349,7 @@ final class AppKitPageTests: XCTestCase {
     /// colour with an alpha shows the desktop through all of it.
     @MainActor
     func testATranslucentWindowsTintCoversItsWholeMaterial() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -377,7 +377,7 @@ final class AppKitPageTests: XCTestCase {
     /// sidebar and the window's own edges.
     @MainActor
     func testTheDetailMeetsAFloatingSidebar() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -410,7 +410,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testTabSelectionChangesVisibilityWithoutInventingNavigation() {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -433,7 +433,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testReaderTabSelectionReportsTheSelectedIndexOnce() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -463,7 +463,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testAWindowsTabbedViewSelectsFromTheRowBeneathItsToolbar() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -511,7 +511,7 @@ final class AppKitPageTests: XCTestCase {
     /// and renders again.
     @MainActor
     func testAReaderChosenTabRenamesTheWindowAtOnce() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -543,7 +543,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testATabbedPageOnTheDetailsStackKeepsBelowItsTabRow() throws {
         guard #available(macOS 26, *) else { throw XCTSkip("the row is the column's from macOS 26") }
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -592,7 +592,7 @@ final class AppKitPageTests: XCTestCase {
     /// tabs on its content.
     @MainActor
     func testATabbedDetailShowsItsTabsBeneathTheToolbar() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -650,7 +650,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testATabbedViewInsideATabShowsItsTabsOnItsContent() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -711,7 +711,7 @@ final class AppKitPageTests: XCTestCase {
     /// or an arrangement of pages: its caption and its glyph.
     @MainActor
     func testATabIsNamedByTheTitleAndIconOfWhatItShows() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -751,7 +751,7 @@ final class AppKitPageTests: XCTestCase {
     /// accessibility identifier on the native view that presents them.
     @MainActor
     func testAnArrangementCarriesItsAccessibilityIdentifier() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -783,7 +783,7 @@ final class AppKitPageTests: XCTestCase {
     /// background colour behind it.
     @MainActor
     func testAPagesPaddingAndBackgroundReachItsView() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -810,7 +810,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testChangingAHiddenTabStackReportsNoPageLifecycle() {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -839,7 +839,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testFlyoutVisibilityDoesNotRecreateOrHideItsDetail() {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -873,7 +873,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testAReplacedSplitDetailIsPresented() {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -906,7 +906,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testAReplacedVisibleSidebarIsPresented() {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -928,7 +928,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testReaderFlyoutToggleReportsItsSettledValueOnce() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -952,7 +952,7 @@ final class AppKitPageTests: XCTestCase {
 
     @MainActor
     func testFlyoutIsPresentedByANativeSplitViewController() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -990,7 +990,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testTheReaderMayHideTheSidebarOfAWideWindow() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -1018,7 +1018,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testWideFlyoutUsesTheNativeSidebarAndSettlesItsBinding() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -1042,7 +1042,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testNavigationUsesThePagesTitleViewAndToolbarItems() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -1089,7 +1089,7 @@ final class AppKitPageTests: XCTestCase {
     /// toolbar's own overflow menu.
     @MainActor
     func testThePagesActionsFollowTheirOrderAndPriorityInTheToolbar() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -1154,7 +1154,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testVisiblePageBuildsNativeNestedMenuItems() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -1198,7 +1198,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testModalStackMovesVisibilityBetweenRootAndTopSheet() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -1228,7 +1228,7 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testReaderDismissalReportsTheSurvivingModalDepth() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })

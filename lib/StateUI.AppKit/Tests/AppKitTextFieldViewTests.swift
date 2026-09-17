@@ -13,7 +13,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
     /// describes a caret position: only a change of that position moves it.
     @MainActor
     func testReapplyingTheTypedTextKeepsTheReadersCaret() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var entry = HostPatch(id: .manual("entry"), type: .textField)
         entry.properties[.text] = .string("")

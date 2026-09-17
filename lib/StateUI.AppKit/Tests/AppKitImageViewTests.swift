@@ -90,7 +90,7 @@ final class AppKitImageViewTests: XCTestCase {
         let representation = try XCTUnwrap(bitmap.representation(using: .png, properties: [:]))
         try representation.write(to: directory.appendingPathComponent("picture.png"))
 
-        let renderer = AppKitRenderer(resourceDirectory: directory, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: directory, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var picture = HostPatch(id: .manual("picture"), type: .image)
         picture.properties = [

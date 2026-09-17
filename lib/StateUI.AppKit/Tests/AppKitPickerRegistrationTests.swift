@@ -42,7 +42,7 @@ final class AppKitPickerRegistrationTests: XCTestCase {
     @MainActor
     func testADatePickerWearsItsDateAndReportsTheReadersChoice() throws {
         var reports: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reports.append(($0, $1)) })
@@ -67,7 +67,7 @@ final class AppKitPickerRegistrationTests: XCTestCase {
     @MainActor
     func testATimePickerWearsItsTimeAndReportsTheReadersChoice() throws {
         var reports: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reports.append(($0, $1)) })
@@ -92,7 +92,7 @@ final class AppKitPickerRegistrationTests: XCTestCase {
     /// applier reads beside the date itself.
     @MainActor
     func testADatePickersRangeComesFromItsOwnMembers() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var due = HostPatch(id: .manual("due"), type: .datePicker)

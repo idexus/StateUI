@@ -11,7 +11,7 @@ final class AppKitFrameTests: XCTestCase {
     @MainActor
     func testFrameReportUsesParentWindowAndSafeAreaCoordinates() throws {
         var reports: [[HostValue]] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, payload in reports.append(payload) })
@@ -46,7 +46,7 @@ final class AppKitFrameTests: XCTestCase {
     @MainActor
     func testAnAncestorMoveQueuesAFrameReportForAStationaryChild() throws {
         var reports: [[HostValue]] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, payload in reports.append(payload) })

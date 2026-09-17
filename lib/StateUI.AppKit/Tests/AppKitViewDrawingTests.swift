@@ -14,7 +14,7 @@ import XCTest
 final class AppKitViewDrawingTests: XCTestCase {
     @MainActor
     func testADrawingTransformSurvivesItsViewsFrameMoving() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.applyForTesting(tree(stack(box(rotation: 30))))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
@@ -27,7 +27,7 @@ final class AppKitViewDrawingTests: XCTestCase {
 
     @MainActor
     func testARotationPivotsAboutTheAnchor() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var cornered = box(id: "cornered", rotation: 90)
         cornered.properties[.pivotX] = .number(0)
@@ -45,7 +45,7 @@ final class AppKitViewDrawingTests: XCTestCase {
 
     @MainActor
     func testAPlacementIsDrawnOverTheViewsOwnTransform() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var own = box(rotation: 10)
         own.properties[.opacity] = .number(0.5)
@@ -84,7 +84,7 @@ final class AppKitViewDrawingTests: XCTestCase {
             .sorted()
 
         for node in drawn {
-            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             var control = HostPatch(id: .manual("control"), type: node)
             control.properties[.rotation] = .number(30)
             renderer.applyForTesting(pages.contains(node) ? windowTree(page: control) : tree(control))
@@ -106,7 +106,7 @@ final class AppKitViewDrawingTests: XCTestCase {
     /// the view.
     @MainActor
     func testEveryDrawingPropertyReachesTheViewsLayer() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         func drawnBox(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
             var box = HostPatch(id: .manual(id), type: .colorBox)

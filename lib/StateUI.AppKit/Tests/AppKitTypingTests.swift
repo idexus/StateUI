@@ -16,7 +16,7 @@ final class AppKitTypingTests: XCTestCase {
     func testEveryBoundTextControlKeepsEachKeystroke() throws {
         let form = TypingForm()
         stateUIUseApp(TypingApp(form: form))
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()
 

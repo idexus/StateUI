@@ -15,7 +15,7 @@ final class AppKitMeasurementTests: XCTestCase {
     @MainActor
     func testASizeFrameDoesNotMeasureUnchangedTextAgain() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -48,7 +48,7 @@ final class AppKitMeasurementTests: XCTestCase {
 
     @MainActor
     func testAPresentationOnlyJourneyFrameArrangesAndMeasuresNothing() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var card = HostPatch(id: .manual("card"), type: .colorBox)
@@ -96,7 +96,7 @@ final class AppKitMeasurementTests: XCTestCase {
 
     @MainActor
     func testChangedNestedTextStillGrowsEveryAncestor() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(samplePage())
@@ -122,7 +122,7 @@ final class AppKitMeasurementTests: XCTestCase {
     @MainActor
     func testASpanTransitionReachesTheLabelThatPresentsIt() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -168,7 +168,7 @@ final class AppKitMeasurementTests: XCTestCase {
 
     @MainActor
     func testReapplyingAnUnchangedImageSourceKeepsTheNativeImage() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var image = HostPatch(id: .manual("image"), type: .image)
@@ -188,7 +188,7 @@ final class AppKitMeasurementTests: XCTestCase {
     @MainActor
     func testAPlacedChildsOwnFrameKeepsItsPlacement() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -238,7 +238,7 @@ final class AppKitMeasurementTests: XCTestCase {
     /// run of cards turned by the hand does on every frame.
     @MainActor
     func testAPlacementRunFrameMovesItsChildrenAndMeasuresNothingElse() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var card = HostPatch(id: .manual("card"), type: .colorBox)

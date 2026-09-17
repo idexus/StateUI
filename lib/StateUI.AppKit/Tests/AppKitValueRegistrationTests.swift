@@ -35,7 +35,7 @@ final class AppKitValueRegistrationTests: XCTestCase {
     /// fit inside it, and follows the tree when either changes.
     @MainActor
     func testASliderShowsItsRangeAndItsValue() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var slider = HostPatch(id: .manual("slider"), type: .slider)
@@ -61,7 +61,7 @@ final class AppKitValueRegistrationTests: XCTestCase {
     /// hand on the thumb is never argued with.
     @MainActor
     func testASliderWhoseValueTheTreeLeavesAloneKeepsIts() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var slider = HostPatch(id: .manual("slider"), type: .slider)

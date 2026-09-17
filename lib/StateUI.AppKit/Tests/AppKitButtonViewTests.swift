@@ -121,7 +121,7 @@ final class AppKitButtonViewTests: XCTestCase {
     /// or is fitted - which is also what a covering aspect does on a button.
     @MainActor
     func testAButtonsPaddingOutlineAndIconAspectComeThroughTheHost() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         func button(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
             var button = HostPatch(id: .manual(id), type: .button)

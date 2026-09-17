@@ -39,7 +39,7 @@ final class AppKitLeaveTests: XCTestCase {
     /// any of them does, and goes when the last one leaves.
     @MainActor
     func testAChannelGoesWhenTheLastControlWearingItLeaves() {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { 0 },
@@ -62,7 +62,7 @@ final class AppKitLeaveTests: XCTestCase {
     @MainActor
     func testAMovingChannelWhoseLastControlLeftLandsAndThenGoes() {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },

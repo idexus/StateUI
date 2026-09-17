@@ -24,7 +24,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAPropertyTransitionBeginsAtItsStandingValueAndLandsExactly() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -61,7 +61,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testANewMovingPropertyStartsAtItsNativeDefault() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -86,7 +86,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testNewPlanarTransformPropertiesStartAtIdentityTogether() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -117,7 +117,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testNewStackGeometryStartsAtZeroTogether() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -153,7 +153,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testOnePropertyFrameArrangesEachChangedAncestorOnce() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -207,7 +207,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAnOrdinaryViewMotionFrameDoesNotResynchronizeTheWindowShell() {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -246,7 +246,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAPropertySizeMotionReusesItsNativeConstraintAcrossFrames() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -281,7 +281,7 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testDrivenStatesFromOneFrameArrangeTheirCommonAncestorOnce() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         func child(_ id: String, state: Int32) -> HostPatch {
@@ -324,7 +324,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAnUnrelatedSparsePropertyLeavesMotionRunning() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -358,7 +358,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAPropertyMotionDoesNotRewriteTheReadersScrollPosition() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -398,7 +398,7 @@ final class AppKitMotionTests: XCTestCase {
     func testReducedMotionAssignsThePropertyTargetImmediately() throws {
         var initial = HostPatch(id: .manual("label"), type: .label)
         initial.properties[.opacity] = .number(0)
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { 0 },
@@ -420,7 +420,7 @@ final class AppKitMotionTests: XCTestCase {
     func testEnablingReducedMotionLandsAnActivePropertyTransition() throws {
         var now = 0.0
         var reduced = false
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -452,7 +452,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAPropertyWithoutATransitionInterruptsTheActiveChannel() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -487,7 +487,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testClearingAPropertyInterruptsMotionAndRestoresItsNativeDefault() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -522,7 +522,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAPropertyRetargetCarriesItsCurrentVelocity() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -562,7 +562,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testEqualAuthoredIDsInDifferentBranchesOwnDifferentChannels() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -618,7 +618,7 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testRemovingAMovingElementDropsItsHostChannel() {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { 0 },
@@ -647,7 +647,7 @@ final class AppKitMotionTests: XCTestCase {
 
     @MainActor
     func testReplacingAMovingElementDoesNotAdoptItsPresentation() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { 0 },
@@ -679,7 +679,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testANumberListKeepsItsShapeWhileItMoves() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -707,7 +707,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testNewStructuredCornerRadiiStartAtZeroWithoutChangingShape() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -735,7 +735,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testASliderTransitionBeginsAtTheReadersLiveNativeValue() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -764,7 +764,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAProgressTransitionBeginsAtItsClampedNativeValue() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -792,7 +792,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAWindowWidthTransitionStartsAtTheReadersLiveContentSizeAndPreservesHeight() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -824,7 +824,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAWindowPositionAxisMovesIndependentlyFromTheLiveFrame() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -852,7 +852,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testAStructuredShapeTransformIsPresentedAtEachMotionFrame() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },
@@ -899,7 +899,7 @@ final class AppKitMotionTests: XCTestCase {
     @MainActor
     func testNewLineGeometryAndStrokeStartAtTheirShapeDefaults() throws {
         var now = 0.0
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             clock: { now },

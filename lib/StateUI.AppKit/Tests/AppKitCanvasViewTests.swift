@@ -104,7 +104,7 @@ final class AppKitCanvasViewTests: XCTestCase {
     @MainActor
     func testHostPatchMapsDrawingAndInteractionEvents() throws {
         var reports: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reports.append(($0, $1)) })

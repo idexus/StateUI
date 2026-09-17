@@ -60,7 +60,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
     /// says rather than as AppKit would leave it.
     @MainActor
     func testAScrollViewTakesItsMembersAndRestsAtItsContractsDefault() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         let bare = HostPatch(id: .manual("bare"), type: .scrollView)
@@ -89,7 +89,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
     /// own edge, and follows the tree when either changes.
     @MainActor
     func testAStackTakesItsSpacingAndPadding() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
@@ -115,7 +115,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
     /// travel as, and the spacings between them.
     @MainActor
     func testAGridTakesItsRowsColumnsAndSpacings() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var grid = HostPatch(id: .manual("grid"), type: .grid)

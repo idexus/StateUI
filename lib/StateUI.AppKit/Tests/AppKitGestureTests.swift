@@ -11,7 +11,7 @@ final class AppKitGestureTests: XCTestCase {
     @MainActor
     func testPanPinchAndPointerUseTheStableStateUIPayloads() throws {
         var reports: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reports.append(($0, $1)) })
@@ -67,7 +67,7 @@ final class AppKitGestureTests: XCTestCase {
             nil,
             with: ColorBox(.transparent).panX(across.projectedValue).body,
             changed: [])
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.applyForTesting(tree(rendered.patch))
 
@@ -82,7 +82,7 @@ final class AppKitGestureTests: XCTestCase {
 
     @MainActor
     func testRemovingPointerEventsDetachesTheNativeRecognizer() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var box = HostPatch(id: .manual("box"), type: .colorBox)
         box.events = .replace([.pointerEntered: 20])
@@ -103,7 +103,7 @@ final class AppKitGestureTests: XCTestCase {
     @MainActor
     func testSwipeReportsOneDominantAllowedDirectionBeyondItsThreshold() throws {
         var reports: [[HostValue]] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, payload in reports.append(payload) })

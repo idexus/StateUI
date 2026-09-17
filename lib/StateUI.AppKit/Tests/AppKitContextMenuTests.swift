@@ -11,7 +11,7 @@ final class AppKitContextMenuTests: XCTestCase {
     @MainActor
     func testAViewOwnsItsNativeNestedContextMenuAndDispatchesTheChosenItem() throws {
         var reports: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reports.append(($0, $1)) })
@@ -46,7 +46,7 @@ final class AppKitContextMenuTests: XCTestCase {
     @MainActor
     func testSparseMenuChangesKeepItsNativeOwnerAndRemovalDetachesIt() throws {
         var reports: [Int32] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { handler, _ in reports.append(handler) })
@@ -91,7 +91,7 @@ final class AppKitContextMenuTests: XCTestCase {
     /// disabled as a whole.
     @MainActor
     func testAnEntrysIconStateAndIdentifierReachItsNativeItem() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var delete = HostPatch(id: .manual("delete"), type: .menuItem)
         delete.properties = [

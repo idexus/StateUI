@@ -10,7 +10,7 @@ import XCTest
 final class AppKitRecyclingTests: XCTestCase {
     @MainActor
     func testARecyclableRowStaysAttachedAndItsWholeSubtreeChangesIdentity() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(rows: [
@@ -48,7 +48,7 @@ final class AppKitRecyclingTests: XCTestCase {
     @MainActor
     func testAnAdoptedControlReportsOnlyTheArrivingRowsHandler() throws {
         var reports: [Int32] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { id, _ in reports.append(id) })
@@ -76,7 +76,7 @@ final class AppKitRecyclingTests: XCTestCase {
 
     @MainActor
     func testZeroOrDifferentShapesNeverAdoptAWaitingRow() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(rows: [row("one", text: "One", shape: 11)]))
@@ -94,7 +94,7 @@ final class AppKitRecyclingTests: XCTestCase {
 
     @MainActor
     func testThePoolIsBoundedAndAnswersMostRecentlyRetiredFirst() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         let rows = (0..<40).map { row("\($0)", text: "\($0)", shape: 99) }
 

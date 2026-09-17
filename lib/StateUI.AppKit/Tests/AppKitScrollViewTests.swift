@@ -110,7 +110,7 @@ final class AppKitScrollViewTests: XCTestCase {
 
     @MainActor
     func testHostUsesThePublicScrollOrientationValuesDirectly() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -245,7 +245,7 @@ final class AppKitScrollViewTests: XCTestCase {
     @MainActor
     func testHostPatchReportsChangedAxesAndRestExactlyOnce() throws {
         var reports: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reports.append(($0, $1)) })
@@ -288,7 +288,7 @@ final class AppKitScrollViewTests: XCTestCase {
     func testAMovementNoLiveScrollBracketsRestsOnTheFrameClock() throws {
         var now = 0.0
         var reports: [Int32] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { handler, _ in reports.append(handler) },

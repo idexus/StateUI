@@ -30,7 +30,7 @@ final class AppKitSharedMemberTests: XCTestCase {
         ]
 
         for (type, properties, isEnabled) in controls {
-            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var disabled = HostPatch(id: .manual("control"), type: type)
             disabled.properties = properties
@@ -66,7 +66,7 @@ final class AppKitSharedMemberTests: XCTestCase {
         ]
 
         for (type, properties, nativeFont) in controls {
-            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var control = HostPatch(id: .manual("control"), type: type)
             control.properties = properties.merging([
@@ -110,7 +110,7 @@ final class AppKitSharedMemberTests: XCTestCase {
         ]
 
         for (type, properties, nativeColour) in controls {
-            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var control = HostPatch(id: .manual("control"), type: type)
             control.properties = properties
@@ -134,7 +134,7 @@ final class AppKitSharedMemberTests: XCTestCase {
         ]
 
         for type in layered + [.colorBox] {
-            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var view = HostPatch(id: .manual("view"), type: type)
             view.properties[.background] = .color(red: 51, green: 102, blue: 153, alpha: 255)
@@ -158,7 +158,7 @@ final class AppKitSharedMemberTests: XCTestCase {
         ]
 
         for type in views {
-            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             func placed(_ id: String, ignoresInput: Bool) -> HostPatch {
                 var view = HostPatch(id: .manual(id), type: type)
@@ -196,7 +196,7 @@ final class AppKitSharedMemberTests: XCTestCase {
     @MainActor
     func testALayoutThatLetsInputThroughStillHasItsChildrenHit() throws {
         for type in [NodeType.vStack, .hStack, .grid, .absoluteLayout] {
-            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var child = HostPatch(id: .manual("child"), type: .colorBox)
             child.properties = [

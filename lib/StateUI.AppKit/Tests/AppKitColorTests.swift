@@ -12,7 +12,7 @@ import XCTest
 final class AppKitColorTests: XCTestCase {
     @MainActor
     func testAnAuthoredColorReachesAppKitInSRGB() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var box = HostPatch(id: .manual("box"), type: .colorBox)
         box.properties[.color] = .color(red: 128, green: 64, blue: 32, alpha: 255)

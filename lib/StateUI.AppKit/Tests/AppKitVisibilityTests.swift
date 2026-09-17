@@ -22,7 +22,7 @@ final class AppKitVisibilityTests: XCTestCase {
 
     @MainActor
     private func renderer(_ now: @escaping () -> Double) -> AppKitRenderer {
-        AppKitRenderer(resourceDirectory: nil, presentsWindows: false, clock: now, reducesMotion: { false })
+        testRenderer(resourceDirectory: nil, presentsWindows: false, clock: now, reducesMotion: { false })
     }
 
     /// A view hidden fades to nothing, deaf to input on its way, and is hidden

@@ -22,7 +22,7 @@ final class AppKitPatchIntakeTests: XCTestCase {
     /// its partial description.
     @MainActor
     func testASparseMessageNamingAChildTheTreeDoesNotHoldIsRefused() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.applyForTesting(stack(["a", "b"]))
         XCTAssertGreaterThan(renderer.baselineForTesting, 0, "a message applied whole is claimed")

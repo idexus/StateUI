@@ -40,7 +40,7 @@ final class AppKitRadioButtonViewTests: XCTestCase {
     @MainActor
     func testNamedGroupReportsOldFalseBeforeNewTrueAcrossContainers() {
         var reports: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reports.append(($0, $1)) })
@@ -58,7 +58,7 @@ final class AppKitRadioButtonViewTests: XCTestCase {
     /// kept around the native control.
     @MainActor
     func testARadioButtonsTextCaseAndPaddingComeThroughTheHost() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var radio = HostPatch(id: .manual("radio"), type: .radioButton)
         radio.properties = [

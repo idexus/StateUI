@@ -11,7 +11,7 @@ final class AppKitTitleBarTests: XCTestCase {
     @MainActor
     func testTitleBarUsesANativeToolbarWithInteractiveStateUISlots() throws {
         var reported: [(Int32, [HostValue])] = []
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { reported.append(($0, $1)) })
@@ -48,7 +48,7 @@ final class AppKitTitleBarTests: XCTestCase {
     /// toolbar's material it could vanish.
     @MainActor
     func testTitleBarTitleStandsAtTheTrailingEdgeInSystemColours() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -75,7 +75,7 @@ final class AppKitTitleBarTests: XCTestCase {
 
     @MainActor
     func testRemovingTitleBarLeavesThePlainNativeWindowChrome() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -102,7 +102,7 @@ final class AppKitTitleBarTests: XCTestCase {
     /// takes its foreground there.
     @MainActor
     func testAWrittenTitleBarBackgroundPaintsTheBandAndColoursItsTitle() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -124,7 +124,7 @@ final class AppKitTitleBarTests: XCTestCase {
 
     @MainActor
     func testTitleBarUpdatesInPlace() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -150,7 +150,7 @@ final class AppKitTitleBarTests: XCTestCase {
 
     @MainActor
     func testTitleBarKeepsPageChromeInsideTheNativeContentLayout() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -170,7 +170,7 @@ final class AppKitTitleBarTests: XCTestCase {
 
     @MainActor
     func testAddingTitleBarRelaysOutTheExistingPageInsideNativeContent() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })
@@ -194,7 +194,7 @@ final class AppKitTitleBarTests: XCTestCase {
 
     @MainActor
     func testTitleBarContainsNestedFlyoutAndScrollInsideNativeContent() throws {
-        let renderer = AppKitRenderer(
+        let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
             eventSink: { _, _ in })

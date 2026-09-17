@@ -78,7 +78,7 @@ extension AppKitRenderer {
     @MainActor
     static func running(_ page: @escaping @Sendable () -> any Page) -> AppKitRenderer {
         stateUIUseApp(OneWindowApplication(page: page))
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         renderer.startForTesting()
         return renderer
     }

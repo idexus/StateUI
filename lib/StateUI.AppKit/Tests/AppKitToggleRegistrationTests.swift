@@ -35,7 +35,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     /// and follows the tree when it says otherwise.
     @MainActor
     func testASwitchShowsWhatTheTreeSays() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var on = HostPatch(id: .manual("toggle"), type: .switch)
@@ -61,7 +61,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     /// number.
     @MainActor
     func testACheckBoxTakesItsValueAndItsTint() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var checked = HostPatch(id: .manual("box"), type: .checkBox)
@@ -105,7 +105,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     /// pass, whatever had changed.
     @MainActor
     func testAToggleNobodyTakesKeepsTheReadersValueUntilTheTreeSaysOtherwise() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var off = HostPatch(id: .manual("toggle"), type: .switch)
@@ -151,7 +151,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     /// asks for, and wears its check.
     @MainActor
     func testARadioButtonShowsItsCaptionAndItsCheck() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var large = HostPatch(id: .manual("large"), type: .radioButton)
@@ -171,7 +171,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     /// answers for the set.
     @MainActor
     func testPickingOneOfASetClearsTheOthers() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var small = HostPatch(id: .manual("small"), type: .radioButton)

@@ -15,7 +15,7 @@ final class AppKitPhaseTests: XCTestCase {
     func testAPushedPageSeesItsArrivalAndItsNavigation() {
         let stack = PhaseStack()
         stateUIUseApp(PhaseApp(stack: stack))
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()
 

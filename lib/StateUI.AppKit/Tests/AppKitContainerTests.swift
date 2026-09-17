@@ -124,7 +124,7 @@ final class AppKitContainerTests: XCTestCase {
 
     @MainActor
     func testHStackGivesAPaddedLabelItsCompleteNativeTextWidth() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties = [
@@ -150,7 +150,7 @@ final class AppKitContainerTests: XCTestCase {
 
     @MainActor
     func testAWidthConstrainedNestedStackKeepsWrappedTextInsideItsBorder() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var label = HostPatch(id: .manual("label"), type: .label)
@@ -183,7 +183,7 @@ final class AppKitContainerTests: XCTestCase {
 
     @MainActor
     func testAHostDrivenChildHeightRefreshesItsAncestorLayoutItem() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         let binding = HostStateBinding(state: 71, mode: .inOut, kind: .property)
 
@@ -230,7 +230,7 @@ final class AppKitContainerTests: XCTestCase {
 
     @MainActor
     func testANegativeSizeRequestMeansNoExplicitNativeExtent() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties = [
@@ -258,7 +258,7 @@ final class AppKitContainerTests: XCTestCase {
 
     @MainActor
     func testAnExplicitExtentIsClampedToItsAuthoredBounds() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties = [
@@ -285,7 +285,7 @@ final class AppKitContainerTests: XCTestCase {
 
     @MainActor
     func testAFillAlignmentStillRespectsAMaximumExtent() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties = [
@@ -318,7 +318,7 @@ final class AppKitContainerTests: XCTestCase {
         ]
 
         for (container, origin) in expected {
-            let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var box = HostPatch(id: .manual("box"), type: .colorBox)
             box.properties = [.width: .number(44), .height: .number(20)]
@@ -338,7 +338,7 @@ final class AppKitContainerTests: XCTestCase {
 
     @MainActor
     func testAMinimumExtentRaisesTheNativeMeasuredSize() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var label = HostPatch(id: .manual("label"), type: .label)
         label.properties = [
@@ -641,7 +641,7 @@ final class AppKitContainerTests: XCTestCase {
             .padding: .numbers([5, 3, 11, 7]),
         ]
         scroll.children = .arranged([box("wide", [.width: .number(500), .height: .number(36)])])
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.applyForTesting(tree(scroll))
 
@@ -660,7 +660,7 @@ final class AppKitContainerTests: XCTestCase {
     /// A renderer showing `layout` arranged in a room of `size`.
     @MainActor
     private func arranged(_ layout: HostPatch, in size: NSSize) -> AppKitRenderer {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         renderer.applyForTesting(tree(layout))
         if let native = renderer.viewForTesting(id: layout.id) {
             native.frame = NSRect(origin: .zero, size: size)

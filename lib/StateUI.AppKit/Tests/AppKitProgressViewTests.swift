@@ -13,7 +13,7 @@ final class AppKitProgressViewTests: XCTestCase {
     /// view's, and neither writes the other.
     @MainActor
     func testAnActivityIndicatorIsShownOnlyWhileVisibleAndRunning() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var stopped = HostPatch(id: .manual("activity"), type: .activityIndicator)
         stopped.properties[.isRunning] = .bool(false)

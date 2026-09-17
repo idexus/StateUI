@@ -39,7 +39,7 @@ final class AppKitFieldRegistrationTests: XCTestCase {
     /// binding is not written onto the control: the control is the source.
     @MainActor
     func testAFieldWhoseTextIsCarriedInIsNotWrittenFromTheTree() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var entry = HostPatch(id: .manual("entry"), type: .textField)
@@ -60,7 +60,7 @@ final class AppKitFieldRegistrationTests: XCTestCase {
     /// reaches the control.
     @MainActor
     func testAFieldNothingCarriesTakesTheTreesWords() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var entry = HostPatch(id: .manual("entry"), type: .textField)
@@ -82,7 +82,7 @@ final class AppKitFieldRegistrationTests: XCTestCase {
     /// whether it is a password, read only, or enabled.
     @MainActor
     func testAFieldTakesTheMembersOfTheTiersItWears() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var entry = HostPatch(id: .manual("entry"), type: .textField)
@@ -102,7 +102,7 @@ final class AppKitFieldRegistrationTests: XCTestCase {
     /// A search field's words reach it the same way, through the same members.
     @MainActor
     func testASearchFieldTakesItsWordsAndPlaceholder() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var search = HostPatch(id: .manual("search"), type: .searchField)

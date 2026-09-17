@@ -27,7 +27,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
     /// told, and shows none once the value is no longer described.
     @MainActor
     func testAProgressBarShowsItsProgressAndNoneOnceCleared() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var bar = HostPatch(id: .manual("bar"), type: .progressBar)
@@ -48,7 +48,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
     /// while it is told it runs.
     @MainActor
     func testAnActivityIndicatorSpinsWhileItRuns() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var running = HostPatch(id: .manual("activity"), type: .activityIndicator)
@@ -72,7 +72,7 @@ final class AppKitIndicatorRegistrationTests: XCTestCase {
     /// started only for the work.
     @MainActor
     func testAnIndicatorMadeStillStartsWhenTheTreeSaysItRuns() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         renderer.applyForTesting(tree(HostPatch(id: .manual("activity"), type: .activityIndicator)))

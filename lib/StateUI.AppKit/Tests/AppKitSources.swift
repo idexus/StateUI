@@ -31,6 +31,26 @@ enum AppKitSources {
 
         return found.sorted { $0.name < $1.name }
     }
+
+    /// Every Swift source of this suite, by its file name, sorted - read the
+    /// same way, and refused the same way when it reads almost nothing.
+    static func tests() throws -> [(name: String, text: String)] {
+        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        var found: [(name: String, text: String)] = []
+
+        guard let walk = FileManager.default.enumerator(atPath: root.path) else {
+            throw WalkReadAlmostNothing(root: root.path, read: 0)
+        }
+
+        for case let path as String in walk where path.hasSuffix(".swift") {
+            let text = try String(contentsOf: root.appendingPathComponent(path), encoding: .utf8)
+            found.append((name: URL(fileURLWithPath: path).lastPathComponent, text: text))
+        }
+
+        guard found.count > 25 else { throw WalkReadAlmostNothing(root: root.path, read: found.count) }
+
+        return found.sorted { $0.name < $1.name }
+    }
 }
 
 /// A walk of the host's sources that read almost nothing: its directory moved,

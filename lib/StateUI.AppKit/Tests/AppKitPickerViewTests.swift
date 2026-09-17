@@ -188,7 +188,7 @@ final class AppKitPickerViewTests: XCTestCase {
     /// of its items.
     @MainActor
     func testAPickersTextAlignmentComesThroughTheHost() throws {
-        let renderer = AppKitRenderer(resourceDirectory: nil, presentsWindows: false)
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var picker = HostPatch(id: .manual("picker"), type: .picker)
         picker.properties = [
