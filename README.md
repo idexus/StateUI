@@ -83,6 +83,19 @@ npm run package
 code --install-extension stateui-*.vsix
 ```
 
+For the .NET MAUI host - Android, iOS, Mac Catalyst, Windows, and Linux -
+install the .NET 10 SDK, the MAUI workload (everywhere except Linux, which has
+none), and the **.NET MAUI** extension (Microsoft), which brings the device
+picker and the C# debugger. The AppKit host needs only Xcode.
+
+```bash
+dotnet workload install maui
+code --install-extension ms-dotnettools.dotnet-maui
+```
+
+[MAUI host](docs/maui-host.md#requirements) lists what each platform needs
+besides, such as the Android SDK or GTK 4 on Linux.
+
 Then open the repository in VS Code:
 
 1. Choose the host in the status bar - **AppKit** or **.NET MAUI** - and the
