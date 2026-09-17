@@ -131,18 +131,28 @@ final class CycleBoard: @unchecked Sendable {
     /// with a fresh waiter, and an equal setpoint would otherwise cross as
     /// nothing at all.
     func write(_ bytes: [UInt8], to storage: HostStorage, forcing forced: UInt64 = 0) {
-        guarded.sync {
+        let waiting: Bool = guarded.sync {
             storage.stamp &+= 1
 
             if cycling {
                 storage.dirty |= HostStorage.lay(bytes, into: &storage.image) | forced
-                return
+                return false
             }
 
             var slot = storage.pending ?? storage.image
 
             storage.pendingMask |= HostStorage.lay(bytes, into: &slot) | forced
             storage.pending = slot
+            return true
+        }
+
+        // A WRITE WAITING FOR A CYCLE WAKES THE HOST, after it has landed and
+        // outside the hold. One made from the pool - a `Task.detached`, an
+        // `async let` child sending a movement - has no event, render or act
+        // after it to start a cycle, and nothing else would tell the host it
+        // is there. A write inside a cycle is taken by that cycle.
+        if waiting {
+            MainThreadExecutor.shared.poke()
         }
     }
 

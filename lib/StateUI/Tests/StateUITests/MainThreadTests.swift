@@ -196,6 +196,102 @@ final class MainThreadTests: XCTestCase {
         XCTAssertEqual(acts.map { $0.name }, ["persistValue"], "which then takes the save")
     }
 
+    /// A MOVEMENT started from the pool wakes the host, and what it wrote
+    /// reads as work.
+    ///
+    /// `move(to:)` books its waiter and writes the destination onto the
+    /// value's board: no job, no act, and no render where nobody reads the
+    /// value. The write waiting for a cycle is the work - counted by
+    /// `stateui_wait_work`, and announced after it lands, so the thread cannot
+    /// wake, count nothing and park again with the movement behind it. That
+    /// was the gallery's analog clock on the MAUI heads: its `async let`
+    /// hands started from the pool, and the clock stood on its first second
+    /// until the next event reached the app.
+    func testAMovementStartedFromThePoolWakesTheHostAndReadsAsWork() async throws {
+        let fade = wornOnAQuietBoard()
+
+        // The id the movement will book is the one after this one, answered
+        // below the way a host answers an arrival.
+        let before = Renderer.shared.book { _ in }
+        _ = Renderer.shared.dispatch(before)
+
+        let work = waitedFor {
+            Task.detached {
+                try await fade.projectedValue.journey.move(to: 0.1, .eased(400, .cubicOut))
+            }
+        }
+
+        XCTAssertNotNil(work, "the movement woke nobody - the host would not start it until the next event")
+        XCTAssertGreaterThan(
+            work ?? 0, 0,
+            "a movement with no job, no act and no render must read as work")
+
+        ReplyBuffer.current = .finished([.bool(true)])
+        XCTAssertTrue(Renderer.shared.dispatch(before - 1), "the movement booked the next waiter")
+    }
+
+    /// A value the host carries, written from the pool where nobody reads it,
+    /// wakes the host - the write waits on its board for a cycle, which is
+    /// work even where no render is asked for.
+    func testACarriedWriteFromThePoolWakesTheHostAndReadsAsWork() async throws {
+        let fade = wornOnAQuietBoard()
+
+        let work = waitedFor {
+            Task.detached { fade.wrappedValue = 0.5 }
+        }
+
+        XCTAssertNotNil(work, "the write woke nobody - the host would not carry it until the next event")
+        XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
+        XCTAssertGreaterThan(work ?? 0, 0, "and what waits on its board is work")
+    }
+
+    /// What the host's parked thread counts once `start` has run, or nil where
+    /// nothing woke it within five seconds.
+    ///
+    /// The waker is left with no signal pending first, so only what `start`
+    /// does can wake it; the thread is parked before `start` runs, as the
+    /// host's always is. A thread nothing woke stays parked when this returns
+    /// nil, and takes the next wake the suite makes - the failure is already
+    /// said by then.
+    private func waitedFor(_ start: () -> Void) -> Int32? {
+        MainThreadExecutor.shared.poke()
+        _ = MainThreadExecutor.shared.waitForWork()
+
+        let counted = DispatchSemaphore(value: 0)
+        nonisolated(unsafe) var work: Int32 = 0
+
+        DispatchQueue.global().async {
+            work = stateui_wait_work()
+            counted.signal()
+        }
+
+        start()
+
+        return counted.wait(timeout: .now() + 5) == .success ? work : nil
+    }
+
+    /// A state a rendered view wears as a driven property, on a board with
+    /// nothing waiting and nothing queued anywhere else.
+    private func wornOnAQuietBoard() -> State<Double> {
+        _ = WireProbe.decode(Renderer.shared.takeActCallsWire())
+        stateUIRunJobs()
+        Renderer.shared.clearInvalidation()
+        Renderer.shared.clearStates()
+
+        let fade = State(wrappedValue: 1.0)
+        Renders().render(Label("worn").opacity(fade.projectedValue).id("worn").body)
+
+        _ = Renderer.shared.cycle(sync: 0, now: 0, reducesMotion: false)
+        var read = [UInt8](repeating: 0, count: 1 << 16)
+        read.withUnsafeMutableBufferPointer { _ = Renderer.shared.cycleRead(0, into: $0) }
+        Renderer.shared.clearInvalidation()
+
+        XCTAssertNotNil(fade.number, "the view wears the state")
+        XCTAssertEqual(Renderer.shared.cycleAwake(), 0, "and its board has nothing waiting")
+
+        return fade
+    }
+
     // MARK: - What a dispatch promises
 
     /// The compatibility guarantee: making handlers asynchronous must not make

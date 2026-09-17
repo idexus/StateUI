@@ -1146,13 +1146,14 @@ public final class Renderer: @unchecked Sendable {
     ///
     /// The same counter every awaited act draws from, so a completion the host
     /// answers cannot be read as anything else. Nothing is queued: what tells
-    /// the host about this one is the number lane it is written into. See
-    /// `Journey.move(to:_:)`.
+    /// the host about this one is the number lane it is written into, and
+    /// that write wakes the host once it has landed. See
+    /// `Journey.move(to:_:)` and `CycleBoard.write`.
     ///
     /// - Parameter completion: what to run when the answer arrives.
     /// - Returns: the number the answer will name.
     func book(_ completion: @escaping (Reply) -> Void) -> Int {
-        let id = guarded.sync { () -> Int in
+        guarded.sync { () -> Int in
             let issued = nextCompletionId
 
             completions[issued] = completion
@@ -1160,13 +1161,6 @@ public final class Renderer: @unchecked Sendable {
 
             return issued
         }
-
-        // Outside the lock, and for the reason `enqueue` pokes: a movement
-        // started from a plain `Task` lands no job on the executor, so nothing
-        // else would tell the host there is anything to read.
-        MainThreadExecutor.shared.poke()
-
-        return id
     }
 
     /// The completions nobody has answered yet.

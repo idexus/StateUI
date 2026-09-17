@@ -462,33 +462,23 @@ public func stateui_run_jobs() -> Int32 {
 }
 
 /// Parks the calling thread until work lands, and returns how much is waiting
-/// - jobs in the queue, PLUS acts not yet taken, PLUS one for a tree a
-/// write from the pool left dirty - which can be 0, when another turn got
+/// - `StateUIHost.waitForWork`'s count, which can be 0 when another turn got
 /// there first.
 ///
 /// This is how a job NO act produced still runs promptly: a `Task.sleep`
 /// coming due, a task an author started finishing. And the other way round -
-/// the acts in the count are how an ACT no job announces is still
-/// performed promptly: an act queued from a plain `Task` runs on the pool,
-/// puts nothing on the executor, and `send`'s poke is the only thing that
-/// says it exists. The host gives this library a thread - one it CREATED, so
-/// its runtime has always known it, which is the whole of the attach trap in
-/// Core/MainThread.swift - and that thread spends its life parked here. When
-/// it returns, the host posts one turn onto its UI thread and calls back in.
+/// an ACT, a dirty tree or a value waiting on its board for a cycle, which a
+/// handler resumed on the pool leaves with no job to announce it, still
+/// reaches the host promptly. The host gives this library a thread - one it
+/// CREATED, so its runtime has always known it, which is the whole of the
+/// attach trap in Core/MainThread.swift - and that thread spends its life
+/// parked here. When it returns, the host posts one turn onto its UI thread
+/// and calls back in.
 ///
 /// Nothing is ever run on this thread; it is a doorbell, not a worker.
 @_cdecl("stateui_wait_work")
 public func stateui_wait_work() -> Int32 {
-    // A DIRTY TREE is work too. A write made inside something the host is
-    // already driving - an event, a completed act, a handler running on
-    // `@MainThread` - is rendered by the turn that follows. A write a
-    // `Task.detached` or an `async let` child makes from the cooperative pool
-    // queues NOTHING: no job, no act, only the dirty flag and the wake
-    // `stateChanged` makes - so without the dirty tree in this count the wake
-    // finds no work and the screen waits for the next event.
-    Int32(MainThreadExecutor.shared.waitForWork()
-        + Renderer.shared.actCallsPending
-        + (Renderer.shared.needsRender ? 1 : 0))
+    Int32(StateUIHost.waitForWork())
 }
 
 /// Tells this library what the host knows - one standard provider's values

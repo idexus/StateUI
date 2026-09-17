@@ -13,9 +13,10 @@ namespace StateUI.Maui.Rendering;
 /// </summary>
 /// <remarks>
 /// Two ways in. The DOORBELL - a thread parked in the core until work lands -
-/// posts a turn whenever a job or an act arrives: the job a resumed handler
-/// continues in, after an act's reply or a journey's answer, a <c>Task.sleep</c>
-/// coming due, an act queued from a plain <c>Task</c>. And every door the
+/// posts a turn whenever a job, an act or a value waiting for a cycle arrives:
+/// the job a resumed handler continues in, after an act's reply or a journey's
+/// answer, a <c>Task.sleep</c> coming due, an act queued from a plain
+/// <c>Task</c>, a movement one started. And every door the
 /// platform's word comes through - an event, a host event, an environment push -
 /// runs one turn once it has entered the core.
 /// </remarks>
@@ -72,9 +73,10 @@ internal sealed class Pump
     /// A resumed handler continues in a job on Swift's queue, and the job lands
     /// a moment after the resume - after an act's reply, a journey's answer, a
     /// <c>Task.sleep</c> coming due, a task an author started finishing, an
-    /// <c>AsyncStream</c> yielding. The core rings this thread for every job and
-    /// every act that lands after the last ring was answered, so each runs in
-    /// the turn the ring posts, whatever the handler awaited.
+    /// <c>AsyncStream</c> yielding. The core rings this thread for every job,
+    /// every act and every value written for a cycle that lands after the last
+    /// ring was answered, so each runs in the turn the ring posts, whatever the
+    /// handler awaited.
     /// </para>
     /// <para>
     /// The thread spends its life inside <see cref="CoreLink.WaitWork"/>;
