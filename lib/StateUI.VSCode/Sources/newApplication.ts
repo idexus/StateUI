@@ -164,6 +164,15 @@ export function writeStarter(starter: Starter, templateRoot: string): string {
         }
     }
 
+    // Every shell script runs by itself - `./run-app.sh` - whatever the copy
+    // it came from kept: a package made on Windows, or a checkout on a file
+    // system with no execute bit, carries none.
+    for (const found of listFiles(destination)) {
+        if (found.endsWith(".sh")) {
+            fs.chmodSync(found, fs.statSync(found).mode | 0o111);
+        }
+    }
+
     return destination;
 }
 

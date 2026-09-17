@@ -244,6 +244,21 @@ export async function run(): Promise<void> {
             check("a release names its version in Package.swift's tag and both NuGet references",
                 manifest.includes('exact: "9.8.7"') && project.includes('Include="StateUI.Maui" Version="9.8.7"')
                 && project.includes('Include="StateUI.Maui.Linux" Version="9.8.7"') && !/\d+\.\d+\.\d+/.test(manifest.replace("9.8.7", "")));
+            // A template whose scripts lost their execute bit - as a package
+            // made on Windows carries them - still writes runnable scripts.
+            if (process.platform !== "win32") {
+                const stripped = path.join(scratch, "stripped");
+                fs.cpSync(carriedTemplate(extensionPath), stripped, { recursive: true });
+                for (const file of fs.readdirSync(stripped, { recursive: true, encoding: "utf8" }).filter((each) => each.endsWith(".sh"))) {
+                    fs.chmodSync(path.join(stripped, file), 0o644);
+                }
+                const runnable = writeStarter({ name: "Runnable", parent: path.join(scratch, "runnable"), source: { kind: "release", version: "0.3.1" }, appKit: false }, stripped);
+                const scripts = fs.readdirSync(runnable, { recursive: true, encoding: "utf8" }).filter((each) => each.endsWith(".sh"));
+                say(`     scripts written: ${scripts.map((each) => `${path.basename(each)} ${(fs.statSync(path.join(runnable, each)).mode & 0o777).toString(8)}`).join(", ")}`);
+                check("every shell script a new application gets is executable, whatever its source kept",
+                    scripts.length > 0 && scripts.every((each) => (fs.statSync(path.join(runnable, each)).mode & 0o111) === 0o111));
+            }
+
             let refused = false;
             try { writeStarter({ name: "Later", parent: path.join(scratch, "later"), source: { kind: "release", version: "9.8.7" }, appKit: false }, carriedTemplate(extensionPath)); } catch { refused = true; }
             check("an application is never written over a directory that exists", refused);
