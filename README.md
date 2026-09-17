@@ -24,7 +24,7 @@ the native contract is settled.
 One application, described once in Swift, on two hosts. The .NET MAUI host
 renders it from the wire - here on Windows, under the debugger:
 
-<video src="https://github.com/user-attachments/assets/72b2af72-24d5-41b8-a393-4bcd972b7fd9" controls muted loop width="960" height="540" poster="docs/assets/win-poster.png">
+<video src="https://github.com/user-attachments/assets/2807b471-95eb-4073-b393-0d10dc60f404" controls muted loop width="960" height="540" poster="docs/assets/win-poster.png">
   <a href="https://github.com/idexus/StateUI/blob/main/docs/assets/win.mp4"><img src="docs/assets/win-poster.png" alt="The Gallery on the MAUI host, on Windows" width="960" height="540"></a>
 </video>
 
