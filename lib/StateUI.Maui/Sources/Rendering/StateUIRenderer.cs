@@ -2829,14 +2829,6 @@ public sealed class StateUIRenderer
     {
         if (node.GetSafeAreaEdges(HostProp.AvoidsSafeArea) is SafeAreaEdges safeArea) { layout.SafeAreaEdges = safeArea; }
         if (node.GetBool(HostProp.ClipsContent) is bool clipped) { layout.IsClippedToBounds = clipped; }
-
-#if WINDOWS
-        // WINDOWS READS THE CASCADE NOWHERE, so it is answered here - each
-        // half read off this message first and off the control only where the
-        // message says nothing, since ApplyView writes the transparency after
-        // this runs. See TouchThrough.
-        TouchThrough.Cascade(node, layout);
-#endif
     }
 
     /// <summary>

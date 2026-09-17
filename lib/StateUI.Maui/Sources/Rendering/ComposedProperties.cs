@@ -129,6 +129,10 @@ internal static class ComposedProperties
         if (view is Layout layout)
         {
             layout.CascadeInputTransparent = ignores || !through;
+#if WINDOWS
+            // WINDOWS READS THE CASCADE NOWHERE. See TouchThrough.
+            TouchThrough.Cascade(layout, ignores);
+#endif
         }
     }
 
