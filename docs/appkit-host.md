@@ -97,6 +97,33 @@ StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLight
 }
 ```
 
+Write a control's registration beside the view it registers: a `static func
+register()` in an extension at the end of the view's own file. Everything
+about the control - the view, what it reports, what it takes and the acts aimed
+at it - is then read in one place, and the application's list of its controls
+is only a list:
+
+```swift quote
+extension TrafficLightView {
+    @MainActor
+    static func register() {
+        StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+            …
+        }) { light in
+            …
+        }
+    }
+}
+
+enum NotesControls {
+    @MainActor
+    static func register() {
+        TrafficLightView.register()
+        RatingBarView.register()
+    }
+}
+```
+
 The host keeps a registered view between renders by identity, and applies the
 shared view properties around it: margins, alignment, opacity, sizing,
 gestures, focus, and frame reports. A node type with no registration draws the

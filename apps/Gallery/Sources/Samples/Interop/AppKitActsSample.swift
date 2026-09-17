@@ -120,10 +120,18 @@ struct AppKitActsSample: SampleContent, ExampleContent {
                     StateUIActs.add(GalleryContract.batteryLevel) {
                         battery()
                     }
+                }
+            }
 
-                    // Aimed at one bar: the identity the aim sent is turned
-                    // back into the view this host made, and the performer is
-                    // handed that view.
+            // An act aimed at a control is its view's, registered at the end of
+            // Platforms/AppKit/Host/RatingBarView.swift. The identity the aim
+            // sent is turned back into the view this host made, and the
+            // performer is handed that view.
+            extension RatingBarView {
+                @MainActor
+                static func register() {
+                    // … StateUIControls.add(RatingBarContract.self, …)
+
                     StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
                         bar.flash()
                     }
@@ -131,6 +139,7 @@ struct AppKitActsSample: SampleContent, ExampleContent {
             }
 
             // And in main.swift, before StateUIAppKit.run(...):
+            GalleryControls.register()   // RatingBarView.register(), and the rest
             GalleryActs.register()
             """)
 

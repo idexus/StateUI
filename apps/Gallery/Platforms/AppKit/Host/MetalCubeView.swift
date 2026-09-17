@@ -4,12 +4,14 @@
 import Foundation
 import MetalKit
 import QuartzCore
+import GalleryUI
+import StateUIAppKit
 
 /// A cube turning on the GPU - an ordinary `MTKView` that knows nothing of
 /// StateUI.
 ///
-/// `GalleryControls` registers it against `MetalCubeContract`, and that
-/// registration is the whole bridge. The Swift half is
+/// `register()`, at the end of this file, adds it for `MetalCubeContract`, and
+/// that registration is the whole bridge. The Swift half is
 /// Sources/Samples/Interop/MetalCube.swift.
 ///
 /// Its shaders are compiled FROM SOURCE as the view is made, so the
@@ -300,5 +302,35 @@ final class MetalCubeView: MTKView {
 
     private static func scaling(_ scale: Float) -> simd_float4x4 {
         simd_float4x4(diagonal: SIMD4(scale, scale, scale, 1))
+    }
+}
+
+// MARK: - Registration
+
+extension MetalCubeView {
+    /// Adds the cube for `MetalCubeContract`. Said once, before the application
+    /// runs.
+    ///
+    /// A view that draws on the GPU registers exactly like one that draws with a
+    /// layer: an `MTKView` is an `NSView`. It reports nothing, so `create` only
+    /// makes it - every member here goes one way, from the description to the
+    /// frames. The cube is declared for this host alone, and this file names it
+    /// with no condition around it because nothing but an AppKit build compiles
+    /// this folder.
+    @MainActor
+    static func register() {
+        StateUIControls.add(MetalCubeContract.self, create: { _ -> MetalCubeView in
+            MetalCubeView()
+        }) { cube in
+            cube.property(MetalCubeContract.size) { view, size in
+                view.cubeSize = size ?? 0.6
+            }
+            cube.property(MetalCubeContract.color) { view, color in
+                view.color = (color ?? .teal).rawValue
+            }
+            cube.property(MetalCubeContract.isSpinning) { view, spinning in
+                view.isSpinning = spinning ?? true
+            }
+        }
     }
 }

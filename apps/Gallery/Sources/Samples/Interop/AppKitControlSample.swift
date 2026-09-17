@@ -108,21 +108,29 @@ struct AppKitControlSample: SampleContent, ExampleContent {
                 }
             }
 
-            // And the registration, in GalleryControls.register(). `create`
+            // And its registration, at the end of the same file. `create`
             // runs once per element and wires what it reports; each `property`
             // puts a described value on the view.
-            StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
-                let light = TrafficLightView()
-                light.onLampTapped = { index in
-                    reports.raise(TrafficLightContract.lampTapped, index)
+            extension TrafficLightView {
+                @MainActor
+                static func register() {
+                    StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+                        let light = TrafficLightView()
+                        light.onLampTapped = { index in
+                            reports.raise(TrafficLightContract.lampTapped, index)
+                        }
+                        return light
+                    }) { light in
+                        light.property(TrafficLightContract.signal) { view, signal in
+                            view.signal = (signal ?? .stop).rawValue
+                        }
+                        light.raises(TrafficLightContract.lampTapped)
+                    }
                 }
-                return light
-            }) { light in
-                light.property(TrafficLightContract.signal) { view, signal in
-                    view.signal = (signal ?? .stop).rawValue
-                }
-                light.raises(TrafficLightContract.lampTapped)
             }
+
+            // GalleryControls.register(), called from main.swift, lists it:
+            TrafficLightView.register()
             """)
 
     var content: any View {

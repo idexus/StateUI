@@ -10,7 +10,8 @@ import StateUIAppKit
 ///
 /// `GalleryContract` declares each name with what it takes and answers - see
 /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that
-/// performs them. `Gallery.Nobody` is registered nowhere on purpose: the
+/// performs them. An act aimed at a control is its view's, registered beside
+/// it: `RatingBarView.register()` performs `flash`. `Gallery.Nobody` is registered nowhere on purpose: the
 /// "Calling AppKit" sample calls it to show what a missing registration does.
 enum GalleryActs {
     /// Registers every act this host performs. Said once, before the
@@ -28,12 +29,6 @@ enum GalleryActs {
 
         StateUIActs.add(GalleryContract.batteryLevel) {
             battery()
-        }
-
-        // Aimed at one bar: the identity the aim sent is turned back into the
-        // view this host made, and the performer is handed that view.
-        StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
-            bar.flash()
         }
     }
 

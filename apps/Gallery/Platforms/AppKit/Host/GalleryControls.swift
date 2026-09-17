@@ -1,77 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import AppKit
-import GalleryUI
-import StateUIAppKit
-
 /// The gallery's own controls, as this host realizes them.
 ///
 /// The contracts and the Swift halves are shared by every host - see
-/// Sources/Samples/Interop - and this is the half that says what each one IS
-/// on screen: `create` makes the view once per element and wires what it
-/// reports, and each `property` puts a described value on it. What every view
-/// shares - margins, alignment, opacity, gestures - the host applies around
-/// them.
+/// Sources/Samples/Interop. What each control IS on screen is its view's, and
+/// so is its registration: `register()` at the end of the view's own file.
+/// This is the list of them, and nothing else.
 enum GalleryControls {
     /// Registers every control this host realizes. Said once, before the
     /// application runs.
     @MainActor
     static func register() {
-        StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
-            let light = TrafficLightView()
-            light.onLampTapped = { index in
-                reports.raise(TrafficLightContract.lampTapped, index)
-            }
-            return light
-        }) { light in
-            light.property(TrafficLightContract.signal) { view, signal in
-                view.signal = (signal ?? .stop).rawValue
-            }
-            light.raises(TrafficLightContract.lampTapped)
-        }
-
-        StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
-            let bar = RatingBarView()
-
-            // A tapped star is the READER's change: it lands on the state the
-            // value is carried in, and raises the event with it - so an
-            // application hears it once, whether it holds the rating in a
-            // state or in a handler.
-            bar.onRatingChanged = { rating in
-                reports.report(
-                    RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
-            }
-            return bar
-        }) { bar in
-            bar.property(RatingBarContract.rating) { view, rating in
-                view.rating = rating ?? 0
-            }
-            bar.raises(RatingBarContract.ratingChanged)
-        }
-
-        // A view that draws with the GPU registers exactly like one that draws
-        // with a layer: the registration says what the element IS, and an
-        // `MTKView` is an `NSView`. It reports nothing, so `create` only makes
-        // it - every member here goes one way, from the description to the
-        // frames.
-        //
-        // The cube is declared for this host alone - see
-        // Sources/Samples/Interop/MetalCube.swift - and this file names it
-        // with no condition around it, because nothing but an AppKit build
-        // compiles this folder: the manifest declares the target only then.
-        StateUIControls.add(MetalCubeContract.self, create: { _ -> MetalCubeView in
-            MetalCubeView()
-        }) { cube in
-            cube.property(MetalCubeContract.size) { view, size in
-                view.cubeSize = size ?? 0.6
-            }
-            cube.property(MetalCubeContract.color) { view, color in
-                view.color = (color ?? .teal).rawValue
-            }
-            cube.property(MetalCubeContract.isSpinning) { view, spinning in
-                view.isSpinning = spinning ?? true
-            }
-        }
+        TrafficLightView.register()
+        RatingBarView.register()
+        MetalCubeView.register()
     }
 }

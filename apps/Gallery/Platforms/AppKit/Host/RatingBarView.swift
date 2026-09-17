@@ -2,12 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AppKit
+import GalleryUI
+import StateUIAppKit
 
 /// Five stars, filled up to a rating - an ordinary `NSView` with one value.
 ///
-/// `GalleryControls` registers `rating` against `RatingBarContract`, so the
-/// host assigns it whenever a message carries it, a style sets it, and a state
-/// walks it. The Swift half is Sources/Samples/Interop/RatingBar.swift.
+/// `register()`, at the end of this file, adds it for `RatingBarContract` with
+/// `rating`, so the host assigns it whenever a message carries it, a style sets
+/// it, and a state walks it - and performs the `flash` act aimed at one bar.
+/// The Swift half is Sources/Samples/Interop/RatingBar.swift.
 final class RatingBarView: NSView {
     /// The rating changed - a tap on a star. An assignment the host makes, on
     /// a render or on a walked frame, is not reported: the control is showing
@@ -111,6 +114,40 @@ final class RatingBarView: NSView {
     private func repaint() {
         for (index, star) in stars.enumerated() {
             star.textColor = rating >= Double(index) + 1 ? Self.lit : Self.ember
+        }
+    }
+}
+
+// MARK: - Registration
+
+extension RatingBarView {
+    /// Adds the bar for `RatingBarContract`, and performs the act aimed at
+    /// one. Said once, before the application runs.
+    @MainActor
+    static func register() {
+        StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
+            let bar = RatingBarView()
+
+            // A tapped star is the READER's change: it lands on the state the
+            // value is carried in, and raises the event with it - so an
+            // application hears it once, whether it holds the rating in a
+            // state or in a handler.
+            bar.onRatingChanged = { rating in
+                reports.report(
+                    RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
+            }
+            return bar
+        }) { bar in
+            bar.property(RatingBarContract.rating) { view, rating in
+                view.rating = rating ?? 0
+            }
+            bar.raises(RatingBarContract.ratingChanged)
+        }
+
+        // Aimed at one bar: the identity the aim sent is turned back into the
+        // view this host made, and the performer is handed that view.
+        StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+            bar.flash()
         }
     }
 }

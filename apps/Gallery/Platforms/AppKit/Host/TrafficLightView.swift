@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import AppKit
+import GalleryUI
+import StateUIAppKit
 
 /// Three lamps in a housing, one lit at a time - an ordinary `NSView` that
 /// knows nothing of StateUI.
 ///
-/// `GalleryControls` registers it against `TrafficLightContract`, and that
-/// registration is the whole bridge. The Swift half is
+/// `register()`, at the end of this file, adds it for `TrafficLightContract`,
+/// and that registration is the whole bridge. The Swift half is
 /// Sources/Samples/Interop/TrafficLight.swift.
 final class TrafficLightView: NSView {
     /// A lamp was tapped; the argument is its index, top to bottom.
@@ -100,6 +102,29 @@ final class TrafficLightView: NSView {
             lamp.layer?.backgroundColor = Int32(index) == signal
                 ? colour.cgColor
                 : colour.withAlphaComponent(0.18).cgColor
+        }
+    }
+}
+
+// MARK: - Registration
+
+extension TrafficLightView {
+    /// Adds the light for `TrafficLightContract`: `create` makes the view once
+    /// per element and wires the tap it reports, and `property` puts the
+    /// described signal on it. Said once, before the application runs.
+    @MainActor
+    static func register() {
+        StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+            let light = TrafficLightView()
+            light.onLampTapped = { index in
+                reports.raise(TrafficLightContract.lampTapped, index)
+            }
+            return light
+        }) { light in
+            light.property(TrafficLightContract.signal) { view, signal in
+                view.signal = (signal ?? .stop).rawValue
+            }
+            light.raises(TrafficLightContract.lampTapped)
         }
     }
 }

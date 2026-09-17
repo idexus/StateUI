@@ -212,20 +212,25 @@ struct AppKitMetalSample: SampleContent, ExampleContent {
                 return in.color;
             }
 
-            // And the registration, in GalleryControls.register(). The cube
-            // reports nothing, so `create` only makes the view: every member
-            // here goes one way, from the description to the frames.
-            StateUIControls.add(MetalCubeContract.self, create: { _ -> MetalCubeView in
-                MetalCubeView()
-            }) { cube in
-                cube.property(MetalCubeContract.size) { view, size in
-                    view.cubeSize = size ?? 0.6
-                }
-                cube.property(MetalCubeContract.color) { view, color in
-                    view.color = (color ?? .teal).rawValue
-                }
-                cube.property(MetalCubeContract.isSpinning) { view, spinning in
-                    view.isSpinning = spinning ?? true
+            // And its registration, at the end of MetalCubeView.swift. The
+            // cube reports nothing, so `create` only makes the view: every
+            // member here goes one way, from the description to the frames.
+            extension MetalCubeView {
+                @MainActor
+                static func register() {
+                    StateUIControls.add(MetalCubeContract.self, create: { _ -> MetalCubeView in
+                        MetalCubeView()
+                    }) { cube in
+                        cube.property(MetalCubeContract.size) { view, size in
+                            view.cubeSize = size ?? 0.6
+                        }
+                        cube.property(MetalCubeContract.color) { view, color in
+                            view.color = (color ?? .teal).rawValue
+                        }
+                        cube.property(MetalCubeContract.isSpinning) { view, spinning in
+                            view.isSpinning = spinning ?? true
+                        }
+                    }
                 }
             }
             """)
