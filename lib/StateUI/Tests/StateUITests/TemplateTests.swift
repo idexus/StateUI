@@ -50,6 +50,7 @@ final class TemplateTests: XCTestCase {
             ".vscode/launch.json",
             ".vscode/tasks.json",
             ".vscode/settings.json",
+            ".vscode/extensions.json",
             "Package.swift",
             "Platforms/AppKit/main.swift",
             "Platforms/Maui/\(token).csproj",
@@ -264,76 +265,15 @@ final class TemplateTests: XCTestCase {
                 squeezed(manifest).contains(".executable(name:\"\(token)AppKit\""), appKit,
                 "\(said): Package.swift and --appkit disagree about the AppKit head.")
             XCTAssertEqual(
-                try generated(".vscode/launch.json", options: options).contains("\"Debug app (AppKit)\""),
+                try generated(".vscode/tasks.json", options: options).contains("\"Build app (AppKit, Debug)\""),
                 appKit,
-                "\(said): launch.json and --appkit disagree about the AppKit launch.")
+                "\(said): tasks.json and --appkit disagree about the AppKit build.")
         }
 
         XCTAssertTrue(
             try generated("Package.swift", options: ["AppKit"]).contains("#error("),
             "--appkit without --stateui-path builds, and fails later for want of the AppKit host.")
     }
-
-    /// The Swift half of a compound waits for the application. A compound
-    /// starts both its sessions at once, so an attach with nothing in front of
-    /// it looks for a process the C# session has not launched yet - it is
-    /// still building - and `process attach --name` fails at once: the
-    /// compound comes up with only the C# debugger in it, which reads as "the
-    /// Swift debugger does not attach" and says nothing about a race. The same
-    /// configuration selected on its own, against an application already
-    /// running, works either way, which is what hides the difference.
-    ///
-    /// The waiting task polls `pgrep -x` and `Get-Process -Name`, which match
-    /// the executable's name: matching a command line would find the dotnet
-    /// and msbuild processes building the application and return at once.
-    func testTheSwiftHalfOfTheCompoundWaitsForTheApp() throws {
-        let launch = try text(at: ".vscode/launch.json")
-        let tasks = try text(at: ".vscode/tasks.json")
-
-        // Every attaching configuration has something that puts an application
-        // there first - the task that launches it, or the one that waits.
-        let attaching = launch.components(separatedBy: "\"request\": \"attach\"")
-        XCTAssertGreaterThan(attaching.count, 1, "launch.json has no attach configuration at all.")
-
-        for (index, configuration) in attaching.dropFirst().enumerated() {
-            XCTAssertTrue(
-                configuration.contains("\"preLaunchTask\""),
-                "attach configuration \(index + 1) has no preLaunchTask - in a compound it races "
-                    + "the session that launches the application, and attaches to nothing.")
-        }
-
-        XCTAssertTrue(
-            launch.contains("\"preLaunchTask\": \"Wait for app startup\""),
-            "nothing waits for the application - the compound's Swift half needs the waiting task.")
-        XCTAssertTrue(
-            tasks.contains("\"label\": \"Wait for app startup\""),
-            "launch.json names a task tasks.json does not declare.")
-        XCTAssertTrue(
-            tasks.contains("pgrep -x \(token)") && tasks.contains("Get-Process -Name \(token)"),
-            "the waiting task does not match the application's executable name on both platforms.")
-
-        // A process task: a shell task is re-quoted into a command line for the
-        // login shell, and this one carries quotes of its own - the outer shell
-        // closes the string early and runs a fragment of the message as a
-        // command, the task dies with exit code 127, and the attach never
-        // happens.
-        let after = try XCTUnwrap(
-            tasks.range(of: "\"label\": \"Wait for app startup\"").map { tasks[$0.upperBound...] })
-
-        // This task and not whatever follows it, bounded at the next task
-        // object: the comments above the next task sit before its label, so a
-        // bound at the label would read them in as this task's.
-        let waiting = after.range(of: "\n    {").map { after[..<$0.lowerBound] } ?? after
-
-        XCTAssertTrue(
-            waiting.prefix(200).contains("\"type\": \"process\""),
-            "the waiting task is not a process task - a shell re-quotes the script it runs.")
-        XCTAssertFalse(
-            waiting.contains("'"),
-            "the waiting task holds a single quote, which the shell's own quoting closes early.")
-    }
-
-    // MARK: - The templating
 
     /// The token appears nowhere in the build the template ships, which is
     /// why it is not simply `StateUIApp`: StateUI.targets is full of

@@ -1,0 +1,8 @@
+{
+  // StateUI: Debug and StateUI: Release, the host in the status bar, and the
+  // editor working as that host. It brings the Swift extension with it.
+  "recommendations": [
+    "idexus.stateui",
+    "ms-dotnettools.dotnet-maui"
+  ]
+}

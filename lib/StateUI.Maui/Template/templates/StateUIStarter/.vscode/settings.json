@@ -7,21 +7,20 @@
   // with the Swift toolchain rather than with VS Code.
   // "lldb-dap.executable-path": "/Users/<you>/Library/Developer/Toolchains/swift-6.3.3-RELEASE.xctoolchain/usr/bin/lldb-dap",
 
-//#if (AppKit)
-  // Package.swift declares this application's AppKit head, and defines APPKIT,
-  // only when a build says it has one - so `swift test` compiles no part of one
-  // host's half. Set here as well, the editor resolves Platforms/AppKit and
-  // completes the code inside `#if APPKIT`; the build tasks set it for
-  // themselves. Read when the language server starts.
-  "swift.swiftEnvironmentVariables": {
-    "STATEUI_APPKIT": "1"
-  },
+  // Every launch is the StateUI extension's: the Swift extension adds none of
+  // its own for the AppKit executable.
+  "swift.autoGenerateLaunchConfigurations": false,
 
-//#endif
-  // WITHOUT THIS, "Launch app (Release)" BUILDS DEBUG. The MAUI extension
-  // replaces a launch configuration's "configuration" field with its own
-  // active configuration - Debug - unless this setting says launch.json is to
-  // be believed, and it defaults to off. Measured on extension 1.16.88.
+  // NO swift.swiftEnvironmentVariables HERE. The editor's host - whether
+  // SourceKit-LSP starts with STATEUI_APPKIT, and so resolves Platforms/AppKit
+  // and completes the code inside `#if APPKIT` - is chosen in the StateUI
+  // extension's status bar. A value here is laid OVER that and would decide
+  // the host whatever is chosen.
+
+  // WITHOUT THIS, "StateUI: Release" BUILDS DEBUG ON MAUI: the StateUI
+  // extension hands the MAUI extension `"configuration": "Release"`, and that
+  // extension replaces a launch's "configuration" with its own active one
+  // unless this says launch.json is to be believed.
   "maui.configuration.useLaunchJsonConfigurations": true,
 
   "files.associations": {

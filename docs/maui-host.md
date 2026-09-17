@@ -64,13 +64,16 @@ compile Swift for Android only on macOS.
 The CI workflows build with Xcode 26.6 and Swift 6.3.3; on Linux they use the
 `swift:6.3.3-noble` image.
 
-In VS Code, three extensions serve the host:
+In VS Code, four extensions serve the host:
 
-- **.NET MAUI** (Microsoft), for the device picker and the MAUI launches;
+- **StateUI** (idexus), for "StateUI: Debug" and "StateUI: Release" and the
+  host the editor works as;
+- **.NET MAUI** (Microsoft), for the device picker and the C# debugger;
 - **Swift** (swiftlang), for completion;
 - **LLDB DAP**, for the Swift debugger.
 
-The Linux C# launches use the C# extension's `coreclr` debugger.
+On Linux the StateUI extension debugs C# with the C# extension's `coreclr`
+debugger.
 
 ## An application's MAUI head
 
@@ -390,9 +393,10 @@ Several tasks in `.vscode/tasks.json` serve the MAUI host:
   fixtures)" regenerates the Wire fixtures and then runs it.
 
 The build and clean tasks name the Gallery's head. A generated application's
-`.vscode` names its own launches - "Debug app (C#)", "Debug app (Swift)" and the
-Linux ones - and with `--appkit` it adds "Debug app (AppKit)" and "Release app
-(AppKit)".
+`.vscode` has the same two launches, "StateUI: Debug" and "StateUI: Release",
+recommends the StateUI extension, and names its own head in its tasks; with
+`--appkit` it adds "Build app (AppKit, Debug)" and "Build app (AppKit,
+Release)".
 
 ## Controls, acts, events, and stores registered in C#
 

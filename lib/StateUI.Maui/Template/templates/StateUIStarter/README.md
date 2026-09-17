@@ -19,9 +19,10 @@ with native controls:
 | **Xcode** | for iOS, Mac Catalyst and the AppKit host |
 | **Android SDK + a Swift SDK for Android** | for Android: `swift sdk install …` - see <https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html>. The toolchain must be the SDK's own build - swift.org's, installed beside Xcode's; the build checks, uses a matching installed toolchain by itself, and names the one to install when none matches |
 
-In VS Code: **.NET MAUI** (Microsoft) for the device picker and the MAUI
-launches, **Swift** (swiftlang) for completion, and **LLDB DAP** for the Swift
-debugger.
+In VS Code: **StateUI** (idexus) for the launches, the host and the editor's
+completion under it - it brings **Swift** (swiftlang) along - **.NET MAUI**
+(Microsoft) for the device picker, and **LLDB DAP** for the Swift debugger.
+`.vscode/extensions.json` recommends them.
 
 ## Building
 
@@ -47,18 +48,19 @@ The AppKit host, when the application has one:
 STATEUI_APPKIT=1 swift run StateUIStarterAppKit
 ```
 
-Run it from the application's root, which is where it reads `Resources/` from.
+It reads `Resources/` beside its own sources, so it runs from any directory.
 
 `STATEUI_APPKIT=1` is what makes this an AppKit build. `Package.swift` reads it
 and then declares the AppKit head - its target, product and StateUIAppKit
 dependency - and defines `APPKIT`, the condition Swift written for the AppKit
 host alone stands under. Without it, `swift test` compiles no part of one
-host's half. `.vscode/settings.json` sets it for the editor too, so completion
-works inside `#if APPKIT`.
+host's half.
 
-In VS Code, press **F5**. "Debug app (C#)" follows the device picker in the
-status bar; "Debug app (AppKit)" starts the macOS host. `.vscode/launch.json`
-lists the rest - Release runs, Swift debugging, Linux.
+In VS Code, press **F5** for "StateUI: Debug" or pick "StateUI: Release". The
+StateUI extension's status bar chooses the host - AppKit or .NET MAUI - and,
+for MAUI, the debugger; the editor works as that host, so completion works
+inside `#if APPKIT` while AppKit is chosen. On MAUI the launch follows the
+device picker.
 
 When the app reports a missing native library, run the diagnostic before
 guessing - it prints every resolved path and what actually exists:

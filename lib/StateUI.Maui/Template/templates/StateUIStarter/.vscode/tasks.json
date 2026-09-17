@@ -1,9 +1,9 @@
 {
   // Builds, runs and cleans for this application's hosts.
   //
-  // The usual workflow needs none of the MAUI tasks: "Debug app (C#)" builds
-  // through the MAUI extension, which respects the device picker, and the Swift
-  // side is compiled for that platform as part of the build by
+  // The usual workflow needs none of these: "StateUI: Debug" builds the head
+  // of the host chosen in the StateUI extension's status bar, and on MAUI the
+  // Swift side is compiled for the platform as part of the build by
   // .scripts/Maui/StateUI.targets. The target platform is a PROMPT rather than
   // a fixed value, so a task cannot quietly build Mac Catalyst while an Android
   // device is selected.
@@ -16,7 +16,7 @@
 //#if (AppKit)
     {
       // The AppKit head and the application module it launches, built by
-      // SwiftPM from Package.swift. The preLaunchTask of "Debug app (AppKit)".
+      // SwiftPM from Package.swift.
       "label": "Build app (AppKit, Debug)",
       "type": "shell",
       "command": "swift",
@@ -66,7 +66,7 @@
     },
     {
       // The Linux head, the only framework a Linux host builds - nothing to
-      // pick. The preLaunchTask of "Debug app (Linux)".
+      // pick.
       "label": "Build app (Linux)",
       "type": "shell",
       "command": "dotnet",
@@ -106,7 +106,7 @@
     },
     {
       // Builds and launches the MAUI app WITHOUT a debugger, then returns once
-      // the process exists: the preLaunchTask of "Debug app (Swift)".
+      // the process exists.
       "label": "Run app (no debugger)",
       "type": "shell",
       "problemMatcher": [],
@@ -126,8 +126,7 @@
     },
     {
       // The same launch with the OPTIMIZED build. For Android, or for a
-      // Release build that follows the device picker, take "Launch app
-      // (Release)" in launch.json.
+      // Release build that follows the device picker, take "StateUI: Release".
       "label": "Run app (Release, no debugger)",
       "type": "shell",
       "problemMatcher": [],
@@ -143,30 +142,6 @@
       "windows": {
         "command": "powershell",
         "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "run-app.ps1", "-Configuration", "Release"]
-      }
-    },
-    {
-      // Waits until the app process exists, for the attaching half of the
-      // Mac Catalyst compound. Polls rather than sleeping: no constant fits a
-      // cold build and a warm one. `pgrep -x` and `Get-Process -Name` match the
-      // EXECUTABLE name exactly, never the dotnet processes building it.
-      //
-      // "type": "process", NOT "shell": a shell task re-quotes the script for
-      // the login shell, and the quotes below would close early.
-      "label": "Wait for app startup",
-      "type": "process",
-      "problemMatcher": [],
-      "osx": {
-        "command": "bash",
-        "args": ["-c", "n=0; while [ $n -lt 900 ]; do if pgrep -x StateUIStarter > /dev/null; then echo \"Found StateUIStarter after ${n}s.\"; sleep 1; exit 0; fi; sleep 1; n=$((n + 1)); if [ $((n % 10)) -eq 0 ]; then echo \"  still waiting for StateUIStarter... (${n}s)\"; fi; done; echo \"StateUIStarter never started - the build probably failed; see the other session.\"; exit 1"]
-      },
-      "linux": {
-        "command": "bash",
-        "args": ["-c", "n=0; while [ $n -lt 900 ]; do if pgrep -x StateUIStarter > /dev/null; then echo \"Found StateUIStarter after ${n}s.\"; sleep 1; exit 0; fi; sleep 1; n=$((n + 1)); if [ $((n % 10)) -eq 0 ]; then echo \"  still waiting for StateUIStarter... (${n}s)\"; fi; done; echo \"StateUIStarter never started - the build probably failed; see the other session.\"; exit 1"]
-      },
-      "windows": {
-        "command": "powershell",
-        "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", "for ($n = 0; $n -lt 900; $n++) { if (Get-Process -Name StateUIStarter -ErrorAction SilentlyContinue) { Write-Host \"Found StateUIStarter after ${n}s.\"; Start-Sleep -Seconds 1; exit 0 }; Start-Sleep -Seconds 1; if ($n % 10 -eq 0 -and $n -gt 0) { Write-Host \"  still waiting for StateUIStarter... (${n}s)\" } }; Write-Host \"StateUIStarter never started - the build probably failed; see the other session.\"; exit 1"]
       }
     },
     {

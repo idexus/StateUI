@@ -14,9 +14,13 @@ import Foundation
 import XCTest
 
 final class VsCodeTests: XCTestCase {
-    /// The layouts that carry a .vscode: this repository's.
+    /// The layouts that carry a .vscode: this repository's, and the one every
+    /// application made from the template starts with. Read with its template
+    /// lines in place - they are comments to JSON, and every launch holds
+    /// whichever way they resolve.
     private var layouts: [(name: String, directory: URL)] {
-        [("the repository", Fixtures.repository.appendingPathComponent(".vscode"))]
+        [("the repository", Fixtures.repository.appendingPathComponent(".vscode")),
+         ("the template", Fixtures.templateApplication.appendingPathComponent(".vscode"))]
     }
 
     /// The files parse as JSON once the comments are gone. A quote or bracket
@@ -256,11 +260,24 @@ final class VsCodeTests: XCTestCase {
         }
     }
 
-    /// The Swift extension appends no raw executable launches of its own:
+    /// The Swift extension appends no raw executable launches of its own, and
+    /// no settings file decides the editor's host over the StateUI extension:
     /// every configuration here is deliberate.
     func testTheSwiftExtensionDoesNotAppendRawExecutableLaunches() throws {
-        let settings = try json(at: Fixtures.repository.appendingPathComponent(".vscode/settings.json"))
-        XCTAssertEqual(settings["swift.autoGenerateLaunchConfigurations"] as? Bool, false)
+        for layout in layouts {
+            let settings = try json(at: layout.directory.appendingPathComponent("settings.json"))
+            XCTAssertEqual(
+                settings["swift.autoGenerateLaunchConfigurations"] as? Bool, false,
+                "\(layout.name) lets the Swift extension add a Debug and a Release of every executable.")
+            XCTAssertNil(
+                settings["swift.swiftEnvironmentVariables"],
+                "\(layout.name) sets the editor's host in settings, over the StateUI extension's choice.")
+        }
+
+        let recommended = try json(at: Fixtures.templateApplication.appendingPathComponent(".vscode/extensions.json"))
+        XCTAssertTrue(
+            (recommended["recommendations"] as? [String] ?? []).contains("idexus.stateui"),
+            "an application made from the template does not recommend the extension its launches need.")
     }
 
     /// Each host's suite is a task of its own, beside the default that runs
