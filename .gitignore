@@ -19,6 +19,10 @@ artifacts/
 *.user
 .DS_Store
 
+# The recordings the README shows travel as the mp4 beside them; the originals
+# are large and stay on the machine that made them.
+/docs/assets/*.mov
+
 # SDK evaluation leftovers MSBuild may leave beside a project.
 *.SdkResolver.*.proj.Backup.tmp
 

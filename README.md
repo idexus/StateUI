@@ -19,6 +19,22 @@ the native contract is settled.
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | ✅ | ☑️ | — | — | — | — | — |
 
+## In Action
+
+One application, described once in Swift, on two hosts. The AppKit host draws
+it with macOS controls, in the same process as the application module:
+
+<video src="https://github.com/idexus/StateUI/raw/main/docs/assets/appkit.mp4" controls muted loop width="840">
+  <a href="https://github.com/idexus/StateUI/raw/main/docs/assets/appkit.mp4">The Gallery on the AppKit host (mp4)</a>
+</video>
+
+The .NET MAUI host renders the same application from the wire - here on
+Windows, under the debugger:
+
+<video src="https://github.com/idexus/StateUI/raw/main/docs/assets/win.mp4" controls muted loop width="840">
+  <a href="https://github.com/idexus/StateUI/raw/main/docs/assets/win.mp4">The Gallery on the MAUI host, on Windows (mp4)</a>
+</video>
+
 ## In Code
 
 ```swift
