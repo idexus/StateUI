@@ -1,5 +1,6 @@
 node_modules/
 out/
 *.vsix
-# Copied from the repository root while packaging.
+# Copied from the repository root, and drawn from the StateUI tile, while packaging.
 LICENSE
+icon.png
