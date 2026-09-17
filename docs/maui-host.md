@@ -279,6 +279,10 @@ dotnet build apps\Gallery\Platforms\Maui -f net10.0-windows10.0.19041.0
 - **Windows.** Do not pass `-r` on Windows. The project picks the host
   architecture itself, and a runtime identifier given on the command line also
   reaches the Android target's restore, which the project lists there too.
+- **Windows, a short directory.** Keep an application close to the drive root,
+  such as `C:\Projects\MyApp`. In a directory as deep as one under `%TEMP%`, the
+  Swift build stops before it compiles anything: `Program 'swiftc.exe' failed
+  to run: The filename or extension is too long`.
 - **Linux.** In a head's directory, `dotnet run` builds and starts it.
 
 The run scripts build, launch without a debugger, and return once the process
