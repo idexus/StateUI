@@ -179,6 +179,19 @@ public sealed class StateUIRenderer
         /// </para>
         /// </remarks>
         public bool Spare { get; set; }
+
+        /// <summary>
+        /// Whether the tree has let this control go - removed it, replaced it,
+        /// or closed what held it.
+        /// </summary>
+        /// <remarks>
+        /// Set on the ROOT of what left, and read up the parent chain by
+        /// <see cref="StateUIRenderer.Reporting"/>: a control inside keeps its
+        /// parent, so only the root can say it has gone. Its handlers left with
+        /// it, and ids are never reused, so a report from anywhere beneath it
+        /// reaches nobody.
+        /// </remarks>
+        public bool LetGo { get; set; }
     }
 
     /// <summary>
@@ -978,6 +991,9 @@ public sealed class StateUIRenderer
         {
             element = standing;
         }
+
+        // Described again, so it is the tree's once more.
+        element.LetGo = false;
 
         // Both are said only when they change, so an absent one leaves what
         // the control already carries - see HostPatch.Recycles and
@@ -1829,6 +1845,71 @@ public sealed class StateUIRenderer
     }
 
     /// <summary>
+    /// The element a control reports as - or null where the tree has let it,
+    /// or anything holding it, go.
+    /// </summary>
+    /// <remarks>
+    /// A report can arrive after the render that let its control go: a frame
+    /// watcher settles a turn late by design, and a page's lifecycle is
+    /// announced a turn late after an assigned pop. Its handlers are gone, so
+    /// it reaches nobody and says so in the log. A spare row answers nothing
+    /// either - see <see cref="RenderedElement.Spare"/>.
+    /// </remarks>
+    /// <param name="control">The control an event came from.</param>
+    private static RenderedElement? Reporting(BindableObject control)
+    {
+        if (control.GetValue(ElementProperty) is not RenderedElement element)
+        {
+            return null;
+        }
+
+        for (Element? at = control as Element; at is not null; at = at.Parent)
+        {
+            if (at.GetValue(ElementProperty) is RenderedElement { LetGo: true } or RenderedElement { Spare: true })
+            {
+                return null;
+            }
+        }
+
+        return element;
+    }
+
+    /// <summary>
+    /// Lets a control go: whatever was travelling on it is dropped, and nothing
+    /// under it reports again - see <see cref="RenderedElement.LetGo"/>.
+    /// </summary>
+    /// <param name="control">The root of what the tree has let go.</param>
+    internal void LetGo(object? control)
+    {
+        if (control is IView view)
+        {
+            _walker.Drop(view);
+        }
+
+        if (control is BindableObject bindable && bindable.GetValue(ElementProperty) is RenderedElement element)
+        {
+            element.LetGo = true;
+        }
+    }
+
+    /// <summary>
+    /// What a single slot holds after a message - and the control it held
+    /// before, let go when that is not the same one.
+    /// </summary>
+    /// <param name="was">The control the slot held.</param>
+    /// <param name="now">The control it holds now, or nothing.</param>
+    /// <returns><paramref name="now"/>.</returns>
+    private View? Filled(View? was, View? now)
+    {
+        if (was is not null && !ReferenceEquals(was, now))
+        {
+            LetGo(was);
+        }
+
+        return now;
+    }
+
+    /// <summary>
     /// Reports an event to the host with the handler id the control holds.
     /// </summary>
     /// <remarks>
@@ -1866,7 +1947,7 @@ public sealed class StateUIRenderer
         }
 
         if (sender is BindableObject control
-            && control.GetValue(ElementProperty) is RenderedElement element
+            && Reporting(control) is RenderedElement element
             && element.Events?.TryGetValue(name, out int id) == true)
         {
             _handlers.Raise(id, payload);
@@ -1916,7 +1997,7 @@ public sealed class StateUIRenderer
         }
 
         if (sender is BindableObject control
-            && control.GetValue(ElementProperty) is RenderedElement element
+            && Reporting(control) is RenderedElement element
             && element.Events?.TryGetValue(name, out int id) == true)
         {
             _handlers.Raise(id, WireCodec.WritePayload(HostValue.Of(value)));
@@ -1953,7 +2034,7 @@ public sealed class StateUIRenderer
         }
 
         if (sender is not BindableObject control
-            || control.GetValue(ElementProperty) is not RenderedElement element)
+            || Reporting(control) is not RenderedElement element)
         {
             return;
         }
@@ -2681,11 +2762,11 @@ public sealed class StateUIRenderer
         // the view LEFT.
         if (Laid(node) is { Count: > 0 } children)
         {
-            border.Content = Reconcile(border.Content, children[0]);
+            border.Content = Filled(border.Content, Reconcile(border.Content, children[0]));
         }
         else if (node.Arranged)
         {
-            border.Content = null;
+            border.Content = Filled(border.Content, null);
         }
 
         return border;
@@ -3015,11 +3096,11 @@ public sealed class StateUIRenderer
         {
             if (count == 0)
             {
-                scroll.Content = null;
+                scroll.Content = Filled(scroll.Content, null);
             }
             else if (Laid(node) is { Count: > 0 } only)
             {
-                scroll.Content = Reconcile(scroll.Content, only[0]);
+                scroll.Content = Filled(scroll.Content, Reconcile(scroll.Content, only[0]));
             }
 
             return;
@@ -3174,9 +3255,9 @@ public sealed class StateUIRenderer
             {
                 switch (slot)
                 {
-                    case HostNodeType.LeadingContent: bar.LeadingContent = null; break;
-                    case HostNodeType.Content: bar.Content = null; break;
-                    case HostNodeType.TrailingContent: bar.TrailingContent = null; break;
+                    case HostNodeType.LeadingContent: bar.LeadingContent = Filled(bar.LeadingContent as View, null); break;
+                    case HostNodeType.Content: bar.Content = Filled(bar.Content as View, null); break;
+                    case HostNodeType.TrailingContent: bar.TrailingContent = Filled(bar.TrailingContent as View, null); break;
                 }
 
                 filled.Remove(slot);
@@ -3188,17 +3269,17 @@ public sealed class StateUIRenderer
             switch (child.Type)
             {
                 case HostNodeType.LeadingContent:
-                    bar.LeadingContent = Slot(bar.LeadingContent as View, child);
+                    bar.LeadingContent = Filled(bar.LeadingContent as View, Slot(bar.LeadingContent as View, child));
                     filled.Add(HostNodeType.LeadingContent);
                     break;
 
                 case HostNodeType.Content:
-                    bar.Content = Slot(bar.Content as View, child);
+                    bar.Content = Filled(bar.Content as View, Slot(bar.Content as View, child));
                     filled.Add(HostNodeType.Content);
                     break;
 
                 case HostNodeType.TrailingContent:
-                    bar.TrailingContent = Slot(bar.TrailingContent as View, child);
+                    bar.TrailingContent = Filled(bar.TrailingContent as View, Slot(bar.TrailingContent as View, child));
                     filled.Add(HostNodeType.TrailingContent);
                     break;
             }
@@ -3265,11 +3346,11 @@ public sealed class StateUIRenderer
         // MAUI's RefreshView holds one view, the way a Border does.
         if (Laid(node) is { Count: > 0 } children)
         {
-            refresh.Content = Reconcile(refresh.Content, children[0]);
+            refresh.Content = Filled(refresh.Content, Reconcile(refresh.Content, children[0]));
         }
         else if (node.Arranged)
         {
-            refresh.Content = null;
+            refresh.Content = Filled(refresh.Content, null);
         }
 
 #if IOS || MACCATALYST
@@ -3331,7 +3412,7 @@ public sealed class StateUIRenderer
             }
             else if (!IsSlot(child))
             {
-                swipe.Content = Reconcile(swipe.Content, child);
+                swipe.Content = Filled(swipe.Content, Reconcile(swipe.Content, child));
                 held = true;
             }
         }
@@ -3340,7 +3421,7 @@ public sealed class StateUIRenderer
         // view LEFT - the single-content rule a Border follows.
         if (node.Arranged && !held)
         {
-            swipe.Content = null;
+            swipe.Content = Filled(swipe.Content, null);
         }
 
         return swipe;
@@ -3780,7 +3861,7 @@ public sealed class StateUIRenderer
                 // A replace keeps its place: the new control stands exactly
                 // where the one it supersedes stood. What it supersedes is
                 // leaving the tree, so its motions are dropped - see Align.
-                if (match is IView superseded) { _walker.Drop(superseded); }
+                LetGo(match);
 
                 int at = IndexOf(items, match);
                 items.RemoveAt(at);
@@ -3871,7 +3952,7 @@ public sealed class StateUIRenderer
             // Leaving for good, so whatever was travelling on it is dropped
             // rather than written - see Align, and Walker.Drop for what
             // a write to a view the tree has let go costs on Apple.
-            if (item is IView leaving) { _walker.Drop(leaving); }
+            LetGo(item);
 
             items.RemoveAt(index);
         }
@@ -4053,7 +4134,7 @@ public sealed class StateUIRenderer
                 // view whose managed peer may already be collected. The
                 // reorder below takes children out and puts them back, which
                 // is why only this cull says anything to the walker.
-                if (items[index] is IView leaving) { _walker.Drop(leaving); }
+                LetGo(items[index]);
 
                 items.RemoveAt(index);
             }

@@ -114,6 +114,28 @@ internal sealed class PagePresenter
         _flyouts.Remove(key);
     }
 
+    /// <summary>
+    /// A page a container no longer holds: out of its map, let go by the
+    /// renderer, and forgotten.
+    /// </summary>
+    /// <remarks>
+    /// Let go because its lifecycle is announced a turn late - after an
+    /// assigned pop, the page's Disappearing arrives when the render that
+    /// dropped its handlers is already in - and a report to them reaches
+    /// nobody. See <c>StateUIRenderer.LetGo</c>.
+    /// </remarks>
+    /// <param name="pages">The container's pages.</param>
+    /// <param name="key">The identity of the page that has gone.</param>
+    private void Gone(Dictionary<string, Page> pages, string key)
+    {
+        if (pages.Remove(key, out Page? page))
+        {
+            _renderer.LetGo(page);
+        }
+
+        Forget(key);
+    }
+
     /// <param name="existing">The page showing in this slot, if any.</param>
     /// <param name="node">What Swift says should be there.</param>
     /// <param name="kept">The pages this container is keeping.</param>
@@ -124,8 +146,7 @@ internal sealed class PagePresenter
 
         if (node.Replace && was is not null)
         {
-            kept.Remove(node.Key);
-            Forget(node.Key);
+            Gone(kept, node.Key);
             was = null;
         }
 
@@ -323,8 +344,7 @@ internal sealed class PagePresenter
 
             foreach (string gone in stack.Pages.Keys.Except(stack.Order).ToList())
             {
-                stack.Pages.Remove(gone);
-                Forget(gone);
+                Gone(stack.Pages, gone);
             }
         }
 
@@ -832,8 +852,7 @@ internal sealed class PagePresenter
 
             foreach (string gone in tabs.Pages.Keys.Except(tabs.Order).ToList())
             {
-                tabs.Pages.Remove(gone);
-                Forget(gone);
+                Gone(tabs.Pages, gone);
             }
         }
 
@@ -1305,8 +1324,7 @@ internal sealed class PagePresenter
 
             foreach (string gone in modals.Pages.Keys.Except(modals.Order).ToList())
             {
-                modals.Pages.Remove(gone);
-                Forget(gone);
+                Gone(modals.Pages, gone);
             }
         }
 
