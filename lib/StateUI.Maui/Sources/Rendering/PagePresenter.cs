@@ -1070,6 +1070,16 @@ internal sealed class PagePresenter
 
             // Once, where the page is created - the rule every control follows.
             built.IsPresentedChanged += (_, _) => Announce(flyout);
+
+#if WINDOWS
+            // A POPOVER ON WINDOWS. MAUI's default locks a wide window's
+            // sidebar open - a Left pane with its button hidden, and
+            // IsPresented refusing every write - so neither the reader nor the
+            // application could hide it. As a popover the pane's button stands
+            // beside the back button in the title bar, and the sidebar opens
+            // over the detail and closes again.
+            built.FlyoutLayoutBehavior = FlyoutLayoutBehavior.Popover;
+#endif
         }
         else
         {
