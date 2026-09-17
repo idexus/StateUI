@@ -93,8 +93,19 @@ dotnet workload install maui
 code --install-extension ms-dotnettools.dotnet-maui
 ```
 
-[MAUI host](docs/maui-host.md#requirements) lists what each platform needs
-besides, such as the Android SDK or GTK 4 on Linux.
+Android asks for more, and builds on macOS only:
+
+- the Android SDK with NDK 27 or newer, for Android 9 (API 28) or newer;
+- the Swift SDK for Android, Swift 6.3 or newer, installed with `swift sdk
+  install`;
+- the swift.org toolchain of exactly that SDK's build, such as
+  `swift-6.3.3-RELEASE`, beside Xcode. Xcode's own Swift of the same version
+  number is a different build and cannot read the SDK's modules; the build
+  picks the matching toolchain by itself and names the one to install when
+  none is there.
+
+[MAUI host](docs/maui-host.md#requirements) lists what each platform needs,
+GTK 4 on Linux among them.
 
 Then open the repository in VS Code:
 
