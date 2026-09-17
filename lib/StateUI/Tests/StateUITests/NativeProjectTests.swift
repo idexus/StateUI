@@ -315,6 +315,31 @@ final class NativeProjectTests: XCTestCase {
         }
     }
 
+    /// Every AppKit head - each application's and the template's - hands the
+    /// host an application icon, and finds its artwork from its own source
+    /// file rather than from the directory it was started in. A head started
+    /// by a debugger, a task or a terminal elsewhere would otherwise run with
+    /// the generic executable's icon in the Dock and no images.
+    func testEveryAppKitHeadHasAnIconWhereverItIsStarted() throws {
+        let heads = try Fixtures.applications().map { $0.appendingPathComponent("Platforms/AppKit/main.swift") }
+            + [Fixtures.templateApplication.appendingPathComponent("Platforms/AppKit/main.swift")]
+        let existing = heads.filter { FileManager.default.fileExists(atPath: $0.path) }
+
+        XCTAssertFalse(existing.isEmpty, "no AppKit head found")
+
+        for head in existing {
+            let text = try String(contentsOf: head, encoding: .utf8)
+            let relative = head.path.replacingOccurrences(of: Fixtures.repository.path + "/", with: "")
+
+            XCTAssertTrue(
+                text.contains("applicationIcon:"),
+                "\(relative) gives the host no application icon - the Dock shows a bare executable's")
+            XCTAssertFalse(
+                text.contains("currentDirectoryPath"),
+                "\(relative) finds its artwork from the directory it was started in")
+        }
+    }
+
     func testGalleryOwnsItsAcceptanceTests() {
         let repository = Fixtures.repository
 
