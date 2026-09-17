@@ -51,7 +51,9 @@ icon_work="$(mktemp -d)"
 trap 'rm -rf "$icon_work"' EXIT
 iconset="$icon_work/StateUI.iconset"
 mkdir -p "$iconset"
-source_icon="$gallery_dir/Resources/Images/stateui_tile.svg"
+# The artwork already on macOS's icon grid - drawn edge to edge, the icon
+# would stand larger in the Dock than every one beside it.
+source_icon="$gallery_dir/Resources/AppIcon/appicon_macos.svg"
 
 sips -s format png -z 16 16 "$source_icon" --out "$iconset/icon_16x16.png" >/dev/null
 sips -s format png -z 32 32 "$source_icon" --out "$iconset/icon_16x16@2x.png" >/dev/null

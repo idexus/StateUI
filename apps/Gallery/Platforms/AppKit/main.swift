@@ -16,14 +16,15 @@ GalleryEventSources.start()
 
 let bundledResources = Bundle.main.resourceURL?.appendingPathComponent(
     "Images", isDirectory: true)
-let sourceResources = URL(fileURLWithPath: #filePath)
+let sourceApplication = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent()
     .deletingLastPathComponent()
-    .appendingPathComponent("Resources/Images", isDirectory: true)
+    .deletingLastPathComponent()
+let sourceResources = sourceApplication.appendingPathComponent("Resources/Images", isDirectory: true)
 let resources = bundledResources.flatMap {
     FileManager.default.fileExists(atPath: $0.path) ? $0 : nil
 } ?? sourceResources
 let bundledIcon = Bundle.main.url(forResource: "StateUI", withExtension: "icns")
-let icon = bundledIcon ?? resources.appendingPathComponent("stateui_tile.svg")
+let icon = bundledIcon ?? sourceApplication.appendingPathComponent("Resources/AppIcon/appicon_macos.svg")
 
 StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)

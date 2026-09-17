@@ -82,7 +82,8 @@ apps/HelloWorld/
   Package.swift                  the application module, HelloWorldUI
   Sources/                       the application; every head compiles it
   Resources/
-    AppIcon/                     appicon_bkg.svg and appicon_mark.svg
+    AppIcon/                     appicon_bkg.svg and appicon_mark.svg for MAUI,
+                                 appicon_macos.svg for AppKit
     Splash/                      splash.svg
     Images/                      the interface's artwork
   Platforms/

@@ -316,28 +316,48 @@ final class NativeProjectTests: XCTestCase {
     }
 
     /// Every AppKit head - each application's and the template's - hands the
-    /// host an application icon, and finds its artwork from its own source
-    /// file rather than from the directory it was started in. A head started
-    /// by a debugger, a task or a terminal elsewhere would otherwise run with
-    /// the generic executable's icon in the Dock and no images.
-    func testEveryAppKitHeadHasAnIconWhereverItIsStarted() throws {
-        let heads = try Fixtures.applications().map { $0.appendingPathComponent("Platforms/AppKit/main.swift") }
-            + [Fixtures.templateApplication.appendingPathComponent("Platforms/AppKit/main.swift")]
-        let existing = heads.filter { FileManager.default.fileExists(atPath: $0.path) }
+    /// host its icon on macOS's icon grid, found from its own source file
+    /// rather than from the directory it was started in.
+    ///
+    /// A macOS icon is a 1024 canvas whose body is an 824-point rounded square
+    /// 100 points in: artwork drawn edge to edge stands larger in the Dock than
+    /// every icon beside it. And a head started by a debugger, a task or a
+    /// terminal elsewhere would find no artwork at all, and show the bare
+    /// executable's icon.
+    func testEveryAppKitHeadShowsAnIconOnTheMacGridWhereverItIsStarted() throws {
+        let applications = try Fixtures.applications() + [Fixtures.templateApplication]
+        let icon = "Resources/AppIcon/appicon_macos.svg"
+        var heads = 0
 
-        XCTAssertFalse(existing.isEmpty, "no AppKit head found")
+        for application in applications {
+            let head = application.appendingPathComponent("Platforms/AppKit/main.swift")
+            guard FileManager.default.fileExists(atPath: head.path) else { continue }
+            heads += 1
 
-        for head in existing {
+            let relative = application.path.replacingOccurrences(of: Fixtures.repository.path + "/", with: "")
             let text = try String(contentsOf: head, encoding: .utf8)
-            let relative = head.path.replacingOccurrences(of: Fixtures.repository.path + "/", with: "")
 
             XCTAssertTrue(
-                text.contains("applicationIcon:"),
-                "\(relative) gives the host no application icon - the Dock shows a bare executable's")
+                text.contains("applicationIcon:") && text.contains("appicon_macos.svg"),
+                "\(relative)'s AppKit head does not hand the host \(icon)")
             XCTAssertFalse(
                 text.contains("currentDirectoryPath"),
-                "\(relative) finds its artwork from the directory it was started in")
+                "\(relative)'s AppKit head finds its artwork from the directory it was started in")
+
+            let artwork = try String(contentsOf: application.appendingPathComponent(icon), encoding: .utf8)
+            XCTAssertTrue(
+                artwork.contains("viewBox=\"0 0 1024 1024\"")
+                    && artwork.contains("x=\"100\" y=\"100\" width=\"824\" height=\"824\""),
+                "\(relative)/\(icon) is not on macOS's icon grid: an 824 body, 100 in, on a 1024 canvas")
         }
+
+        XCTAssertGreaterThan(heads, 1, "no AppKit head found")
+        XCTAssertTrue(
+            try String(
+                contentsOf: Fixtures.repository.appendingPathComponent(".scripts/AppKit/build-gallery-appkit.sh"),
+                encoding: .utf8
+            ).contains("Resources/AppIcon/appicon_macos.svg"),
+            "the Gallery's bundle makes its .icns from artwork off macOS's icon grid")
     }
 
     func testGalleryOwnsItsAcceptanceTests() {

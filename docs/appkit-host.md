@@ -34,6 +34,13 @@ NotesEventSources.start()
 StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
 ```
 
+The head finds its artwork from its own source file, `#filePath`, so it runs
+the same whether a debugger, a task or a terminal starts it. The icon it hands
+the host is `Resources/AppIcon/appicon_macos.svg`, drawn on macOS's icon grid:
+a 1024-point canvas whose body is an 824-point rounded square 100 points in.
+Artwork drawn edge to edge stands larger in the Dock than every icon beside
+it.
+
 Every AppKit build of an application defines the `APPKIT` compilation
 condition; Swift written for this host alone stands under `#if APPKIT`. See
 [Project structure and development](development.md).
