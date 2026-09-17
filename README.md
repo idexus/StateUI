@@ -22,10 +22,13 @@ the native contract is settled.
 ## In Action
 
 One application, described once in Swift, on two hosts. The AppKit host draws
-it with macOS controls, in the same process as the application module:
+it with macOS controls, in the same process as the application module - here
+the Gallery's Metal sample: the cube is an `MTKView` the application registers
+with the host, and its size, colour and spin are described from StateUI. The
+edge is handed over as a state, so dragging the slider rebuilds nothing:
 
 <video src="https://github.com/idexus/StateUI/raw/main/docs/assets/appkit.mp4" controls muted loop width="840">
-  <a href="https://github.com/idexus/StateUI/raw/main/docs/assets/appkit.mp4">The Gallery on the AppKit host (mp4)</a>
+  <a href="https://github.com/idexus/StateUI/raw/main/docs/assets/appkit.mp4">The Gallery's Metal sample on the AppKit host (mp4)</a>
 </video>
 
 The .NET MAUI host renders the same application from the wire - here on
