@@ -12,7 +12,7 @@ import * as vscode from "vscode";
 import { Application, findApplications } from "./applications";
 import { configurations, StateUIDebugConfigurationProvider } from "./debug";
 import { applyEditorMode, cleanIndex, variablesInSettings } from "./editorMode";
-import { availableMauiDebuggers, describe, Host, hosts, MauiDebugger, mauiDebuggers } from "./hosts";
+import { availableHosts, availableMauiDebuggers, describe, Host, MauiDebugger, mauiDebuggers } from "./hosts";
 import { runTask } from "./tasks";
 import { findSuites, runSuites } from "./tests";
 import { carriedTemplate, checkoutProblem, inAppsCommand, isCheckout, nameProblem, pinnedRelease, releases, Starter, StarterSource, writeStarter } from "./newApplication";
@@ -43,10 +43,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     // The packages whose manifest reads a host's variable: the applications.
     const roots = (): string[] => applications().map((each) => each.directory);
 
-    // AppKit where there is a head to run on this machine, MAUI otherwise.
-    const host = (): Host =>
-        state.get<Host>(hostKey)
-        ?? (process.platform === "darwin" && applications().some((each) => each.hasAppKitHead) ? "appkit" : "maui");
+    // The one chosen, where this machine runs it; else AppKit where there is a
+    // head to run on this machine, MAUI otherwise.
+    const host = (): Host => {
+        const stored = state.get<Host>(hostKey);
+        if (availableHosts().some((each) => each.id === stored)) {
+            return stored!;
+        }
+        return availableHosts().some((each) => each.id === "appkit") && applications().some((each) => each.hasAppKitHead) ? "appkit" : "maui";
+    };
 
     /** How a MAUI head is debugged: the one chosen, where this machine offers it, else C#. */
     const mauiDebugger = (): MauiDebugger => {
@@ -126,7 +131,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     context.subscriptions.push(
         vscode.commands.registerCommand("stateui.selectHost", async () => {
             const picked = await vscode.window.showQuickPick(
-                hosts.map((each) => ({
+                availableHosts().map((each) => ({
                     label: each.label,
                     description: each.id === host() ? "current" : undefined,
                     detail: each.detail,

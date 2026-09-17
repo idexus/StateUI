@@ -46,7 +46,8 @@ directory, the MAUI project, the process and the Swift module (`<Name>UI`).
 ## The host
 
 The status bar shows the host - **AppKit** or **.NET MAUI**. Click it, or run
-**StateUI: Select Host**.
+**StateUI: Select Host**. AppKit is offered on macOS alone; on Windows and Linux
+the host is .NET MAUI.
 
 - **The editor works as that host.** Code under `#if APPKIT` is compiled and
   completed while AppKit is chosen, and an application's `Platforms/AppKit`

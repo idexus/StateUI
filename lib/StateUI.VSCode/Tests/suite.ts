@@ -16,7 +16,7 @@ import * as vscode from "vscode";
 import { findApplications } from "../Sources/applications";
 import { StateUIDebugConfigurationProvider } from "../Sources/debug";
 import { findSuites } from "../Sources/tests";
-import { MauiDebugger } from "../Sources/hosts";
+import { availableHosts, MauiDebugger } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { carriedTemplate, inAppsCommand, nameProblem, Starter, templateIn, writeStarter } from "../Sources/newApplication";
 
@@ -170,6 +170,12 @@ export async function run(): Promise<void> {
                 /run-app\.ps1 -Configuration Debug -Project .*Gallery\.csproj$/.test(ran[0] ?? "")
                 && JSON.stringify(resolved?.attachCommands) === JSON.stringify(["process attach --name Gallery.exe"]));
         }
+
+        // The hosts a machine is offered: AppKit on macOS alone.
+        check("the host picker offers AppKit and .NET MAUI on macOS, and only .NET MAUI on Windows and Linux",
+            JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "maui"])
+            && JSON.stringify(availableHosts("win32").map((each) => each.id)) === JSON.stringify(["maui"])
+            && JSON.stringify(availableHosts("linux").map((each) => each.id)) === JSON.stringify(["maui"]));
 
         // 5. The suites, found for each host the way test-native.sh runs them.
         const appkitSuites = findSuites(root.uri.fsPath, "appkit").map((each) => each.label);

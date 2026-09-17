@@ -29,13 +29,21 @@ export interface HostDescription {
      * database asking for inputs that no longer exist.
      */
     readonly indexPath: string;
+
+    /** The machines that build and run this host's heads. */
+    readonly platforms: readonly NodeJS.Platform[];
 }
 
 /** Every host, in the order the picker offers them. */
 export const hosts: readonly HostDescription[] = [
-    { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process", variable: "STATEUI_APPKIT", indexPath: ".build-appkit/index-build" },
-    { id: "maui", label: ".NET MAUI", detail: "Android, iOS, Mac Catalyst, Windows and Linux", indexPath: ".build-maui/index-build" },
+    { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process", variable: "STATEUI_APPKIT", indexPath: ".build-appkit/index-build", platforms: ["darwin"] },
+    { id: "maui", label: ".NET MAUI", detail: "Android, iOS, Mac Catalyst, Windows and Linux", indexPath: ".build-maui/index-build", platforms: ["darwin", "win32", "linux"] },
 ];
+
+/** The hosts this machine builds and runs - AppKit on macOS alone. */
+export function availableHosts(platform: NodeJS.Platform = process.platform): HostDescription[] {
+    return hosts.filter((each) => each.platforms.includes(platform));
+}
 
 /** The description of one host. */
 export function describe(host: Host): HostDescription {
