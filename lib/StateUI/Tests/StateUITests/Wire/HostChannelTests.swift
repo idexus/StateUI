@@ -3,7 +3,7 @@
 
 // The four channels the HOST writes - an act's reply, an event's payload, an
 // event the host raised by name, and an environment push - read back by the
-// library's own decoder in Core/Wire.swift.
+// library's own decoder in Core/Wire/Wire+Reading.swift.
 //
 // The direction is the reverse of every other fixture's: a host WRITES these
 // bytes and StateUI reads them. The fixtures under fixtures/payloads are still

@@ -213,7 +213,8 @@ extension Renderer {
             // After the board has let go: the state's hook may take this renderer's lock.
             storage.told?(write.mask)
 
-            // Readings asked for with `.samples` see every host write (Core/Sampling.swift).
+            // Readings asked for with `.samples` see every host write
+            // (Core/Journey/Sampling.swift).
             storage.sampleTaken()
             written += 1
         }

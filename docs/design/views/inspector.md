@@ -1,8 +1,8 @@
 # Inspector
 
 The inspector shows what every render costs and what it builds, inside the
-application it measures. The record is `Core/Inspection.swift`'s; the views
-here show it.
+application it measures. The record is `Core/Diagnostics/Inspection.swift`'s;
+the views here show it.
 
 ## What it shows
 

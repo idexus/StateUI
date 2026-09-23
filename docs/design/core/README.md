@@ -6,6 +6,9 @@ executor, the Wire and the C exports. It holds the reasons behind the code; the
 code's comments say what a thing is and point here. Every note describes the
 current design, its reason and its trap.
 
+The core's sources stand in one folder per topic, one element to a file, and
+[Where things live](#where-things-live) says which folder holds what.
+
 ## The notes
 
 | Note | What it covers |
@@ -180,37 +183,34 @@ UI thread under a debugger. The host asks instead (concurrency.md).
 
 ## Where things live
 
+Each folder of `lib/StateUI/Sources/Core` is one topic, and the note beside it
+holds its reasons. A type's extensions stand in its folder, named
+`Type+Responsibility.swift`.
+
 ```text
-  Renderer.swift        the renderer, host reports, the act queue      render, acts
-  Invalidation.swift    read scopes                                     invalidation
-  Builds.swift          debugInfo()                                     invalidation
-  Diff.swift            the differ                                      identity-and-diffing
-  Tree.swift            RenderedNode, patch merging                     identity-and-diffing
-  Node.swift            Node, PropValue, handler types                  identity-and-diffing
-  Stateful.swift        placeholders, state parts, inputs               identity-and-diffing
-  Changes, Lifetime     .onChanged, .onCreated, .onDestroying           identity-and-diffing
-  Recycling.swift       row shapes                                      identity-and-diffing
-  State.swift           @State, storage, Binding                        state
-  StateValue.swift      carried values, lanes, HostStorage, Journey     state, journeys
-  Persistence.swift     kept state and its store                        state
-  Environment.swift     @Environment                                    state
-  ElementSession.swift  an element's lifelong object                    state
-  Observable.swift      the @Observable refusal                         state
-  Sampling, Conversion,
-  MultiBinding          readings and conversions                        journeys
-  MotionLaw.swift       the two motion laws                             journeys
-  Cycle, Engine,
-  StateBatch, Ticker    the board, engines, the state batch, the ticker cycle
-  ActCall, Aim, Focus,
-  Dialogs, ScreenReader,
-  HostEvents            acts, aims and events                           acts
-  UIThread, Lock        the executor, the doorbell, the lock            concurrency
-  Wire.swift            the byte layout                                 wire
-  Contract, Registry,
-  Tokens                contracts, realizations, tokens                 contracts
-  HostRender.swift      the typed SPI                                   (this note)
-  HostPath.swift        SVG path data for hosts
-  Scenes, ValueText     scenes, windows, a value as text                scenes
-  Inspection, Complaint the inspector, complaints                       diagnostics
-  Bridge/Exports.swift  the C exports                                   bridge
+  Core/State        @State and its storage, Binding, kept state,          state
+                    @Environment, element sessions, the @Observable refusal
+  Core/Carried      what a carried value is: StateValue and its image,    state, cycle
+                    the attachments, HostStorage's three copies
+  Core/Journey      Journey and its lanes, the law on the image, the two  journeys
+                    motion laws, readings, conversions, .multi
+  Core/Cycle        the board, engines, the state batch, the ticker       cycle
+  Core/Render       the renderer, with its cycle, act queue and dispatch; render, acts,
+                    read scopes, debugInfo()                              invalidation
+  Core/Diff         the differ, Node, RenderedNode, placeholders and      identity-and-diffing
+                    inputs, .onChanged, .onCreated, .onDestroying, rows
+  Core/Acts         acts and replies, aims, focus, dialogs, the screen    acts
+                    reader, host events
+  Core/Threads      the UI thread's executor, the doorbell, the lock      concurrency
+  Core/Wire         the byte layout: its writer, its reader, the          wire
+                    dictionary
+  Core/Boundary     the typed SPI: StateUIHost, HostRender, HostPatch     (this note)
+                    and the values it carries, SVG path data
+  Core/Contract     contracts and tiers, members, their facts and         contracts
+                    values, the tokens
+  Core/Realization  a host's registry and reports, realizations and       contracts
+                    declarations
+  Core/Scenes       scenes, their records and element, a value as text    scenes
+  Core/Diagnostics  the inspector, complaints                             diagnostics
+  Bridge            Exports.swift: the C exports                          bridge
 ```

@@ -58,7 +58,8 @@ extension Differ {
     ) -> (node: RenderedNode, patch: HostPatch) {
         var node = node
 
-        // Whether an inspector's frame is open for this element (Core/Inspection.swift).
+        // Whether an inspector's frame is open for this element
+        // (Core/Diagnostics/Inspection.swift).
         var inspected = false
         defer { if inspected { Inspection.leave() } }
 
@@ -74,12 +75,12 @@ extension Differ {
         // before any placeholder is unwrapped.
         let key = node.key
 
-        // An aim takes the key this element settled on (Core/Aim.swift).
+        // An aim takes the key this element settled on (Core/Acts/Aim.swift).
         let written = node.aim
         written?.attach(id, walk: walkStamp)
 
         // The readings asked for here, keyed by their target and held by this element
-        // (Core/Sampling.swift).
+        // (Core/Journey/Sampling.swift).
         var readings: [Sampling] = []
 
         for (image, into, asks, take) in node.samples {
@@ -93,7 +94,7 @@ extension Differ {
         defer { scope.removeLast(pushed) }
 
         // What the element holds for its life - a page's session - handed back on every
-        // build (Core/ElementSession.swift).
+        // build (Core/State/ElementSession.swift).
         var session: AnyObject?
 
         if let request = node.session {
@@ -164,7 +165,7 @@ extension Differ {
                 }
 
                 // A state a scene keeps takes the scene's storage for its key, before the body
-                // reads it (Core/Scenes.swift).
+                // reads it (Core/Scenes/SceneRecord.swift).
                 if let record = sceneRecord {
                     for (_, box) in stateful.boxes {
                         (box as? SceneClaiming)?.claimScene(record)

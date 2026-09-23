@@ -118,13 +118,13 @@ the first job.
 
 ## The lock
 
-`Lock` (Core/Lock.swift) is what state more than one thread touches stands
-behind: a storage's value, the renderer's bookkeeping, a board's images, the act
-queue. It is a `Mutex` guarding nothing, with the state beside it rather than in
-it, because what it guards is often no value a mutex could hold: a `@State`'s
-value is whatever type its author declares, `Sendable` or not, and a value
-handed into a mutex has to be `sending`, which a property setter cannot promise.
-An uncontended hold costs a few nanoseconds.
+`Lock` (Core/Threads/Lock.swift) is what state more than one thread touches
+stands behind: a storage's value, the renderer's bookkeeping, a board's images,
+the act queue. It is a `Mutex` guarding nothing, with the state beside it
+rather than in it, because what it guards is often no value a mutex could hold:
+a `@State`'s value is whatever type its author declares, `Sendable` or not, and
+a value handed into a mutex has to be `sending`, which a property setter cannot
+promise. An uncontended hold costs a few nanoseconds.
 
 It is not reentrant: a body that asks for the same lock again deadlocks. So what
 a body takes out - a continuation to resume, a handler to call - runs after

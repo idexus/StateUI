@@ -54,4 +54,5 @@ every contract says it the same way:
 ```
 
 The dictionary takes a layer's meaning from the documentation of the
-`ElementLayer` cases in `Core/Contract.swift`, not from these sentences.
+`ElementLayer` cases in `Core/Contract/ElementLayer.swift`, not from these
+sentences.

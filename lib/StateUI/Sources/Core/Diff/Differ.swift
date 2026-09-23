@@ -36,7 +36,7 @@ final class Differ {
     /// The states written since the tree the host holds was built.
     private(set) var changed: Set<ObjectIdentifier> = []
 
-    /// What each changed state is called, for `debugInfo()` (Core/Builds.swift).
+    /// What each changed state is called, for `debugInfo()` (Core/Render/Builds.swift).
     var named: [ObjectIdentifier: String] = [:]
 
     /// The handlers this walk found to run - `.onChanged`, `.onCreated` - in order.

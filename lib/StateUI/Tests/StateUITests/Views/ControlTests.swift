@@ -84,7 +84,7 @@ final class ControlTests: XCTestCase {
     private static var cases: [ControlCase] {
         // The number numbering starts over, so a fixture is the same bytes
         // whichever test read this first: a number number is issued from a
-        // counter the whole process shares. See Core/StateValue.swift.
+        // counter the whole process shares. See Core/Render/Renderer+Cycle.swift.
         Renderer.shared.clearStates()
 
         // A binding needs somewhere to live; a State is a reference, so this is

@@ -3,7 +3,8 @@
 Which scenes are open is the library's to hold, never the author's: the
 platform makes them - at launch, for a new window, when the system restores the
 application's windows - and `ApplicationSession.openScene()` asks for one more.
-`Scenes` (Core/Scenes.swift) keeps them as state the root of the tree reads.
+`Scenes` (Core/Scenes/Scenes.swift) keeps them as state the root of the tree
+reads.
 
 ## The scene tree
 

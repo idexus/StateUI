@@ -115,9 +115,9 @@ and never inherited, so what the author wrote inside an item still animates.
 subtrees, a few described at a time out of many. The host keeps the control of
 a row that scrolls away and gives it to the next row of the same shape. A shape
 is a number over a subtree's types, property keys and event keys with the
-values left out (`Core/Recycling.swift`), so two rows share a shape exactly when
-they name the same properties on the same controls in the same places, and an
-adopted control is given a value for every property it carries.
+values left out (`Core/Diff/Recycling.swift`), so two rows share a shape
+exactly when they name the same properties on the same controls in the same
+places, and an adopted control is given a value for every property it carries.
 
 The modifier stays internal. What it promises is that any child of the layout
 could stand where any other of the same shape stands, which is true of a list's

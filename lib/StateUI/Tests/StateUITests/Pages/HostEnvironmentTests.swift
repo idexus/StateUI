@@ -5,8 +5,8 @@
 // scope and written through `stateui_set_environment`.
 //
 // The mechanism is the providers and their applier, StandardEnvironment.swift,
-// the seeding in Core/Diff.swift and `Node.built`, and the export in
-// Bridge/Exports.swift. The promises pinned here:
+// the seeding in Differ.swift and `Node.built`, and the export in
+// Exports.swift. The promises pinned here:
 //
 //   - a view resolves a standard provider with NOTHING provided anywhere;
 //   - a push through the real export rebuilds exactly the views that read

@@ -3,7 +3,7 @@
 
 // The tree an author writes: a `Node` is one element as written this render and
 // is thrown away after it. Its key and handler ids belong to the element it
-// describes (Core/Tree.swift).
+// describes (Core/Diff/Tree.swift).
 // Design: docs/design/core/identity-and-diffing.md#keys
 
 /// A value in StateUI's tree and at the host boundary. `.themed` stays in the
@@ -226,7 +226,7 @@ public struct Node {
     var aim: AimBox?
 
     /// The readings asked for with `.samples(_:into:_:)`, for the differ to put on
-    /// the values they read. Never crosses (Core/Sampling.swift).
+    /// the values they read. Never crosses (Core/Journey/Sampling.swift).
     var samples: [(image: HostStorage, into: ObjectIdentifier, asks: Asks, take: @Sendable () -> Void)] = []
 
     /// The objects `.environment()` wrote here, in writing order, provided to this
@@ -234,7 +234,7 @@ public struct Node {
     var environments: [(key: ObjectIdentifier, object: AnyObject)] = []
 
     /// What this element holds for its life, where it asks for something - a page's
-    /// session (Core/ElementSession.swift). Never crosses.
+    /// session (Core/State/ElementSession.swift). Never crosses.
     var session: ElementSession?
 
     /// Where this node was written among its siblings - the builder path: which
@@ -270,7 +270,7 @@ public struct Node {
     var events: [Event: EventHandler]
 
     /// The properties driven by a state and how each crosses - what `.opacity($fade)`
-    /// records instead of a value (Core/StateValue.swift).
+    /// records instead of a value (Core/Carried/StateAttachment.swift).
     var driven: [Prop: StateRegistration] = [:]
 
     /// Whether this element reports its own frame, so its own size never animates.
@@ -288,26 +288,26 @@ public struct Node {
     /// application's. Per node, never inherited (Types/Motion.swift).
     var motion: MotionPlan?
 
-    /// The values `.onChanged` watches, in written order (Core/Changes.swift).
+    /// The values `.onChanged` watches, in written order (Core/Diff/Changes.swift).
     var watches: [Watch] = []
 
-    /// What `.onCreated` runs, in written order (Core/Lifetime.swift).
+    /// What `.onCreated` runs, in written order (Core/Diff/Lifetime.swift).
     var created: [EventHandler] = []
 
     /// What `.onDestroying` runs, in written order.
     var destroying: [EventHandler] = []
 
     /// The engines this element runs, in written order; the differ registers them
-    /// under numbers the element keeps (Core/Engine.swift).
+    /// under numbers the element keeps (Core/Cycle/Engine.swift).
     var engines: [EngineDeclaration] = []
 
     /// Set on a layout whose children are rows the host may keep and hand to a row
-    /// of the same shape - by this library's own list alone (Core/Recycling.swift).
+    /// of the same shape - by this library's own list alone (Core/Diff/Recycling.swift).
     var recycles = false
 
 
     /// Set on a placeholder for a composed view whose body is not built yet
-    /// (Core/Stateful.swift).
+    /// (Core/Diff/Stateful.swift).
     var stateful: Stateful?
 
     /// Adds a handler beside any the event already has, never instead of it.

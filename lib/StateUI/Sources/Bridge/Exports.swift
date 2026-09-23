@@ -17,7 +17,7 @@ private func makeCString(_ text: String) -> UnsafeMutablePointer<CChar>? {
 }
 
 // Design: docs/design/core/bridge.md#the-wire-suffix
-/// Renders and returns what changed as Wire bytes (Core/Wire.swift), writing the
+/// Renders and returns what changed as Wire bytes (Core/Wire/Wire.swift), writing the
 /// byte count into `length`.
 ///
 /// `baseline` is the generation of the last message the caller applied in full,
@@ -238,7 +238,7 @@ public func stateui_alive() -> Int32 {
 
 /// Whether an inspector is recording - asked by the host once a render, which
 /// measures its half of a message and reports it only while one is. See
-/// Core/Inspection.swift.
+/// Core/Diagnostics/Inspection.swift.
 @_cdecl("stateui_inspecting")
 public func stateui_inspecting() -> Int32 {
     Inspection.recording ? 1 : 0

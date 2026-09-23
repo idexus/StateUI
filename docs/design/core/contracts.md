@@ -1,9 +1,9 @@
 # Contracts
 
-Every node type exists through one contract (Core/Contract.swift): an enum
-naming its node type and every member it has, each with the type of its value.
-Swift writes through the members, so a property and its value meet in the
-compiler, and a host realizes the contract member by member.
+Every node type exists through one contract (Core/Contract): an enum naming its
+node type and every member it has, each with the type of its value. Swift
+writes through the members, so a property and its value meet in the compiler,
+and a host realizes the contract member by member.
 
 ```text
   enum TrafficLightContract: ElementContract
@@ -91,11 +91,12 @@ which number it rides under is the transport's, settled per session
 same thing.
 
 Nobody writes a token by hand. A member's token is made from its name, and each
-name is spelled once, where a contract declares its member; the library's tokens
-(`Core/Tokens.swift`, for the hosts, behind `@_spi(Host)`) are made from the
-members, and a guard names any source that spells a name out instead. A node
-type is the one token a contract spells, as a literal. Tokens compare by name,
-because a message writes properties and handlers in name order.
+name is spelled once, where a contract declares its member; the library's
+tokens (`Core/Contract/Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
+made from the members, and a guard names any source that spells a name out
+instead. A node type is the one token a contract spells, as a literal. Tokens
+compare by name, because a message writes properties and handlers in name
+order.
 
 An application's own node type can be one no host knows; the host draws an
 unknown type as a red marker rather than failing, which keeps a lagging host

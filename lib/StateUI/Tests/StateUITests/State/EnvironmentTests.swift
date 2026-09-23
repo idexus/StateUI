@@ -5,7 +5,7 @@
 // where the reads are.
 //
 // The mechanism is in Core/Environment.swift (the wrapper and the slots),
-// Core/Diff.swift (the scope, kept through both walks, and the memo's
+// Core/Diff/Differ.swift (the scope, kept through both walks, and the memo's
 // environment snapshot) and Core/Stateful.swift (the slots collected beside
 // the state boxes, and the structural `built` path). The promises pinned
 // here, each proven to fail without its half of the mechanism:

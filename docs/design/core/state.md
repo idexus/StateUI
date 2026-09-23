@@ -1,10 +1,10 @@
 # State
 
-`@State` is the one declaration of mutable state (Core/State.swift). Where it
-is used decides its role: read in a body, it rebuilds that body when written;
-handed to a control or a driven modifier as `$x`, the host carries it and no
-body is rebuilt for it. This note covers how a state is stored, borrowed,
-carried, kept and provided.
+`@State` is the one declaration of mutable state (Core/State/State.swift).
+Where it is used decides its role: read in a body, it rebuilds that body when
+written; handed to a control or a driven modifier as `$x`, the host carries it
+and no body is rebuilt for it. This note covers how a state is stored,
+borrowed, carried, kept and provided.
 
 ## Storage and box
 
@@ -115,9 +115,9 @@ holding the model.
 ## Carried state
 
 A state handed to a driven modifier, a feed or a two-way control is carried by
-the host on an image (`HostStorage`, Core/StateValue.swift). The image is made
-the first time anything asks, from the value as it stands, and kept on the
-storage - a box is remade every render, and the number the host quotes the
+the host on an image (`HostStorage`, Core/Carried/HostStorage.swift). The image
+is made the first time anything asks, from the value as it stands, and kept on
+the storage - a box is remade every render, and the number the host quotes the
 value by is issued against the image. From then on the value lives on the
 image: reads decode its lanes, writes lay theirs, and the box's own hold is
 empty, because two homes for one value would be two answers.

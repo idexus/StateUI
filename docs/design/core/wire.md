@@ -1,9 +1,8 @@
 # The Wire
 
 The Wire is the patch, the acts and the host's reports as deterministic bytes,
-for a runtime that cannot read Swift types (Core/Wire.swift). A Swift host
-takes the same model typed (`HostRender`, `HostPatch`) and never sees these
-bytes.
+for a runtime that cannot read Swift types (Core/Wire). A Swift host takes the
+same model typed (`HostRender`, `HostPatch`) and never sees these bytes.
 
 ## Bytes rather than text
 
