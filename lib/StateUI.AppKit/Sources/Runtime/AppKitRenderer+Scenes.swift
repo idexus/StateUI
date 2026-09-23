@@ -365,4 +365,15 @@ extension AppKitRenderer {
             .standingValue(property)
     }
 }
+
+/// An element's id as a window event carries it.
+extension ElementId {
+    var hostPayload: HostValue {
+        switch self {
+        case .manual(let value): .string(value)
+        case .auto(let value): .number(Double(value))
+        }
+    }
+}
+
 #endif
