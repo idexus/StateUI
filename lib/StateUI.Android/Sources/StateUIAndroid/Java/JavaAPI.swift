@@ -57,6 +57,25 @@ enum JavaAPI {
         choreographer, "postFrameCallback", "(Landroid/view/Choreographer$FrameCallback;)V")
     static let removeAllViews = Java.method(viewGroup, "removeAllViews", "()V")
     static let addView = Java.method(viewGroup, "addView", "(Landroid/view/View;II)V")
+    static let removeView = Java.method(viewGroup, "removeView", "(Landroid/view/View;)V")
+    static let setClipChildren = Java.method(viewGroup, "setClipChildren", "(Z)V")
+    static let getParent = Java.method(view, "getParent", "()Landroid/view/ViewParent;")
+    static let scrollTo = Java.method(view, "scrollTo", "(II)V")
+    static let getScrollX = Java.method(view, "getScrollX", "()I")
+    static let getScrollY = Java.method(view, "getScrollY", "()I")
+    static let getLocationInWindow = Java.method(view, "getLocationInWindow", "([I)V")
+    static let setOnScrollChangeListener = Java.method(
+        view, "setOnScrollChangeListener", "(Landroid/view/View$OnScrollChangeListener;)V")
+    static let setOnTouchListener = Java.method(view, "setOnTouchListener", "(Landroid/view/View$OnTouchListener;)V")
+    static let setVerticalScrollBarEnabled = Java.method(view, "setVerticalScrollBarEnabled", "(Z)V")
+    static let setHorizontalScrollBarEnabled = Java.method(view, "setHorizontalScrollBarEnabled", "(Z)V")
+    static let setScrollbarFadingEnabled = Java.method(view, "setScrollbarFadingEnabled", "(Z)V")
+    static let getViewTreeObserver = Java.method(view, "getViewTreeObserver", "()Landroid/view/ViewTreeObserver;")
+    static let viewTreeObserver = Java.findClass("android/view/ViewTreeObserver")
+    static let addOnGlobalLayoutListener = Java.method(
+        viewTreeObserver, "addOnGlobalLayoutListener", "(Landroid/view/ViewTreeObserver$OnGlobalLayoutListener;)V")
+    static let addOnScrollChangedListener = Java.method(
+        viewTreeObserver, "addOnScrollChangedListener", "(Landroid/view/ViewTreeObserver$OnScrollChangedListener;)V")
 
     // MARK: - android.widget
 
@@ -120,6 +139,13 @@ enum JavaAPI {
         seekBar, "setThumbTintList", "(Landroid/content/res/ColorStateList;)V")
     static let getThumbTintList = Java.method(
         seekBar, "getThumbTintList", "()Landroid/content/res/ColorStateList;")
+
+    static let scrollView = Java.findClass("android/widget/ScrollView")
+    static let newScrollView = Java.method(scrollView, "<init>", "(Landroid/content/Context;)V")
+    static let setFillViewport = Java.method(scrollView, "setFillViewport", "(Z)V")
+    static let horizontalScrollView = Java.findClass("android/widget/HorizontalScrollView")
+    static let newHorizontalScrollView = Java.method(horizontalScrollView, "<init>", "(Landroid/content/Context;)V")
+    static let setHorizontalFillViewport = Java.method(horizontalScrollView, "setFillViewport", "(Z)V")
 
     static let imageView = Java.findClass("android/widget/ImageView")
     static let newImageView = Java.method(imageView, "<init>", "(Landroid/content/Context;)V")

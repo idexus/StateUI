@@ -99,6 +99,21 @@ enum JavaNatives {
                 (AndroidView.find(number) as? AndroidTextFieldView)?.onSubmitted?()
             }
         }
+        let scrolled: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidScrollView)?.scrolled()
+            }
+        }
+        let held: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, holding in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidScrollView)?.held(holding != 0)
+            }
+        }
+        let laidOut: @convention(c) (Environment, jclass?) -> Void = { _, _ in
+            MainActor.assumeIsolated {
+                AndroidRenderer.shared?.laidOut()
+            }
+        }
         let measure: @convention(c) (Environment, jclass?, jlong, jint, jint) -> jlong = {
             _, _, number, widthSpec, heightSpec in
             MainActor.assumeIsolated {
@@ -126,6 +141,9 @@ enum JavaNatives {
             ("dragCompleted", "(J)V", unsafeBitCast(dragCompleted, to: UnsafeMutableRawPointer.self)),
             ("textChanged", "(JLjava/lang/String;)V", unsafeBitCast(textChanged, to: UnsafeMutableRawPointer.self)),
             ("submitted", "(J)V", unsafeBitCast(submitted, to: UnsafeMutableRawPointer.self)),
+            ("scrolled", "(J)V", unsafeBitCast(scrolled, to: UnsafeMutableRawPointer.self)),
+            ("held", "(JZ)V", unsafeBitCast(held, to: UnsafeMutableRawPointer.self)),
+            ("laidOut", "()V", unsafeBitCast(laidOut, to: UnsafeMutableRawPointer.self)),
             ("measure", "(JII)J", unsafeBitCast(measure, to: UnsafeMutableRawPointer.self)),
             ("arrange", "(JII)V", unsafeBitCast(arrange, to: UnsafeMutableRawPointer.self)),
         ]

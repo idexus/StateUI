@@ -22,9 +22,10 @@ final class AndroidAbsoluteLayoutView: AndroidTravellingLayout {
         }
     }
 
-    override func setItems(_ items: [AndroidLayoutItem]) {
-        super.setItems(items)
-        holdInDrawingOrder()
+    @discardableResult
+    override func setItems(_ items: [AndroidLayoutItem]) -> Bool {
+        defer { holdInDrawingOrder() }
+        return super.setItems(items)
     }
 
     override func contentSize(width: Double?) -> LayoutSize {

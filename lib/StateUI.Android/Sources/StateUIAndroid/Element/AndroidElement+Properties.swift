@@ -35,6 +35,7 @@ extension AndroidElement {
             sending: { [weak self] event, values in self?.send(event, values) },
             reporting: { [weak self] property, event, value in self?.report(property, event, value) }
         ) {
+            if let scroll = registered as? AndroidScrollView { follow(scroll) }
             return registered
         }
 
@@ -113,11 +114,20 @@ extension AndroidElement {
             pivotY: value(.pivotY)?.number ?? 0.5)
     }
 
+    /// Hands the scroller's reports to this element, and its wish for the display's frames to the renderer.
+    private func follow(_ scroll: AndroidScrollView) {
+        scroll.onOffsetChanged = { [weak self] old, new in self?.scrolled(from: old, to: new) }
+        scroll.onScrollStopped = { [weak self] in self?.send(.scrollStopped, []) }
+        scroll.onFramesWanted = { [weak self, weak scroll] in
+            if let scroll { self?.host?.requestFrames(for: scroll) }
+        }
+    }
+
     /// Forgets the sizes kept by this element's layout and every one above it, and asks Android to measure again.
     func invalidateMeasurements() {
         var element: AndroidElement? = self
         while let each = element {
-            (each.view as? AndroidLayoutView)?.measurements.invalidate()
+            (each.view as? AndroidLayoutView)?.forgetMeasurements()
             element = each.parent
         }
 

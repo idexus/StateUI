@@ -228,10 +228,12 @@ extension AndroidView {
         let (_, _, width, height) = frame
         let config = Java.staticObject(TestJava.bitmapConfig, "ARGB_8888", "Landroid/graphics/Bitmap$Config;")
         return Java.frame {
-            let bitmap = Java.callStaticObject(
-                TestJava.bitmap, TestJava.createBitmap, .int(width), .int(height), .object(config.reference))!
+            let bitmap = withExtendedLifetime(config) {
+                Java.callStaticObject(
+                    TestJava.bitmap, TestJava.createBitmap, .int(width), .int(height), .object(config.reference))!
+            }
             let canvas = Java.new(TestJava.canvas, TestJava.newCanvas, .object(bitmap))
-            Java.call(reference, TestJava.draw, .object(canvas.reference))
+            withExtendedLifetime(canvas) { Java.call(reference, TestJava.draw, .object(canvas.reference)) }
             return points.map { UInt32(bitPattern: Java.callInt(bitmap, TestJava.getPixel, .int($0.x), .int($0.y))) }
         }
     }
@@ -241,8 +243,10 @@ extension AndroidView {
         Java.frame {
             let outline = Java.new(TestJava.outline, TestJava.newOutline)
             let background = Java.callObject(reference, TestJava.getBackground)!
-            Java.call(background, TestJava.getOutline, .object(outline.reference))
-            return Java.callFloat(outline.reference, TestJava.getRadius)
+            return withExtendedLifetime(outline) {
+                Java.call(background, TestJava.getOutline, .object(outline.reference))
+                return Java.callFloat(outline.reference, TestJava.getRadius)
+            }
         }
     }
 

@@ -326,28 +326,6 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(reports, [11, 13], "and said once")
     }
 
-    /// A scroller's movement is stepped by the frame clock alone: no timer and
-    /// no second clock decides when it rests.
-    func testAScrollersMovementReadsNoClockButTheFrameClock() throws {
-        let timers = ["asyncAfter(", "DispatchWorkItem", "Timer.", "scheduledTimer", "afterDelay:"]
-        let scrolling = ["AppKitScrollMovement.swift", "AppKitScrollView.swift"]
-        let sources = try AppKitSources.all().filter { scrolling.contains($0.name) }
-        var found: [String] = []
-        XCTAssertEqual(sources.map(\.name), scrolling, "the scroller's sources are read")
-
-        for (name, text) in sources {
-            for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false)
-                .enumerated()
-            where !line.trimmingCharacters(in: .whitespaces).hasPrefix("//") {
-                for timer in timers where line.contains(timer) {
-                    found.append("\(name):\(number + 1): \(timer)")
-                }
-            }
-        }
-
-        XCTAssertEqual(found, [], "a scroller rests on the frame clock's time")
-    }
-
     /// A vertical scroller's bar visibility reaches its native scroller:
     /// `.never` takes the bar away, `.always` keeps it from hiding, and a
     /// scroller that says neither leaves AppKit to show and hide it.

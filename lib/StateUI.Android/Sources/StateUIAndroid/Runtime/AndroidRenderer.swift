@@ -53,8 +53,27 @@ final class AndroidRenderer {
     private var pumping = false
     private var pumpAgain = false
 
-    /// Events raised while a patch applied, in order.
+    /// Events raised while a patch applied, or inside a user's transaction, in order.
     private var queuedEvents: [(handler: Int32, payload: [HostValue])] = []
+
+    /// How deep the user's transactions stand; their events wait for the outermost to end.
+    private var transactionDepth = 0
+
+    /// The scrollers moving or with something to say, each given the display's frames until it has said it all.
+    private var scrollers: [Int64: WeakScroller] = [:]
+
+    /// The elements whose frame the tree reads, and whether views may have moved since they last said.
+    private var frameReaders: [ObjectIdentifier: WeakElement] = [:]
+    private var framesMoved = false
+
+    /// A scroller the renderer gives frames to, and an element it follows, neither kept.
+    private struct WeakScroller {
+        weak var view: AndroidScrollView?
+    }
+
+    private struct WeakElement {
+        weak var element: AndroidElement?
+    }
 
     /// A runtime showing its page in `root`, on the display's clock or on `clock`,
     /// with the motion the user's settings allow or as `reducesMotion` says.
@@ -101,9 +120,22 @@ final class AndroidRenderer {
 
         let renderer = AndroidRenderer(context: context, root: root, density: density)
         shared = renderer
+        renderer.watchLayout()
         renderer.show(connectingScene: previous == nil)
         AndroidDoorbell.install { AndroidRenderer.shared?.pump() }
         return renderer
+    }
+
+    /// Hears every layout pass and scroll of the root's window: where a view stands may have moved.
+    /// Design: docs/design/platforms/android/layout.md#where-a-view-stands
+    private func watchLayout() {
+        let listener = Java.new(JavaAPI.listener, JavaAPI.newListener, .long(0))
+        let observer = Java.callObject(root.reference, JavaAPI.getViewTreeObserver)!
+        withExtendedLifetime(listener) {
+            Java.call(observer, JavaAPI.addOnGlobalLayoutListener, .object(listener.reference))
+            Java.call(observer, JavaAPI.addOnScrollChangedListener, .object(listener.reference))
+        }
+        Java.release(local: observer)
     }
 
     /// Renders the application whole, connecting its scene first where no activity has shown it.
@@ -121,15 +153,65 @@ final class AndroidRenderer {
         pump()
     }
 
-    /// Reports a native event and runs its handler, then a turn; one raised while a patch applies waits for it.
+    /// Reports a native event and runs its handler, then a turn; one raised while a patch applies, or inside a
+    /// user's transaction, waits for it.
     func dispatch(_ handler: Int32, payload: [HostValue] = []) {
-        guard !intake.isApplying else {
+        guard !intake.isApplying, transactionDepth == 0 else {
             queuedEvents.append((handler, payload))
             return
         }
 
         _ = core.dispatch(handler, payload: payload)
         pump()
+    }
+
+    /// Runs `body` as one of the user's transactions: the events it raises run in order once it ends,
+    /// and one turn then renders everything it changed.
+    func performUserTransaction(_ body: () -> Void) {
+        transactionDepth += 1
+        body()
+        transactionDepth -= 1
+        guard transactionDepth == 0, !intake.isApplying else { return }
+
+        let queued = queuedEvents
+        queuedEvents.removeAll()
+        for event in queued {
+            _ = core.dispatch(event.handler, payload: event.payload)
+        }
+        pump()
+    }
+
+    /// Keeps the display's frames coming for `scroller` until it stands and has said everything.
+    func requestFrames(for scroller: AndroidScrollView) {
+        scrollers[scroller.number] = WeakScroller(view: scroller)
+        displayCycle.hold()
+    }
+
+    /// Follows where `element` stands while the tree reads it, and lets it go once nothing does.
+    func follow(_ element: AndroidElement, readsFrame: Bool) {
+        let key = ObjectIdentifier(element)
+        guard readsFrame != (frameReaders[key] != nil) else { return }
+
+        frameReaders[key] = readsFrame ? WeakElement(element: element) : nil
+        if readsFrame { laidOut() }
+    }
+
+    /// Android laid the window's views out, or scrolled them: whoever reads a frame says it on the next frame.
+    func laidOut() {
+        guard !frameReaders.isEmpty else { return }
+
+        framesMoved = true
+        displayCycle.hold()
+    }
+
+    /// The safe area's top left in the window, in points: where the page's root stands.
+    var safeAreaOrigin: Point {
+        let window = Java.ints([0, 0])
+        Java.call(root.reference, JavaAPI.getLocationInWindow, .object(window))
+        var pixels: [Int32] = [0, 0]
+        pixels.withUnsafeMutableBufferPointer { Java.jni.GetIntArrayRegion(Java.env, window, 0, 2, $0.baseAddress) }
+        Java.release(local: window)
+        return Point(x: Double(pixels[0]) / density, y: Double(pixels[1]) / density)
     }
 
     /// Reports a value the user set through a bound state.
@@ -233,9 +315,31 @@ final class AndroidRenderer {
 }
 
 extension AndroidRenderer: FramePresenter {
-    var wantsFrames: Bool { false }
+    var wantsFrames: Bool {
+        framesMoved || scrollers.values.contains { $0.view?.wantsFrames == true }
+    }
 
-    func commitUserReports(now: Double) {}
+    /// Lets every moving scroller say what the frame saw it do, then whoever reads a frame say where it
+    /// stands, as one user's transaction.
+    func commitUserReports(now: Double) {
+        guard !scrollers.isEmpty || framesMoved else { return }
+
+        performUserTransaction {
+            for (number, scroller) in scrollers {
+                guard let view = scroller.view else {
+                    scrollers[number] = nil
+                    continue
+                }
+                view.frame(now: now)
+                if !view.wantsFrames { scrollers[number] = nil }
+            }
+
+            if framesMoved {
+                framesMoved = false
+                for reader in frameReaders.values { reader.element?.reportFrame() }
+            }
+        }
+    }
 
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) {
         tree.present(states: states, properties: properties)

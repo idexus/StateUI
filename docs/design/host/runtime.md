@@ -127,7 +127,7 @@ The toolkit-neutral elements live once, in the core, because every Swift host
 would otherwise carry its own copy of the same arithmetic and rules: the
 mounted tree and its patches, the animations, the state channels, the property
 and layout animations, the display cycle's order, the one mark of a program's
-write, the patch intake and the line to the core. A toolkit gives the layer
+write, a scroller's movement, the patch intake and the line to the core. A toolkit gives the layer
 each element's native half through `NativeElement`, its frame signal through
 `FrameClock`, presents a frame through `FramePresenter`, and hands
 `LayoutMotion` the views it places as `PlacedView`. The core suite tests them
@@ -140,6 +140,28 @@ reasons of the animator, the state channels, the described motion and the layout
 motion; [patches](patches.md) those of the patch intake and the program write;
 [the mounted tree](tree.md) those of the tree and its native halves;
 [layout](layout.md) those of the layout arithmetic.
+
+## A scroller's movement
+
+The scrolling is the platform's: a drag, a throw, a wheel and a key move a
+scroller under its toolkit's own physics, and nothing in a host aims,
+shortens or corrects them. `ScrollMovement` adds what no toolkit says in one
+shape: where a movement went, frame by frame, and when it is over.
+
+Reports wait for the display's frame. A toolkit moves a scroller from inside
+its own frame step, and a report rendered there would hold that frame; so a
+move joins the move before it, and a frame says where the scroller went
+rather than every step.
+
+Rest is said once per movement, and only when the offset moved. While the
+user holds the scroller - a live scroll, a finger down - it cannot rest. A
+hold that ran its throw out itself, as a desktop's live scroll does, rests
+as it ends; a finger let go leaves the scroller to throw on by itself, and
+that, like a movement nobody held, rests once the offset has stood still for
+`restAfter` of the frame clock's time. A hold that catches a throw carries
+its movement on, so it still rests once. A moving scroller keeps the frames
+coming, so the quiet is counted in the display's own time and a hand-wound
+clock reproduces every rest.
 
 ## Core link
 

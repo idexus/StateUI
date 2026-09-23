@@ -20,7 +20,7 @@ final class AndroidRegistrationTests: XCTestCase {
             XCTAssertEqual(
                 realization.elements,
                 [
-                    "AbsoluteLayout", "Border", "Button", "ColorBox", "Grid", "HStack", "Image", "Label", "Slider",
+                    "AbsoluteLayout", "Border", "Button", "ColorBox", "Grid", "HStack", "Image", "Label", "ScrollView", "Slider",
                     "Switch", "TextField", "VStack",
                 ])
             for member in [

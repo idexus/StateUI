@@ -40,16 +40,17 @@ matter:
 
 ## Scrolling
 
-The scrolling is the platform's. A drag, a throw, a wheel and a key move the
-scroller under AppKit's own physics, and nothing in the host aims, shortens or
-corrects them. `AppKitScrollMovement` adds what AppKit does not say in one
-shape: where a movement went, frame by frame, and when it is over.
+The scrolling is the platform's, and the host layer's `ScrollMovement` says
+where a movement went and when it is over
+([a scroller's movement](../../host/runtime.md#a-scrollers-movement)). AppKit
+tells it a live scroll's beginning and end - the end with its momentum run
+out, so the movement rests there - and every move of the clip view.
 
 ```text
   AppKit moves the clip view            (inside its own frame step)
         |
         v
-  AppKitScrollMovement.userMoved        joins the move before it: one move
+  ScrollMovement.userMoved              joins the move before it: one move
         |                               per frame, from where it began
         v
   the display's next frame              frame(now:) hands the reports over:
@@ -58,16 +59,8 @@ shape: where a movement went, frame by frame, and when it is over.
   the scroll view's element             the offset state and the events
 ```
 
-Reports wait for the display's frame. AppKit moves the clip view from inside
-its own frame step, and a report rendered there holds that frame: the scroll
-events behind it then arrive merged into one jump. A move joins the move
-before it, so a frame says where the scroller went rather than every step.
-
-Rest is said once per movement, and only when the offset moved: when a live
-scroll ends, or - for a movement no live scroll brackets, such as a wheel's
-click - once the offset has stood still for `restAfter` of the frame clock's
-time. A moving scroller keeps the frames coming, so the quiet is counted in
-the display's own time and a hand-wound clock reproduces every rest.
+A wheel's click is a movement no live scroll brackets, and rests once the
+offset has stood still.
 
 The offset is written to the scroller only where the tree moved it: the
 user's own scrolling comes back as the state it wrote, and putting the clip

@@ -36,6 +36,13 @@ extension NSSize {
     }
 }
 
+extension Point {
+    /// A native point as StateUI's.
+    init(_ point: NSPoint) {
+        self.init(x: Double(point.x), y: Double(point.y))
+    }
+}
+
 extension Insets {
     /// Native edge insets as StateUI's.
     init(_ insets: NSEdgeInsets) {

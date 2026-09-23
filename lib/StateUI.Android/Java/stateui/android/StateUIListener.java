@@ -6,15 +6,22 @@ package stateui.android;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 /** What the user does to one view, forwarded to the Swift view by its number. */
 final class StateUIListener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener,
-        SeekBar.OnSeekBarChangeListener, TextWatcher, TextView.OnEditorActionListener {
+        SeekBar.OnSeekBarChangeListener, TextWatcher, TextView.OnEditorActionListener,
+        View.OnScrollChangeListener, View.OnTouchListener,
+        ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnScrollChangedListener {
     private final long view;
+
+    /** Whether a finger holds the view, as its touches last said. */
+    private boolean holding;
 
     StateUIListener(long view) {
         this.view = view;
@@ -65,5 +72,32 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
         }
         if (event.getAction() == KeyEvent.ACTION_DOWN) StateUIHost.submitted(view);
         return true;
+    }
+
+    @Override
+    public void onScrollChange(View scroller, int x, int y, int oldX, int oldY) {
+        StateUIHost.scrolled(view);
+    }
+
+    /** Says when a finger takes hold of the view and when it lets go; the view handles the touch itself. */
+    @Override
+    public boolean onTouch(View touched, MotionEvent event) {
+        int action = event.getActionMasked();
+        boolean ends = action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL;
+        if (holding == ends) {
+            holding = !ends;
+            StateUIHost.held(view, holding);
+        }
+        return false;
+    }
+
+    @Override
+    public void onGlobalLayout() {
+        StateUIHost.laidOut();
+    }
+
+    @Override
+    public void onScrollChanged() {
+        StateUIHost.laidOut();
     }
 }

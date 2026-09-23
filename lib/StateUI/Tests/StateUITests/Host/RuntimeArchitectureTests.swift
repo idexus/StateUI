@@ -79,6 +79,25 @@ final class RuntimeArchitectureTests: XCTestCase {
         XCTAssertEqual(found, [], "a program's write is marked by ProgramWrite alone")
     }
 
+    /// A scroller rests on the frame clock's time alone: no timer and no second clock in any runtime's scrolling
+    /// decides when a movement is over, so a hand-wound clock reproduces every rest.
+    func testAScrollersRestIsTimedByTheFrameClockAlone() throws {
+        let timers = ["asyncAfter(", "DispatchWorkItem", "Timer.", "scheduledTimer", "afterDelay:", "postDelayed"]
+        let scrolling = try Fixtures.runtimeSources().filter { $0.path.contains("Scroll") }
+        var found: [String] = []
+
+        for (path, text) in scrolling {
+            for (number, line) in code(text) {
+                for timer in timers where line.contains(timer) {
+                    found.append("\(path):\(number): \(timer)")
+                }
+            }
+        }
+
+        XCTAssertTrue(scrolling.contains { $0.path.hasSuffix("ScrollMovement.swift") }, "the movement is read")
+        XCTAssertEqual(found, [], "a scroller rests on the frame clock's time")
+    }
+
     /// The runtimes' types keep the architecture's reserved words: no type of
     /// a runtime is an ENGINE - that word is the application's frame code -
     /// and a CHANNEL is only the state channel, one per `@State`.

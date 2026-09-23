@@ -36,3 +36,36 @@ turned, or still on its way to a place a patch gave it, is drawn where it
 stands. Android's view groups cut their children off by default, so every
 layout view group is told not to, at its content and at its padding.
 
+
+## Scrolling
+
+A ScrollView is a StateUI layout like any other to its parent, measured by
+the core's scroll arithmetic, and inside it stands Android's own scroller: a
+`ScrollView` to scroll down, a `HorizontalScrollView` to scroll across, and
+the second inside the first to scroll both ways, each axis native. The
+innermost holds the document, a StateUI layout that stands the content where
+the arithmetic says. The scroller fills its viewport with the document, so a
+short content still has the whole room to stand in, and the scroller's
+padding is the document's own rather than the native scroller's. Several
+children are stacked down inside the document, as one.
+
+What the user does is Android's - the drag, the throw, the edge's glow - and
+the host hears each move of either scroller and when a finger takes hold and
+lets go. The movement says on the display's frame where it went and when it
+rested ([a scroller's movement](../../host/runtime.md#a-scrollers-movement)):
+a finger let go leaves the scroller to throw on, and it rests once it has
+stood still. The tree's offset is written as the program's write, only where
+it differs from where the scroller stands, and waits for the first layout
+when the scroller has none yet; each scroller keeps it within what it can
+reach.
+
+## Where a view stands
+
+A view whose frame the tree reads - a state its frame drives, or a handler
+for its changes - says where it stands on the display's next frame after
+Android laid the window out or scrolled it: its frame in its parent, its
+place in the window, and that place from the safe area's corner, all in
+points. The host hears every layout pass and scroll of the window once, and
+asks only the views that are read; a view that did not move says nothing. A
+view reports on a frame rather than inside Android's layout pass, so what a
+handler renders is laid out in a pass of its own.

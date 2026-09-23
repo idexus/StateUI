@@ -62,9 +62,18 @@ class AndroidView {
     /// Hands each of `setters` one listener forwarding what the user does to this view, by its number.
     /// Design: docs/design/platforms/android/jni.md#global-references
     func listen(_ setters: jmethodID...) {
+        listen(on: reference, setters)
+    }
+
+    /// Hands each of `setters` of `object` - a view this one holds - one listener forwarding to this view.
+    func listen(on object: jobject, _ setters: jmethodID...) {
+        listen(on: object, setters)
+    }
+
+    private func listen(on object: jobject, _ setters: [jmethodID]) {
         let listener = Java.new(JavaAPI.listener, JavaAPI.newListener, .long(number))
         withExtendedLifetime(listener) {
-            for setter in setters { Java.call(reference, setter, .object(listener.reference)) }
+            for setter in setters { Java.call(object, setter, .object(listener.reference)) }
         }
     }
 
@@ -162,7 +171,7 @@ class AndroidView {
 
         let brush = AndroidShapeDrawable()
         brush.setFill(value)
-        Java.call(reference, JavaAPI.setBackground, .object(brush.reference))
+        withExtendedLifetime(brush) { Java.call(reference, JavaAPI.setBackground, .object(brush.reference)) }
     }
 
     /// The element left the tree: the view lets go of everything that would call back into it.
@@ -192,6 +201,21 @@ class AndroidView {
             height: ViewConstants.spec(ViewConstants.exactly, bottom - top))
         Java.call(reference, JavaAPI.layout, .int(left), .int(top), .int(right), .int(bottom))
         if pivot != (0.5, 0.5) { applyPivot() }
+    }
+
+    /// Where the view stands, in points: its frame in its parent, its place in the window, and that place
+    /// from `safeArea`, the safe area's top left in the window.
+    func frameReport(safeArea: Point) -> [Double] {
+        let place = placedFrame
+        let window = Java.ints([0, 0])
+        Java.call(reference, JavaAPI.getLocationInWindow, .object(window))
+        var pixels: [Int32] = [0, 0]
+        pixels.withUnsafeMutableBufferPointer { Java.jni.GetIntArrayRegion(Java.env, window, 0, 2, $0.baseAddress) }
+        Java.release(local: window)
+
+        let x = Double(pixels[0]) / density
+        let y = Double(pixels[1]) / density
+        return [place.x, place.y, place.width, place.height, x, y, x - safeArea.x, y - safeArea.y]
     }
 
     /// `points` in whole pixels.

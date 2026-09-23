@@ -25,11 +25,12 @@ class AndroidLayoutView: AndroidView {
         }
     }
 
-    /// Puts `items` in the group, in order, where they differ from the children it holds.
-    func setItems(_ items: [AndroidLayoutItem]) {
+    /// Puts `items` in the group, in order, where they differ from the children it holds; whether they did.
+    @discardableResult
+    func setItems(_ items: [AndroidLayoutItem]) -> Bool {
         guard items.count != self.items.count
             || !zip(items, self.items).allSatisfy({ $0.arranges(like: $1) })
-        else { return }
+        else { return false }
 
         if !Self.same(items.map(\.view), self.items.map(\.view)) {
             setChildren(items.map(\.view))
@@ -37,6 +38,7 @@ class AndroidLayoutView: AndroidView {
 
         self.items = items
         invalidateMeasurements()
+        return true
     }
 
     /// Holds `views` in the group in this order, the one it draws them and hands them touches in.
@@ -51,8 +53,13 @@ class AndroidLayoutView: AndroidView {
 
     /// Forgets the kept sizes and asks Android to measure again.
     func invalidateMeasurements() {
-        measurements.invalidate()
+        forgetMeasurements()
         requestLayout()
+    }
+
+    /// Forgets the sizes this layout keeps, and those of any layout inside it that no element owns.
+    func forgetMeasurements() {
+        measurements.invalidate()
     }
 
     /// Answers Android's measure: the size in pixels for the specs given.

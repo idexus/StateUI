@@ -18,6 +18,9 @@ final class AndroidElement: NativeElement {
     /// Whether the element is fading out: still shown and holding its room, hidden once the fade lands.
     var leaving = false
 
+    /// Where the element last said it stood; nil before it said.
+    var lastFrameReport: [Double]?
+
     init(_ element: MountedElement, host: AndroidRenderer) {
         self.element = element
         self.host = host
@@ -58,6 +61,7 @@ final class AndroidElement: NativeElement {
         applyProperties(changed: changed)
         configureLayoutMotion()
         arrangeChildren()
+        host?.follow(self, readsFrame: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
@@ -76,6 +80,7 @@ final class AndroidElement: NativeElement {
 
     func leave() {
         view?.detach()
+        host?.follow(self, readsFrame: false)
     }
 
     func setRecycled(_ recycled: Bool) {

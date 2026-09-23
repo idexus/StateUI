@@ -51,9 +51,11 @@ enum AndroidPictures {
             Java.set(options.reference, JavaAPI.inDensity, density)
             Java.set(options.reference, JavaAPI.inTargetDensity, Int32((AndroidRenderer.density * 160).rounded()))
             Java.set(options.reference, JavaAPI.inScaled, true)
-            let bitmap = Java.callStaticObject(
-                JavaAPI.bitmapFactory, JavaAPI.decodeStream,
-                .object(stream), .object(nil), .object(options.reference))
+            let bitmap = withExtendedLifetime(options) {
+                Java.callStaticObject(
+                    JavaAPI.bitmapFactory, JavaAPI.decodeStream,
+                    .object(stream), .object(nil), .object(options.reference))
+            }
             Java.call(stream, JavaAPI.close)
             return bitmap.map(JavaObject.init)
         }

@@ -42,4 +42,46 @@ extension AndroidElement {
             host.pump()
         }
     }
+
+    /// The user moved a scroller: onto its offset state first, then an event for each axis that moved.
+    /// Design: docs/design/host/runtime.md#a-scrollers-movement
+    func scrolled(from old: Point, to new: Point) {
+        guard let host else { return }
+
+        host.performUserTransaction {
+            if old != new, let binding = element.driven[.scrollOffset] {
+                host.take([new.x, new.y], through: binding)
+            }
+            if old.x != new.x, let handler = element.handler(.scrollXChanged) {
+                host.dispatch(handler, payload: [.number(new.x)])
+            }
+            if old.y != new.y, let handler = element.handler(.scrollYChanged) {
+                host.dispatch(handler, payload: [.number(new.y)])
+            }
+        }
+    }
+
+    /// Whether the tree reads where this element stands: a state its frame drives, or a handler for its changes.
+    var readsFrame: Bool {
+        view != nil && (element.driven[.frame] != nil || element.handler(.frameChanged) != nil)
+    }
+
+    /// Says where the element stands, where that changed: onto the state its frame drives, and to its handler.
+    /// Design: docs/design/platforms/android/layout.md#where-a-view-stands
+    func reportFrame() {
+        guard let host, let view, readsFrame else { return }
+
+        let report = view.frameReport(safeArea: host.safeAreaOrigin)
+        guard report != lastFrameReport else { return }
+        lastFrameReport = report
+
+        host.performUserTransaction {
+            if let binding = element.driven[.frame] {
+                host.report(.lanes(Array(report.prefix(4))), through: binding)
+            }
+            if let handler = element.handler(.frameChanged) {
+                host.dispatch(handler, payload: [.numbers(report)])
+            }
+        }
+    }
 }

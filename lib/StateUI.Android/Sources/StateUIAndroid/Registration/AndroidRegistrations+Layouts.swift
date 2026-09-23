@@ -31,6 +31,26 @@ extension AndroidRegistrations {
 
         registry.add(AbsoluteLayoutContract.self, create: { _ in AndroidAbsoluteLayoutView() }) { _ in }
 
+        // Where the user moves it is reported by the element, on the display's frames.
+        // Design: docs/design/platforms/android/layout.md#scrolling
+        registry.add(ScrollViewContract.self, create: { _ in AndroidScrollView() }) { scroll in
+            scroll.applies([
+                ScrollViewContract.orientation, ScrollViewContract.verticalScrollBarVisibility,
+                ScrollViewContract.horizontalScrollBarVisibility, ScrollViewContract.scrollOffset,
+                PaddingElementContract.padding,
+            ]) { view, values in
+                view.apply(
+                    orientation: values[ScrollViewContract.orientation] ?? .vertical,
+                    padding: values[PaddingElementContract.padding] ?? Insets(0),
+                    verticalBar: values[ScrollViewContract.verticalScrollBarVisibility] ?? .default,
+                    horizontalBar: values[ScrollViewContract.horizontalScrollBarVisibility] ?? .default,
+                    offset: values.changed(ScrollViewContract.scrollOffset) ? values[ScrollViewContract.scrollOffset] : nil)
+            }
+            scroll.raises(ScrollViewContract.scrollXChanged)
+            scroll.raises(ScrollViewContract.scrollYChanged)
+            scroll.raises(ScrollViewContract.scrollStopped)
+        }
+
         registry.add(BorderContract.self, create: { _ in AndroidBorderView() }) { border in
             border.applies([
                 BorderContract.shape, BorderContract.stroke, BorderContract.strokeWidth,

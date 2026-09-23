@@ -45,6 +45,15 @@ final class StateUIHost {
     /** The user submitted a field. */
     static native void submitted(long view);
 
+    /** A scroller moved. */
+    static native void scrolled(long view);
+
+    /** A finger took hold of a scroller, or let go. */
+    static native void held(long view, boolean holding);
+
+    /** The window's views were laid out or scrolled: what stands where may have moved. */
+    static native void laidOut();
+
     /** A layout is measured; its width in the high half, its height in the low one. */
     static native long measure(long view, int widthSpec, int heightSpec);
 

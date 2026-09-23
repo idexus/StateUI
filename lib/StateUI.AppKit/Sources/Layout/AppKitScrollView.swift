@@ -31,7 +31,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     private var gestureScroller: WheelScroller?
 
     /// The user's movement of this scroller, and its rest.
-    private let movement = AppKitScrollMovement()
+    private let movement = ScrollMovement()
 
     var offset: NSPoint { reachable(contentView.bounds.origin) }
     var usesStackWrapperForTesting: Bool { usesStackWrapper }
@@ -213,12 +213,12 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     }
 
     @objc private func willStartLiveScroll(_ notification: Notification) {
-        movement.liveScrollBegan()
+        movement.holdBegan()
     }
 
     /// A live scroll ends when the movement it began has run out.
     @objc private func didEndLiveScroll(_ notification: Notification) {
-        movement.liveScrollEnded()
+        movement.holdEnded(rests: true)
     }
 
     @objc private func clipBoundsChanged(_ notification: Notification) {
@@ -230,7 +230,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         // application's by where the scroller already stands.
         let previous = lastObservedOffset
         lastObservedOffset = current
-        movement.userMoved(from: previous, to: current)
+        movement.userMoved(from: Point(previous), to: Point(current))
     }
 
     /// How many times something other than the user moved the scroller.
@@ -248,7 +248,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         lastObservedOffset = current
 
         if asUser {
-            movement.userMoved(from: old, to: current)
+            movement.userMoved(from: Point(old), to: Point(current))
         }
     }
 
@@ -263,7 +263,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         for report in movement.frame(now: now) {
             switch report {
             case .moved(let from, let to):
-                onOffsetChanged?(from, to)
+                onOffsetChanged?(NSPoint(x: from.x, y: from.y), NSPoint(x: to.x, y: to.y))
             case .rested:
                 onScrollStopped?()
             }
