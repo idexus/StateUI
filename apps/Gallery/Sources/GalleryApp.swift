@@ -32,7 +32,7 @@ import StateUI
 ///
 /// An application is what every gallery SHARES - its styles, and the settings
 /// it keeps between launches. Each gallery is a scene of its own, and there are
-/// as many as the reader opens: see Gallery/GalleryScene.swift.
+/// as many as the user opens: see Gallery/GalleryScene.swift.
 struct GalleryApp: Application {
     /// Which kind of device this is, from the standard environment - answered
     /// by the host before the application is made, so the styles below already
@@ -63,7 +63,7 @@ struct GalleryApp: Application {
         application.persistentKeys = [.visits, .who, .shade]
     }
 
-    /// One gallery, and as many more as the reader opens.
+    /// One gallery, and as many more as the user opens.
     var scene: any Scene { GalleryScene() }
 }
 

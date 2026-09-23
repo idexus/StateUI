@@ -260,7 +260,7 @@ The rest of the contract follows from that ownership:
 
 - `.scrollOffset($offset)` is the two-way offset. A program write moves the native
   scroller; input reports into the same state. `Journey.snap(to:)` lands now
-  and `Journey.move(to:)` requests a host-driven trip.
+  and `Journey.move(to:)` requests a host-driven animation.
 - `onScrollStopped` is the scroller's own: it runs once a movement has ended,
   and a write to the offset from there is how a run comes to rest on an item.
 - The held subtree is input-transparent because the scroller owns the room's

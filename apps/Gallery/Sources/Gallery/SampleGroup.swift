@@ -4,13 +4,13 @@ import StateUI
 
 /// A category of samples - one menu row, one page listing what is in it.
 ///
-/// The names are the ones a reader already looks under - "Controls" for the
+/// The names are the ones a user already looks under - "Controls" for the
 /// things you tap, "Lists & cards" for the things that show many items - and
 /// where two groups could both claim a sample, the summary says which has it
 /// ("text fields are under Text & typing"), so nobody has to guess twice.
 ///
 /// THE FIRST GROUP IS THE CARD IN FRONT on the home page, which is what a
-/// reader taps before they have read anything, so it holds what this library
+/// user taps before they have read anything, so it holds what this library
 /// IS: one declaration, the reader rule, the two layers and what each costs.
 /// Chrome - styles, the window, its title bar and its lifecycle - is further
 /// down under names that say so.

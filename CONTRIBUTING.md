@@ -56,7 +56,7 @@ narrate migration history or explain the API by comparison with another
 framework.
 
 Every public Swift declaration needs `///` documentation. Gallery pages use
-minimal on-screen prose: show behavior directly and tell the reader only what
+minimal on-screen prose: show behavior directly and tell the user only what
 they need to try.
 
 Every public C# member of the MAUI host carries XML documentation: CS1591 and

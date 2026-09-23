@@ -306,7 +306,7 @@ host supplies and maintains it completely.
 ## Host acts
 
 An act is what the application asks a host to do rather than describes: ask
-the reader a question, read the clock or the time zone, keep a value, take a
+the user a question, read the clock or the time zone, keep a value, take a
 web view back or move a map. An act of the application's contract aims at
 nothing; an element's act aims at one element of its kind. Calendar values are
 portable StateUI values; reading the current clock or time zone is a host act

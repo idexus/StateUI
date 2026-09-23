@@ -79,7 +79,7 @@ public static func add<Realized: ElementContract, Made: NSView>(
 - **`create`** makes the view once per element, and wires what the view
   reports: `reports.raise(Contract.member, values)` for an event of the
   element's own, and `reports.report(property, value, as: event)` for a value
-  the READER changed - which lands on the state the value is carried in and
+  the USER changed - which lands on the state the value is carried in and
   raises the event with it.
 - **`members`** registers what the view takes: `property(_:_:)` hands a value
   over as the type its contract declares, `nil` where it is no longer
@@ -148,9 +148,9 @@ an `NSView`, so its registration says no more than any other one: the Gallery's
 Metal cube takes a size, a colour and whether it turns, and the corners, the
 matrix and the frames stay the host's. Two things belong to a view that runs a
 loop of its own. It stops that loop when the tree drops it - the Gallery's
-pauses in `viewDidMoveToWindow`, so nothing turns behind a page the reader has
+pauses in `viewDidMoveToWindow`, so nothing turns behind a page the user has
 left. And a stopped loop still owes one frame to a value that changed, or a
-size moved while it is paused arrives only when the reader starts it again.
+size moved while it is paused arrives only when the user starts it again.
 
 An element only one host can honestly realize is declared only for that host.
 The Metal cube's contract and its `View` stand under `#if APPKIT` beside its

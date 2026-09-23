@@ -32,7 +32,7 @@
         StateUIHost.value(for: binding)
     }
 
-    /// Reports a complete text, plain value or feed a reader changed.
+    /// Reports a complete text, plain value or feed a user changed.
     @discardableResult
     public func report(_ value: HostStateValue, through binding: HostStateBinding) -> Bool {
         StateUIHost.report(value, through: binding)

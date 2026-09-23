@@ -13,7 +13,7 @@
 // Building the tree is the whole test harness: `GalleryScene().windows.main.body` produces
 // the Node tree the host would be sent, with no renderer, no host and no device
 // involved. And WHERE THE GALLERY IS is state on this side - so a move is
-// tested by firing the handler a reader would touch and reading the boxes it
+// tested by firing the handler a user would touch and reading the boxes it
 // wrote, with no acts, no host and nothing to await.
 
 import Foundation
@@ -98,7 +98,7 @@ private extension Sample {
     var code: String { examples.map(\.code).joined(separator: "\n\n") }
 }
 
-/// The headings a tree shows, in order - what a reader moving by heading
+/// The headings a tree shows, in order - what a user moving by heading
 /// lands on.
 private func headings(in node: Node) -> [String] {
     var found: [String] = []
@@ -753,7 +753,7 @@ final class CatalogTests: XCTestCase {
     /// Every example of the AppKit interop group shows both halves, and names
     /// them by what they ARE.
     ///
-    /// Both halves are Swift on this host, so "In Swift" would tell a reader
+    /// Both halves are Swift on this host, so "In Swift" would tell a user
     /// nothing: the application's half is "In StateUI" and the host's is "In
     /// AppKit". Nothing else in the gallery asks that, so a heading lost here
     /// would show up nowhere else - which is exactly how the C# half went
@@ -850,7 +850,7 @@ final class CatalogTests: XCTestCase {
 
     /// The code beside an example is REAL code, not a sketch of one.
     ///
-    /// What a reader sees under "In Swift" is the example's own view code with
+    /// What a user sees under "In Swift" is the example's own view code with
     /// the decoration taken out - the layout and the meaning of the example,
     /// nothing invented. A sketch is what that rots into: `Border { … }`,
     /// `VStack { ... }`, a structure that stops halfway, a type the sample does
@@ -937,7 +937,7 @@ final class CatalogTests: XCTestCase {
     /// it sits is the whole of what it measures: one inside a container's
     /// THE GALLERY CARRIES ITS SEMANTICS AND ITS LISTINGS DO NOT.
     ///
-    /// Every control the gallery hands a reader says what it is - so a screen
+    /// Every control the gallery hands a user says what it is - so a screen
     /// reader has something to read and a script, a test or an agent has
     /// something to ask for by name instead of a coordinate off a picture.
     /// None of it belongs in a sample's `code`: a listing is there to show how
@@ -968,7 +968,7 @@ final class CatalogTests: XCTestCase {
     }
 
     /// braces counts that container, and one outside them counts a description
-    /// that a read deeper down never reaches. A reader looking at the example
+    /// that a read deeper down never reaches. A user looking at the example
     /// therefore has to be able to see the place, which is what the `code`
     /// listing is - so the two are held to the same number here.
     ///
@@ -993,7 +993,7 @@ final class CatalogTests: XCTestCase {
             XCTAssertEqual(
                 taken, shown,
                 "\(path) takes \(taken) build readings and shows \(shown) in its code - "
-                + "a reading whose place a reader cannot see says nothing about what "
+                + "a reading whose place a user cannot see says nothing about what "
                 + "is being measured")
         }
 
@@ -1040,7 +1040,7 @@ final class CatalogTests: XCTestCase {
 
     /// An example shows no paragraphs: its words are declared as `notes`.
     ///
-    /// The example is what a reader tries; the words about it sit under
+    /// The example is what a user tries; the words about it sit under
     /// "Notes", where there is room for them - on a held page, whose one screen
     /// the example needs for itself, on the code tab.
     ///
@@ -1199,7 +1199,7 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(presented.children.count, 0, "the gallery opens with nothing over it")
         XCTAssertNotNil(shown.events?[.modalPopped],
-                        "a sheet the reader drags down would not reach the array")
+                        "a sheet the user drags down would not reach the array")
     }
 
     /// Presenting and closing are the array growing and shrinking - the same
@@ -1235,7 +1235,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertTrue(windows.main is MainWindow)
     }
 
-    /// The whole application is that scene - as many galleries as the reader
+    /// The whole application is that scene - as many galleries as the user
     /// opens, and nothing else.
     func testTheApplicationIsItsGallery() {
         XCTAssertTrue(GalleryApp().scene is GalleryScene)
@@ -1244,7 +1244,7 @@ final class CatalogTests: XCTestCase {
     /// The menu lists Home, every group, and the one row that performs an act.
     ///
     /// The menu is a page the app wrote, so this walks that page - which is
-    /// what the reader taps.
+    /// what the user taps.
     func testTheMenuHasARowForHomeEveryGroupAndTheActAtTheEnd() {
         let catalog = catalog()
         let menu = MenuPage(catalog: catalog, nav: Place().nav,
@@ -1515,7 +1515,7 @@ final class CatalogTests: XCTestCase {
         let first = renders.render(page.body)
         let before = renders.builds
 
-        // What the reader does: the arrow under the run, which writes the
+        // What the user does: the arrow under the run, which writes the
         // position through the binding the page lends it.
         let forward = try XCTUnwrap(
             buttons(in: first).first { $0.props[.text] == .string("›") })
@@ -1665,7 +1665,7 @@ final class CatalogTests: XCTestCase {
     /// A ScrollView claims a drag before the view under it hears about it: a pan
     /// inside one reports nothing vertically, and a swipe up or down never
     /// arrives at all. The page therefore holds the example still and scrolls
-    /// the code instead, which is the part a reader needs to move.
+    /// the code instead, which is the part a user needs to move.
     func testAGestureSampleIsNotShownInsideAScroller() throws {
         let group = try XCTUnwrap(catalog().groups.first { $0.route == "gestures" })
 

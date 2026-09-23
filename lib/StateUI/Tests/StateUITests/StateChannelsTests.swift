@@ -146,7 +146,7 @@ final class StateChannelsTests: XCTestCase {
     }
 
     @MainActor
-    func testAReaderTakesAnActiveJourneyAtItsOwnPosition() throws {
+    func testAUserTakesAnActiveJourneyAtItsOwnPosition() throws {
         let animator = Animator()
         let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 13, mode: .inOut, kind: .property)

@@ -78,7 +78,7 @@ final class HostContractTests: XCTestCase {
         XCTAssertFalse(tabSource.contains("func unselectedTabColor("))
     }
 
-    /// The reader owns whether a flyout is open; the native host owns how its
+    /// The user owns whether a flyout is open; the native host owns how its
     /// panes adapt and which native gestures are available on that platform.
     func testFlyoutVocabularyDoesNotExposeHostPresentationPolicy() throws {
         let tokenSource = try String(

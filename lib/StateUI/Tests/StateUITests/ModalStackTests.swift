@@ -10,7 +10,7 @@
 // every time the window builds - and what it and the sheets write as they
 // arrive is in the message that brings them, which is what `Renders.settled`
 // answers. Coming back there is one report, and it says how many are STILL
-// presented - the sheet the reader dragged down has already gone.
+// presented - the sheet the user dragged down has already gone.
 //
 import XCTest
 @_spi(Host) @testable import StateUI

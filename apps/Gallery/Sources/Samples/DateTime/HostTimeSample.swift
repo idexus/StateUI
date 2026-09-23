@@ -6,7 +6,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
     @State private var clocks: [(String, String)] = []
     @State private var season = ""
 
-    /// A few zones a reader will recognize, including one at half past the
+    /// A few zones a user will recognize, including one at half past the
     /// hour - Kolkata is +05:30, and an offset held as minutes is what makes
     /// that ordinary rather than a special case.
     static let cities = [

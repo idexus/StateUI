@@ -64,7 +64,7 @@ final class RuntimeArchitectureTests: XCTestCase {
 
     /// One mark says a native control is being written by the program: no
     /// control keeps a flag of its own, so an application write cannot echo
-    /// back as a reader's report through a control that forgot to raise one.
+    /// back as a user's report through a control that forgot to raise one.
     func testNoControlKeepsAWriteFlagOfItsOwn() throws {
         let flag = try NSRegularExpression(pattern: #"\bvar\s+(applying\w*)\b"#)
         var found: [String] = []

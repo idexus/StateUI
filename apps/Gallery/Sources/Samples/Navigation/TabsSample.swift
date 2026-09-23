@@ -17,7 +17,7 @@ struct TabsSample: SampleContent, ExampleContent {
             case stack
             case second
 
-            // A tab the reader added, which is what makes the LIST something
+            // A tab the user added, which is what makes the LIST something
             // that changes rather than a fixed set.
             case extra(Int)
         }

@@ -41,7 +41,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
 
             // A field for something that is not prose: the platform's
             // underline and its next-word guesses only get in the way, and the
-            // caret can be put where the reader did not.
+            // caret can be put where the user did not.
             TextField($code)
                 .placeholder("a serial number")
                 .isSpellCheckEnabled(false)
@@ -102,7 +102,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
 
             // A field for something that is not prose: the platform's
             // underline and its next-word guesses only get in the way, and
-            // the caret can be put where the reader did not.
+            // the caret can be put where the user did not.
             TextField($code)
                 .accessibilityIdentifier("entry.code")
                 .accessibilityLabel("Serial number")

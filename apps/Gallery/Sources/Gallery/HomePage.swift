@@ -4,7 +4,7 @@ import StateUI
 
 /// What this is, and every group there is.
 ///
-/// The one page that names the whole catalog, so a reader who has never seen the
+/// The one page that names the whole catalog, so a user who has never seen the
 /// library can find the control they came for without opening the sidebar. The
 /// groups are a GALLERY: one card each, swiped through, and the card in the
 /// middle says underneath what is in it and opens when it is tapped.
@@ -17,7 +17,7 @@ import StateUI
 /// with every pass the layout settles through and is worn rather than drawn, so
 /// it is `.frame` into a driven state and `.engine(following:)` over it: no render, on
 /// the host's own frames. WHICH ROWS THERE ARE is described, so it renders -
-/// but only when a reader turns the device or drags the window past a
+/// but only when a user turns the device or drags the window past a
 /// threshold, which is a handful of times in a session rather than a handful of
 /// times a second.
 struct HomePage: ContentView {
@@ -32,7 +32,7 @@ struct HomePage: ContentView {
     /// Where the gallery is - a card switches the section.
     let nav: Navigation
 
-    /// Which group's card is in the middle. The gallery writes it as the reader
+    /// Which group's card is in the middle. The gallery writes it as the user
     /// swipes, so the words under the cards follow the hand.
     @State private var chosen = 0
 
@@ -213,7 +213,7 @@ struct HomePage: ContentView {
                 // sentences of different lengths, so left to itself this
                 // block is one line taller under one card than the next - and
                 // its height is what the star row above it has LEFT to give
-                // the run. A reader swiping would then resize the gallery
+                // the run. A user swiping would then resize the gallery
                 // from card to card, which lays the whole page out afresh and
                 // moves everything under it.
                 //
@@ -231,7 +231,7 @@ struct HomePage: ContentView {
             .gridRow(1)
 
             // WHAT THIS IS, at the FOOT of the page and centred: the cards are
-            // what a reader came for, and these two lines are what they read
+            // what a user came for, and these two lines are what they read
             // once they have found it. They go completely when the cards' cell
             // runs short - an auto row keeps its height whatever is left, and
             // words that no longer fit would be drawn OVER what is above them.
@@ -320,7 +320,7 @@ struct HomePage: ContentView {
         // rather than worn. A driven value read in a body is a read nothing
         // records, so a row's presence cannot be taken from `room`: it needs a
         // report the tree hears. This one is quiet - it writes only where the
-        // answer actually flips, which a reader does by turning the device or
+        // answer actually flips, which a user does by turning the device or
         // dragging the window past a threshold.
         //
         // IT IS ALSO WHAT MARKS THE PAGE MEASURED, and that is the half worth
@@ -409,7 +409,7 @@ struct HomePage: ContentView {
         // the whole room.
         let heads = most.heads && spare >= least
 
-        // AND THE TWO LINES AT THE FOOT go after both, being what a reader
+        // AND THE TWO LINES AT THE FOOT go after both, being what a user
         // reads once they have found the cards. They cost the run their own
         // height, so they stand only where it can spare it AND still reach its
         // ceiling - a page that had to shrink the cards has nothing to add at
@@ -492,7 +492,7 @@ private struct Caption: ContentView {
     let catalog: Catalog
 
     /// Which card is in the middle. READ here, which is what makes this view
-    /// the one built again when the reader swipes.
+    /// the one built again when the user swipes.
     @Binding var position: Int
 
     /// What the device is, for the count - a phone is shown fewer samples.
@@ -596,7 +596,7 @@ private struct GroupFace: ContentView {
         // A CARD OF THE RUN IS A PICTURE WITH A CAPTION OVER IT, and the run
         // itself takes the touch - so nothing here is a control on any
         // platform. The card says which group it is, and what its summary
-        // says, which is what a reader who cannot see the picture goes by and
+        // says, which is what a user who cannot see the picture goes by and
         // what a script asks for by name. Handle.swift has the rule.
         .accessibilityIdentifier(handle("group", title))
         .accessibilityLabel(title)

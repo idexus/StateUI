@@ -109,7 +109,7 @@ final class HostDeclarationTests: XCTestCase {
     private static let export = Fixtures.repository.appendingPathComponent("exports/maui.bin")
 
     /// A host declaring a label with a member of its own and one of a tier it
-    /// wears, and a slider with the value a reader moves.
+    /// wears, and a slider with the value a user moves.
     private static let sample = HostDeclaration(elements: [
         "Label": HostDeclaration.Element(members: ["fontSize", "maximumLines"]),
         "Slider": HostDeclaration.Element(

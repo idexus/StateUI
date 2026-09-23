@@ -734,7 +734,7 @@ final class MotionTests: XCTestCase {
     }
 
     /// A spring's damping is bought deliberately and never given away: half a
-    /// card's worth of wobble is what a reader reads as a mistake.
+    /// card's worth of wobble is what a user reads as a mistake.
     func testASpringDoesNotOvershootUnlessItIsAskedTo() {
         XCTAssertEqual(Motion.spring().factor, 1)
 

@@ -452,7 +452,7 @@ VStack {
 
 Use `journey.convert(with:)` when the live presentation depends on two moving
 states. One host-carried state is one shared motion channel; use separate
-states when the values need independent trips.
+states when the values need independent animations.
 
 ## Journey and sampled readings
 
@@ -466,7 +466,7 @@ state itself remains discrete and immediately holds the destination:
 | `journey.velocity` | per-second velocity in the value's lanes |
 | `journey.motion` | law used wherever this state is carried |
 | `move(to:_:)` | set a destination and await whether it was reached |
-| `stop()` | settle an active trip at its current presentation |
+| `stop()` | settle an active animation at its current presentation |
 | `snap(to:)` | set presentation, destination, and zero velocity together |
 
 Reading `journey.value` in a body explicitly requests a rebuild for every

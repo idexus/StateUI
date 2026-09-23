@@ -287,7 +287,7 @@ and toolbar leave uncovered. A host whose content reaches under them, as
 AppKit's does, sizes the window so that this area has the requested size, and
 bounds it the same way. Changing one axis must not reapply a stale value for
 another axis. `nil` leaves that axis under native
-window ownership, including reader resizing and platform restoration. Minimum
+window ownership, including user resizing and platform restoration. Minimum
 and maximum values constrain resizing; equal minimum and maximum values express
 a fixed dimension. A minimum wins over a smaller maximum on the same axis.
 Clearing a constraint or operation preference restores the native value the

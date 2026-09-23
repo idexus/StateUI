@@ -1,6 +1,6 @@
 import StateUI
 
-/// A search box on the page, narrowing a list as the reader types.
+/// A search box on the page, narrowing a list as the user types.
 struct SearchFieldSample: SampleContent, ExampleContent {
     @State private var query = ""
     @State private var searched = ""
@@ -91,7 +91,7 @@ struct SearchFieldSample: SampleContent, ExampleContent {
         VStack {
             Label("Two events: `.onTextChanged` on every edit - which runs after the binding "
                 + "has landed the words on `query` - and `.onSubmitted` when the "
-                + "reader says they mean it.")
+                + "user says they mean it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

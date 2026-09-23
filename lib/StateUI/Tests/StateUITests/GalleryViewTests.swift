@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The library's own gallery: where a card goes in each of the three shapes,
-// how long the run the reader swipes is, and what the one number the scroller
+// how long the run the user swipes is, and what the one number the scroller
 // sends it does.
 //
 // A GalleryView is made of things that already exist - a ScrollReader over a
@@ -369,7 +369,7 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(scale(showing, 0), 1.1 * 1.375, accuracy: 0.001)
     }
 
-    // MARK: - What the reader swipes
+    // MARK: - What the user swipes
 
     /// The run is the room plus one card's travel per card past the first, and
     /// it comes to rest on a card.
@@ -544,7 +544,7 @@ final class GalleryViewTests: XCTestCase {
         // THE FIRST CYCLE OF ALL LATCHES rather than runs.
         _ = board.cycle(now: turned, reducesMotion: false)
 
-        // The reader leaves the run there, a cycle takes the report in, and
+        // The user leaves the run there, a cycle takes the report in, and
         // the scroller says it has stopped.
         func rest(at cards: Double) throws -> JourneyLanes<Point> {
             slid(offset, to: Point(cards * step, 0))
@@ -604,7 +604,7 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertNil(tappable(in: showing))
     }
 
-    /// THE CARD IN FRONT ANSWERS THE PRESS. What the reader touches is the
+    /// THE CARD IN FRONT ANSWERS THE PRESS. What the user touches is the
     /// scroller, which lies over every card and takes every touch, so the card
     /// cannot say it was pressed by itself - the gallery says it for it, on the
     /// face inside the placement rather than on the placement, which the host
@@ -707,7 +707,7 @@ final class GalleryViewTests: XCTestCase {
     }
 
     /// A gallery nobody may swipe lays no scroller over the cards at all: the
-    /// reader's hand is stopped, and there is nothing left to stop it with.
+    /// user's hand is stopped, and there is nothing left to stop it with.
     func testAGalleryNobodyMaySwipeLaysNoScroller() {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).isSwipeEnabled(false).body }).first
@@ -841,7 +841,7 @@ final class GalleryViewTests: XCTestCase {
     /// A finger drags the scroller itself, so a pan beside it moves the same
     /// cards a second time; a pointer scrolls nothing - a mouse drag leaves a
     /// UIScrollView exactly where it stands - so without the pan a desktop
-    /// reader could move a run of cards only by the wheel. The formFactor is the
+    /// user could move a run of cards only by the wheel. The formFactor is the
     /// question and not the platform's name: iOS is a phone AND a tablet.
     func testOnlyADesktopTurnsTheRunByDragging() throws {
         let was = StandardEnvironment.device.formFactor

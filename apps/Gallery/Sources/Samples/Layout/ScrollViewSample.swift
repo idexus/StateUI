@@ -532,7 +532,7 @@ private struct RestStrips: ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`.onScrollStopped` runs once a movement of the reader's has ended - "
+            Label("`.onScrollStopped` runs once a movement of the user's has ended - "
                 + "a drag, a throw, a wheel - and not after the glide it asked for itself. "
                 + "That is the moment work costs nothing, so it is also where a list builds "
                 + "the rows the next swipe needs.")
@@ -629,7 +629,7 @@ struct ScrollViewSample: SampleContent {
     static let summary = "A scrollable container - what its offset costs read three ways, and a write that moves it."
 
     // Every example here IS a scroller, so the page must not put one inside
-    // another: the wrong one moves under the reader's finger, and a scroller
+    // another: the wrong one moves under the user's finger, and a scroller
     // inside a scroller cannot be given a height worth having.
     static let scrolls = false
 

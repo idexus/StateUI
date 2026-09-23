@@ -335,7 +335,7 @@ final class PersistenceTests: XCTestCase {
 
     /// Assigning the same value still saves. The state is unchanged and the
     /// interface does not move, but the store may not hold it yet - a first
-    /// run where the reader put the value back where it started.
+    /// run where the user put the value back where it started.
     func testWritingTheValueItAlreadyHoldsStillReachesTheStore() {
         Sidebar().count = 0
 

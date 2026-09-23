@@ -82,7 +82,7 @@ struct DatePickerSample: SampleContent, ExampleContent {
                 + "the chosen day into state, and `onDateChanged` runs after that write "
                 + "with the same day - which is where anything beyond holding the value "
                 + "belongs. The button writes `due` from the tree instead, and the count "
-                + "stays put: the event answers the READER picking a day and nothing "
+                + "stays put: the event answers the USER picking a day and nothing "
                 + "else.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -95,7 +95,7 @@ struct DatePickerSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The text in the field is the host's to write, in the reader's locale; "
+            Label("The text in the field is the host's to write, in the user's locale; "
                 + "`.format(\"D\")` asks for the long form.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

@@ -286,7 +286,7 @@ final class CycleTests: XCTestCase {
         trip(ClockTime(hour: 9, minute: 30, second: 5))
     }
 
-    /// A TEXT TOLD WHOLE REPLACES THE IMAGE: what the reader typed is as long
+    /// A TEXT TOLD WHOLE REPLACES THE IMAGE: what the user typed is as long
     /// as its letters, so a report of it cannot be laid lane by lane into the
     /// bytes the last text left - longer words would be cut to the old length
     /// and shorter ones would keep the old tail.
@@ -908,7 +908,7 @@ final class CycleTests: XCTestCase {
     ///
     /// Measured live before it was written down: a gallery whose shape and
     /// whose travelling law were read inside its engine alone kept the shape it
-    /// was last placed in, however many times the reader asked for another.
+    /// was last placed in, however many times the user asked for another.
     func testAStateOnlyAnEngineReadsArmsNothing() {
         let ran = Ran()
         let renders = Renders()

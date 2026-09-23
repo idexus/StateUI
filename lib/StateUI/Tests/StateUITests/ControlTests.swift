@@ -961,7 +961,7 @@ final class ControlTests: XCTestCase {
     // MARK: - Two-way inputs
 
     /// A binding is what a two-way input IS: the state handed to the host,
-    /// which writes the reader's every report back onto it.
+    /// which writes the user's every report back onto it.
     func testATwoWayInputWritesBackWhatArrives() {
         let text = State("")
         let toggled = State(false)
@@ -994,7 +994,7 @@ final class ControlTests: XCTestCase {
             RefreshView(refreshing.projectedValue) { Label("rows") }.id("refresh").body,
         ]))
 
-        // What the reader TYPES is the HOST's own write onto the text state,
+        // What the user TYPES is the HOST's own write onto the text state,
         // whole - a TextField and a TextEditor over one state are two fields the
         // same words land on.
         typed(text.number, "Ada")

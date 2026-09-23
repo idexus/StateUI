@@ -33,7 +33,7 @@ enum Palette {
 
     /// Text that reads on `accent`. White in BOTH themes, deliberately: a
     /// near-black caption on a filled button reads as DISABLED, and an
-    /// affordance the reader misreads costs more than the contrast buys. The
+    /// affordance the user misreads costs more than the contrast buys. The
     /// trap is that white on the accent's dark half measures 2.3:1 - a deeper
     /// dark-theme accent is what raises that without darkening the text.
     static let onAccent = Color(light: AppColors.white, dark: AppColors.white)

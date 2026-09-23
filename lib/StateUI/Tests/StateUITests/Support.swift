@@ -941,14 +941,14 @@ func moved(_ number: Int32, to lanes: [Double], mask: UInt64 = ~0) {
     told(number, .lanes(lanes), mask: mask)
 }
 
-/// Says where the reader SCROLLED a scroller to, the way the HOST says it for a
-/// journey the reader moved: where it is AND where it is going, both lanes of
+/// Says where the user SCROLLED a scroller to, the way the HOST says it for a
+/// journey the user moved: where it is AND where it is going, both lanes of
 /// each, and standing still - laid into the whole shape of the image, with the
 /// law, the waiter and the stop counter left as they were.
 ///
 /// - Parameters:
 ///   - number: which number, by the number it was issued.
-///   - point: where the reader left the offset.
+///   - point: where the user left the offset.
 func slid(_ number: Int32, to point: Point) {
     var lanes = [Double](repeating: 0, count: 11)
 
@@ -960,7 +960,7 @@ func slid(_ number: Int32, to point: Point) {
     moved(number, to: lanes, mask: 0b111111)
 }
 
-/// Says what the reader TYPED into a field the host carries the text of, the
+/// Says what the user TYPED into a field the host carries the text of, the
 /// way the host says it: the words whole, every lane named.
 ///
 /// - Parameters:

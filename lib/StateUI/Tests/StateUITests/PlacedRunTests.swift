@@ -255,7 +255,7 @@ final class PlacedRunTests: XCTestCase {
 
     /// A DRAWING ORDER IS WRITTEN AS AN ORDER, never as the number the
     /// arithmetic answered: a run ranks its placements as it is built, so a z
-    /// worked out from a value the reader is MOVING - which answers something
+    /// worked out from a value the user is MOVING - which answers something
     /// new on every frame, while the order it expresses changes only when two
     /// views actually swap - is carried as the same run until the picture
     /// really changes. Measured on a fifteen-card run as 720 writes becoming

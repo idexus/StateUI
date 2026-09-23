@@ -8,7 +8,7 @@ and this table maps the two.
 
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
-| user (older text: reader) | user | the person using the application |
+| user | user | the person using the application |
 | application, scene, window, page | same | the structure an application declares: `Application -> Scene -> Window -> Page` |
 | element | node | one entry of the described tree: a control, a layout, a part of the structure |
 | element contract | node schema | a node type's declaration: its tiers and each member with its value's type |

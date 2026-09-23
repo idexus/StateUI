@@ -84,7 +84,7 @@ struct AnimationSample: SampleContent, ExampleContent {
 
             // Whichever of them is moving; a state standing still is
             // unaffected. Each stop leaves the value where it had got to, so
-            // the card stays exactly where the reader saw it stop.
+            // the card stays exactly where the user saw it stop.
             Button("Stop").onClicked {
                 $fade.journey.stop()
                 $shift.journey.stop()
@@ -168,7 +168,7 @@ struct AnimationSample: SampleContent, ExampleContent {
 
             // Whichever of them is moving; a state standing still is
             // unaffected. Each stop leaves the value where it had got to, so
-            // the card stays exactly where the reader saw it stop.
+            // the card stays exactly where the user saw it stop.
             button("Stop") {
                 $fade.journey.stop()
                 $shift.journey.stop()
@@ -209,7 +209,7 @@ struct AnimationSample: SampleContent, ExampleContent {
                 + "must: a card left at 60 stays at 60, the state holding it and "
                 + "no render being needed to say so. Stop is the other half - it "
                 + "leaves the value exactly where it stood, so a movement broken "
-                + "off halfway leaves the card where the reader saw it.")
+                + "off halfway leaves the card where the user saw it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

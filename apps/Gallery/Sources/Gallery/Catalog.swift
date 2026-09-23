@@ -9,7 +9,7 @@
 
 import StateUI
 
-/// The samples, grouped as a reader would look for them.
+/// The samples, grouped as a user would look for them.
 ///
 /// Built once per gallery and kept by `KeptCatalog`, where everything else that
 /// describes the interface is built again on every render. The examples inside

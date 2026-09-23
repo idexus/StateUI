@@ -111,7 +111,7 @@ struct Card: ContentView {
             .padding(16, 14)
         }
         // A CARD IS A BORDER WITH A TAP ON IT, which no platform reads as a
-        // control at all: the reader who cannot see it would be handed a
+        // control at all: the user who cannot see it would be handed a
         // picture, two Labels and a chevron with nothing saying they act
         // together. So the card says what it is and where it goes, and the
         // handle is worked out from the title rather than written per card -

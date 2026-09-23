@@ -26,7 +26,7 @@ extension ToolbarItem {
     /// decides here is the colour behind it, and that colour does not change.
     ///
     /// **One assignment.** `nav.home()` sets the section and empties the path,
-    /// and there is no other stack anywhere to go stale - the page the reader
+    /// and there is no other stack anywhere to go stale - the page the user
     /// was looking at does not linger under the group it came from.
     static func home(_ nav: Navigation) -> ToolbarItem {
         ToolbarItem("Home")

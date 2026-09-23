@@ -3,7 +3,7 @@
 StateUI distinguishes three things:
 
 - state says what the interface currently means;
-- an event reports something the reader or platform committed;
+- an event reports something the user or platform committed;
 - an action asks the host to do something that cannot be represented as a
   standing value.
 
@@ -24,7 +24,7 @@ VStack {
 
     Slider($value)
         .onValueChanged { newValue in
-            lastChange = "Reader chose \(newValue)"
+            lastChange = "User chose \(newValue)"
         }
 
     Label(lastChange)
@@ -33,7 +33,7 @@ VStack {
 
 Handlers run in writing order. A control's two-way binding is committed before
 its handler starts, so the handler observes the new state. Programmatic writes
-do not dispatch reader events.
+do not dispatch user events.
 
 Handlers are `async throws`. They may suspend and continue on StateUI's UI
 isolation domain. An uncaught error is reported through the host rather than
@@ -303,7 +303,7 @@ Announce an important asynchronous change that has no visible focused element:
 try await ScreenReader.announce("Import complete")
 ```
 
-Do not announce a tap result the reader's focused control already expresses;
+Do not announce a tap result the user's focused control already expresses;
 screen-reader output is a scarce, interrupting channel.
 
 Every semantic value and action still requires a native mapping. The platform

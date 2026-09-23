@@ -1,6 +1,6 @@
 import StateUI
 
-/// A slider's value and a stepper's - the two properties a READER can move,
+/// A slider's value and a stepper's - the two properties a USER can move,
 /// both carried by the host. Two sliders and a stepper, and what differs is who
 /// reads the value: the top caption PRINTS it in this body, the two below are
 /// CONVERSIONS the host works out on its own frames.

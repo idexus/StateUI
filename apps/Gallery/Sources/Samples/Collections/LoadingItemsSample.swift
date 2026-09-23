@@ -1,7 +1,7 @@
 #if MAUI
 import StateUI
 
-/// A list that asks for more as the reader nears its end.
+/// A list that asks for more as the user nears its end.
 private struct LoadingList: ExampleContent {
     @State private var count = 30
 
@@ -14,7 +14,7 @@ private struct LoadingList: ExampleContent {
 
         Grid {
             // The tally and Start over stay at the top, where they are in
-            // reach however far down the list the reader has gone.
+            // reach however far down the list the user has gone.
             HStack {
                 Label(loading ? "Loading" : "\\(count) items")
 
@@ -31,9 +31,9 @@ private struct LoadingList: ExampleContent {
                 Label("Item \\(number + 1)").padding(14, 10)
             }
             // Within five items of the end: the next batch is appended, and is
-            // there when the reader arrives.
+            // there when the user arrives.
             .onEndReached(within: 5) {
-                // Asked more than once while the reader stays near the end, so
+                // Asked more than once while the user stays near the end, so
                 // the handler guards on what it is already doing.
                 guard !loading, count < 300 else { return }
 
@@ -95,11 +95,11 @@ private struct LoadingList: ExampleContent {
     }
 }
 
-/// A list that grows as the reader reaches its end.
+/// A list that grows as the user reaches its end.
 struct LoadingItemsSample: SampleContent {
     static let id = "loadingItems"
     static let title = "Loading more items"
-    static let summary = "A list that asks for more as the reader nears its end."
+    static let summary = "A list that asks for more as the user nears its end."
 
     // The example IS a scroller, so the page does not put one inside another -
     // and it takes the window's height, since a list is worth as many rows as

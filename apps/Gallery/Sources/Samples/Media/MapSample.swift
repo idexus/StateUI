@@ -58,7 +58,7 @@ struct MapSample: SampleContent, ExampleContent {
 
                 SwitchRow("Show me", $showsMe)
 
-                // Both at once, which is what "locked" means to a reader.
+                // Both at once, which is what "locked" means to a user.
                 SwitchRow("Locked", $locked)
             }
 
@@ -66,7 +66,7 @@ struct MapSample: SampleContent, ExampleContent {
             // map has connected. Moving later is the act the buttons perform.
             Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
                 .aim(map)
-                // What the map draws, and whether the reader may move it.
+                // What the map draws, and whether the user may move it.
                 .mapType(kind)
                 .isTrafficEnabled(traffic)
                 .showsUserLocation(showsMe)
@@ -142,7 +142,7 @@ struct MapSample: SampleContent, ExampleContent {
             // by the map's own opening view.
             Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
                 .aim(map)
-                // What the map draws, and whether the reader may move it.
+                // What the map draws, and whether the user may move it.
                 .mapType(kind)
                 .isTrafficEnabled(traffic)
                 .showsUserLocation(showsMe)

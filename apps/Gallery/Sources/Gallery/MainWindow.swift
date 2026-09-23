@@ -51,7 +51,7 @@ struct MainWindow: Window {
     /// window is sure to be built.
     @Environment private var window: WindowSession
 
-    // MARK: - What the reader is looking at
+    // MARK: - What the user is looking at
 
     /// THE ARRANGEMENT, and it is three ordinary values: a split view holding two
     /// pages, a stack holding an array, a set of tabs holding a selection.
@@ -66,7 +66,7 @@ struct MainWindow: Window {
             detail()
         }
         // A size and a minimum: the size is the window's as it opens, the
-        // minimum how small the reader may drag it before the layout stops
+        // minimum how small the user may drag it before the layout stops
         // making sense. A phone ignores both, an app there being the whole
         // screen - and there is no `x` or `y` on purpose: pinning an app to
         // the same corner of the screen at every launch is worse than letting
@@ -98,7 +98,7 @@ struct MainWindow: Window {
             // holding the pages presented over the split view, the stack and the
             // bars alike. Written once - it reads the array as the window
             // builds - and empty almost always: presenting is
-            // `sheets.append`, and a sheet the reader drags down truncates
+            // `sheets.append`, and a sheet the user drags down truncates
             // the array itself.
             window.modalStack = ModalStack(nav.$sheets) { _ in
                 ModalPage(nav: nav)
@@ -156,7 +156,7 @@ struct MainWindow: Window {
     ///
     /// HOME is the root of the main stack and a group is PUSHED onto it - see
     /// `Navigation.openGroup` - so this answers three sections rather than a
-    /// group each. The reader's way back out of anything is therefore the
+    /// group each. The user's way back out of anything is therefore the
     /// platform's own back button, all the way to the run of group cards the
     /// gallery opens with.
     func root() -> any View {
@@ -177,7 +177,7 @@ struct MainWindow: Window {
     ///
     /// A `switch` over the author's own type: the compiler proves every route
     /// has a page, where a registered route STRING is checked by nothing but
-    /// the reader's eyes.
+    /// the user's eyes.
     ///
     /// - Parameter route: which page the stack asked for.
     /// - Parameter path: the stack this page is ON, so a page that pushes or

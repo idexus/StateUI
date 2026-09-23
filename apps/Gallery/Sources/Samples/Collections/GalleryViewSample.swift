@@ -4,7 +4,7 @@ import StateUI
 struct GalleryViewSample: SampleContent, ExampleContent {
     static let id = "galleryView"
     static let title = "GalleryView"
-    static let summary = "A run of cards the reader swipes through - a wheel, a fan or a row, chosen with .arrangement."
+    static let summary = "A run of cards the user swipes through - a wheel, a fan or a row, chosen with .arrangement."
 
     /// The cards: what each picture is called and which file it is.
     static let cards: [Card] = [
@@ -85,7 +85,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 .gridRow(0)
 
             VStack {
-                // The binding is written as the reader swipes, so anything
+                // The binding is written as the user swipes, so anything
                 // under the run follows the hand - and assigning it moves the
                 // cards. The dots are joined to the gallery by that one state
                 // and nothing else.
@@ -286,7 +286,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("`GalleryView` is a run of cards the reader swipes through, with "
+            Label("`GalleryView` is a run of cards the user swipes through, with "
                 + "`.arrangement` choosing the shape they stand in - `.default` is a "
                 + "wheel, `.fan` a hand of cards, `.row` a strip. The cards TRAVEL "
                 + "between the three, so the shape button carries the whole run across.")
@@ -298,14 +298,14 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 + "a finger drags the run itself, so on a phone and a tablet that is the "
                 + "whole of it, while on a desktop - where a pointer scrolls nothing - "
                 + "the cards take a drag of their own. `.position($shown)` is which "
-                + "one, written as the reader moves and glided to when it is assigned - "
+                + "one, written as the user moves and glided to when it is assigned - "
                 + "which is what Back and Next do. The dots under the cards are an "
                 + "`PositionIndicator` reading the same `@State`: neither control names the "
                 + "other, and one number joins them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("`Swipeable` is `.isSwipeEnabled(false)` - the reader's "
+            Label("`Swipeable` is `.isSwipeEnabled(false)` - the user's "
                 + "hand is stopped and the buttons still move the run. A gallery is "
                 + "swiped to choose and tapped to open: `.onItemTapped` is handed the "
                 + "card in the MIDDLE, and a tap beside it answers nothing.")

@@ -285,7 +285,7 @@ struct PlacedSample: SampleContent, ExampleContent {
             }
         }
 
-        // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS MOVING DOES NOT
+        // A PLACEMENT WORKED OUT FROM SOMETHING THE USER IS MOVING DOES NOT
         // TRAVEL - a card a fifth of a second behind the hand is a card that
         // lags - which is what a `PlacedRun` written with no law says.
         func place(_ index: Int, _ count: Int) -> Placement {
@@ -488,7 +488,7 @@ struct PlacedSample: SampleContent, ExampleContent {
     }
 
     /// The ring of cards, placed by the arithmetic below - the same views
-    /// whichever way the reader turns them.
+    /// whichever way the user turns them.
     private var cards: any View {
         PlacedLayout(Self.cards, id: \.name) { card in
             face(card)
@@ -501,7 +501,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         .frame($room)
         // THE WHOLE LAYOUT, run on the display's own frames whenever one of
         // the three values it reads has moved. A PLACEMENT WORKED OUT FROM
-        // SOMETHING THE READER IS MOVING DOES NOT TRAVEL - a card a fifth of a
+        // SOMETHING THE USER IS MOVING DOES NOT TRAVEL - a card a fifth of a
         // second behind the hand is a card that lags - which is what a
         // `PlacedRun` written with no law of its own says.
         .engine(following: $scrolled, $dragged, $room) { _ in

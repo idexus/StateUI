@@ -1,6 +1,6 @@
 import StateUI
 
-/// A tab the READER added - the reason the tab list is something that changes
+/// A tab the USER added - the reason the tab list is something that changes
 /// rather than a fixed set.
 ///
 /// Nothing distinguishes it from the two the demonstration opens with: a tab is
@@ -25,7 +25,7 @@ struct TabsExtraPage: ContentView {
     var content: any View {
         ScrollView {
             VStack {
-                SectionTitle("A tab the reader added")
+                SectionTitle("A tab the user added")
 
                 Label("Extra \(number)")
                     .fontSize(26)

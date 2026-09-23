@@ -107,7 +107,7 @@ raise a user event. Same-value guards on both sides prevent native echoes from
 forming a render loop.
 
 Use a binding for state synchronization and a handler for the additional act
-caused by the reader. Do not duplicate the assignment in the handler.
+caused by the user. Do not duplicate the assignment in the handler.
 
 ## Text display
 

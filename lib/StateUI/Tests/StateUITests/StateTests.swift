@@ -353,7 +353,7 @@ final class StateTests: XCTestCase {
     /// What a page writes into its session comes from the same boxes its
     /// content reads, AFTER adoption: the view on its bar holds the query's
     /// own binding, and a title written as the query moves says what the
-    /// reader typed.
+    /// user typed.
     func testStateReadBesideTheContentSeesTheSurvivingValue() {
         let renders = Renders()
 
@@ -364,7 +364,7 @@ final class StateTests: XCTestCase {
 
         XCTAssertNotNil(number, "the search bar is handed the query, and the host carries it")
 
-        // What the reader types is the HOST's write onto that state.
+        // What the user types is the HOST's write onto that state.
         typed(number ?? -1, "alpha")
 
         // The title the page writes as the query moves, and the label, both see

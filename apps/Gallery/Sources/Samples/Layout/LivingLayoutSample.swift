@@ -171,7 +171,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
 
             Label("A layout's own SIZE changing is different, and deliberately: "
                 + "drag the window and the children track it exactly, because a "
-                + "resize is something a reader is doing rather than something "
+                + "resize is something a user is doing rather than something "
                 + "the interface decided.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

@@ -47,7 +47,7 @@ final class AnimatorTests: XCTestCase {
         XCTAssertTrue(animator.advance(to: 300).isEmpty)
     }
 
-    /// When the reader asks for less movement, every animation lands at once, at
+    /// When the user asks for less movement, every animation lands at once, at
     /// its destination.
     @MainActor
     func testLessMovementLandsEveryAnimationAtOnce() {

@@ -391,7 +391,7 @@ final class ActCallTests: XCTestCase {
     /// cashing the receipt resumes every awaiting handler by THROWING the
     /// reason. The alternative was a continuation parked forever, with
     /// nothing anywhere saying why. Deliberately not a timeout: an act may
-    /// wait unboundedly and legitimately - a dialog waits for the reader.
+    /// wait unboundedly and legitimately - a dialog waits for the user.
     func testAnUnreadableBatchFailsItsActInsteadOfHangingIt() async throws {
         drain()
 

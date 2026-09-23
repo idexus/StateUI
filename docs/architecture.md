@@ -149,7 +149,7 @@ reported value to its state channel, then invokes the handler. The handler
 therefore observes the new state.
 
 Program writes are silent at the event boundary. This prevents a write such as
-`enabled = true` from pretending that the reader toggled the native control.
+`enabled = true` from pretending that the user toggled the native control.
 The same-value guard exists on both sides of the boundary, so a native echo
 does not create a render loop.
 
@@ -161,8 +161,8 @@ callbacks.
 ## Journey
 
 A state remains discrete: reading `value` answers its destination immediately.
-For every `Walked` value, `$value.journey` exposes the continuous trip between
-destinations.
+For every `Walked` value, `$value.journey` exposes the continuous animation
+between destinations.
 
 | Journey member | Meaning |
 | --- | --- |
@@ -171,7 +171,7 @@ destinations.
 | `velocity` | per-second velocity, lane by lane |
 | `motion` | law used wherever this state is shown |
 | `move(to:_:)` | set a destination and await whether it was reached |
-| `stop()` | end the active trip where it currently stands |
+| `stop()` | end the active animation where it currently stands |
 | `snap(to:)` | set current value, destination, and zero velocity together |
 | `convert` | derive a host-driven value from the live journey |
 
@@ -250,7 +250,7 @@ and `MotionLanes` because a child's native rectangle is a layout result rather
 than a described property.
 
 Reduced-motion input is part of the host cycle. The final state remains the
-same; only the trip is shortened or removed.
+same; only the animation is shortened or removed.
 
 ## Custom engines
 

@@ -139,7 +139,7 @@ final class ItemsViewTests: XCTestCase {
         return Showing(patch: patch, offset: offset)
     }
 
-    /// Scrolls the way the HOST does: the reader's offset laid onto the state
+    /// Scrolls the way the HOST does: the user's offset laid onto the state
     /// the scroller carries, and a cycle turned, which is where the list's
     /// engine reads it.
     private func scroll(_ offset: Int32, to point: Point) {
@@ -163,7 +163,7 @@ final class ItemsViewTests: XCTestCase {
     /// A list hands its controls round: the item scrolling into view is very
     /// often the one that just left the other end, wearing another item's
     /// words and widths - so a law on an item walks its insides across the
-    /// screen while the reader scrolls, and a motion left running on an item
+    /// screen while the user scrolls, and a motion left running on an item
     /// the tree then drops takes the application down.
     ///
     /// THE TRAP THIS PINS is one character wide: `MotionPlan(base:)` takes an
@@ -396,7 +396,7 @@ final class ItemsViewTests: XCTestCase {
         scroll(showing.offset, to: Point(0, 4400))
 
         XCTAssertEqual(shown(renders.render(tree())), (94...115).map(String.init),
-                       "the items around the reader, and the margin either side")
+                       "the items around the user, and the margin either side")
     }
 
     /// A FRAME OF A SCROLL RENDERS NOBODY while the slot at the top stays: the
@@ -839,7 +839,7 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(asked.wrappedValue, 1)
     }
 
-    /// Asked once per item the top moves by while the reader is near the end,
+    /// Asked once per item the top moves by while the user is near the end,
     /// and never once per frame.
     func testTheEndIsAskedOncePerItemCrossedAndNeverPerFrame() {
         let asked = State(0)
@@ -900,7 +900,7 @@ final class ItemsViewTests: XCTestCase {
     }
 
     /// A list that fits in its view entirely has nothing to scroll, so no
-    /// scroll ever says the reader is at the end - and without another
+    /// scroll ever says the user is at the end - and without another
     /// trigger the loading stalls after the first batch. The RUN's own frame
     /// is the second place the question can become true: it changes as the
     /// list grows, so the list asks again until it outgrows the view or the
@@ -929,7 +929,7 @@ final class ItemsViewTests: XCTestCase {
 
         XCTAssertTrue(renders.fire(run, with: frame(height: 264)))
         XCTAssertEqual(asked.wrappedValue, 1,
-                       "six items in a view that holds ten - the reader is at the end "
+                       "six items in a view that holds ten - the user is at the end "
                         + "already, and no scroll will ever say so")
     }
 

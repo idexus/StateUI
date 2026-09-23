@@ -29,7 +29,7 @@ export interface Choices {
 
     /**
      * The application to run on `host` - the one named, else the one chosen,
-     * else asked for - or nothing, where there is none or the reader declined.
+     * else asked for - or nothing, where there is none or the user declined.
      */
     application(folder: vscode.WorkspaceFolder, host: Host, named?: string): Promise<Application | undefined>;
 

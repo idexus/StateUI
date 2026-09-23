@@ -28,7 +28,7 @@ Three special values select ownership:
 - `.custom` leaves the walk to a StateUI engine attached to the state.
 
 `Motion.standard` is a 200-millisecond cubic-out movement. Reduced-motion input
-may shorten or remove a trip, but never changes its destination.
+may shorten or remove an animation, but never changes its destination.
 
 ## Described property motion
 
@@ -131,15 +131,15 @@ let arrived = try await $opacity.journey.move(
     .eased(400, .cubicOut))
 
 if !arrived {
-    // A newer destination, another write, or stop() ended this trip.
+    // A newer destination, another write, or stop() ended this animation.
 }
 ```
 
 `true` means the value reached that move's destination. `false` means a newer
-destination, another write to the state, or `stop()` superseded it. A trip that
-has nothing to cover completes with `true` immediately. A custom-engine state
-also answers immediately because the engine, rather than the host walker, owns
-its completion.
+destination, another write to the state, or `stop()` superseded it. An
+animation that has nothing to cover completes with `true` immediately. A
+custom-engine state also answers immediately because the engine, rather than
+the host's animator, owns its completion.
 
 The destination write happens before the handler first suspends. An unrelated
 body rebuild does not restart or cancel a journey: the motion channel belongs
@@ -156,7 +156,7 @@ For a host-carried state, motion selection is:
 
 One state is one host motion channel. Every control and driven property attached
 to it observes the same standing value, destination, velocity, and completion.
-Use separate states for independent trips.
+Use separate states for independent animations.
 
 ## Stop, snap, and direct lane writes
 
@@ -174,10 +174,10 @@ for custom engines; an ordinary application decision writes the state or calls
 
 `isVisible` is a semantic visibility transition for a host that implements its
 motion contract. On a continuing element, hiding retains the element while it
-leaves, removes it from hit testing during that trip, and hides it after the
-motion lands. Showing starts from the hidden presentation and enters. The first
-description has no before-state to cross, and `.motion(.none)` makes visibility
-an immediate flag.
+leaves, removes it from hit testing during that animation, and hides it after
+the motion lands. Showing starts from the hidden presentation and enters. The
+first description has no before-state to cross, and `.motion(.none)` makes
+visibility an immediate flag.
 
 Child placement is not an ordinary authored property. A layout emits one
 `HostLayoutMotion` containing a law and `MotionLanes`; the host moves the
@@ -190,7 +190,7 @@ patch caused means the layout holds something different - a row inserted, a
 card grown - so its children travel, under the layout's own motion or, where it
 says nothing, the application's. A room that moves with no patch behind it - a
 window resized, a sidebar dragged - is followed exactly, and so is a layout
-whose own width changed: a child gliding after the reader's hand is late on
+whose own width changed: a child gliding after the user's hand is late on
 every frame. A layout's first arrangement arrives. A size a child states for
 itself arrives while its place still travels. Where a frame under the layout is
 read - an `onFrameChanged` handler, a driven frame - every child arrives,
@@ -204,10 +204,11 @@ shows verified host support.
 
 ## Custom engines
 
-`@State(motion: .custom)` fixes the walker when that state is first registered.
-An engine reads destination, standing value, velocity, and frame timing, writes
-the next standing lanes, and returns `.again` while it needs another frame or
-`.wait` until a followed state changes. An engine's own write does not wake it.
+`@State(motion: .custom)` fixes who animates the state when it is first
+registered. An engine reads destination, standing value, velocity, and frame
+timing, writes the next standing lanes, and returns `.again` while it needs
+another frame or `.wait` until a followed state changes. An engine's own write
+does not wake it.
 
 See [State and reactivity](state-and-reactivity.md) for conversions, sampling,
 and engine composition, and [Host contract](host-contract.md) for the native

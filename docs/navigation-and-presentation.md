@@ -2,7 +2,7 @@
 
 Navigation and presentation are readable application state. StateUI does not
 store a second router or command history beside that state. A host materializes
-native containers and reports committed reader actions back to the same
+native containers and reports committed user actions back to the same
 bindings.
 
 ## Navigation stack
@@ -70,7 +70,7 @@ TabbedView(Tab.allCases) { tab in
 .selection($selected)
 ```
 
-Assigning `selected` changes the visible tab. A reader-selected tab is reported
+Assigning `selected` changes the visible tab. A user-selected tab is reported
 into that same binding. Tab identity is the tab value, not its position, so
 reordering distinct values retains their pages. Repeating a tab value would
 claim one identity twice and is invalid application data.
@@ -104,7 +104,7 @@ the same whether the two pages are temporarily overlaid or persistently side
 by side. On AppKit the sidebar runs the window's full height
 beside the detail, shown and hidden by the system sidebar button in the
 window's toolbar; a window wide enough for both panes opens with the sidebar
-shown, and after that the reader and the binding decide. On Windows the
+shown, and after that the user and the binding decide. On Windows the
 sidebar opens over the detail from the navigation button beside the back
 button in the title bar, and the same button or a click outside it closes it.
 

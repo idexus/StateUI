@@ -271,7 +271,7 @@ VStack {
 ```
 
 A binding form is two-way where the control owns an editable value. Passing a
-plain value describes it in one direction. A handler reports a reader or
+plain value describes it in one direction. A handler reports a user or
 platform action; an application write does not synthesize that event.
 
 The active surface and per-host evidence live in

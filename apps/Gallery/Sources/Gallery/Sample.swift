@@ -110,7 +110,7 @@ protocol ExampleContent: ContentView {
 
     /// What heads the example's own code.
     ///
-    /// "In Swift" for almost every example, which is all a reader needs where
+    /// "In Swift" for almost every example, which is all a user needs where
     /// the example is Swift alone. An example whose far side is ALSO Swift -
     /// a host in the same process - says "In StateUI" instead, so the two
     /// listings are told apart by what they ARE rather than by their language.
@@ -214,7 +214,7 @@ struct Sample {
 
     /// Whether a device of `formFactor` lists this sample. An UNKNOWN formFactor - a
     /// headless test, a host that could not say - lists everything: hiding is
-    /// a courtesy to the reader, and a test wants to see it all.
+    /// a courtesy to the user, and a test wants to see it all.
     func isShown(on formFactor: FormFactor) -> Bool {
         formFactor == .unknown || formFactors.contains(formFactor)
     }

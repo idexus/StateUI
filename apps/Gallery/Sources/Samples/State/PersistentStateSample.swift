@@ -8,10 +8,10 @@ enum Shade: String, PersistentValue {
 }
 
 extension PersistentKey {
-    /// How many times the reader has pressed the button, ever.
+    /// How many times the user has pressed the button, ever.
     static let visits = PersistentKey("dev.stateui.gallery.visits", of: Int.self)
 
-    /// What the reader is called.
+    /// What the user is called.
     static let who = PersistentKey("dev.stateui.gallery.who", of: String.self)
 
     /// Whether the panel below paints loudly.

@@ -143,7 +143,7 @@ struct NavigationSample: SampleContent, ExampleContent {
         .spacing(8)
     }
 
-    /// Where the reader is, in words - the section and how deep above it.
+    /// Where the user is, in words - the section and how deep above it.
     ///
     /// Read from the same state the arrangement is built from, which is the
     /// whole point: there is one answer and it cannot drift from the screen.

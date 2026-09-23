@@ -5,7 +5,7 @@
 //
 // A NavigationStack puts the whole stack on the wire as its ARRANGED children:
 // the root, then one page per element of the bound path, in order. That is the
-// whole protocol going out. Coming back there is one report - a pop the reader
+// whole protocol going out. Coming back there is one report - a pop the user
 // COMPLETED - and it truncates the path.
 //
 import XCTest
@@ -248,7 +248,7 @@ final class NavigationStackTests: XCTestCase {
 
     // MARK: - What comes back
 
-    /// The one report: a pop the READER completed. The payload is the depth
+    /// The one report: a pop the USER completed. The payload is the depth
     /// that survived, so the path is truncated to exactly what is on screen.
     func testACompletedPopTruncatesThePath() {
         let path = State<[Route]>([.detail("a"), .level(2)])

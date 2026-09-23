@@ -5,7 +5,7 @@
 // test double for a platform view: views made through their registration,
 // properties handed over as their declared types - one at a time, or the
 // element whole where a view takes several at once - an element's own events
-// raised by member and its reader's values reported by member, what a host's
+// raised by member and its user's values reported by member, what a host's
 // shared machinery realizes on every element wearing a tier, and what the host
 // realizes told to the core.
 
@@ -124,10 +124,10 @@ final class RegistryTests: XCTestCase {
         XCTAssertTrue(told.values.isEmpty, "an event of its own carries no value of the element's")
     }
 
-    /// A value the reader changed is reported by member: the element is handed
+    /// A value the user changed is reported by member: the element is handed
     /// the property, the event to raise for it, and the value - so the host
     /// writes it where the value is carried and raises the event once.
-    func testTheViewReportsItsReadersValueByMember() throws {
+    func testTheViewReportsItsUsersValueByMember() throws {
         let registry = Self.lamps()
         let told = Told()
         let view = try XCTUnwrap(Self.view(of: LampContract.nodeType, in: registry, told: told) as? LampView)
@@ -245,7 +245,7 @@ final class RegistryTests: XCTestCase {
     /// An element whose VIEW THE HOST MAKES takes its members and records what
     /// it realizes, while the registry makes nothing for it: the host's own arm
     /// makes that view, where making it needs machinery no contract describes -
-    /// a scroll view's reader transaction and the frames it asks the host for.
+    /// a scroll view's user transaction and the frames it asks the host for.
     func testAnElementTheHostMakesTakesItsMembersAndMakesNoView() {
         let registry = Registry<PlatformView>()
 
@@ -275,7 +275,7 @@ final class RegistryTests: XCTestCase {
 
     /// A registry realizing the lamp: its signal and the opacity it wears one
     /// at a time, its caption and emphasis whole, the lamp tap it raises, the
-    /// signal its reader dials - and a member of a contract it does not wear,
+    /// signal its user dials - and a member of a contract it does not wear,
     /// which the registry refuses.
     private static func lamps() -> Registry<PlatformView> {
         let registry = Registry<PlatformView>()

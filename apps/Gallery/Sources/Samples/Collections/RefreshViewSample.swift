@@ -9,7 +9,7 @@ struct RefreshViewSample: SampleContent, ExampleContent {
 
     /// What kind of device this is. The sample offers a pull where a finger
     /// can make one - a phone or a tablet - and a button everywhere else,
-    /// rather than a paragraph about something the reader cannot try.
+    /// rather than a paragraph about something the user cannot try.
     @Environment private var device: DeviceInfo
 
     static let id = "refreshView"

@@ -17,7 +17,7 @@ import StateUI
 ///
 /// A VALUE, and it has to be one - the detail page is rebuilt from it on every
 /// render, and a menu row asks `nav.showing(.home)` to know whether it is the
-/// row the reader is on - a question this application answers, because this
+/// row the user is on - a question this application answers, because this
 /// application is what holds the section.
 enum Section: Hashable {
     /// What the gallery opens with, and the ROOT of the main stack - a group is
@@ -71,7 +71,7 @@ enum DemoTab: Hashable {
     /// The plain one beside it, which is what shows that a tab keeps its place.
     case second
 
-    /// One the reader added, by number. What makes the LIST something that
+    /// One the user added, by number. What makes the LIST something that
     /// changes rather than a fixed set - see `TabsControls`.
     case extra(Int)
 
@@ -120,14 +120,14 @@ final class Navigation {
     /// What is pushed on top of it, deepest last. A platform back gesture
     /// truncates this by itself: the host reports the depth that SURVIVED and
     /// `NavigationStack` writes it back through `$path`, so this array is never
-    /// a stale copy of where the reader is.
+    /// a stale copy of where the user is.
     @State var path: [Route] = []
 
     /// Whether the menu is showing. Native presentation changes write back.
     @State var menuOpen = false
 
     /// Whether the menu lies over the page, as it does on a phone, and so
-    /// closes once the reader has chosen. Beside the page on a desktop it
+    /// closes once the user has chosen. Beside the page on a desktop it
     /// stays open, the way a sidebar does.
     var menuOverlays = true
 
@@ -141,11 +141,11 @@ final class Navigation {
     @State var sheets: [Sheet] = []
 
     /// The tabs the demonstration is showing, in order - the LIST a
-    /// `TabbedView` is built over, held as state so that the reader can change
+    /// `TabbedView` is built over, held as state so that the user can change
     /// it while a tab is selected. See `TabsControls`.
     @State var tabs: [DemoTab] = DemoTab.opening
 
-    /// Which of them is showing. The tabs write it when the reader taps one,
+    /// Which of them is showing. The tabs write it when the user taps one,
     /// and the gallery writes it to move them from code - the same state both
     /// ways, which is what `TabbedView.selection` is.
     @State var tab: DemoTab = .stack
@@ -162,7 +162,7 @@ final class Navigation {
     /// Goes to a section, from the top, with the menu closed behind it.
     ///
     /// The path is emptied on purpose: choosing a section from the menu starts
-    /// it again, so "go home" is one move and lands where the reader expects.
+    /// it again, so "go home" is one move and lands where the user expects.
     /// An app that would rather each section KEPT its stack holds one array per
     /// section instead - the tabs do exactly that, in `tabsPath`.
     func open(_ wanted: Section) {
@@ -205,7 +205,7 @@ final class Navigation {
     /// Whether a section is the one showing - what draws a menu row as chosen.
     ///
     /// Home answers this only when nothing is pushed over it: with a group on
-    /// the stack the reader is IN that group, and the menu says so on the
+    /// the stack the user is IN that group, and the menu says so on the
     /// group's own row.
     func showing(_ wanted: Section) -> Bool {
         wanted == .home ? section == .home && path.isEmpty : section == wanted
@@ -223,7 +223,7 @@ final class Navigation {
         sheets.append(sheet)
     }
 
-    /// Closes the top one. A sheet the READER dismisses needs none of this: the
+    /// Closes the top one. A sheet the USER dismisses needs none of this: the
     /// host reports what survived and the array is truncated for us, the same
     /// way a back gesture shortens a path.
     func dismiss() {
@@ -232,7 +232,7 @@ final class Navigation {
         }
     }
 
-    // MARK: - The tab list, which the reader changes
+    // MARK: - The tab list, which the user changes
 
     /// Adds a tab at the END, numbered past whatever is already there.
     ///

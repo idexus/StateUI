@@ -1,6 +1,6 @@
 import StateUI
 
-/// The reader's language, region, zone and calendar habits - the HOST's
+/// The user's language, region, zone and calendar habits - the HOST's
 /// answer, which is the point: Swift's own `Locale.current` is a fallback
 /// `en_001` on Android, and a Windows app's Foundation has no zones at all.
 struct LocaleInfoSample: SampleContent, ExampleContent {

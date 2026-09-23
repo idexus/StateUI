@@ -16,7 +16,7 @@ struct MenuPage: ContentView {
     let catalog: Catalog
 
     /// Where the gallery is, so a row can move it and know whether it is the
-    /// row the reader is on.
+    /// row the user is on.
     let nav: Navigation
 
     /// What the window has said about its life - written by `WindowPhaseLog`

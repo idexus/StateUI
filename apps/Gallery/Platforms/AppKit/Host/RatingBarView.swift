@@ -128,7 +128,7 @@ extension RatingBarView {
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
             let bar = RatingBarView()
 
-            // A tapped star is the READER's change: it lands on the state the
+            // A tapped star is the USER's change: it lands on the state the
             // value is carried in, and raises the event with it - so an
             // application hears it once, whether it holds the rating in a
             // state or in a handler.

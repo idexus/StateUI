@@ -764,9 +764,9 @@ final class SceneTests: XCTestCase {
 
     // MARK: - What the host reports
 
-    /// The reader closing a window takes it out of its scene, by its key - and
+    /// The user closing a window takes it out of its scene, by its key - and
     /// a report about a window already gone changes nothing.
-    func testTheReaderClosingAWindowTakesItOut() throws {
+    func testTheUserClosingAWindowTakesItOut() throws {
         let renders = Renders()
         let first = renders.render(tree())
         let closed = try XCTUnwrap(first.children[0].events?[.windowClosed])

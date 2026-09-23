@@ -710,7 +710,7 @@ for a page C# owns. A process renders one Swift tree, so it holds one
 
 `ItemsView` is the MAUI host's list. It shows a collection of identified items
 in a scroller and describes only the items in view: however long the
-collection, the tree holds the items the reader can see and a margin of six
+collection, the tree holds the items the user can see and a margin of six
 slots either side. It is compiled for the MAUI host alone, so an application
 writes it under `#if MAUI`. The AppKit host has no `ItemsView`; there the type
 does not exist, and using it is a compile error.
@@ -766,7 +766,7 @@ of `.itemSize(44)` starts at `500 * 44`.
 items whose lengths differ: a feed, a chat, a run of tags. The run is then
 worked out item by item, which suits tens or hundreds of items. An item that has
 never been in view has not been measured, and the run's length is an estimate
-until it has. The items before the reader have been measured, so nothing in view
+until it has. The items before the user have been measured, so nothing in view
 shifts as the rest of the run is worked out.
 
 ```swift
@@ -839,12 +839,12 @@ the template's: it reads the state the binding writes.
 
 ### Loading at the end
 
-`.onEndReached(within:_:)` runs when the reader is within `within` items of the
+`.onEndReached(within:_:)` runs when the user is within `within` items of the
 end, counted after the last item in view; a group's header and footer are not
 items. `0`, the default, runs as the last item comes into view. The question is
 asked when the slot at the top changes, and when the scroller or the run is
 measured, so a batch shorter than the view asks again until the list outgrows
-it. The handler runs more than once while the reader stays near the end, so it
+it. The handler runs more than once while the user stays near the end, so it
 guards on what it has already asked for.
 
 ```swift
@@ -873,7 +873,7 @@ struct Feed: ContentView {
 ### Scrolling
 
 `.scrollOffset(_:)` carries the list's offset on a `Binding<Point>`, both ways:
-the host writes the reader's scrolling into it, and a write moves the list. The
+the host writes the user's scrolling into it, and a write moves the list. The
 list's own arithmetic arrives rather than travels, and its scroller carries
 `Motion.none`, so a plain write is a jump and a journey with a law glides:
 
@@ -916,7 +916,7 @@ in the page, keyed by the item.
 
 Items arrive; they do not travel. A control is handed from the item that left
 to the item that arrives, so a law on an item's root would walk the new item's
-contents across the screen while the reader scrolls. The list therefore writes
+contents across the screen while the user scrolls. The list therefore writes
 `Motion.none` on each item's root unless the author wrote a law there. A law is
 per node and never inherited: what an author writes inside an item travels as
 the author says, and a law on the root is left alone.

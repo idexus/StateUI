@@ -81,7 +81,7 @@ final class WindowTests: XCTestCase {
     /// A slot taking a plain `() -> Element` would be nested content without
     /// a builder: nothing inside it would have a branch key, an `if/else`
     /// there would describe ONE control merely changing its properties, and
-    /// the reader's focus and caret would go on living in a control the author
+    /// the user's focus and caret would go on living in a control the author
     /// had written as switched away from.
     func testTheTwoBranchesOfAnIfInASlotAreDifferentElements() {
         let session = WindowSession()

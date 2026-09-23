@@ -167,7 +167,7 @@ final class DrivenWireTests: XCTestCase {
             against: "state-text")
     }
 
-    /// A field the reader types into: the same text door, both ways.
+    /// A field the user types into: the same text door, both ways.
     func testATwoWayTextIsWrittenDown() throws {
         let name = State(wrappedValue: "Ada")
 
@@ -182,7 +182,7 @@ final class DrivenWireTests: XCTestCase {
             against: "state-text-two-way")
     }
 
-    /// A day and a time the reader picks: three lanes each, plain, both ways.
+    /// A day and a time the user picks: three lanes each, plain, both ways.
     func testAPickedDayAndTimeAreWrittenDown() throws {
         let due = State(wrappedValue: CalendarDate(year: 2026, month: 8, day: 2))
         let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 30, second: 5))
@@ -195,7 +195,7 @@ final class DrivenWireTests: XCTestCase {
             against: "state-picked")
     }
 
-    /// The two-way inputs, whose value the reader can move as well.
+    /// The two-way inputs, whose value the user can move as well.
     func testADrivenInputIsWrittenDown() throws {
         let level = State(wrappedValue: 0.5)
         let steps = State(wrappedValue: 3.0)
@@ -208,10 +208,10 @@ final class DrivenWireTests: XCTestCase {
             against: "state-input")
     }
 
-    /// ONE STATE, TWO SINKS: a value the reader drags and a size that rides the
+    /// ONE STATE, TWO SINKS: a value the user drags and a size that rides the
     /// same number.
     ///
-    /// The pair is what a report has to reach BOTH of - the control the reader
+    /// The pair is what a report has to reach BOTH of - the control the user
     /// touched already shows the new value, and the other one has heard
     /// nothing at all unless somebody tells it.
     func testTwoControlsCanRideOneDrivenValue() throws {
