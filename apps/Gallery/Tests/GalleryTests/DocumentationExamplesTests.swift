@@ -78,7 +78,8 @@ final class DocumentationExamplesTests: XCTestCase {
         XCTAssertGreaterThan(examples.count, 4, "the handbook has lost its examples")
 
         guard let module = Self.builtModuleDirectory() else {
-            throw XCTSkip("no StateUI.swiftmodule under apps/Gallery/.build - build the package first")
+            // Never a skip: a check that did not run reads as one that passed.
+            return XCTFail("no StateUI.swiftmodule beside the test bundle - no example was compiled")
         }
         let sdk = try Self.sdkPath()
         let scratch = FileManager.default.temporaryDirectory
@@ -199,20 +200,22 @@ final class DocumentationExamplesTests: XCTestCase {
 
     /// Where the build that made THIS test put the library's module, or nil.
     ///
-    /// The Modules folder beside the test bundle - inside it, where the bundle
-    /// is the folder the test executable stands in. The listings are checked
-    /// with the compiler running them, against what that compiler wrote: a walk
-    /// of .build meets every triple built there, and an application's Android
-    /// build writes its own module there with another compiler.
+    /// Beside the test bundle: in the folder the bundle stands in, where Swift
+    /// Build puts every product (`out/Products/Debug`), or in a Modules folder
+    /// there - inside the bundle too, where the bundle is the folder the test
+    /// executable stands in. The listings are checked with the compiler running
+    /// them, against what that compiler wrote: a walk of .build meets every
+    /// triple built there, and an application's Android build writes its own
+    /// module there with another compiler.
     static func builtModuleDirectory() -> URL? {
         let bundle = Bundle(for: DocumentationExamplesTests.self).bundleURL
 
         for folder in [bundle, bundle.deletingLastPathComponent()] {
-            let modules = folder.appendingPathComponent("Modules")
-
-            if FileManager.default.fileExists(
-                atPath: modules.appendingPathComponent("StateUI.swiftmodule").path) {
-                return modules
+            for modules in [folder, folder.appendingPathComponent("Modules")] {
+                if FileManager.default.fileExists(
+                    atPath: modules.appendingPathComponent("StateUI.swiftmodule").path) {
+                    return modules
+                }
             }
         }
 

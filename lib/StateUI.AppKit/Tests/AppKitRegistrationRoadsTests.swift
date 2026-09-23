@@ -74,12 +74,15 @@ final class AppKitRegistrationRoadsTests: XCTestCase {
     ]
 
     func testEveryRemovedSpellingIsClosedAndItsRegistryOpen() throws {
+        // Beside the test bundle: in the folder it stands in, where Swift Build
+        // puts every product, or in a Modules folder there.
         let bundle = Bundle(for: Self.self).bundleURL
         guard let modules = [bundle, bundle.deletingLastPathComponent()]
-            .map({ $0.appendingPathComponent("Modules") })
+            .flatMap({ [$0, $0.appendingPathComponent("Modules")] })
             .first(where: { FileManager.default.fileExists(atPath: $0.appendingPathComponent("StateUIAppKit.swiftmodule").path) })
         else {
-            throw XCTSkip("no StateUIAppKit.swiftmodule beside the test bundle - build the package first")
+            // Never a skip: a check that did not run reads as one that passed.
+            return XCTFail("no StateUIAppKit.swiftmodule beside the test bundle - no road was checked")
         }
 
         let scratch = FileManager.default.temporaryDirectory

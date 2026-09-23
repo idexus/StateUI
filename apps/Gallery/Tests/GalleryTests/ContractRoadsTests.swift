@@ -134,7 +134,8 @@ final class ContractRoadsTests: XCTestCase {
 
     func testEveryUntypedRoadIsClosedAndItsContractRoadOpen() throws {
         guard let module = DocumentationExamplesTests.builtModuleDirectory() else {
-            throw XCTSkip("no StateUI.swiftmodule beside the test bundle - build the package first")
+            // Never a skip: a check that did not run reads as one that passed.
+            return XCTFail("no StateUI.swiftmodule beside the test bundle - no road was checked")
         }
         let sdk = try DocumentationExamplesTests.sdkPath()
         let scratch = FileManager.default.temporaryDirectory
