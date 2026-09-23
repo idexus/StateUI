@@ -39,3 +39,19 @@ A user who turns the system's animations off - the animator duration scale
 at zero, which `ValueAnimator.areAnimatorsEnabled()` reports - asks for less
 motion, and StateUI hears it so: every animation arrives at its destination
 at once, and a journey's waiter hears it arrive.
+
+## Joining and leaving
+
+A stack is a travelling layout: when a patch reaches it, its children travel
+to their new places ([layout motion](../../host/motion.md#layout-motion)).
+Its places are set on the views in the display's frame, as the layout motion
+follows the animator, and a layout pass Android runs meanwhile asks for the
+same places and keeps the running animation.
+
+A child that joins a standing stack fades in while the others make room. A
+child the tree hides fades out first, still holding its room, and only then
+goes: the stack closes over it as over a row a patch removed. A child shown
+again comes up from nothing, or, shown again on its way out, from where the
+fade has reached. Under a layout that moves nothing, or with less motion, it
+goes and comes at once.
+

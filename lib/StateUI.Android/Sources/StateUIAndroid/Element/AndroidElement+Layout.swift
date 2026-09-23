@@ -14,9 +14,22 @@ extension AndroidElement {
     var layoutItem: AndroidLayoutItem? {
         guard let view else { return children.lazy.compactMap(\.layoutItem).first }
 
-        return AndroidLayoutItem(
-            view: view,
-            values: element.layoutValues,
-            isShown: value(.isVisible)?.bool != false)
+        var item = AndroidLayoutItem(view: view, values: element.layoutValues, isShown: isShown)
+        item.mount = element.mount
+        if fadesIn {
+            item.fadeIn = { [weak self] motion in self?.fadeIn(under: motion) }
+        }
+        return item
+    }
+
+    /// Whether the view is shown: as the tree says, or while it fades out.
+    var isShown: Bool {
+        leaving || value(.isVisible)?.bool != false
+    }
+
+    /// The element whose layout places this one: the nearest above it with a view.
+    var layoutParent: AndroidElement? {
+        guard let parent else { return nil }
+        return parent.view != nil ? parent : parent.layoutParent
     }
 }

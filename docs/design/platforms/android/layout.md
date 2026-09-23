@@ -28,3 +28,11 @@ A layout keeps the sizes it measured for each width offered. Anything that
 can change a size - a child arriving or leaving, a spacing, a padding, a
 property of a descendant that is not only drawn - forgets the kept sizes from
 that element up to the root and asks Android to lay out again.
+
+## Children past the edges
+
+A StateUI layout does not cut its children off at its edges: a child moved,
+turned, or still on its way to a place a patch gave it, is drawn where it
+stands. Android's view groups cut their children off by default, so every
+layout view group is told not to, at its content and at its padding.
+

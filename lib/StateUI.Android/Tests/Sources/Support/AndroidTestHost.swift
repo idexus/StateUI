@@ -54,6 +54,8 @@ enum TestJava {
     static let getWidth = Java.method(JavaAPI.view, "getWidth", "()I")
     static let getHeight = Java.method(JavaAPI.view, "getHeight", "()I")
     static let getChildCount = Java.method(JavaAPI.viewGroup, "getChildCount", "()I")
+    static let getClipChildren = Java.method(JavaAPI.viewGroup, "getClipChildren", "()Z")
+    static let getClipToPadding = Java.method(JavaAPI.viewGroup, "getClipToPadding", "()Z")
     static let getTextSize = Java.method(JavaAPI.textView, "getTextSize", "()F")
     static let onEditorAction = Java.method(JavaAPI.textView, "onEditorAction", "(I)V")
     static let editable = Java.findClass("android/text/Editable")
@@ -158,6 +160,14 @@ extension AndroidView {
             Java.callInt(reference, TestJava.getLeft), Java.callInt(reference, TestJava.getTop),
             Java.callInt(reference, TestJava.getWidth), Java.callInt(reference, TestJava.getHeight)
         )
+    }
+
+    /// Measures and places the view at `width` by `height` pixels, as its parent's layout pass does.
+    func layOut(width: Int32, height: Int32) {
+        _ = measure(
+            width: ViewConstants.spec(ViewConstants.exactly, width),
+            height: ViewConstants.spec(ViewConstants.exactly, height))
+        Java.call(reference, JavaAPI.layout, .int(0), .int(0), .int(width), .int(height))
     }
 
     /// Clicks the view as the user does: its listener runs.

@@ -10,6 +10,7 @@ final class AndroidStackViewTests: XCTestCase {
         [
             ("testAStackPlacesItsChildrenWhereTheArithmeticSays", testAStackPlacesItsChildrenWhereTheArithmeticSays),
             ("testAStackWrapsItsChildrenWhereThePageCentresIt", testAStackWrapsItsChildrenWhereThePageCentresIt),
+            ("testALayoutDoesNotCutItsChildrenOff", testALayoutDoesNotCutItsChildrenOff),
         ]
     }
 
@@ -47,6 +48,17 @@ final class AndroidStackViewTests: XCTestCase {
 
             let stack = try XCTUnwrap(host.views(AndroidStackView.self).first)
             XCTAssertTrue(stack.frame == (0, (1920 - 80) / 2, 1080, 80), "\(stack.frame)")
+        }
+    }
+
+    /// A child on its way, turned or moved, is drawn past its layout's edges: a layout cuts off only where told to.
+    func testALayoutDoesNotCutItsChildrenOff() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running { VStack { Label("moving").translationX(500) } }
+            let stack = try XCTUnwrap(host.views(AndroidStackView.self).first)
+
+            XCTAssertFalse(Java.callBool(stack.reference, TestJava.getClipChildren))
+            XCTAssertFalse(Java.callBool(stack.reference, TestJava.getClipToPadding))
         }
     }
 }

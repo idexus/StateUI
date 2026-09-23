@@ -63,6 +63,11 @@ class AndroidView {
         Java.call(reference, JavaAPI.setVisibility, .int(shown ? ViewConstants.visible : ViewConstants.gone))
     }
 
+    /// Whether the view is shown rather than gone.
+    var isShown: Bool {
+        Java.callInt(reference, JavaAPI.getVisibility) == ViewConstants.visible
+    }
+
     func setOpacity(_ opacity: Double) {
         Java.call(reference, JavaAPI.setAlpha, .float(Float(opacity)))
     }
@@ -160,5 +165,19 @@ class AndroidView {
         weak var view: AndroidView?
 
         init(_ view: AndroidView) { self.view = view }
+    }
+}
+
+extension AndroidView: PlacedView {
+    /// Where the view stands in its parent, in points; set, it is measured and placed there.
+    var placedFrame: Rect {
+        get {
+            Rect(
+                x: Double(Java.callInt(reference, JavaAPI.getLeft)) / density,
+                y: Double(Java.callInt(reference, JavaAPI.getTop)) / density,
+                width: Double(Java.callInt(reference, JavaAPI.getWidth)) / density,
+                height: Double(Java.callInt(reference, JavaAPI.getHeight)) / density)
+        }
+        set { layout(newValue) }
     }
 }

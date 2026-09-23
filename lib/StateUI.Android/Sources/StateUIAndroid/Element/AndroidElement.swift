@@ -15,6 +15,9 @@ final class AndroidElement: NativeElement {
 
     weak var host: AndroidRenderer?
 
+    /// Whether the element is fading out: still shown and holding its room, hidden once the fade lands.
+    var leaving = false
+
     init(_ element: MountedElement, host: AndroidRenderer) {
         self.element = element
         self.host = host
@@ -34,7 +37,9 @@ final class AndroidElement: NativeElement {
 
     func willApply() {}
 
-    func adopted() {}
+    func adopted() {
+        leaving = false
+    }
 
     func standingValue(_ property: Prop) -> HostValue? {
         switch (type, property) {
@@ -49,7 +54,9 @@ final class AndroidElement: NativeElement {
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
+        if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
+        configureLayoutMotion()
         arrangeChildren()
     }
 
@@ -63,7 +70,9 @@ final class AndroidElement: NativeElement {
         return impact
     }
 
-    func letGo() {}
+    func letGo() {
+        leaving = false
+    }
 
     func leave() {
         view?.detach()

@@ -8,13 +8,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
-/** A StateUI layout: Android asks it to measure and place, and the Swift host answers. */
+/**
+ * A StateUI layout: Android asks it to measure and place, and the Swift host
+ * answers. It draws its children past its edges, as every StateUI layout does.
+ */
 final class StateUIViewGroup extends ViewGroup {
     private final long view;
 
     StateUIViewGroup(Context context, long view) {
         super(context);
         this.view = view;
+        setClipChildren(false);
+        setClipToPadding(false);
     }
 
     @Override

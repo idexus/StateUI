@@ -71,7 +71,7 @@ extension AndroidElement {
             for property in own {
                 switch property {
                 case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
-                case .isVisible: view.setShown(value(.isVisible)?.bool != false)
+                case .isVisible: view.setShown(isShown)
                 case .background: view.setBackground(value(.background))
                 default: break
                 }

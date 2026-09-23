@@ -5,7 +5,7 @@
 
 /// A VStack or an HStack: the core's stack arithmetic over a `StateUIViewGroup`.
 @MainActor
-final class AndroidStackView: AndroidLayoutView {
+final class AndroidStackView: AndroidTravellingLayout {
     /// The axis the stack runs along.
     let axis: StackArithmetic.Axis
 
@@ -29,9 +29,10 @@ final class AndroidStackView: AndroidLayoutView {
     }
 
     override func arrange(in bounds: Rect) {
+        beginArrangement(width: bounds.width)
         let places = StackArithmetic.places(of: items, axis: axis, spacing: spacing, padding: padding, in: bounds)
         for (item, place) in zip(items, places) {
-            if let place { item.view.layout(place) }
+            if let place { self.place(item, at: place) }
         }
     }
 }

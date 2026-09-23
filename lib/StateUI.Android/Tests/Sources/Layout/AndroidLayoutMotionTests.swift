@@ -1,0 +1,157 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+@_spi(Host) @testable import StateUI
+@testable import StateUIAndroid
+import XCTest
+
+/// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.
+final class AndroidLayoutMotionTests: XCTestCase {
+    static var allTests: [(String, (AndroidLayoutMotionTests) -> () throws -> Void)] {
+        [
+            ("testAChildAPatchMovesTravelsToItsNewPlace", testAChildAPatchMovesTravelsToItsNewPlace),
+            ("testAChildThatJoinsAStandingStackFadesIn", testAChildThatJoinsAStandingStackFadesIn),
+            ("testWithLessMotionEveryChildArrives", testWithLessMotionEveryChildArrives),
+            ("testAStackClosesOverARowOnceItsFadeLands", testAStackClosesOverARowOnceItsFadeLands),
+            ("testARowShownAgainMidFadeComesBackFromWhereItStands", testARowShownAgainMidFadeComesBackFromWhereItStands),
+        ]
+    }
+
+    /// A vertical stack of 100 x 40 labels in `order`, travelling on a 200 ms linear law; `hidden` fade out in 100 ms.
+    private static func stack(_ order: [String], hidden: Set<String> = []) -> HostPatch {
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
+        stack.children = .arranged(order.map { name in
+            var row = HostPatch(id: .manual(name), type: .label)
+            row.properties = [.text: .string(name), .width: .number(100), .height: .number(40)]
+            row.properties[.isVisible] = .bool(!hidden.contains(name))
+            row.motion = HostLayoutMotion(motion: .eased(100, .linear), lanes: .all)
+            return row
+        })
+        return stack
+    }
+
+    /// Two pixels a point: a row 40 points down stands at 80 pixels.
+    func testAChildAPatchMovesTravelsToItsNewPlace() throws {
+        try onMainActor {
+            let clock = TestClock()
+            let host = AndroidRenderer.bare(clock: clock)
+            host.apply(Self.stack(["a", "b"]))
+            let layout = try XCTUnwrap(host.view(id: .manual("stack")))
+            let moved = try XCTUnwrap(host.view(id: .manual("b")))
+            layout.layOut(width: 600, height: 400)
+            XCTAssertEqual(moved.frame.y, 80, "the first arrangement is an arrival")
+
+            host.apply(Self.stack(["b", "a"]))
+            layout.layOut(width: 600, height: 400)
+            XCTAssertEqual(moved.frame.y, 80, "a child starts from where it stood")
+
+            clock.now = 100
+            host.frame()
+            XCTAssertEqual(moved.frame.y, 40, "halfway through a linear 200 ms animation")
+
+            clock.now = 200
+            host.frame()
+            XCTAssertEqual(moved.frame.y, 0, "and it lands exactly")
+            XCTAssertFalse(host.animator.isMoving)
+        }
+    }
+
+    func testAChildThatJoinsAStandingStackFadesIn() throws {
+        try onMainActor {
+            let clock = TestClock()
+            let host = AndroidRenderer.bare(clock: clock)
+            host.apply(Self.stack(["a"]))
+            let layout = try XCTUnwrap(host.view(id: .manual("stack")))
+            layout.layOut(width: 600, height: 400)
+
+            host.apply(Self.stack(["a", "b"]))
+            layout.layOut(width: 600, height: 400)
+            let joined = try XCTUnwrap(host.view(id: .manual("b")))
+            XCTAssertEqual(joined.opacity, 0, accuracy: 1e-6)
+
+            clock.now = 100
+            host.frame()
+            XCTAssertEqual(joined.opacity, 0.5, accuracy: 1e-6)
+
+            clock.now = 200
+            host.frame()
+            XCTAssertEqual(joined.opacity, 1, accuracy: 1e-6)
+        }
+    }
+
+    func testWithLessMotionEveryChildArrives() throws {
+        try onMainActor {
+            let host = AndroidRenderer.bare(clock: TestClock(), reducesMotion: true)
+            host.apply(Self.stack(["a", "b"]))
+            let layout = try XCTUnwrap(host.view(id: .manual("stack")))
+            layout.layOut(width: 600, height: 400)
+
+            host.apply(Self.stack(["b", "a"]))
+            layout.layOut(width: 600, height: 400)
+
+            XCTAssertEqual(try XCTUnwrap(host.view(id: .manual("b"))).frame.y, 0)
+            XCTAssertFalse(host.animator.isMoving)
+        }
+    }
+
+    /// The hidden row fades where it stands, keeping its room; once it has gone, the row below travels up.
+    func testAStackClosesOverARowOnceItsFadeLands() throws {
+        try onMainActor {
+            let clock = TestClock()
+            let host = AndroidRenderer.bare(clock: clock)
+            host.apply(Self.stack(["first", "second"]))
+            let layout = try XCTUnwrap(host.view(id: .manual("stack")))
+            let first = try XCTUnwrap(host.view(id: .manual("first")))
+            let second = try XCTUnwrap(host.view(id: .manual("second")))
+            layout.layOut(width: 600, height: 400)
+            XCTAssertEqual(second.frame.y, 80)
+
+            host.apply(Self.stack(["first", "second"], hidden: ["first"]))
+            layout.layOut(width: 600, height: 400)
+            XCTAssertTrue(first.isShown, "still there, on its way out")
+
+            clock.now = 50
+            host.frame()
+            XCTAssertEqual(first.opacity, 0.5, accuracy: 1e-6)
+            XCTAssertEqual(second.frame.y, 80)
+
+            clock.now = 100
+            host.frame()
+            layout.layOut(width: 600, height: 400)
+            XCTAssertFalse(first.isShown, "gone when the fade landed")
+            XCTAssertEqual(first.opacity, 1, accuracy: 1e-6, "at the opacity the tree describes")
+            XCTAssertEqual(second.frame.y, 80, "the row below starts once it has gone")
+
+            clock.now = 200
+            host.frame()
+            XCTAssertEqual(second.frame.y, 40, "and travels into its place")
+
+            clock.now = 300
+            host.frame()
+            XCTAssertEqual(second.frame.y, 0)
+        }
+    }
+
+    func testARowShownAgainMidFadeComesBackFromWhereItStands() throws {
+        try onMainActor {
+            let clock = TestClock()
+            let host = AndroidRenderer.bare(clock: clock)
+            host.apply(Self.stack(["first", "second"]))
+            let layout = try XCTUnwrap(host.view(id: .manual("stack")))
+            let first = try XCTUnwrap(host.view(id: .manual("first")))
+            layout.layOut(width: 600, height: 400)
+
+            host.apply(Self.stack(["first", "second"], hidden: ["first"]))
+            clock.now = 50
+            host.frame()
+            host.apply(Self.stack(["first", "second"]))
+            XCTAssertEqual(first.opacity, 0.5, accuracy: 1e-6, "up again from where the fade reached")
+
+            clock.now = 150
+            host.frame()
+            XCTAssertEqual(first.opacity, 1, accuracy: 1e-6)
+            XCTAssertTrue(first.isShown, "and never gone")
+        }
+    }
+}
