@@ -153,10 +153,10 @@ properties of every node in the tree, styled or not.
 
 ## What can be styled
 
-Every control in `Views/` is a `StyleTarget`, the list kept in one place so it
-can be read at a glance and a test can insist on it. A style target is any
-control that can be made with nothing set, and each of them can: the
-initializer taking the value that gives a control its purpose is one of
-several, never the only one. A `SwipeAction` is not a target and cannot be: it
-is a menu item rather than a view, with none of the properties a style would
-set and no visual element to hang one on.
+Every control in `Views/` is a `StyleTarget`, the list kept in one place -
+`StyleTarget.swift` - so it can be read at a glance and a test can insist on
+it. A style target is any control that can be made with nothing set, and each
+of them can: the initializer taking the value that gives a control its purpose
+is one of several, never the only one. A `SwipeAction` is not a target and
+cannot be: it is a menu item rather than a view, with none of the properties a
+style would set and no visual element to hang one on.

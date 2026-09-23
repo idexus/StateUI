@@ -6,6 +6,12 @@ arrangements, the modifiers, the builders, the styles, and the library's own
 composed views. Each of them is a value that describes itself as a node; the
 core's differ turns the nodes into the patch a host applies.
 
+Its folders: `Tiers` and `Mixins` the tiers and their modifiers, `Bindings` a
+property carried from a state, `Composition` composed views and builders,
+`Controls`, `Text`, `Layouts`, `Shapes` and `Collections` the library's views,
+`Structure`, `Navigation` and `Menus` the application, its pages and what
+hangs off them, `Styles` the styles and `Inspector` the inspector.
+
 ## The notes
 
 | Note | What it covers |

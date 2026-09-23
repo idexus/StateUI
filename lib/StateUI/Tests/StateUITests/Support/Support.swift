@@ -597,7 +597,7 @@ enum Fixtures {
 
     /// One of the library's own source files, read as text - found by its name
     /// wherever it sits, the names being unique across the sources, or by its
-    /// path under the sources, `Views/Label.swift`.
+    /// path under the sources, `Views/Text/Label.swift`.
     static func text(in file: String) throws -> String {
         let found = try allSources().filter { $0.path == file || $0.path.hasSuffix("/" + file) }
         guard found.count == 1, let source = found.first else {
@@ -784,7 +784,8 @@ enum Fixtures {
         "Shape.swift", "InputView.swift",
     ]
 
-    /// The files under Views/ that describe controls.
+    /// The files under Views/ that describe controls, by name: a file's folder
+    /// is its topic, and a guard reads it by the name the sources keep unique.
     ///
     /// Application.swift and the style files describe the application and the
     /// styles its controls are given - neither a control, and each with tests
@@ -822,12 +823,12 @@ enum Fixtures {
         }
         var found: [String] = []
 
-        for case let name as String in walk {
-            let path = name.replacingOccurrences(of: "\\", with: "/")
+        for case let path as String in walk {
+            let name = Self.name(of: path.replacingOccurrences(of: "\\", with: "/"))
 
-            guard path.hasSuffix(".swift"), !skipped.contains(path) else { continue }
+            guard name.hasSuffix(".swift"), !skipped.contains(name) else { continue }
 
-            found.append(path)
+            found.append(name)
         }
 
         return try refusingAlmostNothing(found.sorted(), readFrom: views, moreThan: 40)
