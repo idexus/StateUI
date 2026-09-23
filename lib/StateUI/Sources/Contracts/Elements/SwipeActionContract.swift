@@ -9,7 +9,7 @@ public enum SwipeActionContract: ElementContract {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
-    /// An action is an item a reader chooses.
+    /// An action is an item a user chooses.
     public static let tiers: [any Contract.Type] = [MenuItemElementContract.self]
 
     /// What is drawn behind it, which tells one action from the next.

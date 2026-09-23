@@ -15,13 +15,13 @@ public enum PickerContract: ElementContract {
         TextAlignmentElementContract.self, TintElementContract.self,
     ]
 
-    /// The reader has closed the list of choices.
+    /// The user has closed the list of choices.
     public static let closed = ElementEvent<Self, Void>("closed", layer: .native)
 
     /// Whether the list of choices is showing.
     public static let isOpen = ElementProperty<Self, Bool>("isOpen", layer: .native)
 
-    /// The reader has opened the list of choices.
+    /// The user has opened the list of choices.
     public static let opened = ElementEvent<Self, Void>("opened", layer: .native)
 
     /// The list to choose from, in the order it is offered.
@@ -31,7 +31,7 @@ public enum PickerContract: ElementContract {
     public static let selectedIndex = ElementProperty<Self, Int>(
         "selectedIndex", layer: .native, travels: false, cleared: false)
 
-    /// The reader changed the choice, to the index it carries.
+    /// The user changed the choice, to the index it carries.
     public static let selectedIndexChanged = ElementEvent<Self, Int>("selectedIndexChanged", layer: .native)
 
     /// What the field says while nothing is chosen.

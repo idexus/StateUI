@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The menu a view offers where the reader asks for one - a secondary click, a
+/// The menu a view offers where the user asks for one - a secondary click, a
 /// long press.
 public enum ContextMenuContract: ElementContract {
     /// The node type the contract declares.

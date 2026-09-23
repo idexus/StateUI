@@ -2,7 +2,7 @@
 
 # InputView
 
-What every field a reader types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
+What every field a user types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
 
 Wears: [View](View.md)
 

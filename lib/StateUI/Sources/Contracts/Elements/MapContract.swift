@@ -35,7 +35,7 @@ public enum MapContract: ElementContract {
     public static let region = ElementProperty<Self, MapRegion>(
         "region", layer: .provider, travels: false, cleared: false)
 
-    /// Whether the reader's own position is drawn on it.
+    /// Whether the user's own position is drawn on it.
     public static let showsUserLocation = ElementProperty<Self, Bool>("showsUserLocation", layer: .provider)
 
     /// The element's own members.

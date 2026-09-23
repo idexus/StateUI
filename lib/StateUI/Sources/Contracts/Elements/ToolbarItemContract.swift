@@ -9,7 +9,7 @@ public enum ToolbarItemContract: ElementContract {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
-    /// A toolbar item is an item a reader chooses.
+    /// A toolbar item is an item a user chooses.
     public static let tiers: [any Contract.Type] = [MenuItemElementContract.self]
 
     /// Whether it sits on the bar itself or behind the overflow menu.

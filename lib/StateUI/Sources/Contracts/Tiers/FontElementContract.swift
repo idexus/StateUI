@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The font text is drawn in: its family, its size, its weight and slant, and
-/// whether it follows the reader's text-size setting.
+/// whether it follows the user's text-size setting.
 public enum FontElementContract: Contract {
     /// The tier's name.
     public static let name = "FontElement"
@@ -13,7 +13,7 @@ public enum FontElementContract: Contract {
     /// Whether the text is bold, italic, or both.
     public static let fontAttributes = ElementProperty<Self, FontAttributes>("fontAttributes", layer: .native)
 
-    /// Whether the text follows the reader's text-size setting.
+    /// Whether the text follows the user's text-size setting.
     public static let fontAutoScalingEnabled = ElementProperty<Self, Bool>(
         "fontAutoScalingEnabled", layer: .adaptive)
 

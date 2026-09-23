@@ -32,13 +32,13 @@ public enum PageContract: ElementContract {
     /// Whether the bar shows above the page.
     public static let hasNavigationBar = ElementProperty<Self, Bool>("hasNavigationBar", layer: .adaptive)
 
-    /// The reader has left the page for another.
+    /// The user has left the page for another.
     public static let navigatedFrom = ElementEvent<Self, Void>("navigatedFrom", layer: .adaptive)
 
-    /// The reader has arrived at the page.
+    /// The user has arrived at the page.
     public static let navigatedTo = ElementEvent<Self, Void>("navigatedTo", layer: .adaptive)
 
-    /// The reader is leaving the page for another.
+    /// The user is leaving the page for another.
     public static let navigatingFrom = ElementEvent<Self, Void>("navigatingFrom", layer: .adaptive)
 
     /// The room kept inside the page's edges, in device units.

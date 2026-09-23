@@ -33,10 +33,10 @@ public enum WindowContract: ElementContract {
     public static let hidesWhenInactive = ElementProperty<Self, Bool>(
         "hidesWhenInactive", layer: .adaptive, cleared: false)
 
-    /// Whether the reader can make the window fill the screen.
+    /// Whether the user can make the window fill the screen.
     public static let isMaximizable = ElementProperty<Self, Bool>("isMaximizable", layer: .adaptive)
 
-    /// Whether the reader can put the window away.
+    /// Whether the user can put the window away.
     public static let isMinimizable = ElementProperty<Self, Bool>("isMinimizable", layer: .adaptive)
 
     /// Whether the window's material shows through it.

@@ -11,7 +11,7 @@ public enum VisualElementContract: Contract {
     /// Every drawn element carries values in the tree.
     public static let tiers: [any Contract.Type] = [PropertyContainerContract.self]
 
-    /// How deep a heading the element is, for a reader moving by headings.
+    /// How deep a heading the element is, for a user moving by headings.
     public static let accessibilityHeadingLevel = ElementProperty<Self, HeadingLevel>(
         "accessibilityHeadingLevel", layer: .native)
 
@@ -24,7 +24,7 @@ public enum VisualElementContract: Contract {
         "accessibilityLabel", layer: .native)
 
     /// Whether the element and everything in it are left out of what a screen
-    /// reader walks.
+    /// reader reads.
     public static let automationExcludedWithChildren = ElementProperty<Self, Bool>(
         "automationExcludedWithChildren", layer: .native)
 

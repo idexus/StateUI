@@ -18,7 +18,7 @@ public enum NavigationStackContract: ElementContract {
     public static let barForegroundColor = ElementProperty<Self, Color>(
         "barForegroundColor", layer: .adaptive)
 
-    /// The reader went back natively, leaving this many pages above the root.
+    /// The user went back natively, leaving this many pages above the root.
     public static let popped = ElementEvent<Self, Int>("popped", layer: .adaptive)
 
     /// The element's own members.

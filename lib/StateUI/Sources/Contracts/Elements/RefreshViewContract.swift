@@ -22,7 +22,7 @@ public enum RefreshViewContract: ElementContract {
     /// The platform showed or hid the spinner, to the value it carries.
     public static let isRefreshingChanged = ElementEvent<Self, Bool>("isRefreshingChanged", layer: .stateUI)
 
-    /// The reader pulled.
+    /// The user pulled.
     public static let refreshRequested = ElementEvent<Self, Void>("refreshRequested", layer: .stateUI)
 
     /// The element's own members.

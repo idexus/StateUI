@@ -4,6 +4,7 @@
 /// Every contract the library declares, the tiers first - what the guards
 /// holding the contracts read, and what the tables derived from them are
 /// built out of.
+/// Design: docs/design/contracts/README.md#the-contracts-of-the-library
 enum LibraryContracts {
     /// The tiers, in the dictionary's order.
     static let tiers: [any Contract.Type] = [
@@ -54,9 +55,9 @@ enum LibraryContracts {
     static let all: [any Contract.Type] = tiers + elements.map { $0 as any Contract.Type }
 
     /// Every property's facts, by the name it crosses under - what the differ
-    /// asks of a property it holds only a token for. The members of one name
-    /// say the same (`LibraryContractTests`), so the first one met answers for
-    /// them all.
+    /// asks of a property it holds only a token for. The first member met
+    /// answers for every member of its name.
+    /// Design: docs/design/contracts/member-facts.md#one-name-one-set-of-facts
     static let facts: [Prop: MemberFacts] = {
         var facts: [Prop: MemberFacts] = [:]
 
@@ -71,10 +72,10 @@ enum LibraryContracts {
 }
 
 extension Prop {
-    /// What the members of this name say: whether a change travels, whether a
+    /// What the members of this name say: whether a change animates, whether a
     /// lost value is cleared, which of a view's values it is. A name no library
-    /// contract declares - an application's own - travels, is cleared, and
-    /// says nothing of motion.
+    /// contract declares - an application's own - animates, is cleared, and
+    /// says nothing of its group.
     var facts: MemberFacts {
         LibraryContracts.facts[self] ?? .undeclared
     }

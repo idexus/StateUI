@@ -119,7 +119,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 ## From [InputView](tiers/InputView.md)
 
-What every field a reader types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
+What every field a user types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
@@ -154,7 +154,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 
 ## From [FontElement](tiers/FontElement.md)
 
-The font text is drawn in: its family, its size, its weight and slant, and whether it follows the reader's text-size setting.
+The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |

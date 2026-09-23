@@ -2,7 +2,7 @@
 
 # FontElement
 
-The font text is drawn in: its family, its size, its weight and slant, and whether it follows the reader's text-size setting.
+The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 
 Wears: [PropertyContainer](PropertyContainer.md)
 

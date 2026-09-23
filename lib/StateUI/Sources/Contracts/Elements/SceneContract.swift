@@ -22,7 +22,7 @@ public enum SceneContract: ElementContract {
     /// The scene went out of sight.
     public static let stopped = ElementEvent<Self, Void>("stopped", layer: .adaptive)
 
-    /// The reader closed one of the scene's windows, which the key names.
+    /// The user closed one of the scene's windows, which the key names.
     public static let windowClosed = ElementEvent<Self, String>("windowClosed", layer: .adaptive)
 
     /// The platform restored a window the scene had open: its kind, and the

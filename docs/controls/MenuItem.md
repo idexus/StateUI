@@ -36,7 +36,7 @@ What anything carrying values in the tree has - a control, a `Style`, a text run
 
 ## From [MenuItemElement](tiers/MenuItemElement.md)
 
-What every item a reader chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
+What every item a user chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |

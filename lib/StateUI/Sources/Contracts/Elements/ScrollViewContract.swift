@@ -20,8 +20,7 @@ public enum ScrollViewContract: ElementContract {
     public static let orientation = ElementProperty<Self, ScrollOrientation>("orientation", layer: .native)
 
     /// Where the scroller stands, in device units from the content's top-left
-    /// corner: one point of two lanes, so one journey makes a diagonal move
-    /// arrive on both axes together.
+    /// corner: one point, so a diagonal scroll arrives on both axes together.
     public static let scrollOffset = ElementProperty<Self, Point>(
         "scrollOffset", layer: .structure, travels: false)
 

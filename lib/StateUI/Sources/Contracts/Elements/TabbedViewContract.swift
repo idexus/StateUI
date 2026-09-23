@@ -18,7 +18,7 @@ public enum TabbedViewContract: ElementContract {
     public static let currentPage = ElementProperty<Self, Int>(
         "currentPage", layer: .structure, travels: false, cleared: false)
 
-    /// The reader chose another tab, the one it carries.
+    /// The user chose another tab, the one it carries.
     public static let currentPageChanged = ElementEvent<Self, Int>("currentPageChanged", layer: .adaptive)
 
     /// The element's own members.

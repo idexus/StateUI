@@ -21,7 +21,7 @@ public enum SwipeViewContract: ElementContract {
     /// left showing.
     public static let swipeEnded = ElementEvent<Self, (SwipeDirection, Bool)>("swipeEnded", layer: .stateUI)
 
-    /// The reader began swiping, in a direction.
+    /// The user began swiping, in a direction.
     public static let swipeStarted = ElementEvent<Self, SwipeDirection>("swipeStarted", layer: .stateUI)
 
     /// How far the view travels before the actions are revealed, in device

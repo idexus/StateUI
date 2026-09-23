@@ -2,7 +2,7 @@
 
 # Application
 
-The application at the root of a StateUI tree, and what its host does for it with no control behind it: questions for the reader, the clock and the time zone, the screen reader, what is kept.
+The application at the root of a StateUI tree, and what its host does for it with no control behind it: questions for the user, the clock and the time zone, the screen reader, what is kept.
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 

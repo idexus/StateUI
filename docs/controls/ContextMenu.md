@@ -2,7 +2,7 @@
 
 # ContextMenu
 
-The menu a view offers where the reader asks for one - a secondary click, a long press.
+The menu a view offers where the user asks for one - a secondary click, a long press.
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 

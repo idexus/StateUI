@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What every item a reader chooses from has - a menu's entry, a toolbar's
+/// What every item a user chooses from has - a menu's entry, a toolbar's
 /// item, a swipe's action: a caption, a picture, and something to run.
 public enum MenuItemElementContract: Contract {
     /// The tier's name.

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The application at the root of a StateUI tree, and what its host does for it
-/// with no control behind it: questions for the reader, the clock and the time
+/// with no control behind it: questions for the user, the clock and the time
 /// zone, the screen reader, what is kept.
 public enum ApplicationContract: ElementContract, ApplicationTier {
     /// The node type the contract declares.
@@ -11,7 +11,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
-    /// Tells the reader something on the showing page, with one button that
+    /// Tells the user something on the showing page, with one button that
     /// dismisses it: the title, the message and the button's caption.
     ///
     /// See `Dialogs.alert`.
@@ -22,7 +22,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `ScreenReader.announce`.
     public static let announce = ElementAct<Self, String, Void>("announce")
 
-    /// Offers the reader a list of choices on the showing page - the title, the
+    /// Offers the user a list of choices on the showing page - the title, the
     /// cancel and the destructive captions where there are ones, and the
     /// choices - answering the pressed caption, or nothing where the sheet was
     /// dismissed.
@@ -31,7 +31,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     public static let chooseAction = ElementAct<Self, (String, String?, String?, [String]), String?>(
         "chooseAction")
 
-    /// Asks the reader a yes-or-no question on the showing page - the title,
+    /// Asks the user a yes-or-no question on the showing page - the title,
     /// the message, and the captions that accept and cancel - answering whether
     /// it was accepted.
     ///
@@ -65,7 +65,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// A kept key's new value, on its way to the store the host keeps it in.
     public static let persistValue = ElementAct<Self, (Name, PropValue), Void>("persistValue")
 
-    /// Asks the reader to type something on the showing page - the title, the
+    /// Asks the user to type something on the showing page - the title, the
     /// message, the captions that accept and cancel, the placeholder, the most
     /// characters, what the field is for and what it starts holding - answering
     /// the text, or nothing where it was cancelled.

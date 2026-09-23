@@ -99,11 +99,11 @@ Members many elements share, declared once.
 - [View](tiers/View.md) - What every view a layout positions has: where it sits in its layout, the space kept around it, and the gestures, drags and frame reports it answers.
 - [Layout](tiers/Layout.md) - What every layout has: the screen's unsafe strips it keeps clear of, and whether its children are clipped or let input through.
 - [StackBase](tiers/StackBase.md) - What both stacks have: the space between their children.
-- [InputView](tiers/InputView.md) - What every field a reader types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
+- [InputView](tiers/InputView.md) - What every field a user types into has: the text's limits and caret, the keyboard it asks for, and the placeholder shown while it is empty.
 - [Shape](tiers/Shape.md) - What every drawn shape has: what fills it, the line around it, how it fits its room, and a transform of its own drawing.
 - [TextElement](tiers/TextElement.md) - What every element showing words has: the words, and the case they are drawn in.
 - [TextStyleElement](tiers/TextStyleElement.md) - How text looks wherever it is drawn: its colour and the space between its letters.
-- [FontElement](tiers/FontElement.md) - The font text is drawn in: its family, its size, its weight and slant, and whether it follows the reader's text-size setting.
+- [FontElement](tiers/FontElement.md) - The font text is drawn in: its family, its size, its weight and slant, and whether it follows the user's text-size setting.
 - [TextAlignmentElement](tiers/TextAlignmentElement.md) - Where text sits inside the space its own element was given.
 - [LineHeightElement](tiers/LineHeightElement.md) - How far apart the lines of text are.
 - [DecorableTextElement](tiers/DecorableTextElement.md) - The lines drawn through or under text.
@@ -112,7 +112,7 @@ Members many elements share, declared once.
 - [ImageElement](tiers/ImageElement.md) - How a picture fills the room it was given.
 - [TintElement](tiers/TintElement.md) - A control's one accent colour.
 - [BarElement](tiers/BarElement.md) - The bar a page arrangement draws: its colour.
-- [MenuItemElement](tiers/MenuItemElement.md) - What every item a reader chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
+- [MenuItemElement](tiers/MenuItemElement.md) - What every item a user chooses from has - a menu's entry, a toolbar's item, a swipe's action: a caption, a picture, and something to run.
 - [PageElement](tiers/PageElement.md) - What a page shows about itself where another container presents it as an item - a title and a picture.
 <!-- tiers:end -->
 

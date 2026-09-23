@@ -17,7 +17,7 @@ public enum SplitViewContract: ElementContract {
     /// Whether the sidebar is showing.
     public static let isSidebarVisible = ElementProperty<Self, Bool>("isSidebarVisible", layer: .native)
 
-    /// The reader showed or hid the sidebar, to the value it carries.
+    /// The user showed or hid the sidebar, to the value it carries.
     public static let isSidebarVisibleChanged = ElementEvent<Self, Bool>(
         "isSidebarVisibleChanged", layer: .adaptive)
 
