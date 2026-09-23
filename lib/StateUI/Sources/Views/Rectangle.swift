@@ -54,3 +54,11 @@ extension RectangleProperties {
             .corners(topLeft: topLeft, topRight: topRight, bottomLeft: bottomLeft, bottomRight: bottomRight))
     }
 }
+
+extension Rectangle {
+    /// `cornerRadius` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func cornerRadius(_ state: Binding<Double>) -> Modified {
+        plain(RectangleContract.cornerRadius.token, by: state)
+    }
+}

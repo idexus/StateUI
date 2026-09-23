@@ -17,3 +17,11 @@ extension TintElement {
         setValue(TintElementContract.tint, value)
     }
 }
+
+extension TintElement where Self: VisualElement {
+    /// `tint` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func tint(_ state: Binding<Color>) -> Modified {
+        journey(TintElementContract.tint, by: state)
+    }
+}

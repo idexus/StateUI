@@ -80,3 +80,11 @@ public struct RefreshView: View, TintElement, RefreshViewProperties {
         onEvent(RefreshViewContract.refreshRequested, handler)
     }
 }
+
+extension RefreshView {
+    /// `isRefreshEnabled` from a state, `$x`: the host sets each new value as
+    /// it stands, and no view is rebuilt for it.
+    public func isRefreshEnabled(_ state: Binding<Bool>) -> Modified {
+        plain(.isRefreshEnabled, by: state)
+    }
+}

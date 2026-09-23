@@ -77,3 +77,29 @@ extension ShapeProperties {
     /// proportions; `.center` keeps the size its own numbers say.
     public func aspect(_ value: Aspect) -> Modified { setValue(ShapeContract.aspect, value) }
 }
+
+extension Shape {
+    /// `aspect` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func aspect(_ state: Binding<Aspect>) -> Modified {
+        plain(ShapeContract.aspect, by: state)
+    }
+
+    /// `strokeDashOffset` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
+    public func strokeDashOffset(_ state: Binding<Double>) -> Modified {
+        journey(ShapeContract.strokeDashOffset, by: state)
+    }
+
+    /// `strokeMiterLimit` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
+    public func strokeMiterLimit(_ state: Binding<Double>) -> Modified {
+        journey(ShapeContract.strokeMiterLimit, by: state)
+    }
+
+    /// `strokeWidth` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
+    public func strokeWidth(_ state: Binding<Double>) -> Modified {
+        journey(ShapeContract.strokeWidth, by: state)
+    }
+}

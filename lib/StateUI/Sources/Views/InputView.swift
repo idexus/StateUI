@@ -79,3 +79,59 @@ extension InputViewProperties {
         setValue(InputViewContract.maximumLength, value)
     }
 }
+
+extension InputView {
+    /// `cursorPosition` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func cursorPosition(_ state: Binding<Int>) -> Modified {
+        plain(InputViewContract.cursorPosition, by: state)
+    }
+
+    /// `isReadOnly` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func isReadOnly(_ state: Binding<Bool>) -> Modified {
+        plain(InputViewContract.isReadOnly, by: state)
+    }
+
+    /// `isSpellCheckEnabled` from a state, `$x`: the host sets each new value
+    /// as it stands, and no view is rebuilt for it.
+    public func isSpellCheckEnabled(_ state: Binding<Bool>) -> Modified {
+        plain(InputViewContract.isSpellCheckEnabled, by: state)
+    }
+
+    /// `isTextPredictionEnabled` from a state, `$x`: the host sets each new
+    /// value as it stands, and no view is rebuilt for it.
+    public func isTextPredictionEnabled(_ state: Binding<Bool>) -> Modified {
+        plain(InputViewContract.isTextPredictionEnabled, by: state)
+    }
+
+    /// `inputPurpose` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func inputPurpose(_ state: Binding<InputPurpose>) -> Modified {
+        plain(InputViewContract.inputPurpose, by: state)
+    }
+
+    /// `maximumLength` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func maximumLength(_ state: Binding<Int>) -> Modified {
+        plain(InputViewContract.maximumLength, by: state)
+    }
+
+    /// `placeholder` from a state, `$x`: the host writes each new text, and no
+    /// view is rebuilt for it.
+    public func placeholder(_ state: Binding<String>) -> Modified {
+        words(InputViewContract.placeholder, by: state)
+    }
+
+    /// `placeholderColor` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
+    public func placeholderColor(_ state: Binding<Color>) -> Modified {
+        journey(InputViewContract.placeholderColor, by: state)
+    }
+
+    /// `selectionLength` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func selectionLength(_ state: Binding<Int>) -> Modified {
+        plain(InputViewContract.selectionLength, by: state)
+    }
+}

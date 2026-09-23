@@ -21,3 +21,23 @@ extension FontElement {
     /// default.
     public func fontAutoScalingEnabled(_ value: Bool) -> Modified { setValue(FontElementContract.fontAutoScalingEnabled, value) }
 }
+
+extension FontElement where Self: VisualElement {
+    /// `fontAttributes` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func fontAttributes(_ state: Binding<FontAttributes>) -> Modified {
+        plain(FontElementContract.fontAttributes, by: state)
+    }
+
+    /// `fontAutoScalingEnabled` from a state, `$x`: the host sets each new
+    /// value as it stands, and no view is rebuilt for it.
+    public func fontAutoScalingEnabled(_ state: Binding<Bool>) -> Modified {
+        plain(FontElementContract.fontAutoScalingEnabled, by: state)
+    }
+
+    /// `fontSize` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
+    public func fontSize(_ state: Binding<Double>) -> Modified {
+        journey(FontElementContract.fontSize, by: state)
+    }
+}

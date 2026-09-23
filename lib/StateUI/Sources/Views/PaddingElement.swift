@@ -23,3 +23,11 @@ extension PaddingElement {
         padding(Insets(left, top, right, bottom))
     }
 }
+
+extension PaddingElement where Self: VisualElement {
+    /// `padding` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func padding(_ state: Binding<Insets>) -> Modified {
+        journey(PaddingElementContract.padding, by: state)
+    }
+}

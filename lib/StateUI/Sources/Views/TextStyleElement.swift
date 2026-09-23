@@ -13,3 +13,17 @@ extension TextStyleElement {
     /// The space added between letters, in device units.
     public func characterSpacing(_ value: Double) -> Modified { setValue(TextStyleElementContract.characterSpacing, value) }
 }
+
+extension TextStyleElement where Self: VisualElement {
+    /// `characterSpacing` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
+    public func characterSpacing(_ state: Binding<Double>) -> Modified {
+        journey(TextStyleElementContract.characterSpacing, by: state)
+    }
+
+    /// `textColor` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
+    public func textColor(_ state: Binding<Color>) -> Modified {
+        journey(TextStyleElementContract.textColor, by: state)
+    }
+}

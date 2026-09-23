@@ -295,10 +295,9 @@ final class HostContractTests: XCTestCase {
         XCTAssertTrue(controls.contains("ContextMenu"))
         XCTAssertFalse(controls.contains("ContextFlyout"), "the context menu keeps its former name")
 
-        let files = try [
-            "VisualElement+Properties.swift", "View.swift", "Layout.swift",
-            "Bound.swift", "Label.swift", "SwipeView.swift",
-        ] + Self.typeSources().map(\.path)
+        let files = try Fixtures.allSources().map(\.path)
+            .filter { $0.hasPrefix("Views/") || $0.hasPrefix("Types/") }
+        XCTAssertTrue(files.contains { $0.hasSuffix("/Label.swift") }, "the views are read")
         for file in files {
             let source = try Fixtures.text(in: file)
             for name in former + ["contextFlyout"] {

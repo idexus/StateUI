@@ -92,3 +92,23 @@ public struct TextField: InputView, TextElement, FontElement, TextAlignmentEleme
         onEvent(TextFieldContract.submitted, handler)
     }
 }
+
+extension TextField {
+    /// `showsClearButton` from a state, `$x`: the host sets each new value as
+    /// it stands, and no view is rebuilt for it.
+    public func showsClearButton(_ state: Binding<Bool>) -> Modified {
+        plain(.showsClearButton, by: state)
+    }
+
+    /// `isPassword` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func isPassword(_ state: Binding<Bool>) -> Modified {
+        plain(.isPassword, by: state)
+    }
+
+    /// `returnKey` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func returnKey(_ state: Binding<ReturnKey>) -> Modified {
+        plain(TextFieldContract.returnKey.token, by: state)
+    }
+}

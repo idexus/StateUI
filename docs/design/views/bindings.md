@@ -27,9 +27,9 @@ What the host does with a carried state follows from the value:
 ```
 
 Each twin is one line over one of three helpers of `PropertyContainer` -
-`journey(_:by:)`, `plain(_:by:mode:)` and `words(_:by:mode:)` - and
-`Bound.swift` is generated from the value forms.
-`testEveryValueModifierHasABindingTwin` holds the two lists together: a value
+`journey(_:by:)`, `plain(_:by:mode:)` and `words(_:by:mode:)` - and stands
+beside its value form, in the file of the tier or the control it belongs to.
+`testEveryValueModifierHasABindingTwin` holds the two forms together: a value
 modifier added without its twin is named there. The few allowed out are listed
 with their reason - a value the host cannot be handed whole (a brush, a
 picture, a date, a shape, a transform), a name rather than a value (a style

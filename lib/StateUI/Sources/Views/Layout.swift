@@ -71,3 +71,23 @@ extension LayoutProperties {
         setValue(LayoutContract.avoidsSafeArea, .edges(left: left, top: top, right: right, bottom: bottom))
     }
 }
+
+extension Layout {
+    /// `letsInputThrough` from a state, `$x`: the host sets each new value as
+    /// it stands, and no view is rebuilt for it.
+    public func letsInputThrough(_ state: Binding<Bool>) -> Modified {
+        plain(LayoutContract.letsInputThrough, by: state)
+    }
+
+    /// `clipsContent` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func clipsContent(_ state: Binding<Bool>) -> Modified {
+        plain(LayoutContract.clipsContent, by: state)
+    }
+
+    /// `avoidsSafeArea` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func avoidsSafeArea(_ state: Binding<SafeArea>) -> Modified {
+        plain(LayoutContract.avoidsSafeArea.token, by: state)
+    }
+}

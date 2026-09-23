@@ -1,8 +1,8 @@
 # Controls
 
 A control is a node of its contract's type and the modifiers written on it.
-Each control file holds the control, its own properties protocol, and the
-events and acts it declares; its binding twins are in `Bound.swift`.
+Each control file holds the control, its own properties protocol, the events
+and acts it declares, and the binding twins of its values.
 
 ## A control is a node and its modifiers
 

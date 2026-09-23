@@ -13,3 +13,11 @@ extension DecorableTextElement {
         setValue(DecorableTextElementContract.textDecorations, value)
     }
 }
+
+extension DecorableTextElement where Self: VisualElement {
+    /// `textDecorations` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func textDecorations(_ state: Binding<TextDecorations>) -> Modified {
+        plain(DecorableTextElementContract.textDecorations, by: state)
+    }
+}

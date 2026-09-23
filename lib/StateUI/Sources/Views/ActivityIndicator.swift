@@ -39,3 +39,11 @@ public struct ActivityIndicator: View, TintElement, ActivityIndicatorProperties 
         node.write(ActivityIndicatorContract.isRunning, isRunning)
     }
 }
+
+extension ActivityIndicator {
+    /// `isRunning` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func isRunning(_ state: Binding<Bool>) -> Modified {
+        plain(.isRunning, by: state)
+    }
+}

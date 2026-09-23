@@ -48,3 +48,41 @@ extension VisualElementProperties {
     /// drawn big is not one until this says so.
     public func accessibilityHeadingLevel(_ value: HeadingLevel) -> Modified { setValue(VisualElementContract.accessibilityHeadingLevel, value) }
 }
+
+extension VisualElement {
+    /// `accessibilityIdentifier` from a state, `$x`: the host writes each new
+    /// text, and no view is rebuilt for it.
+    public func accessibilityIdentifier(_ state: Binding<String>) -> Modified {
+        words(PropertyContainerContract.accessibilityIdentifier, by: state)
+    }
+
+    /// `automationExcludedWithChildren` from a state, `$x`: the host sets each
+    /// new value as it stands, and no view is rebuilt for it.
+    public func automationExcludedWithChildren(_ state: Binding<Bool>) -> Modified {
+        plain(VisualElementContract.automationExcludedWithChildren, by: state)
+    }
+
+    /// `isAccessibilityHidden` from a state, `$x`: the host sets each new value
+    /// as it stands, and no view is rebuilt for it.
+    public func isAccessibilityHidden(_ state: Binding<Bool>) -> Modified {
+        plain(VisualElementContract.isAccessibilityHidden, by: state)
+    }
+
+    /// `accessibilityLabel` from a state, `$x`: the host writes each new text,
+    /// and no view is rebuilt for it.
+    public func accessibilityLabel(_ state: Binding<String>) -> Modified {
+        words(VisualElementContract.accessibilityLabel, by: state)
+    }
+
+    /// `accessibilityHeadingLevel` from a state, `$x`: the host sets each new
+    /// value as it stands, and no view is rebuilt for it.
+    public func accessibilityHeadingLevel(_ state: Binding<HeadingLevel>) -> Modified {
+        plain(VisualElementContract.accessibilityHeadingLevel, by: state)
+    }
+
+    /// `accessibilityHint` from a state, `$x`: the host writes each new text,
+    /// and no view is rebuilt for it.
+    public func accessibilityHint(_ state: Binding<String>) -> Modified {
+        words(VisualElementContract.accessibilityHint, by: state)
+    }
+}

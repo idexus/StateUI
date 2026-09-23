@@ -92,3 +92,11 @@ public struct Stepper: View, StepperProperties {
         onEvent(StepperContract.valueChanged, handler)
     }
 }
+
+extension Stepper {
+    /// `step` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func step(_ state: Binding<Double>) -> Modified {
+        plain(.step, by: state)
+    }
+}

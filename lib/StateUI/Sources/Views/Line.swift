@@ -40,3 +40,29 @@ extension LineProperties {
     /// Where it ends, down.
     public func y2(_ value: Double) -> Modified { setValue(LineContract.y2, value) }
 }
+
+extension Line {
+    /// `x1` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func x1(_ state: Binding<Double>) -> Modified {
+        journey(.x1, by: state)
+    }
+
+    /// `x2` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func x2(_ state: Binding<Double>) -> Modified {
+        journey(.x2, by: state)
+    }
+
+    /// `y1` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func y1(_ state: Binding<Double>) -> Modified {
+        journey(.y1, by: state)
+    }
+
+    /// `y2` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func y2(_ state: Binding<Double>) -> Modified {
+        journey(.y2, by: state)
+    }
+}

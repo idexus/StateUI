@@ -33,3 +33,22 @@ extension BorderElement {
     }
 }
 
+extension BorderElement where Self: VisualElement {
+    /// `borderColor` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
+    public func borderColor(_ state: Binding<Color>) -> Modified {
+        journey(BorderElementContract.borderColor, by: state)
+    }
+
+    /// `borderWidth` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
+    public func borderWidth(_ state: Binding<Double>) -> Modified {
+        journey(BorderElementContract.borderWidth, by: state)
+    }
+
+    /// `cornerRadius` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func cornerRadius(_ state: Binding<Int>) -> Modified {
+        plain(BorderElementContract.cornerRadius, by: state)
+    }
+}

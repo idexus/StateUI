@@ -99,3 +99,17 @@ public struct Slider: View, TintElement, SliderProperties {
         onEvent(SliderContract.dragCompleted, handler)
     }
 }
+
+extension Slider {
+    /// `maximum` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func maximum(_ state: Binding<Double>) -> Modified {
+        plain(SliderContract.maximum.token, by: state)
+    }
+
+    /// `minimum` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func minimum(_ state: Binding<Double>) -> Modified {
+        plain(SliderContract.minimum.token, by: state)
+    }
+}

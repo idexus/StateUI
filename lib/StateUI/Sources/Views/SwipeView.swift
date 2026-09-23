@@ -231,3 +231,11 @@ public struct SwipeEnd: Equatable, Sendable {
     /// False for a swipe that did not reach the threshold and sprang back.
     public var isOpen: Bool
 }
+
+extension SwipeView {
+    /// `threshold` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func threshold(_ state: Binding<Double>) -> Modified {
+        plain(.threshold, by: state)
+    }
+}

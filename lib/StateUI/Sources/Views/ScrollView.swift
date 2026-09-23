@@ -97,3 +97,23 @@ public struct ScrollView: View, PaddingElement, ScrollViewProperties {
         onEvent(ScrollViewContract.scrollStopped, handler)
     }
 }
+
+extension ScrollView {
+    /// `horizontalScrollBarVisibility` from a state, `$x`: the host sets each
+    /// new value as it stands, and no view is rebuilt for it.
+    public func horizontalScrollBarVisibility(_ state: Binding<ScrollBarVisibility>) -> Modified {
+        plain(.horizontalScrollBarVisibility, by: state)
+    }
+
+    /// `orientation` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func orientation(_ state: Binding<ScrollOrientation>) -> Modified {
+        plain(.orientation, by: state)
+    }
+
+    /// `verticalScrollBarVisibility` from a state, `$x`: the host sets each new
+    /// value as it stands, and no view is rebuilt for it.
+    public func verticalScrollBarVisibility(_ state: Binding<ScrollBarVisibility>) -> Modified {
+        plain(.verticalScrollBarVisibility, by: state)
+    }
+}

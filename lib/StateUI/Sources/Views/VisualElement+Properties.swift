@@ -133,3 +133,143 @@ extension VisualElementProperties {
     /// Who is drawn on top where views overlap, higher being nearer the front.
     public func zIndex(_ value: Int) -> Modified { setValue(VisualElementContract.zIndex, value) }
 }
+
+extension VisualElement {
+    /// `pivotX` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func pivotX(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.pivotX, by: state)
+    }
+
+    /// `pivotY` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func pivotY(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.pivotY, by: state)
+    }
+
+    /// `background` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
+    public func background(_ state: Binding<Color>) -> Modified {
+        journey(VisualElementContract.background.token, by: state)
+    }
+
+    /// `layoutDirection` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func layoutDirection(_ state: Binding<LayoutDirection>) -> Modified {
+        plain(VisualElementContract.layoutDirection, by: state)
+    }
+
+    /// `height` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func height(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.height, by: state)
+    }
+
+    /// `ignoresInput` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func ignoresInput(_ state: Binding<Bool>) -> Modified {
+        plain(VisualElementContract.ignoresInput, by: state)
+    }
+
+    /// `isEnabled` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func isEnabled(_ state: Binding<Bool>) -> Modified {
+        plain(VisualElementContract.isEnabled, by: state)
+    }
+
+    /// `isVisible` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func isVisible(_ state: Binding<Bool>) -> Modified {
+        plain(VisualElementContract.isVisible, by: state)
+    }
+
+    /// `maximumHeight` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
+    public func maximumHeight(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.maximumHeight, by: state)
+    }
+
+    /// `maximumWidth` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
+    public func maximumWidth(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.maximumWidth, by: state)
+    }
+
+    /// `minimumHeight` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
+    public func minimumHeight(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.minimumHeight, by: state)
+    }
+
+    /// `minimumWidth` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
+    public func minimumWidth(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.minimumWidth, by: state)
+    }
+
+    /// `opacity` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func opacity(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.opacity, by: state)
+    }
+
+    /// `rotation` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
+    public func rotation(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.rotation, by: state)
+    }
+
+    /// `rotationX` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
+    public func rotationX(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.rotationX, by: state)
+    }
+
+    /// `rotationY` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
+    public func rotationY(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.rotationY, by: state)
+    }
+
+    /// `scale` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func scale(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.scale, by: state)
+    }
+
+    /// `scaleX` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func scaleX(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.scaleX, by: state)
+    }
+
+    /// `scaleY` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func scaleY(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.scaleY, by: state)
+    }
+
+    /// `translationX` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
+    public func translationX(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.translationX, by: state)
+    }
+
+    /// `translationY` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
+    public func translationY(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.translationY, by: state)
+    }
+
+    /// `width` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    public func width(_ state: Binding<Double>) -> Modified {
+        journey(VisualElementContract.width, by: state)
+    }
+
+    /// `zIndex` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func zIndex(_ state: Binding<Int>) -> Modified {
+        plain(VisualElementContract.zIndex, by: state)
+    }
+}

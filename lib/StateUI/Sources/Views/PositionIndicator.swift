@@ -89,3 +89,47 @@ public struct PositionIndicator: View, PositionIndicatorProperties {
     }
 
 }
+
+extension PositionIndicator {
+    /// `count` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
+    public func count(_ state: Binding<Int>) -> Modified {
+        plain(.count, by: state)
+    }
+
+    /// `hideSingle` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func hideSingle(_ state: Binding<Bool>) -> Modified {
+        plain(.hideSingle, by: state)
+    }
+
+    /// `indicatorColor` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
+    public func indicatorColor(_ state: Binding<Color>) -> Modified {
+        journey(.indicatorColor, by: state)
+    }
+
+    /// `indicatorSize` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func indicatorSize(_ state: Binding<Double>) -> Modified {
+        plain(.indicatorSize, by: state)
+    }
+
+    /// `indicatorsShape` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func indicatorsShape(_ state: Binding<IndicatorShape>) -> Modified {
+        plain(.indicatorsShape, by: state)
+    }
+
+    /// `maximumVisible` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func maximumVisible(_ state: Binding<Int>) -> Modified {
+        plain(.maximumVisible, by: state)
+    }
+
+    /// `selectedIndicatorColor` from a state, `$x`: the host animates the
+    /// property to each new value, and no view is rebuilt for it.
+    public func selectedIndicatorColor(_ state: Binding<Color>) -> Modified {
+        journey(.selectedIndicatorColor, by: state)
+    }
+}

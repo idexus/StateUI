@@ -760,9 +760,9 @@ final class ControlTests: XCTestCase {
     /// `fontSize(_ value: Double)`, `isVisible(_ value: Bool)`,
     /// `horizontalAlignment(_ value: Alignment)` - there is a twin taking
     /// `Binding<T>`, so a property whose value is decided somewhere else is
-    /// never a reason to build the view again. Views/Bound.swift is generated
-    /// from the value forms, and this is what keeps the two lists together: a
-    /// value modifier added without its twin is named here.
+    /// never a reason to build the view again. Each twin stands beside its
+    /// value form, and this is what keeps the two together: a value modifier
+    /// added without its twin is named here.
     ///
     /// WHAT IS ALLOWED OUT is named one by one, and each for a reason the host
     /// gives: a value it cannot be handed whole (a brush, a picture, a date, a
@@ -828,8 +828,8 @@ final class ControlTests: XCTestCase {
 
         XCTAssertGreaterThan(values.count, 150, "the scan read almost nothing")
         XCTAssertEqual(missing, [], """
-            These value modifiers have no binding twin - write one in \
-            Views/Bound.swift, beside the others of its kind:
+            These value modifiers have no binding twin - write one beside \
+            its value form, with the other twins of its type:
 
             \(missing.joined(separator: "\n"))
             """)
