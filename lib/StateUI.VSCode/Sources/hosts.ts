@@ -5,7 +5,7 @@
 // editor - one host's.
 
 /** A host an application is built for and run on. */
-export type Host = "appkit" | "maui";
+export type Host = "appkit" | "maui" | "android";
 
 /** What the extension knows about one host. */
 export interface HostDescription {
@@ -30,6 +30,20 @@ export interface HostDescription {
      */
     readonly indexPath: string;
 
+    /**
+     * What the language server compiles for while the editor works as this
+     * host, where that is not this machine.
+     */
+    readonly target?: {
+        readonly triple: string;
+
+        /** What names the Swift SDK in its id: `android` in `swift-6.4.0-RELEASE_android`. */
+        readonly swiftSDK: string;
+
+        /** Where that Swift SDK is installed from. */
+        readonly swiftSDKGuide: string;
+    };
+
     /** The machines that build and run this host's heads. */
     readonly platforms: readonly NodeJS.Platform[];
 }
@@ -38,9 +52,17 @@ export interface HostDescription {
 export const hosts: readonly HostDescription[] = [
     { id: "appkit", label: "AppKit", detail: "macOS, in the application's own process", variable: "STATEUI_APPKIT", indexPath: ".build-appkit/index-build", platforms: ["darwin"] },
     { id: "maui", label: ".NET MAUI", detail: "Android, iOS, Mac Catalyst, Windows and Linux", indexPath: ".build-maui/index-build", platforms: ["darwin", "win32", "linux"] },
+    {
+        id: "android", label: "Android", detail: "Android Views, in the application's own process", variable: "STATEUI_ANDROID",
+        indexPath: ".build-android/index-build", platforms: ["darwin"],
+        target: {
+            triple: "aarch64-unknown-linux-android28", swiftSDK: "android",
+            swiftSDKGuide: "https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html",
+        },
+    },
 ];
 
-/** The hosts this machine builds and runs - AppKit on macOS alone. */
+/** The hosts this machine builds and runs - AppKit and Android on macOS alone. */
 export function availableHosts(platform: NodeJS.Platform = process.platform): HostDescription[] {
     return hosts.filter((each) => each.platforms.includes(platform));
 }

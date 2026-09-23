@@ -18,7 +18,8 @@ Neither host has a published package route yet.
 - VS Code and Node.js 20 or newer, for the StateUI extension.
 
 [Starting with the MAUI host](#starting-with-the-maui-host) lists what the MAUI
-host needs as well.
+host needs as well, and [Android Views host](android-host.md#requirements)
+what the Android Views host needs.
 
 ## Working in VS Code
 
@@ -51,16 +52,22 @@ host's device picker and C# debugger.
 
 Open the repository folder. The status bar shows two StateUI items:
 
-- **the host** - AppKit or .NET MAUI, and for MAUI the debugger. The editor
-  works as that host: code under `#if APPKIT` is completed only while AppKit
-  is chosen, and switching restarts the Swift language server without reloading
-  the window.
+- **the host** - AppKit, Android, or .NET MAUI, and for MAUI the debugger. The
+  editor works as that host: code under `#if APPKIT` is completed only while
+  AppKit is chosen, and as Android the language server compiles for Android
+  with the Swift SDK for Android. Switching restarts the Swift language server
+  without reloading the window. Android is offered for an application with an
+  Android head.
 - **the application** - Gallery, HelloWorld, or any other under `apps/`. It is
   remembered for the workspace.
 
+While the host is Android a third item shows the device: an attached phone or
+a running emulator, or an emulator started when it is picked.
+
 Press **F5** to run **StateUI: Debug**, or choose **StateUI: Release** in Run
 and Debug. On AppKit the application's head is built and started under
-`lldb-dap`. On .NET MAUI the launch follows the MAUI extension's device picker,
+`lldb-dap`. On Android it is built, installed and started on the chosen device,
+with no debugger, and its terminal follows the application's log. On .NET MAUI the launch follows the MAUI extension's device picker,
 and the debugger chosen in the status bar decides how it is debugged:
 
 - **C#** - the MAUI extension's debugger on macOS and Windows, and `coreclr`
@@ -79,7 +86,8 @@ The Command Palette offers the rest under **StateUI:**
 
 | Command | What it does |
 | --- | --- |
-| Select Host | AppKit or .NET MAUI, as the status bar item does |
+| Select Host | AppKit, Android, or .NET MAUI, as the status bar item does |
+| Select Android Device | the device or emulator an Android head runs on |
 | Select Application | the application F5 runs |
 | Select Debugger | how a MAUI head is debugged |
 | Run Tests | the workspace's suites, run as the chosen host |
@@ -103,6 +111,13 @@ The variable is what makes it an AppKit build: the manifest then declares the
 AppKit head and defines `APPKIT`, and without it `swift test` compiles no part
 of one host's half; see
 [Project structure and development](development.md).
+
+Run HelloWorld's Android head on a device - `.scripts/Android/devices.sh list`
+names the devices:
+
+```bash
+.scripts/Android/run-app.sh apps/HelloWorld debug emulator-5554
+```
 
 Build the signed Gallery bundle with its resources and icon:
 

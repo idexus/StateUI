@@ -1,20 +1,21 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The extension: a host and an application chosen once, the editor working as
-// that host, one Debug and one Release that run the application on it, and
-// the suites run as it.
+// The extension: a host and an application chosen once - and for Android a
+// device - the editor working as that host, one Debug and one Release that run
+// the application on it, and the suites run as it.
 
 import { execFile } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
-import { Application, findApplications } from "./applications";
+import { Application, findApplications, hasHead } from "./applications";
 import { configurations, StateUIDebugConfigurationProvider } from "./debug";
+import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
 import { applyEditorMode, cleanIndex, variablesInSettings } from "./editorMode";
 import { availableHosts, availableMauiDebuggers, describe, Host, MauiDebugger, mauiDebuggers } from "./hosts";
-import { runTask } from "./tasks";
-import { findSuites, runSuites } from "./tests";
+import { runTask, startTask } from "./tasks";
+import { findSuites, forDevice, runSuites } from "./tests";
 import { carriedTemplate, checkoutProblem, inAppsCommand, isCheckout, nameProblem, pinnedRelease, releases, Starter, StarterSource, writeStarter } from "./newApplication";
 
 /** What the extension answers to another extension - and to its own tests. */
@@ -30,6 +31,13 @@ const hostKey = "stateui.host";
 const applicationKey = "stateui.application";
 const debuggerKey = "stateui.debugger";
 
+/** What gives an application each host's head. */
+const heads: Record<Host, string> = {
+    appkit: "an AppKit head (Platforms/AppKit/main.swift)",
+    maui: "a MAUI head (Platforms/Maui/*.csproj)",
+    android: "an Android head (Platforms/Android/build.gradle.kts)",
+};
+
 export async function activate(context: vscode.ExtensionContext): Promise<StateUIApi> {
     const state = context.workspaceState;
 
@@ -37,8 +45,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         (vscode.workspace.workspaceFolders ?? []).flatMap((folder) => findApplications(folder.uri.fsPath));
 
     /** The applications that have a head for `host`. */
-    const runnable = (host: Host): Application[] =>
-        applications().filter((each) => (host === "appkit" ? each.hasAppKitHead : each.mauiProject !== undefined));
+    const runnable = (host: Host): Application[] => applications().filter((each) => hasHead(each, host));
 
     // The packages whose manifest reads a host's variable: the applications.
     const roots = (): string[] => applications().map((each) => each.directory);
@@ -67,7 +74,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     hostItem.command = "stateui.selectHost";
     const applicationItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 49);
     applicationItem.command = "stateui.selectApplication";
-    context.subscriptions.push(hostItem, applicationItem);
+    const deviceItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 48);
+    deviceItem.command = "stateui.selectAndroidDevice";
+    context.subscriptions.push(hostItem, applicationItem, deviceItem);
 
     const refresh = (): void => {
         const described = describe(host());
@@ -81,6 +90,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         applicationItem.text = `$(window) ${application?.name ?? "Select Application"}`;
         applicationItem.tooltip = `The application StateUI: Debug and StateUI: Release run on ${described.label}. Click to change.`;
         candidates.length > 0 ? applicationItem.show() : applicationItem.hide();
+
+        const device = chosenDevice(state);
+        deviceItem.text = `$(device-mobile) ${device?.name ?? "Select Android Device"}`;
+        deviceItem.tooltip = `The Android device StateUI: Debug, StateUI: Release and StateUI: Run Tests run on${device ? ` - ${device.serial}` : ""}. Click to change.`;
+        described.id === "android" ? deviceItem.show() : deviceItem.hide();
     };
 
     const selectHost = async (picked: Host): Promise<void> => {
@@ -106,8 +120,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     const askForApplication = async (forHost: Host): Promise<Application | undefined> => {
         const candidates = runnable(forHost);
         if (candidates.length === 0) {
-            const head = forHost === "appkit" ? "an AppKit head (Platforms/AppKit/main.swift)" : "a MAUI head (Platforms/Maui/*.csproj)";
-            void vscode.window.showErrorMessage(`StateUI: no application here has ${head}.`);
+            void vscode.window.showErrorMessage(`StateUI: no application here has ${heads[forHost]}.`);
             return undefined;
         }
 
@@ -128,10 +141,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         return picked?.application;
     };
 
+    /** The Android device a launch or a suite runs on - asked for where none chosen is attached. */
+    const androidDevice = async (root: string): Promise<string | undefined> => {
+        const serial = await deviceToRunOn(root, state);
+        refresh();
+        return serial;
+    };
+
     context.subscriptions.push(
         vscode.commands.registerCommand("stateui.selectHost", async () => {
             const picked = await vscode.window.showQuickPick(
-                availableHosts().map((each) => ({
+                // Android is offered where an application has its head.
+                availableHosts().filter((each) => each.id !== "android" || runnable("android").length > 0).map((each) => ({
                     label: each.label,
                     description: each.id === host() ? "current" : undefined,
                     detail: each.detail,
@@ -143,6 +164,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             }
         }),
         vscode.commands.registerCommand("stateui.selectApplication", () => askForApplication(host())),
+        vscode.commands.registerCommand("stateui.selectAndroidDevice", async () => {
+            const root = (vscode.workspace.workspaceFolders ?? []).map((folder) => folder.uri.fsPath)
+                .find((directory) => fs.existsSync(androidScript(directory, "devices.sh")));
+            if (!root) {
+                void vscode.window.showErrorMessage("StateUI: Android devices are listed by a StateUI checkout's .scripts/Android/devices.sh, which no folder here has.");
+                return;
+            }
+            await askForDevice(root, state);
+            refresh();
+        }),
         vscode.commands.registerCommand("stateui.selectDebugger", async () => {
             const picked = await vscode.window.showQuickPick(
                 availableMauiDebuggers().map((each) => ({
@@ -171,7 +202,16 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
                 return;
             }
 
-            const failed = await runSuites(folder, picked.map((each) => each.suite));
+            let chosenSuites = picked.map((each) => each.suite);
+            if (chosenSuites.some((each) => each.onDevice)) {
+                const serial = await androidDevice(folder.uri.fsPath);
+                if (!serial) {
+                    return;
+                }
+                chosenSuites = chosenSuites.map((each) => forDevice(each, serial));
+            }
+
+            const failed = await runSuites(folder, chosenSuites);
             if (failed.length === 0) {
                 void vscode.window.showInformationMessage(`StateUI: all ${picked.length} suites passed on ${describe(host()).label}.`);
             } else {
@@ -261,6 +301,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         host,
         debugger: mauiDebugger,
         run: runTask,
+        start: startTask,
+        device: (folder) => androidDevice(folder.uri.fsPath),
         attachSwiftWhenStarted: (sessionName, processName) => { pendingSwift.set(sessionName, processName); },
         application: async (_folder, forHost, named) => {
             const candidates = runnable(forHost);

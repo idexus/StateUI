@@ -1,7 +1,7 @@
 {
   "name": "stateui",
   "displayName": "StateUI",
-  "description": "Build, run and debug StateUI applications on AppKit and .NET MAUI.",
+  "description": "Build, run and debug StateUI applications on AppKit, Android and .NET MAUI.",
   "version": "0.4.0",
   "publisher": "idexus",
   "license": "Apache-2.0",
@@ -24,6 +24,7 @@
   "activationEvents": [
     "workspaceContains:**/Platforms/AppKit/main.swift",
     "workspaceContains:**/Platforms/Maui/*.csproj",
+    "workspaceContains:**/Platforms/Android/build.gradle.kts",
     "onDebugResolve:stateui",
     "onDebugDynamicConfigurations:stateui"
   ],
@@ -37,6 +38,11 @@
       {
         "command": "stateui.selectApplication",
         "title": "Select Application",
+        "category": "StateUI"
+      },
+      {
+        "command": "stateui.selectAndroidDevice",
+        "title": "Select Android Device",
         "category": "StateUI"
       },
       {
@@ -135,7 +141,7 @@
         "properties": {
           "application": {
             "type": "string",
-            "description": "The application whose AppKit head is built."
+            "description": "The application whose head is built or run."
           },
           "configuration": {
             "type": "string",
@@ -147,6 +153,10 @@
           "suite": {
             "type": "string",
             "description": "The test suite run."
+          },
+          "device": {
+            "type": "string",
+            "description": "The serial of the Android device the head runs on."
           }
         }
       }

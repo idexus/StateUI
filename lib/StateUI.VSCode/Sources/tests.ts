@@ -8,7 +8,8 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { findApplications } from "./applications";
-import { environment, Host } from "./hosts";
+import { androidScript } from "./devices";
+import { describe, environment, Host } from "./hosts";
 import { runTask } from "./tasks";
 
 /** One suite, and the command that runs it. */
@@ -18,6 +19,9 @@ export interface Suite {
     readonly command: string;
     readonly args: readonly string[];
     readonly env: Record<string, string>;
+
+    /** Whether it runs on an Android device, whose serial ends its arguments once one is chosen. */
+    readonly onDevice?: boolean;
 }
 
 /**
@@ -30,6 +34,10 @@ export interface Suite {
  *   under `#if MAUI` compiles only in a MAUI run.
  * - A host's own package - `lib/StateUI.AppKit` - runs only for that host.
  * - A C# test project - `lib/StateUI.Maui/Tests` - runs for the MAUI host.
+ * - For the Android host an application runs as plain Swift, its Android build
+ *   running only on a device, and the host's own tests -
+ *   `lib/StateUI.Android/Tests` - run on the device chosen, by
+ *   `.scripts/Android/test-android.sh`.
  */
 export function findSuites(root: string, host: Host): Suite[] {
     const suites: Suite[] = [];
@@ -45,20 +53,20 @@ export function findSuites(root: string, host: Host): Suite[] {
         }
 
         const name = directory === root ? path.basename(root) : path.relative(root, directory);
-        const hostPackage = path.basename(directory).match(/\.(AppKit|Maui)$/)?.[1]?.toLowerCase();
+        const hostPackage = path.basename(directory).match(/\.(AppKit|Maui|Android)$/)?.[1]?.toLowerCase();
         if (hostPackage && hostPackage !== host) {
             continue;
         }
 
         const base = ["test", "--package-path", directory];
         if (hostPackage) {
-            suites.push({ label: name, detail: `swift test - ${host === "appkit" ? "the AppKit" : "the MAUI"} host's own package`, command: "swift", args: base, env: {} });
+            suites.push({ label: name, detail: `swift test - the ${describe(host).label} host's own package`, command: "swift", args: base, env: {} });
         } else if (host === "maui") {
             suites.push({
                 label: name, detail: "swift test -Xswiftc -DMAUI, on .build-maui", command: "swift",
                 args: [...base, "--scratch-path", path.join(directory, ".build-maui"), "-Xswiftc", "-DMAUI"], env: {},
             });
-        } else if (applications.has(directory)) {
+        } else if (host === "appkit" && applications.has(directory)) {
             suites.push({
                 label: name, detail: "swift test as an AppKit build, on .build-appkit", command: "swift",
                 args: [...base, "--scratch-path", path.join(directory, ".build-appkit")], env: appKitEnvironment,
@@ -77,7 +85,20 @@ export function findSuites(root: string, host: Host): Suite[] {
         }
     }
 
+    const testScript = androidScript(root, "test-android.sh");
+    if (host === "android" && fs.existsSync(testScript)) {
+        suites.push({
+            label: path.join("lib", "StateUI.Android", "Tests"), detail: "test-android.sh - the Android host's own tests, on the device chosen",
+            command: "bash", args: [testScript], env: {}, onDevice: true,
+        });
+    }
+
     return suites;
+}
+
+/** `suite` run on the Android device `serial`, where it runs on one. */
+export function forDevice(suite: Suite, serial: string): Suite {
+    return suite.onDevice ? { ...suite, args: [...suite.args, serial] } : suite;
 }
 
 function children(directory: string): string[] {

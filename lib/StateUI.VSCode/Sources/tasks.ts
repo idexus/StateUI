@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Runs a task and waits for it - how the extension builds a head and runs a
-// suite, with the output where a task's always is: the terminal.
+// suite - or starts one that runs until stopped, as an Android head's log does,
+// with the output where a task's always is: the terminal.
 
 import * as vscode from "vscode";
 
@@ -27,4 +28,28 @@ export function runTask(task: vscode.Task): Promise<number | undefined> {
             (execution) => { started = execution; },
             (error) => { listener.dispose(); if (!ended) { reject(error); } });
     });
+}
+
+/**
+ * Starts `task`, which runs until it is stopped - a head followed by its log -
+ * and answers once it has started. A StateUI task for the same application on
+ * the same device still running is stopped first and waited for, so starting
+ * again is a restart rather than a second run beside the first.
+ */
+export async function startTask(task: vscode.Task): Promise<void> {
+    const { application, device } = task.definition;
+    const replaced = vscode.tasks.taskExecutions.filter((each) => device !== undefined && each.task.definition.type === "stateui"
+        && each.task.definition.application === application && each.task.definition.device === device);
+
+    await Promise.all(replaced.map((execution) => new Promise<void>((resolve) => {
+        const listener = vscode.tasks.onDidEndTask((event) => {
+            if (event.execution === execution) {
+                listener.dispose();
+                resolve();
+            }
+        });
+        execution.terminate();
+    })));
+
+    await vscode.tasks.executeTask(task);
 }

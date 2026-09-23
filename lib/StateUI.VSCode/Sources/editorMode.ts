@@ -32,6 +32,12 @@
 // had two servers building in one directory - the same failure, a few seconds
 // apart. Switches therefore run one at a time, and each waits until no build is
 // running in the directories its server is about to build in.
+//
+// A HOST WHOSE HEADS RUN ON ANOTHER PLATFORM IS INDEXED FOR THAT PLATFORM. For
+// Android the same file names the Swift SDK of the toolchain's release and the
+// triple, found as .scripts/Android/build-swift.sh finds them. With no such SDK
+// installed the editor still works as the host, compiling for this Mac, and
+// says so.
 
 import { execFile } from "child_process";
 import * as fs from "fs";
@@ -58,9 +64,10 @@ export function applyEditorMode(host: Host, roots: readonly string[]): Promise<b
 
 async function apply(host: Host, roots: readonly string[]): Promise<boolean> {
     let changed = false;
+    const settings = serverSettings(host, roots.length > 0 ? await installedSwiftSDK(host) : undefined);
 
     for (const root of roots) {
-        changed = writeServerConfig(root, describe(host).indexPath) || changed;
+        changed = writeServerConfig(root, settings) || changed;
     }
 
     for (const [variable, value] of Object.entries(environment(host))) {
@@ -131,17 +138,93 @@ export function variablesInSettings(): string[] {
     return Object.keys(settings).filter((variable) => known.has(variable));
 }
 
+/** What the language server is told about one host, under `swiftPM`. */
+export interface ServerSettings {
+    readonly scratchPath: string;
+    readonly swiftSDK?: string;
+    readonly triple?: string;
+}
+
+/** The language server's own file, .sourcekit-lsp/config.json. */
+export interface ServerConfig {
+    swiftPM?: Record<string, unknown>;
+    backgroundPreparationMode?: string;
+    [key: string]: unknown;
+}
+
 /**
- * Sets the index directory and the preparation mode in
- * `root`/.sourcekit-lsp/config.json, keeping anything else the file says.
+ * What the language server is told while the editor works as `host`: the
+ * host's index directory and - for a host compiled for another platform, where
+ * its Swift SDK `swiftSDK` is installed - that SDK and the triple.
+ */
+export function serverSettings(host: Host, swiftSDK?: string): ServerSettings {
+    const { indexPath, target } = describe(host);
+    return target && swiftSDK ? { scratchPath: indexPath, swiftSDK, triple: target.triple } : { scratchPath: indexPath };
+}
+
+/**
+ * `config` saying `settings` and preparing by building: an SDK and a triple
+ * that `settings` leave out are removed, anything else the file says is kept.
+ */
+export function serverConfig(config: ServerConfig, settings: ServerSettings): ServerConfig {
+    const kept = Object.entries(config.swiftPM ?? {}).filter(([key]) => key !== "swiftSDK" && key !== "triple");
+    return { ...config, swiftPM: { ...Object.fromEntries(kept), ...settings }, backgroundPreparationMode: "build" };
+}
+
+/**
+ * The release a Swift version names - `6.4` in `swift --version`'s "Swift
+ * version 6.4" or in the SDK id `swift-6.4.0-RELEASE_android`: a release
+ * ending in `.0` is the release without it, as build-swift.sh reads it.
+ */
+export function swiftRelease(text: string): string | undefined {
+    const version = text.match(/Swift version (\d+\.\d+(\.\d+)?)/)?.[1] ?? text.match(/\d+\.\d+(\.\d+)?/)?.[0];
+    return version?.replace(/^(\d+\.\d+)\.0$/, "$1");
+}
+
+/**
+ * The Swift SDK of `release` whose id names `family`, among the ids
+ * `swift sdk list` printed as `list` - the last one, as build-swift.sh takes it.
+ */
+export function swiftSDKOf(release: string | undefined, list: string, family: string): string | undefined {
+    return release === undefined
+        ? undefined
+        : list.split(/\s+/).filter((id) => id.toLowerCase().includes(family) && swiftRelease(id) === release).pop();
+}
+
+/**
+ * The Swift SDK the language server compiles `host` with - or nothing, for a
+ * host of this machine and, said in a warning, where none is installed.
+ */
+async function installedSwiftSDK(host: Host): Promise<string | undefined> {
+    const { label, target } = describe(host);
+    if (!target) {
+        return undefined;
+    }
+
+    const swift = (args: string[]): Promise<string> => new Promise((resolve) =>
+        execFile("swift", args, (_error, stdout, stderr) => resolve(`${stdout}${stderr}`)));
+    const release = swiftRelease(await swift(["--version"]));
+    const found = swiftSDKOf(release, await swift(["sdk", "list"]), target.swiftSDK);
+
+    if (!found) {
+        void vscode.window.showWarningMessage(
+            `StateUI: no Swift SDK for ${label} of ${release ? `Swift ${release}` : "this toolchain's release"} is installed, `
+            + `so the editor compiles the code for this Mac rather than for ${label}. [Install the Swift SDK for ${label}](${target.swiftSDKGuide}).`);
+    }
+    return found;
+}
+
+/**
+ * Sets `settings` and the preparation mode in `root`/.sourcekit-lsp/config.json,
+ * keeping anything else the file says.
  *
  * @returns whether the file changed.
  */
-function writeServerConfig(root: string, indexPath: string): boolean {
+function writeServerConfig(root: string, settings: ServerSettings): boolean {
     const directory = path.join(root, ".sourcekit-lsp");
     const file = path.join(directory, "config.json");
 
-    let config: { swiftPM?: Record<string, unknown>; backgroundPreparationMode?: string } = {};
+    let config: ServerConfig = {};
     if (fs.existsSync(file)) {
         try {
             config = JSON.parse(fs.readFileSync(file, "utf8"));
@@ -151,13 +234,12 @@ function writeServerConfig(root: string, indexPath: string): boolean {
         }
     }
 
-    if (config.swiftPM?.scratchPath === indexPath && config.backgroundPreparationMode === "build") {
+    const next = serverConfig(config, settings);
+    if (JSON.stringify(next) === JSON.stringify(config)) {
         return false;
     }
 
-    config.swiftPM = { ...config.swiftPM, scratchPath: indexPath };
-    config.backgroundPreparationMode = "build";
     fs.mkdirSync(directory, { recursive: true });
-    fs.writeFileSync(file, JSON.stringify(config, null, 2) + "\n");
+    fs.writeFileSync(file, JSON.stringify(next, null, 2) + "\n");
     return true;
 }

@@ -9,6 +9,10 @@
 // on the device that extension's own picker chose. Resolved in the FIRST hook,
 // so the new type's resolvers still run over it.
 //
+// An Android head is run with NO debugger: .scripts/Android/run-app.sh builds,
+// installs and starts it on the device chosen, in a task whose terminal then
+// follows its log, and the configuration resolves to no session.
+//
 // The application is the one chosen with StateUI: Select Application; a launch
 // naming its `application` runs that one instead. A MAUI head is debugged the
 // way StateUI: Select Debugger chose - C#, Swift, or both on Mac Catalyst.
@@ -18,6 +22,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 import { Application, appKitProgram } from "./applications";
+import { androidScript } from "./devices";
 import { environment, Host, MauiDebugger } from "./hosts";
 
 /** Which build a launch runs. */
@@ -38,6 +43,15 @@ export interface Choices {
 
     /** Runs a build as a task and answers its exit code. */
     run(task: vscode.Task): Promise<number | undefined>;
+
+    /** Starts a task that runs until it is stopped - a head followed by its log. */
+    start(task: vscode.Task): Promise<void>;
+
+    /**
+     * The serial of the Android device a launch runs on - the one chosen while
+     * it is attached, else asked for - or nothing, where none is picked.
+     */
+    device(folder: vscode.WorkspaceFolder): Promise<string | undefined>;
 
     /**
      * Attaches lldb-dap to `processName` once the C# session named
@@ -87,6 +101,9 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
 
         if (host === "maui") {
             return this.maui(root, application, configuration, name);
+        }
+        if (host === "android") {
+            return this.android(root, application, configuration);
         }
 
         if (!(await buildAppKitHead(root, application, configuration, (task) => this.choices.run(task)))) {
@@ -183,6 +200,27 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
                 return started ? attach(`${application.name}.exe`) : undefined;
             }
         }
+    }
+
+    /** An Android head, started by run-app.sh in a task that follows its log: no session. */
+    private async android(root: vscode.WorkspaceFolder, application: Application, configuration: Configuration): Promise<undefined> {
+        const script = androidScript(root.uri.fsPath, "run-app.sh");
+        if (!fs.existsSync(script)) {
+            void vscode.window.showErrorMessage(
+                `StateUI: an Android head runs through a StateUI checkout's .scripts/Android/run-app.sh, which ${root.name} does not have.`);
+            return undefined;
+        }
+
+        const serial = await this.choices.device(root);
+        if (serial) {
+            const task = new vscode.Task(
+                { type: "stateui", application: application.name, configuration, device: serial }, root,
+                `Run ${application.name} (Android, ${configuration})`, "StateUI",
+                new vscode.ShellExecution("bash", [script, application.directory, configuration, serial], { cwd: root.uri.fsPath }), []);
+            task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+            await this.choices.start(task);
+        }
+        return undefined;
     }
 
     /**

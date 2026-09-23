@@ -13,10 +13,12 @@ import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
 import * as vscode from "vscode";
-import { findApplications } from "../Sources/applications";
+import { findApplications, hasHead } from "../Sources/applications";
 import { StateUIDebugConfigurationProvider, stateUIBuildDirectory } from "../Sources/debug";
-import { findSuites } from "../Sources/tests";
-import { availableHosts, MauiDebugger } from "../Sources/hosts";
+import { parseDevices } from "../Sources/devices";
+import { serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
+import { findSuites, forDevice } from "../Sources/tests";
+import { availableHosts, environment, hosts, MauiDebugger } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
 import { carriedTemplate, inAppsCommand, nameProblem, Starter, templateIn, writeStarter } from "../Sources/newApplication";
 
@@ -108,6 +110,8 @@ export async function run(): Promise<void> {
                     ran.push([shell.command, ...(shell.args ?? [])].map(String).join(" "));
                     return 0;
                 },
+                start: async () => { throw new Error("a MAUI launch starts no task that runs until stopped"); },
+                device: async () => { throw new Error("a MAUI launch asks for no Android device"); },
                 attachSwiftWhenStarted: (session, processName) => { attached.push(`${session}->${processName}`); },
             });
             const resolved = await provider.resolveDebugConfiguration(root,
@@ -171,9 +175,9 @@ export async function run(): Promise<void> {
                 && JSON.stringify(resolved?.attachCommands) === JSON.stringify(["process attach --name Gallery.exe"]));
         }
 
-        // The hosts a machine is offered: AppKit on macOS alone.
-        check("the host picker offers AppKit and .NET MAUI on macOS, and only .NET MAUI on Windows and Linux",
-            JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "maui"])
+        // The hosts a machine is offered: AppKit and Android on macOS alone.
+        check("the host picker offers AppKit, .NET MAUI and Android on macOS, and only .NET MAUI on Windows and Linux",
+            JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "maui", "android"])
             && JSON.stringify(availableHosts("win32").map((each) => each.id)) === JSON.stringify(["maui"])
             && JSON.stringify(availableHosts("linux").map((each) => each.id)) === JSON.stringify(["maui"]));
 
@@ -182,15 +186,109 @@ export async function run(): Promise<void> {
         const mauiSuites = findSuites(root.uri.fsPath, "maui").map((each) => each.label);
         say(`appkit suites: ${appkitSuites.join(", ")}`);
         say(`maui suites: ${mauiSuites.join(", ")}`);
-        check("appkit runs the core, StateUI.AppKit and the Gallery, and no C#",
+        check("appkit runs the core, StateUI.AppKit and the Gallery, and no C# and no device",
             appkitSuites.includes("StateUI") && appkitSuites.includes("lib/StateUI.AppKit")
             && appkitSuites.includes("apps/Gallery") && !mauiSuites.includes("lib/StateUI.AppKit")
             && !appkitSuites.some((each) => each.endsWith("Tests")));
-        check("maui runs the core, the Gallery and the C# suite, and not StateUI.AppKit",
+        check("maui runs the core, the Gallery and the C# suite, and not StateUI.AppKit nor the Android host's tests",
             mauiSuites.includes("StateUI") && mauiSuites.includes("apps/Gallery")
-            && mauiSuites.includes("lib/StateUI.Maui/Tests") && !mauiSuites.includes("lib/StateUI.AppKit"));
+            && mauiSuites.includes("lib/StateUI.Maui/Tests") && !mauiSuites.includes("lib/StateUI.AppKit")
+            && !mauiSuites.includes("lib/StateUI.Android/Tests"));
 
-        // 6. A new application. What the extension writes from the template is
+        // 6. Android: the environment, the language server's file, the
+        //    devices, and the commands a launch and a suite run - captured,
+        //    not run.
+        check("each host's environment sets its own variable alone and clears every other - STATEUI_ANDROID for Android",
+            hosts.every((host) => {
+                const values = environment(host.id);
+                const set = Object.entries(values).filter((entry) => entry[1] !== undefined);
+                return JSON.stringify(Object.keys(values).sort()) === JSON.stringify(["STATEUI_ANDROID", "STATEUI_APPKIT"])
+                    && JSON.stringify(set) === JSON.stringify(host.variable ? [[host.variable, "1"]] : []);
+            }) && environment("android").STATEUI_ANDROID === "1");
+        {
+            const sdk = "swift-6.4.0-RELEASE_android";
+            const android = serverConfig(
+                { swiftPM: { scratchPath: ".build-appkit/index-build", configuration: "debug" }, index: { indexStorePath: "x" } },
+                serverSettings("android", sdk));
+            const back = serverConfig(android, serverSettings("appkit", sdk));
+            check("as Android the language server indexes in .build-android/index-build with the Swift SDK and aarch64-unknown-linux-android28, by building",
+                android.swiftPM?.scratchPath === ".build-android/index-build" && android.swiftPM?.swiftSDK === sdk
+                && android.swiftPM?.triple === "aarch64-unknown-linux-android28" && android.backgroundPreparationMode === "build");
+            check("the rest of the file is kept, and back on AppKit the SDK and the triple are gone",
+                android.swiftPM?.configuration === "debug" && JSON.stringify(android.index) === JSON.stringify({ indexStorePath: "x" })
+                && back.swiftPM?.scratchPath === ".build-appkit/index-build" && back.swiftPM?.configuration === "debug"
+                && !("swiftSDK" in back.swiftPM!) && !("triple" in back.swiftPM!));
+            check("with no Swift SDK installed Android indexes for this Mac, and a host of this machine never takes one",
+                JSON.stringify(serverSettings("android", undefined)) === JSON.stringify({ scratchPath: ".build-android/index-build" })
+                && JSON.stringify(serverSettings("maui", sdk)) === JSON.stringify({ scratchPath: ".build-maui/index-build" }));
+
+            // The other releases are assembled, so the repository's one-release guard reads no second one here.
+            const older = ["6", "3", "3"].join("."), newer = ["6", "5"].join(".");
+            const list = `swift-${older}-RELEASE_android\nswift-6.4.0-RELEASE_android\nswift-6.4.0-RELEASE_static-linux-0.1.0\n`;
+            const sdkOf = (version: string) => swiftSDKOf(swiftRelease(version), list, "android");
+            check("the Swift SDK for Android is the one of the toolchain's release, as build-swift.sh finds it",
+                sdkOf("Apple Swift version 6.4 (swift-6.4-RELEASE)\nTarget: arm64-apple-macosx26.0") === sdk
+                && sdkOf(`Apple Swift version ${older} (swift-${older}-RELEASE)`) === `swift-${older}-RELEASE_android`
+                && sdkOf(`Apple Swift version ${newer} (swift-${newer}-RELEASE)`) === undefined && sdkOf("") === undefined);
+        }
+        check("devices.sh list reads as the devices attached, by serial and name, and the emulators not running",
+            JSON.stringify(parseDevices("device\t190a991d\tCPH2363\r\ndevice\temulator-5554\tPixel_3a_API_34\ndevice\tR5CT\navd\tMAUI_Emulator_API_33\n\nnoise\n"))
+            === JSON.stringify([
+                { kind: "device", serial: "190a991d", name: "CPH2363" },
+                { kind: "device", serial: "emulator-5554", name: "Pixel_3a_API_34" },
+                { kind: "device", serial: "R5CT", name: "R5CT" },
+                { kind: "avd", name: "MAUI_Emulator_API_33" },
+            ]));
+
+        const helloWorld = findApplications(root.uri.fsPath).find((each) => each.name === "HelloWorld")!;
+        check("HelloWorld has an Android head and the Gallery none",
+            hasHead(helloWorld, "android") && !hasHead(gallery_, "android"));
+        {
+            const launchOnAndroid = async (serial: string | undefined) => {
+                const started: vscode.Task[] = [];
+                const ran: string[] = [];
+                const provider = new StateUIDebugConfigurationProvider({
+                    host: () => "android", application: async () => helloWorld, debugger: () => "csharp",
+                    run: async (task) => { ran.push(task.name); return 0; },
+                    start: async (task) => { started.push(task); },
+                    device: async () => serial,
+                    attachSwiftWhenStarted: () => undefined,
+                });
+                const resolved = await provider.resolveDebugConfiguration(root,
+                    { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
+                return { resolved, started, ran };
+            };
+
+            const { resolved, started, ran } = await launchOnAndroid("emulator-5554");
+            const shell = started[0]?.execution as vscode.ShellExecution | undefined;
+            const line = shell ? [shell.command, ...(shell.args ?? [])].map(String).join(" ") : "";
+            say(`     android started: ${line}`);
+            check("Android: run-app.sh <HelloWorld> release <serial> started as a task on that device, nothing waited for, and no session",
+                resolved === undefined && ran.length === 0 && started.length === 1
+                && line === `bash ${path.join(root.uri.fsPath, ".scripts", "Android", "run-app.sh")} ${helloWorld.directory} release emulator-5554`
+                && started[0].definition.application === "HelloWorld" && started[0].definition.device === "emulator-5554");
+
+            const declined = await launchOnAndroid(undefined);
+            check("Android with no device picked starts nothing and opens no session",
+                declined.resolved === undefined && declined.started.length === 0);
+        }
+        {
+            const androidSuites = findSuites(root.uri.fsPath, "android");
+            say(`android suites: ${androidSuites.map((each) => each.label).join(", ")}`);
+            const onDevice = androidSuites.filter((each) => each.onDevice).map((each) => forDevice(each, "emulator-5554"));
+            const galleryRun = androidSuites.find((each) => each.label === "apps/Gallery");
+            check("android runs the core and the Gallery as plain Swift, and no AppKit and no C#",
+                androidSuites.some((each) => each.label === "StateUI" && forDevice(each, "emulator-5554") === each)
+                && galleryRun?.args.join(" ") === `test --package-path ${gallery}` && Object.keys(galleryRun.env).length === 0
+                && !androidSuites.some((each) => each.label === "lib/StateUI.AppKit" || each.command === "dotnet"));
+            check("android runs test-android.sh <serial> on the device, and only android does",
+                onDevice.length === 1 && onDevice[0].label === "lib/StateUI.Android/Tests"
+                && [onDevice[0].command, ...onDevice[0].args].join(" ") === `bash ${path.join(root.uri.fsPath, ".scripts", "Android", "test-android.sh")} emulator-5554`
+                && ![...appkitSuites, ...mauiSuites].includes("lib/StateUI.Android/Tests"));
+        }
+        check("the palette has Select Android Device", (await vscode.commands.getCommands(true)).includes("stateui.selectAndroidDevice"));
+
+        // 7. A new application. What the extension writes from the template is
         //    what `dotnet new stateui-maui` writes, file for file, for each
         //    source and head - the template read by two readers, checked as one.
         const commands = await vscode.commands.getCommands(true);
@@ -280,7 +378,7 @@ export async function run(): Promise<void> {
             fs.rmSync(scratch, { recursive: true, force: true });
         }
 
-        // 7. StateUI: Debug on AppKit runs the REMEMBERED application - no
+        // 8. StateUI: Debug on AppKit runs the REMEMBERED application - no
         //    question asked - built, under lldb-dap.
         await api.selectHost("appkit");
         await api.selectApplication("HelloWorld");
@@ -303,7 +401,7 @@ export async function run(): Promise<void> {
         await vscode.debug.stopDebugging(running);
 
 
-        // 8. LIVE: Swift · Mac Catalyst - run-app.sh builds and starts the
+        // 9. LIVE: Swift · Mac Catalyst - run-app.sh builds and starts the
         //    Gallery's MAUI head, and lldb-dap attaches to the running app.
         await api.selectHost("maui");
         await api.selectApplication("Gallery");

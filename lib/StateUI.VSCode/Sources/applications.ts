@@ -6,6 +6,7 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import { Host } from "./hosts";
 
 /** One application, and the heads it has. */
 export interface Application {
@@ -19,6 +20,9 @@ export interface Application {
 
     /** The MAUI project - `Platforms/Maui/Gallery.csproj` - where it has a MAUI head. */
     readonly mauiProject?: string;
+
+    /** Whether it has an Android head: the Gradle build in `Platforms/Android`. */
+    readonly hasAndroidHead: boolean;
 
     /**
      * The script that builds the application's AppKit bundle, where it has one
@@ -51,9 +55,10 @@ function describeApplication(root: string, directory: string): Application | und
     }
 
     const hasAppKitHead = fs.existsSync(path.join(directory, "Platforms", "AppKit", "main.swift"));
+    const hasAndroidHead = fs.existsSync(path.join(directory, "Platforms", "Android", "build.gradle.kts"));
     const project = mauiProject(directory);
 
-    if (!hasAppKitHead && !project) {
+    if (!hasAppKitHead && !hasAndroidHead && !project) {
         return undefined;
     }
 
@@ -67,8 +72,18 @@ function describeApplication(root: string, directory: string): Application | und
         directory,
         hasAppKitHead,
         mauiProject: project,
+        hasAndroidHead,
         bundleScript: fs.existsSync(script) ? script : undefined,
     };
+}
+
+/** Whether `application` has a head for `host`. */
+export function hasHead(application: Application, host: Host): boolean {
+    switch (host) {
+    case "appkit": return application.hasAppKitHead;
+    case "maui": return application.mauiProject !== undefined;
+    case "android": return application.hasAndroidHead;
+    }
 }
 
 function mauiProject(directory: string): string | undefined {
