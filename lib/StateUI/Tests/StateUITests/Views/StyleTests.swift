@@ -938,10 +938,10 @@ final class StyleTests: XCTestCase {
         let declared = try Fixtures.text(in: "Style.swift")
         var read = 0
 
-        // Elements.swift declares the TIER surfaces, which reach the style
-        // through the `where Target:` conformances - this walk is about the
-        // per-control ones, declared beside their control.
-        for source in try Fixtures.controlSources() where source != "Elements.swift" {
+        // The shared tier's files declare the TIER surfaces, which reach the
+        // style through the `where Target:` conformances - this walk is about
+        // the per-control ones, declared beside their control.
+        for source in try Fixtures.controlSources() where !Fixtures.sharedTier.contains(source) {
             let text = try Fixtures.text(in: source)
 
             for surface in text.occurrences(between: "public protocol ", and: ":")

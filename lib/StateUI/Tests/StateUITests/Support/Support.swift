@@ -774,12 +774,22 @@ enum Fixtures {
         "Pin",
     ]
 
+    /// The files of the shared view tier: the tiers every view wears, whose
+    /// properties one case covers rather than every control's.
+    /// Design: docs/design/views/tiers.md#the-shared-view-tier
+    static let sharedTier = [
+        "PropertyContainer.swift", "ModifiableElement.swift", "VisualElement.swift",
+        "VisualElement+Properties.swift", "VisualElement+Accessibility.swift", "View.swift",
+        "View+Placement.swift", "View+Gestures.swift", "Layout.swift", "StackBase.swift",
+        "Shape.swift", "InputView.swift",
+    ]
+
     /// The files under Views/ that describe controls.
     ///
     /// Application.swift and Style.swift describe the application and the
     /// styles its controls are given - neither a control, and each with tests
-    /// of its own; Elements.swift and ViewBuilder.swift describe no type at
-    /// all.
+    /// of its own; the shared tier's files and ViewBuilder.swift describe no
+    /// type at all.
     ///
     /// NavigationStack.swift and TabbedView.swift are the same kind of thing: a
     /// PAGE arranges other pages, so there is no control to build one on and
@@ -788,10 +798,10 @@ enum Fixtures {
     /// checked. ModalStack.swift arranges pages too, over the
     /// window rather than inside it.
     ///
-    /// Elements.swift STAYS IN, describing no type of its own: its property
-    /// keys are the shared tier, which `testEveryModifierIsExercised` reads
-    /// and `testTheSharedTierIsCoveredOnce` unwraps a case for. Skipping it
-    /// would leave three guards asking about nothing.
+    /// The shared tier's files STAY IN, describing no type of their own: their
+    /// property keys are the shared tier, which `testEveryModifierIsExercised`
+    /// reads and `testTheSharedTierIsCoveredOnce` unwraps a case for. Skipping
+    /// them would leave three guards asking about nothing.
     ///
     /// The walk RECURSES, as the build's own glob does: a control added in a
     /// folder under Views/ compiles, and one this could not see would be a

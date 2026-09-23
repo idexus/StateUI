@@ -57,17 +57,19 @@ the aim and the read-only bindings live on `VisualElement`, and lifetime on
 
 ## The shared view tier
 
-`Elements.swift` declares the hierarchy and the modifiers of its own tiers:
-visual element, view, layout, stack, shape and input view.
-`testTheSharedTierIsCoveredOnce` checks the properties declared there against
-one fixture, built from a stack and a label, so those properties are covered
-once rather than in every control's case.
+The shared tier is the hierarchy every view wears - property container,
+modifiable element, visual element, view, layout, stack, shape and input
+view - a file for each, and one more for a larger group of a tier's
+modifiers: a view's gestures, where it sits, what it says about itself.
+`testTheSharedTierIsCoveredOnce` checks the properties declared in those files
+against one fixture, built from a stack and a label, so those properties are
+covered once rather than in every control's case.
 
 ## One file per mixin tier
 
 A tier worn by some controls and not others - text, font, alignment, padding,
 line height, decoration, border, image, tint, bar, page and menu item - has a
-file of its own beside `Elements.swift` rather than a block inside it. Its
+file of its own beside the shared tier's rather than a block inside one. Its
 properties are then not part of the shared tier the fixture checks, and a
 control that does not wear the tier is never offered its modifiers.
 

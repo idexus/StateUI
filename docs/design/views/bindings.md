@@ -26,7 +26,7 @@ What the host does with a carried state follows from the value:
                                                  driven text
 ```
 
-Each twin is one line over one of three helpers in `Elements.swift` -
+Each twin is one line over one of three helpers of `PropertyContainer` -
 `journey(_:by:)`, `plain(_:by:mode:)` and `words(_:by:mode:)` - and
 `Bound.swift` is generated from the value forms.
 `testEveryValueModifierHasABindingTwin` holds the two lists together: a value

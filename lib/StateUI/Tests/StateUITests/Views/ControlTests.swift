@@ -37,14 +37,18 @@ private struct ControlCase {
     /// The StateUI node type, which is also what the fixture is called.
     let name: String
 
-    /// The file under Views/ whose modifiers this case has to exercise.
-    let source: String
+    /// The files under Views/ whose modifiers this case has to exercise.
+    let sources: [String]
 
     let node: Node
 
     init(_ name: String, source: String, _ element: any Element) {
+        self.init(name, sources: [source], element)
+    }
+
+    init(_ name: String, sources: [String], _ element: any Element) {
         self.name = name
-        self.source = source
+        self.sources = sources
         self.node = element.body
     }
 }
@@ -505,7 +509,7 @@ final class ControlTests: XCTestCase {
             // alignment, and a shape for what a shape is drawn with. The grid
             // placement is on the label because that is where a placement
             // lives - on the child, not the grid.
-            ControlCase("Elements", source: "Elements.swift",
+            ControlCase("Elements", sources: Fixtures.sharedTier,
                 VStack {
                     // The Shape tier, which all seven shapes share - so it is
                     // checked here rather than in each of their cases, exactly
@@ -674,7 +678,9 @@ final class ControlTests: XCTestCase {
         var covered: [String: Set<String>] = [:]
 
         for control in Self.cases {
-            covered[control.source, default: []].formUnion(Self.propNames(in: control.node))
+            for source in control.sources {
+                covered[source, default: []].formUnion(Self.propNames(in: control.node))
+            }
         }
 
         var read = 0
@@ -715,7 +721,7 @@ final class ControlTests: XCTestCase {
     /// appears in no `fixtures/controls/` file at all, and PageTests is where
     /// it is built with everything it can do.
     func testEveryModifierOfATierIsExercisedSomewhere() throws {
-        let withCases = Set(Self.cases.map(\.source))
+        let withCases = Set(Self.cases.flatMap(\.sources))
         let proof = try (Fixtures.fixtureSidecars()
             + Fixtures.testSources().map(\.text))
             .joined(separator: "\n")
@@ -896,8 +902,10 @@ final class ControlTests: XCTestCase {
     /// The shared tier, deliberately covered in one place rather than in every
     /// control's case.
     func testTheSharedTierIsCoveredOnce() throws {
-        let tiers = try XCTUnwrap(Self.cases.first { $0.source == "Elements.swift" })
-        let declared = try Fixtures.propertyKeys(in: "Elements.swift")
+        let tiers = try XCTUnwrap(Self.cases.first { $0.sources == Fixtures.sharedTier })
+        let declared = try Fixtures.sharedTier.reduce(into: Set<String>()) {
+            $0.formUnion(try Fixtures.propertyKeys(in: $1))
+        }
 
         // Worth stating rather than implying: this is a real number of
         // properties, and it is covered once.
