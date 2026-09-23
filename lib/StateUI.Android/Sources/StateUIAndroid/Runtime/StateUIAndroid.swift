@@ -57,6 +57,12 @@ enum JavaNatives {
                 AndroidRenderer.shared?.setPhase(ApplicationPhase(rawValue: phase) ?? .active)
             }
         }
+        let configured: @convention(c) (Environment, jclass?) -> Void = { _, _ in
+            MainActor.assumeIsolated { AndroidRenderer.shared?.configured() }
+        }
+        let back: @convention(c) (Environment, jclass?) -> jboolean = { _, _ in
+            MainActor.assumeIsolated { AndroidRenderer.shared?.goBack() == true ? 1 : 0 }
+        }
         let frame: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, time in
             MainActor.assumeIsolated {
                 AndroidFrameClock.current?.frame(Double(time) / 1_000_000)
@@ -65,6 +71,16 @@ enum JavaNatives {
         let clicked: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
             MainActor.assumeIsolated {
                 AndroidView.find(number)?.clicked()
+            }
+        }
+        let actionClicked: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, action in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidBarView)?.onAction?(Int(action))
+            }
+        }
+        let tabSelected: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, tab in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidTabsView)?.onChosen?(Int(tab))
             }
         }
         let toggled: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, on in
@@ -133,8 +149,12 @@ enum JavaNatives {
         let natives: [(String, String, UnsafeMutableRawPointer)] = [
             ("start", "(Landroid/app/Activity;Landroid/widget/FrameLayout;F)V", unsafeBitCast(start, to: UnsafeMutableRawPointer.self)),
             ("phase", "(I)V", unsafeBitCast(phase, to: UnsafeMutableRawPointer.self)),
+            ("configured", "()V", unsafeBitCast(configured, to: UnsafeMutableRawPointer.self)),
+            ("back", "()Z", unsafeBitCast(back, to: UnsafeMutableRawPointer.self)),
             ("frame", "(J)V", unsafeBitCast(frame, to: UnsafeMutableRawPointer.self)),
             ("clicked", "(J)V", unsafeBitCast(clicked, to: UnsafeMutableRawPointer.self)),
+            ("actionClicked", "(JI)V", unsafeBitCast(actionClicked, to: UnsafeMutableRawPointer.self)),
+            ("tabSelected", "(JI)V", unsafeBitCast(tabSelected, to: UnsafeMutableRawPointer.self)),
             ("toggled", "(JZ)V", unsafeBitCast(toggled, to: UnsafeMutableRawPointer.self)),
             ("moved", "(JI)V", unsafeBitCast(moved, to: UnsafeMutableRawPointer.self)),
             ("dragStarted", "(J)V", unsafeBitCast(dragStarted, to: UnsafeMutableRawPointer.self)),

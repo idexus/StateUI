@@ -33,6 +33,17 @@ final class StateUIViews {
         view.layout(left, top, right, bottom);
     }
 
+    /** Slides the view across to `translationX` pixels and fades it to `alpha`, over `duration` milliseconds. */
+    static void slide(View view, float translationX, float alpha, long duration) {
+        view.animate().cancel();
+        if (duration <= 0) {
+            view.setTranslationX(translationX);
+            view.setAlpha(alpha);
+            return;
+        }
+        view.animate().translationX(translationX).alpha(alpha).setDuration(duration).start();
+    }
+
     /** Moves, turns and scales the view about its pivot, in pixels; a pivot of NaN is its centre. */
     static void transform(View view, float translationX, float translationY, float rotation,
             float rotationX, float rotationY, float scaleX, float scaleY, float pivotX, float pivotY) {

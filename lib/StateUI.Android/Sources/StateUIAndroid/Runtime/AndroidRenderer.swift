@@ -46,15 +46,23 @@ final class AndroidRenderer {
     let root: JavaObject
     private let density: Double
 
-    /// The page's view the root shows.
-    private weak var shownPage: AndroidView?
-
     /// Whether a turn is running; a turn asked for inside it runs once it ends.
     private var pumping = false
     private var pumpAgain = false
 
-    /// Events raised while a patch applied, or inside a user's transaction, in order.
-    private var queuedEvents: [(handler: Int32, payload: [HostValue])] = []
+    /// Events raised while a patch applied, inside a user's transaction, or a page's phase, in order.
+    private var queuedEvents: [QueuedEvent] = []
+
+    /// An event waiting for its turn; a page's phase is rendered before the event after it runs.
+    private struct QueuedEvent {
+        let handler: Int32
+        let payload: [HostValue]
+        var isPhase = false
+    }
+
+    /// The arrangement of pages the root shows, and whether the activity was last told there is a way back.
+    private weak var shownArrangement: AndroidElement?
+    private var handlesBack = false
 
     /// How deep the user's transactions stand; their events wait for the outermost to end.
     private var transactionDepth = 0
@@ -121,6 +129,7 @@ final class AndroidRenderer {
         let renderer = AndroidRenderer(context: context, root: root, density: density)
         shared = renderer
         renderer.watchLayout()
+        AndroidEnvironment.report(to: renderer.core, activity: context.reference)
         renderer.show(connectingScene: previous == nil)
         AndroidDoorbell.install { AndroidRenderer.shared?.pump() }
         return renderer
@@ -140,16 +149,32 @@ final class AndroidRenderer {
 
     /// Renders the application whole, connecting its scene first where no activity has shown it.
     func show(connectingScene: Bool = true) {
-        if connectingScene {
-            core.setTheme(.light)
-            core.connectScene()
-        }
+        if connectingScene { core.connectScene() }
         pump()
     }
 
-    /// Reports the application's phase as the activity's lifecycle moves it.
+    /// Reports the application's phase as the activity's lifecycle moves it, then the scene's and its window's,
+    /// each rendered before the next.
+    /// Design: docs/design/platforms/android/runtime.md#the-activitys-lifecycle
     func setPhase(_ phase: ApplicationPhase) {
         core.setApplicationPhase(phase)
+        pump()
+
+        let event: Event = switch phase {
+        case .active: .activated
+        case .inactive: .deactivated
+        default: .stopped
+        }
+        for element in [tree.root?.first(type: .scene), tree.root?.first(type: .window)] {
+            if let handler = element?.handler(event) { dispatch(handler) }
+        }
+    }
+
+    /// The activity's configuration changed - the display turned or resized: the core is told what stands now,
+    /// and the window laid out again.
+    func configured() {
+        AndroidEnvironment.report(to: core, activity: context.reference)
+        Java.call(root.reference, JavaAPI.requestLayout)
         pump()
     }
 
@@ -157,7 +182,7 @@ final class AndroidRenderer {
     /// user's transaction, waits for it.
     func dispatch(_ handler: Int32, payload: [HostValue] = []) {
         guard !intake.isApplying, transactionDepth == 0 else {
-            queuedEvents.append((handler, payload))
+            queuedEvents.append(QueuedEvent(handler: handler, payload: payload))
             return
         }
 
@@ -173,12 +198,27 @@ final class AndroidRenderer {
         transactionDepth -= 1
         guard transactionDepth == 0, !intake.isApplying else { return }
 
-        let queued = queuedEvents
-        queuedEvents.removeAll()
-        for event in queued {
-            _ = core.dispatch(event.handler, payload: event.payload)
-        }
+        deliverQueued()
         pump()
+    }
+
+    /// Queues a page's phase: it runs in its turn, and is rendered before anything after it.
+    /// Design: docs/design/platforms/android/pages.md#a-pages-phases
+    func enqueuePhase(_ handler: Int32) {
+        queuedEvents.append(QueuedEvent(handler: handler, payload: [], isPhase: true))
+    }
+
+    /// Runs the queued events in order, stopping after a phase so it is rendered first; whether any ran.
+    @discardableResult
+    private func deliverQueued() -> Bool {
+        guard !queuedEvents.isEmpty, !intake.isApplying, transactionDepth == 0 else { return false }
+
+        while !queuedEvents.isEmpty {
+            let event = queuedEvents.removeFirst()
+            _ = core.dispatch(event.handler, payload: event.payload)
+            if event.isPhase { break }
+        }
+        return true
     }
 
     /// Keeps the display's frames coming for `scroller` until it stands and has said everything.
@@ -262,18 +302,16 @@ final class AndroidRenderer {
             for handler in created {
                 _ = core.dispatch(handler)
             }
-
-            let queued = queuedEvents
-            queuedEvents.removeAll()
-            for event in queued {
-                _ = core.dispatch(event.handler, payload: event.payload)
-            }
-
-            // The acts land on the interface their handler changed, so a turn that ran handlers renders again first.
-            if !created.isEmpty || !queued.isEmpty {
+            if !created.isEmpty {
                 pumpAgain = true
                 return
             }
+        }
+
+        // The acts land on the interface their handler changed, so a turn that ran handlers renders again first.
+        if deliverQueued() {
+            pumpAgain = true
+            return
         }
 
         for call in core.takeActCalls() {
@@ -281,6 +319,7 @@ final class AndroidRenderer {
                 core.fail(completion, reason: "the Android Views host performs no act yet")
             }
         }
+        refreshBack()
     }
 
     /// Applies the core's render; a drifted one is asked for whole, once.
@@ -301,17 +340,39 @@ final class AndroidRenderer {
         showPage()
     }
 
-    /// Shows the first window's page in the activity's root.
+    /// Shows the first window's arrangement of pages in the activity's root, its pages hearing that they show.
     private func showPage() {
-        let page = tree.root?.first(type: .window)?.first(type: .page)?.android.view
-        guard page !== shownPage else { return }
+        let arrangement = tree.root?.first(type: .window)?.children
+            .first { AndroidElement.pageTypes.contains($0.type) }?.android
+        guard arrangement !== shownArrangement else { return }
 
-        shownPage = page
+        shownArrangement?.setPagePresented(false, reason: .window)
+        shownArrangement = arrangement
         Java.call(root.reference, JavaAPI.removeAllViews)
-        if let page {
+        if let page = arrangement?.view {
             page.forgetPlace()
             Java.call(root.reference, JavaAPI.addView, .object(page.reference), .int(-1), .int(-1))
         }
+        arrangement?.setPagePresented(true, reason: .window)
+    }
+
+    /// Goes the way back the arrangement shown offers; whether there was one.
+    /// Design: docs/design/platforms/android/pages.md#the-way-back
+    func goBack() -> Bool {
+        guard let wayBack = shownArrangement?.wayBack else { return false }
+
+        wayBack()
+        return true
+    }
+
+    /// Tells the activity whether there is a way back, so the system's own back gesture knows whose it is.
+    func refreshBack() {
+        let handles = shownArrangement?.wayBack != nil
+        guard handles != handlesBack else { return }
+
+        handlesBack = handles
+        guard Java.jni.IsInstanceOf(Java.env, context.reference, JavaAPI.activity) != 0 else { return }
+        Java.call(context.reference, JavaAPI.setHandlesBack, .bool(handles))
     }
 }
 

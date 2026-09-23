@@ -46,6 +46,15 @@ extension AndroidElement {
         case .page:
             return AndroidSingleChildView()
 
+        case .navigationStack:
+            return AndroidNavigationView()
+
+        case .splitView:
+            return AndroidSplitView()
+
+        case .tabbedView:
+            return AndroidTabbedView()
+
         case .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
              .titleView, .toolbarItems, .toolbarItem, .menuBar, .contextMenu,
              .menu, .menuItem, .menuSeparator, .spans, .span:
@@ -77,6 +86,10 @@ extension AndroidElement {
                 case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
                 case .isVisible: view.setShown(isShown)
                 case .background: view.setBackground(value(.background))
+                case .padding where type == .page:
+                    let sides = value(.padding)?.numbers ?? []
+                    (view as? AndroidSingleChildView)?.padding =
+                        sides.count >= 4 ? Insets(sides[0], sides[1], sides[2], sides[3]) : Insets(0)
                 default: break
                 }
             }

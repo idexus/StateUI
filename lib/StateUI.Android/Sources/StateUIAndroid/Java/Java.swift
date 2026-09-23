@@ -215,9 +215,9 @@ enum Java {
     }
 
     /// An array of `owner`'s objects, as a local reference.
-    static func array(of owner: jclass, _ objects: [jobject]) -> jobjectArray? {
+    static func array(of owner: jclass, _ objects: [jobject?]) -> jobjectArray? {
         let array = jni.NewObjectArray(env, jsize(objects.count), owner, nil)
-        for (index, object) in objects.enumerated() {
+        for (index, object) in objects.enumerated() where object != nil {
             jni.SetObjectArrayElement(env, array, jsize(index), object)
         }
         check("an array")
@@ -228,6 +228,14 @@ enum Java {
     static func floats(_ values: [Float]) -> jfloatArray? {
         let array = jni.NewFloatArray(env, jsize(values.count))
         values.withUnsafeBufferPointer { jni.SetFloatArrayRegion(env, array, 0, jsize(values.count), $0.baseAddress) }
+        return array
+    }
+
+    /// A Java boolean array of `values`, as a local reference.
+    static func booleans(_ values: [Bool]) -> jbooleanArray? {
+        let array = jni.NewBooleanArray(env, jsize(values.count))
+        let bytes = values.map { jboolean($0 ? 1 : 0) }
+        bytes.withUnsafeBufferPointer { jni.SetBooleanArrayRegion(env, array, 0, jsize(values.count), $0.baseAddress) }
         return array
     }
 

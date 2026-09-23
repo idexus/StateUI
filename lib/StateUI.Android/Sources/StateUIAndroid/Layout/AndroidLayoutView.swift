@@ -32,13 +32,21 @@ class AndroidLayoutView: AndroidView {
             || !zip(items, self.items).allSatisfy({ $0.arranges(like: $1) })
         else { return false }
 
-        if !Self.same(items.map(\.view), self.items.map(\.view)) {
-            setChildren(items.map(\.view))
-        }
-
+        let rehold = !Self.same(items.map(\.view), self.items.map(\.view))
         self.items = items
+        if rehold { holdChildren() }
         invalidateMeasurements()
         return true
+    }
+
+    /// The views the group holds for its items: every item's, unless a layout shows only some.
+    func heldViews() -> [AndroidView] {
+        items.map(\.view)
+    }
+
+    /// Holds the views `heldViews()` answers, where they differ from those it holds.
+    func holdChildren() {
+        setChildren(heldViews())
     }
 
     /// Holds `views` in the group in this order, the one it draws them and hands them touches in.

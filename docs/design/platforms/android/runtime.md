@@ -70,3 +70,21 @@ are on one clock.
 An Android application's standard output goes nowhere. The host points stdout
 and stderr at a pipe whose reader writes each line to logcat under the tag
 `StateUI`, so an application's `print` reaches the log the scripts follow.
+
+## The environment
+
+What the device, its display and the application are is read as the host
+starts and whenever the activity's configuration changes, each group of
+facts in one call: the model, the maker and Android's version; the display's
+size in pixels, its density, rotation and refresh rate; the application's
+name, package and version. A device whose smallest width is 600
+density-independent pixels or more is a tablet, any other a phone. The
+system's dark or light theme is read with them, and the activity is made in
+the matching one: a change of theme makes Android create the activity again,
+and the new one takes the scene over, its controls drawn in the new theme.
+
+## The activity's lifecycle
+
+The activity's resume, pause and stop move the application's phase, and
+then the scene's and its window's: activated, deactivated and stopped, each
+rendered before the next is heard.

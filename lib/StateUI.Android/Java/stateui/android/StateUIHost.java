@@ -18,6 +18,12 @@ final class StateUIHost {
     /** Starts the host in the activity's root, at the display's density. */
     static native void start(Activity activity, FrameLayout root, float density);
 
+    /** The display turned or resized, or the theme changed. */
+    static native void configured();
+
+    /** The user asked to go back; whether the host went. */
+    static native boolean back();
+
     /** The activity's lifecycle moved the application's phase. */
     static native void phase(int phase);
 
@@ -26,6 +32,12 @@ final class StateUIHost {
 
     /** A button was clicked. */
     static native void clicked(long view);
+
+    /** A tab was chosen, by its place among the tabs. */
+    static native void tabSelected(long view, int tab);
+
+    /** One of a bar's actions was clicked, by its place in the bar. */
+    static native void actionClicked(long view, int action);
 
     /** A switch was turned on or off. */
     static native void toggled(long view, boolean on);

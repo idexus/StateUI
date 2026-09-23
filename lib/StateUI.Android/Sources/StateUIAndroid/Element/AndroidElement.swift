@@ -24,6 +24,10 @@ final class AndroidElement: NativeElement {
     /// Whether a label shows its spans' runs rather than its own words.
     var hasRuns = false
 
+    /// Whether this page tree is shown, as its pages last heard; and what an arrangement showed before a patch.
+    var pagePresented = false
+    private var previouslyShown: [MountedElement] = []
+
     init(_ element: MountedElement, host: AndroidRenderer) {
         self.element = element
         self.host = host
@@ -41,10 +45,13 @@ final class AndroidElement: NativeElement {
 
     var presentsView: Bool { view != nil }
 
-    func willApply() {}
+    func willApply() {
+        previouslyShown = shownChildren.map(\.element)
+    }
 
     func adopted() {
         leaving = false
+        pagePresented = false
     }
 
     func standingValue(_ property: Prop) -> HostValue? {
@@ -65,6 +72,9 @@ final class AndroidElement: NativeElement {
         view?.setTapped(element.handler(.tapped) == nil ? nil : { [weak self] in self?.send(.tapped, []) })
         configureLayoutMotion()
         arrangeChildren()
+        arrangePages(changed: changed)
+        reconcilePresentation(from: previouslyShown.map(\.android))
+        previouslyShown = []
         host?.follow(self, readsFrame: readsFrame)
     }
 

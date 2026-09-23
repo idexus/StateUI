@@ -9,7 +9,7 @@
         <activity
             android:name="stateui.android.StateUIActivity"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode|density">
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|density">
             <!-- The library this head's Swift is built into; its JNI_OnLoad starts the host. -->
             <meta-data android:name="stateui.library" android:value="HelloWorldAndroid" />
             <intent-filter>

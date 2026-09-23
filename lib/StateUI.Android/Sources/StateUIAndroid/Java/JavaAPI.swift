@@ -233,6 +233,7 @@ enum JavaAPI {
     // MARK: - java.lang
 
     static let object = Java.findClass("java/lang/Object")
+    static let string = Java.findClass("java/lang/String")
     static let toString = Java.method(object, "toString", "()Ljava/lang/String;")
 
     // MARK: - The host's own classes
@@ -249,10 +250,34 @@ enum JavaAPI {
     static let listener = Java.findClass("stateui/android/StateUIListener")
     static let newListener = Java.method(listener, "<init>", "(J)V")
 
+    static let environment = Java.findClass("stateui/android/StateUIEnvironment")
+    static let deviceFacts = Java.staticMethod(environment, "device", "()[Ljava/lang/String;")
+    static let displayFacts = Java.staticMethod(environment, "display", "(Landroid/app/Activity;)[F")
+    static let applicationFacts = Java.staticMethod(
+        environment, "application", "(Landroid/content/Context;)[Ljava/lang/String;")
+
+    static let bar = Java.findClass("stateui/android/StateUIBar")
+    static let newBar = Java.method(bar, "<init>", "(Landroid/content/Context;J)V")
+    static let showBar = Java.method(bar, "show", "(Ljava/lang/String;II)V")
+    static let setBarNavigation = Java.method(
+        bar, "setNavigation", "(ILandroid/graphics/Bitmap;ILjava/lang/String;)V")
+    static let setBarActions = Java.method(
+        bar, "setActions", "([Ljava/lang/String;[Landroid/graphics/Bitmap;[Z[Z)V")
+
+    static let androidActivity = Java.findClass("android/app/Activity")
+    static let activity = Java.findClass("stateui/android/StateUIActivity")
+    static let setHandlesBack = Java.method(activity, "setHandlesBack", "(Z)V")
+
     static let views = Java.findClass("stateui/android/StateUIViews")
     static let measureView = Java.staticMethod(views, "measure", "(Landroid/view/View;II)J")
     static let placeView = Java.staticMethod(views, "place", "(Landroid/view/View;IIII)V")
     static let transformView = Java.staticMethod(views, "transform", "(Landroid/view/View;FFFFFFFFF)V")
+    static let slideView = Java.staticMethod(views, "slide", "(Landroid/view/View;FFJ)V")
+
+    static let tabs = Java.findClass("stateui/android/StateUITabs")
+    static let newTabs = Java.method(tabs, "<init>", "(Landroid/content/Context;J)V")
+    static let setTabs = Java.method(
+        tabs, "setTabs", "([Ljava/lang/String;[Landroid/graphics/Bitmap;IIII)V")
     static let setDrawingOrder = Java.method(viewGroupHost, "setDrawingOrder", "([I)V")
 
     static let shapeDrawable = Java.findClass("stateui/android/StateUIShapeDrawable")
