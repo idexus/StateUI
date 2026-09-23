@@ -46,6 +46,31 @@ conditional beside them does not shift them.
 differ assigns and `.manual` is the author's text. On the wire one is a number
 and the other a string, so they can never collide.
 
+## What a walk keeps
+
+The differ is one object for the life of the renderer. What it keeps between
+walks is what no walk can work out again:
+
+```text
+  the element and handler counters   never reset (ids are never reused)
+  the walk's number                  an aim put on two views in one walk
+                                     attaches once; the next walk afresh
+  the style sheet                    a clean walk does not read it
+  the handler registry               a carried subtree is not walked, and
+                                     its handlers must go on working
+```
+
+What belongs to one walk is set as it starts: whether it describes every
+element, whether the sheet moved, the states written since the host's tree was
+built - what the clean walk and the carry decide by - and the environments in
+scope, seeded with the standard providers so an application's own
+`.environment()` below is nearer. Where an element says nothing of motion, a
+value takes the application's answer, or the library's default in a test's
+differ. The handlers a walk finds run after it, what left first and innermost
+first; the composed views it is inside name a bare container's content in
+`debugInfo()`; and the scene it is inside is the one a `@State(sceneKey:)`
+claims from.
+
 ## Ids are never reused
 
 Element ids and handler ids come from counters that are never reset, not even
