@@ -926,7 +926,7 @@ func stack(_ children: [Node], id: String? = nil) -> Node {
 /// whatever it was.
 ///
 /// The theme is what the differ reads as it builds an element wearing a pair
-/// - see Types/Color.swift - so this is how a test asks for the other half.
+/// - see Types/Colour/Color.swift - so this is how a test asks for the other half.
 /// The provider is the one the host pushes into, which is exactly what a real
 /// theme change writes.
 func withTheme(_ theme: Theme, _ body: () -> Void) {

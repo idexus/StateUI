@@ -7,6 +7,16 @@ the host knows. Each value says how it crosses to a host and how it comes
 back, so no host parses or guesses anything. These notes give the reasons;
 the declarations' own documentation says how to use them.
 
+The sources stand in a folder per topic: `Geometry` points, rectangles,
+insets and transforms; `Layout` alignment, grid lengths, safe areas and
+placements; `Colour` colours, gradients, brushes and backgrounds; `Drawing`
+pictures, shapes, strokes and the canvas; `Text` names and the text and
+keyboard vocabularies; `Time` days, times of day and zones; `Motion` the
+timing laws and their groups; `Gestures` what a gesture reports;
+`Environment` the standard providers and their vocabularies; `Sessions` the
+application, scene, window and page sessions; `Controls` the vocabularies one
+control takes.
+
 ## The notes
 
 - [Closed vocabularies](vocabularies.md) - every enum and flag set crosses as

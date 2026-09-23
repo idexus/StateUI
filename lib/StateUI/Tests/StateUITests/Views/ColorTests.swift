@@ -77,7 +77,7 @@ final class ColorTests: XCTestCase {
 
     /// And a themed one crosses as ONE colour: written, it is the pair, and
     /// the half in force is picked as the element wearing it is built - so
-    /// the wire never sees two. See Types/Color.swift.
+    /// the wire never sees two. See Types/Colour/Color.swift.
     func testAThemedColourCrossesAsTheHalfInForce() {
         let themed = Color(light: .white, dark: .black)
 
