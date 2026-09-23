@@ -38,8 +38,8 @@ it.
 - `host/`: the runtime every host shares - [the runtime](host/runtime.md),
   [the mounted tree](host/tree.md), [layout](host/layout.md),
   [motion](host/motion.md), [patches](host/patches.md).
-- `appkit/`: the AppKit half of its runtime - [input](appkit/input.md) and
-  [views](appkit/views.md).
+- `appkit/`: the AppKit half of its runtime - [input](appkit/input.md),
+  [views](appkit/views.md), [registrations](appkit/registrations.md).
 
 ## Writing a note
 
