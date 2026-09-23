@@ -581,10 +581,7 @@ final class SceneTests: XCTestCase {
     func testNoApplicationWindowOrPageSaysWhatItsSessionHolds() throws {
         // A page's are read off its session, so a value added there is looked
         // for here the day it arrives.
-        let pageSession = try String(
-            contentsOf: Fixtures.repository
-                .appendingPathComponent("lib/StateUI/Sources/Types/PageSession.swift"),
-            encoding: .utf8)
+        let pageSession = try Fixtures.text(in: "PageSession.swift")
 
         let onPage = pageSession.split(separator: "\n").compactMap { line -> String? in
             guard let declared = line.range(of: "@State public var \\w+", options: .regularExpression)

@@ -60,8 +60,8 @@ final class CompleteContractTests: XCTestCase {
     /// construction, and a scan reading line by line walks past it.
     func testEveryNodeIsBuiltThroughItsContract() throws {
         let allowed: [(path: String, construction: String)] = [
-            ("Core/Stateful.swift", "Node(type: .composed)"),
-            ("Views/Style.swift", "Node(type: Target().node.type)"),
+            ("Stateful.swift", "Node(type: .composed)"),
+            ("Style.swift", "Node(type: Target().node.type)"),
         ]
         var byType: [String] = []
 
@@ -78,7 +78,7 @@ final class CompleteContractTests: XCTestCase {
                 let line = text[lineStart..<lineEnd].trimmingCharacters(in: .whitespaces)
 
                 if line.hasPrefix("//") { continue }
-                if allowed.contains(where: { source.path == $0.path && text[found.lowerBound...].hasPrefix($0.construction) }) {
+                if allowed.contains(where: { Fixtures.name(of: source.path) == $0.path && text[found.lowerBound...].hasPrefix($0.construction) }) {
                     continue
                 }
 
@@ -161,14 +161,14 @@ final class CompleteContractTests: XCTestCase {
         var read = 0
 
         for source in try Fixtures.allSources()
-        where source.path.hasPrefix("Views/") || Self.describing[source.path] != nil {
+        where source.path.hasPrefix("Views/") || Self.describing[Fixtures.name(of: source.path)] != nil {
             let properties = Fixtures.propertyKeys(inSource: source.text)
             let events = Fixtures.handlerKeys(inSource: source.text)
 
             guard !properties.isEmpty || !events.isEmpty else { continue }
 
             let described = Fixtures.nodeTypes(inSource: source.text)
-                .union(Self.describing[source.path] ?? [])
+                .union(Self.describing[Fixtures.name(of: source.path)] ?? [])
                 .union(Self.extended(in: source.text))
             let owners = described.compactMap { contracts[$0] }.flatMap { $0.worn }
 
@@ -216,10 +216,10 @@ final class CompleteContractTests: XCTestCase {
     /// write, the page's, which its session keeps, and the placed layout's, a
     /// composition over an `AbsoluteLayout` placing its children.
     private static let describing: [String: [String]] = [
-        "Core/Scenes.swift": ["Window"],
-        "Types/HostEnvironment.swift": ["Window"],
-        "Types/PageSession.swift": ["Page"],
-        "Views/PlacedLayout.swift": ["AbsoluteLayout"],
+        "Scenes.swift": ["Window"],
+        "HostEnvironment.swift": ["Window"],
+        "PageSession.swift": ["Page"],
+        "PlacedLayout.swift": ["AbsoluteLayout"],
     ]
 
     /// The contracts a source names by its protocols and extensions -

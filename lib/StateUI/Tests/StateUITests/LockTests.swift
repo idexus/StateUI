@@ -33,7 +33,7 @@ final class LockTests: XCTestCase {
         for (path, text) in try Fixtures.allSources() {
             if text.contains("DispatchQueue(") { offenders.append("\(path): DispatchQueue(") }
             if text.contains(".sync {") || text.contains(".sync(") { offenders.append("\(path): .sync") }
-            if text.contains("Mutex(") && !path.hasSuffix("Core/Lock.swift") { offenders.append("\(path): Mutex(") }
+            if text.contains("Mutex(") && !path.hasSuffix("/Lock.swift") { offenders.append("\(path): Mutex(") }
         }
 
         XCTAssertEqual(offenders, [], "the library locks with `Lock`")

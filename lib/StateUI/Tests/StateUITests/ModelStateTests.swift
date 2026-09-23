@@ -512,9 +512,9 @@ final class ModelStateTests: XCTestCase {
 
     func testHoldingAnObservableModelIsSaidAtTheDeclaration() throws {
         let refusals = try Fixtures.allSources()
-            .first { $0.path.hasSuffix("Core/Observable.swift") }
+            .first { $0.path.hasSuffix("/Observable.swift") }
 
-        let text = try XCTUnwrap(refusals?.text, "Core/Observable.swift is where this is said")
+        let text = try XCTUnwrap(refusals?.text, "Observable.swift is where this is said")
 
         let declared = text.components(separatedBy: "public convenience init").count - 1
         let deprecated = text.components(separatedBy: "@available(*, deprecated").count - 1

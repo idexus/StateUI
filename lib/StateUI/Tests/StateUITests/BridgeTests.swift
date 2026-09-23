@@ -129,7 +129,7 @@ final class BridgeTests: XCTestCase {
     /// Every `@_cdecl` in the library is in `Bridge/Exports.swift`.
     func testEveryExportLivesInTheBridgeFile() throws {
         for (path, text) in try Fixtures.allSources()
-        where !path.hasSuffix("Bridge/Exports.swift") {
+        where !path.hasSuffix("/Exports.swift") {
             let code = text.split(separator: "\n", omittingEmptySubsequences: false)
                 .map { $0.drop(while: { $0 == " " }) }
                 .filter { !$0.hasPrefix("//") }

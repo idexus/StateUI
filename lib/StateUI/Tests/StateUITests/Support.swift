@@ -597,21 +597,27 @@ enum Fixtures {
     /// wherever it sits, the names being unique across the sources, or by its
     /// path under the sources, `Views/Label.swift`.
     static func text(in file: String) throws -> String {
-        guard let source = try allSources().first(where: { $0.path == file || $0.path.hasSuffix("/" + file) }) else {
-            throw CocoaError(.fileNoSuchFile, userInfo: [NSFilePathErrorKey: file])
+        let found = try allSources().filter { $0.path == file || $0.path.hasSuffix("/" + file) }
+        guard found.count == 1, let source = found.first else {
+            throw CocoaError(.fileNoSuchFile, userInfo: [NSFilePathErrorKey: "\(file): \(found.count) found"])
         }
 
         return source.text
     }
 
-    /// The names one vocabulary's tokens stand for, read off Core/Tokens.swift:
+    /// A source's file name, without the folders it stands in: `Core/Tokens.swift` is `Tokens.swift`.
+    static func name(of path: String) -> String {
+        String(path.split(separator: "/").last ?? "")
+    }
+
+    /// The names one vocabulary's tokens stand for, read off Tokens.swift:
     /// a token stands under its member's name, and a node type's is that name
     /// capitalized - `"Prop"` answers `fontSize`, `"NodeType"` answers `Label`.
     static func tokenNames(of vocabulary: String) throws -> Set<String> {
-        tokenNames(of: vocabulary, in: try text(in: "Core/Tokens.swift"))
+        tokenNames(of: vocabulary, in: try text(in: "Tokens.swift"))
     }
 
-    /// The same, read off the text of Core/Tokens.swift a caller already holds.
+    /// The same, read off the text of Tokens.swift a caller already holds.
     static func tokenNames(of vocabulary: String, in source: String) -> Set<String> {
         var names: Set<String> = []
         var inside = false
@@ -640,7 +646,7 @@ enum Fixtures {
     ///
     /// The path is reported with FORWARD slashes on every platform. The walk
     /// yields `Bridge\Exports.swift` on Windows, and a caller comparing against
-    /// a written path - `hasSuffix("Bridge/Exports.swift")`, which is how the
+    /// a written path - `hasSuffix("/Exports.swift")`, which is how the
     /// one file allowed to declare `@_cdecl` is recognized - then matches
     /// nothing and names that very file as the offender.
     static func allSources() throws -> [(path: String, text: String)] {

@@ -512,7 +512,7 @@ final class UIThreadTests: XCTestCase {
             for rule in banned where code.contains(rule.needle) {
                 // The one post of MainActor's drain to that queue, for wherever
                 // something turns it.
-                if rule.needle == "DispatchQueue.main", source.path.hasSuffix("Core/UIThread.swift") {
+                if rule.needle == "DispatchQueue.main", source.path.hasSuffix("/UIThread.swift") {
                     continue
                 }
 

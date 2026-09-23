@@ -58,7 +58,7 @@ struct ControlDictionary {
         + "ControlDictionaryTests writes it again. -->"
 
     /// The sources outside Views/ that declare an element's `on…` modifiers.
-    static let modifierSources: Set<String> = ["Core/Scenes.swift", "Types/HostEnvironment.swift", "Types/PageSession.swift"]
+    static let modifierSources: Set<String> = ["Scenes.swift", "HostEnvironment.swift", "PageSession.swift"]
 
     /// A document the dictionary needs and cannot read as it expects.
     struct Unreadable: Error, CustomStringConvertible {
@@ -694,7 +694,7 @@ struct ControlDictionary {
         var spellings: [String: Set<String>] = [:]
 
         for source in try Fixtures.allSources()
-        where source.path.hasPrefix("Views/") || modifierSources.contains(source.path) {
+        where source.path.hasPrefix("Views/") || modifierSources.contains(Fixtures.name(of: source.path)) {
             let text = uncommented(source.text)
             let nsText = text as NSString
             let whole = NSRange(location: 0, length: nsText.length)
@@ -769,7 +769,7 @@ struct ControlDictionary {
     /// `ElementLayer`'s cases with what each means, read off their doc
     /// comments in Core/Contract.swift.
     static func layers() throws -> [(name: String, meaning: String)] {
-        let lines = try source("Core/Contract.swift").components(separatedBy: "\n")
+        let lines = try source("Contract.swift").components(separatedBy: "\n")
 
         guard let start = lines.firstIndex(where: { $0.hasPrefix("public enum ElementLayer") }) else {
             throw Unreadable(description: "Core/Contract.swift declares no ElementLayer")
@@ -964,9 +964,9 @@ struct ControlDictionary {
             .joined(separator: "\n")
     }
 
-    /// One of the library's sources, by its path under lib/StateUI/Sources.
+    /// One of the library's sources, by its name or its path under lib/StateUI/Sources.
     static func source(_ path: String) throws -> String {
-        try String(contentsOf: Fixtures.sources.appendingPathComponent(path), encoding: .utf8)
+        try Fixtures.text(in: path)
     }
 
     /// Lines as a file holds them: one newline at the end, none after it.

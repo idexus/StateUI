@@ -15,7 +15,7 @@ final class RuntimeArchitectureTests: XCTestCase {
     func testOnlyTheAnimatorSamplesALaw() throws {
         var found: [String] = []
 
-        for (path, text) in try Fixtures.runtimeSources() where path != "StateUI/Sources/Host/Animator.swift" {
+        for (path, text) in try Fixtures.runtimeSources() where !path.hasSuffix("/Animator.swift") {
             for (number, line) in code(text) where line.contains("HostMotionLaw.sample(") {
                 found.append("\(path):\(number)")
             }
@@ -29,7 +29,7 @@ final class RuntimeArchitectureTests: XCTestCase {
     func testOnlyTheDisplayCycleAdvancesTheAnimatorAndRunsTheCoresCycle() throws {
         var found: [String] = []
 
-        for (path, text) in try Fixtures.runtimeSources() where path != "StateUI/Sources/Host/DisplayCycle.swift" {
+        for (path, text) in try Fixtures.runtimeSources() where !path.hasSuffix("/DisplayCycle.swift") {
             for (number, line) in code(text) {
                 for step in ["animator.advance(", "core.cycle("] where line.contains(step) {
                     found.append("\(path):\(number): \(step)")
@@ -47,7 +47,7 @@ final class RuntimeArchitectureTests: XCTestCase {
         let codecs = ["journey(from:", "value(of:", "placements(from:"]
         var calls: [String] = []
 
-        for (path, text) in try Fixtures.runtimeSources() where path != "StateUI/Sources/Host/CoreLink.swift" {
+        for (path, text) in try Fixtures.runtimeSources() where !path.hasSuffix("/CoreLink.swift") {
             for (number, line) in code(text) {
                 var rest = Substring(line)
                 while let found = rest.range(of: "StateUIHost.") {
