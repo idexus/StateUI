@@ -5,8 +5,8 @@
 import Android
 import CStateUIAndroid
 
-/// The frame clock: the display's frames through `AChoreographer`, asked for one at a time while held.
-/// Design: docs/design/host/runtime.md#one-frame
+/// The frame clock: the display's frames through the UI thread's `Choreographer`, asked for one at a time while held.
+/// Design: docs/design/platforms/android/runtime.md#one-frame
 @MainActor
 final class AndroidFrameClock: FrameClock {
     /// The runtime's time, in milliseconds on the monotonic clock the display's frames are stamped on.
@@ -23,8 +23,13 @@ final class AndroidFrameClock: FrameClock {
     /// Whether a frame is asked for and has not come.
     private var posted = false
 
-    /// The one clock, which the choreographer's callback reaches.
+    /// The one clock, which the frame callback reaches.
     static var current: AndroidFrameClock?
+
+    /// The UI thread's choreographer and the one callback it is handed, made once for the process.
+    private static let choreographer = JavaObject(
+        Java.callStaticObject(JavaAPI.choreographer, JavaAPI.choreographerInstance)!)
+    private static let callback = Java.new(JavaAPI.frameCallback, JavaAPI.newFrameCallback)
 
     /// A clock telling `now`'s time: the monotonic clock's, or a test's hand-wound one.
     init(now: @escaping () -> Double = AndroidFrameClock.monotonic) {
@@ -33,17 +38,14 @@ final class AndroidFrameClock: FrameClock {
     }
 
     private func post() {
-        guard !posted, let choreographer = AChoreographer_getInstance() else { return }
+        guard !posted else { return }
 
         posted = true
-        AChoreographer_postFrameCallback(choreographer, { frameTime, _ in
-            MainActor.assumeIsolated {
-                Java.frame { AndroidFrameClock.current?.frame(Double(frameTime) / 1_000_000) }
-            }
-        }, nil)
+        Java.call(Self.choreographer.reference, JavaAPI.postFrameCallback, .object(Self.callback.reference))
     }
 
-    private func frame(_ time: Double) {
+    /// The display's frame at `time`: the frame's work, then the next frame while something holds the clock.
+    func frame(_ time: Double) {
         posted = false
         guard held else { return }
 
@@ -51,7 +53,7 @@ final class AndroidFrameClock: FrameClock {
         if held { post() }
     }
 
-    /// Milliseconds on `CLOCK_MONOTONIC`, the clock `AChoreographer` stamps frames with.
+    /// Milliseconds on `CLOCK_MONOTONIC`, the clock the choreographer stamps frames with.
     nonisolated static func monotonic() -> Double {
         var time = timespec()
         clock_gettime(CLOCK_MONOTONIC, &time)

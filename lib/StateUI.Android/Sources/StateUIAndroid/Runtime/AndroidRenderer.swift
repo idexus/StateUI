@@ -24,6 +24,9 @@ final class AndroidRenderer {
     let describedMotion: DescribedMotion
     let layoutMotion: LayoutMotion
     let frameClock: AndroidFrameClock
+
+    /// Whether the user asked for less motion: every animation arrives at once.
+    let reducesMotion: () -> Bool
     let displayCycle: DisplayCycle
 
     /// The mounted tree; each element's Android half is an `AndroidElement`.
@@ -34,7 +37,7 @@ final class AndroidRenderer {
         describedMotion: describedMotion,
         layoutMotion: layoutMotion,
         now: frameClock.now,
-        reducesMotion: { false },
+        reducesMotion: reducesMotion,
         makeNative: { [unowned self] element in AndroidElement(element, host: self) })
 
     private let context: JavaObject
@@ -53,16 +56,21 @@ final class AndroidRenderer {
     /// Events raised while a patch applied, in order.
     private var queuedEvents: [(handler: Int32, payload: [HostValue])] = []
 
-    /// A runtime showing its page in `root`, on the display's clock or on `clock`.
-    init(context: JavaObject, root: JavaObject, density: Double, clock: (() -> Double)? = nil) {
+    /// A runtime showing its page in `root`, on the display's clock or on `clock`,
+    /// with the motion the user's settings allow or as `reducesMotion` says.
+    init(
+        context: JavaObject, root: JavaObject, density: Double,
+        clock: (() -> Double)? = nil, reducesMotion: @escaping () -> Bool = { AndroidRenderer.animationsRemoved() }
+    ) {
         self.context = context
         self.root = root
         self.density = density
         let frameClock = clock.map { AndroidFrameClock(now: $0) } ?? AndroidFrameClock()
         self.frameClock = frameClock
+        self.reducesMotion = reducesMotion
         stateChannels = StateChannels(animator: animator)
         describedMotion = DescribedMotion(animator: animator)
-        layoutMotion = LayoutMotion(animator: animator, now: frameClock.now, reducesMotion: { false })
+        layoutMotion = LayoutMotion(animator: animator, now: frameClock.now, reducesMotion: reducesMotion)
         displayCycle = DisplayCycle(
             core: core,
             clock: frameClock,
@@ -70,11 +78,17 @@ final class AndroidRenderer {
             stateChannels: stateChannels,
             describedMotion: describedMotion,
             layoutMotion: layoutMotion,
-            reducesMotion: { false })
+            reducesMotion: reducesMotion)
         frameClock.onFrame = { [weak self] now in self?.displayCycle.frame(now: now) }
         layoutMotion.onStart = { [weak self] in self?.displayCycle.hold() }
         tree.onAnimation = { [weak self] in self?.displayCycle.hold() }
         displayCycle.presenter = self
+    }
+
+    /// Whether the user turned the system's animations off, which StateUI reads as asking for less motion.
+    /// Design: docs/design/platforms/android/motion.md#less-motion
+    static func animationsRemoved() -> Bool {
+        !Java.callStaticBool(JavaAPI.valueAnimator, JavaAPI.areAnimatorsEnabled)
     }
 
     /// Starts the host in an activity's root, then rings the doorbell for everything after its first render.

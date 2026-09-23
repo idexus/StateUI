@@ -12,6 +12,7 @@ import XCTest
 nonisolated(unsafe) let testCases: [XCTestCaseEntry] = [
     testCase(AndroidRendererTests.allTests),
     testCase(AndroidLeaveTests.allTests),
+    testCase(AndroidMotionTests.allTests),
     testCase(AndroidTextViewTests.allTests),
     testCase(AndroidViewTests.allTests),
     testCase(AndroidSwitchViewTests.allTests),

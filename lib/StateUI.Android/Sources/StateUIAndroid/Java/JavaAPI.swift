@@ -12,6 +12,19 @@ enum JavaAPI {
     static let viewGroup = Java.findClass("android/view/ViewGroup")
     static let setVisibility = Java.method(view, "setVisibility", "(I)V")
     static let setAlpha = Java.method(view, "setAlpha", "(F)V")
+    static let getAlpha = Java.method(view, "getAlpha", "()F")
+    static let setTranslationX = Java.method(view, "setTranslationX", "(F)V")
+    static let setTranslationY = Java.method(view, "setTranslationY", "(F)V")
+    static let setRotation = Java.method(view, "setRotation", "(F)V")
+    static let setRotationX = Java.method(view, "setRotationX", "(F)V")
+    static let setRotationY = Java.method(view, "setRotationY", "(F)V")
+    static let setScaleX = Java.method(view, "setScaleX", "(F)V")
+    static let setScaleY = Java.method(view, "setScaleY", "(F)V")
+    static let setPivotX = Java.method(view, "setPivotX", "(F)V")
+    static let setPivotY = Java.method(view, "setPivotY", "(F)V")
+    static let resetPivot = Java.method(view, "resetPivot", "()V")
+    static let getWidth = Java.method(view, "getWidth", "()I")
+    static let getHeight = Java.method(view, "getHeight", "()I")
     static let setEnabled = Java.method(view, "setEnabled", "(Z)V")
     static let setBackgroundColor = Java.method(view, "setBackgroundColor", "(I)V")
     static let getBackground = Java.method(view, "getBackground", "()Landroid/graphics/drawable/Drawable;")
@@ -25,6 +38,11 @@ enum JavaAPI {
     static let getMeasuredWidth = Java.method(view, "getMeasuredWidth", "()I")
     static let getMeasuredHeight = Java.method(view, "getMeasuredHeight", "()I")
     static let performClick = Java.method(view, "performClick", "()Z")
+    static let choreographer = Java.findClass("android/view/Choreographer")
+    static let choreographerInstance = Java.staticMethod(
+        choreographer, "getInstance", "()Landroid/view/Choreographer;")
+    static let postFrameCallback = Java.method(
+        choreographer, "postFrameCallback", "(Landroid/view/Choreographer$FrameCallback;)V")
     static let removeAllViews = Java.method(viewGroup, "removeAllViews", "()V")
     static let addView = Java.method(viewGroup, "addView", "(Landroid/view/View;II)V")
 
@@ -91,6 +109,11 @@ enum JavaAPI {
     static let getThumbTintList = Java.method(
         seekBar, "getThumbTintList", "()Landroid/content/res/ColorStateList;")
 
+    // MARK: - android.animation
+
+    static let valueAnimator = Java.findClass("android/animation/ValueAnimator")
+    static let areAnimatorsEnabled = Java.staticMethod(valueAnimator, "areAnimatorsEnabled", "()Z")
+
     // MARK: - android.content.res
 
     static let colorStateList = Java.findClass("android/content/res/ColorStateList")
@@ -108,6 +131,9 @@ enum JavaAPI {
     static let newViewGroupHost = Java.method(
         viewGroupHost, "<init>", "(Landroid/content/Context;J)V")
     static let setChildren = Java.method(viewGroupHost, "setChildren", "([Landroid/view/View;)V")
+
+    static let frameCallback = Java.findClass("stateui/android/StateUIFrameCallback")
+    static let newFrameCallback = Java.method(frameCallback, "<init>", "()V")
 
     static let listener = Java.findClass("stateui/android/StateUIListener")
     static let newListener = Java.method(listener, "<init>", "(J)V")

@@ -37,11 +37,15 @@ final class AndroidElement: NativeElement {
     func adopted() {}
 
     func standingValue(_ property: Prop) -> HostValue? {
-        nil
+        switch (type, property) {
+        case (_, .opacity): view.map { .number($0.opacity) }
+        case (.slider, .value): (view as? AndroidSliderView).map { .number($0.value) }
+        default: nil
+        }
     }
 
     func animates(_ property: Prop) -> Bool {
-        false
+        AndroidTransitionSurface.presents(property, on: type)
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {

@@ -21,6 +21,9 @@ final class StateUIHost {
     /** The activity's lifecycle moved the application's phase. */
     static native void phase(int phase);
 
+    /** A frame of the display began at {@code time}, in nanoseconds of the monotonic clock. */
+    static native void frame(long time);
+
     /** A button was clicked. */
     static native void clicked(long view);
 

@@ -25,6 +25,16 @@ enum AndroidRegistrations {
     /// What `AndroidElement` puts on every view wearing each member's contract.
     static func shared(_ registry: Registry<AndroidView>) {
         registry.everyElementRealizes(VisualElementContract.opacity)
+        registry.everyElementRealizes(VisualElementContract.translationX)
+        registry.everyElementRealizes(VisualElementContract.translationY)
+        registry.everyElementRealizes(VisualElementContract.rotation)
+        registry.everyElementRealizes(VisualElementContract.rotationX)
+        registry.everyElementRealizes(VisualElementContract.rotationY)
+        registry.everyElementRealizes(VisualElementContract.scale)
+        registry.everyElementRealizes(VisualElementContract.scaleX)
+        registry.everyElementRealizes(VisualElementContract.scaleY)
+        registry.everyElementRealizes(VisualElementContract.pivotX)
+        registry.everyElementRealizes(VisualElementContract.pivotY)
         registry.everyElementRealizes(VisualElementContract.isVisible)
         registry.everyElementRealizes(VisualElementContract.background)
         registry.everyElementRealizes(VisualElementContract.width)

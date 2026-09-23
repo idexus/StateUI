@@ -14,8 +14,8 @@ visible rather than silent.
 ```text
 lib/StateUI.Android/
   Sources/StateUIAndroid/    the host: its runtime, elements, registrations, layout and JNI
-  Sources/CStateUIAndroid/   the NDK's C surface: JNI, the looper, the choreographer, the log
-  Java/stateui/android/      the Java layer: the activity, the layout view group, the listener
+  Sources/CStateUIAndroid/   the NDK's C surface: JNI, the looper, the log
+  Java/stateui/android/      the Java layer: the activity, the layout view group, the frame callback, the listener
   Tests/                     the host's suite, run in a test APK on a device
 .scripts/Android/
   build-swift.sh             an application's Swift for Android, for the ABIs asked

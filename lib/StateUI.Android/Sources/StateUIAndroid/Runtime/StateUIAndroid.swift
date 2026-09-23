@@ -57,6 +57,11 @@ enum JavaNatives {
                 AndroidRenderer.shared?.setPhase(ApplicationPhase(rawValue: phase) ?? .active)
             }
         }
+        let frame: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, time in
+            MainActor.assumeIsolated {
+                AndroidFrameClock.current?.frame(Double(time) / 1_000_000)
+            }
+        }
         let clicked: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
             MainActor.assumeIsolated {
                 (AndroidView.find(number) as? AndroidButtonView)?.onClicked?()
@@ -113,6 +118,7 @@ enum JavaNatives {
         let natives: [(String, String, UnsafeMutableRawPointer)] = [
             ("start", "(Landroid/app/Activity;Landroid/widget/FrameLayout;F)V", unsafeBitCast(start, to: UnsafeMutableRawPointer.self)),
             ("phase", "(I)V", unsafeBitCast(phase, to: UnsafeMutableRawPointer.self)),
+            ("frame", "(J)V", unsafeBitCast(frame, to: UnsafeMutableRawPointer.self)),
             ("clicked", "(J)V", unsafeBitCast(clicked, to: UnsafeMutableRawPointer.self)),
             ("toggled", "(JZ)V", unsafeBitCast(toggled, to: UnsafeMutableRawPointer.self)),
             ("moved", "(JI)V", unsafeBitCast(moved, to: UnsafeMutableRawPointer.self)),

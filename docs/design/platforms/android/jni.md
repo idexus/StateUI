@@ -10,10 +10,9 @@ NDK's sysroot carries and the host's C module includes.
 ## The main thread's environment
 
 A JNI environment belongs to one thread. The host calls views on the UI thread
-alone, so it keeps one environment: the one the activity's start hands it. A
-callback that does not come through a native method - the looper's doorbell,
-the choreographer's frame - runs on the same thread and uses the same
-environment. Classes and methods are looked up once, on first use, and held
+alone, so it keeps one environment: the one the activity's start hands it. The
+looper's doorbell, which does not come through a native method, runs on the
+same thread and uses the same environment. Classes and methods are looked up once, on first use, and held
 for the life of the process; a lookup that fails stops the process with the
 name that is missing, since the application was built without the host's Java
 layer.
@@ -22,9 +21,9 @@ layer.
 
 A reference JNI hands back is local to the native frame it was made in. A
 native method's frame ends when it returns, and its locals with it. The
-looper's and the choreographer's callbacks are not native methods: nothing
-would ever free what they make, so each runs inside its own frame of local
-references (`PushLocalFrame`/`PopLocalFrame`). A string made for one call is
+looper's callback is not a native method: nothing would ever free what it
+makes, so it runs inside its own frame of local references
+(`PushLocalFrame`/`PopLocalFrame`). A string made for one call is
 freed right after it, so a render that writes many never fills a frame.
 
 ## Global references
@@ -65,7 +64,8 @@ and says which call raised it.
 ## The natives
 
 The Java layer declares the host's native methods on `StateUIHost`: the
-activity's start and its lifecycle, what the user does to a control - a
+activity's start and its lifecycle, the display's frame, what the user does
+to a control - a
 click, a turn, a slider's move and drag, words typed, a Return - and a
 layout's measure and arrangement. The head's `JNI_OnLoad` registers them by name, so the host's
 library exports no other symbol, and a native Java declares that Swift does
@@ -73,6 +73,6 @@ not register fails at load rather than at the first call.
 `NativeProjectTests` holds the two lists equal.
 
 The Java layer exists only where Android wants a subclass or an interface:
-the activity, the layout `ViewGroup`, and one listener for what the user does
-to a view ([controls](controls.md)). Each method forwards to a registered
+the activity, the layout `ViewGroup`, the frame callback, and one listener
+for what the user does to a view ([controls](controls.md)). Each method forwards to a registered
 Swift function.

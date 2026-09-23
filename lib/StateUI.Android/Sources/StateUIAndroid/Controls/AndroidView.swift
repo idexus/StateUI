@@ -23,6 +23,9 @@ class AndroidView {
     /// The background the view was made with, often none, read before the first change.
     private var madeBackground: JavaObject??
 
+    /// The point the view turns and scales about, as fractions of its size.
+    private var pivot = (x: 0.5, y: 0.5)
+
     /// Takes the next number and holds the view `make` makes, handed that number.
     init(_ make: (_ number: Int64) -> JavaObject) {
         Self.nextNumber += 1
@@ -62,6 +65,36 @@ class AndroidView {
 
     func setOpacity(_ opacity: Double) {
         Java.call(reference, JavaAPI.setAlpha, .float(Float(opacity)))
+    }
+
+    /// How opaque the view is drawn.
+    var opacity: Double { Double(Java.callFloat(reference, JavaAPI.getAlpha)) }
+
+    /// Moves, turns and scales the view where its layout put it, in points and degrees.
+    /// Design: docs/design/platforms/android/motion.md#moved-turned-and-scaled
+    func setTransform(_ transform: HostDrawingTransform) {
+        Java.call(reference, JavaAPI.setTranslationX, .float(Float(transform.translationX * density)))
+        Java.call(reference, JavaAPI.setTranslationY, .float(Float(transform.translationY * density)))
+        Java.call(reference, JavaAPI.setRotation, .float(Float(transform.rotation)))
+        Java.call(reference, JavaAPI.setRotationX, .float(Float(transform.rotationX)))
+        Java.call(reference, JavaAPI.setRotationY, .float(Float(transform.rotationY)))
+        Java.call(reference, JavaAPI.setScaleX, .float(Float(transform.scaleX)))
+        Java.call(reference, JavaAPI.setScaleY, .float(Float(transform.scaleY)))
+        pivot = (transform.pivotX, transform.pivotY)
+        applyPivot()
+    }
+
+    /// Puts the pivot at its fractions of the view's size; at the centre Android keeps it there itself.
+    private func applyPivot() {
+        guard pivot != (0.5, 0.5) else {
+            Java.call(reference, JavaAPI.resetPivot)
+            return
+        }
+
+        let width = Double(Java.callInt(reference, JavaAPI.getWidth))
+        let height = Double(Java.callInt(reference, JavaAPI.getHeight))
+        Java.call(reference, JavaAPI.setPivotX, .float(Float(pivot.x * width)))
+        Java.call(reference, JavaAPI.setPivotY, .float(Float(pivot.y * height)))
     }
 
     func setEnabled(_ enabled: Bool) {
@@ -106,6 +139,7 @@ class AndroidView {
             width: ViewConstants.spec(ViewConstants.exactly, right - left),
             height: ViewConstants.spec(ViewConstants.exactly, bottom - top))
         Java.call(reference, JavaAPI.layout, .int(left), .int(top), .int(right), .int(bottom))
+        if pivot != (0.5, 0.5) { applyPivot() }
     }
 
     /// `points` in whole pixels.

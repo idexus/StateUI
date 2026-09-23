@@ -53,10 +53,17 @@ race the moment another thread runs it.
 
 ## One frame
 
-The frame clock asks `AChoreographer` for one frame at a time while something
-holds it, and none when nothing moves. Its time is `CLOCK_MONOTONIC` in
-milliseconds, the clock the choreographer stamps its frames with, so a frame's
-time and a patch's time are on one clock.
+The frame clock asks the UI thread's `Choreographer` for one frame at a time
+while something holds it, and none when nothing moves. Its callback runs in
+the display's frame, among the frame's animations and before it lays out and
+draws, so what the frame moves - a value, a place, a size - is drawn in that
+same frame. A frame signal of its own beside the toolkit's would run its work
+outside the toolkit's frame: the views it changes wait for the toolkit's next
+frame, and every other frame of the display is lost.
+
+The frame's time is `CLOCK_MONOTONIC` in milliseconds, the clock the
+choreographer stamps its frames with, so a frame's time and a patch's time
+are on one clock.
 
 ## Print reaches logcat
 

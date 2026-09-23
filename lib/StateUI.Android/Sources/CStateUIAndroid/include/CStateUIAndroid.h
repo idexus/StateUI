@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The NDK's C surface the Android Views host calls: JNI, the main thread's
-// looper, the display's frames, the log, and an eventfd for the doorbell.
+// looper, the log, and an eventfd for the doorbell.
 #pragma once
 
-#include <android/choreographer.h>
 #include <android/log.h>
 #include <android/looper.h>
 #include <jni.h>
