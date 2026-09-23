@@ -10,7 +10,7 @@
 // view's own numbers are always at `12 × index`, and that a layout placed this
 // way describes not one property of a placement.
 //
-// The type is Types/Placement.swift; the host's half is MotionPlacement in
+// The types are PlacedRun.swift and Placement.swift; the host's half is MotionPlacement in
 // StateUI.Runtime's MotionTargets.cs.
 
 import XCTest
