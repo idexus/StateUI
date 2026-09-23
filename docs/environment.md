@@ -304,8 +304,8 @@ Keep portable interface decisions on StateUI's host-normalized boundary:
 - use `CalendarDate` and `ClockTime` at control and state boundaries;
 - use `Task.sleep` or `Ticker` for application timing, not Foundation
   `Timer` or `RunLoop`;
-- use StateUI's `@MainThread` for application handlers, not Swift
-  `@MainActor` as a cross-platform UI abstraction.
+- isolate work for the UI thread to `MainActor`, not `DispatchQueue.main`,
+  which nothing drains on Android, Windows, or Linux.
 
 An application can convert between its Foundation-rich domain model and these
 small StateUI values at its boundary. That keeps the library's wire,

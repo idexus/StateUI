@@ -822,7 +822,7 @@ final class GalleryViewTests: XCTestCase {
         _ = stateUIRunJobs()
 
         XCTAssertEqual(
-            MainThreadExecutor.shared.pendingCount, 0,
+            UIThreadExecutor.shared.pendingCount, 0,
             "the shape's deferral was left running")
     }
 

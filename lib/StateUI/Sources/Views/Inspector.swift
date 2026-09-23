@@ -367,7 +367,7 @@ final class InspectorModel: @unchecked Sendable {
 
         asking = true
 
-        Task { @MainThread [self] in
+        Task { @MainActor [self] in
             try? await Task.sleep(for: .milliseconds(Inspector.pace))
             asking = false
             revision &+= 1

@@ -4,11 +4,9 @@
 // A timer, as a loop that sleeps.
 //
 // Foundation has one and it cannot be used here: `Timer` hangs off a `RunLoop`,
-// and nothing turns a RunLoop on Android or Windows - the same reason handlers
-// are isolated to @MainThread rather than to Swift's @MainActor. What IS
-// available on every platform is Swift's own concurrency, because the host
-// keeps a thread parked in `stateui_wait_work` and a resume wakes it; see
-// Core/MainThread.swift.
+// and nothing turns a RunLoop on Android or Windows. What IS available on every
+// platform is Swift's own concurrency, because MainActor's jobs reach the UI
+// thread everywhere and a resume wakes the host; see Core/UIThread.swift.
 //
 // So a timer here is `Task.sleep` in a loop, and this class is that loop with
 // the four things an author would otherwise write again each time:
@@ -67,12 +65,11 @@
 public final class Ticker: @unchecked Sendable {
     /// What a tick runs, if anything.
     ///
-    /// Isolated to `@MainThread`, this library's own actor, so it runs where a
-    /// handler runs - on the host's UI thread - and may therefore read and
-    /// write `@State` like any handler. It may await: the tick after it is
-    /// scheduled from where this one ENDS, so a slow tick delays the next
-    /// rather than overlapping it.
-    public typealias Tick = @MainThread @Sendable () async -> Void
+    /// Isolated to `@MainActor`, so it runs where a handler runs - on the
+    /// host's UI thread - and may therefore read and write `@State` like any
+    /// handler. It may await: the tick after it is scheduled from where this
+    /// one ENDS, so a slow tick delays the next rather than overlapping it.
+    public typealias Tick = @MainActor @Sendable () async -> Void
 
     /// The one lock.
     private let guarded = Lock()
@@ -250,7 +247,7 @@ public final class Ticker: @unchecked Sendable {
         // a lock taken inside a lock is how an order gets reversed.
         Renderer.shared.stateChanged(self)
 
-        Task { @MainThread [self] in await loop(mine) }
+        Task { @MainActor [self] in await loop(mine) }
     }
 
     /// Stops counting, keeping the count. Starting again goes on from there.

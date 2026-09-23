@@ -1,19 +1,23 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Where a handler runs, and where it comes back.
+// Where a handler runs, and where it comes back: MainActor, the host's UI
+// thread.
 //
 // This is the one part of the library whose failure is silent. A handler that
-// resumes on the wrong thread writes state while the host is drawing, and
-// nothing crashes reliably - which is why the executor exists at all, and why
-// what it promises is written down here rather than remembered.
+// resumes on the wrong thread writes state while the host is drawing, and one
+// that never resumes leaves the interface standing, and nothing crashes
+// reliably - which is why what it promises is written down here rather than
+// remembered.
 //
 // What a headless test CAN show: that a handler which never awaits finishes
-// inside the call that raised it, that one which does await does not, and that
-// every async function in the library is declared so that it stays on its
-// caller's executor. What it cannot show is the thread itself - there is no host
-// here, so there is only one thread to be on. That part was measured against a
-// running app.
+// inside the call that raised it, that one which does await does not and comes
+// back without another event, that a job on the UI thread's queue wakes the
+// host, and that every async function in the library is declared so that it
+// stays on its caller's executor. A test that stands for the host runs on
+// MainActor, as the host calls in on its UI thread. What it cannot show is the
+// thread itself - there is no host here. That part was measured against a
+// running app on every platform.
 
 import Foundation
 import XCTest
@@ -29,20 +33,16 @@ private struct Shows: ContentView {
     }
 }
 
-final class MainThreadTests: XCTestCase {
+final class UIThreadTests: XCTestCase {
     // MARK: - The waker
 
     /// A handler may await something that is NOT a host act - `Task.sleep`,
-    /// a task's value - because a job landing in the queue wakes the thread the
-    /// host keeps parked in `stateui_wait_work`.
-    ///
-    /// The sleep below comes due on the runtime's own timer with no
-    /// act in flight, and its resume still reaches the queue promptly
-    /// because the park is released. The worker thread stands in for the
-    /// host's, doing exactly what the host's does: park, wake, ask for a drain.
-    func testASleepingHandlerIsResumedWithNoActInFlight() throws {
+    /// a task's value - and comes back with no act in flight and no other
+    /// event: its resume is MainActor's job, which the UI thread runs.
+    @MainActor
+    func testASleepingHandlerIsResumedWithNoActInFlight() async throws {
         let renders = Renders()
-        nonisolated(unsafe) var woke = false
+        var woke = false
 
         let patch = renders.render(
             Button("Nap")
@@ -56,27 +56,40 @@ final class MainThreadTests: XCTestCase {
         XCTAssertTrue(renders.fire(id))
         XCTAssertFalse(woke, "the handler is asleep, and nothing has been reported")
 
-        // The host's parked thread, stood in for: park until the queue has the
-        // resume in it. Each turn of the loop PARKS - `stateui_wait_work`
-        // blocks until something pokes - and what is being waited for here is a
-        // JOB, because the waker also announces a dirty tree and one may be
-        // left over from another test.
+        try await waitUntil { woke }
+        XCTAssertTrue(woke, "the sleep came due and the handler never came back")
+    }
+
+    /// A job landing on the UI thread's queue wakes the thread the host keeps
+    /// parked in `stateui_wait_work` - which is how MainActor's jobs reach the
+    /// UI thread where the host alone drains it. Proved with an actor of this
+    /// test's own on that queue, so it holds on every platform, Apple's
+    /// included: the worker thread stands in for the host's, doing exactly what
+    /// the host's does - park, wake, ask for a drain.
+    func testAJobOnTheUIThreadsQueueWakesTheParkedThread() throws {
+        let queued = OnTheUIThreadsQueue()
+
         let parked = DispatchSemaphore(value: 0)
 
+        // Each turn PARKS - `stateui_wait_work` blocks until something pokes -
+        // and what is waited for is a JOB, because the waker also announces a
+        // dirty tree and one may be left over from another test.
         DispatchQueue.global().async {
-            while MainThreadExecutor.shared.pendingCount == 0 {
+            while UIThreadExecutor.shared.pendingCount == 0 {
                 _ = stateui_wait_work()
             }
 
             parked.signal()
         }
 
+        Task.detached { await queued.touch() }
+
         XCTAssertEqual(
             parked.wait(timeout: .now() + 5), .success,
-            "the sleep came due and nothing woke the parked thread")
+            "a job landed on the UI thread's queue and nothing woke the parked thread")
 
         stateUIRunJobs()
-        XCTAssertTrue(woke, "the resume was in the queue the wake announced")
+        XCTAssertEqual(queued.touches, 1, "the job was in the queue the wake announced")
     }
 
     /// An act queued from a plain `Task` - the pool, no handler suspended on
@@ -154,14 +167,14 @@ final class MainThreadTests: XCTestCase {
         // Leave the waker with NO signal pending: a poke is coalesced into
         // one the flag already holds, and one wait collects exactly that one
         // and disarms the flag. From here on, only a new signal can wake it.
-        MainThreadExecutor.shared.poke()
-        _ = MainThreadExecutor.shared.waitForWork()
+        UIThreadExecutor.shared.poke()
+        _ = UIThreadExecutor.shared.waitForWork()
 
         await Task.detached { fade.wrappedValue = 0.5 }.value
 
         XCTAssertTrue(Renderer.shared.needsRender, "a write dirties the tree")
         XCTAssertEqual(Renderer.shared.actCallsPending, 0, "and queues no act")
-        XCTAssertEqual(MainThreadExecutor.shared.pendingCount, 0, "and lands no job")
+        XCTAssertEqual(UIThreadExecutor.shared.pendingCount, 0, "and lands no job")
 
         XCTAssertGreaterThan(
             stateui_wait_work(), 0,
@@ -181,8 +194,8 @@ final class MainThreadTests: XCTestCase {
         let key = PersistentKey("mainThread.kept", of: Double.self)
         let kept = State(wrappedValue: 1.0, persistentKey: key)
 
-        MainThreadExecutor.shared.poke()
-        _ = MainThreadExecutor.shared.waitForWork()
+        UIThreadExecutor.shared.poke()
+        _ = UIThreadExecutor.shared.waitForWork()
 
         await Task.detached { kept.wrappedValue = 0.5 }.value
 
@@ -254,8 +267,8 @@ final class MainThreadTests: XCTestCase {
     /// nil, and takes the next wake the suite makes - the failure is already
     /// said by then.
     private func waitedFor(_ start: () -> Void) -> Int32? {
-        MainThreadExecutor.shared.poke()
-        _ = MainThreadExecutor.shared.waitForWork()
+        UIThreadExecutor.shared.poke()
+        _ = UIThreadExecutor.shared.waitForWork()
 
         let counted = DispatchSemaphore(value: 0)
         nonisolated(unsafe) var work: Int32 = 0
@@ -315,6 +328,7 @@ final class MainThreadTests: XCTestCase {
 
     /// And the other half: a handler that awaits gives up the thread, which is
     /// the entire point and the entire risk.
+    @MainActor
     func testAHandlerThatAwaitsGivesTheThreadBackBeforeItFinishes() async throws {
         let renders = Renders()
         var reached = false
@@ -344,15 +358,16 @@ final class MainThreadTests: XCTestCase {
         XCTAssertTrue(Renderer.shared.dispatch(completion))
         await settle()
 
-        // The resumed job is handed to whoever can run it, which takes a moment
-        // - measured: `resume()` returns before the job exists. In an app that
-        // moment is one turn of the UI thread.
+        // The resumed job is MainActor's, which takes a moment - measured:
+        // `resume()` returns before the job exists. In an app that moment is
+        // one turn of the UI thread.
         try await waitUntil { reached }
         XCTAssertTrue(reached, "the rest of the handler never ran")
     }
 
     /// An error out of a handler is reported rather than lost, so a failed
     /// `try await` is something an author can see.
+    @MainActor
     func testAHandlerThatThrowsIsReportedToTheHost() async throws {
         let renders = Renders()
 
@@ -374,16 +389,14 @@ final class MainThreadTests: XCTestCase {
     // MARK: - The rule that keeps it true
 
     /// Every async function here must SAY where it runs: on its caller's
-    /// executor, or on `@MainThread`.
+    /// executor, or on `@MainActor`.
     ///
     /// A plain `async` function is nonisolated, and a nonisolated async function
     /// runs on Swift's cooperative pool whoever calls it - so a handler awaiting
     /// one would come back on a pool thread with the host drawing beside it.
     /// The spelling that prevents it is `nonisolated(nonsending)`. The other
-    /// spelling that does is `@MainThread`, which names the executor outright
-    /// and makes a caller from the pool hop there first - what `Renderer.fly`
-    /// does, so that a journey is sent and written on the rendering
-    /// thread whoever started it.
+    /// spelling that does is `@MainActor`, which names the UI thread outright
+    /// and makes a caller from the pool hop there first.
     ///
     /// This is not hypothetical: an early act was written without it, and what
     /// showed was not a crash but an act queue that filled up a moment late.
@@ -412,7 +425,7 @@ final class MainThreadTests: XCTestCase {
                     .filter { !$0.trimmed.hasPrefix("//") }
                     .joined(separator: " ")
 
-                if !window.contains("nonisolated(nonsending)") && !window.contains("@MainThread func") {
+                if !window.contains("nonisolated(nonsending)") && !window.contains("@MainActor func") {
                     unmarked.append("\(source.path):\(index + 1)  \(line.trimmed)")
                 }
             }
@@ -424,12 +437,12 @@ final class MainThreadTests: XCTestCase {
 
             \(unmarked.joined(separator: "\n"))
 
-            Write `nonisolated(nonsending)` before `func` - or `@MainThread`, \
+            Write `nonisolated(nonsending)` before `func` - or `@MainActor`, \
             when the function must run on the rendering thread whoever calls \
             it. Without either the function runs on Swift's cooperative pool, \
             and a handler that awaits it resumes off the thread the host draws on \
             - which corrupts state quietly rather than failing. See \
-            Core/MainThread.swift.
+            Core/UIThread.swift.
             """)
     }
 
@@ -451,16 +464,17 @@ final class MainThreadTests: XCTestCase {
     /// Every application's manifest is FOUND rather than listed, so a scaffolded
     /// app is covered the moment it exists.
     /// THE FOUR NON-NEGOTIABLES, checked instead of remembered - CONTRIBUTING.md
-    /// states them, under "The rules a pull request is measured against". Every
+    /// states them, under "Keep the core platform-neutral". Every
     /// one of them breaks a platform silently and far from the cause, which is
     /// why they are rules rather than preferences, and why a test pins them.
     ///
     /// - **The LIBRARY never imports Foundation.** `Core/Wire.swift` writes the
     ///   wire by hand and a date on it is three integers. An application may
     ///   import it; nothing under `Sources/` may.
-    /// - **`@MainActor` is banned**, everywhere. It is libdispatch's main
-    ///   queue, which nothing drains on Android or Windows. This library's own
-    ///   global actor is `@MainThread`.
+    /// - **`DispatchQueue.main` is banned**, but for the one drain
+    ///   Core/UIThread.swift posts there. Nothing drains that queue on Android
+    ///   or Windows; MainActor, which the UI thread's own executor serves
+    ///   there, is where work for the UI thread goes.
     /// - **`Timer` and `RunLoop` are banned**, for the same reason: they hang
     ///   off a run loop nothing turns. A timer here is `Task.sleep` and the
     ///   waker.
@@ -477,9 +491,9 @@ final class MainThreadTests: XCTestCase {
         let banned: [(needle: String, why: String)] = [
             ("import Foundation",
              "the library never imports Foundation - Wire.swift writes the wire by hand"),
-            ("@MainActor",
-             "@MainActor is libdispatch's main queue, which nothing drains on Android "
-                + "or Windows - this library's actor is @MainThread"),
+            ("DispatchQueue.main",
+             "nothing drains libdispatch's main queue on Android or Windows - work for "
+                + "the UI thread goes to MainActor"),
             ("Timer",
              "a Foundation Timer hangs off a run loop nothing turns - a timer here is "
                 + "Task.sleep and the waker in Core/Ticker.swift"),
@@ -493,9 +507,15 @@ final class MainThreadTests: XCTestCase {
         var broken: [String] = []
 
         for source in try Fixtures.allSources() {
-            let code = MainThreadTests.withoutComments(source.text)
+            let code = UIThreadTests.withoutComments(source.text)
 
             for rule in banned where code.contains(rule.needle) {
+                // The one post of MainActor's drain to that queue, for wherever
+                // something turns it.
+                if rule.needle == "DispatchQueue.main", source.path.hasSuffix("Core/UIThread.swift") {
+                    continue
+                }
+
                 broken.append("\(source.path) uses \(rule.needle) - \(rule.why)")
             }
         }
@@ -506,7 +526,7 @@ final class MainThreadTests: XCTestCase {
             \(broken.joined(separator: "\n"))
 
             Each of these breaks one platform while the others go on working. \
-            See CONTRIBUTING.md, "The rules a pull request is measured against".
+            See CONTRIBUTING.md, "Keep the core platform-neutral".
             """)
     }
 
@@ -587,7 +607,7 @@ final class MainThreadTests: XCTestCase {
             `-enable-upcoming-feature NonisolatedNonsendingByDefault` on the \
             swiftc line. Without it a plain `async` function written there runs \
             on Swift's cooperative pool, and a handler awaiting one resumes off \
-            the executor its native host draws on. See Core/MainThread.swift.
+            the executor its native host draws on. See Core/UIThread.swift.
             """)
     }
 
@@ -645,36 +665,33 @@ final class MainThreadTests: XCTestCase {
     /// measured, one pass: its continuation is handed back through the global
     /// executor, so the queue is empty again by the time the next pass looks.
     func testADrainIsBoundedSoAJobThatQueuesItselfCannotTakeTheThread() {
-        final class Countdown: @unchecked Sendable { var left = 200 }
-        let countdown = Countdown()
+        let queued = OnTheUIThreadsQueue()
 
-        // Queued from INSIDE the running job, which is what puts it on the
-        // very next pass.
-        @Sendable func again() async throws {
-            countdown.left -= 1
-            if countdown.left > 0 { Renderer.shared.queue(again) }
-        }
-
-        Renderer.shared.queue(again)
+        // Each job queues the next from INSIDE itself, which is what puts it on
+        // the very next pass.
+        Task.detached { await queued.countDown(from: 200) }
 
         let deadline = Date().addingTimeInterval(2)
-        while MainThreadExecutor.shared.pendingCount == 0, Date() < deadline {
+        while UIThreadExecutor.shared.pendingCount == 0, Date() < deadline {
             Thread.sleep(forTimeInterval: 0.002)
         }
 
         XCTAssertEqual(stateUIRunJobs(), 64, "a drain ran other than its 64 passes")
         XCTAssertGreaterThan(
-            MainThreadExecutor.shared.pendingCount, 0,
+            UIThreadExecutor.shared.pendingCount, 0,
             "the drain stopped without leaving the rest waiting")
 
         // And the host asking again is what finishes it - drained here so the
         // next test does not inherit the rest.
-        while countdown.left > 0 { _ = stateUIRunJobs() }
+        while queued.left > 0 { _ = stateUIRunJobs() }
         while stateUIRunJobs() > 0 {}
     }
 
-    /// the host is told and puts it on the UI thread; in a test there is nobody
-    /// to tell, so the only honest thing is to wait a bounded while.
+    /// Waits for something the runtime will do shortly, without a fixed sleep:
+    /// turns of the UI thread until it holds, for a bounded while. A resumed
+    /// continuation arrives when the scheduler gets to it; in an app the host
+    /// is told and puts it on the UI thread.
+    @MainActor
     private func waitUntil(
         _ condition: () -> Bool,
         timeout: TimeInterval = 2
@@ -682,9 +699,36 @@ final class MainThreadTests: XCTestCase {
         let deadline = Date().addingTimeInterval(timeout)
 
         while !condition(), Date() < deadline {
-            stateUIRunJobs()
+            await settle(timeout: 0)
             try await Task.sleep(nanoseconds: 200_000)
         }
+    }
+}
+
+/// An actor of this test's own whose jobs wait on the UI thread's queue - where
+/// MainActor's wait wherever the host drains that queue - so what the queue
+/// does is proved on every platform, Apple's included.
+private actor OnTheUIThreadsQueue {
+    nonisolated var unownedExecutor: UnownedSerialExecutor {
+        UIThreadExecutor.shared.asUnownedSerialExecutor()
+    }
+
+    /// How many times `touch` ran.
+    nonisolated(unsafe) private(set) var touches = 0
+
+    /// How many jobs `countDown` has left to queue.
+    nonisolated(unsafe) private(set) var left = 0
+
+    func touch() {
+        touches += 1
+    }
+
+    /// Counts down one job at a time, each queued from inside the one before.
+    func countDown(from count: Int) {
+        left = count - 1
+        guard left > 0 else { return }
+
+        Task { countDown(from: left) }
     }
 }
 

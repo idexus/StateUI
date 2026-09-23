@@ -9,13 +9,14 @@ namespace StateUI.Maui.Rendering;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The Swift side has no lock of its own, on purpose - see
-/// <c>Core/MainThread.swift</c>. Its safety comes entirely from being entered
-/// from one thread, and MAUI is the authority on which thread that is. If that
-/// ever stopped being true - a platform handler raising an event off the UI
-/// thread, a dispatcher that does not do what it says - the result would not be
-/// a crash. It would be a state write landing beside a render, occasionally,
-/// with nothing anywhere to say so.
+/// The Swift side locks its state values and its queues, and not its tree or
+/// its handlers, on purpose - see <c>Core/UIThread.swift</c>. Their safety
+/// comes entirely from being entered from one thread, and MAUI is the
+/// authority on which thread that is. If that ever stopped being true - a
+/// platform handler raising an event off the UI thread, a dispatcher that does
+/// not do what it says - the result would not be a crash. It would be an event
+/// looked up in the handler table a render is rewriting, occasionally, with
+/// nothing anywhere to say so.
 /// </para>
 /// <para>
 /// So it is checked, and said out loud once. Said once because a wrong thread is

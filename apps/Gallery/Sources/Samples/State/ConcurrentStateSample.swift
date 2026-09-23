@@ -4,9 +4,9 @@ import StateUI
 ///
 /// The headline the sample proves on screen: two hundred tasks counting at
 /// once all land, because a write to `@State` is whole from any thread. The
-/// notes carry the rule the screen cannot show - never hop onto `@MainActor`
-/// or `DispatchQueue.main`, and reach for `update` when two tasks change the
-/// same state at the same moment.
+/// notes carry the rule the screen cannot show - never post to
+/// `DispatchQueue.main`, and reach for `update` when two tasks change the same
+/// state at the same moment.
 struct ConcurrentStateSample: SampleContent, ExampleContent {
     /// The shared count every task increments. `_total` - the box behind it -
     /// is what the tasks capture; it is Sendable, so it crosses to the
@@ -69,10 +69,10 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
 
         // WRONG - never do this to "reach the UI thread":
         //
-        //     await MainActor.run { total = value }   // hangs on Android/Windows
+        //     DispatchQueue.main.async { total = value }   // never runs on Android/Windows
         //
-        // RIGHT - just write it. A handler already runs on the library's own
-        // @MainThread, and a plain @State write is safe from any thread anyway:
+        // RIGHT - just write it. A handler already runs on MainActor, the UI
+        // thread, and a plain @State write is safe from any thread anyway:
         //
         //     total = value
         """
@@ -142,13 +142,12 @@ struct ConcurrentStateSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("Which is the one move that is forbidden: never send yourself to "
-                + "`@MainActor` or `DispatchQueue.main` to \"reach the UI thread\". "
-                + "Nothing drains those on Android or Windows - the main thread turns "
-                + "Android's Looper or the WinUI message pump instead - so a handler "
-                + "that awaits `MainActor.run { … }` suspends at that line and never "
-                + "wakes, silently. A handler already runs on the library's own "
-                + "@MainThread; you do not move yourself there, and you do not need to.")
+            Label("Which is the one move that is forbidden: never post to "
+                + "`DispatchQueue.main` to \"reach the UI thread\". Nothing drains it "
+                + "on Android or Windows - the UI thread turns Android's Looper or the "
+                + "WinUI message pump instead - so what is posted there never runs, "
+                + "silently. A handler already runs on `MainActor`, the UI thread; you "
+                + "do not move yourself there, and you do not need to.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

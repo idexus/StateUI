@@ -951,7 +951,7 @@ extension HostChildrenUpdate: RandomAccessCollection {
     /// `move(to:)` sent. Each wakes this thread after it lands, so the thread
     /// cannot wake, count nothing and park again with the work behind it.
     public static func waitForWork() -> Int {
-        MainThreadExecutor.shared.waitForWork()
+        UIThreadExecutor.shared.waitForWork()
             + Renderer.shared.actCallsPending
             + (Renderer.shared.needsRender ? 1 : 0)
             + (Renderer.shared.cycleAwake() > 0 ? 1 : 0)

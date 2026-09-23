@@ -264,7 +264,7 @@ final class ContractTests: XCTestCase {
     func testAnApplicationActIsCalledAndAnsweredAsItsDeclaredValues() async throws {
         _ = drainedActs()
 
-        let asked = begin { try await stateUICall(TestDevice.battery) }
+        let asked = await Self.begin { try await stateUICall(TestDevice.battery) }
         let acts = drainedActs()
         XCTAssertEqual(acts.first?.name, "Test.Battery")
         XCTAssertEqual(acts.first?.arguments, [])
@@ -274,7 +274,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(level, 0.5)
         XCTAssertTrue(charging)
 
-        let copied = begin { try await stateUICall(TestDevice.copy, "note") }
+        let copied = await Self.begin { try await stateUICall(TestDevice.copy, "note") }
         let copy = drainedActs()
         XCTAssertEqual(copy.first?.name, "Test.Copy")
         XCTAssertEqual(copy.first?.arguments, [.string("note")])
@@ -288,7 +288,7 @@ final class ContractTests: XCTestCase {
     func testAnAnswerOfAnotherShapeThrowsNamingTheAct() async throws {
         _ = drainedActs()
 
-        let asked = begin { try await stateUICall(TestDevice.battery) }
+        let asked = await Self.begin { try await stateUICall(TestDevice.battery) }
         await report(try completionId(in: drainedActs()), .finished([.string("full")]))
 
         do {
@@ -309,7 +309,7 @@ final class ContractTests: XCTestCase {
         renders.render(stack([Lamp().aim(lamp).body], id: "root"))
         _ = drainedActs()
 
-        let asked = begin { try await lamp.call(LampContract.flash, 3) }
+        let asked = await Self.begin { try await lamp.call(LampContract.flash, 3) }
         let acts = drainedActs()
         XCTAssertEqual(acts.first?.name, "Test.Flash")
         XCTAssertEqual(acts.first?.arguments, [.number(1), .number(3)], "the element it was put on, then the times")
@@ -347,10 +347,9 @@ final class ContractTests: XCTestCase {
 
     /// Starts an act and lets it reach its suspension, the way an event does:
     /// by the time this returns the act is on the act queue.
-    private func begin<Value: Sendable>(_ body: sending @escaping Asking<Value>) -> Task<Value, Error> {
-        let task = Task { @MainThread in try await body() }
-        stateUIRunJobs()
-        return task
+    @MainActor
+    private static func begin<Value: Sendable>(_ body: sending @escaping Asking<Value>) -> Task<Value, Error> {
+        Task.immediate { @MainActor in try await body() }
     }
 
     /// The completion id in a taken batch, which is what the host quotes back.

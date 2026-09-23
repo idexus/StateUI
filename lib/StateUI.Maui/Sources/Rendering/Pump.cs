@@ -89,7 +89,7 @@ internal sealed class Pump
     /// <para>
     /// Created BY .NET on purpose, and background on purpose. Mono deadlocks
     /// when native code enters managed from a thread it has never seen - the
-    /// measured trap in <c>Core/MainThread.swift</c> - so instead of Swift
+    /// measured trap in <c>Core/UIThread.swift</c> - so instead of Swift
     /// calling out, this side sends a thread in. Background, so a process
     /// shutting down does not wait on a park that nothing will ever signal.
     /// </para>

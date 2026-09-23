@@ -23,8 +23,8 @@
 // WHY THE HANDLER SUSPENDS RATHER THAN TAKING A CLOSURE:
 // Both work; `await` reads better and sequences without nesting, which is what
 // an animation or a confirm-then-act will want. What makes it SAFE is
-// Core/MainThread.swift: the handler resumes on the host's UI thread, because
-// this library's executor puts it there. Read that file before changing
+// Core/UIThread.swift: the handler resumes on the host's UI thread, because
+// that is where MainActor runs its jobs. Read that file before changing
 // anything here - a suspension that resumes anywhere else writes state next to
 // a render the host is running, and nothing crashes reliably.
 //
@@ -104,7 +104,7 @@ public struct StateUIError: Error, CustomStringConvertible, Equatable {
 /// for exactly that - and from a `Task.detached`. A handler may also await
 /// things that are NOT acts - `Task.sleep`, a task's value - because the host
 /// keeps a thread parked in `stateui_wait_work` and a resume wakes it; see
-/// Core/MainThread.swift.
+/// Core/UIThread.swift.
 ///
 /// Two acts queued without an `await` between them start in the order they
 /// were queued and finish in whichever order the host's methods do. `await` is

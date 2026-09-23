@@ -37,6 +37,12 @@ under `lib/StateUI.Maui`, with its build in `.scripts/Maui`; each later host
 receives a sibling package of its own. Swift written for the MAUI host alone
 stands under `#if MAUI`, the condition every MAUI build defines.
 
+The core schedules nothing on Foundation's `Timer` or `RunLoop`, or on
+`DispatchQueue.main`: nothing drains them on Android or Windows. Work for the
+UI thread goes to `MainActor`, and a timer is `Task.sleep` or `Ticker`. Memory
+allocated in Swift is freed in Swift - never `strdup` and `free` - because
+several C runtimes can share a Windows process.
+
 Swift owns identity, diffing, state, journeys, and motion descriptions. Hosts
 own native objects, platform callbacks, and display-frame property motion. Keep
 renderers thin and derive richer behavior from StateUI primitives where that

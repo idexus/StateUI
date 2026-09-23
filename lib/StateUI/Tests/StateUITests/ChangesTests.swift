@@ -378,6 +378,7 @@ final class ChangesTests: XCTestCase {
     /// queued - see Core/Changes.swift - so the act is asked for against an
     /// interface already showing the change. The handler then resumes with the
     /// act's own answer, exactly as a button's handler would.
+    @MainActor
     func testAChangeHandlerMayAwaitAnAct() async throws {
         let renders = Renders()
         let card = Aim(Label.self)

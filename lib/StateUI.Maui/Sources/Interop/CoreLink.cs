@@ -350,7 +350,7 @@ internal static partial class CoreLink
     /// resumed job on a cooperative-pool thread, and entering .NET from a thread
     /// it has never seen makes Mono attach that thread - which deadlocks the UI
     /// thread when a debugger is attached, on Android. Measured. See
-    /// <c>Core/MainThread.swift</c>.
+    /// <c>Core/UIThread.swift</c>.
     /// </para>
     /// <para>
     /// The job does not exist yet when the completion is reported: it lands a

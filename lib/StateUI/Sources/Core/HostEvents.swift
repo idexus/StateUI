@@ -10,10 +10,10 @@
 // the host, and subscribes here to the member: the name crosses, and the
 // values arrive as the types the member declares.
 //
-// The handlers run exactly as a control's do: queued on this library's
-// executor, isolated to @MainThread, free to await - `Renderer.start` is where
-// an event's handler is started, `Renderer.queue` being the other road, for
-// what a render's walk found - and this is one more caller of it.
+// The handlers run exactly as a control's do: started on MainActor, free to
+// await - `Renderer.start` is where an event's handler is started,
+// `Renderer.queue` being the other road, for what a render's walk found - and
+// this is one more caller of it.
 
 /// One handler's subscription to a host event, made by `HostEvents.on`.
 ///
@@ -77,9 +77,9 @@ public enum HostEvents {
 
     /// Subscribes a handler to what the host raises under an event's name -
     /// what every `on` is written over, the values still as they crossed.
-    /// Handlers run in the order they were subscribed, each queued on this
-    /// library's executor exactly as a control's handler is -
-    /// `@MainThread`-isolated, free to await, its thrown errors reported.
+    /// Handlers run in the order they were subscribed, each started on
+    /// MainActor exactly as a control's handler is - free to await, its
+    /// thrown errors reported.
     ///
     /// An event the host said it does not raise is said once, with the names
     /// it likely meant.

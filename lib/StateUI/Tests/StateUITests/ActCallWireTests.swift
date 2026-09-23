@@ -40,10 +40,9 @@ final class ActCallWireTests: XCTestCase {
     }
 
     /// Starts an act and lets it reach its suspension - see ActCallTests.
-    private func begin<Value>(_ body: sending @escaping Act<Value>) -> Task<Value, Error> {
-        let task = Task { @MainThread in try await body() }
-        stateUIRunJobs()
-        return task
+    @MainActor
+    private static func begin<Value>(_ body: sending @escaping Act<Value>) -> Task<Value, Error> {
+        Task.immediate { @MainActor in try await body() }
     }
 
     /// Reports an act as done, so no test leaves a continuation suspended.
@@ -67,7 +66,7 @@ final class ActCallWireTests: XCTestCase {
         _ body: sending @escaping Act<Void>
     ) async throws {
         drain()
-        let task = begin(body)
+        let task = await Self.begin(body)
         let taken = WireProbe.decode(drain())
 
         var pinned = taken.map { act in

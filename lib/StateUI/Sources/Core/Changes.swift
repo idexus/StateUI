@@ -51,7 +51,7 @@
 /// that reads right at the call site.
 ///
 /// `nonisolated(nonsending)` for the reason every handler here is: it runs on
-/// its caller's executor, which is `@MainThread`, so it may read and write
+/// its caller's executor, which is `@MainActor`, so it may read and write
 /// `@State` as freely as a button's handler and may await without landing on
 /// Swift's cooperative pool.
 public typealias ChangeHandler<Value> = nonisolated(nonsending) (Value, Value) async throws -> Void

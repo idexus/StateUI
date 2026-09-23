@@ -1,15 +1,16 @@
 # Concurrency
 
-StateUI handlers may suspend without leaving the platform UI thread. The
-library expresses that guarantee with its own `@MainThread` global actor and a
-host-drained executor. Application code uses ordinary Swift concurrency while
-the host remains the owner of its native event loop.
+StateUI handlers may suspend without leaving the platform UI thread. That
+thread is Swift's `MainActor` on every platform: on Apple it is the main queue
+UIKit and AppKit drain, and on Android, Windows, and Linux StateUI makes it a
+queue the host drains on its UI thread. Application code uses ordinary Swift
+concurrency while the host remains the owner of its native event loop.
 
 ## Handler isolation
 
-Every StateUI event, change, lifetime, ticker, and host-event handler already
-runs on `@MainThread`. It can read and write state directly and may call an
-asynchronous function:
+Every StateUI event, change, lifetime, ticker, and host-event handler runs on
+`MainActor`. It can read and write state directly and may call an asynchronous
+function:
 
 ```swift
 @State var status = "Idle"
@@ -23,9 +24,9 @@ Button("Load").onClicked {
 
 A handler without an `await` completes during the event dispatch that started
 it. After a suspension, continuation requires a later turn of the platform UI
-loop. The host wakes for queued jobs even when the awaited work was not a host
-action, so `Task.sleep`, task values, streams, and continuations all resume
-promptly.
+loop. The host wakes for MainActor's jobs even when the awaited work was not a
+host action, so `Task.sleep`, task values, streams, continuations, and
+`MainActor.run` from a task on the pool all resume promptly.
 
 An uncaught handler error is reported through the active host. Use `do` and
 `catch` only when the application can recover or present a more useful state.
@@ -36,7 +37,7 @@ An asynchronous helper called by a handler must inherit its caller's executor
 or state its isolation explicitly:
 
 ```swift quote
-@MainThread
+@MainActor
 func loadDocument() async throws {
     let name = try await Dialogs.prompt(
         "Open", message: "Document name", placeholder: "Name")
@@ -59,12 +60,12 @@ inherits its caller's executor. The setting is per target:
 ```
 
 Keep this setting on platform-neutral application modules, native entry
-targets, and test targets. `@MainThread` remains useful when the function's
-contract is specifically UI-isolated rather than merely caller-inheriting.
+targets, and test targets. `@MainActor` names a function whose contract is
+specifically UI-isolated rather than merely caller-inheriting; a package whose
+UI code is already isolated to `@MainActor` runs unchanged.
 
-Do not use `@MainActor` as StateUI's portable UI abstraction. A native host can
-use the isolation its toolkit requires internally; application handlers and
-cross-platform helpers use StateUI's executor contract.
+`DispatchQueue.main` is not the UI thread's queue on Android, Windows, or
+Linux: nothing drains it there. Work for the UI thread goes to `MainActor`.
 
 ## State across tasks
 
@@ -79,13 +80,13 @@ let counter = _total
 counter.update { value in value + 1 }
 ```
 
-`total += 1` is appropriate on `@MainThread`, where application handlers are
+`total += 1` is appropriate on `MainActor`, where application handlers are
 serialized. Use `update` when several tasks may modify the same state
 concurrently.
 
 Thread safety does not turn a group of separate states into one transaction.
 If several fields must change as one invariant, place that invariant behind
-one synchronized owner or return the work to `@MainThread` for the complete
+one synchronized owner or return the work to `MainActor` for the complete
 change.
 
 A write requests a render; the renderer coalesces pending work. A task that
@@ -112,7 +113,7 @@ Button("Rename and confirm").onClicked {
 
 An `async let` or child task may run work concurrently. Registry, state, and
 wake-up mechanics are safe for that route, but UI decisions still belong to
-the handler's `@MainThread` continuation. Concurrency changes completion order;
+the handler's `MainActor` continuation. Concurrency changes completion order;
 it does not weaken StateUI's identity or render ordering.
 
 ## Sleeping and deadlines
@@ -155,7 +156,7 @@ platform scheduler may have a coarser practical resolution.
 
 ## Work on each tick
 
-`onTick` is an optional `@MainThread` asynchronous closure. Ticks never overlap:
+`onTick` is an optional `@MainActor` asynchronous closure. Ticks never overlap:
 the next interval is scheduled after the current closure finishes. If work
 takes more than a whole interval, the next deadline starts from completion
 instead of releasing a burst of missed ticks.
@@ -195,7 +196,7 @@ boundary use StateUI's portable values and execution primitives:
 - `CalendarDate` and `ClockTime` for picker state;
 - `LocaleInfo` and `TimeZoneInfo` for host-normalized locale and zone facts;
 - `Task.sleep` and `Ticker` for timing;
-- `@MainThread` for UI isolation.
+- `MainActor` for UI isolation.
 
 This keeps the core deterministic and gives each native host one explicit
 place to connect Swift concurrency to its toolkit event loop.

@@ -66,7 +66,7 @@ final class ConcurrencyTests: XCTestCase {
 
             let ran = stateUIRunJobs()
 
-            if ids.isEmpty && ran == 0 && MainThreadExecutor.shared.pendingCount == 0
+            if ids.isEmpty && ran == 0 && UIThreadExecutor.shared.pendingCount == 0
                 && Renderer.shared.resumesPending == 0 {
                 quiet += 1
             } else {
@@ -85,6 +85,7 @@ final class ConcurrencyTests: XCTestCase {
     /// The host's whole loop, against a handler whose animations run as child
     /// tasks: take what was queued, answer each act, run the jobs the resumes
     /// produce, until the handler says it has finished or the patience runs out.
+    @MainActor
     func testActsQueuedFromChildTasksAreEachAnsweredAndAllComeBack() async throws {
         let renders = Renders()
         var finished = 0
@@ -141,6 +142,7 @@ final class ConcurrencyTests: XCTestCase {
     /// or a landed job - or the drain gives up and the handler sits until
     /// the next event. The method-written closure; `PressCard` above is the
     /// same contract for the getter-written one.
+    @MainActor
     func testAHandlerWithAChildBelowStaysOnTheLibrarysExecutor() async throws {
         let renders = Renders()
         var reached = false
@@ -171,7 +173,7 @@ final class ConcurrencyTests: XCTestCase {
         let deadline = Date().addingTimeInterval(2)
 
         while Date() < deadline {
-            if MainThreadExecutor.shared.pendingCount > 0 || Renderer.shared.resumesPending > 0 {
+            if UIThreadExecutor.shared.pendingCount > 0 || Renderer.shared.resumesPending > 0 {
                 visible = true
                 break
             }
@@ -189,6 +191,7 @@ final class ConcurrencyTests: XCTestCase {
 
     /// The same contract, written where the gallery writes it: in a
     /// conforming struct's `body` getter; see the doc on `PressCard`.
+    @MainActor
     func testACardShapedHandlerStaysOnTheLibrarysExecutor() async throws {
         let renders = Renders()
 
@@ -210,7 +213,7 @@ final class ConcurrencyTests: XCTestCase {
         let deadline = Date().addingTimeInterval(2)
 
         while Date() < deadline {
-            if MainThreadExecutor.shared.pendingCount > 0 || Renderer.shared.resumesPending > 0 {
+            if UIThreadExecutor.shared.pendingCount > 0 || Renderer.shared.resumesPending > 0 {
                 visible = true
                 break
             }
@@ -230,6 +233,7 @@ final class ConcurrencyTests: XCTestCase {
     /// the press animation does - dip, then the return and the navigation
     /// starting together - and the shape in which an unguarded registry
     /// leaves the handler never resuming from its FIRST await.
+    @MainActor
     func testAChildStartedBetweenTwoActsLeavesBothAnswered() async throws {
         let renders = Renders()
         var reached = false
@@ -271,6 +275,7 @@ final class ConcurrencyTests: XCTestCase {
     /// resume can be owed with the queue still empty, and a job can be waiting
     /// with no resume owed - a parent whose children have already lowered the
     /// count. The drain loop asks BOTH, so both have to be visible.
+    @MainActor
     func testAJobIsVisibleToTheHostBeforeItIsRun() async throws {
         let renders = Renders()
         var reached = false
@@ -298,14 +303,14 @@ final class ConcurrencyTests: XCTestCase {
         // there - this is what the drain loop keeps looking on.
         let deadline = Date().addingTimeInterval(2)
         while Date() < deadline {
-            if MainThreadExecutor.shared.pendingCount > 0 || Renderer.shared.resumesPending > 0 {
+            if UIThreadExecutor.shared.pendingCount > 0 || Renderer.shared.resumesPending > 0 {
                 break
             }
             try? await Task.sleep(nanoseconds: 10_000)
         }
 
         XCTAssertTrue(
-            MainThreadExecutor.shared.pendingCount > 0 || Renderer.shared.resumesPending > 0,
+            UIThreadExecutor.shared.pendingCount > 0 || Renderer.shared.resumesPending > 0,
             "a resumed handler that has not run yet must be visible to the host "
                 + "through one of the two counters it polls")
 

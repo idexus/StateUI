@@ -42,8 +42,8 @@ usable platform promise.
 - [Composition and identity](composition-and-identity.md) covers composed
   views, builders, identity, lifetime reactions, frame reports, and render
   diagnostics.
-- [Concurrency](concurrency.md) defines `@MainThread`, handler suspension,
-  `Ticker`, and the application module's compiler setting.
+- [Concurrency](concurrency.md) defines handler isolation on `MainActor`,
+  handler suspension, `Ticker`, and the application module's compiler setting.
 
 ## Extend or host StateUI
 

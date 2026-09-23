@@ -455,7 +455,7 @@ public func stateui_connect_scene(_ bytes: UnsafePointer<UInt8>?, _ length: Int3
 /// Deliberately a call INTO this library rather than a callback out of it: a
 /// resume arrives on a cooperative-pool thread, and entering a foreign-language
 /// host from a thread its runtime has never seen can deadlock the UI thread
-/// when a debugger is attached. See Core/MainThread.swift.
+/// when a debugger is attached. See Core/UIThread.swift.
 @_cdecl("stateui_run_jobs")
 public func stateui_run_jobs() -> Int32 {
     Int32(stateUIRunJobs())
@@ -471,7 +471,7 @@ public func stateui_run_jobs() -> Int32 {
 /// handler resumed on the pool leaves with no job to announce it, still
 /// reaches the host promptly. The host gives this library a thread - one it
 /// CREATED, so its runtime has always known it, which is the whole of the
-/// attach trap in Core/MainThread.swift - and that thread spends its life
+/// attach trap in Core/UIThread.swift - and that thread spends its life
 /// parked here. When it returns, the host posts one turn onto its UI thread
 /// and calls back in.
 ///

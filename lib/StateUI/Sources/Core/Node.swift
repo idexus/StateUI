@@ -243,10 +243,10 @@ extension [PropValue] {
 ///     Button("Open").onClicked { path.append(.details) }
 ///
 /// A handler that never awaits finishes before event dispatch returns. One that
-/// does await resumes on `@MainThread` in a later turn; see Core/MainThread.swift.
+/// does await resumes on `@MainActor` in a later turn; see Core/UIThread.swift.
 ///
 /// `nonisolated(nonsending)` is what makes that true: it says the handler runs on
-/// its CALLER's executor, which is `@MainThread`. Written as a plain
+/// its CALLER's executor, which is `@MainActor`. Written as a plain
 /// `() async -> Void` it would run on Swift's cooperative pool instead, next to a
 /// render that assumes it is alone.
 ///

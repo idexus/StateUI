@@ -94,7 +94,7 @@ internal sealed class ActPerformer
     /// continuation back on the UI thread. What Swift gets is the OUTCOME,
     /// reported through the same event dispatch that carries a button tap - and
     /// what resumes there is a Swift continuation, on the thread MAUI draws on.
-    /// See <c>Core/MainThread.swift</c>.
+    /// See <c>Core/UIThread.swift</c>.
     /// </para>
     /// <para>
     /// The reply crosses as typed values (<see cref="WireCodec.WriteReply"/>):

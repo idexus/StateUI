@@ -12,11 +12,11 @@
 // a write that lands while a render is running is kept for the next one. So a
 // handler writes it, a `Task.detached` that worked something out writes it,
 // a child task started with `async let` writes it, and none of them has to
-// hop first. What a handler may NOT do is move itself onto `@MainActor` or
-// `DispatchQueue.main` to get there - nothing drains those on Android or
-// Windows - and what nothing may do is read a value, think, and write it back
-// from two tasks at once expecting both to count: that is `update(_:)`, which
-// holds the lock across the three steps.
+// hop first. What none of them may wait for is `DispatchQueue.main` - nothing
+// drains that queue on Android or Windows, where MainActor has the UI thread's
+// own executor - and what nothing may do is read a value, think, and write it
+// back from two tasks at once expecting both to count: that is `update(_:)`,
+// which holds the lock across the three steps.
 //
 // Event handlers are closures written straight onto the node - see Node.swift.
 // The ids the host quotes back are assigned in Diff.swift, where an element's
@@ -48,7 +48,7 @@ import Synchronization
 /// `@unchecked Sendable` is a promise to the compiler that this type is safe to
 /// reference across isolation boundaries. It is kept by a lock: the value is
 /// read and written under one, so a box may be written from a handler on
-/// `@MainThread`, read by the render on the host's UI thread, and written
+/// `@MainActor`, read by the render on the host's UI thread, and written
 /// again by a `Task.detached` that has an answer, all at once, and every
 /// write is a whole one. `@unchecked` rather than `Sendable` because `Value`
 /// itself need not be - a box may hold a class an author owns, and what the
@@ -493,7 +493,7 @@ public final class State<Value>: @unchecked Sendable {
     /// where there was one.
     private func wakeForSave() {
         if save != nil {
-            MainThreadExecutor.shared.poke()
+            UIThreadExecutor.shared.poke()
         }
     }
 

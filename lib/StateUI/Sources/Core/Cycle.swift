@@ -148,7 +148,7 @@ final class CycleBoard: @unchecked Sendable {
         // after it to start a cycle, and nothing else would tell the host it
         // is there. A write inside a cycle is taken by that cycle.
         if waiting {
-            MainThreadExecutor.shared.poke()
+            UIThreadExecutor.shared.poke()
         }
     }
 

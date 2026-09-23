@@ -228,7 +228,7 @@ final class LifetimeTests: XCTestCase {
             labels(in: first.root), ["\(Renderer.settleLimit)"],
             "each settling pass walks one step of the chain into the message")
 
-        stateUIRunJobs()
+        turnTheUIThread()
 
         XCTAssertTrue(
             Renderer.shared.needsRender,

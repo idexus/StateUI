@@ -160,16 +160,14 @@ final class Renders {
         return result.patch
     }
 
-    /// Runs what the walk found once it is done - queued as jobs and run by
-    /// one `stateUIRunJobs()`, exactly what a host's drain calls. The
+    /// Runs what the walk found once it is done, each here and now up to its
+    /// first suspension - `Renderer.run`, what a settling pass calls. The
     /// differ's view alone: the renderer also walks what these write into the
     /// same message, which a test of that renders through `Renderer.renderWire`.
     private func runFired() {
         for handler in differ.takeFired() {
-            Renderer.shared.queue(handler)
+            Renderer.shared.run(handler)
         }
-
-        stateUIRunJobs()
     }
 
     /// Runs the closure an id refers to, the way a dispatched event does.
@@ -225,10 +223,8 @@ extension Differ {
             guard !handlers.isEmpty else { break }
 
             for handler in handlers {
-                Renderer.shared.queue(handler)
+                Renderer.shared.run(handler)
             }
-
-            stateUIRunJobs()
 
             let wrote = Renderer.shared.pendingChanges
 
@@ -242,10 +238,8 @@ extension Differ {
         }
 
         for handler in takeFired() {
-            Renderer.shared.queue(handler)
+            Renderer.shared.run(handler)
         }
-
-        stateUIRunJobs()
 
         return (rendered, patch)
     }
@@ -261,23 +255,46 @@ func named<Target>(_ name: String, _ type: Target.Type) -> Aim<Target> {
     return aim
 }
 
-/// Runs whatever a resumed handler left waiting, the way the host does.
+/// One turn of the UI thread, taken by a test that stands on it - a
+/// synchronous test, which runs on the main thread: what the host's drain runs,
+/// then what the main run loop runs. Between them that is every MainActor job
+/// waiting: the main queue's on Apple, the UI thread's queue elsewhere, which
+/// its drain empties and the main queue's post drains too.
+///
+/// - Parameter seconds: how long the run loop may wait for work to arrive.
+func turnTheUIThread(for seconds: TimeInterval = 0.002) {
+    stateUIRunJobs()
+
+    let until = Date(timeIntervalSinceNow: seconds)
+    if !RunLoop.main.run(mode: .default, before: until) {
+        Thread.sleep(until: until)
+    }
+}
+
+/// Lets the UI thread run what a resumed handler left waiting, the way the
+/// host's turns do.
 ///
 /// `resume()` schedules the rest of a handler rather than continuing it, and the
 /// job it produces arrives a moment later - so a test that reports an act as
-/// finished waits for it, where a host's doorbell rings as it lands. Returns
-/// as soon as something ran.
+/// finished takes turns of the UI thread until every handler told its act is
+/// over has run again, where a host's doorbell rings as the job lands. A turn
+/// is a hop to MainActor: it lands behind every job already waiting there -
+/// the main queue's on Apple, the UI thread's queue elsewhere, which the host
+/// drains and a test's run loop drains too.
+///
+/// - Returns: how many turns it took.
 @discardableResult
 func settle(timeout: TimeInterval = 2) async -> Int {
     let deadline = Date().addingTimeInterval(timeout)
+    var turns = 0
 
-    while Date() < deadline {
-        let ran = stateUIRunJobs()
-        if ran > 0 { return ran }
-        try? await Task.sleep(nanoseconds: 100_000)
-    }
+    repeat {
+        await MainActor.run { _ = stateUIRunJobs() }
+        turns += 1
+    } while (Renderer.shared.resumesPending > 0 || UIThreadExecutor.shared.pendingCount > 0)
+        && Date() < deadline
 
-    return 0
+    return turns
 }
 
 /// A walk of the sources, the tests or the fixtures that read almost nothing:

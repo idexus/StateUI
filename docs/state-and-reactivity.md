@@ -144,13 +144,13 @@ tracking before calling `Renderer.shared.setNeedsRender()`.
 ```swift quote
 import Observation
 
-@MainThread
+@MainActor
 func observe(_ model: ExternalModel) {
     withObservationTracking {
         _ = model.title
         _ = model.progress
     } onChange: {
-        Task { @MainThread in
+        Task { @MainActor in
             observe(model) // Observation tracking is one-shot.
             Renderer.shared.setNeedsRender()
         }

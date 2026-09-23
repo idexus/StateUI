@@ -5,29 +5,28 @@
 // its own reads and writes.
 //
 // Real time is involved, so these are the only tests here that WAIT - each
-// stands in for the host's parked thread the way MainThreadTests does, draining
-// the executor until the ticker has counted what it was asked for or a generous
-// deadline passes. The intervals are milliseconds; the deadlines are seconds.
+// stands on the UI thread, taking its turns until the ticker has counted what
+// it was asked for or a generous deadline passes. The intervals are
+// milliseconds; the deadlines are seconds.
 
 import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
 final class TickerTests: XCTestCase {
-    /// Drains the executor - the host's job, here done by hand - until `done`
-    /// answers true or `seconds` have passed. Answers whether it happened.
+    /// Takes turns of the UI thread - the host's job, here done by hand -
+    /// until `done` answers true or `seconds` have passed. Answers whether it
+    /// happened.
     @discardableResult
     private func drain(until done: () -> Bool, within seconds: Double = 3) -> Bool {
         let deadline = Date().addingTimeInterval(seconds)
 
         while Date() < deadline {
-            stateUIRunJobs()
-
             if done() { return true }
 
-            // The sleeps are milliseconds, so this is a poll rather than a
-            // spin: without it the loop burns a core waiting for a timer.
-            Thread.sleep(forTimeInterval: 0.002)
+            // A turn waits for work a few milliseconds at most, so this is a
+            // poll rather than a spin: the ticks arrive on a timer.
+            turnTheUIThread()
         }
 
         return done()

@@ -22,12 +22,12 @@ public final class Renderer: @unchecked Sendable {
     // Legal as a plain static let because the class declares @unchecked
     // Sendable above.
     //
-    // The type system DOES express that thread, as @MainThread - but for
+    // The type system DOES express that thread, as @MainActor - but for
     // handlers, which are the part that can suspend and therefore the part that
     // could land anywhere. The renderer itself is only ever entered from a
     // @_cdecl, synchronously, so isolating it would buy a promise the compiler
     // cannot check across the boundary anyway and would cost every entry point
-    // an assumeIsolated. See Core/MainThread.swift.
+    // an assumeIsolated. See Core/UIThread.swift.
 
     /// The one renderer. There is a single host per process, so a second would
     /// have nothing to render into.
@@ -204,7 +204,11 @@ public final class Renderer: @unchecked Sendable {
     /// doorbell; what waits on this count is a test, for a queue gone quiet.
     var resumesPending: Int { guarded.withLock { resumes } }
 
-    private init() {}
+    /// Makes the UI thread MainActor's before anything here starts a task:
+    /// the first use of MainActor chooses its executor. See Core/UIThread.swift.
+    private init() {
+        UIThreadExecutor.install()
+    }
 
     /// Registers the application. Called through `stateUIUseApp`.
     ///
@@ -269,12 +273,13 @@ public final class Renderer: @unchecked Sendable {
     /// only what read it.
     ///
     /// Behind `guarded`, and followed by a wake, because a write may come
-    /// from any thread: a handler on `@MainThread` lands inside a drain, whose
-    /// end renders it, while a `Task.detached` or an `async let` child that
-    /// writes from the cooperative pool has nothing driving it - the flag is
-    /// what the host's parked thread counts as work and the wake is what
-    /// makes it look. The storage itself is locked in Core/State.swift; this
-    /// is the other half of what makes a write from anywhere whole.
+    /// from any thread: a handler on `@MainActor` lands inside the host's
+    /// turn, whose end renders it, while a `Task.detached` or an `async let`
+    /// child that writes from the cooperative pool has nothing driving it -
+    /// the flag is what the host's parked thread counts as work and the wake
+    /// is what makes it look. The storage itself is locked in
+    /// Core/State.swift; this is the other half of what makes a write from
+    /// anywhere whole.
     public func setNeedsRender() {
         guarded.withLock {
             dirty = true
@@ -283,7 +288,7 @@ public final class Renderer: @unchecked Sendable {
 
         // Outside the lock, the shape `send` has: a wake only signals a
         // thread, and the executor's lock must never be taken inside this one.
-        MainThreadExecutor.shared.poke()
+        UIThreadExecutor.shared.poke()
     }
 
     /// Records that a piece of state was read - what every `@State` calls on
@@ -343,7 +348,7 @@ public final class Renderer: @unchecked Sendable {
         }
 
         if asked {
-            MainThreadExecutor.shared.poke()
+            UIThreadExecutor.shared.poke()
         }
     }
 
@@ -1003,10 +1008,8 @@ public final class Renderer: @unchecked Sendable {
             }
 
             for handler in handlers {
-                queue(handler)
+                run(handler)
             }
-
-            stateUIRunJobs()
 
             let (wrote, wroteUntracked, wroteNames):
                 (Set<ObjectIdentifier>, Bool, [ObjectIdentifier: String]) = guarded.withLock {
@@ -1200,7 +1203,7 @@ public final class Renderer: @unchecked Sendable {
         // tell the host this act exists - it would sit in the queue until
         // the next event, a pressed card never coming back up. Coalesced by
         // the waker's own armed flag, so a burst of sends is one wake.
-        MainThreadExecutor.shared.poke()
+        UIThreadExecutor.shared.poke()
     }
 
     /// How many acts are queued and not yet taken.
@@ -1219,7 +1222,7 @@ public final class Renderer: @unchecked Sendable {
     /// Queues an act and suspends until the host reports what came of it.
     ///
     /// `nonisolated(nonsending)` so that it runs - and resumes - on the executor
-    /// of whoever called it, which for a handler is `@MainThread`. Written as a
+    /// of whoever called it, which for a handler is `@MainActor`. Written as a
     /// plain async function it would run on Swift's cooperative pool, and the
     /// caller would come back to life beside a render the host is running.
     ///
@@ -1373,12 +1376,11 @@ public final class Renderer: @unchecked Sendable {
     /// against an element that has left the tree, and for an act that has already
     /// been reported. Ignoring it is correct; crashing would not be.
     ///
-    /// A handler runs inside a `Task` on `@MainThread`, which is what gives it
-    /// somewhere to suspend. That costs nothing when it does not: the executor
-    /// hands the task straight back to the host, the host is already on its own
-    /// thread, and the whole handler runs before this returns. Only a handler
-    /// that really awaits comes back later, and it comes back on the same
-    /// thread.
+    /// A handler runs inside a task on `@MainActor`, which is what gives it
+    /// somewhere to suspend. That costs nothing when it does not: the task
+    /// starts on the calling thread - the host's own - and the whole handler
+    /// runs before this returns. Only a handler that really awaits comes back
+    /// later, and it comes back on the same thread.
     ///
     /// The Bool therefore says a handler was FOUND, not that it has finished.
     func dispatch(_ handlerId: Int) -> Bool {
@@ -1417,11 +1419,31 @@ public final class Renderer: @unchecked Sendable {
         // Read here rather than inside the task: the buffer holds the payload of
         // the event being dispatched RIGHT NOW, and a handler that suspends would
         // otherwise read whatever the next event left there.
-        let payload = EventBuffer.current
+        begin(handler, payload: EventBuffer.current)
+    }
+
+    /// Runs a handler a render's walk found - `.onCreated`, a value that moved -
+    /// here and now, up to its first suspension, with no event's payload.
+    /// What a settling pass does with each one it runs.
+    func run(_ handler: @escaping EventHandler) {
+        begin(handler, payload: nil)
+    }
+
+    /// Runs a handler here and now, up to its first suspension, on MainActor.
+    ///
+    /// `Task.immediate` starts the task on the calling thread - the host's UI
+    /// thread, which is MainActor's - so a handler with no `await` in it
+    /// finishes before the event returns to the host. Where a start cannot run
+    /// inline - a caller the runtime does not know as MainActor's - the task
+    /// lands in the UI thread's queue, and the drain after it runs it here all
+    /// the same.
+    private func begin(_ handler: @escaping EventHandler, payload: [PropValue]?) {
         let carried = CarriedHandler(run: handler)
 
-        Task { @MainThread in
-            EventBuffer.current = payload
+        Task.immediate { @MainActor in
+            if let payload {
+                EventBuffer.current = payload
+            }
 
             do {
                 try await carried.run()
@@ -1430,29 +1452,24 @@ public final class Renderer: @unchecked Sendable {
             }
         }
 
-        // `Task` queues its first job on the calling thread, synchronously -
-        // measured - so this runs the handler here and now, up to its first
-        // suspension. That is what keeps a handler with no `await` in it
-        // finishing before the event returns to the host.
         stateUIRunJobs()
     }
 
-    /// Starts a handler the way `start` does, but leaves it QUEUED for the
-    /// host's next drain rather than running it here and now.
+    /// Starts a handler on MainActor the way `start` does, but in a LATER turn
+    /// of the UI thread rather than here and now.
     ///
     /// For what a render found and had no settling pass left to run - see
     /// `renderWire` - where running it at once would land a state write after
     /// the host's "does anything need rendering" look. Queued, it takes the
-    /// path a resumed handler takes: enqueueing signals the waker, the drain
-    /// runs the job, and the drain ends in a Pump - so what the handler writes
-    /// is rendered without anything new on the boundary. A settling pass
-    /// queues what it runs as well, and drains once for all of it. No payload
-    /// is carried: the events that have one run through `start`, from a
+    /// path a resumed handler takes - MainActor's executor, the main queue on
+    /// Apple and the host's drain elsewhere - and what it writes rings the
+    /// doorbell, so it is rendered without anything new on the boundary. No
+    /// payload is carried: the events that have one run through `start`, from a
     /// dispatch that just wrote it.
     func queue(_ handler: @escaping EventHandler) {
         let carried = CarriedHandler(run: handler)
 
-        Task { @MainThread in
+        Task { @MainActor in
             do {
                 try await carried.run()
             } catch {
@@ -1466,7 +1483,7 @@ public final class Renderer: @unchecked Sendable {
 ///
 /// The handler lives in the differ's registry, which the compiler reads as
 /// shared state - so handing one to a `Task` is a region violation on paper. It
-/// is not one here: the task is isolated to `@MainThread`, the registry is only
+/// is not one here: the task is isolated to `@MainActor`, the registry is only
 /// ever touched from there, and there is one such thread. The same
 /// `@unchecked Sendable` promise the Renderer itself is built on, made in the
 /// one place that needs it rather than by loosening the handler type for
