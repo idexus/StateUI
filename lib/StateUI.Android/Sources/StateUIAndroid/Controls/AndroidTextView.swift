@@ -12,6 +12,10 @@ class AndroidTextView: AndroidView {
     /// Bold and italic, as last set.
     private(set) var fontAttributes: FontAttributes?
 
+    /// The room around the words the tree describes; nil where the view keeps its own.
+    private var padding: Insets?
+    private var madePadding: (left: Int32, top: Int32, right: Int32, bottom: Int32)?
+
     /// The words shown.
     func setText(_ text: String) {
         let string = Java.string(text)
@@ -55,6 +59,31 @@ class AndroidTextView: AndroidView {
         } else {
             Java.call(reference, JavaAPI.setTextColors, .object(made.colors.reference))
         }
+    }
+
+    /// The room around the words, in points; nil puts back the platform's.
+    func setPadding(_ insets: Insets?) {
+        if madePadding == nil {
+            madePadding = (
+                Java.callInt(reference, JavaAPI.getPaddingLeft), Java.callInt(reference, JavaAPI.getPaddingTop),
+                Java.callInt(reference, JavaAPI.getPaddingRight), Java.callInt(reference, JavaAPI.getPaddingBottom))
+        }
+        padding = insets
+        applyPadding()
+    }
+
+    /// A new background brings its own padding; the tree's is put back over it.
+    /// Design: docs/design/platforms/android/controls.md#the-background-a-view-is-made-with
+    override func setBackground(_ value: HostValue?) {
+        super.setBackground(value)
+        if padding != nil { applyPadding() }
+    }
+
+    private func applyPadding() {
+        guard let made = madePadding else { return }
+
+        let sides = padding.map { (pixels($0.left), pixels($0.top), pixels($0.right), pixels($0.bottom)) } ?? made
+        Java.call(reference, JavaAPI.setPadding, .int(sides.0), .int(sides.1), .int(sides.2), .int(sides.3))
     }
 
     /// The size and colours the view was made with, read before the first change.

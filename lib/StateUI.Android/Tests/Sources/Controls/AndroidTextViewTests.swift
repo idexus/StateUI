@@ -10,6 +10,7 @@ final class AndroidTextViewTests: XCTestCase {
         [
             ("testTextOutsideTheBasicPlaneComesBackWhole", testTextOutsideTheBasicPlaneComesBackWhole),
             ("testAClearedSizePutsBackThePlatformsOwn", testAClearedSizePutsBackThePlatformsOwn),
+            ("testPaddingIsTheRoomAroundTheWordsWhateverTheBackground", testPaddingIsTheRoomAroundTheWordsWhateverTheBackground),
         ]
     }
 
@@ -38,6 +39,22 @@ final class AndroidTextViewTests: XCTestCase {
             label.setFontSize(nil)
 
             XCTAssertEqual(Java.callFloat(label.reference, TestJava.getTextSize), platforms)
+        }
+    }
+
+    /// A colour behind a button takes the padding its own background brought; the tree's padding stays.
+    func testPaddingIsTheRoomAroundTheWordsWhateverTheBackground() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Button("Styled").background(Color("#512BD4")).padding(16, 11)
+                }
+            }
+            let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+
+            XCTAssertEqual(Java.callInt(button.reference, JavaAPI.getPaddingLeft), 32, "sixteen points at two pixels a point")
+            XCTAssertEqual(Java.callInt(button.reference, JavaAPI.getPaddingTop), 22)
+            XCTAssertEqual(Java.callInt(button.reference, JavaAPI.getPaddingRight), 32)
         }
     }
 }

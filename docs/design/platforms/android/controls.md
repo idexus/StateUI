@@ -60,6 +60,12 @@ A button, a field, a switch and a slider draw their own background. A colour
 the tree describes replaces it, and a colour the tree takes away gives back
 the background the view was made with, read before the first change.
 
+A background brings its own padding - the room a button's drawing leaves
+around its words - and Android takes the view's padding from each new one. A
+padding the tree describes is put back over it, so a button with a colour and
+a padding keeps its room; one whose padding is taken away gives back the
+padding it was made with.
+
 ## A layout does not delay a press
 
 A layout that does not scroll tells its children to show a press at once.

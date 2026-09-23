@@ -48,10 +48,11 @@ enum AndroidRegistrations {
         registry.everyElementRealizes(ViewContract.verticalAlignment)
     }
 
-    /// The words of a text control, their size, weight and colour.
+    /// The words of a text control, their size, weight and colour, and the room around them.
     static let textMembers: [any ContractMember] = [
         TextElementContract.text, FontElementContract.fontSize,
         FontElementContract.fontAttributes, TextStyleElementContract.textColor,
+        PaddingElementContract.padding,
     ]
 
     /// Puts `textMembers` on a text view.
@@ -67,6 +68,9 @@ enum AndroidRegistrations {
         }
         if values.changed(TextStyleElementContract.textColor) {
             view.setTextColor(values[TextStyleElementContract.textColor]?.propValue)
+        }
+        if values.changed(PaddingElementContract.padding) {
+            view.setPadding(values[PaddingElementContract.padding])
         }
     }
 }

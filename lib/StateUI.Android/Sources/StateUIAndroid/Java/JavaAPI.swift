@@ -33,6 +33,10 @@ enum JavaAPI {
     static let getBackground = Java.method(view, "getBackground", "()Landroid/graphics/drawable/Drawable;")
     static let setBackground = Java.method(view, "setBackground", "(Landroid/graphics/drawable/Drawable;)V")
     static let setPadding = Java.method(view, "setPadding", "(IIII)V")
+    static let getPaddingLeft = Java.method(view, "getPaddingLeft", "()I")
+    static let getPaddingTop = Java.method(view, "getPaddingTop", "()I")
+    static let getPaddingRight = Java.method(view, "getPaddingRight", "()I")
+    static let getPaddingBottom = Java.method(view, "getPaddingBottom", "()I")
     static let setOnClickListener = Java.method(
         view, "setOnClickListener", "(Landroid/view/View$OnClickListener;)V")
     static let requestLayout = Java.method(view, "requestLayout", "()V")

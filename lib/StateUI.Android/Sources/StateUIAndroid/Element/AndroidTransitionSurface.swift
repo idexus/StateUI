@@ -13,7 +13,7 @@ enum AndroidTransitionSurface {
         switch type {
         case .page: return property == .background
         case .vStack, .hStack: return property == .padding || property == .spacing
-        case .label, .button: return property == .fontSize || property == .textColor
+        case .label, .button: return property == .fontSize || property == .textColor || property == .padding
         case .textField: return property == .fontSize || property == .textColor || property == .placeholderColor
         case .slider: return property == .value || property == .tint
         default: return false

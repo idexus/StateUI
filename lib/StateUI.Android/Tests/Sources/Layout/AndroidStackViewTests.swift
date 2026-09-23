@@ -11,6 +11,7 @@ final class AndroidStackViewTests: XCTestCase {
             ("testAStackPlacesItsChildrenWhereTheArithmeticSays", testAStackPlacesItsChildrenWhereTheArithmeticSays),
             ("testAStackWrapsItsChildrenWhereThePageCentresIt", testAStackWrapsItsChildrenWhereThePageCentresIt),
             ("testALayoutDoesNotCutItsChildrenOff", testALayoutDoesNotCutItsChildrenOff),
+            ("testAButtonWhoseWordsGrowIsMeasuredWider", testAButtonWhoseWordsGrowIsMeasuredWider),
         ]
     }
 
@@ -59,6 +60,27 @@ final class AndroidStackViewTests: XCTestCase {
 
             XCTAssertFalse(Java.callBool(stack.reference, TestJava.getClipChildren))
             XCTAssertFalse(Java.callBool(stack.reference, TestJava.getClipToPadding))
+        }
+    }
+
+    /// The words a click writes are measured anew: the stack gives the button the room they take.
+    func testAButtonWhoseWordsGrowIsMeasuredWider() throws {
+        try onMainActor {
+            let count = State(wrappedValue: 0)
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                VStack {
+                    Button(count.wrappedValue == 0 ? "Go" : "Gone a long way").onClicked { count.wrappedValue += 1 }
+                        .horizontalAlignment(.center)
+                }
+            }
+            host.layOut()
+            let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
+            let before = button.frame.width
+
+            button.click()
+            host.layOut()
+
+            XCTAssertGreaterThan(button.frame.width, before + 100, "\(before) -> \(button.frame.width)")
         }
     }
 }
