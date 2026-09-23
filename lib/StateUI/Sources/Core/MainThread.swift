@@ -120,16 +120,7 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
     static let shared = MainThreadExecutor()
 
     /// Guards `pending` and `wakeArmed`, and nothing else.
-    ///
-    /// A serial `DispatchQueue` used as a mutex rather than Foundation's
-    /// `NSLock`: libdispatch is on every platform this targets and Foundation on
-    /// Windows links ICU, which is the one dependency this library cannot take.
-    /// `Synchronization.Mutex` would be the modern answer and is iOS 18, above
-    /// this floor.
-    ///
-    /// NOT the main queue, and nothing here waits on one: this is a private
-    /// queue, entered synchronously, held for an array append.
-    private let guarded = DispatchQueue(label: "StateUI.MainThread.jobs")
+    private let guarded = Lock()
 
     /// Jobs waiting for the host to run them.
     private var pending: [UnownedJob] = []
@@ -159,7 +150,7 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
     func enqueue(_ job: consuming ExecutorJob) {
         let job = UnownedJob(job)
 
-        let signal: Bool = guarded.sync {
+        let signal: Bool = guarded.withLock {
             pending.append(job)
 
             guard !wakeArmed else { return false }
@@ -180,7 +171,7 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// pressed, on Android for ever. `Renderer.send` calls this after queueing;
     /// the same armed flag coalesces it with `enqueue`'s wake.
     func poke() {
-        let signal: Bool = guarded.sync {
+        let signal: Bool = guarded.withLock {
             guard !wakeArmed else { return false }
             wakeArmed = true
             return true
@@ -195,7 +186,7 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
     func waitForWork() -> Int {
         wake.wait()
 
-        return guarded.sync {
+        return guarded.withLock {
             wakeArmed = false
             return pending.count
         }
@@ -212,7 +203,7 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
         var ran = 0
 
         for _ in 0..<64 {
-            let taken: [UnownedJob] = guarded.sync {
+            let taken: [UnownedJob] = guarded.withLock {
                 let taken = pending
                 pending.removeAll(keepingCapacity: true)
                 return taken
@@ -245,7 +236,7 @@ final class MainThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// `resumesPending`, for a queue gone quiet: a host is woken by each job
     /// as it lands.
     var pendingCount: Int {
-        guarded.sync { pending.count }
+        guarded.withLock { pending.count }
     }
 }
 

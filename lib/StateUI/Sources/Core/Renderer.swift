@@ -15,10 +15,6 @@
 // state updates work without invalidating anything by hand. What is SENT is the
 // difference against what the host is already showing; see Diff.swift.
 
-// Dispatch and not Foundation, for the lock below: libdispatch exists on every
-// platform this targets, and Foundation on Windows links ICU.
-import Dispatch
-
 /// `@unchecked Sendable` for the same reason as State: the safety guarantee is
 /// external - a host calls in only from the thread it draws on - and
 /// cannot be expressed structurally.
@@ -104,12 +100,12 @@ public final class Renderer: @unchecked Sendable {
 
     /// Counts a rendered node in.
     func nodeBorn() {
-        guarded.sync { liveNodes += 1 }
+        guarded.withLock { liveNodes += 1 }
     }
 
     /// Counts a rendered node out.
     func nodeGone() {
-        guarded.sync { liveNodes -= 1 }
+        guarded.withLock { liveNodes -= 1 }
     }
 
     private let differ = Differ()
@@ -163,13 +159,10 @@ public final class Renderer: @unchecked Sendable {
     /// a handler frozen at its `await`, and corrupted memory on a bad one,
     /// which takes real devices down.
     ///
-    /// A serial `DispatchQueue` as a mutex for the reason `MainThreadExecutor`
-    /// uses one: libdispatch exists on every platform this targets, and
-    /// Foundation's locks arrive with ICU on Windows. Closures taken OUT of the
-    /// registry are always invoked outside the lock - `dispatch` resumes a
-    /// continuation, and a resume that re-entered `send` would deadlock on a
-    /// queue `sync` cannot re-enter.
-    private let guarded = DispatchQueue(label: "StateUI.Renderer.acts")
+    /// Closures taken OUT of the registry are always invoked outside the lock -
+    /// `dispatch` resumes a continuation, and a resume that re-entered `send`
+    /// would deadlock on a lock that is not reentrant.
+    private let guarded = Lock()
 
     /// Acts waiting for the host to collect them - see ActCall.swift.
     private var actCalls: [ActCall] = []
@@ -209,7 +202,7 @@ public final class Renderer: @unchecked Sendable {
     /// The job a resume produces does not exist yet when the outcome is
     /// reported - measured - and lands a moment later, waking the host's
     /// doorbell; what waits on this count is a test, for a queue gone quiet.
-    var resumesPending: Int { guarded.sync { resumes } }
+    var resumesPending: Int { guarded.withLock { resumes } }
 
     private init() {}
 
@@ -283,7 +276,7 @@ public final class Renderer: @unchecked Sendable {
     /// makes it look. The storage itself is locked in Core/State.swift; this
     /// is the other half of what makes a write from anywhere whole.
     public func setNeedsRender() {
-        guarded.sync {
+        guarded.withLock {
             dirty = true
             untracked = true
         }
@@ -331,7 +324,7 @@ public final class Renderer: @unchecked Sendable {
         // too. See Core/Builds.swift.
         let name = (state as? NamedState)?.origin
 
-        let asked: Bool = guarded.sync {
+        let asked: Bool = guarded.withLock {
             guard rendering || readers[id] != nil else {
                 refusedWrites += 1
                 return false
@@ -359,7 +352,7 @@ public final class Renderer: @unchecked Sendable {
     ///
     /// - Parameter states: what was read, by storage identity.
     func reading(_ states: Set<ObjectIdentifier>) {
-        guarded.sync {
+        guarded.withLock {
             for id in states {
                 readers[id, default: 0] += 1
             }
@@ -370,7 +363,7 @@ public final class Renderer: @unchecked Sendable {
     ///
     /// - Parameter states: what it had read, by storage identity.
     func unreading(_ states: Set<ObjectIdentifier>) {
-        guarded.sync {
+        guarded.withLock {
             for id in states {
                 guard let count = readers[id] else { continue }
 
@@ -385,7 +378,7 @@ public final class Renderer: @unchecked Sendable {
     /// - Parameter state: the storage, the model, or the ticker.
     /// - Returns: whether a write to it would ask for a render.
     func isRead(_ state: AnyObject) -> Bool {
-        guarded.sync { readers[ObjectIdentifier(state)] != nil }
+        guarded.withLock { readers[ObjectIdentifier(state)] != nil }
     }
 
     // MARK: - Continuous values
@@ -442,7 +435,7 @@ public final class Renderer: @unchecked Sendable {
         nextNumber += 1
         storage.number = issued
 
-        guarded.sync {
+        guarded.withLock {
             states[issued] = { [weak storage] in storage }
         }
 
@@ -758,10 +751,10 @@ public final class Renderer: @unchecked Sendable {
 
     /// A state by its number, or nil where none rides it any more.
     func storage(of number: Int32) -> HostStorage? {
-        let found = guarded.sync { states[number] }
+        let found = guarded.withLock { states[number] }
 
         guard let storage = found?() else {
-            guarded.sync { states[number] = nil }
+            guarded.withLock { states[number] = nil }
             return nil
         }
 
@@ -778,7 +771,7 @@ public final class Renderer: @unchecked Sendable {
     /// a value whose number is forgotten while the host still quotes it would
     /// be told about somebody else's movement.
     func clearStates() {
-        let issued = guarded.sync { () -> [() -> HostStorage?] in
+        let issued = guarded.withLock { () -> [() -> HostStorage?] in
             let held = Array(states.values)
             states.removeAll()
             return held
@@ -798,21 +791,21 @@ public final class Renderer: @unchecked Sendable {
 
     /// What the next render will act on - read by the tests, which drive a
     /// Differ of their own rather than going through `renderWire`.
-    var pendingChanges: Set<ObjectIdentifier> { guarded.sync { changed } }
+    var pendingChanges: Set<ObjectIdentifier> { guarded.withLock { changed } }
 
     /// What those changes are CALLED - the other half of what a test hands a
     /// differ of its own, so a build there is explained in the same names an
     /// application's is. See Core/Builds.swift.
-    var pendingNames: [ObjectIdentifier: String] { guarded.sync { names } }
+    var pendingNames: [ObjectIdentifier: String] { guarded.withLock { names } }
 
     /// Whether anything asked for a render without naming what changed - the
     /// other thing a test needs to see.
-    var hasUntrackedCause: Bool { guarded.sync { untracked } }
+    var hasUntrackedCause: Bool { guarded.withLock { untracked } }
 
     /// Puts the invalidation bookkeeping back to "nothing has changed", so a
     /// test starts from a known state whatever ran before it.
     func clearInvalidation() {
-        guarded.sync {
+        guarded.withLock {
             dirty = false
             changed.removeAll()
             names.removeAll()
@@ -822,7 +815,7 @@ public final class Renderer: @unchecked Sendable {
 
     /// Whether anything has changed since the last render. The host polls this
     /// rather than being called back, so nothing here calls into the host.
-    public var needsRender: Bool { guarded.sync { dirty } }
+    public var needsRender: Bool { guarded.withLock { dirty } }
 
     /// Renders - building the tree, or walking to what changed - and
     /// serializes what changed since `baseline`.
@@ -883,7 +876,7 @@ public final class Renderer: @unchecked Sendable {
         // stays stale and a handler that stays suspended on a walk nobody
         // drew.
         let (changedNow, untrackedNow, namesNow):
-            (Set<ObjectIdentifier>, Bool, [ObjectIdentifier: String]) = guarded.sync {
+            (Set<ObjectIdentifier>, Bool, [ObjectIdentifier: String]) = guarded.withLock {
             let taken = (changed, untracked, names)
             changed.removeAll()
             names.removeAll()
@@ -965,7 +958,7 @@ public final class Renderer: @unchecked Sendable {
         // The old elements died with the tree they were in, above, and the
         // new ones counted themselves as they were made - so from here the
         // readers are exact again and a write may ask them.
-        let dirtiedMeanwhile: Bool = guarded.sync {
+        let dirtiedMeanwhile: Bool = guarded.withLock {
             rendering = false
             return dirty
         }
@@ -1016,7 +1009,7 @@ public final class Renderer: @unchecked Sendable {
             stateUIRunJobs()
 
             let (wrote, wroteUntracked, wroteNames):
-                (Set<ObjectIdentifier>, Bool, [ObjectIdentifier: String]) = guarded.sync {
+                (Set<ObjectIdentifier>, Bool, [ObjectIdentifier: String]) = guarded.withLock {
                 let taken = (changed, untracked, names)
                 changed.removeAll()
                 names.removeAll()
@@ -1028,7 +1021,7 @@ public final class Renderer: @unchecked Sendable {
 
             // Nothing they wrote is read anywhere.
             if wrote.isEmpty && !wroteUntracked {
-                guarded.sync { rendering = false }
+                guarded.withLock { rendering = false }
                 break
             }
 
@@ -1050,7 +1043,7 @@ public final class Renderer: @unchecked Sendable {
                     rendered, with: built.tree, styles: built.styles, changed: wrote)
             }
 
-            guarded.sync { rendering = false }
+            guarded.withLock { rendering = false }
 
             rendered = settled.node
             patch = patch.merging(settled.patch)
@@ -1153,7 +1146,7 @@ public final class Renderer: @unchecked Sendable {
     /// - Parameter completion: what to run when the answer arrives.
     /// - Returns: the number the answer will name.
     func book(_ completion: @escaping (Reply) -> Void) -> Int {
-        guarded.sync { () -> Int in
+        guarded.withLock { () -> Int in
             let issued = nextCompletionId
 
             completions[issued] = completion
@@ -1168,7 +1161,7 @@ public final class Renderer: @unchecked Sendable {
     /// What a test harness playing the host answers: a movement on a driven
     /// state is booked here and named by a LANE of the image rather than by
     /// any message, so there is nothing in a patch to find it under.
-    var waiting: [Int] { guarded.sync { Array(completions.keys) } }
+    var waiting: [Int] { guarded.withLock { Array(completions.keys) } }
 
     /// Queues an act - a token, whether the library's or an application's;
     /// the session dictionary numbers both the same way.
@@ -1190,7 +1183,7 @@ public final class Renderer: @unchecked Sendable {
     /// Callable from any thread: a child task started with `async let` sends
     /// from the cooperative pool, which is why the registry is behind `guarded`.
     private func enqueue(_ make: (Int?) -> ActCall, _ completion: ((Reply) -> Void)?) {
-        guarded.sync {
+        guarded.withLock {
             var id: Int?
 
             if let completion = completion {
@@ -1219,7 +1212,7 @@ public final class Renderer: @unchecked Sendable {
         // The saves a kept state has waiting count with the acts: a save IS an
         // act the moment it is taken, and nothing else says it is there. See
         // `takeActCallsWire`.
-        guarded.sync { actCalls.count } + PersistentStore.shared.pending
+        guarded.withLock { actCalls.count } + PersistentStore.shared.pending
             + Scenes.shared.pendingSaves
     }
 
@@ -1252,13 +1245,13 @@ public final class Renderer: @unchecked Sendable {
                 // thing that runs on the other side of the suspension - so the
                 // host can tell "the resume has not landed yet" from "there is
                 // nothing to wait for".
-                Renderer.shared.guarded.sync { Renderer.shared.resumes += 1 }
+                Renderer.shared.guarded.withLock { Renderer.shared.resumes += 1 }
                 continuation.resume(returning: outcome)
             }
         }
 
         // On a pool thread when the caller was a child task, hence the lock.
-        guarded.sync { resumes -= 1 }
+        guarded.withLock { resumes -= 1 }
 
         switch reply {
         case .finished(let values):
@@ -1316,7 +1309,7 @@ public final class Renderer: @unchecked Sendable {
             ActCall(ApplicationContract.persistValue, Name($0.name), $0.value)
         }
 
-        let queued = guarded.sync {
+        let queued = guarded.withLock {
             let queued = actCalls
             actCalls.removeAll(keepingCapacity: true)
             takenCompletions = queued.compactMap { $0.completion }
@@ -1359,7 +1352,7 @@ public final class Renderer: @unchecked Sendable {
     /// nobody twice - and an act performed normally in the meantime is safe
     /// either way, `dispatch` answering false for a completion already gone.
     func failTakenActCalls(_ reason: String) {
-        let ids = guarded.sync {
+        let ids = guarded.withLock {
             let ids = takenCompletions
             takenCompletions = []
             return ids
@@ -1393,7 +1386,7 @@ public final class Renderer: @unchecked Sendable {
             // Removed under the lock, invoked outside it: the completion resumes
             // a continuation, and Swift may run part of that machinery here and
             // now - none of which may find the lock held.
-            let taken = guarded.sync { completions.removeValue(forKey: handlerId) }
+            let taken = guarded.withLock { completions.removeValue(forKey: handlerId) }
 
             guard let completion = taken else { return false }
             completion(ReplyBuffer.current)

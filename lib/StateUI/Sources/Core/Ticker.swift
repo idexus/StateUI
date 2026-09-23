@@ -34,11 +34,8 @@
 //
 // So the state lives behind ONE lock, the public properties read through it,
 // and the renders are asked for outside it - naming the ticker itself as what
-// was read and written, since to a view it is one thing. The pattern, the
-// queue-as-a-mutex and the reason it is not Foundation's NSLock are all the
-// same as `Renderer`'s.
-
-import Dispatch
+// was read and written, since to a view it is one thing. The pattern is
+// `Renderer`'s.
 
 /// A repeating timer: something to read while it counts.
 ///
@@ -77,10 +74,8 @@ public final class Ticker: @unchecked Sendable {
     /// rather than overlapping it.
     public typealias Tick = @MainThread @Sendable () async -> Void
 
-    /// The one lock. A serial queue as a mutex, for the reason
-    /// `Renderer.guarded` is one: it is Dispatch rather than Foundation, and
-    /// nothing here may pull ICU in.
-    private let guarded = DispatchQueue(label: "StateUI.Ticker")
+    /// The one lock.
+    private let guarded = Lock()
 
     private var storedInterval: Duration
     private var storedLimit: Int?
@@ -104,10 +99,10 @@ public final class Ticker: @unchecked Sendable {
     public var interval: Duration {
         get {
             Renderer.shared.stateRead(self)
-            return guarded.sync { storedInterval }
+            return guarded.withLock { storedInterval }
         }
         set {
-            guarded.sync { storedInterval = Ticker.usable(newValue) }
+            guarded.withLock { storedInterval = Ticker.usable(newValue) }
             Renderer.shared.stateChanged(self)
         }
     }
@@ -120,10 +115,10 @@ public final class Ticker: @unchecked Sendable {
     public var limit: Int? {
         get {
             Renderer.shared.stateRead(self)
-            return guarded.sync { storedLimit }
+            return guarded.withLock { storedLimit }
         }
         set {
-            guarded.sync { storedLimit = newValue }
+            guarded.withLock { storedLimit = newValue }
             Renderer.shared.stateChanged(self)
         }
     }
@@ -138,10 +133,10 @@ public final class Ticker: @unchecked Sendable {
     public var isRepeating: Bool {
         get {
             Renderer.shared.stateRead(self)
-            return guarded.sync { storedRepeating }
+            return guarded.withLock { storedRepeating }
         }
         set {
-            guarded.sync { storedRepeating = newValue }
+            guarded.withLock { storedRepeating = newValue }
             Renderer.shared.stateChanged(self)
         }
     }
@@ -163,8 +158,8 @@ public final class Ticker: @unchecked Sendable {
     /// A `Tick` does not throw, so anything that can has to be handled inside
     /// it - `try?`, or a `do`/`catch` that writes the failure into state.
     public var onTick: Tick? {
-        get { guarded.sync { storedTick } }
-        set { guarded.sync { storedTick = newValue } }
+        get { guarded.withLock { storedTick } }
+        set { guarded.withLock { storedTick = newValue } }
     }
 
     /// How many ticks have happened since the last `reset()`.
@@ -174,7 +169,7 @@ public final class Ticker: @unchecked Sendable {
     /// it and leaves the rest of the tree alone.
     public var ticks: Int {
         Renderer.shared.stateRead(self)
-        return guarded.sync { count }
+        return guarded.withLock { count }
     }
 
     /// Whether another tick is coming. `start()` and `stop()` are what change
@@ -187,14 +182,14 @@ public final class Ticker: @unchecked Sendable {
     /// not "the work is over".
     public var isRunning: Bool {
         Renderer.shared.stateRead(self)
-        return guarded.sync { running }
+        return guarded.withLock { running }
     }
 
     /// Whether it has counted all the way to its `limit`. Always false for a
     /// ticker with no limit.
     public var isFinished: Bool {
         Renderer.shared.stateRead(self)
-        return guarded.sync { finished }
+        return guarded.withLock { finished }
     }
 
     /// A ticker, not started.
@@ -237,7 +232,7 @@ public final class Ticker: @unchecked Sendable {
     /// Safe from any thread, which is what lets an `onTick` that moved its work
     /// to another task start the next round from there.
     public func start() {
-        let mine: Int? = guarded.sync { () -> Int? in
+        let mine: Int? = guarded.withLock { () -> Int? in
             guard !running else { return nil }
 
             if finished { count = 0 }
@@ -263,7 +258,7 @@ public final class Ticker: @unchecked Sendable {
     /// Safe from any thread. The loop notices when it wakes, so a stop during a
     /// sleep costs at most the rest of that sleep - and nothing ticks after it.
     public func stop() {
-        let changed = guarded.sync {
+        let changed = guarded.withLock {
             let was = running
             running = false
 
@@ -275,7 +270,7 @@ public final class Ticker: @unchecked Sendable {
 
     /// Stops counting and puts the count back to zero. Safe from any thread.
     public func reset() {
-        guarded.sync {
+        guarded.withLock {
             running = false
             count = 0
         }
@@ -291,7 +286,7 @@ public final class Ticker: @unchecked Sendable {
         var deadline = ContinuousClock.now
 
         while true {
-            deadline += guarded.sync { storedInterval }
+            deadline += guarded.withLock { storedInterval }
 
             try? await Task.sleep(until: deadline)
 
@@ -303,7 +298,7 @@ public final class Ticker: @unchecked Sendable {
             // whole point of a ticker that does not repeat - because `start()`
             // on one that is still running is a no-op, and a stop written
             // afterwards would undo the round the tick just asked for.
-            let (tick, last): (Tick?, Bool) = guarded.sync { () -> (Tick?, Bool) in
+            let (tick, last): (Tick?, Bool) = guarded.withLock { () -> (Tick?, Bool) in
                 guard running, run == mine else { return (nil, false) }
 
                 count += 1
@@ -324,7 +319,7 @@ public final class Ticker: @unchecked Sendable {
 
             // The tick may have called stop() - or start(), which takes a new
             // run number and makes this loop the old one.
-            guard guarded.sync(execute: { running && run == mine }) else { return }
+            guard guarded.withLock({ running && run == mine }) else { return }
 
             // A lap that took longer than a WHOLE interval would otherwise
             // leave the deadline far enough in the past that the laps it
@@ -342,7 +337,7 @@ public final class Ticker: @unchecked Sendable {
             // unaffected: a ticker whose tick outruns its interval keeps the
             // gap between ticks under either clamp, where no clamp at all
             // lets the missed laps come due at once.
-            if deadline + guarded.sync(execute: { storedInterval }) < .now { deadline = .now }
+            if deadline + guarded.withLock({ storedInterval }) < .now { deadline = .now }
         }
     }
 

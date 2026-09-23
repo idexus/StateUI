@@ -41,10 +41,6 @@
 // where two unrelated views share state without `$` being written, and it is
 // what a key IS: a name for a value the whole application means.
 
-// Dispatch and not Foundation, for the lock below - the Renderer's reason: it
-// exists on every platform this targets, and Foundation on Windows links ICU.
-import Dispatch
-
 /// What kind of value a persistent key holds.
 ///
 /// The host needs this before any state exists, because a store is typed: an
@@ -263,7 +259,7 @@ final class PersistentStore: @unchecked Sendable {
     /// values that whole process shares.
     static let shared = PersistentStore()
 
-    private let guarded = DispatchQueue(label: "StateUI.PersistentStore")
+    private let guarded = Lock()
 
     /// What the host read out of the store before the first render, by key
     /// name. Read once per key, as the first state declaring it is built.
@@ -289,7 +285,7 @@ final class PersistentStore: @unchecked Sendable {
     /// its value now, still ahead of the first view.
     /// - Parameter values: name and value, for the keys the store had.
     func hydrate(_ values: [(name: String, value: PropValue)]) {
-        let landings: [((PropValue) -> Void, PropValue)] = guarded.sync {
+        let landings: [((PropValue) -> Void, PropValue)] = guarded.withLock {
             var landings: [((PropValue) -> Void, PropValue)] = []
 
             for pair in values {
@@ -335,7 +331,7 @@ final class PersistentStore: @unchecked Sendable {
         orAdopt storage: AnyObject,
         landing land: @escaping (PropValue) -> Void
     ) -> AnyObject {
-        let (owner, held): (AnyObject, PropValue?) = guarded.sync {
+        let (owner, held): (AnyObject, PropValue?) = guarded.withLock {
             if let standing = storages[key.name] {
                 return (standing.storage, nil)
             }
@@ -357,18 +353,18 @@ final class PersistentStore: @unchecked Sendable {
     /// that gets the save taken is the write's to make, after it lets go -
     /// see `State.wrappedValue`.
     func record(_ key: PersistentKey, _ value: PropValue) {
-        guarded.sync { waiting[key.name] = value }
+        guarded.withLock { waiting[key.name] = value }
     }
 
     /// How many keys are waiting to be saved - counted as pending work by
     /// `Renderer.actCallsPending`, so the host takes them whether or not the
     /// write that recorded them asked for a render.
-    var pending: Int { guarded.sync { waiting.count } }
+    var pending: Int { guarded.withLock { waiting.count } }
 
     /// The keys waiting to be saved, SORTED BY NAME, and forgets them - the
     /// determinism rule, so two runs of one session write the same bytes.
     func takeWaiting() -> [(name: String, value: PropValue)] {
-        guarded.sync {
+        guarded.withLock {
             let taken = waiting.sorted { $0.key < $1.key }
             waiting.removeAll(keepingCapacity: true)
             return taken.map { (name: $0.key, value: $0.value) }
@@ -378,7 +374,7 @@ final class PersistentStore: @unchecked Sendable {
     /// Forgets everything - for tests, which build many sessions in one
     /// process and must not inherit the last one's keys.
     func forgetAll() {
-        guarded.sync {
+        guarded.withLock {
             hydrated.removeAll()
             storages.removeAll()
             waiting.removeAll()

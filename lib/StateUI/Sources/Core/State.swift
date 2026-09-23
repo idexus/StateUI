@@ -23,7 +23,7 @@
 // identity is known, because an id has to belong to the element rather than to
 // the tree that happened to mention it.
 
-import Dispatch
+import Synchronization
 
 /// A mutable piece of state, owned by whoever declares it.
 ///
@@ -71,28 +71,26 @@ public final class State<Value>: @unchecked Sendable {
     ///
     /// The lock lives HERE and not on the box, because two boxes sharing a
     /// storage must share its lock too - a handler suspended across a render
-    /// writes through last render's box. A serial `DispatchQueue` as the
-    /// mutex, for the reason `MainThreadExecutor` gives: libdispatch is on
-    /// every platform this targets and Foundation's locks bring ICU on
-    /// Windows. Uncontended, a hold costs about the time of a function call.
+    /// writes through last render's box. The lock is a `Lock` - see
+    /// Core/Lock.swift.
     ///
     /// Internal rather than private so the tests can hold the invariant below
     /// directly: that a write and the record beside it happen under ONE hold.
     /// It appears in no public signature - `lender` erases it to `AnyObject` -
     /// so an application cannot name it.
     final class Storage: @unchecked Sendable, NamedState, AnyStateStorage, FollowedState {
-        private let guarded = DispatchQueue(label: "StateUI.State")
+        private let guarded = Lock()
 
         /// How many times this side has written the value while it lived
-        /// here - bumped under the lock, beside the write it counts, and READ
-        /// WITHOUT IT by an engine's `stirred()`: handlers and engines run on
-        /// the one thread the host drains and draws on, so the read sees the
-        /// write; a write from a detached task is seen a cycle late at worst,
-        /// the count only ever growing. Not read under the lock on purpose -
+        /// here - an atomic, bumped under the lock beside the write it counts
+        /// and READ WITHOUT IT by an engine's `stirred()`: handlers and engines
+        /// run on the one thread the host drains and draws on, so the read sees
+        /// the write; a write from a detached task is seen a cycle late at
+        /// worst, the count only ever growing. Not read under the lock on purpose -
         /// `carry()` takes the board's hold while holding this one, and
         /// `stirring` reads stamps under the board's, so a lock here would
         /// take the two in the other order.
-        nonisolated(unsafe) private var written = 0
+        private let written = Atomic<Int>(0)
 
         /// How many times the state has been written, whoever wrote it - what
         /// an engine following it compares between two runs.
@@ -103,7 +101,7 @@ public final class State<Value>: @unchecked Sendable {
         /// on the image, and the host's own frames, which are told to it.
         /// Both count a write that put the same bytes back, so an engine
         /// following a number a finger is holding still hears every report.
-        var stamp: Int { written &+ (image?.stamp ?? 0) }
+        var stamp: Int { written.load(ordering: .relaxed) &+ (image?.stamp ?? 0) }
 
         /// The value, once anybody has wanted it.
         ///
@@ -141,7 +139,7 @@ public final class State<Value>: @unchecked Sendable {
         ///
         /// - Parameter name: what the author declared the property as.
         func name(once name: String) {
-            guarded.sync {
+            guarded.withLock {
                 if origin == nil { origin = name }
             }
         }
@@ -330,7 +328,7 @@ public final class State<Value>: @unchecked Sendable {
             get {
                 if let hostRead { return pair ?? hostRead() }
 
-                return guarded.sync { settled() }
+                return guarded.withLock { settled() }
             }
             set {
                 if let hostWrite {
@@ -339,10 +337,10 @@ public final class State<Value>: @unchecked Sendable {
                     return
                 }
 
-                guarded.sync {
+                guarded.withLock {
                     held = newValue
                     make = nil
-                    written &+= 1
+                    written.wrappingAdd(1, ordering: .relaxed)
                 }
             }
         }
@@ -370,10 +368,10 @@ public final class State<Value>: @unchecked Sendable {
                 return
             }
 
-            guarded.sync {
+            guarded.withLock {
                 held = newValue
                 make = nil
-                written &+= 1
+                written.wrappingAdd(1, ordering: .relaxed)
                 then?(newValue)
             }
         }
@@ -395,12 +393,12 @@ public final class State<Value>: @unchecked Sendable {
                 return
             }
 
-            guarded.sync {
+            guarded.withLock {
                 let settled = transform(settled())
 
                 held = settled
                 make = nil
-                written &+= 1
+                written.wrappingAdd(1, ordering: .relaxed)
                 then?(settled)
             }
         }
@@ -726,7 +724,7 @@ extension State.Storage where Value: Walked {
     /// answers; a frame asks the JOURNEY's readers, which is the second
     /// reader set (`askJourneyReaders()`).
     func carryAsJourney() -> HostStorage? {
-        let made: HostStorage? = guarded.sync {
+        let made: HostStorage? = guarded.withLock {
             if let image, journeyed { return image }
 
             // An image the host has never been told the number of - made by
@@ -906,7 +904,7 @@ extension State.Storage where Value: StateValue {
     /// and the box's own hold is empty: two homes for one value would be two
     /// answers.
     func carry() -> HostStorage? {
-        let made: HostStorage? = guarded.sync {
+        let made: HostStorage? = guarded.withLock {
             if let image { return journeyed ? nil : image }
 
             let initial = settled()

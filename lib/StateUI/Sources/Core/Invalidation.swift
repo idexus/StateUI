@@ -33,7 +33,7 @@
 // lock) and why anything that cannot name what changed falls back to the full
 // build.
 
-import Dispatch
+import Synchronization
 
 /// The read scopes open right now, innermost last.
 ///
@@ -50,19 +50,19 @@ enum ReadScope {
     /// Guards the stack. Reads may arrive from a pool thread - an author's task
     /// reading a `@State` while the UI thread renders - and an insert racing a
     /// pop would corrupt the array.
-    private static let guarded = DispatchQueue(label: "StateUI.ReadScope")
+    private static let guarded = Lock()
 
     private nonisolated(unsafe) static var stack: [Set<ObjectIdentifier>] = []
 
     /// How many scopes are open, kept beside the stack for the fast path below.
-    private nonisolated(unsafe) static var depth = 0
+    private static let depth = Atomic<Int>(0)
 
     /// Records a read into the innermost open scope, if any.
     ///
     /// Called on EVERY read of every `@State` in the process, almost all of
-    /// them from handlers with no scope open - so the empty check is an
-    /// unsynchronized read of `depth`, not a trip through the lock. That is
-    /// safe by argument rather than by the compiler: the thread that opens and
+    /// them from handlers with no scope open - so the empty check is a relaxed
+    /// atomic read of `depth`, not a trip through the lock. What it answers is
+    /// right by argument rather than by the compiler: the thread that opens and
     /// closes scopes is the thread that renders, so a read there always sees
     /// the truth; a pool thread may see a stale value, and either direction is
     /// harmless - noting a read that lands in some element's set over-records
@@ -73,9 +73,9 @@ enum ReadScope {
     ///   a read at BUILD from every other read of the same state.
     @discardableResult
     static func note(_ id: ObjectIdentifier) -> Bool {
-        guard depth > 0 else { return false }
+        guard depth.load(ordering: .relaxed) > 0 else { return false }
 
-        return guarded.sync {
+        return guarded.withLock {
             guard !stack.isEmpty else { return false }
 
             stack[stack.count - 1].insert(id)
@@ -85,15 +85,15 @@ enum ReadScope {
 
     /// Runs a build with a scope of its own open, and returns what it read.
     static func collect<T>(_ build: () -> T) -> (value: T, reads: Set<ObjectIdentifier>) {
-        guarded.sync {
+        guarded.withLock {
             stack.append([])
-            depth += 1
+            depth.add(1, ordering: .relaxed)
         }
 
         let value = build()
 
-        let reads = guarded.sync { () -> Set<ObjectIdentifier> in
-            depth -= 1
+        let reads = guarded.withLock { () -> Set<ObjectIdentifier> in
+            depth.subtract(1, ordering: .relaxed)
             return stack.removeLast()
         }
 

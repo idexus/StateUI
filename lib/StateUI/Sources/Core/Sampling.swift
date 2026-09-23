@@ -35,7 +35,6 @@
 // is what a cadence on the state could never say, and the reason this is a
 // modifier rather than a rider on the declaration.
 
-import Dispatch
 
 /// One reading of one source into one target, at one rate.
 ///
@@ -45,8 +44,8 @@ import Dispatch
 final class Sampling: @unchecked Sendable {
     /// Guards the window. The host writes from its UI thread and the
     /// deadline's task resumes on another, which is the same crossing
-    /// `State.Storage` keeps a queue for.
-    private let guarded = DispatchQueue(label: "StateUI.Sampling")
+    /// `State.Storage` keeps a lock for.
+    private let guarded = Lock()
 
     /// The earliest moment this reading may be taken again. Nothing until one
     /// has been taken.
@@ -71,8 +70,8 @@ final class Sampling: @unchecked Sendable {
     /// while a booked reading may be running it on the pool at that moment.
     /// The object itself lives on, which is what keeps the window.
     var take: @Sendable () -> Void {
-        get { guarded.sync { taking } }
-        set { guarded.sync { taking = newValue } }
+        get { guarded.withLock { taking } }
+        set { guarded.withLock { taking = newValue } }
     }
 
     /// - Parameters:
@@ -90,7 +89,7 @@ final class Sampling: @unchecked Sendable {
     ///   the clock still rather than sleep.
     /// - Returns: what to do.
     func due(at now: ContinuousClock.Instant = .now) -> Due {
-        guarded.sync {
+        guarded.withLock {
             if waiting { return .waiting }
 
             guard let next, now < next else {
@@ -108,7 +107,7 @@ final class Sampling: @unchecked Sendable {
     ///
     /// - Parameter now: the moment it was taken.
     func took(at now: ContinuousClock.Instant = .now) {
-        guarded.sync {
+        guarded.withLock {
             waiting = false
             next = now + .milliseconds(max(0, window))
         }

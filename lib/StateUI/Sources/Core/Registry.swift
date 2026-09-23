@@ -13,7 +13,6 @@
 // core the same thing through the export.
 
 // Dispatch and not Foundation, for the lock - the Renderer's own reasoning.
-import Dispatch
 
 /// What one element tells the application: an event of its own, and a value
 /// its reader changed. Handed to the view where the view is made, so the view
@@ -757,13 +756,13 @@ enum HostRealizations {
     /// and an application may ask from any thread.
     nonisolated(unsafe) private static var told = HostRealization()
 
-    /// The lock, the Renderer's pattern.
-    private static let guarded = DispatchQueue(label: "StateUI.HostRealizations")
+    /// The lock.
+    private static let guarded = Lock()
 
     /// What the host said, replacing what it said before.
     static var current: HostRealization {
-        get { guarded.sync { told } }
-        set { guarded.sync { told = newValue } }
+        get { guarded.withLock { told } }
+        set { guarded.withLock { told = newValue } }
     }
 
     /// What to say about a node type described for the first time: nothing

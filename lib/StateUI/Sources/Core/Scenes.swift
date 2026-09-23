@@ -32,7 +32,6 @@
 // values of the scene's `@State(sceneKey:)`. What comes back at launch is what
 // the SYSTEM restores; nothing of this library's decides it.
 
-import Dispatch
 
 /// The name a scene keeps a value under, and what kind of value it is -
 /// `@State(sceneKey:)`'s key. This library's own.
@@ -140,7 +139,7 @@ final class SceneRecord: @unchecked Sendable {
 
     /// Held around the three tables below: a scene key's write lands from
     /// under its state's lock, from whichever thread wrote it.
-    private let guarded = DispatchQueue(label: "StateUI.SceneRecord")
+    private let guarded = Lock()
 
     /// What the platform kept for the scene's keys, by name.
     private var restored: [String: PropValue] = [:]
@@ -305,7 +304,7 @@ final class SceneRecord: @unchecked Sendable {
     /// Takes what the platform kept for the scene's keys - before its first
     /// build, which is where the states claiming them are built.
     func restore(_ values: [String: PropValue]) {
-        guarded.sync { restored = values }
+        guarded.withLock { restored = values }
     }
 
     /// The storage a key of this scene means: the one standing already, or
@@ -318,7 +317,7 @@ final class SceneRecord: @unchecked Sendable {
     ///   - land: the typed write putting a kept value into `storage`.
     /// - Returns: the storage the key means.
     func claim(_ name: String, orAdopt storage: AnyObject, landing land: (PropValue) -> Void) -> AnyObject {
-        let (owner, held): (AnyObject, PropValue?) = guarded.sync {
+        let (owner, held): (AnyObject, PropValue?) = guarded.withLock {
             if let standing = keyed[name] { return (standing, nil) }
 
             keyed[name] = storage
@@ -335,16 +334,16 @@ final class SceneRecord: @unchecked Sendable {
     /// Marks a key as needing to be kept, replacing whatever value was
     /// waiting. Runs under the state's lock, so it records and nothing else.
     func record(_ name: String, _ value: PropValue) {
-        guarded.sync { waiting[name] = value }
+        guarded.withLock { waiting[name] = value }
     }
 
     /// How many keys are waiting to be kept.
-    var pending: Int { guarded.sync { waiting.count } }
+    var pending: Int { guarded.withLock { waiting.count } }
 
     /// The keys waiting to be kept, SORTED BY NAME, and forgets them - the
     /// determinism rule.
     func takeWaiting() -> [(name: String, value: PropValue)] {
-        guarded.sync {
+        guarded.withLock {
             let taken = waiting.sorted { $0.key < $1.key }
             waiting.removeAll(keepingCapacity: true)
             return taken.map { (name: $0.key, value: $0.value) }

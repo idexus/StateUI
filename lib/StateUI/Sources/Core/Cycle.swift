@@ -21,10 +21,6 @@
 // over both. There is one per SYNC - one clock, one cycle - and today the only
 // sync is the display's own frame.
 
-// The hold is a serial queue for the reason `Core/State.swift` gives: libdispatch
-// is on every platform this targets, and Foundation's locks bring ICU on Windows.
-import Dispatch
-
 /// What one cycle did, which is what the trace and the tests read.
 struct CycleReport: Equatable {
     /// How many states were latched in.
@@ -54,7 +50,7 @@ final class CycleBoard: @unchecked Sendable {
     /// Which clock this board runs on.
     let sync: Sync
 
-    private let guarded = DispatchQueue(label: "StateUI.Board")
+    private let guarded = Lock()
 
     /// Every storage that belongs to this board, weakly: a state is the view's,
     /// and one nobody holds any more is one nothing can write.
@@ -86,7 +82,7 @@ final class CycleBoard: @unchecked Sendable {
     /// slider now walks as a journey. Only ever before the host has been told
     /// the number, so nothing outside this side has a picture to disagree with.
     func reshape(_ storage: HostStorage, to bytes: [UInt8]) {
-        guarded.sync {
+        guarded.withLock {
             storage.image = bytes
             storage.published = bytes
             storage.pending = nil
@@ -98,7 +94,7 @@ final class CycleBoard: @unchecked Sendable {
 
     /// Takes a storage into this board's keeping.
     func hold(_ storage: HostStorage) {
-        guarded.sync {
+        guarded.withLock {
             storages.removeAll { $0.storage == nil }
             storages.append(WeakStorage(storage: storage))
         }
@@ -113,7 +109,7 @@ final class CycleBoard: @unchecked Sendable {
     /// and reads it back gets what it wrote, and the cycle still runs over a
     /// picture that cannot change under it.
     func read(_ storage: HostStorage, lanes: Int) -> StateCarried {
-        let bytes = guarded.sync { cycling ? storage.image : (storage.pending ?? storage.published) }
+        let bytes = guarded.withLock { cycling ? storage.image : (storage.pending ?? storage.published) }
 
         return StateImage.carried(of: bytes, lanes: lanes)
     }
@@ -131,7 +127,7 @@ final class CycleBoard: @unchecked Sendable {
     /// with a fresh waiter, and an equal setpoint would otherwise cross as
     /// nothing at all.
     func write(_ bytes: [UInt8], to storage: HostStorage, forcing forced: UInt64 = 0) {
-        let waiting: Bool = guarded.sync {
+        let waiting: Bool = guarded.withLock {
             storage.stamp &+= 1
 
             if cycling {
@@ -182,7 +178,7 @@ final class CycleBoard: @unchecked Sendable {
             }
         }
 
-        guarded.sync {
+        guarded.withLock {
             storage.stamp &+= 1
 
             if cycling {
@@ -210,7 +206,7 @@ final class CycleBoard: @unchecked Sendable {
     ///
     /// - Returns: the number, which lanes moved, and the bytes, per number.
     func dirty() -> [(number: Int32, mask: UInt64, bytes: [UInt8])] {
-        guarded.sync {
+        guarded.withLock {
             var answered: [(number: Int32, mask: UInt64, bytes: [UInt8])] = []
 
             for held in storages {
@@ -231,7 +227,7 @@ final class CycleBoard: @unchecked Sendable {
     /// - Parameter number: which number.
     /// - Returns: its bytes, or nil where no state rides that number any more.
     func whole(_ number: Int32) -> [UInt8]? {
-        guarded.sync {
+        guarded.withLock {
             for held in storages where held.storage?.number == number {
                 return held.storage?.crossing()
             }
@@ -245,7 +241,7 @@ final class CycleBoard: @unchecked Sendable {
 
     /// Registers an engine, which runs from the next cycle.
     func arm(_ entry: EngineEntry) {
-        guarded.sync {
+        guarded.withLock {
             engines.append(entry)
             engines.sort { ($0.priority, $0.id) < ($1.priority, $1.id) }
         }
@@ -253,7 +249,7 @@ final class CycleBoard: @unchecked Sendable {
 
     /// Forgets an engine - the view that declared it has gone.
     func disarm(_ id: Int) {
-        guarded.sync { engines.removeAll { $0.id == id } }
+        guarded.withLock { engines.removeAll { $0.id == id } }
     }
 
     /// Hands an engine the arithmetic a fresh render wrote, the states that
@@ -271,7 +267,7 @@ final class CycleBoard: @unchecked Sendable {
         following follows: [any FollowedState],
         with run: @escaping (EngineCycle) -> EngineAnswer
     ) -> Bool {
-        guarded.sync {
+        guarded.withLock {
             guard let entry = engines.first(where: { $0.id == id }) else { return false }
 
             entry.run = run
@@ -284,12 +280,12 @@ final class CycleBoard: @unchecked Sendable {
     /// Whether this board holds an engine under that number - what a test
     /// asks, and what says a forgotten view took its arithmetic with it.
     func holds(_ id: Int) -> Bool {
-        guarded.sync { engines.contains { $0.id == id } }
+        guarded.withLock { engines.contains { $0.id == id } }
     }
 
     /// Whether anything at all is waiting for a cycle.
     var awake: Bool {
-        guarded.sync {
+        guarded.withLock {
             stirring || storages.contains {
                 $0.storage?.pending != nil || ($0.storage?.dirty ?? 0) != 0
             }
@@ -328,7 +324,7 @@ final class CycleBoard: @unchecked Sendable {
 
         count &+= 1
 
-        let running: [EngineEntry] = guarded.sync {
+        let running: [EngineEntry] = guarded.withLock {
             cycling = true
 
             for held in storages {
@@ -381,7 +377,7 @@ final class CycleBoard: @unchecked Sendable {
             }
         }
 
-        guarded.sync {
+        guarded.withLock {
             for held in storages {
                 guard let storage = held.storage else { continue }
 
@@ -407,7 +403,7 @@ final class CycleBoard: @unchecked Sendable {
     /// what a test asks for so its bytes do not depend on which test ran
     /// first.
     func clear() {
-        guarded.sync {
+        guarded.withLock {
             storages.removeAll()
             engines.removeAll()
             cycling = false

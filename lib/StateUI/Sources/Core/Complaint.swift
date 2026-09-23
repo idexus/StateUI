@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import Dispatch
 
 // WHERE THIS LIBRARY SAYS AN APPLICATION HANDED IT SOMETHING IT CANNOT USE.
 //
@@ -32,20 +31,16 @@ func complain(_ message: String) {
     Complaints.shared.say(message)
 }
 
-/// What has been said already, so nothing is said twice.
-///
-/// Behind a serial queue rather than a lock, for the reason `State.Storage`
-/// gives: libdispatch is on every platform this targets, and Foundation's locks
-/// bring ICU on Windows.
+/// What has been said already, so nothing is said twice, behind a `Lock`.
 private final class Complaints: @unchecked Sendable {
     static let shared = Complaints()
 
-    private let guarded = DispatchQueue(label: "StateUI.Complaints")
+    private let guarded = Lock()
 
     private var said: Set<String> = []
 
     func say(_ message: String) {
-        let first = guarded.sync { said.insert(message).inserted }
+        let first = guarded.withLock { said.insert(message).inserted }
 
         // OUTSIDE THE HOLD, because writing is somebody else's I/O and a
         // complaint is not worth serialising a render behind.

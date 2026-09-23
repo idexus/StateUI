@@ -16,7 +16,6 @@
 // what a render's walk found - and this is one more caller of it.
 
 // Dispatch and not Foundation, for the lock - the Renderer's own reasoning.
-import Dispatch
 
 /// One handler's subscription to a host event, made by `HostEvents.on`.
 ///
@@ -74,10 +73,9 @@ public enum HostEvents {
     /// cannot take a newer listener with it.
     nonisolated(unsafe) private static var nextId = 1
 
-    /// The lock. A serial queue as a mutex, the Renderer's own pattern:
-    /// a subscription may be written from a handler while a raise arrives on
-    /// the UI thread.
-    private static let guarded = DispatchQueue(label: "StateUI.HostEvents")
+    /// The lock: a subscription may be written from a handler while a raise
+    /// arrives on the UI thread.
+    private static let guarded = Lock()
 
     /// Subscribes a handler to what the host raises under an event's name -
     /// what every `on` is written over, the values still as they crossed.
@@ -105,7 +103,7 @@ public enum HostEvents {
             complain(unraised)
         }
 
-        let id = guarded.sync {
+        let id = guarded.withLock {
             let id = nextId
             nextId += 1
             subscriptions[event, default: []].append((id: id, handler: handler))
@@ -214,7 +212,7 @@ public enum HostEvents {
 
     /// Takes one subscription out - `HostEventSubscription.cancel`'s half.
     static func remove(_ event: Event, _ id: Int) {
-        guarded.sync {
+        guarded.withLock {
             subscriptions[event]?.removeAll { $0.id == id }
         }
     }
@@ -224,7 +222,7 @@ public enum HostEvents {
     /// UI thread. The handlers are taken under the lock and started outside
     /// it, the dispatch rule.
     static func dispatch(_ name: String, _ payload: [PropValue]) -> Int {
-        let handlers = guarded.sync { subscriptions[Event(name)] ?? [] }
+        let handlers = guarded.withLock { subscriptions[Event(name)] ?? [] }
 
         for entry in handlers {
             Renderer.shared.start { try await entry.handler(payload) }

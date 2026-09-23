@@ -74,7 +74,6 @@
 // need - and the two compose: `.id("row-7").aim(row)` is a named row an act
 // can also reach.
 
-import Dispatch
 
 /// Which control an act is aimed at, declared on the view beside its state.
 ///
@@ -220,14 +219,14 @@ extension Aim: Aiming {}
 ///
 /// A class, and untyped, because the NODE holds one too - `Node.aim` - and a
 /// node is not generic. `@unchecked Sendable` with every read and write behind
-/// one serial queue: the differ writes on the UI thread while an act may read
+/// one `Lock`: the differ writes on the UI thread while an act may read
 /// from a cooperative-pool thread (`async let` runs its child there), the same
 /// crossing `Renderer.guarded` exists for.
 final class AimBox: @unchecked Sendable, Hashable {
     /// One lock for every box: attachments are a few per render and reads a
     /// few per act, so contention is not a thing this needs to be clever
     /// about.
-    private static let guarded = DispatchQueue(label: "StateUI.AimBox")
+    private static let guarded = Lock()
 
     /// The identity of the element this was last put on.
     private var identity: ElementId?
@@ -244,7 +243,7 @@ final class AimBox: @unchecked Sendable, Hashable {
     /// first attachment of a walk takes the identity, a second one in the same
     /// walk is a conflict the next act reports.
     func attach(_ id: ElementId, walk: Int) {
-        Self.guarded.sync {
+        Self.guarded.withLock {
             if self.walk != walk {
                 self.walk = walk
                 identity = id
@@ -258,7 +257,7 @@ final class AimBox: @unchecked Sendable, Hashable {
     /// The act argument this box aims with, or why it cannot.
     var target: PropValue {
         get throws {
-            let (identity, conflicted) = Self.guarded.sync { (self.identity, self.conflicted) }
+            let (identity, conflicted) = Self.guarded.withLock { (self.identity, self.conflicted) }
 
             if conflicted {
                 throw StateUIError(
@@ -285,7 +284,7 @@ final class AimBox: @unchecked Sendable, Hashable {
 
     /// What `Aim.description` says.
     var label: String {
-        let (identity, conflicted) = Self.guarded.sync { (self.identity, self.conflicted) }
+        let (identity, conflicted) = Self.guarded.withLock { (self.identity, self.conflicted) }
 
         if conflicted { return "two views" }
 
