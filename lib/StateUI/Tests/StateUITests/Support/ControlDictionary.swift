@@ -775,12 +775,12 @@ struct ControlDictionary {
     }
 
     /// `ElementLayer`'s cases with what each means, read off their doc
-    /// comments in Core/Contract.swift.
+    /// comments in ElementLayer.swift.
     static func layers() throws -> [(name: String, meaning: String)] {
-        let lines = try source("Contract.swift").components(separatedBy: "\n")
+        let lines = try source("ElementLayer.swift").components(separatedBy: "\n")
 
         guard let start = lines.firstIndex(where: { $0.hasPrefix("public enum ElementLayer") }) else {
-            throw Unreadable(description: "Core/Contract.swift declares no ElementLayer")
+            throw Unreadable(description: "ElementLayer.swift declares no ElementLayer")
         }
 
         var layers: [(name: String, meaning: String)] = []
