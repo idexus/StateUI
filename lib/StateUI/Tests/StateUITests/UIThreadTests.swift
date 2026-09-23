@@ -687,6 +687,68 @@ final class UIThreadTests: XCTestCase {
         while stateUIRunJobs() > 0 {}
     }
 
+    /// The executor answers WHOSE isolation a thread is in: the UI thread's,
+    /// and no other thread's.
+    ///
+    /// The runtime asks whenever code says it is already where it belongs -
+    /// `MainActor.run`, `assumeIsolated`, an `assertIsolated` - and an executor
+    /// that does not answer gets the default, which stops the process:
+    /// *"Unexpected isolation context, expected to be executing on
+    /// UIThreadExecutor"*, thrown on Windows out of the drain the main queue
+    /// runs, at the first test of the suite.
+    func testTheExecutorAnswersIsolationByTheUIThread() throws {
+        // The thread the host drains on is the UI thread, and this test is it.
+        stateUIRunJobs()
+
+        XCTAssertEqual(
+            UIThreadExecutor.shared.isIsolatingCurrentContext(), true,
+            "the UI thread is not in the executor's isolation")
+
+        // A thread of its own: `global().sync` runs its work on the CALLING
+        // thread, which is the very thread this is asking about.
+        let elsewhere = DispatchSemaphore(value: 0)
+        let answered = Asked()
+
+        DispatchQueue.global().async {
+            answered.answer = UIThreadExecutor.shared.isIsolatingCurrentContext()
+            elsewhere.signal()
+        }
+
+        XCTAssertEqual(elsewhere.wait(timeout: .now() + 5), .success)
+        XCTAssertEqual(answered.answer, .some(false), "a thread that is not the UI thread was answered as isolated")
+    }
+
+    /// And a job the drain runs is in it - which is what the runtime asks about
+    /// when a handler resumes.
+    func testAJobTheDrainRunsIsInTheExecutorsIsolation() throws {
+        let asked = Asks()
+
+        Task.detached { await asked.ask() }
+
+        let deadline = Date().addingTimeInterval(2)
+        while UIThreadExecutor.shared.pendingCount == 0, Date() < deadline {
+            Thread.sleep(forTimeInterval: 0.002)
+        }
+
+        while asked.answer == nil, Date() < deadline { _ = stateUIRunJobs() }
+
+        XCTAssertEqual(asked.answer, true, "a job running on the UI thread was not in the executor's isolation")
+    }
+
+    /// What a thread of its own answered.
+    private final class Asked: @unchecked Sendable {
+        var answer: Bool??
+    }
+
+    /// Asks the executor, from a job the executor itself runs.
+    private final class Asks: @unchecked Sendable {
+        private(set) var answer: Bool?
+
+        func ask() async {
+            await OnTheUIThreadsQueue().run { self.answer = UIThreadExecutor.shared.isIsolatingCurrentContext() }
+        }
+    }
+
     /// Waits for something the runtime will do shortly, without a fixed sleep:
     /// turns of the UI thread until it holds, for a bounded while. A resumed
     /// continuation arrives when the scheduler gets to it; in an app the host
@@ -721,6 +783,11 @@ private actor OnTheUIThreadsQueue {
 
     func touch() {
         touches += 1
+    }
+
+    /// Runs `body` on this actor - that is, on the UI thread's queue.
+    func run(_ body: () -> Void) {
+        body()
     }
 
     /// Counts down one job at a time, each queued from inside the one before.

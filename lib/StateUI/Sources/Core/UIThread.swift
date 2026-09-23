@@ -59,9 +59,28 @@
 // ask about.
 
 import Dispatch
+#if canImport(Darwin)
+import Darwin
+#elseif canImport(Android)
+import Android
+#elseif canImport(Glibc)
+import Glibc
+#elseif canImport(WinSDK)
+import WinSDK
+#endif
 #if !canImport(Darwin)
 @_spi(ExperimentalCustomExecutors) import _Concurrency
 #endif
+
+/// Which thread this is, as a number to compare with another - the one thing
+/// this file asks of a thread, and the platforms spell it differently.
+private func currentThread() -> UInt64 {
+    #if canImport(WinSDK)
+    UInt64(GetCurrentThreadId())
+    #else
+    UInt64(UInt(bitPattern: pthread_self().hashValue))
+    #endif
+}
 
 /// The executor whose jobs the host runs on its UI thread - MainActor's own on
 /// every platform but Apple's - and the doorbell that tells the host to ask.
@@ -110,6 +129,14 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// `dispatchMain` - it drains this queue as well, so MainActor works there
     /// too. Where nothing turns it, the one post waits for ever and no second
     /// is made: the host's drain is what runs the jobs.
+    ///
+    /// ON WINDOWS THAT QUEUE HAS A THREAD OF ITS OWN: measured in the core
+    /// suite, the drain it ran was on thread 16020 while the tests ran on
+    /// 16312. So the thread a job runs on is the DRAINING one rather than the
+    /// host's - which is what `isIsolatingCurrentContext()` answers by. In an
+    /// application nothing turns that queue and no drain but the host's ever
+    /// runs: measured, a block handed to the main queue with no run loop
+    /// turning it never runs at all.
     private var mainQueueAsked = false
 
     /// Whether a drain is running. A second drain entered meanwhile - on
@@ -120,6 +147,18 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
 
     /// Whether `run()` has been told to return.
     private var stopped = false
+
+    /// The thread the last drain ran on - the UI thread, and this executor's
+    /// isolation.
+    ///
+    /// Jobs run inside a drain and nowhere else, and a drain is serial, so the
+    /// thread draining IS where MainActor stands. It is remembered rather than
+    /// cleared afterwards because what asks between drains - a host call that
+    /// says it is already on MainActor - asks from that same thread.
+    ///
+    /// Not the thread this object was made on: `shared` is created by whoever
+    /// touches it first, which can be a pool thread enqueueing a job.
+    private var uiThread = currentThread()
 
     /// Takes a job. Runs nothing here - but wakes the host.
     ///
@@ -147,9 +186,16 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
         if signal { wake.signal() }
 
         if post {
-            DispatchQueue.main.async {
+            // A WORK ITEM RATHER THAN A CLOSURE: a closure handed to
+            // `DispatchQueue.main.async` is MainActor's, and the runtime asks
+            // this executor whether the thread running it is MainActor's
+            // BEFORE the first statement - which on Windows is a thread of the
+            // queue's own, so the answer is no and the process stops. A work
+            // item is isolated to nobody, and what runs inside it is this
+            // executor's own drain, which says where MainActor stands.
+            DispatchQueue.main.async(execute: DispatchWorkItem {
                 UIThreadExecutor.shared.drainFromTheMainQueue()
-            }
+            })
         }
     }
 
@@ -200,6 +246,9 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
 
         guard entered else { return 0 }
 
+        // Jobs run on this thread, so this is where MainActor stands.
+        guarded.withLock { uiThread = currentThread() }
+
         var ran = 0
 
         for _ in 0..<64 {
@@ -232,6 +281,30 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
     /// This executor, in the form the runtime stores.
     func asUnownedSerialExecutor() -> UnownedSerialExecutor {
         UnownedSerialExecutor(ordinary: self)
+    }
+
+    /// Whether the calling thread is in this executor's isolation - that is,
+    /// whether it is the UI thread.
+    ///
+    /// The runtime asks whenever code claims to be where it belongs already:
+    /// `MainActor.run` from MainActor, `assumeIsolated`, an `assertIsolated`,
+    /// and a resume that could stay on the thread it is on. An executor that
+    /// does not answer gets the default, which STOPS THE PROCESS - *"Unexpected
+    /// isolation context, expected to be executing on UIThreadExecutor"* - and
+    /// that is how it was found: the core suite's first test on Windows, in the
+    /// drain the main queue runs.
+    func isIsolatingCurrentContext() -> Bool? {
+        let thread = currentThread()
+
+        return guarded.withLock { thread == uiThread }
+    }
+
+    /// The same question, asked where the runtime wants a stop rather than an
+    /// answer.
+    func checkIsolated() {
+        precondition(
+            isIsolatingCurrentContext() == true,
+            "this is not the UI thread, whose jobs are MainActor's - see Core/UIThread.swift")
     }
 
     /// How many jobs are waiting, without running any.
