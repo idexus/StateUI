@@ -862,8 +862,8 @@ enum AppKitRegistrations {
 
     /// A row or a column is a kind and an amount, and travels as the two of
     /// them - a LIST OF VALUES, as a render transform does.
-    private static func gridLengths(_ value: [GridLength]?) -> [AppKitGridLength] {
-        value?.propValue.values?.compactMap(AppKitGridLength.init) ?? []
+    private static func gridLengths(_ value: [GridLength]?) -> [GridLength] {
+        value ?? []
     }
 
     /// The six components a render transform travels as - a LIST OF VALUES, not

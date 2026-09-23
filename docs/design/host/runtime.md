@@ -51,7 +51,8 @@ paths, the journey's animations and the frame they run on.
 | J | a journey's animations, walked by the host | `Walker`, `Trip`, `TripTarget`; the laws are `HostMotionLaw` in the core | host layer |
 | E | the frame engines and animations run on | `DisplayCycle`; the `FrameClock` protocol | host layer |
 | | | the frame signal: the toolkit's display link | toolkit half |
-| P | presenting what D describes, reporting the user into C | layout, scrolling, gestures, drawing, focus, accessibility, windows, menus | toolkit half |
+| P | presenting what D describes, reporting the user into C | the layout arithmetic: `StackArithmetic`, `GridArithmetic`, `AbsoluteArithmetic`, `SingleChildArithmetic`, `ScrollArithmetic`, `MeasurementCache` | host layer |
+| | | the layout views, scrolling, gestures, drawing, focus, accessibility, windows, menus | toolkit half |
 | B | transport and process | `CoreLink`; `Registry` is the core's | host layer |
 | | | the pump, the act performer | toolkit half |
 
@@ -136,7 +137,8 @@ calls into the core, only `ProgramWrite` marks a write, and no runtime type is
 an engine or a channel other than a state's. [Motion](motion.md) gives the
 reasons of the walker, the state channels, the described motion and the layout
 motion; [patches](patches.md) those of the patch intake and the program write;
-[the mounted tree](tree.md) those of the tree and its native halves.
+[the mounted tree](tree.md) those of the tree and its native halves;
+[layout](layout.md) those of the layout arithmetic.
 
 ## Core link
 

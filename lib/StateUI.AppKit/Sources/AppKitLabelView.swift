@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUI
 
 enum AppKitVerticalTextAlignment: Int32, Equatable {
     case start = 0
@@ -16,7 +17,7 @@ enum AppKitVerticalTextAlignment: Int32, Equatable {
 final class AppKitLabelView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
     private let textField = NSTextField(labelWithString: "")
-    let measurements = AppKitMeasurementCache()
+    let measurements = MeasurementCache()
 
     private(set) var padding = NSEdgeInsets()
     private(set) var horizontalTextAlignment: NSTextAlignment = .left

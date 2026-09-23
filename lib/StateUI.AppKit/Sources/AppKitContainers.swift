@@ -15,41 +15,39 @@ protocol AppKitWidthConstrainedMeasuring: AnyObject {
     func fittingContentSize(width: CGFloat?) -> NSSize
 }
 
-/// The sizes one native view measured, by the width its parent offered.
-///
-/// A size is kept until something that can change it happens: the view's own
-/// content or arrangement, or a descendant's. `invalidateMeasurements()` is the
-/// one road by which such a change forgets it, from the changed view up to the
-/// room it stands in, so an unchanged subtree beside the change is never
-/// measured again.
-@MainActor
-final class AppKitMeasurementCache {
-    private var sizes: [(width: CGFloat?, size: NSSize)] = []
-
-    /// The size measured for `width`, measuring only when none is kept.
+extension MeasurementCache {
+    /// The size measured for `width`, in AppKit's units, measuring only when none is kept.
     func size(offering width: CGFloat?, measure: () -> NSSize) -> NSSize {
-        if let kept = sizes.first(where: { $0.width == width }) { return kept.size }
-
-        let measured = measure()
-        if sizes.count == Self.capacity { sizes.removeFirst() }
-        sizes.append((width, measured))
-        return measured
+        let size = size(offering: width.map(Double.init)) { LayoutSize(measure()) }
+        return NSSize(width: size.width, height: size.height)
     }
+}
 
-    /// Forgets every kept size.
-    func invalidate() {
-        sizes.removeAll(keepingCapacity: true)
+extension LayoutSize {
+    /// A native size as the layout arithmetic's.
+    init(_ size: NSSize) {
+        self.init(width: Double(size.width), height: Double(size.height))
     }
+}
 
-    /// A parent offers a view one or two widths in a pass: its natural width
-    /// and the width it then lays the view out in.
-    private static let capacity = 4
+extension NSSize {
+    /// The layout arithmetic's size as a native one.
+    init(_ size: LayoutSize) {
+        self.init(width: size.width, height: size.height)
+    }
+}
+
+extension Insets {
+    /// Native edge insets as StateUI's.
+    init(_ insets: NSEdgeInsets) {
+        self.init(Double(insets.left), Double(insets.top), Double(insets.right), Double(insets.bottom))
+    }
 }
 
 /// A StateUI container or text surface that keeps its own measurements.
 @MainActor
 protocol AppKitMeasurementCaching: AnyObject {
-    var measurements: AppKitMeasurementCache { get }
+    var measurements: MeasurementCache { get }
 }
 
 /// A container whose size its place decides - a split view's pane, a window's
@@ -91,103 +89,74 @@ extension NSView {
     }
 }
 
-/// Layout information owned by the StateUI child rather than its AppKit view.
+/// One child as its AppKit layout places it: its view, and what the layout reads of it.
 @MainActor
-struct AppKitLayoutItem {
+struct AppKitLayoutItem: LayoutChild {
     let view: NSView
-    var margin = NSEdgeInsets()
-    var horizontal: Int32 = 3
-    var vertical: Int32 = 3
-    var width: CGFloat?
-    var height: CGFloat?
-    var minimumWidth: CGFloat?
-    var minimumHeight: CGFloat?
-    var maximumWidth: CGFloat?
-    var maximumHeight: CGFloat?
-    var row = 0
-    var column = 0
-    var rowSpan = 1
-    var columnSpan = 1
-    var absoluteBounds: [Double]?
-    var absoluteProportions: Int32 = 0
 
-    /// The mounted identity of the element the view presents, which a place
-    /// on its way is filed under; 0 for a view no element presents.
+    /// What the layout reads of the child.
+    var values = LayoutValues()
+
+    /// The mounted identity of the element the view presents; 0 for a view no element presents.
     var mount: UInt64 = 0
 
     /// The element that places the view as its layout animates it; nil for a view no element presents.
     weak var placed: (any PlacedView)?
 
-    /// Fades the view in under a motion, as it joins a layout that was already
-    /// standing; nil for a view that simply appears.
+    /// Fades the view in as it joins a standing layout; nil for a view that simply appears.
     var fadeIn: ((Motion) -> Void)?
 
     /// How the view is drawn over its frame, for a layout that places it.
     var drawing: AppKitViewDrawing?
 
+    init(view: NSView, values: LayoutValues = LayoutValues()) {
+        self.view = view
+        self.values = values
+    }
+
+    /// A child stating its own size.
+    init(view: NSView, width: CGFloat?, height: CGFloat?) {
+        self.view = view
+        values.width = width.map(Double.init)
+        values.height = height.map(Double.init)
+    }
+
+    var isShown: Bool { !view.isHidden }
+
+    /// The child's margin, in AppKit's units.
+    var margin: NSEdgeInsets {
+        let margin = values.margin
+        return NSEdgeInsets(top: margin.top, left: margin.left, bottom: margin.bottom, right: margin.right)
+    }
+
+    func size(offered width: Double?) -> LayoutSize {
+        LayoutSize(fittingSize(width: width.map { CGFloat($0) }))
+    }
+
+    /// The view's size for the width offered, margin included in the offer, its stated sizes and bounds applied.
     func fittingSize(width availableWidth: CGFloat? = nil) -> NSSize {
+        let available = availableWidth.map { max(0, $0 - margin.left - margin.right) }
+        let measured: NSSize
         if let measurable = view as? AppKitWidthConstrainedMeasuring {
-            let available = availableWidth.map {
-                max(0, $0 - margin.left - margin.right)
+            measured = measurable.fittingContentSize(width: available)
+        } else {
+            if let label = view as? NSTextField, let available, available.isFinite {
+                label.preferredMaxLayoutWidth = available
             }
-            let measured = measurable.fittingContentSize(width: available)
-            return NSSize(
-                width: boundedWidth(width ?? measured.width),
-                height: boundedHeight(height ?? measured.height))
+            measured = view.fittingSize
         }
-
-        if let label = view as? NSTextField, let availableWidth, availableWidth.isFinite {
-            label.preferredMaxLayoutWidth = max(0, availableWidth - margin.left - margin.right)
-        }
-
-        let measured = view.fittingSize
         return NSSize(
-            width: boundedWidth(width ?? measured.width),
-            height: boundedHeight(height ?? measured.height))
+            width: values.boundedWidth(values.width ?? Double(measured.width)),
+            height: values.boundedHeight(values.height ?? Double(measured.height)))
     }
 
-    func boundedWidth(_ proposed: CGFloat, available: CGFloat? = nil) -> CGFloat {
-        appKitBoundedExtent(
-            proposed,
-            minimum: minimumWidth,
-            maximum: maximumWidth,
-            available: available)
-    }
-
-    func boundedHeight(_ proposed: CGFloat, available: CGFloat? = nil) -> CGFloat {
-        appKitBoundedExtent(
-            proposed,
-            minimum: minimumHeight,
-            maximum: maximumHeight,
-            available: available)
-    }
-
-    /// Whether a parent would place this item exactly as it places `other`:
-    /// the same native view with the same layout values.
+    /// Whether a parent would place this item as it places `other`: the same view with the same values.
     func arranges(like other: AppKitLayoutItem) -> Bool {
-        view === other.view
-            && NSEdgeInsetsEqual(margin, other.margin)
-            && horizontal == other.horizontal
-            && vertical == other.vertical
-            && width == other.width
-            && height == other.height
-            && minimumWidth == other.minimumWidth
-            && minimumHeight == other.minimumHeight
-            && maximumWidth == other.maximumWidth
-            && maximumHeight == other.maximumHeight
-            && row == other.row
-            && column == other.column
-            && rowSpan == other.rowSpan
-            && columnSpan == other.columnSpan
-            && absoluteBounds == other.absoluteBounds
-            && absoluteProportions == other.absoluteProportions
+        view === other.view && values == other.values
     }
 
     /// Whether two complete arrangements place the same views the same way.
-    static func sameArrangement(
-        _ left: [AppKitLayoutItem],
-        _ right: [AppKitLayoutItem]
-    ) -> Bool {
+    static func sameArrangement(_ left: [AppKitLayoutItem], _ right: [AppKitLayoutItem]) -> Bool {
         left.count == right.count && zip(left, right).allSatisfy { $0.arranges(like: $1) }
     }
 
@@ -254,7 +223,7 @@ class AppKitHitTestView: NSView {
 @MainActor
 final class AppKitAbsoluteLayoutView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
-    let measurements = AppKitMeasurementCache()
+    let measurements = MeasurementCache()
     var placement: HostPlacementRun? {
         didSet { needsLayout = true }
     }
@@ -307,19 +276,7 @@ final class AppKitAbsoluteLayoutView: AppKitTravellingLayout, AppKitWidthConstra
     }
 
     private func measuredContentSize() -> NSSize {
-        var width: CGFloat = 0
-        var height: CGFloat = 0
-
-        for item in items where !item.view.isHidden {
-            let natural = item.fittingSize()
-            let bounds = item.absoluteBounds ?? [0, 0, -1, -1]
-            let childWidth = bounds.count > 2 && bounds[2] >= 0 ? bounds[2] : natural.width
-            let childHeight = bounds.count > 3 && bounds[3] >= 0 ? bounds[3] : natural.height
-            width = max(width, (bounds.first ?? 0) + childWidth)
-            height = max(height, (bounds.count > 1 ? bounds[1] : 0) + childHeight)
-        }
-
-        return NSSize(width: width, height: height)
+        NSSize(AbsoluteArithmetic.size(of: items))
     }
 
     override func layout() {
@@ -332,26 +289,9 @@ final class AppKitAbsoluteLayoutView: AppKitTravellingLayout, AppKitWidthConstra
 
         beginArrangement()
         for item in items { drawUnplaced(item) }
-        for item in items where !item.view.isHidden {
-            let values = item.absoluteBounds ?? [0, 0, -1, -1]
-            let natural = item.fittingSize()
-            let flags = item.absoluteProportions
-            var width = values.count > 2 ? CGFloat(values[2]) : natural.width
-            var height = values.count > 3 ? CGFloat(values[3]) : natural.height
-
-            if width < 0 { width = natural.width }
-            if height < 0 { height = natural.height }
-            if flags & 4 != 0 { width *= bounds.width }
-            if flags & 8 != 0 { height *= bounds.height }
-            width = item.boundedWidth(width)
-            height = item.boundedHeight(height)
-
-            var x = CGFloat(values.first ?? 0)
-            var y = CGFloat(values.count > 1 ? values[1] : 0)
-            if flags & 1 != 0 { x *= max(0, bounds.width - width) }
-            if flags & 2 != 0 { y *= max(0, bounds.height - height) }
-
-            place(item, at: NSRect(x: x, y: y, width: width, height: height))
+        let room = LayoutSize(width: Double(bounds.width), height: Double(bounds.height))
+        for (item, place) in zip(items, AbsoluteArithmetic.places(of: items, in: room)) {
+            if let place { self.place(item, at: NSRect(placed: place)) }
         }
     }
 
@@ -399,13 +339,8 @@ final class AppKitAbsoluteLayoutView: AppKitTravellingLayout, AppKitWidthConstra
 @MainActor
 final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
-    enum Axis {
-        case horizontal
-        case vertical
-    }
-
-    let axis: Axis
-    let measurements = AppKitMeasurementCache()
+    let axis: StackArithmetic.Axis
+    let measurements = MeasurementCache()
     var spacing: CGFloat = 0 {
         didSet { if spacing != oldValue { invalidateMeasurements() } }
     }
@@ -415,7 +350,7 @@ final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasu
     private(set) var items: [AppKitLayoutItem] = []
     private(set) var arrangementCountForTesting = 0
 
-    init(axis: Axis) {
+    init(axis: StackArithmetic.Axis) {
         self.axis = axis
         super.init(frame: .zero)
     }
@@ -448,85 +383,19 @@ final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasu
 
     /// Measures each visible child once for the width this stack offers it.
     private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
-        let visible = items.filter { !$0.view.isHidden }
-        let gaps = spacing * CGFloat(max(visible.count - 1, 0))
-        var along: CGFloat = 0
-        var across: CGFloat = 0
-
-        switch axis {
-        case .vertical:
-            let childWidth = availableWidth.map {
-                max(0, $0 - padding.left - padding.right)
-            }
-            for item in visible {
-                let size = item.fittingSize(width: childWidth)
-                along += size.height + item.margin.top + item.margin.bottom
-                across = max(across, size.width + item.margin.left + item.margin.right)
-            }
-            return NSSize(
-                width: padding.left + padding.right + across,
-                height: padding.top + padding.bottom + gaps + along)
-
-        case .horizontal:
-            for item in visible {
-                let size = item.fittingSize()
-                along += size.width + item.margin.left + item.margin.right
-                across = max(across, size.height + item.margin.top + item.margin.bottom)
-            }
-            return NSSize(
-                width: padding.left + padding.right + gaps + along,
-                height: padding.top + padding.bottom + across)
-        }
+        NSSize(StackArithmetic.size(
+            of: items, axis: axis, spacing: Double(spacing), padding: Insets(padding),
+            width: availableWidth.map(Double.init)))
     }
 
     override func layout() {
         super.layout()
 
         beginArrangement()
-        let content = bounds.inset(by: padding)
-        var offset: CGFloat = axis == .vertical ? content.minY : content.minX
-
-        for item in items where !item.view.isHidden {
-            let cross = axis == .vertical ? content.width : content.height
-            let natural = item.fittingSize(width: axis == .vertical ? cross : nil)
-
-            switch axis {
-            case .vertical:
-                offset += item.margin.top
-                let width = extent(
-                    option: item.horizontal,
-                    explicit: item.width,
-                    natural: natural.width,
-                    available: max(0, content.width - item.margin.left - item.margin.right),
-                    minimum: item.minimumWidth,
-                    maximum: item.maximumWidth)
-                let x = position(
-                    option: item.horizontal,
-                    extent: width,
-                    start: content.minX + item.margin.left,
-                    available: max(0, content.width - item.margin.left - item.margin.right))
-                let height = item.boundedHeight(natural.height)
-                place(item, at: NSRect(x: x, y: offset, width: width, height: height))
-                offset += height + item.margin.bottom + spacing
-
-            case .horizontal:
-                offset += item.margin.left
-                let height = extent(
-                    option: item.vertical,
-                    explicit: item.height,
-                    natural: natural.height,
-                    available: max(0, content.height - item.margin.top - item.margin.bottom),
-                    minimum: item.minimumHeight,
-                    maximum: item.maximumHeight)
-                let y = position(
-                    option: item.vertical,
-                    extent: height,
-                    start: content.minY + item.margin.top,
-                    available: max(0, content.height - item.margin.top - item.margin.bottom))
-                let width = item.boundedWidth(natural.width)
-                place(item, at: NSRect(x: offset, y: y, width: width, height: height))
-                offset += width + item.margin.right + spacing
-            }
+        let places = StackArithmetic.places(
+            of: items, axis: axis, spacing: Double(spacing), padding: Insets(padding), in: bounds.placed)
+        for (item, place) in zip(items, places) {
+            if let place { self.place(item, at: NSRect(placed: place)) }
         }
     }
 }
@@ -535,7 +404,7 @@ final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasu
 @MainActor
 class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
-    let measurements = AppKitMeasurementCache()
+    let measurements = MeasurementCache()
     var padding = NSEdgeInsets() {
         didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
     }
@@ -568,64 +437,16 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
     }
 
     private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
-        guard let item, !item.view.isHidden else {
-            return NSSize(width: padding.left + padding.right, height: padding.top + padding.bottom)
-        }
-
-        let contentWidth = availableWidth.map {
-            max(0, $0 - padding.left - padding.right)
-        }
-        let size = item.fittingSize(width: contentWidth)
-        return NSSize(
-            width: padding.left + padding.right + item.margin.left + item.margin.right + size.width,
-            height: padding.top + padding.bottom + item.margin.top + item.margin.bottom + size.height)
+        NSSize(SingleChildArithmetic.size(
+            of: item, padding: Insets(padding), width: availableWidth.map(Double.init)))
     }
 
     override func layout() {
         super.layout()
-        guard let item, !item.view.isHidden else { return }
+        guard let item, item.isShown else { return }
 
-        let content = (insetsBySafeArea ? safeAreaRect : bounds).inset(by: padding)
-        let availableWidth = max(0, content.width - item.margin.left - item.margin.right)
-        let availableHeight = max(0, content.height - item.margin.top - item.margin.bottom)
-        let natural = Self.placesByNaturalSize(item)
-            ? item.fittingSize(width: availableWidth)
-            : .zero
-        let width = extent(
-            option: item.horizontal,
-            explicit: item.width,
-            natural: natural.width,
-            available: availableWidth,
-            minimum: item.minimumWidth,
-            maximum: item.maximumWidth)
-        let height = extent(
-            option: item.vertical,
-            explicit: item.height,
-            natural: natural.height,
-            available: availableHeight,
-            minimum: item.minimumHeight,
-            maximum: item.maximumHeight)
-
-        item.view.frame = NSRect(
-            x: position(
-                option: item.horizontal,
-                extent: width,
-                start: content.minX + item.margin.left,
-                available: availableWidth),
-            y: position(
-                option: item.vertical,
-                extent: height,
-                start: content.minY + item.margin.top,
-                available: availableHeight),
-            width: width,
-            height: height)
-    }
-
-    /// Whether a child's natural size places it: on an axis it does not fill
-    /// and has no size of its own. A child that fills both ways takes the room
-    /// whatever it measures.
-    private static func placesByNaturalSize(_ item: AppKitLayoutItem) -> Bool {
-        (item.horizontal != 3 && item.width == nil) || (item.vertical != 3 && item.height == nil)
+        let room = (insetsBySafeArea ? safeAreaRect : bounds).placed
+        item.view.frame = NSRect(placed: SingleChildArithmetic.place(of: item, in: room, padding: Insets(padding)))
     }
 }
 
@@ -1307,47 +1128,15 @@ final class AppKitSplitView: AppKitHitTestView {
 }
 
 /// One parsed row or column definition in a StateUI grid.
-struct AppKitGridLength: Equatable {
-    enum Kind {
-        case fixed
-        case proportional
-        case auto
-    }
-
-    let kind: Kind
-    let value: CGFloat
-
-    init(kind: Kind, value: CGFloat) {
-        self.kind = kind
-        self.value = value
-    }
-
-    init?(_ value: HostValue) {
-        guard let parts = value.values,
-              let rawKind = parts.first?.enumeration,
-              let amount = parts.value(1)?.number
-        else { return nil }
-
-        switch rawKind {
-        case 0: kind = .fixed
-        case 1: kind = .proportional
-        case 2: kind = .auto
-        default: return nil
-        }
-
-        self.value = max(0, amount)
-    }
-}
-
 /// AppKit's deterministic implementation of StateUI's row-and-column layout.
 @MainActor
 final class AppKitGridView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
-    let measurements = AppKitMeasurementCache()
-    var rows: [AppKitGridLength] = [] {
+    let measurements = MeasurementCache()
+    var rows: [GridLength] = [] {
         didSet { if rows != oldValue { invalidateMeasurements() } }
     }
-    var columns: [AppKitGridLength] = [] {
+    var columns: [GridLength] = [] {
         didSet { if columns != oldValue { invalidateMeasurements() } }
     }
     var rowSpacing: CGFloat = 0 {
@@ -1388,166 +1177,21 @@ final class AppKitGridView: AppKitTravellingLayout, AppKitWidthConstrainedMeasur
     }
 
     private func measuredContentSize() -> NSSize {
-        let rowCount = max(rows.count, (items.map { $0.row + $0.rowSpan }.max() ?? 1))
-        let columnCount = max(columns.count, (items.map { $0.column + $0.columnSpan }.max() ?? 1))
-        let measuredRows = trackSizes(
-            definitions: completed(rows, count: rowCount),
-            count: rowCount,
-            available: nil,
-            spacing: rowSpacing,
-            vertical: true)
-        let measuredColumns = trackSizes(
-            definitions: completed(columns, count: columnCount),
-            count: columnCount,
-            available: nil,
-            spacing: columnSpacing,
-            vertical: false)
-
-        return NSSize(
-            width: padding.left + padding.right + measuredColumns.reduce(0, +)
-                + columnSpacing * CGFloat(max(columnCount - 1, 0)),
-            height: padding.top + padding.bottom + measuredRows.reduce(0, +)
-                + rowSpacing * CGFloat(max(rowCount - 1, 0)))
+        NSSize(GridArithmetic.size(
+            of: items, rows: rows, columns: columns, rowSpacing: Double(rowSpacing),
+            columnSpacing: Double(columnSpacing), padding: Insets(padding)))
     }
 
     override func layout() {
         super.layout()
 
         beginArrangement()
-        let content = bounds.inset(by: padding)
-        let rowCount = max(rows.count, (items.map { $0.row + $0.rowSpan }.max() ?? 1))
-        let columnCount = max(columns.count, (items.map { $0.column + $0.columnSpan }.max() ?? 1))
-        let rowDefinitions = completed(rows, count: rowCount)
-        let columnDefinitions = completed(columns, count: columnCount)
-        let rowSizes = trackSizes(
-            definitions: rowDefinitions,
-            count: rowCount,
-            available: content.height,
-            spacing: rowSpacing,
-            vertical: true)
-        let columnSizes = trackSizes(
-            definitions: columnDefinitions,
-            count: columnCount,
-            available: content.width,
-            spacing: columnSpacing,
-            vertical: false)
-        let rowOrigins = origins(of: rowSizes, start: content.minY, spacing: rowSpacing)
-        let columnOrigins = origins(of: columnSizes, start: content.minX, spacing: columnSpacing)
-
-        for item in items where !item.view.isHidden {
-            let row = min(max(item.row, 0), rowCount - 1)
-            let column = min(max(item.column, 0), columnCount - 1)
-            let rowEnd = min(row + max(item.rowSpan, 1), rowCount)
-            let columnEnd = min(column + max(item.columnSpan, 1), columnCount)
-            let cellWidth = columnSizes[column..<columnEnd].reduce(0, +)
-                + columnSpacing * CGFloat(max(columnEnd - column - 1, 0))
-            let cellHeight = rowSizes[row..<rowEnd].reduce(0, +)
-                + rowSpacing * CGFloat(max(rowEnd - row - 1, 0))
-            let availableWidth = max(0, cellWidth - item.margin.left - item.margin.right)
-            let availableHeight = max(0, cellHeight - item.margin.top - item.margin.bottom)
-            let natural = item.fittingSize(width: availableWidth)
-            let width = extent(
-                option: item.horizontal,
-                explicit: item.width,
-                natural: natural.width,
-                available: availableWidth,
-                minimum: item.minimumWidth,
-                maximum: item.maximumWidth)
-            let height = extent(
-                option: item.vertical,
-                explicit: item.height,
-                natural: natural.height,
-                available: availableHeight,
-                minimum: item.minimumHeight,
-                maximum: item.maximumHeight)
-
-            place(item, at: NSRect(
-                x: position(
-                    option: item.horizontal,
-                    extent: width,
-                    start: columnOrigins[column] + item.margin.left,
-                    available: availableWidth),
-                y: position(
-                    option: item.vertical,
-                    extent: height,
-                    start: rowOrigins[row] + item.margin.top,
-                    available: availableHeight),
-                width: width,
-                height: height))
+        let places = GridArithmetic.places(
+            of: items, rows: rows, columns: columns, rowSpacing: Double(rowSpacing),
+            columnSpacing: Double(columnSpacing), padding: Insets(padding), in: bounds.placed)
+        for (item, place) in zip(items, places) {
+            if let place { self.place(item, at: NSRect(placed: place)) }
         }
-    }
-
-    private func completed(_ definitions: [AppKitGridLength], count: Int) -> [AppKitGridLength] {
-        definitions + Array(
-            repeating: AppKitGridLength(kind: .proportional, value: 1),
-            count: max(0, count - definitions.count))
-    }
-
-    private func trackSizes(
-        definitions: [AppKitGridLength],
-        count: Int,
-        available: CGFloat?,
-        spacing: CGFloat,
-        vertical: Bool
-    ) -> [CGFloat] {
-        var sizes = Array(repeating: CGFloat(0), count: count)
-
-        for index in 0..<count where definitions[index].kind == .fixed {
-            sizes[index] = definitions[index].value
-        }
-
-        for item in items where !item.view.isHidden {
-            let track = vertical ? item.row : item.column
-            let span = vertical ? item.rowSpan : item.columnSpan
-            guard span == 1, track >= 0, track < count, definitions[track].kind == .auto else {
-                continue
-            }
-
-            let measured = item.fittingSize()
-            let extent = vertical
-                ? measured.height + item.margin.top + item.margin.bottom
-                : measured.width + item.margin.left + item.margin.right
-            sizes[track] = max(sizes[track], extent)
-        }
-
-        let gaps = spacing * CGFloat(max(count - 1, 0))
-        let fixed = sizes.reduce(0, +) + gaps
-        let starWeight = definitions.reduce(CGFloat(0)) {
-            $0 + ($1.kind == .proportional ? max($1.value, 0.000_001) : 0)
-        }
-        let remainder = max(0, (available ?? fixed) - fixed)
-
-        for index in 0..<count where definitions[index].kind == .proportional {
-            if available == nil {
-                let matching = items.filter {
-                    (vertical ? $0.row : $0.column) == index
-                        && (vertical ? $0.rowSpan : $0.columnSpan) == 1
-                        && !$0.view.isHidden
-                }
-                sizes[index] = matching.map {
-                    let measured = $0.fittingSize()
-                    return vertical
-                        ? measured.height + $0.margin.top + $0.margin.bottom
-                        : measured.width + $0.margin.left + $0.margin.right
-                }.max() ?? 0
-            } else {
-                sizes[index] = remainder * max(definitions[index].value, 0.000_001) / starWeight
-            }
-        }
-
-        return sizes
-    }
-
-    private func origins(of sizes: [CGFloat], start: CGFloat, spacing: CGFloat) -> [CGFloat] {
-        var answer: [CGFloat] = []
-        var cursor = start
-
-        for size in sizes {
-            answer.append(cursor)
-            cursor += size + spacing
-        }
-
-        return answer
     }
 }
 
@@ -1857,7 +1501,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
 
 @MainActor
 private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
-    let measurements = AppKitMeasurementCache()
+    let measurements = MeasurementCache()
     var item: AppKitLayoutItem? {
         didSet {
             guard !AppKitLayoutItem.sameArrangement(oldValue, item) else { return }
@@ -1881,21 +1525,9 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
     }
 
     private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
-        guard let item else { return .zero }
-
-        let horizontalInsets = padding.left + padding.right + item.margin.left + item.margin.right
-        let verticalInsets = padding.top + padding.bottom + item.margin.top + item.margin.bottom
-        let constrainedWidth: CGFloat? = orientation == .vertical || orientation == .neither
-            ? availableWidth.map { max(0, $0 - horizontalInsets) }
-            : nil
-        let natural = item.fittingSize(width: constrainedWidth)
-        let contentWidth = item.horizontal == 3 && item.width == nil
-            ? (constrainedWidth ?? natural.width)
-            : natural.width
-
-        return NSSize(
-            width: max(0, contentWidth + horizontalInsets),
-            height: max(0, natural.height + verticalInsets))
+        NSSize(ScrollArithmetic.contentSize(
+            of: item, padding: Insets(padding), orientation: orientation,
+            width: availableWidth.map(Double.init)))
     }
 
     func arrange(in viewport: NSSize) {
@@ -1904,46 +1536,10 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
             return
         }
 
-        let horizontalInsets = padding.left + padding.right + item.margin.left + item.margin.right
-        let verticalInsets = padding.top + padding.bottom + item.margin.top + item.margin.bottom
-        let constrainedWidth: CGFloat? = orientation == .vertical || orientation == .neither
-            ? max(0, viewport.width - horizontalInsets)
-            : nil
-        let natural = item.fittingSize(width: constrainedWidth)
-        let documentWidth: CGFloat = switch orientation {
-        case .horizontal, .both: max(viewport.width, natural.width + horizontalInsets)
-        case .vertical, .neither: viewport.width
-        }
-        let documentHeight: CGFloat = switch orientation {
-        case .vertical, .both: max(viewport.height, natural.height + verticalInsets)
-        case .horizontal, .neither: viewport.height
-        }
-        frame = NSRect(origin: .zero, size: NSSize(width: documentWidth, height: documentHeight))
-
-        let room = NSRect(
-            x: padding.left + item.margin.left,
-            y: padding.top + item.margin.top,
-            width: max(0, documentWidth - horizontalInsets),
-            height: max(0, documentHeight - verticalInsets))
-        let width = extent(
-            option: item.horizontal,
-            explicit: item.width,
-            natural: natural.width,
-            available: room.width,
-            minimum: item.minimumWidth,
-            maximum: item.maximumWidth)
-        let height = extent(
-            option: item.vertical,
-            explicit: item.height,
-            natural: natural.height,
-            available: room.height,
-            minimum: item.minimumHeight,
-            maximum: item.maximumHeight)
-        item.view.frame = NSRect(
-            x: position(option: item.horizontal, extent: width, start: room.minX, available: room.width),
-            y: position(option: item.vertical, extent: height, start: room.minY, available: room.height),
-            width: max(0, width),
-            height: max(0, height))
+        let arranged = ScrollArithmetic.arrange(
+            item, padding: Insets(padding), orientation: orientation, in: LayoutSize(viewport))
+        frame = NSRect(origin: .zero, size: NSSize(arranged.document))
+        item.view.frame = NSRect(placed: arranged.place)
         item.view.needsLayout = true
     }
 }
@@ -2189,54 +1785,6 @@ func nsColor(_ value: HostValue) -> NSColor? {
         green: CGFloat(color.green) / 255,
         blue: CGFloat(color.blue) / 255,
         alpha: CGFloat(color.alpha) / 255)
-}
-
-func appKitBoundedExtent(
-    _ proposed: CGFloat,
-    minimum: CGFloat?,
-    maximum: CGFloat?,
-    available: CGFloat? = nil
-) -> CGFloat {
-    let lower = max(0, minimum ?? 0)
-    // A contradictory maximum cannot make the constraints unsatisfiable.
-    // StateUI deterministically gives the authored minimum precedence.
-    let upper = max(lower, maximum ?? .greatestFiniteMagnitude)
-    let finite = proposed.isFinite ? proposed : lower
-    var result = min(max(0, finite), upper)
-    result = max(result, lower)
-    if let available, available.isFinite {
-        result = min(result, max(0, available))
-    }
-    return result
-}
-
-/// A child's extent along one axis of its slot. An explicit size wins over
-/// every alignment and is bounded only by its own minimum and maximum;
-/// without one, a filling child takes the slot and any other its natural size.
-private func extent(
-    option: Int32,
-    explicit: CGFloat?,
-    natural: CGFloat,
-    available: CGFloat,
-    minimum: CGFloat? = nil,
-    maximum: CGFloat? = nil
-) -> CGFloat {
-    appKitBoundedExtent(
-        explicit ?? (option == 3 ? available : natural),
-        minimum: minimum,
-        maximum: maximum,
-        available: available)
-}
-
-/// Where a child of the given extent starts in its slot. A filling child
-/// that stops short of the slot - an explicit size, or a maximum - stands in
-/// the middle of it.
-private func position(option: Int32, extent: CGFloat, start: CGFloat, available: CGFloat) -> CGFloat {
-    switch option {
-    case 1, 3: return start + max(0, available - extent) / 2
-    case 2: return start + max(0, available - extent)
-    default: return start
-    }
 }
 
 private extension NSRect {

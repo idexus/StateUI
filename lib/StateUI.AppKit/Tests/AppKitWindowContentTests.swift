@@ -15,13 +15,11 @@ final class AppKitWindowContentTests: XCTestCase {
         let content = AppKitWindowContentView()
         content.frame = NSRect(x: 0, y: 0, width: 200, height: 100)
 
-        content.set(
-            page: page,
-            overlay: AppKitLayoutItem(
-                view: panel,
-                horizontal: 2,
-                vertical: 3,
-                width: 60))
+        var placed = LayoutValues()
+        placed.horizontal = 2
+        placed.vertical = 3
+        placed.width = 60
+        content.set(page: page, overlay: AppKitLayoutItem(view: panel, values: placed))
         content.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(page.frame, content.bounds)

@@ -81,21 +81,7 @@ extension AppKitElement {
     var layoutItem: AppKitLayoutItem? {
         guard let view = presentableViews.first else { return nil }
         var item = AppKitLayoutItem(view: view)
-        item.margin = insets(.margin)
-        item.horizontal = enumeration(.horizontalAlignment) ?? 3
-        item.vertical = enumeration(.verticalAlignment) ?? 3
-        item.width = requested(.width)
-        item.height = requested(.height)
-        item.minimumWidth = requested(.minimumWidth)
-        item.minimumHeight = requested(.minimumHeight)
-        item.maximumWidth = requested(.maximumWidth)
-        item.maximumHeight = requested(.maximumHeight)
-        item.row = whole(.gridRow) ?? 0
-        item.column = whole(.gridColumn) ?? 0
-        item.rowSpan = max(whole(.gridRowSpan) ?? 1, 1)
-        item.columnSpan = max(whole(.gridColumnSpan) ?? 1, 1)
-        item.absoluteBounds = value(.absoluteLayoutBounds)?.numbers
-        item.absoluteProportions = enumeration(.absoluteLayoutProportions) ?? 0
+        item.values = element.layoutValues
         item.drawing = presentableDrawing
         item.mount = mount
         item.placed = presentableNode

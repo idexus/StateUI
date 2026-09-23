@@ -206,13 +206,13 @@ extension AppKitElement {
         widthConstraint = reconciledConstraint(
             widthConstraint,
             value: requested(.width).map {
-                appKitBoundedExtent($0, minimum: minimumWidth, maximum: maximumWidth)
+                CGFloat(Extent.bounded(Double($0), minimum: minimumWidth.map(Double.init), maximum: maximumWidth.map(Double.init)))
             },
             make: { view.widthAnchor.constraint(equalToConstant: $0) })
         heightConstraint = reconciledConstraint(
             heightConstraint,
             value: requested(.height).map {
-                appKitBoundedExtent($0, minimum: minimumHeight, maximum: maximumHeight)
+                CGFloat(Extent.bounded(Double($0), minimum: minimumHeight.map(Double.init), maximum: maximumHeight.map(Double.init)))
             },
             make: { view.heightAnchor.constraint(equalToConstant: $0) })
         minimumWidthConstraint = reconciledConstraint(

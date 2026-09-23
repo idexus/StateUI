@@ -55,8 +55,8 @@ class AppKitTravellingLayout: AppKitHitTestView {
         }
 
         var stated: MotionLanes = []
-        if item.width != nil { stated.insert(.width) }
-        if item.height != nil { stated.insert(.height) }
+        if item.values.width != nil { stated.insert(.width) }
+        if item.values.height != nil { stated.insert(.height) }
         layoutMotion.place(
             placed,
             mount: item.mount,

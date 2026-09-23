@@ -410,6 +410,41 @@
     /// The handler of `event`, when the tree listens to it.
     public func handler(_ event: Event) -> Int32? { events[event] }
 
+    /// What a layout reads of this element as its child.
+    /// Design: docs/design/host/layout.md#the-layout-arithmetic
+    public var layoutValues: LayoutValues {
+        var values = LayoutValues()
+        if let sides = value(.margin)?.numbers, sides.count >= 4 {
+            values.margin = Insets(sides[0], sides[1], sides[2], sides[3])
+        }
+        values.horizontal = value(.horizontalAlignment)?.enumeration ?? 3
+        values.vertical = value(.verticalAlignment)?.enumeration ?? 3
+        values.width = stated(.width)
+        values.height = stated(.height)
+        values.minimumWidth = stated(.minimumWidth)
+        values.minimumHeight = stated(.minimumHeight)
+        values.maximumWidth = stated(.maximumWidth)
+        values.maximumHeight = stated(.maximumHeight)
+        values.row = whole(.gridRow) ?? 0
+        values.column = whole(.gridColumn) ?? 0
+        values.rowSpan = max(whole(.gridRowSpan) ?? 1, 1)
+        values.columnSpan = max(whole(.gridColumnSpan) ?? 1, 1)
+        values.absoluteBounds = value(.absoluteLayoutBounds)?.numbers
+        values.absoluteProportions = value(.absoluteLayoutProportions)?.enumeration ?? 0
+        return values
+    }
+
+    /// A size the element states for itself; a negative one asks to be measured.
+    private func stated(_ property: Prop) -> Double? {
+        guard let value = number(property), value.isFinite, value >= 0 else { return nil }
+        return value
+    }
+
+    private func whole(_ property: Prop) -> Int? {
+        guard let number = value(property)?.number, number.isFinite else { return nil }
+        return Int(number.rounded())
+    }
+
     /// The bound state's value for `property`, as the last frame carried it or the core holds it.
     public func carriedValue(_ property: Prop) -> HostStateValue? {
         guard let binding = driven[property] else { return nil }
