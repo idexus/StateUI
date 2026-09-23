@@ -56,6 +56,8 @@ usable platform promise.
   application's structure member by member, each with a mark per platform.
 - [MAUI host](maui-host.md) builds, runs, debugs, and extends the .NET MAUI
   host on Android, iOS, Mac Catalyst, Windows, and Linux.
+- [Android Views host](android-host.md) builds, runs, and tests the Swift host
+  that renders an application with Android views, in the application's process.
 - [Project structure and development](development.md) covers repository
   layout, Gallery samples, vertical feature work, tests, and native builds.
 - [Design notes](design/README.md) draw the architecture and give the reasons

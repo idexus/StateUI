@@ -673,7 +673,7 @@ enum Fixtures {
     /// with forward slashes - `StateUI/Sources/Host/Motion/Animator.swift`.
     static func runtimeSources() throws -> [(path: String, text: String)] {
         let lib = repository.appendingPathComponent("lib")
-        let roots = ["StateUI/Sources/Host", "StateUI.AppKit/Sources"]
+        let roots = ["StateUI/Sources/Host", "StateUI.AppKit/Sources", "StateUI.Android/Sources"]
         var found: [(path: String, text: String)] = []
 
         for root in roots {
@@ -688,7 +688,7 @@ enum Fixtures {
     }
 
     /// Every active test source, so a guard can ask whether some test names a
-    /// thing across the core, Gallery, and AppKit host suites.
+    /// thing across the core, Gallery, AppKit and Android host suites.
     static func testSources() throws -> [(path: String, text: String)] {
         var found: [(path: String, text: String)] = []
 
@@ -696,6 +696,7 @@ enum Fixtures {
             ("StateUITests", repository.appendingPathComponent("lib/StateUI/Tests/StateUITests")),
             ("GalleryTests", repository.appendingPathComponent("apps/Gallery/Tests/GalleryTests")),
             ("StateUIAppKitTests", repository.appendingPathComponent("lib/StateUI.AppKit/Tests")),
+            ("StateUIAndroidTests", repository.appendingPathComponent("lib/StateUI.Android/Tests/Sources")),
         ]
 
         for (target, root) in targets {

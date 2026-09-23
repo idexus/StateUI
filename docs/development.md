@@ -8,11 +8,13 @@ StateUI.slnx                      the .NET solution: MAUI heads and host project
 lib/StateUI/Sources/              platform-neutral StateUI
 lib/StateUI/Tests/                core tests, fixtures, and shared test support
 lib/StateUI.AppKit/               independent AppKit host package and tests
+lib/StateUI.Android/              Android Views host package, its Java layer and tests
 lib/StateUI.Maui/Sources/         .NET MAUI host (StateUI.Maui)
 lib/StateUI.Maui/Linux/           its Linux platform over GTK 4 (StateUI.Maui.Linux)
 lib/StateUI.Maui/Tests/           MAUI host tests
 lib/StateUI.Maui/Template/        `dotnet new stateui-maui` template
 .scripts/AppKit/                  AppKit Gallery bundling
+.scripts/Android/                 Android Views builds, runs, devices and tests
 .scripts/Maui/                    MSBuild targets and per-platform Swift builds
 apps/Gallery/Sources/             platform-neutral Gallery application
 apps/Gallery/Platforms/AppKit/    Gallery AppKit entry point
@@ -20,6 +22,7 @@ apps/Gallery/Platforms/Maui/      Gallery MAUI head
 apps/Gallery/Tests/               Gallery acceptance tests
 apps/HelloWorld/Sources/          small platform-neutral example application
 apps/HelloWorld/Platforms/AppKit/ HelloWorld AppKit entry point
+apps/HelloWorld/Platforms/Android/ HelloWorld Android head
 apps/HelloWorld/Platforms/Maui/   HelloWorld MAUI head
 ```
 
@@ -29,8 +32,9 @@ platform entry points.
 
 Swift written for one host alone stands under the condition named for it:
 `#if MAUI`, which every MAUI build of a Swift module defines with
-`-Xswiftc -DMAUI`, and `#if APPKIT`, which every AppKit build of an application
-defines through its manifest. `NativeProjectTests`
+`-Xswiftc -DMAUI`, `#if APPKIT`, which every AppKit build of an application
+defines through its manifest, and `#if ANDROID`, which every Android Views
+build of an application defines the same way, from `STATEUI_ANDROID=1`. `NativeProjectTests`
 refuses any other mention of either host in the library and in the
 applications' `Sources/`.
 
@@ -145,6 +149,16 @@ dotnet build apps/Gallery/Platforms/Maui -f net10.0-android -t:Run
 [MAUI host](maui-host.md) lists every platform, how each is debugged, and the
 tasks.
 
+The Android Views host builds on macOS with the swift.org toolchain, the Swift
+SDK for Android, the NDK r30 and JDK 21. An application's Android head is
+built, installed and started on a device by one script:
+
+```bash
+.scripts/Android/run-app.sh apps/HelloWorld debug emulator-5554
+```
+
+[Android Views host](android-host.md) lists what it needs and what it builds.
+
 ## Test
 
 Each suite lives beside the package whose behavior it verifies:
@@ -170,6 +184,12 @@ and compiles the documentation examples. The fourth drives MAUI controls as
 ordinary .NET objects over the fixtures the first writes; it needs the .NET 10
 SDK and, except on Linux, the MAUI workload, and runs its classes one at a
 time. In VS Code, **StateUI: Run Tests** runs them as the chosen host.
+
+The Android Views host's suite runs on a device, in a test APK:
+
+```bash
+.scripts/Android/test-android.sh emulator-5554
+```
 
 A passing unit suite does not prove native drawing or interaction. Exercise a
 user-visible change in the running Gallery on the affected platform. Run only

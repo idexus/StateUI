@@ -23,11 +23,17 @@ import PackageDescription
 // and never the manifest describing them, so an AppKit build says so here.
 let hasAppKitHead = ProcessInfo.processInfo.environment["STATEUI_APPKIT"] == "1"
 
+// WHETHER THIS BUILD HAS AN ANDROID HEAD - the same question for the Android
+// Views host, asked by .scripts/Android/build-swift.sh.
+let hasAndroidHead = ProcessInfo.processInfo.environment["STATEUI_ANDROID"] == "1"
+
 // What every module of the application is compiled with - in an AppKit build
-// including APPKIT, defined here and nowhere else. See apps/Gallery/Package.swift.
+// including APPKIT, in an Android Views build ANDROID, each defined here and
+// nowhere else. See apps/Gallery/Package.swift.
 let settings: [SwiftSetting] =
     [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
     + (hasAppKitHead ? [.define("APPKIT")] : [])
+    + (hasAndroidHead ? [.define("ANDROID")] : [])
 
 var products: [Product] = [
     // Dynamic so an executable and its host share exactly one StateUI
@@ -92,6 +98,31 @@ if hasAppKitHead {
                 .product(name: "StateUIAppKit", package: "StateUIAppKit"),
             ],
             path: "Platforms/AppKit",
+            swiftSettings: settings
+        ))
+}
+
+if hasAndroidHead {
+    // The same Swift application, loaded by Android as a library: its
+    // JNI_OnLoad names the application to the Android Views host.
+    products.append(
+        .library(
+            name: "HelloWorldAndroid",
+            type: .dynamic,
+            targets: ["HelloWorldAndroid"]
+        ))
+
+    dependencies.append(
+        .package(name: "StateUIAndroid", path: "../../lib/StateUI.Android"))
+
+    targets.append(
+        .target(
+            name: "HelloWorldAndroid",
+            dependencies: [
+                "HelloWorldUI",
+                .product(name: "StateUIAndroid", package: "StateUIAndroid"),
+            ],
+            path: "Platforms/Android/Swift",
             swiftSettings: settings
         ))
 }

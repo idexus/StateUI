@@ -1,0 +1,87 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+@_spi(Host) import StateUI
+
+/// The native view: made, and given the element's properties.
+extension AndroidElement {
+    /// Properties a parent reads into its child's layout item: a frame that moves one arranges the parent again.
+    static let arrangedProperties: Set<Prop> = [
+        .margin, .horizontalAlignment, .verticalAlignment,
+        .width, .height,
+        .minimumWidth, .minimumHeight,
+        .maximumWidth, .maximumHeight,
+        .isVisible,
+    ]
+
+    /// Properties drawn without changing any measurement; any other one measures the view again.
+    static let unmeasuredProperties: Set<Prop> = [
+        .opacity, .background, .textColor, .isEnabled,
+    ]
+
+    func makeView() -> AndroidView? {
+        if let registered = AndroidRegistrations.registry.makeView(
+            for: type,
+            sending: { [weak self] event, values in self?.send(event, values) },
+            reporting: { [weak self] property, event, value in self?.report(property, event, value) }
+        ) {
+            return registered
+        }
+
+        switch type {
+        case .application, .scene, .window:
+            return nil
+
+        case .page:
+            return AndroidSingleChildView()
+
+        case .modalStack, .titleBar, .content, .leadingContent, .trailingContent,
+             .titleView, .toolbarItems, .toolbarItem, .menuBar, .contextMenu,
+             .menu, .menuItem, .menuSeparator, .spans, .span:
+            return nil
+
+        default:
+            return AndroidUnsupportedView(type)
+        }
+    }
+
+    /// Puts the changed properties on the view: its registration's first, then what every view takes.
+    func applyProperties(changed: Set<Prop>) {
+        guard let view else {
+            if !changed.isDisjoint(with: Self.arrangedProperties) { parent?.invalidateMeasurements() }
+            return
+        }
+
+        let taken = AndroidRegistrations.registry.apply(
+            changed, to: view, of: type,
+            reading: { [element] in element.value($0) },
+            carriedIn: { [element] in element.driven[$0]?.mode == .in })
+
+        for property in changed.subtracting(taken) {
+            switch property {
+            case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
+            case .isVisible: view.setShown(value(.isVisible)?.bool != false)
+            case .background: view.setBackground(value(.background))
+            default: break
+            }
+        }
+
+        if !changed.isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
+    }
+
+    /// Forgets the sizes kept by this element's layout and every one above it, and asks Android to measure again.
+    func invalidateMeasurements() {
+        var element: AndroidElement? = self
+        while let each = element {
+            (each.view as? AndroidLayoutView)?.measurements.invalidate()
+            element = each.parent
+        }
+
+        (view ?? parent?.nearestView)?.requestLayout()
+    }
+
+    /// The view of this element or the nearest one above it.
+    var nearestView: AndroidView? {
+        view ?? parent?.nearestView
+    }
+}

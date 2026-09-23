@@ -97,6 +97,80 @@ final class NativeProjectTests: XCTestCase {
         ])
     }
 
+    /// The Android Views host is a Swift package beside AppKit's, with its Java
+    /// layer, its tests in a package of their own and the scripts under
+    /// `.scripts/Android`; and every native method the Java layer declares is
+    /// one the host registers, by name - one left out is found only on a
+    /// device, as an `UnsatisfiedLinkError`.
+    func testTheAndroidViewsHostIsAHostPackageBesideAppKit() throws {
+        let repository = Fixtures.repository
+        let host = "lib/StateUI.Android"
+        for relative in [
+            "\(host)/Package.swift", "\(host)/Tests/Package.swift",
+            "\(host)/Tests/Platforms/Android/build.gradle.kts",
+            "\(host)/Java/stateui/android/StateUIActivity.java",
+            ".scripts/Android/build-swift.sh", ".scripts/Android/run-app.sh",
+            ".scripts/Android/test-android.sh", ".scripts/Android/devices.sh",
+        ] {
+            XCTAssertTrue(
+                FileManager.default.fileExists(atPath: repository.appendingPathComponent(relative).path),
+                "missing \(relative)")
+        }
+
+        func names(_ pattern: String, in relative: String) throws -> Set<String> {
+            let text = try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
+            let expression = try NSRegularExpression(pattern: pattern)
+            return Set(expression.matches(in: text, range: NSRange(text.startIndex..., in: text)).compactMap {
+                Range($0.range(at: 1), in: text).map { String(text[$0]) }
+            })
+        }
+
+        let declared = try names(#"static native \w+ (\w+)\("#, in: "\(host)/Java/stateui/android/StateUIHost.java")
+        let registered = try names(
+            #"\("(\w+)", "\("#, in: "\(host)/Sources/StateUIAndroid/Runtime/StateUIAndroid.swift")
+        XCTAssertGreaterThan(declared.count, 3, "the walk read almost no native method")
+        XCTAssertEqual(declared, registered, "the Java layer and the host disagree on the native methods")
+    }
+
+    /// Every ANDROID HEAD is a library Android loads, declared by the
+    /// application's manifest exactly when a build says it is an Android one:
+    /// its Gradle build, an Android manifest naming the host's activity and the
+    /// head's library, and a `JNI_OnLoad` that names the application to the host.
+    func testEveryAndroidHeadLoadsTheApplicationsModule() throws {
+        var heads = 0
+
+        for application in try Fixtures.applications() {
+            let head = application.appendingPathComponent("Platforms/Android")
+            guard FileManager.default.fileExists(atPath: head.path) else { continue }
+            heads += 1
+            let name = application.lastPathComponent
+            func text(_ relative: String) throws -> String {
+                try String(contentsOf: application.appendingPathComponent(relative), encoding: .utf8)
+            }
+
+            let manifest = try text("Package.swift")
+            for shape in [
+                "environment[\"STATEUI_ANDROID\"] == \"1\"", "hasAndroidHead ? [.define(\"ANDROID\")] : []",
+                "name: \"\(name)Android\"", "name: \"StateUIAndroid\"", "path: \"Platforms/Android/Swift\"",
+            ] {
+                XCTAssertTrue(manifest.contains(shape), "\(name)'s Package.swift does not say \(shape)")
+            }
+
+            let android = try text("Platforms/Android/AndroidManifest.xml")
+            XCTAssertTrue(android.contains("android:name=\"stateui.android.StateUIActivity\""))
+            XCTAssertTrue(android.contains("android:value=\"\(name)Android\""))
+
+            let entry = try text("Platforms/Android/Swift/\(name)Android.swift")
+            for shape in ["@_cdecl(\"JNI_OnLoad\")", "stateui_app_register()", "StateUIAndroid.load("] {
+                XCTAssertTrue(entry.contains(shape), "\(name)'s Android head does not say \(shape)")
+            }
+
+            XCTAssertTrue(try text("Platforms/Android/build.gradle.kts").contains("stated(\"stateui.libraries\")"))
+        }
+
+        XCTAssertGreaterThan(heads, 0, "no Android head found")
+    }
+
     /// The code every host runs names no host. Swift written for one host alone
     /// stands under the condition named for it - `#if MAUI`, which every MAUI
     /// build defines, and `#if APPKIT`, which every AppKit build of an

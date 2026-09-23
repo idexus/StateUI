@@ -14,7 +14,7 @@
 # limitations under the License.
 # ---------------------------------------------------------------------------
 # Creates a new StateUI application in apps/: one page with a counter, an
-# AppKit head and a MAUI head for every MAUI platform.
+# AppKit head, an Android head, and a MAUI head for every MAUI platform.
 #
 # USAGE:
 #   ./new-app.sh Name [apps-dir]
@@ -29,10 +29,12 @@
 # WHAT IT MAKES is apps/HelloWorld under another name - the worked example of
 # the layout every application in apps/ has:
 #
-#     Package.swift         the application's Swift module and its AppKit head
+#     Package.swift         the application's Swift module, its AppKit head and
+#                           its Android head
 #     Sources/              the application, its page, and Styles/
 #     Resources/            the artwork
 #     Platforms/AppKit/     the macOS head
+#     Platforms/Android/    the Android Views head: its Gradle build and Swift/
 #     Platforms/Maui/       the MAUI head: <Name>.csproj, Host/, and one folder
 #                           per platform
 #
@@ -75,9 +77,15 @@ fail() {
 APP="$APPS_DIR/$NAME"
 LOWER="$(echo "$NAME" | tr '[:upper:]' '[:lower:]')"
 
-mkdir -p "$APP/Platforms/Maui"
+mkdir -p "$APP/Platforms/Maui" "$APP/Platforms/Android"
 for item in Package.swift Sources Resources Platforms/AppKit; do
   cp -R "$MODEL/$item" "$APP/$item"
+done
+
+# The Android head without Gradle's .gradle/, which an editor that opens the
+# head writes beside it: the glob leaves every dot-directory out.
+for item in "$MODEL"/Platforms/Android/*; do
+  cp -R "$item" "$APP/Platforms/Android/"
 done
 
 # The MAUI head without what its builds write: bin/ and obj/ stay where they
@@ -103,7 +111,8 @@ done
 
 find "$APP" -type f \
   \( -name "*.swift" -o -name "*.cs" -o -name "*.csproj" -o -name "*.plist" \
-     -o -name "*.xml" -o -name "*.json" -o -name "*.xaml" -o -name "*.manifest" \) \
+     -o -name "*.xml" -o -name "*.json" -o -name "*.xaml" -o -name "*.manifest" \
+     -o -name "*.kts" \) \
   -exec perl -pi -e "s/HelloWorld/$NAME/g; s/helloworld/$LOWER/g" {} +
 
 # The title is SET rather than renamed: it is the one property whose value need
@@ -126,5 +135,6 @@ Created $APP
 
 Next, from the repository root:
   STATEUI_APPKIT=1 swift run --package-path apps/$NAME ${NAME}AppKit   # the AppKit head
+  .scripts/Android/run-app.sh apps/$NAME                                    # the Android head
   dotnet build apps/$NAME/Platforms/Maui -f net10.0-maccatalyst27.0         # or net10.0-ios27.0 / net10.0-android
 DONE

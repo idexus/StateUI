@@ -20,9 +20,11 @@ final class ProjectFilesTests: XCTestCase {
         let kinds: Set<String> = ["csproj", "targets", "props", "slnx"]
 
         // What a build or a pack writes is not the build's own file: bin/, obj/,
-        // .build/ and each host's .build-appkit/ and .build-maui/, and the
+        // .build/ and each host's .build-appkit/, .build-maui/ and .build-android/, and the
         // editor extension's node_modules/.
-        let written: Set<String> = [".build", ".build-appkit", ".build-maui", ".git", "bin", "node_modules", "obj"]
+        let written: Set<String> = [
+            ".build", ".build-appkit", ".build-maui", ".build-android", ".git", ".gradle", "bin", "node_modules", "obj",
+        ]
 
         let entered = { (relative: String) -> Bool in
             let name = String(relative.split(separator: "/").last ?? "")

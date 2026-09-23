@@ -5,6 +5,9 @@ artifacts/
 .build/
 .build-maui/
 .build-appkit/
+.build-android/
+# What Gradle keeps beside a head an editor opens; the scripts keep theirs in .build-android.
+.gradle/
 
 # The language server's own settings, written by the StateUI editor extension:
 # the index directory of the host the editor works as.

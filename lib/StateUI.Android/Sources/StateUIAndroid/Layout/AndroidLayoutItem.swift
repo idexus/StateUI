@@ -1,0 +1,35 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+@_spi(Host) import StateUI
+
+/// One child as its Android layout places it: its view, and what the layout reads of it.
+@MainActor
+struct AndroidLayoutItem: LayoutChild {
+    /// The child's view.
+    let view: AndroidView
+
+    /// What the layout reads of the child.
+    var values = LayoutValues()
+
+    /// Whether the child is shown; a hidden child takes no room.
+    var isShown = true
+
+    /// The view's size for the width offered, margin included in the offer, its stated sizes and bounds applied.
+    func size(offered width: Double?) -> LayoutSize {
+        let margin = values.margin
+        let available = width.map { max(0, $0 - margin.left - margin.right) }
+        let widthSpec = available.map { ViewConstants.spec(ViewConstants.atMost, view.pixels($0)) }
+            ?? ViewConstants.unspecified
+        let measured = view.measure(width: widthSpec, height: ViewConstants.unspecified)
+
+        return LayoutSize(
+            width: values.boundedWidth(values.width ?? Double(measured.width) / view.density),
+            height: values.boundedHeight(values.height ?? Double(measured.height) / view.density))
+    }
+
+    /// Whether a parent would place this item as it places `other`.
+    func arranges(like other: AndroidLayoutItem) -> Bool {
+        view === other.view && values == other.values && isShown == other.isShown
+    }
+}

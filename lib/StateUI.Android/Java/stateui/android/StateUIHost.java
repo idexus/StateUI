@@ -1,0 +1,32 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+package stateui.android;
+
+import android.app.Activity;
+import android.widget.FrameLayout;
+
+/** The Swift host: every method is registered by the head's JNI_OnLoad. */
+final class StateUIHost {
+    /** The application's phases, as StateUI numbers them. */
+    static final int ACTIVE = 0;
+    static final int INACTIVE = 1;
+    static final int BACKGROUND = 2;
+
+    private StateUIHost() {}
+
+    /** Starts the host in the activity's root, at the display's density. */
+    static native void start(Activity activity, FrameLayout root, float density);
+
+    /** The activity's lifecycle moved the application's phase. */
+    static native void phase(int phase);
+
+    /** A button was clicked. */
+    static native void clicked(long view);
+
+    /** A layout is measured; its width in the high half, its height in the low one. */
+    static native long measure(long view, int widthSpec, int heightSpec);
+
+    /** A layout places its children. */
+    static native void arrange(long view, int width, int height);
+}

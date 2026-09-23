@@ -23,7 +23,7 @@ final class ToolchainTests: XCTestCase {
         // What a build writes, the wire fixtures, and the pages rendered from
         // the contracts - none of them names a toolchain.
         let skipped: Set<String> = [
-            ".build", ".build-appkit", ".build-maui", ".git", "bin", "obj", "node_modules", "out",
+            ".build", ".build-appkit", ".build-maui", ".build-android", ".git", ".gradle", "bin", "obj", "node_modules", "out",
             "lib/StateUI/Tests/Fixtures", "docs/controls",
         ]
 

@@ -18,8 +18,9 @@
 #   .\new-app.ps1 -Name MyApp [-AppsDir <dir>]
 #
 # It makes apps/HelloWorld under another name: Package.swift, Sources/,
-# Resources/, Platforms/AppKit/ and Platforms/Maui/ with <Name>.csproj, Host/
-# and one folder per platform. What HelloWorld's builds wrote is left behind.
+# Resources/, Platforms/AppKit/, Platforms/Android/ and Platforms/Maui/ with
+# <Name>.csproj, Host/ and one folder per platform. What HelloWorld's builds
+# wrote is left behind.
 # Only the default AppsDir also registers the MAUI project in StateUI.slnx.
 # ---------------------------------------------------------------------------
 param(
@@ -52,9 +53,16 @@ if (-not (Test-Path $model)) { throw "HelloWorld is not at $model - it is what a
 $lower = $Name.ToLowerInvariant()
 
 New-Item -ItemType Directory -Path (Join-Path $app "Platforms/Maui") -Force | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $app "Platforms/Android") -Force | Out-Null
 foreach ($item in @("Package.swift", "Sources", "Resources", "Platforms/AppKit")) {
     Copy-Item -Recurse (Join-Path $model $item) (Join-Path $app $item)
 }
+
+# The Android head without Gradle's .gradle/, which an editor that opens the
+# head writes beside it.
+Get-ChildItem -Path (Join-Path $model "Platforms/Android") -Force |
+    Where-Object { $_.Name -ne ".gradle" } |
+    ForEach-Object { Copy-Item -Recurse $_.FullName (Join-Path $app "Platforms/Android") }
 
 # The MAUI head without what its builds write: bin/ and obj/ stay where they
 # are rather than being copied and removed, which a build of HelloWorld under
@@ -72,7 +80,7 @@ Get-ChildItem -Path $app -Recurse -Filter "*HelloWorld*" |
     Sort-Object { $_.FullName.Length } -Descending |
     ForEach-Object { Rename-Item $_.FullName ($_.Name.Replace("HelloWorld", $Name)) }
 
-$extensions = @(".swift", ".cs", ".csproj", ".plist", ".xml", ".json", ".xaml", ".manifest")
+$extensions = @(".swift", ".cs", ".csproj", ".plist", ".xml", ".json", ".xaml", ".manifest", ".kts")
 Get-ChildItem -Path $app -Recurse -File |
     Where-Object { $extensions -contains $_.Extension } |
     ForEach-Object {
