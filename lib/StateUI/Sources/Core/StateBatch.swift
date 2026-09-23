@@ -1,20 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The batch state values cross a host's boundary in, both ways.
-///
-/// `[count: U16]` and then, per write, `[number: I32][mask: U64]`
-/// `[length: U32][bytes]`, little-endian throughout. The mask says which LANES
-/// moved - a report about an offset is not a report about the law beside it -
-/// and the bytes are the value whole, as the image holds it.
-///
-/// `stateui_cycle_write` reads a host's batch through `decode` and
-/// `stateui_cycle_read` answers through `encode`, so one layout serves both
-/// directions. `state-batches.txt`, written from these two, holds every other
-/// runtime's copy of the layout to this one.
+/// The batch state values cross a host's boundary in, both ways: `[count: U16]`,
+/// then per write `[number: I32][mask: U64][length: U32][bytes]`.
+/// Design: docs/design/core/cycle.md#the-state-batch
 enum StateBatch {
-    /// One state's write in a batch: which state, which of its lanes, and
-    /// the value whole.
+    /// One state's write: which state, which lanes, and the value whole.
     struct Write: Equatable {
         /// The state's number.
         let number: Int32
@@ -44,13 +35,8 @@ enum StateBatch {
         return bytes
     }
 
-    /// What a batch says, as far as its bytes go.
-    ///
-    /// Bytes that run out part way are a boundary fault, not a value: the
-    /// writes before the fault are read, and `complete` says the rest is lost.
-    ///
-    /// - Parameter batch: the bytes.
-    /// - Returns: the writes read, and whether the bytes held the whole batch.
+    /// What a batch says as far as its bytes go: the writes read, and whether the
+    /// bytes held the whole batch.
     static func decode(_ batch: UnsafeBufferPointer<UInt8>) -> (writes: [Write], complete: Bool) {
         var at = 0
 

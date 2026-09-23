@@ -1,19 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Events the HOST raises by name, with no element behind them.
-//
-// Every other event belongs to an element of the tree and is found by a
-// handler id the differ issued. What the host pushes on its own -
-// connectivity changing, the battery reporting - has no element to hang off,
-// so the application declares it in its contract, registers the raise with
-// the host, and subscribes here to the member: the name crosses, and the
-// values arrive as the types the member declares.
-//
-// The handlers run exactly as a control's do: started on MainActor, free to
-// await - `Renderer.start` is where an event's handler is started,
-// `Renderer.queue` being the other road, for what a render's walk found - and
-// this is one more caller of it.
+// Events the host raises by name, with no element behind them.
+// Design: docs/design/core/acts.md#host-events
 
 /// One handler's subscription to a host event, made by `HostEvents.on`.
 ///
@@ -62,35 +51,18 @@ public final class HostEventSubscription: @unchecked Sendable {
 /// the application's own (`"Gallery."`) so they can never meet an event this
 /// library adds later.
 public enum HostEvents {
-    /// The subscriptions, in the order they were made - which is the order
-    /// the handlers run in, the `addHandler` rule.
+    /// The subscriptions in the order made, which is the order handlers run in.
     nonisolated(unsafe) private static var subscriptions:
         [Event: [(id: Int, handler: ValueEventHandler<[PropValue]>)]] = [:]
 
-    /// The next subscription's number - never reused, so a cancelled one
-    /// cannot take a newer listener with it.
+    /// The next subscription's number - never reused.
     nonisolated(unsafe) private static var nextId = 1
 
-    /// The lock: a subscription may be written from a handler while a raise
-    /// arrives on the UI thread.
+    /// The lock: a subscription may be written while a raise arrives.
     private static let guarded = Lock()
 
-    /// Subscribes a handler to what the host raises under an event's name -
-    /// what every `on` is written over, the values still as they crossed.
-    /// Handlers run in the order they were subscribed, each started on
-    /// MainActor exactly as a control's handler is - free to await, its
-    /// thrown errors reported.
-    ///
-    /// An event the host said it does not raise is said once, with the names
-    /// it likely meant.
-    ///
-    /// - Parameters:
-    ///   - event: the name the host raises.
-    ///   - owner: the contract declaring the event, as the host's realization
-    ///     names it.
-    ///   - member: the event's own name there.
-    ///   - handler: given what the raise carried, in the order the host wrote it.
-    /// - Returns: the subscription, to `cancel()` when the listener leaves.
+    /// Subscribes a handler to what the host raises under an event's name, the values
+    /// as they crossed; an event the host says it does not raise is said once.
     private static func subscribe(
         _ event: Event,
         owner: String,
@@ -215,10 +187,8 @@ public enum HostEvents {
         }
     }
 
-    /// Runs every handler subscribed to a name and answers how many there
-    /// were - called by the export and by `StateUIHost.raise`, on the host's
-    /// UI thread. The handlers are taken under the lock and started outside
-    /// it, the dispatch rule.
+    /// Runs every handler subscribed to a name and answers how many - taken under the
+    /// lock, started outside it, each on `MainActor`.
     static func dispatch(_ name: String, _ payload: [PropValue]) -> Int {
         let handlers = guarded.withLock { subscriptions[Event(name)] ?? [] }
 

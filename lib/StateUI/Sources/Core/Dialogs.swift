@@ -1,33 +1,15 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Asking the reader a question.
-//
-// A dialog is not a shape, so it is not in the tree - it is an ACT, and it
-// goes through ActCall.swift exactly as focusing a field or scrolling a list
-// does:
-//
-//     let ok = try await Dialogs.confirm(
-//         "Delete draft?", message: "This cannot be undone",
-//         accept: "Delete", cancel: "Keep")
-//
-// The handler suspends while the dialog is up and resumes with the answer,
-// which is the reason this is not a modifier with a binding: asking, waiting
-// and branching is one sequential thought, and an act keeps it in one place
-// where a binding would split it into a state write here and a result closure
-// there.
-//
-// None of these names a page: a handler holds a description of a page rather
-// than the page, so the host shows the dialog on the page the reader is
-// actually looking at - the top of the modal stack included, which only the
-// host can know. `OnScreenKeyboard` is the same shape of answer for the keyboard.
+// Dialogs: questions for the user, asked as acts - the handler suspends until the
+// user answers.
+// Design: docs/design/core/acts.md#dialogs
 
-/// Questions for the reader - an alert, a confirmation, a choice among actions
-/// and a prompt,
-/// asked of the page that is showing. Each suspends the handler until the
-/// reader answers.
+/// Questions for the user - an alert, a confirmation, a choice among actions and
+/// a prompt - asked of the page that is showing. Each suspends the handler until
+/// the user answers.
 public enum Dialogs {
-    /// Tells the reader something, with one button to dismiss it.
+    /// Tells the user something, with one button to dismiss it.
     ///
     ///     try await Dialogs.alert("Saved", message: "The draft is safe")
     ///
@@ -47,7 +29,7 @@ public enum Dialogs {
         try await stateUICall(ApplicationContract.alert, title, message, cancel)
     }
 
-    /// Asks the reader a yes-or-no question.
+    /// Asks the user a yes-or-no question.
     ///
     ///     let ok = try await Dialogs.confirm(
     ///         "Delete draft?", message: "This cannot be undone",
@@ -70,12 +52,12 @@ public enum Dialogs {
         try await stateUICall(ApplicationContract.confirm, title, message, accept, cancel)
     }
 
-    /// Offers the reader a list of things to do.
+    /// Offers the user a list of things to do.
     ///
     ///     let choice = try await Dialogs.chooseAction(
     ///         "Share via", cancel: "Cancel", buttons: ["Mail", "Message"])
     ///
-    /// What comes back is the pressed CAPTION - `cancel` and `destruction`
+    /// What comes back is the pressed caption - `cancel` and `destruction`
     /// included - so a `switch` over the same strings is the whole handling.
     ///
     /// - Parameters:
@@ -95,9 +77,7 @@ public enum Dialogs {
         try await stateUICall(ApplicationContract.chooseAction, title, cancel, destruction, buttons)
     }
 
-    /// Asks the reader to type something. The arguments cross in the act's
-    /// order, `initialValue` last; the Swift signature keeps it beside
-    /// `placeholder`, where it reads.
+    /// Asks the user to type something.
     ///
     ///     let name = try await Dialogs.prompt(
     ///         "Rename", message: "A new name for the draft",

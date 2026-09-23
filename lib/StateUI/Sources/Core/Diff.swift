@@ -1,153 +1,80 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Turning "here is the tree" into "here is what changed".
-//
-// A render builds what it has to: the application's scenes where a cause could
-// not be named, and otherwise only the elements whose recorded reads moved
-// (`revisit`), a composed view built with the same inputs being CARRIED - which
-// is what makes state updates work without any invalidation by hand. What goes
-// delivered is a different question, and this file answers it: what was built
-// is walked against the tree the host is already showing, and only the
-// differences are packed into a HostPatch.
-//
-// Two things are allocated here and nowhere else, because both have to outlive
-// the tree that introduced them:
-//
-//   element ids   what a host matches a control by. An element keeps its id, and
-//                 therefore its control, for as long as it stays in the tree.
-//   handler ids   what a host quotes back when an event fires. Kept for as long as
-//                 the element handles that event, so a control that is not part
-//                 of a message goes on using the id it already has.
-//
-// The closures themselves are registered afresh whenever an element is BUILT,
-// changed or not: a button whose caption did not change can still have captured
-// a different value this time round. An element a walk carries over - a
-// composed view built with the same inputs, a view none of whose state moved -
-// keeps the closures it last registered, and they are current for the same
-// reason the carry is sound: nobody computed newer values for them to have
-// captured. The one exception is a handler the PARENT wrote on a carried view,
-// which the carry registers afresh, the parent's closure having run.
+// The differ: what a render built, walked against the tree the host holds, with
+// only the differences packed into a `HostPatch`. Element ids and handler ids
+// are allocated here, because both outlive the tree that made them.
+// Design: docs/design/core/identity-and-diffing.md#keys
 
 /// Walks the authored tree against the rendered one and produces the message.
 final class Differ {
-    /// Never reset, not even by a resync: an id that has been used is never
-    /// handed out again, so a stale host control can never be mistaken
-    /// for a new one that happens to land on the same number.
+    /// The next element id. Never reset, not even by a resync.
+    /// Design: docs/design/core/identity-and-diffing.md#ids-are-never-reused
     private var nextElementId = 1
 
-    /// The same rule for handler ids, and for the same reason: an event arriving
-    /// late must never reach the wrong closure.
+    /// The next handler id, under the same rule.
     private var nextHandlerId = 1
 
-    /// Which walk this is, counted at every entry - what an `AimBox` uses
-    /// to tell a second attach in the SAME walk (one aim on two
-    /// views, a conflict the act reports) from the next walk attaching it
-    /// afresh.
+    /// Which walk this is - what tells an aim put on two views in one walk from the
+    /// next walk attaching it afresh.
     private var walkStamp = 0
 
-    /// Whether the current walk describes every element in full rather than
-    /// only what changed. Set by `reconcile` for a resync - a host that is not
-    /// holding the current generation - and read by every decision below about
-    /// what goes INTO the patch. What it deliberately does not change is the
-    /// matching: identities, state adoption and handler bookkeeping work
-    /// exactly as in an ordinary diff, or a resync would reset every `@State`
-    /// and leak the whole registry.
+    /// Whether this walk describes every element in full, for a resync. It changes
+    /// what goes into the patch, never the matching.
+    /// Design: docs/design/core/identity-and-diffing.md#a-resync-keeps-matching
     private var describeAll = false
 
-    /// The styles every element this walk builds is resolved against - the
-    /// application's sheet, as it stood when the tree was built.
-    ///
-    /// Kept between walks because a clean walk (`revisit`) does not build the
-    /// application and therefore never reads it: what it carries over was resolved
-    /// against this same sheet. See Views/Style.swift.
+    /// The style sheet every element this walk builds is resolved against, kept
+    /// between walks because a clean walk does not read it (Views/Style.swift).
     private var styles: StyleSheet?
 
-    /// How a value that CHANGED travels, where its element says nothing else -
-    /// the application's own answer, read once at the top of every walk.
-    ///
-    /// Set by `Renderer.renderWire` beside the styles and left at this library's
-    /// own default everywhere else, which is what makes a differ built by a test
-    /// describe the motions an application would see.
+    /// How a changed value animates where its element says nothing else - the
+    /// application's answer, or the library's default in a test's differ.
     var motion: Motion = .standard
 
-    /// Whether the sheet MOVED at the top of this walk.
-    ///
-    /// The one thing a carried view's inputs cannot see: they say the view
-    /// was built with the same things, and a style is not one of them - so a
-    /// sheet that replaced a value under a carried view would leave the old
-    /// one on screen for ever. The carry is suppressed for that one walk,
-    /// exactly as `seen` suppresses it for a provider that replaced its
-    /// object.
+    /// Whether the sheet moved at the top of this walk, which suppresses every carry
+    /// for the walk.
+    /// Design: docs/design/core/identity-and-diffing.md#what-a-carry-cannot-see
     private var stylesMoved = false
 
-    /// The state that has changed since the tree the host is showing was
-    /// built, by storage identity - what the renderer collected from
-    /// `stateChanged`.
-    ///
-    /// Read by `revisit`, deciding whether a kept element must be built again,
-    /// and by the carry, which never carries a view that read what moved.
+    /// The states written since the tree the host holds was built - what the clean
+    /// walk and the carry decide by.
     private var changed: Set<ObjectIdentifier> = []
 
-    /// What each changed state is CALLED, by storage identity - the author's
-    /// own property names, for `debugInfo()` to explain a build with. Set by
-    /// `Renderer.renderWire`, and empty everywhere else. See Core/Builds.swift.
+    /// What each changed state is called, for `debugInfo()` (Core/Builds.swift).
     var named: [ObjectIdentifier: String] = [:]
 
-    /// The handlers this walk found something to run - an `.onChanged` whose
-    /// value moved, an `.onCreated` whose element arrived - in the order they
-    /// were reached.
-    ///
-    /// Collected rather than run: a handler may write `@State`, and a write
-    /// landing mid-walk is cleared by the bookkeeping that ends it. The
-    /// renderer takes these once the walk is done and runs them before its
-    /// message leaves. See `Renderer.renderWire`.
+    /// The handlers this walk found to run - `.onChanged`, `.onCreated` - in the
+    /// order reached, run by the renderer after the walk.
+    /// Design: docs/design/core/render.md#handlers-in-the-message
     private var fired: [EventHandler] = []
 
-    /// The `.onDestroying` handlers of the elements this walk let go, the
-    /// innermost of each first - run BEFORE everything in `fired`, so an
-    /// element leaving has said what it had to before one arriving in its
-    /// place asks. See `forget` and Core/Lifetime.swift.
+    /// The `.onDestroying` handlers of what this walk let go, innermost first; they
+    /// run before everything in `fired`.
     private var leaving: [EventHandler] = []
 
-    /// The environments in scope where the walk currently stands - what
-    /// `.environment()` provided on this element's ancestors, nearest LAST.
-    /// Pushed as elements are entered and popped as they are left, in both
-    /// walks; a `@Environment` slot resolves against it just before the
-    /// view's body builds. See Core/Environment.swift.
+    /// The environments in scope where the walk stands, nearest last
+    /// (Core/Environment.swift).
     private var scope: [(key: ObjectIdentifier, object: AnyObject)] = []
 
-    /// The composed views whose bodies the walk is inside, outermost first -
-    /// what a bare container's content runs under, so `debugInfo()` written
-    /// inside its braces names the view whose braces they are. Pushed as a
-    /// composed view unwraps, popped as its element returns.
+    /// The composed views whose bodies the walk is inside, outermost first - what a
+    /// bare container's content names in `debugInfo()`.
     private var bodies: [String] = []
 
-    /// What every live element's events run.
-    ///
-    /// Kept BETWEEN renders rather than rebuilt by each one. A carried subtree
-    /// is not walked while its inputs are unchanged, so there is nothing to
-    /// re-register it with - and its handlers have to go on working. Entries are
-    /// overwritten as elements are visited and dropped when an element leaves
-    /// the tree, which is what `forget` is for.
+    /// What every live element's events run, kept between renders: a carried subtree
+    /// is not walked, and its handlers must go on working.
+    /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
     private var handlers: [Int: EventHandler] = [:]
 
-    /// The scene the walk is inside, as the record its `@State(sceneKey:)`
-    /// boxes are kept by - and what `Scenes.building` says while the walk is
-    /// inside it. Nothing above the scenes, and nothing in a tree that has
-    /// none.
+    /// The scene the walk is inside, whose record keeps its `@State(sceneKey:)`
+    /// boxes; `Scenes.building` follows it.
     private var sceneRecord: SceneRecord? {
         didSet { Scenes.shared.building = sceneRecord }
     }
 
-    /// Reconciles the tree just written against the one the host is showing.
-    ///
-    /// `describeAll` makes the patch carry every element in full - for a host
-    /// that has lost track of the tree and needs the whole thing - while the
-    /// walk still matches against `rendered`, so element ids, handler ids and
-    /// `@State` survive a resync the way they survive any other render. Passing
-    /// `nil` for `rendered` instead is only for a first render, when there is
-    /// nothing to carry over.
+    /// Reconciles the tree just built against the one the host holds. `describeAll`
+    /// makes the patch complete while matching stays as it always is; a nil
+    /// `rendered` is only for a first render.
     func reconcile(
         _ rendered: RenderedNode?,
         with tree: Node,
@@ -162,8 +89,7 @@ final class Differ {
         walkStamp += 1
         seedScope()
 
-        // The root has no siblings to be told apart from, so it keeps whatever
-        // identity it was given until the author states another one.
+        // The root keeps whatever key it was given until the author states another.
         let id = tree.id.map(ElementId.manual) ?? rendered?.id ?? identity(for: tree)
         let previous = rendered?.id == id ? rendered : nil
 
@@ -174,16 +100,9 @@ final class Differ {
         return element(id: id, rendered: previous, node: tree)
     }
 
-    /// Walks the tree the host is showing with NO fresh tree to compare
-    /// against, and rebuilds exactly the elements whose recorded reads
-    /// intersect `changed`.
-    ///
-    /// This is the render that skips the author's closure: nothing above a
-    /// changed view is built, walked or sent - the ancestors contribute only
-    /// the path of carrier patches down to it. It is only sound when every
-    /// cause of the render named the state it wrote; anything else goes
-    /// through `reconcile` with a freshly built tree. See
-    /// Core/Invalidation.swift for the two facts this rests on.
+    /// The clean walk: no fresh tree, and exactly the elements whose reads intersect
+    /// `changed` are built again. Sound only when every cause named its state.
+    /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     func revisit(
         _ rendered: RenderedNode,
         changed: Set<ObjectIdentifier>
@@ -197,17 +116,8 @@ final class Differ {
         return revisit(rendered)
     }
 
-    /// One kept element: built again from what it kept when its reads moved,
+    /// One kept element: built again from its placeholder when its reads moved,
     /// walked for changed descendants when they did not.
-    ///
-    /// The rebuild runs the closure the element's placeholder captured LAST
-    /// render - which is correct precisely because this walk got here: the
-    /// parent was left alone, so nobody computed newer inputs than the ones
-    /// that closure holds. A parent that IS rebuilt writes fresh placeholders
-    /// for its children, and those are built by `element`, never here. A clean
-    /// walk moves nothing either: a child's place among its siblings is its
-    /// parent's business, and this walk only runs where the parent was left
-    /// alone.
     private func revisit(
         _ rendered: RenderedNode,
         walking: Bool = true
@@ -222,15 +132,13 @@ final class Differ {
                 sizesArrive: rendered.sizesArrive)
         }
 
-        // A composed view walked past, which an inspector writes down only as
-        // the path to something below it that was built. Not for a view just
-        // carried, whose own entry already stands for it.
+        // A composed view walked past is written down only as the path to something
+        // built below it, and not for a view just carried.
         let walked = walking && Inspection.recording && !rendered.views.isEmpty
             && Inspection.enter(rendered.views[0].type, .walked, element: rendered.id)
         defer { if walked { Inspection.leave() } }
 
-        // And the scene it is in - the record the kept state below is claimed
-        // from.
+        // And the scene it is in, whose record the kept state below is claimed from.
         let outer = sceneRecord
         if rendered.type == .scene, sceneRecord == nil, case .manual(let name) = rendered.id {
             sceneRecord = Scenes.shared.record(id: name)
@@ -239,9 +147,7 @@ final class Differ {
 
         var patch = HostPatch(id: rendered.id, type: rendered.type)
 
-        // What this element provided stays in scope while its children are
-        // walked, so a view rebuilt deep under clean ancestors resolves its
-        // `@Environment` exactly as a full build would.
+        // What this element provided stays in scope while its children are walked.
         scope.append(contentsOf: rendered.provided)
         defer { scope.removeLast(rendered.provided.count) }
 
@@ -268,12 +174,8 @@ final class Differ {
         handlers[id]
     }
 
-    /// The handlers the last walk found something to run - what left the tree
-    /// first, then the rest in the order they were reached - and forgets them.
-    ///
-    /// Taken rather than read so that a handler runs once for what produced
-    /// it. The renderer calls this once the walk is done - see
-    /// Core/Changes.swift for why not during it.
+    /// The handlers the last walk found - what left first, then the rest - taken so
+    /// each runs once.
     func takeFired() -> [EventHandler] {
         let taken = leaving + fired
         leaving.removeAll(keepingCapacity: true)
@@ -281,20 +183,14 @@ final class Differ {
         return taken
     }
 
-    /// Drops the handlers of an element that has left the tree, and of
-    /// everything under it - and books what its `.onDestroying` runs.
-    ///
-    /// Answered HERE, in the walk that stops describing the element: its
-    /// leaving is the tree's to know, and nothing about it waits on the host.
-    /// And by the renderer for a whole tree, when a new application registers.
+    /// Drops the handlers and engines of an element that left the tree, and of
+    /// everything under it, and books its `.onDestroying`.
     func forget(_ node: RenderedNode) {
         for id in node.events.values {
             handlers.removeValue(forKey: id)
         }
 
-        // And the arithmetic it ran between renders, which nothing is left to
-        // ask for: an engine whose view has gone would go on being handed
-        // frames for a picture nobody can see.
+        // Its engines: nothing is left to ask for their frames.
         for id in node.engines {
             Renderer.shared.disarm(id)
         }
@@ -303,20 +199,15 @@ final class Differ {
             forget(child)
         }
 
-        // What `.onDestroying` runs, once its subtree's is booked - so the
-        // innermost element's runs first. See Core/Lifetime.swift.
+        // Its `.onDestroying`, once its subtree's is booked - innermost first.
         leaving.append(contentsOf: node.destroying)
     }
 
     // MARK: - One element
 
-    /// Registers this element's engines, or hands the ones it already has the
-    /// arithmetic this render wrote.
-    ///
-    /// - Parameters:
-    ///   - declared: what the tree says it runs.
-    ///   - previous: the numbers it ran under last render.
-    /// - Returns: the numbers it runs under now.
+    /// Registers this element's engines, or hands the ones it has this render's
+    /// closures; a different count starts over.
+    /// Design: docs/design/core/identity-and-diffing.md#engines-on-an-element
     private func arm(
         _ declared: [EngineDeclaration],
         previous: [Int]?
@@ -329,9 +220,8 @@ final class Differ {
                     .rearm(id, following: engine.follows, with: engine.run) && kept
             }
 
-            // Unless the board has forgotten them - which is what a resync
-            // after a session was claimed afresh looks like - and then they are
-            // registered again under the numbers they already had.
+            // Unless the board forgot them, as after a session claimed afresh: then they
+            // are registered again under the numbers they had.
             if kept { return previous }
         }
 
@@ -353,19 +243,11 @@ final class Differ {
         }
     }
 
-    /// Reconciles one element against what the host has for it, and returns
-    /// both the element as it now stands and the patch that gets the host
-    /// there.
+    /// Reconciles one element and returns it as it now stands, with the patch that
+    /// gets the host there: a composed view carried whole, an element replaced, an
+    /// element changed, or one unchanged whose empty patch its parent drops.
     ///
-    /// The four cases, in the order they are decided: a composed view built
-    /// with the same inputs that read nothing that moved (nothing is built at
-    /// all), an element that cannot be
-    /// patched into shape (replaced whole), an element that changed (its
-    /// properties, events and children), and one that did not (an empty patch
-    /// its parent drops).
-    ///
-    /// `sizesArrive` says the layout this element stands in is measured, so a
-    /// size of its own takes its new value at once.
+    /// `sizesArrive` says the layout it stands in is measured.
     private func element(
         id: ElementId,
         rendered: RenderedNode?,
@@ -375,8 +257,7 @@ final class Differ {
     ) -> (node: RenderedNode, patch: HostPatch) {
         var node = node
 
-        // Whether an inspector's record has a frame open for this element,
-        // which is left however the element returns. See Core/Inspection.swift.
+        // Whether an inspector's frame is open for this element (Core/Inspection.swift).
         var inspected = false
         defer { if inspected { Inspection.leave() } }
 
@@ -385,47 +266,33 @@ final class Differ {
             boxes: [(path: String, box: StateBox)],
             inputs: [(path: String, input: Input)])] = []
 
-        // How many times this element has been described, this time included -
-        // one integer carried along the element, which is what lets a view ask
-        // how often it is being rebuilt. See Core/Builds.swift.
+        // How many times this element has been described, this time included.
         let builds = (rendered?.builds ?? 0) + 1
 
-        // Read from what the AUTHOR wrote, before any stand-in is unwrapped: the
-        // path belongs to where the element was written, and the subtree a
-        // composed view produces was written somewhere else entirely.
+        // The builder path belongs to where the element was written, so it is read
+        // before any placeholder is unwrapped.
         let key = node.key
 
-        // An aim put on the view takes the identity this element settled
-        // on - which is the whole of how an act aims, so it happens before
-        // anything else can return. See Core/Aim.swift.
+        // An aim takes the key this element settled on (Core/Aim.swift).
         let written = node.aim
         written?.attach(id, walk: walkStamp)
 
-        // And the readings it asked for, on the values they read - KEYED BY
-        // THE TARGET, so a view describing itself again replaces its own
-        // rather than adding a second, and HELD BY THIS ELEMENT, which is the
-        // whole of how long one lives. See Core/Sampling.swift.
+        // The readings asked for here, keyed by their target and held by this element
+        // (Core/Sampling.swift).
         var readings: [Sampling] = []
 
         for (image, into, asks, take) in node.samples {
             readings.append(image.sample(into: into, every: asks.window, take: take))
         }
 
-        // What `.environment()` provided HERE joins the scope before anything
-        // below can resolve - the view's own slots included, since an object
-        // provided on the view is the view's to read. Pushed as stand-ins
-        // unwrap (their content roots may provide too), popped however this
-        // element returns. The total is recorded on the element, so the clean
-        // walk can push the same scope without building anything.
+        // What `.environment()` provided here joins the scope before anything below
+        // resolves; the count is kept for the clean walk.
         var pushed = node.environments.count
         scope.append(contentsOf: node.environments)
         defer { scope.removeLast(pushed) }
 
-        // And what the element holds for its life, where it asks for
-        // something - a page's session: the object it was made with while the
-        // same kind of view stands here, handed back on every build after, and
-        // offered below like anything provided here - the view's own
-        // `@Environment` included. See Core/ElementSession.swift.
+        // What the element holds for its life - a page's session - handed back on every
+        // build (Core/ElementSession.swift).
         var session: AnyObject?
 
         if let request = node.session {
@@ -442,53 +309,34 @@ final class Differ {
         var entered = 0
         defer { bodies.removeLast(entered) }
 
-        // The environments visible at this element's composed view, when it is
-        // one - what a carry compares beside the view's inputs, because a
-        // provider replaced above is a change no input can see. See
-        // Core/Environment.swift.
+        // The environments visible at a composed view, which a carry compares.
+        // Design: docs/design/core/identity-and-diffing.md#what-a-carry-cannot-see
         var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
 
-        // Kept on the element it builds, so a later render can build the
-        // subtree again without the parent having written it - which is what
-        // `revisit` does. A composed view keeps its placeholder - which is
-        // also what the parent WROTE on it, compared on the next render to
-        // decide whether the view is carried - and a CONTAINER the node with
-        // its content still to run:
-        // the closure that read a state is the reader of it, and what the
-        // walk builds again for that state is this container's content,
-        // from here. A leaf keeps nothing: its properties were computed by
-        // an ancestor's closure, and a change to them starts at that
-        // closure's own element.
+        // What the clean walk needs to build this element again without its parent: a
+        // composed view keeps its placeholder, a container its node with the content
+        // still to run; a leaf keeps nothing.
+        // Design: docs/design/core/identity-and-diffing.md#the-clean-walk
         var placeholder = node.stateful != nil || node.producer != nil ? node : nil
 
-        // And the node as written, which a LEAF wearing a value with a half for
-        // each theme keeps in its place - see the theme below.
+        // The node as written, which a leaf wearing a themed value keeps.
         let authored = node
 
-        // Everything the builds below read, recorded against this element -
-        // the other half of what `revisit` decides by.
+        // Everything the builds below read, recorded against this element.
         var reads: Set<ObjectIdentifier> = []
 
-        // The frame the last body build ran under, kept so that the container
-        // content below runs under it too - see the content run at the end of
-        // the unwrapping.
+        // The frame the last body build ran under, for the container content below.
         var frame: BuildScope.Frame?
 
-        // WHICH SCENE this element is in - its own, where it IS one - held
-        // while it and everything under it is built, so every kept state below
-        // is claimed from it.
+        // The scene this element is in, held while it and its subtree are built.
         let outerScene = sceneRecord
         defer { sceneRecord = outerScene }
 
-        // Unwraps what stands in for a subtree, outermost first, until a real
-        // node comes out. A loop because the stand-ins nest: a composed view
-        // made of another is a placeholder around a placeholder.
+        // Unwraps nested placeholders, outermost first, until a real node comes out.
         while true {
-            // A composed view: the same identity holding the same KIND of view
-            // keeps its state, so the fresh boxes adopt their predecessors'
-            // storage BEFORE the body is built and reads them. A different view
-            // type at this position starts over, exactly as a different control
-            // type replaces the control. See Core/Stateful.swift.
+            // A composed view: the same key holding the same kind of view keeps its state,
+            // adopted before the body reads it.
+            // Design: docs/design/core/identity-and-diffing.md#state-survives-a-rebuild
             if let stateful = node.stateful {
                 let step = views.count
 
@@ -499,13 +347,8 @@ final class Differ {
                 if let rendered = rendered,
                     step < rendered.views.count,
                     rendered.views[step].type == stateful.viewType {
-                    // By PATH, not by position: a view may store another view,
-                    // and a stored slot that fills between two renders would
-                    // shift every box declared after it by one - handing a
-                    // counter that was never touched the count of one that
-                    // was. A path nobody answered is a box that starts at its
-                    // initial value, which is what a newly stored view's state
-                    // is.
+                    // By path, not by position.
+                    // Design: docs/design/core/identity-and-diffing.md#paths-pair-state
                     var kept: [String: StateBox] = [:]
 
                     for (path, box) in rendered.views[step].boxes where kept[path] == nil {
@@ -519,10 +362,8 @@ final class Differ {
                     }
                 }
 
-                // A state a scene keeps takes the storage the scene keeps for
-                // its key - adopted or new, on every build, and BEFORE the body
-                // reads it, so the first build already shows what the platform
-                // kept. See Core/Scenes.swift.
+                // A state a scene keeps takes the scene's storage for its key, before the body
+                // reads it (Core/Scenes.swift).
                 if let record = sceneRecord {
                     for (_, box) in stateful.boxes {
                         (box as? SceneClaiming)?.claimScene(record)
@@ -532,26 +373,12 @@ final class Differ {
                 views.append((
                     type: stateful.viewType, boxes: stateful.boxes, inputs: stateful.inputs))
 
-                // The `@Environment` slots resolve against everything provided
-                // so far - the view's own `.environment()` included - BEFORE
-                // the body builds and its handlers capture the view.
+                // Slots resolve against everything provided so far, before the body builds.
                 stateful.resolve(from: scope)
 
-                // A COMPOSED VIEW IS ITS OWN TOKEN. Its parent's closure ran
-                // again and constructed it afresh - but what it was BUILT
-                // WITH is its stored properties, which the walk that found
-                // its boxes also compared, and what it READ is recorded on
-                // the element. Neither moved, no provider above was
-                // replaced, the styles stand, the parent wrote the same
-                // things on it, and nobody forced this build: then the
-                // subtree is CARRIED - not built, not compared, not sent,
-                // state and handlers with it - and walked for deeper readers
-                // exactly as a clean walk would. See `Input`.
-                //
-                // Decided on the OUTERMOST view alone. A composed view made
-                // of another is one element, and the inner view's inputs are
-                // the outer body's business - which, if it ran, ran for a
-                // reason.
+                // A composed view built with the same inputs that read nothing that moved is
+                // carried whole; decided on the outermost view alone.
+                // Design: docs/design/core/identity-and-diffing.md#carrying-a-view
                 if step == 0 {
                     seen = snapshot()
 
@@ -602,40 +429,18 @@ final class Differ {
             break
         }
 
-        // A scene written as a node rather than as a scene type - a test's own
-        // tree - is the scene everything below it is in, as one the
-        // unwrapping met is.
+        // A scene written as a node rather than a scene type - a test's own tree.
         if node.type == .scene, sceneRecord == nil, case .manual(let name) = id {
             sceneRecord = Scenes.shared.record(id: name)
         }
 
-        // THE CONTAINER'S OWN CONTENT RUNS HERE, inside this element's read
-        // scope and NO DEEPER: what the author's closure reads lands on this
-        // element, and a container written inside it runs its own closure in
-        // its own element, under a scope of its own, when the walk reaches it
-        // among the children below. So THE READER OF A STATE IS THE CLOSURE
-        // THAT READ IT - the innermost container whose content did, or the
-        // body itself where the read is in the body - and nothing outside that
-        // closure is built again for it: `revisit` finds the container by its
-        // reads and builds it again from the node kept as its placeholder,
-        // while everything around it is carried over untouched.
-        //
-        // After the unwrap loop, so a composed view that was carried has
-        // already returned above and its content never runs - which is the
-        // whole saving - and before `styled`, which may need the children to
-        // append a style's visual states after them.
-        //
-        // INSIDE A BUILD FRAME, so `debugInfo()` written in the author's
-        // closure answers about the view whose closure it is: the frame the
-        // body build opened where this element IS the view, and one made for
-        // the view the walk is inside where this element is a bare container
-        // under it - named from `views` on a build, and from what the element
-        // remembered on a clean walk, which enters no body.
+        // The container's own content runs here, inside this element's read scope and
+        // build frame: the reader of a state is the closure that read it.
+        // Design: docs/design/core/identity-and-diffing.md#containers-run-their-own-content
         let within = frame ?? bareFrame(for: rendered, builds: builds)
 
-        // A CONTAINER BUILT AGAIN FOR WHAT ITS OWN CLOSURE READ, which the clean
-        // walk does with the view around it left standing - so an inspector
-        // names both: the view whose closure it is, and the container.
+        // A container built again for what its own closure read: an inspector names the
+        // view and the container.
         if Inspection.recording, forced, views.isEmpty {
             let owner = Inspection.short(within?.view ?? "a view")
 
@@ -657,36 +462,22 @@ final class Differ {
             return BuildScope.within(within, shallow)
         }
 
-        // The content a composed view unwrapped to may carry an aim of its
-        // own on its root - the SAME element, so it takes the same identity.
-        // This is what a string id inside a composed view can never have: the
-        // identity is fixed on the placeholder before the content exists, and
-        // only this walk knows the two are one.
+        // An aim on the root of a composed view's content is the same element.
         if let inner = node.aim, inner !== written {
             inner.attach(id, walk: walkStamp)
         }
 
-        // The same for a reading written on a composed view's own root: the
-        // same element, and the same target, so it replaces rather than adds.
+        // The same for a reading written on that root.
         for (image, into, asks, take) in node.samples {
             readings.append(image.sample(into: into, every: asks.window, take: take))
         }
 
-        // The style, applied HERE and nowhere else: what the host receives is a
-        // control with every value already on it, so no host has to know what
-        // a style is. After the unwrapping, because it is the
-        // real node's type and key that decide which style it wears; before
-        // everything below, because from here on this node is what is sent.
-        // See Views/Style.swift.
+        // The style is applied here, so a host receives every value already on the
+        // control (Views/Style.swift).
         node = styled(node, with: styles)
 
-        // THE THEME, picked HERE for every value written with a half for each -
-        // a `Color(light:dark:)`, an `ImageSource(light:dark:)` - wherever it
-        // was written: in a body, in a style, or into a session from a handler
-        // long before this build. The read makes this element the theme's
-        // reader, so a theme change builds it again from what was written -
-        // which is why a LEAF wearing one keeps its node, the way a container
-        // keeps its content. See Types/Color.swift.
+        // Themed values are picked here, which makes this element the theme's reader.
+        // Design: docs/design/core/identity-and-diffing.md#themes
         if node.props.values.contains(where: \.isThemed) {
             node.props = ReadScope.collect(into: &reads) {
                 node.props.mapValues { $0.isThemed ? $0.resolvingTheme() : $0 }
@@ -697,37 +488,23 @@ final class Differ {
             }
         }
 
-        // The arithmetic this element runs on the host's own frames, if it
-        // has any: registered under ids the element KEEPS, so a render hands
-        // the newest closure - this render's captures - to the engine that
-        // already has a number, rather than starting one over. A different
-        // COUNT is a different SET, the reading a changed number of watches
-        // gets and for the same reason: a `.engine(following:)` written under an `if`
-        // moves every one after it. See Core/Cycle.swift.
-        // THE ENGINES A CONVERSION NEEDS - a binding converted on its way to
-        // one of this element's properties - armed beside the author's own,
-        // ahead of them in the order, and handed each render's closures as
-        // the author's are. In property order, so the count and the set are
-        // the same from one render to the next.
+        // The engines this element runs, under numbers it keeps; a conversion's engines
+        // come first, in property order.
+        // Design: docs/design/core/identity-and-diffing.md#engines-on-an-element
         let converting = node.driven.keys.sorted()
             .compactMap { node.driven[$0]!.conversion }
             .flatMap { $0.declarations() }
         let engines = arm(converting + node.engines, previous: rendered?.engines)
 
-        // The properties this element carried last render and no longer
-        // describes. They are NAMED to the host, which clears each one, so a
-        // modifier that stops being written costs that one property - not the
-        // control, its handlers, and the state of every view under it. In
-        // name order, because everything this side writes is.
+        // Properties described last render and not now are named for the host to clear.
+        // Design: docs/design/core/identity-and-diffing.md#properties-no-longer-described
         let lost = (rendered?.props.keys.filter { node.props[$0] == nil } ?? []).sorted()
 
-        // Except for the few the host has no default to put back, which are
-        // still the whole element again. See `ElementProperty.cleared`.
+        // Except those with no host default, which replace the element.
         let replace = rendered != nil
             && (rendered!.type != node.type || lost.contains { !$0.facts.cleared })
 
-        // Nothing to build on: either this element is new, or what is there
-        // cannot become what the node describes.
+        // Nothing to build on: the element is new, or cannot become what is described.
         let previous = replace ? nil : rendered
 
         if replace, let rendered = rendered {
@@ -738,49 +515,20 @@ final class Differ {
         patch.replace = replace
         patch.fresh = describeAll || previous == nil
 
-        // How THIS element's values travel: what it was told about them, or
-        // what the application says. Per node and never inherited - see
-        // `Node.motion`. A plan answers per KIND of value, so a view may cross
-        // to its new place on a spring and take its new size at once.
+        // How this element's values animate: its own plan, or the application's.
         let plan = node.motion
         let standing = motion
         let travel = { (values: MotionValues) in
             (plan?.motion(for: values) ?? .inherited).resolved(against: standing)
         }
 
-        // What everything with no kind of its own travels at - which is what
-        // an element's own motion means where no rule names a value.
+        // What values with no kind of their own animate at.
         let travels = travel(.all)
 
-        // Whether this layout's children are ROWS the host may keep and hand
-        // to the next row of the same shape. Written when it CHANGES, like
-        // every other field here: absent means unchanged, and a sparse patch
-        // about a list whose rows merely moved must not say it again.
-        //
-        // A COMPLETE description is compared against the host's own default
-        // rather than against this side's last render, and for one reason: the
-        // host receiving it may be a fresh one, holding nothing. So a resync
-        // says it only where it is TRUE, which is also what keeps a byte off
-        // every node of every full message.
-        // HOW THIS ELEMENT MOVES WHAT THE WIRE CANNOT DESCRIBE BESIDE: where it
-        // puts its children, and what its VISUAL STATES change. Both are the
-        // host's own arithmetic - a placement is worked out from a measurement,
-        // and a state is applied by the platform, outside every message - so
-        // neither has a property for a transition to ride beside. See
-        // Core/Wire.swift, Field.motion.
-        //
-        // A control that travels the way the application does says NOTHING, on
-        // any message, ever: `.inherited` is what a control is until it is told
-        // otherwise, on both sides, so the common case is not on the wire at
-        // all. What is said is an override, and its going away.
-        //
-        // A visual state is written as a CHILD, and `write(_:into:resting:)`
-        // keeps them after whatever the control lays out - so the last child
-        // is the whole of the question.
-        //
-        // And any element that answered `.motion(_:)` for itself, because what
-        // the HOST decides follows that answer: where children go, what a
-        // visual state changes, and whether showing and hiding crosses.
+        // An element that places children, has visual states, or answered `.motion(_:)`
+        // for itself says how its children animate; `.inherited`, the default on both
+        // sides, is never said.
+        // Design: docs/design/core/identity-and-diffing.md#layout-motion
         if NodeType.saysMotion.contains(node.type)
             || node.states
             || plan?.base != nil {
@@ -789,27 +537,19 @@ final class Differ {
                 : (plan?.motion(for: .place).map { $0.isInherited ? .inherited : $0 }
                     ?? .inherited)
 
-            // INHERITED until told otherwise, on both sides - so a layout that
-            // travels the way the application does has nothing to say, on a
-            // first render as much as on a patch. The application itself has no
-            // such default and always says its own once.
+            // Inherited until told otherwise; the application says its own once.
             let was: Motion? = node.type == .application
                 ? (describeAll ? nil : previous?.motion)
                 : (describeAll ? .inherited : (previous?.motion ?? .inherited))
 
-            // WHICH PARTS of a place travel. A layout told `.motion(.none,
-            // .size)` puts its children in their new places and gives them
-            // their new size at once, which is what a panel whose content
-            // changes shape wants: a view growing out of nothing is the one
-            // movement a reader reads as a fault.
+            // Which parts of a child's place animate.
             var lanes = MotionLanes.all
 
             if travel(.place).isNothing { lanes.subtract(.place) }
             if travel(.width).isNothing { lanes.subtract(.width) }
             if travel(.height).isNothing { lanes.subtract(.height) }
 
-            // A MEASURED LAYOUT's children take their sizes at once and travel
-            // only by their place - the rule for properties below.
+            // A measured layout's children take their sizes at once.
             if node.childSizesArrive { lanes.subtract([.width, .height]) }
 
             let stood = describeAll ? MotionLanes.all : (previous?.lanes ?? .all)
@@ -823,26 +563,17 @@ final class Differ {
             patch.recycles = node.recycles
         }
 
-        // Nothing to clear on an element being described from scratch: the
-        // patch is complete, so what is not in it was never set.
+        // Nothing is cleared on an element described from scratch.
         patch.clearedProperties = replace ? [] : lost
 
-        // What `.onChanged` watches, against what this element carried last
-        // time it was built. Nothing here reaches the patch: the comparison is
-        // this side's alone, and the handlers are run by the renderer once the
-        // walk is done, before the message is encoded - what they write is
-        // walked and merged into it. See Core/Changes.swift.
-        //
-        // Only against an element that is CONTINUING - a new one, or one being
-        // replaced, has nothing to have changed from. A different count is a
-        // different set of watches rather than a set that all moved, so it
-        // starts over too.
+        // `.onChanged` against what this continuing element carried last time; a
+        // different count starts over.
+        // Design: docs/design/core/identity-and-diffing.md#watching-values
         if let previous = previous, previous.watched.count == node.watches.count {
             for (index, watch) in node.watches.enumerated() {
                 let old = previous.watched[index]
 
-                // Nil means the stored value is of another type: that slot
-                // changed hands, and a slot changing hands starts over.
+                // Nil: the stored value is of another type, and the slot starts over.
                 if watch.matches(old) == false {
                     let new = watch.value
                     fired.append { try await watch.run(old, new) }
@@ -850,49 +581,27 @@ final class Differ {
             }
         }
 
-        // What `.onCreated` runs, once, for an element that was not here - a
-        // new one, or one replacing what stood here before. Run once the walk
-        // is done, with the watches, before the message leaves. See
-        // Core/Lifetime.swift.
+        // `.onCreated` for an element that was not here.
+        // Design: docs/design/core/identity-and-diffing.md#created-and-destroying
         if previous == nil {
             fired.append(contentsOf: node.created)
 
-            // A node type the host said it does not realize is said once,
-            // with the names it likely meant.
+            // A node type the host does not realize is said once, with near misses.
             if let unrealized = HostRealizations.unrealized(node.type) {
                 complain(unrealized)
             }
         }
 
-        // Properties. Everything when there is nothing to compare against, only
-        // the differences when there is - and everything again on a resync.
+        // Every property when there is nothing to compare against, or on a resync.
         let changed = previous.map { was in
             node.props.filter { key, value in was.props[key] != value }
         } ?? node.props
 
         patch.properties = describeAll ? node.props : changed
 
-        // EVERY OTHER PROPERTY THAT MOVED, TRAVELS. A value that changed is a
-        // setpoint: the tree says where it is going and the host's engine takes
-        // the control there, so a colour crosses to the colour it became and a
-        // view that grew arrives at its size.
-        //
-        // On a CONTINUING element alone. An element being described for the
-        // first time - built, replaced, resynced, or adopted under a fresh
-        // identity - has no "before" to travel from, so the first thing anyone
-        // sees is always the thing itself: first render at target is a fact of
-        // these bytes and not something the host has to work out.
-        //
-        // Channel ZERO: nobody started this and nobody is waiting for it.
-        //
-        // Nothing is written for a value with no half-way - a string, a flag, a
-        // member of an enumeration, a brush - and nothing at all when the
-        // motion is none, where a snap costs exactly the bytes it always did.
-        //
-        // A SIZE SOMEBODY MEASURES ARRIVES. Where this element reports its own
-        // frame, or the layout it stands in is measured, a size is worked out
-        // from a report - and carried through a motion it would lay the page
-        // out at sizes nobody chose, growing from nothing on its first report.
+        // A property that changed on a continuing element animates to its new value; a
+        // measured size arrives at once.
+        // Design: docs/design/core/identity-and-diffing.md#transitions
         let measured = sizesArrive || node.reportsFrame
 
         if !describeAll, !replace, previous != nil, plan != nil || !travels.isNothing {
@@ -909,15 +618,8 @@ final class Differ {
             }
         }
 
-        // Events. Ids are inherited so that an element the host is not being
-        // told about goes on resolving the ids it already has.
-        //
-        // In name order, because a Dictionary has none: Swift seeds its hashing
-        // per process, so the same tree would hand the same three events three
-        // different ids on three different runs. Nothing breaks - the ids are
-        // sent with the element that uses them - but two runs of one tree stop
-        // being comparable, which is the same reason Core/Wire.swift writes
-        // props and events in name order.
+        // Handler ids are kept per event, assigned in name order.
+        // Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
         var events: [Event: Int] = [:]
         for (name, handler) in node.events.sorted(by: { $0.key < $1.key }) {
             let handlerId = previous?.events[name] ?? allocateHandlerId()
@@ -932,13 +634,7 @@ final class Differ {
             }
         }
 
-        // Set when the event set CHANGED, so the host replaces its map. Empty
-        // counts as a change only for a CONTINUING element - one whose last
-        // handler went - because there an empty map MEANS "clear what you
-        // had"; for a new element or a resync an empty set is nothing to say,
-        // and writing it would put a redundant field on every eventless
-        // control. See Core/Wire.swift, which writes an empty set through
-        // rather than skipping it.
+        // Sent when the handled set changed; an empty map only for a continuing element.
         let eventsChanged = describeAll || previous == nil
             ? !events.isEmpty
             : Set(events.keys) != Set(previous!.events.keys)
@@ -947,34 +643,17 @@ final class Differ {
             patch.events = .replace(events.mapValues { Int32($0) })
         }
 
-        // The properties driven to a state. Asking each state for its number
-        // is what ISSUES one, so they are numbered in the order the tree is
-        // walked - which is the order a fixture's sidecar reads in, and the
-        // reason two runs of one tree number alike.
-        //
-        // Written when the set CHANGED, an emptied set included: an element
-        // that stopped tying a property has to say so, or the host would go on
-        // reading a state for a property the tree has taken back. Compared as a
-        // whole, so a state swapped for another under the same property is a
-        // change like any other.
-        // IN NAME ORDER, because asking a state for its number is what ISSUES
-        // one: a Dictionary has no order and Swift salts its hashing per
-        // process, so numbering them as they happen to be stored would give
-        // one tree different numbers in two runs - and a fixture's bytes are
-        // a contract. Sorted here, the numbers follow the walk and the names.
+        // The properties driven to a state, numbered in walk and name order; the set is
+        // sent whenever it changed, an emptied one included.
+        // Design: docs/design/core/identity-and-diffing.md#driven-properties
         var driven: [Prop: StateEntry] = [:]
 
         for key in node.driven.keys.sorted() {
             let registration = node.driven[key]!
             let state = registration.state
 
-            // WHAT `.inherited` MEANS ON THIS VALUE, worked out here because
-            // this is the only side that can. The host is told what the
-            // APPLICATION says and no more; an element's `.motion(_:_:)` is a
-            // plan answering per KIND of value, so which law a driven opacity
-            // travels under is a question only the tree can be asked. The
-            // answer is left on the value and read at the crossing - see
-            // `HostStorage.crossing()`.
+            // What `.inherited` means on this value can be answered only here; the answer
+            // stays on the state and is read at the crossing.
             let mine = travel(key.facts.moves.union(registration.values))
 
             if let already = state.inheritedBy, already != id, state.inherited != mine {
@@ -1037,11 +716,8 @@ final class Differ {
         return (result, patch)
     }
 
-    /// The frame a bare container's content runs under: the composed view
-    /// the walk is inside, with THIS element's own count and reads - so a
-    /// reading taken in the container's braces names the view and counts the
-    /// container, which is what is built again when a state read there moves.
-    /// Nothing where the walk is inside no view at all.
+    /// The frame a bare container's content runs under: the view the walk is in,
+    /// with this element's own count and reads.
     private func bareFrame(for rendered: RenderedNode?, builds: Int) -> BuildScope.Frame? {
         guard let view = bodies.last ?? rendered?.view else { return nil }
 
@@ -1054,10 +730,8 @@ final class Differ {
             everything: describeAll)
     }
 
-    /// Why a composed view is being built rather than carried, in words - what
-    /// an inspector shows beside it. The same questions the carry asks, in the
-    /// same order, answered with the first that says no. Asked only while an
-    /// inspector is recording.
+    /// Why a composed view is built rather than carried, in words - the carry's
+    /// questions in the carry's order. Asked only while an inspector records.
     private func reason(
         _ stateful: Node.Stateful,
         node: Node,
@@ -1106,21 +780,10 @@ final class Differ {
 
     // MARK: - Children
 
-    /// Matches this render's children against the last one's, patches each, and
-    /// says how they now stand when that changed.
-    ///
-    /// Where the identities come from is the whole of it: a child written with
-    /// an `.id()` is found wherever it has moved to, one without is found by
-    /// position. What the patch then carries is decided by ONE comparison, the
-    /// id sequence against last render's: unchanged, and only the children
-    /// with something to say are sent, each found again by its identity;
-    /// changed - an addition, a removal and a move all change it - and the
-    /// patch carries the COMPLETE list in order, the unchanged children as
-    /// stubs. The list is then the whole story: its order, its length, and
-    /// who is no longer in it.
-    ///
-    /// `sizesArrive` is handed to every child: the layout is measured, so their
-    /// sizes take their new values at once.
+    /// Matches this render's children against the last one's and patches each. An
+    /// unchanged key sequence sends only the children with something to say; a
+    /// changed one sends the complete list in order.
+    /// Design: docs/design/core/identity-and-diffing.md#keys
     private func reconcileChildren(
         of previous: RenderedNode?,
         node: Node,
@@ -1136,19 +799,13 @@ final class Differ {
                 byManualId[key] = child
             }
 
-            // First wins, so two elements that somehow claim one path behave
-            // like two siblings written with the same `.id()`: the second is
-            // identified by where it stands instead.
+            // First wins, so two elements claiming one path behave like a repeated `.id()`.
             if let key = child.key, byKey[key] == nil {
                 byKey[key] = child
             }
         }
 
-        // The elements the builder did NOT write - a node put among them by
-        // hand, the way a page appends its TitleView. They are still matched by
-        // position, and by position among THEMSELVES: a conditional beside them
-        // changes how many children there are, and counting past it would find
-        // the wrong one.
+        // Nodes put in by hand are matched by position among themselves.
         let unkeyed = rendered.filter { $0.key == nil }
 
         var children: [RenderedNode] = []
@@ -1159,16 +816,8 @@ final class Differ {
         var manualSeen: [String: Int] = [:]
 
         for (index, childNode) in node.children.enumerated() {
-            // Two siblings written with the same `.id()`. The host matches
-            // children by identity and one control cannot be in two places,
-            // so the repeat cannot keep the bare id - but a fresh AUTOMATIC id
-            // every render would rebuild its control, its handlers and its
-            // `@State` each time and resend the arrangement each time. A
-            // STABLE variant instead - the id with an occurrence number behind
-            // a NUL - is the same identity every render, so the repeat keeps
-            // everything a first-occurrence element would. A NUL cannot come
-            // out of a `String(describing:)` an author wrote, so the variant
-            // can never collide with an id someone spelled.
+            // A repeated `.id()` takes a stable variant: the id, a NUL, its occurrence.
+            // Design: docs/design/core/identity-and-diffing.md#repeated-ids
             var childNode = childNode
             if let rawId = childNode.id {
                 let occurrence = manualSeen[rawId, default: 0]
@@ -1197,8 +846,7 @@ final class Differ {
 
             var id = match?.id ?? identity(for: childNode)
 
-            // A backstop for a variant that somehow still collided - it never
-            // should, the occurrence number making each unique.
+            // A backstop for a variant that still collided, which it should not.
             if used.contains(id) {
                 id = .auto(allocateElementId())
             }
@@ -1208,17 +856,13 @@ final class Differ {
             var (child, childPatch) = element(
                 id: id, rendered: match, node: childNode, sizesArrive: sizesArrive)
 
-            // What this row LOOKS like, so the host can hand its control to
-            // the next row of the same shape. Only under a layout that says
-            // its children are rows, and only when the number MOVED: a row
-            // that starts writing a conditional property is a row the pool
-            // must stop offering to the rows that do not write it. See
-            // Core/Recycling.swift.
+            // What this row looks like, under a layout whose rows are recycled; sent when
+            // it moved.
+            // Design: docs/design/core/identity-and-diffing.md#recycling
             if node.recycles {
                 child.shape = Recycling.shape(of: child)
 
-                // Against the host's default on a complete description, for
-                // the reason the recycling flag is - see `element`.
+                // Against the host's default on a complete description.
                 let had = describeAll ? Recycling.none : (match?.shape ?? Recycling.none)
 
                 if child.shape != had {
@@ -1234,9 +878,7 @@ final class Differ {
             forget(child)
         }
 
-        // The arrangement is described only when it changed. Sending it always
-        // would make the host rearrange the child list on every render of a
-        // parent whose children merely changed their text.
+        // The arrangement is sent only when it changed.
         if describeAll || children.map(\.id) != rendered.map(\.id) {
             patch.children = .arranged(patches)
         } else {
@@ -1247,24 +889,9 @@ final class Differ {
         return children
     }
 
-    /// The rendered element a node continues, if any.
-    ///
-    /// Three ways to be the same element, in the order they are tried:
-    ///
-    /// 1. **The author's `id`** - a NAME, matched wherever the element has moved
-    ///    to. This is what a collection needs, and what `ForEach` stamps from
-    ///    its items.
-    /// 2. **The builder's path** - WHERE it was written, matched wherever it has
-    ///    moved to as well. Which statement, which branch; see `Node.key`. An
-    ///    element from one branch of an `if` never matches one from the other,
-    ///    and an element after a conditional does not move when the
-    ///    conditional changes its mind.
-    /// 3. **Position** - for a node put in by hand rather than by a builder, and
-    ///    counted among the hand-written ones only.
-    ///
-    /// The three never meet: a node identified one way is never matched to an
-    /// element identified another, so a `.id()` added to a view replaces the
-    /// control rather than quietly adopting the one the path had.
+    /// The rendered element a node continues: by the author's `.id()`, then by the
+    /// builder path, then by position - three ways that never meet.
+    /// Design: docs/design/core/identity-and-diffing.md#keys
     private func match(
         _ node: Node,
         at index: Int,
@@ -1298,27 +925,15 @@ final class Differ {
 
     // MARK: - Environment
 
-    /// Starts a walk's scope over: the STANDARD providers first - the host's
-    /// battery, connectivity, display and their kin, seeded at the bottom so
-    /// any view resolves them with nothing provided, and an app's own
-    /// `.environment()` deeper in the tree is nearer and wins. See
-    /// Types/HostEnvironment.swift.
+    /// Starts a walk's scope with the standard providers, so any view resolves them
+    /// and an app's own `.environment()` below is nearer (Types/HostEnvironment.swift).
     private func seedScope() {
         scope.removeAll(keepingCapacity: true)
         scope.append(contentsOf: StandardEnvironment.scope)
     }
 
-    /// Whether the parent wrote the same things on a composed view as it did
-    /// last render - the half of a carry that is about the PLACEHOLDER rather
-    /// than the view inside it.
-    ///
-    /// Properties, the motion plan, driven ties and the objects
-    /// `.environment()` provided on it are compared; a watch is compared by its value, the way the change
-    /// pass compares it; handlers by their NAMES, and what runs as the view
-    /// comes and goes by how much of it there is, the closures being taken
-    /// fresh by the carry. Anything harder to compare - a slot written on the
-    /// view, an engine, a reading - makes the view build as it always did,
-    /// which errs the right way.
+    /// Whether the parent wrote the same things on a composed view as last render.
+    /// Design: docs/design/core/identity-and-diffing.md#what-the-parent-wrote
     private func sameWriting(_ node: Node, as kept: Node) -> Bool {
         guard node.props == kept.props,
             node.motion == kept.motion,
@@ -1357,17 +972,9 @@ final class Differ {
         return true
     }
 
-    /// Carries a composed element whose inputs, reads and writing all held:
-    /// nothing under it is built, and the walk goes on below it for readers
-    /// of what moved.
-    ///
-    /// THE HANDLERS THE PARENT WROTE ARE TAKEN FRESH. A handler written on the
-    /// view is the parent's closure, and that closure ran again: what it
-    /// captured is what the parent computed THIS time, so the handler written
-    /// last is the one that runs - under the ids the element keeps, which the
-    /// host already quotes. The placeholder is kept fresh for the same reason:
-    /// a later clean walk that builds this element from it runs the closure
-    /// that holds the newest inputs, equal though they are.
+    /// Carries a composed element whose inputs, reads and writing all held: nothing
+    /// under it is built, and the handlers the parent wrote on it are taken fresh.
+    /// Design: docs/design/core/identity-and-diffing.md#what-the-parent-wrote
     private func carry(
         _ rendered: RenderedNode,
         written node: Node
@@ -1378,9 +985,7 @@ final class Differ {
             }
         }
 
-        // And what it runs as it leaves: what its body wrote at its last
-        // build, then what the parent wrote on it, taken fresh like its
-        // handlers. See Core/Lifetime.swift.
+        // Its `.onDestroying`: its body's last ones, then the parent's, taken fresh.
         rendered.destroying =
             Array(rendered.destroying.dropLast(node.destroying.count)) + node.destroying
 
@@ -1389,9 +994,7 @@ final class Differ {
         return revisit(rendered, walking: false)
     }
 
-    /// The nearest provided object per type, by identity - what a carried
-    /// view's check compares. Later entries are nearer, so a plain overwrite
-    /// wins right.
+    /// The nearest provided object per type, by identity - what a carry compares.
     private func snapshot() -> [ObjectIdentifier: ObjectIdentifier] {
         var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
 
@@ -1404,20 +1007,19 @@ final class Differ {
 
     // MARK: - Identity
 
-    /// The identity for an element being seen for the first time: the author's
-    /// if there is one, otherwise a fresh number.
+    /// A new element's key: the author's, or a fresh number.
     private func identity(for node: Node) -> ElementId {
         node.id.map(ElementId.manual) ?? .auto(allocateElementId())
     }
 
-    /// The next element identity. Never reused, ever.
+    /// The next element id. Never reused.
     private func allocateElementId() -> Int {
         let id = nextElementId
         nextElementId += 1
         return id
     }
 
-    /// The next handler id. Never reused either.
+    /// The next handler id. Never reused.
     private func allocateHandlerId() -> Int {
         let id = nextHandlerId
         nextHandlerId += 1

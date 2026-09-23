@@ -1,29 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The names this library speaks, as TOKENS.
-//
-// Everything the wire names - a node's type, a property key, an event, an act
-// - is a closed vocabulary with one open edge: an application can add its own
-// entries. So each vocabulary is a STRUCT holding the name, with the library's
-// own entries as static members, and nothing else inside. A token is a NAME
-// and only a name: which NUMBER it rides under is the transport's business,
-// settled per session in Core/Wire.swift - the first message that uses a name
-// announces it, and both sides speak the number from then on. That is what
-// makes the library's tokens and an application's the same thing: there is no
-// reserved pool to collide with and no table to be missing from.
-//
-// Nobody writes a token by hand: an element and its members are declared in a
-// CONTRACT (Core/Contract.swift), and a member's token is made from its name -
-// the library's and an application's alike. A node type is the one token a
-// contract spells, as a literal: `static let nodeType: NodeType =
-// "Gallery.TrafficLight"`.
-//
-// Each name is SPELLED ONCE, where a contract declares its member, and a
-// token here is made from that member - `static let fontSize =
-// FontElementContract.fontSize.token`. The library's sources write the members,
-// or these tokens where they read a tree, and `testNoSourceSpellsAName` names
-// any file that spells a name out instead.
+// The names the library speaks, as tokens: a name only, whose number the session's
+// dictionary settles. Every token is made from its contract's member.
+// Design: docs/design/core/contracts.md#tokens
 
 /// The kind of element a `Node` describes: a native-host capability, a
 /// structural node StateUI defines, or an application's own control.
@@ -152,44 +132,19 @@ public struct Act: Hashable, Sendable, ExpressibleByStringLiteral,
 
 // MARK: - The library's own vocabulary
 //
-// One token per member the sources and the hosts name, made from the member: a
-// new control, property, event or act starts in its CONTRACT, and its token
-// follows here - there is no table to keep in step and no number to reserve.
-//
-// FOR THE HOSTS, behind `@_spi(Host)`: they read a tree by these names until
-// their registrations name the members themselves. An application writes a
-// member with its contract - `ViewContract.pinchUpdated` - which is where the
-// name and its value's type meet, and so do these sources wherever they write
-// a value.
-//
-// A TOKEN IS ITS MEMBER'S NAME, standing under the member's own - `fontSize`,
-// `label` - and a node type is its contract's name: `LabelContract` declares
-// "Label". LibraryContractTests says both, which is what leaves nothing to
-// remember and nothing to look up: the declaration cannot lie about what goes
-// on the wire.
-//
-// A token carries no `///`: its documentation is its member's, where an author
-// and a host read what the member holds, carries or does.
+// One token per member the sources and the hosts name, made from the member, for
+// the hosts behind `@_spi(Host)`. A token carries no `///`: its documentation is
+// its member's.
 extension NodeType {
-    /// Elements whose host arranges children from native measurement rather
-    /// than from an ordinary property.
-    ///
-    /// This set decides which elements may emit `HostLayoutMotion` for their
-    /// children. Everything else has no child arrangement to transition.
+    /// Elements whose host arranges children from native measurement - the ones that
+    /// may say how their children animate.
     static let places: Set<NodeType> = [
         .vStack, .hStack, .grid, .absoluteLayout,
     ]
 
-    /// Elements that always resolve a layout-motion field: child-placing
-    /// layouts and the application that supplies the shared fallback.
-    ///
-    /// A control also says it when its VISUAL STATES move a value, which is
-    /// decided per node rather than per type: a state is a child, and any
-    /// control may have one. See `Differ.element`.
-    ///
-    /// One number for a whole application rather than one per control: a
-    /// control that travels the way everything else does says nothing at all,
-    /// on any message, ever.
+    /// Elements that always say a layout motion: child-placing layouts and the
+    /// application, whose answer the rest inherit.
+    /// Design: docs/design/core/identity-and-diffing.md#layout-motion
     static let saysMotion: Set<NodeType> = places.union([.application])
 }
 

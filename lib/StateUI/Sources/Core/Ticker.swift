@@ -1,39 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A timer, as a loop that sleeps.
-//
-// Foundation has one and it cannot be used here: `Timer` hangs off a `RunLoop`,
-// and nothing turns a RunLoop on Android or Windows. What IS available on every
-// platform is Swift's own concurrency, because MainActor's jobs reach the UI
-// thread everywhere and a resume wakes the host; see Core/UIThread.swift.
-//
-// So a timer here is `Task.sleep` in a loop, and this class is that loop with
-// the four things an author would otherwise write again each time:
-//
-// - the sleep is to a DEADLINE rather than for a length: a resume costs a few
-//   milliseconds a lap, a loop that sleeps for the interval adds every one up,
-//   and sleeping until the next deadline spends that lateness instead.
-// - the loop belongs to one RUN. Starting again retires the previous loop
-//   through a token, which is what stops a return to a page ending up with two
-//   loops counting the same number down twice as fast.
-// - a tick asks for a render, so a view that reads `ticks` follows it with
-//   nothing subscribed.
-// - EVERY entry point is safe from any thread, which is the one that shapes the
-//   rest of this file. See below.
-//
-// WHY ITS PROPERTIES ARE NOT `@State`s, when a model's in an application
-// should be. A `@State` is ONE value behind its own lock, safe from any thread
-// by itself - and a ticker is several values that change TOGETHER: a tick
-// moves the count, the last one clears `isRunning` first, a restart retires the
-// run that was going, and `start`, `stop` and `reset` arrive from wherever
-// `onTick`'s work ended up. Read from separate locks, `start()` racing a last
-// tick could see the count of one moment and the running flag of another.
-//
-// So the state lives behind ONE lock, the public properties read through it,
-// and the renders are asked for outside it - naming the ticker itself as what
-// was read and written, since to a view it is one thing. The pattern is
-// `Renderer`'s.
+// A repeating timer as a loop that sleeps to a deadline, safe to drive from any
+// thread.
+// Design: docs/design/core/cycle.md#the-ticker
 
 /// A repeating timer: something to read while it counts.
 ///
@@ -47,28 +17,13 @@
 ///     }
 ///     .onDestroying { ticker.stop() }
 ///
-/// A tick writes what the interface reads and asks for the next render, so
-/// there is no event to subscribe to and nothing to unsubscribe. Hold it in a
-/// `@State`, which is what keeps the instance across renders, and stop it in
-/// `.onDestroying` when it should not outlive the view.
-///
-/// **Every method is safe to call from any thread**, which is what makes the
-/// other half of this work: an `onTick` that hands its work to another task can
-/// call `start()` again from wherever that work finished. See
-/// `Ticker(every:isRepeating:limit:onTick:)`.
-///
-/// Not Foundation's `Timer`, which needs a RunLoop nothing turns on Android or
-/// Windows - and not named `Timer` either, because an application that imports
-/// Foundation would then have two types of that name in scope and neither would
-/// win. It sleeps to a deadline rather than for a length, so a minute of
-/// seconds is a minute rather than a minute and three seconds.
+/// A tick asks for a render, so a view reading `ticks` follows it with nothing
+/// subscribed. Hold it in a `@State`, and stop it in `.onDestroying` when it
+/// should not outlive the view. Every method is safe from any thread. It sleeps
+/// to a deadline, so a minute of seconds is a minute.
 public final class Ticker: @unchecked Sendable {
-    /// What a tick runs, if anything.
-    ///
-    /// Isolated to `@MainActor`, so it runs where a handler runs - on the
-    /// host's UI thread - and may therefore read and write `@State` like any
-    /// handler. It may await: the tick after it is scheduled from where this
-    /// one ENDS, so a slow tick delays the next rather than overlapping it.
+    /// What a tick runs. It runs on `@MainActor`, so it may read and write `@State`;
+    /// it may await, and the next tick is scheduled from where it ends.
     public typealias Tick = @MainActor @Sendable () async -> Void
 
     /// The one lock.
@@ -81,18 +36,11 @@ public final class Ticker: @unchecked Sendable {
     private var count = 0
     private var running = false
 
-    /// Which run the loop belongs to. It is what makes starting twice safe: a
-    /// loop suspended in its sleep cannot be cancelled from outside without
-    /// holding its Task, so each run takes a number and a loop that wakes
-    /// holding an old one returns rather than ticking.
+    /// Which run the loop belongs to: a loop waking with an old number returns.
     private var run = 0
 
-    /// How long between ticks. Written while running, it takes effect from the
-    /// next tick.
-    ///
-    /// A millisecond is the floor, and anything shorter - zero, or a negative
-    /// interval arrived at by arithmetic - is that instead. See
-    /// `Ticker(every:isRepeating:limit:onTick:)`.
+    /// How long between ticks; written while running, it applies from the next tick.
+    /// A millisecond is the floor.
     public var interval: Duration {
         get {
             Renderer.shared.stateRead(self)
@@ -221,13 +169,9 @@ public final class Ticker: @unchecked Sendable {
         storedTick = onTick
     }
 
-    /// Starts counting, or does nothing if it is already counting.
-    ///
-    /// Returns at once - the loop is a task, and the first tick is one interval
-    /// away. A ticker that has reached its limit starts over.
-    ///
-    /// Safe from any thread, which is what lets an `onTick` that moved its work
-    /// to another task start the next round from there.
+    /// Starts counting, or does nothing if it is already counting. Returns at once;
+    /// the first tick is an interval away, and a ticker at its limit starts over.
+    /// Safe from any thread.
     public func start() {
         let mine: Int? = guarded.withLock { () -> Int? in
             guard !running else { return nil }
@@ -243,8 +187,7 @@ public final class Ticker: @unchecked Sendable {
         // Already running: not an error, and nothing to report.
         guard let mine else { return }
 
-        // Outside the lock, always: the renderer takes a lock of its own, and
-        // a lock taken inside a lock is how an order gets reversed.
+        // Outside the lock: the renderer takes a lock of its own.
         Renderer.shared.stateChanged(self)
 
         Task { @MainActor [self] in await loop(mine) }
@@ -275,10 +218,7 @@ public final class Ticker: @unchecked Sendable {
         Renderer.shared.stateChanged(self)
     }
 
-    /// The loop, on the host's UI thread.
-    ///
-    /// Every read of the state goes through the lock, because `stop()` and
-    /// `interval` may be written from anywhere between one lap and the next.
+    /// The loop, on the UI thread; every read of the state goes through the lock.
     private nonisolated(nonsending) func loop(_ mine: Int) async {
         var deadline = ContinuousClock.now
 
@@ -287,14 +227,9 @@ public final class Ticker: @unchecked Sendable {
 
             try? await Task.sleep(until: deadline)
 
-            // Both halves matter: `running` is an ordinary stop, and the token
-            // catches a loop whose run was replaced while it slept.
-            //
-            // A LAST tick stops the ticker BEFORE running the tick, not after.
-            // That is what lets the tick itself start the next round - the
-            // whole point of a ticker that does not repeat - because `start()`
-            // on one that is still running is a no-op, and a stop written
-            // afterwards would undo the round the tick just asked for.
+            // A stop and a replaced run both end the loop. The last tick stops the ticker
+            // before it runs, so the tick itself can start the next round.
+            // Design: docs/design/core/cycle.md#the-ticker
             let (tick, last): (Tick?, Bool) = guarded.withLock { () -> (Tick?, Bool) in
                 guard running, run == mine else { return (nil, false) }
 
@@ -314,26 +249,12 @@ public final class Ticker: @unchecked Sendable {
 
             if last { return }
 
-            // The tick may have called stop() - or start(), which takes a new
-            // run number and makes this loop the old one.
+            // The tick may have stopped the ticker, or started a new run.
             guard guarded.withLock({ running && run == mine }) else { return }
 
-            // A lap that took longer than a WHOLE interval would otherwise
-            // leave the deadline far enough in the past that the laps it
-            // "missed" all come due at once. The next one is measured from here
-            // instead, which restores the gap between ticks.
-            //
-            // A whole interval, not merely "the deadline has passed": a sleep
-            // overshoots its deadline by whatever the platform's floor is, and
-            // clamping on THAT hands the overshoot to the next lap, where it
-            // happens again - one lateness becomes one per tick, which is the
-            // accumulation this loop sleeps to a deadline to avoid. It is what
-            // `testTicksDoNotDriftApart` measures where it runs - not on
-            // Windows, whose ~12 ms floor is wider than the drift, which is
-            // why that test stands aside there. What the clamp is FOR is
-            // unaffected: a ticker whose tick outruns its interval keeps the
-            // gap between ticks under either clamp, where no clamp at all
-            // lets the missed laps come due at once.
+            // A lap longer than a whole interval restarts the deadline from now, so missed
+            // laps do not all come due at once.
+            // Design: docs/design/core/cycle.md#the-ticker
             if deadline + guarded.withLock({ storedInterval }) < .now { deadline = .now }
         }
     }
@@ -341,20 +262,11 @@ public final class Ticker: @unchecked Sendable {
     /// Whether the count has reached the limit. Callers hold the lock.
     private var finished: Bool { storedLimit.map { count >= $0 } ?? false }
 
-    /// An interval the loop can actually sleep for.
-    ///
-    /// Zero is not a very fast ticker and a negative one is not a ticker at
-    /// all: the deadline would never reach ahead of the clock, so every sleep
-    /// would return at once and the loop would tick as fast as the host's UI
-    /// thread could carry it - taking the interface down with it, on the one
-    /// thread that draws it. A millisecond is the floor, which is well under
-    /// every platform's own resolution (Windows sleeps in steps of about 12),
-    /// so nothing anyone could have measured is clamped away.
+    /// An interval the loop can sleep for: a millisecond at least.
     private static func usable(_ interval: Duration) -> Duration {
         max(interval, .milliseconds(1))
     }
 
-    /// Stands in for an absent `onTick`, so the lock can answer "tick" and
-    /// "do not tick" with the same optional rather than two flags.
+    /// Stands in for an absent `onTick`, so one optional answers "tick" or not.
     private static let nothing: Tick = {}
 }

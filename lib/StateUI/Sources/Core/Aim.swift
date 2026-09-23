@@ -1,78 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// WHERE AN ACT IS AIMED: which control it is about, declared on the view.
-//
-// The tree describes what the interface IS; an act - putting the keyboard on a
-// field, stepping back through a WebView's history, moving a map - has to say
-// WHICH control it is about, and a description rebuilt every render has no
-// object to point at. What survives a render is the element's IDENTITY, and an
-// `Aim` is that identity, declared where the view declares its state:
-//
-//     @Aim(WebView.self) private var browser
-//
-//     WebView(address).aim(browser)
-//     Button("Back").onClicked { try await browser.goBack() }
-//
-// AIMING IS ONE WORD ON BOTH SIDES OF THE WIRE: the host resolves the control
-// an act names by the same aim. It holds no state of the control's own - not a
-// property, not a report, nothing readable - which is why it is not a
-// `@State`: it is the answer to "which one", and nothing else.
-//
-// WHAT AN AUTHOR HOLDS IS DECLARED, ONE WAY FOR EACH KIND: a VALUE with
-// `@State` - shown by the closures that read it, or walked by the host
-// (`.opacity($fade)`, see Core/StateValue.swift) - and a CONTROL with `@Aim`,
-// which `.aim(_:)` puts on a view. On a value you WRITE; on a control you
-// CALL - and which member is which follows what the native toolkits share: a
-// value every host can hold and set is a property, and something that HAPPENS
-// is an act. Focusing, moving a map to a region and stepping a web view back
-// are acts (the platforms expose their state read-only, or they mean "again",
-// which no value can say on a wire where an absent field means unchanged). A
-// scroller's offset is answered with STATE instead - `scroll($:)`, both ways -
-// because this side has an engine of its own to move it with, and a value
-// that is where the scroller IS says more than a call that sends it.
-//
-// THE MECHANISM is the differ's: every element carries an identity - allocated
-// once, never reused, stable for as long as the element stays in the tree -
-// and it is on the wire already, being what the host matches controls by.
-// `.aim(_:)` links the aim's box to the node, the differ writes the settled
-// identity into the box as it walks, and the act sends it: a NUMBER for an
-// element the author never named, the NAME for one that also says
-// `.id("x")` - the two namespaces the tree's ids have. The host resolves
-// either back to its control.
-//
-// WHY A BOX INSIDE THE AIM. `Node.aim` has to hold whatever was written on the
-// view without knowing WHICH control it is about - a node is not generic - so
-// the erased `AimBox` is what the tree stores and the typed `Aim<Target>` is
-// what the author holds. The type parameter is therefore pure surface: it is
-// what makes `goBack()` offer itself on a WebView's aim and nowhere else, and
-// `moveToRegion` on a map's.
-//
-// WHY THE BOX SURVIVES A RENDER. A view is a value built again on every
-// render, and the `@Aim` on it with it - so a fresh aim ADOPTS its
-// predecessor's box, paired by the path the walk reached it by, exactly as a
-// fresh `@State` adopts its predecessor's storage (Core/Stateful.swift). Every
-// aim a view was ever built with then aims through one box: a handler captured
-// three renders ago aims where one captured now does, and a view the aim is
-// handed to compares it by that box and is carried like a view handed any
-// unchanged value. The differ REFILLS the box on every walk that visits the
-// element, and the identity is stable, so the write is idempotent.
-//
-// AN AIM A VIEW IS HANDED IS NOT ITS OWN. `@Aim` declares one; a plain stored
-// property holding one - a child given its parent's - BORROWS it: compared by
-// the box it aims through, and never adopted, or a child handed another aim
-// in the same place would take over the one its parent holds. The mirror tells
-// the two apart by name, a wrapper's backing property being the declared one
-// with a leading underscore. An aim in a MODEL is the model's, and the walk
-// never enters a model - the view's `@State` keeps the model, and the model
-// keeps the aim.
-//
-// WHAT IT DOES NOT DO: it takes no part in MATCHING. A view carrying only an
-// aim is identified by the builder's path or its position, exactly as if
-// nothing were written on it. Identity stays `.id()`'s job - a string the
-// author chose, found wherever it moved to, which is what a collection's rows
-// need - and the two compose: `.id("row-7").aim(row)` is a named row an act
-// can also reach.
+// An aim: which control an act is about - the element's key, declared on the view
+// with `@Aim` and filled by the differ as it walks.
+// Design: docs/design/core/acts.md#aims
 
 
 /// Which control an act is aimed at, declared on the view beside its state.
@@ -82,44 +13,19 @@
 ///     WebView(address).aim(browser)
 ///     Button("Back").onClicked { try await browser.goBack() }
 ///
-/// `.aim(_:)` puts it on a view, and the differ fills it with the identity it
-/// settled for that element - so the act reaches exactly that view: there is
-/// no name to spell, to misspell, or to use twice, and two instances of one
-/// composed view each aim at their own.
+/// `.aim(_:)` puts it on a view, and the act reaches exactly that view: there is
+/// no name to spell, and two instances of one composed view each aim at their
+/// own. The declared type is the control, so the aim offers what that control
+/// can do - `focus()` on any, `goBack` on a web view's. A view handed an aim keeps
+/// it in a plain property and aims at its parent's control.
 ///
-/// The type named in the declaration is the CONTROL, so the aim offers exactly
-/// what that control can do: `focus()`/`unfocus()` on any of them, and an act
-/// one kind of control has on that kind alone - `goBack` on an `Aim<WebView>`,
-/// `moveToRegion` on an `Aim<Map>`. `.aim(_:)` takes the view's own
-/// `Aim<Self>`, which keeps the declaration and the view agreeing at compile
-/// time; the host still verifies at run time, because a view can leave the
-/// tree after the act was written.
-///
-/// Declared with `@Aim` - on a view, a window or a model alike - which keeps
-/// it across renders the way `@State` keeps a value. A view HANDED one, a
-/// child given its parent's, keeps it in a plain property
-/// (`let field: Aim<TextField>`) and aims at its parent's control. It is not a
-/// state: it holds nothing of the control's own, which is why it has a
-/// declaration of its own.
-///
-/// This is NOT an identity: a view carrying only an aim is still matched by
-/// where it was written, so a collection's rows keep wanting `.id()` - and
-/// both compose, an aim on a named element aiming with the name.
-///
-/// One of these names ONE view. An act on an aim that never reached a view -
-/// or that was put on two at once - throws, saying which of the two it was;
-/// one whose view has LEFT the tree keeps its last identity, and the act
-/// reports there is no such view on screen, which is what acting on a
-/// vanished view answers.
+/// An aim is not a key: a collection's rows still want `.id()`, and the two
+/// compose. An act on an aim that reached no view, or two, throws; one whose view
+/// has left reports that no such view is on screen.
 @propertyWrapper
 public final class Aim<Target>: @unchecked Sendable, CustomStringConvertible {
-    /// Where the identity lives - untyped, because the tree holds it too and a
-    /// node knows nothing about which control it is for.
-    ///
-    /// Replaced at most once, by adoption, on the thread that builds the view
-    /// declaring the aim and before anything holding that view can act -
-    /// which is what the `@unchecked` above rests on. What is INSIDE the box
-    /// goes through the box's own lock.
+    /// Where the key lives - untyped, because the tree holds it too. Replaced at most
+    /// once, by adoption, before anything holding the view can act.
     private(set) var box = AimBox()
 
     /// An aim at a control of this kind, aimed at nothing until `.aim(_:)`
@@ -138,17 +44,9 @@ public final class Aim<Target>: @unchecked Sendable, CustomStringConvertible {
     /// "nowhere" or "two views" - so printing one says something useful.
     public var description: String { box.label }
 
-    /// The argument that tells the host which view an act is about: the
-    /// element's identity, in the namespace it has - a number, or the name the
-    /// author also gave it with `.id()`.
-    ///
-    /// `call` puts it in argument 0, which is where every aimed act has it,
-    /// and the host half turns it back into the control - by number, or by
-    /// name.
-    ///
-    /// Throws instead of guessing: an aim that never reached a view, or one
-    /// put on two, has nothing sound to aim at, and an act that goes nowhere
-    /// looks exactly like one that has not started yet.
+    /// The argument that tells the host which view an act is about: the element's
+    /// key, a number or the `.id()` name. Throws rather than guess where the aim is on
+    /// no view or on two.
     var target: PropValue {
         get throws { try box.target }
     }
@@ -191,9 +89,8 @@ public final class Aim<Target>: @unchecked Sendable, CustomStringConvertible {
 }
 
 extension Aim: StateBox {
-    /// Takes over the box of the aim this one follows - the same declaration,
-    /// one build earlier - so every aim a view was built with aims through
-    /// one box. See Core/Stateful.swift.
+    /// Takes over the box of the aim this one follows, so every aim a view was built
+    /// with aims through one box.
     func adopt(from other: AnyObject) {
         if let other = other as? Aim<Target> {
             box = other.box
@@ -204,9 +101,9 @@ extension Aim: StateBox {
     var lender: AnyObject { box }
 }
 
-/// Any aim, whatever it aims at - what the walk that finds a view's state asks
-/// to tell an aim the view was HANDED from one it declares. See
-/// Core/Stateful.swift.
+/// Any aim - what the state walk asks to tell an aim a view was handed from one it
+/// declares.
+/// Design: docs/design/core/acts.md#an-aim-a-view-is-handed
 protocol Aiming: AnyObject {
     /// The box it aims through.
     var box: AimBox { get }
@@ -214,34 +111,24 @@ protocol Aiming: AnyObject {
 
 extension Aim: Aiming {}
 
-/// The box behind an `Aim`: where the differ leaves the element's identity,
-/// and where an act reads it back.
-///
-/// A class, and untyped, because the NODE holds one too - `Node.aim` - and a
-/// node is not generic. `@unchecked Sendable` with every read and write behind
-/// one `Lock`: the differ writes on the UI thread while an act may read
-/// from a cooperative-pool thread (`async let` runs its child there), the same
-/// crossing `Renderer.guarded` exists for.
+/// The box behind an `Aim`, where the differ leaves the element's key and an act
+/// reads it; every read and write goes through one lock.
 final class AimBox: @unchecked Sendable, Hashable {
-    /// One lock for every box: attachments are a few per render and reads a
-    /// few per act, so contention is not a thing this needs to be clever
-    /// about.
+    /// One lock for every box: a few attachments per render, a few reads per act.
     private static let guarded = Lock()
 
     /// The identity of the element this was last put on.
     private var identity: ElementId?
 
-    /// Which walk last attached it - what tells a second view in the SAME
-    /// render (a conflict) from the next render attaching it afresh.
+    /// Which walk last attached it, so a second view in one walk is a conflict.
     private var walk = 0
 
-    /// Whether the last walk found this box on two elements. Cleared by the
-    /// first attachment of the next walk, so fixing the tree fixes the aim.
+    /// Whether the last walk found it on two elements; the next walk's first
+    /// attachment clears it.
     private var conflicted = false
 
-    /// Called by the differ for every element whose node carries this box: the
-    /// first attachment of a walk takes the identity, a second one in the same
-    /// walk is a conflict the next act reports.
+    /// Attaches the element's key: the first attachment of a walk takes it, a second
+    /// in the same walk is a conflict.
     func attach(_ id: ElementId, walk: Int) {
         Self.guarded.withLock {
             if self.walk != walk {
@@ -269,10 +156,7 @@ final class AimBox: @unchecked Sendable, Hashable {
             case .auto(let number):
                 return .number(Double(number))
             case .manual(let name):
-                // TEXT, exactly as an element's own manual id crosses in
-                // Core/Wire.swift: an identity is the string the author
-                // wrote, not an entry in a vocabulary, so there is nothing
-                // for the session dictionary to number it against.
+                // The author's name, as text - as an element's own manual id crosses.
                 return .string(name)
             case nil:
                 throw StateUIError(

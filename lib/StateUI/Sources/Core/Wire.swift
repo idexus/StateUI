@@ -1,185 +1,27 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The binary wire format.
-//
-// One process, one address space, and every platform this library targets is
-// little-endian arm64 or x86_64 - so numbers cross as their own bytes, fixed
-// width, no text in between: an Int32 here is an Int32 there. A message is a
-// byte buffer the host reads IN PLACE, with no UTF-16 round trip and nothing
-// materialized on the way.
-//
-// SEVEN channels share the one value encoding below. This side WRITES the tree
-// and the acts; it READS the five the host writes - the two laid out here, and
-// the three at `decodeHostEvent`, `decodeEnvironment` and `decodePersistent`.
-// An eighth carries no values at all: `encodePersistent` announces the
-// application's persistent keys, which are names and a kind byte.
-//
-//   reply    [version: U8][ok: U8][count: U8][values...]
-//            what an act came to - the values a `try await` resumes with, or
-//            ok 0 and one string, the reason it throws.
-//   payload  [version: U8][count: U8][values...]
-//            what an event carried - one value per thing the event reports,
-//            in the order the event declares them. An event with nothing to
-//            say crosses no bytes at all.
-//
-// THE DICTIONARY: a name - a node type, a property key, an event, an act -
-// does not travel as its spelling. Each SESSION numbers the names it actually
-// uses: the first message that uses one assigns it the next UInt16 and
-// ANNOUNCES the pair in its head, and both sides speak the number from then
-// on. See `WireDictionary`. What that buys, in order of importance:
-//
-//   - An application's names are numbered exactly as the library's are. There
-//     is no reserved pool, no table to be missing from, and no ledger to keep
-//     append-only - the name IS the registration, said once per session.
-//   - The reader can never hold a table from another version: it learns every
-//     entry from the message itself. A name the HOST does not recognize
-//     degrades gently - an unknown property is ignored, an unknown node type
-//     draws the marker.
-//   - A message costs a name's spelling once per session and two bytes ever
-//     after.
-//
-// Announcements sit at the HEAD of a message, before anything that could
-// refer to them - so a batch that fails later in its bytes has still taught
-// the reader its names, and the session's numbering can never drift on a
-// failure. The host checks `stateui_wire_version` before the first render,
-// so two halves built from different versions fail loudly at startup instead
-// of reading each other's bytes wrong.
-//
-// The layout of an acts batch:
-//
-//   [version: U8][announcements][count: U16]
-//   per act:
-//     [method: U16, from the dictionary]
-//     [completion: I32]  (0 when nobody is waiting - real ids are negative)
-//     [argCount: U8]
-//     [arguments...]
-//
-// where announcements are [count: U16] then per entry [id: U16][name: string].
-// The render message's envelope is [version][complete][generation], then the
-// announcements, then the root's patch. A value is one tag byte, then its
-// payload:
-//
-//   1 false | 2 true | 3 number: F64 | 4 string: [length: U32][UTF-8]
-//   5 numbers: [count: U16][F64...] | 6 strings: [count: U16][string...]
-//   7 unused
-//   8 color: [r: U8][g: U8][b: U8][a: U8]
-//   9 values: [count: U16][values...]
-//   10 enumeration: [member: I32]
-//   11 name: [id: U16, from the dictionary]
-//   12 nothing: (no payload)
-//
-// TAG 4 IS TEXT SOMEONE WROTE, and it is the only arm that carries a
-// spelling. A closed vocabulary is tag 10 and rides its member's NUMBER - see
-// the head of Types/Enums.swift for whose numbers those are; an open
-// vocabulary an author NAMES is tag 11 and rides the session's dictionary,
-// announced once like a property key; and a value made of parts is tag 9 and
-// rides as its parts. An argument or a list element that is not there is tag
-// 12 - one spelling for absence, so no corner of the wire has to read an empty
-// string, a -1 or an empty list as one.
-//
-// TAG 7 IS UNUSED, and nothing is renumbered to close the gap: a number costs
-// nothing left alone, while moving one has to land on both halves in the same
-// breath. Tag 11 is the one way a name crosses.
-//
-// A COLOUR has a tag of its own because it is the value this tree carries
-// most of and the cheapest to say exactly: four bytes against the twelve a
-// "#RRGGBB" string cost, with no parser and no vocabulary on the host.
-// Channel order is written out rather than packed into a word, so there is no
-// endianness to agree about.
-//
-// A string carries its LENGTH, so nothing is ever escaped and a comma inside
-// one needs no rule. A number crosses as its own bits, so nothing is formatted
-// invariantly and a non-finite needs no sentinel beside it - the reader
-// answers "not a number" for one and the caller is left alone.
-//
-// A TRANSITION is not a value and does not ride in one. A property being
-// MOVED carries its target as the ordinary value it is; a separate field
-// beside the props says which of them the host is to walk to rather than
-// assign:
-//
-//   6 transitions: [count: U16] then per entry
-//     [property: U16, from the dictionary]
-//     [law: I32, which law it travels under - Motion.Law's member]
-//     [millis: U32, the length, or a spring's response]
-//     [easing: I32, the curve's member][factor: F64, a spring's damping]
-//
-// A LAW AND NOTHING ELSE. Nobody is told when a walk ends, because nobody is
-// waiting: a value that changed is a setpoint, the tree already says where it
-// is going, and a render in the middle of the walk says the same thing again.
-// A value somebody DOES await is a driven one, which is walked off its own
-// image and rides field 11 instead.
-//
-//   11 states: WHICH PROPERTIES ARE TIED TO A DRIVEN STATE -
-//      [count: U16] then per entry
-//      [property: U16, from the dictionary]
-//      [number: I32, the number the value rides on]
-//      [mode: U8, which way it crosses][kind: U8, which of the host's doors]
-//
-// One field for both directions, because a registration is the same fact
-// either way: this property and that number are the same value. Eight bytes an
-// entry and NO LAW - a law is written into the animated value's own lanes,
-// where a per-write law has to live anyway.
-//
-// A property with a number behind it carries NO VALUE on any message after the
-// registration: the host reads it off the image on its own frames. A property
-// that has a stated value AS WELL still carries it, and then the newest of the
-// two setpoints is the one in force.
-//
-//   10 motion: HOW THIS ELEMENT MOVES WHAT NO PROPERTY CARRIES -
-//      [law: I32], then, unless the law is -1,
-//      [millis: U32][easing: I32][factor: F64], and always
-//      [lanes: U8, which parts of a child's place travel]
-//
-// The one thing about a motion that has to cross, and only from the elements
-// where the host works something out for itself: one that PLACES children,
-// one whose VISUAL STATES change a value, and the APPLICATION, whose answer
-// the rest of them inherit. A child's place is arithmetic over a measurement
-// and a visual state is applied by the platform outside every message, so
-// neither is a property and neither can have a transition beside it.
-//
-// LAW -1 IS "the application's", which is what every layout is until it is
-// told otherwise. So the common case - a layout that travels the way the rest
-// of the application does - is on no message at all, and what crosses is an
-// override and its going away. Written when it CHANGES, like everything here.
-//
-// Beside the props rather than inside them, and this is why: a wrapped VALUE
-// answers nil from every typed accessor on the host, so a host that did
-// not know the wrapper would silently not write the property -
-// indistinguishable from "this did not change" - and a wrapper leaking into
-// the visual-state overlay, which copies prop bags whole, would set a motion
-// nobody asked for. A field is skipped by nobody: an unknown one throws on
-// arrival, which is the loud failure this deserves.
+// The Wire: the patch, the acts and the host's reports as deterministic bytes, for
+// a runtime that cannot read Swift types. Little-endian and fixed width; every
+// name rides the session's dictionary.
+// Design: docs/design/core/wire.md#bytes-rather-than-text
 
-/// One session's numbering of every name the wire carries - node types,
-/// property keys, event names, act methods, one id space for all of them.
-///
-/// A name is assigned the next number the first time a message uses it, and
-/// that message announces the pair in its head - so the reader learns the
-/// dictionary exactly as fast as it needs it, and an application's own names
-/// ride numbers the same way the library's do. Nothing is reserved and
-/// nothing can collide: the numbering is this session's own and dies with it.
-///
-/// Touched only while a message is being encoded, which happens on the host's
-/// one thread - renders and takes alike - so it needs no lock of its own. The
-/// tests hand each fixture a fresh one, which is what makes a fixture's bytes
-/// deterministic and self-describing.
+/// One session's numbering of every name the wire carries, announced by the first
+/// message that uses each. Touched only while encoding, on the host's one thread.
+/// Design: docs/design/core/wire.md#the-dictionary
 final class WireDictionary {
     private var ids: [String: UInt16] = [:]
     private var pending: [(id: UInt16, name: String)] = []
     private var next: UInt16 = 1
 
-    /// The name's number in this session - assigned, and queued for
-    /// announcement, the first time it is asked for.
+    /// The name's number in this session, assigned and queued for announcement the
+    /// first time it is asked for.
     func id(of name: String) -> UInt16 {
         if let id = ids[name] { return id }
 
         let id = next
 
-        // The counter has come back round to where it started. It must not
-        // wrap: the number is the reader's ONLY handle on a name, so issuing
-        // one twice would quietly rename half a tree, and there is nothing on
-        // the wire that could notice.
+        // The counter must not wrap: a number issued twice would rename half a tree.
         precondition(
             id != 0,
             "StateUI: this session has named \(UInt16.max) different things, "
@@ -194,8 +36,8 @@ final class WireDictionary {
         return id
     }
 
-    /// The entries assigned since the last take - what the message being
-    /// encoded writes into its head, each exactly once.
+    /// The entries assigned since the last take - what the message being encoded
+    /// announces, each once.
     func takePending() -> [(id: UInt16, name: String)] {
         defer { pending.removeAll() }
         return pending
@@ -204,18 +46,13 @@ final class WireDictionary {
 
 /// The wire's writer - and the reader of every channel the host writes.
 public enum Wire {
-    /// A list's length as the wire writes it, which is a fixed number of bits.
-    ///
-    /// How deep a list value may nest before the reader refuses one. A real
-    /// argument list is a few levels; the bound turns a corrupt count into an
-    /// unreadable buffer instead of a stack overflow nothing can catch.
+    /// How deep a list value may nest before decoding refuses it, so a corrupt count
+    /// is an unreadable buffer rather than a stack overflow.
     static let mostNesting = 256
 
-    /// Everything in a message is length-prefixed, so a list longer than its
-    /// prefix can count cannot be written at all. The plain conversion ends the
-    /// process on an arithmetic trap that names neither the list nor the limit;
-    /// this names both, which is the difference between a crash report someone
-    /// can act on and one nobody can place.
+    /// A list's length in the width the wire writes, or a stop naming the list and the
+    /// limit where it does not fit.
+    /// Design: docs/design/core/wire.md#limits
     static func count<Written: FixedWidthInteger>(
         _ value: Int,
         of what: String
@@ -229,16 +66,14 @@ public enum Wire {
         return written
     }
 
-    /// The format's version, answered by `stateui_wire_version` and written
-    /// first into every message on every channel this file lays out - the
-    /// state batch, raw lanes with no value in it, carries none. Bumped only
-    /// when the LAYOUT changes.
+    /// The format's version, answered by `stateui_wire_version` and written first into
+    /// every message on every channel but the state batch. It changes only when the
+    /// layout does.
     public static let version: UInt8 = 15
 
-    // The tree message's field markers, one byte each, written only when the
-    // field is present: a field that is not there did not change. Zero ends a
-    // node, so optionality costs one byte per present field and nothing per
-    // absent one.
+    // The render message's field markers, each written only when its field is
+    // present; zero ends a node.
+    // Design: docs/design/core/wire.md#the-render-message
     enum Field {
         static let end: UInt8 = 0
         static let replace: UInt8 = 1
@@ -262,9 +97,7 @@ public enum Wire {
         complete: Bool = false,
         dictionary: WireDictionary
     ) -> [UInt8] {
-        // The body is written first, because writing it is what discovers
-        // which names still need announcing - the head then carries exactly
-        // those.
+        // The body first: writing it discovers which names the head announces.
         var body: [UInt8] = []
         write(patch, into: &body, dictionary: dictionary)
 
@@ -299,10 +132,9 @@ public enum Wire {
         return out
     }
 
-    /// The head's dictionary section: the names this message is the first in
-    /// its session to use. At the head, BEFORE anything that could refer to
-    /// them, so a batch that fails later in its bytes has still taught the
-    /// reader its names.
+    /// The head's announcements: the names this message is the first to use, ahead of
+    /// anything that refers to them.
+    /// Design: docs/design/core/wire.md#announcements-come-first
     private static func announce(
         _ entries: [(id: UInt16, name: String)],
         into out: inout [UInt8]
@@ -315,11 +147,8 @@ public enum Wire {
         }
     }
 
-    /// Writes one element's patch, and recursively the elements under it.
-    ///
-    /// The identity and the type come first, always - the id is how the host
-    /// finds the control and the type is worth its two bytes on every
-    /// message - and every other field is written only when it is there.
+    /// Writes one element's patch and, recursively, the patches under it: the key and
+    /// the type always, every other field only when present.
     private static func write(
         _ patch: HostPatch,
         into out: inout [UInt8],
@@ -332,10 +161,8 @@ public enum Wire {
             out.u8(Field.replace)
         }
 
-        // Whether this element's children are rows the host may keep and
-        // re-use, and - one level down - what one row looks like. Both are
-        // written only when they CHANGED, so a list standing still says
-        // neither and a list scrolling says one number per arriving row.
+        // Whether the children are rows the host may reuse, and what a row looks like -
+        // each only when it changed.
         if let recycles = patch.recycles {
             out.u8(Field.recycles)
             out.u8(recycles ? 1 : 0)
@@ -349,18 +176,15 @@ public enum Wire {
         if !patch.properties.isEmpty {
             out.u8(Field.props)
             out.u16(count(patch.properties.count, of: "properties on one element"))
-            // Sorted so the output is deterministic - it makes diffs between
-            // two renders meaningful and test output stable.
+            // Sorted: the determinism rule.
+            // Design: docs/design/core/wire.md#determinism
             for key in patch.properties.keys.sorted() {
                 out.u16(dictionary.id(of: key.name))
                 write(patch.properties[key]!, into: &out, dictionary: dictionary)
             }
         }
 
-        // What this element described last time and does not describe now.
-        // Only the keys: there is no value to send for a property that is
-        // gone, and what it goes back to is the host's business rather than
-        // this side's. Already in name order, as everything written here is.
+        // The properties no longer described, by key alone, in name order.
         if !patch.clearedProperties.isEmpty {
             out.u8(Field.cleared)
             out.u16(count(
@@ -372,14 +196,13 @@ public enum Wire {
             }
         }
 
-        // How the children of this element travel when it places them
-        // somewhere new - see Field.motion.
+        // How the children animate where this element places them.
+        // Design: docs/design/core/wire.md#layout-motion
         if let placement = patch.motion {
             out.u8(Field.motion)
 
-            // INHERITED is a law of its own on the wire, and only here: a
-            // layout that stops saying how its children travel has to be heard
-            // saying so, or the host would go on carrying them the old way.
+            // Inherited is -1 here: a layout that stops saying how its children animate has
+            // to be heard saying so.
             if placement.motion.isInherited {
                 out.i32(-1)
             } else {
@@ -389,15 +212,13 @@ public enum Wire {
                 out.f64(placement.motion.factor)
             }
 
-            // Always, whichever law: a layout may travel the way the
-            // application does and still hold one part of a place still.
+            // Always, whichever law: one part of a place may stay still.
             out.u8(placement.lanes.rawValue)
         }
 
-        // Beside the properties, never inside one: the value above is the
-        // target, written exactly as it would be if nothing were moving, and
-        // this says which of them the host walks to instead of assigning.
-        // Sorted for the same reason the props are.
+        // Beside the properties, never inside one: the value is the destination, and this
+        // says which the host animates to.
+        // Design: docs/design/core/wire.md#transitions
         if !patch.transitions.isEmpty {
             out.u8(Field.transitions)
             out.u16(count(patch.transitions.count, of: "motions on one element"))
@@ -412,16 +233,9 @@ public enum Wire {
             }
         }
 
-        // The properties driven by a state. Written whenever the set changed,
-        // EMPTY set included - an element that stopped tying one has to say
-        // so, and a count of nought is how. Sorted by name, for
-        // the reason everything here is sorted: a Dictionary has no order and
-        // Swift salts its hashing per process.
-        //
-        // EIGHT BYTES AN ENTRY AND NO LAW. A law belongs to the value - it is
-        // written into the animated value's own lanes, where a per-write law
-        // has to live anyway - so the host reads one spec from one place and
-        // this field says only which number, which way, and which door.
+        // The driven properties, whenever the set changed, an empty set included; sorted;
+        // no law - it lies in the value's own lanes.
+        // Design: docs/design/core/wire.md#driven-states
         if case .replace(let driven)? = patch.driven {
             out.u8(Field.driven)
             out.u16(count(driven.count, of: "driven properties on one element"))
@@ -435,14 +249,8 @@ public enum Wire {
             }
         }
 
-        // Written whenever the patch decided the event set changed, EMPTY set
-        // included: an element whose last handler went carries `[:]` here, and
-        // the host replaces its map with an empty one. Skipping an empty set
-        // would leave that element reading as "events unchanged", so the host
-        // would keep the id Swift has forgotten and resolve a gesture to
-        // nobody - a false "handler on a released element" in the log the one
-        // reader debugging it reads. The count-0 case the reader already
-        // handles, so the host needs nothing.
+        // Whenever the event set changed, an empty set included.
+        // Design: docs/design/core/wire.md#events-and-children
         if case .replace(let events)? = patch.events {
             out.u8(Field.events)
             out.u16(count(events.count, of: "handlers on one element"))
@@ -452,9 +260,7 @@ public enum Wire {
             }
         }
 
-        // The two shapes of the child list: the COMPLETE arrangement, written
-        // even when it is empty - an element whose last child left has to say
-        // so - and the sparse form, worth bytes only when something is in it.
+        // The complete arrangement even when empty; the sparse form only when it is not.
         switch patch.children {
         case .unchanged:
             break
@@ -477,9 +283,8 @@ public enum Wire {
         out.u8(Field.end)
     }
 
-    /// An identity, in the shape that says which kind it is: a number when
-    /// the differ assigned it, a string when the author did - the two
-    /// namespaces the tree's ids travel in.
+    /// A key in the shape that says which kind: a number the differ assigned, or the
+    /// author's text.
     private static func write(_ id: ElementId, into out: inout [UInt8]) {
         switch id {
         case .auto(let value):
@@ -491,11 +296,7 @@ public enum Wire {
         }
     }
 
-    /// One tagged value. The dictionary is for the arm that carries a NAME -
-    /// `.name`, an open vocabulary an author names: a visual state, a font
-    /// family, a radio group, a window's kind. It rides the session's number the
-    /// way a property key does, so a name is spelled one way wherever it is
-    /// given.
+    /// One tagged value; the dictionary is for the arm that carries a name.
     private static func write(
         _ value: PropValue,
         into out: inout [UInt8],
@@ -507,9 +308,7 @@ public enum Wire {
             out.u16(dictionary.id(of: name))
 
         case .values(let values):
-            // Recursed HERE rather than in the bare helper, so a token
-            // nested in a list still rides the session's number - which the
-            // drawing and every other value made of parts depend on.
+            // Recursed here, so a name nested in a list still rides the dictionary.
             out.u8(9)
             out.u16(count(values.count, of: "parts of one value"))
             for value in values {
@@ -517,8 +316,8 @@ public enum Wire {
             }
 
         case .themed:
-            // Picked by the differ as the element was built; one that reaches
-            // here anyway is written as the theme stands now.
+            // Picked by the differ as the element was built; one arriving here anyway is
+            // written as the theme stands.
             write(value.resolvingTheme(), into: &out, dictionary: dictionary)
 
         default:
@@ -528,11 +327,9 @@ public enum Wire {
 
     // MARK: - Reading the host's channels
 
-    /// Decodes an event's payload: the typed values a control reported, in
-    /// the order the event declares them. An empty buffer IS the payload of
-    /// an event with nothing to say - the host crosses no bytes for one - and
-    /// nil is a buffer that would not read, which every typed reader treats
-    /// as the gesture parse rule treats garbage: nothing moves.
+    /// Decodes an event's payload: an empty buffer is an event with nothing to say, and
+    /// nil a buffer that would not read.
+    /// Design: docs/design/core/wire.md#reading-the-host-channels
     static func decodePayload(_ bytes: [UInt8]) -> [PropValue]? {
         guard !bytes.isEmpty else { return [] }
 
@@ -545,9 +342,8 @@ public enum Wire {
         return values
     }
 
-    /// Decodes an act's outcome. Nil for a buffer that would not read - the
-    /// caller turns that into a failure rather than a hang, because a reply
-    /// that cannot be read must still resume the handler waiting on it.
+    /// Decodes an act's outcome; nil for a buffer that would not read, which the caller
+    /// turns into a failure rather than a hang.
     static func decodeReply(_ bytes: [UInt8]) -> Reply? {
         var reader = Reader(bytes)
 
@@ -565,11 +361,8 @@ public enum Wire {
         return .failed(reason)
     }
 
-    /// Decodes an event the HOST raised by name - no element behind it, so
-    /// the name travels in the buffer: the application registered it with the
-    /// host and a `HostEvents.on` subscription is what hears it. Nil for
-    /// a buffer that would not read, which the caller answers with -1 so the
-    /// host can say version skew rather than nothing.
+    /// Decodes an event the host raised by name; nil for a buffer that would not read,
+    /// which the caller answers with -1.
     static func decodeHostEvent(_ bytes: [UInt8]) -> (name: String, payload: [PropValue])? {
         var reader = Reader(bytes)
 
@@ -581,16 +374,8 @@ public enum Wire {
         return (name, values)
     }
 
-    /// Announces which store the application keeps its state in and every key
-    /// it keeps there, so the host can read exactly those before the first
-    /// render:
-    ///
-    ///   [version: U8][storage: string][count: U16]
-    ///   per key: [name: string][kind: U8]
-    ///
-    /// Names in full rather than dictionary numbers: this is the FIRST thing
-    /// either side says, before any message has announced anything, and the
-    /// names belong to the platform's store rather than to a session.
+    /// Announces the store the application keeps state in and its keys, names in full.
+    /// Design: docs/design/core/wire.md#persistent-keys
     static func encodePersistent(storage: PersistentStorage, keys: [PersistentKey]) -> [UInt8] {
         var out: [UInt8] = []
         out.u8(version)
@@ -600,24 +385,15 @@ public enum Wire {
         for key in keys {
             out.string(key.name)
 
-            // One byte for a vocabulary of four, where the tree's values would
-            // spend five. Nothing here is repeated often enough to be worth a
-            // dictionary entry.
+            // One byte for a vocabulary of four.
             out.u8(UInt8(truncatingIfNeeded: key.kind.rawValue))
         }
 
         return out
     }
 
-    /// Decodes what the host read out of the store - a name and a value per
-    /// key it FOUND. A key the store had nothing under is simply absent, which
-    /// is what leaves the state holding the value written beside it.
-    ///
-    ///   [version: U8][count: U16]
-    ///   per entry: [name: string][value]
-    ///
-    /// Nil for a buffer that would not read, which the caller answers with -1
-    /// so the host can say version skew rather than nothing.
+    /// Decodes what the host read out of the store - a name and a value per key it
+    /// found; nil for a buffer that would not read.
     static func decodePersistent(_ bytes: [UInt8]) -> [(name: String, value: PropValue)]? {
         var reader = Reader(bytes)
 
@@ -635,16 +411,9 @@ public enum Wire {
         return reader.atEnd ? found : nil
     }
 
-    /// What a host realizes - the elements it makes a view for and the members
-    /// it realizes on each - said once at start-up by a host across the Wire,
-    /// where a Swift host hands over its `Registry.realization`:
-    ///
-    ///   [version: U8][elements: U16] per element: [name: string]
-    ///   [members: U16] per member: [element: string][owner: string][member: string]
-    ///
-    /// Elements sorted by name and members by element, owner and member, so
-    /// one realization is one run of bytes. Names in full, as the persistent
-    /// keys are: nothing has announced a dictionary yet.
+    /// What a host realizes, said once at start-up by a runtime across the Wire;
+    /// sorted, names in full.
+    /// Design: docs/design/core/wire.md#realizations-and-declarations
     static func encodeRealization(_ realization: HostRealization) -> [UInt8] {
         var out: [UInt8] = []
         out.u8(version)
@@ -668,26 +437,8 @@ public enum Wire {
         return out
     }
 
-    /// What a host DECLARES, read off its own runtime and written to
-    /// `exports/`: the elements it makes a view for and, on each, the members
-    /// it takes and the events it raises.
-    ///
-    ///   [version: U8][elements: U16] per element: [name: string]
-    ///     [members: U16] per member: [name: string]
-    ///     [events: U16] per event: [name: string]
-    ///   [shared members: U16] per member: [name: string]
-    ///   [shared events: U16] per event: [name: string]
-    ///   [acts: U16] per act: [name: string]
-    ///
-    /// A declaration states PRESENCE and never ownership, which is the whole
-    /// difference from `encodeRealization`: whether `borderColor` is a
-    /// button's own member or one of a tier it wears is a fact of the
-    /// CONTRACT, which a host does not hold. `HostDeclaration.realization`
-    /// names each owner here, where the contracts are.
-    ///
-    /// The shared members ride last and unattached because a host realizes
-    /// them around EVERY view rather than in a registration, so each belongs
-    /// to a tier and reaches whichever elements wear it.
+    /// What a host declares, read off its own runtime: presence, never ownership.
+    /// Design: docs/design/core/wire.md#realizations-and-declarations
     static func encodeDeclaration(_ declaration: HostDeclaration) -> [UInt8] {
         var out: [UInt8] = []
         out.u8(version)
@@ -727,8 +478,7 @@ public enum Wire {
         }
     }
 
-    /// Decodes what `encodeDeclaration` writes, and what a foreign runtime
-    /// wrote with the same layout. Nil for a buffer that would not read.
+    /// Decodes what `encodeDeclaration` writes; nil for a buffer that would not read.
     static func decodeDeclaration(_ bytes: [UInt8]) -> HostDeclaration? {
         var reader = Reader(bytes)
 
@@ -755,8 +505,7 @@ public enum Wire {
         return reader.atEnd ? declaration : nil
     }
 
-    /// One element's members and then its events, as `encodeDeclaration`
-    /// wrote them.
+    /// One element's members and then its events, as `encodeDeclaration` wrote them.
     private static func read(_ reader: inout Reader) -> HostDeclaration.Element? {
         guard let members = reader.u16() else { return nil }
 
@@ -779,9 +528,7 @@ public enum Wire {
         return declared
     }
 
-    /// Decodes what `encodeRealization` writes. Nil for a buffer that would
-    /// not read, which the caller answers with -1 so the host can say version
-    /// skew rather than nothing.
+    /// Decodes what `encodeRealization` writes; nil for a buffer that would not read.
     static func decodeRealization(_ bytes: [UInt8]) -> HostRealization? {
         var reader = Reader(bytes)
 
@@ -807,12 +554,8 @@ public enum Wire {
         return reader.atEnd ? realization : nil
     }
 
-    /// Decodes a standard-environment push - which provider, then the same
-    /// counted value list every channel shares. The domain is one byte, not a
-    /// name: the providers are a closed vocabulary both sides of this
-    /// repository spell, see `EnvironmentDomain`. Nil for a buffer that would
-    /// not read, which the caller answers with -1 so the host can say version
-    /// skew rather than nothing.
+    /// Decodes a standard-environment push: the provider's domain byte, then the
+    /// values; nil for a buffer that would not read.
     static func decodeEnvironment(_ bytes: [UInt8]) -> (domain: UInt8, payload: [PropValue])? {
         var reader = Reader(bytes)
 
@@ -824,8 +567,7 @@ public enum Wire {
         return (domain, values)
     }
 
-    /// A counted value list - the shape the payload, reply, host-event and
-    /// environment channels share.
+    /// A counted value list - the shape the value channels share.
     private static func values(_ reader: inout Reader) -> [PropValue]? {
         guard let count = reader.u8() else { return nil }
 
@@ -840,13 +582,8 @@ public enum Wire {
         return values
     }
 
-    /// One tagged value, the mirror of `[UInt8].value(_:)` below.
-    ///
-    /// No arm for a name, and that is the only omission: its number belongs to
-    /// the session's dictionary, which THIS side writes, so the host has
-    /// nothing to number one against and never sends one. Everything else the
-    /// writer can emit is read here, so a reply is read in the one encoding
-    /// every channel shares.
+    /// One tagged value, the mirror of `[UInt8].value(_:)`. No arm for a name: the
+    /// host never sends one.
     private static func value(_ reader: inout Reader, depth: Int = 0) -> PropValue? {
         switch reader.u8() {
         case 1:
@@ -898,9 +635,7 @@ public enum Wire {
         }
     }
 
-    /// A bounds-checked cursor over one message - every read answers nil past
-    /// the end instead of trapping, so a truncated buffer is a refusal, never
-    /// a crash.
+    /// A bounds-checked cursor over one message: every read past the end answers nil.
     private struct Reader {
         private let bytes: [UInt8]
         private var offset = 0
@@ -940,10 +675,9 @@ public enum Wire {
         mutating func string() -> String? {
             guard let low = u16(), let high = u16() else { return nil }
 
-            // Compared as it crossed - UNSIGNED and 32 bits wide - against
-            // what is left. `Int` is 32 bits on a 32-bit target, armeabi-v7a
-            // among them, where a length past Int32.max would trap on the way
-            // in rather than be refused here.
+            // Compared unsigned and 32 bits wide against what is left, so a 32-bit target
+            // refuses a huge length rather than trapping.
+            // Design: docs/design/core/wire.md#limits
             let stated = UInt64(UInt32(low) | UInt32(high) << 16)
             guard stated <= UInt64(bytes.count - offset) else { return nil }
 
@@ -954,9 +688,8 @@ public enum Wire {
     }
 }
 
-/// What the host answered an act with: the values a `try await` resumes with,
-/// or the reason it throws. Decoded from the reply channel by
-/// `Wire.decodeReply`; `Renderer.answered` is where the two arms part.
+/// What the host answered an act with: values to resume with, or a reason to
+/// throw.
 enum Reply: Equatable, Sendable {
     /// The act ran; these are the values it returned - empty for a method
     /// that returns nothing.
@@ -966,8 +699,7 @@ enum Reply: Equatable, Sendable {
     case failed(String)
 }
 
-/// The append helpers every record above is written with - little-endian,
-/// fixed width, in one place so the layout has one spelling.
+/// The append helpers every record is written with - little-endian, fixed width.
 extension [UInt8] {
     mutating func u8(_ value: UInt8) {
         append(value)
@@ -985,7 +717,7 @@ extension [UInt8] {
         append(UInt8(truncatingIfNeeded: value >> 24))
     }
 
-    /// Eight bytes, little-endian - what a shape travels as.
+    /// Eight bytes, little-endian - what a shape crosses as.
     mutating func u64(_ value: UInt64) {
         for shift in stride(from: 0, to: 64, by: 8) {
             append(UInt8(truncatingIfNeeded: value >> UInt64(shift)))
@@ -1011,10 +743,8 @@ extension [UInt8] {
         append(contentsOf: bytes)
     }
 
-    /// One tagged value - see the layout in Wire's header. A NAME is not
-    /// written here: its number belongs to a session's dictionary, so it goes
-    /// through `Wire.write(_:into:dictionary:)`, and this helper serves the
-    /// channels that never carry one.
+    /// One tagged value. A name is not written here: its number belongs to a session's
+    /// dictionary, so it goes through `Wire.write(_:into:dictionary:)`.
     mutating func value(_ value: PropValue) {
         switch value {
         case .bool(false):

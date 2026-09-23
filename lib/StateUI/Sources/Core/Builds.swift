@@ -1,58 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// WHY A VIEW IS BEING DESCRIBED, said in the author's own names.
-//
-// A render rebuilds exactly the views whose recorded reads intersect the state
-// that changed (Core/Invalidation.swift, `Differ.revisit`), and everything
-// under them. Which view that turns out to be is the one question an author
-// asks while a screen is being made smooth, and without this the only way
-// to answer it is to reason about where a value is read.
-//
-// So the differ keeps three things it already had within reach, and this file
-// hands them to `debugInfo()`:
-//
-//   the view      the composed view whose body, or whose container's content,
-//                 is running right now.
-//   how often     how many times THIS element has been described, kept on the
-//                 element so it survives every render that leaves it alone.
-//                 THE ELEMENT IS THE CLOSURE THAT READ: a reading taken inside
-//                 a container's braces counts that container, which is what
-//                 is built again when a state read there moves - and nothing
-//                 outside the braces is.
-//   why           the state this element read LAST time that has been written
-//                 since - the very intersection the walk decided by.
-//
-// Nothing here is computed until it is asked for. The frame carries the two
-// sets by reference and the intersection is taken inside `debugInfo()`, so a
-// render nobody is watching pays for a build counter and two assignments.
-//
-// A STATE IS NAMED BY THE PATH THE REFLECTION WALK REACHED IT BY - the same
-// path that pairs it with its predecessor across a render (Core/Stateful.swift)
-// - which is the author's own property name, and costs a string that walk had
-// already built. A `@State` inside a class is named by the property it is
-// declared as, on the first touch of the model - the enclosing-instance road in
-// Core/State.swift - and a state nothing owns either way, a ticker, is named by
-// its type, which is what an author calls it too.
+// Why a view is being described, in the author's own names - what
+// `debugInfo()` answers.
+// Design: docs/design/core/invalidation.md#why-a-view-is-described
 
-/// A piece of state that can say what it is called.
-///
-/// Worn by the STORAGE rather than the box: a `@State` box is rebuilt with its
-/// view on every render and adopts its predecessor's storage, so the storage is
-/// the one object that means "this piece of state" across renders - and the one
-/// a write names.
+/// A state that can say what the author calls it - worn by the storage, the one
+/// object that is the state across renders.
 protocol NamedState: AnyObject {
     /// What the author calls it, once a reflection walk has said.
     var origin: String? { get }
 }
 
-/// Which view is being described right now, and what changed that it had read.
-///
-/// One frame per composed view whose body - or bare container's content - is
-/// running, pushed by the differ around the build and popped however it
-/// returns. Depth is one in practice - a
-/// body constructs its children's placeholders, never their bodies - and a
-/// stack anyway, because a composed view made of another unwraps in one pass.
+/// Which view is being described now, and what changed that it had read: one
+/// frame per body or bare container's content, pushed around the build.
 enum BuildScope {
     /// One view's build, as it stands.
     struct Frame {
@@ -71,22 +32,14 @@ enum BuildScope {
         /// What each of those is called, by storage identity.
         let names: [ObjectIdentifier: String]
 
-        /// Whether this render is describing the whole tree rather than
-        /// walking to what changed.
+        /// Whether this render describes the whole tree.
         let everything: Bool
     }
 
-    /// The build under way, or nothing outside every body.
-    ///
-    /// Written only by the thread that renders, which is the one that reads it.
+    /// The build under way; written and read only by the thread that renders.
     nonisolated(unsafe) static var current: Frame?
 
-    /// Runs a build with its frame in place.
-    ///
-    /// - Parameters:
-    ///   - frame: what is being described, and why.
-    ///   - build: the build to run.
-    /// - Returns: whatever the build answered.
+    /// Runs a build with its frame in place, answering what the build answered.
     static func within<T>(_ frame: Frame, _ build: () -> T) -> T {
         let outer = current
         current = frame
@@ -129,8 +82,8 @@ enum BuildScope {
         String(type.split(separator: ".").last ?? "a view")
     }
 
-    /// A state's name for a reader: the reflection walk's path without the
-    /// leading dot and the underscore a property wrapper's storage wears.
+    /// A state's name as the author reads it: the walk's path without its leading
+    /// dot and the wrapper's underscore.
     static func readable(_ path: String) -> String {
         var name = Substring(path)
 
@@ -147,23 +100,11 @@ extension Element {
     ///
     ///     Label(debugInfo())
     ///
-    /// Answers the view's own name, how many times the closure this is written
-    /// in has been described - the body, or the container's content the
-    /// reading sits in, which is what is built again when a state read there
-    /// moves - and WHICH piece of state this description is for -
-    /// `"PlacedSample: 47 builds, for aim"` - naming the state by the
-    /// property the author declared it as. A view described because an
-    /// ancestor was says `with its parent`, which is what tells a view that
-    /// reads a value from one that merely sits under a view that does: the
-    /// rebuild starts at the outermost view naming a state, and everything
-    /// below it goes along.
-    ///
-    /// It is a reading rather than a report, so put it where a reading goes -
-    /// a `Label` on the screen being worked on, or a value handed to whatever
-    /// prints. Reading it does not itself cause a render.
-    ///
-    /// Called INSIDE a body, where a description is under way; anywhere else
-    /// there is nothing being described and it says so.
+    /// Answers the view's name, how many times the closure this is written in has
+    /// been described, and which state this description is for -
+    /// `"PlacedSample: 47 builds, for aim"`. A view described because an ancestor
+    /// was says `with its parent`. Reading it causes no render; outside a body it
+    /// says nothing is being described.
     ///
     /// - Returns: what is being described here, how often, and why.
     public func debugInfo() -> String {

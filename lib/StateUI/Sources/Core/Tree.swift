@@ -1,31 +1,16 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What a host is holding, and what it is about to be told.
-//
-// A Node is what an author wrote this render and is thrown away after it. These
-// two types are the ones that persist:
-//
-//   RenderedNode  one element as it now stands on the host - its identity,
-//                 its properties, the handler ids it quotes back, its children
-//   HostPatch     the difference between that and the tree just written, which
-//                 a native host reads directly and Wire serializes for a
-//                 foreign-language host
-//
-// Keeping the first is what makes the second possible. Without it, "what
-// changed" has no answer and the only correct message is the whole tree.
+// What a host holds (`RenderedNode`) and what it is told next (`HostPatch`).
+// Design: docs/design/core/identity-and-diffing.md#keys
 
-/// Identity of an element, stable for as long as the element lives.
+/// An element's key, stable for as long as the element lives.
 ///
-/// The two cases are two namespaces that cannot collide, which is the point:
-///
-///   .auto     assigned by the differ, written as a NUMBER
-///   .manual   whatever the author passed to `.id()`, written as TEXT
-///
-/// An automatic identity survives a render as long as the element is written in
-/// the same place in the source - its builder path - or, put in by hand, stands
-/// at the same position. A manual one survives anywhere, which is what a
-/// collection needs.
+/// `.auto` is a number the differ assigns and `.manual` is what the author
+/// passed to `.id()`; the two never collide. An automatic key survives a render
+/// while the element is written in the same place in the source, or stands at
+/// the same position when put in by hand. A manual one survives anywhere, which
+/// is what a collection needs.
 public enum ElementId: Hashable, Sendable {
     /// Assigned by the differ, from a counter, never reused. Written as a
     /// number.
@@ -35,11 +20,8 @@ public enum ElementId: Hashable, Sendable {
     /// keeps the two namespaces from ever colliding.
     case manual(String)
 
-    /// Whether the author named this one.
-    ///
-    /// Read where an element is about to be matched by its builder PATH: an
-    /// element the author named is his to move, and adopting it for a path
-    /// would take the name off it.
+    /// Whether the author named this one - an element matched by its builder path
+    /// must not take an author's name.
     var isManual: Bool {
         if case .manual = self { return true }
 
@@ -47,171 +29,99 @@ public enum ElementId: Hashable, Sendable {
     }
 }
 
-/// One element as it currently stands on the host.
-///
-/// A class, not a struct: the differ carries the unchanged parts of the previous
-/// tree straight into the next one, and shares them rather than copying.
+/// One element as it stands on the host - a class, so unchanged parts of one
+/// tree are shared into the next.
 final class RenderedNode {
     /// Who this element is. Fixed for as long as it stays in the tree.
     let id: ElementId
 
-    /// The kind of control the host made for it. A change here cannot be
-    /// patched, so it forces a replace.
+    /// The kind of control the host made; a change of it replaces the element.
     var type: NodeType
 
     /// Every property the host has been told about, as it was told.
     var props: [Prop: PropValue]
 
-    /// Event token -> the handler id the host quotes back when it fires.
-    ///
-    /// Assigned once, when the element first handles that event, and kept for as
-    /// long as it does. An element that is not part of a render's message keeps
-    /// the ids the host already has - which is exactly why they cannot be
-    /// per-render numbers.
+    /// Event token to the handler id the host quotes back, kept for as long as the
+    /// element handles that event.
     var events: [Event: Int]
 
-    /// The path the builder took to write it - see `Node.key`, and `Differ.match`,
-    /// which matches a child against the one that stood in the same PLACE IN THE
-    /// SOURCE rather than at the same index.
+    /// The builder path the element was written at (`Node.key`).
     var key: String?
 
-    /// The composed views this element was built by, outermost first: each
-    /// one's type, the state boxes it owned under the paths they were found
-    /// at, and what it was BUILT WITH.
-    ///
-    /// The boxes are what let a `@State` survive the view being rebuilt: next
-    /// render, a view of the same type at the same identity hands its fresh
-    /// boxes this render's storage, box by box under the same path. The
-    /// inputs are what let the view NOT be rebuilt: the outermost one's are
-    /// compared against the fresh view's, and a view built with the same
-    /// inputs that read nothing that moved is carried whole. See
-    /// Core/Stateful.swift.
+    /// The composed views this element was built by, outermost first: each one's
+    /// type, its state boxes by path, and what it was built with.
+    /// Design: docs/design/core/identity-and-diffing.md#state-survives-a-rebuild
     var views: [(
         type: String,
         boxes: [(path: String, box: StateBox)],
         inputs: [(path: String, input: Input)])]
 
-    /// What stood in for this element's subtree - the node as its parent wrote
-    /// it, build closure and all - kept so the clean walk can build the
-    /// subtree again WITHOUT the parent having written it again.
-    ///
-    /// The closure captures the view value the parent built last time, whose
-    /// inputs are therefore exactly what the parent last computed - and the
-    /// clean walk only ever runs it while the parent is being left alone, so
-    /// those inputs are current by construction. Nil for a plain element: its
-    /// properties were written by whoever built it, and a change to them
-    /// starts at that ancestor's own placeholder.
+    /// What stood in for this element's subtree, kept so the clean walk can build it
+    /// again without the parent; nil for a leaf.
+    /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     var placeholder: Node?
 
-    /// The composed view whose body wrote this element - what a bare
-    /// container's content runs under when the clean walk builds it again,
-    /// so `debugInfo()` in its braces still names the view. Nil for an
-    /// element under no view.
+    /// The composed view whose body wrote this element, for `debugInfo()` in a bare
+    /// container's braces.
     var view: String?
 
-    /// The state this element's builds read, by storage identity - what
-    /// decides, against the changes a render carries, whether the subtree is
-    /// built again or carried over. See Core/Invalidation.swift.
-    ///
-    /// FIXED FOR THE LIFE OF THE ELEMENT, because the renderer counts this
-    /// element as a READER of each of these for exactly as long as it lives -
-    /// said as it is made, taken back in `deinit` - and a set that moved in
-    /// between would leave that count wrong. A build that read something
-    /// else is a new element, which is what `element()` makes.
+    /// The states this element's builds read, fixed for its life: the renderer counts
+    /// it as their reader from `init` to `deinit`.
+    /// Design: docs/design/core/invalidation.md#live-readers
     let reads: Set<ObjectIdentifier>
 
-    /// How many times this element has been described since it entered the
-    /// tree - what `debugInfo()` answers with, and the one thing that says
-    /// whether a view is being rebuilt by a scroll it has no part in. Carried
-    /// along the element, so a render that leaves it alone leaves it standing.
-    /// See Core/Builds.swift.
+    /// How many times this element has been described, for `debugInfo()`.
     var builds: Int
 
-    /// What this element PROVIDED to its subtree - the objects `.environment()`
-    /// put on its node and on the content it unwrapped to. The clean walk
-    /// pushes these as it descends, so a view rebuilt deep under clean
-    /// ancestors resolves exactly what a full build would hand it.
+    /// What this element provided to its subtree, pushed again by the clean walk.
     var provided: [(key: ObjectIdentifier, object: AnyObject)]
 
-    /// The environments VISIBLE when the composed view here was built - per
-    /// type, the nearest object's identity. A view's inputs say what it was
-    /// built with; they say nothing about a provider above replacing its
-    /// object, so the carry compares this too. See Core/Environment.swift.
+    /// The nearest provided object per type when the composed view here was built,
+    /// which a carry compares.
     var seen: [ObjectIdentifier: ObjectIdentifier]
 
-    /// What this element's `.onChanged` values were last time it was built, in
-    /// the order they were written.
-    ///
-    /// The values themselves rather than the watches: the closures belong to
-    /// the render that wrote them, and what has to outlive a render is only
-    /// what the next one compares against. See Core/Changes.swift.
+    /// The `.onChanged` values of its last build, in written order - the values
+    /// only; the closures belong to their render.
     var watched: [Any]
 
-    /// What this element's `.onDestroying` runs as it leaves the tree - the
-    /// closures its last build wrote, so the ones that run are the newest.
-    /// See Core/Lifetime.swift.
+    /// What `.onDestroying` runs as it leaves: its last build's closures.
     var destroying: [EventHandler] = []
 
-    /// What the element holds for its life - its session, where it asked for
-    /// one - handed back to every build after the first. See
-    /// Core/ElementSession.swift.
+    /// What the element holds for its life, where it asked for one.
     var session: AnyObject?
 
-    /// The numbers this element's engines are registered under, in the order
-    /// they were written.
-    ///
-    /// The ids rather than the arithmetic: what a cycle runs lives on the
-    /// BOARD, and what has to outlive a render is only the number that names
-    /// it - so a render rewrites the closure it already has a number for, and
-    /// an element leaving the tree hands the numbers back. A different COUNT
-    /// is a different set of engines and starts over. See Core/Cycle.swift.
+    /// The numbers its engines are registered under, in written order; the closures
+    /// live on the board.
     var engines: [Int] = []
 
-    /// Whether this element takes a new size at once, because the layout it
-    /// stands in is measured - kept so the clean walk, which builds it again
-    /// without its parent, answers as its parent did. See Core/Diff.swift.
+    /// Whether its sizes arrive at once because its layout is measured - kept for
+    /// the clean walk.
     var sizesArrive = false
 
-    /// The properties this element has driven to a state, as the host was told
-    /// them - which is what a render is compared against, so a registration
-    /// that did not change costs nothing. See Core/StateValue.swift.
+    /// The properties driven to a state, as the host was told them.
     var driven: [Prop: StateEntry] = [:]
 
-    /// The readings `.samples(_:into:_:)` asked for HERE, held - which is the
-    /// whole of how long one lives.
-    ///
-    /// The value being read knows them weakly, so a reading ends exactly when
-    /// this element does: the view leaves the tree, the element is released,
-    /// and the reading with it - the same sentence `engines` makes, where the
-    /// numbers go back at `Diff.forget(_:)`. An element that takes one over
-    /// holds the same object, so a rebuild hands it on rather than starting
-    /// its window again. See Core/Sampling.swift.
+    /// The readings `.samples` asked for here, held - which is how long one lives.
+    /// Design: docs/design/core/journeys.md#readings
     let readings: [Sampling]
 
     /// The elements under it, in the order the host has them.
     var children: [RenderedNode]
 
-    /// What this element's subtree LOOKS like, values left out - filled in
-    /// only for the children of a layout that recycles, and zero everywhere
-    /// else. Kept so the next render can tell whether the shape MOVED, a row
-    /// that starts writing a conditional property being a row the pool must
-    /// stop offering to the rows that do not. See Core/Recycling.swift.
+    /// What this subtree looks like with values left out, for a recycled layout's
+    /// children; zero elsewhere (Core/Recycling.swift).
     var shape: UInt64 = 0
 
-    /// Whether this element's children are recycled - `Node.recycles`, kept
-    /// so the flag is sent when it changes rather than on every patch.
+    /// Whether its children are recycled, kept so the flag is sent when it changes.
     var recycles = false
 
-    /// How this element's children were last told to travel when it places
-    /// them - what a change is compared against, so an unchanged one is not
-    /// said again. Nil until it has ever been said.
+    /// How its children were last told to animate; nil until said.
     var motion: Motion?
 
-    /// And which parts of a child's place travelled, for the same reason.
+    /// And which parts of a child's place animated.
     var lanes: MotionLanes = .all
 
-    /// One element as the host currently has it. Built by the differ, never
-    /// by hand.
+    /// One element as the host has it. Made by the differ.
     init(
         id: ElementId,
         type: NodeType,
@@ -258,14 +168,13 @@ final class RenderedNode {
         self.key = key
         self.children = children
 
-        // A reader of what it read, for as long as it lives - see `reads`.
-        // Only an element that read anything is counted, which spares every
-        // bare container the trip through the renderer's lock.
+        // A reader of what it read for as long as it lives; an element that read
+        // nothing skips the lock.
         if !reads.isEmpty {
             Renderer.shared.reading(reads)
         }
 
-        // And one of the living, for the tally's `alive` column.
+        // And one of the living, for the tally's `alive`.
         Renderer.shared.nodeBorn()
     }
 
@@ -279,20 +188,9 @@ final class RenderedNode {
 }
 
 extension HostPatch {
-    /// True when this patch says nothing beyond naming the element, in which
-    /// case its parent leaves it out of the message entirely.
-    ///
-    /// `transitions` is not asked about: a transition names a property in
-    /// `properties`, so a patch with one always has that property too, and a
-    /// patch carrying nothing but a transition would name a property it is
-    /// not sending - which is a bug, not a message.
-    ///
-    /// `driven` COUNTS, an emptied set included: a driven modifier writes
-    /// nothing into `properties`, so a child whose only change is which states it
-    /// ties - a conditional `.opacity($fade)` dropped, one state swapped for
-    /// another under one property - has no other field to be heard by, and
-    /// the empty set is the message that unties. Held by
-    /// `CarriedStateTests.testADrivenModifierDroppedFromAChildUntiesIt`.
+    /// Whether this patch says nothing beyond naming the element, so its parent
+    /// leaves it out. A changed driven set counts, an emptied one included.
+    /// Design: docs/design/core/identity-and-diffing.md#merging-patches
     var isEmpty: Bool {
         !replace
             && motion == nil
@@ -305,17 +203,8 @@ extension HostPatch {
             && !children.hasChange
     }
 
-    /// This patch followed by a later one about the same element - the one
-    /// message the host would have applied the two as, the later winning
-    /// wherever both say something about the same thing.
-    ///
-    /// What a render sends when the handlers it ran wrote state before its
-    /// message left: its own patch, then the walk of what they wrote. The
-    /// later patch was worked out against the tree the earlier one left, so
-    /// every element it names is one the earlier one brought, changed or left
-    /// standing. See `Renderer.renderWire`.
-    ///
-    /// - Parameter later: the later patch.
+    /// This patch followed by a later one about the same element, as one message.
+    /// Design: docs/design/core/identity-and-diffing.md#merging-patches
     func merging(_ later: HostPatch) -> HostPatch {
         // Built again, and complete when it says so.
         if later.replace {
@@ -324,9 +213,8 @@ extension HostPatch {
 
         var merged = self
 
-        // An element this message BRINGS arrives at its values: nothing
-        // travels to them and nothing is cleared, what is not in its patch
-        // never having been set.
+        // An element this message brings arrives at its values: no transition, nothing
+        // cleared.
         for (prop, value) in later.properties {
             merged.properties[prop] = value
             merged.transitions[prop] = fresh ? nil : later.transitions[prop]
@@ -356,8 +244,7 @@ extension HostPatch {
 }
 
 extension HostChildrenUpdate {
-    /// Whether this value carries any child update. An empty arrangement still
-    /// counts because it removes every child.
+    /// Whether this carries any child update; an empty arrangement removes every child.
     var hasChange: Bool {
         switch self {
         case .unchanged:
@@ -369,8 +256,7 @@ extension HostChildrenUpdate {
         }
     }
 
-    /// The child patches in this update, independent of whether they are sparse
-    /// or a complete arrangement.
+    /// The child patches, sparse or arranged.
     var patches: [HostPatch] {
         switch self {
         case .unchanged:
@@ -380,10 +266,8 @@ extension HostChildrenUpdate {
         }
     }
 
-    /// The children of two patches about one element: the later list where
-    /// it is ARRANGED, being the whole list in order, each child merged with
-    /// what the earlier one said about it - and otherwise the earlier list,
-    /// with each child the later one names merged in by its identity.
+    /// The children of two patches about one element: the later list where it is
+    /// arranged, each child merged; otherwise the earlier list, the later merged in.
     fileprivate static func merging(
         _ earlier: HostChildrenUpdate,
         with later: HostChildrenUpdate
@@ -406,8 +290,7 @@ extension HostChildrenUpdate {
                 if let at = merged.firstIndex(where: { $0.id == child.id }) {
                     merged[at] = merged[at].merging(child)
                 } else {
-                    // A sparse list names only children that stand, and an
-                    // arranged earlier list holds every child that does.
+                    // A sparse list names only children that stand.
                     if case .arranged = earlier {
                         assertionFailure(
                             "a later patch names a child the earlier arrangement has not got")

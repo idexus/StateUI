@@ -1,36 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The scenes an application has open, and what the tree says about them.
-//
-// WHICH SCENES THERE ARE is this library's to hold, never the author's: the
-// platform makes them - at launch, for *File ▸ New Window*, when the system
-// restores the application's windows - and `ApplicationSession.openScene()`
-// asks for one more. So the list lives here, as state the root of the tree
-// reads, and each entry holds what its scene has open beside its main window,
-// which that scene's own node reads - opening a window in one scene builds
-// nothing of another.
-//
-// THE TREE is what the host keeps its platform windows in step with:
-//
-//     Application
-//       Scene "1"            one per open scene, in the order they opened
-//         Window "main"      its main window, always first
-//         Window "fonts 1"   a window of a group: the kind, and a number of its own
-//
-// A scene's number is this library's - "1", "2", in the order they open - and
-// never the platform's, which is what keeps the wire the same bytes in every
-// run. The platform's own identity for a scene, the one the system restores it
-// by, stays on the host, which keeps the two paired.
-//
-// EACH OF THEM HAS A SESSION in the environment of what is under it: the
-// scene's `SceneSession`, and a `WindowSession` for each of its windows - held
-// by the scene's record, so a window keeps its own for as long as it is open.
-//
-// WHAT THE PLATFORM KEEPS for a scene is written down by the host: which
-// windows it had open - each window's kind and its value, as text - and the
-// values of the scene's `@State(sceneKey:)`. What comes back at launch is what
-// the SYSTEM restores; nothing of this library's decides it.
+// The scenes an application has open, and the tree the host keeps its platform
+// windows in step with.
+// Design: docs/design/core/scenes.md#the-scene-tree
 
 
 /// The name a scene keeps a value under, and what kind of value it is -
@@ -42,11 +15,9 @@
 ///
 ///     @State(sceneKey: .section) private var section = 0
 ///
-/// Kept by the platform WITH ITS SCENE: each session has its own value under
-/// the name, and the system hands it back with the scene when it restores the
-/// application's windows. A value every session shares is a `PersistentKey`
-/// instead. Where a platform restores no scenes - a phone, Windows - the value
-/// lives as long as its scene does.
+/// Each scene keeps its own value under the name, handed back with the scene when
+/// the system restores it; where a platform restores no scenes, the value lives as
+/// long as its scene. A value every scene shares is a `PersistentKey`.
 public struct SceneKey: Hashable, Sendable, CustomStringConvertible {
     /// The name - what the value is written down under.
     public let name: String
@@ -68,12 +39,10 @@ public struct SceneKey: Hashable, Sendable, CustomStringConvertible {
     public var description: String { name }
 }
 
-/// What a build of a scene declared about one of its groups - what a
-/// session's `openWindow` is checked against, and what a restored window is
-/// read with.
+/// What a scene's build declared about one of its window groups - what opening a
+/// window is checked against, and what a restored window is read with.
 struct GroupShape {
-    /// The type of value the group opens one window per, or nothing where it
-    /// opens one window.
+    /// The type of value the group opens one window per; nothing for a group of one.
     let valueType: Any.Type?
 
     /// A value read back out of the text it was written down as.
@@ -94,8 +63,8 @@ struct OpenedWindow: Equatable {
     /// Its group's kind.
     let type: WindowType
 
-    /// Its number in its scene, in the order windows opened there - what keeps
-    /// it the same window when the value it stands for changes.
+    /// Its number in its scene, in opening order - what keeps it the same window when
+    /// its value changes.
     let serial: Int
 
     /// The value it stands for, where its group opens one per value.
@@ -111,8 +80,7 @@ struct OpenedWindow: Equatable {
 /// One open scene: what it has open beside its main window, what the platform
 /// kept for it, and the sessions it hands the views under it.
 final class SceneRecord: @unchecked Sendable {
-    /// Its number - "1" for the first scene to open - which is also the
-    /// element the tree knows it by.
+    /// Its number - "1" for the first scene - which is also its key in the tree.
     let id: String
 
     /// What it has open beside its main window, in the order they opened.
@@ -124,39 +92,30 @@ final class SceneRecord: @unchecked Sendable {
     /// The groups its last build declared, by kind - written by that build.
     var declared: [WindowType: GroupShape] = [:]
 
-    /// Whether the platform has handed it a window: false for the scene an
-    /// application starts with, until the platform's first window arrives -
-    /// which is then that scene's rather than another's.
+    /// Whether the platform has handed it a window; the scene an application starts
+    /// with waits for the first one.
     var handedOver: Bool
 
     /// The last number given to one of its windows.
     private var serial = 0
 
-    /// Each window's session, by the key the tree knows the window by - kept
-    /// for as long as the window is open, so what a window was told about
-    /// itself outlives the renders that describe it.
+    /// Each window's session, kept while the window is open.
     private var windowSessions: [String: WindowSession] = [:]
 
-    /// Held around the three tables below: a scene key's write lands from
-    /// under its state's lock, from whichever thread wrote it.
+    /// Held around the three tables below: a scene key's write lands from under its
+    /// state's lock, from any thread.
     private let guarded = Lock()
 
     /// What the platform kept for the scene's keys, by name.
     private var restored: [String: PropValue] = [:]
 
-    /// The storage standing for each of its keys - one key, one piece of
-    /// state, in a scene as in the application.
+    /// The storage standing for each key - one key, one piece of state.
     private var keyed: [String: AnyObject] = [:]
 
-    /// The keys written since the host last took them, with the value to
-    /// keep. A key written five times is here once, holding the last value.
+    /// The keys written since the host last took them, each with its last value.
     private var waiting: [String: PropValue] = [:]
 
-    /// A scene, by its number.
-    ///
-    /// - Parameters:
-    ///   - id: its number.
-    ///   - handedOver: whether the platform has handed it a window yet.
+    /// A scene, by its number, and whether the platform has handed it a window.
     init(id: String, handedOver: Bool) {
         self.id = id
         self.handedOver = handedOver
@@ -216,16 +175,14 @@ final class SceneRecord: @unchecked Sendable {
         windows.remove(at: index)
     }
 
-    /// Closes one of its windows by the key the tree knows it by - what that
-    /// window's own session asks for.
+    /// Closes one of its windows by its key - what that window's session asks for.
     func closeWindow(key: String) throws {
         guard windows.contains(where: { $0.key == key }) else { throw WindowError.notOpen }
 
         closed(key: key)
     }
 
-    /// Makes one of its windows about another value - the window's own
-    /// binding, written.
+    /// Makes one of its windows about another value - the window's own binding.
     func retarget<Value: Codable & Hashable>(_ serial: Int, to value: Value) {
         guard let index = windows.firstIndex(where: { $0.serial == serial }) else { return }
 
@@ -233,19 +190,15 @@ final class SceneRecord: @unchecked Sendable {
         windows[index].text = try? ValueText.write(value)
     }
 
-    /// The reader closed one of its windows - the platform's window has gone.
-    /// By its key, so a report about a window already gone changes nothing.
+    /// The user closed one of its windows; a report about one already gone changes
+    /// nothing.
     func closed(key: String) {
         windows.removeAll { $0.key == key }
     }
 
-    /// The system restored one of its windows at launch: back it goes, where
-    /// the scene still declares its kind and the text still reads as its
-    /// value - and nowhere else, which is what closes it again.
-    ///
-    /// - Parameters:
-    ///   - name: its kind's name.
-    ///   - text: its value written down, or nothing for a group of one.
+    /// The system restored one of its windows: back it goes where the scene still
+    /// declares its kind and the text reads as its value, and nowhere else.
+    /// Design: docs/design/core/scenes.md#what-the-platform-keeps
     func restored(kind name: String, text: String?) {
         let type = WindowType(name)
 
@@ -265,10 +218,7 @@ final class SceneRecord: @unchecked Sendable {
         windows.append(OpenedWindow(type: type, serial: nextSerial(), value: value, text: text))
     }
 
-    /// The session of one of its windows - made the first time the window is
-    /// built, and the same one on every build after.
-    ///
-    /// - Parameter key: the key the tree knows the window by.
+    /// The session of one of its windows, made once and kept.
     func windowSession(_ key: String) -> WindowSession {
         if let standing = windowSessions[key] {
             return standing
@@ -307,15 +257,8 @@ final class SceneRecord: @unchecked Sendable {
         guarded.withLock { restored = values }
     }
 
-    /// The storage a key of this scene means: the one standing already, or
-    /// the offered one, adopted - with what the platform kept for the key
-    /// landed in it.
-    ///
-    /// - Parameters:
-    ///   - name: the key.
-    ///   - storage: the claimant's own storage, adopted when none stands.
-    ///   - land: the typed write putting a kept value into `storage`.
-    /// - Returns: the storage the key means.
+    /// The storage a key of this scene means: the one standing, or the offered one
+    /// adopted, with what the platform kept landed in it.
     func claim(_ name: String, orAdopt storage: AnyObject, landing land: (PropValue) -> Void) -> AnyObject {
         let (owner, held): (AnyObject, PropValue?) = guarded.withLock {
             if let standing = keyed[name] { return (standing, nil) }
@@ -340,8 +283,7 @@ final class SceneRecord: @unchecked Sendable {
     /// How many keys are waiting to be kept.
     var pending: Int { guarded.withLock { waiting.count } }
 
-    /// The keys waiting to be kept, SORTED BY NAME, and forgets them - the
-    /// determinism rule.
+    /// The keys waiting to be kept, sorted by name, taken.
     func takeWaiting() -> [(name: String, value: PropValue)] {
         guarded.withLock {
             let taken = waiting.sorted { $0.key < $1.key }
@@ -356,17 +298,15 @@ final class Scenes: @unchecked Sendable {
     /// The one there is: a process runs one application.
     static let shared = Scenes()
 
-    /// The scenes, in the order they opened - what the root of the tree reads,
-    /// so a scene opening or closing builds the application again and nothing
-    /// in the scenes that stay.
+    /// The scenes in opening order - a state the root reads, so a scene opening or
+    /// closing builds the application again and no scene that stays.
     @State var list: [SceneRecord] = [SceneRecord(id: "1", handedOver: false)]
 
     /// The number the next scene gets.
     private var next = 2
 
-    /// The scene being BUILT right now, while the differ is inside one - what a
-    /// `@State(sceneKey:)` made during the build claims its storage from, a
-    /// model class a scene's state creates included. Nothing between builds.
+    /// The scene being built now, while the differ is inside one - what a
+    /// `@State(sceneKey:)` made during the build claims from.
     var building: SceneRecord?
 
     private init() {}
@@ -378,8 +318,8 @@ final class Scenes: @unchecked Sendable {
         next = 2
     }
 
-    /// The scene with a number, if it is open. Read off the storage, so no
-    /// build that asks becomes a reader of the list.
+    /// The scene with a number, if it is open - read off the storage, so no build that
+    /// asks becomes the list's reader.
     func record(id: String) -> SceneRecord? {
         _list.storage.value.first { $0.id == id }
     }
@@ -390,8 +330,8 @@ final class Scenes: @unchecked Sendable {
         _list.storage.value.firstIndex { $0.id == id }
     }
 
-    /// Whether the platform opens a window beside another: a desktop and an
-    /// iPad do, a phone does not. A host that has not said - a test - does.
+    /// Whether the platform opens a window beside another: a desktop and an iPad do, a
+    /// phone does not, and a host that has not said does.
     static var opensWindows: Bool {
         let device = StandardEnvironment.device
 
@@ -410,9 +350,7 @@ final class Scenes: @unchecked Sendable {
         next += 1
     }
 
-    /// Ends a scene from the interface - its session's `close()`: it leaves
-    /// the list, and the host closes its main window and every window beside
-    /// it.
+    /// Ends a scene from the interface - its session's `close()`.
     func close(_ record: SceneRecord) throws {
         guard Scenes.opensWindows else { throw WindowError.unsupported }
         guard _list.storage.value.contains(where: { $0 === record }) else { throw WindowError.notOpen }
@@ -420,12 +358,9 @@ final class Scenes: @unchecked Sendable {
         ended(record)
     }
 
-    /// The platform handed over a window nobody here asked for - the first at
-    /// launch, one for *File ▸ New Window*, a scene the system restored - and
-    /// this is the scene it is: the one still waiting for its window, or a new
-    /// one.
-    ///
-    /// - Parameter values: what the platform kept for the scene's keys.
+    /// The platform handed over a window nobody here asked for: the scene waiting for
+    /// its first window takes it, or a new scene does.
+    /// Design: docs/design/core/scenes.md#connecting-and-ending
     func connected(restoring values: [String: PropValue]) {
         let standing = _list.storage.value
 
@@ -439,20 +374,17 @@ final class Scenes: @unchecked Sendable {
             list.append(record)
         }
 
-        // The host renders into the window it is holding as soon as this
-        // returns, and a scene that was already waiting changes no state.
+        // The host renders into the window as soon as this returns.
         Renderer.shared.setNeedsRender()
     }
 
-    /// A scene's main window has gone, and the scene with it - and an
-    /// inspector docked in that window.
+    /// A scene's main window has gone, and the scene with it.
     func ended(_ record: SceneRecord) {
         list.removeAll { $0 === record }
         Inspector.ended(record)
     }
 
-    /// Every key the open scenes have waiting to be kept, as the acts that
-    /// keep them - scene by scene, in the order they opened.
+    /// Every key the open scenes have waiting, as the acts that keep them.
     func takeSaves() -> [ActCall] {
         _list.storage.value.flatMap { record in
             record.takeWaiting().map {
@@ -467,23 +399,16 @@ final class Scenes: @unchecked Sendable {
     }
 
     /// The application as the root of a message: one node per open scene.
-    ///
-    /// - Parameter application: the application, asked for its scene.
     func tree(of application: Application) -> Node {
-        // ONE SCENE VALUE PER SCENE: a scene's `@State` boxes are the value's
-        // own, so two scenes built from one value would share every storage
-        // the first of them adopted.
+        // One scene value per scene: a scene's `@State` boxes are its value's own.
         Node(
             contract: ApplicationContract.self,
             children: list.map { SceneElement(record: $0, scene: application.scene).body })
     }
 }
 
-/// A scene as the tree holds it: the application's scene, for one open scene.
-///
-/// A composed view like a window or a page, which is what gives each open
-/// scene `@State` of its own - the author's scene type is stored here, and its
-/// boxes are paired across renders under this scene's number.
+/// A scene as the tree holds it - a composed view, so each open scene has `@State`
+/// of its own, paired under its number.
 struct SceneElement: Element {
     /// Which scene.
     let record: SceneRecord
@@ -502,9 +427,7 @@ struct SceneElement: Element {
 
         node.id = record.id
 
-        // What the application offered its scenes, and the scene's own
-        // session: in scope for the scene type's own `@Environment`, and under
-        // it for every window of the scene.
+        // What the application offered its scenes, and the scene's own session.
         node.environments = SceneElement.offered(by: scene)
             + [(key: ObjectIdentifier(SceneSession.self), object: record.session)]
 
@@ -531,8 +454,7 @@ struct SceneElement: Element {
 
         var children = [main]
 
-        // What it has open, READ HERE - so the scene is what builds again when
-        // a window opens or closes in it, and no other scene is.
+        // Read here, so this scene is what builds again when a window opens in it.
         for opened in record.windows {
             guard let group = windows.groups.first(where: { $0.type == opened.type }) else {
                 continue
@@ -542,10 +464,8 @@ struct SceneElement: Element {
                 panel: nil, session: record.windowSession(opened.key))
             window.id = opened.key
 
-            // What the host writes down for the system to restore, whether the
-            // window hides while another scene is in front and whether it
-            // floats on top - said either way, so none of the four is ever
-            // taken off a window it was on.
+            // Written either way, so none of them is ever cleared off a window.
+            // Design: docs/design/core/scenes.md#opening-windows
             window.write(WindowContract.windowType, opened.type)
             window.describe(WindowContract.windowValue, opened.text)
             window.write(WindowContract.hidesWhenInactive, group.hides)
@@ -560,17 +480,15 @@ struct SceneElement: Element {
         var node = Node(contract: SceneContract.self, children: children)
         node.environments = windows.environments
 
-        // The reader closed a window of the scene - its key is the payload.
+        // The user closed a window of the scene - its key is the payload.
         node.addHandler(SceneContract.windowClosed.token) {
             if let key = EventBuffer.current.value()?.string {
                 record.closed(key: key)
             }
         }
 
-        // The system restored one at launch - its kind, and its value's text.
-        // "No" is an answer too: the host holds the window until the render
-        // after this one says whether the scene took it, so one is asked for
-        // either way.
+        // The system restored one: its kind and its value's text. A render is asked for
+        // either way - the host holds the window until it hears.
         node.addHandler(SceneContract.windowRestored.token) {
             if let name = EventBuffer.current.value(0)?.string {
                 record.restored(kind: name, text: EventBuffer.current.value(1)?.string)
@@ -579,8 +497,7 @@ struct SceneElement: Element {
             Renderer.shared.setNeedsRender()
         }
 
-        // Its main window has gone - the reader closed it - and the scene with
-        // it, which is what closes every window beside it.
+        // Its main window has gone - the user closed it - and the scene with it.
         node.addHandler(SceneContract.destroying.token) { Scenes.shared.ended(record) }
 
         // Where the scene stands, as the host sees it.

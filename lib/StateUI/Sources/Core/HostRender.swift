@@ -12,12 +12,9 @@ import Glibc
 import CRT
 #endif
 
-// The typed boundary for a host linked into the same Swift process.
-//
-// A host in this process receives the renderer's sparse patch directly. A host
-// across a language boundary receives the Wire encoding of the same model. The
-// SPI keeps this machinery out of an application's API while allowing host
-// packages maintained beside StateUI to depend on it deliberately.
+// The typed boundary for a Swift host in this process: the renderer's sparse patch
+// as it is. A runtime in another language receives its Wire encoding.
+// Design: docs/design/core/README.md#two-ways-out
 
 /// A property value delivered directly to a native Swift host.
 @_spi(Host) public typealias HostValue = PropValue
@@ -31,7 +28,7 @@ import CRT
 /// A state image delivered directly to, or reported by, a native Swift host.
 @_spi(Host) public typealias HostStateValue = StateCarried
 
-/// The complete image of one host-walked value.
+/// The complete image of one value the host animates.
 ///
 /// A native host uses this representation instead of knowing how StateUI lays
 /// a journey out in numeric state lanes. Values are arrays because the same
@@ -40,7 +37,7 @@ import CRT
     /// Where the value stands on the current frame.
     public let value: [Double]
 
-    /// Where the value is travelling.
+    /// Where the value is going.
     public let destination: [Double]
 
     /// Its current speed per second, lane by lane.
@@ -73,7 +70,7 @@ import CRT
     }
 }
 
-/// Which parts of a host-walked journey are reported back to StateUI.
+/// Which parts of a journey the host animates are reported back to StateUI.
 @_spi(Host) public struct HostJourneyUpdate: OptionSet, Equatable, Sendable {
     /// The raw option bits.
     public let rawValue: UInt8
@@ -86,7 +83,7 @@ import CRT
     /// Where the value currently stands.
     public static let value = HostJourneyUpdate(rawValue: 1 << 0)
 
-    /// Where the value is travelling.
+    /// Where the value is going.
     public static let destination = HostJourneyUpdate(rawValue: 1 << 1)
 
     /// How fast the value currently moves.
@@ -147,7 +144,7 @@ extension HostPlacement {
     /// One placement for each child, in child order.
     public let placements: [HostPlacement]
 
-    /// How a changed arrangement travels to its new positions.
+    /// How a changed arrangement animates to its new positions.
     public let motion: Motion
 }
 
@@ -359,7 +356,7 @@ extension HostPlacement {
     /// The hardware manufacturer.
     public let manufacturer: String
 
-    /// The reader-visible device name, where available.
+    /// The user-visible device name, where available.
     public let name: String
 
     /// The operating-system version.
@@ -428,13 +425,13 @@ extension HostPlacement {
 
 /// Manifest facts supplied before a native host asks for its first render.
 @_spi(Host) public struct HostApplicationInfo: Equatable, Sendable {
-    /// The application name shown to the reader.
+    /// The application name shown to the user.
     public let name: String
 
     /// The bundle or package identifier.
     public let packageName: String
 
-    /// The reader-visible release version.
+    /// The user-visible release version.
     public let versionString: String
 
     /// The build identifier behind the release version.
@@ -599,7 +596,7 @@ extension HostPlacement {
     /// Nil means unchanged; `.replace([:])` removes every handler.
     public var events: HostEventUpdate?
 
-    /// How this element's children travel when it puts them somewhere new,
+    /// How this element's children animate when it puts them somewhere new,
     /// sent when it changed and only by an element that places children.
     public var motion: HostLayoutMotion?
 
@@ -820,7 +817,7 @@ extension HostChildrenUpdate: RandomAccessCollection {
     ///
     /// A moving property reports through its host motion channel instead; its
     /// image contains the value, destination, velocity, law and completion,
-    /// rather than only the value a reader moved.
+    /// rather than only the value a user moved.
     @discardableResult
     public static func report(
         _ value: HostStateValue,

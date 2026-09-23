@@ -1,18 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A value written down as TEXT, and read back.
-//
-// What a window of a scene is opened FOR - a document's number, an item's id -
-// is kept by the platform while the application is not running, so that the
-// window comes back for the same value when the system restores the scene. The
-// platform keeps text, and a window's value is any `Codable` the author chose,
-// so this is the one road between the two.
-//
-// `Codable` is the standard library's, and so is everything here: the text is
-// JSON, written and read by hand the way Core/Wire.swift writes the wire, with
-// an object's members in the order the value encoded them - so one value is
-// one text, in every run.
+// A `Codable` value written down as text and read back: what a scene's window is
+// opened for, kept by the platform as JSON written and read by hand.
+// Design: docs/design/core/scenes.md#what-the-platform-keeps
 
 /// A `Codable` value as text, and back.
 enum ValueText {

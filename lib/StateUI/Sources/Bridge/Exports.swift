@@ -1,33 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The C boundary.
-//
-// Every function a foreign-language host calls lives here, in ONE file on
-// purpose: @_cdecl is an underscored (compiler-private) attribute, so keeping
-// all uses together makes a future migration to the official @cdecl a local
-// change. It also keeps the exported surface easy to audit - what is here is
-// the entire API a foreign-language host can reach.
-//
-// NOTE ON DIRECTION:
-// This library knows nothing about any particular application. The app module
-// (GalleryUI in the sample) depends on this one, registers its Application
-// through stateUIUseApp, and exposes its own @_cdecl entry point for the host
-// to call. The dependency runs app -> library and never the other way, which is
-// what lets this package be published on its own.
-//
-// Rules for anything added here:
-//   - must be a global function (not a method)
-//   - parameters and return types must be representable in C: integers,
-//     doubles, pointers - no String, Array, class, generic or throws
-//   - memory returned to the caller must have a matching free function
+// The C boundary: every function a runtime in another language calls, in one
+// file. C types only, and memory returned to the caller has a matching free.
+// Design: docs/design/core/bridge.md#one-file-of-exports
 
-/// Allocates a null-terminated UTF-8 copy of a string.
-///
-/// Uses allocate rather than strdup so allocation and release happen on the same
-/// side of the boundary with the same allocator on every platform. Mixing
-/// allocators is a classic source of crashes that only show up under load, and
-/// strdup/free is unreliable on Windows where multiple C runtime copies exist.
+/// A null-terminated UTF-8 copy of a string, allocated here to be freed here.
+/// Design: docs/design/core/bridge.md#memory-is-freed-where-it-was-allocated
 private func makeCString(_ text: String) -> UnsafeMutablePointer<CChar>? {
     let bytes = Array(text.utf8CString)   // already includes the terminator
     let buffer = UnsafeMutablePointer<CChar>.allocate(capacity: bytes.count)
@@ -37,24 +16,14 @@ private func makeCString(_ text: String) -> UnsafeMutablePointer<CChar>? {
     return buffer
 }
 
-/// Renders - building the tree, or walking to what changed - and returns what
-/// changed, in the binary wire format (Core/Wire.swift). Writes the byte count
-/// into `length`.
+// Design: docs/design/core/bridge.md#the-wire-suffix
+/// Renders and returns what changed as Wire bytes (Core/Wire.swift), writing the
+/// byte count into `length`.
 ///
-/// `baseline` is the generation the caller is holding - the one that came with
-/// the last message it applied SUCCESSFULLY, or 0 if it has nothing. A caller
-/// still holding the current generation gets a patch; anyone else gets the whole
-/// tree, which is how the two sides recover from ever losing track of each
-/// other. The reply carries the new generation.
-///
-/// The `_wire` suffix names the FORMAT, for the reason
-/// stateui_take_act_calls_wire carries it: a half built for another format
-/// calls a name that is not here and fails to find the entry point - a
-/// clean, nameable error - where one name over two signatures would read a
-/// register as a pointer.
-///
-/// The caller owns the returned memory and must release it with
-/// stateui_free_buffer.
+/// `baseline` is the generation of the last message the caller applied in full,
+/// or 0 for none. A caller holding the current generation gets a patch; anyone
+/// else gets the whole tree. The caller releases the buffer with
+/// `stateui_free_buffer`.
 @_cdecl("stateui_render_wire")
 public func stateui_render_wire(
     _ baseline: Int32,
@@ -63,10 +32,7 @@ public func stateui_render_wire(
     makeBuffer(Renderer.shared.renderWire(baseline: baseline), length)
 }
 
-/// Allocates a copy of a wire message for the caller, writing its byte count
-/// - the shape the three buffer exports hand over. Null for an empty message
-/// - the act calls taken on a quiet pump, the persistent keys of an application
-/// that keeps nothing.
+/// A copy of a message for the caller, with its byte count; null for an empty one.
 private func makeBuffer(
     _ bytes: [UInt8],
     _ length: UnsafeMutablePointer<Int32>?
@@ -82,20 +48,12 @@ private func makeBuffer(
     return buffer
 }
 
-/// Reports that an event fired or an act finished, identified by the id from
-/// the tree - positive for an element's event, negative for a completion.
+/// Reports that an event fired or an act finished, by the id from the tree -
+/// positive for an element's event, negative for a completion - with `bytes` the
+/// event's payload or the act's reply, as Wire values.
 ///
-/// `bytes` carries the binary payload (Core/Wire.swift): for an event, the
-/// typed values the control reported - null for an event with nothing to say -
-/// and for a completion, the act's reply. Returns 1 if a handler ran, 0 if the
-/// id was unknown - which happens when an event arrives for a tree that has
-/// already been replaced, and is not an error.
-///
-/// The buffer is the caller's and is read before this returns; nothing is
-/// kept, so there is nothing to free. The `_wire` suffix names the format, for
-/// the reason the other two `_wire` exports carry it: a half built for another
-/// format fails to find the entry point - a clean, nameable error - instead of
-/// reading bytes as a C string.
+/// Returns 1 if a handler ran and 0 for an unknown id, which is not an error. The
+/// buffer is read before this returns.
 @_cdecl("stateui_dispatch_wire")
 public func stateui_dispatch_wire(
     _ handlerId: Int32,
@@ -107,31 +65,23 @@ public func stateui_dispatch_wire(
     } ?? []
 
     if handlerId < 0 {
-        // A reply that cannot be read must still resume the handler waiting
-        // on it - as a failure, never a hang. The same reasoning as
-        // stateui_fail_taken_act_calls, one level down.
+        // A reply that cannot be read still resumes its handler, as a failure.
         ReplyBuffer.current = Wire.decodeReply(payload)
             ?? .failed("the reply from the host could not be read. Usually a "
                 + "native library and a runtime built from different versions.")
     } else {
-        // An unreadable payload is treated as an empty one: the typed readers
-        // find nothing they expect and leave handler and binding alone - the
-        // gesture parse rule, applied to the whole buffer.
+        // An unreadable payload reads as empty: the typed readers leave everything alone.
         EventBuffer.current = Wire.decodePayload(payload) ?? []
     }
 
     return Renderer.shared.dispatch(Int(handlerId)) ? 1 : 0
 }
 
-/// Reports an event the HOST raised by NAME, with no element behind it - the
-/// application's own pushes, registered with the host and heard by
-/// `HostEvents.on`. `bytes` is the host-event layout (Core/Wire.swift): the
-/// name, then the typed values.
+/// Reports an event the host raised by name, with no element behind it - heard by
+/// `HostEvents.on`. `bytes` is the host-event layout: the name, then the values.
 ///
-/// Returns how many handlers heard it - zero is an ordinary answer, since the
-/// battery reports whether a page is watching or not - and -1 for a buffer
-/// that would not read, which the host reports as version skew. The buffer is
-/// the caller's and is read before this returns.
+/// Returns how many handlers heard it - zero is an ordinary answer - and -1 for a
+/// buffer that would not read. The buffer is read before this returns.
 @_cdecl("stateui_dispatch_host_event")
 public func stateui_dispatch_host_event(
     _ bytes: UnsafePointer<UInt8>?,
@@ -168,18 +118,9 @@ public func stateui_set_realization_wire(
     return 0
 }
 
-/// Hands over the acts queued since the last time, in the binary wire format
-/// (Core/Wire.swift), and forgets them. Writes the byte count into `length`
-/// and answers null for an empty queue - the common case, every pump,
-/// allocating nothing.
-///
-/// The `_wire` suffix names the FORMAT, and is what makes a mismatch loud: a
-/// half built for another format calls a name that is not here and fails to
-/// find the entry point - a clean, nameable error - where one name over two
-/// signatures would read a register as a pointer.
-///
-/// The caller owns the returned memory and must release it with
-/// stateui_free_buffer.
+/// Hands over the acts queued since the last call as Wire bytes and forgets them,
+/// writing the byte count into `length`; null for an empty queue. The caller
+/// releases the buffer with `stateui_free_buffer`.
 @_cdecl("stateui_take_act_calls_wire")
 public func stateui_take_act_calls_wire(
     _ length: UnsafeMutablePointer<Int32>?
@@ -187,35 +128,23 @@ public func stateui_take_act_calls_wire(
     makeBuffer(Renderer.shared.takeActCallsWire(), length)
 }
 
-/// Which version of the binary wire format this library writes.
-///
-/// The host asks BEFORE the first render and refuses a mismatch loudly - two
-/// halves built from different versions must fail at startup with a sentence,
-/// never by reading each other's bytes wrong. A library too old to have this
-/// export fails the same check as a missing entry point, which is the same
-/// sentence one step earlier.
+/// Which version of the Wire this library writes. The host asks before the first
+/// render and refuses a mismatch.
 @_cdecl("stateui_wire_version")
 public func stateui_wire_version() -> Int32 {
     Int32(Wire.version)
 }
 
-/// Releases a buffer any of the four buffer exports returned - the two
-/// `_wire` ones, `stateui_persistent_keys` and `stateui_inspect_log`.
-/// Allocated and freed on this side of the boundary, the stateui_free_string
-/// rule.
+/// Releases a buffer a buffer export returned - the `_wire` ones,
+/// `stateui_persistent_keys` and `stateui_inspect_log`.
 @_cdecl("stateui_free_buffer")
 public func stateui_free_buffer(_ pointer: UnsafeMutableRawPointer?) {
     guard let pointer = pointer else { return }
     pointer.deallocate()
 }
 
-/// Reports that the LAST taken batch could not be read at all, so every act in
-/// it fails with `reason` - each awaiting handler resumes by throwing instead
-/// of staying suspended forever.
-///
-/// The host cannot name the acts itself: their completion ids are inside the
-/// very bytes that would not read, so the take keeps a receipt on this side
-/// and this is how the host cashes it. See `Renderer.failTakenActCalls`.
+/// Fails every act of the last taken batch with `reason`, because the host could
+/// not read it: each awaiting handler throws instead of waiting for ever.
 @_cdecl("stateui_fail_taken_act_calls")
 public func stateui_fail_taken_act_calls(_ reason: UnsafePointer<CChar>?) {
     Renderer.shared.failTakenActCalls(reason.map { String(cString: $0) } ?? "")
@@ -223,24 +152,11 @@ public func stateui_fail_taken_act_calls(_ reason: UnsafePointer<CChar>?) {
 
 // MARK: - The cycle
 
-/// Takes in everything the host has written since the last cycle - one call, a
-/// batch of states.
+/// Takes in everything the host wrote since the last cycle, as a state batch:
+/// `[count: U16]`, then per write `[number: I32][mask: U64][length: U32][bytes]`,
+/// the mask naming the lanes the host wrote.
 ///
-/// THE LAYOUT: `[count: U16]` and then, per entry, `[number: I32][mask: U64]`
-/// `[length: U32][bytes]`. The mask says which LANES the host actually wrote,
-/// so a report about an offset does not read as a report about the law beside
-/// it; those lanes are laid into the image and their dirty bits CLEARED, a
-/// host-written lane never being read back out as this side's.
-///
-/// Called from inside a cycle it writes the image the engines are running
-/// over; called between cycles it waits for the next one to latch it, exactly
-/// as a handler's own write does.
-///
-/// - Parameters:
-///   - batch: the bytes.
-///   - length: how many of them.
-/// - Returns: how many states were written, or -1 where the bytes could not be
-///   read at all.
+/// - Returns: how many states were written, or -1 where the bytes ran out.
 @_cdecl("stateui_cycle_write")
 public func stateui_cycle_write(_ batch: UnsafePointer<UInt8>?, _ length: Int32) -> Int32 {
     guard let batch = batch, length > 0 else { return 0 }
@@ -249,42 +165,25 @@ public func stateui_cycle_write(_ batch: UnsafePointer<UInt8>?, _ length: Int32)
         UnsafeBufferPointer(start: batch, count: Int(length))))
 }
 
-/// Runs one cycle: everything written taken in, the engines that have a reason
-/// run, and what they wrote published.
+/// Runs one cycle.
 ///
 /// - Parameters:
-///   - sync: which board, by the order they were made. 0 is the display's own
-///     frame, which is the only one there is today.
+///   - sync: which board; 0 is the display's own frame.
 ///   - now: the instant, in milliseconds on the host's own clock.
-///   - reducesMotion: whether the reader has asked for less movement.
-/// - Returns: how many states have lanes waiting to be read, with
-///   `0x4000_0000` set where any engine says it has more to do - so one call
-///   answers both "is there anything to write onto a control" and "keep the
-///   clock running". -1 where there is no such board.
+///   - reducesMotion: whether the user asked for less motion.
+/// - Returns: how many states have lanes waiting, with `0x4000_0000` set where an
+///   engine has more to do; -1 where there is no such board.
 @_cdecl("stateui_cycle_run")
 public func stateui_cycle_run(_ sync: Int32, _ now: Double, _ reducesMotion: Int32) -> Int32 {
     Renderer.shared.cycle(sync: sync, now: now, reducesMotion: reducesMotion != 0)
 }
 
-/// Reads out what the last cycle wrote.
+/// Reads out what the last cycle wrote, in `stateui_cycle_write`'s layout:
+/// `number` 0 for every state with dirty lanes, ascending, its bits cleared; a
+/// number for that one state whole, nothing cleared.
 ///
-/// TWO QUESTIONS, one call. `number == 0` asks for every state with dirty lanes, in
-/// ASCENDING order, and CLEARS the bits it answers - that is the per-frame
-/// read, and the order is what makes two runs of one cycle write the same
-/// bytes. `number == n` asks for that one state WHOLE, with every lane marked, and
-/// clears nothing: what a registration needs, which is the value AND where it
-/// is going.
-///
-/// The layout is `stateui_cycle_write`'s exactly, so one reader serves both
-/// directions.
-///
-/// - Parameters:
-///   - number: which number, or 0 for every dirty one.
-///   - into: where to write the bytes.
-///   - capacity: how many bytes fit there.
-/// - Returns: how many bytes were written, 0 for a state that has gone, and -1
-///   where the buffer is too small - in which case nothing was cleared and the
-///   call can be made again with room.
+/// - Returns: bytes written, 0 for a state that has gone, or -1 where the buffer is
+///   too small - nothing cleared.
 @_cdecl("stateui_cycle_read")
 public func stateui_cycle_read(
     _ number: Int32,
@@ -297,28 +196,15 @@ public func stateui_cycle_read(
         number, into: UnsafeMutableBufferPointer(start: buffer, count: Int(capacity))))
 }
 
-/// Whether anything at all is waiting for a cycle - a write not yet latched, a
-/// lane not yet read, an engine armed by a render or one that says it has more
-/// to do.
-///
-/// What the waker asks so a still page costs no frames at all.
-///
-/// - Returns: how many boards have something waiting.
+/// Whether anything is waiting for a cycle - a write not latched, a lane not read,
+/// an engine armed or with more to do. Answers how many boards have something.
 @_cdecl("stateui_cycle_awake")
 public func stateui_cycle_awake() -> Int32 {
     Renderer.shared.cycleAwake()
 }
 
-/// The last cycle, as one line - what it latched, what ran, what was skipped
-/// and what it wrote.
-///
-/// ASKED FOR RATHER THAN DECIDED HERE: whether a trace is being kept is the
-/// host's own switch, and this side has no environment to read - so nothing
-/// calls this unless `STATEUI_FRAMES` is set over there. The string is
-/// allocated here and freed by `stateui_free_string`, as every string that
-/// crosses this way is.
-///
-/// - Returns: the line.
+/// The last cycle as one line - what it latched, ran, skipped and wrote. Released
+/// with `stateui_free_string`.
 @_cdecl("stateui_cycle_trace")
 public func stateui_cycle_trace() -> UnsafeMutablePointer<CChar>? {
     makeCString(Renderer.shared.cycleTrace())
@@ -332,12 +218,8 @@ public func stateui_needs_render() -> Int32 {
     Renderer.shared.needsRender ? 1 : 0
 }
 
-/// How many renders this process has made, and two counts written beside it:
-/// `empty`, how many of them carried nothing - a message with no patch in it,
-/// made for a write that changed no property - and `refused`, how many writes
-/// asked for nothing because no live element read the state. The tally's
-/// `empty` and `refused` columns: what the readers spared, beside what still
-/// got through. See `Renderer.renders`.
+/// How many renders this process made; `empty` receives how many carried nothing,
+/// and `refused` how many writes asked for nothing.
 @_cdecl("stateui_renders")
 public func stateui_renders(
     _ empty: UnsafeMutablePointer<Int32>,
@@ -348,9 +230,7 @@ public func stateui_renders(
     return Int32(truncatingIfNeeded: Renderer.shared.renders)
 }
 
-/// How many rendered nodes are alive right now - the tally's `alive` column,
-/// which is what tells a page left standing in memory from garbage a collector
-/// has not got to yet. See `Renderer.liveNodes`.
+/// How many rendered elements are alive now.
 @_cdecl("stateui_alive")
 public func stateui_alive() -> Int32 {
     Int32(truncatingIfNeeded: Renderer.shared.liveNodes)
@@ -395,13 +275,9 @@ public func stateui_inspect_scene(_ generation: Int32, _ index: Int32, _ micros:
     Inspection.applied(generation: generation, scene: Int(index), micros: micros)
 }
 
-/// Every inspected pass the host has reported on since the last call, as
-/// UTF-8 text - what the host writes out beside the tally for
-/// `STATEUI_INSPECT=1`. The first call is the host asking for them: recording
-/// starts then and stays on. Answers null with nothing new to say.
-///
-/// The caller owns the returned memory and must release it with
-/// stateui_free_buffer.
+/// Every inspected pass the host reported on since the last call, as UTF-8 text;
+/// the first call starts recording for good. Null with nothing new. Released
+/// with `stateui_free_buffer`.
 @_cdecl("stateui_inspect_log")
 public func stateui_inspect_log(
     _ length: UnsafeMutablePointer<Int32>?
@@ -409,15 +285,9 @@ public func stateui_inspect_log(
     makeBuffer(Array(Inspection.takeLog().utf8), length)
 }
 
-/// Tells this library the platform has handed over a window nobody here asked
-/// for - the first at launch, one for *File ▸ New Window*, one the system
-/// restored - and what the platform kept for that scene's keys: name and
-/// value, name and value, in the event payload's layout (Core/Wire.swift).
-///
-/// Called BEFORE the render that puts the scene in the window, so a
-/// `@State(sceneKey:)` reads what was kept from its first build. Returns 1, or
-/// -1 for a buffer that would not read, which changes nothing. The buffer is
-/// the caller's and is read before this returns. See Core/Scenes.swift.
+/// Hands over a platform window nobody here asked for, with what the platform kept
+/// for its scene's keys - name and value pairs, in the payload's layout - before
+/// the render that fills it. Returns 1, or -1 for a buffer that would not read.
 @_cdecl("stateui_connect_scene")
 public func stateui_connect_scene(_ bytes: UnsafePointer<UInt8>?, _ length: Int32) -> Int32 {
     let buffer: [UInt8] = bytes.map {
@@ -441,58 +311,27 @@ public func stateui_connect_scene(_ bytes: UnsafePointer<UInt8>?, _ length: Int3
     return 1
 }
 
-/// Runs whatever a suspended handler has waiting, and returns how many jobs ran.
-///
-/// This is where a handler comes back to life after an `await`. The host calls it
-/// on its UI thread at the start of every turn: the job a resume produces
-/// lands a moment after the resume is reported, and its landing wakes the
-/// host's doorbell (`stateui_wait_work`), whose turn runs it.
-///
-/// Anything the handler does - a state write, another act - happens inside this
-/// call, so the host renders and drains the act queue afterwards exactly as
-/// it does after an event.
-///
-/// Deliberately a call INTO this library rather than a callback out of it: a
-/// resume arrives on a cooperative-pool thread, and entering a foreign-language
-/// host from a thread its runtime has never seen can deadlock the UI thread
-/// when a debugger is attached. See Core/UIThread.swift.
+/// Runs whatever suspended handlers have waiting, on the calling thread, and
+/// returns how many jobs ran. The host calls it on its UI thread at the start of
+/// every turn; whatever the handlers do happens inside this call.
 @_cdecl("stateui_run_jobs")
 public func stateui_run_jobs() -> Int32 {
     Int32(stateUIRunJobs())
 }
 
-/// Parks the calling thread until work lands, and returns how much is waiting
-/// - `StateUIHost.waitForWork`'s count, which can be 0 when another turn got
-/// there first.
-///
-/// This is how a job NO act produced still runs promptly: a `Task.sleep`
-/// coming due, a task an author started finishing. And the other way round -
-/// an ACT, a dirty tree or a value waiting on its board for a cycle, which a
-/// handler resumed on the pool leaves with no job to announce it, still
-/// reaches the host promptly. The host gives this library a thread - one it
-/// CREATED, so its runtime has always known it, which is the whole of the
-/// attach trap in Core/UIThread.swift - and that thread spends its life
-/// parked here. When it returns, the host posts one turn onto its UI thread
-/// and calls back in.
-///
-/// Nothing is ever run on this thread; it is a doorbell, not a worker.
+/// Parks the calling thread until work lands, and returns how much is waiting -
+/// which can be 0 when another turn got there first. The host gives this a thread
+/// it created, and posts one turn onto its UI thread whenever it returns; nothing
+/// ever runs on this thread.
 @_cdecl("stateui_wait_work")
 public func stateui_wait_work() -> Int32 {
     Int32(StateUIHost.waitForWork())
 }
 
-/// Tells this library what the host knows - one standard provider's values
-/// per call, in the environment layout (Core/Wire.swift): the version, the
-/// domain byte, then the typed values in the order the provider declares its
-/// properties. Called for every domain BEFORE the first render, so the first
-/// tree already knows its formFactor and its locale, and again whenever a platform
-/// event says something moved - which is what rebuilds exactly the views that
-/// read the changed provider. See Types/HostEnvironment.swift.
-///
-/// Returns 1 applied; 0 for a domain this library does not know or a payload
-/// of the wrong shape, refused whole; -1 for a buffer that would not read.
-/// The host reports either failure once, as version skew. The buffer is the
-/// caller's and is read before this returns.
+/// Pushes one standard provider's values in the environment layout - once per
+/// domain before the first render, and whenever a platform event moves one.
+/// Returns 1 applied, 0 for an unknown domain or a payload of the wrong shape, and
+/// -1 for a buffer that would not read.
 @_cdecl("stateui_set_environment")
 public func stateui_set_environment(
     _ bytes: UnsafePointer<UInt8>?,
@@ -507,17 +346,9 @@ public func stateui_set_environment(
     return StandardEnvironment.apply(domain: push.domain, values: push.payload) ? 1 : 0
 }
 
-/// Announces which store the application keeps state in and every key it keeps
-/// there, so the host can read exactly those. Writes the byte count into
-/// `length`.
-///
-/// Called ONCE, after the app registers and before the first render - the only
-/// moment where the application exists and no view has been built yet, which is
-/// what the hydration below has to happen inside. An application that keeps
-/// nothing answers a null pointer and a count of 0.
-///
-/// The caller owns the returned memory and must release it with
-/// stateui_free_buffer.
+/// The store the application keeps state in and its keys, for the host to read
+/// before the first render; null and 0 for an application that keeps nothing.
+/// Released with `stateui_free_buffer`.
 @_cdecl("stateui_persistent_keys")
 public func stateui_persistent_keys(
     _ length: UnsafeMutablePointer<Int32>?
@@ -525,17 +356,8 @@ public func stateui_persistent_keys(
     makeBuffer(Renderer.shared.persistentWire(), length)
 }
 
-/// Takes what the host read out of the store: a name and a value for each key
-/// it FOUND, in the layout at `Wire.decodePersistent`.
-///
-/// Called once, before the first render, so a `@State` declared with one of
-/// these keys already holds the kept value the first time anything reads it.
-/// A key the store had nothing under is absent from the buffer, and the state
-/// keeps the value written beside it.
-///
-/// Returns 1 applied, -1 for a buffer that would not read - which the host
-/// reports once as version skew. The buffer is the caller's and is read before
-/// this returns.
+/// Takes what the host read out of the store - a name and a value per key found -
+/// before the first render. Returns 1, or -1 for a buffer that would not read.
 @_cdecl("stateui_set_persistent")
 public func stateui_set_persistent(
     _ bytes: UnsafePointer<UInt8>?,
@@ -560,12 +382,8 @@ public func stateui_free_string(_ pointer: UnsafeMutablePointer<CChar>?) {
     pointer.deallocate()
 }
 
-/// Reports which platform the Swift side was compiled for.
-///
-/// Useful as a smoke test: if this returns the expected platform, the native
-/// library really was built for the target and loaded correctly. Available to
-/// Swift code as `stateUIPlatform()`, which is the same string without the
-/// trip across the boundary.
+/// Reports which platform the Swift side was compiled for - a smoke test that the
+/// right library loaded. `stateUIPlatform()` is the same string in Swift.
 @_cdecl("stateui_platform")
 public func stateui_platform() -> UnsafeMutablePointer<CChar>? {
     makeCString(stateUIPlatform())

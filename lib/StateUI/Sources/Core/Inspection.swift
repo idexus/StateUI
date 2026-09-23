@@ -1,28 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// WHAT EACH RENDER COST AND WHAT IT BUILT, kept while an inspector is open.
-//
-// The renderer opens a PASS around every render and the differ writes an ENTRY
-// for every composed view it reaches: BUILT, with the reason it could not be
-// carried; CARRIED whole; or WALKED on the way to one that was built - each
-// with the time its element took, the entries under it included and the time
-// that was its own. The host adds its half once the message is applied: how
-// long reading it and applying it took, per scene, and what that cost in
-// controls. Views/Inspector.swift is what shows it.
-//
-// NOTHING HERE RUNS WHILE NOBODY LOOKS. Every hook in the differ is one read of
-// `recording`, false until an inspector opens and false again when it closes or
-// pauses - so an application that never opens one pays a branch per composed
-// view and nothing else. The one other reader is the host, asked for every
-// pass as text (`STATEUI_INSPECT=1`): recording then starts with the first
-// render and stays on.
-//
-// THE INSPECTOR IS NOT ITS OWN SUBJECT. It is a tree like any other, built
-// again whenever a pass lands, so its own views are MUTED - their time is kept
-// apart and they write no entries - and a pass caused by nothing but its own
-// state is not kept at all. Otherwise every pass would record the inspector
-// drawing the pass before it.
+// The inspector's record: what each render cost and what it built, kept only while
+// an inspector records.
+// Design: docs/design/core/diagnostics.md#the-inspector
 
 /// One render, as the inspector shows it.
 struct InspectedPass {
@@ -38,8 +19,8 @@ struct InspectedPass {
         case complete
     }
 
-    /// Counts from 1 for as long as the inspector has been recording - the
-    /// passes KEPT, so a pass the inspector caused leaves no gap.
+    /// Counts from 1 over the passes kept, so a pass the inspector caused leaves no
+    /// gap.
     var number = 0
 
     /// The generation the message carried - what the host's report names.
@@ -96,9 +77,8 @@ struct InspectedEntry {
     /// The view's type, without its module.
     let view: String
 
-    /// The scene it is in - the element of the entry at depth 0 above it, a
-    /// scene's own entry being the outermost a render writes. What an
-    /// inspector files the entry under.
+    /// The scene it is in - the element of the depth-0 entry above it, which an
+    /// inspector files it under.
     let scene: ElementId?
 
     /// What the render did with it.
@@ -136,10 +116,8 @@ struct InspectedHost {
     var scenes: [Double] = []
 }
 
-/// The record an inspector reads, and the hooks the renderer and the differ
-/// write it through.
-///
-/// Written only by the thread that renders, which is the one that reads it.
+/// The record an inspector reads, and the hooks the renderer and the differ write
+/// it through - touched only by the thread that renders.
 enum Inspection {
     /// Whether anything is being recorded.
     nonisolated(unsafe) static var recording = false
@@ -164,9 +142,8 @@ enum Inspection {
     /// Told whenever a pass lands or the host reports on one.
     nonisolated(unsafe) static var landed: (() -> Void)?
 
-    /// Whether the host takes every pass as text too - `STATEUI_INSPECT=1`,
-    /// read on its side. Set by its first `takeLog()`; from then on recording
-    /// stays on whatever an inspector's own buttons say.
+    /// Whether the host takes every pass as text too (`STATEUI_INSPECT=1`); set by its
+    /// first `takeLog()`, after which recording stays on.
     nonisolated(unsafe) static var logging = false
 
     /// The passes written out as text and not yet taken.
@@ -201,8 +178,8 @@ enum Inspection {
         recording = true
     }
 
-    /// Stops recording, keeping what was recorded - unless the host takes the
-    /// passes as text, which keeps it recording.
+    /// Stops recording, keeping what was recorded - unless the host takes the passes
+    /// as text.
     static func stop() {
         guard !logging else { return }
 
@@ -220,10 +197,6 @@ enum Inspection {
     // MARK: - The renderer's hooks
 
     /// Opens the pass one render makes.
-    ///
-    /// - Parameters:
-    ///   - road: which road the render is taking.
-    ///   - causes: what was written since the render before, by name.
     static func begin(road: InspectedPass.Road, causes: [String]) {
         pass = InspectedPass(
             at: micros(since: origin) / 1000,
@@ -235,25 +208,15 @@ enum Inspection {
         scene = nil
     }
 
-    /// Closes the pass, and keeps it unless the inspector's own state was all
-    /// that caused it.
-    ///
-    /// - Parameters:
-    ///   - generation: what the message carries.
-    ///   - describe: microseconds the differ took, the inspector's own views
-    ///     included - they are taken out here.
-    ///   - encode: microseconds writing the message.
-    ///   - bytes: how long the message is.
-    ///   - keep: false for a pass the inspector caused.
+    /// Closes the pass, and keeps it unless the inspector's own state alone caused it;
+    /// `describe` includes the inspector's own views, taken out here.
     static func end(generation: Int32, describe: Double, encode: Double, bytes: Int, keep: Bool) {
         guard var done = pass else { return }
 
         pass = nil
         stack.removeAll()
 
-        // AND A PASS THAT BUILT NOTHING BUT THE INSPECTOR is its own too, whatever
-        // state caused it - a list inside it measuring its rows keeps state of
-        // its own, which no model can name.
+        // A pass that built nothing but the inspector is its own too.
         guard keep, !(done.entries.isEmpty && done.own > 0) else { return }
 
         numbered += 1
@@ -274,18 +237,9 @@ enum Inspection {
 
     // MARK: - The differ's hooks
 
-    /// Enters one composed view, and answers whether the caller leaves it.
-    ///
-    /// A view WALKED past is written down only if something under it is built
-    /// or carried - which is when it becomes the path to that view. Anything
-    /// under one of the inspector's own views is muted.
-    ///
-    /// - Parameters:
-    ///   - type: the view's type, module-qualified.
-    ///   - outcome: what the render is doing with it.
-    ///   - element: the element it is - what an entry at depth 0, a scene,
-    ///     files everything under it by.
-    /// - Returns: whether a frame was opened, which the caller must `leave()`.
+    /// Enters one composed view, answering whether the caller must `leave()`. A view
+    /// walked past is written down only once something under it is; anything under
+    /// an inspector view is muted.
     static func enter(
         _ type: String,
         _ outcome: InspectedEntry.Outcome,
@@ -383,11 +337,6 @@ enum Inspection {
     // MARK: - The host's report
 
     /// One scene's apply, reported before the message's own.
-    ///
-    /// - Parameters:
-    ///   - generation: the message.
-    ///   - index: the scene, in the order the application lists them.
-    ///   - micros: how long its apply took.
     static func applied(generation: Int32, scene index: Int, micros: Double) {
         var scenes = waiting?.generation == generation ? waiting!.scenes : []
 
@@ -400,10 +349,6 @@ enum Inspection {
     }
 
     /// The host's half of one message.
-    ///
-    /// - Parameters:
-    ///   - generation: the message.
-    ///   - host: what applying it cost.
     static func applied(generation: Int32, _ host: InspectedHost) {
         var host = host
 
@@ -428,10 +373,8 @@ enum Inspection {
 
     // MARK: - As text
 
-    /// Every pass the host has reported on since the last call, as text - what
-    /// the host writes out beside the tally's lines for `STATEUI_INSPECT=1`.
-    /// The first call is the host asking for them: recording starts, and stays
-    /// on from then.
+    /// Every pass the host reported on since the last call, as text; the first call
+    /// starts recording for good.
     static func takeLog() -> String {
         if !logging {
             logging = true
@@ -446,10 +389,7 @@ enum Inspection {
         return log
     }
 
-    /// One pass as text, the way an inspector shows it: what caused it, the
-    /// road it took, what it cost on each side, and every composed view it
-    /// reached, indented under the one above it - built with the reason it
-    /// could not be carried, carried whole, or walked past.
+    /// One pass as text, the way an inspector shows it.
     static func text(of pass: InspectedPass) -> String {
         let built = pass.entries.filter {
             if case .built = $0.outcome { return true } else { return false }

@@ -1,39 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// WHAT AN ELEMENT IS, DECLARED ONCE.
-//
-// Every node type - a Label, a VStack, a Window, a control an application
-// registers with its hosts - has one CONTRACT: an enum naming its node type and
-// every member it has, each with the type of its value. Swift writes through
-// the members, so a property and its value meet in the compiler, and a host
-// realizes the contract member by member.
-//
-//     enum TrafficLightContract: ElementContract {
-//         static let nodeType: NodeType = "Gallery.TrafficLight"
-//         static let tiers: [any Contract.Type] = [ViewContract.self]
-//
-//         static let signal = ElementProperty<Self, TrafficSignal>("signal")
-//         static let lampTapped = ElementEvent<Self, Int>("lampTapped")
-//         static let flash = ElementAct<Self, Int, Void>("flash")
-//
-//         static let members: [any ContractMember] = [signal, lampTapped, flash]
-//     }
-//
-// A TIER is a contract with no node type of its own: members many elements
-// share, declared once - every text control's font size is one member of one
-// tier. An element names the tiers it wears, and a tier may wear tiers, as the
-// Swift protocols behind them do.
-//
-// What happens with no control behind it - an alert, the clock, a battery
-// reporting - belongs to the application. `ApplicationTier` is a tier the
-// application element wears, and an application declares its own exactly as
-// the library declares its.
-//
-// A MEMBER IS WRITTEN WITH ITS CONTRACT, always - `TrafficLightContract.signal`.
-// A member found as a leading-dot member of its own type cannot be paired with
-// a single-value payload by the compiler, so nothing here is declared for that
-// spelling.
+// What an element is, declared once: every node type has one contract naming its
+// node type and every member with the type of its value. Swift writes through the
+// members, and a host realizes the contract member by member.
+// Design: docs/design/core/contracts.md#members-are-written-with-their-contract
 
 /// A named set of members: the contract of one node type, or a tier - members
 /// many elements wear.
@@ -54,7 +25,7 @@ public protocol Contract: Sendable {
     /// are the members of the tiers they wear.
     static var tiers: [any Contract.Type] { get }
 
-    /// The members declared here, in the order a reader is told about them.
+    /// The members declared here, in the order the documentation lists them.
     static var members: [any ContractMember] { get }
 }
 
@@ -62,9 +33,7 @@ extension Contract {
     /// Nothing worn, unless the contract says.
     public static var tiers: [any Contract.Type] { [] }
 
-    /// This contract and every tier it wears, each once, nearest first - a
-    /// tier reached twice, through two of the tiers worn, counted where it was
-    /// first met.
+    /// This contract and every tier it wears, each once, nearest first.
     static var worn: [any Contract.Type] {
         var seen: Set<ObjectIdentifier> = []
         var order: [any Contract.Type] = []
@@ -188,37 +157,15 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     /// Which layer realizes it.
     let layer: ElementLayer
 
-    /// Whether a change travels to the new value - the default. False where
-    /// there is no half way, of four kinds:
-    ///
-    /// - a PLACE or a COUNT: which tab, which item, which row of a grid, how
-    ///   many dots, where the caret is - nothing walks a whole number;
-    /// - a LAW a scroller obeys - how far apart its stops are, how much of a
-    ///   throw it keeps - read as a release is decided, which a law still
-    ///   arriving would decide differently every frame;
-    /// - a RANGE or a REGION - a slider's ends, where a map looks - answered by
-    ///   a method or a redraw, not by a value shown on the way;
-    /// - a PLACEMENT: where a child sits in an AbsoluteLayout, which the host
-    ///   answers from what it measured; the layout's own motion carries a
-    ///   child from one place to the next.
-    ///
-    /// A host still snaps a transition it cannot interpolate; this keeps the
-    /// ones StateUI knows are invalid out of `HostPatch`.
-    /// `testAPlaceOrACountNeverTravels` holds that the differ honours every
-    /// member that says so, and cannot hold which members say it: set it back
-    /// to true only for a property that should travel.
+    /// Whether a change animates to the new value - the default. False where there is
+    /// no half way: a place or a count, a law a scroller obeys, a range or a region, a
+    /// placement.
+    /// Design: docs/design/core/contracts.md#member-facts
     let travels: Bool
 
-    /// Whether a value no longer described is put back to the control's own
-    /// default - the default. False where no default answers for it, and the
-    /// element is built again instead: a gesture's settings, which belong to
-    /// its recognizer; a list's items, which are data; where the host PUTS an
-    /// item - a toolbar item's `order` and `priority`, a swipe's `side`; a
-    /// CHOICE, which clearing would move - back to the first tab, the first
-    /// item, the top of the list; and a window's kind, its value, whether it
-    /// hides and whether it floats, which the host reads to keep the
-    /// platform's windows. Every host agrees with the members that say so, or
-    /// the difference is found only on a screen.
+    /// Whether a value no longer described is put back to the control's default - the
+    /// default. False where no default answers for it, and the element is built again.
+    /// Design: docs/design/core/contracts.md#member-facts
     let cleared: Bool
 
     /// Which of a view's values it is, for `.motion(_:_:)`, where the value
@@ -231,7 +178,7 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     /// - Parameters:
     ///   - name: its name - the name of the static member holding it.
     ///   - layer: which layer realizes it; an application's own unless said.
-    ///   - travels: whether a change travels to the new value.
+    ///   - travels: whether a change animates to the new value.
     ///   - cleared: whether a value no longer described is put back to the
     ///     control's default.
     ///   - moves: which of a view's values it is, where the value cannot say.
@@ -442,9 +389,8 @@ extension String: HostRepresentable {
     public static func list(from value: PropValue) -> [String]? { value.strings }
 }
 
-/// A value that may be left out of the END of a payload: saying nothing is
-/// how a host says it has none - a pointer's position the platform does not
-/// know.
+/// A value that may be left out of the end of a payload - how a host says it has
+/// none.
 protocol OmissibleValue {
     /// The value a left-out position stands for.
     static var omitted: Self { get }
@@ -642,7 +588,7 @@ struct MemberFacts: Equatable {
     /// Which layer realizes it; nil for an act.
     let layer: ElementLayer?
 
-    /// Whether a change travels to the new value.
+    /// Whether a change animates to the new value.
     let travels: Bool
 
     /// Whether a value no longer described is put back to the default.
@@ -652,8 +598,7 @@ struct MemberFacts: Equatable {
     let moves: MotionValues
 
     /// What a property no library contract declares says of itself - an
-    /// application's own: it travels, it is cleared, and it says nothing of
-    /// motion.
+    /// application's own: it animates, it is cleared, and it says nothing of motion.
     static let undeclared = MemberFacts(kind: .property, layer: nil, travels: true, cleared: true, moves: [])
 }
 

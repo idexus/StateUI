@@ -1,27 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// State.
-//
-// The model is intentionally the simplest thing that works: state lives in
-// observable boxes, a write asks the views that read it for a render, and a
-// write nobody reads asks for nothing.
-//
-// WHERE STATE MAY BE READ AND WRITTEN: anywhere. The value sits behind a lock,
-// a write marks the tree and wakes the host from whatever thread made it, and
-// a write that lands while a render is running is kept for the next one. So a
-// handler writes it, a `Task.detached` that worked something out writes it,
-// a child task started with `async let` writes it, and none of them has to
-// hop first. What none of them may wait for is `DispatchQueue.main` - nothing
-// drains that queue on Android or Windows, where MainActor has the UI thread's
-// own executor - and what nothing may do is read a value, think, and write it
-// back from two tasks at once expecting both to count: that is `update(_:)`,
-// which holds the lock across the three steps.
-//
-// Event handlers are closures written straight onto the node - see Node.swift.
-// The ids the host quotes back are assigned in Diff.swift, where an element's
-// identity is known, because an id has to belong to the element rather than to
-// the tree that happened to mention it.
+// `@State`, the one declaration of mutable state, and `Binding`, the way to
+// borrow one. A write asks the views that read it for a render, from any thread.
+// Design: docs/design/core/state.md#storage-and-box
 
 import Synchronization
 
@@ -32,167 +14,81 @@ import Synchronization
 ///         …
 ///     }
 ///
-/// Writing asks the views that read it for a render, naming this state as
-/// what changed, so the render rebuilds those views rather than everything
-/// (see Core/Invalidation.swift) - and a write nobody reads asks for nothing. Using a class
-/// (reference type) means views can capture it without copying, so a closure
-/// created during render still writes to the real value.
-///
-/// A view is a value rebuilt on every render, and its state survives that: the
-/// differ hands the rebuilt view's boxes the storage their predecessors held,
-/// for as long as the element keeps its identity and its view type - the same
-/// rule that keeps a control. Leaving the tree is what ends the state. State on
-/// the APPLICATION simply lives for as long as the app does, the application
-/// being built once and kept.
-///
-/// `@unchecked Sendable` is a promise to the compiler that this type is safe to
-/// reference across isolation boundaries. It is kept by a lock: the value is
-/// read and written under one, so a box may be written from a handler on
-/// `@MainActor`, read by the render on the host's UI thread, and written
-/// again by a `Task.detached` that has an answer, all at once, and every
-/// write is a whole one. `@unchecked` rather than `Sendable` because `Value`
-/// itself need not be - a box may hold a class an author owns, and what the
-/// lock guards is the box's HOLD on that value, not the value's insides.
-///
-/// Without it, Swift 6 rejects even declaring application state as a global
-/// (`let counter = State(0)`), since a global of a non-Sendable type could in
-/// principle be reached from anywhere.
+/// Writing asks the views that read it for a render, and a write nobody reads
+/// asks for nothing. A view's state survives the view being rebuilt for as long
+/// as the element keeps its key and its view type; leaving the tree ends it.
+/// State on the application lives as long as the app does. It may be read and
+/// written from any thread.
 @propertyWrapper
 public final class State<Value>: @unchecked Sendable {
-    /// Where the value actually lives.
-    ///
-    /// One indirection deeper than the box itself, and it is load-bearing: a
-    /// view is rebuilt on every render, and a `@State` declared on one comes
-    /// back as a NEW box holding the initial value. The differ then makes the
-    /// new box ADOPT the old one's storage - see `adopt(from:)` - so every box
-    /// that ever stood for this element's state points at the same storage, and
-    /// a handler that captured last render's box writes where this render
-    /// reads.
-    ///
-    /// The lock lives HERE and not on the box, because two boxes sharing a
-    /// storage must share its lock too - a handler suspended across a render
-    /// writes through last render's box. The lock is a `Lock` - see
-    /// Core/Lock.swift.
-    ///
-    /// Internal rather than private so the tests can hold the invariant below
-    /// directly: that a write and the record beside it happen under ONE hold.
-    /// It appears in no public signature - `lender` erases it to `AnyObject` -
-    /// so an application cannot name it.
+    /// Where the value lives, one level below the box: a fresh box adopts its
+    /// predecessor's storage, so every box that stood for this state shares it and
+    /// its lock. Internal, so the tests can hold its invariants.
+    /// Design: docs/design/core/state.md#storage-and-box
     final class Storage: @unchecked Sendable, NamedState, AnyStateStorage, FollowedState {
         private let guarded = Lock()
 
-        /// How many times this side has written the value while it lived
-        /// here - an atomic, bumped under the lock beside the write it counts
-        /// and READ WITHOUT IT by an engine's `stirred()`: handlers and engines
-        /// run on the one thread the host drains and draws on, so the read sees
-        /// the write; a write from a detached task is seen a cycle late at
-        /// worst, the count only ever growing. Not read under the lock on purpose -
-        /// `carry()` takes the board's hold while holding this one, and
-        /// `stirring` reads stamps under the board's, so a lock here would
-        /// take the two in the other order.
+        /// How many times this side wrote the value while it lived here - read without
+        /// the lock by an engine's `stirred()`.
+        /// Design: docs/design/core/cycle.md#what-wakes-an-engine
         private let written = Atomic<Int>(0)
 
-        /// How many times the state has been written, whoever wrote it - what
-        /// an engine following it compares between two runs.
-        ///
-        /// TWO COUNTS ADDED, because a value has two homes in its life: this
-        /// side's own writes while the value lives here, and every write to
-        /// the image once the host carries it - this side's, which lay lanes
-        /// on the image, and the host's own frames, which are told to it.
-        /// Both count a write that put the same bytes back, so an engine
-        /// following a number a finger is holding still hears every report.
+        /// How many times the state was written, by this side or the host - what an
+        /// engine following it compares.
         var stamp: Int { written.load(ordering: .relaxed) &+ (image?.stamp ?? 0) }
 
-        /// The value, once anybody has wanted it.
-        ///
-        /// OPTIONAL so that `make` below can stand in its place until then,
-        /// and one level deeper than `Value` on purpose: a state holding an
-        /// optional is ordinary, and `.some(nil)` is how this tells "the value
-        /// is nil" from "there is no value yet".
+        /// The value, once anybody has wanted it; one optional deeper than `Value`, so a
+        /// nil value is told from no value yet.
         private var held: Value?
 
-        /// What the value WOULD be, until something asks - then nothing.
-        ///
-        /// A `@State`'s initial value is written where the state is declared,
-        /// and a view is a value rebuilt on every render: written eagerly, the
-        /// expression beside every declaration would run on every render of
-        /// every view that is described, and the result be thrown away by the
-        /// adoption that hands this box its predecessor's storage. So it is
-        /// held as the expression until a storage nobody adopted is read from,
-        /// which is the one time the answer is kept.
+        /// What the value would be, until something asks.
+        /// Design: docs/design/core/state.md#the-initial-value-waits
         private var make: (() -> Value)?
 
-        /// What the author calls this state - written by the reflection walk
-        /// that finds the box, and read where a render is explained. See
-        /// Core/Builds.swift.
-        ///
-        /// Outside the lock on purpose: it is a name, written to the same
-        /// value by every walk that reaches the same property, and a render
-        /// reading a torn one would say the wrong name at worst.
+        /// What the author calls this state (Core/Builds.swift). Outside the lock: every
+        /// walk writes the same name.
         nonisolated(unsafe) var origin: String?
 
-        /// Names this storage where nothing has yet - the model road's
-        /// half of `named(_:)`, under the lock because a model is written
-        /// from any thread and two first touches may race to say the same
-        /// thing. Where the reflection walk has named a view's state, or a
-        /// first touch has named a model's, a second name is ignored.
-        ///
-        /// - Parameter name: what the author declared the property as.
+        /// Names this storage where nothing has yet - under the lock, since two first
+        /// touches of a model may race.
         func name(once name: String) {
             guarded.withLock {
                 if origin == nil { origin = name }
             }
         }
 
-        /// The image the HOST carries this state on, once anything has asked it
-        /// to - a driven modifier, a feed, a two-way control. Nil until then,
-        /// which is what most states are for their whole life; an engine
-        /// following the state asks for none, following the storage itself.
-        ///
-        /// ON THE STORAGE, as everything that has to survive a rebuild is: a box
-        /// is remade every render and adopts this, and the number the host
-        /// quotes the value by is issued against the image - so an image kept on
-        /// the box would be issued a new number every render while the host went
-        /// on moving the old one.
+        /// The image the host carries this state on, once anything asks; on the storage,
+        /// because its number is issued against it.
+        /// Design: docs/design/core/state.md#carried-state
         nonisolated(unsafe) private(set) var image: HostStorage?
 
-        /// How the value is read and written once the host carries it - typed
-        /// closures installed by `carry()`, because this class is generic over
-        /// ANY value and only a `StateValue` has lanes to be read off an image.
+        /// How the value is read and written once carried, installed by `carry()` - only
+        /// a `StateValue` has lanes.
         private var hostRead: (() -> Value)?
         private var hostWrite: ((Value) -> Void)?
 
-        /// How a value the host walks as a JOURNEY is put somewhere at once -
-        /// value and destination together, standing still - which is what a
-        /// report written back means. Nil where a write already is that: a
-        /// plain image has no destination apart from its value.
+        /// How a journey's value is put somewhere at once, standing still; nil where a
+        /// write already is that.
         private var hostSnap: ((Value) -> Void)?
 
-        /// How a destination sent by another road than a write is made known
-        /// to the host's hook - see `noteDestination(_:)`. Nil on a plain
-        /// image, which compares bytes and needs no telling.
+        /// How a destination sent another way than a write is made known to the host's
+        /// hook.
         var noted: ((Value) -> Void)?
 
-        /// The colour PAIR this side last wrote into a state the host carries.
-        /// The image holds the half in force - lanes are one colour - and this
-        /// is what a read answers and what the other half is laid from when
-        /// the theme changes (`wearThemedPair()`). Nil for any other value, and
-        /// let go when the host moves the value somewhere else.
+        /// The colour pair last written into a carried state; the image holds its half
+        /// in force.
+        /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
         nonisolated(unsafe) var pair: Value?
 
         /// Whether a value is a colour with a half for each theme.
         static func isPair(_ value: Value) -> Bool { (value as? Color)?.dark != nil }
 
-        /// Whether the image is a JOURNEY's rather than the value's own lanes:
-        /// made for a driven property, a `Slider`, a scroller - anything the
-        /// host walks - or by the first read of `$x.journey`, and read back as
-        /// where the value is GOING. One state has one shape, so a state
-        /// handed to both a feed and a slider is said out loud and the second
-        /// hand-over is refused.
+        /// Whether the image is a journey's rather than the value's own lanes.
+        /// Design: docs/design/core/state.md#a-state-has-one-shape
         nonisolated(unsafe) private(set) var journeyed = false
 
-        /// Puts the value THERE - where it is, where it is going, and standing
-        /// still - which for a plain value is simply a write.
+        /// Puts the value there - where it is, where it is going, standing still; for a
+        /// plain value, a write.
         func snap(_ newValue: Value) {
             if let hostSnap {
                 pair = Self.isPair(newValue) ? newValue : nil
@@ -205,55 +101,25 @@ public final class State<Value>: @unchecked Sendable {
         /// Whether the host carries this state.
         var carried: Bool { image != nil }
 
-        /// The law the value travels under wherever it is shown, as the
-        /// declaration said it - `@State(motion:)` - or `.inherited` for the
-        /// element's own. Read once, when the image is made: from then on
-        /// the law lives in the journey's own lanes, and `Journey.motion`
-        /// reads and writes it there. Meaningful for a `Walked` value alone,
-        /// which is the only kind the initializer that writes it takes.
+        /// The law `@State(motion:)` declared, or `.inherited`; read once, when the
+        /// journey image is made.
         nonisolated(unsafe) var law: Motion = .inherited
 
-        /// Whether any BUILD has ever read this state - set by the first read
-        /// that lands in an open scope, and never cleared.
-        ///
-        /// What a write consults before it asks for a render: a state no
-        /// build ever read has no reader for the renderer to find, so asking
-        /// would be a trip through its lock to be told no. STICKY on purpose -
-        /// a state read once and then left by every reader goes on asking,
-        /// and the renderer goes on refusing, which is the answer it always
-        /// gave; what this makes cheap is the other case, a value the host
-        /// carries that nobody ever prints, written forty times a second.
-        ///
-        /// Sound across a render: an element that read this state in the
-        /// render under way set the flag as it read, before any write it or
-        /// anything else could make; a read that comes AFTER the write sees
-        /// the written value and needs no render for it.
+        /// Whether any build ever read this state - sticky, and what a write consults
+        /// before asking for a render.
+        /// Design: docs/design/core/invalidation.md#live-readers
         nonisolated(unsafe) var readAtBuild = false
 
-        /// The conversion this storage is the DERIVED side of, if it is one -
-        /// the arithmetic each way and the sources, for the differ to arm
-        /// engines from. See Core/Conversion.swift.
-        ///
-        /// **WEAKLY, because a conversion belongs to the element that wrote
-        /// it.** The arithmetic reads the sources, so it holds them; the
-        /// derived state is kept on the first SOURCE so that one conversion is
-        /// one state across renders. Held here strongly, those two make a ring
-        /// - the source keeps the derived state, the derived state keeps the
-        /// arithmetic, the arithmetic keeps the source - and no state of that
-        /// view is ever freed. What owns it instead is the ENGINE the differ
-        /// arms for it, which hands its number back when the element goes
-        /// (`Diff.forget(_:)`), and the binding the conversion was made for,
-        /// which carries it until the tree does.
-        /// `ElementReleaseTests.testAMultiConversionGoesWithTheElement`.
+        /// The conversion this storage is the derived side of, held weakly to break a
+        /// ring (Core/Conversion.swift).
+        /// Design: docs/design/core/journeys.md#conversions
         nonisolated(unsafe) weak var conversion: Conversion?
 
-        /// The derived states worked out from this one, by the line that wrote
-        /// each conversion - so a conversion written once is one state across
-        /// every render, and the tie the host holds keeps its number.
+        /// The derived states worked out from this one, by the line that wrote each
+        /// conversion.
         nonisolated(unsafe) var derivations: [String: AnyObject] = [:]
 
-        /// The derived state a conversion written at `key` keeps, made the
-        /// first time from `make` and the same object every time after.
+        /// The derived state a conversion written at `key` keeps - made once, then kept.
         func derived<Out>(_: Out.Type, at key: String, make: @escaping () -> Out) -> State<Out>.Storage {
             if let kept = derivations[key] as? State<Out>.Storage { return kept }
 
@@ -263,40 +129,22 @@ public final class State<Value>: @unchecked Sendable {
             return made
         }
 
-        /// What every write ends with, this side's and the HOST's alike: the
-        /// readers are asked, and nobody is asked where no build has read the
-        /// state.
-        ///
-        /// THERE IS NO CADENCE HERE, and that is the whole shape of the
-        /// design: a state is at its value the moment it is written - a
-        /// journey stands at its DESTINATION from the first frame - so
-        /// holding the ask back would show the same number again and again
-        /// rather than a value sweeping. What sweeps is a SAMPLE, and
-        /// `.samples(_:into:_:)` is what makes one. See Core/Sampling.swift.
+        /// What every write ends with, this side's and the host's: the readers are asked,
+        /// and nobody where no build read the state. A state has no cadence.
+        /// Design: docs/design/core/journeys.md#readings
         func askForRender() {
-            // NO BUILD EVER READ IT, so there is nobody to render for and no
-            // reason to ask: this is the whole of what a write to a value the
-            // host carries costs on this side, and it is one load.
+            // No build ever read it: nobody to render for, and this costs one load.
             if readAtBuild {
                 Renderer.shared.stateChanged(self)
             }
 
-            // A destination that moved is a journey that moved: whoever read
-            // where the value IS is asked too.
+            // A moved destination is a moved journey too.
             askJourneyReaders()
         }
 
-        /// Asks the bodies that read the JOURNEY - where the value is, how
-        /// fast - for a render, and nobody else.
-        ///
-        /// THE SECOND READER SET, keyed by the image rather than by this
-        /// storage: a body that printed the destination is a reader of the
-        /// state and is asked when the destination moves; a body that printed
-        /// `$fade.journey.value` is a reader of the image and is asked on
-        /// every frame the host writes. So a walk costs a build per frame
-        /// exactly where somebody asked to see it move, and nothing where a
-        /// body reads the state alone. `HostStorage.readAtBuild` is the
-        /// flag, set by `Journey`'s reads.
+        /// Asks the bodies that read the journey - where the value is, how fast - and
+        /// nobody else.
+        /// Design: docs/design/core/journeys.md#two-reader-sets
         func askJourneyReaders() {
             guard let image, image.readAtBuild else { return }
 
@@ -308,18 +156,14 @@ public final class State<Value>: @unchecked Sendable {
             self.make = make
         }
 
-        /// The value, worked out if this is the first time anybody wanted it.
-        ///
-        /// Called under the lock and nowhere else, so the expression runs
-        /// once however many readers arrive at once.
+        /// The value, worked out the first time; called under the lock only.
         private func settled() -> Value {
             if let make {
                 held = make()
                 self.make = nil
             }
 
-            // Written just above where it was not already there, so there is
-            // always a value by this line.
+            // Written just above where it was missing.
             return held!
         }
 
@@ -345,23 +189,12 @@ public final class State<Value>: @unchecked Sendable {
             }
         }
 
-        /// Writes the value and hands it to `then` under ONE hold.
-        ///
-        /// The two must not come apart. `then` is what puts the value where
-        /// the next drain will save it, and both halves being separately
-        /// thread-safe is not enough: two tasks writing at once can settle the
-        /// VALUE in one order and reach the store in the other, leaving the
-        /// state holding the newer value and the store holding the older -
-        /// which is then what the next launch reads. Under one hold, whoever
-        /// writes last records last, because it never let go in between.
-        ///
-        /// - Parameter then: runs under the lock, so it must be short and must
-        ///   never touch this state again - `record` is a value converted and
-        ///   put in a dictionary, which is the whole of what belongs here.
+        /// Writes the value and hands it to `then` under one hold, so a kept state's save
+        /// never comes apart from its write. `then` runs under the lock.
+        /// Design: docs/design/core/state.md#writes-from-any-thread
         func write(_ newValue: Value, then: ((Value) -> Void)?) {
             if let hostWrite {
-                // The board's own hold is what serialises a carried write; the
-                // record beside it is made after, outside that hold.
+                // The board's hold serializes a carried write; the record comes after it.
                 pair = Self.isPair(newValue) ? newValue : nil
                 hostWrite(newValue)
                 then?(newValue)
@@ -376,15 +209,11 @@ public final class State<Value>: @unchecked Sendable {
             }
         }
 
-        /// Reads, changes, writes and records under ONE hold - so two tasks
-        /// counting at once both count, and the store hears them in the order
-        /// they landed.
+        /// Reads, changes, writes and records under one hold, so two tasks counting at
+        /// once both count.
         func update(_ transform: (Value) -> Value, then: ((Value) -> Void)?) {
             if let hostRead, let hostWrite {
-                // A READ AND THEN A WRITE, not a hold: the host rewrites the
-                // image on its own frames and nothing on this side can bracket
-                // that, so what stands between the two is whatever the last
-                // cycle left - the same pair `x += 1` is on a carried value.
+                // A read and then a write: the host rewrites the image on its own frames.
                 let settled = transform(pair ?? hostRead())
 
                 pair = Self.isPair(settled) ? settled : nil
@@ -405,72 +234,48 @@ public final class State<Value>: @unchecked Sendable {
     }
 
     /// Where the value lives, across every render.
-    ///
-    /// Readable inside the library rather than private, for the reason the
-    /// lock inside it is: the tests hold this file's invariants directly.
     private(set) var storage: Storage
 
-    /// What to do with a new value BESIDES holding it - present only on state
-    /// declared with a `PersistentKey`, where it marks the key for saving.
-    ///
-    /// A closure rather than the key itself, because turning a value into what
-    /// the wire carries needs `Value: PersistentValue` and this class is
-    /// generic over every value. The constraint therefore lives at the
-    /// initializer that makes the closure, and the setter below just calls it.
+    /// What a write does besides holding the value - marking a kept state's key for
+    /// saving; a closure, because only a `PersistentValue` can make it.
     private var save: ((Value) -> Void)?
 
-    /// What pairs this state with the scene it is built in - present only on
-    /// state declared with a `SceneKey`, which that scene then keeps. The
-    /// differ runs it for every build of the view in a scene; see
-    /// Core/Scenes.swift.
+    /// What pairs this state with the scene it is built in - a `SceneKey` state only
+    /// (Core/Scenes.swift).
     private var sceneClaim: ((SceneRecord) -> Void)?
 
-    /// State that will hold whatever `value` answers - the one initializer the
-    /// others go through, and the only place a storage is made.
-    ///
-    /// The value as a THUNK rather than a value: see `Storage.make`.
+    /// The one initializer the others go through, and the only place a storage is
+    /// made.
     init(making value: @escaping () -> Value) {
         storage = Storage(value)
     }
 
-    /// State holding `initialValue`. The way to declare it at file scope, where
-    /// a property wrapper is not allowed: `let counter = State(0)`.
+    /// State holding `initialValue` - the way to declare it at file scope, where a
+    /// property wrapper is not allowed: `let counter = State(0)`.
     ///
-    /// THE EXPRESSION IS NOT RUN UNTIL THE VALUE IS WANTED, and a state that
-    /// adopts another's storage never wants it - so an initial value that
-    /// costs something to work out costs it once, when this state is first
-    /// read, rather than on every render that rebuilds the view declaring it.
-    /// It is an ordinary Swift expression either way; what changes is when.
+    /// The expression runs when the value is first wanted, and a state that adopts
+    /// another's storage never wants it.
     public convenience init(_ initialValue: @autoclosure @escaping () -> Value) {
         self.init(making: initialValue)
     }
 
-    /// What `@State private var counter = 0` calls.
-    ///
-    /// The expression beside the declaration is run when the value is first
-    /// wanted, for the reason `init(_:)` gives.
+    /// What `@State private var counter = 0` calls. The expression runs when the
+    /// value is first wanted.
     public convenience init(wrappedValue: @autoclosure @escaping () -> Value) {
         self.init(making: wrappedValue)
     }
 
-    /// State holding `value`, with nothing said about what kind of value it
-    /// is - which is what the two warnings in Core/Observable.swift delegate
-    /// to. Written there, `self.init(wrappedValue:)` would resolve back to the
-    /// warning itself, both declarations having the same signature.
+    /// State holding `value`, whatever it is - what Core/Observable.swift's
+    /// initializers delegate to without resolving back to themselves.
     convenience init(holding value: @autoclosure @escaping () -> Value) {
         self.init(making: value)
     }
 
-    /// The value. Writing asks the views that read it for a render, naming
-    /// this state as what changed; reading records a dependency while a view is being built, and
-    /// costs nearly nothing anywhere else. The next render follows by itself,
-    /// and rebuilds only what read this - see Core/Invalidation.swift.
+    /// The value. Writing asks the views that read it for a render; reading records
+    /// a dependency while a view is built and costs nearly nothing elsewhere.
     ///
-    /// Safe from any thread, both ways. `counter += 1` through the wrapper is
-    /// a read and then a write, two holds of the lock - right from a handler,
-    /// where nothing runs between them, and right from one task at a time;
-    /// two tasks incrementing the same state at once want `update(_:)` on
-    /// the box (`_counter.update { $0 + 1 }`), which holds it across both.
+    /// Safe from any thread. `counter += 1` is a read and then a write; two tasks
+    /// changing one state at once use `_counter.update { $0 + 1 }`.
     public var wrappedValue: Value {
         get {
             if Renderer.shared.stateRead(storage) { storage.readAtBuild = true }
@@ -483,72 +288,40 @@ public final class State<Value>: @unchecked Sendable {
         }
     }
 
-    /// Wakes the host to take the save a kept state's write just recorded.
-    ///
-    /// Outside the storage's lock, which `record` ran under, and whether or
-    /// not the write asked for a render: a kept state no view reads asks for
-    /// none, and a save left to the render would wait for the next event
-    /// instead. `Renderer.actCallsPending` counts what is waiting as work, so
-    /// the woken thread finds it. A wake is coalesced with the render's own,
-    /// where there was one.
+    /// Wakes the host to take the save a kept state's write recorded, whether or not
+    /// the write asked for a render.
+    /// Design: docs/design/core/state.md#kept-state
     private func wakeForSave() {
         if save != nil {
             UIThreadExecutor.shared.poke()
         }
     }
 
-    /// What every write ends with: the storage decides whether anybody is
-    /// rendered for it, and when. See `Storage.askForRender()`.
+    /// Every write ends here (`Storage.askForRender()`).
     private func askForRender() { storage.askForRender() }
 
     /// What `$counter` gives: this state, for something else to borrow.
     ///
-    /// Hand it to a child that has to write the value (`@Binding`), to an
-    /// input that shows it and writes it back (`TextField($name)`), to a modifier
-    /// that has the HOST carry it (`.opacity($fade)`), or to an engine that
-    /// follows it (`following: $offset`) - none of which reads anything at
-    /// build, so handing it over makes nobody a reader: the value moving renders
-    /// exactly the views that read it, and none where there are none.
+    /// Hand it to a child that writes it (`@Binding`), to a control that shows it
+    /// and writes it back (`TextField($name)`), to a modifier the host carries it
+    /// through (`.opacity($fade)`), or to an engine that follows it. Handing it over
+    /// reads nothing, so it makes nobody a reader.
     public var projectedValue: Binding<Value> { Binding(self) }
 
-    /// The road a `@State` declared INSIDE A CLASS is read and written by:
+    // Declared in the class body: the compiler passes over it in an extension.
+    // Design: docs/design/core/state.md#model-state
+    /// How a `@State` declared inside a class is read and written:
     ///
     ///     final class Profile {
     ///         @State var name = ""
     ///         @State var visits = 0
     ///     }
     ///
-    /// Swift routes such a property through the wrapper's TYPE with the
-    /// instance in hand, where a state in a struct goes through `wrappedValue`
-    /// directly. The value is the same storage's, read and written exactly as
-    /// `wrappedValue` reads and writes it - a read at build records the
-    /// property, a write names it, so `profile.visits += 1` rebuilds the
-    /// closures that read `visits` and none that read `name`, as two
-    /// `@State`s in a view would. What the instance buys is the NAME: nothing
-    /// walks a class's stored properties - the reflection walk stops at a
-    /// reference on purpose, Core/Stateful.swift - so a state in a model would
-    /// have none, and `debugInfo()` would say `for Storage` where a state in a
-    /// view says `for name`. The first access through any of a model's states
-    /// reflects the instance ONCE and names every state it holds by the
-    /// property it is declared as; every access after that is one nil check.
-    ///
-    /// The model's own `$name` is the whole state - `TextField(profile.$name)` is
-    /// carried by the host and makes nobody a reader, `.opacity(profile.$fade)`
-    /// is walked, `following: profile.$step` wakes an engine.
-    /// `$profile.name` through a key path is a PART of the holding state and
-    /// takes the described road, as `$room.width` does.
-    ///
-    /// DECLARED IN THE CLASS BODY AND NOT IN AN EXTENSION, and that is the
-    /// one thing about it that is not a choice: the compiler looks this
-    /// subscript up on the wrapper's own declaration, and one written in an
-    /// extension is passed over in silence - the property then goes through
-    /// `wrappedValue` directly, unnamed, with nothing said anywhere. Measured
-    /// with a probe wrapper that answered through the subscript from its body
-    /// and not from an extension. There is no such road for `profile.$name`:
-    /// the projection is read-only, so no writable key path to it exists for
-    /// the compiler to hand over - a state only ever handed on is named by
-    /// the first read of it, and a state nobody reads is named nowhere it
-    /// could be seen.
+    /// Each property behaves as a `@State` in a view does: a read at build records
+    /// that property and a write names it, so `profile.visits += 1` rebuilds the
+    /// closures that read `visits` and none that read `name`. The model's own
+    /// `$name` is the whole state; `$profile.name` is a part of the state holding
+    /// the model.
     ///
     /// - Parameters:
     ///   - model: the object the property belongs to.
@@ -571,13 +344,7 @@ public final class State<Value>: @unchecked Sendable {
         }
     }
 
-    /// The object that IS this piece of state.
-    ///
-    /// The STORAGE rather than the box, deliberately: a box is remade on
-    /// every render and adopts the elder one's storage, so this is the one
-    /// thing that means "this state" across rebuilds - which is what
-    /// `Binding.described` needs to still name the right storage three
-    /// renders later.
+    /// The object that is this state: the storage, which every rebuilt box adopts.
     var lender: AnyObject { storage }
 
     /// Reads the value, recording the dependency exactly as the wrapper does.
@@ -593,19 +360,16 @@ public final class State<Value>: @unchecked Sendable {
         return storage.value
     }
 
-    /// Writes the value computed from the one it holds - the read, change and
-    /// write the wrapper's `counter += 1` is, under ONE hold of the lock.
+    /// Writes the value computed from the one it holds, under one hold of the lock.
     ///
     ///     counter.update { $0 + 1 }
     ///
-    /// For state held without the wrapper, as `get()` is - and, through the
-    /// box (`_counter.update`), for the one case the wrapper's spelling cannot
-    /// serve: two tasks changing the same state at the same moment, where a
-    /// read-then-write from each would count one of them twice and the other
-    /// not at all.
+    /// For state held without the wrapper, and through the box (`_counter.update`)
+    /// for two tasks changing one state at the same moment, where a read and a
+    /// write from each would lose one of them.
     ///
-    /// - Parameter transform: given the current value, answers the new one.
-    ///   Runs under the lock, so it must not touch this state again.
+    /// - Parameter transform: given the current value, answers the new one. It runs
+    ///   under the lock, so it must not touch this state again.
     public func update(_ transform: (Value) -> Value) {
         storage.update(transform, then: save)
         askForRender()
@@ -614,126 +378,67 @@ public final class State<Value>: @unchecked Sendable {
 }
 
 extension Binding {
-    /// The storage this binding borrows, where it is a `@State`'s - what the
-    /// host's image and the journey reach. Nothing for a closure binding or a
-    /// PART of a state (`$room.width`), which has no image of its own.
+    /// The storage this binding borrows, where it is a whole `@State`'s; nothing for
+    /// a part of a state or a binding made from closures.
     var described: State<Value>.Storage? {
         lent == nil ? lender as? State<Value>.Storage : nil
     }
 
-    /// The value as it stands, WITHOUT recording a read.
-    ///
-    /// What the machinery of a write uses - `Journey`'s `move`, `stop`,
-    /// `snap(to:)` and the lane setters all read the journey they are about
-    /// to change - because a write reading what it is changing is not a view
-    /// depending on the value. Recording it is worse than pointless: a completion answered
-    /// while a render is running resumes the handler INSIDE that build, so the
-    /// read lands in whatever element's scope is open and makes that element a
-    /// reader of a state it never mentions. Measured on the gallery: a card's
-    /// press animation would make the window a reader of the card's own dip,
-    /// and every example would open at two builds instead of one.
-    ///
-    /// A part of a state, or a binding made from closures, has no storage to
-    /// read - there the ordinary read is the only one there is.
+    /// The value as it stands, without recording a read - what the machinery of a
+    /// write reads.
+    /// Design: docs/design/core/state.md#reading-without-recording
     var standing: Value { described.map { $0.value } ?? wrappedValue }
 
-    /// The storage an ENGINE follows - the borrowed state's own, whatever it
-    /// holds and whichever shape the host carries it in, since following
-    /// needs the stamp and nothing about the value. Nothing for a part of a
-    /// state or a binding made from closures, which have no storage.
+    /// The storage an engine follows - the borrowed state's own; nothing for a part
+    /// of a state or a binding made from closures.
     public var followed: (any FollowedState)? { described }
 
 }
 
 extension Binding where Value: StateValue {
-    /// The image the HOST carries the borrowed state on - made the first time
-    /// anything asks for it, from the value as it stands, and kept for good.
-    ///
-    /// This is what every driven modifier and every feed take from a
-    /// `$state`: NOT the value, which would be a read at build and therefore a
-    /// reason to rebuild, but the image both sides rewrite between renders. A
-    /// state reached this way and read nowhere costs no render however often
-    /// it moves; one that IS read somewhere renders whenever it is written, by
-    /// this side or by the host.
-    ///
-    /// Nothing for a part of a state (`$room.width`) or a binding made from
-    /// closures: neither is a value the host can be handed whole.
+    /// The image the host carries the borrowed state on, made the first time anything
+    /// asks and kept for good - what every driven modifier and feed takes from
+    /// `$state`. Nothing for a part of a state or a binding made from closures.
     public var image: HostStorage? { described?.carry() }
 }
 
 extension Binding where Value: Walked {
-    /// The image the host walks this state on as a journey - what a driven
-    /// property takes from `$x`. Nothing for a part of a state, a binding
-    /// made from closures, or a state the host already carries as the value
-    /// itself and has the number of, the last of which is said out loud.
+    /// The image the host animates this state on as a journey - what a driven
+    /// property takes from `$x`.
     var journeyImage: HostStorage? { described?.carryAsJourney() }
 
-    /// The journey the borrowed state is on: where the value is this frame,
-    /// where it is going, how fast, under what law - and the road to send it
-    /// somewhere and wait, `$fade.journey.move(to:)`. See `Journey`.
-    ///
-    /// Every state over a value the host can walk has one, whether or not
-    /// anything walks it yet; reading it is what first asks the host to.
+    /// The journey the borrowed state is on: where the value is this frame, where it
+    /// is going, how fast, under what law - and `move(to:)` to send it and wait.
     public var journey: Journey<Value> { Journey(of: self) }
 }
 
 extension State where Value: StateValue {
-    /// The image the host carries this state on, made the first time anything
-    /// asks - what a test reaches for where an application writes `$x`.
-    ///
-    /// Whichever shape it has: a state the host already walks as a journey
-    /// answers that image, and one nothing has carried yet is carried now.
+    /// The image the host carries this state on, whichever shape - what a test
+    /// reaches for where an application writes `$x`.
     var image: HostStorage { storage.image ?? storage.carry()! }
 
-    /// The number the host quotes this state by, issued the first time
-    /// anything asks. Asking has the host carry the state.
+    /// The number the host quotes this state by; asking has the host carry it.
     var number: Int32 { Renderer.shared.number(for: image) }
 }
 
 extension Binding where Value: StateValue {
-    /// The number the host quotes the borrowed state by, or nothing for a
-    /// part of a state or a closure binding, which the host cannot carry.
+    /// The number the host quotes the borrowed state by, or nothing.
     var number: Int32? { image.map { Renderer.shared.number(for: $0) } }
 }
 
 extension State.Storage where Value: Walked {
-    /// The image the host carries this state on as a JOURNEY - what a driven
-    /// property takes from the state: a `Slider`'s thumb, a label's font
-    /// size, a border's colour, a scroller's offset, the host walking the
-    /// property there rather than holding the value - and what
-    /// `$x.journey` reads and writes. The same object every time after;
-    /// nothing, said out loud, where the image already made is the value's
-    /// own and the host has its number (`carry()`).
-    ///
-    /// The state goes on answering its plain type: a read is where the value
-    /// is GOING, a write moves that destination alone and the host walks the
-    /// value there under the value's law, and a snap - a report written back
-    /// - lands value and destination together. So `volume = 1` on a
-    /// `Slider($volume)` sends the thumb, and a drag arrives.
-    ///
-    /// **A STATE NOBODY WEARS LANDS WHERE IT IS WRITTEN.** Until an element
-    /// registers the state the host has no number for it and nothing walks
-    /// it, so a write puts the value at the destination as well - a value
-    /// standing where it was sent, which is what a view described later
-    /// shows from its first frame. Not under `.custom`, whose walker is an
-    /// engine on this side.
-    ///
-    /// A HOST write asks the state's readers for a render only where the
-    /// DESTINATION moved - a drag, a press - and never for a frame of a walk,
-    /// which moves the value's lane alone and changes nothing this state
-    /// answers; a frame asks the JOURNEY's readers, which is the second
-    /// reader set (`askJourneyReaders()`).
+    /// The image the host carries this state on as a journey - a slider's thumb, a
+    /// driven property, a scroller's offset, and what `$x.journey` reads. A read
+    /// answers the destination; a write moves the destination and the host animates
+    /// the value there; a snap lands both. Nothing, said out loud, where the value's
+    /// own image already has a number.
+    /// Design: docs/design/core/state.md#a-state-has-one-shape
     func carryAsJourney() -> HostStorage? {
         let made: HostStorage? = guarded.withLock {
             if let image, journeyed { return image }
 
-            // An image the host has never been told the number of - made by
-            // a hand-over the differ has not yet registered, in the same body
-            // that now hands `$v` to a slider - is RESHAPED here rather than
-            // refused: the host has no picture of it yet, and
-            // the two hand-overs are one state. An image a registration has
-            // crossed keeps its shape and the slider is refused, the host
-            // being about to write one lane into a journey.
+            // Refused where the host already has the value's own image by number; an image
+            // it has no number for yet is reshaped below.
             if let image, image.number != nil { return nil }
 
             let initial = image.map { Self.lifted(from: $0) } ?? settled()
@@ -755,11 +460,8 @@ extension State.Storage where Value: Walked {
             journeyed = true
             held = nil
             make = nil
-            // WHERE THE VALUE IS GOING, as this side last knew it: what a host
-            // write is compared against before it asks for a render, since
-            // the host writes the destination back on landing - the same
-            // number this side sent - and a reader printing it has nothing
-            // to show for that.
+            // The destination this side last knew: the host writes it back on landing, and
+            // that asks for nothing.
             let known = Known(start.destination)
 
             hostRead = { Self.journey(on: made).destination }
@@ -768,7 +470,8 @@ extension State.Storage where Value: Walked {
 
                 journey.destination = target
 
-                // NOBODY TO WALK IT: the value lands where it is sent.
+                // Nobody animates it yet: the value lands where it is sent.
+                // Design: docs/design/core/state.md#a-state-nobody-wears
                 if made.number == nil, !journey.motion.isCustom {
                     journey.value = target
                     journey.velocity = JourneyLanes<Value>.still
@@ -792,16 +495,12 @@ extension State.Storage where Value: Walked {
                 let now = Self.journey(on: made)
 
                 if mask & JourneyLanes<Value>.mask(of: .destination) != 0, !known.stands(at: now.destination) {
-                    // The destination moved - a drag, a press - and that is
-                    // the state's own value: every reader is asked, the
-                    // journey's included. A pair this side wrote is no longer
-                    // what the value is.
+                    // The destination moved - a drag, a press: every reader is asked.
                     known.destination = now.destination
                     self?.pair = nil
                     self?.askForRender()
                 } else if mask & (JourneyLanes<Value>.mask(of: .value) | JourneyLanes<Value>.mask(of: .velocity)) != 0 {
-                    // A frame of the walk: the state answers the same
-                    // destination, and only whoever read the journey is asked.
+                    // A frame of the animation: only the journey's readers are asked.
                     self?.askJourneyReaders()
                 }
             }
@@ -819,10 +518,8 @@ extension State.Storage where Value: Walked {
         return made
     }
 
-    /// The image the host walks this state on, made now if nothing has yet -
-    /// or nothing, quietly, where the host carries the state as the value
-    /// itself and has its number. What `Journey` reads through: it complains
-    /// nowhere, a read being no place for a complaint about a hand-over.
+    /// The journey image, made now if nothing has yet - or nothing, quietly, where
+    /// the value's own image has a number. What `Journey` reads through.
     func walkedImage() -> HostStorage? {
         if journeyed { return image }
         if let image, image.number != nil { return nil }
@@ -830,32 +527,27 @@ extension State.Storage where Value: Walked {
         return carryAsJourney()
     }
 
-    /// The journey's lanes as they stand, read WITHOUT recording - what every
-    /// write through `Journey` starts from, and what a reading or an engine
-    /// takes. Nothing where the host walks the state in no journey's shape.
+    /// The journey's lanes as they stand, read without recording.
     var journeyLanes: JourneyLanes<Value>? {
         guard journeyed, let image else { return nil }
 
         return Self.journey(on: image)
     }
 
-    /// Writes the journey's lanes whole; the board finds which of them moved.
-    /// Nothing where the state is not a journey's.
+    /// Writes the journey's lanes whole; the board finds which moved.
     func lay(_ lanes: JourneyLanes<Value>) {
         guard journeyed, let image else { return }
 
         Self.lay(lanes, on: image)
     }
 
-    /// Tells the storage a destination this side sent by another road than a
-    /// write - `Journey.move(to:_:)` lays the lanes itself - so the host
-    /// writing that same destination back on landing asks for nothing.
+    /// Tells the storage a destination sent by another road than a write, so the host
+    /// writing it back on landing asks for nothing.
     func noteDestination(_ destination: Value) {
         noted?(destination)
     }
 
-    /// The destination this side last knew, shared by the writers and the
-    /// host's hook - a class, because the closures that keep it are three.
+    /// The destination this side last knew, shared by three closures.
     private final class Known: @unchecked Sendable {
         nonisolated(unsafe) var destination: Value
 
@@ -867,25 +559,22 @@ extension State.Storage where Value: Walked {
         }
     }
 
-    /// The journey as its lanes stand, or one standing at nought where the
-    /// bytes stand for none - which nothing on this side can bring about.
+    /// The journey as its lanes stand, or one at nought where they stand for none.
     private static func journey(on image: HostStorage) -> JourneyLanes<Value> {
         JourneyLanes<Value>(
             carried: Renderer.shared.board(of: image).read(image, lanes: JourneyLanes<Value>.lanes))
             ?? JourneyLanes(nothing)
     }
 
-    /// The journey written into the lanes, whole - the board finds which of
-    /// them moved.
+    /// Writes the journey into the lanes, whole.
     private static func lay(_ journey: JourneyLanes<Value>, on image: HostStorage) {
         Renderer.shared.board(of: image).write(StateImage.bytes(of: journey.carried), to: image)
     }
 }
 
 extension State.Storage where Value: StateValue {
-    /// Writes the value where it differs from what stands, lane for lane, and
-    /// asks the readers where `asking` says so - what a conversion's engines
-    /// do on every cycle, and what a read at build does without asking.
+    /// Writes the value where it differs, lane for lane, asking the readers where
+    /// `asking` says - what a conversion's engines do.
     func settle(_ newValue: Value, asking: Bool) {
         guard StateImage.bytes(of: newValue.carried) != StateImage.bytes(of: value.carried) else { return }
 
@@ -894,15 +583,9 @@ extension State.Storage where Value: StateValue {
         if asking { askForRender() }
     }
 
-    /// The image the host carries this state on, made the first time anything
-    /// asks and the same object every time after - or nothing, said out loud,
-    /// where the image already made is a journey's (`carryAsJourney()`).
-    ///
-    /// Made OF the value as it stands, so a state that was written before the
-    /// host was asked to carry it starts where it was left. From here on the
-    /// value lives on the image - reads decode its lanes, writes lay theirs -
-    /// and the box's own hold is empty: two homes for one value would be two
-    /// answers.
+    /// The image the host carries this state on as its own lanes, made once from the
+    /// value as it stands - or nothing, said out loud, where the image is a journey's.
+    /// Design: docs/design/core/state.md#carried-state
     func carry() -> HostStorage? {
         let made: HostStorage? = guarded.withLock {
             if let image { return journeyed ? nil : image }
@@ -920,9 +603,8 @@ extension State.Storage where Value: StateValue {
             held = nil
             make = nil
 
-            // The bytes this side last knew, so a host write that puts the
-            // same value back - a report of where a switch already stood -
-            // asks for nothing.
+            // The bytes this side last knew: a host write putting them back asks nothing.
+            // Design: docs/design/core/state.md#what-the-host-writes-back
             let known = KnownBytes(bytes)
 
             hostRead = { Self.lifted(from: made) }
@@ -931,9 +613,7 @@ extension State.Storage where Value: StateValue {
                 Self.lay(value, on: made)
             }
 
-            // A HOST write is a write: it ends where this side's do, and the
-            // storage decides by its readers. Weak, because the image outlives
-            // nothing - the board holds it for the state.
+            // A host write ends where this side's do, the storage deciding by its readers.
             made.told = { [weak self] _ in
                 let now = StateImage.bytes(of: Self.lifted(from: made).carried)
 
@@ -957,24 +637,20 @@ extension State.Storage where Value: StateValue {
         return made
     }
 
-    /// The bytes this side last knew a carried value by, shared by the writer
-    /// and the host's hook.
+    /// The bytes this side last knew, shared by the writer and the host's hook.
     private final class KnownBytes: @unchecked Sendable {
         nonisolated(unsafe) var bytes: [UInt8]
 
         init(_ bytes: [UInt8]) { self.bytes = bytes }
     }
 
-    /// Lays a colour PAIR in the half now in force, and makes the element
-    /// being built the theme's reader - what every driven modifier does as it
-    /// hands the state on. So a theme change builds that element again and the
-    /// host walks the colour to the other half, the way a pair written on a
-    /// node crosses. Nothing for any other value.
+    /// Lays a colour pair's half in force and makes the element being built the
+    /// theme's reader.
+    /// Design: docs/design/core/state.md#themed-colours-on-a-carried-state
     func wearThemedPair() {
         guard let pair, let hostRead, let hostWrite else { return }
 
-        // THE READ THAT FINDS THIS AGAIN: recorded against the element whose
-        // body is handing the state on, which a theme change then builds.
+        // The read that makes this element the theme's reader.
         _ = StandardEnvironment.app.requestedTheme
 
         guard StateImage.bytes(of: pair.carried) != StateImage.bytes(of: hostRead().carried) else { return }
@@ -982,8 +658,7 @@ extension State.Storage where Value: StateValue {
         hostWrite(pair)
     }
 
-    /// The value as the lanes stand, or `nothing` where those bytes stand for
-    /// no value of this type.
+    /// The value as the lanes stand, or `nothing` where they stand for none.
     static func lifted(from image: HostStorage) -> Value {
         Value(carried: Renderer.shared.board(of: image).read(image, lanes: Value.lanes))
             ?? nothing
@@ -994,13 +669,9 @@ extension State.Storage where Value: StateValue {
         Renderer.shared.board(of: image).write(StateImage.bytes(of: value.carried), to: image)
     }
 
-    /// What a value answers where its bytes stand for none of this type -
-    /// every lane at nought, or empty text.
-    ///
-    /// Nothing on this side can bring it about, the setter writing the type's
-    /// own bytes; a HOST that wrote the wrong lane count could, and a picture
-    /// frozen for a frame is the right answer to that where a trap would take
-    /// the application down.
+    /// What a value answers where its bytes stand for none of its type - every lane
+    /// nought, or empty text. Only a faulty host causes it, and a frame frozen beats
+    /// a trap.
     private static var nothing: Value {
         Value(carried: .lanes(Array(repeating: 0, count: max(Value.lanes, 0))))
             ?? Value(carried: .text(""))!
@@ -1008,11 +679,9 @@ extension State.Storage where Value: StateValue {
 }
 
 extension State {
-    /// Names this state, and every other one the model holds, by the property
-    /// each is declared as - once per model, on the first touch of any of
-    /// them. A stored property's label is the wrapper's storage, underscore
-    /// and all, and `readable` takes that off. A superclass's properties are
-    /// one mirror up.
+    /// Names every state the model holds by its property, once per model, on the
+    /// first touch of any of them.
+    /// Design: docs/design/core/state.md#model-state
     private func name(within model: AnyObject) {
         guard storage.origin == nil else { return }
 
@@ -1028,15 +697,12 @@ extension State {
             mirror = level.superclassMirror
         }
 
-        // Reflection listed every stored property, so this one is named by
-        // now; the word `debugInfo()` falls back on is here for the case it
-        // cannot be, so the mirror is never taken again.
+        // Named by now; the fallback word stops the mirror being taken again.
         storage.name(once: "state")
     }
 }
 
-/// A `@State` of ANY value, seen by the naming reflection of the model that
-/// holds it, which meets the boxes as `Any` and cannot name a generic type.
+/// A `@State` of any value, as a model's naming reflection meets it.
 protocol AnyModelState: AnyObject {
     /// Names the storage where nothing has yet.
     func name(once name: String)
@@ -1049,24 +715,14 @@ extension State: AnyModelState {
 }
 
 extension State: StateBox {
-    /// Tells the storage what the author calls it, so a render explained in
-    /// names has one for this state. The path is the reflection walk's - the
-    /// property's own name, wrapper underscore and all - and the reading is
-    /// tidied where it is shown.
+    /// Tells the storage what the author calls it, tidied from the walk's path.
     func named(_ path: String) {
         storage.origin = BuildScope.readable(path)
     }
 
-    /// Takes over the other box's storage, so the two are one piece of state
-    /// from here on.
-    ///
-    /// Called by the differ when a rebuilt view lands where the same KIND of
-    /// view stood last render: the new box - freshly made, holding the initial
-    /// value - adopts the storage the old one holds, which is how `@State` on a
-    /// view survives the view being a value rebuilt every time. Sharing the
-    /// storage rather than copying the value is deliberate: a handler suspended
-    /// across a render still writes through LAST render's box, and a copy would
-    /// quietly lose that write.
+    /// Takes over the other box's storage - how a view's `@State` survives the view
+    /// being rebuilt. Shared, not copied, so a suspended handler's write lands.
+    /// Design: docs/design/core/state.md#storage-and-box
     func adopt(from other: AnyObject) {
         guard let other = other as? State<Value>, other !== self else { return }
 
@@ -1074,29 +730,19 @@ extension State: StateBox {
     }
 }
 
-/// How often a READING is taken - the cadence of
-/// `.samples($fade, into: $shown, .every(100))`.
-///
-/// A STATE ITSELF HAS NO CADENCE: a write asks its readers at once, whoever
-/// made it, because a state is at its value the moment it is written. What
-/// this paces is a reading of where a walked value has GOT TO, copied into an
-/// ordinary state that is then read under the ordinary rules - see
-/// Core/Sampling.swift. Two views may read one value at two rates, each
-/// reading being its own.
+/// How often a reading is taken - the cadence of
+/// `.samples($fade, into: $shown, .every(100))`. A state itself has no cadence;
+/// two views may read one value at two rates.
 public enum Asks: Equatable, Sendable {
     /// A reading on every frame the host writes.
     case always
 
-    /// A reading at most once every so many milliseconds: the first frame in
-    /// a window at once, the last in it when the window ends, the ones between
-    /// not at all. **THE WINDOW IS NOT A DELAY THE READER WAITS OUT** - a
-    /// render somebody else asks for shows the value on time; what can be
-    /// late is this one reading, by at most that long. Nought or less is
-    /// `.always`.
+    /// A reading at most once every so many milliseconds: the first frame in a
+    /// window at once, the last when the window ends. The window is not a delay a
+    /// render waits out. Nought or less is `.always`.
     case every(Int)
 
-    /// How long a reading may be held back, in milliseconds - nought for
-    /// `.always`, which holds nothing back at all.
+    /// How long a reading may be held back, in milliseconds.
     var window: Int {
         switch self {
         case .always: return 0
@@ -1106,28 +752,20 @@ public enum Asks: Equatable, Sendable {
 }
 
 extension State where Value: Walked {
-    /// State declared with its journey's LAW - how this value travels wherever
-    /// it is shown, and who walks it.
+    /// State declared with its journey's law - how this value animates wherever it
+    /// is shown, and who animates it.
     ///
-    ///     @State(motion: .spring()) private var lift = 1.0    // a spring, on every element that shows it
+    ///     @State(motion: .spring()) private var lift = 1.0    // a spring, wherever it is shown
     ///     @State(motion: .none) private var box = Rect.zero    // lands at once, wherever it is written
-    ///     @State(motion: .custom) private var ball = 0.0       // an engine of your own walks it
+    ///     @State(motion: .custom) private var ball = 0.0       // an engine of your own animates it
     ///
-    /// The value's own law is the first the crossing asks - ahead of the
-    /// element's `.motion(_:)`, the application's and the library's - and it
-    /// is on the image from the first frame. Leaving it out means
-    /// `.inherited`, the element's. It can be changed later through
-    /// `$x.journey.motion`, except `.custom`, which says WHO walks the value
-    /// and is settled here: the host is told at the first crossing and cannot
-    /// be told again.
-    ///
-    /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED**, as `persistentKey:`
-    /// is: there is ONE kind of state, and the brackets say only what ELSE is
-    /// true of one - where it is kept, and how it travels.
+    /// The value's own law comes ahead of the element's `.motion(_:)`, the
+    /// application's and the library's. It can be changed later through
+    /// `$x.journey.motion`, except `.custom`, which is settled here.
     ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds, and where the journey starts.
-    ///   - motion: the law the value travels under.
+    ///   - motion: the law the value animates under.
     public convenience init(wrappedValue: @autoclosure @escaping () -> Value, motion: Motion) {
         self.init(making: wrappedValue)
 
@@ -1136,55 +774,35 @@ extension State where Value: Walked {
 }
 
 extension State where Value: PersistentValue {
-    /// State the application KEEPS - the same state, under a name, still there
-    /// on the next launch.
+    /// State the application keeps: the same state, under a name, still there on
+    /// the next launch.
     ///
     ///     @State(persistentKey: .lastGroup) private var group = 0
     ///
-    /// The value written here is what the state holds when the store has
-    /// nothing under that name - the first launch, or a value the reader never
-    /// changed - so the default lives where it can be seen. Reading and
-    /// writing are exactly what they are on any other `@State`: nothing is
-    /// awaited, the value is in memory before the first view is built, and a
-    /// write reaches the store by itself. See Core/Persistence.swift for how,
-    /// and for why the application also lists its keys.
-    ///
-    /// **One key is one piece of state.** Two views declaring the same key
-    /// share the storage, so a write in either rebuilds the readers in both.
-    ///
-    /// **THE LABEL IS THE ARGUMENT'S OWN TYPE, LOWERCASED** - the rule `motion:`
-    /// follows too, and both are labelled for one reason: there is ONE kind
-    /// of state, and the brackets say only what ELSE is true of one. A key is
-    /// not a kind: a kept state IS an ordinary one, with somewhere to be
-    /// written down as well. And the UNLABELLED position on this wrapper
-    /// already means the initial value (`State(0)`), so an unlabelled key would
-    /// read as a state holding `.lastGroup`.
+    /// The value written here is what the state holds when the store has nothing
+    /// under the name. Reading and writing are what they are on any `@State`:
+    /// nothing is awaited, and a write reaches the store by itself. Two views
+    /// declaring one key share the state. The application lists its keys in
+    /// `persistentKeys`.
     ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds when the store has nothing.
-    ///   - persistentKey: the name it is kept under, and the kind of value it
-    ///     is. Declared on `PersistentKey`, and listed by the application.
+    ///   - persistentKey: the name it is kept under, and the kind of value it is.
     public convenience init(
         wrappedValue: @autoclosure @escaping () -> Value,
         persistentKey key: PersistentKey
     ) {
         self.init(making: wrappedValue)
 
-        // The one thing an author can get wrong here, said at once rather
-        // than by quietly never being saved: the key was declared with a
-        // different type from the state written beside it.
+        // A key declared for another type is said at once, rather than never saved.
         precondition(
             Value.persistentKind == key.kind,
             "'\(key.name)' was declared to keep a \(key.kind) and is written "
                 + "on a \(Value.self), which is a \(Value.persistentKind)")
 
-        // One claim, one hold: the key's standing storage when another state
-        // got here first - this state is then that same state - or this one,
-        // adopted. The landing is how the stored value arrives whether the
-        // host's read is already here or still to come: an application's own
-        // keyed state is built as the app registers, BEFORE the store is
-        // pushed, and the landing then runs at `hydrate`, still ahead of the
-        // first view.
+        // One claim, one hold: the key's standing storage, or this one adopted; the
+        // stored value lands now or when the host's read arrives.
+        // Design: docs/design/core/state.md#kept-state
         let own = storage
 
         if let shared = PersistentStore.shared.claim(
@@ -1201,22 +819,14 @@ extension State where Value: PersistentValue {
         save = { PersistentStore.shared.record(key, $0.persistentValue) }
     }
 
-    /// State a SCENE keeps - the same state, under a name, handed back with
-    /// its scene when the system restores the application's windows.
+    /// State a scene keeps: the same state, under a name, handed back with its scene
+    /// when the system restores the application's windows.
     ///
     ///     @State(sceneKey: .section) private var section = 0
     ///
-    /// Each session has its own value under the name: a second *File ▸ New
-    /// Window* starts from the value written here, and a scene the system
-    /// restores comes back holding what the reader left in it. Reading and
-    /// writing are what they are on any other `@State` - see
-    /// Core/Scenes.swift for where the value goes, and `persistentKey:` for a
-    /// value every session shares.
-    ///
-    /// **One key is one piece of state IN A SCENE.** Two views of one scene
-    /// declaring a key share the storage; two scenes have one each. Declared
-    /// outside every scene - on the application - it is an ordinary state,
-    /// kept by nobody.
+    /// Each scene has its own value under the name, and a new scene starts from the
+    /// value written here. Declared outside every scene it is an ordinary state. A
+    /// value every scene shares is `persistentKey:` instead.
     ///
     /// - Parameters:
     ///   - wrappedValue: what the state holds in a scene that kept nothing.
@@ -1232,21 +842,18 @@ extension State where Value: PersistentValue {
             "'\(key.name)' was declared to keep a \(key.kind) and is written "
                 + "on a \(Value.self), which is a \(Value.persistentKind)")
 
-        // Paired with its scene by the build that finds it there, which is the
-        // one place that knows WHICH scene: a view is a value, made before the
-        // walk decides where it stands.
+        // Paired with its scene by the build that finds it there.
+        // Design: docs/design/core/state.md#scene-kept-state
         sceneClaim = { [unowned self] record in self.claim(key, in: record) }
 
-        // And at once where it is made INSIDE a scene's build - a model class
-        // a scene's state creates, whose boxes no walk finds.
+        // And at once where it is made inside a scene's build - a model's state.
         if let record = Scenes.shared.building {
             claim(key, in: record)
         }
     }
 
-    /// Pairs this state with the scene it is built in: the storage the scene
-    /// keeps under the key - with what the platform kept for it landed - and
-    /// the scene as where its writes are kept.
+    /// Pairs this state with the scene it is built in: the scene's storage for the
+    /// key, with what the platform kept landed, and the scene as where it is kept.
     private func claim(_ key: SceneKey, in record: SceneRecord) {
         let own = storage
 
@@ -1271,18 +878,7 @@ extension State: SceneClaiming {
     }
 }
 
-/// A piece of state a view BORROWS from whoever owns it.
-///
-///     struct CounterPage: ContentView {
-///         @State private var counter = 0
-///
-///         var content: any View {
-///             VStack {
-///                 Button("Count: \(counter)").onClicked { counter += 1 }
-///                 ResetRow(counter: $counter)
-///             }
-///         }
-///     }
+/// A piece of state a view borrows from whoever owns it.
 ///
 ///     struct ResetRow: ContentView {
 ///         @Binding var counter: Int
@@ -1292,50 +888,23 @@ extension State: SceneClaiming {
 ///         }
 ///     }
 ///
-/// What it holds is a way to read the owner's value and a way to write it, so a
-/// write through it reaches the owner - and the differ knows not to treat the
-/// storage as the borrower's own when it carries state across a rebuild.
+///     ResetRow(counter: $counter)
 ///
-/// **`$` says: I LEND YOU THIS, DO WITH IT WHAT YOU WANT.** A borrower may write
-/// the whole value, or one property of it - `$basket.note` - and a model lent
-/// this way may be edited or replaced outright. That is the point rather than an
-/// oversight: what a parent hands over is a capability, and the way to hand over
-/// less is to hand over less. Give the child the value itself and it can only
-/// read; give it the object and it can edit what the object holds; give it `$`
-/// and it can do everything the owner can.
-///
-/// **This is what a MODEL is lent with too.** A class of `@State` properties is
-/// a value like any other as far as this is concerned: `@Binding var basket:
-/// Basket` borrows it, `basket.$note` is the note's own state and `$basket.note`
-/// a binding to it through the model, and `$app.basket.note` reaches through a
-/// model inside a model. There is no second wrapper for the class case, because
-/// there is no second case.
-///
-/// The names come from the problem: a value type that describes a view cannot
-/// hold the view's state by itself, and the split into owning and borrowing is
-/// what says whose value each piece is.
+/// A write through it reaches the owner. `$` lends everything the owner can do:
+/// a borrower may write the whole value or one property of it, and a model lent
+/// this way may be edited or replaced; to hand over less, hand over the value or
+/// the object instead. A class of `@State` properties is lent the same way:
+/// `@Binding var basket: Basket`, with `basket.$note` the note's own state.
 @propertyWrapper
 @dynamicMemberLookup
 public struct Binding<Value> {
-    // A pair of closures rather than the `State` box itself: the box covers the
-    // case an author writes most - `$counter` - and covers nothing else: a
-    // property of a model, a value behind a function, one that has to be
-    // checked on the way in. Reading and writing is all a binding ever asks of
-    // what it borrows from, so that is what it holds.
+    // Two closures: reading and writing is all a binding asks of what it borrows.
     private let read: () -> Value
     private let write: (Value) -> Void
 
-    // Who this borrows FROM, when there is anybody: the storage behind a
-    // `@State`, and which of its properties when the binding is one of them.
-    // Reading and writing still go through the two closures above and only
-    // through them - this says nothing about the value and cannot reach it.
-    //
-    // It is here for one reason: `$counter` builds a NEW binding every time it
-    // is written, so two spellings naming one piece of state are two values
-    // with no way to recognize each other. This is that way, and ONE road reads
-    // it: `described`, which answers the storage behind a whole `@State` and
-    // nothing for a part of one or a binding made from closures - and is what
-    // `standing`, `followed` and the host's image all hang off.
+    // Who this borrows from - the storage and which part of it - so two spellings
+    // of one state recognize each other. Only `described` reads it.
+    // Design: docs/design/core/state.md#bindings
     let lender: AnyObject?
     let lent: AnyHashable?
 
@@ -1348,15 +917,10 @@ public struct Binding<Value> {
         lent = nil
     }
 
-    /// A binding over a storage no box holds - the derived side of a
-    /// conversion. A read works the value out from the sources afresh and
-    /// records a read of each of them, so the body is their reader; a write
-    /// lands on the derived state as a control's report does, for the back
-    /// engine to carry to the source.
+    /// A binding over a storage no box holds - a conversion's derived side: a read
+    /// works the value out from its sources, a write lands as a control's report.
     init(over storage: State<Value>.Storage) {
-        // HELD HERE, because the storage knows it weakly: this binding is what
-        // carries the conversion from the line that wrote it to the element
-        // that ends up holding it.
+        // Held here: the storage knows its conversion weakly.
         let conversion = storage.conversion
 
         read = {
@@ -1380,8 +944,7 @@ public struct Binding<Value> {
         lent = nil
     }
 
-    /// The one the property subscripts use: the
-    /// same closures they would have written, plus who the value came from.
+    /// The one the property subscripts use, with who the value came from.
     init(
         read: @escaping () -> Value,
         write: @escaping (Value) -> Void,
@@ -1394,15 +957,13 @@ public struct Binding<Value> {
         self.lent = lent
     }
 
-    /// A binding to something this library does not own: read it with `get`,
-    /// write it with `set`.
+    /// A binding to something this library does not own: read it with `get`, write
+    /// it with `set`.
     ///
     ///     TextField(Binding(get: { settings.name }, set: { settings.name = $0 }))
     ///
-    /// The escape hatch, for a value that is not a `@State` - in a view or in
-    /// a model, both of which have a shorter spelling, `$x` and `model.$x`.
-    /// Whether a write asks for another render is then the setter's business:
-    /// writing a `@State` does, and writing anything else does not.
+    /// Whether a write asks for a render is the setter's business: writing a
+    /// `@State` does.
     public init(get: @escaping () -> Value, set: @escaping (Value) -> Void) {
         read = get
         write = set
@@ -1415,9 +976,7 @@ public struct Binding<Value> {
     public var wrappedValue: Value {
         get { read() }
 
-        // Nonmutating: what changes is what the owner holds, not which binding
-        // this is. That is what lets a view write to its state from a handler,
-        // without being a mutating method it cannot be.
+        // Nonmutating: what changes is what the owner holds.
         nonmutating set { write(newValue) }
     }
 
@@ -1436,16 +995,10 @@ public struct Binding<Value> {
 
     /// A binding to one property of what this borrows - `$profile.name`.
     ///
-    ///     @State private var profile = Profile()
-    ///     …
     ///     TextField($profile.name)
     ///
-    /// A key path, so a name that is not a property does not compile - this is
-    /// dynamic in the spelling only.
-    ///
-    /// This one is for a VALUE, which cannot be written to in place from here:
-    /// the whole is read, the property written, and the whole put back through
-    /// this binding. A model takes the other subscript below.
+    /// For a value: the whole is read, the property written, and the whole put back.
+    /// A model takes the subscript below.
     public subscript<Subject>(
         dynamicMember keyPath: WritableKeyPath<Value, Subject>
     ) -> Binding<Subject> {
@@ -1460,30 +1013,13 @@ public struct Binding<Value> {
             lent: keyPath)
     }
 
-    /// A binding to one property of a MODEL, through the model - `$basket.note`.
+    /// A binding to one property of a model, through the model - `$basket.note`.
     ///
-    ///     struct NoteRow: ContentView {
-    ///         @Binding var basket: Basket
+    ///     TextField($basket.note)
     ///
-    ///         var content: any View {
-    ///             TextField($basket.note)
-    ///         }
-    ///     }
-    ///
-    ///     NoteRow(basket: $basket)
-    ///
-    /// A `ReferenceWritableKeyPath`, which only a class has, so the write goes
-    /// straight to the object both sides are already holding and nothing is put
-    /// back. Swift prefers this to the one above wherever both would fit -
-    /// measured - which is what keeps a model's own binding from being written
-    /// to on every keystroke, and any setter behind it from firing for a change
-    /// it did not make.
-    ///
-    /// It reaches the property THROUGH the state holding the model, so it is a
-    /// part of that state and none of its own - read where a control shows it,
-    /// as `$room.width` is. The property's own state is the model's `$`:
-    /// `basket.$note`, which is what a control the host carries the value for
-    /// is handed.
+    /// The write goes straight to the object, and nothing is put back. It is a part
+    /// of the state holding the model; the property's own state is `basket.$note`,
+    /// which is what a control the host carries is handed.
     public subscript<Subject>(
         dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject>
     ) -> Binding<Subject> {
@@ -1496,19 +1032,15 @@ public struct Binding<Value> {
 }
 
 extension Binding where Value: MutableCollection, Value.Index: Hashable {
-    /// A binding to ONE ELEMENT of what this borrows - `$hops[2]`.
+    /// A binding to one element of what this borrows - `$hops[2]`.
     ///
-    ///     @State private var hops = [0.0, 0.0, 0.0, 0.0]
-    ///     …
     ///     ForEach(Array(hops.enumerated()), id: \.offset) { hop in
     ///         Stepper($hops[hop.offset])
     ///     }
     ///
-    /// The whole is read, the element written, and the whole put back through
-    /// this binding - the value subscript's shape, one step along. A PART of a
-    /// state has no storage of its own: a control handed one reads it at build
-    /// and writes through the whole, and a driven modifier refuses one - four
-    /// bars the host moves are four states.
+    /// The whole is read, the element written, and the whole put back. It is a part
+    /// of the state, which a driven modifier refuses: values the host animates
+    /// separately are separate states.
     ///
     /// - Parameter index: which element, in the collection's own index space.
     public subscript(index: Value.Index) -> Binding<Value.Element> {
@@ -1527,21 +1059,10 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable {
 // MARK: - A write that lands
 
 extension Binding {
-    /// Writes a REPORT - a value the platform measured, or the reader moved -
-    /// so that it lands where it is rather than travelling there.
-    ///
-    /// On a state the host walks as a journey the value, its destination and
-    /// a speed of nought land together; on any other state it is an ordinary
-    /// write. Either way the state's readers are asked for a render, as they
-    /// are for every write, and a state nobody reads costs nothing. What is
-    /// NOT done is a save: a measurement is not a setting, so a kept state
-    /// (`persistentKey:`) landed here is not written to the store.
-    ///
-    /// INTERNAL: what the library's own write-backs use - a reading the host
-    /// reports - where an author reaches for `.motion(.none)` on the view or,
-    /// on a journey, `$x.journey.snap(to:)`.
-    ///
-    /// - Parameter value: what landed.
+    /// Writes a report - a value the platform measured or the user moved - so it
+    /// lands where it is: value, destination and a still speed together. A landed
+    /// value is not saved.
+    /// Design: docs/design/core/state.md#a-write-that-lands
     func land(_ value: Value) {
         if let storage = described {
             storage.snap(value)
@@ -1556,14 +1077,7 @@ extension Binding: BorrowedState {
     var lends: (lender: AnyObject?, lent: AnyHashable?) { (lender, lent) }
 }
 
-/// `@unchecked Sendable` for the reason `State` is, and load-bearing for what a
-/// handler does: one that writes state from an `async let` runs the child on the
-/// cooperative pool, and the binding has to reach it.
-///
-/// The two closures are the whole of what crosses, and what they touch is a
-/// `State` box - itself `@unchecked Sendable`, kept so by the lock its
-/// storage holds, so a write through a binding is as safe from any thread as
-/// a write to the box. A binding made with `Binding(get:set:)` over
-/// something an author owns is as safe as that something, which is the same
-/// promise `State<SomeClass>` makes.
+/// `@unchecked Sendable` for the reason `State` is: a handler's `async let` child
+/// writes through a binding from the pool.
+/// Design: docs/design/core/state.md#sendable-promises
 extension Binding: @unchecked Sendable {}

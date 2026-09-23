@@ -1,50 +1,15 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What a subtree LOOKS like, with every value taken out of it.
-//
-// A list scrolling by one row costs the platform four controls built and four
-// thrown away, and that is what makes a scroll judder: the message for a row
-// is cheap, and building its controls is not. The row leaving and the row arriving are
-// usually the SAME SHAPE, so the control that left could stand in for the one
-// arriving; what stops a renderer from simply doing that is that it cannot
-// know the two are alike.
-//
-// This is how it knows. A shape is a number over the subtree's TYPES, PROPERTY
-// KEYS and EVENT KEYS, recursively, with the values left out - so two rows
-// share a shape exactly when they name the same properties on the same
-// controls in the same places. A control adopted under a matching shape is
-// then given a value for every property it already carries, which is what
-// makes the adoption safe: there is nothing left over to clear, and nothing
-// the arriving row names that the leaving row did not.
-//
-// A conditional property splits the shape in two - a row that writes
-// `.textColor` only when it is chosen has one shape chosen and another not -
-// and that is correct rather than cheap: those two rows are NOT
-// interchangeable. A list has one to three shapes in practice.
+// What a subtree looks like with its values left out, so a host can hand a
+// row's controls to the next row of the same shape.
+// Design: docs/design/core/identity-and-diffing.md#recycling
 
 /// Whether a subtree may be recycled, and what it looks like when it may.
 enum Recycling {
-    /// The controls whose whole state is in the tree, so a value for every
-    /// property they name is a complete description of them.
-    ///
-    /// An INCLUSION list, and that is the load-bearing part: a control an
-    /// application registered, a page, and every type added to this library
-    /// later are all outside it until somebody puts them in deliberately. What
-    /// is kept out and why:
-    ///
-    /// - `TextField`, `TextEditor`, `SearchField`, `Picker`, `DatePicker`, `TimePicker` -
-    ///   the caret, the selection, which of them the platform is typing into,
-    ///   and whether a list is open. None of it is a property, so none of it is
-    ///   in the shape.
-    /// - `ScrollView` - its own offset, which nothing describes.
-    /// - `SwipeView` - open or closed, which nothing describes either, so an
-    ///   adopted row could arrive with its actions already showing.
-    /// - `RefreshView` - the spinner the platform is running.
-    /// - `WebView`, `Map` - a whole browser and a whole map, each with a
-    ///   history and a region of its own.
-    /// - `Canvas` - the drawing is a property, the surface it is cached
-    ///   on is not.
+    /// The controls whose whole state is in the tree - an inclusion list. Anything
+    /// holding a caret, an offset, an open state or a surface of its own stays out.
+    /// Design: docs/design/core/identity-and-diffing.md#recycling
     static let poolable: Set<NodeType> = [
         .absoluteLayout, .activityIndicator, .border, .colorBox, .button,
         .checkBox, .ellipse, .spans, .grid,
@@ -54,30 +19,18 @@ enum Recycling {
         .vStack,
     ]
 
-    /// Zero, which is the shape of a subtree that may NOT be recycled - so the
-    /// wire carries one number rather than a number and a flag, and a host
-    /// that reads zero pools nothing.
+    /// Zero: the shape of a subtree that may not be recycled.
     static let none: UInt64 = 0
 
-    /// What this element and everything under it looks like, or `none` when
-    /// any part of it holds state the tree does not describe.
-    ///
-    /// Read off the RENDERED element rather than the node, because that is
-    /// what the differ has once a subtree is settled: the same types, the same
-    /// complete property map, and the same events, whoever wrote them - a
-    /// style's properties included, since a style is resolved before this.
+    /// What this rendered element and its subtree look like, or `none` where any part
+    /// holds state the tree does not describe.
     static func shape(of node: RenderedNode) -> UInt64 {
         var value = seed
         return fold(node, into: &value) ? (value == none ? 1 : value) : none
     }
 
-    /// Folds one element into the running number, and says whether it may be
-    /// recycled at all.
-    ///
-    /// SORTED keys, both maps, for the reason everything else this side writes
-    /// is sorted: Swift salts each dictionary with its own storage address, so
-    /// an unsorted walk gives two instances of one row two different numbers
-    /// inside a single run - and the pool would then never match anything.
+    /// Folds one element into the running number, keys sorted, and answers whether it
+    /// may be recycled at all.
     private static func fold(_ node: RenderedNode, into value: inout UInt64) -> Bool {
         guard poolable.contains(node.type) else { return false }
 
@@ -87,8 +40,7 @@ enum Recycling {
             absorb(key.name, into: &value)
         }
 
-        // A separator between the two maps, so a property named like an event
-        // cannot make two different elements read alike.
+        // A separator, so a property named like an event cannot read alike.
         absorb("", into: &value)
 
         for key in node.events.keys.sorted() {
@@ -99,16 +51,12 @@ enum Recycling {
             return false
         }
 
-        // And one at the end, so the same children one level deeper are a
-        // different number.
+        // And one at the end, so the same children one level deeper differ.
         absorb("", into: &value)
         return true
     }
 
-    /// FNV-1a, written out here rather than taken from Swift's own hashing,
-    /// which is seeded per process: two runs of one interface must number a
-    /// shape the same way for a fixture to be worth reading, and two INSTANCES
-    /// inside one run must, or nothing would ever be adopted.
+    /// FNV-1a, written out: Swift's own hashing is seeded per process.
     private static func absorb(_ text: String, into value: inout UInt64) {
         for byte in text.utf8 {
             value ^= UInt64(byte)

@@ -12,24 +12,12 @@ import Glibc
 import CRT
 #endif
 
-// THE TWO LAWS, AS NUMBERS.
-//
-// A host walks a trip - one value on its way to a destination - by asking the
-// law where the value stands at the time since the trip began. Both laws are
-// closed form in that time: nothing is integrated frame by frame, so a run of
-// frames answers the same numbers whatever the frames were, a hand-wound clock
-// reproduces them exactly, and a suspended application slews to the end
-// rather than resuming mid-air.
-//
-// Velocity is the law's own derivative, never a difference between two
-// samples. A trip that replaces another starts from the speed the first had
-// reached, so a retarget bends the value instead of cutting it.
-//
-// Every runtime walks with these numbers. A Swift runtime calls
-// `HostMotionLaw`; a runtime in another language keeps a line-by-line copy,
-// and the trajectories in `Tests/Fixtures/motion-laws.txt` are what prove it.
+// The two motion laws as numbers, in closed form in the time since an animation
+// began. Every runtime animates with these; a runtime in another language keeps
+// a line-by-line copy, proved by `Tests/Fixtures/motion-laws.txt`.
+// Design: docs/design/core/journeys.md#motion-laws
 
-/// Where a trip stands at one instant of its law.
+/// Where an animation stands at one instant of its law.
 @_spi(Host) public struct HostMotionSample: Equatable, Sendable {
     /// The value of each lane.
     public let value: [Double]
@@ -37,46 +25,41 @@ import CRT
     /// How fast each lane is going, per millisecond.
     public let velocity: [Double]
 
-    /// Whether the trip has arrived: every lane at its destination and still.
+    /// Whether the animation has arrived: every lane at its destination and still.
     public let rested: Bool
 }
 
-/// The two motion laws, evaluated from the time since a trip began.
+/// The two motion laws, evaluated from the time since an animation began.
 ///
-/// Time is in milliseconds, the unit of `Motion`'s numbers, so velocity is
-/// per millisecond. A journey reports its velocity per second; a walker
-/// converts where it reports.
+/// Time is in milliseconds, the unit of `Motion`'s numbers, so velocity is per
+/// millisecond. A journey reports its velocity per second; an animator converts
+/// where it reports.
 @_spi(Host) public enum HostMotionLaw {
-    /// How near its destination and how slow a lane is when it counts as
-    /// arrived: in the value's own units, and per millisecond for the speed.
-    ///
-    /// One number serves every lane because lanes keep the units a reader
-    /// sees - a colour channel runs from 0 to 1, a coordinate is a point on
-    /// screen - and a thousandth of either is below any display's resolution.
+    /// How near its destination and how slow a lane is when it counts as arrived: in
+    /// the value's own units, and per millisecond for the speed. A thousandth of a
+    /// colour channel or of a point is below any display's resolution.
     public static let still = 0.001
 
-    /// The longest a spring walks, in milliseconds.
-    ///
-    /// A spring is the one law with no stated end. However slowly it settles,
-    /// it is over after this, so no trip holds a display clock awake for ever.
+    /// The longest a spring animates, in milliseconds. A spring has no stated end;
+    /// this keeps any animation from holding a display clock awake for ever.
     public static let longest = 10_000.0
 
-    /// Where a trip stands `elapsed` milliseconds after it began.
+    /// Where an animation stands `elapsed` milliseconds after it began.
     ///
-    /// An eased trip from a standstill follows its curve exactly. A lane that
-    /// began moving follows the cubic Hermite of the same length instead, from
-    /// the value and speed it had to its destination at a standstill. A spring
-    /// settles each lane on its own, and the trip rests when all of them have.
+    /// An eased animation from a standstill follows its curve exactly. A lane that
+    /// began moving follows the cubic Hermite of the same length instead, from the
+    /// value and speed it had to its destination at a standstill. A spring settles
+    /// each lane on its own, and the animation rests when all of them have.
     ///
     /// - Parameters:
     ///   - motion: The law and its numbers.
-    ///   - elapsed: Milliseconds since the trip began.
+    ///   - elapsed: Milliseconds since the animation began.
     ///   - from: Where each lane began.
     ///   - destination: Where each lane is going.
     ///   - velocity: How fast each lane was going when it began, per
     ///     millisecond.
-    /// - Returns: The value and velocity at that instant, and whether the trip
-    ///   has arrived. Lanes that do not pair up land at once.
+    /// - Returns: The value and velocity at that instant, and whether the
+    ///   animation has arrived. Lanes that do not pair up land at once.
     public static func sample(
         _ motion: Motion,
         elapsed: Double,
@@ -108,7 +91,7 @@ import CRT
         }
     }
 
-    /// A trip at its destination, standing still.
+    /// An animation at its destination, standing still.
     private static func landed(_ destination: [Double]) -> HostMotionSample {
         HostMotionSample(
             value: destination,
@@ -226,9 +209,9 @@ import CRT
             : HostMotionSample(value: value, velocity: speed, rested: false)
     }
 
-    /// How far through the change an eased trip is when `progress` of its
-    /// length has passed: 0 at the start and 1 at the end, and past 1 and back
-    /// on the curves that overshoot.
+    /// How far through the change an eased animation is when `progress` of its
+    /// length has passed: 0 at the start and 1 at the end, and past 1 and back on the
+    /// curves that overshoot.
     static func ease(_ curve: Easing, at progress: Double) -> Double {
         let value = min(max(progress, 0), 1)
 
@@ -262,11 +245,8 @@ import CRT
         }
     }
 
-    /// How steeply `curve` climbs at `progress`, per unit of progress.
-    ///
-    /// A central difference on the curve, one-sided at its ends: a function of
-    /// progress alone, never of two frames, so it answers the same number in
-    /// every run at any frame rate.
+    /// How steeply `curve` climbs at `progress`, per unit of progress: a central
+    /// difference on the curve, a function of progress alone.
     static func slope(_ curve: Easing, at progress: Double) -> Double {
         let step = 1e-4
         let from = min(max(progress - step, 0), 1)

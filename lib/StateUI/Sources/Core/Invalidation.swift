@@ -1,55 +1,17 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Which state was read where - the half of invalidation the differ cannot see.
-//
-// The fallback answer to "what changed" is: something did, so run the author's
-// closure in full and diff the result. That is always correct - but for a large
-// tree it builds every page so that one label can change. The clean walk in
-// Core/Diff.swift needs two facts recorded as they happen, and this file is
-// where the first is kept:
-//
-//   reads     while a body or a container's content is being built, every
-//             piece of state it reads is recorded against THAT element - the
-//             closure that read it, and no closure around it - so the next
-//             render can ask "did anything this build depended on move?"
-//             without building anything, and build again exactly the closure
-//             that read.
-//   changes   every write names the state it wrote. That half lives on the
-//             Renderer (`stateChanged`), beside the dirty flag it extends.
-//
-// The identity in both is the STORAGE, not the box: a `@State` box is rebuilt
-// with its view on every render and adopts its predecessor's storage
-// (State.adopt), so the storage is the one object that means "this piece of
-// state" across renders. A `@State` declared in a class has a storage of its
-// own the same way, and a Ticker is its own.
-//
-// Both directions err toward REBUILDING, never toward skipping: a recycled
-// ObjectIdentifier, a read recorded from a pool thread mid-render, a `@State`
-// read in a branch the body did not take this time - each can only add a
-// dependency or a change that was not strictly needed, and the cost of any of
-// them is a subtree built and diffed for nothing. A dependency MISSED would be
-// a frozen interface, which is why writes always land (behind the renderer's
-// lock) and why anything that cannot name what changed falls back to the full
-// build.
+// Which state was read where: the half of invalidation the differ cannot see.
+// The other half, which state was written, is `Renderer.stateChanged`.
+// Design: docs/design/core/invalidation.md#two-facts
 
 import Synchronization
 
-/// The read scopes open right now, innermost last.
-///
-/// The differ opens one around each build it runs, and `Renderer.renderWire`
-/// opens one around the root build itself - the reads that happen outside
-/// every composed view, which is what decides whether the application needs
-/// building at all.
-///
-/// Builds never nest across elements - a body constructs its children's
-/// PLACEHOLDERS, never their bodies - so the stack is depth one in practice.
-/// It is a stack anyway, because `Node.built` in a test expands everything
-/// eagerly and nothing here should be surprised by that.
+/// The read scopes open now, innermost last: one around each build the differ
+/// runs, and one around the root build.
+/// Design: docs/design/core/invalidation.md#the-reader-is-the-closure-that-read
 enum ReadScope {
-    /// Guards the stack. Reads may arrive from a pool thread - an author's task
-    /// reading a `@State` while the UI thread renders - and an insert racing a
-    /// pop would corrupt the array.
+    /// Guards the stack: a read may arrive from a pool thread.
     private static let guarded = Lock()
 
     private nonisolated(unsafe) static var stack: [Set<ObjectIdentifier>] = []
@@ -57,20 +19,9 @@ enum ReadScope {
     /// How many scopes are open, kept beside the stack for the fast path below.
     private static let depth = Atomic<Int>(0)
 
-    /// Records a read into the innermost open scope, if any.
-    ///
-    /// Called on EVERY read of every `@State` in the process, almost all of
-    /// them from handlers with no scope open - so the empty check is a relaxed
-    /// atomic read of `depth`, not a trip through the lock. What it answers is
-    /// right by argument rather than by the compiler: the thread that opens and
-    /// closes scopes is the thread that renders, so a read there always sees
-    /// the truth; a pool thread may see a stale value, and either direction is
-    /// harmless - noting a read that lands in some element's set over-records
-    /// a dependency, and skipping one records nothing a pool-thread read was
-    /// entitled to anyway.
-    ///
-    /// - Returns: whether a scope was open to record it - which is what tells
-    ///   a read at BUILD from every other read of the same state.
+    /// Records a read into the innermost open scope, answering whether one was open.
+    /// The empty check is a relaxed atomic load, since every read lands here.
+    /// Design: docs/design/core/invalidation.md#reads-from-other-threads
     @discardableResult
     static func note(_ id: ObjectIdentifier) -> Bool {
         guard depth.load(ordering: .relaxed) > 0 else { return false }
@@ -100,9 +51,7 @@ enum ReadScope {
         return (value, reads)
     }
 
-    /// The same, accumulating into a set the caller keeps - the differ unwraps
-    /// a chain of placeholders one build at a time, and they all belong to the
-    /// one element.
+    /// The same, accumulating into a set the caller keeps across nested placeholders.
     static func collect<T>(
         into reads: inout Set<ObjectIdentifier>,
         _ build: () -> T

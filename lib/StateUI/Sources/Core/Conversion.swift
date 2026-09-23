@@ -1,79 +1,41 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A BINDING CONVERTED ON ITS WAY TO A CONTROL.
-//
-// `$volume.convert { $0 * 100 }` is a second state the host carries, worked
-// out from the first by an engine the differ writes for you: whenever the
-// source moves, the engine runs on the display's frames and settles the
-// derived value where the control reads it. `.convertBack { $0 / 100 }` is the
-// engine the other way, for a control that reports - a slider's thumb, a
-// stepper's press, a switch - so what the reader did lands on the source in
-// the source's own terms. Two sources make one derived value with
-// `$a.convert(with: $b) { a, b in … }`, and `.convertBack { out in (a, b) }`
-// sends a report back into both.
-//
-// NOTHING IS READ AT BUILD BY HANDING ONE ON: the derived state goes to a
-// control as `$x` does, so converting costs the arithmetic on the host's
-// frames and no render. The derived state is ONE object across renders - kept
-// on its first source under the line that wrote the conversion - so the tie
-// the host holds keeps its number from render to render. A body that READS a
-// conversion reads its sources: the value is worked out afresh on the read,
-// and the body is a reader of every source, rebuilt when any of them moves.
-//
-// `convertBack` is meant to be the inverse of `convert`. Where it is not
-// exactly - a rounding, a clamp - the source settles on the value the round
-// trip lands on, once, and both sides then agree.
+// A binding converted on its way to a control: a second state the host carries,
+// worked out by an engine the differ writes, with `convertBack` for a control
+// that reports.
+// Design: docs/design/core/journeys.md#conversions
 
-/// What the differ writes an engine or two for: the sources a derived state
-/// is worked out from, the arithmetic each way, and where the derived image
-/// is.
+/// What the differ writes engines for: the sources, the arithmetic each way, and
+/// the derived state.
 final class Conversion: @unchecked Sendable {
-    /// The sources, WEAKLY - which is what keeps a conversion from being a
-    /// ring nothing can break.
-    ///
-    /// The derived state is kept on the FIRST SOURCE's storage, so that one
-    /// conversion is one state across every render (`derivations`); held here
-    /// strongly, the source would point at the derived state and the derived
-    /// state's conversion back at the source, and neither would ever be freed -
-    /// every visit to a page with a converted text leaving both behind, and the
-    /// board walking them on every frame it runs. So a conversion is a way to
-    /// find its sources and never a reason to keep them: what OWNS them is the
-    /// view that declared them, and the engine the differ arms holds them for
-    /// exactly as long as the element lives.
-    /// `ElementReleaseTests.testAConversionGoesWithTheElement`.
+    /// The sources, weakly: held strongly, they would make a ring nothing breaks.
+    /// Design: docs/design/core/journeys.md#conversions
     private var kept: [WeakSource] = []
 
-    /// The sources themselves, for a read at build to record and for the back
-    /// engine to write into. A source that has gone is left out.
+    /// The sources that still exist, for a read at build to record and the back
+    /// engine to write.
     var sources: [any AnyStateStorage] {
         get { kept.compactMap { $0.storage } }
         set { kept = newValue.map { WeakSource($0) } }
     }
 
-    /// The same list, as what the forward engine FOLLOWS - the engine's own
-    /// hold is strong and ends when the element hands its number back.
+    /// The same, as what the forward engine follows.
     var follows: [any FollowedState] { sources }
 
-    /// Works the derived value out from the sources and settles it - asking
-    /// the derived state's readers for a render where `asking` says so, which
-    /// the engine does and a read at build does not.
+    /// Works the derived value out and settles it, asking its readers where `asking`
+    /// says - the engine does, a read at build does not.
     var forward: (_ asking: Bool) -> Void = { _ in }
 
-    /// Works the sources out from the derived value and settles them, where a
-    /// control reports into the derived state.
+    /// Works the sources out from the derived value, where a control reports into it.
     var back: (() -> Void)?
 
     /// The derived state, for the back engine to follow.
     var derived: () -> (any FollowedState)? = { nil }
 
-    /// The engines the differ arms for this conversion, on the element that
-    /// wears the derived state - both ahead of every engine an author wrote,
-    /// so one following the derived state sees the converted value in the
-    /// same cycle. THE BACK ONE RUNS FIRST: a report is the newer word, and
-    /// the forward one then derives again from what it landed - which is
-    /// what keeps a report that arrives in the very cycle the engines first
-    /// run from being derived over by the sources it has not reached yet.
+    /// The engines for this conversion, ahead of every author's: the back one first,
+    /// since a report is the newer word.
+    /// Design: docs/design/core/journeys.md#conversions
     func declarations() -> [EngineDeclaration] {
         var made: [EngineDeclaration] = []
 
@@ -95,41 +57,34 @@ final class Conversion: @unchecked Sendable {
     }
 }
 
-/// One source of a conversion, as the conversion knows it: weakly, for the
-/// reason `Conversion.kept` gives.
+/// One source as the conversion knows it: weakly.
 final class WeakSource: @unchecked Sendable {
     weak var storage: (any AnyStateStorage)?
 
     init(_ storage: any AnyStateStorage) { self.storage = storage }
 }
 
-/// The part of a state's storage a conversion needs without knowing the value's
-/// type: that a build read it, where a derived state is kept, and - being a
-/// source the conversion's engine follows - how many times it was written.
+/// What a conversion needs of a source's storage without its type: whether a
+/// build read it, where a derived state is kept, and its write count.
 protocol AnyStateStorage: FollowedState {
     /// Whether any build has ever read this state.
     var readAtBuild: Bool { get set }
 
-    /// The derived state a conversion written at `key` keeps - the first
-    /// source of a `.multi` is where it lives, as it is for `convert(_:)`.
+    /// The derived state a conversion written at `key` keeps on this source.
     func derived<Out>(_: Out.Type, at key: String, make: @escaping () -> Out) -> State<Out>.Storage
 }
 
 extension Journey {
-    /// The JOURNEY converted on its way to a control - words worked out from
-    /// where the value IS this frame, how fast it is going, or where it is
-    /// going - a second state the host carries, settled by an engine the
-    /// differ writes on every frame the value moves, so the control shows
-    /// `transform(journey)` as it walks and nothing is built for it.
+    /// The journey converted on its way to a control - words worked out from where
+    /// the value is this frame, how fast, or where it is going - a second state the
+    /// host carries, settled on every frame the value moves with nothing built.
     ///
     ///     @State private var offset = Point.zero
     ///
     ///     ScrollView { … }.scrollOffset($offset)
     ///     Label($offset.journey.convert { "\(Int($0.value.y)) down" })
     ///
-    /// `$offset.convert { … }` beside it is a conversion of the STATE, which
-    /// is the destination - the number a plain read answers, worked out once
-    /// per write. This one follows the walk, and costs no render either way.
+    /// `$offset.convert { … }` converts the state instead, which is the destination.
     ///
     /// - Parameters:
     ///   - transform: the derived value, from the journey as it stands.
@@ -151,9 +106,8 @@ extension Journey {
             return Binding<Out>(get: { transform(self) }, set: { _ in })
         }
 
-        // The image is made now, so the engine below has a journey to read
-        // from its first run - and so a body reading the result is a reader of
-        // the journey, which is what makes the words move for it too.
+        // The image is made now, so the engine has a journey from its first run and a
+        // body reading the result reads the journey.
         _ = source.walkedImage()
 
         let journey = self
@@ -174,8 +128,8 @@ extension Journey {
 }
 
 extension Journey {
-    /// Two journeys converted into one value - the words for a point, a
-    /// distance between two walks - settled on every frame either moves.
+    /// Two journeys converted into one value - the words for a point, the distance
+    /// between two animated values - settled on every frame either moves.
     ///
     ///     Label($liveX.journey.convert(with: $liveY.journey) { x, y in
     ///         "at \(Int(x.value)), \(Int(y.value))"

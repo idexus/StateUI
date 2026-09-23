@@ -1,25 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// THE CYCLE: read, work out, write - once per frame, in that order.
-//
-// Every IMAGE a cycle reads is LATCHED before any arithmetic runs, so every
-// engine in one cycle sees one picture of what the host carries, and
-// everything they wrote to it is published together at the end. A carried
-// value that changes half way through cannot make two engines disagree about
-// it, and running the same cycle twice over the same image answers the same
-// bytes. A state the host does not carry is read live, under its own lock:
-// on the one thread that runs handlers and engines alike that is the same
-// picture, and it is what following ANY state costs nothing extra for.
-//
-//   (1) READ      every write made since the last cycle is taken in at once.
-//   (2) WORK OUT  the engines run, in a stated order, each told how long it is
-//                 since IT last ran. What one of those is: `Core/Engine.swift`.
-//   (3) WRITE     what moved is published, and the host reads it out.
-//
-// The board is what holds one such cycle: an image, its engines, and one hold
-// over both. There is one per SYNC - one clock, one cycle - and today the only
-// sync is the display's own frame.
+// The cycle: every write since the last one latched, the engines run over one
+// picture, and what moved published - once per frame, in that order.
+// Design: docs/design/core/cycle.md#the-board
 
 /// What one cycle did, which is what the trace and the tests read.
 struct CycleReport: Equatable {
@@ -39,32 +23,24 @@ struct CycleReport: Equatable {
     var awake = false
 }
 
-/// One sync's image, engines and cycle.
-///
-/// THE HOLD IS THE BOARD'S and every touch of an image goes through it, so a
-/// write from a handler, a report from the host and an engine's own arithmetic
-/// cannot tear one another. It is never held while an engine RUNS: an engine
-/// reads and writes states, and a lock held across the call would be a lock the
-/// engine asks for again.
+/// One sync's images, engines and cycle, behind one hold that is never held while
+/// an engine runs.
+/// Design: docs/design/core/cycle.md#the-board
 final class CycleBoard: @unchecked Sendable {
     /// Which clock this board runs on.
     let sync: Sync
 
     private let guarded = Lock()
 
-    /// Every storage that belongs to this board, weakly: a state is the view's,
-    /// and one nobody holds any more is one nothing can write.
+    /// Every storage of this board, weakly: a state belongs to its view.
     private var storages: [WeakStorage] = []
 
-    /// The engines, in the order they run: ascending priority, then the order
-    /// they were registered in.
+    /// The engines in running order: ascending priority, then registration.
     private var engines: [EngineEntry] = []
 
-    /// Whether a cycle is between its latch and its publish.
-    ///
-    /// What decides where a write LANDS - the image the cycle is working on,
-    /// or the pending slot the next one will take in - and what decides which
-    /// of the two a read answers.
+    /// Whether a cycle is between its latch and its publish - which decides where a
+    /// write lands and what a read answers.
+    /// Design: docs/design/core/cycle.md#three-copies-of-a-value
     private var cycling = false
 
     /// When the last cycle ran, on the clock the host hands in.
@@ -77,10 +53,8 @@ final class CycleBoard: @unchecked Sendable {
         self.sync = sync
     }
 
-    /// Gives a storage a new SHAPE - the bytes it holds, its published copy,
-    /// and nothing pending - for a state carried as a plain value that a
-    /// slider now walks as a journey. Only ever before the host has been told
-    /// the number, so nothing outside this side has a picture to disagree with.
+    /// Gives a storage a new shape - a plain value a slider now animates as a
+    /// journey - before the host has its number.
     func reshape(_ storage: HostStorage, to bytes: [UInt8]) {
         guarded.withLock {
             storage.image = bytes
@@ -100,32 +74,18 @@ final class CycleBoard: @unchecked Sendable {
         }
     }
 
-    /// What a value stands at.
-    ///
-    /// INSIDE a cycle that is the image the cycle is working on, which is what
-    /// makes every engine in one cycle see one picture. Outside one it is the
-    /// newest thing this side knows - a write waiting to be latched, or, where
-    /// none is, the last completed cycle's. So a handler that writes a value
-    /// and reads it back gets what it wrote, and the cycle still runs over a
-    /// picture that cannot change under it.
+    /// What a value stands at: the running cycle's image inside a cycle, the newest
+    /// write or the last published picture outside one.
     func read(_ storage: HostStorage, lanes: Int) -> StateCarried {
         let bytes = guarded.withLock { cycling ? storage.image : (storage.pending ?? storage.published) }
 
         return StateImage.carried(of: bytes, lanes: lanes)
     }
 
-    /// Writes a value, which is a write into the image when a cycle is running
-    /// and into the pending slot when none is.
-    ///
-    /// The stamp is bumped either way, so an engine following this value is
-    /// told even where the bytes are what they already were - a finger holding
-    /// a scroller still reports, and an engine that steers by it is entitled
-    /// to hear every report.
-    ///
-    /// `forcing` is for the lanes a write MEANS even where the bytes did not
-    /// move: sending a value to where it is already going is a fresh journey
-    /// with a fresh waiter, and an equal setpoint would otherwise cross as
-    /// nothing at all.
+    /// Writes a value into the image during a cycle, or into the pending slot between
+    /// cycles; the stamp moves either way. `forcing` marks lanes a write means even
+    /// where the bytes did not move.
+    /// Design: docs/design/core/cycle.md#where-a-write-lands
     func write(_ bytes: [UInt8], to storage: HostStorage, forcing forced: UInt64 = 0) {
         let waiting: Bool = guarded.withLock {
             storage.stamp &+= 1
@@ -142,33 +102,16 @@ final class CycleBoard: @unchecked Sendable {
             return true
         }
 
-        // A WRITE WAITING FOR A CYCLE WAKES THE HOST, after it has landed and
-        // outside the hold. One made from the pool - a `Task.detached`, an
-        // `async let` child sending a movement - has no event, render or act
-        // after it to start a cycle, and nothing else would tell the host it
-        // is there. A write inside a cycle is taken by that cycle.
+        // A write waiting for a cycle wakes the host, outside the hold: a write from the
+        // pool has nothing else to announce it.
         if waiting {
             UIThreadExecutor.shared.poke()
         }
     }
 
-    /// Takes in what the HOST wrote: the named lanes only, and their dirty
-    /// bits cleared.
-    ///
-    /// Cleared because a lane the host wrote is a lane the host already has -
-    /// reading it back out would be this side telling the platform what the
-    /// platform just told it, once a frame, for ever.
-    ///
-    /// A REPORT OF THE WHOLE VALUE - every lane named - may change the value's
-    /// LENGTH: a text is as long as its letters. Such a report replaces the
-    /// slot; one about some lanes lays those lanes and leaves the rest of the
-    /// image standing, a report speaking about lanes and never about shape.
-    ///
-    /// - Parameters:
-    ///   - bytes: the whole value's bytes, of which only the named lanes are
-    ///     taken.
-    ///   - mask: which lanes the host actually wrote.
-    ///   - storage: the value.
+    /// Takes in what the host wrote: the named lanes only, their dirty bits cleared.
+    /// A report naming every lane may change the value's length.
+    /// Design: docs/design/core/cycle.md#what-the-host-reports
     func told(_ bytes: [UInt8], mask: UInt64, to storage: HostStorage) {
         func lay(into slot: inout [UInt8]) {
             if mask == ~0 {
@@ -196,15 +139,9 @@ final class CycleBoard: @unchecked Sendable {
         }
     }
 
-    /// Every state with lanes waiting to be read, in ASCENDING order, and what
-    /// each of them holds - the per-frame read.
-    ///
-    /// The bits answered are CLEARED: what the host has been told about is not
-    /// told again. What crosses is what a cycle FINISHED rather than the image
-    /// a cycle is working on, so the platform never wears a half-worked-out
-    /// picture.
-    ///
-    /// - Returns: the number, which lanes moved, and the bytes, per number.
+    /// Every state with lanes waiting, in ascending order, with what each holds - the
+    /// per-frame read. The bits answered are cleared.
+    /// Design: docs/design/core/cycle.md#the-per-frame-read
     func dirty() -> [(number: Int32, mask: UInt64, bytes: [UInt8])] {
         guarded.withLock {
             var answered: [(number: Int32, mask: UInt64, bytes: [UInt8])] = []
@@ -221,11 +158,8 @@ final class CycleBoard: @unchecked Sendable {
         }
     }
 
-    /// One state WHOLE, with nothing cleared - what a registration reads,
-    /// needing the value and where it is going both.
-    ///
-    /// - Parameter number: which number.
-    /// - Returns: its bytes, or nil where no state rides that number any more.
+    /// One state whole, nothing cleared - what a registration reads; nil where no
+    /// state rides that number.
     func whole(_ number: Int32) -> [UInt8]? {
         guarded.withLock {
             for held in storages where held.storage?.number == number {
@@ -252,15 +186,8 @@ final class CycleBoard: @unchecked Sendable {
         guarded.withLock { engines.removeAll { $0.id == id } }
     }
 
-    /// Hands an engine the arithmetic a fresh render wrote, the states that
-    /// render named, and a reason to run: the view has just been described, so
-    /// whatever it captured has moved.
-    ///
-    /// - Parameters:
-    ///   - id: which engine.
-    ///   - follows: the states this render's `following:` named.
-    ///   - run: the arithmetic, with this render's captures.
-    /// - Returns: whether there was one to hand it to.
+    /// Hands an engine a fresh render's closure and followed states, and arms it.
+    /// Answers whether there was one to hand it to.
     @discardableResult
     func rearm(
         _ id: Int,
@@ -277,8 +204,7 @@ final class CycleBoard: @unchecked Sendable {
         }
     }
 
-    /// Whether this board holds an engine under that number - what a test
-    /// asks, and what says a forgotten view took its arithmetic with it.
+    /// Whether this board holds an engine under that number - what a test asks.
     func holds(_ id: Int) -> Bool {
         guarded.withLock { engines.contains { $0.id == id } }
     }
@@ -292,30 +218,15 @@ final class CycleBoard: @unchecked Sendable {
         }
     }
 
-    /// Whether any engine has a reason to run - the half both answers about
-    /// being awake share, asked with the hold already taken.
-    ///
-    /// STIRRED COUNTS, and it is what makes a LATCHING cycle ask for the next
-    /// one: nothing ran on it, so everything the silence piled up is still
-    /// waiting - and `awake` and a cycle's own report give one answer, or a
-    /// clock told there is more to do would go back to sleep.
+    /// Whether any engine has a reason to run - asked with the hold taken. A latching
+    /// cycle counts it too, so the clock is not let go with work piled up.
     private var stirring: Bool {
         engines.contains { $0.armed || $0.awake || $0.stirred() }
     }
 
-    /// One cycle: everything written taken in, the engines that have a reason
-    /// run, and what they wrote published.
-    ///
-    /// A START IS THE GAP, never a flag: the first cycle of all, and any cycle
-    /// arriving after a silence longer than `mostElapsed`, LATCHES ONLY. An
-    /// application that was asleep has a pile of reports and no elapsed time
-    /// anybody can act on, and an engine handed a gap of minutes would put
-    /// whatever it is moving through the wall.
-    ///
-    /// - Parameters:
-    ///   - now: the instant, in milliseconds on the host's own clock.
-    ///   - reducesMotion: whether the reader has asked for less movement.
-    /// - Returns: what the cycle did.
+    /// One cycle: what was written latched, the engines with a reason run, and what
+    /// they wrote published. A first cycle, or one after a long silence, only latches.
+    /// Design: docs/design/core/cycle.md#a-start-is-a-gap
     @discardableResult
     func cycle(now instant: Double, reducesMotion: Bool) -> CycleReport {
         var report = CycleReport()
@@ -340,11 +251,7 @@ final class CycleBoard: @unchecked Sendable {
             return engines
         }
 
-        // A start moves every engine's clock to now, so the first run after it
-        // is told about ONE frame rather than about how long the application
-        // was away. What it does NOT do is write down where the values stand:
-        // a write made while nothing was cycling is a reason to run, and
-        // noticing it here would be latching it in and then losing it.
+        // A start moves every engine's clock to now, without noting where values stand.
         for entry in running where started {
             entry.lastRan = now
         }
@@ -366,9 +273,8 @@ final class CycleBoard: @unchecked Sendable {
 
                 let answer = entry.run(cycle)
 
-                // NOTICED AFTER THE RUN, which is what makes an engine's own
-                // write to a state it follows no reason to run again: the
-                // stamp it moved is the stamp it is now seen to have.
+                // Noticed after the run, so the engine's own writes are no reason to run again.
+                // Design: docs/design/core/cycle.md#what-wakes-an-engine
                 entry.noticed()
                 entry.lastRan = now
                 entry.armed = false
@@ -399,9 +305,7 @@ final class CycleBoard: @unchecked Sendable {
         return report
     }
 
-    /// Everything this board holds, forgotten - what a fresh process has, and
-    /// what a test asks for so its bytes do not depend on which test ran
-    /// first.
+    /// Forgets everything - a fresh process's board, for a test's bytes.
     func clear() {
         guarded.withLock {
             storages.removeAll()

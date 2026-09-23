@@ -1,56 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// State that outlives the process.
-//
-// `@State(persistentKey: .key) var group = 0` is an ordinary piece of state with one addition:
-// it is KEPT. The value the reader left behind is there on the next launch, and
-// nothing about reading or writing it changes - no load to await, no save to
-// remember.
-//
-// WHY THE KEYS ARE DECLARED UP FRONT. Reading a `@State` is synchronous, so the
-// value has to be in memory before the first view is built; asking the host at
-// read time would answer a render too late, and the reader would see the
-// default flash past. The host therefore hydrates the whole store BEFORE the
-// first render - and to read a store it has to know what to ask for, because
-// it reads key by key, each with the kind of value it holds. So the
-// application names its keys, in one list, and the three steps that follow all
-// happen inside the same startup window:
-//
-//   1. the host asks Swift for the keys      (stateui_persistent_keys)
-//   2. it reads exactly those from the store
-//   3. it pushes what it found back          (stateui_set_persistent)
-//
-// A key the store has no value for is simply absent from the push, and the
-// state keeps the value written beside it - which is what makes the default
-// live at the declaration, where it can be seen.
-//
-// WRITING is the other direction and needs nothing awaited: the value lands in
-// memory at once, so the read after the write is right, and the key is marked
-// for saving. What actually goes out is one act per key per drain, sorted by
-// name - see `Renderer.takeActCallsWire` - so a key written five times inside
-// one handler is saved once. It is a collapse PER DRAIN and not a delay: an
-// event drains, so a `TextField` bound to kept state does reach the store once a
-// letter. A view that wants the store touched when the typing stops keeps the
-// text in ordinary state and writes the kept one from `.onSubmitted`.
-//
-// ONE KEY IS ONE PIECE OF STATE, everywhere in the application. Two views that
-// declare the same key share the storage itself, not a copy of the value, so a
-// write in one rebuilds the readers in the other - the ordinary invalidation,
-// which already keys on storage identity. It is the one place in this library
-// where two unrelated views share state without `$` being written, and it is
-// what a key IS: a name for a value the whole application means.
+// State that outlives the process: `@State(persistentKey:)`, its keys, and the
+// store that hydrates and saves them.
+// Design: docs/design/core/state.md#kept-state
 
-/// What kind of value a persistent key holds.
-///
-/// The host needs this before any state exists, because a store is typed: an
-/// entry is read as the kind it was written as, and on some platforms asking
-/// for the wrong one is an error rather than a conversion. It comes from the
-/// Swift type named at the key's declaration - `of: Int.self` - so there is
-/// no second vocabulary to keep in step.
-///
-/// THE NUMBERS ARE THIS LIBRARY'S OWN, the wire's rule: declaration order from
-/// 0, read by every host exactly as declared here.
+/// What kind of value a persistent key holds - what the host reads the store
+/// with, a store being typed. Taken from the Swift type named at the key.
 public enum PersistentKind: Int32, Sendable {
     /// True or false.
     case boolean = 0
@@ -178,27 +134,18 @@ extension PersistentValue where Self: RawRepresentable, Self.RawValue: Persisten
     }
 }
 
-/// The name a piece of state is KEPT under, and what kind of value it is.
+/// The name a piece of state is kept under, and what kind of value it is.
 ///
 ///     extension PersistentKey {
 ///         static let lastGroup = PersistentKey("com.example.lastGroup", of: Int.self)
-///         static let appearance = PersistentKey("com.example.appearance", of: Appearance.self)
 ///     }
-///
-/// Declared the way every vocabulary in this library is - static members on an
-/// extension - and used in two places: the application lists them in
-/// `persistentKeys`, and a view writes one on the state it keeps.
 ///
 ///     @State(persistentKey: .lastGroup) private var group = 0
 ///
-/// **The name is the application's and belongs to the whole platform**, not to
-/// this library: it sits beside whatever else the app keeps in the platform's
-/// settings, so a reverse-DNS prefix is what stops it from meeting another
-/// application's `theme`.
-///
-/// The kind comes from the Swift type rather than a vocabulary of its own, so
-/// `of: Int.self` and `var group = 0` are the same word twice and a mismatch
-/// between them is caught the first time the view is built.
+/// The application lists its keys in `persistentKeys`. The name sits in the
+/// platform's settings beside whatever else the app keeps there, so a reverse-DNS
+/// prefix keeps it apart. A key declared for another type than the state written
+/// with it stops the program the first time the view is built.
 public struct PersistentKey: Hashable, Sendable, CustomStringConvertible {
     /// The name in the store - what the host reads and writes under.
     public let name: String
@@ -249,41 +196,26 @@ public struct PersistentStorage: Hashable, Sendable, CustomStringConvertible {
     public var description: String { name }
 }
 
-/// Where kept state lives on this side: what the host hydrated, which storage
-/// stands for each key, and which keys are waiting to be saved.
-///
-/// `@unchecked Sendable` over its own lock, the Renderer's arrangement: a write
-/// can come from a child task a handler started, exactly as a queued act can.
+/// Where kept state lives on this side: what the host hydrated, the storage for
+/// each key, and the keys waiting to be saved. Behind its own lock.
 final class PersistentStore: @unchecked Sendable {
-    /// The one store. There is a single host per process, and the keys name
-    /// values that whole process shares.
+    /// The one store: a process has one host.
     static let shared = PersistentStore()
 
     private let guarded = Lock()
 
-    /// What the host read out of the store before the first render, by key
-    /// name. Read once per key, as the first state declaring it is built.
+    /// What the host read out of the store before the first render, by key name.
     private var hydrated: [String: PropValue] = [:]
 
-    /// The storage standing for each key - a `State.Storage`, held as the
-    /// opaque object this file is allowed to know about - and the typed write
-    /// that puts a restored value into it. The FIRST state declaring a key
-    /// puts its own here, and every later one takes it, which is what makes
-    /// one key one piece of state; the write is how a storage claimed BEFORE
-    /// the host's read arrives still takes the stored value - an application's
-    /// own keyed state is built as the app registers, ahead of `hydrate`.
+    /// The storage standing for each key, with the typed write that lands a restored
+    /// value in it - the first state to claim a key puts its own here.
     private var storages: [String: (storage: AnyObject, land: (PropValue) -> Void)] = [:]
 
-    /// The keys written since the last drain, with the value to save. A key
-    /// written five times is here once, holding the last value - which is what
-    /// keeps a slider or an entry from saving on every report.
+    /// The keys written since the last take, each with its last value.
     private var waiting: [String: PropValue] = [:]
 
-    /// Takes what the host read out of the store. Called once, before the
-    /// first render, so a state built later finds its value already here -
-    /// and a storage claimed EARLIER, an application's own keyed state, takes
-    /// its value now, still ahead of the first view.
-    /// - Parameter values: name and value, for the keys the store had.
+    /// Takes what the host read out of the store, before the first render; a storage
+    /// claimed earlier takes its value now.
     func hydrate(_ values: [(name: String, value: PropValue)]) {
         let landings: [((PropValue) -> Void, PropValue)] = guarded.withLock {
             var landings: [((PropValue) -> Void, PropValue)] = []
@@ -299,33 +231,16 @@ final class PersistentStore: @unchecked Sendable {
             return landings
         }
 
-        // Outside the hold: a landing takes the STORAGE's lock, and the order
-        // between the two is the storage's first everywhere else - a save
-        // reaches `record` from under it - so this side must never hold its
-        // own while asking for the other.
+        // Outside the hold: the storage's lock always comes first.
+        // Design: docs/design/core/state.md#kept-state
         for (land, value) in landings {
             land(value)
         }
     }
 
-    /// The storage this key means, decided under ONE hold: the one already
-    /// standing, or the offered one, adopted. Lookup and adoption must not
-    /// come apart - as two holds, two states first declaring one key from two
-    /// tasks could each see nothing standing and each adopt its own, leaving
-    /// two live storages under one name.
-    ///
-    /// A value the host already read lands in the offered storage through
-    /// `land` on the way; when the read has not happened yet, `land` is kept
-    /// and `hydrate` makes the same write - so a key claimed at any moment
-    /// holds the stored value before the first view is built.
-    ///
-    /// - Parameters:
-    ///   - key: the name being claimed.
-    ///   - storage: the claimant's own storage, adopted when none stands.
-    ///   - land: the typed write putting a restored value into `storage`,
-    ///     recording no save. Runs outside this store's hold.
-    /// - Returns: the storage the key means - the offered one, or the one
-    ///   that was standing already.
+    /// The storage this key means, decided under one hold: the one standing, or the
+    /// offered one adopted, with a value the host already read landed in it.
+    /// Design: docs/design/core/state.md#kept-state
     func claim(
         _ key: PersistentKey,
         orAdopt storage: AnyObject,
@@ -347,22 +262,17 @@ final class PersistentStore: @unchecked Sendable {
         return owner
     }
 
-    /// Marks a key as needing a save, replacing whatever value was waiting.
-    ///
-    /// Runs under the STATE's lock, so it records and nothing else; the wake
-    /// that gets the save taken is the write's to make, after it lets go -
-    /// see `State.wrappedValue`.
+    /// Marks a key for saving with its value. Runs under the state's lock, so it only
+    /// records; the write wakes the host.
     func record(_ key: PersistentKey, _ value: PropValue) {
         guarded.withLock { waiting[key.name] = value }
     }
 
-    /// How many keys are waiting to be saved - counted as pending work by
-    /// `Renderer.actCallsPending`, so the host takes them whether or not the
-    /// write that recorded them asked for a render.
+    /// How many keys are waiting - work the host takes whether or not a render was
+    /// asked for.
     var pending: Int { guarded.withLock { waiting.count } }
 
-    /// The keys waiting to be saved, SORTED BY NAME, and forgets them - the
-    /// determinism rule, so two runs of one session write the same bytes.
+    /// The keys waiting, sorted by name, taken.
     func takeWaiting() -> [(name: String, value: PropValue)] {
         guarded.withLock {
             let taken = waiting.sorted { $0.key < $1.key }
@@ -371,8 +281,7 @@ final class PersistentStore: @unchecked Sendable {
         }
     }
 
-    /// Forgets everything - for tests, which build many sessions in one
-    /// process and must not inherit the last one's keys.
+    /// Forgets everything, for tests building many sessions in one process.
     func forgetAll() {
         guarded.withLock {
             hydrated.removeAll()

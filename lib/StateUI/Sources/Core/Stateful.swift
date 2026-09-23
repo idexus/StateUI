@@ -1,98 +1,39 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// How `@State` on a view survives the view being rebuilt.
-//
-// A composed view - a ContentView, a Window - is a value, rebuilt on every
-// render, so a `@State` declared on one comes back as a fresh box holding the
-// initial value. What makes the state survive anyway is done here, in two
-// halves:
-//
-//   1. The view's body is not built when the tree is written. It goes into the
-//      tree as a PLACEHOLDER carrying the view's type, its state boxes, and a
-//      closure that builds the real subtree.
-//
-//   2. The differ, on reaching the placeholder, knows the element's identity -
-//      which the tree alone never does - and whether the same KIND of view
-//      stood there last render. If it did, the fresh boxes adopt the old ones'
-//      storage (State.adopt), and only THEN is the subtree built, so everything
-//      the body reads sees the surviving values.
-//
-// Same identity, same view type, same state - the rule the differ already
-// applies to controls (same identity, same control), one level up. A different
-// view type at the same position starts over, exactly as a different control
-// type replaces the control.
-//
-// The boxes are found by reflection, ONCE per placeholder, walking the view's
-// stored properties with Swift's own Mirror over Swift values.
+// How `@State` on a composed view survives the view being rebuilt: the view
+// enters the tree as a placeholder, and the differ adopts the old boxes'
+// storage before it builds the body.
+// Design: docs/design/core/identity-and-diffing.md#state-survives-a-rebuild
 
-/// What the differ needs to know about any state box, without knowing the
-/// value's type: that it can adopt another box's storage.
+/// What the differ needs of any state box without knowing its value's type.
 protocol StateBox: AnyObject {
-    /// Takes over `other`'s storage when it is a box of the same value type;
-    /// does nothing when it is not.
+    /// Takes over `other`'s storage when it is a box of the same value type.
     func adopt(from other: AnyObject)
 
-    /// The storage this box holds - what says, after adoption, whether a box
-    /// at a path the previous render answered is the same state. See
-    /// `Input.box`.
+    /// The storage this box holds after adoption - what says two boxes are one state.
     var lender: AnyObject { get }
 
-    /// Says what the author calls this state - the path the walk below
-    /// reached it by, which is the property's own name. Kept so a render can
-    /// be explained in those names. See Core/Builds.swift.
+    /// Tells the box the property the author declared it as (Core/Builds.swift).
     func named(_ path: String)
 }
 
 extension StateBox {
-    /// A box whose state cannot be named answers to nothing, which is what a
-    /// borrowed value and a class of the author's own both are.
+    /// A borrowed value and an author's own class answer to no name.
     func named(_ path: String) {}
 }
 
-/// Marks a wrapper whose state is OWNED elsewhere - `Binding`, the borrowed
-/// form.
-///
-/// The box collector stops at one: the storage behind a borrowed value belongs
-/// to whoever lent it, survives on its owner, and must never be adopted as if
-/// the borrowing view owned it. Stopping by the MARK rather than by the shape
-/// of the wrapper is what keeps that true whatever fields the wrapper gains.
+/// Marks a wrapper whose state is owned elsewhere - `Binding`. The walk stops at
+/// one, so borrowed storage is never adopted as the borrower's own.
 protocol BorrowedState {
-    /// What the wrapper borrows from - the storage behind a whole `@State`
-    /// and which part of it, or nothing for a binding made from closures.
-    /// What `Input.borrowed` compares: the storage, never the value, which is
-    /// the storage's own business. See `Input`.
+    /// What the wrapper borrows from: the storage behind a whole `@State` and which
+    /// part of it, or nothing for a binding made from closures.
     var lends: (lender: AnyObject?, lent: AnyHashable?) { get }
 }
 
-/// One stored property of a composed view, as far as the differ can see it.
-///
-/// WHAT A VIEW WAS BUILT WITH is what decides, beside what it read, whether it
-/// is described again or CARRIED - subtree, state and handlers untouched -
-/// when its parent's closure runs again. The parent constructs a fresh view
-/// value every time; these are that value's stored properties, each compared
-/// the one way it can be:
-///
-/// - a value by equality;
-/// - a lent state (`@Binding`) by the STORAGE it lends, never by the value in
-///   it - a body that reads through the binding is that storage's reader,
-///   and is built again by the reader rule when the storage moves;
-/// - a state the view owns (`@State`) by the storage it holds after adoption,
-///   so a box at a path the previous render answered is the same state - and
-///   an aim it declares (`@Aim`) by the box it holds after adoption, the
-///   same way;
-/// - an aim the view was HANDED by the box it aims through, never adopted;
-/// - an `@Environment` slot by the object it resolves to;
-/// - an object by identity - what it holds that a body should see is
-///   `@State` on it, with readers of its own;
-/// - and a closure, a built node, or anything else with no way to be compared
-///   NEVER: an opaque input is a changed one, and the view is built as it
-///   always was.
-///
-/// The comparison errs toward BUILDING, the direction every other piece of
-/// invalidation errs in: what it cannot see through, it does not assume. A
-/// container of values also records how many parts it has, so two collections
-/// of different length differ even where every pair compared so far agreed.
+/// One stored property of a composed view, as the differ can compare it - what
+/// decides, beside its reads, whether the view is built again or carried.
+/// Design: docs/design/core/identity-and-diffing.md#what-a-view-was-built-with
 enum Input {
     /// A value that says whether it equals another.
     case value(any Equatable)
@@ -130,9 +71,8 @@ enum Input {
         return true
     }
 
-    /// The first input that does not match its predecessor, named by its
-    /// property - what an inspector gives as the reason a view was built
-    /// rather than carried. Nothing where every one matches.
+    /// The first input that does not match, by its property's name - the reason an
+    /// inspector gives for a build.
     static func difference(
         _ fresh: [(path: String, input: Input)],
         _ kept: [(path: String, input: Input)]
@@ -173,8 +113,7 @@ enum Input {
         }
     }
 
-    /// Equality across the existential - opened on the first value's type,
-    /// which is the type both have where the two are the same property.
+    /// Equality across the existential, opened on the first value's type.
     private static func equal(_ a: any Equatable, _ b: any Equatable) -> Bool {
         func open<Value: Equatable>(_ a: Value) -> Bool {
             (b as? Value).map { $0 == a } ?? false
@@ -184,25 +123,10 @@ enum Input {
     }
 }
 
-/// Every state box AND every `@Environment` slot a view owns, one walk for
-/// both: the boxes are adopted, the slots are filled from the differ's scope
-/// before the body builds. See Core/Environment.swift for the slots' half.
-///
-/// Each box comes back under the PATH the walk reached it by - the stored
-/// property's name at every level, the branch a keyed child came from, and the
-/// TYPE of any view stored along the way. That path is what pairs a box with
-/// its predecessor next render, and it is why a slot that fills - an
-/// `Element?` going from nil to a view - moves nothing else: the newcomer's
-/// path is one nothing answered last render, so it starts at its initial value
-/// and every other box keeps its own.
-///
-/// The walk recurses through structs, enums and collections, because a view
-/// may keep another view - and with it, that view's state - in a stored
-/// property. It stops at a `Binding` (borrowed, owned elsewhere), at an aim
-/// the view was handed (its parent's), at a `Node` (built interface, never a
-/// state owner), at any `Equatable` value (compared whole, as an input), and at
-/// any other class (a reference keeps itself alive; whatever state it holds
-/// does not need rescuing).
+/// Every state box and `@Environment` slot a view owns, with its inputs, in one
+/// walk. Each box comes back under the path the walk reached it by, which pairs
+/// it with its predecessor next render.
+/// Design: docs/design/core/identity-and-diffing.md#paths-pair-state
 func stateParts(
     in value: Any
 ) -> (
@@ -224,12 +148,8 @@ private func collectStateParts(
     slots: inout [EnvironmentSlot],
     inputs: inout [(path: String, input: Input)]
 ) {
-    // An AIM the view was HANDED - a plain stored property, its parent's - is
-    // compared by the box it aims through and never adopted: adopting it would
-    // give the parent's aim whatever box stood at this place last render. One
-    // the view DECLARES is `@Aim`'s backing property, which the mirror names
-    // with a leading underscore, and is adopted below like every state a view
-    // owns. See Core/Aim.swift.
+    // An aim the view was handed is compared by its box and never adopted; one it
+    // declares is `@Aim`'s underscored backing property, adopted like any state.
     if let aim = value as? Aiming, !(path.split(separator: ".").last?.hasPrefix("_") ?? false) {
         inputs.append((path: path, input: .borrowed(ObjectIdentifier(aim.box), nil)))
         return
@@ -248,8 +168,7 @@ private func collectStateParts(
         return
     }
 
-    // A borrowed state is compared by what it borrows FROM, and a binding
-    // made from closures borrows from nothing anybody can name.
+    // A borrowed state is compared by what it borrows from.
     if let borrowed = value as? BorrowedState {
         let lends = borrowed.lends
         inputs.append((
@@ -258,20 +177,14 @@ private func collectStateParts(
         return
     }
 
-    // A built node is interface, never state - and what it describes is
-    // whatever closure built it, which nothing can compare.
+    // A built node is interface, never state, and cannot be compared.
     if value is Node {
         inputs.append((path: path, input: .opaque))
         return
     }
 
-    // A keyed element carries the BRANCH of the builder it was written in,
-    // which says more about where it is than the wrapper's own two stored
-    // properties do: both arms of an `if` are the same property holding
-    // different views, and the segment is what tells them apart. The TYPE of
-    // the view inside still matters beside it: one branch can hold another
-    // view each render through a type-erased factory, and the type is what
-    // starts the newcomer at its own initial value.
+    // A keyed element carries its builder branch, which tells the arms of an `if`
+    // apart, and the type of the view inside.
     if let keyed = value as? Keyed {
         collectStateParts(
             in: keyed.element,
@@ -282,9 +195,7 @@ private func collectStateParts(
         return
     }
 
-    // A value that can say whether it equals another is compared whole -
-    // an array of items by its own `==`, never element by element through
-    // the mirror.
+    // A value that can say whether it equals another is compared whole.
     if let comparable = value as? any Equatable {
         inputs.append((path: path, input: .value(comparable)))
         return
@@ -292,8 +203,7 @@ private func collectStateParts(
 
     let mirror = Mirror(reflecting: value)
 
-    // A reference keeps itself alive, and whatever state it holds does not
-    // need rescuing; as an input it is the object it is.
+    // A reference keeps itself alive; as an input it is the object it is.
     if mirror.displayStyle == .class {
         inputs.append((path: path, input: .reference(ObjectIdentifier(value as AnyObject))))
         return
@@ -301,9 +211,8 @@ private func collectStateParts(
 
     let children = Array(mirror.children)
 
-    // A leaf the mirror cannot open is a closure, a metatype or the like:
-    // nothing to compare, so it counts as changed. A struct or an enum with
-    // nothing in it is the one value it can be.
+    // A leaf the mirror cannot open - a closure, a metatype - counts as changed; an
+    // empty struct or enum is the one value it can be.
     if children.isEmpty {
         inputs.append((path: path, input: mirror.displayStyle == nil ? .opaque : .parts(0)))
         return
@@ -311,9 +220,7 @@ private func collectStateParts(
 
     inputs.append((path: path, input: .parts(children.count)))
 
-    // A collection's children have no labels, so their position stands in -
-    // which is all a position ever has to be here, the elements of one array
-    // being one property's contents rather than separate declarations.
+    // A collection's children have no labels, so their position stands in.
     for (offset, child) in children.enumerated() {
         collectStateParts(
             in: child.value,
@@ -324,15 +231,8 @@ private func collectStateParts(
     }
 }
 
-/// The type of a stored VIEW, in brackets after the property holding it, and
-/// nothing at all for anything else.
-///
-/// A slot holding a view is the one place a path built from names alone would
-/// lie: the same property holds one view this render and another the next, and
-/// a path naming only the property would hand the newcomer its predecessor's
-/// state. Naming the type makes the two paths two, which is what starts the
-/// newcomer at its initial value. Module-qualified, as the composed view's own
-/// `viewType` is - two modules can export one name.
+/// The type of a stored view, in brackets after the property holding it, so one
+/// property holding different views gives different paths. Module-qualified.
 private func storedViewType(of value: Any) -> String {
     value is Element ? "(\(String(reflecting: type(of: value))))" : ""
 }
@@ -340,39 +240,27 @@ private func storedViewType(of value: Any) -> String {
 extension Node {
     /// A subtree nobody has built yet, and what it takes to build it right.
     struct Stateful {
-        /// The composed view's Swift type, module-qualified. What decides
-        /// whether last render's state is this view's to keep.
+        /// The composed view's module-qualified type, which decides whose state it keeps.
         let viewType: String
 
-        /// The state boxes the freshly built view owns, each under the path
-        /// the reflection walk reached it by - what pairs it with the box the
-        /// same path held last render.
+        /// The state boxes the fresh view owns, under the paths the walk found them at.
         let boxes: [(path: String, box: StateBox)]
 
-        /// The `@Environment` slots the view declares, filled from the scope
-        /// of provided objects BEFORE the body builds - so the body and every
-        /// handler that captured the view read a resolved object. See
-        /// Core/Environment.swift.
+        /// The `@Environment` slots, filled before the body builds (Core/Environment.swift).
         let slots: [EnvironmentSlot]
 
-        /// What the view was built with - its stored properties, each as far
-        /// as the differ can see it - compared against the previous render's
-        /// to decide whether the body is built or the subtree carried. See
-        /// `Input`.
+        /// What the view was built with, compared against last render's to decide whether
+        /// it is built or carried.
         let inputs: [(path: String, input: Input)]
 
-        /// Builds the subtree. Called by the differ, AFTER the boxes have
-        /// adopted their predecessors' storage - never before, or the body
-        /// would read initial values.
+        /// Builds the subtree - after the boxes have adopted their predecessors' storage.
         let build: () -> Node
 
-        /// The scene this view IS, where it is one - what everything built
-        /// under it belongs to. See Core/Scenes.swift.
+        /// The scene this view is, where it is one (Core/Scenes.swift).
         let scene: SceneRecord?
 
-        /// Fills every slot with the nearest provided object of its type.
-        /// A type nobody provided leaves its slot alone, and the READ is what
-        /// says so - a structural expansion has no providers to offer.
+        /// Fills every slot with the nearest provided object of its type; a slot nobody
+        /// provided for is left for its read to report.
         func resolve(from scope: [(key: ObjectIdentifier, object: AnyObject)]) {
             for slot in slots {
                 if let found = scope.last(where: { $0.key == slot.wants }) {
@@ -381,48 +269,33 @@ extension Node {
             }
         }
 
-        /// Builds the subtree and lands what the author wrote ON the view -
-        /// modifiers, handlers, an id - on what the view is made of.
+        /// Builds the subtree and lands what the author wrote on the view onto its root.
         func expand(over written: Node) -> Node {
             var node = build()
             node.props.merge(written.props) { _, wrote in wrote }
 
-            // And the STATES driven to it, for the same reason again: a
-            // `.opacity($fade)` on a composed view is about the view, and a
-            // registration left on the placeholder names a control nothing
-            // holds - the property would simply never be written.
+            // The states driven to it, for the same reason: a registration left on the
+            // placeholder names a control nothing holds.
             node.driven.merge(written.driven) { _, wrote in wrote }
 
-            // And how what the view is made of MOVES, for the same reason: a
-            // `.motion(.none)` written on a composed view is about the view,
-            // and a modifier that compiles, renders nothing and says nothing
-            // is the one failure this library refuses to ship.
+            // And how it animates: `.motion(_:)` on a composed view is about the view.
             node.motion = MotionPlan.merged(node.motion, under: written.motion)
 
             for (name, handler) in written.events.sorted(by: { $0.key < $1.key }) {
                 node.addHandler(name, handler)
             }
 
-            // What the view was made of first, what was written ON it after -
-            // one order, held to on every render, which is all the pairing of
-            // a watch with its predecessor asks for. See Core/Changes.swift.
+            // Its own watches first, then what was written on it - one order every render.
             node.watches += written.watches
 
-            // And what runs as it comes into the tree and as it leaves, in the
-            // same one order. See Core/Lifetime.swift.
+            // And its lifetime handlers, in the same order (Core/Lifetime.swift).
             node.created += written.created
             node.destroying += written.destroying
 
-            // And the arithmetic written on it, in the same one order - an
-            // engine on a composed view is registered against the element its
-            // body ends on, which is the element the host holds.
+            // And its engines, registered against the element its body ends on.
             node.engines += written.engines
 
-            // And the same for a SLOT written on the view - a `.contextMenu`,
-            // which is a child rather than a property. Appended, so what the
-            // view is made of keeps the positions it was built with. Without
-            // this the modifier compiles, renders nothing and says nothing,
-            // which is the one failure this library refuses to ship.
+            // And slot children written on it - a `.contextMenu` - after its own.
             node.children += written.children
 
             node.id = written.id ?? node.id
@@ -431,21 +304,12 @@ extension Node {
         }
     }
 
-    /// This node with every placeholder built, recursively - WITHOUT any state
-    /// carried over, since there is no previous render to carry it from.
-    ///
-    /// For tests that read a tree structurally. Rendering never comes here: the
-    /// differ expands each placeholder itself, after deciding whose state it
-    /// holds.
-    ///
-    /// Seeded with the STANDARD providers, exactly as every differ walk is -
-    /// so a view reading `@Environment var device: DeviceInfo` expands
-    /// structurally too, answering the headless defaults.
+    /// This node with every placeholder built, recursively, with no state carried
+    /// over - for tests that read a tree structurally, resolving the standard
+    /// environment as a render does.
     var built: Node { built(within: StandardEnvironment.scope) }
 
-    /// The same, resolving `@Environment` from `scope` - the differ's stack,
-    /// stood in for by an array, so a structural read sees exactly what a
-    /// render at this position would.
+    /// The same, resolving `@Environment` from `scope` as a render at this place would.
     func built(within scope: [(key: ObjectIdentifier, object: AnyObject)]) -> Node {
         var node = self
         var scope = scope
@@ -467,15 +331,10 @@ extension Node {
         return node
     }
 
-    /// A placeholder for a composed view, expanded by the differ.
+    /// A placeholder for a composed view, expanded by the differ before anything is
+    /// sent.
     ///
-    /// The type name never reaches the host - the differ always expands the
-    /// placeholder before anything is sent - but if a bug ever let it through,
-    /// the host would draw its red unknown-type marker naming it, which is the
-    /// diagnosable failure this project prefers.
-    ///
-    /// - Parameter scene: the scene this view IS, where it is one - see
-    ///   Core/Scenes.swift.
+    /// - Parameter scene: the scene this view is, where it is one.
     static func composed(
         _ view: Any,
         type: String,
@@ -496,8 +355,7 @@ extension Node {
 }
 
 extension NodeType {
-    /// The differ's placeholder for a composed view. Expanded before anything
-    /// is sent, it never crosses the boundary: the library's own name, no part
-    /// of the host vocabulary.
+    /// The differ's placeholder for a composed view. It never crosses to a host, so
+    /// no contract declares it.
     static let composed = NodeType("Composed")
 }

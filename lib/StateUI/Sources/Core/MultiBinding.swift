@@ -1,23 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// SEVERAL STATES READ AS ONE, on their way to a control.
-//
-//     Label(.multi($info, $value).convert { "\($0) = \($1)" })
-//
-// The same machinery `convert(_:)` is built on, over as many states as are
-// named: the derived value is a second state the host carries, worked out by
-// an engine the differ writes, so it costs the arithmetic on the display's own
-// frames and no render at all. `.multi` is a static member of `Binding`, so
-// the leading dot resolves against the type the control takes - and what a
-// reader writes is the pair, the states and then the arithmetic over them.
-//
-// THE ARITIES ARE WRITTEN OUT, two to ten, and this file is GENERATED. A
-// parameter pack looks like the answer and is not: capturing one in the
-// escaping closure that reads the sources crashes the 6.3 compiler, and
-// shorthand closure arguments have no arity to bind to over a pack. What the
-// spelled-out arities buy is exactly that - `$0`, `$1` at the call site, each
-// with the source's own type.
+// `.multi($a, $b).convert { … }`: several states read as one on their way to a
+// control. The arities two to ten are written out, one overload each.
+// Design: docs/design/core/journeys.md#many-sources
 
 /// The states a `.multi` conversion reads, waiting for the arithmetic.
 ///
@@ -25,27 +11,16 @@
 /// which is what each `convert` overload is chosen by - so the closure's
 /// arguments arrive with the types the states were declared with.
 public struct MultiBinding<Out: StateValue, Sources> {
-    /// Every source's value, read afresh whenever the engine runs.
-    ///
-    /// Read off the STORAGE and not through the binding: a read through the
-    /// binding at build would record one, which would make the closure that
-    /// wrote the conversion a reader of every source - and the whole point of
-    /// handing a state on is that it is not.
+    /// Every source's value, read afresh when the engine runs - off the storage, so
+    /// nothing that reads it at build becomes the sources' reader.
     let values: () -> Sources
 
-    /// The sources' storages, in the order they were named - nothing where a
-    /// binding was a part of a state or made from closures, which is what the
-    /// complaint below is about.
+    /// The sources' storages in the order named; nothing for a part of a state or a
+    /// binding made from closures.
     let parts: [(any AnyStateStorage)?]
 
-    /// The derived state itself: one object per line that wrote a conversion,
-    /// kept on the first source, with the engine that keeps it up to date.
-    ///
-    /// - Parameters:
-    ///   - key: where the conversion is written, which is what keeps the
-    ///     derived state one object across renders.
-    ///   - read: the arithmetic over the sources.
-    /// - Returns: the derived state, to hand on.
+    /// The derived state: one object per line that wrote a conversion, kept on the
+    /// first source, with the engine that keeps it up to date.
     func made(at key: String, _ read: @escaping () -> Out) -> Binding<Out> {
         let storages = parts.compactMap { $0 }
 

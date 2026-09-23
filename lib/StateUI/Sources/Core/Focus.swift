@@ -1,23 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Who has the keyboard, and how to take it away.
-//
-// Focus is not a shape, so it is not in the tree. It is an act carried through
-// ActCall.swift, with two forms:
-//
-//     try await field.focus()      // this view, by the id it was given
-//     try await OnScreenKeyboard.hide()   // whatever has the keyboard, whatever it is
-//
-// The second form lets a Done button close a keyboard it did not open. The
-// focused control is whichever one the reader touched last, so the host asks
-// its native focus system and StateUI does not mirror that identity as state.
-//
-// THE TRAP, on iOS: a search box on the navigation bar takes the focus and
-// iOS gives the whole bar to the search field - the back button goes with it.
-// A reader who has nothing to tap has no way out of the search and no way
-// back to the previous page. `OnScreenKeyboard.hide()` is what puts the bar back,
-// and the gallery's Keyboard sample offers it as a button.
+// Focus and the keyboard, as acts: a view's own aim, or whatever has the keyboard.
+// Design: docs/design/core/acts.md#focus-and-the-keyboard
 
 extension Aim {
     /// Puts the keyboard on this view.
@@ -50,12 +35,8 @@ extension Aim {
     }
 }
 
-/// The on-screen keyboard, as the page it is over sees it.
-///
-/// The on-screen input surface without naming the view that opened it.
-///
-/// A known view is released with `Aim.unfocus()`. Use `hide()` when the native
-/// focus system must identify the current input.
+/// The on-screen keyboard, as the page it is over sees it - reached without
+/// naming the view that opened it. A known view is released with `Aim.unfocus()`.
 public enum OnScreenKeyboard {
     /// Closes the keyboard by taking the focus off whatever has it.
     ///

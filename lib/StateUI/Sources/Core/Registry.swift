@@ -1,21 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A HOST'S REALIZATION, CONTRACT BY CONTRACT.
-//
-// A host registers each element contract it realizes: how the element's view
-// is made, which of its members the view takes - one at a time, or the element
-// whole where a view takes several at once - and which of its own events the
-// view raises. The registration IS the record of what the host realizes: the
-// core answers "does this host realize X" from it, and the host makes and
-// updates its views through it. Generic over the platform's view type, so
-// every Swift host takes the same machinery; a host across the Wire tells the
-// core the same thing through the export.
+// A host's realization, contract by contract: how it makes each element's view,
+// which members the view takes, and which events it raises.
+// Design: docs/design/core/contracts.md#realizations
 
-/// What one element tells the application: an event of its own, and a value
-/// its reader changed. Handed to the view where the view is made, so the view
-/// names members of its contract and never a handler - bound to the element,
-/// as a C# control's raise is.
+/// What one element tells the application: an event of its own, and a value the
+/// user changed. Handed to the view where the view is made, so the view names
+/// members of its contract and never a handler.
 ///
 ///     registry.add(TrafficLightContract.self, create: { reports in
 ///         let light = TrafficLightView()
@@ -29,13 +21,13 @@
     /// Hands an event and its encoded values on - to the element's handler.
     private let send: (Event, [HostValue]) -> Void
 
-    /// Hands a value the reader changed on - to the state the element's value
-    /// is carried in, and to the element's handler for the event.
+    /// Hands a value the user changed on - to the state the element's value is carried
+    /// in, and to the element's handler for the event.
     private let carry: (Prop, Event, HostValue) -> Void
 
-    /// The reports of one element: `send` finds the element's handler for an
-    /// event, `carry` writes a reader's value where the element carries it and
-    /// raises the event with it.
+    /// The reports of one element: `send` finds the element's handler for an event,
+    /// `carry` writes the user's value where the element carries it and raises the
+    /// event with it.
     ///
     /// - Parameters:
     ///   - send: given the event's key and what it carries.
@@ -61,10 +53,10 @@
         send(event.token, MemberValues.encode(repeat each value))
     }
 
-    /// A value the reader changed: it lands on the state the element's value is
-    /// carried in - the one place a host-carried value lives - and the event is
-    /// raised with it, so an application hears the change once whether it holds
-    /// the value in a state or in a handler.
+    /// A value the user changed: it lands on the state the element's value is carried
+    /// in - the one place a host-carried value lives - and the event is raised with
+    /// it, so an application hears the change once whether it holds the value in a
+    /// state or in a handler.
     ///
     ///     toggle.onToggled = { on in
     ///         reports.report(SwitchContract.isOn, on, as: SwitchContract.toggled)
@@ -77,7 +69,7 @@
     ///
     /// - Parameters:
     ///   - property: the value's member, written with its contract.
-    ///   - value: what the reader made it.
+    ///   - value: what the user made it.
     ///   - event: the member the element raises for that change.
     public func report<Owner: Contract, Raised: Contract, Value: HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,
@@ -163,8 +155,8 @@
         return typed
     }
 
-    /// Whether the patch changed a member - the gate for a value a view must
-    /// not write unasked, a field's text under the reader's cursor.
+    /// Whether the patch changed a member - the gate for a value a view must not write
+    /// unasked, such as a field's text under the user's cursor.
     ///
     /// - Parameter member: the property, written with its contract.
     /// - Returns: whether the patch changed it.
@@ -345,14 +337,14 @@ extension ElementProperty: RegisteredProperty {
     /// An empty registry.
     public init() {}
 
-    /// Registers the realization of one element contract: how its view is
-    /// made and - in `members` - which of its members the view takes and
-    /// raises. A second registration of a contract replaces the first.
+    /// Registers the realization of one element contract: how its view is made and -
+    /// in `members` - which of its members the view takes and raises. A second
+    /// registration of a contract replaces the first.
     ///
     /// - Parameters:
     ///   - contract: the element's contract.
-    ///   - create: makes the view, once per element, handed the reports its
-    ///     events and its reader's values leave through.
+    ///   - create: makes the view, once per element, handed the reports its events
+    ///     and the user's values leave through.
     ///   - members: registers the members the view realizes.
     public func add<Realized: ElementContract, Made: AnyObject>(
         _ contract: Realized.Type,
@@ -372,16 +364,15 @@ extension ElementProperty: RegisteredProperty {
         }
     }
 
-    /// Registers the realization of one element contract whose VIEW THE HOST
-    /// MAKES: the registration takes its members and records what it realizes,
-    /// and the host goes on making the view itself.
+    /// Registers the realization of one element contract whose view the host makes:
+    /// the registration takes its members and records what it realizes, and the host
+    /// goes on making the view itself.
     ///
-    /// For an element whose making needs host machinery no contract describes -
-    /// a scroll view reports through a reader transaction and asks the host for
-    /// display frames, and neither is an event of its contract. `makeView`
-    /// answers nothing for such a type, and says nothing about it: the host's
-    /// own arm stands. Everything else is a registration like any other, and
-    /// the realization claims the element and every member registered here.
+    /// For an element whose making needs host machinery no contract describes - a
+    /// scroll view reports the user's changes as one transaction and asks the host
+    /// for display frames, and neither is an event of its contract. `makeView`
+    /// answers nothing for such a type; the host's own code stands. Everything else is
+    /// a registration like any other.
     ///
     ///     registry.add(TrafficLightContract.self, madeByHost: TrafficLightView.self) { light in
     ///         light.property(TrafficLightContract.signal) { view, signal in
@@ -475,13 +466,13 @@ extension ElementProperty: RegisteredProperty {
             HostRealizedMember(element: ApplicationContract.name, owner: Owner.name, member: event.name))
     }
 
-    /// A view for a node type, made by its registration, its reports handed to
-    /// `send` and `carry` - nil where nothing registered the type.
+    /// A view for a node type, made by its registration, its reports handed to `send`
+    /// and `carry` - nil where nothing registered the type.
     ///
     /// - Parameters:
     ///   - type: the node type.
     ///   - send: given each event the view raises, and what it carries.
-    ///   - carry: given each value the view's reader changed: the property, the
+    ///   - carry: given each value the user changed in the view: the property, the
     ///     event to raise for it, and the value.
     /// - Returns: the view, or nil.
     public func makeView(
@@ -583,14 +574,12 @@ extension ElementProperty: RegisteredProperty {
     }
 }
 
-/// What a host DECLARES, read off its own runtime: the elements it makes a
-/// view for and, on each, the members it takes and the events it raises.
+/// What a host declares, read off its own runtime: the elements it makes a view
+/// for and, on each, the members it takes and the events it raises.
 ///
-/// A declaration says PRESENCE. It does not say who declares a member, because
-/// a runtime does not hold the contracts - `borderColor` on a button is the
-/// same call whether the button declares it or a tier it wears does.
-/// `realization` is where that is answered, against the contracts themselves,
-/// so an owner is never written by hand and cannot be written wrong.
+/// A declaration says presence, not who declares a member: a runtime does not
+/// hold the contracts. `realization` answers that against the contracts, so an
+/// owner is never written by hand.
 @_spi(Host) public struct HostDeclaration: Equatable, Sendable {
     /// What one element's registration takes and raises.
     public struct Element: Equatable, Sendable {
@@ -614,25 +603,13 @@ extension ElementProperty: RegisteredProperty {
     /// Each element, by node type name.
     public var elements: [String: Element]
 
-    /// What the host's SHARED machinery realizes on every element wearing the
-    /// contract declaring it - margins, opacity, the gestures, the focus and
-    /// frame reports - rather than one registration.
-    ///
-    /// Said apart because it is realized apart: a host applies these around
-    /// every view it makes, so naming them under one element would be false
-    /// and naming them under all of them would be a list nobody maintains.
-    /// Which tier each belongs to is answered here, against the contracts,
-    /// exactly as an element's own members are.
+    /// What the host's shared machinery realizes on every element wearing the
+    /// contract declaring it - margins, opacity, the gestures, the focus and frame
+    /// reports - rather than one registration.
     public var shared: Element
 
-    /// The acts this host performs, whichever element they are aimed at.
-    ///
-    /// Said whole rather than per element because that is how a host performs
-    /// them: an act names the view it is aimed at and the session performs it
-    /// against that identity, so nothing about the call says which element it
-    /// belongs to. The contracts do - `focus` is declared by a tier every
-    /// element wears, `goBack` by one element - so each act reaches whatever
-    /// wears the contract declaring it, exactly as a shared member does.
+    /// The acts this host performs, whichever element they are aimed at; each reaches
+    /// whatever wears the contract declaring it.
     public var acts: Set<String>
 
     /// A declaration - nothing, unless said.
@@ -651,15 +628,10 @@ extension ElementProperty: RegisteredProperty {
         self.acts = acts
     }
 
-    /// What this declaration means against the contracts: the same members,
-    /// each under the contract DECLARING it - the element's own, or the
-    /// nearest tier it wears that declares a member of that name.
-    ///
-    /// A member no contract declares is left out rather than guessed at: it is
-    /// a host and a contract that disagree, and the guard reading this says so
-    /// by name. `Contract.worn` answers the element first and its tiers
-    /// nearest-first, so a member an element redeclares belongs to the
-    /// element.
+    /// What this declaration means against the contracts: the same members, each
+    /// under the contract declaring it - the element's own, or the nearest tier it
+    /// wears that declares a member of that name. A member no contract declares is
+    /// left out rather than guessed at.
     public var realization: HostRealization {
         var members: Set<HostRealizedMember> = []
         var elements: Set<String> = []
@@ -671,10 +643,7 @@ extension ElementProperty: RegisteredProperty {
             guard let contract = LibraryContracts.elements.first(where: { $0.nodeType.name == name })
             else { continue }
 
-            // The element's own, and then everything the shared machinery
-            // realizes on it - which is every shared member whose contract
-            // this element wears. A host applies those around the view rather
-            // than inside the registration, so they reach the element here.
+            // The element's own, then every shared member whose contract this element wears.
             for member in declared.members.union(declared.events).union(sharedNames) {
                 guard let owner = contract.worn.first(where: { owner in
                     owner.members.contains { $0.name == member }
@@ -688,14 +657,9 @@ extension ElementProperty: RegisteredProperty {
         return HostRealization(elements: elements, members: members)
     }
 
-    /// The shared members and the acts, each under the contract DECLARING it -
-    /// the tier, or the one element whose contract declares the act.
-    ///
-    /// Answered from the contracts rather than through the elements, because
-    /// that is what these are: a fact about a CONTRACT. A tier worn only by
-    /// elements this host declares no registration for - `Layout`, worn by the
-    /// layouts - is realized just as truly as one worn by a registered
-    /// element, and going through the elements would lose exactly those.
+    /// The shared members and the acts, each under the contract declaring it -
+    /// answered from the contracts, so a tier worn only by elements this host
+    /// registers nothing for is still counted.
     public var tierMembers: [(owner: String, member: String)] {
         var found: [(owner: String, member: String)] = []
 
@@ -716,12 +680,9 @@ extension ElementProperty: RegisteredProperty {
     public var undeclared: [(element: String, member: String)] {
         var unknown: [(element: String, member: String)] = []
 
-        // A shared member belongs to a TIER, so it is held to every contract
-        // rather than to one element: one no contract declares at all is a
-        // host and the contracts disagreeing, said under the empty element.
-        // An ACT is held the same way and deliberately NOT listed here: a host
-        // performs some of its own - a chooser, a prompt - that no contract
-        // declares, and those are the host's business rather than a drift.
+        // A shared member no contract declares is said under the empty element. Acts are
+        // not listed: a host performs some of its own that no contract declares.
+        // Design: docs/design/core/contracts.md#declarations
         for member in shared.members.union(shared.events).sorted()
         where !LibraryContracts.all.contains(where: { owner in
             owner.members.contains { $0.name == member }
@@ -763,11 +724,10 @@ enum HostRealizations {
         set { guarded.withLock { told = newValue } }
     }
 
-    /// What to say about a node type described for the first time: nothing
-    /// where the host realizes it, or has said nothing at all, and otherwise
-    /// that it does not - with the realized elements nearest in name, the
-    /// misspelling's likeliest meaning. The differ's placeholder never crosses
-    /// and is never said.
+    /// What to say about a node type described for the first time: nothing where the
+    /// host realizes it or has said nothing, and otherwise that it does not, with the
+    /// nearest realized names.
+    /// Design: docs/design/core/contracts.md#unrealized-names
     static func unrealized(_ type: NodeType) -> String? {
         let realization = current
 
