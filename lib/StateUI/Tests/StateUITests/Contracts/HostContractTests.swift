@@ -618,7 +618,7 @@ final class HostContractTests: XCTestCase {
         for (file, spelling) in [
             ("NavigationStack.swift", "func barForegroundColor("),
             ("TitleBar.swift", "func barForegroundColor("),
-            ("Scene.swift", "func hidesWhenInactive("),
+            ("WindowGroup.swift", "func hidesWhenInactive("),
         ] {
             let source = try Fixtures.text(in: file)
             XCTAssertTrue(source.contains(spelling), "\(file) does not say \(spelling)")
