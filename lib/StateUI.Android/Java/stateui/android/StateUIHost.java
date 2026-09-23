@@ -24,6 +24,24 @@ final class StateUIHost {
     /** A button was clicked. */
     static native void clicked(long view);
 
+    /** A switch was turned on or off. */
+    static native void toggled(long view, boolean on);
+
+    /** A slider's thumb moved to {@code progress}. */
+    static native void moved(long view, int progress);
+
+    /** The user took a slider's thumb. */
+    static native void dragStarted(long view);
+
+    /** The user let go of a slider's thumb. */
+    static native void dragCompleted(long view);
+
+    /** A field's words changed; {@code text} is all of them. */
+    static native void textChanged(long view, String text);
+
+    /** The user submitted a field. */
+    static native void submitted(long view);
+
     /** A layout is measured; its width in the high half, its height in the low one. */
     static native long measure(long view, int widthSpec, int heightSpec);
 

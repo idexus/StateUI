@@ -26,6 +26,16 @@ struct OneWindow: Window {
     var page: any Page { content() }
 }
 
+/// What a handler heard, in order.
+final class Received<Value>: Sendable {
+    private let received = State(wrappedValue: [Value]())
+
+    var values: [Value] {
+        get { received.wrappedValue }
+        set { received.wrappedValue = newValue }
+    }
+}
+
 extension XCTestCase {
     /// Runs `body` as the main actor's: the runner runs every test on the UI thread.
     func onMainActor(_ body: @MainActor () throws -> Void) rethrows {
@@ -44,6 +54,16 @@ enum TestJava {
     static let getHeight = Java.method(JavaAPI.view, "getHeight", "()I")
     static let getChildCount = Java.method(JavaAPI.viewGroup, "getChildCount", "()I")
     static let getTextSize = Java.method(JavaAPI.textView, "getTextSize", "()F")
+    static let onEditorAction = Java.method(JavaAPI.textView, "onEditorAction", "(I)V")
+    static let editable = Java.findClass("android/text/Editable")
+    static let insert = Java.method(editable, "insert", "(ILjava/lang/CharSequence;)Landroid/text/Editable;")
+    static let motionEvent = Java.findClass("android/view/MotionEvent")
+    static let obtain = Java.staticMethod(motionEvent, "obtain", "(JJIFFI)Landroid/view/MotionEvent;")
+    static let recycle = Java.method(motionEvent, "recycle", "()V")
+    static let dispatchTouchEvent = Java.method(JavaAPI.view, "dispatchTouchEvent", "(Landroid/view/MotionEvent;)Z")
+    static let keyEvent = Java.findClass("android/view/KeyEvent")
+    static let newKeyEvent = Java.method(keyEvent, "<init>", "(II)V")
+    static let dispatchKeyEvent = Java.method(JavaAPI.view, "dispatchKeyEvent", "(Landroid/view/KeyEvent;)Z")
 
     /// An empty root, as an activity's content is.
     static func root() -> JavaObject {
@@ -51,14 +71,29 @@ enum TestJava {
     }
 }
 
+/// A clock a test winds by hand, in milliseconds.
+@MainActor
+final class TestClock {
+    var now = 0.0
+}
+
 extension AndroidRenderer {
-    /// A host running the application whose only window shows what `page` builds, at two pixels a point.
-    static func running(_ page: @escaping @Sendable () -> any Page) -> AndroidRenderer {
+    /// A host running the application whose only window shows what `page` builds, at two pixels a point,
+    /// on `clock` where one is given.
+    static func running(
+        clock: TestClock? = nil, _ page: @escaping @Sendable () -> any Page
+    ) -> AndroidRenderer {
         stateUIUseApp(OneWindowApplication(page: page))
-        let renderer = AndroidRenderer(context: TestContext.context, root: TestJava.root(), density: 2)
+        let renderer = AndroidRenderer(
+            context: TestContext.context, root: TestJava.root(), density: 2, clock: clock.map { clock in { clock.now } })
         AndroidRenderer.shared = renderer
         renderer.show()
         return renderer
+    }
+
+    /// One display frame at the clock's time, as the choreographer gives one.
+    func frame() {
+        displayCycle.frame(now: frameClock.now())
     }
 
     /// Measures and places the root at `width` by `height` pixels, as a window does.
@@ -93,7 +128,48 @@ extension AndroidView {
 
     /// Clicks the view as the user does: its listener runs.
     func click() {
-        _ = Java.jni.CallBooleanMethodA(Java.env, reference, JavaAPI.performClick, nil)
-        Java.check("performClick")
+        _ = Java.callBool(reference, JavaAPI.performClick)
     }
+
+    /// Drags a finger across the view's middle, from `start` to `end` of its width, as the user does.
+    func drag(from start: Double, to end: Double) {
+        let (_, _, width, height) = frame
+        let y = Float(height) / 2
+        func x(_ fraction: Double) -> Float { Float(Double(width) * fraction) }
+
+        // MotionEvent's ACTION_DOWN, ACTION_MOVE and ACTION_UP, each a little after the one before.
+        for (time, action, fraction) in [(0, 0, start), (50, 2, (start + end) / 2), (100, 2, end), (150, 1, end)] {
+            let event = Java.callStaticObject(
+                TestJava.motionEvent, TestJava.obtain,
+                .long(0), .long(Int64(time)), .int(Int32(action)), .float(x(fraction)), .float(y), .int(0))
+            _ = Java.callBool(reference, TestJava.dispatchTouchEvent, .object(event))
+            Java.call(event!, TestJava.recycle)
+            Java.release(local: event)
+        }
+    }
+
+    /// Presses and lets go of the hardware key `code`, as a keyboard does.
+    func press(key code: Int32) {
+        for action: Int32 in [0, 1] {
+            let event = Java.new(TestJava.keyEvent, TestJava.newKeyEvent, .int(action), .int(code))
+            withExtendedLifetime(event) {
+                _ = Java.callBool(reference, TestJava.dispatchKeyEvent, .object(event.reference))
+            }
+        }
+    }
+}
+
+extension AndroidTextFieldView {
+    /// Types `text` at the caret, as a keyboard does.
+    func type(_ text: String) {
+        let editable = Java.callObject(reference, JavaAPI.getText)!
+        let words = Java.string(text)
+        let caret = Java.callInt(reference, JavaAPI.getSelectionStart)
+        Java.release(local: Java.callObject(editable, TestJava.insert, .int(caret), .object(words)))
+        Java.release(local: words)
+        Java.release(local: editable)
+    }
+
+    /// Where the caret stands, in UTF-16 units.
+    var caret: Int32 { Java.callInt(reference, JavaAPI.getSelectionStart) }
 }

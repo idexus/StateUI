@@ -23,7 +23,7 @@ final class AndroidRenderer {
     let stateChannels: StateChannels
     let describedMotion: DescribedMotion
     let layoutMotion: LayoutMotion
-    let frameClock = AndroidFrameClock()
+    let frameClock: AndroidFrameClock
     let displayCycle: DisplayCycle
 
     /// The mounted tree; each element's Android half is an `AndroidElement`.
@@ -53,10 +53,13 @@ final class AndroidRenderer {
     /// Events raised while a patch applied, in order.
     private var queuedEvents: [(handler: Int32, payload: [HostValue])] = []
 
-    init(context: JavaObject, root: JavaObject, density: Double) {
+    /// A runtime showing its page in `root`, on the display's clock or on `clock`.
+    init(context: JavaObject, root: JavaObject, density: Double, clock: (() -> Double)? = nil) {
         self.context = context
         self.root = root
         self.density = density
+        let frameClock = clock.map { AndroidFrameClock(now: $0) } ?? AndroidFrameClock()
+        self.frameClock = frameClock
         stateChannels = StateChannels(animator: animator)
         describedMotion = DescribedMotion(animator: animator)
         layoutMotion = LayoutMotion(animator: animator, now: frameClock.now, reducesMotion: { false })

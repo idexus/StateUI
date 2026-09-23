@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 import CStateUIAndroid
 
-/// A Button: an `android.widget.Button` whose click reaches Swift through a `StateUIClick`.
+/// A Button: an `android.widget.Button` whose click reaches Swift through its `StateUIListener`.
 @MainActor
 final class AndroidButtonView: AndroidTextView {
     /// What the button does when it is clicked.
@@ -14,8 +14,7 @@ final class AndroidButtonView: AndroidTextView {
         super.init { _ in Java.new(JavaAPI.button, JavaAPI.newButton, .object(AndroidRenderer.context)) }
         Java.call(reference, JavaAPI.setAllCaps, .bool(false))
 
-        let listener = Java.new(JavaAPI.click, JavaAPI.newClick, .long(number))
-        Java.call(reference, JavaAPI.setOnClickListener, .object(listener.reference))
+        listen(JavaAPI.setOnClickListener)
     }
 
     override func detach() {

@@ -62,6 +62,38 @@ enum JavaNatives {
                 (AndroidView.find(number) as? AndroidButtonView)?.onClicked?()
             }
         }
+        let toggled: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, on in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidSwitchView)?.onToggled?(on != 0)
+            }
+        }
+        let moved: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, progress in
+            MainActor.assumeIsolated {
+                guard let slider = AndroidView.find(number) as? AndroidSliderView else { return }
+                slider.onValueChanged?(slider.value(at: progress))
+            }
+        }
+        let dragStarted: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidSliderView)?.onDragStarted?()
+            }
+        }
+        let dragCompleted: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidSliderView)?.onDragCompleted?()
+            }
+        }
+        let textChanged: @convention(c) (Environment, jclass?, jlong, jstring?) -> Void = { _, _, number, text in
+            nonisolated(unsafe) let text = text
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidTextFieldView)?.typed(Java.text(text))
+            }
+        }
+        let submitted: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidTextFieldView)?.onSubmitted?()
+            }
+        }
         let measure: @convention(c) (Environment, jclass?, jlong, jint, jint) -> jlong = {
             _, _, number, widthSpec, heightSpec in
             MainActor.assumeIsolated {
@@ -82,6 +114,12 @@ enum JavaNatives {
             ("start", "(Landroid/app/Activity;Landroid/widget/FrameLayout;F)V", unsafeBitCast(start, to: UnsafeMutableRawPointer.self)),
             ("phase", "(I)V", unsafeBitCast(phase, to: UnsafeMutableRawPointer.self)),
             ("clicked", "(J)V", unsafeBitCast(clicked, to: UnsafeMutableRawPointer.self)),
+            ("toggled", "(JZ)V", unsafeBitCast(toggled, to: UnsafeMutableRawPointer.self)),
+            ("moved", "(JI)V", unsafeBitCast(moved, to: UnsafeMutableRawPointer.self)),
+            ("dragStarted", "(J)V", unsafeBitCast(dragStarted, to: UnsafeMutableRawPointer.self)),
+            ("dragCompleted", "(J)V", unsafeBitCast(dragCompleted, to: UnsafeMutableRawPointer.self)),
+            ("textChanged", "(JLjava/lang/String;)V", unsafeBitCast(textChanged, to: UnsafeMutableRawPointer.self)),
+            ("submitted", "(J)V", unsafeBitCast(submitted, to: UnsafeMutableRawPointer.self)),
             ("measure", "(JII)J", unsafeBitCast(measure, to: UnsafeMutableRawPointer.self)),
             ("arrange", "(JII)V", unsafeBitCast(arrange, to: UnsafeMutableRawPointer.self)),
         ]

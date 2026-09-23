@@ -6,15 +6,16 @@ library: it applies the typed sparse patches of the
 [host contract](host-contract.md) directly and calls the views through JNI. No
 Wire encoding stands between them.
 
-It presents its first controls - `Label`, `Button`, `VStack` and `HStack` -
-over the runtime every host shares, and shows any other control's name in red
-where the control belongs, so a gap is visible rather than silent.
+It presents its first controls - `Label`, `Button`, `TextField`, `Switch`,
+`Slider`, `VStack` and `HStack` - over the runtime every host shares, and
+shows any other control's name in red where the control belongs, so a gap is
+visible rather than silent.
 
 ```text
 lib/StateUI.Android/
   Sources/StateUIAndroid/    the host: its runtime, elements, registrations, layout and JNI
   Sources/CStateUIAndroid/   the NDK's C surface: JNI, the looper, the choreographer, the log
-  Java/stateui/android/      the Java layer: the activity, the layout view group, the listeners
+  Java/stateui/android/      the Java layer: the activity, the layout view group, the listener
   Tests/                     the host's suite, run in a test APK on a device
 .scripts/Android/
   build-swift.sh             an application's Swift for Android, for the ABIs asked

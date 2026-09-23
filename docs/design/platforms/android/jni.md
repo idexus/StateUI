@@ -34,6 +34,13 @@ object lives while Swift holds it. `JavaObject` deletes its reference when it
 is released, so a view lives exactly as long as the Swift object that holds
 it, and nothing in the host holds a view after the tree drops its element.
 
+The reference is only as good as the Swift object holding it, and Swift
+releases an object after its last use, not at the end of the statement: a
+listener made only to be handed to a view is released the moment its
+reference is read, before the call that hands it over, and the call meets a
+deleted reference. Such an object is held through the call with
+`withExtendedLifetime`.
+
 ## A view and its number
 
 Java calls back into Swift for a click, a measure, a layout. It cannot hold a
@@ -58,12 +65,14 @@ and says which call raised it.
 ## The natives
 
 The Java layer declares the host's native methods on `StateUIHost`: the
-activity's start and its lifecycle, a click, a layout's measure and
-arrangement. The head's `JNI_OnLoad` registers them by name, so the host's
+activity's start and its lifecycle, what the user does to a control - a
+click, a turn, a slider's move and drag, words typed, a Return - and a
+layout's measure and arrangement. The head's `JNI_OnLoad` registers them by name, so the host's
 library exports no other symbol, and a native Java declares that Swift does
 not register fails at load rather than at the first call.
 `NativeProjectTests` holds the two lists equal.
 
 The Java layer exists only where Android wants a subclass or an interface:
-the activity, the layout `ViewGroup`, the click listener. Each method forwards
-to a registered Swift function.
+the activity, the layout `ViewGroup`, and one listener for what the user does
+to a view ([controls](controls.md)). Each method forwards to a registered
+Swift function.

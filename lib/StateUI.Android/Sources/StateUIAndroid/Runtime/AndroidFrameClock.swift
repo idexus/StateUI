@@ -10,7 +10,7 @@ import CStateUIAndroid
 @MainActor
 final class AndroidFrameClock: FrameClock {
     /// The runtime's time, in milliseconds on the monotonic clock the display's frames are stamped on.
-    let now: () -> Double = AndroidFrameClock.monotonic
+    let now: () -> Double
 
     /// What a frame of the display does, handed that frame's time.
     var onFrame: ((Double) -> Void)?
@@ -26,7 +26,9 @@ final class AndroidFrameClock: FrameClock {
     /// The one clock, which the choreographer's callback reaches.
     static var current: AndroidFrameClock?
 
-    init() {
+    /// A clock telling `now`'s time: the monotonic clock's, or a test's hand-wound one.
+    init(now: @escaping () -> Double = AndroidFrameClock.monotonic) {
+        self.now = now
         Self.current = self
     }
 

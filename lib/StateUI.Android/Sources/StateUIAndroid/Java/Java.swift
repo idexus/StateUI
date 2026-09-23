@@ -97,6 +97,22 @@ enum Java {
         return result
     }
 
+    /// Calls a method returning a boolean.
+    static func callBool(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
+        let result = arguments.withUnsafeBufferPointer { jni.CallBooleanMethodA(env, object, method, $0.baseAddress) }
+        check("a call")
+        return result != 0
+    }
+
+    /// Calls a static method returning a boolean.
+    static func callStaticBool(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
+        let result = arguments.withUnsafeBufferPointer {
+            jni.CallStaticBooleanMethodA(env, owner, method, $0.baseAddress)
+        }
+        check("a static call")
+        return result != 0
+    }
+
     /// Calls a method returning a float.
     static func callFloat(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Float {
         let result = arguments.withUnsafeBufferPointer { jni.CallFloatMethodA(env, object, method, $0.baseAddress) }

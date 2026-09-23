@@ -14,6 +14,8 @@ enum JavaAPI {
     static let setAlpha = Java.method(view, "setAlpha", "(F)V")
     static let setEnabled = Java.method(view, "setEnabled", "(Z)V")
     static let setBackgroundColor = Java.method(view, "setBackgroundColor", "(I)V")
+    static let getBackground = Java.method(view, "getBackground", "()Landroid/graphics/drawable/Drawable;")
+    static let setBackground = Java.method(view, "setBackground", "(Landroid/graphics/drawable/Drawable;)V")
     static let setPadding = Java.method(view, "setPadding", "(IIII)V")
     static let setOnClickListener = Java.method(
         view, "setOnClickListener", "(Landroid/view/View$OnClickListener;)V")
@@ -41,8 +43,59 @@ enum JavaAPI {
     static let setTypeface = Java.method(textView, "setTypeface", "(Landroid/graphics/Typeface;I)V")
     static let setAllCaps = Java.method(textView, "setAllCaps", "(Z)V")
 
+    static let setHint = Java.method(textView, "setHint", "(Ljava/lang/CharSequence;)V")
+    static let setHintTextColor = Java.method(textView, "setHintTextColor", "(I)V")
+    static let getHintTextColors = Java.method(
+        textView, "getHintTextColors", "()Landroid/content/res/ColorStateList;")
+    static let setHintTextColors = Java.method(
+        textView, "setHintTextColor", "(Landroid/content/res/ColorStateList;)V")
+    static let setInputType = Java.method(textView, "setInputType", "(I)V")
+    static let getSelectionStart = Java.method(textView, "getSelectionStart", "()I")
+    static let getSelectionEnd = Java.method(textView, "getSelectionEnd", "()I")
+    static let addTextChangedListener = Java.method(
+        textView, "addTextChangedListener", "(Landroid/text/TextWatcher;)V")
+    static let setOnEditorActionListener = Java.method(
+        textView, "setOnEditorActionListener", "(Landroid/widget/TextView$OnEditorActionListener;)V")
+
     static let button = Java.findClass("android/widget/Button")
     static let newButton = Java.method(button, "<init>", "(Landroid/content/Context;)V")
+
+    static let editText = Java.findClass("android/widget/EditText")
+    static let newEditText = Java.method(editText, "<init>", "(Landroid/content/Context;)V")
+    static let setSelection = Java.method(editText, "setSelection", "(II)V")
+
+    static let compoundButton = Java.findClass("android/widget/CompoundButton")
+    static let setChecked = Java.method(compoundButton, "setChecked", "(Z)V")
+    static let isChecked = Java.method(compoundButton, "isChecked", "()Z")
+    static let setOnCheckedChangeListener = Java.method(
+        compoundButton, "setOnCheckedChangeListener", "(Landroid/widget/CompoundButton$OnCheckedChangeListener;)V")
+
+    static let switchView = Java.findClass("android/widget/Switch")
+    static let newSwitch = Java.method(switchView, "<init>", "(Landroid/content/Context;)V")
+
+    static let progressBar = Java.findClass("android/widget/ProgressBar")
+    static let setMax = Java.method(progressBar, "setMax", "(I)V")
+    static let setProgress = Java.method(progressBar, "setProgress", "(I)V")
+    static let getProgress = Java.method(progressBar, "getProgress", "()I")
+    static let setProgressTintList = Java.method(
+        progressBar, "setProgressTintList", "(Landroid/content/res/ColorStateList;)V")
+    static let getProgressTintList = Java.method(
+        progressBar, "getProgressTintList", "()Landroid/content/res/ColorStateList;")
+
+    static let seekBar = Java.findClass("android/widget/SeekBar")
+    static let newSeekBar = Java.method(seekBar, "<init>", "(Landroid/content/Context;)V")
+    static let setOnSeekBarChangeListener = Java.method(
+        seekBar, "setOnSeekBarChangeListener", "(Landroid/widget/SeekBar$OnSeekBarChangeListener;)V")
+    static let setThumbTintList = Java.method(
+        seekBar, "setThumbTintList", "(Landroid/content/res/ColorStateList;)V")
+    static let getThumbTintList = Java.method(
+        seekBar, "getThumbTintList", "()Landroid/content/res/ColorStateList;")
+
+    // MARK: - android.content.res
+
+    static let colorStateList = Java.findClass("android/content/res/ColorStateList")
+    static let colorStateListOf = Java.staticMethod(
+        colorStateList, "valueOf", "(I)Landroid/content/res/ColorStateList;")
 
     // MARK: - java.lang
 
@@ -56,17 +109,21 @@ enum JavaAPI {
         viewGroupHost, "<init>", "(Landroid/content/Context;J)V")
     static let setChildren = Java.method(viewGroupHost, "setChildren", "([Landroid/view/View;)V")
 
-    static let click = Java.findClass("stateui/android/StateUIClick")
-    static let newClick = Java.method(click, "<init>", "(J)V")
+    static let listener = Java.findClass("stateui/android/StateUIListener")
+    static let newListener = Java.method(listener, "<init>", "(J)V")
 }
 
-/// The constants of `android.view.View` the host passes.
+/// The constants of Android's views the host passes.
 enum ViewConstants {
     /// `View.VISIBLE`.
     static let visible: Int32 = 0
 
     /// `View.GONE`.
     static let gone: Int32 = 8
+
+    /// `InputType.TYPE_CLASS_TEXT`, and its variation that hides what is typed.
+    static let textInput: Int32 = 0x1
+    static let passwordInput: Int32 = 0x80
 
     /// `TypedValue.COMPLEX_UNIT_PX` and `COMPLEX_UNIT_SP`: a text size in pixels, and one the user's font scale applies to.
     static let pixels: Int32 = 0

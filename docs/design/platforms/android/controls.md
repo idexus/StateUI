@@ -1,0 +1,68 @@
+# Controls on Android
+
+How the Android Views host presents the controls a user changes - a switch, a
+slider, a field - and hears what the user does to them. The value a control
+carries belongs to a state; the host writes the control where the tree
+changed that value and reports the user's change back
+([patches](../../host/patches.md)).
+
+## One listener a view
+
+Android tells a view's owner what its user did through listener interfaces:
+a click, a turn, a thumb moved, words typed, a Return. The Java layer has one
+listener class for all of them, `StateUIListener`, made for one view with that
+view's number, which forwards each call to Swift by the number
+([JNI](jni.md)). A view hands the same listener to every setter it needs, so a
+field's typing and its Return reach the same Swift view.
+
+## Nothing the program writes is heard
+
+Every native write of an element - a patch applied, a display frame presented
+- runs inside `ProgramWrite`. Android calls a switch's, a slider's and a
+field's listener while the value is being set, so the listener's call during
+that write is the write's echo, and the element reports nothing. A control
+does not keep a flag of its own.
+
+## A slider in steps
+
+`SeekBar` moves in whole steps from zero. The host gives it ten thousand steps
+across the range and turns a step into a value and back, so a value the user
+reports has the range's ten-thousandth as its finest step. A new range keeps
+the value the thumb stands at, inside the range, unless the tree wrote a new
+value with it: a hand on the thumb is never argued with.
+
+## A field and its words
+
+A field reports all its words after every change, and a report comes back as
+the value of the state it carries: the host writes the words only where they
+differ from the field's own, so the render a keystroke causes leaves the
+user's words and caret alone. Words the program writes put the caret after
+them.
+
+`maximumLength` counts characters, as the contract does. The field keeps the
+first characters that fit and writes them back, as the program, when typing
+goes past the bound.
+
+A password field is a field whose input type hides what is typed. Android
+resets the typeface when the input type changes, so the field puts its weight
+back after it.
+
+## Return, once
+
+A keyboard's action reaches the listener with no key event; a hardware Return
+reaches it as the key goes down and again as it comes up. The listener
+submits on the action and on the key going down, and takes the key's release
+itself, so one Return is one submission.
+
+## The background a view is made with
+
+A button, a field, a switch and a slider draw their own background. A colour
+the tree describes replaces it, and a colour the tree takes away gives back
+the background the view was made with, read before the first change.
+
+## A layout does not delay a press
+
+A layout that does not scroll tells its children to show a press at once.
+Android's default holds a press back in case the touch becomes a scroll,
+which makes a slider inside a layout wait for the finger to move before its
+thumb follows.

@@ -28,6 +28,12 @@ final class StateUIViewGroup extends ViewGroup {
         StateUIHost.arrange(view, right - left, bottom - top);
     }
 
+    /** A layout that does not scroll lets its children show a press at once. */
+    @Override
+    public boolean shouldDelayChildPressedState() {
+        return false;
+    }
+
     /** Holds exactly {@code children}, in order, moving only what moved. */
     void setChildren(View[] children) {
         for (int index = getChildCount() - 1; index >= 0; index--) {

@@ -20,6 +20,9 @@ class AndroidView {
     private static var nextNumber: Int64 = 0
     private static var live: [Int64: Weak] = [:]
 
+    /// The background the view was made with, often none, read before the first change.
+    private var madeBackground: JavaObject??
+
     /// Takes the next number and holds the view `make` makes, handed that number.
     init(_ make: (_ number: Int64) -> JavaObject) {
         Self.nextNumber += 1
@@ -42,6 +45,15 @@ class AndroidView {
 
     var reference: jobject { object.reference }
 
+    /// Hands each of `setters` one listener forwarding what the user does to this view, by its number.
+    /// Design: docs/design/platforms/android/jni.md#global-references
+    func listen(_ setters: jmethodID...) {
+        let listener = Java.new(JavaAPI.listener, JavaAPI.newListener, .long(number))
+        withExtendedLifetime(listener) {
+            for setter in setters { Java.call(reference, setter, .object(listener.reference)) }
+        }
+    }
+
     // MARK: - What every view takes
 
     func setShown(_ shown: Bool) {
@@ -56,9 +68,16 @@ class AndroidView {
         Java.call(reference, JavaAPI.setEnabled, .bool(enabled))
     }
 
-    /// The view's background: a colour, or none; any other brush draws none yet.
+    /// The view's background: a colour, or none for any other brush yet; nil puts back the platform's.
     func setBackground(_ value: HostValue?) {
-        Java.call(reference, JavaAPI.setBackgroundColor, .int(value.flatMap(Self.argb) ?? 0))
+        if madeBackground == nil {
+            madeBackground = .some(Java.callObject(reference, JavaAPI.getBackground).map(JavaObject.init))
+        }
+
+        guard let value else {
+            return Java.call(reference, JavaAPI.setBackground, .object(madeBackground??.reference))
+        }
+        Java.call(reference, JavaAPI.setBackgroundColor, .int(Self.argb(value) ?? 0))
     }
 
     /// The element left the tree: the view lets go of everything that would call back into it.

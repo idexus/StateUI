@@ -9,6 +9,9 @@ import CStateUIAndroid
 class AndroidTextView: AndroidView {
     private var made: (size: Float, colors: JavaObject)?
 
+    /// Bold and italic, as last set.
+    private(set) var fontAttributes: FontAttributes?
+
     /// The words shown.
     func setText(_ text: String) {
         let string = Java.string(text)
@@ -40,6 +43,7 @@ class AndroidTextView: AndroidView {
 
     /// Bold and italic, in the bits `FontAttributes` and `Typeface` share.
     func setFontAttributes(_ attributes: FontAttributes?) {
+        fontAttributes = attributes
         Java.call(reference, JavaAPI.setTypeface, .object(nil), .int((attributes?.rawValue ?? 0) & 3))
     }
 

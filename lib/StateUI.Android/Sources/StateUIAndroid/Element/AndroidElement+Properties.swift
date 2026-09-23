@@ -16,7 +16,8 @@ extension AndroidElement {
 
     /// Properties drawn without changing any measurement; any other one measures the view again.
     static let unmeasuredProperties: Set<Prop> = [
-        .opacity, .background, .textColor, .isEnabled,
+        .opacity, .background, .textColor, .placeholderColor, .tint, .isEnabled,
+        .isOn, .value, .minimum, .maximum, .cursorPosition, .selectionLength,
     ]
 
     func makeView() -> AndroidView? {
@@ -45,24 +46,28 @@ extension AndroidElement {
         }
     }
 
-    /// Puts the changed properties on the view: its registration's first, then what every view takes.
+    /// Puts the changed properties on the view as the program's write: its registration's first,
+    /// then what every view takes.
+    /// Design: docs/design/host/patches.md#program-write
     func applyProperties(changed: Set<Prop>) {
         guard let view else {
             if !changed.isDisjoint(with: Self.arrangedProperties) { parent?.invalidateMeasurements() }
             return
         }
 
-        let taken = AndroidRegistrations.registry.apply(
-            changed, to: view, of: type,
-            reading: { [element] in element.value($0) },
-            carriedIn: { [element] in element.driven[$0]?.mode == .in })
+        ProgramWrite.perform {
+            let taken = AndroidRegistrations.registry.apply(
+                changed, to: view, of: type,
+                reading: { [element] in element.value($0) },
+                carriedIn: { [element] in element.driven[$0]?.mode == .in })
 
-        for property in changed.subtracting(taken) {
-            switch property {
-            case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
-            case .isVisible: view.setShown(value(.isVisible)?.bool != false)
-            case .background: view.setBackground(value(.background))
-            default: break
+            for property in changed.subtracting(taken) {
+                switch property {
+                case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
+                case .isVisible: view.setShown(value(.isVisible)?.bool != false)
+                case .background: view.setBackground(value(.background))
+                default: break
+                }
             }
         }
 
