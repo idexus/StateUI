@@ -326,7 +326,10 @@ node; it registers the state instead. The state's number is issued the first
 time anything asks, and properties are walked in name order, so numbers follow
 the walk and two runs of one tree number alike. The registration set is sent
 whenever it changed, an emptied set included: an element that stops tying a
-property has to say so.
+property has to say so. A registration names the state rather than its number,
+which is issued later; it carries the conversion the state is the derived side
+of, if it is one, which the differ arms engines for on the element wearing it,
+and which of the view's values it is - the property's group, plus a colour's.
 
 What `.inherited` means for a driven value can be answered only here: the host
 knows what the application says, while an element's motion plan answers per

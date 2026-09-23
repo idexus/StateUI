@@ -362,7 +362,7 @@ final class DrivenWireTests: XCTestCase {
 
         XCTAssertEqual(declared.count, 1, "one declaration, and it is the journey's: \(declared)")
         XCTAssertEqual(
-            declared.first.map { Fixtures.name(of: $0.file) }, "StateValue.swift",
+            declared.first.map { Fixtures.name(of: $0.file) }, "Journey.swift",
             "the one that survives lives beside the journey")
         XCTAssertTrue(
             declared.first?.line.contains("target: Value") == true,
