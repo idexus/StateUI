@@ -314,6 +314,7 @@ enum Fixtures {
     /// directory that depends on who started the process.
     static var directory: URL {
         URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()    // Support
             .deletingLastPathComponent()    // StateUITests
             .deletingLastPathComponent()    // Tests
             .appendingPathComponent("Fixtures")
@@ -322,6 +323,7 @@ enum Fixtures {
     /// `lib/StateUI/Sources`.
     static var sources: URL {
         URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()    // Support
             .deletingLastPathComponent()    // StateUITests
             .deletingLastPathComponent()    // Tests
             .deletingLastPathComponent()    // StateUI
