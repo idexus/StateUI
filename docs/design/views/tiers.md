@@ -106,9 +106,9 @@ are written once and serve the control and the style alike.
 `InputViewProperties` is a `ViewProperties`: it stands for a kind of control, a
 positioned view the user types into. `InputView` is its element half, as
 `Layout` and `Shape` are theirs, and the element half is what a style is told
-apart by: the conditional conformances in `Style.swift` name the element
-protocol, so a tier with only a property half could not be given to a style
-without also giving it the modifiers of `View`.
+apart by: the conditional conformances in `StyleBag+Properties.swift` name the
+element protocol, so a tier with only a property half could not be given to a
+style without also giving it the modifiers of `View`.
 
 ## Shapes
 

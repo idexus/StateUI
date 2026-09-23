@@ -910,7 +910,7 @@ final class StyleTests: XCTestCase {
     /// ever under-report - and the count at its end refuses a scan that reads
     /// nothing.
     func testEveryControlIsAStyleTarget() throws {
-        let declared = try Fixtures.text(in: "Style.swift")
+        let declared = try Fixtures.text(in: "StyleTarget.swift")
         var read = 0
 
         for source in try Fixtures.controlSources() {
@@ -918,8 +918,8 @@ final class StyleTests: XCTestCase {
             where !Fixtures.notViews.contains(type) {
                 read += 1
                 XCTAssertTrue(declared.contains("extension \(type): StyleTarget {}"), """
-                    \(source) describes \(type), which Style.swift does not \
-                    declare a style target.
+                    \(source) describes \(type), which StyleTarget.swift does \
+                    not declare a style target.
 
                     Every control can be styled. Give it an initializer that \
                     sets nothing, if it has none, and add the conformance.
@@ -935,7 +935,7 @@ final class StyleTests: XCTestCase {
     /// declared without its `StyleBag` conformance would compile and quietly
     /// leave `Style<Name>` without the control's own setters.
     func testEveryPropertySurfaceReachesTheStyle() throws {
-        let declared = try Fixtures.text(in: "Style.swift")
+        let declared = try Fixtures.text(in: "StyleBag+Properties.swift")
         var read = 0
 
         // The shared tier's files declare the TIER surfaces, which reach the
@@ -954,8 +954,8 @@ final class StyleTests: XCTestCase {
                     declared.contains(
                         "extension StyleBag: \(surface) where Target == \(target) {}"),
                     """
-                    \(source) declares \(surface), which Style.swift does not \
-                    hand to StyleBag - Style<\(target)> is missing the \
+                    \(source) declares \(surface), which StyleBag+Properties.swift \
+                    does not hand to StyleBag - Style<\(target)> is missing the \
                     control's own setters.
                     """)
             }

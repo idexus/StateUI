@@ -786,7 +786,7 @@ enum Fixtures {
 
     /// The files under Views/ that describe controls.
     ///
-    /// Application.swift and Style.swift describe the application and the
+    /// Application.swift and the style files describe the application and the
     /// styles its controls are given - neither a control, and each with tests
     /// of its own; the shared tier's files and ViewBuilder.swift describe no
     /// type at all.
@@ -809,7 +809,10 @@ enum Fixtures {
     static func controlSources() throws -> [String] {
         let views = sources.appendingPathComponent("Views")
         let skipped: Set = [
-            "Application.swift", "Style.swift", "ViewBuilder.swift",
+            "Application.swift", "ViewBuilder.swift",
+            "Style.swift", "StyleBag+Properties.swift", "StyleBuilder.swift", "StyleSheet.swift",
+            "StyleTarget.swift", "VisualState.swift", "VisualStateList.swift",
+            "VisualElement+VisualStates.swift",
             "NavigationStack.swift", "TabbedView.swift", "SplitView.swift",
             "ModalStack.swift",
         ]
