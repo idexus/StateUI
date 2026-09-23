@@ -619,8 +619,8 @@ final class TemplateTests: XCTestCase {
     /// SwiftPM refusing to resolve in a generated application is the symptom
     /// when it does not.
     ///
-    /// The template package may add a fourth part to the release - `0.3.1.1`
-    /// against `0.3.1` - because it can be wrong while every line of the
+    /// The template package may add a fourth part to the release - `0.4.0.1`
+    /// against `0.4.0` - because it can be wrong while every line of the
     /// library is right; it never names another release.
     func testEveryVersionAgrees() throws {
         let runtime = try version(of: "lib/StateUI.Maui/Sources/StateUI.Maui.csproj")

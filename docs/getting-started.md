@@ -324,7 +324,7 @@ beside the checkout:
 
 ```bash
 dotnet pack lib/StateUI.Maui/Template -c Release -o artifacts
-dotnet new install artifacts/StateUI.Maui.Template.0.3.1.nupkg
+dotnet new install artifacts/StateUI.Maui.Template.0.4.0.nupkg
 dotnet new stateui-maui -n Notes -o ../Notes --stateui-path "$PWD" --appkit
 ```
 

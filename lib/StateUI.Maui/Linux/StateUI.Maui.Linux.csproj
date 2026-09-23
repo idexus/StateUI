@@ -20,11 +20,11 @@
     <WarningsAsErrors>$(WarningsAsErrors);CS1591;CS1573</WarningsAsErrors>
 
     <PackageId>StateUI.Maui.Linux</PackageId>
-    <Version>0.3.1</Version>
+    <Version>0.4.0</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
     <Title>StateUI MAUI host for Linux</Title>
-    <PackageDescription>The Linux platform of StateUI's .NET MAUI host: hosting over MAUI's GTK 4 backend, with the styling, gestures, scrolling, measurement, dispatching, navigation teardown and transforms that backend leaves open. Reference it beside StateUI.Maui in an application's Linux head. Version 0.3: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <PackageDescription>The Linux platform of StateUI's .NET MAUI host: hosting over MAUI's GTK 4 backend, with the styling, gestures, scrolling, measurement, dispatching, navigation teardown and transforms that backend leaves open. Reference it beside StateUI.Maui in an application's Linux head. Version 0.4: the API is still changing, so use in a project is at your own risk.</PackageDescription>
     <PackageTags>maui;swift;ui;declarative;linux;gtk4;cross-platform</PackageTags>
     <PackageProjectUrl>https://github.com/idexus/StateUI</PackageProjectUrl>
     <RepositoryUrl>https://github.com/idexus/StateUI</RepositoryUrl>

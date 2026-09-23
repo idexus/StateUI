@@ -8,7 +8,7 @@
        template is available to the SDK:
 
            dotnet pack lib/StateUI.Maui/Template -c Release -o artifacts
-           dotnet new install artifacts/StateUI.Maui.Template.0.3.1.nupkg
+           dotnet new install artifacts/StateUI.Maui.Template.0.4.0.nupkg
            dotnet new stateui-maui -n MyApp
 
        WHAT THE TEMPLATE IS, is templates/StateUIStarter/ beside this file -
@@ -22,11 +22,11 @@
     <TargetFramework>net10.0</TargetFramework>
 
     <PackageId>StateUI.Maui.Template</PackageId>
-    <Version>0.3.1</Version>
+    <Version>0.4.0</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
     <Title>StateUI MAUI application template</Title>
-    <PackageDescription>A StateUI application - its interface written in Swift - with a .NET MAUI head for Android, iOS, Mac Catalyst, Windows and Linux, and optionally an AppKit head: dotnet new stateui-maui -n MyApp --stateui-path /path/to/StateUI. Version 0.3: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <PackageDescription>A StateUI application - its interface written in Swift - with a .NET MAUI head for Android, iOS, Mac Catalyst, Windows and Linux, and optionally an AppKit head: dotnet new stateui-maui -n MyApp --stateui-path /path/to/StateUI. Version 0.4: the API is still changing, so use in a project is at your own risk.</PackageDescription>
     <PackageTags>dotnet-new;templates;maui;swift;ui;cross-platform</PackageTags>
     <!-- The same two URLs the runtime carries, and for the same reason: one
          owner, one project, visible on both listings. -->

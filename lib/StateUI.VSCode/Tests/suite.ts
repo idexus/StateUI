@@ -221,7 +221,7 @@ export async function run(): Promise<void> {
                 { label: "a checkout", templateRoot: repository, options: ["--stateui-path", repository],
                   starter: { name: "Probe", parent: path.join(scratch, "mine-checkout"), source: { kind: "checkout", checkout: repository }, appKit: false } },
                 { label: "the release, from the template this extension carries", templateRoot: carriedTemplate(extensionPath), options: [],
-                  starter: { name: "Probe", parent: path.join(scratch, "mine-release"), source: { kind: "release", version: "0.3.1" }, appKit: false } },
+                  starter: { name: "Probe", parent: path.join(scratch, "mine-release"), source: { kind: "release", version: "0.4.0" }, appKit: false } },
             ];
             for (const each of cases) {
                 const mine = writeStarter(each.starter, each.templateRoot);
@@ -240,7 +240,7 @@ export async function run(): Promise<void> {
                 check(`${each.label}: the project takes StateUI's build from ${each.starter.source.kind === "checkout" ? "the checkout" : "the StateUI.Maui package"}`,
                     each.starter.source.kind === "checkout"
                         ? made.includes(`<Import Project="${repository}/.scripts/Maui/StateUI.targets" />`)
-                        : !made.includes("<Import Project=") && made.includes('<PackageReference Include="StateUI.Maui" Version="0.3.1" />'));
+                        : !made.includes("<Import Project=") && made.includes('<PackageReference Include="StateUI.Maui" Version="0.4.0" />'));
             }
 
             const other = writeStarter({ name: "Later", parent: path.join(scratch, "later"), source: { kind: "release", version: "9.8.7" }, appKit: false },

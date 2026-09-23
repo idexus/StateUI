@@ -2,7 +2,7 @@
   "name": "stateui",
   "displayName": "StateUI",
   "description": "Build, run and debug StateUI applications on AppKit and .NET MAUI.",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "publisher": "idexus",
   "license": "Apache-2.0",
   "icon": "icon.png",

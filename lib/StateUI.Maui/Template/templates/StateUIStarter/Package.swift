@@ -71,7 +71,7 @@ var dependencies: [Package.Dependency] = [
     // Platforms/Maui/StateUIStarter.csproj, and the two move together: the
     // wire between them is a binary contract, so the version here IS the
     // version there.
-    .package(url: "https://github.com/idexus/StateUI.git", exact: "0.3.1"),
+    .package(url: "https://github.com/idexus/StateUI.git", exact: "0.4.0"),
 //#endif
 ]
 

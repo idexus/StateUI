@@ -80,11 +80,11 @@
          directory beside the managed ones, so a managed StateUI.dll would
          collide with it there. -->
     <PackageId>StateUI.Maui</PackageId>
-    <Version>0.3.1</Version>
+    <Version>0.4.0</Version>
     <Authors>Paweł Krzywdziński and Contributors</Authors>
     <Copyright>Copyright 2026 Paweł Krzywdziński and Contributors</Copyright>
     <Title>StateUI MAUI host</Title>
-    <PackageDescription>StateUI's .NET MAUI host: native interfaces written in Swift, rendered with MAUI controls on Android, iOS, Mac Catalyst, Windows and Linux. This is the C# half; an application's Swift half comes from the StateUI Swift package. On Linux, reference StateUI.Maui.Linux beside it. Version 0.3: the API is still changing, so use in a project is at your own risk.</PackageDescription>
+    <PackageDescription>StateUI's .NET MAUI host: native interfaces written in Swift, rendered with MAUI controls on Android, iOS, Mac Catalyst, Windows and Linux. This is the C# half; an application's Swift half comes from the StateUI Swift package. On Linux, reference StateUI.Maui.Linux beside it. Version 0.4: the API is still changing, so use in a project is at your own risk.</PackageDescription>
     <PackageTags>maui;swift;ui;declarative;ios;android;maccatalyst;windows;linux;gtk4;cross-platform</PackageTags>
     <!-- Both URLs are what nuget.org shows beside the package, and both are read
          when a package id prefix is applied for: a listing that says who owns it

@@ -200,7 +200,7 @@ it from a pack of this repository:
 
 ```bash
 dotnet pack lib/StateUI.Maui/Template -c Release -o artifacts
-dotnet new install artifacts/StateUI.Maui.Template.0.3.1.nupkg
+dotnet new install artifacts/StateUI.Maui.Template.0.4.0.nupkg
 ```
 
 Create an application built against a StateUI checkout, outside that checkout:
@@ -233,9 +233,9 @@ dotnet new stateui-maui -n Notes --stateui-path ~/src/StateUI --appkit
   - `Package.swift` names the checkout with `.package(path:)`;
   - `StateUIPackagePath` tells the Swift build where it is.
 - **The package route.** Without `--stateui-path`, the application takes
-  `StateUI.Maui` and `StateUI.Maui.Linux` 0.3.1 from NuGet, and the Swift half
-  from `https://github.com/idexus/StateUI.git` at exactly `0.3.1`. That route
-  resolves only once release 0.3.1 is tagged and its packages are published.
+  `StateUI.Maui` and `StateUI.Maui.Linux` 0.4.0 from NuGet, and the Swift half
+  from `https://github.com/idexus/StateUI.git` at exactly `0.4.0`. That route
+  resolves only once release 0.4.0 is tagged and its packages are published.
   Until then, create applications with `--stateui-path`.
 - **Reinstalling.** Before installing a rebuilt template of the same version,
   remove the previous one with `dotnet new uninstall StateUI.Maui.Template`.
@@ -1030,8 +1030,8 @@ A release is three NuGet packages and one tag:
 | `StateUI.Maui.Template` | `lib/StateUI.Maui/Template` | the `stateui-maui` template |
 
 The Swift half is the repository itself. The root `Package.swift` is the Swift
-package, and a tag such as `0.3.1` is what
-`.package(url: "https://github.com/idexus/StateUI.git", exact: "0.3.1")`
+package, and a tag such as `0.4.0` is what
+`.package(url: "https://github.com/idexus/StateUI.git", exact: "0.4.0")`
 resolves.
 
 Three things move together:
@@ -1130,7 +1130,7 @@ dependency is never checked out, so a project that uses one also sets
 The StateUI checkout's directory has another name. SwiftPM identifies a path
 dependency by its last path component, so the directory is called `StateUI`.
 
-**"no versions of 'stateui' match the requirement 0.3.1".**
+**"no versions of 'stateui' match the requirement 0.4.0".**
 The generated application's Swift half names a release that is not tagged.
 Create the application with `--stateui-path`, or point its `Package.swift` at
 a checkout with `.package(path:)` and set `StateUIPackagePath`.

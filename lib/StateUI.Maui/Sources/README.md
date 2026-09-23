@@ -16,7 +16,7 @@ dotnet new stateui-maui -n MyApp --stateui-path /path/to/StateUI
 
 `--appkit` adds a native macOS head beside the MAUI one.
 
-**Version 0.3 - the API is still changing.** Use in a project is at your own
+**Version 0.4 - the API is still changing.** Use in a project is at your own
 risk: names and signatures move between versions while the design is being
 found.
 

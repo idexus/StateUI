@@ -3,7 +3,7 @@
 A StateUI application: its interface written in Swift, with a .NET MAUI head
 for Android, iOS, Mac Catalyst, Windows and Linux.
 
-**Version 0.3 - the API is still changing.** Use in a project is at your own
+**Version 0.4 - the API is still changing.** Use in a project is at your own
 risk: names and signatures move between versions while the design is being
 found.
 
