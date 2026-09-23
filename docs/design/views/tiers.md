@@ -7,8 +7,8 @@ it, and every control wearing that tier inherits the modifier: opacity from
 `PaddingElement`, the font size from `FontElement`. A modifier is therefore
 offered on exactly the controls that carry the property - `.spacing()` on a
 stack, `.placeholder()` on a text field, and nothing on a Label that a Label
-does not carry. Each Swift tier has a tier contract under `Contracts/Tiers`,
-which declares its members for the hosts.
+does not carry. Each Swift tier has a tier contract under `Contracts/Tiers`
+or `Contracts/Mixins`, which declares its members for the hosts.
 
 ## Two halves
 

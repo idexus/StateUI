@@ -8,7 +8,7 @@ Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Label](../Label.md) · [Span](../Span.md)
 
-Declared in `lib/StateUI/Sources/Contracts/Tiers/DecorableTextElementContract.swift`.
+Declared in `lib/StateUI/Sources/Contracts/Mixins/DecorableTextElementContract.swift`.
 
 How each of them realizes these members is on its own page.
 

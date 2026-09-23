@@ -118,7 +118,7 @@ it wears, and each member with its value's type. The views write and hear
 through those members, never through spelled tokens.
 
 ```text
-  Contracts/Elements, Contracts/Tiers
+  Contracts/Elements, Contracts/Tiers, Contracts/Mixins
     LabelContract: ElementContract
       nodeType "Label", layer, tiers [View, TextElement, FontElement, …]
       members: lineBreak, maximumLines         ElementProperty / ElementEvent / ElementAct
@@ -135,6 +135,6 @@ through those members, never through spelled tokens.
     each host declares which members it realizes:  docs/platform-contract.md, docs/controls/
 ```
 
-The tier protocols here and the tier contracts under `Contracts/Tiers` name the
-same sets, so a modifier offered on a tier is a member that tier's contract
-declares.
+The tier protocols here and the tier contracts under `Contracts/Tiers` and
+`Contracts/Mixins` name the same sets, so a modifier offered on a tier is a
+member that tier's contract declares.

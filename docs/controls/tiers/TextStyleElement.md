@@ -8,7 +8,7 @@ Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Button](../Button.md) · [DatePicker](../DatePicker.md) · [Label](../Label.md) · [Picker](../Picker.md) · [RadioButton](../RadioButton.md) · [SearchField](../SearchField.md) · [Span](../Span.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md)
 
-Declared in `lib/StateUI/Sources/Contracts/Tiers/TextStyleElementContract.swift`.
+Declared in `lib/StateUI/Sources/Contracts/Mixins/TextStyleElementContract.swift`.
 
 How each of them realizes these members is on its own page.
 

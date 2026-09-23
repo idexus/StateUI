@@ -8,7 +8,7 @@ Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [MenuItem](../MenuItem.md) · [SwipeAction](../SwipeAction.md) · [ToolbarItem](../ToolbarItem.md)
 
-Declared in `lib/StateUI/Sources/Contracts/Tiers/MenuItemElementContract.swift`.
+Declared in `lib/StateUI/Sources/Contracts/Mixins/MenuItemElementContract.swift`.
 
 How each of them realizes these members is on its own page.
 

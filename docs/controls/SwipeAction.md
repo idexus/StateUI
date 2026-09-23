@@ -10,7 +10,7 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [MenuItemElement](t
 
 Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/SwipeActionContract.swift`.
+Declared in `lib/StateUI/Sources/Contracts/Elements/Collections/SwipeActionContract.swift`.
 
 ## SwipeAction's own members
 

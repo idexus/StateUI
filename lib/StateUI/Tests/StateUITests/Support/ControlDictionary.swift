@@ -166,6 +166,9 @@ struct ControlDictionary {
     /// Each contract's doc, by the contract.
     private let documentation: [ObjectIdentifier: String]
 
+    /// Where each contract is declared, under lib/StateUI/Sources, by the contract.
+    private let declared: [ObjectIdentifier: String]
+
     /// The dictionary as everything it is rendered from stands now.
     init() throws {
         elements = LibraryContracts.elements.sorted { $0.name < $1.name }
@@ -176,10 +179,13 @@ struct ControlDictionary {
         layers = try Self.layers()
 
         var documentation: [ObjectIdentifier: String] = [:]
+        var declared: [ObjectIdentifier: String] = [:]
         for contract in LibraryContracts.all {
             documentation[ObjectIdentifier(contract)] = try Self.documentation(of: contract)
+            declared[ObjectIdentifier(contract)] = try Self.path(of: contract)
         }
         self.documentation = documentation
+        self.declared = declared
     }
 
     // MARK: - The pages
@@ -248,7 +254,7 @@ struct ControlDictionary {
                 : "Inherits: " + worn.map { "[\($0.name)](tiers/\($0.name).md)" }.joined(separator: " · "),
             "",
             "Marks: \(Self.legend). See [the dictionary](README.md).", "",
-            "Declared in `lib/StateUI/Sources/\(Self.path(of: element))`.", "",
+            "Declared in `lib/StateUI/Sources/\(declared[ObjectIdentifier(element)] ?? "")`.", "",
             "## \(name)'s own members", "",
         ]
 
@@ -281,7 +287,7 @@ struct ControlDictionary {
 
         body += [
             "Worn by: " + wearers.map { "[\($0.name)](../\($0.name).md)" }.joined(separator: " · "), "",
-            "Declared in `lib/StateUI/Sources/\(Self.path(of: tier))`.", "",
+            "Declared in `lib/StateUI/Sources/\(declared[ObjectIdentifier(tier)] ?? "")`.", "",
             "How each of them realizes these members is on its own page.", "",
             "| Member | Kind | Value | Layer |",
             "| --- | --- | --- | --- |",
@@ -800,10 +806,10 @@ struct ControlDictionary {
     /// as one line.
     static func documentation(of contract: any Contract.Type) throws -> String {
         let type = String(describing: contract)
-        let lines = try source(path(of: contract)).components(separatedBy: "\n")
+        let lines = try source(try path(of: contract)).components(separatedBy: "\n")
 
         guard let declaration = lines.firstIndex(where: { $0.hasPrefix("public enum \(type):") }) else {
-            throw Unreadable(description: "\(path(of: contract)) does not declare \(type)")
+            throw Unreadable(description: "\(type).swift does not declare \(type)")
         }
 
         var start = declaration
@@ -817,11 +823,21 @@ struct ControlDictionary {
             .joined(separator: " ")
     }
 
-    /// Where a contract is declared, under lib/StateUI/Sources.
-    static func path(of contract: any Contract.Type) -> String {
-        let folder = (contract as? any ElementContract.Type) == nil ? "Tiers" : "Elements"
+    /// Where a contract is declared, under lib/StateUI/Sources: the one file named for it.
+    static func path(of contract: any Contract.Type) throws -> String {
+        let name = "\(String(describing: contract)).swift"
+        let found = try sourcePaths.get()[name] ?? []
 
-        return "Contracts/\(folder)/\(String(describing: contract)).swift"
+        guard found.count == 1, let path = found.first else {
+            throw Unreadable(description: "\(name) is \(found.count) files under lib/StateUI/Sources")
+        }
+
+        return path
+    }
+
+    /// Every source's path under lib/StateUI/Sources, by its file name, read once.
+    private static let sourcePaths = Result {
+        Dictionary(grouping: try Fixtures.allSources().map(\.path), by: Fixtures.name(of:))
     }
 
     /// A member's value as Swift spells it: a property's type, an event's

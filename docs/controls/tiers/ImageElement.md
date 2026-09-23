@@ -8,7 +8,7 @@ Wears: [PropertyContainer](PropertyContainer.md)
 
 Worn by: [Button](../Button.md) · [Image](../Image.md)
 
-Declared in `lib/StateUI/Sources/Contracts/Tiers/ImageElementContract.swift`.
+Declared in `lib/StateUI/Sources/Contracts/Mixins/ImageElementContract.swift`.
 
 How each of them realizes these members is on its own page.
 

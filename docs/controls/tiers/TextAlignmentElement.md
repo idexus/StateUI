@@ -8,7 +8,7 @@ Wears: [VisualElement](VisualElement.md)
 
 Worn by: [Label](../Label.md) · [Picker](../Picker.md) · [SearchField](../SearchField.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md)
 
-Declared in `lib/StateUI/Sources/Contracts/Tiers/TextAlignmentElementContract.swift`.
+Declared in `lib/StateUI/Sources/Contracts/Mixins/TextAlignmentElementContract.swift`.
 
 How each of them realizes these members is on its own page.
 
