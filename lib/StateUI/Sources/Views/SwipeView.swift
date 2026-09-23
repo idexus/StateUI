@@ -1,12 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A view with actions hidden behind it, and the items a swipe reveals.
-
-/// SwipeView's own properties - the half a `Style<SwipeView>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `SwipeView`'s own properties, shared by the control and its
+/// `Style<SwipeView>`.
 public protocol SwipeViewProperties: PropertyContainer {}
 
 extension SwipeViewProperties {
@@ -34,9 +30,8 @@ extension SwipeViewProperties {
 /// items on each side of it, and `.execute` runs the first item on a full swipe
 /// with no tap at all.
 ///
-/// The items are NOT views - a `SwipeAction` is a menu item, which is a caption,
-/// a picture and something to run - so they are written with their own
-/// modifiers and go nowhere else in the tree.
+/// The items are not views: a `SwipeAction` is a menu item, with modifiers of
+/// its own.
 public struct SwipeView: View, SwipeViewProperties {
     /// The node this control describes.
     public var node: Node
@@ -46,26 +41,18 @@ public struct SwipeView: View, SwipeViewProperties {
         node = Node(contract: SwipeViewContract.self)
     }
 
-    /// A swipeable view around what the closure describes. A SwipeView holds
-    /// ONE view; put a layout in it if there is more than one thing to show.
-    /// The closure is kept and run when the differ describes the view.
+    /// A swipeable view around what the closure describes: one view, so put a
+    /// layout in it for more.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
         node = Node(contract: SwipeViewContract.self)
         node.producer = { content().map { $0.body } }
     }
 
-    // MARK: Properties
-
     // MARK: The swipe itself
-    //
-    // Three reports about the SWIPE, where `SwipeAction.onClicked` is about one
-    // item being chosen. A row that has to answer while the finger is still
-    // moving - a background that darkens as the items come out - listens here.
 
-    /// The reader has begun swiping.
+    /// The user has begun swiping.
     public func onSwipeStarted(_ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self {
-        // A report names the ONE direction a swipe went; a set of several
-        // is no answer to "which way?", and leaves the handler alone.
+        // A report naming more than one direction leaves the handler alone.
         onEvent(SwipeViewContract.swipeStarted) { direction in
             guard direction.isOneDirection else { return }
             try await handler(direction)
@@ -89,11 +76,6 @@ public struct SwipeView: View, SwipeViewProperties {
     }
 
     // MARK: The items
-    //
-    // Four collections, one per side. The mode, and what the open items do
-    // once one has run, belong to the COLLECTION rather than to an item, so
-    // they are parameters here, the same way a gesture's are parameters of the
-    // handler that listens for it.
 
     /// The items revealed by swiping right.
     ///
@@ -151,11 +133,8 @@ public struct SwipeView: View, SwipeViewProperties {
         self.items(.bottom, mode, swipeBehaviorOnInvoked, items)
     }
 
-    /// One collection, replacing whatever was on that side.
-    ///
-    /// The side rides as a property of the collection's own node: there is no
-    /// such thing as a node inside a property, so each collection is a child
-    /// that says which side it belongs to.
+    /// One collection, replacing whatever was on that side: a child node that
+    /// says which side it is.
     private func items(
         _ side: SwipeSide,
         _ mode: SwipeMode,
@@ -180,12 +159,8 @@ public struct SwipeView: View, SwipeViewProperties {
 
 /// Which of a SwipeView's four collections a set of items is.
 ///
-/// This library's own numbering: a closed vocabulary of four, so it rides the
-/// wire as a number like every other.
-///
-/// NOT `SwipeDirection`'s bits, however tempting: the left items are what a
-/// swipe to the RIGHT reveals, so the two vocabularies would agree on every
-/// name and disagree on every meaning.
+/// Not a `SwipeDirection`: the left items are what a swipe to the right
+/// reveals.
 public enum SwipeSide: Int32, Sendable, HostRepresentable {
     /// What `leftItems` holds - revealed by swiping right.
     case left = 0
@@ -207,9 +182,7 @@ public enum SwipeSide: Int32, Sendable, HostRepresentable {
 ///         .background(.gold)
 ///         .onClicked { favourites.insert(item) }
 ///
-/// Not a view: it has a caption, a picture, a colour behind it and something to
-/// run, and no layout of its own. So it takes none of the modifiers a view has,
-/// and it belongs inside one of a SwipeView's four collections and nowhere else.
+/// Not a view: it belongs inside one of a SwipeView's four collections.
 public struct SwipeAction: Element, MenuItemElement {
     /// The node this item describes.
     public var node: Node
@@ -223,10 +196,6 @@ public struct SwipeAction: Element, MenuItemElement {
 
     /// The node this item describes.
     public var body: Node { node }
-
-    // `text`, `icon`, `isDestructive`, `isEnabled` and `onClicked`
-    // are every menu item's and live on MenuItemElement, which this conforms
-    // to. What is left here is what a SWIPE action alone has.
 
     /// What is drawn behind it, which is how one item is told from the next.
     public func background(_ value: Color) -> Self {
@@ -248,8 +217,7 @@ public struct SwipeChange: Equatable, Sendable {
 
     /// How far it has travelled, in device units.
     ///
-    /// Signed: negative while the view moves left, positive while it moves
-    /// right, which is why it is not a distance.
+    /// Negative while the view moves left, positive while it moves right.
     public var offset: Double
 }
 
@@ -260,7 +228,6 @@ public struct SwipeEnd: Equatable, Sendable {
 
     /// Whether the items are left showing.
     ///
-    /// False for a swipe that did not reach the threshold and sprang back,
-    /// which is what tells a half-swipe from a real one.
+    /// False for a swipe that did not reach the threshold and sprang back.
     public var isOpen: Bool
 }

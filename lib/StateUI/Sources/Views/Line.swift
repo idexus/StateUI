@@ -12,11 +12,8 @@
 ///
 /// A line with no stroke draws nothing: it has no inside for `fill` to paint.
 ///
-/// Each coordinate left unsaid is zero, so `.x2(240)` on its own
-/// runs from the top left corner across. The four are modifiers rather than
-/// arguments for the reason every property here is one - only what gives a
-/// control its purpose goes in the initializer, and a line's purpose is not any
-/// one of the four.
+/// Each coordinate left unsaid is zero, so `.x2(240)` on its own runs from the
+/// top left corner across.
 public struct Line: Shape, LineProperties {
     /// The node this control describes.
     public var node: Node
@@ -27,10 +24,7 @@ public struct Line: Shape, LineProperties {
     }
 }
 
-/// Line's own properties - the half a `Style<Line>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Line`'s own properties, shared by the control and its `Style<Line>`.
 public protocol LineProperties: PropertyContainer {}
 
 extension LineProperties {

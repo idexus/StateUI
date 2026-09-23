@@ -1,17 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// How a control that shows artwork fills the room it is given.
-//
-// Its own file, for the reason BarElement.swift gives: Elements.swift is the
-// tier every VIEW shares and is checked against one fixture, and only two
-// controls show a picture.
-
-/// The artwork half shared by `Image` and `Button`.
-///
-/// The picture ITSELF is not here. `Image(_:)` and `Button(icon:)` take it in
-/// their initializer, because there it is the value that gives the control its
-/// purpose; beside a caption it is a button's `.icon(_:)`.
+/// How `Image` and `Button` fit their picture. The picture itself goes in
+/// their initializer, or in a button's `.icon(_:)`.
 public protocol ImageElement: PropertyContainer {}
 
 extension ImageElement {

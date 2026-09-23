@@ -13,10 +13,8 @@
 /// drawn 40 wide fills a 200-wide cell under `.fit` and stays 40 under
 /// `.center`.
 ///
-/// The data crosses as SVG text and the shared host parser normalizes it to
-/// absolute move, line, curve, arc and close commands. Native backends then
-/// translate that closed vocabulary to their drawing APIs, so the accepted
-/// grammar is not defined by any one platform.
+/// Every platform accepts the same grammar: the host parses the path itself
+/// before drawing it.
 public struct Path: Shape, PathProperties {
     /// The node this control describes.
     public var node: Node
@@ -26,18 +24,14 @@ public struct Path: Shape, PathProperties {
         node = Node(contract: PathContract.self)
     }
 
-    /// The outline, in SVG path syntax - which is the value that gives a Path
-    /// its purpose, so it goes in the initializer.
+    /// The outline, in SVG path syntax.
     public init(_ data: String) {
         node = Node(contract: PathContract.self)
         node.write(PathContract.data, data)
     }
 }
 
-/// Path's own properties - the half a `Style<Path>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Path`'s own properties, shared by the control and its `Style<Path>`.
 public protocol PathProperties: PropertyContainer {}
 
 extension PathProperties {

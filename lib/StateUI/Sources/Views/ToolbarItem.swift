@@ -40,11 +40,8 @@ public struct ToolbarItem: Element, MenuItemElement {
     /// The node this item describes.
     public var body: Node { node }
 
-    /// Who this item is, among the page's others - the same `.id()` a view
-    /// takes, so one value means one thing wherever identity is given.
-    ///
-    /// An item inserted in the middle is then matched to itself rather than to
-    /// whichever item now stands where it did.
+    /// Who this item is among the page's others, so an item inserted in the
+    /// middle is matched to itself rather than to whichever item stood there.
     ///
     /// - Parameter value: distinct among the page's items, and the same value
     ///   across renders.
@@ -54,16 +51,11 @@ public struct ToolbarItem: Element, MenuItemElement {
         return copy
     }
 
-    // `text`, `icon`, `isDestructive` and `isEnabled` are MenuItem's
-    // and live on MenuItemElement, which this conforms to. What is left here is
-    // what a TOOLBAR item alone has.
-
     /// Whether it sits on the bar itself or behind the overflow menu.
     public func placement(_ value: ToolbarItemPlacement) -> Self { setValue(ToolbarItemContract.placement, value) }
 
     /// Where this item sorts among items in the same order group.
     ///
-    /// Lower values appear first. Items with equal priority retain source
-    /// order, so one collection always produces one deterministic arrangement.
+    /// Lower values appear first; items of equal priority keep their order.
     public func priority(_ value: Int) -> Self { setValue(ToolbarItemContract.priority, value) }
 }

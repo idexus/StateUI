@@ -1,12 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A caption, a picture and action presentation shared by item-like elements.
-//
-// Its own file, for the reason BarElement.swift gives. These are not views at
-// all: none of the layout tier in Elements.swift applies to one and none of
-// this applies to a view.
-
 /// What a toolbar item, a menu entry and a swipe action all share: `text`,
 /// `icon`, `isDestructive`, `isEnabled` - and `onClicked`, what
 /// choosing one does.
@@ -17,11 +11,6 @@
 ///         .icon("trash.png")
 ///         .isDestructive(true)
 ///         .onClicked { delete() }
-///
-/// `Menu` deliberately stays outside this tier: a menu has a caption and
-/// entries and is never clicked, so its `isEnabled` remains its own property
-/// beside that structure, and an icon or a destructive look on it would
-/// describe a capability the native host contract does not apply.
 public protocol MenuItemElement: PropertyContainer {}
 
 extension MenuItemElement {
@@ -35,17 +24,14 @@ extension MenuItemElement {
         setValue(MenuItemElementContract.icon, value)
     }
 
-    /// Whether the platform draws it as a destructive action, so deletion and
-    /// similarly irreversible choices look like what they do.
-    ///
-    /// The LOOK only. It asks nothing and confirms nothing; a confirmation is
-    /// still the handler's to put up.
+    /// Whether the platform draws it as a destructive action. The look only: a
+    /// confirmation is still the handler's to put up.
     public func isDestructive(_ value: Bool) -> Modified {
         setValue(MenuItemElementContract.isDestructive, value)
     }
 
-    /// Whether it responds to selection. A disabled item remains visible, so
-    /// the reader still knows that the action exists.
+    /// Whether it responds to selection. A disabled item stays visible, so the
+    /// user still knows the action exists.
     public func isEnabled(_ value: Bool) -> Modified {
         setValue(MenuItemElementContract.isEnabled, value)
     }

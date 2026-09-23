@@ -1,36 +1,16 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// EVERY PROPERTY CAN BE HANDED A BINDING. The value modifiers take a value;
-// these take the state as `$x`, and the host carries it - so a property whose
-// value moves is never a reason to build the view again. What the host does
-// with it follows from the value:
-//
-//   a JOURNEY   a number, a colour, a thickness: the host walks the property
-//               there under the element's law - `$x.journey` is the trip -
-//               and `.motion(.none)` on the element lands it at once. The
-//               state goes on answering its plain type - a read is where the
-//               value is going.
-//   a PLAIN     a Bool, an Int, and the numbers that never travel (a range's
-//               ends, a spacing, a snap grid): the host sets the property as
-//               the value stands, on its own frames, and nothing walks.
-//   WORDS       a String: the host writes the words, as it writes a driven
-//               text.
-//
-// One line each, over the three helpers in Elements.swift, and generated from
-// the value forms: `testEveryValueModifierHasABindingTwin` holds the two
-// lists together. On the ELEMENT-side tiers, never the `…Properties` ones a
-// `StyleBag` wears, for the reason Driven.swift gives.
+// The binding twin of every value modifier: the property carried from a state,
+// `$x`, which the host animates, sets or writes with no view rebuilt.
+// Design: docs/design/views/bindings.md#binding-twins
 
 // MARK: - ActivityIndicator
 
 extension ActivityIndicator {
 
-    /// `isRunning`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `isRunning` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func isRunning(_ state: Binding<Bool>) -> Modified {
         plain(.isRunning, by: state)
     }
@@ -39,52 +19,32 @@ extension ActivityIndicator {
 // MARK: - Border
 
 extension Border {
-    /// `strokeDashOffset`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `strokeDashOffset` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func strokeDashOffset(_ state: Binding<Double>) -> Modified {
         journey(BorderContract.strokeDashOffset.token, by: state)
     }
 
-    /// `strokeLineCap`, handed on as `$x`: the host sets the member it names,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `strokeLineCap` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func strokeLineCap(_ state: Binding<LineCap>) -> Modified {
         plain(BorderContract.strokeLineCap.token, by: state)
     }
 
-    /// `strokeLineJoin`, handed on as `$x`: the host sets the member it names,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `strokeLineJoin` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func strokeLineJoin(_ state: Binding<LineJoin>) -> Modified {
         plain(BorderContract.strokeLineJoin.token, by: state)
     }
 
-    /// `strokeMiterLimit`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `strokeMiterLimit` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func strokeMiterLimit(_ state: Binding<Double>) -> Modified {
         journey(BorderContract.strokeMiterLimit.token, by: state)
     }
 
-    /// `strokeWidth`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `strokeWidth` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func strokeWidth(_ state: Binding<Double>) -> Modified {
         journey(BorderContract.strokeWidth.token, by: state)
     }
@@ -93,32 +53,20 @@ extension Border {
 // MARK: - BorderElement
 
 extension BorderElement where Self: VisualElement {
-    /// `borderColor`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `borderColor` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func borderColor(_ state: Binding<Color>) -> Modified {
         journey(BorderElementContract.borderColor, by: state)
     }
 
-    /// `borderWidth`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `borderWidth` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func borderWidth(_ state: Binding<Double>) -> Modified {
         journey(BorderElementContract.borderWidth, by: state)
     }
 
-    /// `cornerRadius`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `cornerRadius` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func cornerRadius(_ state: Binding<Int>) -> Modified {
         plain(BorderElementContract.cornerRadius, by: state)
     }
@@ -127,25 +75,15 @@ extension BorderElement where Self: VisualElement {
 // MARK: - ColorBox
 
 extension ColorBox {
-    /// `color`, handed on as `$x`: the host walks it there under the element's
-    /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state.
-    ///
-    /// Not `.background`, for the reason `color(_:)` gives: the
-    /// background is a second square behind the one a box draws.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `color` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
+    /// Not `.background`, which is a second square behind the one a box draws.
     public func color(_ state: Binding<Color>) -> Modified {
         journey(.color, by: state)
     }
 
-    /// `cornerRadius`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `cornerRadius` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func cornerRadius(_ state: Binding<Double>) -> Modified {
         plain(ColorBoxContract.cornerRadius.token, by: state)
     }
@@ -154,32 +92,20 @@ extension ColorBox {
 // MARK: - Button
 
 extension Button {
-    /// `iconPosition`, handed on as `$x`: the host sets the member it names,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `iconPosition` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func iconPosition(_ state: Binding<IconPosition>) -> Modified {
         plain(.iconPosition, by: state)
     }
 
-    /// `iconSpacing`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `iconSpacing` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func iconSpacing(_ state: Binding<Double>) -> Modified {
         journey(.iconSpacing, by: state)
     }
 
-    /// `lineBreak`, handed on as `$x`: the host sets the member it names,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `lineBreak` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func lineBreak(_ state: Binding<LineBreak>) -> Modified {
         plain(ButtonContract.lineBreak.token, by: state)
     }
@@ -188,11 +114,8 @@ extension Button {
 // MARK: - DatePicker
 
 extension DatePicker {
-    /// `isOpen`, handed on as `$x`: the host sets it as it is, and handing it
-    /// on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `isOpen` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
     public func isOpen(_ state: Binding<Bool>) -> Modified {
         plain(DatePickerContract.isOpen.token, by: state)
     }
@@ -201,12 +124,8 @@ extension DatePicker {
 // MARK: - DecorableTextElement
 
 extension DecorableTextElement where Self: VisualElement {
-    /// `textDecorations`, handed on as `$x`: the host sets the member it names,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `textDecorations` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func textDecorations(_ state: Binding<TextDecorations>) -> Modified {
         plain(DecorableTextElementContract.textDecorations, by: state)
     }
@@ -215,12 +134,8 @@ extension DecorableTextElement where Self: VisualElement {
 // MARK: - TextEditor
 
 extension TextEditor {
-    /// `growsWithText`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `growsWithText` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func growsWithText(_ state: Binding<Bool>) -> Modified {
         plain(.growsWithText, by: state)
     }
@@ -229,31 +144,20 @@ extension TextEditor {
 // MARK: - TextField
 
 extension TextField {
-    /// `showsClearButton`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `showsClearButton` from a state, `$x`: the host sets each new value as
+    /// it stands, and no view is rebuilt for it.
     public func showsClearButton(_ state: Binding<Bool>) -> Modified {
         plain(.showsClearButton, by: state)
     }
 
-    /// `isPassword`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `isPassword` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func isPassword(_ state: Binding<Bool>) -> Modified {
         plain(.isPassword, by: state)
     }
 
-    /// `returnKey`, handed on as `$x`: the host sets the member it names, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `returnKey` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func returnKey(_ state: Binding<ReturnKey>) -> Modified {
         plain(TextFieldContract.returnKey.token, by: state)
     }
@@ -262,32 +166,20 @@ extension TextField {
 // MARK: - FontElement
 
 extension FontElement where Self: VisualElement {
-    /// `fontAttributes`, handed on as `$x`: the host sets the member it names,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `fontAttributes` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func fontAttributes(_ state: Binding<FontAttributes>) -> Modified {
         plain(FontElementContract.fontAttributes, by: state)
     }
 
-    /// `fontAutoScalingEnabled`, handed on as `$x`: the host sets it as it is,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `fontAutoScalingEnabled` from a state, `$x`: the host sets each new
+    /// value as it stands, and no view is rebuilt for it.
     public func fontAutoScalingEnabled(_ state: Binding<Bool>) -> Modified {
         plain(FontElementContract.fontAutoScalingEnabled, by: state)
     }
 
-    /// `fontSize`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `fontSize` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func fontSize(_ state: Binding<Double>) -> Modified {
         journey(FontElementContract.fontSize, by: state)
     }
@@ -296,21 +188,14 @@ extension FontElement where Self: VisualElement {
 // MARK: - Grid
 
 extension Grid {
-    /// `columnSpacing`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `columnSpacing` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func columnSpacing(_ state: Binding<Double>) -> Modified {
         plain(.columnSpacing, by: state)
     }
 
-    /// `rowSpacing`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `rowSpacing` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func rowSpacing(_ state: Binding<Double>) -> Modified {
         plain(.rowSpacing, by: state)
     }
@@ -319,12 +204,8 @@ extension Grid {
 // MARK: - Image
 
 extension Image {
-    /// `isAnimating`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `isAnimating` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func isAnimating(_ state: Binding<Bool>) -> Modified {
         plain(.isAnimating, by: state)
     }
@@ -333,12 +214,8 @@ extension Image {
 // MARK: - ImageElement
 
 extension ImageElement where Self: VisualElement {
-    /// `aspect`, handed on as `$x`: the host sets the member it names, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `aspect` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
     public func aspect(_ state: Binding<Aspect>) -> Modified {
         plain(ImageElementContract.aspect, by: state)
     }
@@ -347,70 +224,44 @@ extension ImageElement where Self: VisualElement {
 // MARK: - PositionIndicator
 
 extension PositionIndicator {
-    /// `count`, handed on as `$x`: the host sets it as it is, and handing it on
-    /// reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `count` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
     public func count(_ state: Binding<Int>) -> Modified {
         plain(.count, by: state)
     }
 
-    /// `hideSingle`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `hideSingle` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func hideSingle(_ state: Binding<Bool>) -> Modified {
         plain(.hideSingle, by: state)
     }
 
-    /// `indicatorColor`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `indicatorColor` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func indicatorColor(_ state: Binding<Color>) -> Modified {
         journey(.indicatorColor, by: state)
     }
 
-    /// `indicatorSize`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `indicatorSize` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func indicatorSize(_ state: Binding<Double>) -> Modified {
         plain(.indicatorSize, by: state)
     }
 
-    /// `indicatorsShape`, handed on as `$x`: the host sets the member it names,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `indicatorsShape` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func indicatorsShape(_ state: Binding<IndicatorShape>) -> Modified {
         plain(.indicatorsShape, by: state)
     }
 
-    /// `maximumVisible`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `maximumVisible` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func maximumVisible(_ state: Binding<Int>) -> Modified {
         plain(.maximumVisible, by: state)
     }
 
-    /// `selectedIndicatorColor`, handed on as `$x`: the host walks it there
-    /// under the element's law, and handing it on reads nothing - a write
-    /// renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `selectedIndicatorColor` from a state, `$x`: the host animates the
+    /// property to each new value, and no view is rebuilt for it.
     public func selectedIndicatorColor(_ state: Binding<Color>) -> Modified {
         journey(.selectedIndicatorColor, by: state)
     }
@@ -419,89 +270,56 @@ extension PositionIndicator {
 // MARK: - InputView
 
 extension InputView {
-    /// `cursorPosition`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `cursorPosition` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func cursorPosition(_ state: Binding<Int>) -> Modified {
         plain(InputViewContract.cursorPosition, by: state)
     }
 
-    /// `isReadOnly`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `isReadOnly` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func isReadOnly(_ state: Binding<Bool>) -> Modified {
         plain(InputViewContract.isReadOnly, by: state)
     }
 
-    /// `isSpellCheckEnabled`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `isSpellCheckEnabled` from a state, `$x`: the host sets each new value
+    /// as it stands, and no view is rebuilt for it.
     public func isSpellCheckEnabled(_ state: Binding<Bool>) -> Modified {
         plain(InputViewContract.isSpellCheckEnabled, by: state)
     }
 
-    /// `isTextPredictionEnabled`, handed on as `$x`: the host sets it as it is,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `isTextPredictionEnabled` from a state, `$x`: the host sets each new
+    /// value as it stands, and no view is rebuilt for it.
     public func isTextPredictionEnabled(_ state: Binding<Bool>) -> Modified {
         plain(InputViewContract.isTextPredictionEnabled, by: state)
     }
 
-    /// `inputPurpose`, handed on as `$x`: the host sets the member it names, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `inputPurpose` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func inputPurpose(_ state: Binding<InputPurpose>) -> Modified {
         plain(InputViewContract.inputPurpose, by: state)
     }
 
-    /// `maximumLength`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `maximumLength` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func maximumLength(_ state: Binding<Int>) -> Modified {
         plain(InputViewContract.maximumLength, by: state)
     }
 
-    /// `placeholder`, handed on as `$x`: the host writes the words, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `placeholder` from a state, `$x`: the host writes each new text, and no
+    /// view is rebuilt for it.
     public func placeholder(_ state: Binding<String>) -> Modified {
         words(InputViewContract.placeholder, by: state)
     }
 
-    /// `placeholderColor`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `placeholderColor` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func placeholderColor(_ state: Binding<Color>) -> Modified {
         journey(InputViewContract.placeholderColor, by: state)
     }
 
-    /// `selectionLength`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `selectionLength` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func selectionLength(_ state: Binding<Int>) -> Modified {
         plain(InputViewContract.selectionLength, by: state)
     }
@@ -510,11 +328,8 @@ extension InputView {
 // MARK: - Label
 
 extension Label {
-    /// `maximumLines`, handed on as `$x`: the host sets it as it is, and handing it
-    /// on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `maximumLines` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func maximumLines(_ state: Binding<Int>) -> Modified {
         plain(.maximumLines, by: state)
     }
@@ -523,32 +338,20 @@ extension Label {
 // MARK: - Layout
 
 extension Layout {
-    /// `letsInputThrough`, handed on as `$x`: the host sets it as it is,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `letsInputThrough` from a state, `$x`: the host sets each new value as
+    /// it stands, and no view is rebuilt for it.
     public func letsInputThrough(_ state: Binding<Bool>) -> Modified {
         plain(LayoutContract.letsInputThrough, by: state)
     }
 
-    /// `clipsContent`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `clipsContent` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func clipsContent(_ state: Binding<Bool>) -> Modified {
         plain(LayoutContract.clipsContent, by: state)
     }
 
-    /// `avoidsSafeArea`, handed on as `$x`: the host sets the member it names,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `avoidsSafeArea` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func avoidsSafeArea(_ state: Binding<SafeArea>) -> Modified {
         plain(LayoutContract.avoidsSafeArea.token, by: state)
     }
@@ -557,42 +360,26 @@ extension Layout {
 // MARK: - Line
 
 extension Line {
-    /// `x1`, handed on as `$x`: the host walks it there under the element's
-    /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `x1` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func x1(_ state: Binding<Double>) -> Modified {
         journey(.x1, by: state)
     }
 
-    /// `x2`, handed on as `$x`: the host walks it there under the element's
-    /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `x2` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func x2(_ state: Binding<Double>) -> Modified {
         journey(.x2, by: state)
     }
 
-    /// `y1`, handed on as `$x`: the host walks it there under the element's
-    /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `y1` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func y1(_ state: Binding<Double>) -> Modified {
         journey(.y1, by: state)
     }
 
-    /// `y2`, handed on as `$x`: the host walks it there under the element's
-    /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `y2` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func y2(_ state: Binding<Double>) -> Modified {
         journey(.y2, by: state)
     }
@@ -601,11 +388,8 @@ extension Line {
 // MARK: - LineHeightElement
 
 extension LineHeightElement where Self: VisualElement {
-    /// `lineHeight`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `lineHeight` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func lineHeight(_ state: Binding<Double>) -> Modified {
         plain(LineHeightElementContract.lineHeight, by: state)
     }
@@ -614,12 +398,8 @@ extension LineHeightElement where Self: VisualElement {
 // MARK: - PaddingElement
 
 extension PaddingElement where Self: VisualElement {
-    /// `padding`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `padding` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func padding(_ state: Binding<Insets>) -> Modified {
         journey(PaddingElementContract.padding, by: state)
     }
@@ -628,12 +408,8 @@ extension PaddingElement where Self: VisualElement {
 // MARK: - Polygon
 
 extension Polygon {
-    /// `fillRule`, handed on as `$x`: the host sets the member it names, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `fillRule` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func fillRule(_ state: Binding<FillRule>) -> Modified {
         plain(PolygonContract.fillRule.token, by: state)
     }
@@ -642,12 +418,8 @@ extension Polygon {
 // MARK: - ProgressBar
 
 extension ProgressBar {
-    /// `progress`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `progress` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func progress(_ state: Binding<Double>) -> Modified {
         journey(.progress, by: state)
     }
@@ -656,12 +428,8 @@ extension ProgressBar {
 // MARK: - RadioButton
 
 extension RadioButton {
-    /// `textCase`, handed on as `$x`: the host sets the member it names,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `textCase` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func textCase(_ state: Binding<TextCase>) -> Modified {
         plain(.textCase, by: state)
     }
@@ -670,12 +438,8 @@ extension RadioButton {
 // MARK: - Rectangle
 
 extension Rectangle {
-    /// `cornerRadius`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `cornerRadius` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func cornerRadius(_ state: Binding<Double>) -> Modified {
         plain(RectangleContract.cornerRadius.token, by: state)
     }
@@ -684,12 +448,8 @@ extension Rectangle {
 // MARK: - RefreshView
 
 extension RefreshView {
-    /// `isRefreshEnabled`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `isRefreshEnabled` from a state, `$x`: the host sets each new value as
+    /// it stands, and no view is rebuilt for it.
     public func isRefreshEnabled(_ state: Binding<Bool>) -> Modified {
         plain(.isRefreshEnabled, by: state)
     }
@@ -698,32 +458,20 @@ extension RefreshView {
 // MARK: - ScrollView
 
 extension ScrollView {
-    /// `horizontalScrollBarVisibility`, handed on as `$x`: the host sets the
-    /// member it names, and handing it on reads nothing - a write renders only
-    /// a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `horizontalScrollBarVisibility` from a state, `$x`: the host sets each
+    /// new value as it stands, and no view is rebuilt for it.
     public func horizontalScrollBarVisibility(_ state: Binding<ScrollBarVisibility>) -> Modified {
         plain(.horizontalScrollBarVisibility, by: state)
     }
 
-    /// `orientation`, handed on as `$x`: the host sets the member it names, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `orientation` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func orientation(_ state: Binding<ScrollOrientation>) -> Modified {
         plain(.orientation, by: state)
     }
 
-    /// `verticalScrollBarVisibility`, handed on as `$x`: the host sets the
-    /// member it names, and handing it on reads nothing - a write renders only
-    /// a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `verticalScrollBarVisibility` from a state, `$x`: the host sets each new
+    /// value as it stands, and no view is rebuilt for it.
     public func verticalScrollBarVisibility(_ state: Binding<ScrollBarVisibility>) -> Modified {
         plain(.verticalScrollBarVisibility, by: state)
     }
@@ -732,42 +480,26 @@ extension ScrollView {
 // MARK: - Shape
 
 extension Shape {
-    /// `aspect`, handed on as `$x`: the host sets the member it names, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `aspect` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
     public func aspect(_ state: Binding<Aspect>) -> Modified {
         plain(ShapeContract.aspect, by: state)
     }
 
-    /// `strokeDashOffset`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `strokeDashOffset` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func strokeDashOffset(_ state: Binding<Double>) -> Modified {
         journey(ShapeContract.strokeDashOffset, by: state)
     }
 
-    /// `strokeMiterLimit`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `strokeMiterLimit` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func strokeMiterLimit(_ state: Binding<Double>) -> Modified {
         journey(ShapeContract.strokeMiterLimit, by: state)
     }
 
-    /// `strokeWidth`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `strokeWidth` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func strokeWidth(_ state: Binding<Double>) -> Modified {
         journey(ShapeContract.strokeWidth, by: state)
     }
@@ -776,20 +508,14 @@ extension Shape {
 // MARK: - Slider
 
 extension Slider {
-    /// `maximum`, handed on as `$x`: the host sets it as it is, and handing it
-    /// on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `maximum` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
     public func maximum(_ state: Binding<Double>) -> Modified {
         plain(SliderContract.maximum.token, by: state)
     }
 
-    /// `minimum`, handed on as `$x`: the host sets it as it is, and handing it
-    /// on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `minimum` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
     public func minimum(_ state: Binding<Double>) -> Modified {
         plain(SliderContract.minimum.token, by: state)
     }
@@ -798,12 +524,8 @@ extension Slider {
 // MARK: - StackBase
 
 extension StackBase {
-    /// `spacing`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `spacing` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func spacing(_ state: Binding<Double>) -> Modified {
         journey(StackBaseContract.spacing, by: state)
     }
@@ -812,11 +534,8 @@ extension StackBase {
 // MARK: - Stepper
 
 extension Stepper {
-    /// `step`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `step` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
     public func step(_ state: Binding<Double>) -> Modified {
         plain(.step, by: state)
     }
@@ -825,11 +544,8 @@ extension Stepper {
 // MARK: - SwipeView
 
 extension SwipeView {
-    /// `threshold`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `threshold` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func threshold(_ state: Binding<Double>) -> Modified {
         plain(.threshold, by: state)
     }
@@ -838,22 +554,14 @@ extension SwipeView {
 // MARK: - TextAlignmentElement
 
 extension TextAlignmentElement where Self: VisualElement {
-    /// `horizontalTextAlignment`, handed on as `$x`: the host sets the member
-    /// it names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `horizontalTextAlignment` from a state, `$x`: the host sets each new
+    /// value as it stands, and no view is rebuilt for it.
     public func horizontalTextAlignment(_ state: Binding<TextAlignment>) -> Modified {
         plain(TextAlignmentElementContract.horizontalTextAlignment, by: state)
     }
 
-    /// `verticalTextAlignment`, handed on as `$x`: the host sets the member it
-    /// names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `verticalTextAlignment` from a state, `$x`: the host sets each new value
+    /// as it stands, and no view is rebuilt for it.
     public func verticalTextAlignment(_ state: Binding<TextAlignment>) -> Modified {
         plain(TextAlignmentElementContract.verticalTextAlignment, by: state)
     }
@@ -862,22 +570,14 @@ extension TextAlignmentElement where Self: VisualElement {
 // MARK: - TextStyleElement
 
 extension TextStyleElement where Self: VisualElement {
-    /// `characterSpacing`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `characterSpacing` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func characterSpacing(_ state: Binding<Double>) -> Modified {
         journey(TextStyleElementContract.characterSpacing, by: state)
     }
 
-    /// `textColor`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `textColor` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func textColor(_ state: Binding<Color>) -> Modified {
         journey(TextStyleElementContract.textColor, by: state)
     }
@@ -886,12 +586,8 @@ extension TextStyleElement where Self: VisualElement {
 // MARK: - TintElement
 
 extension TintElement where Self: VisualElement {
-    /// `tint`, handed on as `$x`: the host walks it there under the element's
-    /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `tint` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func tint(_ state: Binding<Color>) -> Modified {
         journey(TintElementContract.tint, by: state)
     }
@@ -900,79 +596,50 @@ extension TintElement where Self: VisualElement {
 // MARK: - View
 
 extension View {
-    /// `absoluteLayoutProportions`, handed on as `$x`: the host sets the member it
-    /// names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `absoluteLayoutProportions` from a state, `$x`: the host sets each new
+    /// value as it stands, and no view is rebuilt for it.
     public func absoluteLayoutProportions(_ state: Binding<AbsoluteLayoutProportions>) -> Modified {
         plain(ViewContract.absoluteLayoutProportions, by: state)
     }
 
-    /// `gridColumn`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `gridColumn` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func gridColumn(_ state: Binding<Int>) -> Modified {
         plain(ViewContract.gridColumn, by: state)
     }
 
-    /// `gridColumnSpan`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `gridColumnSpan` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func gridColumnSpan(_ state: Binding<Int>) -> Modified {
         plain(ViewContract.gridColumnSpan, by: state)
     }
 
-    /// `gridRow`, handed on as `$x`: the host sets it as it is, and handing it
-    /// on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `gridRow` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
     public func gridRow(_ state: Binding<Int>) -> Modified {
         plain(ViewContract.gridRow, by: state)
     }
 
-    /// `gridRowSpan`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `gridRowSpan` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func gridRowSpan(_ state: Binding<Int>) -> Modified {
         plain(ViewContract.gridRowSpan, by: state)
     }
 
-    /// `horizontalAlignment`, handed on as `$x`: the host sets the member it
-    /// names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `horizontalAlignment` from a state, `$x`: the host sets each new value
+    /// as it stands, and no view is rebuilt for it.
     public func horizontalAlignment(_ state: Binding<Alignment>) -> Modified {
         plain(ViewContract.horizontalAlignment, by: state)
     }
 
-    /// `margin`, handed on as `$x`: the host walks it there under the element's
-    /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `margin` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func margin(_ state: Binding<Insets>) -> Modified {
         journey(ViewContract.margin, by: state)
     }
 
-    /// `verticalAlignment`, handed on as `$x`: the host sets the member it names,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `verticalAlignment` from a state, `$x`: the host sets each new value as
+    /// it stands, and no view is rebuilt for it.
     public func verticalAlignment(_ state: Binding<Alignment>) -> Modified {
         plain(ViewContract.verticalAlignment, by: state)
     }
@@ -981,289 +648,176 @@ extension View {
 // MARK: - VisualElement
 
 extension VisualElement {
-    /// `pivotX`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `pivotX` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func pivotX(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.pivotX, by: state)
     }
 
-    /// `pivotY`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `pivotY` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func pivotY(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.pivotY, by: state)
     }
 
-    /// `accessibilityIdentifier`, handed on as `$x`: the host writes the words, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `accessibilityIdentifier` from a state, `$x`: the host writes each new
+    /// text, and no view is rebuilt for it.
     public func accessibilityIdentifier(_ state: Binding<String>) -> Modified {
         words(PropertyContainerContract.accessibilityIdentifier, by: state)
     }
 
-    /// `automationExcludedWithChildren`, handed on as `$x`: the host sets it as
-    /// it is, and handing it on reads nothing - a write renders only a body
-    /// that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `automationExcludedWithChildren` from a state, `$x`: the host sets each
+    /// new value as it stands, and no view is rebuilt for it.
     public func automationExcludedWithChildren(_ state: Binding<Bool>) -> Modified {
         plain(VisualElementContract.automationExcludedWithChildren, by: state)
     }
 
-    /// `isAccessibilityHidden`, handed on as `$x`: the host sets it as
-    /// it is, and handing it on reads nothing - a write renders only a body
-    /// that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `isAccessibilityHidden` from a state, `$x`: the host sets each new value
+    /// as it stands, and no view is rebuilt for it.
     public func isAccessibilityHidden(_ state: Binding<Bool>) -> Modified {
         plain(VisualElementContract.isAccessibilityHidden, by: state)
     }
 
-    /// `background`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `background` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func background(_ state: Binding<Color>) -> Modified {
         journey(VisualElementContract.background.token, by: state)
     }
 
-    /// `layoutDirection`, handed on as `$x`: the host sets the member it names,
-    /// and handing it on reads nothing - a write renders only a body that reads
-    /// the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `layoutDirection` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func layoutDirection(_ state: Binding<LayoutDirection>) -> Modified {
         plain(VisualElementContract.layoutDirection, by: state)
     }
 
-    /// `height`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `height` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func height(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.height, by: state)
     }
 
-    /// `ignoresInput`, handed on as `$x`: the host sets it as it is, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `ignoresInput` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func ignoresInput(_ state: Binding<Bool>) -> Modified {
         plain(VisualElementContract.ignoresInput, by: state)
     }
 
-    /// `isEnabled`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `isEnabled` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func isEnabled(_ state: Binding<Bool>) -> Modified {
         plain(VisualElementContract.isEnabled, by: state)
     }
 
-    /// `isVisible`, handed on as `$x`: the host sets it as it is, and handing
-    /// it on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `isVisible` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
     public func isVisible(_ state: Binding<Bool>) -> Modified {
         plain(VisualElementContract.isVisible, by: state)
     }
 
-    /// `maximumHeight`, handed on as `$x`: the host walks it there under
-    /// the element's law, and handing it on reads nothing - a write renders
-    /// only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `maximumHeight` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func maximumHeight(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.maximumHeight, by: state)
     }
 
-    /// `maximumWidth`, handed on as `$x`: the host walks it there under
-    /// the element's law, and handing it on reads nothing - a write renders
-    /// only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `maximumWidth` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func maximumWidth(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.maximumWidth, by: state)
     }
 
-    /// `minimumHeight`, handed on as `$x`: the host walks it there under
-    /// the element's law, and handing it on reads nothing - a write renders
-    /// only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `minimumHeight` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func minimumHeight(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.minimumHeight, by: state)
     }
 
-    /// `minimumWidth`, handed on as `$x`: the host walks it there under
-    /// the element's law, and handing it on reads nothing - a write renders
-    /// only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `minimumWidth` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func minimumWidth(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.minimumWidth, by: state)
     }
 
-    /// `opacity`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `opacity` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func opacity(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.opacity, by: state)
     }
 
-    /// `rotation`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `rotation` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func rotation(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.rotation, by: state)
     }
 
-    /// `rotationX`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `rotationX` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func rotationX(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.rotationX, by: state)
     }
 
-    /// `rotationY`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `rotationY` from a state, `$x`: the host animates the property to each
+    /// new value, and no view is rebuilt for it.
     public func rotationY(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.rotationY, by: state)
     }
 
-    /// `scale`, handed on as `$x`: the host walks it there under the element's
-    /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `scale` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func scale(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.scale, by: state)
     }
 
-    /// `scaleX`, handed on as `$x`: the host walks it there under the element's
-    /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `scaleX` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func scaleX(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.scaleX, by: state)
     }
 
-    /// `scaleY`, handed on as `$x`: the host walks it there under the element's
-    /// law, and handing it on reads nothing - a write renders only a body that
-    /// reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `scaleY` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func scaleY(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.scaleY, by: state)
     }
 
-    /// `accessibilityLabel`, handed on as `$x`: the host writes the words, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `accessibilityLabel` from a state, `$x`: the host writes each new text,
+    /// and no view is rebuilt for it.
     public func accessibilityLabel(_ state: Binding<String>) -> Modified {
         words(VisualElementContract.accessibilityLabel, by: state)
     }
 
-    /// `accessibilityHeadingLevel`, handed on as `$x`: the host sets the member it
-    /// names, and handing it on reads nothing - a write renders only a body
-    /// that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `accessibilityHeadingLevel` from a state, `$x`: the host sets each new
+    /// value as it stands, and no view is rebuilt for it.
     public func accessibilityHeadingLevel(_ state: Binding<HeadingLevel>) -> Modified {
         plain(VisualElementContract.accessibilityHeadingLevel, by: state)
     }
 
-    /// `accessibilityHint`, handed on as `$x`: the host writes the words, and
-    /// handing it on reads nothing - a write renders only a body that reads the
-    /// state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `accessibilityHint` from a state, `$x`: the host writes each new text,
+    /// and no view is rebuilt for it.
     public func accessibilityHint(_ state: Binding<String>) -> Modified {
         words(VisualElementContract.accessibilityHint, by: state)
     }
 
-    /// `translationX`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `translationX` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func translationX(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.translationX, by: state)
     }
 
-    /// `translationY`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `translationY` from a state, `$x`: the host animates the property to
+    /// each new value, and no view is rebuilt for it.
     public func translationY(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.translationY, by: state)
     }
 
-    /// `width`, handed on as `$x`: the host walks it there under the
-    /// element's law, and handing it on reads nothing - a write renders only a
-    /// body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `width` from a state, `$x`: the host animates the property to each new
+    /// value, and no view is rebuilt for it.
     public func width(_ state: Binding<Double>) -> Modified {
         journey(VisualElementContract.width, by: state)
     }
 
-    /// `zIndex`, handed on as `$x`: the host sets it as it is, and handing it
-    /// on reads nothing - a write renders only a body that reads the state.
-    ///
-    /// - Parameter state: the state the property is read from.
-    /// - Returns: the element, with the property carried from that state.
+    /// `zIndex` from a state, `$x`: the host sets each new value as it stands,
+    /// and no view is rebuilt for it.
     public func zIndex(_ state: Binding<Int>) -> Modified {
         plain(VisualElementContract.zIndex, by: state)
     }

@@ -1,18 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Slider's own properties - the half a `Style<Slider>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Slider`'s own properties, shared by the control and its `Style<Slider>`.
 public protocol SliderProperties: PropertyContainer {}
 
 extension SliderProperties {
-    /// Where the thumb stands, between `minimum` and `maximum`.
-    ///
-    /// `Slider(0.5)` and `Slider($volume)` both say this from their argument,
-    /// so a modifier written beside one wins - and a binding goes on being
-    /// written back to, which is how the two can then disagree.
+    /// Where the thumb stands, between `minimum` and `maximum`. Usually given
+    /// in the initializer.
     public func value(_ value: Double) -> Modified {
         setValue(SliderContract.value, value)
     }
@@ -55,51 +49,28 @@ public struct Slider: View, TintElement, SliderProperties {
         node.write(SliderContract.value, value)
     }
 
-    /// Two-way: shows what the state holds and writes back what is dragged -
-    /// and HANDED OVER, so the slider is no reader of the state.
+    /// Two-way: shows what the state holds and writes back what the user drags,
+    /// with no view rebuilt for it.
     ///
     ///     @State private var volume = 0.0
     ///
     ///     Slider($volume)
     ///
-    /// The host carries the value as a journey. An assignment (`volume = 1`)
-    /// sends the thumb there under the element's law - `.motion(.none)` on the
-    /// slider lands it at once - and a drag is written back onto the value and
-    /// its destination together, so nothing aims the thumb out from under the
-    /// hand holding it. What a drag COSTS is decided by who reads `volume` at
-    /// build: nothing where nobody prints it, and a render per report for the
-    /// body that does. A reading that keeps up with every report is a text an
-    /// engine following `$volume` writes, or `$volume.convert { … }`.
-    ///
-    /// The journey is the state's, as every walked state's is: `$volume.journey`
-    /// reads where the thumb IS while the host walks it, and
+    /// An assignment (`volume = 1`) animates the thumb there under the
+    /// element's motion; `$volume.journey` reads where the thumb is, and
     /// `try await $volume.journey.move(to: 1)` waits for the arrival.
     public init(_ value: Binding<Double>) {
         self = Slider().value(value)
     }
 
+    // Design: docs/design/views/bindings.md#a-finger-takes-a-moving-thumb
     /// The same two-way value as `Slider($value)`, written as a modifier.
     ///
     ///     Slider($volume)
     ///     Slider().value($volume)
     ///
-    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
-    /// the short way to say what gives this control its purpose, and the
-    /// modifier is the way every other property is written. Neither is the
-    /// real one.
-    ///
-    /// BOTH WAYS: a value written to the state moves the thumb, and the
-    /// reader's own drag is written back onto the journey's value and
-    /// destination together, so nothing aims the thumb out from under the hand
-    /// holding it. What tells the two apart is WHEN the platform's report
-    /// arrives - one raised inside the host's own write is the host hearing
-    /// itself and is dropped.
-    ///
-    /// **A FINGER TAKES A THUMB THAT IS ALREADY MOVING.** Its first report ends
-    /// the old journey where the reader put it, zeroes its velocity and resumes
-    /// an awaiting move with `false`. From then on every report writes the
-    /// journey's value and destination together, so nothing pulls against the
-    /// hand.
+    /// A finger that takes a moving thumb stops its animation where the user
+    /// holds it, and an awaiting move resumes with `false`.
     ///
     /// - Parameter value: the state the thumb shows and writes back into,
     ///   carried by the host as a journey.
@@ -108,15 +79,10 @@ public struct Slider: View, TintElement, SliderProperties {
         journey(SliderContract.value.token, by: value)
     }
 
-    // MARK: Properties
-
     // MARK: Events
 
-    /// Fires on every step of a drag, with the value dragged to. Runs after a
-    /// binding's write, if there is one.
-    ///
-    /// Work heavy enough to stutter belongs in `.onDragCompleted` instead, this
-    /// one running for every position the thumb passes through.
+    /// Fires on every step of a drag, with the value dragged to, after a
+    /// binding's write. Heavy work belongs in `.onDragCompleted`.
     public func onValueChanged(_ handler: @escaping ValueEventHandler<Double>) -> Self {
         onEvent(SliderContract.valueChanged, handler)
     }

@@ -14,15 +14,11 @@
 ///     }
 ///     .height(160)
 ///
-/// Where a child sits is written on the CHILD, with `.absoluteLayoutBounds(…)`
-/// and `.absoluteLayoutProportions(…)`. Those two modifiers are on `ViewProperties`,
-/// so any view can carry them; see Elements.swift.
-///
-/// The FLAGS decide how the four numbers in the bounds are read: each is either
-/// a fraction of the layout or a length in device units. That is what makes an
-/// absolute layout worth using on a screen whose size is not known -
+/// Where a child sits is written on the child, with `.absoluteLayoutBounds(…)`
+/// and `.absoluteLayoutProportions(…)`. The proportions say which of the four
+/// numbers are fractions of the layout rather than device units:
 /// `Rect(0.5, 0, 0.5, 1)` with `.all` is the right-hand half, whatever the
-/// window turns out to be.
+/// window's size.
 ///
 /// A child that says neither sits at 0,0 at the size it measures itself at -
 /// which is why children with no bounds of their own end up drawn on top of
@@ -39,9 +35,8 @@ public struct AbsoluteLayout: Layout {
     ///             Rect(1, 1, AbsoluteLayout.autoSize, AbsoluteLayout.autoSize))
     ///         .absoluteLayoutProportions(.position)
     ///
-    /// Only the POSITION is proportional there: a size the child chooses is not
-    /// a fraction of anything, so `.size` and this cannot both be
-    /// meant at once.
+    /// Only the position can be proportional there: a size the child chooses
+    /// is not a fraction of anything.
     public static let autoSize = -1.0
 
     /// An empty one - what a `Style<AbsoluteLayout>` is written against.
@@ -51,21 +46,14 @@ public struct AbsoluteLayout: Layout {
 
     /// A layout holding what the closure describes. Where each child sits is
     /// written on the child, with `.absoluteLayoutBounds`.
-    /// The closure is kept and run when the differ describes the layout.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
         node = Node(contract: AbsoluteLayoutContract.self)
         node.producer = { content().map { $0.body } }
     }
 
-    /// Says these children are ROWS: interchangeable subtrees, a few described
-    /// at a time out of many, so the host keeps the control of a row that
-    /// scrolls away and gives it to the next row of the same SHAPE.
-    ///
-    /// Internal, and it stays internal: what it promises is that any child of
-    /// this layout could stand where any other of the same shape stands, which
-    /// is true of a list's rows and of a gallery's cards by construction and
-    /// is not something a caller can be asked to be sure of. See
-    /// Core/Recycling.swift.
+    /// Says these children are rows the host may keep and hand to the next row
+    /// of the same shape - internal, since only this library can promise it.
+    /// Design: docs/design/views/lists.md#recycling
     func recycling() -> AbsoluteLayout {
         var copy = self
         copy.node.recycles = true

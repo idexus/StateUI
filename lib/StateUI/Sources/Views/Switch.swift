@@ -1,20 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// An on/off toggle.
-
-/// Switch's own properties - the half a `Style<Switch>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Switch`'s own properties, shared by the control and its `Style<Switch>`.
 public protocol SwitchProperties: PropertyContainer {}
 
 extension SwitchProperties {
-    /// Which way it is thrown - true for on.
-    ///
-    /// `Switch(true)` and `Switch($soundOn)` both say this from their argument,
-    /// so a modifier written beside one wins - and a binding goes on being
-    /// written back to, which is how the two can then disagree.
+    /// Which way it is thrown - true for on. Usually given in the initializer.
     public func isOn(_ value: Bool) -> Modified {
         setValue(SwitchContract.isOn, value)
     }
@@ -42,7 +33,7 @@ public struct Switch: View, TintElement, SwitchProperties {
     }
 
     /// A switch showing `isOn`. One-way: the flip goes nowhere without
-    /// `.onToggled` - CheckBox's `CheckBox(true)` is the same pair.
+    /// `.onToggled`.
     public init(_ isOn: Bool) {
         node = Node(contract: SwitchContract.self)
         node.write(SwitchContract.isOn, isOn)
@@ -53,20 +44,16 @@ public struct Switch: View, TintElement, SwitchProperties {
         self = Switch().isOn(isOn)
     }
 
-    /// Two-way: shows what the state holds and writes back what is flipped -
-    /// and HANDED OVER, so the switch is no reader of the state. The host
-    /// sets the toggle from the state and lands a flip on it as its own
-    /// write, and what a flip COSTS is decided by who reads the state at
-    /// build. A part of a state, or a binding made from closures, is one the
-    /// host cannot carry: the tree shows it, and the closure that wrote it
-    /// renders per flip.
+    // Design: docs/design/views/bindings.md#two-way-controls
+    /// Two-way: shows what the state holds and writes back what is flipped,
+    /// with no view rebuilt for it.
     ///
     ///     @State private var on = false
     ///
     ///     Switch($on)
     ///
-    /// - Parameter value: the state shown, and written back into as the
-    ///   reader flips it.
+    /// - Parameter value: the state shown, and written back into as the user
+    ///   flips it.
     /// - Returns: the switch, wearing and reporting that value.
     public func isOn(_ value: Binding<Bool>) -> Modified {
         value.image == nil
@@ -74,12 +61,10 @@ public struct Switch: View, TintElement, SwitchProperties {
             : plain(SwitchContract.isOn.token, by: value, mode: .inOut)
     }
 
-    // MARK: Properties
-
     // MARK: Events
 
-    /// Fires when it is flipped, with the way it was flipped TO. Runs after a
-    /// binding's write, if there is one.
+    /// Fires when it is flipped, with the way it was flipped to. Runs after a
+    /// binding's write.
     public func onToggled(_ handler: @escaping ValueEventHandler<Bool>) -> Self {
         onEvent(SwitchContract.toggled, handler)
     }

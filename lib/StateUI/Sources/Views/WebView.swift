@@ -1,12 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A view showing web content, and the acts aimed at it.
-
-/// WebView's own properties - the half a `Style<WebView>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `WebView`'s own properties, shared by the control and its `Style<WebView>`.
 public protocol WebViewProperties: PropertyContainer {}
 
 extension WebViewProperties {
@@ -20,10 +15,6 @@ extension WebViewProperties {
     }
 
     /// The page it shows, by URL.
-    ///
-    /// The kind travels in front of the address - see `WebViewSource` -
-    /// because a source is one of two things and the wire says which rather
-    /// than leaving the host to tell them apart by shape.
     public func source(_ url: String) -> Modified {
         setValue(WebViewContract.source, .url(url))
     }
@@ -47,15 +38,13 @@ extension WebViewProperties {
 ///     WebView()
 ///         .source(html: "<h1>Hello</h1>")
 ///
-/// The web content scrolls ITSELF, so a WebView wants room of its own - a Grid
-/// row, or a page without a scroller - rather than a place inside a ScrollView,
-/// where the two scrollers fight over every drag. Same rule as any gesture.
+/// The web content scrolls itself, so give it room of its own - a Grid row, or
+/// a page without a scroller - rather than a place inside a ScrollView.
 ///
-/// Everything the view is TOLD to do is an ACT aimed at it - `browser.goBack()`,
-/// `browser.reload()`, `browser.evaluateJavaScript("…")` - because a description
-/// has no control to call a method on. `.aim(_:)` is what puts the view in the
-/// `Aim` those are called on. What the view REPORTS travels the
-/// other way, into a binding: `.canGoBack($hasBack)`.
+/// What the view is told to do is an act called through its aim -
+/// `browser.goBack()`, `browser.reload()`,
+/// `browser.evaluateJavaScript("…")`; what it reports arrives in a binding,
+/// `.canGoBack($hasBack)`.
 public struct WebView: View, WebViewProperties {
     /// The node this control describes.
     public var node: Node
@@ -71,13 +60,10 @@ public struct WebView: View, WebViewProperties {
         node.write(WebViewContract.source, .url(url))
     }
 
-    // MARK: Properties
-
     // MARK: What the platform reports
 
-    /// Whether there is a page behind this one - what enables a Back button.
-    /// Read-only, and set by the platform after every navigation, so this only
-    /// writes INTO the binding.
+    /// Whether there is a page behind this one - what enables a Back button -
+    /// written into the binding by the platform after every navigation.
     public func canGoBack(_ binding: Binding<Bool>) -> Self {
         onEvent(WebViewContract.canGoBackChanged) { can in
             binding.wrappedValue = can
@@ -85,8 +71,7 @@ public struct WebView: View, WebViewProperties {
     }
 
     /// Whether there is a page ahead of this one - true only after going back,
-    /// and what enables a Forward button. Written INTO the binding by the
-    /// platform, like `canGoBack`.
+    /// and what enables a Forward button - written into the binding.
     public func canGoForward(_ binding: Binding<Bool>) -> Self {
         onEvent(WebViewContract.canGoForwardChanged) { can in
             binding.wrappedValue = can
@@ -95,12 +80,8 @@ public struct WebView: View, WebViewProperties {
 
     // MARK: Events
 
-    /// Fires as a navigation starts, with where it is going.
-    ///
-    /// OBSERVING only: the platform can cancel a navigation only before its
-    /// own event returns, and a handler here runs a boundary away, after it
-    /// has - so there is deliberately nothing to set. A page that must not be
-    /// left is a page not navigated to.
+    /// Fires as a navigation starts, with where it is going. Observing only: it
+    /// cannot cancel the navigation.
     public func onNavigating(_ handler: @escaping ValueEventHandler<WebNavigation>) -> Self {
         onEvent(WebViewContract.navigating) { event, url in
             try await handler(WebNavigation(event: event, url: url))
@@ -125,17 +106,10 @@ public struct WebView: View, WebViewProperties {
 // MARK: - What a navigation reports
 
 /// Why a navigation happened.
-///
-/// The numbers are THIS LIBRARY's, declaration order from 0, and the host
-/// translates its toolkit's reason onto the member that means the same. A
-/// toolkit's own numbers stay out of it: a toolkit release free to renumber
-/// its enum would otherwise have every report here read as a different
-/// reason, silently.
 public enum WebNavigationEvent: Int32, Sendable, HostRepresentable {
     /// No reason named - what the host answers for a reason it has no case
-    /// for. Windows sends this for a view's FIRST navigation - the source it
-    /// was given before its browser existed - so it is an ordinary answer
-    /// there rather than a fault.
+    /// for. Windows sends it for a view's first navigation, so it is an
+    /// ordinary answer there rather than a fault.
     case unknown = 0
 
     /// The view went back a page.
@@ -150,10 +124,8 @@ public enum WebNavigationEvent: Int32, Sendable, HostRepresentable {
     /// The same page, fetched again.
     case refresh = 4
 
-    /// The member a number names - a closed vocabulary, so `.enumeration` and
-    /// not a plain number - and `.unknown` for a member this side has no case
-    /// for. Nil for anything that is not one, so a report of the wrong SHAPE
-    /// still leaves the handler alone.
+    /// The member a number names, `.unknown` for one this side has no case for,
+    /// and nil for anything that is not a member.
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
         guard case .enumeration(let member) = propValue else { return nil }
@@ -162,14 +134,9 @@ public enum WebNavigationEvent: Int32, Sendable, HostRepresentable {
 }
 
 /// How a navigation ended.
-///
-/// The numbers are THIS LIBRARY's and the host translates its toolkit's
-/// outcome onto the member that means the same, exactly as
-/// `WebNavigationEvent` above.
 public enum WebNavigationResult: Int32, Sendable, HostRepresentable {
-    /// No outcome named - and what the host answers for an outcome it has no
-    /// case for. Read `.success` before treating a navigation as arrived;
-    /// this is not it.
+    /// No outcome named - what the host answers for an outcome it has no case
+    /// for. Only `.success` means the page arrived.
     case unknown = 0
 
     /// The page arrived.
@@ -184,10 +151,8 @@ public enum WebNavigationResult: Int32, Sendable, HostRepresentable {
     /// It could not be fetched - no connection, no such host, an error page.
     case failure = 4
 
-    /// The member a number names - a closed vocabulary, so `.enumeration` and
-    /// not a plain number - and `.unknown` for a member this side has no case
-    /// for. Nil for anything that is not one, so a report of the wrong SHAPE
-    /// still leaves the handler alone.
+    /// The member a number names, `.unknown` for one this side has no case for,
+    /// and nil for anything that is not a member.
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
         guard case .enumeration(let member) = propValue else { return nil }
@@ -218,17 +183,11 @@ public struct WebNavigated: Equatable, Sendable {
 
 // MARK: - What it shows
 
+// Design: docs/design/views/controls.md#web-view
 /// What a web view shows: a page fetched from an address, or a document
 /// written here.
 ///
 ///     WebView().source(html: "<h1>Offline</h1>")
-///
-/// The kind crosses in front of what it is made of, because a source is one
-/// of two things and the wire says which rather than leaving the host to tell
-/// them apart by shape: an address as the kind and the address, a document as
-/// the kind, the document and its base address or nothing - three values
-/// whether or not there is a base address, so the host reads the same three
-/// places every time.
 public enum WebViewSource: Equatable, Sendable, HostRepresentable {
     /// A page fetched from an address.
     case url(String)
@@ -237,8 +196,7 @@ public enum WebViewSource: Equatable, Sendable, HostRepresentable {
     /// relative links resolve against, where there is one.
     case html(String, baseUrl: String?)
 
-    /// Which of the two a source is, as the number that crosses - numbered by
-    /// this library, the way a `BorderShape`'s kinds are.
+    /// Which of the two a source is, as the number that crosses.
     private enum Kind: Int32 {
         case url = 0
         case html = 1

@@ -5,9 +5,7 @@
 /// or under way in - a switch that is on, the covered part of a slider, a
 /// ticked box, the filled part of a bar, a spinner.
 ///
-/// One colour, because it is the one a control's look reliably has on every
-/// platform; a host with no way to tint a control draws the platform's own
-/// accent there.
+/// A host with no way to tint a control draws the platform's own accent.
 public protocol TintElement: PropertyContainer {}
 
 extension TintElement {

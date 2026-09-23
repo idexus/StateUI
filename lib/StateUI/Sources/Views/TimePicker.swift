@@ -1,12 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A time of day, chosen from the platform's own clock.
-
-/// TimePicker's own properties - the half a `Style<TimePicker>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `TimePicker`'s own properties, shared by the control and its
+/// `Style<TimePicker>`.
 public protocol TimePickerProperties: PropertyContainer {}
 
 extension TimePickerProperties {
@@ -19,13 +15,9 @@ extension TimePickerProperties {
     }
 
     /// The time the field is showing, on a 24-hour clock whatever `.format`
-    /// draws.
+    /// draws. Usually given in the initializer.
     ///
     ///     TimePicker().time(ClockTime(hour: 7, minute: 30))
-    ///
-    /// `TimePicker(alarm)` and `TimePicker($alarm)` both say this from their
-    /// argument, so a modifier written beside one wins - and a binding goes on
-    /// being written back to, which is how the two can then disagree.
     public func time(_ value: ClockTime) -> Modified {
         setValue(TimePickerContract.time, value)
     }
@@ -33,9 +25,8 @@ extension TimePickerProperties {
     /// How the time is written - "t" for the short form, "T" for the long one,
     /// or a pattern like "HH:mm".
     ///
-    /// Formatting happens in the host, where a locale is available and costs
-    /// nothing - which is also what decides whether the reader sees 13:00 or
-    /// 1:00 PM.
+    /// The host formats it in the user's locale, which decides between 13:00
+    /// and 1:00 PM.
     public func format(_ value: String) -> Modified {
         setValue(TimePickerContract.format, value)
     }
@@ -52,12 +43,8 @@ extension TimePickerProperties {
 /// a plain `ClockTime` it shows that, and `.onTimeChanged` is how the choice
 /// gets anywhere.
 ///
-/// The time is a `ClockTime` rather than a Foundation value - see that type for
-/// why. A time of day is a length SINCE MIDNIGHT, which is what three integers
-/// describe exactly.
-///
-/// `TextStyleElement` rather than `TextElement`: a TimePicker colours its text
-/// and spaces its letters, and has no text property - the field shows the
+/// The time is a `ClockTime`: hours, minutes and seconds since midnight. The
+/// picker takes `.textColor` but has no `.text`, the field showing the
 /// formatted time.
 public struct TimePicker: View, TextStyleElement, FontElement, TimePickerProperties {
     /// The node this control describes.
@@ -80,25 +67,15 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
         self = TimePicker().time(time)
     }
 
+    // Design: docs/design/views/bindings.md#two-way-controls
     /// The same two-way time as `TimePicker($alarm)`, written as a modifier.
     ///
     ///     TimePicker($alarm)
     ///     TimePicker().time($alarm)
     ///
-    /// BOTH SPELLINGS ALWAYS, and they mean the same thing - the initializer
-    /// delegates here, so there is one body.
-    ///
-    /// HANDED OVER, so the picker is no reader of the state: the host sets the
-    /// time from the state on its own frames - hour, minute and second as
-    /// three lanes - and lands the one the reader chooses back on it as its
-    /// own write. A part of a state or a binding made from closures has no
-    /// storage for the host to carry and takes the described road instead:
-    /// shown from the value read at build, written back through the binding
-    /// when a time is chosen, the closure that wrote the picker a reader of it.
-    ///
-    /// A time of more than a day is shown as the platform folds it into one
-    /// day, while the state keeps what was written; the reader's next pick
-    /// lands the time shown.
+    /// The host shows the state's time and writes back the one the user
+    /// chooses, with no view rebuilt for it. A time of more than a day is shown
+    /// folded into one day while the state keeps what was written.
     ///
     /// - Parameter value: the state shown, and written back into when a time
     ///   is chosen.
@@ -109,22 +86,16 @@ public struct TimePicker: View, TextStyleElement, FontElement, TimePickerPropert
             : plain(.time, by: value, mode: .inOut)
     }
 
-    // MARK: Properties
-
     // MARK: Events
 
     /// Fires when a time is chosen, with the new one. Runs after a binding's
-    /// write, if there is one.
+    /// write.
     public func onTimeChanged(_ handler: @escaping ValueEventHandler<ClockTime>) -> Self {
         onEvent(TimePickerContract.timeChanged, handler)
     }
 
-    /// The clock face has opened.
-    ///
-    /// THE TRAP: it answers the READER opening it and not `isOpen(true)`:
-    /// the tree opening it opens the platform's own and raises nothing. An application that opens it
-    /// from a button of its own already knows, so what this is for is the
-    /// other direction.
+    /// The user has opened the clock face. Opening it with `isOpen(true)` raises
+    /// nothing: the application already knows.
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
         onEvent(TimePickerContract.opened, handler)
     }

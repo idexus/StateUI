@@ -1,62 +1,17 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The result builder behind the nested syntax.
-//
-// It is what turns consecutive statements into a child list:
-//
-//     VStack {
-//         Label("Hello")
-//         if signedIn {
-//             Button("Sign out").onClicked { signOut() }
-//         }
-//         ForEach(items) { item in
-//             Label(item)
-//         }
-//     }
-//
-// Every method works in terms of [Element] rather than Element, which is what
-// lets an `if` or a `ForEach` - each of which produces a list, not a single
-// view - appear as one statement among others.
-//
-// WHAT EVERY METHOD ALSO DOES is write down where it was: the statement's
-// number, which branch of the `if`. The segments nest into a path -
-// "1.else.0" is the first statement of the else branch of the second
-// statement - and `Node.key` carries it to the differ.
-//
-// The reason is that FLATTENING LOSES THE SHAPE. All of these come out of the
-// builder as a plain list, and the index is all the differ would otherwise
-// have to go on:
-//
-//     VStack {
-//         if signedIn { Label("Welcome") }
-//         TextField($search)
-//     }
-//
-// Signed out, the TextField is child 0. Signed in, child 0 is the Label and the
-// TextField is child 1 - so by index, signing in matches the new Label against the
-// TextField, which is a changed type and therefore a REPLACED control: the search
-// box is rebuilt, losing its focus, its caret and its scroll, and rebuilt
-// again on signing out. With the path, the Label is "0.some" and the TextField is
-// "1" in both states; the TextField is matched to itself and never moves.
-//
-// The other half is that two branches are two elements, not one:
-//
-//     if editing { TextField($name) } else { TextField($nickname) }
-//
-// Both are Entries with the same properties, so by index they are ONE control
-// that merely changes its text, and the caret stays put across what the author
-// wrote as a switch between two fields. "0.if" and "0.else" are different
-// places, so they are different elements.
+// The result builder behind the nested syntax. Besides joining statements into
+// a child list, every method records where each view was written - a path such
+// as "1.else.0" that `Node.key` carries to the differ as the view's key.
+// Design: docs/design/views/builders.md#every-statement-records-where-it-stood
 
 /// Collects child views written as consecutive statements into an array.
 /// Every closure in this library that takes views is one of these.
 ///
-/// `if`, `if/else`, `switch`, `ForEach` and `if #available` all work inside one,
-/// and each records where it stood - see the note above this type, and
-/// `Node.key`. A plain `for` does NOT compile here: a turn of a loop has no
-/// identity but its number, so repetition is `ForEach`, which gives each view
-/// its item's identity instead.
+/// `if`, `if/else`, `switch`, `ForEach` and `if #available` work inside one.
+/// A plain `for` does not compile: repeat views with `ForEach`, which keys
+/// each view by its item.
 ///
 ///     VStack {
 ///         Label("Files")
@@ -77,19 +32,14 @@ public enum ViewBuilder {
         expression
     }
 
-    /// The statements of the closure, joined in the order they are written.
-    ///
-    /// Each statement is numbered, and that number is the outermost segment of
-    /// everything it produced. A statement keeps its number whatever the
-    /// statements around it produce, which is the whole point.
+    /// The statements of the closure, in the order they are written, each
+    /// keyed by its statement's number whatever the others produce.
     public static func buildBlock(_ components: [Element]...) -> [Element] {
         components.enumerated().flatMap { at($0.offset, $0.element) }
     }
 
-    /// An `if` without an `else`.
-    ///
-    /// The branch that ran is marked, so what it produced is never matched
-    /// against what the statement AFTER it produced when it did not run.
+    /// An `if` without an `else`; what it builds is keyed apart from the
+    /// statement after it.
     public static func buildOptional(_ component: [Element]?) -> [Element] {
         component.map { tag("some", $0) } ?? []
     }
@@ -99,41 +49,25 @@ public enum ViewBuilder {
         tag("if", component)
     }
 
-    /// The `else` branch.
-    ///
-    /// Marked differently from the `if` branch on purpose: two branches are two
-    /// elements even when they build the same kind of control, so switching
-    /// between them replaces the control rather than editing it.
+    /// The `else` branch. Its views are keyed apart from the `if` branch's, so
+    /// switching branches replaces the control rather than editing it.
     public static func buildEither(second component: [Element]) -> [Element] {
         tag("else", component)
     }
 
-    /// A loop's views - `ForEach`, each identified by its ITEM.
-    ///
-    /// There is deliberately no `buildArray`, so a plain `for` does not
-    /// compile here: a turn has no identity but its number, which IS the
-    /// position - the assumption `ForEach` exists to retire. A collection
-    /// that gains a row at the top renumbers every turn below it, and the
-    /// views are rebuilt as though each had changed.
+    /// A `ForEach`'s views, each keyed by its item.
     public static func buildExpression(_ expression: ForEach) -> [Element] {
         expression.elements
     }
 
-    /// What an `if #available(…)` block builds - marked with a segment of its
-    /// own, the way every other branch is.
+    /// What an `if #available(…)` block builds, keyed like every other branch.
     public static func buildLimitedAvailability(_ component: [Element]) -> [Element] {
         tag("available", component)
     }
 
-    /// Puts one segment in front of everything a statement produced.
-    ///
-    /// A statement that produced SEVERAL views has its own numbering added
-    /// under the segment, so a list written as one expression - `buildExpression`
-    /// over an array - does not give every element the same path. That inner
-    /// number is a position like any other, which does not matter for a
-    /// `ForEach` - its views carry their items' ids, and an id wins over the
-    /// path - and is why a hand-built `[Element]` whose length changes wants
-    /// `ForEach` instead.
+    /// Puts one segment in front of everything a statement produced, numbering
+    /// several views under it.
+    /// Design: docs/design/views/builders.md#several-views-from-one-statement
     private static func tag(_ segment: String, _ elements: [Element]) -> [Element] {
         guard elements.count > 1 else {
             return elements.map { Keyed(segment: segment, element: $0) }
@@ -150,11 +84,7 @@ public enum ViewBuilder {
 }
 
 /// One more segment on an element's path, added without touching the element.
-///
-/// A wrapper rather than a property on the controls, because the builder is
-/// handed an `Element` and must not care which one: a Label, a composed view
-/// and a hand-written `Node` all take the segment the same way. `body` is where it lands, which is also where the parent asks for it -
-/// so a wrapped element is built no earlier than an unwrapped one.
+/// Design: docs/design/views/builders.md#the-path-rides-a-wrapper
 struct Keyed: Element {
     /// What to put in front of whatever path the element already has.
     let segment: String

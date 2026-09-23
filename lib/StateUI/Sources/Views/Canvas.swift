@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Canvas's own properties - the half a `Style<Canvas>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Canvas`'s own properties, shared by the control and its `Style<Canvas>`.
 public protocol CanvasProperties: PropertyContainer {}
 
 extension CanvasProperties {
@@ -16,9 +13,8 @@ extension CanvasProperties {
     ///         Draw.drawLine(x1: 0, y1: 0, x2: 120, y2: 0)
     ///     }
     ///
-    /// This is how a `Style<Canvas>` states a drawing. One view's own
-    /// usually goes in its initializer instead, which takes the same closure -
-    /// the drawing being what gives that view its purpose.
+    /// Usually given in the initializer instead; this is how a `Style<Canvas>`
+    /// states one.
     public func drawable(@DrawingBuilder _ drawing: () -> [DrawCommand]) -> Modified {
         setValue(CanvasContract.drawable, drawing())
     }
@@ -39,14 +35,9 @@ extension CanvasProperties {
 ///     }
 ///     .height(48)
 ///
-/// The drawing travels as DATA - its canvas calls, in order - because an
-/// object with a draw method is the one thing this boundary cannot carry; the
-/// host replays the calls against the platform's own canvas. Everything `Draw`
-/// offers is one such call - see Types/Drawing.swift.
-///
-/// The instructions are run again whenever the view is described again -
-/// which a state the drawing reads is enough to cause - so a drawing follows
-/// state: change what the closure produces and the view is redrawn.
+/// The drawing travels as data - the canvas calls `Draw` offers, in order -
+/// and the host replays them on the platform's own canvas. A drawing that
+/// reads a state is drawn again when the state changes.
 public struct Canvas: View, CanvasProperties {
     /// The node this control describes.
     public var node: Node

@@ -3,46 +3,13 @@
 
 #if MAUI
 
-// A LIST THAT DESCRIBES ONLY THE ITEMS IN VIEW.
-//
-//     ItemsView(files, id: \.path) { file in
-//         Label(file.name)
-//     }
-//     .selection($chosen)
-//
-// Compiled for the MAUI host alone: a StateUI composition over controls that
-// already cross the boundary, and nothing of its own on the wire - no node
-// type, no host arm, no fixture.
-//
-// WHAT IT IS MADE OF. A ScrollView holding an AbsoluteLayout whose length is
-// computed, and the slots in view placed in it by arithmetic. The length is the
-// count times one measured item, so the scroller knows how far it goes before a
-// single item is described; the scroll position, the measured viewport and that
-// one length say which slots are in view. Those, and a margin either side, are
-// the only ones described, built and sent.
-//
-// TWO PATHS, EACH FOR WHAT IT IS FOR. The offset is host-carried state: the
-// host writes the reader's scrolling into it on its own frames, and nothing is
-// described for it. An engine following it works out which slot is at the top
-// and writes that into ordinary state only when it changes - so a fling
-// renders once per item crossed and never once per frame. WHICH items exist is
-// a structural decision, and the body reads it.
-//
-// GROUPS ARE THE SAME ARITHMETIC, one level up. A grouped list is a run of
-// SLOTS - a group's header, its items, its footer, the next header - and each
-// kind is measured once, so where any slot sits is a sum over the groups before
-// it, worked out once per render over the groups rather than the items.
-//
-// WHAT IT COSTS. An item that scrolls out of the window leaves the tree and
-// takes its own `@State` with it; the host keeps its control for the next item
-// of the same shape. What must outlive the window belongs in the page, keyed by
-// the item.
+// A list that describes only the items in view: a composition compiled for the
+// MAUI host alone, over a ScrollView holding an AbsoluteLayout whose length is
+// computed from measured items, with nothing of its own on the wire.
+// Design: docs/design/views/lists.md#itemsview-describes-only-the-items-in-view
 
-/// How much of an `ItemsView` is measured to know where each item goes.
-///
-/// The list works out where a slot sits by arithmetic rather than by laying
-/// every item out, so how much of it has to be measured is what decides what a
-/// long list costs.
+/// How much of an `ItemsView` is measured to know where each item goes -
+/// which decides what a long list costs.
 public enum ItemSizing: Sendable {
     /// One item is measured and every other one is given its length. The
     /// default.
@@ -61,7 +28,7 @@ public enum ItemSizing: Sendable {
     case individual
 }
 
-/// Which way an `ItemsView` runs, and which way the reader scrolls it.
+/// Which way an `ItemsView` runs, and which way the user scrolls it.
 public enum ItemsOrientation: Sendable {
     /// Down. The default.
     case vertical
@@ -79,62 +46,41 @@ public enum ItemsOrientation: Sendable {
 ///     }
 ///     .selection($chosen)
 ///
-/// The initializer is the item template, run for the items in view: one view
-/// per item, the item its identity. However long the collection, what is
-/// described is the items in view and a margin of six slots either side.
+/// The initializer is the item template, run for the items in view and six
+/// slots either side: one view per item, the item its identity.
 ///
-/// **It is bounded across the way it scrolls**, as a scroller is: a star row of
-/// a Grid or a `.height` for a list that runs down, a `.height` for one that
-/// runs across. In a bare stack a list running down is given the length of all
-/// its items, describes every one of them, and has nothing left to scroll.
+/// Bound it across the way it scrolls, as a scroller: a star row of a Grid or
+/// a `.height`. In a bare stack it is given the length of all its items and
+/// describes every one.
 ///
-/// **Its items are one length unless `.itemSizing(.individual)` says
-/// otherwise**: the first item placed is measured and every item is given its
-/// length, which is what lets the list know how long it is without describing
-/// anything. `.itemSize(_:)` states the length instead.
+/// Its items are one length - the first one measured - unless
+/// `.itemSizing(.individual)` says otherwise or `.itemSize(_:)` states one. An
+/// item's root does not animate unless its author gives it a motion. An item
+/// scrolled out of the window leaves the tree with its `@State`: what must
+/// outlive the window belongs in the page, keyed by the item.
 ///
-/// **An item arrives, it does not travel.** The list places its items by
-/// arithmetic and hands their controls round, so an item's root is given
-/// `Motion.none` unless its author wrote a law there. A law written inside an
-/// item travels as its author says.
-///
-/// **An item scrolled out of the window leaves the tree**, and its own
-/// `@State` goes with it. What must outlive the window - a half-typed edit,
-/// whether an item is expanded - belongs in the page, keyed by the item.
-///
-/// Write the list's own modifiers before the ones every view has: `.height`
-/// and its kind give back the wrapper every composed view's modifiers give
-/// back.
+/// Write the list's own modifiers before the ones every view has.
 public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentView {
-    // The state is declared FIRST: a box is adopted by its PATH, the stored
-    // property's own name at every level (Core/Stateful.swift), and a header
-    // stored below may be a composed view carrying boxes of its own.
+    // State first: boxes are adopted by path, and a header stored below may
+    // carry boxes of its own.
+    // Design: docs/design/views/composition.md#state-declared-first
 
     /// What the first placed item measured along the axis - the length every
     /// item is given where the author stated none. Zero until it settles.
     @State private var measuredItem = 0.0
 
-    /// The same for a group's header, measured once and answering for all of
-    /// them.
+    /// The same for a group's header, measured once for all of them.
     @State private var measuredHeader = 0.0
 
     /// And for a group's footer.
     @State private var measuredFooter = 0.0
 
-    /// What each slot measured, by its identity - filled only where every item
-    /// is measured.
-    ///
-    /// BY IDENTITY, never by position: an item inserted at the top would
-    /// otherwise hand every item below it its neighbour's length. A slot that
-    /// has never been in view is not in here at all.
+    /// What each slot measured, by its identity rather than its position, which
+    /// an insertion shifts - kept only where every item is measured.
     @State private var measuredItems: [String: Double] = [:]
 
-    /// How wide the scroller is, as layout settled it.
-    ///
-    /// Kept as a width and a height rather than along and across the axis,
-    /// because the axis can change while the frame does not: a list turned to
-    /// run across is the same rectangle, and would wait for a report that
-    /// never comes.
+    /// How wide the scroller is: width and height rather than along and across,
+    /// since the axis can change while the frame does not.
     @State private var measuredWidth = 0.0
 
     /// And how tall.
@@ -144,26 +90,20 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
     /// measured against, along the axis.
     @State private var itemsStart = 0.0
 
-    /// The slot at the top of the viewport, which the window is drawn around.
-    ///
-    /// The one structural decision a scroll makes: written by the engine only
-    /// when it changes, and read by the body.
+    /// The slot at the top of the viewport: the one structural decision a
+    /// scroll makes, written by the engine only when it changes.
     @State private var firstShown = 0
 
     /// Where the list is scrolled to, where the author lent no state of their
     /// own.
     @State private var scrolled = Point.zero
 
-    /// The screen, which the window is drawn against while the scroller has
-    /// not reported its own size. No list is longer than the window it is in,
-    /// so a screenful of slots is never short - and the scroller's report can
-    /// arrive after the slots are placed.
+    /// The screen, which the window is drawn against until the scroller reports
+    /// its size: no list is longer than the window it is in.
     @Environment private var display: DeviceDisplay
 
-    /// The groups and their templates, held BY REFERENCE, which is what stops
-    /// the state walk here: reflecting a hundred thousand items on every build
-    /// is what this list exists not to do, and the walk stops at any class.
-    /// See Core/Stateful.swift.
+    /// The groups and their templates, behind a class so the state walk stops
+    /// before the items.
     private let source: Source
 
     /// The length the author stated for every item, rather than one measured.
@@ -190,7 +130,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
     /// How many items after the last one in view still count as the end.
     private var endWithin = 0
 
-    /// What runs when the reader is that close to the end.
+    /// What runs when the user is that close to the end.
     private var endReached: EventHandler?
 
     /// The aim the scroller answers to.
@@ -199,9 +139,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
     /// Where the list is scrolled to, where the author lent a state.
     private var reports: Binding<Point>?
 
-    /// How many slots either side of the visible ones are described anyway,
-    /// so an ordinary flick finds them already there. A slot is cheap here and
-    /// a blank one is not, which is what decides the number.
+    /// How many slots either side of the visible ones are described, so an
+    /// ordinary flick finds them already there.
     private static var margin: Int { 6 }
 
     /// What a slot is given while its kind has never been measured - one
@@ -281,8 +220,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
     /// `.itemSizing(.individual)` every item is still measured, and this is
     /// the length an item is given until it has been.
     ///
-    /// A length that is not above nought is no length: the list says so once
-    /// and measures its first item instead.
+    /// A length at or below nought is refused with a complaint, and the first
+    /// item is measured instead.
     ///
     /// - Parameter length: The length of an item, in device units.
     /// - Returns: The list, placing its items by that length.
@@ -308,7 +247,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
     /// one its length - exact whenever the items are alike, and what makes a
     /// hundred thousand items cost what ten do. `.individual` measures every
     /// item, by its identity: each is its own length, and the run is worked
-    /// out item by item. The items before the reader have been measured, so
+    /// out item by item. The items before the user have been measured, so
     /// nothing in view shifts as the rest of the run is.
     ///
     /// - Parameter value: How much to measure.
@@ -319,7 +258,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         return copy
     }
 
-    /// Which way the items run, and which way the reader scrolls. Down unless
+    /// Which way the items run, and which way the user scrolls. Down unless
     /// this says otherwise.
     ///
     ///     ItemsView(1...200) { Label("Card \($0)") }
@@ -385,12 +324,9 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
     ///     }
     ///     .selection($chosen)
     ///
-    /// The binding's TYPE says how many items may be chosen - one here, a
-    /// `Set` in the form below - so there is no mode beside it to disagree
-    /// with. A list nobody lends a binding to answers no tap at all.
-    ///
-    /// What a chosen item looks like is the template's: it reads the state the
-    /// binding writes.
+    /// The binding's type says how many may be chosen - one here, a `Set` below.
+    /// A list lent no binding answers no tap, and what a chosen item looks like
+    /// is the template's, reading the state the binding writes.
     ///
     /// - Parameter binding: Where the chosen item's identity is written.
     /// - Returns: The list, answering a tap on an item.
@@ -400,7 +336,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         return copy
     }
 
-    /// The same, for as many items as the reader taps: each tap adds or
+    /// The same, for as many items as the user taps: each tap adds or
     /// removes that item's identity.
     ///
     ///     @State private var chosen: Set<Int> = []
@@ -419,24 +355,18 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         return copy
     }
 
-    /// Runs when the reader is within `within` items of the end: the moment to
-    /// append the next batch, so it is there when the reader arrives.
+    /// Runs when the user is within `within` items of the end: the moment to
+    /// append the next batch, so it is there when the user arrives.
     ///
     ///     @State private var count = 30
     ///
     ///     ItemsView(0..<count) { Label("Item \($0)") }
     ///         .onEndReached(within: 5) { count += 30 }
     ///
-    /// Counted in ITEMS after the last one in view - a group's header and
-    /// footer are no items - so `0`, the default, runs as the last item comes
-    /// into view. It is asked when the slot at the top changes, and when the
-    /// list or its run is measured: a batch shorter than the view leaves
-    /// nothing to scroll, and the list asks again as it grows, until it
-    /// outgrows the view.
-    ///
-    /// It runs more than once while the reader stays near the end, so the
-    /// handler guards on what it has already asked for. A list without this
-    /// never asks.
+    /// Counted in items after the last one in view, so `0`, the default, runs
+    /// as the last item comes into view; a batch shorter than the view asks
+    /// again as the list grows. It runs more than once while the user stays
+    /// near the end, so the handler guards on what it already asked for.
     ///
     /// - Parameters:
     ///   - within: How many items after the last one in view still count as
@@ -456,8 +386,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
     ///
     ///     ItemsView(names) { Label($0) }.aim(list)
     ///
-    /// An `Aim<ScrollView>`, because a scroller is what the list is from the
-    /// outside. Moving it is not an act: it is a write to `scrollOffset($:)`.
+    /// Moving it is not an act but a write to the `scrollOffset($:)` state.
     ///
     /// - Parameter aim: The aim the list's scroller answers to.
     /// - Returns: The list, whose scroller answers there.
@@ -468,8 +397,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
     }
 
     /// Where the list is scrolled to, in device units from the start of its
-    /// run - both ways. The host writes the reader's scrolling into it on its
-    /// own frames, and a value written here moves the list.
+    /// run, both ways: the host writes the user's scrolling into it, and a
+    /// value written here moves the list.
     ///
     ///     @State private var offset = Point.zero
     ///
@@ -481,16 +410,11 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
     ///         try await $offset.journey.move(to: Point(0, 500 * 44), .eased(300, .cubicOut))
     ///     }
     ///
-    /// The list's own arithmetic arrives rather than travels - its scroller
-    /// carries `Motion.none` - so a write with no law of its own is a jump,
-    /// and `$offset.journey.move(to:_:)` with a law glides. An offset past the
-    /// end is held to the end.
+    /// A plain write jumps, and `$offset.journey.move(to:_:)` with a motion
+    /// animates; an offset past the end is held to the end. The list itself
+    /// renders only when the slot at the top changes.
     ///
-    /// Handing `$offset` over reads nothing, so what the offset costs is
-    /// decided by whoever reads it; the list itself follows it with an engine
-    /// and renders only when the slot at the top changes.
-    ///
-    /// - Parameter state: The state the offset is walked on.
+    /// - Parameter state: The state the offset is carried on.
     /// - Returns: The list, moving with that state and reporting into it.
     public func scrollOffset(_ state: Binding<Point>) -> Self {
         var copy = self
@@ -508,9 +432,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         let ask = asking(plan)
 
         var list = ScrollView {
-            // ONE BRANCH WHICHEVER WAY AN UNFURNISHED LIST RUNS: two branches
-            // are two elements even where they build the same control, so a
-            // list turned round would build every slot in view again.
+            // One branch whichever way a bare list runs, so turning it round
+            // does not build every slot again.
             if head == nil && foot == nil {
                 run(window, of: plan)
             } else if vertical {
@@ -535,9 +458,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         // A list with nothing in it has nothing to scroll, and saying so is
         // what bounds whatever stands in for the items.
         .orientation(plan.slots == 0 ? .neither : (vertical ? .vertical : .horizontal))
-        // THE LIST'S OWN NUMBERS ARRIVE, they do not travel: every length it
-        // states answers a measurement, and an offset written with no law of
-        // its own is a place, not a trip.
+        // The list's own numbers arrive: each answers a measurement.
         .motion(.none)
         .scrollOffset(offset)
         .aimed(at: scroller)
@@ -550,18 +471,15 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         let starts = _itemsStart
 
         list = list
-            // HOW MUCH IS IN VIEW - and a moment "is the reader near the end"
-            // can become true, for a list already showing its end.
+            // How much is in view, and whether the end is now near.
             .onFrameChanged { frame in
                 if frame.width != widths.wrappedValue { widths.wrappedValue = frame.width }
                 if frame.height != heights.wrappedValue { heights.wrappedValue = frame.height }
 
                 try await ask?()
             }
-            // A LENGTH MEASURED ALONG ONE AXIS IS NO LENGTH ALONG THE OTHER, so
-            // a list turned round forgets every one it measured and measures
-            // its slots again - a group's header and footer included, which are
-            // measured whether or not the items' length is stated.
+            // A list turned round forgets every length it measured, headers and
+            // footers included: a length along one axis is none along the other.
             .onChanged(axis) {
                 for length in lengths where length.wrappedValue != 0 {
                     length.wrappedValue = 0
@@ -569,11 +487,9 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
 
                 if !each.wrappedValue.isEmpty { each.wrappedValue = [:] }
             }
-            // WHICH SLOT IS AT THE TOP, worked out on the host's own frames from
-            // where the scroller IS, and written only when it changes: a flick
-            // crossing four items renders four times, and a frame crossing none
-            // renders nothing. It also runs once after every render, so a run
-            // measured anew puts the window where the offset says.
+            // Which slot is at the top, from where the scroller is, written only
+            // when it changes: one render per item crossed, none per frame.
+            // Design: docs/design/views/lists.md#two-paths
             .engine(following: offset, $itemsStart) { _ in
                 guard plan.settled, plan.slots > 0 else { return }
 
@@ -589,9 +505,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
             }
 
         if let ask {
-            // THE SLOT AT THE TOP CHANGED, which is how a scroll brings the
-            // reader near the end. Asked here, on the description path: an
-            // engine runs inside a frame and awaits nothing.
+            // Asked here, on the description path: an engine awaits nothing.
             list = list.onChanged(firstShown) { try await ask() }
         }
 
@@ -608,11 +522,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         }
     }
 
-    /// The slots of the window, each where the arithmetic puts it.
-    ///
-    /// The layout's own length is stated - the sum over the groups - so the
-    /// scroller knows how far it goes before a single item is described, and
-    /// every slot is placed by its number rather than by what stands before it.
+    /// The slots of the window, each where the arithmetic puts it, in a layout
+    /// whose length is stated so the scroller knows how far it goes.
     private func placed(_ window: [Int], of plan: Plan) -> Element {
         let starts = _itemsStart
         let ask = asking(plan)
@@ -626,20 +537,14 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         }
         // The run's length and every placement answer a measurement.
         .motion(.none)
-        // The items are what a pool is for: a scroll of one item builds one and
-        // drops one, and the two are the same shape whenever the template wrote
-        // the same modifiers for both.
+        // A scroll builds one item and drops one of the same shape: a pool.
         .recycling()
-        // THE RUN STARTS WHERE THE SCROLLER DOES. A view stating a length of its
-        // own is centred in whatever room is left over, so a run shorter than
-        // its box would stand in the middle of it. Along the axis it is pinned;
+        // Pinned to the start along the axis, so a short run is not centred;
         // across it, it fills.
         .verticalAlignment(vertical ? .start : .fill)
         .horizontalAlignment(vertical ? .fill : .start)
 
-        // The run's own length, once every kind it has is measured. Until then
-        // the slots placed measure themselves, and the layout is as long as
-        // they are.
+        // The run's length, once every kind is measured.
         if plan.settled {
             layout = vertical ? layout.height(plan.extent) : layout.width(plan.extent)
         }
@@ -655,23 +560,15 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
 
             if start != starts.wrappedValue { starts.wrappedValue = start }
 
-            // This frame is the RUN's, so it changes as the list grows - the
-            // moment "is the reader near the end" becomes true with no scroll
-            // to say so.
+            // The run grows, so the end may now be near with no scroll.
             try await ask?()
         }
     }
 
     /// Every slot of the window, with where it sits and who it is.
-    ///
-    /// Each position costs a binary search over the GROUPS: a flat list has
-    /// one group, and a hundred groups are seven comparisons.
     private func slots(_ window: [Int], of plan: Plan) -> [Placed] {
-        // While a kind has never been measured, every slot placed measures
-        // itself - the window IS the first slot of each such kind - and it
-        // carries the only frame subscription there will be. Where every item
-        // is measured, every slot described keeps its subscription: each is
-        // its own length, and a slot whose content changes is a new one.
+        // Slots measure themselves while a kind is unmeasured, and always where
+        // every item is its own length.
         let measuring: Set<Int> = sizing == .individual || !plan.settled ? Set(window) : []
 
         return window.compactMap { (index: Int) -> Placed? in
@@ -708,28 +605,21 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
     /// One slot: the author's view, placed, measuring itself where it has to,
     /// and answering a tap where the list is selectable.
     private func described(_ slot: Placed, across: Double, vertical: Bool) -> Element {
-        // A slot that measures itself is laid out at its OWN length, which is
-        // the whole of what "every item is its own length" means.
+        // A slot that measures itself is laid out at its own length.
         let length = slot.measures == nil ? slot.length : AbsoluteLayout.autoSize
 
-        // Across the axis a slot is as long as the scroller, once it has been
-        // measured; until then it measures itself there too.
+        // Across the axis, as long as the measured scroller.
         let breadth = across > 0 ? across : AbsoluteLayout.autoSize
 
         var view = ModifiedContent(node: slot.view.body)
             .absoluteLayoutBounds(vertical
                 ? Rect(0, slot.start, breadth, length)
                 : Rect(slot.start, 0, length, breadth))
-            // AN ITEM ARRIVES, IT DOES NOT TRAVEL, unless its author says
-            // otherwise on the item's root. The list hands its controls round:
-            // the item scrolling into view is very often the one that just left
-            // the other end, wearing another item's words and widths, so a law
-            // on its root would walk its insides across the screen while the
-            // reader scrolls. A law is per node and never inherited, so what
-            // the author wrote INSIDE an item still travels.
+            // An item arrives unless its author gave its root a motion: the list
+            // hands controls round, and a recycled item would animate.
+            // Design: docs/design/views/lists.md#items-arrive
             .modified { node in
-                // `Motion.none` spelled out: `base` is an optional, and a bare
-                // `.none` there is `Optional.none` - a plan stating no law.
+                // `Motion.none` spelled out: a bare `.none` is `Optional.none`.
                 if node.motion == nil { node.motion = MotionPlan(base: Motion.none) }
             }
 
@@ -744,9 +634,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
 
                 guard measured > 0 else { return }
 
-                // The kind's own length is taken whatever the sizing: it is
-                // what says the arithmetic has SETTLED, and what a slot nobody
-                // has shown yet is worth.
+                // The kind's length, whatever the sizing, settles the arithmetic.
                 if lengths.wrappedValue <= 0 { lengths.wrappedValue = measured }
 
                 if each, all.wrappedValue[name] != measured {
@@ -757,20 +645,14 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
 
         guard let chooses = slot.chooses, !choice.isNone else { return view }
 
-        // A local rather than `self`: this view holds a class, and a handler
-        // closure capturing one can leave this library's executor.
+        // A local rather than `self`, which holds a class.
         let choice = choice
 
         return view.onTapped { choice.choose(chooses) }
     }
 
-    /// The one question - is the reader within `endWithin` items of the end -
-    /// as a closure, so every place it can become true asks it in the same
-    /// words: the slot at the top changing, the scroller measured, and the run
-    /// measured or grown.
-    ///
-    /// Built out of LOCALS rather than `self`: this view holds a class, and a
-    /// handler closure capturing one can leave this library's executor.
+    /// Whether the user is within `endWithin` items of the end, as one closure
+    /// every place it can become true asks - built of locals, not `self`.
     private func asking(_ plan: Plan) -> EventHandler? {
         guard let endReached else { return nil }
 
@@ -785,8 +667,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
 
             let viewport = vertical ? heights.wrappedValue : widths.wrappedValue
 
-            // How much is in view is a measurement, and until there is one
-            // the reader is nowhere yet.
+            // Until the viewport is measured the user is nowhere yet.
             guard viewport > 0 else { return }
 
             let top = plan.clamped(firsts.wrappedValue)
@@ -799,11 +680,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
     }
 
     /// Which slots are described: the one at the top, the ones that fit after
-    /// it, and a margin either side.
-    ///
-    /// While a KIND has never been measured, it is the first slot of each such
-    /// kind instead - wherever in the list that falls, since a footer may be a
-    /// thousand items down and the arithmetic cannot settle without it.
+    /// it and a margin either side - or, while a kind is unmeasured, the first
+    /// slot of each such kind, wherever it falls.
     private func window(of plan: Plan) -> [Int] {
         guard plan.slots > 0 else { return [] }
 
@@ -816,12 +694,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
 
         let measured = axis == .vertical ? measuredHeight : measuredWidth
 
-        // A VIEWPORT AS LONG AS THE WHOLE RUN IS A LIST THAT IS NOT BOUNDED. A
-        // stack gives a child the length it asks for, and a scroller asked how
-        // long it wants to be answers with its whole content - so a list in one
-        // is laid out as long as its run and describes every slot. Said rather
-        // than refused, and only where the run is longer than a screen, since a
-        // short list standing in a tall box is an ordinary thing.
+        // A viewport as long as the whole run is an unbounded list: said, not
+        // refused, and only where the run is longer than a screen.
         if measured >= plan.extent, plan.extent > screenful {
             complain("an ItemsView measured a viewport as long as its whole run, so "
                 + "every item of it is described and nothing is left to scroll. A "
@@ -853,20 +727,16 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
             lengths: sizing == .individual ? lengths(guess(item)) : nil)
     }
 
-    /// How long the screen is along the axis, in device units - the standing
-    /// answer to "how much of this list can be in view" while the scroller's
-    /// own measurement has not arrived. Generous by design: it costs a
-    /// screenful of slots described, and it is never short.
+    /// How long the screen is along the axis, in device units: how much can be
+    /// in view until the scroller reports, never short.
     private var screenful: Double {
         let side = axis == .vertical ? display.height : display.width
 
         return display.density > 0 && side > 0 ? side / display.density : 1_000
     }
 
-    /// The length of every slot of the list, in order - what a list measuring
-    /// every item is placed by. A slot never in view is worth the estimate;
-    /// the slots the reader has passed are measured, which is why nothing
-    /// before the reader shifts as the rest of the run is worked out.
+    /// The length of every slot, in order, for a list measuring every item: a
+    /// slot never in view is worth the estimate.
     private func lengths(_ estimate: Double) -> [Double] {
         var all: [Double] = []
         all.reserveCapacity(source.groups.count * 8)
@@ -898,9 +768,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         value > 0 ? value : Self.provisional
     }
 
-    /// What a slot is CALLED - the one place the answer is written, so the
-    /// slots the window describes and the lengths the plan reads are filed
-    /// under the same name.
+    /// What a slot is called: the one answer the window and the plan both file
+    /// under.
     private func identity(group: Int, kind: Kind, offset: Int) -> String {
         let shape = source.groups[group]
 
@@ -910,10 +779,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
 
         let own = String(describing: shape.item(at: offset)[keyPath: shape.path])
 
-        // Under its group, so two groups may hold equal items and keep their
-        // own. A group that says nothing is identified by where it SITS, as its
-        // header is - and a list of one group prefixes nothing, its items being
-        // the only ones there are.
+        // Under its group's name, or its position, so two groups may hold
+        // equal items; a list of one group prefixes nothing.
         let under = source.groups.count > 1 ? (shape.name ?? "\(group)") : shape.name
 
         return under.map { "\($0)/\(own)" } ?? own
@@ -998,10 +865,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         let measures: Kind?
     }
 
-    /// Where every group starts, and what each kind of slot is worth.
-    ///
-    /// The running lists are one longer than the groups: the last entry is the
-    /// end, which is the run's own count and length.
+    /// Where every group starts, and what each kind of slot is worth; each
+    /// running list ends with the total.
     private struct Plan {
         /// The first slot of each group, then the total.
         let starts: [Int]
@@ -1024,12 +889,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         /// What a group's footer measured.
         let footer: Double
 
-        /// Where every SLOT starts, then the whole length - built only where
-        /// every item is measured, and nil where one answers for all.
-        ///
-        /// The whole of what a list of unequal items costs: one number per
-        /// slot rather than one per group, summed once as the plan is built
-        /// and read in one lookup afterwards.
+        /// Where every slot starts, then the whole length - built only where
+        /// every item is measured.
         let each: [Double]?
 
         /// Builds the sums, one addition per group.
@@ -1044,9 +905,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
             var tops = [0.0]
             var itemsBefore = [0]
 
-            // The same lengths `length(of:)` answers, provisional ones
-            // included, so a slot placed before its kind is measured stands
-            // where the sums say.
+            // The lengths `length(of:)` answers, provisional ones included.
             let itemLength = item > 0 ? item : ItemsView.provisional
             let headerLength = header > 0 ? header : ItemsView.provisional
             let footerLength = footer > 0 ? footer : ItemsView.provisional
@@ -1147,9 +1006,8 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
             return nil
         }
 
-        /// How many slots fit in a viewport, counted off the SHORTEST slot the
-        /// run has, so the answer is never short: a window a slot too small is
-        /// a band of nothing at the end of the view.
+        /// How many slots fit in a viewport, counted off the shortest slot so the
+        /// answer is never short.
         func fits(in viewport: Double) -> Int {
             max(1, Int((viewport / max(shortest, 1)).rounded(.up)))
         }
@@ -1223,16 +1081,11 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         /// A slot the run actually has.
         func clamped(_ index: Int) -> Int { min(max(0, index), max(0, slots - 1)) }
 
-        /// Which slot is at a position along the axis - the other direction.
-        ///
-        /// Worked out in lengths and held to the group's own items before it
-        /// becomes a whole number, so an offset far past the end is still a
-        /// slot rather than a number too large to count.
+        /// Which slot is at a position along the axis, held to the group's items
+        /// before it becomes a whole number.
         func slot(at along: Double) -> Int {
             if let each {
-                // The last slot starting at or before the position, found the
-                // way the groups are: a list of unequal items may be as long
-                // as it likes.
+                // The last slot starting at or before the position.
                 var low = 0
                 var high = each.count - 2
 
@@ -1274,8 +1127,7 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
         }
     }
 
-    /// What the list shows, and how an item is described - by reference, so
-    /// the state walk stops before the items.
+    /// What the list shows, behind a class so the state walk stops before it.
     private final class Source {
         /// Every group, with its items and its templates.
         let groups: [ItemsGroup<Items, Id>]
@@ -1336,10 +1188,9 @@ public struct ItemsView<Items: RandomAccessCollection, Id: Hashable>: ContentVie
 ///     .header(Label(shelf.name))
 ///     .footer(Label("\(shelf.items.count) items"))
 ///
-/// Not a view: a group is data the list lays out, and these are all it says.
-/// Its header and footer are slots in the same run as the items, each kind
-/// measured once for the whole list - so every group's header is given the
-/// same shape, and so is every footer.
+/// Not a view but data the list lays out. Its header and footer are slots in
+/// the run, each kind measured once for the whole list, so every group's
+/// header has one length and so does every footer.
 public struct ItemsGroup<Items: RandomAccessCollection, Id: Hashable> {
     /// What this group shows, one item each.
     let items: Items

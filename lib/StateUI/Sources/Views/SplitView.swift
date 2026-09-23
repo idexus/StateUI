@@ -1,35 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The split view, owned by Swift.
-//
-// A SplitView is two pages: a sidebar beside the page the reader is actually
-// looking at. Whether the sidebar shows is a `Bool` the AUTHOR holds, borrowed
-// two-way - so showing it from code is `isSidebarVisible = true`, and a reader
-// who hides it writes `false` back through the same binding.
-//
-//     @State private var menu = false
-//
-//     SplitView($menu) {
-//         MenuPage(section: $section, menu: $menu)  // the sidebar
-//     } detail: {
-//         NavigationStack($path) { … } destination: { … }
-//     }
-//
-// The SIDEBAR IS AN ORDINARY PAGE: the rows are whatever views the author
-// writes, a row is a Button whose handler assigns state, and nothing about it -
-// no item type, no template, no selection of its own - is the library's
-// business.
+// The split view: two pages, and whether the sidebar shows is a Bool the
+// author holds, written back when the user shows or hides it.
+// Design: docs/design/views/pages.md#split-view
 
 /// A page holding two: a sidebar at the side and the page beside it.
 ///
-/// A whole application, and this is all of it:
-///
 ///     enum Section: Hashable, CaseIterable { case today, archive }
-///
-///     struct DiaryApp: Application {
-///         var scene: any Scene { MainWindow() }
-///     }
 ///
 ///     struct MainWindow: Window {
 ///         @State private var section: Section = .today
@@ -62,34 +40,16 @@
 ///                         }
 ///                 }
 ///             }
-///             .onCreated { page.title = "Sections" }   // REQUIRED - see below
+///             .onCreated { page.title = "Sections" }   // required
 ///         }
 ///     }
 ///
-/// Note what a row is: **a Button whose handler assigns state**. Choosing and
-/// closing are two ordinary writes, in the order the author wants them, and a
-/// sidebar that should stay open simply does not write the second.
-///
-/// **What the reader can do**, and it arrives as a write to the binding: the
-/// platform's own sidebar button, a swipe from the edge, a tap on the shaded
-/// detail page - whichever the platform offers. Each ends in
-/// `isSidebarVisible` saying what is true, so the state and the screen cannot
-/// disagree.
-///
-/// **A wide screen may open with both pages showing.** A host with room for
-/// both may show the sidebar when the window first appears; the binding then
-/// settles on `true`, and from there the reader and the application decide.
-///
-/// **What is deliberately NOT here:**
-///
-/// - A sidebar ITEM type, a sidebar template, a sidebar header and footer. The
-///   sidebar is a page; a header is a view at the top of it.
-/// - A way to turn the sidebar off for good while keeping the page it is on. A
-///   `SplitView` is made of its two pages - an application with nothing to put
-///   in a sidebar does not use one.
-/// - A shared overlay/split policy or gesture switch. Those are capabilities
-///   of a particular native container. The host adapts its own presentation;
-///   StateUI owns the two pages and whether the sidebar shows.
+/// A sidebar row is an ordinary view whose handler assigns state: choosing and
+/// closing are two writes, and a sidebar that should stay open skips the
+/// second. The platform's own ways to show or hide the sidebar - its button,
+/// an edge swipe, a tap on the dimmed page - are written into the binding, and
+/// a host with room for both pages may open with the sidebar showing. The
+/// sidebar page must have a title.
 public struct SplitView: Page, ModifiableElement, PageElement, PageArrangement {
     /// The node this page describes.
     public var node: Node
@@ -117,15 +77,7 @@ public struct SplitView: Page, ModifiableElement, PageElement, PageArrangement {
             ])
         node.write(SplitViewContract.isSidebarVisible, isSidebarVisible.wrappedValue)
 
-        // The reader's own ways in and out - the platform's sidebar button,
-        // the edge swipe, the tap on the dimmed detail page - all end here,
-        // and only once the gesture has FINISHED: an interactive swipe let go
-        // halfway reports whatever it settled on, which is what the screen
-        // shows.
-        //
-        // Written only when it MOVED, the rule every binding in this library
-        // follows: a host can report either direction, and a binding written
-        // with the value it already holds would be a render nobody asked for.
+        // The user's ways in and out, once finished, written only when moved.
         node.addHandler(SplitViewContract.isSidebarVisibleChanged.token) {
             guard let visible = EventBuffer.current.value()?.bool,
                   visible != isSidebarVisible.wrappedValue else { return }
@@ -134,19 +86,13 @@ public struct SplitView: Page, ModifiableElement, PageElement, PageArrangement {
         }
     }
 
-    // MARK: - Who the two pages are
-
-    /// What the sidebar is called among its siblings.
+    /// The sidebar's key among its siblings.
     private static let sidebarIdentity = "sidebar"
 
-    /// And what the page beside it is called.
+    /// And the key of the page beside it.
     private static let detailIdentity = "detail"
 
-    /// A page node wearing the identity the arrangement gives it.
-    ///
-    /// Identity here is what pairs a page with its half of the layout, so it
-    /// belongs to the mechanism rather than to the author - the same rule a
-    /// `NavigationStack` follows for the pages in its stack.
+    /// A page node wearing the key the arrangement gives it.
     private static func identified(_ node: Node, as identity: String) -> Node {
         var copy = node
         copy.id = identity

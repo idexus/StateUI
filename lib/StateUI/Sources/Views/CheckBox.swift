@@ -1,17 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// CheckBox's own properties - the half a `Style<CheckBox>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `CheckBox`'s own properties, shared by the control and its
+/// `Style<CheckBox>`.
 public protocol CheckBoxProperties: PropertyContainer {}
 
 extension CheckBoxProperties {
-    /// Whether the box is ticked.
-    ///
-    /// Usually given in the initializer instead; this is the way to set it in a
-    /// style, or to change it on a checkbox built elsewhere.
+    /// Whether the box is ticked. Usually given in the initializer.
     public func isOn(_ value: Bool) -> Modified {
         setValue(CheckBoxContract.isOn, value)
     }
@@ -53,21 +48,18 @@ public struct CheckBox: View, TintElement, CheckBoxProperties {
         self = CheckBox().isOn(isOn)
     }
 
-    /// Two-way: shows what the state holds and writes back what is ticked -
-    /// and HANDED OVER, so the box is no reader of the state; what a tick
-    /// costs is decided by who reads the state at build; a part of a state or
-    /// a binding made from closures is shown by the tree instead.
+    // Design: docs/design/views/bindings.md#two-way-controls
+    /// Two-way: shows what the state holds and writes back what is ticked,
+    /// with no view rebuilt for it.
     ///
-    /// - Parameter value: the state shown, and written back into as the
-    ///   reader ticks it.
+    /// - Parameter value: the state shown, and written back into as the user
+    ///   ticks it.
     /// - Returns: the box, wearing and reporting that value.
     public func isOn(_ value: Binding<Bool>) -> Modified {
         value.image == nil
             ? described(CheckBoxContract.isOn.token, value, on: CheckBoxContract.toggled.token)
             : plain(CheckBoxContract.isOn.token, by: value, mode: .inOut)
     }
-
-    // MARK: Properties
 
     // MARK: Events
 

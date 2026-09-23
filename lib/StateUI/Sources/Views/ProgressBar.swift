@@ -1,17 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// How far along something is, as a bar.
-
-/// ProgressBar's own properties - the half a `Style<ProgressBar>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `ProgressBar`'s own properties, shared by the control and its
+/// `Style<ProgressBar>`.
 public protocol ProgressBarProperties: PropertyContainer {}
 
 extension ProgressBarProperties {
-    /// How far along, as a FRACTION from 0 to 1 - not a percentage and not a
-    /// count of items. The host clamps anything outside that range.
+    /// How far along, as a fraction from 0 to 1. The host clamps anything
+    /// outside that range.
     public func progress(_ value: Double) -> Modified {
         setValue(ProgressBarContract.progress, value)
     }
@@ -24,15 +20,11 @@ extension ProgressBarProperties {
 ///     ProgressBar(done)
 ///         .tint(.firebrick)
 ///
-/// A FRACTION, not a percentage and not a count: 0.4 is four tenths of the way
-/// through, whatever the work is measured in - so a job counting files divides
-/// by the total itself. For work with no measurable length, use an
+/// A fraction, not a percentage and not a count: 0.4 is four tenths of the
+/// way through, so a job counting files divides by the total itself. For work with no measurable length, use an
 /// `ActivityIndicator`.
 ///
-/// It takes no TWO-WAY binding, unlike the inputs: nothing about it is the
-/// reader's to change, so the value only ever goes one way - written into the
-/// `@State` it is built from, or handed on as `.progress($done)`, which the
-/// host walks there.
+/// `.progress($done)` carries it from a state, animated to each new value.
 public struct ProgressBar: View, TintElement, ProgressBarProperties {
     /// The node this control describes.
     public var node: Node
@@ -48,7 +40,4 @@ public struct ProgressBar: View, TintElement, ProgressBarProperties {
         node = Node(contract: ProgressBarContract.self)
         node.write(ProgressBarContract.progress, progress)
     }
-
-    // MARK: Properties
-
 }

@@ -1,12 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A native single-line text entry and the properties specific to it.
-
-/// TextField's own properties - the half a `Style<TextField>` shares with the
-/// control, beside what its tiers already carry. The control conforms on the
-/// element side and the style on the property side, which is what makes the
-/// same modifiers compile on both.
+/// `TextField`'s own properties, shared by the control and its
+/// `Style<TextField>`.
 public protocol TextFieldProperties: PropertyContainer {}
 
 extension TextFieldProperties {
@@ -69,27 +65,17 @@ public struct TextField: InputView, TextElement, FontElement, TextAlignmentEleme
         self = TextField().text(text)
     }
 
+    // Design: docs/design/views/bindings.md#two-way-controls
     /// The same two-way text as `TextField($text)`, written as a modifier.
     ///
     ///     TextField($query)
     ///     TextField().text($query)
     ///
-    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
-    /// the short way to say what gives this control its purpose, and the
-    /// modifier is the way every other property is written. Neither is the
-    /// real one.
+    /// The host shows the state's text and writes back what the user types,
+    /// with no view rebuilt for it: a keystroke costs a render only in a body
+    /// that reads the state.
     ///
-    /// HANDED OVER, so the field is no reader of the state: the host writes
-    /// the field's text from the state on its own frames and lands what the
-    /// reader types back on it, whole, as its own write. What a keystroke
-    /// COSTS is decided by who reads the state at build - nothing where nobody
-    /// prints it, a render per keystroke for the body that does. A part of a
-    /// state or a binding made from closures has no storage for the host to
-    /// carry and takes the described road instead: shown from the value read
-    /// at build, written back through the binding on every report, the
-    /// closure that wrote the field a reader of it.
-    ///
-    /// - Parameter value: the state shown, and written back into as the reader
+    /// - Parameter value: the state shown, and written back into as the user
     ///   types.
     /// - Returns: the control, wearing and reporting that text.
     public func text(_ value: Binding<String>) -> Modified {
@@ -97,8 +83,6 @@ public struct TextField: InputView, TextElement, FontElement, TextAlignmentEleme
             ? described(TextElementContract.text.token, value, on: .textChanged)
             : words(TextElementContract.text.token, by: value, mode: .inOut)
     }
-
-    // MARK: Properties
 
     // MARK: Events
 

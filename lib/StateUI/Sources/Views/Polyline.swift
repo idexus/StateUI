@@ -1,21 +1,18 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Polyline's own properties - the half a `Style<Polyline>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Polyline`'s own properties, shared by the control and its
+/// `Style<Polyline>`.
 public protocol PolylineProperties: PropertyContainer {}
 
 extension PolylineProperties {
-    /// The points, in order, left OPEN - the last is not joined back to the
+    /// The points, in order, left open - the last is not joined back to the
     /// first.
     ///
     ///     Polyline().points([Point(0, 30), Point(20, 5), Point(40, 25)])
     ///
-    /// The numbers are device units in the shape's OWN space, which `.aspect`
-    /// then fits to the room the layout gives it. They travel as the pairs
-    /// themselves - x, y, x, y - which the host makes a `PointCollection` of.
+    /// The numbers are device units in the shape's own space, which `.aspect`
+    /// fits to the room the layout gives it.
     public func points(_ value: [Point]) -> Modified {
         setValue(PolylineContract.points, value)
     }
@@ -23,11 +20,8 @@ extension PolylineProperties {
     /// Which parts of a self-crossing outline count as inside it, and so get
     /// painted by `fill`.
     ///
-    /// Only the fill looks at it; the line itself is drawn the same either
-    /// way. An open line still has an inside: a filled polyline is painted as
-    /// though the last point were joined back to the first, with that join
-    /// left undrawn. So this matters on a FILLED line whose path crosses
-    /// itself, and nowhere else.
+    /// A filled polyline is painted as though its last point were joined back
+    /// to the first, so this matters only on a filled line that crosses itself.
     public func fillRule(_ value: FillRule) -> Modified {
         setValue(PolylineContract.fillRule, value)
     }
@@ -53,7 +47,7 @@ public struct Polyline: Shape, PolylineProperties {
         node = Node(contract: PolylineContract.self)
     }
 
-    /// The points, in order. The value that gives a polyline its purpose.
+    /// The points, in order.
     public init(_ points: [Point]) {
         node = Node(contract: PolylineContract.self)
         node.write(PolylineContract.points, points)

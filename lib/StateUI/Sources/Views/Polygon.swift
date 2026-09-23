@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Polygon's own properties - the half a `Style<Polygon>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Polygon`'s own properties, shared by the control and its `Style<Polygon>`.
 public protocol PolygonProperties: PropertyContainer {}
 
 extension PolygonProperties {
@@ -12,9 +9,8 @@ extension PolygonProperties {
     ///
     ///     Polygon().points([Point(20, 0), Point(40, 40), Point(0, 40)])
     ///
-    /// The numbers are device units in the shape's OWN space, which `.aspect`
-    /// then fits to the room the layout gives it. They travel as the pairs
-    /// themselves - x, y, x, y - which the host makes a `PointCollection` of.
+    /// The numbers are device units in the shape's own space, which `.aspect`
+    /// fits to the room the layout gives it.
     public func points(_ value: [Point]) -> Modified {
         setValue(PolygonContract.points, value)
     }
@@ -47,7 +43,7 @@ public struct Polygon: Shape, PolygonProperties {
         node = Node(contract: PolygonContract.self)
     }
 
-    /// The corners, in order. The value that gives a polygon its purpose.
+    /// The corners, in order.
     public init(_ points: [Point]) {
         node = Node(contract: PolygonContract.self)
         node.write(PolygonContract.points, points)

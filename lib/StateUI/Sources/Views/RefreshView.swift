@@ -1,23 +1,14 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A view that asks for its content again when it is pulled down.
-
-/// RefreshView's own properties - the half a `Style<RefreshView>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `RefreshView`'s own properties, shared by the control and its
+/// `Style<RefreshView>`.
 public protocol RefreshViewProperties: PropertyContainer {}
 
 extension RefreshViewProperties {
-    /// Whether the spinner is showing.
-    ///
-    /// NOTHING clears it on its own. The pull raises it and the work's handler
-    /// writes it back down, which is this control's contract.
-    ///
-    /// One-way, and there is no `.isRefreshing($:)` beside it: the two-way form
-    /// is the INITIALIZER, `RefreshView($refreshing) { … }`, where every other
-    /// two-way control in this library spells it as a modifier of the same name.
+    /// Whether the spinner is showing. Nothing clears it on its own: the work's
+    /// handler writes it back down. The two-way form is the initializer,
+    /// `RefreshView($refreshing) { … }`.
     public func isRefreshing(_ value: Bool) -> Modified {
         setValue(RefreshViewContract.isRefreshing, value)
     }
@@ -43,14 +34,11 @@ extension RefreshViewProperties {
 ///         refreshing = false
 ///     }
 ///
-/// The spinner is shown for as long as `isRefreshing` is true, and NOTHING sets
-/// it back: the pull sets it, and the handler clears it when the work is done.
-/// That is this control's contract, and it is what makes this binding unusual
-/// here: it is written from both sides.
+/// The spinner shows while `isRefreshing` is true: the pull sets it, and the
+/// handler clears it when the work is done.
 ///
-/// It goes AROUND the scroller rather than inside one - a RefreshView holds a
-/// single scrollable view, and a pull is a gesture that scroller would
-/// otherwise claim.
+/// It goes around the scroller rather than inside one: it holds a single
+/// scrollable view, whose own gesture would otherwise claim the pull.
 public struct RefreshView: View, TintElement, RefreshViewProperties {
     /// The node this control describes.
     public var node: Node
@@ -62,7 +50,6 @@ public struct RefreshView: View, TintElement, RefreshViewProperties {
 
     /// A refreshable view around what the closure describes. One-way: the pull
     /// goes nowhere without `.onRefreshRequested`.
-    /// The closure is kept and run when the differ describes the view.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
         node = Node(contract: RefreshViewContract.self)
         node.producer = { content().map { $0.body } }
@@ -72,30 +59,23 @@ public struct RefreshView: View, TintElement, RefreshViewProperties {
     /// every move the platform makes - true when a pull starts one, false when
     /// a pull is abandoned before it does.
     ///
-    /// Once the refresh has STARTED, clearing it is the handler's: nothing
-    /// else ever writes false, and a spinner left turning is what forgetting
-    /// looks like.
+    /// Once the refresh has started, clearing it is the handler's: nothing else
+    /// writes false.
     public init(_ isRefreshing: Binding<Bool>, @ViewBuilder content: @escaping () -> [Element]) {
         node = Node(contract: RefreshViewContract.self)
         node.producer = { content().map { $0.body } }
 
-        // HANDED OVER, both ways: the host shows the spinner from the state
-        // and lands a pull on it as its own write, so the view is no reader
-        // of the state it borrows. A part of a state, or a binding made from
-        // closures, is one the host cannot carry, and the tree shows it.
+        // Handed over, or described where the host cannot carry the binding.
+        // Design: docs/design/views/bindings.md#two-way-controls
         self = isRefreshing.image == nil
             ? described(.isRefreshing, isRefreshing, on: .isRefreshingChanged)
             : plain(.isRefreshing, by: isRefreshing, mode: .inOut)
     }
 
-    // MARK: Properties
-
     // MARK: Events
 
-    /// Runs when the user pulls.
-    ///
-    /// Where the work goes, and where `isRefreshing` is cleared once it is done.
-    /// Runs after a binding's write, if there is one.
+    /// Runs when the user pulls: where the work goes, and where `isRefreshing`
+    /// is cleared once it is done. Runs after a binding's write.
     public func onRefreshRequested(_ handler: @escaping EventHandler) -> Self {
         onEvent(RefreshViewContract.refreshRequested, handler)
     }

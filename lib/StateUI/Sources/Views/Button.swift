@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Button's own properties - the half a `Style<Button>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Button`'s own properties, shared by the control and its `Style<Button>`.
 public protocol ButtonProperties: PropertyContainer {}
 
 extension ButtonProperties {
@@ -49,13 +46,9 @@ extension ButtonProperties {
 ///         .cornerRadius(8)
 ///         .onClicked { counter += 1 }
 ///
-/// The caption goes in the initializer because it is what a button IS;
-/// everything else - the colours, the outline, the picture beside the words -
-/// is a modifier.
-///
-/// A handler may `await`: it runs on this library's own main thread and the
-/// interface goes on being described while it is suspended, so
-/// `.onClicked { items = try await load() }` needs nothing around it.
+/// A handler runs on the main actor and may `await`; the interface goes on
+/// updating while it is suspended, so `.onClicked { items = try await load() }`
+/// needs nothing around it.
 public struct Button: View, TextElement, FontElement, PaddingElement, BorderElement, ImageElement,
     ButtonProperties {
     /// The node this control describes.
@@ -85,15 +78,13 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
         node.write(TextElementContract.text, text)
     }
 
-    /// The same spelling over a state the host carries: a caption written by the host when the
-    /// bytes change, at no render.
+    /// A button whose caption is carried from a state, written by the host as
+    /// it changes, at no render.
     ///
     /// - Parameter text: the state the caption is read from.
     public init(_ text: Binding<String>) {
         self = Button().text(text)
     }
-
-    // MARK: Properties
 
     // MARK: Events
 
@@ -117,9 +108,6 @@ public struct Button: View, TextElement, FontElement, PaddingElement, BorderElem
 }
 
 /// Which side of a button's caption its picture is on.
-///
-/// Its numbers are this wire's own - the rule at the head of
-/// Types/Enums.swift, which every closed vocabulary on this wire follows.
 public enum IconPosition: Int32, Sendable, HostRepresentable {
     /// Before the words, on the side a line starts from - the default.
     case leading = 0

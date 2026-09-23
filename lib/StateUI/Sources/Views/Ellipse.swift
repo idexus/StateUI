@@ -8,10 +8,8 @@
 ///         .width(48)
 ///         .height(48)
 ///
-/// An ellipse IS its bounds, so it declares nothing of its own: the fill, the
-/// stroke and the dash pattern all come from the shape tier in Elements.swift.
-/// An outline needs a `.stroke`; the width defaults to 1, so
-/// `.strokeWidth` is for a heavier or a finer one.
+/// An outline needs a `.stroke`, 1 unit wide unless `.strokeWidth` says
+/// otherwise.
 ///
 /// A round avatar or a status dot is this control sized square. For a rounded
 /// RECTANGLE, use a `Rectangle` with a `cornerRadius`, or a `Border` with a

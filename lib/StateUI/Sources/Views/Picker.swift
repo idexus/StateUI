@@ -1,27 +1,18 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Picker's own properties - the half a `Style<Picker>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Picker`'s own properties, shared by the control and its `Style<Picker>`.
 public protocol PickerProperties: PropertyContainer {}
 
 extension PickerProperties {
-    /// Asks the host to show or dismiss the list of choices.
-    ///
-    /// This is a presentation request, not another selection state. A reader
-    /// can still close the native list by choosing, clicking away or pressing
-    /// Escape; `onClosed` reports that reader-driven boundary.
+    /// Shows or dismisses the list of choices. The user may still close it by
+    /// choosing, clicking away or pressing Escape, which `onClosed` reports.
     public func isOpen(_ value: Bool) -> Modified {
         setValue(PickerContract.isOpen, value)
     }
 
-    /// The list to choose from, in the order it is offered.
-    ///
-    /// The host boundary carries captions rather than application objects, so
-    /// an application choosing among models formats them here and resolves the
-    /// chosen model through its index.
+    /// The captions to choose from, in order. Choosing among models, format
+    /// them here and find the chosen one by its index.
     public func options(_ value: [String]) -> Modified {
         setValue(PickerContract.options, value)
     }
@@ -47,14 +38,10 @@ extension PickerProperties {
 ///         .selectedIndex($size)
 ///         .title("Size")
 ///
-/// The list is the initializer argument because it is what a Picker is for.
-/// Which one is chosen is a binding, so the choice comes back without a
-/// handler - as an INDEX into the list, and `-1` while nothing is chosen.
-/// Turning that index back into a value is the author's own `sizes[size]`,
-/// which is why the list is worth holding rather than writing inline.
-///
-/// `TextStyleElement` rather than `TextElement`: the field displays either a
-/// chosen item or its title, so there is no independent `.text()` value.
+/// The choice comes back through the binding as an index into the list, `-1`
+/// while nothing is chosen; `sizes[size]` turns it back into a value, which is
+/// why the list is worth holding. The picker takes `.textColor` but has no
+/// `.text`: the field shows the chosen item or the title.
 public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement, TintElement,
     PickerProperties {
     /// The node this control describes.
@@ -74,13 +61,12 @@ public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement,
 
     // MARK: Properties
 
-    /// Two-way: shows the choice the state holds and writes back the one
-    /// made - and HANDED OVER, so the picker is no reader of the state; a part
-    /// of a state or a binding made from closures is shown by the tree
-    /// instead.
+    // Design: docs/design/views/bindings.md#two-way-controls
+    /// Two-way: shows the choice the state holds and writes back the one the
+    /// user makes, with no view rebuilt for it.
     ///
     /// - Parameter binding: the state shown, and written back into as the
-    ///   reader chooses.
+    ///   user chooses.
     /// - Returns: the picker, wearing and reporting that choice.
     public func selectedIndex(_ binding: Binding<Int>) -> Self {
         binding.image == nil
@@ -90,28 +76,20 @@ public struct Picker: View, TextStyleElement, FontElement, TextAlignmentElement,
 
     // MARK: Events
 
-    /// Fires when the reader changes the choice, with the new index.
-    ///
-    /// Runs after the choice has landed on a state handed as `$size`, wherever
-    /// `.selectedIndex($:)` is written in the chain. Over a part of a state or
-    /// a binding made from closures it runs in WRITING order instead: written
-    /// after the binding it sees the state already updated, written before it
-    /// the state still holds the old index. The payload carries the new one
-    /// either way.
+    /// Fires when the user changes the choice, with the new index - after the
+    /// choice has landed on a state handed as `$size`.
     public func onSelectedIndexChanged(_ handler: @escaping ValueEventHandler<Int>) -> Self {
         onEvent(PickerContract.selectedIndexChanged, handler)
     }
 
-    /// The reader has opened the native list of choices.
-    ///
-    /// It deliberately does not echo an `isOpen(true)` write from the tree: an
-    /// application issuing that request already knows it did so.
+    /// The user has opened the list of choices. Opening it with `isOpen(true)`
+    /// raises nothing: the application already knows.
     public func onOpened(_ handler: @escaping EventHandler) -> Self {
         onEvent(PickerContract.opened, handler)
     }
 
-    /// The reader has closed it - by a choice, a click outside or the native
-    /// platform's dismissal command.
+    /// The user has closed it - by a choice, a click outside or the platform's
+    /// own dismissal.
     public func onClosed(_ handler: @escaping EventHandler) -> Self {
         onEvent(PickerContract.closed, handler)
     }

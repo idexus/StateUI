@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Map's own properties - the half a `Style<Map>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Map`'s own properties, shared by the control and its `Style<Map>`.
 public protocol MapProperties: PropertyContainer {}
 
 extension MapProperties {
@@ -28,11 +25,10 @@ extension MapProperties {
         setValue(MapContract.isTrafficEnabled, value)
     }
 
-    /// Whether the reader's own position is drawn on it - and the PLATFORM's
-    /// location permission is the price: on iOS an app without
+    /// Whether the user's own position is drawn on it. That needs the
+    /// platform's location permission: on iOS an app without
     /// `NSLocationWhenInUseUsageDescription` in its Info.plist is killed the
-    /// moment this turns on, and Android needs the location permission
-    /// granted. The map itself needs none of that.
+    /// moment this turns on, and Android needs the permission granted.
     public func showsUserLocation(_ value: Bool) -> Modified {
         setValue(MapContract.showsUserLocation, value)
     }
@@ -48,21 +44,17 @@ extension MapProperties {
 ///                 .onPinClicked { chosen = "castle" }
 ///         }
 ///
-/// The map PANS, so it wants room of its own - a grid row, a page that holds
-/// still - rather than a seat inside a ScrollView, the rule every gesture
-/// follows.
+/// The map pans, so give it room of its own - a grid row, a page that holds
+/// still - rather than a place inside a ScrollView.
 ///
-/// Where it looks is an ACT rather than a property: declare an
-/// `@Aim(Map.self)`, put it on the map with `.aim(_:)`, then call
-/// `map.moveToRegion(latitude:longitude:radiusMeters:)`. Where it OPENS is the
-/// initializer below, which is not the same thing.
+/// Where it looks is an act: put an `@Aim(Map.self)` on it with `.aim(_:)` and
+/// call `map.moveToRegion(latitude:longitude:radiusMeters:)`. Where it opens
+/// is the initializer below.
 ///
-/// What draws it is the platform's own map - MapKit on Apple platforms, a map
-/// provider elsewhere - and that costs two things the doc of nothing else here
-/// has to say: where the provider is Google Maps, an Android app needs a
-/// Google Maps API key in its manifest (`com.google.android.geo.API_KEY`;
-/// without one the map stays a grey grid), and a host with no map provider
-/// shows its unsupported-control marker where the map belongs.
+/// The platform's own map draws it. Where that is Google Maps, an Android app
+/// needs an API key in its manifest (`com.google.android.geo.API_KEY`) or the
+/// map stays a grey grid; a host with no map provider shows its
+/// unsupported-control marker instead.
 public struct Map: View, MapProperties {
     /// The node this control describes.
     public var node: Node
@@ -76,11 +68,8 @@ public struct Map: View, MapProperties {
     ///
     ///     Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
     ///
-    /// Where a map OPENS belongs here rather than in an act from `.onCreated`:
-    /// a region given here is kept by the host and applied once the
-    /// platform's map is ready, while the same act lands an instant after the
-    /// native map exists and the platform's own opening region overwrites it.
-    /// Moving LATER is the act -
+    /// Where a map opens belongs here, not in an act from `.onCreated`, which
+    /// the platform's own opening region overwrites. Moving later is the act,
     /// `map.moveToRegion(latitude:longitude:radiusMeters:)`.
     ///
     /// - Parameter radiusMeters: Half the width of what is shown, in METERS -
@@ -90,20 +79,15 @@ public struct Map: View, MapProperties {
         node.write(MapContract.region, MapRegion(latitude: latitude, longitude: longitude, radiusMeters: radiusMeters))
     }
 
-    // MARK: Properties
-
     // MARK: The pins
 
-    /// The pins on it, replacing whatever was pinned before.
-    ///
-    /// A `Pin` is not a view - a label, an address and a point, nothing to lay
-    /// out - so it takes none of the modifiers a view has and belongs here and
-    /// nowhere else.
+    /// The pins on it, replacing whatever was pinned before. A `Pin` is not a
+    /// view, and goes here and nowhere else.
     public func pins(@ViewBuilder _ content: () -> [Element]) -> Self {
         var copy = self
 
-        // The slot a `.contextMenu` appended stays LAST, the rule every
-        // slot-carrying list follows - so the pins go in front of it.
+        // The pins go before the context menu's slot, which stays last.
+        // Design: docs/design/views/modifiers.md#slot-children
         copy.node.children.removeAll { $0.type == .pin }
         let slots = copy.node.children.filter { $0.type == .contextMenu }
         copy.node.children.removeAll { $0.type == .contextMenu }
@@ -173,9 +157,8 @@ public struct Pin: Element {
         return copy
     }
 
-    /// Fires when the pin is tapped. OBSERVING only: a handler here runs a
-    /// boundary away, after the platform has already decided whether the
-    /// callout opens, so it cannot keep the callout shut.
+    /// Fires when the pin is tapped. Observing only: it cannot keep the
+    /// callout shut.
     public func onPinClicked(_ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(PinContract.pinClicked.token, handler)
@@ -191,9 +174,7 @@ public struct Pin: Element {
     }
 }
 
-/// How the world is drawn. Its numbers are this wire's own - the rule at the
-/// head of Types/Enums.swift, which every closed vocabulary on this wire
-/// follows.
+/// How the world is drawn.
 public enum MapType: Int32, Sendable, HostRepresentable {
     /// Roads and their names - the default.
     case street = 0
@@ -215,10 +196,6 @@ public struct Location: Equatable, Sendable, HostRepresentable {
     public var longitude: Double
 
     /// A place, by its two coordinates.
-    ///
-    /// The map hands one of these to `onMapClicked`; this is how an author
-    /// makes one of their own - a saved place, a test's expectation - so the
-    /// type reads the same in both directions.
     ///
     /// - Parameter latitude: degrees north of the equator, negative south.
     /// - Parameter longitude: degrees east of Greenwich, negative west.
@@ -296,10 +273,8 @@ extension Aim where Target == Map {
     ///             latitude: 52.2497, longitude: 21.0135, radiusMeters: 800)
     ///     }
     ///
-    /// For moving a map that is already up. Where one OPENS is
-    /// `Map(latitude:longitude:radiusMeters:)`, not this act from `.onCreated`:
-    /// that lands an instant after the native map exists and the platform's
-    /// own opening region overwrites it.
+    /// For moving a map that is already up; where one opens is
+    /// `Map(latitude:longitude:radiusMeters:)`.
     ///
     /// - Parameter radiusMeters: Half the width of what is shown, in METERS -
     ///   a plain number, its unit in its name.

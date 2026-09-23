@@ -1,23 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A host-native rectangle primitive.
-
-/// A box's own properties - the half a `Style<ColorBox>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `ColorBox`'s own properties, shared by the control and its
+/// `Style<ColorBox>`.
 public protocol ColorBoxProperties: PropertyContainer {}
 
 extension ColorBoxProperties {
-    /// What the rectangle is filled with.
-    ///
-    /// Not `.background`: a ColorBox carries both, and this is the one it
-    /// draws - the background is a second surface behind it, which the corner
-    /// radius does not round and which need not share the box's transform.
-    /// A rotated box that carries both shows the background standing still
-    /// underneath, so give a box its colour here and leave its background
-    /// alone - in a style as much as on the control.
+    /// What the rectangle is filled with. Use this rather than `.background`,
+    /// a second surface behind the box that its corner radius does not round.
     public func color(_ value: Color) -> Modified {
         setValue(ColorBoxContract.color, value)
     }

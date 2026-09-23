@@ -1,10 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// PositionIndicator's own properties - the half a `Style<PositionIndicator>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `PositionIndicator`'s own properties, shared by the control and its
+/// `Style<PositionIndicator>`.
 public protocol PositionIndicatorProperties: PropertyContainer {}
 
 extension PositionIndicatorProperties {
@@ -16,12 +14,8 @@ extension PositionIndicatorProperties {
         setValue(PositionIndicatorContract.count, value)
     }
 
-    /// Which one is the current one, counting from 0.
-    ///
-    /// Told to it rather than read from it: nothing about a PositionIndicator is
-    /// the reader's to change, so there is no binding overload here - a
-    /// gallery's `position($shown)` is what writes, and this reads the same
-    /// state.
+    /// Which dot is the current one, counting from 0 - usually the state a
+    /// gallery's `position($shown)` writes.
     public func position(_ value: Int) -> Modified {
         setValue(PositionIndicatorContract.position, value)
     }
@@ -46,8 +40,7 @@ extension PositionIndicatorProperties {
         setValue(PositionIndicatorContract.maximumVisible, value)
     }
 
-    /// A dot or a square, for every dot. The modifier's name is plural and the
-    /// enum's is not.
+    /// A dot or a square, for every dot.
     public func indicatorsShape(_ value: IndicatorShape) -> Modified {
         setValue(PositionIndicatorContract.indicatorsShape, value)
     }
@@ -67,11 +60,9 @@ extension PositionIndicatorProperties {
 ///         .indicatorColor(.lightGray)
 ///         .selectedIndicatorColor(.cornflowerBlue)
 ///
-/// It is joined to a `GalleryView` by SHARED STATE rather than by naming one:
-/// `GalleryView { … }.position($shown)` writes that state as the reader swipes,
-/// and `.position(shown)` here reads the same value back. Which is also what
-/// makes a PositionIndicator useful on its own - a wizard, a stepper, anything
-/// with a place in a sequence.
+/// It is joined to a `GalleryView` by shared state: the gallery's
+/// `.position($shown)` writes it as the user swipes, and `.position(shown)`
+/// here reads it. It serves anything with a place in a sequence.
 public struct PositionIndicator: View, PositionIndicatorProperties {
     /// The node this control describes.
     public var node: Node

@@ -25,10 +25,8 @@ public struct Rectangle: Shape, RectangleProperties {
     }
 }
 
-/// Rectangle's own properties - the half a `Style<Rectangle>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Rectangle`'s own properties, shared by the control and its
+/// `Style<Rectangle>`.
 public protocol RectangleProperties: PropertyContainer {}
 
 extension RectangleProperties {
@@ -44,9 +42,7 @@ extension RectangleProperties {
     ///         .cornerRadius(topLeft: 16, topRight: 16, bottomLeft: 0, bottomRight: 0)
     ///         .fill(.whiteSmoke)
     ///
-    /// A card rounded along the top and flush along the bottom, which is what
-    /// naming them separately is for. The labels are required, so there is no
-    /// order to remember at the call site.
+    /// A card rounded along the top and flush along the bottom.
     public func cornerRadius(
         topLeft: Double,
         topRight: Double,

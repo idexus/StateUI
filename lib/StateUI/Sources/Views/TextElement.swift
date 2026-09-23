@@ -1,16 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The tier for a control whose text IS a property.
-//
-// A tier of its own rather than a block in Elements.swift - that file is the
-// tier every view shares, and Text is the texted controls' and a span's.
-
-/// The tier for a control whose text IS a property: everything
-/// `TextStyleElement` has, plus the text itself.
-///
-/// The tiers are separate because a Picker or date/time field can style the
-/// value it formats without owning an independent text value.
+/// A control whose text is a property: everything `TextStyleElement` has,
+/// plus the text itself.
 public protocol TextElement: TextStyleElement {}
 
 extension TextElement {
@@ -18,12 +10,9 @@ extension TextElement {
     /// `Label("Total")` - and this is the way to change it in a style.
     public func text(_ value: String) -> Modified { setValue(TextElementContract.text, value) }
 
-    /// Whether those letters are DRAWN as written or in one case throughout.
+    /// Whether the letters are drawn as written or in one case throughout.
     ///
     ///     Label("total").textCase(.uppercase)
-    ///
-    /// On this tier rather than on `TextStyleElement`, because transforming a
-    /// formatted picker value would be a different, platform-specific promise.
     public func textCase(_ value: TextCase) -> Modified {
         setValue(TextElementContract.textCase, value)
     }

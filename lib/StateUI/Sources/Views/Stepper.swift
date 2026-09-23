@@ -1,20 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A number changed one step at a time.
-
-/// Stepper's own properties - the half a `Style<Stepper>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Stepper`'s own properties, shared by the control and its `Style<Stepper>`.
 public protocol StepperProperties: PropertyContainer {}
 
 extension StepperProperties {
-    /// The number it is showing, between `minimum` and `maximum`.
-    ///
-    /// `Stepper(1)` and `Stepper($count)` both say this from their argument, so
-    /// a modifier written beside one wins - and a binding goes on being written
-    /// back to, which is how the two can then disagree.
+    /// The number it is showing, between `minimum` and `maximum`. Usually given
+    /// in the initializer.
     public func value(_ value: Double) -> Modified {
         setValue(StepperContract.value, value)
     }
@@ -66,32 +58,24 @@ public struct Stepper: View, StepperProperties {
         node.write(StepperContract.value, value)
     }
 
-    /// Two-way: shows what the state holds and writes back what is stepped to
-    /// - and HANDED OVER, so the stepper is no reader of the state.
+    /// Two-way: shows what the state holds and writes back what is stepped to,
+    /// with no view rebuilt for it.
     ///
     ///     @State private var count = 1.0
     ///
     ///     Stepper($count)
     ///
-    /// The host carries the value as a journey, as a `Slider`'s: an assignment
-    /// sends it under the element's law, a press is written back landed, and
-    /// what a press COSTS is decided by who reads `count` at build. A Stepper
-    /// draws its two buttons and NO number, so the reading beside it is either
-    /// a body that prints `count` - a render per press - or a text an engine
-    /// writes, which costs none.
+    /// A Stepper draws its two buttons and no number: show `count` beside it,
+    /// or a driven text an engine writes, which costs no render.
     public init(_ value: Binding<Double>) {
         self = Stepper().value(value)
     }
 
+    // Design: docs/design/views/bindings.md#two-way-controls
     /// The same two-way value as `Stepper($value)`, written as a modifier.
     ///
     ///     Stepper($count)
     ///     Stepper().value($count)
-    ///
-    /// BOTH SPELLINGS ALWAYS, and they mean the same thing: the initializer is
-    /// the short way to say what gives this control its purpose, and the
-    /// modifier is the way every other property is written. Neither is the
-    /// real one.
     ///
     /// - Parameter value: the state the stepper shows and writes back into,
     ///   carried by the host as a journey.
@@ -99,8 +83,6 @@ public struct Stepper: View, StepperProperties {
     public func value(_ value: Binding<Double>) -> Modified {
         journey(StepperContract.value.token, by: value)
     }
-
-    // MARK: Properties
 
     // MARK: Events
 

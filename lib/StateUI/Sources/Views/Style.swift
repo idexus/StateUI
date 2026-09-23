@@ -1,78 +1,20 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Styles: what every control of a type looks like - resolved on THIS side.
-//
-// A style is a bag of property values applied to every control of a type, and
-// this library already writes those values one way: as modifiers. So a style
-// is written with the same modifiers, chained on the style itself:
-//
-//     Style<Label>()
-//         .textColor(AppColors.text)
-//         .fontSize(14)
-//
-// The style conforms to the PROPERTY half of its target's tiers and to
-// nothing else - see the split at the top of Elements.swift - so after the
-// dot an author is offered exactly what a style can carry. A modifier the
-// target does not have does not compile, and neither does anything that is
-// not a property: `Style<Label>().onTapped { }` and `Style<Label>().id("x")`
-// are refused at the keyboard, which is the rule this library is built to -
-// what can be written is what is allowed.
-//
-// They live in a sheet the application writes into its session. A style with no
-// key applies to every control of its type; one with a key is asked for by name.
-//
-//     struct GalleryApp: Application {
-//         @Environment private var application: ApplicationSession
-//
-//         init() {
-//             application.styles = StyleSheet {
-//                 Style<Label>().fontSize(14)                  // every Label
-//                 Style<Label>("Headline").fontSize(32)        // by name
-//             }
-//         }
-//
-//         var scene: any Scene { MainWindow() }
-//     }
-//
-//     Label("Welcome").style("Headline")
-//
-// WHERE A STYLE IS APPLIED is this side. Nothing about a style crosses the
-// boundary: the differ merges it into the control it belongs to, so what the
-// host receives is a control with every value already on it. There is no style
-// object, no resource lookup and nothing in the host that has to know what a
-// style is - which is what keeps the host small enough to be written again for
-// another platform, and why the rules are stated here:
-//
-//   - A KEYED style replaces the implicit one for the type, and a value written
-//     on the control beats both - one property at a time.
-//   - A state written on the CONTROL is written over the state of the same name
-//     in its style, one setter at a time. Merging is the rule every other value
-//     here already follows, and it is what lets a control hear a state
-//     (`.onVisualStateChanged`) without losing the paint its style gave it.
-//   - `basedOn` is flattened when the sheet is built, so a chain costs nothing
-//     per control.
-//
-// See `StyleSheet` below for the resolution itself, and `Diff.element` for
-// where it runs.
+// Styles: what every control of a type looks like, resolved on this side
+// before the patch. A style is written with a control's own modifiers and
+// carries only its target's property half.
+// Design: docs/design/views/styles.md#styles-are-resolved-before-the-patch
 
-/// A control a style can be written for.
-///
-/// The requirement is an initializer that sets nothing, and what the style
-/// takes from it is the node TYPE, so the target is named once, by the control
-/// itself, rather than spelled again as a string.
+/// A control a style can be written for: one with an initializer that sets
+/// nothing, from which the style takes its node type.
 public protocol StyleTarget: VisualElement {
     /// A control with nothing set. Where a style reads its target's type.
     init()
 
-    /// The state a control of this type RESTS in - and therefore the one a
-    /// group of states that named none is given, so that it has somewhere to
-    /// return to.
-    ///
-    /// It is `.normal` for everything but a RadioButton, which rests in
-    /// `.unchecked` - see the note on `VisualState.unchecked`. A control an
-    /// application registers itself may say so too, if the native control
-    /// behind it drives a state of its own.
+    /// The state a control of this type rests in, given to a group of states
+    /// that names none so it has somewhere to return to: `.normal` for
+    /// everything but a RadioButton.
     static var restingVisualState: VisualState<Self> { get }
 }
 
@@ -82,17 +24,10 @@ extension StyleTarget {
     public static var restingVisualState: VisualState<Self> { .normal }
 }
 
-/// One state a control can be in.
-///
-/// The names are spelled exactly as the host matches them: a state is matched
-/// by its name, so unlike an enum value on the wire this is not camelCased -
-/// "PointerOver" is the state, and "pointerOver" is nothing.
-///
-/// The TARGET is a phantom, and it is what makes the list after the dot the
-/// states that control actually enters: `Style<Switch>().visualState(.on)`
-/// compiles and `Style<Button>().visualState(.on)` does not, because nothing
-/// ever moves a Button into On and a state nothing drives is a style that
-/// silently does nothing.
+/// One state a control can be in, for the control type `Target`: after the
+/// dot are the states that control enters, so `Style<Switch>().visualState(.on)`
+/// compiles and `Style<Button>().visualState(.on)` does not. Names are spelled
+/// as the host matches them: "PointerOver", not "pointerOver".
 public struct VisualState<Target>: Equatable, Sendable {
     /// The name a state is matched on, spelled exactly.
     public let name: String
@@ -116,22 +51,15 @@ extension VisualState where Target: VisualElement {
     /// While the control has the keyboard focus.
     public static var focused: Self { Self("Focused") }
 
-    /// While the control does NOT have the keyboard focus.
-    ///
-    /// A control enters this straight AFTER Normal, so a group declaring both
-    /// rests here rather than there. That makes it a second spelling of Normal
-    /// rather than the pair of `.focused`, and worth writing only where saying
-    /// it twice says something.
+    /// While the control does not have the keyboard focus. A control enters it
+    /// right after Normal, so a group declaring both rests here.
     public static var unfocused: Self { Self("Unfocused") }
 
     /// While a mouse or pen is over the control. Never on a touch-only device.
     public static var pointerOver: Self { Self("PointerOver") }
 
-    /// While the control is the chosen one.
-    ///
-    /// Nothing in `VisualElement` drives this: it is entered by whatever does
-    /// the choosing - a `PositionIndicator`'s dots, where it draws them from
-    /// views.
+    /// While the control is the chosen one - entered by whatever does the
+    /// choosing, such as a `PositionIndicator`'s dots drawn from views.
     public static var selected: Self { Self("Selected") }
 
 }
@@ -164,14 +92,8 @@ extension VisualState where Target == RadioButton {
     /// While `isOn` is true.
     public static var checked: Self { Self("Checked") }
 
-    /// While `isOn` is false, which is where a RadioButton RESTS.
-    ///
-    /// A RadioButton rests here rather than in `.normal`, because it enters
-    /// Checked or Unchecked FIRST and the ordinary Normal AFTER, so a group
-    /// that declares Normal ends every transition there and the pair is never
-    /// seen at all. It is the only control this way round - a Switch and a
-    /// CheckBox enter Normal first, so their own states win over a Normal
-    /// beside them. `StyleTests` pins the resting state this gives a group.
+    /// While `isOn` is false - where a RadioButton rests, since it enters
+    /// Checked or Unchecked before Normal.
     public static var unchecked: Self { Self("Unchecked") }
 }
 
@@ -192,23 +114,12 @@ extension RadioButton {
 ///             .background(AppColors.gray200)
 ///         }
 ///
-/// The style itself takes the modifiers, and it conforms to the property half
-/// of its target's tiers and to nothing else - so what can be written on one
-/// is exactly what a style can carry. An event, a gesture, an `.id()` or
-/// another control's property does not compile; the compiler is the check,
-/// not the host.
-///
-/// `Style<Button>` is this type with its second parameter filled in. That
-/// parameter is the CONTEXT - the style itself, or one of its states - a
-/// phantom whose one job is to keep `visualState` from nesting: a state
-/// cannot hold a state, and the constraint says so at the keyboard.
-///
-/// The target type is not written twice: it comes from the target's own blank
-/// initializer, which is the same place its node type comes from.
+/// A style takes the modifiers of its target's properties and nothing else:
+/// an event, a gesture, an `.id()` or another control's property does not
+/// compile. Write it as `Style<Button>`; `Context` keeps a visual state from
+/// holding another.
 public struct StyleBag<Target: StyleTarget, Context> {
-    /// The setters written so far. The node's type is the TARGET's, so the
-    /// one name travels from the control to the wire without being spelled
-    /// again; its props are what the modifiers set.
+    /// The setters written so far, on a node of the target's type.
     public var node: Node
 
     /// The key a keyed style is asked for by; nil for one every control of
@@ -228,17 +139,15 @@ public struct StyleBag<Target: StyleTarget, Context> {
     }
 }
 
-/// The context of the style itself - where `visualState`, `basedOn` and
-/// `applyToDerivedTypes` may be written. See `StyleBag`.
+/// The context of the style itself, where `visualState` and `basedOn` may be
+/// written. See `StyleBag`.
 public enum StyleBase {}
 
 /// The context inside a `visualState` closure: the same property surface,
 /// minus what only the style itself can carry - a state cannot hold a state.
 public enum StyleState {}
 
-/// The public spelling of a style - `Style<Button>()` - with the context
-/// filled in. Swift has no default generic arguments, and a typealias is how
-/// the phantom stays out of every declaration.
+/// A style, `Style<Button>()`: a `StyleBag` with its context filled in.
 public typealias Style<Target: StyleTarget> = StyleBag<Target, StyleBase>
 
 extension StyleBag: PropertyContainer {
@@ -260,10 +169,8 @@ extension StyleBag where Context == StyleBase {
 
     /// The style this one starts from, named by the key that style was given.
     ///
-    /// The one it names must be in the same sheet - which is where the chain is
-    /// flattened, once, so a style based on a style based on a style costs a
-    /// control nothing. A key naming nothing is simply not started from, and a
-    /// chain that comes back round to itself stops where it began.
+    /// The one it names must be in the same sheet. A key naming nothing is
+    /// ignored, and a chain that comes back round to itself stops there.
     public func basedOn(_ key: String) -> Self {
         var copy = self
         copy.basedOn = key
@@ -276,9 +183,7 @@ extension StyleBag where Context == StyleBase {
     ///         .background(.cornflowerBlue)
     ///         .visualState(.disabled) { $0.background(.gray) }
     ///
-    /// The closure's `$0` is the same property surface the style has - and
-    /// nothing more: a `visualState` inside a `visualState` does not compile,
-    /// which is the phantom context doing its one job.
+    /// The closure's `$0` offers the style's own property modifiers.
     ///
     /// - Parameters:
     ///   - state: which state these setters describe. What is offered after
@@ -331,13 +236,8 @@ extension StyleBag where Context == StyleBase {
 }
 
 extension StyleBag where Context == StyleBase {
-    /// The style with its target forgotten - what a `StyleSheet` files.
-    ///
-    /// A style is NOT an `Element`: it describes no part of the tree and never
-    /// travels, so it has no body and no node type of its own. What survives
-    /// the erasure is the target's node TYPE, which is what a control is
-    /// matched against, and the states - already nodes, because those become
-    /// the styled control's own children.
+    /// The style with its target forgotten, for a `StyleSheet`: the target's
+    /// node type, its values and its states.
     var erased: AnyStyle {
         AnyStyle(
             target: node.type,
@@ -348,32 +248,9 @@ extension StyleBag where Context == StyleBase {
     }
 }
 
-/// The states of one target with `state` written into them: the ONE place a
-/// list of states is arranged, so a style and a control put theirs in the same
-/// shape.
-///
-/// Three rules, and each is there for a reason:
-///
-/// - A state REPLACES one of the same name in the same group, WHERE THE FIRST
-///   ONE WAS. A group holds one state of each name, so the second writing has
-///   to win rather than stand beside the first; it wins the values and not the
-///   position, so writing order is what the list reads as.
-/// - A group that names no resting state is given the TARGET's - an empty one,
-///   changing nothing. A group is left by entering another state, so a group
-///   whose only state is Disabled has no way back: the control is disabled once
-///   and stays drawn that way for the rest of its life, with nothing anywhere
-///   reporting it.
-/// - And the resting state stands FIRST, because a group opens in the state it
-///   declares first.
-///
-/// Which state is the resting one is the target's business, not always Normal:
-/// see `StyleTarget.restingVisualState`, and the note on
-/// `VisualState.unchecked`.
-///
-/// A state's name and its group are NAMES on the wire, not text: each repeats
-/// on every state that shares it, and one spelling means one state wherever it
-/// is written. So they are read back with `.name` here - `.string` would answer
-/// nil for every one of them and leave every state matching every other.
+/// The states of one target with `state` written into them: the one place a
+/// list of states is arranged, for a style and a control alike.
+/// Design: docs/design/views/styles.md#arranging-states
 func visualStates(_ existing: [Node], adding state: Node, resting: String) -> [Node] {
     let group = state.visualStateGroup ?? ""
     let name = state.visualStateName ?? ""
@@ -408,21 +285,15 @@ func visualStates(_ existing: [Node], adding state: Node, resting: String) -> [N
 }
 
 extension VisualElement where Self: StyleTarget {
-    /// What changes while THIS control is in a state - the same thing a style
+    /// What changes while this control is in a state - the same thing a style
     /// says, said about one control.
     ///
     ///     Button("Save")
     ///         .visualState(.disabled) { $0.textColor(Palette.disabled) }
     ///
-    /// The closure's `$0` is the control's own property surface, exactly as a
-    /// style's is - so what can be written in a state is what a style could
-    /// carry, and the states offered after the dot are the ones this control
-    /// actually enters.
+    /// A state written here is written over the state of the same name in the
+    /// control's style, one setter at a time.
     ///
-    /// - Important: a state written here is written OVER the state of the same
-    ///   name in the control's style, one setter at a time - so a control may
-    ///   change what one state looks like and leave the rest of its style's
-    ///   states exactly as they were, the style being resolved on this side.
     /// - Parameters:
     ///   - state: which state these setters describe. What is offered after
     ///     the dot is the states this control actually enters.
@@ -462,8 +333,8 @@ extension VisualElement where Self: StyleTarget {
         visualState(emptyVisualState(named: state.name, in: group))
     }
 
-    /// Runs when this control ENTERS a state - which is what makes a state
-    /// something that can be animated rather than only set.
+    /// Runs when this control enters one of the named states - where a state
+    /// can animate rather than only be set.
     ///
     ///     @State private var lift = 1.0
     ///
@@ -473,24 +344,12 @@ extension VisualElement where Self: StyleTarget {
     ///             try await $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(120, .cubicOut))
     ///         }
     ///
-    /// A style's setters change instantly; a handler can take as long as it
-    /// likes, so this is where a state becomes a transition.
+    /// A control reports only the states it declares, so the states named here
+    /// are declared in `CommonStates`, merged with its style's without changing
+    /// how it looks. Name only the states it should react to: declaring a
+    /// state can change which one it rests in.
     ///
-    /// - Important: a control reports the states it DECLARES, and nothing else:
-    ///   the host knows a state only from the list it is sent, so a state
-    ///   nobody wrote down is one it cannot announce. The states named here
-    ///   are declared for you, in `CommonStates`, without changing what the
-    ///   control looks like in them; states written with `.visualState` are
-    ///   heard as they are, whatever group they are in.
-    /// - Important: DECLARING a state can change which one the control rests in
-    ///   - see `VisualState.unchecked` for the case where that bites. Name here
-    ///   only the states this control is meant to react to.
-    /// - Note: a control whose states come from a STYLE declares none of its
-    ///   own, so name the ones to hear here as well - which costs nothing,
-    ///   since a state named here is merged into its style's rather than
-    ///   replacing it.
-    /// - Parameter perform: labelled because Swift requires a label after a
-    ///   variadic - written as a trailing closure it is never seen.
+    /// - Parameter perform: what to run, given the state entered.
     public func onVisualStateChanged(
         _ states: VisualState<Self>...,
         perform handler: @escaping ValueEventHandler<VisualState<Self>>
@@ -512,13 +371,7 @@ extension VisualElement where Self: StyleTarget {
             }
 
             node.addHandler(VisualElementContract.visualStateChanged.token) {
-                // The name is what a state is matched by, and what the report
-                // carries. A payload of another shape leaves the handler alone,
-                // the rule every typed event follows.
-                //
-                // `.string` and not `.name` on the way BACK: an event payload
-                // is written without a dictionary, so what the host says a
-                // state is called arrives as text however it went out.
+                // The state's name, as text: an event payload carries no names.
                 if let name = EventBuffer.current.value()?.string {
                     try await handler(VisualState<Self>(name))
                 }
@@ -526,11 +379,9 @@ extension VisualElement where Self: StyleTarget {
         }
     }
 
-    /// Writes one state into the control's own list of them.
-    ///
-    /// The states ride as CHILDREN of the control - the `.contextMenu` shape,
-    /// a modifier that writes a child rather than a property - appended after
-    /// whatever the control lays out, which is where the host subtracts them.
+    /// Writes one state into the control's own list, as children after what
+    /// the control lays out.
+    /// Design: docs/design/views/styles.md#visual-states
     private func visualState(_ written: Node) -> Modified {
         modified { write(written, into: &$0, resting: Self.restingVisualState.name) }
     }
@@ -551,14 +402,10 @@ func write(_ state: Node, into node: inout Node, resting: String) {
 
 // MARK: - The sheet, and resolving against it
 
-/// A style whose target type has been forgotten - what a `StyleSheet` collects.
-///
-/// Written as `Style<Label>()` and never by hand: the erasure happens where the
-/// sheet's builder takes it, which is the last point at which there is anything
-/// left to check.
+/// A style whose target type has been forgotten - what a `StyleSheet`
+/// collects, made from a `Style<Label>()` and never by hand.
 public struct AnyStyle {
-    /// The node type this style is for - the target's own, so the type is named
-    /// once, by the control itself.
+    /// The node type this style is for - the target's own.
     let target: NodeType
 
     /// The key it is asked for by, or nil for the one every control of the type
@@ -571,17 +418,12 @@ public struct AnyStyle {
     /// What it sets.
     var props: [Prop: PropValue]
 
-    /// The states it declares, arranged - the resting one first. These become
-    /// the styled control's own `VisualState` children.
+    /// The states it declares, arranged, the resting one first.
     var states: [Node]
 }
 
-/// Collects the styles written in a `StyleSheet`'s closure.
-///
-/// `if`, `else` and `for` all work here, which is what lets a sheet answer a
-/// platform or an formFactor. There is no identity to lose in a loop - a style is
-/// filed by its target type or its key - so unlike a view builder this one
-/// keeps `buildArray`.
+/// Collects the styles written in a `StyleSheet`'s closure; `if`, `else` and
+/// `for` all work, so a sheet can answer a platform or a form factor.
 @resultBuilder
 public enum StyleBuilder {
     /// One style, whatever its target.
@@ -610,27 +452,18 @@ public enum StyleBuilder {
 
 /// The styles an application makes available.
 ///
-/// Written into the application's session as it is made, so they apply to the
-/// whole application:
+/// Written into the application's session, so they apply to the whole
+/// application:
 ///
 ///     application.styles = StyleSheet {
 ///         Style<Label>().textColor(AppColors.text)
 ///         Style<Button>("Danger").background(.firebrick)
 ///     }
 ///
-/// The top of the tree reads it, so a sheet written again restyles every
-/// control, and it is a VALUE: two sheets saying the same thing are the same
-/// sheet.
-///
-/// - Note: a sheet holds `Style`s and nothing else, because a style is the one
-///   thing resolved on this side.
+/// Writing a new sheet restyles every control.
 public struct StyleSheet {
-    /// Every style, in writing order, each with whatever it is based on already
-    /// under it.
-    ///
-    /// The one storage: the two maps below are places IN it, not copies of it -
-    /// which is also what lets a test see a style that was filed twice, where a
-    /// dictionary would only ever show the winner.
+    /// Every style, in writing order, each with what it is based on already
+    /// under it - the one storage the two maps below point into.
     var written: [AnyStyle] = []
 
     /// Where the one every control of a type gets is.
@@ -654,9 +487,7 @@ public struct StyleSheet {
             }
         }
 
-        // Flattened against what was WRITTEN, so a style may name one written
-        // below it: where a style stands in the sheet does not decide what it
-        // may start from.
+        // Against what was written, so a style may start from one below it.
         let unflattened = written
 
         for index in written.indices {
@@ -664,11 +495,8 @@ public struct StyleSheet {
         }
     }
 
-    /// One style with everything it is based on already under it.
-    ///
-    /// `chain` is what makes a cycle harmless: a style that comes back round to
-    /// one already being flattened stops there, rather than looping forever
-    /// over a mistake there is nowhere to report.
+    /// One style with everything it is based on already under it; `chain`
+    /// stops a cycle where it began.
     private static func flatten(
         _ style: AnyStyle,
         from written: [AnyStyle],
@@ -689,14 +517,8 @@ public struct StyleSheet {
         return result
     }
 
-    /// The style a node wears: the one it asked for by name, or the one every
-    /// control of its type gets.
-    ///
-    /// A key naming nothing falls through to the implicit style - an
-    /// unresolved key is no style, and no style is what makes an implicit one
-    /// apply. A key naming a style declared for ANOTHER control falls through
-    /// the same way, since its values would be half applied and half dropped
-    /// unread.
+    /// The style a node wears: the keyed one it asks for where that is for its
+    /// type, or else the one every control of its type gets.
     func style(for node: Node) -> AnyStyle? {
         if let key = node.props[VisualElementContract.style.token]?.name, let at = keyed[key],
            written[at].target == node.type {
@@ -706,13 +528,8 @@ public struct StyleSheet {
         return implicit[node.type].map { written[$0] }
     }
 
-    /// Whether two sheets say the same thing.
-    ///
-    /// Read once per render, by the differ, and only to decide whether a
-    /// composed view may still be carried: its inputs say what it was built
-    /// with, and a sheet is not one of them. Hand-written
-    /// because a state is a `Node`, which carries closures and cannot be
-    /// Equatable - a state's props and its setters are all there is to compare.
+    /// Whether two sheets say the same thing - read once per render, to decide
+    /// whether a composed view may still be carried.
     static func same(_ one: StyleSheet?, _ other: StyleSheet?) -> Bool {
         switch (one, other) {
         case (nil, nil): return true
@@ -741,19 +558,13 @@ public struct StyleSheet {
     }
 }
 
-/// The node as the host will see it: its style's values under its own, and the
-/// states of both.
-///
-/// The ONE place a style is applied, called by `Diff.element` for every element
-/// it builds - which is why it runs even with no sheet at all: `.style("…")` is
-/// consumed here whatever happens, the host having no dictionary to look a key
-/// up in.
+/// The node as the host will see it: its style's values under its own, and
+/// the states of both - the one place a style is applied.
+/// Design: docs/design/views/styles.md#applying-a-style
 func styled(_ node: Node, with sheet: StyleSheet?) -> Node {
     let style = sheet?.style(for: node)
 
-    // Asked before it is written: assigning nil to a key a dictionary does not
-    // have still makes the storage unique, so an unguarded removal would COPY
-    // the props of every node in the tree, styled or not.
+    // Asked first: assigning nil to a missing key still copies the storage.
     guard style != nil || node.props[VisualElementContract.style.token] != nil else { return node }
 
     var node = node
@@ -761,17 +572,14 @@ func styled(_ node: Node, with sheet: StyleSheet?) -> Node {
 
     guard let style = style else { return node }
 
-    // The control's own values win, one property at a time - this library's
-    // precedence everywhere.
+    // The control's own values win, one property at a time.
     if !style.props.isEmpty {
         node.props = style.props.merging(node.props) { _, own in own }
     }
 
     guard !style.states.isEmpty else { return node }
 
-    // The states ride as slot children, appended after whatever the control
-    // lays out - see `write(_:into:resting:)`, which puts the control's own
-    // there in the same place.
+    // States ride as children after what the control lays out.
     node.states = true
 
     let laid = node.children.filter { $0.type != .visualState }
@@ -783,16 +591,8 @@ func styled(_ node: Node, with sheet: StyleSheet?) -> Node {
 }
 
 /// The states of a control that also has a style: the style's, with the
-/// control's written over them.
-///
-/// A state of the same name in the same group is OVERLAID rather than replaced,
-/// so a control that declares `.pointerOver` only to hear it
-/// (`.onVisualStateChanged`) keeps whatever its style paints there - and
-/// merging is what every other value on this side already does.
-///
-/// A state in a group the base does not have is appended, which is enough to
-/// keep the arrangement: both lists arrive arranged, so each group's resting
-/// state has already been put first among its own.
+/// control's written over them one setter at a time.
+/// Design: docs/design/views/styles.md#states-on-a-control-over-its-style
 func merged(_ base: [Node], with own: [Node]) -> [Node] {
     guard !own.isEmpty else { return base }
     guard !base.isEmpty else { return own }
@@ -815,10 +615,8 @@ func merged(_ base: [Node], with own: [Node]) -> [Node] {
     return result
 }
 
-/// One state written over another: its setters win, one property at a time.
-///
-/// A state that sets NOTHING changes nothing - which is what a state declared
-/// only to be heard is, and the reason declaring one is safe.
+/// One state written over another, one setter at a time; a state that sets
+/// nothing changes nothing.
 private func overlaid(_ base: Node, with own: Node) -> Node {
     let mine = own.children.first { $0.type == .setters }?.props ?? [:]
 
@@ -835,12 +633,7 @@ private func overlaid(_ base: Node, with own: Node) -> Node {
 }
 
 // MARK: - What a style may say
-//
-// The property half of the tiers, one line per tier: a `Style<Target>` offers
-// a modifier exactly when the target's tier declares it, and the modifiers
-// themselves are written ONCE, in Elements.swift, serving the control and the
-// style alike. The element half - events, gestures, identity, lifecycle - is
-// exactly what is missing from this list, and that absence is the feature.
+// Design: docs/design/views/tiers.md#two-halves
 
 extension StyleBag: VisualElementProperties {}
 extension StyleBag: ViewProperties where Target: View {}
@@ -859,9 +652,7 @@ extension StyleBag: BorderElement where Target: BorderElement {}
 extension StyleBag: ImageElement where Target: ImageElement {}
 extension StyleBag: InputViewProperties where Target: InputView {}
 
-// And each control's OWN property surface, one line per control - the
-// protocol is declared beside the control, so this list only says "its style
-// shares it".
+// And each control's own properties.
 
 extension StyleBag: ActivityIndicatorProperties where Target == ActivityIndicator {}
 extension StyleBag: BorderProperties where Target == Border {}
@@ -897,12 +688,7 @@ extension StyleBag: TitleBarProperties where Target == TitleBar {}
 extension StyleBag: WebViewProperties where Target == WebView {}
 
 // MARK: - What can be styled
-//
-// Every control in Views/ - which is the rule, kept in one place so it can be
-// read at a glance and so a test can insist on it. A style target is any control
-// that can be made with nothing set, and each of these already could: the
-// initializer that takes the value giving the control its purpose is one of
-// several, never the only one.
+// Design: docs/design/views/styles.md#what-can-be-styled
 
 extension Label: StyleTarget {}
 extension Button: StyleTarget {}
@@ -941,9 +727,7 @@ extension WebView: StyleTarget {}
 extension Map: StyleTarget {}
 extension TitleBar: StyleTarget {}
 
-// A SwipeAction is NOT one, and cannot be: it is a menu item rather than a view,
-// so it has none of the properties a style would set and no VisualElement to
-// hang one on. See Views/SwipeView.swift.
+// A SwipeAction is a menu item, not a view, and has nothing to style.
 
 /// A visual state named `name` in `group`, with no values of its own - how a
 /// state a control only has to be able to enter is written.

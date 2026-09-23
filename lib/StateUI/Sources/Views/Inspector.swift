@@ -1,29 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// WHAT EVERY RENDER COSTS AND WHAT IT BUILDS, shown inside the application.
-//
-// The record is Core/Inspection.swift's; this is what shows it, and the two
-// sentences an application writes to offer it: `ToolbarItem.inspector(scene)`,
-// the button on a page, and - for a scene that may show it in a window of its
-// own - `WindowGroup(.debugInspector) { DebugInspector() }`.
-//
-// EVERY SCENE HAS ITS OWN, showing that scene's history: the renders that
-// reached it, and what each cost there. It opens along the bottom of the
-// scene's main window, folded to its last render, and goes from there - opened
-// out, down the side, or into the scene's `DebugInspector` window where the
-// scene declares one and the platform opens windows: a window of the scene
-// like any other, closed with it, hidden with it where its group says so, off
-// the Window menu, and back with it when the system restores the
-// application's windows. See Views/Scene.swift.
-//
-// IT IS A TREE LIKE ANY OTHER, described by this library and applied by the
-// host, and so it is careful about its own cost: its views are muted in the
-// record, a render its own state caused is not kept, and it is built again at
-// most every `Inspector.pace` milliseconds however fast the application renders.
+// The inspector: what every render costs and builds, shown inside the
+// application, one per scene; the record itself is Core/Inspection.swift's.
+// Design: docs/design/views/inspector.md#what-it-shows
 
 /// What each render costs and what it builds, shown inside the application.
-/// This library's own.
 ///
 ///     @Environment private var scene: SceneSession
 ///     @Environment private var page: PageSession
@@ -31,32 +13,24 @@
 ///     VStack { … }
 ///         .onCreated { page.toolbarItems = [.inspector(scene)] }
 ///
-/// A render is listed as it happens: what caused it, which road it took, how
-/// long describing it took in Swift and applying it took in the host, in
-/// microseconds, and how many composed views it built and carried. Chosen, a
-/// render shows its TREE - every composed view it reached, built with the
-/// reason it could not be carried, carried whole, or walked past on the way to
-/// one below it - with each one's time, its own and with what is under it.
+/// Each render is listed as it happens - its cause, its road, the time Swift
+/// took to describe it and the host to apply it, and how many composed views
+/// it built and carried - and a chosen render shows its tree of composed
+/// views with each one's time.
 ///
-/// EACH SCENE HAS ITS OWN, and shows the renders that reached that scene: the
-/// ⓘ is handed the scene it opens, the session its page holds. It opens along
-/// the bottom of the scene's main window FOLDED TO ONE LINE - the last render
-/// that reached its scene - which leaves the page all but uncovered while it
-/// is watched, with two buttons at the end of the line: open it out, and close
-/// it. Opened out, the same two fold it again and close it. From its head it
-/// docks down the side on a desktop or a tablet, and shows in the scene's own
-/// window where the scene declares one:
+/// Each scene has its own. It opens along the bottom of the scene's main
+/// window folded to one line, the last render; opened out, it docks at the
+/// side on a desktop or a tablet, or shows in the scene's own window where the
+/// scene declares one:
 ///
 ///     WindowGroup(.debugInspector) { DebugInspector() }
 ///
-/// Nothing is recorded while every inspector is closed or paused, so an
-/// application that offers it costs nothing until somebody looks.
+/// Nothing is recorded while every inspector is closed or paused.
 public enum Inspector {
     /// Where an inspector shows.
     public enum Place: Sendable, Equatable {
-        /// Along the bottom of its scene's main window, the page going on
-        /// above it - where the ⓘ opens it, folded to one line, the last
-        /// render. It opens out again, and folds again.
+        /// Along the bottom of its scene's main window, the page going on above
+        /// it - where the ⓘ opens it, folded to one line.
         case bottom
 
         /// Down the trailing side of the main window, under the bar.
@@ -129,15 +103,9 @@ public enum Inspector {
             || record.windows.contains { $0.type == .debugInspector }
     }
 
-    /// Shows a scene's inspector at a place - docked, where it cannot show in
-    /// a window - and records from now on.
-    ///
-    /// - Parameters:
-    ///   - record: the scene.
-    ///   - place: where it shows.
-    ///   - folded: whether it shows folded to its last render, which a panel
-    ///     along the bottom alone can - the ⓘ's way of opening it. Anywhere
-    ///     else, and asked for a place, it is shown whole.
+    /// Shows a scene's inspector at a place - docked where it cannot show in a
+    /// window - and records from now on; `folded` folds a bottom panel to its
+    /// last render.
     static func show(in record: SceneRecord, _ place: Place, folded: Bool = false) {
         let model = InspectorModel.shared
 
@@ -186,10 +154,8 @@ public enum Inspector {
         model.settle()
     }
 
-    /// The panel over a scene's main window, if its inspector docks there.
-    ///
-    /// Asked INSIDE the main window's build, so the window is the reader of
-    /// where its inspector docks and is built again when that moves.
+    /// The panel over a scene's main window, if its inspector docks there -
+    /// asked inside the window's build, so the window builds again when it moves.
     static func panel(in record: SceneRecord) -> Node? {
         guard let place = InspectorModel.shared.places[record.id] else { return nil }
 
@@ -242,7 +208,6 @@ public struct InspectorButton: ContentView {
 }
 
 /// The inspector in a window of its own, beside its scene's main window.
-/// This library's own.
 ///
 ///     WindowGroup(.debugInspector) { DebugInspector() }
 ///
@@ -264,11 +229,9 @@ public struct DebugInspector: Window {
 
 // MARK: - What it remembers
 
-/// Everything the inspectors hold, and the only state they have.
-///
-/// ONE PLACE, because a render caused by nothing but these is an inspector
-/// drawing itself: their storages are what `Inspection.ownStates` holds, and a
-/// pass whose causes are all among them is not kept.
+/// Everything the inspectors hold, in one place, so a render caused only by
+/// these states is known as an inspector drawing itself and is not kept.
+/// Design: docs/design/views/inspector.md#its-own-cost
 final class InspectorModel: @unchecked Sendable {
     /// The one there is.
     static let shared = InspectorModel()
@@ -377,13 +340,8 @@ final class InspectorModel: @unchecked Sendable {
 
 // MARK: - Where it shows
 
-/// An inspector docked in its scene's main window, and nothing over the rest
-/// of it.
-///
-/// THE LAYOUT IT STANDS IN TAKES NO TOUCHES OF ITS OWN, and the host lays it
-/// over the whole window: a touch anywhere the panel is not goes through to
-/// the page under it, which is what lets an application be used while it is
-/// being watched.
+/// An inspector docked in its scene's main window, in a layout that takes no
+/// touches of its own, so the page under it stays in use.
 struct InspectorPanel: ContentView {
     /// The scene it looks at, by its number.
     let scene: String
@@ -413,8 +371,7 @@ struct InspectorPanel: ContentView {
         .margin(8)
 
         if place == .side {
-            // UNDER THE BAR, which keeps the page's own buttons - its ⓘ among
-            // them - where the reader left them.
+            // Under the bar, which keeps the page's own buttons in reach.
             return Grid { panel.gridRow(1).gridColumn(1) }
                 .rows(.fixed(Look.bar), .fill)
                 .columns(.fill, .fixed(Look.side))
@@ -484,8 +441,7 @@ struct InspectorView: ContentView {
     var content: any View {
         let model = InspectorModel.shared
 
-        // WHAT MAKES THIS THE VIEW BUILT AGAIN when a pass lands. The record
-        // itself is plain data, read below without asking anybody.
+        // Reading the revision rebuilds this view when a pass lands.
         _ = model.revision
 
         // Shown means recording, however it came to be shown - the ⓘ, or a
@@ -877,8 +833,7 @@ enum Look {
     /// a drawing in a twelve-unit box, the tap, and the word a screen reader
     /// and a script know it by.
     ///
-    /// DRAWN RATHER THAN TYPED: a glyph is whatever the platform's font makes
-    /// of it, and a font without one draws an empty box in its place.
+    /// Drawn rather than typed: a font without the glyph draws an empty box.
     ///
     /// - Parameters:
     ///   - picture: the drawing - `expanding`, `folding` or `closing`.

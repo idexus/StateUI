@@ -1,37 +1,14 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A RUN OF CARDS THE READER SWIPES THROUGH, and one word says which shape they
-// stand in.
-//
-//     GalleryView(albums, id: \.title) { album in
-//         AlbumFace(album)
-//     }
-//     .arrangement(.fan)
-//     .position($shown)
-//
-// WHAT IT IS MADE OF. A `PlacedLayout` for the cards, a `ScrollReader` for the
-// hand, and a `@State` between them: the offset of an empty scroller lying
-// over the cards is written into a value nothing describes for, and the
-// arithmetic that places the cards reads it. So the run follows a finger, a
-// trackpad and a wheel frame by frame with no view built, nothing compared and
-// no message sent - and the only render is the one that crosses a card, which
-// is what tells the rest of the page which card the reader is on.
-//
-// The three shapes are three closures over the same three numbers - which card
-// this is, how many there are, and the room. Each answers where the card goes,
-// how far it is turned, how big it looks and how opaque it is; a change of
-// shape is those values changing, and for `crossing` milliseconds after one
-// the run is written to travel - so the cards FLY from one arrangement to the
-// next, and follow the hand at once the rest of the time.
+// A run of cards the user swipes through, in a shape one word chooses: a
+// PlacedLayout for the cards, a ScrollReader for the hand, and a state between.
+// Design: docs/design/views/measured-layouts.md#gallery-view
 
-/// Which shape a `GalleryView` stands its cards in. This library's own.
-///
-/// One word per arrangement, and the cards travel between them: the shape is a
-/// set of values like any other, so a gallery told to be a fan carries every
-/// card from where it was to where the fan puts it.
+/// Which shape a `GalleryView` stands its cards in; the cards animate from
+/// one shape to the next.
 public enum GalleryArrangement: Sendable, Equatable {
-    /// The cards stand on a wheel: the one in the middle faces the reader and
+    /// The cards stand on a wheel: the one in the middle faces the user and
     /// the rest turn away, shrink and fade behind it.
     case `default`
 
@@ -44,8 +21,7 @@ public enum GalleryArrangement: Sendable, Equatable {
     case row
 }
 
-/// One card at a time, swiped through - in a shape one word chooses.
-/// This library's own.
+/// One card at a time, swiped through, in a shape one word chooses.
 ///
 ///     @State private var shown = 0
 ///
@@ -56,53 +32,31 @@ public enum GalleryArrangement: Sendable, Equatable {
 ///     .position($shown)
 ///     .onItemTapped { open(albums[shown]) }
 ///
-/// The initializer IS the card's face - one card per item, the item its
-/// identity - and it says nothing about where the card goes or which way it
-/// faces. That is the SHAPE's, and keeping the two apart is what lets one run
-/// of cards wear three arrangements and travel between them.
+/// The initializer is the card's face, one card per item; where a card goes
+/// and which way it faces is the arrangement's. Give the gallery a bounded
+/// size, as a scroller needs - a `.height`, or a star row of a Grid - and the
+/// cards are fitted to it.
 ///
-/// **It needs a bounded size**, as a scroller does: a `.height`, or a
-/// star row of a Grid. A gallery is a window onto a run of cards, and the cards
-/// are placed in whatever room it is given - a narrow window shows the same
-/// gallery smaller rather than three slivers of a large one.
-///
-/// **The reader's swipe SETTLES on a card**, and `.position($:)` is which one.
-/// Assigning that binding moves the run, so a button, a tap and a swipe all say
-/// the same thing.
-///
-/// **A tap opens the card in the MIDDLE.** A gallery is swiped to choose and
-/// tapped to open, and the middle card is the choice - `.onItemTapped` is
-/// handed it.
-///
-/// **Nothing is described while the run moves.** The offset rides a driven state,
-/// which is read and written without the interface being described again, so
-/// the whole run turns for the cost of the arithmetic. The one render is the
-/// card CHANGING, which is what a caption under the gallery is written from.
+/// A swipe settles on a card, and `.position($:)` says which; assigning it
+/// moves the run. A tap opens the middle card, handed to `.onItemTapped`. No
+/// view is rebuilt while the run moves: the one render is the card changing.
 public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentView {
-    // The state is declared FIRST, deliberately: a box is adopted by its PATH,
-    // which is the stored property's own name at every level
-    // (Core/Stateful.swift), and a card's face stored below may build composed
-    // views carrying boxes of their own.
+    // State first: boxes are adopted by path, and the card faces stored below
+    // may carry boxes of their own.
+    // Design: docs/design/views/composition.md#state-declared-first
 
     /// Which card is in the middle, where no binding was lent.
     @State private var shown = 0
 
-    /// The card the RUN last named as it passed, which is what tells a position
-    /// the reader swiped to from one somebody assigned: only an assigned one
-    /// has anything to move.
+    /// The card the run last named as it passed: only a position somebody
+    /// assigned has anything to move.
     @State private var reported = 0
 
-    /// The shape the cards are IN, which is one render behind the shape asked
-    /// for.
-    ///
-    /// A change of shape has to TRAVEL, and a render describes where a card is
-    /// going before anything can be told that it changed - so the cards keep
-    /// the shape they are in for the render that notices, and fly in the next
-    /// one. Nothing, until the first change: the shape asked for is the shape
-    /// a gallery opens in.
+    /// The shape the cards are in, one render behind the shape asked for, so a
+    /// change of shape animates; nil until the first change.
     @State private var wearing: GalleryArrangement?
 
-    /// Whether the cards are TRAVELLING to a new shape rather than following
+    /// Whether the cards are animating to a new shape rather than following
     /// the scroller.
     @State private var flying = false
 
@@ -110,50 +64,29 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// happened, which is when an offset refused before can finally land.
     @State private var measured = 0.0
 
-    /// Which card is being held down, by its identity - nothing while none is.
-    ///
-    /// The press said back, and this library's own doing rather than the
-    /// author's: what the reader taps is the SCROLLER, which lies over the
-    /// cards and takes every touch, so a card cannot answer a press by itself.
+    /// Which card is held down, by its identity: the scroller over the cards
+    /// takes every touch, so the gallery shows the press itself.
     @State private var dipping: Id?
 
-    /// WHAT MOVES THE RUN, which is not the same question on every platform:
-    /// a finger drags a scroller itself, and a mouse does not.
+    /// Whether a pointer drag has to move the run: a finger drags a scroller
+    /// itself, a mouse does not.
     @Environment private var device: DeviceInfo
 
-    /// Where the run has been scrolled to, in device units - the scroller's
-    /// own offset, walked BOTH WAYS: the hand writes it and a write moves the
-    /// scroller. NOT read in any body: it moves many times a second, and a
-    /// view rebuilt for each of them is a view that lags.
-    /// `$scrolled.journey.value` is where the run IS, which is what the
-    /// arithmetic reads, and `scrolled` where it is going. See
-    /// Core/StateValue.swift.
+    /// Where the run is scrolled to, carried both ways and never read in a
+    /// body; `$scrolled.journey.value` is where the run is.
     @State private var scrolled = Point.zero
 
-    /// WHERE THE RUN STOOD WHEN A DRAG BEGAN, which every report of that drag
-    /// is measured from.
-    ///
-    /// No platform here scrolls by a POINTER dragging - a wheel and a finger
-    /// are what a scroller answers - so a mouse or a trackpad without a wheel
-    /// has no way to turn a run of cards at all. A drag moves the SCROLLER
-    /// ITSELF, which is what makes the rest of it ordinary: the cards follow
-    /// the offset they always follow, the slot is reported as it is passed,
-    /// and letting go settles on the nearest card from where the run STANDS -
-    /// where an offset of our own would have had it jump back to where the
-    /// drag began and glide from there.
+    /// Where the run stood when a pointer drag began, which every report of
+    /// the drag is measured from.
     @State private var dragged = 0.0
 
-    /// Where every card stands - one placement each, in the order the cards
-    /// are in. Written by the engine below on the display's own frames and
-    /// worn there, so a hand turning the run costs no render at all.
+    /// Every card's placement, written by the engine on the host's frames.
     @State private var placements = PlacedRun()
 
-    /// How big the room the cards stand in is, as the platform reports it.
-    /// Everything the arithmetic answers is scaled by it - see `fit(in:)`.
+    /// The room the cards stand in, as the platform reports it.
     @State private var room = Rect(0, 0, 0, 0)
 
-    /// The items and their card face, held BY REFERENCE - which is what stops
-    /// the state walk here. See Core/Stateful.swift.
+    /// The items and their card face, behind a class so the state walk stops.
     private let source: Source
 
     /// Where the middle card is written, when an author lent a binding.
@@ -162,7 +95,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// What runs when the middle card changes, beside any binding.
     private var moved: ValueEventHandler<Int>?
 
-    /// What runs when the reader taps the run.
+    /// What runs when the user taps the run.
     private var tapped: ValueEventHandler<Items.Element>?
 
     /// Which shape the cards stand in.
@@ -174,14 +107,13 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// And how tall.
     private var cardHeight = 248.0
 
-    /// Whether the reader may swipe at all.
+    /// Whether the user may swipe at all.
     private var swipes = true
 
     /// What stands in when there are no items at all.
     private var empty: (any View)?
 
-    /// What is drawn over a card to send it into the background, where the run
-    /// darkens its far cards rather than fading them. See `shade(_:amount:)`.
+    /// What is drawn over a far card to darken it. See `shade(_:amount:)`.
     private var mask: Element?
 
     /// How far the shade goes, from 0 to 1.
@@ -226,14 +158,10 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         source = Source(items: items, path: id, card: content)
     }
 
-    /// Which shape the cards stand in. A wheel unless this says otherwise.
-    /// This library's own.
+    /// Which shape the cards stand in - a wheel unless said. Changing it
+    /// animates every card to the new shape.
     ///
     ///     GalleryView(albums) { … }.arrangement(.fan)
-    ///
-    /// The cards TRAVEL to the new arrangement: where a card goes, how far it
-    /// is turned and how big it looks are values like any other, so changing
-    /// the word carries the whole run across.
     ///
     /// - Parameter style: the arrangement.
     /// - Returns: the gallery, in that shape.
@@ -243,8 +171,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return copy
     }
 
-    /// Which card is in the middle, counting from 0 - and where a swipe writes
-    /// the one it settled on. This library's own, two-way.
+    /// Which card is in the middle, counting from 0, two-way: a swipe writes
+    /// the card it settled on.
     ///
     ///     @State private var shown = 0
     ///
@@ -262,13 +190,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return copy
     }
 
-    /// Another card came to the middle, and this is which one. This library's
-    /// own.
-    ///
-    /// Beside `.position($:)` rather than instead of it: the binding is where
-    /// the number lives, and this is for what has to HAPPEN when it moves. A
-    /// card brought to the middle by an assignment is as arrived at as one
-    /// swiped to.
+    /// Runs when another card comes to the middle, swiped or assigned, with
+    /// its index.
     ///
     /// - Parameter handler: what to run, given the card's index.
     /// - Returns: the gallery, telling that handler.
@@ -278,16 +201,14 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return copy
     }
 
-    /// The reader tapped the run, and this is the item in the MIDDLE. This
-    /// library's own.
+    /// Runs when the user taps the run, with the item in the middle.
     ///
     ///     GalleryView(groups, id: \.route) { … }
     ///         .position($shown)
     ///         .onItemTapped { group in open(group) }
     ///
-    /// A gallery is swiped to choose and tapped to open, so the card the tap is
-    /// about is the one the run has settled on - which is the card filling the
-    /// middle of the view, whatever part of it the finger landed on.
+    /// The tap is about the card the run has settled on, wherever the finger
+    /// landed.
     ///
     /// - Parameter handler: what to run, given the middle item.
     /// - Returns: the gallery, answering a tap.
@@ -297,20 +218,12 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return copy
     }
 
-    /// How big a card is, in device units - and with it, THE SHAPE OF ONE.
-    /// 176 by 248 unless this says otherwise. This library's own.
+    /// How big a card is, in device units - 176 by 248 unless said.
     ///
-    /// THE RUN IS FITTED TO THE ROOM IT IS GIVEN, up as well as down, and by
-    /// both sides at once: a card takes at most half the room's width and
-    /// stands within its height, so a taller window draws taller cards and a
-    /// narrow one draws the same gallery smaller. What this states is the
-    /// PROPORTIONS that fitting keeps, and the size a card is drawn at in a
-    /// room exactly the size for it.
-    ///
-    /// ONE SIZE IN EVERY SHAPE, and how big a card LOOKS is the shape's:
-    /// sizing by the rectangle would put the run through a change of size as
-    /// well as of place at every switch, which is two journeys where one will
-    /// do.
+    /// The run is fitted to its room, up as well as down: a card takes at most
+    /// half the room's width and stands within its height. This states the
+    /// proportions the fitting keeps, and the size a card is drawn at in a
+    /// room exactly its size.
     ///
     /// - Parameters:
     ///   - width: how wide a card is, against its height.
@@ -323,21 +236,18 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return copy
     }
 
-    /// Whether the reader may swipe at all. This library's own.
-    ///
-    /// A gallery that says no still moves when its position is assigned - it is
-    /// the reader's hand that is stopped, not the gallery - and the cards
-    /// travel to the card assigned rather than following a finger.
+    /// Whether the user may swipe at all. A gallery that says no still moves
+    /// when its position is assigned.
     ///
     /// - Parameter value: whether a finger, a trackpad or a wheel moves it.
-    /// - Returns: the gallery, hearing the reader or not.
+    /// - Returns: the gallery, hearing the user or not.
     public func isSwipeEnabled(_ value: Bool) -> Self {
         var copy = self
         copy.swipes = value
         return copy
     }
 
-    /// What the gallery shows while it has no items at all. This library's own.
+    /// What the gallery shows while it has no items at all.
     ///
     /// - Parameter view: what stands in for the cards.
     /// - Returns: the gallery, showing that instead of nothing.
@@ -347,23 +257,15 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return copy
     }
 
-    /// What to draw over a card to send it into the background, and how far it
-    /// goes. This library's own.
+    /// What to draw over a card to send it into the background, and how far.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
     ///         .shade(ColorBox(Color("#000000")).cornerRadius(14))
     ///
-    /// A run of cards puts its far cards behind the one in front, and there are
-    /// two ways to say so. Fading is the one this does without: a card faded to
-    /// a half shows whatever is BEHIND it, which in the wheel and the fan is
-    /// the next card rather than the page. A shade darkens what is there, and
-    /// the card in front wears none of it.
-    ///
-    /// The view is drawn over every card, so it is a SHAPE rather than a
-    /// picture: give it the corners the card has, or its own square edges show
-    /// at each of them. Told this, the gallery also drops its fade to a quarter,
-    /// because a card that only darkens reads as lit differently rather than as
-    /// further away - `fading(_:)` is how to say otherwise.
+    /// A shade darkens a far card without showing the card behind it, as
+    /// fading would; the card in front wears none of it. Give the view the
+    /// corners the card has. With a shade the fade drops to a quarter, unless
+    /// `fading(_:)` says otherwise.
     ///
     /// - Parameters:
     ///   - view: what to draw over each card.
@@ -377,18 +279,13 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return copy
     }
 
-    /// How far the cards away from the middle FADE, from 0 (not at all) to 1
-    /// (as far as the shape says). This library's own.
+    /// How far the cards away from the middle fade, from 0 (not at all) to 1
+    /// (as far as the shape says): all of it unless a `shade(_:amount:)` is
+    /// given, and then a quarter.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
     ///         .shade(ColorBox(Color("#000000")).cornerRadius(14))
     ///         .fading(0)
-    ///
-    /// The whole of what the shape says, unless the gallery was also given a
-    /// `shade(_:amount:)` - then a quarter of it, the shade carrying the rest.
-    /// This is what says otherwise, either way: nought leaves a far card as
-    /// opaque as the one in front, and one fades it as far as the shape goes
-    /// whatever else it wears.
     ///
     /// - Parameter amount: how far a far card fades.
     /// - Returns: the gallery, fading that much.
@@ -398,18 +295,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return copy
     }
 
-    /// A strength held to what a strength can be, saying so where it had to.
-    ///
-    /// HELD RATHER THAN REFUSED: a gallery given 1.4 is a gallery an author is
-    /// still writing, and taking the page down over a constant would answer the
-    /// wrong question. So the value carries on working at the nearest one that
-    /// means something, and the complaint is what says which - once, and to
-    /// four platforms of the five. See Core/Complaint.swift.
-    ///
-    /// - Parameters:
-    ///   - amount: what the author wrote.
-    ///   - modifier: which one they wrote it on, so the message names it.
-    /// - Returns: the same number, between 0 and 1.
+    /// A strength held between 0 and 1, saying so where it had to be: held
+    /// rather than refused, so a gallery still being written keeps working.
     private static func fraction(_ amount: Double, _ modifier: String) -> Double {
         guard amount.isFinite else {
             complain("GalleryView.\(modifier) was given a number that is not one. Using 1.")
@@ -437,9 +324,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             return empty
         }
 
-        // BUILT OUT OF LOCALS rather than `self`: this view holds a class, and
-        // a handler closure that captures one can leave this library's
-        // executor.
+        // Locals rather than `self`, which holds a class.
+        // Design: docs/design/views/composition.md#handlers-capture-locals
         let reports = _reported
         let showns = _shown
         let worn = _wearing
@@ -457,28 +343,18 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         let make = source.card
         let dips = _dipping
 
-        // WHERE THE RUN IS ASKED TO BE, AS A QUESTION RATHER THAN AN ANSWER.
-        // Read here it would make THIS body a reader of the position, and a
-        // card crossed would then describe the whole deck for a picture none
-        // of them changes. Every handler below asks it when it fires, and the
-        // one thing that needs it at BUILD - a watcher, which compares the
-        // value it was described with - asks it inside `Turning`, a view of
-        // its own beside the deck rather than above it.
+        // The asked position as a closure: read here, it would make this body a
+        // reader, and every card crossed would rebuild the deck.
+        // Design: docs/design/views/composition.md#a-watcher-is-a-view-of-its-own
         let asked = { min(max(pin?.wrappedValue ?? showns.wrappedValue, 0), count - 1) }
 
-        // THE SHAPE AND THE LAW ARE READ HERE, in the body, and handed to the
-        // arithmetic below rather than looked up inside it. A read an ENGINE
-        // makes is recorded NOWHERE - it runs on the host's own frames,
-        // outside any render - so a state only the engine looked at would move
-        // with nothing built again, no engine armed, and the cards left
-        // standing in the shape they were last placed in.
+        // The shape and the motion are read here: a read an engine makes is
+        // recorded nowhere, so a change read only there would move nothing.
         let shape = wearing ?? look
         let travels = flying
         let drawn = { (room: Rect) in self.front(in: room, shape: shape) }
 
-        // WHICH CARD IS IN THE MIDDLE, written only where it changed. What the
-        // run names is where it already is, so the watcher below moves nothing
-        // for it, and the page hears it as it hears an assignment.
+        // The middle card, written only where it changed.
         let name = { (slot: Int) in
             let card = min(max(slot, 0), count - 1)
 
@@ -493,26 +369,18 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             }
         }
 
-        // A VIEW OF ITS OWN FOR THE PLACEMENT, and it has to be one: a card's
-        // turn, fade and size are written by the DRIVEN STATE, on the host's own
-        // frames, so a press written on the same node is snapped away by the
-        // next of them. The wrapper is what the placement is written on; the
-        // face inside it is left free, and the press there is an ordinary
-        // property that travels.
+        // The face in a wrapper of its own, so the press on it is not overwritten
+        // by the placement written on the wrapper every frame.
         var run = PlacedLayout(items, id: source.path) { item in
             Grid {
                 ModifiedContent(node: make(item).body)
-                    // WHICH CARD IS PRESSED, never which is in front: the two
-                    // are the same card, and asking the position here would
-                    // make the deck a reader of it.
+                    // Which card is pressed, never which is in front.
                     .scale(dips.wrappedValue == item[keyPath: path] ? Self.dip : 1)
                     .motion(Self.pressing)
             }
         }
 
-        // THE SHADE SITS BESIDE THE PRESS RATHER THAN OVER IT, and it costs
-        // nothing here: the only card that dips is the one in front, and the
-        // card in front is the one wearing no shade at all.
+        // The shade sits beside the press: the card that dips wears none.
         if let mask {
             run = run.shade(mask)
         }
@@ -520,45 +388,28 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         let cards = run
             .placement($placements)
             .frame($room)
-            // THE ARITHMETIC RUNS ON THE HOST'S OWN FRAMES, and `.engine(following:)`
-            // says which values moving are a reason to run it again: the hand
-            // that turns the run, and the room it is all scaled by.
+            // The arithmetic runs again whenever the hand or the room moves.
             .engine(following: $scrolled, $room) { _ in
                 placements = PlacedRun(
                     (0..<count).map { place($0, count, room, shape) },
-                    // A PLACEMENT WORKED OUT FROM SOMETHING THE READER IS
-                    // MOVING DOES NOT TRAVEL: the arithmetic is re-answered
-                    // every frame, and a card a fifth of a second behind the
-                    // hand is a card that lags. A change of SHAPE is the other
-                    // case, and the only one where these do travel.
+                    // Following the hand, placements arrive; a shape change animates.
                     motion: travels ? .inherited : .none)
 
-                // THE CARD IN THE MIDDLE IS NAMED AS THE RUN PASSES HALFWAY
-                // between two - under the hand, in the platform's throw, or on
-                // the way to a card - so a card crossed is one render and a
-                // frame is none.
+                // The middle card is named as the run passes halfway: one render
+                // per card crossed, none per frame.
                 if swipes {
                     name(Int((offset.projectedValue.journey.value.x / step).rounded()))
                 }
             }
 
-        // THE WATCHERS ARE A VIEW OF THEIR OWN, BESIDE THE DECK.
-        //
-        // Both values are somebody's ASSIGNMENT, so both are watched rather
-        // than read: a position the scroller REPORTED is where the run already
-        // is, and moving to it would report again. A watcher compares the value
-        // it was DESCRIBED with, so something has to read it at build - and
-        // whatever reads it is rebuilt when it moves. Written on the reader,
-        // that would be the deck's own ancestor and every card crossed would
-        // describe the whole deck. Written HERE it is a sibling of nothing, and
-        // the cards are left standing.
+        // The watchers, a view of their own beside the deck, so reading the
+        // asked position rebuilds none of the cards.
         let turning = Turning(
             at: asked,
             look: look,
             turned: { position in
-                // A position the scroller REPORTED is where the run already
-                // is: it moves nothing, and it is still a card come to the
-                // middle, which the handler hears as it hears an assignment.
+                // A reported position is where the run already is: it moves
+                // nothing, but the handler still hears it.
                 guard position != reports.wrappedValue else {
                     if let moved { try await moved(position) }
                     return
@@ -569,8 +420,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                 if swipes {
                     offset.wrappedValue = Point(Double(position) * step, 0)
                 } else {
-                    // NOTHING TO SCROLL, so the value is written and the
-                    // cards travel to what the arithmetic now says.
+                    // Nothing to scroll: the cards animate to the new place.
                     flies.wrappedValue = true
                     offset.projectedValue.journey.snap(to: Point(Double(position) * step, 0))
 
@@ -582,10 +432,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                 if let moved { try await moved(position) }
             },
             wore: {
-                // THE SHAPE IS WORN A RENDER LATE, so there is a render in
-                // which the cards are told they may travel BEFORE they are
-                // told where to. Described in the same render, they would
-                // already be there.
+                // The shape is worn a render late, so the cards are told they
+                // may animate before they are told where to.
                 flies.wrappedValue = true
                 worn.wrappedValue = look
 
@@ -603,10 +451,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 
         var reader = ScrollReader(across: Double(count - 1) * step) { cards }
             .scrollOffset($scrolled)
-            // THE RUN COMES TO REST ON A CARD. The scroller stops wherever the
-            // platform's own throw leaves it, and from there the run travels on
-            // to the card it is nearest - a write, so the scroller glides there
-            // under the element's law and the cards follow it the whole way.
+            // The run comes to rest on the nearest card, by a write.
             .onScrollStopped {
                 let stood = offset.projectedValue.journey.value.x
                 let rest = Double(min(max(Int((stood / step).rounded()), 0), count - 1)) * step
@@ -616,13 +461,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                 }
             }
 
-        // A DRAG TURNS THE RUN WHERE A SCROLLER WILL NOT TAKE ONE ITSELF.
-        // On a phone and on a tablet the finger IS the scroller's own gesture:
-        // it drags the run natively, and a pan beside it moves the same cards
-        // a second time. On a desktop the pointer scrolls nothing - a mouse
-        // drag leaves a scroller exactly where it stands - so without this a
-        // run of cards could only be moved by the wheel. The IDIOM is the question and not the platform's name,
-        // because iOS is a phone and a tablet and neither of them wants it.
+        // On a desktop a pointer drag turns the run: a scroller takes no drag
+        // from a mouse, and a finger drags the scroller itself.
         if device.formFactor == .desktop {
             reader = reader.onPanUpdated { pan in
                 switch pan.phase {
@@ -630,27 +470,15 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
                     drags.wrappedValue = offset.projectedValue.journey.value.x
 
                 case .running:
-                    // THE OFFSET IS WRITTEN, not the scroller: a drag is
-                    // measured in the coordinates of the view it is on, and
-                    // that view lies in the scroller's own content - so
-                    // scrolling while the hand is down moves the very frame
-                    // the report is measured in, and the two chase each other
-                    // (measured here as a run juddering between two offsets a
-                    // few units apart). The cards follow this number; the
-                    // scroller is told where it ended up when the hand lets
-                    // go.
+                    // The offset is written, not the scroller: the drag is
+                    // measured inside the content the scroller would move.
                     offset.projectedValue.journey.snap(to: Point(drags.wrappedValue - pan.totalX, 0))
 
                 case .completed, .canceled:
                     let stood = offset.projectedValue.journey.value.x
                     let card = min(max(Int((stood / step).rounded()), 0), count - 1)
 
-                    // FIRST THE SCROLLER IS PUT WHERE THE RUN ALREADY IS -
-                    // nothing moves, the cards are drawn from the number the
-                    // drag just wrote - and then it TRAVELS to the nearest
-                    // card from there, which is the movement a reader expects
-                    // and not a walk back to where the drag began. A snap and
-                    // a written destination say exactly those two things.
+                    // Snap the scroller to where the run is, then animate on.
                     offset.projectedValue.journey.snap(to: Point(stood, 0))
                     offset.wrappedValue = Point(Double(card) * step, 0)
                 }
@@ -658,19 +486,10 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         }
 
         if let tapped {
-            // WHERE THE CARD IN FRONT STANDS IN THE ROOM, taken through its
-            // own shape's transform - a wheel's middle card is drawn larger
-            // than its rectangle, a row's smaller. The reader keeps the box
-            // there as the run moves, so what answers a tap is the card the
-            // reader is looking at and nothing else: a tap on the empty run
-            // beside it is not a tap on a card.
+            // The tap is answered on the card in front, as its shape draws it.
             reader = reader.onTapped(within: drawn) {
-                // THE PRESS RUNS FIRST AND THE RETURN RIDES THE ACTION - the
-                // card's own rule, and for the card's own reason: tapping a
-                // card usually builds a page, and a page built on this thread
-                // eats every frame beside it. The tree says the card is back
-                // at its own size the moment the press is let go, so it draws
-                // right whether the walk was ever seen or not.
+                // The press shows, and the card is back at its size, before the
+                // tap's own work, which usually builds a page.
                 let middle = items.index(items.startIndex, offsetBy: asked())
 
                 dips.wrappedValue = items[middle][keyPath: path]
@@ -685,16 +504,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
 
         return Grid {
             reader
-                // THE RUN IS PUT WHERE THE POSITION SAYS, whenever a layout
-                // has happened and it is not there.
-                //
-                // WHICH IS THE FIRST SHOWING AND EVERY ONE AFTER IT: a
-                // scroller cannot be moved before its content is laid out -
-                // asked earlier it clamps to the length it has so far - so
-                // this asks again until the card arrives, and a scroller
-                // built AFRESH, by a resize or by the reader's hand being
-                // given back, is a scroller standing at nothing with the same
-                // answer.
+                // After each layout the run is put where the position says,
+                // asking again until it lands: an unlaid scroller clamps.
                 .onFrameChanged { frame in
                     let sendTo = Double(asked()) * step
                     let astray = abs(offset.projectedValue.journey.value.x - sendTo) > 1
@@ -727,40 +538,23 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// milliseconds - long enough for the press to be seen at all.
     private static var held: Int { 60 }
 
-    /// How the press travels, down and back.
-    ///
-    /// Short both ways: a press is an answer to a finger, and an answer that
-    /// takes as long as a page does is not felt as one.
+    /// How the press animates, down and back: short, as an answer to a finger.
     private static var pressing: Motion { .eased(50, .cubicOut) }
 
-    /// How far a far card FADES, from 0 to 1, unless the author said.
-    ///
-    /// All of it where the gallery was given no shade view, and a quarter where
-    /// it was: a card that only darkens reads as lit differently rather than as
-    /// further away, and the little fade left over is what puts it behind. The
-    /// rest is the shade's, which darkens the card instead of showing the card
-    /// behind it. See `fading(_:)` and `shade(_:amount:)`.
+    /// How far a far card fades unless said: all of it, or a quarter where a
+    /// shade does the rest.
     private var fade: Double { fades ?? (mask == nil ? 1 : 0.25) }
 
-    /// How far the hand travels to turn the run by one card, in device units.
-    ///
-    /// THIS IS THE SENSITIVITY, and it is the only thing that is. The run's
-    /// content is the room plus one of these per card past the first, so what
-    /// a device sends - a constant, whatever it is - buys a card in proportion
-    /// to this number and nothing else. Three fifths of a card's width: far
-    /// enough that the coarsest thing a device can say is a part of a card
-    /// rather than more than one, near enough that a deck is quick to cross.
+    /// How far the hand travels to turn the run by one card - the sensitivity:
+    /// three fifths of a card's width.
     private var reach: Double { cardWidth * 0.6 }
 
     /// How near a card the run has to stand to count as resting on it, in
     /// device units - closer than this is not worth a movement.
     private static var settled: Double { 0.5 }
 
-    /// How far the run is turned, in CARDS - a whole number at rest and
-    /// whatever the scroller says while it is moving.
-    ///
-    /// A READING FROM OUTSIDE IS NOT A NUMBER UNTIL IT IS CHECKED: a platform
-    /// that reports through a transform can answer with no number at all.
+    /// How far the run is turned, in cards; a reading that is not a finite
+    /// number counts as none.
     private var at: Double {
         let turned = $scrolled.journey.value.x / reach
 
@@ -769,22 +563,10 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return min(max(turned, 0), Double(max(source.items.count - 1, 0)))
     }
 
-    /// How big the cards are DRAWN in THIS room, as a multiple of the size they
-    /// were told - which is the whole of how a gallery fits itself, what every
-    /// distance below scales with, and what each shape multiplies its own scale
-    /// by. The rectangle stays the size the author stated, so what is inside a
-    /// card comes down with it - see `card`.
-    ///
-    /// BOTH AXES, always: a card takes at most half the room's width and stands
-    /// within its height, and the smaller of the two answers. So a window grown
-    /// taller draws taller cards, a narrow one draws the same gallery smaller,
-    /// and a phone on its side - plenty of width, almost no height - is
-    /// answered by the height.
-    ///
-    /// It grows only so far: a card is a card, and one blown up to fill a
-    /// desk is a picture. Past `largest` the room is simply room, and the run
-    /// stands in the MIDDLE of it - which it does at every size, the
-    /// arithmetic being written from the middle out.
+    /// How big the cards are drawn in this room, as a multiple of their stated
+    /// size: the smaller of half the room's width and its height, up to
+    /// `largest`.
+    /// Design: docs/design/views/measured-layouts.md#gallery-view
     private func fit(in room: Rect) -> Double {
         min(
             Self.largest,
@@ -796,19 +578,12 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     /// full size - the room the fan's lift and a turned card's corners need.
     private static var headroom: Double { 1.16 }
 
-    /// How much bigger than the size it was told a card may be drawn. About a
-    /// third again: enough that a desktop window is used and not so much that
-    /// one card becomes the page. An author who wants more says a bigger
-    /// `itemSize`.
+    /// How much bigger than its stated size a card may be drawn: about a third
+    /// again, so one card does not become the page.
     private static var largest: Double { 1.375 }
 
-    /// Where one card goes and how it is turned - the whole of the layout.
-    ///
-    /// THE ABSENCE OF A SHADE IS A NUMBER, because the host cannot see this
-    /// side's views: it is handed a run of doubles and the placed control, and
-    /// `unshaded` is what tells it there is no shade view under one. A gallery
-    /// that HAS one answers nought for the card in front, and nought is a
-    /// shade like any other.
+    /// Where one card goes and how it is turned. With no shade view the shade
+    /// is `PackedPlacement.unshaded`, the host seeing none of this side's views.
     private func place(
         _ index: Int,
         _ count: Int,
@@ -824,12 +599,8 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         return placement
     }
 
-    /// Where the card in front of the reader is DRAWN, in the room.
-    ///
-    /// The placement of a card the run is exactly ON - which is what the
-    /// middle of the room holds whatever the offset is - taken through its own
-    /// shape's transform, so the answer is the card as the reader sees it
-    /// rather than the rectangle it was laid out in.
+    /// Where the card in front is drawn in the room: its placement taken
+    /// through its shape's transform.
     private func front(in room: Rect, shape: GalleryArrangement) -> Rect {
         let placement = placed(0, source.items.count, room, shape)
         let box = placement.bounds
@@ -865,16 +636,14 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
         }
     }
 
-    /// A WHEEL: the cards stand on it, the one in the middle facing the reader
-    /// and the rest turning away, shrinking and fading behind it.
+    /// A wheel: the one in the middle faces the user and the rest turn away,
+    /// shrink and fade behind it.
     private func wheel(_ step: Double, _ room: Rect, _ fit: Double) -> Placement {
         let near = max(-2.4, min(2.4, step))
         let away = min(abs(near), 1.55) / 1.55
 
-        // TURNED, SIZED AND TIPPED IN ONE PLACE. `turn` is a turn about the
-        // card's vertical axis drawn FLAT, which is the same picture on every
-        // platform - `.rotationY` is the other reading, and every platform
-        // projects that one through a camera of its own.
+        // `turn` draws a turn about the vertical axis flat, the same on every
+        // platform, where `.rotationY` is projected differently by each.
         let dim = min(max(abs(near) - 0.35, 0) / 3, 0.62)
 
         return Placement(
@@ -887,7 +656,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             zIndex: order(step))
     }
 
-    /// A FAN: the card in the middle stands tallest and the ones beside it lean
+    /// A fan: the card in the middle stands tallest and the ones beside it lean
     /// away and sink.
     private func fan(_ step: Double, _ room: Rect, _ fit: Double) -> Placement {
         let near = max(-2.6, min(2.6, step))
@@ -905,8 +674,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             zIndex: order(step))
     }
 
-    /// A ROW, side by side - and no wider than the room, however many cards
-    /// there are.
+    /// A row, side by side, no wider than the room however many cards there are.
     private func row(_ step: Double, _ count: Int, _ room: Rect, _ fit: Double) -> Placement {
         let across = min(cardWidth * 0.64 * fit, room.width / Double(max(count, 1)))
 
@@ -916,21 +684,14 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             zIndex: order(step))
     }
 
-    /// Which cards are drawn over which: the middle one nearest the reader, and
-    /// the rest behind it in the order they stand away from it.
+    /// Which cards are drawn over which: the middle one nearest the user, the
+    /// rest behind it by their distance from it.
     private func order(_ step: Double) -> Int {
         1000 - Int(min(abs(step), 99) * 100)
     }
 
-    /// A card's rectangle: THE SIZE IT WAS TOLD, whatever room the run is in,
-    /// in the middle of that room and then moved by the arithmetic above.
-    ///
-    /// The room's own answer - `fit` - is a SCALE and not a rectangle, which is
-    /// what carries a card's CONTENT down with it: a caption is laid out in the
-    /// width the author wrote it for and drawn smaller, where a shrinking
-    /// rectangle would keep the words their own size and cut them off. So the
-    /// card is one size everywhere, and how big it looks is the room's and the
-    /// shape's together.
+    /// A card's rectangle: its stated size in the middle of the room, moved by
+    /// the arithmetic. The fit is a scale, so the card's content shrinks with it.
     private func card(_ room: Rect, up: Double, across: Double) -> Rect {
         Rect(
             room.width / 2 + across - cardWidth / 2,
@@ -939,8 +700,7 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
             cardHeight)
     }
 
-    /// The items and their card face, behind a class - which is what stops the
-    /// Mirror walk that adopts state boxes from recursing through them.
+    /// The items and their card face, behind a class.
     private final class Source {
         /// What the gallery shows.
         let items: Items
@@ -964,18 +724,9 @@ public struct GalleryView<Items: RandomAccessCollection, Id: Hashable>: ContentV
     }
 }
 
-/// The run's own watcher: a view of NOTHING that reads where the run is asked
-/// to be, so that reading it leaves the deck beside it standing.
-///
-/// **A WATCHER HAS TO READ WHAT IT WATCHES**, `onChanged` comparing the value
-/// it was DESCRIBED with - and whatever reads a value is described again when
-/// it moves. On the reader that is the deck's own ancestor, so a card crossed
-/// described every card for a picture none of them changes; here it is a
-/// sibling of nothing at all. It is the reader rule used the way an author
-/// uses it, one level in.
-///
-/// It draws nothing and takes no touches: what is watched is somebody's
-/// ASSIGNMENT, and a value the scroller REPORTED is where the run already is.
+/// The run's watcher: a view of nothing that reads where the run is asked to
+/// be, so the read rebuilds it and not the deck.
+/// Design: docs/design/views/composition.md#a-watcher-is-a-view-of-its-own
 private struct Turning: ContentView {
     /// Where the run is asked to be - ASKED here, so the read is this view's.
     let at: () -> Int

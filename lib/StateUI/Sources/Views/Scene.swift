@@ -1,55 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// How an application is laid out in windows.
-//
-//     Application ──scene──▶ Scene ──windows──▶ the main window, and the groups beside it
-//
-// A SCENE is one session of the application: a main window, the smaller
-// windows that serve it - an inspector, a palette, a document of its own - and
-// the state all of them share. An application declares ONE scene, and the
-// platform makes as many of it as the reader asks for: the first at launch,
-// another for every *File ▸ New Window*, and every one that was open when the
-// system restores the application's windows at the next launch.
-//
-//     struct GalleryApp: Application {
-//         @State private var library = Library()              // every session's
-//
-//         var scene: any Scene { GalleryScene().environment(library) }
-//     }
-//
-//     struct GalleryScene: Scene {
-//         @State private var nav = Navigation()                // this session's
-//
-//         var windows: Windows {
-//             Windows {
-//                 WindowGroup(.fonts) { FontsWindow() }
-//                 WindowGroup(.document, for: UUID.self) { $id in DocumentWindow(id: id) }
-//             } main: {
-//                 MainWindow()
-//             }
-//             .environment(nav)
-//         }
-//     }
-//
-// What follows from that shape is the whole of the model:
-//
-// - A session's STATE is its scene type's own `@State`: each session has its
-//   own, and every window of the session reads it - offered with
-//   `.environment`, or handed in as a binding.
-// - A window of a group belongs to its scene. It opens with the scene's
-//   session - `@Environment var scene: SceneSession`, then
-//   `scene.openWindow(.fonts)` - it closes with its scene, it may hide while
-//   another scene is in front, and it is never what *File ▸ New Window* makes.
-// - What the system restores is what was open: each scene comes back with the
-//   windows it had, and with the values its `@State(sceneKey:)` held.
-//
-// Which scenes are open is this library's to hold, never the author's - see
-// Core/Scenes.swift.
+// How an application is laid out in windows: one scene type, as many sessions
+// of it as the user opens, each a main window and the groups beside it.
+// Design: docs/design/views/pages.md#scenes
 
 /// One session of the application: its main window, the windows it opens
-/// beside it, and the state they share. It is a StateUI ownership boundary,
-/// independently of how a platform names its own scene or window objects.
+/// beside it, and the state they share.
 ///
 ///     struct EditorScene: Scene {
 ///         @State private var document = Document()
@@ -64,31 +21,23 @@
 ///         }
 ///     }
 ///
-/// **A window is a scene of one window**, which is what an application with
-/// nothing to open beside its window writes:
+/// A window is a scene of one window - what an application with nothing to
+/// open beside it writes: `var scene: any Scene { MainWindow() }`.
 ///
-///     struct HelloApp: Application {
-///         var scene: any Scene { MainWindow() }
-///     }
-///
-/// A scene holds `@State` the way a window or a page does, and holds it ONCE
-/// PER SESSION: a second *File ▸ New Window* is a second instance of the same
-/// type, with state of its own. What every session shares belongs to the
-/// `Application`, and reaches a scene through `.environment(_:)`. What is DONE
-/// to a scene as it runs - opening a window in it, closing it - is its
-/// `SceneSession`'s, in the environment of every view in it.
+/// A scene holds `@State` once per session: a second *File ▸ New Window* is a
+/// second instance with state of its own. What every session shares belongs
+/// to the `Application` and reaches a scene through `.environment(_:)`.
+/// Opening and closing its windows is its `SceneSession`'s, in the
+/// environment of every view in it.
 public protocol Scene {
-    /// The scene's windows - its main one, and the groups it may open beside
-    /// it. Read as the scene is built, and again when what it was built with
-    /// or a state it read changes, so which groups there are and what the main
-    /// window is can depend on state.
+    /// The scene's windows: its main one, and the groups it may open beside
+    /// it. Read again when a state it read changes.
     var windows: Windows { get }
 }
 
 extension Scene {
     /// Offers an object to every window of every session of this scene,
-    /// resolved by TYPE the way `.environment` on a view is - which is how the
-    /// application's own state reaches its scenes.
+    /// resolved by type the way `.environment` on a view is.
     ///
     ///     var scene: any Scene { GalleryScene().environment(library) }
     ///
@@ -113,8 +62,8 @@ struct OfferingScene: Scene {
     var windows: Windows { base.windows }
 }
 
-/// A scene's windows: its MAIN window, and the GROUPS of windows it may open
-/// beside it. This library's own.
+/// A scene's windows: its main window, and the groups of windows it may open
+/// beside it.
 ///
 ///     Windows {
 ///         WindowGroup(.fonts) { FontsWindow() }
@@ -122,10 +71,10 @@ struct OfferingScene: Scene {
 ///         if loading { LoadingWindow() } else { MainWindow() }
 ///     }
 ///
-/// The main window IS the scene on screen: it opens with the scene, and the
-/// reader closing it ends the scene and every window of its groups with it.
-/// It is ONE window whatever type it is written as - the `if` above changes
-/// what that window shows, and the platform's window stays where it is.
+/// The main window is the scene on screen: it opens with the scene, and the
+/// user closing it ends the scene and every window of its groups. It is one
+/// window whatever type it is written as - the `if` above changes what that
+/// window shows.
 public struct Windows {
     /// The kinds of window the scene may open beside its main one.
     let groups: [WindowGroup]
@@ -158,9 +107,8 @@ public struct Windows {
         self.init({}, main: main)
     }
 
-    /// Offers an object to every window of the scene - the main one and those
-    /// beside it - resolved by TYPE, the way `.environment` on a view is. Which
-    /// is how a session's windows share one context:
+    /// Offers an object to every window of the scene, resolved by type the way
+    /// `.environment` on a view is - how a session's windows share one context:
     ///
     ///     @State private var nav = Navigation()
     ///
@@ -175,42 +123,34 @@ public struct Windows {
     }
 }
 
-/// One kind of window a scene opens beside its main one: ONE window of it,
-/// or - given `for:` - one per value. This library's own.
+/// One kind of window a scene opens beside its main one: one window of it,
+/// or - given `for:` - one per value.
 ///
 ///     WindowGroup(.fonts) { FontsWindow() }
 ///     WindowGroup(.document, for: UUID.self) { $id in DocumentWindow(id: id) }
 ///
-/// The group says what the window IS; the scene's session says when it opens:
+/// The group says what the window is; the scene's session says when it opens:
 ///
 ///     @Environment private var scene: SceneSession
 ///
 ///     Button("Fonts").onClicked { try await scene.openWindow(.fonts) }
 ///     Button("Open").onClicked { try await scene.openWindow(.document, value: id) }
 ///
-/// A window of a group belongs to its scene: it closes with the scene, it
-/// may hide while another scene is in front (`hidesWhenInactive`) or float above the
-/// application's windows (`floatsOnTop`). A host's scene-listing surfaces
-/// enumerate main windows rather than these owned helpers. Opening another
-/// application scene remains a separate operation. When the platform restores
-/// an owned window, it returns to its scene for the same value, which is why
-/// the value is `Codable`.
-///
-/// A host without independent native windows refuses `openWindow` with
-/// `WindowError.unsupported`.
+/// A window of a group belongs to its scene: it closes with the scene, and the
+/// platform restores it to its scene for the same value, which is why the
+/// value is `Codable`. A host without independent windows refuses
+/// `openWindow` with `WindowError.unsupported`.
 public struct WindowGroup {
     /// The kind of window.
     let type: WindowType
 
-    /// The type of value the group opens one window per - nothing for a group
-    /// that opens one.
+    /// The type of value the group opens one window per; nil for one window.
     let valueType: Any.Type?
 
     /// The window for one that is open, in the scene that has it open.
     let make: (_ opened: OpenedWindow, _ record: SceneRecord) -> Window
 
-    /// A value read back out of the text it was written down as - what a
-    /// window the system restored is opened for again.
+    /// A value read back from its text: what a restored window is opened for.
     let restore: (_ text: String) -> AnyHashable?
 
     /// Whether its windows hide while another scene is in front.
@@ -219,7 +159,7 @@ public struct WindowGroup {
     /// Whether its windows float above the application's other windows.
     var floats = false
 
-    /// A group that opens ONE window, in any scene that declares it.
+    /// A group that opens one window, in any scene that declares it.
     ///
     ///     WindowGroup(.debugInspector) { DebugInspector() }
     ///
@@ -233,7 +173,7 @@ public struct WindowGroup {
         restore = { _ in nil }
     }
 
-    /// A group that opens one window PER VALUE - a document per document, an
+    /// A group that opens one window per value - a document per document, an
     /// inspector per item.
     ///
     ///     WindowGroup(.document, for: UUID.self) { $id in DocumentWindow(id: id) }
@@ -255,9 +195,8 @@ public struct WindowGroup {
         self.type = type
         valueType = Value.self
         make = { opened, record in
-            // The value as it was when the scene was built, and a write that
-            // retargets THIS window: the scene reads what it has open, so the
-            // write builds it again with the value it now stands for.
+            // The value the scene was built with; a write retargets this window,
+            // and the scene, which reads what it has open, builds it again.
             let standing = opened.value?.base as! Value
 
             let binding = Binding<Value>(
@@ -282,10 +221,9 @@ public struct WindowGroup {
     }
 
     /// Whether the group's windows float above the application's other
-    /// windows - a tool that stays in sight over the main window it serves
-    /// rather than going under it as soon as the reader clicks there. They
-    /// float while the application is in front and go while another one is.
-    /// A host without native window levels leaves their order to the platform.
+    /// windows - a tool that stays in sight over the main window it serves -
+    /// while the application is in front. A host without native window levels
+    /// leaves their order to the platform.
     ///
     ///     WindowGroup(.fonts) { FontsWindow() }
     ///         .floatsOnTop(true)
@@ -297,17 +235,15 @@ public struct WindowGroup {
 }
 
 /// What kind of window a group opens - the name a scene declares one under,
-/// and a session's `openWindow` opens one by. This library's own.
+/// and a session's `openWindow` opens one by.
 ///
 ///     extension WindowType {
 ///         static let fonts = WindowType("fonts")
 ///         static let document = WindowType("document")
 ///     }
 ///
-/// Declared the way every vocabulary in this library is, as static members on
-/// an extension. The name is written down with every window the system may
-/// restore, so it belongs to the application and should not change between
-/// its versions.
+/// The name is written down with every window the system may restore, so it
+/// should not change between versions of the application.
 public struct WindowType: Hashable, Sendable, CustomStringConvertible, HostRepresentable {
     /// The name - what is written down with a window of this kind.
     public let name: String
@@ -322,8 +258,7 @@ public struct WindowType: Hashable, Sendable, CustomStringConvertible, HostRepre
     /// The name, so an interpolated diagnostic prints it plainly.
     public var description: String { name }
 
-    /// The name, crossing as a name: a window's kind is words the application
-    /// chose, the same on every window of the kind.
+    /// The name, crossing as a `.name`.
     public var propValue: PropValue { .name(name) }
 
     /// A kind back from its name - nil for any other kind of value.

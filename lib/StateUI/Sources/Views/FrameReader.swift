@@ -1,78 +1,30 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Measuring what a layout decided.
-//
-//     VStack { … }
-//         .onFrameChanged { frame in height = frame.height }
-//
-//     FrameReader { frame in
-//         Label("drawn into \(Int(frame.width)) points")
-//     }
-//
-// The MODIFIER is the mechanism: any view can report the frame layout gave
-// it. It is the library's own - named FRAME because a frame is where a view
-// sits in its PARENT's coordinates, where "bounds" would say the view's own.
-//
-// The CONTAINER is composed over it in the core, and earns its place by what
-// the modifier cannot do: its content is built FROM the measurement. A
-// `FrameReader` holds the last frame in a `@State` of its own, so the closure
-// runs again whenever the frame settles somewhere new, with the measurement
-// arriving through the same channel as every other report. Nothing about it
-// exists in the host at all.
-//
-// ONE REPORT CARRIES EVERY SPACE. The wire says
-// "x,y,width,height,windowX,windowY,safeX,safeY" - the frame in the parent,
-// then the same origin converted to the window, then measured from where
-// content can safely sit - and the modifier picks the four values its space
-// means. That is why there is no property saying which space was asked for:
-// the host computes all of it in one walk, and nothing about the choice
-// crosses the boundary.
-//
-// NOTHING IS MEASURED UNLESS SOMETHING ASKS. A view without a handler is not
-// even subscribed - the rule every reported property follows, because a
-// frame moves at every measure and a standing subscription per control would
-// cost real work for an answer nobody wanted.
-//
-// WHEN IT REPORTS: when the view's own frame settles or moves - its first
-// layout included - when an ANCESTOR's does, and when a scroll among the
-// ancestors moves the view against the window. A view that asked about its
-// frame is listening to the chain above it, up to its page - attached on the
-// first report, and again wherever a report finds the view's parent is no
-// longer the one listened to, nothing here listening for the view coming or
-// going - because scrolling changes the `.global` and `.safeArea` answers
-// without the view's own frame moving an inch. Each report is deduplicated
-// against the last, so a layout pass that writes four components is one
-// report - and each HANDLER dedupes again in its own space, so a `.parent`
-// listener hears nothing of a scroll that changed only the window origin.
-// What never reports: translate, rotate and scale are drawing TRANSFORMS, not
-// layout, so an animated translation reports nothing while an animated
-// `width` reports every step of the layout it causes.
+// Measuring what a layout decided: `.onFrameChanged` on any view, and
+// `FrameReader`, a composed view whose content is built from its frame.
+// Design: docs/design/views/measured-layouts.md#frame-reports
 
 /// Which coordinates a measurement is answered in.
 public enum CoordinateSpace: Sendable {
     /// The frame as the parent placed it: `x` and `y` are offsets inside the
-    /// parent. What a reader answers unless told otherwise.
+    /// parent. The default.
     case parent
 
-    /// The same rectangle with its origin converted to the WINDOW, ancestor
-    /// offsets and scroll positions accounted for. What positioning something
-    /// over the whole interface wants.
+    /// The same rectangle with its origin converted to the window, ancestor
+    /// offsets and scroll positions accounted for.
     case global
 
-    /// Measured from where content can SAFELY sit - past the status bar, the
-    /// notch AND whatever bar was drawn above the page, so a view at the
-    /// very top of its page's content reads zero, on every platform. The
-    /// origin is the page's own corner plus the insets the platform still
-    /// charges it - a sidebar header reaching behind the status bar is charged
-    /// that bar, a page parked below the navigation bar is charged nothing.
-    /// Headlessly - a test, with no platform to be safe from - this agrees
-    /// with `.global`.
+    /// Measured from where content can safely sit - past the status bar, the
+    /// notch and any bar drawn above the page - so a view at the very top of
+    /// its page's content reads zero on every platform. With no platform, in a
+    /// test, it agrees with `.global`.
     case safeArea
 }
 
 extension View {
-    /// Reports this view's own frame as layout settles it.
+    /// Reports this view's own frame as layout settles it - the first layout
+    /// included - and again when an ancestor's frame or a scroll moves it.
     ///
     ///     VStack {
     ///         …
@@ -80,15 +32,9 @@ extension View {
     ///     .onFrameChanged { frame in height = frame.height }
     ///     .onFrameChanged(in: .global) { frame in anchor = frame }
     ///
-    /// This library's own. The first layout reports too, so the handler needs
-    /// no special case for "nothing measured yet". Written more than once it
-    /// reports each space to its own handler. The handler is a handler like
-    /// any other: it may write `@State` and it may await.
-    ///
-    /// **A TRANSFORM never reports.** `.translationX`, `.rotation` and
-    /// `.scale` change what is drawn without moving the layout frame, so an
-    /// animated translation is silent here, while an animated `.width`
-    /// reports every step of the layout it causes.
+    /// Each handler hears only changes in its own space. A transform -
+    /// `.translationX`, `.rotation`, `.scale` - moves what is drawn and not the
+    /// frame, so it reports nothing; an animated `.width` reports every step.
     ///
     /// - Parameters:
     ///   - space: Which coordinates to answer in - the parent's unless said.
@@ -97,11 +43,8 @@ extension View {
         in space: CoordinateSpace = .parent,
         _ handler: @escaping ValueEventHandler<Rect>
     ) -> Modified {
-        // One report serves every space, so a report may carry no news for
-        // THIS one: scrolling moves the window origin while the parent frame
-        // stands still. Each handler remembers the last rectangle it handed
-        // over and stays quiet while its own answer is unchanged - which is
-        // what keeps a `.parent` listener out of a scroll entirely.
+        // One report serves every space; each handler stays quiet while its
+        // own answer is unchanged.
         let last = LastFrame()
 
         return onEvent(ViewContract.frameChanged) { numbers in
@@ -116,33 +59,24 @@ extension View {
     }
 }
 
-/// What a frame handler last handed over - a reference, so the closure that
-/// captures it can remember across reports.
-///
-/// Reset when the view is rebuilt, the closure being rebuilt with it; the one
-/// cost is a single repeated callback after a rebuild, which the handler's
-/// own state write absorbs (an equal value renders once and changes nothing).
+/// What a frame handler last handed over, remembered across reports; a
+/// rebuilt view starts it afresh, costing one repeated report.
 private final class LastFrame: @unchecked Sendable {
     /// The rectangle the handler last ran with.
     var rect: Rect?
 }
 
-/// A container whose content is built FROM the space it was given.
+/// A container whose content is built from the space it was given.
 ///
 ///     FrameReader { frame in
 ///         Label("half of \(Int(frame.width)) is \(Int(frame.width / 2))")
 ///             .width(frame.width / 2)
 ///     }
 ///
-/// Built on `.onFrameChanged`: the last measured frame lives in a `@State` on
-/// this view, so the closure runs again whenever the frame settles somewhere
-/// new - the first layout included, before which it is given a zero rectangle.
-/// More than one view stacks the way a plain `Grid` stacks them, on top of
-/// each other.
-///
-/// For REPORTING a frame rather than building from it, write
-/// `.onFrameChanged` on the view that has one - this container is for content
-/// that cannot be described until its space is known.
+/// The closure runs again whenever the frame settles somewhere new; before the
+/// first layout it is given a zero rectangle. Several views stack on top of
+/// each other, as in a `Grid`. To report a frame rather than build from it,
+/// write `.onFrameChanged` on the view.
 public struct FrameReader: ContentView {
     /// The last frame the layout settled on - zero until the first report.
     @State private var frame = Rect(0, 0, 0, 0)
@@ -153,8 +87,8 @@ public struct FrameReader: ContentView {
     /// What to show, given the space it will live in.
     private let build: (Rect) -> [Element]
 
-    /// A reader handing its content closure the frame in its PARENT's
-    /// coordinates, which is the measurement content is usually built from.
+    /// A reader handing its content closure the frame in its parent's
+    /// coordinates.
     ///
     /// - Parameter content: What to show, built again as each measurement
     ///   settles.
@@ -176,9 +110,8 @@ public struct FrameReader: ContentView {
         self.build = content
     }
 
-    /// The content, in a Grid that fills the offered space and hears its own
-    /// frame - the measurement writes the `@State` above, and the write is
-    /// what builds this body again.
+    /// The content, in a Grid that fills the offered space and writes its own
+    /// frame into the state this body reads.
     public var content: any View {
         Grid {
             build(frame)
@@ -199,9 +132,7 @@ struct FrameReport {
     let safeArea: Rect
 
     /// Reads the eight numbers of one report - x, y, width, height, windowX,
-    /// windowY, safeX, safeY. Any other count is nil, and the caller leaves
-    /// the handler alone: a report that will not read is a version mismatch,
-    /// not an event.
+    /// windowY, safeX, safeY; any other count is nil.
     init?(_ numbers: [Double]) {
         guard numbers.count == 8 else { return nil }
         frame = Rect(numbers[0], numbers[1], numbers[2], numbers[3])

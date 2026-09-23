@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Label's own properties - the half a `Style<Label>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Label`'s own properties, shared by the control and its `Style<Label>`.
 public protocol LabelProperties: PropertyContainer {}
 
 extension LabelProperties {
@@ -28,9 +25,6 @@ extension LabelProperties {
 ///         .fontSize(20)
 ///         .fontAttributes(.bold)
 ///         .horizontalTextAlignment(.center)
-///
-/// The text is available in the initializer because it is what a Label is for.
-/// Everything else is a modifier in StateUI's text vocabulary.
 public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     PaddingElement, LineHeightElement, DecorableTextElement, LabelProperties {
     /// The node this control describes.
@@ -47,9 +41,8 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
         node.write(TextElementContract.text, text)
     }
 
-    /// The same spelling over a state the host carries: written by the host when the bytes
-    /// change, never described - which is what lets a reading be rewritten
-    /// sixty times a second at no render at all.
+    /// A label whose text is carried from a state, written by the host as it
+    /// changes, at no render.
     ///
     /// - Parameter text: the state the words are read from.
     public init(_ text: Binding<String>) {
@@ -65,10 +58,9 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     ///             TextSpan(" = 0")
     ///         }
     ///
-    /// This is the ONLY way to colour part of a label: a Label has one
-    /// `textColor`, and text in two colours is two runs. Syntax highlighting is
-    /// what it is usually for, and a `ForEach` builds the runs - identified by
-    /// where each one sits, since two tokens may read the same:
+    /// The one way to colour part of a label: text in two colours is two runs.
+    /// A `ForEach` builds them, keyed by where each sits, since two tokens may
+    /// read the same:
     ///
     ///     Label().spans {
     ///         ForEach(Array(highlighted(code).enumerated()), id: \.offset) { token in
@@ -76,8 +68,7 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
     ///         }
     ///     }
     ///
-    /// **This and `text` are mutually exclusive**: a Label given both shows
-    /// the runs and not its `text`.
+    /// A Label given both runs and a `text` shows the runs.
     public func spans(@ViewBuilder _ spans: () -> [Element]) -> Self {
         modified {
             $0.children = [Node(contract: SpansContract.self, children: spans().map { $0.body })]
@@ -91,19 +82,8 @@ public struct Label: View, TextElement, FontElement, TextAlignmentElement,
 ///         .textColor(.firebrick)
 ///         .fontAttributes(.bold)
 ///
-/// NOT a view, which is why it wears `TextElement` and `FontElement` rather
-/// than `View`: a run is a `ModifiableElement` with text and font properties
-/// and nothing else - no opacity, no margin, no size of its own. It goes in one
-/// place, a Label's `spans`, and nowhere else in the tree.
-///
-/// **`TextSpan` rather than `Span`, because `Span` is taken.** Swift's own
-/// standard library has a `Span<Element>` - a view over contiguous memory - and
-/// it is in scope in every file without an import, so an application writing
-/// `Span("…")` gets *"no exact matches in call to initializer"* and a plain
-/// `[Span]` gets *"reference to generic type 'Span' requires arguments"*.
-/// Measured from a module importing this one. The node on the wire is `Span`
-/// all the same - the vocabulary's name for a run, and what the fixture
-/// sidecars read.
+/// Not a view: a run has text and font properties and nothing else, and it
+/// goes only in a Label's `spans`.
 public struct TextSpan: ModifiableElement, TextElement, FontElement,
     LineHeightElement, DecorableTextElement {
     /// The node this run describes.

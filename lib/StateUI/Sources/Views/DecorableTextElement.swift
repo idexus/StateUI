@@ -1,16 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The lines drawn through or under text.
-//
-// A tier of its own rather than a block in Elements.swift - that file is the
-// tier every view shares, and a decoration is a Label's and a span's.
-
-/// A line under the text, through it, or both - the tier `Label` and
-/// `TextSpan` both wear.
-///
-/// `PropertyContainer` rather than a view tier: a `TextSpan` wears this and
-/// is not a view, and a `Style` wears it without being in the tree at all.
+/// A line under the text, through it, or both - worn by `Label` and
+/// `TextSpan`.
 public protocol DecorableTextElement: PropertyContainer {}
 
 extension DecorableTextElement {

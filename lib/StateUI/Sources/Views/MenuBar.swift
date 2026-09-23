@@ -1,10 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The desktop menu bar. A page writes its menus into its session and each menu
-// lists its entries, and the platform puts them where a desktop puts menus - at
-// the top of the screen on a Mac, under the title bar on Windows. A phone has no
-// menu bar and shows none of it.
+// The desktop menu bar: a page writes its menus into its session, and the
+// platform puts them where it puts menus. A phone shows none of it.
 
 /// A menu: a caption and the entries it opens - on the menu bar, or one level
 /// down inside another menu.
@@ -22,9 +20,7 @@
 ///         },
 ///     ]
 ///
-/// Not a view: a menu has a caption and entries, no layout of its own, and it
-/// belongs to a PAGE rather than sitting in one - written into the page's
-/// session, and written again when what it lists moves.
+/// Not a view: a menu belongs to a page, written into the page's session.
 public struct Menu: Element {
     /// The node this menu describes.
     public var node: Node
@@ -45,9 +41,9 @@ public struct Menu: Element {
     /// The node, as every element answers it.
     public var body: Node { node }
 
-    /// Who this menu is, among the page's others - what keeps it matched to
-    /// itself when the menus around it come and go. A menu with no id is
-    /// matched by its POSITION in the list.
+    /// Who this menu is among the page's others, so it stays matched to itself
+    /// when the menus around it come and go; without one it is matched by
+    /// position.
     public func id(_ value: some Hashable) -> Self {
         var copy = self
         copy.node.id = String(describing: value)
@@ -81,16 +77,12 @@ public struct MenuItem: Element, MenuItemElement {
     /// The node, as every element answers it.
     public var body: Node { node }
 
-    /// Who this entry is, among the menu's others - what keeps it matched to
-    /// itself when the entries around it come and go. An entry with no id is
-    /// matched by its POSITION in the menu.
+    /// Who this entry is among the menu's others, so it stays matched to itself
+    /// when the entries around it come and go; without one it is matched by
+    /// position.
     public func id(_ value: some Hashable) -> Self {
         modified { $0.id = String(describing: value) }
     }
-
-    // `text`, `icon`, `isDestructive`, `isEnabled` and `onClicked`
-    // are shared with the toolbar item and the swipe action and live on
-    // MenuItemElement, which this conforms to.
 }
 
 /// A line between entries, grouping the ones above it apart from the ones
@@ -135,17 +127,10 @@ public struct MenuSeparator: Element {
 ///         }
 ///     }
 ///
-/// Shaped like `ViewBuilder` and over the same `[Element]` - a menu's entries
-/// ARE elements - so an `if`, an `if/else` and a `ForEach` all work in one, and
-/// a plain `for` does not.
-///
-/// It collects without KEYING, and that is the one difference from a layout
-/// that shows: an entry carries no note of which statement or which branch
-/// produced it, so it is matched by the `.id()` it was given and by its
-/// POSITION otherwise. An `if` whose entry comes and goes therefore re-matches
-/// every entry below it against a different one. `ForEach` stamps each entry
-/// with its item, so a list of them needs no ids; a hand-written entry standing
-/// beside a conditional wants one.
+/// An `if`, an `if/else` and a `ForEach` work in one, and a plain `for` does
+/// not. An entry is matched by its `.id()` and otherwise by its position, so a
+/// hand-written entry beside an `if` wants an id; `ForEach` gives its entries
+/// their items' identities.
 @resultBuilder
 public enum MenuBuilder {
     /// A single entry written as a statement.
@@ -178,10 +163,7 @@ public enum MenuBuilder {
         component
     }
 
-    /// A loop's entries - `ForEach`, each identified by its item, which is
-    /// how a menu lists recent files. A plain `for` does not compile in a
-    /// menu for the reason it does not in a layout: a turn's number is the
-    /// position, and the entries here are kept by identity.
+    /// A `ForEach`'s entries, each identified by its item.
     public static func buildExpression(_ expression: ForEach) -> [Element] {
         expression.elements
     }

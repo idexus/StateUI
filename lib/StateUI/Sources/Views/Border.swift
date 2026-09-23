@@ -1,10 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Border's own properties - the half a `Style<Border>` shares with the
-/// control, beside what its tiers already carry. The control conforms on
-/// the element side and the style on the property side, which is what
-/// makes the same modifiers compile on both.
+/// `Border`'s own properties, shared by the control and its `Style<Border>`.
 public protocol BorderProperties: PropertyContainer {}
 
 extension BorderProperties {
@@ -19,21 +16,15 @@ extension BorderProperties {
         setValue(BorderContract.stroke, value)
     }
 
-    /// The same, in one colour - which is what a border's outline usually is.
-    ///
-    /// One line over the brush form, so a border's stroke and a shape's put the
-    /// SAME bytes on the wire for the same colour. Writing the bare colour out
-    /// instead would have one property arrive in two shapes, and leave the host
-    /// carrying a branch to tell them apart.
+    /// The same, in one colour - a solid brush.
     public func stroke(_ value: Color) -> Modified {
         stroke(.solidColor(value))
     }
 
     /// How wide the stroke is drawn, in device units - 1 unless said.
     ///
-    /// A width of 0 draws no outline however the stroke is painted - which
-    /// is how a Border is used for its SHAPE alone, as the rounded corners on a
-    /// coloured card.
+    /// A width of 0 draws no outline, which is how a Border is used for its
+    /// shape alone, as the rounded corners on a coloured card.
     public func strokeWidth(_ value: Double) -> Modified {
         setValue(BorderContract.strokeWidth, value)
     }
@@ -53,12 +44,8 @@ extension BorderProperties {
         setValue(BorderContract.shape, value)
     }
 
-    // The rest of the stroke, which a Border carries as fully as a Shape does.
-    // Written HERE rather than shared with the shape tier, because that tier
-    // also carries `fill`, `renderTransform` and an `aspect` - a drawn
-    // figure's, and none of them a Border's. The properties on the wire are
-    // the same ones; `stroke` and `strokeWidth` above are this same pair
-    // said twice.
+    // The rest of the stroke, as a shape carries it.
+    // Design: docs/design/views/tiers.md#shapes
 
     /// The dashes and the gaps between them, in multiples of the stroke
     /// width.
@@ -110,10 +97,8 @@ extension BorderProperties {
 /// `.background` and a `.shape`, and the background follows the
 /// shape whether or not the outline is drawn.
 ///
-/// Not to be confused with `BorderElement`, the outline a Button and a
-/// RadioButton each draw around themselves - three flat properties on the
-/// control, where this is a view of its own with a brush, a shape and a dash
-/// pattern. See Views/BorderElement.swift.
+/// Not to be confused with `BorderElement`, the outline a Button or a
+/// RadioButton draws around itself.
 public struct Border: View, PaddingElement, BorderProperties {
     /// The node this control describes.
     public var node: Node
@@ -123,9 +108,8 @@ public struct Border: View, PaddingElement, BorderProperties {
         node = Node(contract: BorderContract.self)
     }
 
-    /// A border around what the closure describes. A Border holds ONE view;
-    /// put a layout in it if there is more than one thing to show.
-    /// The closure is kept and run when the differ describes the border.
+    /// A border around what the closure describes: one view, so put a layout in
+    /// it for more. The closure runs when the differ reaches the border.
     public init(@ViewBuilder content: @escaping () -> [Element]) {
         node = Node(contract: BorderContract.self)
         node.producer = { content().map { $0.body } }
