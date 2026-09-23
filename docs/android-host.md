@@ -7,7 +7,8 @@ library: it applies the typed sparse patches of the
 Wire encoding stands between them.
 
 It presents its first controls - `Label`, `Button`, `TextField`, `Switch`,
-`Slider`, `VStack` and `HStack` - over the runtime every host shares, and
+`Slider`, `Image`, `ColorBox`, `VStack`, `HStack`, `Grid`, `AbsoluteLayout`
+and `Border` - over the runtime every host shares, and
 shows any other control's name in red where the control belongs, so a gap is
 visible rather than silent.
 
@@ -19,6 +20,7 @@ lib/StateUI.Android/
   Tests/                     the host's suite, run in a test APK on a device
 .scripts/Android/
   build-swift.sh             an application's Swift for Android, for the ABIs asked
+  rasterize-images.swift     draws an application's SVG pictures for its APK
   run-app.sh                 builds an application's Android head, installs and starts it
   test-android.sh            builds and runs the host's suite on a device
   devices.sh                 the devices attached, the emulators, and booting one
@@ -80,7 +82,10 @@ the APK, installs it, starts it and follows its log. Everything a build writes
 stays in the application's `.build-android/`. The APK carries the libraries
 the head needs and nothing else - the Swift runtime's own among them -
 stripped, with the unstripped copies kept in `.build-android/symbols/` for
-`ndk-stack` and a debugger. An application's `print` reaches logcat under the
+`ndk-stack` and a debugger. Android draws no SVG, so the application's
+`Resources/Images` are drawn for it as the APK is built: an SVG three times
+over, as a PNG, which `Image("mark.png")` finds as it finds the SVG on every
+other host. An application's `print` reaches logcat under the
 tag `StateUI`.
 
 In VS Code, choose **Android** as the host and a device, and press **F5**.

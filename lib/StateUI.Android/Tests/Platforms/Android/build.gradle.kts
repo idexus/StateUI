@@ -32,6 +32,7 @@ android {
             java.srcDir(stated("stateui.java"))
             java.srcDir("Java")
             jniLibs.srcDir(stated("stateui.libraries"))
+            assets.srcDir(stated("stateui.assets"))
         }
     }
 

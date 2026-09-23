@@ -44,7 +44,8 @@ it.
   [registrations](platforms/appkit/registrations.md).
   `platforms/android/`: [the runtime](platforms/android/runtime.md),
   [JNI](platforms/android/jni.md), [layout](platforms/android/layout.md),
-  [controls](platforms/android/controls.md), [motion](platforms/android/motion.md).
+  [controls](platforms/android/controls.md), [motion](platforms/android/motion.md),
+  [drawing](platforms/android/drawing.md).
 
 ## Writing a note
 

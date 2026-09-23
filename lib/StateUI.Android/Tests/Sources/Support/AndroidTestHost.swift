@@ -75,6 +75,22 @@ enum TestJava {
     static let keyEvent = Java.findClass("android/view/KeyEvent")
     static let newKeyEvent = Java.method(keyEvent, "<init>", "(II)V")
     static let dispatchKeyEvent = Java.method(JavaAPI.view, "dispatchKeyEvent", "(Landroid/view/KeyEvent;)Z")
+    static let getChildAt = Java.method(JavaAPI.viewGroup, "getChildAt", "(I)Landroid/view/View;")
+    static let getClipToOutline = Java.method(JavaAPI.view, "getClipToOutline", "()Z")
+    static let getBackground = Java.method(JavaAPI.view, "getBackground", "()Landroid/graphics/drawable/Drawable;")
+    static let drawable = Java.findClass("android/graphics/drawable/Drawable")
+    static let getOutline = Java.method(drawable, "getOutline", "(Landroid/graphics/Outline;)V")
+    static let outline = Java.findClass("android/graphics/Outline")
+    static let newOutline = Java.method(outline, "<init>", "()V")
+    static let getRadius = Java.method(outline, "getRadius", "()F")
+    static let bitmap = Java.findClass("android/graphics/Bitmap")
+    static let bitmapConfig = Java.findClass("android/graphics/Bitmap$Config")
+    static let createBitmap = Java.staticMethod(
+        bitmap, "createBitmap", "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;")
+    static let getPixel = Java.method(bitmap, "getPixel", "(II)I")
+    static let canvas = Java.findClass("android/graphics/Canvas")
+    static let newCanvas = Java.method(canvas, "<init>", "(Landroid/graphics/Bitmap;)V")
+    static let draw = Java.method(JavaAPI.view, "draw", "(Landroid/graphics/Canvas;)V")
 
     /// An empty root, as an activity's content is.
     static func root() -> JavaObject {
@@ -205,6 +221,40 @@ extension AndroidView {
         Java.release(local: matrix)
         Java.release(local: array)
         return stride(from: 0, to: mapped.count, by: 2).map { (mapped[$0], mapped[$0 + 1]) }
+    }
+
+    /// What the view draws at each of `points`, in pixels of its own frame, as ARGB.
+    func pixels(at points: [(x: Int32, y: Int32)]) -> [UInt32] {
+        let (_, _, width, height) = frame
+        let config = Java.staticObject(TestJava.bitmapConfig, "ARGB_8888", "Landroid/graphics/Bitmap$Config;")
+        return Java.frame {
+            let bitmap = Java.callStaticObject(
+                TestJava.bitmap, TestJava.createBitmap, .int(width), .int(height), .object(config.reference))!
+            let canvas = Java.new(TestJava.canvas, TestJava.newCanvas, .object(bitmap))
+            Java.call(reference, TestJava.draw, .object(canvas.reference))
+            return points.map { UInt32(bitPattern: Java.callInt(bitmap, TestJava.getPixel, .int($0.x), .int($0.y))) }
+        }
+    }
+
+    /// The radius of the outline the view's background gives it, in pixels.
+    var outlineRadius: Float {
+        Java.frame {
+            let outline = Java.new(TestJava.outline, TestJava.newOutline)
+            let background = Java.callObject(reference, TestJava.getBackground)!
+            Java.call(background, TestJava.getOutline, .object(outline.reference))
+            return Java.callFloat(outline.reference, TestJava.getRadius)
+        }
+    }
+
+    /// Whether the group holds exactly `views`, in this order - the one it draws them in.
+    func holds(inOrder views: [AndroidView]) -> Bool {
+        guard Java.callInt(reference, TestJava.getChildCount) == views.count else { return false }
+
+        return views.enumerated().allSatisfy { index, view in
+            let child = Java.callObject(reference, TestJava.getChildAt, .int(Int32(index)))
+            defer { Java.release(local: child) }
+            return Java.jni.IsSameObject(Java.env, child, view.reference) != 0
+        }
     }
 
     /// Presses and lets go of the hardware key `code`, as a keyboard does.

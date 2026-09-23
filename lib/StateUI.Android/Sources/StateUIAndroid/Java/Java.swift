@@ -75,6 +75,23 @@ enum Java {
         return jni.GetStaticIntField(env, owner, field)
     }
 
+    /// A static field's object, held for the life of the process.
+    static func staticObject(_ owner: jclass, _ name: String, _ signature: String) -> JavaObject {
+        let field = jni.GetStaticFieldID(env, owner, name, signature)
+        check("GetStaticFieldID \(name)")
+        return JavaObject(jni.GetStaticObjectField(env, owner, field)!)
+    }
+
+    /// An instance field of `owner`.
+    static func field(_ owner: jclass, _ name: String, _ signature: String) -> jfieldID {
+        guard let field = jni.GetFieldID(env, owner, name, signature) else {
+            check("GetFieldID \(name)")
+            fatalError("StateUI Android: the field \(name) is missing")
+        }
+
+        return field
+    }
+
     // MARK: - Calls
 
     /// A new object, held globally.
@@ -136,6 +153,16 @@ enum Java {
         return result
     }
 
+    /// Writes an int field.
+    static func set(_ object: jobject, _ field: jfieldID, _ value: Int32) {
+        jni.SetIntField(env, object, field, value)
+    }
+
+    /// Writes a boolean field.
+    static func set(_ object: jobject, _ field: jfieldID, _ value: Bool) {
+        jni.SetBooleanField(env, object, field, value ? 1 : 0)
+    }
+
     // MARK: - Values
 
     /// A Java string of `text`'s UTF-16, as a local reference.
@@ -163,6 +190,31 @@ enum Java {
         }
         check("an array")
         return array
+    }
+
+    /// A Java float array of `values`, as a local reference.
+    static func floats(_ values: [Float]) -> jfloatArray? {
+        let array = jni.NewFloatArray(env, jsize(values.count))
+        values.withUnsafeBufferPointer { jni.SetFloatArrayRegion(env, array, 0, jsize(values.count), $0.baseAddress) }
+        return array
+    }
+
+    /// A Java int array of `values`, as a local reference.
+    static func ints(_ values: [Int32]) -> jintArray? {
+        let array = jni.NewIntArray(env, jsize(values.count))
+        values.withUnsafeBufferPointer { jni.SetIntArrayRegion(env, array, 0, jsize(values.count), $0.baseAddress) }
+        return array
+    }
+
+    /// The strings of a Java string array.
+    static func texts(_ array: jobjectArray?) -> [String] {
+        guard let array else { return [] }
+
+        return (0..<jni.GetArrayLength(env, array)).map { index in
+            let string = jni.GetObjectArrayElement(env, array, index)
+            defer { release(local: string) }
+            return text(string)
+        }
     }
 
     /// Lets a local reference go before its frame ends.

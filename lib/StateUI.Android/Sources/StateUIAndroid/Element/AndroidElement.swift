@@ -64,7 +64,7 @@ final class AndroidElement: NativeElement {
         applyProperties(changed: changed)
 
         var impact = FrameImpact(content: true)
-        if view == nil || !changed.isDisjoint(with: Self.arrangedProperties) {
+        if view == nil || !changed.subtracting(ownPlacementRun).isDisjoint(with: Self.arrangedProperties) {
             impact.arrangement = true
         }
         return impact

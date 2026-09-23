@@ -17,6 +17,7 @@ enum AndroidRegistrations {
         values(registry)
         fields(registry)
         layouts(registry)
+        pictures(registry)
         shared(registry)
 
         return registry
@@ -44,6 +45,12 @@ enum AndroidRegistrations {
         registry.everyElementRealizes(VisualElementContract.maximumWidth)
         registry.everyElementRealizes(VisualElementContract.maximumHeight)
         registry.everyElementRealizes(ViewContract.margin)
+        registry.everyElementRealizes(ViewContract.gridRow)
+        registry.everyElementRealizes(ViewContract.gridColumn)
+        registry.everyElementRealizes(ViewContract.gridRowSpan)
+        registry.everyElementRealizes(ViewContract.gridColumnSpan)
+        registry.everyElementRealizes(ViewContract.absoluteLayoutBounds)
+        registry.everyElementRealizes(ViewContract.absoluteLayoutProportions)
         registry.everyElementRealizes(ViewContract.horizontalAlignment)
         registry.everyElementRealizes(ViewContract.verticalAlignment)
     }

@@ -32,6 +32,7 @@ android {
             manifest.srcFile("AndroidManifest.xml")
             java.srcDir(stated("stateui.java"))
             jniLibs.srcDir(stated("stateui.libraries"))
+            assets.srcDir(stated("stateui.assets"))
         }
     }
 

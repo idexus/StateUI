@@ -13,6 +13,9 @@ enum AndroidTransitionSurface {
         switch type {
         case .page: return property == .background
         case .vStack, .hStack: return property == .padding || property == .spacing
+        case .grid: return [.padding, .rowSpacing, .columnSpacing, .rows, .columns].contains(property)
+        case .border: return [.padding, .stroke, .strokeWidth, .shape].contains(property)
+        case .colorBox: return property == .color || property == .cornerRadius
         case .label, .button: return property == .fontSize || property == .textColor || property == .padding
         case .textField: return property == .fontSize || property == .textColor || property == .placeholderColor
         case .slider: return property == .value || property == .tint
@@ -22,6 +25,7 @@ enum AndroidTransitionSurface {
 
     private static let viewTypes: Set<NodeType> = [
         .label, .button, .textField, .switch, .slider, .vStack, .hStack,
+        .grid, .absoluteLayout, .border, .colorBox, .image,
     ]
 
     private static let viewProperties: Set<Prop> = [

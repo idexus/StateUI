@@ -56,6 +56,14 @@ build_head () {
   STATEUI_ANDROID=1 SWIFT_CONFIG="$configuration" ABIS="$abi" \
     "$script_dir/build-swift.sh" "$app" "$product" "$build" >&2 || return 1
 
+  # Android draws no SVG: the application's pictures are drawn for it, into the APK's assets.
+  local rasterizer="$build/tools/rasterize-images"
+  if [[ ! -x "$rasterizer" || "$script_dir/rasterize-images.swift" -nt "$rasterizer" ]]; then
+    mkdir -p "$build/tools"
+    xcrun swiftc -O "$script_dir/rasterize-images.swift" -o "$rasterizer" >&2 || return 1
+  fi
+  "$rasterizer" "$app/Resources/Images" "$build/assets/images" >&2 || return 1
+
   java="$(java_home_21)"
   [[ -n "$java" ]] || { echo "ERROR: Gradle needs JDK 21 - install it, or point JAVA_HOME at one" >&2; return 1; }
   gradle="$(gradle_binary)" || return 1
@@ -68,6 +76,7 @@ build_head () {
     -Pstateui.build="$build/gradle" \
     -Pstateui.java="$repository_dir/lib/StateUI.Android/Java" \
     -Pstateui.libraries="$build/jniLibs" \
+    -Pstateui.assets="$build/assets" \
     "$task" >&2 || return 1
 
   apk="$(find "$build/gradle/outputs/apk/$configuration" -name '*.apk' 2>/dev/null | head -n 1)"

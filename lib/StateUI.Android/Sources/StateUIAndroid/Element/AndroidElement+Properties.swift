@@ -12,12 +12,15 @@ extension AndroidElement {
         .minimumWidth, .minimumHeight,
         .maximumWidth, .maximumHeight,
         .isVisible,
+        .gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan,
+        .absoluteLayoutBounds, .absoluteLayoutProportions,
     ]
 
     /// Properties drawn without changing any measurement; any other one measures the view again.
     static let unmeasuredProperties = Set<Prop>([
         .opacity, .background, .textColor, .placeholderColor, .tint, .isEnabled,
         .isOn, .value, .minimum, .maximum, .cursorPosition, .selectionLength,
+        .color, .cornerRadius, .stroke, .strokeWidth, .shape,
     ]).union(transformProperties)
 
     /// Properties that move, turn and scale the view where its layout put it.
@@ -77,9 +80,22 @@ extension AndroidElement {
                 }
             }
             if !own.isDisjoint(with: Self.transformProperties) { view.setTransform(transform) }
+            if let absolute = view as? AndroidAbsoluteLayoutView { absolute.placement = placement }
         }
 
-        if !changed.isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
+        if !changed.subtracting(ownPlacementRun).isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
+    }
+
+    /// The layout's own placement run, where a state drives one: it moves the children without changing
+    /// what the layout measures.
+    var ownPlacementRun: Set<Prop> {
+        element.driven[.absoluteLayoutBounds]?.kind == .placement ? [.absoluteLayoutBounds] : []
+    }
+
+    /// The places an engine gives this layout's children, one each; nil while no state drives them.
+    var placement: HostPlacementRun? {
+        guard !ownPlacementRun.isEmpty, let carried = element.carriedValue(.absoluteLayoutBounds) else { return nil }
+        return StateUIHost.placements(from: carried)
     }
 
     /// How the view is moved, turned and scaled; `scale` multiplies both axes on top of `scaleX` and `scaleY`.

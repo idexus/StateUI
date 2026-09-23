@@ -14,6 +14,9 @@ class AndroidLayoutView: AndroidView {
     /// The children, in order.
     private(set) var items: [AndroidLayoutItem] = []
 
+    /// The views the group holds, in the order it draws them, back to front.
+    private var held: [AndroidView] = []
+
     init() {
         super.init { number in
             Java.new(
@@ -29,13 +32,21 @@ class AndroidLayoutView: AndroidView {
         else { return }
 
         if !Self.same(items.map(\.view), self.items.map(\.view)) {
-            let children = Java.array(of: JavaAPI.view, items.map(\.view.reference))
-            Java.call(reference, JavaAPI.setChildren, .object(children))
-            Java.release(local: children)
+            setChildren(items.map(\.view))
         }
 
         self.items = items
         invalidateMeasurements()
+    }
+
+    /// Holds `views` in the group in this order, the one it draws them and hands them touches in.
+    func setChildren(_ views: [AndroidView]) {
+        guard !Self.same(views, held) else { return }
+
+        let children = Java.array(of: JavaAPI.view, views.map(\.reference))
+        Java.call(reference, JavaAPI.setChildren, .object(children))
+        Java.release(local: children)
+        held = views
     }
 
     /// Forgets the kept sizes and asks Android to measure again.

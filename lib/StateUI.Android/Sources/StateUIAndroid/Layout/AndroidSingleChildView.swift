@@ -3,9 +3,9 @@
 
 @_spi(Host) import StateUI
 
-/// A page: its one child within its padding.
+/// A page, or a container like it: its one child within its padding.
 @MainActor
-final class AndroidSingleChildView: AndroidLayoutView {
+class AndroidSingleChildView: AndroidLayoutView {
     /// The room inside the view's own edge, in points.
     var padding = Insets(0) {
         didSet { if padding != oldValue { invalidateMeasurements() } }

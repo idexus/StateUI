@@ -18,7 +18,11 @@ final class AndroidRegistrationTests: XCTestCase {
             let realization = AndroidRegistrations.registry.realization
 
             XCTAssertEqual(
-                realization.elements, ["Button", "HStack", "Label", "Slider", "Switch", "TextField", "VStack"])
+                realization.elements,
+                [
+                    "AbsoluteLayout", "Border", "Button", "ColorBox", "Grid", "HStack", "Image", "Label", "Slider",
+                    "Switch", "TextField", "VStack",
+                ])
             for member in [
                 HostRealizedMember(element: "Button", owner: "Button", member: "clicked"),
                 HostRealizedMember(element: "Label", owner: "TextElement", member: "text"),
@@ -27,6 +31,12 @@ final class AndroidRegistrationTests: XCTestCase {
                 HostRealizedMember(element: "Slider", owner: "Slider", member: "dragCompleted"),
                 HostRealizedMember(element: "TextField", owner: "InputView", member: "textChanged"),
                 HostRealizedMember(element: "TextField", owner: "TextField", member: "submitted"),
+                HostRealizedMember(element: "Grid", owner: "Grid", member: "rows"),
+                HostRealizedMember(element: "Label", owner: "View", member: "gridRow"),
+                HostRealizedMember(element: "Label", owner: "View", member: "absoluteLayoutBounds"),
+                HostRealizedMember(element: "Border", owner: "Border", member: "shape"),
+                HostRealizedMember(element: "Image", owner: "Image", member: "source"),
+                HostRealizedMember(element: "ColorBox", owner: "ColorBox", member: "cornerRadius"),
             ] {
                 XCTAssertTrue(realization.members.contains(member), "\(member)")
             }

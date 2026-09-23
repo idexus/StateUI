@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 @_spi(Host) import StateUI
+import Android
 import CStateUIAndroid
 
 /// An `android.view.View` Swift holds, and the number Java calls back with.
@@ -22,6 +23,16 @@ class AndroidView {
 
     /// The background the view was made with, often none, read before the first change.
     private var madeBackground: JavaObject??
+
+    /// How the view's own properties move, turn and scale it.
+    private var own = HostDrawingTransform.identity
+
+    /// How a placing layout draws the view over the place it gave; nil for none.
+    private var placed: HostDrawingTransform?
+
+    /// How opaque the view's own property and a placing layout draw it.
+    private var ownOpacity = 1.0
+    private var placedOpacity = 1.0
 
     /// The point the view turns and scales about, as fractions of its size.
     private var pivot = (x: 0.5, y: 0.5)
@@ -69,23 +80,53 @@ class AndroidView {
     }
 
     func setOpacity(_ opacity: Double) {
-        Java.call(reference, JavaAPI.setAlpha, .float(Float(opacity)))
+        ownOpacity = opacity
+        Java.call(reference, JavaAPI.setAlpha, .float(Float(ownOpacity * placedOpacity)))
     }
 
-    /// How opaque the view is drawn.
-    var opacity: Double { Double(Java.callFloat(reference, JavaAPI.getAlpha)) }
+    /// How opaque the view's own property draws it.
+    var opacity: Double { ownOpacity }
 
     /// Moves, turns and scales the view where its layout put it, in points and degrees.
     /// Design: docs/design/platforms/android/motion.md#moved-turned-and-scaled
     func setTransform(_ transform: HostDrawingTransform) {
-        Java.call(reference, JavaAPI.setTranslationX, .float(Float(transform.translationX * density)))
-        Java.call(reference, JavaAPI.setTranslationY, .float(Float(transform.translationY * density)))
-        Java.call(reference, JavaAPI.setRotation, .float(Float(transform.rotation)))
-        Java.call(reference, JavaAPI.setRotationX, .float(Float(transform.rotationX)))
-        Java.call(reference, JavaAPI.setRotationY, .float(Float(transform.rotationY)))
-        Java.call(reference, JavaAPI.setScaleX, .float(Float(transform.scaleX)))
-        Java.call(reference, JavaAPI.setScaleY, .float(Float(transform.scaleY)))
-        pivot = (transform.pivotX, transform.pivotY)
+        own = transform
+        applyTransform()
+    }
+
+    /// How a placing layout draws the view over the place it gave, and how opaque; nil and 1 for as the view says.
+    /// Design: docs/design/platforms/android/drawing.md#a-placed-child
+    func setPlacedDrawing(_ transform: HostDrawingTransform?, opacity: Double) {
+        guard transform != placed || opacity != placedOpacity else { return }
+
+        placed = transform
+        placedOpacity = opacity
+        applyTransform()
+        setOpacity(ownOpacity)
+    }
+
+    /// Writes the view's own transform, with a placing layout's over it.
+    private func applyTransform() {
+        var drawn = own
+        if let placed {
+            let angle = placed.rotation * .pi / 180
+            let x = own.translationX * placed.scaleX
+            let y = own.translationY * placed.scaleY
+            drawn.translationX = placed.translationX + x * cos(angle) - y * sin(angle)
+            drawn.translationY = placed.translationY + x * sin(angle) + y * cos(angle)
+            drawn.rotation += placed.rotation
+            drawn.scaleX *= placed.scaleX
+            drawn.scaleY *= placed.scaleY
+        }
+
+        Java.call(reference, JavaAPI.setTranslationX, .float(Float(drawn.translationX * density)))
+        Java.call(reference, JavaAPI.setTranslationY, .float(Float(drawn.translationY * density)))
+        Java.call(reference, JavaAPI.setRotation, .float(Float(drawn.rotation)))
+        Java.call(reference, JavaAPI.setRotationX, .float(Float(drawn.rotationX)))
+        Java.call(reference, JavaAPI.setRotationY, .float(Float(drawn.rotationY)))
+        Java.call(reference, JavaAPI.setScaleX, .float(Float(drawn.scaleX)))
+        Java.call(reference, JavaAPI.setScaleY, .float(Float(drawn.scaleY)))
+        pivot = placed == nil ? (drawn.pivotX, drawn.pivotY) : (0.5, 0.5)
         applyPivot()
     }
 
@@ -106,7 +147,7 @@ class AndroidView {
         Java.call(reference, JavaAPI.setEnabled, .bool(enabled))
     }
 
-    /// The view's background: a colour, or none for any other brush yet; nil puts back the platform's.
+    /// The view's background: a colour, or a brush drawn over its bounds; nil puts back the platform's.
     func setBackground(_ value: HostValue?) {
         if madeBackground == nil {
             madeBackground = .some(Java.callObject(reference, JavaAPI.getBackground).map(JavaObject.init))
@@ -115,7 +156,13 @@ class AndroidView {
         guard let value else {
             return Java.call(reference, JavaAPI.setBackground, .object(madeBackground??.reference))
         }
-        Java.call(reference, JavaAPI.setBackgroundColor, .int(Self.argb(value) ?? 0))
+        if let argb = Self.argb(value) {
+            return Java.call(reference, JavaAPI.setBackgroundColor, .int(argb))
+        }
+
+        let brush = AndroidShapeDrawable()
+        brush.setFill(value)
+        Java.call(reference, JavaAPI.setBackground, .object(brush.reference))
     }
 
     /// The element left the tree: the view lets go of everything that would call back into it.

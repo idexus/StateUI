@@ -9,6 +9,7 @@ enum JavaAPI {
     // MARK: - android.view
 
     static let view = Java.findClass("android/view/View")
+    static let newView = Java.method(view, "<init>", "(Landroid/content/Context;)V")
     static let viewGroup = Java.findClass("android/view/ViewGroup")
     static let setVisibility = Java.method(view, "setVisibility", "(I)V")
     static let getVisibility = Java.method(view, "getVisibility", "()I")
@@ -37,6 +38,10 @@ enum JavaAPI {
     static let getPaddingTop = Java.method(view, "getPaddingTop", "()I")
     static let getPaddingRight = Java.method(view, "getPaddingRight", "()I")
     static let getPaddingBottom = Java.method(view, "getPaddingBottom", "()I")
+    static let setForeground = Java.method(view, "setForeground", "(Landroid/graphics/drawable/Drawable;)V")
+    static let setClipToOutline = Java.method(view, "setClipToOutline", "(Z)V")
+    static let invalidateOutline = Java.method(view, "invalidateOutline", "()V")
+    static let invalidate = Java.method(view, "invalidate", "()V")
     static let setOnClickListener = Java.method(
         view, "setOnClickListener", "(Landroid/view/View$OnClickListener;)V")
     static let requestLayout = Java.method(view, "requestLayout", "()V")
@@ -116,6 +121,38 @@ enum JavaAPI {
     static let getThumbTintList = Java.method(
         seekBar, "getThumbTintList", "()Landroid/content/res/ColorStateList;")
 
+    static let imageView = Java.findClass("android/widget/ImageView")
+    static let newImageView = Java.method(imageView, "<init>", "(Landroid/content/Context;)V")
+    static let setImageBitmap = Java.method(imageView, "setImageBitmap", "(Landroid/graphics/Bitmap;)V")
+    static let setScaleType = Java.method(imageView, "setScaleType", "(Landroid/widget/ImageView$ScaleType;)V")
+    static let setCropToPadding = Java.method(imageView, "setCropToPadding", "(Z)V")
+    static let scaleType = Java.findClass("android/widget/ImageView$ScaleType")
+
+    // MARK: - android.graphics
+
+    static let bitmap = Java.findClass("android/graphics/Bitmap")
+    static let bitmapWidth = Java.method(bitmap, "getWidth", "()I")
+    static let bitmapHeight = Java.method(bitmap, "getHeight", "()I")
+    static let bitmapFactory = Java.findClass("android/graphics/BitmapFactory")
+    static let decodeStream = Java.staticMethod(
+        bitmapFactory, "decodeStream",
+        "(Ljava/io/InputStream;Landroid/graphics/Rect;Landroid/graphics/BitmapFactory$Options;)Landroid/graphics/Bitmap;")
+    static let bitmapOptions = Java.findClass("android/graphics/BitmapFactory$Options")
+    static let newBitmapOptions = Java.method(bitmapOptions, "<init>", "()V")
+    static let inDensity = Java.field(bitmapOptions, "inDensity", "I")
+    static let inTargetDensity = Java.field(bitmapOptions, "inTargetDensity", "I")
+    static let inScaled = Java.field(bitmapOptions, "inScaled", "Z")
+
+    // MARK: - android.content
+
+    static let contextClass = Java.findClass("android/content/Context")
+    static let getAssets = Java.method(contextClass, "getAssets", "()Landroid/content/res/AssetManager;")
+    static let assetManager = Java.findClass("android/content/res/AssetManager")
+    static let openAsset = Java.method(assetManager, "open", "(Ljava/lang/String;)Ljava/io/InputStream;")
+    static let listAssets = Java.method(assetManager, "list", "(Ljava/lang/String;)[Ljava/lang/String;")
+    static let inputStream = Java.findClass("java/io/InputStream")
+    static let close = Java.method(inputStream, "close", "()V")
+
     // MARK: - android.animation
 
     static let valueAnimator = Java.findClass("android/animation/ValueAnimator")
@@ -144,6 +181,12 @@ enum JavaAPI {
 
     static let listener = Java.findClass("stateui/android/StateUIListener")
     static let newListener = Java.method(listener, "<init>", "(J)V")
+
+    static let shapeDrawable = Java.findClass("stateui/android/StateUIShapeDrawable")
+    static let newShapeDrawable = Java.method(shapeDrawable, "<init>", "()V")
+    static let setShape = Java.method(shapeDrawable, "setShape", "(I[F)V")
+    static let setFill = Java.method(shapeDrawable, "setFill", "(I[I[F[F)V")
+    static let setStroke = Java.method(shapeDrawable, "setStroke", "(IF)V")
 }
 
 /// The constants of Android's views the host passes.
