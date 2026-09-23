@@ -1,0 +1,216 @@
+# The core
+
+The core is `lib/StateUI/Sources/Core` and `lib/StateUI/Sources/Bridge`: state,
+invalidation, keys and diffing, the display cycle, acts, the UI thread's
+executor, the Wire and the C exports. It holds the reasons behind the code; the
+code's comments say what a thing is and point here. Every note describes the
+current design, its reason and its trap.
+
+## The notes
+
+| Note | What it covers |
+| --- | --- |
+| [render.md](render.md) | the renderer, the three roads of a render, generations, handlers in the message, starting a handler |
+| [invalidation.md](invalidation.md) | reads and changes, live readers, writes during a render, `debugInfo()` |
+| [identity-and-diffing.md](identity-and-diffing.md) | keys, state surviving a rebuild, carrying a view, the clean walk, what a patch carries, recycling |
+| [state.md](state.md) | storage and box, bindings, model state, carried state, kept and scene-kept state, the environment |
+| [journeys.md](journeys.md) | the journey lanes, the law on the image, moving and waiting, readings, conversions, motion laws |
+| [cycle.md](cycle.md) | the board, where a write lands, host reports, engines, state numbers, the state batch, the ticker |
+| [acts.md](acts.md) | acts, completion ids, the receipt, aims, focus, dialogs, host events |
+| [concurrency.md](concurrency.md) | `MainActor` on every platform, the doorbell, draining jobs, the lock and its order |
+| [wire.md](wire.md) | the byte layout of every channel, the dictionary, versions, limits, determinism |
+| [contracts.md](contracts.md) | contracts and tiers, member facts, values that cross, tokens, realizations |
+| [scenes.md](scenes.md) | the scene tree, sessions, what the platform keeps, connecting and ending scenes |
+| [bridge.md](bridge.md) | the C exports, memory ownership, answers, jobs asked for rather than pushed |
+| [diagnostics.md](diagnostics.md) | the tally, the inspector, complaints |
+
+## The core at a glance
+
+```text
+  application     Application -> Scene -> Window -> Page -> views
+                  bodies READ @State; handlers WRITE @State and call acts
+        |
+        v
+  +---------------------------- StateUI core -----------------------------+
+  |                                                                        |
+  |   @State box --adopt--> State.Storage ---------------------------+     |
+  |                          | read at build: ReadScope records it   |     |
+  |                          | write: Renderer.stateChanged          |     |
+  |                          v                                       |     |
+  |   Renderer --- render(baseline) ---> Differ                      |     |
+  |     changed, readers,     walk / build / complete                |     |
+  |     generation            keys, adoption, carry, handlers        |     |
+  |                           |                                      |     |
+  |                           v                                      |     |
+  |                     RenderedNode tree  +  HostPatch (sparse)      |     |
+  |                                                                  |     |
+  |   handed on as $x ---------------------------------------------- +     |
+  |     HostStorage image  --  CycleBoard: latch, engines, publish         |
+  |                                                                        |
+  |   act queue, completions        UIThreadExecutor (MainActor), doorbell |
+  +------------------------------------------------------------------------+
+        |  typed: HostRender, HostCycle,       |  C: Bridge/Exports.swift,
+        |  HostActCall (StateUIHost)           |  Wire bytes
+        v                                      v
+  a Swift host in this process           a runtime in another language
+```
+
+Two reactive paths leave the same state. A body that read a state is rebuilt
+when it is written, diffed, and arrives at the host as a patch (reactive path
+1). A state handed on as `$x` is carried by the host on an image both sides
+rewrite; it moves on the display cycle with no rebuild at all (reactive path 2).
+
+## Two ways out
+
+A Swift host links the core's dynamic library and calls `StateUIHost`, behind
+`@_spi(Host)`: `render(baseline:)` answers a typed `HostRender` holding the
+sparse `HostPatch`, `cycle` a `HostCycle`, `takeActCalls` typed `HostActCall`s.
+One process holds one copy of StateUI's types. A runtime in another language
+cannot read Swift types and calls the C exports instead; the Wire is the same
+patch, cycle and acts as deterministic bytes (wire.md, bridge.md). Both roads
+reach the same `Renderer.shared`, and the patch is built once for either.
+
+## A state write from start to finish
+
+```text
+  handler: count += 1                        on MainActor, or from any thread
+     |
+     v  State.wrappedValue.set -> Storage.write     under the storage's lock
+     |
+     v  Storage.askForRender()
+  never read at build? -------------------> nothing more: one load
+     |
+     v  Renderer.stateChanged(storage)
+  no live reader and no render running? --> refused, counted in the tally
+     |
+     |  dirty = true; changed += storage; its name kept for debugInfo()
+     v  UIThreadExecutor.poke()
+  doorbell thread wakes, posts one turn onto the UI thread
+     |
+     v  host turn:  run jobs -> a pending cycle -> RENDER -> take acts
+  Renderer.render(baseline: the generation the host holds)
+     |  take and clear the changes in one locked step
+     |
+     |  clean walk   every cause named its state, none read by the root
+     |  build        the root built again and reconciled
+     |  complete     baseline != generation: every element in full
+     v
+  Differ: elements whose reads meet the changes are built again;
+          composed views built with the same inputs are carried;
+          children matched by .id(), builder path, position
+     |
+     v  settle passes: .onDestroying, .onCreated, .onChanged run now,
+     |  what they write is walked and merged - up to three passes
+     v
+  HostPatch -> HostRender (typed) or Wire bytes with announcements
+     |
+     v  the host applies it and keeps the generation only if it went in whole
+```
+
+## The display cycle
+
+```text
+  host frame tick (now, ms)
+     |
+     |  the host animates carried values with HostMotionLaw and reports
+     |  the user's changes and its frames, lane by lane
+     v                                    stateui_cycle_write / StateUIHost.report
+  CycleBoard.cycle(now)
+     1  latch     pending writes -> image; reported lanes are never echoed
+     2  engines   by ascending priority - a conversion's back (-2) and
+                  forward (-1) engines ahead of the author's (0 unless said) -
+                  each only with a reason: armed by a render, stirred by a
+                  followed write, or awake after answering .again
+     3  publish   image -> published; dirty lanes collected
+     |
+     v                                    stateui_cycle_read / HostCycle.changes
+  the host writes each moved value onto every control bound to that state
+     |
+     |  a state some body read asks for a render; a journey's frame asks only
+     |  the bodies that read the journey
+     v
+  the frame clock stays held while an engine answers .again or anything waits
+```
+
+## The UI thread
+
+```text
+  UI thread (the host's)                       any other thread
+  -----------------------------------------    ----------------------------------
+  event   stateui_dispatch_wire(id, bytes)     a Task.detached or async let child
+          Renderer.dispatch                      writes @State, sends an act,
+          Task.immediate on MainActor            writes a board between cycles
+          -> the handler runs to its first           |  poke(), outside every lock
+             await, inside the event                 v
+                                               doorbell thread (the host made it)
+  turn    stateui_run_jobs: MainActor's jobs     parked in stateui_wait_work
+          (Apple: the main queue's instead)      wakes, counts the work, posts
+          a pending cycle, a render, the acts    ONE turn onto the UI thread
+                                                 and parks again
+  resume  a continuation's job lands on
+          MainActor's executor -> next drain   nothing ever runs on it
+```
+
+The library never calls the host back: a resume produces its job on a pool
+thread, and entering a runtime from a thread it has never seen can deadlock the
+UI thread under a debugger. The host asks instead (concurrency.md).
+
+## The C bridge
+
+```text
+  runtime in another language              Bridge/Exports.swift -> core
+  ---------------------------------------  -------------------------------------
+  at start   stateui_wire_version            refuse a version mismatch loudly
+             stateui_set_environment          one standard provider per call
+             stateui_persistent_keys          -> keys; stateui_set_persistent <-
+             stateui_set_realization_wire     what the host realizes
+             stateui_connect_scene            a platform window, before its render
+  each turn  stateui_run_jobs                 MainActor's jobs
+             stateui_cycle_write/run/read     the display cycle
+             stateui_needs_render,
+             stateui_render_wire              the patch against a baseline
+             stateui_take_act_calls_wire      the acts, a receipt kept
+             stateui_fail_taken_act_calls     a batch that would not read
+             stateui_free_buffer/free_string  memory freed where it was made
+  events     stateui_dispatch_wire            an element's event, an act's reply
+             stateui_dispatch_host_event      an event raised by name
+  doorbell   stateui_wait_work                on a thread the host created
+  tally      stateui_renders, stateui_alive, stateui_cycle_trace, stateui_inspect_*
+```
+
+## Where things live
+
+```text
+  Renderer.swift        the renderer, host reports, the act queue      render, acts
+  Invalidation.swift    read scopes                                     invalidation
+  Builds.swift          debugInfo()                                     invalidation
+  Diff.swift            the differ                                      identity-and-diffing
+  Tree.swift            RenderedNode, patch merging                     identity-and-diffing
+  Node.swift            Node, PropValue, handler types                  identity-and-diffing
+  Stateful.swift        placeholders, state parts, inputs               identity-and-diffing
+  Changes, Lifetime     .onChanged, .onCreated, .onDestroying           identity-and-diffing
+  Recycling.swift       row shapes                                      identity-and-diffing
+  State.swift           @State, storage, Binding                        state
+  StateValue.swift      carried values, lanes, HostStorage, Journey     state, journeys
+  Persistence.swift     kept state and its store                        state
+  Environment.swift     @Environment                                    state
+  ElementSession.swift  an element's lifelong object                    state
+  Observable.swift      the @Observable refusal                         state
+  Sampling, Conversion,
+  MultiBinding          readings and conversions                        journeys
+  MotionLaw.swift       the two motion laws                             journeys
+  Cycle, Engine,
+  StateBatch, Ticker    the board, engines, the state batch, the ticker cycle
+  ActCall, Aim, Focus,
+  Dialogs, ScreenReader,
+  HostEvents            acts, aims and events                           acts
+  UIThread, Lock        the executor, the doorbell, the lock            concurrency
+  Wire.swift            the byte layout                                 wire
+  Contract, Registry,
+  Tokens                contracts, realizations, tokens                 contracts
+  HostRender.swift      the typed SPI                                   (this note)
+  HostPath.swift        SVG path data for hosts
+  Scenes, ValueText     scenes, windows, a value as text                scenes
+  Inspection, Complaint the inspector, complaints                       diagnostics
+  Bridge/Exports.swift  the C exports                                   bridge
+```
