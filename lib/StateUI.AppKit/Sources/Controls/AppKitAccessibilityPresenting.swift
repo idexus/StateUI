@@ -5,7 +5,7 @@
 import AppKit
 
 /// A view wrapping one native control, which assistive technology meets in its place.
-/// Design: docs/design/appkit/views.md#accessibility-on-the-control
+/// Design: docs/design/platforms/appkit/views.md#accessibility-on-the-control
 @MainActor
 protocol AppKitAccessibilityPresenting: NSView {
     /// The native control assistive technology meets for this view.

@@ -6,7 +6,7 @@ import AppKit
 
 /// One scroller's movement as the host knows it: whether the user is moving it,
 /// what it says on the display's next frame, and when a movement comes to rest.
-/// Design: docs/design/appkit/input.md#scrolling
+/// Design: docs/design/platforms/appkit/input.md#scrolling
 @MainActor
 final class AppKitScrollMovement {
     /// Something the scroller says on a display frame.

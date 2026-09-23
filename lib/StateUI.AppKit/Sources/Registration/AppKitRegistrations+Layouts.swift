@@ -26,7 +26,7 @@ extension AppKitRegistrations {
         }
 
         // The host makes the scroll view; its registration takes the members alone.
-        // Design: docs/design/appkit/registrations.md#the-scroll-view
+        // Design: docs/design/platforms/appkit/registrations.md#the-scroll-view
         registry.add(ScrollViewContract.self, madeByHost: AppKitScrollView.self) { scroll in
             scroll.applies([
                 ScrollViewContract.orientation,
@@ -36,7 +36,7 @@ extension AppKitRegistrations {
                 PaddingElementContract.padding,
             ]) { view, values in
                 // The offset is written only where the tree moved it.
-                // Design: docs/design/appkit/input.md#scrolling
+                // Design: docs/design/platforms/appkit/input.md#scrolling
                 let offset = values.changed(ScrollViewContract.scrollOffset)
                     ? values[ScrollViewContract.scrollOffset].map { NSPoint(x: $0.x, y: $0.y) }
                     : nil

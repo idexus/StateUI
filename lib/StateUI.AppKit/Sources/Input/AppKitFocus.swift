@@ -5,7 +5,7 @@
 import AppKit
 
 /// Where the keyboard focus is, asked of the window that holds it; StateUI never mirrors it as state.
-/// Design: docs/design/appkit/input.md#focus
+/// Design: docs/design/platforms/appkit/input.md#focus
 @MainActor
 enum AppKitFocus {
     /// The view inside `view` that takes the keyboard: itself, or the first one within it that does.

@@ -38,8 +38,10 @@ it.
 - `host/`: the runtime every host shares - [the runtime](host/runtime.md),
   [the mounted tree](host/tree.md), [layout](host/layout.md),
   [motion](host/motion.md), [patches](host/patches.md).
-- `appkit/`: the AppKit half of its runtime - [input](appkit/input.md),
-  [views](appkit/views.md), [registrations](appkit/registrations.md).
+- `platforms/`: each platform's half of its runtime, one folder a platform.
+  `platforms/appkit/`: [input](platforms/appkit/input.md),
+  [views](platforms/appkit/views.md),
+  [registrations](platforms/appkit/registrations.md).
 
 ## Writing a note
 

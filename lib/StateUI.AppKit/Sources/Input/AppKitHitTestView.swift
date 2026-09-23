@@ -7,7 +7,7 @@ import AppKit
 
 /// A StateUI-owned AppKit surface: StateUI's input transparency, and a press
 /// assistive technology reaches as a click does.
-/// Design: docs/design/appkit/input.md#hit-testing
+/// Design: docs/design/platforms/appkit/input.md#hit-testing
 @MainActor
 class AppKitHitTestView: NSView {
     private var ignoresInput = false
@@ -23,7 +23,7 @@ class AppKitHitTestView: NSView {
     }
 
     /// An element that answers a tap takes the first click into an inactive window.
-    /// Design: docs/design/appkit/input.md#the-first-click
+    /// Design: docs/design/platforms/appkit/input.md#the-first-click
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool {
         pressAction != nil || super.acceptsFirstMouse(for: event)
     }

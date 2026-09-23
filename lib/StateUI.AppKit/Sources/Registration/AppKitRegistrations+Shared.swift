@@ -8,7 +8,7 @@ import AppKit
 extension AppKitRegistrations {
     /// What this host realizes around every view rather than inside a registration:
     /// the room, the drawing and turning, the accessibility words, the gestures.
-    /// Design: docs/design/appkit/registrations.md#shared-members
+    /// Design: docs/design/platforms/appkit/registrations.md#shared-members
     static func shared(_ registry: Registry<NSView>) {
         registry.everyElementRealizes(PropertyContainerContract.accessibilityIdentifier)
         registry.everyElementRealizes(TintElementContract.tint)
@@ -50,7 +50,7 @@ extension AppKitRegistrations {
         registry.everyElementRealizes(ViewContract.verticalAlignment)
 
         // What a gesture is configured with, read where the recognizers are made.
-        // Design: docs/design/appkit/registrations.md#what-a-declaration-leaves-out
+        // Design: docs/design/platforms/appkit/registrations.md#what-a-declaration-leaves-out
         registry.everyElementRealizes(ViewContract.panXChannel)
         registry.everyElementRealizes(ViewContract.panYChannel)
         registry.everyElementRealizes(ViewContract.swipeDirection)
