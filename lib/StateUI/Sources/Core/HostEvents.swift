@@ -15,8 +15,6 @@
 // an event's handler is started, `Renderer.queue` being the other road, for
 // what a render's walk found - and this is one more caller of it.
 
-// Dispatch and not Foundation, for the lock - the Renderer's own reasoning.
-
 /// One handler's subscription to a host event, made by `HostEvents.on`.
 ///
 /// Keep it and `cancel()` when the listener leaves, the way a view's

@@ -12,8 +12,6 @@
 // every Swift host takes the same machinery; a host across the Wire tells the
 // core the same thing through the export.
 
-// Dispatch and not Foundation, for the lock - the Renderer's own reasoning.
-
 /// What one element tells the application: an event of its own, and a value
 /// its reader changed. Handed to the view where the view is made, so the view
 /// names members of its contract and never a handler - bound to the element,
