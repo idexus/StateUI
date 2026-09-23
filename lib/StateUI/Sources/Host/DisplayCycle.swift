@@ -1,22 +1,15 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-#if os(macOS)
-@_spi(Host) import StateUI
-
-/// What a frame presents through: the mounted tree and the windows around it.
-@MainActor
-protocol AppKitFramePresenter: AnyObject {
+/// What a frame presents through: the toolkit's mounted tree and the windows around it.
+@_spi(Host) @MainActor public protocol FramePresenter: AnyObject {
     /// Whether a scroller still moves or owes a report, and so wants frames.
     var wantsFrames: Bool { get }
 
-    /// Commits what the reader did on the scrollers since the last frame, as
-    /// one transaction.
-    func commitReaderReports(now: Double)
+    /// Commits what the user did on the scrollers since the last frame, as one batch.
+    func commitUserReports(now: Double)
 
-    /// Presents one frame's batch in one walk of the mounted tree: the states'
-    /// images on every control tied to them, and the described properties
-    /// that moved, each element's together and each ancestor arranged once.
+    /// Presents one frame's batch in one walk: bound states' values and moved properties.
     func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>])
 
     /// Renders when the core has changed since the last render.
@@ -24,47 +17,34 @@ protocol AppKitFramePresenter: AnyObject {
 }
 
 /// One frame of the display's clock, in the order every runtime keeps.
-///
-/// (1) The reader's reports since the last frame are committed as one
-/// transaction. (2) The walker steps every trip; the state channels, the
-/// described motion and the layout motion follow it, and the channels' reports
-/// reach the core before its cycle. (3) The core's cycle runs, and the state channels wear its
-/// changes. (4) Everything the frame moved is presented in one walk, and then
-/// each finished journey is answered. (5) A render follows when the core needs
-/// one. (6) The frame clock stays held while anything still moves, and lets go
-/// only here, after a whole frame.
-///
-/// A reader's own change drains the cycle inline - steps (2) to (4) and (6) -
-/// so followers and engines move on the reader's frame.
-@MainActor
-final class AppKitDisplayCycle {
+/// Design: docs/design/host/runtime.md#one-frame
+@_spi(Host) @MainActor public final class DisplayCycle {
     /// What the frame presents through.
-    weak var presenter: AppKitFramePresenter?
+    public weak var presenter: (any FramePresenter)?
 
     private let core: CoreLink
-    private let clock: AppKitFrameClock
+    private let clock: any FrameClock
     private let walker: Walker
     private let stateChannels: StateChannels
     private let describedMotion: DescribedMotion
-    private let layoutMotion: AppKitLayoutMotion
+    private let layoutMotion: LayoutMotion
     private let reducesMotion: () -> Bool
 
     /// Whether the core's last cycle said it has more to do.
     private var continues = false
 
-    /// The frame's batch: the states' images to wear, and the described
-    /// properties that moved, per mounted element.
+    /// The frame's batch: bound states' values, and moved properties per mounted element.
     private var states: [Int32: HostStateValue] = [:]
     private var properties: [UInt64: Set<Prop>] = [:]
 
     /// A cycle over the runtime's elements, on `clock`.
-    init(
+    public init(
         core: CoreLink,
-        clock: AppKitFrameClock,
+        clock: any FrameClock,
         walker: Walker,
         stateChannels: StateChannels,
         describedMotion: DescribedMotion,
-        layoutMotion: AppKitLayoutMotion,
+        layoutMotion: LayoutMotion,
         reducesMotion: @escaping () -> Bool
     ) {
         self.core = core
@@ -76,21 +56,16 @@ final class AppKitDisplayCycle {
         self.reducesMotion = reducesMotion
     }
 
-    /// One frame of the display's clock, (1) to (6).
-    func frame(now: Double) {
-        presenter?.commitReaderReports(now: now)
+    /// One frame: the user's reports, the animations, the core's cycle, one walk, a render, the hold.
+    public func frame(now: Double) {
+        presenter?.commitUserReports(now: now)
         drain(now: now)
         presenter?.renderIfNeeded()
     }
 
-    /// Steps the trips, runs the core's cycle and presents what moved in one
-    /// walk, then holds the clock while anything still does.
-    ///
-    /// - Parameters:
-    ///   - now: The frame clock's time.
-    ///   - reported: States a reader changed, worn by every other control tied
-    ///     to them in the same walk.
-    func drain(now: Double, reported: [Int32: HostStateValue] = [:]) {
+    /// Steps the animations, runs the core's cycle, presents what moved and holds the clock.
+    /// `reported` holds states the user changed, worn by every other bound control in the same walk.
+    public func drain(now: Double, reported: [Int32: HostStateValue] = [:]) {
         states.merge(reported) { _, reported in reported }
 
         let reducesMotion = reducesMotion()
@@ -110,30 +85,26 @@ final class AppKitDisplayCycle {
         hold()
     }
 
-    /// Steps every trip to `now` and presents what the steps moved.
-    func stepTrips(now: Double, reducesMotion: Bool) {
+    /// Steps every animation to `now` and presents what the steps moved.
+    public func stepTrips(now: Double, reducesMotion: Bool) {
         follow(walker.step(now: now, reducesMotion: reducesMotion))
         present()
     }
 
-    /// Presents the state channels' journeys on their own - after a render
-    /// has attached new channels.
-    func presentStateChannels() {
+    /// Presents the state channels on their own, after a render attached new ones.
+    public func presentStateChannels() {
         collectStateChannels()
         present()
     }
 
-    /// Holds the frame clock while anything still moves or owes a frame: a
-    /// trip, the core's cycle, a scroller moving or with a report to make.
-    func hold() {
+    /// Holds the frame clock while an animation, the core's cycle or a scroller still moves.
+    public func hold() {
         clock.held = continues
             || walker.isMoving
             || core.cyclesPending
             || presenter?.wantsFrames == true
     }
 
-    /// Lets the state channels, the described motion and the layout motion
-    /// follow a step, and adds what they made of it to the frame's batch.
     private func follow(_ steps: [Step]) {
         stateChannels.follow(steps)
         describedMotion.follow(steps)
@@ -145,8 +116,7 @@ final class AppKitDisplayCycle {
         }
     }
 
-    /// Takes the state channels' journeys into the batch, their reports to
-    /// the core at once.
+    /// Takes the channels' values into the batch, and their reports to the core at once.
     private func collectStateChannels() {
         for output in stateChannels.takeOutputs() {
             states[output.state] = StateUIHost.value(of: output.journey)
@@ -157,8 +127,7 @@ final class AppKitDisplayCycle {
         }
     }
 
-    /// Presents the batch in one walk, then answers every journey that
-    /// finished.
+    /// Presents the batch in one walk, then answers every finished animation's waiter.
     private func present() {
         if !states.isEmpty || !properties.isEmpty {
             presenter?.present(states: states, properties: properties)
@@ -172,4 +141,3 @@ final class AppKitDisplayCycle {
         }
     }
 }
-#endif

@@ -165,8 +165,8 @@ final class AppKitRenderer: @unchecked Sendable {
     private let walker: Walker
     fileprivate let stateChannels: StateChannels
     private let describedMotion: DescribedMotion
-    fileprivate let layoutMotion: AppKitLayoutMotion
-    private let displayCycle: AppKitDisplayCycle
+    fileprivate let layoutMotion: LayoutMotion
+    private let displayCycle: DisplayCycle
     private let images = NSCache<NSString, NSImage>()
     private let frameClock: AppKitFrameClock
     private let reducesMotion: () -> Bool
@@ -224,9 +224,9 @@ final class AppKitRenderer: @unchecked Sendable {
         self.walker = walker
         stateChannels = StateChannels(walker: walker)
         describedMotion = DescribedMotion(walker: walker)
-        layoutMotion = AppKitLayoutMotion(
+        layoutMotion = LayoutMotion(
             walker: walker, now: frameClock.now, reducesMotion: reducesMotion)
-        displayCycle = AppKitDisplayCycle(
+        displayCycle = DisplayCycle(
             core: core,
             clock: frameClock,
             walker: walker,
@@ -1101,13 +1101,20 @@ final class AppKitRenderer: @unchecked Sendable {
 
 }
 
-extension AppKitRenderer: AppKitFramePresenter {
+/// An element's view, placed by the layout motion of the layout it stands in.
+extension MountedNode: PlacedView {
+    var placedFrame: Rect {
+        get { view?.frame.placed ?? Rect(0, 0, 0, 0) }
+        set { view?.frame = NSRect(placed: newValue) }
+    }
+}
+
+extension AppKitRenderer: FramePresenter {
     var wantsFrames: Bool { framedScrollers.anyObject != nil }
 
-    /// Lets every moving scroller say what the frame saw it do, all of them as
-    /// one reader transaction; a scroller that stands and has said everything
-    /// lets the clock go.
-    func commitReaderReports(now: Double) {
+    /// Lets every moving scroller say what the frame saw it do, as one user transaction;
+    /// a scroller that stands and has said everything lets the clock go.
+    func commitUserReports(now: Double) {
         let scrollers = framedScrollers.allObjects
         guard !scrollers.isEmpty else { return }
 
@@ -2659,10 +2666,17 @@ final class MountedNode: NSObject {
         item.absoluteProportions = enumeration(.absoluteLayoutProportions) ?? 0
         item.drawing = presentableDrawing
         item.mount = mount
+        item.placed = presentableNode
         if fadesIn {
             item.fadeIn = { [weak self] motion in self?.fadeIn(under: motion) }
         }
         return item
+    }
+
+    /// The element whose view `presentableViews` puts first.
+    private var presentableNode: MountedNode? {
+        if view != nil { return self }
+        return children.lazy.compactMap(\.presentableNode).first
     }
 
     /// The drawing of the view `presentableViews` puts first.

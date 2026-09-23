@@ -115,6 +115,9 @@ struct AppKitLayoutItem {
     /// on its way is filed under; 0 for a view no element presents.
     var mount: UInt64 = 0
 
+    /// The element that places the view as its layout animates it; nil for a view no element presents.
+    weak var placed: (any PlacedView)?
+
     /// Fades the view in under a motion, as it joins a layout that was already
     /// standing; nil for a view that simply appears.
     var fadeIn: ((Motion) -> Void)?

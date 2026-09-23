@@ -24,6 +24,22 @@ final class RuntimeArchitectureTests: XCTestCase {
         XCTAssertEqual(found, [], "a value is walked by the Walker alone")
     }
 
+    /// A frame's order lives in one place: only the display cycle steps the walker and runs the
+    /// core's cycle, so no path of a runtime animates or drains a cycle in an order of its own.
+    func testOnlyTheDisplayCycleStepsTheWalkerAndRunsTheCoresCycle() throws {
+        var found: [String] = []
+
+        for (path, text) in try Fixtures.runtimeSources() where path != "StateUI/Sources/Host/DisplayCycle.swift" {
+            for (number, line) in code(text) {
+                for step in ["walker.step(", "core.cycle("] where line.contains(step) {
+                    found.append("\(path):\(number): \(step)")
+                }
+            }
+        }
+
+        XCTAssertEqual(found, [], "a frame is the DisplayCycle's, in its one order")
+    }
+
     /// Every call into the running core crosses `CoreLink`. No other file of a
     /// runtime calls `StateUIHost`, except for the lane codecs, which are
     /// arithmetic on values the runtime already holds.

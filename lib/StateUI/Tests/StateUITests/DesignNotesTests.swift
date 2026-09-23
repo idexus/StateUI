@@ -75,13 +75,14 @@ final class DesignNotesTests: XCTestCase {
         return found
     }
 
-    /// Counted comment lines and counted lines: the licence header aside, and the
-    /// `///` documentation of a public declaration or an enum case, which the editor shows on `.`.
+    /// Counted comment lines and counted lines, the licence header aside. What the editor shows on `.` is
+    /// not counted: the `///` above a public declaration, an enum case, or a member of a public protocol or extension.
     static func measure(_ text: String) -> (comments: Int, lines: Int) {
         var lines = text.components(separatedBy: "\n")
         if lines.last == "" { lines.removeLast() }
-        let body = Array(lines.drop { $0.hasPrefix("// SPDX-") })
-        let trimmed = body.map { $0.trimmingCharacters(in: .whitespaces) }
+        let trimmed = lines.drop { $0.hasPrefix("// SPDX-") }.map { $0.trimmingCharacters(in: .whitespaces) }
+        let comment = commentLines(trimmed)
+        let inPublicBody = membersOfPublicBodies(trimmed, comment: comment)
         var exempt = Set<Int>()
         var index = 0
 
@@ -93,24 +94,74 @@ final class DesignNotesTests: XCTestCase {
             while target < trimmed.count, trimmed[target].hasPrefix("@"), !isPublic(trimmed[target]),
                   !trimmed[target].hasPrefix("@_spi") { target += 1 }
             let declaration = target < trimmed.count ? trimmed[target] : ""
-            if isPublic(declaration) || declaration.hasPrefix("case ") { exempt.formUnion(index..<end) }
+            if isPublic(declaration) || declaration.hasPrefix("case ") || inPublicBody.contains(target) {
+                exempt.formUnion(index..<end)
+            }
             index = end
         }
 
-        var comments = 0
-        var inBlock = false
-        for (number, line) in trimmed.enumerated() where !exempt.contains(number) {
-            if inBlock {
-                comments += 1
-                if line.contains("*/") { inBlock = false }
-            } else if line.hasPrefix("/*") {
-                comments += 1
-                inBlock = !line.dropFirst(2).contains("*/")
-            } else if line.hasPrefix("//") {
-                comments += 1
-            }
-        }
+        let comments = comment.indices.filter { comment[$0] && !exempt.contains($0) }.count
         return (comments, trimmed.count - exempt.count)
+    }
+
+    /// Whether each line is a comment: `//`, `///`, or inside `/* */`.
+    private static func commentLines(_ lines: [String]) -> [Bool] {
+        var inBlock = false
+        return lines.map { line in
+            if inBlock {
+                if line.contains("*/") { inBlock = false }
+                return true
+            }
+            if line.hasPrefix("/*") {
+                inBlock = !line.dropFirst(2).contains("*/")
+                return true
+            }
+            return line.hasPrefix("//")
+        }
+    }
+
+    /// The lines declared directly in a public protocol or a public extension, public without saying so.
+    private static func membersOfPublicBodies(_ lines: [String], comment: [Bool]) -> Set<Int> {
+        var members = Set<Int>()
+        var depth = 0
+        var bodies: [Int] = []
+
+        for (number, line) in lines.enumerated() {
+            if let body = bodies.last, body == depth { members.insert(number) }
+            guard !comment[number] else { continue }
+            let code = codePart(line)
+            let opens = code.filter { $0 == "{" }.count
+            if opens > 0, isPublic(line),
+               line.range(of: #"\b(protocol|extension)\b"#, options: .regularExpression) != nil {
+                bodies.append(depth + 1)
+            }
+            depth += opens - code.filter { $0 == "}" }.count
+            while let body = bodies.last, body > depth { bodies.removeLast() }
+        }
+        return members
+    }
+
+    /// A line's code without a trailing comment or the contents of its strings, for counting braces.
+    private static func codePart(_ line: String) -> String {
+        var code = ""
+        var inString = false
+        var escaped = false
+        var previous: Character?
+
+        for character in line {
+            if inString {
+                if escaped { escaped = false } else if character == "\\" { escaped = true } else if character == "\"" { inString = false }
+            } else if character == "\"" {
+                inString = true
+            } else if character == "/", previous == "/" {
+                code.removeLast()
+                break
+            } else {
+                code.append(character)
+            }
+            previous = character
+        }
+        return code
     }
 
     private static func isPublic(_ line: String) -> Bool {

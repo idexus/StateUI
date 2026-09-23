@@ -4,16 +4,12 @@
 #if os(macOS)
 import AppKit
 import QuartzCore
+@_spi(Host) import StateUI
 
-/// The runtime's one frame signal and its one timebase.
-///
-/// The signal is the display link of the window the host shows first, moved
-/// to another window when that one closes. It runs only while something holds
-/// it - a trip moving, the core's cycle continuing, a scroller moving or still
-/// owing a report - so a still page costs no frames. Every time the runtime
-/// reads comes from `now()`, in milliseconds on one monotonic clock.
+/// The frame clock: the display link of the window shown first, moved on when that window closes.
+/// Design: docs/design/host/runtime.md#one-frame
 @MainActor
-final class AppKitFrameClock: NSObject {
+final class AppKitFrameClock: NSObject, FrameClock {
     /// The runtime's time, in milliseconds on one monotonic clock.
     let now: () -> Double
 
@@ -33,10 +29,7 @@ final class AppKitFrameClock: NSObject {
 
     private var link: CADisplayLink?
 
-    /// A clock on `now`, giving no frames until a window's display is attached.
-    ///
-    /// - Parameter now: The timebase; the displays' own by default, in
-    ///   milliseconds, which is also what their frames are stamped in.
+    /// A clock on `now` (the displays' own milliseconds by default), silent until a window attaches.
     init(now: @escaping () -> Double = { CACurrentMediaTime() * 1_000 }) {
         self.now = now
     }
