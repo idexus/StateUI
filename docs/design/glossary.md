@@ -17,6 +17,11 @@ and this table maps the two.
 | wear (a tier) | adopt, conform to | an element contract taking a tier's members |
 | layer (`ElementLayer`) | implementation source | who realizes a node type or a member: the platform, an adaptation, StateUI, the structure or a provider |
 | slot | named placeholder | a structural child that holds authored content in a known place: `Content`, `LeadingContent`, `TitleView` |
+| slot child | auxiliary child | a child a modifier appends after the laid-out ones: a context menu, visual states |
+| watcher (`.onChanged`) | change observer | a view that runs code when a value it watches changes |
+| mixin tier | mixin, trait | a tier several contracts wear for one group of members |
+| resting state | default visual state | the visual state a control shows when no other applies |
+| arrangement (`PageArrangement`) | page container | a page that arranges other pages: a stack, tabs, a split view |
 | arrangement (navigation) | navigation container | `NavigationStack`, `TabbedView` and `SplitView`: what decides which page shows |
 | session | per-instance runtime state | the values one opening of an application, a scene, a window or a page holds |
 | session (`PageSession`) | per-page state | the runtime values a page holds while it is shown |
@@ -28,6 +33,9 @@ and this table maps the two.
 | `@State` | state | the one declaration of mutable state |
 | `Binding` (`$x`) | binding | a borrowed reference to a state |
 | body rebuild, reactive path 1 | re-render | a body that read a written state runs again and is diffed |
+| reader (of a state) | dependent, subscriber | the body or content that read a state and is rebuilt when it changes |
+| binding twin | binding overload | the `Binding` form of a value modifier |
+| driven property | bound property | a control property that reads a state the host carries |
 | follow (`following:`) | depend on, subscribe to | what wakes an engine: a write to a state it follows |
 | conversion (`convert`) | derived binding | a binding that reads and writes another state through a mapping |
 | lender, lent | source storage | what a `Binding` borrows its value from |
@@ -49,6 +57,8 @@ and this table maps the two.
 | render | reconcile | build the patch between the tree the host holds and the tree the state describes |
 | patch (`HostPatch`) | diff | the sparse change from one tree to the next |
 | road (walk, build, complete) | render mode | how a render reaches the elements it describes |
+| path (builder) | structural key | where a statement stood in its builder: `1.else.0` |
+| window (`ItemsView`) | virtualization window | the items a list describes because they are in view |
 | clean walk (`revisit`) | partial re-render | only the elements whose reads meet the changes are rebuilt |
 | resync (`describeAll`) | full sync | the complete tree sent to a host that lost its generation |
 | settle pass | handler flush | the handlers a render found run, their writes merged into the same message |
@@ -115,7 +125,7 @@ and this table maps the two.
 | arrangement (layout) | layout pass | a layout placing its children |
 | placement | frame | the rectangle a layout gives a child |
 | shade, rank | dimming overlay, z-order | what a placement run draws over a child, and its order among siblings |
-| room | layout boundary | a container its place sizes, which lays out a change inside itself |
+| room | layout boundary | a container its place sizes, which lays out a change inside itself; in a view's own text, the space it is given |
 | seat | layout position | a child's place in a layout while it animates |
 | Wire | binary protocol | the patch and the cycle as deterministic bytes for a runtime in another language |
 | record, mark (the dictionary) | declaration entry, support status | a host's statement that it realizes a member, and the ✅ or ☑️ it earns |

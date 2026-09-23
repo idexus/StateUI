@@ -10,7 +10,7 @@ final class DesignNotesTests: XCTestCase {
     /// The directories that keep the golden rule, relative to the repository.
     private static let held = [
         "lib/StateUI/Sources/Host", "lib/StateUI/Sources/Types", "lib/StateUI/Sources/Contracts",
-        "lib/StateUI/Sources/Core", "lib/StateUI/Sources/Bridge",
+        "lib/StateUI/Sources/Core", "lib/StateUI/Sources/Bridge", "lib/StateUI/Sources/Views",
     ]
 
     /// Every `Design:` reference in a source names a note and a heading that exist.
