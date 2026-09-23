@@ -59,7 +59,7 @@ struct ControlDictionary {
 
     /// The sources outside Views/ that declare an element's `on…` modifiers.
     static let modifierSources: Set<String> = [
-        "Scenes.swift", "ApplicationSession.swift", "SceneSession.swift", "WindowSession.swift", "PageSession.swift",
+        "SceneElement.swift", "ApplicationSession.swift", "SceneSession.swift", "WindowSession.swift", "PageSession.swift",
     ]
 
     /// A document the dictionary needs and cannot read as it expects.

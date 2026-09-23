@@ -217,7 +217,7 @@ final class CompleteContractTests: XCTestCase {
     /// composition over an `AbsoluteLayout` placing its children, and every
     /// visual element's style key, which the style sheet reads and takes off.
     private static let describing: [String: [String]] = [
-        "Scenes.swift": ["Window"],
+        "SceneElement.swift": ["Window"],
         "WindowSession.swift": ["Window"],
         "PageSession.swift": ["Page"],
         "PlacedLayout.swift": ["AbsoluteLayout"],
