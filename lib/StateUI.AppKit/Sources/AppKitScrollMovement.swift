@@ -4,25 +4,9 @@
 #if os(macOS)
 import AppKit
 
-/// One scroller's movement as the host knows it: whether the user is moving
-/// it, what it has to say on the display's next frame, and the moment a
-/// movement of the user's comes to rest.
-///
-/// THE SCROLLING IS THE PLATFORM'S. A drag, a throw, a wheel and a key move the
-/// scroller under AppKit's own physics, and nothing here aims, shortens or
-/// corrects them. What this adds is what AppKit does not say in one shape:
-/// where a movement went, frame by frame, and when it is over.
-///
-/// REPORTS WAIT FOR THE DISPLAY'S FRAME. AppKit moves the clip view from inside
-/// its own frame step, and a report rendered there holds that frame: the scroll
-/// events behind it then arrive merged into one jump. A move joins the move
-/// before it, so a frame says where the scroller went rather than every step.
-///
-/// REST is said once per movement, and only when the offset moved: when a live
-/// scroll ends, or - for a movement no live scroll brackets, a wheel's click -
-/// once the offset has stood still for `restAfter` of the frame clock's time.
-/// A moving scroller keeps the frames coming, so the quiet is counted in the
-/// display's own time and a hand-wound clock reproduces every rest.
+/// One scroller's movement as the host knows it: whether the user is moving it,
+/// what it says on the display's next frame, and when a movement comes to rest.
+/// Design: docs/design/appkit/input.md#scrolling
 @MainActor
 final class AppKitScrollMovement {
     /// Something the scroller says on a display frame.

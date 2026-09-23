@@ -336,10 +336,8 @@ final class AppKitScrollViewTests: XCTestCase {
         let timers = ["asyncAfter(", "DispatchWorkItem", "Timer.", "scheduledTimer", "afterDelay:"]
         var found: [String] = []
 
-        for name in ["AppKitContainers.swift", "AppKitScrollMovement.swift"] {
-            guard let text = try? String(
-                contentsOf: sources.appendingPathComponent(name), encoding: .utf8)
-            else { continue }
+        for name in ["AppKitScrollView.swift", "AppKitScrollMovement.swift"] {
+            let text = try String(contentsOf: sources.appendingPathComponent(name), encoding: .utf8)
 
             for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false)
                 .enumerated()

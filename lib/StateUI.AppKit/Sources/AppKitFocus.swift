@@ -4,18 +4,11 @@
 #if os(macOS)
 import AppKit
 
-/// Where the keyboard focus is, asked of the window that holds it.
-///
-/// The focus is the platform's: it moves on a click, a Tab, a Return and
-/// whenever AppKit takes it away, so StateUI never mirrors it as state. The host
-/// needs two answers - which view inside an element takes the keyboard, and
-/// whether a window's first responder is inside an element - and asks the
-/// window for both at the moment they matter.
+/// Where the keyboard focus is, asked of the window that holds it; StateUI never mirrors it as state.
+/// Design: docs/design/appkit/input.md#focus
 @MainActor
 enum AppKitFocus {
-    /// The view inside `view` that takes the keyboard: the view itself where it
-    /// does, or the first one within it that does - a text field's own field,
-    /// not the box it stands in.
+    /// The view inside `view` that takes the keyboard: itself, or the first one within it that does.
     static func focusable(in view: NSView) -> NSView? {
         if view.acceptsFirstResponder { return view }
 
@@ -25,8 +18,7 @@ enum AppKitFocus {
         return nil
     }
 
-    /// Whether `responder` - a window's first responder - is `view` or inside
-    /// it, a text field's field editor counting as the field it edits.
+    /// Whether a window's first `responder` is `view` or inside it; a field editor counts as its field.
     static func holds(_ view: NSView, _ responder: NSResponder?) -> Bool {
         var holder = responder
         if let editor = responder as? NSTextView, editor.isFieldEditor,

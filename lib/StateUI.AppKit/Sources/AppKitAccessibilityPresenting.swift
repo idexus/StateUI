@@ -4,10 +4,8 @@
 #if os(macOS)
 import AppKit
 
-/// A host view that wraps one native control, and so hands assistive
-/// technology that control in its own place: the author's words, role and
-/// participation are written where VoiceOver meets the control, not on the
-/// view around it.
+/// A view wrapping one native control, which assistive technology meets in its place.
+/// Design: docs/design/appkit/views.md#accessibility-on-the-control
 @MainActor
 protocol AppKitAccessibilityPresenting: NSView {
     /// The native control assistive technology meets for this view.

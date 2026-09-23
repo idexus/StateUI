@@ -11,6 +11,7 @@ final class DesignNotesTests: XCTestCase {
     private static let held = [
         "lib/StateUI/Sources/Host", "lib/StateUI/Sources/Types", "lib/StateUI/Sources/Contracts",
         "lib/StateUI/Sources/Core", "lib/StateUI/Sources/Bridge", "lib/StateUI/Sources/Views",
+        "lib/StateUI.AppKit/Sources",
     ]
 
     /// Every `Design:` reference in a source names a note and a heading that exist.
