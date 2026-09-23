@@ -41,11 +41,11 @@ final class AppKitDisplayCycle {
     /// What the frame presents through.
     weak var presenter: AppKitFramePresenter?
 
-    private let core: AppKitCoreLink
+    private let core: CoreLink
     private let clock: AppKitFrameClock
-    private let walker: AppKitWalker
-    private let stateChannels: AppKitStateChannels
-    private let describedMotion: AppKitDescribedMotion
+    private let walker: Walker
+    private let stateChannels: StateChannels
+    private let describedMotion: DescribedMotion
     private let layoutMotion: AppKitLayoutMotion
     private let reducesMotion: () -> Bool
 
@@ -59,11 +59,11 @@ final class AppKitDisplayCycle {
 
     /// A cycle over the runtime's elements, on `clock`.
     init(
-        core: AppKitCoreLink,
+        core: CoreLink,
         clock: AppKitFrameClock,
-        walker: AppKitWalker,
-        stateChannels: AppKitStateChannels,
-        describedMotion: AppKitDescribedMotion,
+        walker: Walker,
+        stateChannels: StateChannels,
+        describedMotion: DescribedMotion,
         layoutMotion: AppKitLayoutMotion,
         reducesMotion: @escaping () -> Bool
     ) {
@@ -134,7 +134,7 @@ final class AppKitDisplayCycle {
 
     /// Lets the state channels, the described motion and the layout motion
     /// follow a step, and adds what they made of it to the frame's batch.
-    private func follow(_ steps: [AppKitStep]) {
+    private func follow(_ steps: [Step]) {
         stateChannels.follow(steps)
         describedMotion.follow(steps)
         layoutMotion.follow(steps)

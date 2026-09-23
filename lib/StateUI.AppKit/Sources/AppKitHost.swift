@@ -161,16 +161,16 @@ final class AppKitRenderer: @unchecked Sendable {
     private let presentsWindows: Bool
     private let eventSink: ((Int32, [HostValue]) -> Void)?
     private let preferences: UserDefaults
-    private let core = AppKitCoreLink()
-    private let walker: AppKitWalker
-    fileprivate let stateChannels: AppKitStateChannels
-    private let describedMotion: AppKitDescribedMotion
+    private let core = CoreLink()
+    private let walker: Walker
+    fileprivate let stateChannels: StateChannels
+    private let describedMotion: DescribedMotion
     fileprivate let layoutMotion: AppKitLayoutMotion
     private let displayCycle: AppKitDisplayCycle
     private let images = NSCache<NSString, NSImage>()
     private let frameClock: AppKitFrameClock
     private let reducesMotion: () -> Bool
-    fileprivate let intake = AppKitPatchIntake()
+    fileprivate let intake = PatchIntake()
     private lazy var actPerformer = AppKitActPerformer(renderer: self)
     private var focusReportQueued = false
     private var nextMount: UInt64 = 0
@@ -220,10 +220,10 @@ final class AppKitRenderer: @unchecked Sendable {
         let frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
         self.frameClock = frameClock
         self.reducesMotion = reducesMotion
-        let walker = AppKitWalker()
+        let walker = Walker()
         self.walker = walker
-        stateChannels = AppKitStateChannels(walker: walker)
-        describedMotion = AppKitDescribedMotion(walker: walker)
+        stateChannels = StateChannels(walker: walker)
+        describedMotion = DescribedMotion(walker: walker)
         layoutMotion = AppKitLayoutMotion(
             walker: walker, now: frameClock.now, reducesMotion: reducesMotion)
         displayCycle = AppKitDisplayCycle(
@@ -1058,7 +1058,7 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     fileprivate func presentedPropertyValue(mount: UInt64, property: Prop) -> HostValue? {
-        describedMotion.presentedValue(for: AppKitDescribedKey(
+        describedMotion.presentedValue(for: DescribedKey(
             mount: mount,
             property: property))
     }
@@ -1073,7 +1073,7 @@ final class AppKitRenderer: @unchecked Sendable {
         landed: (() -> Void)? = nil
     ) -> Bool {
         let started = describedMotion.receive(
-            key: AppKitDescribedKey(mount: mount, property: property),
+            key: DescribedKey(mount: mount, property: property),
             standing: standing,
             target: target,
             motion: motion,
@@ -1150,7 +1150,7 @@ final class MountedNode: NSObject {
     private var drawing: AppKitViewDrawing?
 
     private weak var host: AppKitRenderer?
-    private let core = AppKitCoreLink()
+    private let core = CoreLink()
     private weak var parent: MountedNode?
     private let mount: UInt64
     private var properties: [Prop: HostValue] = [:]

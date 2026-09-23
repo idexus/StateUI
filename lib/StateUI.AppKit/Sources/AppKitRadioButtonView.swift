@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUI
 
 /// A native AppKit radio control. StateUI's mounted tree owns group scope.
 @MainActor
@@ -32,7 +33,7 @@ final class AppKitRadioButtonView: NSButton {
         textColor: NSColor,
         enabled: Bool
     ) {
-        AppKitProgramWrite.perform {
+        ProgramWrite.perform {
             state = checked ? .on : .off
             title = text
             self.font = font
@@ -44,13 +45,13 @@ final class AppKitRadioButtonView: NSButton {
     }
 
     func setCheckedFromGroup(_ checked: Bool) {
-        AppKitProgramWrite.perform {
+        ProgramWrite.perform {
             state = checked ? .on : .off
         }
     }
 
     @objc private func selected(_ sender: NSButton) {
-        guard !AppKitProgramWrite.isWriting, state == .on else { return }
+        guard !ProgramWrite.isWriting, state == .on else { return }
         onSelected?()
     }
 

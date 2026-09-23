@@ -34,11 +34,11 @@ final class AppKitDisplayCycleTests: XCTestCase {
     /// changes together - so each ancestor arranges once a frame.
     @MainActor
     func testAFramePresentsEverythingItMovedInOneWalk() {
-        let walker = AppKitWalker()
-        let channels = AppKitStateChannels(walker: walker)
-        let described = AppKitDescribedMotion(walker: walker)
+        let walker = Walker()
+        let channels = StateChannels(walker: walker)
+        let described = DescribedMotion(walker: walker)
         let cycle = AppKitDisplayCycle(
-            core: AppKitCoreLink(),
+            core: CoreLink(),
             clock: AppKitFrameClock(now: { 0 }),
             walker: walker,
             stateChannels: channels,
@@ -57,7 +57,7 @@ final class AppKitDisplayCycleTests: XCTestCase {
             now: 0,
             reducesMotion: false)
         described.receive(
-            key: AppKitDescribedKey(mount: 1, property: .opacity),
+            key: DescribedKey(mount: 1, property: .opacity),
             standing: .number(0),
             target: .number(1),
             motion: .eased(400),

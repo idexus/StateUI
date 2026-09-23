@@ -51,7 +51,7 @@ final class AppKitLayoutMotion {
         var standing: NSRect?
     }
 
-    private let walker: AppKitWalker
+    private let walker: Walker
     private let now: () -> Double
     private let reducesMotion: () -> Bool
     private var seats: [UInt64: Seat] = [:]
@@ -64,7 +64,7 @@ final class AppKitLayoutMotion {
     var onStart: () -> Void = {}
 
     /// Layout motion whose trips `walker` walks, on `now`'s time.
-    init(walker: AppKitWalker, now: @escaping () -> Double, reducesMotion: @escaping () -> Bool) {
+    init(walker: Walker, now: @escaping () -> Double, reducesMotion: @escaping () -> Bool) {
         self.walker = walker
         self.now = now
         self.reducesMotion = reducesMotion
@@ -124,7 +124,7 @@ final class AppKitLayoutMotion {
         }
 
         seats[mount]?.view = view
-        let key = AppKitTripTarget.placed(mount)
+        let key = TripTarget.placed(mount)
         let destination = Self.lanes(target)
         let running = walker.trip(for: key)
 
@@ -158,7 +158,7 @@ final class AppKitLayoutMotion {
             velocity[index] = 0
         }
 
-        let trip = AppKitTrip(
+        let trip = Trip(
             from: start,
             destination: destination,
             velocity: velocity,
@@ -178,7 +178,7 @@ final class AppKitLayoutMotion {
     }
 
     /// Stands each travelling child where a step of the walker put it.
-    func follow(_ steps: [AppKitStep]) {
+    func follow(_ steps: [Step]) {
         for step in steps {
             guard case .placed(let mount) = step.target else { continue }
 

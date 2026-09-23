@@ -21,7 +21,7 @@ import AppKit
 /// anything did.
 @MainActor
 final class AppKitActPerformer {
-    private let core = AppKitCoreLink()
+    private let core = CoreLink()
     private unowned let renderer: AppKitRenderer
 
     /// A performer for the acts `renderer`'s application calls.

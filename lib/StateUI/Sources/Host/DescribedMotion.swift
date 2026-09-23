@@ -1,65 +1,62 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-#if os(macOS)
-import Foundation
-@_spi(Host) import StateUI
+/// The key of one property animation: its element and its property.
+@_spi(Host) public struct DescribedKey: Hashable, Comparable {
+    /// The mounted element the property belongs to.
+    public let mount: UInt64
 
-/// Stable identity of one host-presented property transition.
-struct AppKitDescribedKey: Hashable, Comparable {
-    let mount: UInt64
-    let property: Prop
+    /// The property.
+    public let property: Prop
 
-    static func < (left: Self, right: Self) -> Bool {
+    /// The transition of `property` on the mounted element `mount`.
+    public init(mount: UInt64, property: Prop) {
+        self.mount = mount
+        self.property = property
+    }
+
+    /// By element, then by property.
+    public static func < (left: Self, right: Self) -> Bool {
         if left.mount != right.mount { return left.mount < right.mount }
 
         return left.property < right.property
     }
 }
 
-/// One property presentation produced for a mounted native element.
-struct AppKitDescribedOutput: Equatable {
-    let key: AppKitDescribedKey
-    let value: HostValue
+/// One frame's value of a property animation.
+@_spi(Host) public struct DescribedOutput: Equatable {
+    /// The property it presents, on its element.
+    public let key: DescribedKey
+
+    /// The value drawn on this frame.
+    public let value: HostValue
 }
 
-/// The transitions a patch describes, keyed by element and property.
-///
-/// They share the display clock and `HostMotionLaw` with the state channels,
-/// but carry no StateUI state number, report or completion:
-/// `HostPatch.properties` remains the committed target, and this owns only the
-/// value drawn on the current frame.
-@MainActor
-final class AppKitDescribedMotion {
-    private let walker: AppKitWalker
-    private var transitions: [AppKitDescribedKey: AppKitDescribedTransition] = [:]
-    private var outputs: [AppKitDescribedOutput] = []
+/// The property animations a patch describes, keyed by element and property.
+/// Design: docs/design/host/motion.md#described-motion
+@_spi(Host) @MainActor public final class DescribedMotion {
+    private let walker: Walker
+    private var transitions: [DescribedKey: DescribedTransition] = [:]
+    private var outputs: [DescribedOutput] = []
 
     /// Described motion whose trips `walker` walks.
-    init(walker: AppKitWalker) {
+    public init(walker: Walker) {
         self.walker = walker
     }
 
-    var isActive: Bool { !transitions.isEmpty }
+    /// Whether any transition is under way.
+    public var isActive: Bool { !transitions.isEmpty }
 
-    func presentedValue(for key: AppKitDescribedKey) -> HostValue? {
+    /// The value a transition under way draws for `key`.
+    public func presentedValue(for key: DescribedKey) -> HostValue? {
         transitions[key]?.presented
     }
 
-    /// Starts, retargets, or interrupts a property transition.
-    ///
-    /// A missing motion is an explicit snap for a property present in the
-    /// sparse patch. An unrelated sparse patch never calls this method and
-    /// therefore leaves the transition alone.
-    ///
-    /// - Parameter landed: What follows the end of the transition: its
-    ///   landing, or another transition of the property cutting it short. An
-    ///   element that leaves drops it unrun.
-    /// - Returns: Whether a transition started; false where the value simply
-    ///   arrives.
+    /// Starts, retargets or cuts short a property's animation; a nil `motion` snaps.
+    /// `landed` runs when it ends or is cut short; returns whether one started.
     @discardableResult
-    func receive(
-        key: AppKitDescribedKey,
+    public func receive(
+        key: DescribedKey,
         standing: HostValue?,
         target: HostValue?,
         motion: Motion?,
@@ -90,14 +87,14 @@ final class AppKitDescribedMotion {
               motion.factor.isFinite,
               !reducesMotion,
               !(motion.law == .eased && motion.millis == 0),
-              let plan = AppKitMotionValuePlan(
+              let plan = MotionValuePlan(
                 from: source,
                 destination: target,
                 exactSource: carriedLanes,
                 property: key.property)
         else { return false }
 
-        let trip = AppKitTrip(
+        let trip = Trip(
             from: plan.from,
             destination: plan.destination,
             velocity: carriedVelocity.count == plan.from.count
@@ -107,22 +104,21 @@ final class AppKitDescribedMotion {
             began: now)
 
         guard !trip.arrives else { return false }
-        transitions[key] = AppKitDescribedTransition(
+        transitions[key] = DescribedTransition(
             plan: plan, velocity: trip.velocity, landed: landed)
         walker.start(trip, for: .described(key))
         return true
     }
 
-    /// Follows what a step of the walker made of the transitions' trips, in
-    /// stable identity/property order.
-    func follow(_ steps: [AppKitStep]) {
+    /// Takes a walker step's values for the animations, in key order.
+    public func follow(_ steps: [Step]) {
         for step in steps {
             guard case .described(let key) = step.target,
                   let transition = transitions[key]
             else { continue }
 
             let presented = transition.follow((step.value, step.velocity, step.rested))
-            outputs.append(AppKitDescribedOutput(key: key, value: presented.value))
+            outputs.append(DescribedOutput(key: key, value: presented.value))
 
             if presented.rested {
                 transitions[key] = nil
@@ -132,8 +128,8 @@ final class AppKitDescribedMotion {
         }
     }
 
-    /// Drops every transition owned by an element being replaced or adopted.
-    func remove(mount: UInt64) {
+    /// Drops every animation of an element that leaves or is adopted.
+    public func remove(mount: UInt64) {
         transitions = transitions.filter { $0.key.mount != mount }
         outputs.removeAll { $0.key.mount == mount }
         walker.retain { target in
@@ -142,24 +138,24 @@ final class AppKitDescribedMotion {
         }
     }
 
-    func takeOutputs() -> [AppKitDescribedOutput] {
+    /// Takes the values drawn since the previous take.
+    public func takeOutputs() -> [DescribedOutput] {
         defer { outputs.removeAll(keepingCapacity: true) }
         return outputs
     }
 }
 
-/// One described property on its way to its target: the shape of its value,
-/// and where its lanes stand. Its trip is the walker's.
+/// One property on its way: its value's shape and where its lanes stand.
 @MainActor
-private final class AppKitDescribedTransition {
-    private let plan: AppKitMotionValuePlan
+private final class DescribedTransition {
+    private let plan: MotionValuePlan
     fileprivate var lanes: [Double]
     fileprivate var velocity: [Double]
 
     /// What follows the transition's end.
     let landed: (() -> Void)?
 
-    init(plan: AppKitMotionValuePlan, velocity: [Double], landed: (() -> Void)?) {
+    init(plan: MotionValuePlan, velocity: [Double], landed: (() -> Void)?) {
         self.plan = plan
         lanes = plan.from
         self.velocity = velocity
@@ -168,8 +164,7 @@ private final class AppKitDescribedTransition {
 
     var presented: HostValue { plan.value(at: lanes) }
 
-    /// Takes the trip's position, answering the value to draw and whether the
-    /// transition is over. A position that is not a number lands.
+    /// The value to draw at `position`, and whether it is over; a non-number lands.
     func follow(
         _ position: (value: [Double], velocity: [Double], rested: Bool)
     ) -> (value: HostValue, rested: Bool) {
@@ -188,12 +183,9 @@ private final class AppKitDescribedTransition {
     }
 }
 
-/// A shape-preserving conversion between a host value and numerical lanes.
-///
-/// Structured values move only when their discrete scaffolding is identical;
-/// for example, a gradient may move its geometry, stops, and colours without
-/// changing kind or stop count midway through the transition.
-private struct AppKitMotionValuePlan {
+/// A value as numeric lanes and back, keeping its shape.
+/// Design: docs/design/host/motion.md#described-motion
+private struct MotionValuePlan {
     let from: [Double]
     let destination: [Double]
     let target: HostValue
@@ -324,8 +316,7 @@ private struct AppKitMotionValuePlan {
         }
     }
 
-    /// What a brush property carries: one colour or a well-formed brush.
-    /// Motion runs only between two of the same shape.
+    /// Whether a brush property holds a colour or a well-formed brush.
     private static func isPaint(_ value: HostValue) -> Bool {
         value.color != nil || isValidBrush(value)
     }
@@ -364,5 +355,3 @@ private struct AppKitMotionValuePlan {
         .background, .fill, .stroke,
     ]
 }
-
-#endif

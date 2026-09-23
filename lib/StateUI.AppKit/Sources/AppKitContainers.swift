@@ -1149,7 +1149,7 @@ final class AppKitSplitView: AppKitHitTestView {
         splitController.view.translatesAutoresizingMaskIntoConstraints = true
         addSubview(splitController.view)
 
-        AppKitProgramWrite.perform {
+        ProgramWrite.perform {
             sidebarItem.isCollapsed = true
         }
         NotificationCenter.default.addObserver(
@@ -1271,7 +1271,7 @@ final class AppKitSplitView: AppKitHitTestView {
             return
         }
 
-        AppKitProgramWrite.perform {
+        ProgramWrite.perform {
             sidebarItem.isCollapsed = !presented
         }
         lastEffectivePresentation = presented
@@ -1282,7 +1282,7 @@ final class AppKitSplitView: AppKitHitTestView {
     }
 
     @objc private func splitViewResized(_ notification: Notification) {
-        guard !AppKitProgramWrite.isWriting else { return }
+        guard !ProgramWrite.isWriting else { return }
         let presented = !sidebarItem.isCollapsed
         guard presented != lastEffectivePresentation else { return }
 
@@ -1765,7 +1765,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     }
 
     @objc private func clipBoundsChanged(_ notification: Notification) {
-        guard !AppKitProgramWrite.isWriting else { return }
+        guard !ProgramWrite.isWriting else { return }
         let current = offset
         guard current != lastObservedOffset else { return }
         // WHERE IT STANDS FIRST, then the report: the report runs the render
@@ -1783,7 +1783,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         if !asReader { programmaticMovesForTesting += 1 }
         let old = offset
         let target = reachable(normalized(requested))
-        AppKitProgramWrite.perform {
+        ProgramWrite.perform {
             contentView.scroll(to: target)
             reflectScrolledClipView(contentView)
         }

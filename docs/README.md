@@ -58,6 +58,8 @@ usable platform promise.
   host on Android, iOS, Mac Catalyst, Windows, and Linux.
 - [Project structure and development](development.md) covers repository
   layout, Gallery samples, vertical feature work, tests, and native builds.
+- [Design notes](design/README.md) draw the architecture and give the reasons
+  behind the code, with a glossary of StateUI's terms.
 - [Contributing](../CONTRIBUTING.md) states the evidence, documentation, and
   review rules for changing the contract.
 

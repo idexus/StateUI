@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUI
 
 enum AppKitDateTimePickerMode {
     case date
@@ -51,7 +52,7 @@ final class AppKitDateTimePickerView: NSDatePicker {
         textColor: NSColor,
         enabled: Bool
     ) {
-        AppKitProgramWrite.perform {
+        ProgramWrite.perform {
             self.font = font
             self.textColor = textColor
             isEnabled = enabled
@@ -161,7 +162,7 @@ final class AppKitDateTimePickerView: NSDatePicker {
     }
 
     @objc private func changed(_ sender: NSDatePicker) {
-        guard !AppKitProgramWrite.isWriting else { return }
+        guard !ProgramWrite.isWriting else { return }
         onValueChanged?(lanes(from: dateValue))
     }
 

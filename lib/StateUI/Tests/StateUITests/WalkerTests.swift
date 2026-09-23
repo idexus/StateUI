@@ -1,44 +1,23 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-#if os(macOS)
-import Foundation
-@_spi(Host) import StateUI
-@testable import StateUIAppKit
 import XCTest
+@_spi(Host) @testable import StateUI
 
-final class AppKitWalkerTests: XCTestCase {
-    /// One walker walks every value: no other file of the host samples a
-    /// motion law, so a state channel and a described property cannot walk
-    /// the same kind of value two ways.
-    func testOnlyTheWalkerSamplesALaw() throws {
-        var found: [String] = []
-
-        for (name, text) in try AppKitSources.all() where name != "AppKitWalker.swift" {
-            let lines = text.split(separator: "\n", omittingEmptySubsequences: false)
-
-            for (number, line) in lines.enumerated()
-            where line.contains("HostMotionLaw.sample(")
-                && !line.trimmingCharacters(in: .whitespaces).hasPrefix("//") {
-                found.append("\(name):\(number + 1)")
-            }
-        }
-
-        XCTAssertEqual(found, [], "a value is walked by AppKitWalker alone")
-    }
-
+/// The runtime's one walker: every trip stepped together, in target order.
+final class WalkerTests: XCTestCase {
     /// One step walks every trip, states first by number and then described
     /// properties by element and property - the order two runs of one frame
     /// both write in.
     @MainActor
     func testAStepWalksEveryTripInTargetOrder() {
-        let walker = AppKitWalker()
-        let near = AppKitDescribedKey(mount: 1, property: .opacity)
-        let far = AppKitDescribedKey(mount: 2, property: .opacity)
-        let trip = AppKitTrip(
+        let walker = Walker()
+        let near = DescribedKey(mount: 1, property: .opacity)
+        let far = DescribedKey(mount: 2, property: .opacity)
+        let trip = Trip(
             from: [0], destination: [1], velocity: [0], motion: .eased(200, .linear), began: 0)
 
-        for target in [AppKitTripTarget.described(far), .state(5), .described(near), .state(1)] {
+        for target in [TripTarget.described(far), .state(5), .described(near), .state(1)] {
             walker.start(trip, for: target)
         }
 
@@ -51,10 +30,9 @@ final class AppKitWalkerTests: XCTestCase {
     /// holds nothing that no longer moves.
     @MainActor
     func testATripThatArrivesLeavesTheWalker() {
-        let walker = AppKitWalker()
+        let walker = Walker()
         walker.start(
-            AppKitTrip(
-                from: [0], destination: [1], velocity: [0], motion: .eased(200, .linear), began: 0),
+            Trip(from: [0], destination: [1], velocity: [0], motion: .eased(200, .linear), began: 0),
             for: .state(1))
 
         let halfway = walker.step(now: 100)
@@ -73,14 +51,12 @@ final class AppKitWalkerTests: XCTestCase {
     /// its destination.
     @MainActor
     func testLessMovementLandsEveryTripAtOnce() {
-        let walker = AppKitWalker()
+        let walker = Walker()
         walker.start(
-            AppKitTrip(
-                from: [0], destination: [1], velocity: [0], motion: .spring(response: 300), began: 0),
+            Trip(from: [0], destination: [1], velocity: [0], motion: .spring(response: 300), began: 0),
             for: .state(1))
         walker.start(
-            AppKitTrip(
-                from: [5, 5], destination: [9, 1], velocity: [0, 0], motion: .eased(400), began: 0),
+            Trip(from: [5, 5], destination: [9, 1], velocity: [0, 0], motion: .eased(400), began: 0),
             for: .state(2))
 
         let steps = walker.step(now: 10, reducesMotion: true)
@@ -90,4 +66,3 @@ final class AppKitWalkerTests: XCTestCase {
         XCTAssertFalse(walker.isMoving)
     }
 }
-#endif

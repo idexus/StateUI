@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUI
 
 /// A native AppKit choice field with StateUI's strict program/reader boundary.
 ///
@@ -87,7 +88,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
         open: Bool,
         writeOpen: Bool
     ) {
-        AppKitProgramWrite.perform {
+        ProgramWrite.perform {
             let itemsChanged = sourceItems != items
             sourceItems = items
             if itemsChanged {
@@ -189,7 +190,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
     }
 
     @objc private func changed(_ sender: NSPopUpButton) {
-        guard !AppKitProgramWrite.isWriting else { return }
+        guard !ProgramWrite.isWriting else { return }
         updatePlaceholder()
         onSelectionChanged?(button.indexOfSelectedItem)
     }

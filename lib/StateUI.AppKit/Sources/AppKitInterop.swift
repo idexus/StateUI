@@ -152,7 +152,7 @@ public enum StateUIEvents {
         _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) -> Int {
-        AppKitCoreLink().raise(event, repeat each value)
+        CoreLink().raise(event, repeat each value)
     }
 }
 

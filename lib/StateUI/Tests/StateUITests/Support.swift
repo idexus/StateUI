@@ -659,6 +659,26 @@ enum Fixtures {
         return try refusingAlmostNothing(found.sorted { $0.path < $1.path }, readFrom: root, moreThan: 150)
     }
 
+    /// Every Swift runtime's sources: the core's host layer, `Sources/Host`,
+    /// and the package of each Swift host, for the guards that hold every
+    /// runtime to one architecture. A path is relative to `lib/` and written
+    /// with forward slashes - `StateUI/Sources/Host/Walker.swift`.
+    static func runtimeSources() throws -> [(path: String, text: String)] {
+        let lib = repository.appendingPathComponent("lib")
+        let roots = ["StateUI/Sources/Host", "StateUI.AppKit/Sources"]
+        var found: [(path: String, text: String)] = []
+
+        for root in roots {
+            let url = lib.appendingPathComponent(root)
+            for file in try files(under: url, entering: { _ in true }) where file.hasSuffix(".swift") {
+                let text = try String(contentsOf: url.appendingPathComponent(file), encoding: .utf8)
+                found.append((path: "\(root)/\(file)", text: text))
+            }
+        }
+
+        return try refusingAlmostNothing(found.sorted { $0.path < $1.path }, readFrom: lib, moreThan: 35)
+    }
+
     /// Every active test source, so a guard can ask whether some test names a
     /// thing across the core, Gallery, and AppKit host suites.
     static func testSources() throws -> [(path: String, text: String)] {

@@ -1,0 +1,81 @@
+# Glossary
+
+StateUI's words and the common term for each. Comments and design notes use
+the common term where one exists; a name in the API keeps its StateUI word,
+and this table maps the two.
+
+## People and structure
+
+| StateUI term | Common term | What it means here |
+| --- | --- | --- |
+| user (older text: reader) | user | the person using the application |
+| application, scene, window, page | same | the structure an application declares: `Application -> Scene -> Window -> Page` |
+| element | node | one entry of the described tree: a control, a layout, a part of the structure |
+| element contract | node schema | a node type's declaration: its tiers and each member with its value's type |
+| tier | trait | a set of members several elements share, such as `VisualElement` |
+| member | property, event or method | a property, an event or an act an element declares |
+| session (`PageSession`) | per-page state | the runtime values a page holds while it is shown |
+
+## State and reactivity
+
+| StateUI term | Common term | What it means here |
+| --- | --- | --- |
+| `@State` | state | the one declaration of mutable state |
+| `Binding` (`$x`) | binding | a borrowed reference to a state |
+| body rebuild, reactive path 1 | re-render | a body that read a written state runs again and is diffed |
+| host-carried state, reactive path 2 | bound control value | a state a native control shows and changes with no rebuild |
+| attachment, wear, wearer | binding, bound control | a control property tied to a state |
+| report | input event | the user's change on its way from a control to the core |
+| feed | host-supplied value | a value only the platform knows, such as focus or a frame, read into a state |
+| kept value (`persistent`) | persisted state | a state saved in a store and read back at launch |
+| engine | frame callback | application code that runs once per display frame while it follows states |
+
+## Identity and diffing
+
+| StateUI term | Common term | What it means here |
+| --- | --- | --- |
+| identity, `.id()`, `ElementId` | key | what keeps an element the same element across renders: an explicit `.id()`, then the builder path, then the position |
+| render | reconcile | build the patch between the tree the host holds and the tree the state describes |
+| patch (`HostPatch`) | diff | the sparse change from one tree to the next |
+| generation, baseline | version | the tree a patch was computed against |
+| drift | desync | a patch that does not match the tree the host holds |
+| mount, mounted element | mounted node | the host's live instance of an element; `mount` is its instance number |
+| realization | native adapter | how a host implements an element with its toolkit's control |
+| described property | declared value | a property value the patch carries |
+| recycling | view reuse | a list row's native views kept and given to the next row of the same shape |
+
+## Motion
+
+| StateUI term | Common term | What it means here |
+| --- | --- | --- |
+| motion (`Motion`) | animation timing | how a change animates: an eased curve over a duration, a spring, or none |
+| law, motion law | timing function | the curve or spring that gives a value at a time (`HostMotionLaw`) |
+| journey (`$x.journey`) | animated value | a state's value with its destination, speed and timing |
+| trip | animation | one running animation of one value |
+| walker, walk, step | animator, animate, advance a frame | the one place a runtime advances every animation |
+| lane | component | one number of an animated value: x of a point, red of a colour |
+| land, arrive | finish | an animation reaching its destination |
+| snap | jump | a change applied at once, with no animation |
+| travel, travelling layout | layout animation | a layout's children animating to their new places |
+| state channel | animated state source | the one place a runtime animates a bound state for every control tied to it |
+| described motion | property animation | the animation a patch describes for a property |
+
+## The runtime
+
+| StateUI term | Common term | What it means here |
+| --- | --- | --- |
+| host | platform backend | the code that shows StateUI with one toolkit |
+| runtime | backend runtime | a host's elements: the host layer and its toolkit half |
+| host layer | shared backend code | the toolkit-neutral elements in `lib/StateUI/Sources/Host` |
+| display cycle, cycle | frame update | the ordered work of one display frame |
+| frame clock | display link, vsync | what ticks once per display frame while something holds it |
+| doorbell | wake-up thread | a thread parked until the core has work, which then wakes the UI thread |
+| pump, turn | event-loop pass | one pass of the host's work: jobs, a cycle, a render, then acts |
+| program write | programmatic change | a write to a control made by the program, not the user |
+| act | imperative control call | a call the application makes on a control, such as `focus` |
+| aim (`@Aim`) | control reference | the reference an act is called through |
+| arrangement | layout pass | a layout placing its children |
+| placement | frame | the rectangle a layout gives a child |
+| room | layout boundary | a container its place sizes, which lays out a change inside itself |
+| seat | slot | a child's place in a layout while it animates |
+| Wire | binary protocol | the patch and the cycle as deterministic bytes for a runtime in another language |

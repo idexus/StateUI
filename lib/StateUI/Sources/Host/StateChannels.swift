@@ -1,56 +1,60 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-#if os(macOS)
-import Foundation
-@_spi(Host) import StateUI
+/// What a state channel gives its controls and the core after a step.
+@_spi(Host) public struct StateChannelOutput {
+    /// The state's number.
+    public let state: Int32
 
-/// What a state channel gives the controls and StateUI after a step: its
-/// journey, and the report the core hears.
-@MainActor
-struct AppKitStateChannelOutput {
-    let state: Int32
-    let binding: HostStateBinding
-    let journey: HostJourney
-    let report: HostJourneyUpdate?
+    /// How the controls wear the state.
+    public let binding: HostStateBinding
+
+    /// Where the state's journey stands.
+    public let journey: HostJourney
+
+    /// What the core hears of it; nil where it hears nothing.
+    public let report: HostJourneyUpdate?
 }
 
-/// The outcome of one awaited journey.
-struct AppKitJourneyCompletion: Equatable {
-    let id: Int
-    let succeeded: Bool
+/// How one awaited animation of a state ended.
+@_spi(Host) public struct JourneyCompletion: Equatable {
+    /// The waiter the core is to answer.
+    public let id: Int
+
+    /// Whether it arrived, rather than being cut short.
+    public let succeeded: Bool
+
+    /// The answer `succeeded` for the waiter `id`.
+    public init(id: Int, succeeded: Bool) {
+        self.id = id
+        self.succeeded = succeeded
+    }
 }
 
-/// The state channels: one per host-carried `@State`, shared by every control
-/// tied to it.
-///
-/// Controls never own their own copy of a driven journey. Every property tied
-/// to the same number reads this channel, so all of them stand at the same
-/// value and retarget with the same velocity on the same display frame. The
-/// trips they travel on are the walker's.
-@MainActor
-final class AppKitStateChannels {
-    private let walker: AppKitWalker
-    private var channels: [Int32: AppKitStateChannel] = [:]
+/// One channel per host-carried `@State`, shared by every control bound to it.
+/// Design: docs/design/host/motion.md#state-channels
+@_spi(Host) @MainActor public final class StateChannels {
+    private let walker: Walker
+    private var channels: [Int32: StateChannel] = [:]
 
     /// How many controls wear each state: a channel lives while any does.
     private var wearers: [Int32: Int] = [:]
-    private var outputs: [AppKitStateChannelOutput] = []
-    private var completions: [AppKitJourneyCompletion] = []
+    private var outputs: [StateChannelOutput] = []
+    private var completions: [JourneyCompletion] = []
 
     /// State channels whose trips `walker` walks.
-    init(walker: AppKitWalker) {
+    public init(walker: Walker) {
         self.walker = walker
     }
 
-    var isActive: Bool { channels.values.contains(where: \.isActive) }
+    /// Whether any channel's trip is under way.
+    public var isActive: Bool { channels.values.contains(where: \.isActive) }
 
     /// How many states have a channel.
-    var count: Int { channels.count }
+    public var count: Int { channels.count }
 
-    /// Resolves the value a driven property draws from, creating its shared
-    /// channel when this is the first property attached to the state.
-    func presentedValue(
+    /// The value a bound property draws, opening the state's channel for its first control.
+    public func presentedValue(
         for binding: HostStateBinding,
         from carried: HostStateValue,
         now: Double,
@@ -60,13 +64,13 @@ final class AppKitStateChannels {
               let incoming = StateUIHost.journey(from: carried)
         else { return carried }
 
-        let channel: AppKitStateChannel
+        let channel: StateChannel
 
         if let existing = channels[binding.state] {
             existing.binding = binding
             channel = existing
         } else {
-            channel = AppKitStateChannel(
+            channel = StateChannel(
                 binding: binding,
                 journey: incoming,
                 walker: walker,
@@ -80,7 +84,7 @@ final class AppKitStateChannels {
     }
 
     /// Applies a sparse StateUI cycle change to the channel it names.
-    func receive(
+    public func receive(
         _ change: HostStateChange,
         now: Double,
         reducesMotion: Bool
@@ -97,9 +101,8 @@ final class AppKitStateChannels {
             emit: emit)
     }
 
-    /// Follows what a step of the walker made of the channels' trips. A
-    /// channel nobody wears any more goes once its trip has landed.
-    func follow(_ steps: [AppKitStep]) {
+    /// Takes a walker step's values; a channel no control wears goes once it lands.
+    public func follow(_ steps: [Step]) {
         for step in steps {
             guard case .state(let number) = step.target else { continue }
             channels[number]?.follow(step.value, step.velocity, rested: step.rested, emit: emit)
@@ -108,16 +111,12 @@ final class AppKitStateChannels {
     }
 
     /// A control ties one of its properties to `state`.
-    func attach(_ state: Int32) {
+    public func attach(_ state: Int32) {
         wearers[state, default: 0] += 1
     }
 
-    /// A control lets go of `state` - it leaves the tree, or the property is
-    /// no longer tied. The last one to let go takes the channel with it, once
-    /// the value has landed where it was sent: THE STATE'S CHANNEL IS NOT A
-    /// CONTROL'S TO END, and a control described again a moment later joins it
-    /// where it is.
-    func detach(_ state: Int32) {
+    /// A control lets go of `state`; the channel goes with the last one, once it lands.
+    public func detach(_ state: Int32) {
         guard let count = wearers[state] else { return }
 
         if count > 1 {
@@ -129,10 +128,9 @@ final class AppKitStateChannels {
         if channels[state]?.isActive != true { channels[state] = nil }
     }
 
-    /// Lets a two-way native reader take a property journey at the position it
-    /// has just established. The old destination and velocity cease to pull.
+    /// The user takes the state at `value` on a two-way control; its animation stops there.
     @discardableResult
-    func take(_ value: [Double], through binding: HostStateBinding) -> Bool {
+    public func take(_ value: [Double], through binding: HostStateBinding) -> Bool {
         guard binding.kind == .property,
               binding.mode != .out,
               let channel = channels[binding.state],
@@ -143,23 +141,23 @@ final class AppKitStateChannels {
     }
 
     /// Takes values emitted since the previous host pump.
-    func takeOutputs() -> [AppKitStateChannelOutput] {
+    public func takeOutputs() -> [StateChannelOutput] {
         defer { outputs.removeAll(keepingCapacity: true) }
         return outputs
     }
 
     /// Takes journey completions emitted since the previous host pump.
-    func takeCompletions() -> [AppKitJourneyCompletion] {
+    public func takeCompletions() -> [JourneyCompletion] {
         defer { completions.removeAll(keepingCapacity: true) }
         return completions
     }
 
     private func emit(
-        _ channel: AppKitStateChannel,
+        _ channel: StateChannel,
         report: HostJourneyUpdate?,
-        completion: AppKitJourneyCompletion? = nil
+        completion: JourneyCompletion? = nil
     ) {
-        outputs.append(AppKitStateChannelOutput(
+        outputs.append(StateChannelOutput(
             state: channel.binding.state,
             binding: channel.binding,
             journey: channel.presented,
@@ -171,13 +169,13 @@ final class AppKitStateChannels {
     }
 }
 
-/// One state's channel: its journey, and the trip the walker walks it on.
+/// One state's channel: its animated value, walked on one trip.
 @MainActor
-private final class AppKitStateChannel {
+private final class StateChannel {
     var binding: HostStateBinding
 
-    private let walker: AppKitWalker
-    private let target: AppKitTripTarget
+    private let walker: Walker
+    private let target: TripTarget
     private var value: [Double]
     private var destination: [Double]
     private var velocity: [Double]
@@ -191,10 +189,10 @@ private final class AppKitStateChannel {
     init(
         binding: HostStateBinding,
         journey: HostJourney,
-        walker: AppKitWalker,
+        walker: Walker,
         now: Double,
         reducesMotion: Bool,
-        emit: (AppKitStateChannel, HostJourneyUpdate?, AppKitJourneyCompletion?) -> Void
+        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
     ) {
         self.binding = binding
         self.walker = walker
@@ -231,7 +229,7 @@ private final class AppKitStateChannel {
         changed: UInt64,
         now: Double,
         reducesMotion: Bool,
-        emit: (AppKitStateChannel, HostJourneyUpdate?, AppKitJourneyCompletion?) -> Void
+        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
     ) {
         guard incoming.value.count == value.count else { return }
         let width = value.count
@@ -293,19 +291,18 @@ private final class AppKitStateChannel {
         }
     }
 
-    /// Follows where the walker put this channel's trip: a frame on the way,
-    /// or the landing at its destination.
+    /// Takes where the walker put the trip: a frame on the way, or the landing.
     func follow(
         _ lanes: [Double],
         _ speed: [Double],
         rested: Bool,
-        emit: (AppKitStateChannel, HostJourneyUpdate?, AppKitJourneyCompletion?) -> Void
+        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
     ) {
         guard !rested else {
             walker.halt(target)
             value = destination
             velocity = Array(repeating: 0, count: value.count)
-            let landed = completion.map { AppKitJourneyCompletion(id: $0, succeeded: true) }
+            let landed = completion.map { JourneyCompletion(id: $0, succeeded: true) }
             completion = nil
             emit(self, .position, landed)
             return
@@ -316,11 +313,11 @@ private final class AppKitStateChannel {
         emit(self, .frame, nil)
     }
 
-    /// Stops the current motion at the reader's authoritative position.
+    /// Stops the animation where the user holds the value.
     @discardableResult
     func take(
         _ taken: [Double],
-        emit: (AppKitStateChannel, HostJourneyUpdate?, AppKitJourneyCompletion?) -> Void
+        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
     ) -> Bool {
         guard taken.count == value.count else { return false }
 
@@ -340,7 +337,7 @@ private final class AppKitStateChannel {
         usesCompletion: Bool,
         now: Double,
         reducesMotion: Bool,
-        emit: (AppKitStateChannel, HostJourneyUpdate?, AppKitJourneyCompletion?) -> Void
+        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
     ) {
         if isActive {
             sample(now: now, emit: emit)
@@ -360,7 +357,7 @@ private final class AppKitStateChannel {
             return
         }
 
-        let trip = AppKitTrip(
+        let trip = Trip(
             from: value,
             destination: destination,
             velocity: (usesStatedVelocity ? incoming.velocity : velocity).map { $0 / 1_000 },
@@ -374,7 +371,7 @@ private final class AppKitStateChannel {
             walker.halt(target)
             value = destination
             velocity = Array(repeating: 0, count: value.count)
-            let landed = completion.map { AppKitJourneyCompletion(id: $0, succeeded: true) }
+            let landed = completion.map { JourneyCompletion(id: $0, succeeded: true) }
             completion = nil
             emit(self, .position, landed)
             return
@@ -384,11 +381,10 @@ private final class AppKitStateChannel {
         emit(self, .position, nil)
     }
 
-    /// Brings the value to where the walker's trip stands at `now`, before a
-    /// change lands on it.
+    /// Brings the value to where the trip stands at `now`, before a change lands.
     private func sample(
         now: Double,
-        emit: (AppKitStateChannel, HostJourneyUpdate?, AppKitJourneyCompletion?) -> Void
+        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
     ) {
         guard let trip = walker.trip(for: target) else { return }
 
@@ -397,12 +393,10 @@ private final class AppKitStateChannel {
     }
 
     private func cancelCompletion(
-        emit: (AppKitStateChannel, HostJourneyUpdate?, AppKitJourneyCompletion?) -> Void
+        emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
     ) {
         guard let completion else { return }
         self.completion = nil
-        emit(self, nil, AppKitJourneyCompletion(id: completion, succeeded: false))
+        emit(self, nil, JourneyCompletion(id: completion, succeeded: false))
     }
 }
-
-#endif

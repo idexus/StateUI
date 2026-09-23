@@ -3,6 +3,7 @@
 
 #if os(macOS)
 import AppKit
+@_spi(Host) import StateUI
 
 /// A native AppKit switch with a strict program-write/user-write boundary.
 @MainActor
@@ -25,14 +26,14 @@ final class AppKitSwitchView: NSSwitch {
     }
 
     func apply(toggled: Bool, enabled: Bool) {
-        AppKitProgramWrite.perform {
+        ProgramWrite.perform {
             state = toggled ? .on : .off
             isEnabled = enabled
         }
     }
 
     @objc private func changed(_ sender: NSSwitch) {
-        guard !AppKitProgramWrite.isWriting else { return }
+        guard !ProgramWrite.isWriting else { return }
         onToggled?(state == .on)
     }
 
@@ -65,7 +66,7 @@ final class AppKitCheckBoxView: NSButton {
     }
 
     func apply(checked: Bool, enabled: Bool, tint: NSColor?) {
-        AppKitProgramWrite.perform {
+        ProgramWrite.perform {
             state = checked ? .on : .off
             isEnabled = enabled
             contentTintColor = tint
@@ -73,7 +74,7 @@ final class AppKitCheckBoxView: NSButton {
     }
 
     @objc private func changed(_ sender: NSButton) {
-        guard !AppKitProgramWrite.isWriting else { return }
+        guard !ProgramWrite.isWriting else { return }
         onToggled?(state == .on)
     }
 
