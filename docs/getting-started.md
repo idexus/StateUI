@@ -13,7 +13,7 @@ Neither host has a published package route yet.
 
 ## Requirements
 
-- macOS 14 or newer, with Xcode and its Swift 6 toolchain, for the AppKit host;
+- macOS 26 or newer, with Xcode 27 and its Swift 6.4, for the AppKit host;
 - a checkout of this repository;
 - VS Code and Node.js 20 or newer, for the StateUI extension.
 

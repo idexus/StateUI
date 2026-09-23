@@ -122,11 +122,11 @@ let package = Package(
     name: "GalleryUI",
     // The same floor StateUI declares. SwiftPM refuses a package that depends
     // on one requiring more than it does, so these move together - see the note
-    // in ../../Package.swift for what fixes them at 17.
+    // in ../../Package.swift for what fixes them at 26.
     platforms: [
-        .iOS(.v17),
-        .macCatalyst(.v17),
-        .macOS(.v14),
+        .iOS(.v26),
+        .macCatalyst(.v26),
+        .macOS(.v26),
     ],
     products: products,
     dependencies: dependencies,

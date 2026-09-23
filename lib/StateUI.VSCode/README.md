@@ -126,7 +126,7 @@ launch file at all:
 ## Requirements
 
 - The [Swift extension](https://marketplace.visualstudio.com/items?itemName=swiftlang.swift-vscode).
-- For AppKit: macOS 14 or newer and the `lldb-dap` extension.
+- For AppKit: macOS 26 or newer and the `lldb-dap` extension.
 - For .NET MAUI: the .NET MAUI extension and the .NET 10 SDK.
 
 Do not set `STATEUI_APPKIT` in `swift.swiftEnvironmentVariables`: that setting

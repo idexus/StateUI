@@ -66,12 +66,9 @@ else
 fi
 
 # Must match SupportedOSPlatformVersion in the app project and `platforms:` in
-# every Package.swift. 17 rather than 15 because a custom
-# SerialExecutor - which is how a handler resumes on the thread MAUI draws on,
-# see Core/MainThread.swift - is iOS 17 API. Below that the same thing is only
-# reachable through a deprecated, underscored entry point.
-IOS_MIN="17.0"
-CATALYST_MIN="17.0"
+# every Package.swift.
+IOS_MIN="26.0"
+CATALYST_MIN="26.0"
 
 case "$VARIANT" in
   ios-device)        TARGET="arm64-apple-ios${IOS_MIN}";              SDK="iphoneos" ;;

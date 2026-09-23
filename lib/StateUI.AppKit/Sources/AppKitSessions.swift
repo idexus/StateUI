@@ -746,8 +746,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private func synchronizeTabRow(_ window: NSWindow, _ placement: AppKitTabsPlacement?) {
         if let placement { tabRow.apply(placement.tabs) }
 
-        var column: AppKitSplitView?
-        if #available(macOS 26, *) { column = placement?.split }
+        let column = placement?.split
         let stays = placement == nil
             ? tabRowAccessory == nil && tabRowSplit == nil
             : column == nil ? tabRowAccessory != nil : column === tabRowSplit
@@ -755,7 +754,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
         // Out of where it stood before it stands anywhere else: a view has one
         // superview, and taking an accessory away takes its view with it.
-        if #available(macOS 26, *) { tabRowSplit?.setDetailRow(nil) }
+        tabRowSplit?.setDetailRow(nil)
         tabRowSplit = nil
         if let accessory = tabRowAccessory,
            let index = window.titlebarAccessoryViewControllers.firstIndex(of: accessory) {
@@ -764,7 +763,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         tabRowAccessory = nil
 
         guard placement != nil else { return }
-        if #available(macOS 26, *), let column {
+        if let column {
             tabRow.insets = AppKitTabRow.columnInsets
             column.setDetailRow(tabRow)
             tabRowSplit = column

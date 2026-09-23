@@ -105,9 +105,9 @@ code --install-extension stateui-*.vsix
 For the .NET MAUI host - Android, iOS, Mac Catalyst, Windows, and Linux -
 install the .NET 10 SDK, the MAUI workload (everywhere except Linux, which has
 none), and the **.NET MAUI** extension (Microsoft), which brings the device
-picker and the C# debugger. The AppKit host needs only Xcode 27. StateUI
-builds with one Swift release everywhere, Swift 6.4: Xcode 27's on macOS and
-the swift.org 6.4.0 toolchain on the other platforms.
+picker and the C# debugger. The AppKit host needs only Xcode 27, on macOS 26 or
+newer. StateUI builds with one Swift release everywhere, Swift 6.4: Xcode 27's
+on macOS and the swift.org 6.4.0 toolchain on the other platforms.
 
 ```bash
 dotnet workload install maui

@@ -45,7 +45,7 @@ Xcode 27, the Xcode StateUI builds with. .NET ships them in workload set
 10.0.401 and marks them a preview; the projects silence that notice,
 `XCODE_27_0_PREVIEW`.
 
-The minimum platforms are iOS 17, Mac Catalyst 17, Android API 28, and Windows
+The minimum platforms are iOS 26, Mac Catalyst 26, Android API 28, and Windows
 10.0.17763. A head's project lists only the frameworks its host can build:
 
 - Android, iOS, and Mac Catalyst on macOS;

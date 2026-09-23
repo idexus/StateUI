@@ -6,7 +6,7 @@ import PackageDescription
 // of copying StateUI's object files into a second library in the same process.
 let package = Package(
     name: "StateUIAppKit",
-    platforms: [.macOS(.v14)],
+    platforms: [.macOS(.v26)],
     products: [
         .library(name: "StateUIAppKit", type: .dynamic, targets: ["StateUIAppKit"]),
     ],

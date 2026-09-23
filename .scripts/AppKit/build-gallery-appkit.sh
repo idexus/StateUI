@@ -79,7 +79,7 @@ plutil -insert CFBundleName -string "StateUI Gallery" "$plist"
 plutil -insert CFBundlePackageType -string APPL "$plist"
 plutil -insert CFBundleShortVersionString -string 0.4.0 "$plist"
 plutil -insert CFBundleVersion -string 1 "$plist"
-plutil -insert LSMinimumSystemVersion -string 14.0 "$plist"
+plutil -insert LSMinimumSystemVersion -string 26.0 "$plist"
 plutil -insert NSHighResolutionCapable -bool true "$plist"
 
 codesign --force --deep --sign - "$application_dir"

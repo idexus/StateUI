@@ -542,7 +542,6 @@ final class AppKitPageTests: XCTestCase {
     /// safe area, and the detail lays its page out again in it.
     @MainActor
     func testATabbedPageOnTheDetailsStackKeepsBelowItsTabRow() throws {
-        guard #available(macOS 26, *) else { throw XCTSkip("the row is the column's from macOS 26") }
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
@@ -610,16 +609,11 @@ final class AppKitPageTests: XCTestCase {
         let split = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         XCTAssertEqual(controller.tabRowForTesting.controlForTesting.segmentCount, 2)
-        if #available(macOS 26, *) {
-            XCTAssertTrue(split.detailRowForTesting === controller.tabRowForTesting)
-            XCTAssertTrue(controller.tabRowSplitForTesting === split)
-            XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
-        }
+        XCTAssertTrue(split.detailRowForTesting === controller.tabRowForTesting)
+        XCTAssertTrue(controller.tabRowSplitForTesting === split)
+        XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
         if #available(macOS 26.1, *) {
             XCTAssertEqual(split.detailRowAccessoryForTesting?.preferredScrollEdgeEffectStyle, .soft)
-        }
-        if #unavailable(macOS 26) {
-            XCTAssertTrue(controller.tabRowStandsInTitleBarForTesting)
         }
 
         renderer.applyForTesting(tree(flyout(
@@ -627,9 +621,7 @@ final class AppKitPageTests: XCTestCase {
             menu: page("menu", title: "Menu", events: 100),
             detail: page("detail", title: "Detail", events: 400))))
         XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
-        if #available(macOS 26, *) {
-            XCTAssertNil(split.detailRowForTesting)
-        }
+        XCTAssertNil(split.detailRowForTesting)
 
         renderer.applyForTesting(tree(flyout(
             presented: true,
@@ -702,9 +694,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertFalse(picture.isTemplate)
         XCTAssertEqual(picture.size, NSSize(width: 48, height: 48))
         XCTAssertEqual(row.frame.height, control.fittingSize.height)
-        if #available(macOS 26, *) {
-            XCTAssertEqual(control.borderShape, .capsule)
-        }
+        XCTAssertEqual(control.borderShape, .capsule)
     }
 
     /// A tab is named by the title and the icon of what it shows - a page,

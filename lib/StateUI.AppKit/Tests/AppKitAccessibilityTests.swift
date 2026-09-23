@@ -27,11 +27,9 @@ final class AppKitAccessibilityTests: XCTestCase {
         XCTAssertEqual(native.accessibilityIdentifier(), "semantics.heading")
         XCTAssertEqual(native.accessibilityLabel(), "Accessible title")
         XCTAssertEqual(native.accessibilityHelp(), "Opens the section")
-        if #available(macOS 26.0, *) {
-            XCTAssertEqual(
-                native.accessibilityRole(),
-                NSAccessibility.Role(rawValue: "AXHeading"))
-        }
+        XCTAssertEqual(
+            native.accessibilityRole(),
+            NSAccessibility.Role(rawValue: "AXHeading"))
         XCTAssertTrue(native.isAccessibilityElement())
     }
 

@@ -113,7 +113,7 @@ contract.
 
 ## Build
 
-The AppKit host requires macOS 14 or newer and a Swift 6 toolchain from Xcode.
+The AppKit host requires macOS 26 or newer and Xcode 27, with its Swift 6.4.
 
 Build the runnable Gallery bundle:
 

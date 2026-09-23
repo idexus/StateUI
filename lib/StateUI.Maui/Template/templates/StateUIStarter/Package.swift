@@ -121,9 +121,9 @@ let package = Package(
     // The same floor StateUI declares, and it must not go below it: SwiftPM
     // refuses a package that depends on one requiring more than it does.
     platforms: [
-        .iOS(.v17),
-        .macCatalyst(.v17),
-        .macOS(.v14),
+        .iOS(.v26),
+        .macCatalyst(.v26),
+        .macOS(.v26),
     ],
     products: products,
     dependencies: dependencies,

@@ -2709,7 +2709,7 @@ final class MountedNode: NSObject {
                 ? false
                 : (authoredElement ?? (carriesSemantics || pressable ? true : defaults.isElement)))
 
-        if #available(macOS 26.0, *), headingLevel > 0 {
+        if headingLevel > 0 {
             target.setAccessibilityRole(NSAccessibility.Role(rawValue: "AXHeading"))
         } else if pressable {
             target.setAccessibilityRole(.button)

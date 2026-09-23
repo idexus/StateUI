@@ -5,7 +5,8 @@ import Foundation
 import XCTest
 
 /// StateUI builds with ONE Swift release on every platform - Xcode's on
-/// macOS, swift.org's everywhere else - and with one Xcode and one NDK.
+/// macOS, swift.org's everywhere else - with one Xcode and one NDK, for one
+/// oldest release of Apple's systems.
 ///
 /// The release is written in many places that nothing else compares: every
 /// manifest's tools version, the continuous integration's toolchains, images
@@ -124,6 +125,25 @@ final class ToolchainTests: XCTestCase {
         XCTAssertEqual(
             unversioned.map { "\($0.place) \($0.value)" }, [],
             "an iOS or Mac Catalyst framework names the Xcode it builds against")
+    }
+
+    /// Every manifest, project, script and handbook page names one release of
+    /// Apple's systems as the oldest StateUI runs on: iOS, Mac Catalyst and
+    /// macOS alike.
+    func testEveryPlaceThatNamesTheFloorNamesOne() throws {
+        let named = try [
+            #"\.(?:iOS|macCatalyst|macOS)\(\.v(\d+)\)"#,
+            #"== '(?:ios|maccatalyst)'">(\d+)\.\d+</SupportedOSPlatformVersion>"#,
+            #"(?:IOS|CATALYST)_MIN="(\d+)\.\d+""#,
+            #"LSMinimumSystemVersion -string (\d+)"#,
+            #"\b(?:iOS|macOS|Mac Catalyst) (\d+) or newer"#,
+            #"minimum platforms are iOS (\d+)"#,
+        ].flatMap(values(of:))
+
+        XCTAssertGreaterThan(named.count, 20, "the walk found almost none of the places that name the floor")
+        XCTAssertEqual(
+            Set(named.map(\.value)).count, 1,
+            "one floor: \(named.map { "\($0.place) \($0.value)" })")
     }
 
     /// The continuous integration and the handbook name one NDK, the one the

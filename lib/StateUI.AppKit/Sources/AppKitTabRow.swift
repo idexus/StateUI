@@ -69,7 +69,7 @@ final class AppKitTabRow: NSView {
         super.init(frame: frameRect)
         control.trackingMode = .selectOne
         control.segmentDistribution = .fillEqually
-        if #available(macOS 26, *) { control.borderShape = .capsule }
+        control.borderShape = .capsule
         control.target = self
         control.action = #selector(chose(_:))
         addSubview(control)
