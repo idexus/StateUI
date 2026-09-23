@@ -45,7 +45,7 @@ preserves the same state, event, accessibility, lifetime, and motion contract.
 | macOS | Swift | typed `HostPatch` | AppKit |
 | iOS and iPadOS | Swift | typed `HostPatch` | UIKit |
 | Linux desktop | Swift with the C API | typed `HostPatch` | GTK 4 |
-| Android | Kotlin with thin JNI | Wire encoding of `HostPatch` | Android Views |
+| Android | Swift with JNI | typed `HostPatch` | Android Views |
 | Windows | C++/WinRT | Wire encoding of `HostPatch` | WinUI 3 |
 | Browser | JavaScript or TypeScript | Wire encoding of `HostPatch` | DOM and CSS |
 
