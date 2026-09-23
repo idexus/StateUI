@@ -28,7 +28,8 @@ it.
   the threads, drawn.
 - [Glossary](glossary.md): StateUI's words and the common term for each.
 - `host/`: the runtime every host shares - [the runtime](host/runtime.md),
-  [motion](host/motion.md), [patches](host/patches.md).
+  [the mounted tree](host/tree.md), [motion](host/motion.md),
+  [patches](host/patches.md).
 
 ## Writing a note
 

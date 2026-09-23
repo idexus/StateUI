@@ -7,7 +7,7 @@ import AppKit
 
 /// The contracts this host realizes through the core's registry: how each
 /// element's view is made, which of its members the view takes, and what it
-/// reports. Families move here from `MountedNode`'s switch one at a time; an
+/// reports. Families move here from `AppKitElement`'s switch one at a time; an
 /// element no registration answers is still made there.
 @MainActor
 enum AppKitRegistrations {

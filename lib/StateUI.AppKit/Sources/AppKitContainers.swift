@@ -795,7 +795,7 @@ private final class AppKitOverlaySurfaceView: AppKitSingleChildView {
 
 /// AppKit's presentation of the stack whose identity stays in Swift.
 ///
-/// Every page view remains owned by its `MountedNode`; this view shows only
+/// Every page view remains owned by its `AppKitElement`; this view shows only
 /// the top one, across its whole frame. The stack's furniture - the top
 /// page's title, the way back and the page's actions - is the window's
 /// toolbar, which the window controller composes from the visible

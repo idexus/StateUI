@@ -173,7 +173,7 @@ final class AppKitSceneController {
     private let presentsWindows: Bool
     private var windows: [ElementId: AppKitWindowController] = [:]
     private var windowOrder: [ElementId] = []
-    private weak var node: MountedNode?
+    private weak var node: AppKitElement?
     private(set) var sessionIdentifier: String?
     private var kept: [String: HostValue] = [:]
     private var lastPhase: Event?
@@ -202,7 +202,7 @@ final class AppKitSceneController {
         windowOrder.compactMap { windows[$0] }
     }
 
-    func synchronize(_ node: MountedNode, cascadeFrom: Int = 0) {
+    func synchronize(_ node: AppKitElement, cascadeFrom: Int = 0) {
         self.node = node
 
         let windowNodes = node.children.filter { $0.type == .window }
@@ -342,7 +342,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     var sceneID: ElementId? { scene?.stateUIID }
     let isMain: Bool
     private weak var host: AppKitRenderer?
-    private weak var node: MountedNode?
+    private weak var node: AppKitElement?
     private let presentsWindow: Bool
     private var record: AppKitRestorationRecord
     var restorationRecordForTesting: AppKitRestorationRecord { record }
@@ -356,7 +356,12 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     private var stopCauses: Set<StopCause> = []
     private var lastWindowEvent: Event?
     private(set) var closingFromTree = false
-    private var presentedPage: MountedNode?
+    /// The page the window shows, held by its mounted element, which owns its AppKit half.
+    private var presentedPageElement: MountedElement?
+    private var presentedPage: AppKitElement? {
+        get { presentedPageElement?.appKit }
+        set { presentedPageElement = newValue?.element }
+    }
     private var modals: [AppKitModalWindowController] = []
 
     /// The window's first responder, watched so every element that follows its
@@ -475,7 +480,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         nil
     }
 
-    func presents(_ candidate: MountedNode) -> Bool {
+    func presents(_ candidate: AppKitElement) -> Bool {
         node === candidate
     }
 
@@ -497,10 +502,11 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         }
     }
 
-    func synchronize(_ node: MountedNode, cascade: Int) {
+    func synchronize(_ node: AppKitElement, cascade: Int) {
         self.node = node
         guard let window else { return }
-        let previousVisible = modals.last?.node ?? presentedPage
+        // Held by their owners: a page the patch removed is still told it stopped showing.
+        let previousVisible = (modals.last?.node ?? presentedPage)?.element
         let previousWasModal = !modals.isEmpty
 
         record = AppKitRestorationRecord(
@@ -572,13 +578,13 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         presentedPage = node.pageNode
         synchronizeModals(node.modalStackNode?.children ?? [])
 
-        let nextVisible = modals.last?.node ?? presentedPage
+        let nextVisible = (modals.last?.node ?? presentedPage)?.element
         if previousVisible !== nextVisible {
             let reason: AppKitPagePresentationReason = previousWasModal || !modals.isEmpty
                 ? .navigation
                 : .window
-            previousVisible?.setPagePresented(false, reason: reason)
-            nextVisible?.setPagePresented(true, reason: reason)
+            previousVisible?.appKit.setPagePresented(false, reason: reason)
+            nextVisible?.appKit.setPagePresented(true, reason: reason)
         }
 
         // A requested bound is on the content area too; AppKit bounds the
@@ -645,7 +651,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         return CGFloat(value)
     }
 
-    private func synchronizeModals(_ target: [MountedNode]) {
+    private func synchronizeModals(_ target: [AppKitElement]) {
         guard let window else { return }
 
         var common = 0
@@ -671,14 +677,14 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
     fileprivate func readerDismissed(_ modal: AppKitModalWindowController) {
         guard let window, modals.last === modal else { return }
-        let previous = modal.node
+        let previous = modal.node.element
         let parent = modals.count == 1
             ? window
             : (modals[modals.count - 2].window ?? window)
         modals.removeLast().dismiss(from: parent)
         let next = modals.last?.node ?? presentedPage
 
-        previous.setPagePresented(false, reason: .navigation)
+        previous.appKit.setPagePresented(false, reason: .navigation)
         next?.setPagePresented(true, reason: .navigation)
         refreshVisiblePageChrome()
         host?.commit(node?.handler(.modalPopped), payload: [.number(Double(modals.count))])
@@ -817,7 +823,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     /// keeps the system's colours, where a written one could vanish.
     private func synchronizeTitleAccessory(
         _ window: NSWindow,
-        titleBar: MountedNode?,
+        titleBar: AppKitElement?,
         foreground: NSColor?
     ) {
         let title = titleBar?.string(.title)
@@ -862,8 +868,8 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
     func closeFromTree() {
         guard !closingFromTree else { return }
         closingFromTree = true
-        let visible = modals.last?.node ?? presentedPage
-        visible?.setPagePresented(false, reason: .window)
+        let visible = (modals.last?.node ?? presentedPage)?.element
+        visible?.appKit.setPagePresented(false, reason: .window)
 
         if let window {
             while !modals.isEmpty {
@@ -989,14 +995,16 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 /// One native sheet in the modal arrangement owned by a StateUI window.
 @MainActor
 final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
-    private(set) var node: MountedNode
+    /// The sheet's page, held by its mounted element, which owns its AppKit half.
+    private var element: MountedElement
+    var node: AppKitElement { element.appKit }
     private weak var stateUIOwner: AppKitWindowController?
 
     /// The sheet's first responder, watched for its owner.
     private var focusWatch: NSKeyValueObservation?
 
-    init(node: MountedNode, owner: AppKitWindowController) {
-        self.node = node
+    init(node: AppKitElement, owner: AppKitWindowController) {
+        element = node.element
         stateUIOwner = owner
 
         let window = NSWindow(
@@ -1017,8 +1025,8 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         nil
     }
 
-    func synchronize(_ node: MountedNode) {
-        self.node = node
+    func synchronize(_ node: AppKitElement) {
+        element = node.element
         guard let window else { return }
 
         if let content = node.presentablePageView, window.contentView !== content {

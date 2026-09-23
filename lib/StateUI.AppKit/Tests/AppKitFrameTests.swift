@@ -20,7 +20,8 @@ final class AppKitFrameTests: XCTestCase {
         var patch = HostPatch(id: .manual("measured"), type: .label)
         patch.properties = [.text: .string("Measured")]
         patch.events = .replace([.frameChanged: 50])
-        let node = MountedNode(patch, host: renderer)
+        renderer.applyForTesting(patch)
+        let node = try XCTUnwrap(renderer.rootElementForTesting)
         let measured = try XCTUnwrap(node.view)
 
         let window = NSWindow(
@@ -54,7 +55,8 @@ final class AppKitFrameTests: XCTestCase {
 
         var patch = HostPatch(id: .manual("measured"), type: .label)
         patch.events = .replace([.frameChanged: 51])
-        let node = MountedNode(patch, host: renderer)
+        renderer.applyForTesting(patch)
+        let node = try XCTUnwrap(renderer.rootElementForTesting)
         let measured = try XCTUnwrap(node.view)
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 400, height: 300),

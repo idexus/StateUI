@@ -18,14 +18,15 @@ another language ports them and proves the port against the same fixtures.
        |                                                      |
        v                                                      v
   host layer               CoreLink        PatchIntake        runtime in another language
-  @_spi(Host)              Walker          StateChannels      (C#: lib/StateUI.Maui),
-  Sources/Host             DescribedMotion LayoutMotion       the same elements, ported
+  @_spi(Host)              MountedTree     MountedElement     (C#: lib/StateUI.Maui),
+  Sources/Host             Walker          StateChannels      the same elements, ported
+                           DescribedMotion LayoutMotion
                            DisplayCycle    ProgramWrite
        |
        v
-  toolkit half             frame signal, mounted tree, realizations,
-  one package per host     layout views, scrolling, gestures, focus,
-  (lib/StateUI.AppKit)     accessibility, windows and menus
+  toolkit half             frame signal, each element's native half,
+  one package per host     realizations, layout views, scrolling, gestures,
+  (lib/StateUI.AppKit)     focus, accessibility, windows and menus
        |
        v
   native views
@@ -43,8 +44,8 @@ paths, the journey's animations and the frame they run on.
 | Part | What it is | Elements | Home |
 | --- | --- | --- | --- |
 | S | one `@State` is one state channel, shared by every control bound to it | `StateChannels` | host layer |
-| D | reactive path 1: a body rebuilds, is diffed, arrives as a patch | `PatchIntake`, `DescribedMotion`, `LayoutMotion` | host layer |
-| | | the mounted tree, one realization per control family, the handler queue | toolkit half |
+| D | reactive path 1: a body rebuilds, is diffed, arrives as a patch | `PatchIntake`, `MountedTree`, `MountedElement`, `DescribedMotion`, `LayoutMotion` | host layer |
+| | | each element's native half (`NativeElement`), one realization per control family, the handler queue | toolkit half |
 | C | reactive path 2: a value reaches a native control with no rebuild, and the user's change comes back | `ProgramWrite` | host layer |
 | | | the user's reports | toolkit half |
 | J | a journey's animations, walked by the host | `Walker`, `Trip`, `TripTarget`; the laws are `HostMotionLaw` in the core | host layer |
@@ -122,9 +123,10 @@ The acts come last, so an act lands on the interface its handler just changed.
 
 The toolkit-neutral elements live once, in the core, because every Swift host
 would otherwise carry its own copy of the same arithmetic and rules: the
-animations, the state channels, the property and layout animations, the
-display cycle's order, the one mark of a program's write, the patch intake and
-the line to the core. A toolkit gives the layer its frame signal through
+mounted tree and its patches, the animations, the state channels, the property
+and layout animations, the display cycle's order, the one mark of a program's
+write, the patch intake and the line to the core. A toolkit gives the layer
+each element's native half through `NativeElement`, its frame signal through
 `FrameClock`, presents a frame through `FramePresenter`, and hands
 `LayoutMotion` the views it places as `PlacedView`. The core suite tests them
 on every platform the core builds on, and `RuntimeArchitectureTests` holds
@@ -133,7 +135,8 @@ every Swift runtime to them: only `Walker` samples a timing law, only
 calls into the core, only `ProgramWrite` marks a write, and no runtime type is
 an engine or a channel other than a state's. [Motion](motion.md) gives the
 reasons of the walker, the state channels, the described motion and the layout
-motion; [patches](patches.md) those of the patch intake and the program write.
+motion; [patches](patches.md) those of the patch intake and the program write;
+[the mounted tree](tree.md) those of the tree and its native halves.
 
 ## Core link
 
