@@ -27,6 +27,10 @@ it.
 - [Architecture](architecture.md): the packages, one change end to end, and
   the threads, drawn.
 - [Glossary](glossary.md): StateUI's words and the common term for each.
+- [`types/`](types/README.md): the values an application passes and how
+  each reaches a host.
+- [`contracts/`](contracts/README.md): how an element contract declares a
+  node type, its tiers and its members, and who reads it.
 - `host/`: the runtime every host shares - [the runtime](host/runtime.md),
   [the mounted tree](host/tree.md), [motion](host/motion.md),
   [patches](host/patches.md).

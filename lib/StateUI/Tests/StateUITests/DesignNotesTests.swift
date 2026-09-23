@@ -8,7 +8,9 @@ import XCTest
 /// Design: docs/design/README.md#the-golden-rule
 final class DesignNotesTests: XCTestCase {
     /// The directories that keep the golden rule, relative to the repository.
-    private static let held = ["lib/StateUI/Sources/Host"]
+    private static let held = [
+        "lib/StateUI/Sources/Host", "lib/StateUI/Sources/Types", "lib/StateUI/Sources/Contracts",
+    ]
 
     /// Every `Design:` reference in a source names a note and a heading that exist.
     func testEveryDesignReferenceResolves() throws {

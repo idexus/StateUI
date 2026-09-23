@@ -14,6 +14,11 @@ and this table maps the two.
 | element contract | node schema | a node type's declaration: its tiers and each member with its value's type |
 | tier | trait | a set of members several elements share, such as `VisualElement` |
 | member | property, event or method | a property, an event or an act an element declares |
+| wear (a tier) | adopt, conform to | an element contract taking a tier's members |
+| layer (`ElementLayer`) | implementation source | who realizes a node type or a member: the platform, an adaptation, StateUI, the structure or a provider |
+| slot | named placeholder | a structural child that holds authored content in a known place: `Content`, `LeadingContent`, `TitleView` |
+| arrangement (navigation) | navigation container | `NavigationStack`, `TabbedView` and `SplitView`: what decides which page shows |
+| session | per-instance runtime state | the values one opening of an application, a scene, a window or a page holds |
 | session (`PageSession`) | per-page state | the runtime values a page holds while it is shown |
 
 ## State and reactivity
@@ -24,10 +29,12 @@ and this table maps the two.
 | `Binding` (`$x`) | binding | a borrowed reference to a state |
 | body rebuild, reactive path 1 | re-render | a body that read a written state runs again and is diffed |
 | host-carried state, reactive path 2 | bound control value | a state a native control shows and changes with no rebuild |
-| attachment, wear, wearer | binding, bound control | a control property tied to a state |
+| attachment, wear (a state), wearer | binding, bound control | a control property tied to a state |
 | report | input event | the user's change on its way from a control to the core |
 | feed | host-supplied value | a value only the platform knows, such as focus or a frame, read into a state |
 | kept value (`persistent`) | persisted state | a state saved in a store and read back at launch |
+| standard environment, provider | environment object | the typed values an application and its host provide down the tree |
+| themed pair, the half in force | light and dark variant, the active variant | a value with one side for each theme, and the side the theme picks |
 | engine | frame callback | application code that runs once per display frame while it follows states |
 
 ## Identity and diffing
@@ -43,6 +50,10 @@ and this table maps the two.
 | realization | native adapter | how a host implements an element with its toolkit's control |
 | described property | declared value | a property value the patch carries |
 | recycling | view reuse | a list row's native views kept and given to the next row of the same shape |
+| closed vocabulary, open vocabulary (`Name`) | enumeration, interned name | a fixed set of numbered choices, and a set an author names |
+| kind first (`Kind`) | tagged value | a structured value whose first part says which shape follows |
+| state image, carried value | state buffer | a bound state's value as the host reads and writes it |
+| dirty word | dirty mask | the bits saying which parts of a value changed |
 
 ## Motion
 
@@ -56,6 +67,7 @@ and this table maps the two.
 | lane | component | one number of an animated value: x of a point, red of a colour |
 | land, arrive | finish | an animation reaching its destination |
 | snap | jump | a change applied at once, with no animation |
+| travels, cleared, moves (member facts) | animatable, reset when unset, animation group | what a member's contract says about how its value changes |
 | travel, travelling layout | layout animation | a layout's children animating to their new places |
 | state channel | animated state source | the one place a runtime animates a bound state for every control tied to it |
 | described motion | property animation | the animation a patch describes for a property |
@@ -74,8 +86,10 @@ and this table maps the two.
 | program write | programmatic change | a write to a control made by the program, not the user |
 | act | imperative control call | a call the application makes on a control, such as `focus` |
 | aim (`@Aim`) | control reference | the reference an act is called through |
-| arrangement | layout pass | a layout placing its children |
+| arrangement (layout) | layout pass | a layout placing its children |
 | placement | frame | the rectangle a layout gives a child |
+| shade, rank | dimming overlay, z-order | what a placement run draws over a child, and its order among siblings |
 | room | layout boundary | a container its place sizes, which lays out a change inside itself |
-| seat | slot | a child's place in a layout while it animates |
+| seat | layout position | a child's place in a layout while it animates |
 | Wire | binary protocol | the patch and the cycle as deterministic bytes for a runtime in another language |
+| record, mark (the dictionary) | declaration entry, support status | a host's statement that it realizes a member, and the ✅ or ☑️ it earns |
