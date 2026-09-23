@@ -120,7 +120,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
 
         var grid = HostPatch(id: .manual("grid"), type: .grid)
         // An auto length carries a 1 rather than nothing, so every length
-        // crosses as the same two parts - a kind and a number (Types/GridLength).
+        // crosses as the same two parts - a kind and a number (`GridLength`).
         grid.properties[.rows] = .values([
             .values([.enumeration(0), .number(40)]),
             .values([.enumeration(2), .number(1)]),
