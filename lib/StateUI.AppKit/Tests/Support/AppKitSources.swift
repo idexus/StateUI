@@ -13,6 +13,7 @@ enum AppKitSources {
     /// reading it would pass on nothing.
     static func all() throws -> [(name: String, text: String)] {
         let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()    // Support
             .deletingLastPathComponent()    // Tests
             .deletingLastPathComponent()    // StateUI.AppKit
             .appendingPathComponent("Sources")
@@ -35,7 +36,9 @@ enum AppKitSources {
     /// Every Swift source of this suite, by its file name, sorted - read the
     /// same way, and refused the same way when it reads almost nothing.
     static func tests() throws -> [(name: String, text: String)] {
-        let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        let root = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()    // Support
+            .deletingLastPathComponent()    // Tests
         var found: [(name: String, text: String)] = []
 
         guard let walk = FileManager.default.enumerator(atPath: root.path) else {

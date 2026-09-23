@@ -329,16 +329,13 @@ final class AppKitScrollViewTests: XCTestCase {
     /// A scroller's movement is stepped by the frame clock alone: no timer and
     /// no second clock decides when it rests.
     func testAScrollersMovementReadsNoClockButTheFrameClock() throws {
-        let sources = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()    // Tests
-            .deletingLastPathComponent()    // StateUI.AppKit
-            .appendingPathComponent("Sources")
         let timers = ["asyncAfter(", "DispatchWorkItem", "Timer.", "scheduledTimer", "afterDelay:"]
+        let scrolling = ["AppKitScrollMovement.swift", "AppKitScrollView.swift"]
+        let sources = try AppKitSources.all().filter { scrolling.contains($0.name) }
         var found: [String] = []
+        XCTAssertEqual(sources.map(\.name), scrolling, "the scroller's sources are read")
 
-        for name in ["AppKitScrollView.swift", "AppKitScrollMovement.swift"] {
-            let text = try String(contentsOf: sources.appendingPathComponent(name), encoding: .utf8)
-
+        for (name, text) in sources {
             for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false)
                 .enumerated()
             where !line.trimmingCharacters(in: .whitespaces).hasPrefix("//") {

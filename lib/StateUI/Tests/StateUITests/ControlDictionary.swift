@@ -632,7 +632,7 @@ struct ControlDictionary {
             viewless: nil)
 
         let appKit = try Declaration(
-            host: "AppKit", reading: "lib/StateUI.AppKit/Sources/AppKitRealization.swift",
+            host: "AppKit", reading: "lib/StateUI.AppKit/Sources/Registration/AppKitRealization.swift",
             records: #"\.(complete|partial)"# + record,
             unrealized: #"static let unrealized: Set<String> = \[([^\]]*)\]"#,
             viewless: #"static let viewless: Set<String> = \[([^\]]*)\]"#)

@@ -133,6 +133,7 @@ final class AppKitDeclarationExportTests: XCTestCase {
     /// realizes.
     private static var exports: URL {
         URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()    // Registration
             .deletingLastPathComponent()    // Tests
             .deletingLastPathComponent()    // StateUI.AppKit
             .deletingLastPathComponent()    // lib
