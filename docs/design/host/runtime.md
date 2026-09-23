@@ -6,6 +6,7 @@ the same elements, one job each, named alike in every language. The
 toolkit-neutral elements are the core's host layer, `lib/StateUI/Sources/Host`,
 behind `@_spi(Host)`: every Swift host uses them as they are, and a runtime in
 another language ports them and proves the port against the same fixtures.
+Its folders follow these notes: `Runtime`, `Tree`, `Layout` and `Motion`.
 
 ## The layers
 
