@@ -100,36 +100,9 @@ rm -f "$OUT_DIR"/.stamp-*
 
 BIN_DIR="$("$SWIFT_BIN" build --package-path "$APP_PACKAGE" -c "$CONFIG" -Xswiftc -DMAUI --show-bin-path)"
 
-# --- what gets packaged ----------------------------------------------------
-# SwiftPM compiles incrementally on its own, and the copy step must not cost
-# a full build's worth of work beside that: the Swift runtime is around 90 MB
-# and changes only when the TOOLCHAIN does, so each file is copied only when
-# it is missing or newer. The names are remembered as they go, and anything
-# else in the directory is removed afterwards - a library whose source is
-# gone still disappears, while one that has not moved is left where it is.
-WANTED=""
-
-install_so () {
-  local source="$1" dest_dir="$2" name
-  name="$(basename "$source")"
-  WANTED="$WANTED $name"
-
-  if [[ ! -f "$dest_dir/$name" ]] || [[ "$source" -nt "$dest_dir/$name" ]]; then
-    cp "$source" "$dest_dir/$name"
-  fi
-}
-
-remove_the_rest () {
-  local dest_dir="$1" so name
-  for so in "$dest_dir"/*.so; do
-    [[ -f "$so" ]] || continue
-    name="$(basename "$so")"
-    case " $WANTED " in
-      *" $name "*) continue ;;
-    esac
-    rm -f "$so"
-  done
-}
+# --- what gets packaged: install_so and remove_the_rest --------------------
+# shellcheck source=libraries.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/libraries.sh"
 
 for module in StateUI "$APP_MODULE"; do
   src="$BIN_DIR/lib$module.so"

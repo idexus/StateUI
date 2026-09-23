@@ -6,8 +6,13 @@
          can build keeps the output clean - Visual Studio aggregates warnings
          from every target framework into one Error List, so unbuildable targets
          would show up as noise. -->
-    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows')) And !$([MSBuild]::IsOSPlatform('linux'))">net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('windows')) And !$([MSBuild]::IsOSPlatform('linux'))">net10.0-android;net10.0-ios27.0;net10.0-maccatalyst27.0</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net10.0-android;net10.0-windows10.0.19041.0</TargetFrameworks>
+    <!-- iOS and Mac Catalyst build against .NET's packs for Xcode 27 - the
+         27.0 in the framework - because Xcode 27 is the one Xcode StateUI
+         builds with. .NET marks those packs a preview and says so on every
+         build as XCODE_27_0_PREVIEW. -->
+    <NoWarn>$(NoWarn);XCODE_27_0_PREVIEW</NoWarn>
     <!-- LINUX IS A PLAIN net10.0 HEAD: there is no MAUI workload there, so the
          framework carries no platform and everything below conditions on the
          HOST rather than on a platform identifier. StateUI.Maui.Linux is what puts
@@ -56,13 +61,13 @@
   </PropertyGroup>
 
  <!-- iOS is the one platform whose DEFAULT runtime identifier is not the one
-       you end up running on. A plain build of net10.0-ios targets the SIMULATOR,
+       you end up running on. A plain build of net10.0-ios27.0 targets the SIMULATOR,
        so every ordinary restore writes a simulator target and no ios-arm64 one -
        and the first build for a real device then fails in the SDK, before
        compiling anything:
 
          NETSDK1047: Assets file ... doesn't have a target for
-         'net10.0-ios/ios-arm64'
+         'net10.0-ios27.0/ios-arm64'
 
        Named here so that restore produces all three, which is what makes a
        device build work from a clean tree and switching between device and

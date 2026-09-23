@@ -83,9 +83,10 @@ internal static class SceneSessions
         {
             foreach (NSObject key in values.Keys)
             {
-                if (values[key] is NSString text && SceneOrigin.Read(text.ToString()) is HostValue value)
+                if (key.ToString() is string name && values[key] is NSString text
+                    && SceneOrigin.Read(text.ToString()) is HostValue value)
                 {
-                    kept.Add((key.ToString(), value));
+                    kept.Add((name, value));
                 }
             }
         }

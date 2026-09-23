@@ -28,7 +28,7 @@ concurrency:
 jobs:
   build:
     name: ${{ matrix.name }}
-    runs-on: macos-26
+    runs-on: xcode-27
     timeout-minutes: 60
     strategy:
       # Both targets are reported, even after one has failed. A run that stops
@@ -37,22 +37,22 @@ jobs:
       matrix:
         include:
           - name: iOS
-            framework: net10.0-ios
+            framework: net10.0-ios27.0
             # The SIMULATOR, which is what a plain iOS build targets anyway and
             # the only iOS target that needs no signing identity. Naming it here
             # narrows the restore to this one runtime identifier, so a device
             # build is a leg somebody adds rather than something this one covers.
             rid: iossimulator-arm64
           - name: Mac Catalyst
-            framework: net10.0-maccatalyst
+            framework: net10.0-maccatalyst27.0
             rid: maccatalyst-arm64
     steps:
       - uses: actions/checkout@v7.0.1
 
       # Pinned for the reason tests.yml gives: the compiler is not something an
       # image update gets to change quietly.
-      - name: Use Xcode 26.6
-        run: sudo xcode-select -s /Applications/Xcode_26.6.app/Contents/Developer
+      - name: Use Xcode 27.0
+        run: sudo xcode-select -s /Applications/Xcode_27.0.app/Contents/Developer
 
       - name: Report the toolchain
         run: swift --version

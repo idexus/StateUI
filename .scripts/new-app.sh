@@ -126,5 +126,5 @@ Created $APP
 
 Next, from the repository root:
   STATEUI_APPKIT=1 swift run --package-path apps/$NAME ${NAME}AppKit   # the AppKit head
-  dotnet build apps/$NAME/Platforms/Maui -f net10.0-maccatalyst         # or net10.0-ios / net10.0-android
+  dotnet build apps/$NAME/Platforms/Maui -f net10.0-maccatalyst27.0         # or net10.0-ios27.0 / net10.0-android
 DONE

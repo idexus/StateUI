@@ -216,7 +216,7 @@ final class MainThreadTests: XCTestCase {
         _ = Renderer.shared.dispatch(before)
 
         let work = waitedFor {
-            Task.detached {
+            _ = Task.detached {
                 try await fade.projectedValue.journey.move(to: 0.1, .eased(400, .cubicOut))
             }
         }

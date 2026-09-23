@@ -162,7 +162,7 @@ fi
 case "$PLATFORM" in
 
   ios)
-    FRAMEWORK="net10.0-ios"
+    FRAMEWORK="net10.0-ios27.0"
     RID="iossimulator-arm64"
 
     echo "== Building for the iOS Simulator ($CONFIGURATION) =="
@@ -205,7 +205,7 @@ case "$PLATFORM" in
     ;;
 
   maccatalyst)
-    FRAMEWORK="net10.0-maccatalyst"
+    FRAMEWORK="net10.0-maccatalyst27.0"
     RID="maccatalyst-arm64"
 
     echo "== Building for Mac Catalyst ($CONFIGURATION) =="

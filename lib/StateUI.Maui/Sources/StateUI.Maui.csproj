@@ -20,7 +20,7 @@
          any other OS lacks the windows lib, and a Windows app consuming such a
          package silently binds plain net10.0, where every `#if WINDOWS` block
          is compiled out. -->
-    <TargetFrameworks>net10.0;net10.0-android;net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks>net10.0;net10.0-android;net10.0-ios27.0;net10.0-maccatalyst27.0</TargetFrameworks>
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
     <!-- A LINUX host builds the plain head alone: the MAUI workload does not
          exist there, so the reference-assembly heads cannot even restore. The
@@ -28,6 +28,11 @@
          puts a real MAUI application underneath it, and every `#if` platform
          block is compiled out exactly as it is for the tests. -->
     <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('linux'))">net10.0</TargetFrameworks>
+    <!-- iOS and Mac Catalyst build against .NET's packs for Xcode 27 - the
+         27.0 in the framework - because Xcode 27 is the one Xcode StateUI
+         builds with. .NET marks those packs a preview and says so on every
+         build as XCODE_27_0_PREVIEW. -->
+    <NoWarn>$(NoWarn);XCODE_27_0_PREVIEW</NoWarn>
 
     <!-- LINUX names the plain head the way the workload names the other four.
          The MAUI workload defines WINDOWS, ANDROID, IOS and MACCATALYST for its

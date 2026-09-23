@@ -36,10 +36,10 @@ jobs:
     name: Gallery
     runs-on: ubuntu-24.04
     timeout-minutes: 45
-    # Swift 6.3.3 on Ubuntu 24.04 - the toolchain and the distribution this
+    # Swift 6.4.0 on Ubuntu 24.04 - the toolchain and the distribution this
     # platform is developed on. A newer image would be a deliberate move, not a
     # default that changed underneath.
-    container: swift:6.3.3-noble
+    container: swift:6.4.0-noble
     steps:
       # THE CHECKOUT DIRECTORY HAS TO BE CALLED StateUI, for the reason
       # tests.yml carries: a bare "StateUI" dependency is matched against the
@@ -86,7 +86,7 @@ jobs:
     name: Tests
     runs-on: ubuntu-24.04
     timeout-minutes: 30
-    container: swift:6.3.3-noble
+    container: swift:6.4.0-noble
     steps:
       - uses: actions/checkout@v7.0.1
 

@@ -25,7 +25,7 @@
 // WinUI message pump instead. A handler would suspend at its first `await`
 // and never wake up, silently, on Android and Windows. Replacing
 // MainActor's own executor exists only behind an experimental SPI
-// (`@_spi(ExperimentalCustomExecutors)`, from Swift 6.3) that any toolchain may
+// (`@_spi(ExperimentalCustomExecutors)`) that any toolchain may
 // change and the floor Apple runtimes do not carry, so nothing here leans on
 // it. Hence a global actor of this library's own, whose jobs the host runs.
 //

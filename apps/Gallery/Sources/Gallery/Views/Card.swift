@@ -64,15 +64,10 @@ struct Card: ContentView {
     /// an eager `body` would hand out a fresh 1.0 on every render and the dip
     /// would have nowhere to live.
     var content: any View {
-        // Copies for the handler to capture - and NOT a capture list, which
-        // looks equivalent and is not: a closure with an explicit capture
-        // list, written in a content getter, is moved off this library's
-        // executor by the compiler (Swift 6.3) - the host sees no job and no
-        // pending resume, and the press froze until the NEXT event reached
-        // the app; on Android it would never resume at all. The locals keep
-        // `self` out of the closure, and a BINDING is copied like anything
-        // else the handler holds. Measured both ways; ConcurrencyTests pins
-        // this shape.
+        // Copies for the handler to capture. The locals keep `self` out of
+        // the closure, and a BINDING is copied like anything else the
+        // handler holds. ConcurrencyTests pins this shape on the library's
+        // executor.
         let dip = $dip
         let action = self.action
 

@@ -14,10 +14,10 @@ with native controls:
 | | |
 |---|---|
 | **.NET 10 SDK** | <https://dotnet.microsoft.com/download> |
-| **.NET MAUI workload** | `dotnet workload install maui` |
-| **Swift 6.3 or newer** | macOS: Xcode (it ships the toolchain). Windows: <https://www.swift.org/install/windows/>, plus Visual Studio Build Tools, because Swift links through the MSVC linker |
-| **Xcode** | for iOS, Mac Catalyst and the AppKit host |
-| **Android SDK + a Swift SDK for Android** | for Android: `swift sdk install …` - see <https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html>. The toolchain must be the SDK's own build - swift.org's, installed beside Xcode's; the build checks, uses a matching installed toolchain by itself, and names the one to install when none matches |
+| **.NET MAUI workload** | `dotnet workload install maui`, workload set 10.0.401 or newer - it carries .NET's packs for Xcode 27 |
+| **Swift 6.4** | one release on every platform. macOS: Xcode 27 (it ships the toolchain). Windows: the swift.org 6.4.0 toolchain from <https://www.swift.org/install/windows/>, plus Visual Studio Build Tools, because Swift links through the MSVC linker |
+| **Xcode 27** | for iOS, Mac Catalyst and the AppKit host |
+| **Android SDK with NDK 30 + the Swift SDK for Android 6.4.0** | for Android: `swift sdk install …` - see <https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html>. The toolchain must be the SDK's own build - swift.org's, installed beside Xcode's; the build checks, uses a matching installed toolchain by itself, and names the one to install when none matches |
 
 In VS Code: **StateUI** (idexus) for the launches, the host and the editor's
 completion under it - it brings **Swift** (swiftlang) along - **.NET MAUI**
@@ -35,8 +35,8 @@ launch; with C#, the .NET MAUI extension's device picker chooses the device.
 From a terminal, the MAUI host, from the application's root:
 
 ```bash
-dotnet build Platforms/Maui -f net10.0-maccatalyst
-dotnet build Platforms/Maui -f net10.0-ios
+dotnet build Platforms/Maui -f net10.0-maccatalyst27.0
+dotnet build Platforms/Maui -f net10.0-ios27.0
 dotnet build Platforms/Maui -f net10.0-android -t:Run
 dotnet build Platforms/Maui -f net10.0-windows10.0.19041.0
 dotnet build Platforms/Maui                      # Linux

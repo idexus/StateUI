@@ -35,10 +35,15 @@ Gallery's MAUI head shows the behavior.
 | Platform | Target framework | Swift is compiled into | Travels with the application | Built on |
 | --- | --- | --- | --- | --- |
 | Android | `net10.0-android` | one `.so` per module and ABI (`arm64-v8a`, `x86_64`), through SwiftPM and the Swift SDK for Android | the Swift runtime and `libc++_shared.so`, inside the APK | macOS |
-| iOS | `net10.0-ios` | one static archive per module, linked into the application binary | nothing: the OS carries the Swift runtime | macOS with Xcode |
-| Mac Catalyst | `net10.0-maccatalyst` | the same as iOS | nothing | macOS with Xcode |
+| iOS | `net10.0-ios27.0` | one static archive per module, linked into the application binary | nothing: the OS carries the Swift runtime | macOS with Xcode |
+| Mac Catalyst | `net10.0-maccatalyst27.0` | the same as iOS | nothing | macOS with Xcode |
 | Windows | `net10.0-windows10.0.19041.0` | one DLL per module, linked with the MSVC toolchain | the Swift runtime DLLs, beside the executable | Windows |
 | Linux | `net10.0` | one `.so` per module, through SwiftPM with the host toolchain | the Swift runtime and a small C shim, beside the executable | Linux |
+
+The `27.0` in the iOS and Mac Catalyst frameworks selects .NET's packs for
+Xcode 27, the Xcode StateUI builds with. .NET ships them in workload set
+10.0.401 and marks them a preview; the projects silence that notice,
+`XCODE_27_0_PREVIEW`.
 
 The minimum platforms are iOS 17, Mac Catalyst 17, Android API 28, and Windows
 10.0.17763. A head's project lists only the frameworks its host can build:
@@ -55,14 +60,14 @@ compile Swift for Android only on macOS.
 | Tool | Needed for |
 | --- | --- |
 | .NET 10 SDK | every platform |
-| MAUI workload: `dotnet workload install maui` | every platform except Linux, which has no workload |
-| Swift 6.3 or newer | every platform. On macOS, Xcode's toolchain. On Windows, the swift.org toolchain plus Visual Studio Build Tools, because Swift links through the MSVC linker. On Linux, the swift.org toolchain |
-| Xcode | iOS and Mac Catalyst |
-| Android SDK with NDK 27 or newer, the Swift SDK for Android, and the swift.org toolchain whose build matches that SDK | Android |
+| MAUI workload: `dotnet workload install maui`, workload set 10.0.401 or newer | every platform except Linux, which has no workload |
+| Swift 6.4 | every platform, one release everywhere. On macOS, Xcode 27's toolchain. On Windows, the swift.org 6.4.0 toolchain plus Visual Studio Build Tools, because Swift links through the MSVC linker. On Linux, the swift.org 6.4.0 toolchain |
+| Xcode 27 | iOS and Mac Catalyst |
+| Android SDK with NDK 30, the Swift SDK for Android 6.4.0, and the swift.org 6.4.0 toolchain, whose build is the SDK's | Android |
 | GTK 4.12 or newer | Linux: `libgtk-4-1` and `gir1.2-gtk-4.0` to run; `libgtk-4-dev`, `libgraphene-1.0-dev`, and a C compiler to build |
 
-The CI workflows build with Xcode 26.6 and Swift 6.3.3; on Linux they use the
-`swift:6.3.3-noble` image.
+The CI workflows build with Xcode 27.0 and Swift 6.4.0; on Linux they use the
+`swift:6.4.0-noble` image.
 
 In VS Code, four extensions serve the host:
 
@@ -257,10 +262,10 @@ same way from its own `Platforms/Maui` directory.
 
 ```bash
 # Mac Catalyst
-dotnet build apps/Gallery/Platforms/Maui -f net10.0-maccatalyst
+dotnet build apps/Gallery/Platforms/Maui -f net10.0-maccatalyst27.0
 
-# iOS Simulator: a plain net10.0-ios build targets the simulator
-dotnet build apps/Gallery/Platforms/Maui -f net10.0-ios
+# iOS Simulator: a plain net10.0-ios27.0 build targets the simulator
+dotnet build apps/Gallery/Platforms/Maui -f net10.0-ios27.0
 
 # Android: build, deploy to the selected emulator or device, and start
 dotnet build apps/Gallery/Platforms/Maui -f net10.0-android -t:Run
@@ -989,7 +994,7 @@ sudo apt-get install libgtk-4-dev libgraphene-1.0-dev gir1.2-gtk-4.0 build-essen
 ```
 
 The Linux workflow builds the Gallery and HelloWorld in the
-`swift:6.3.3-noble` container and runs both suites there. Nothing runs the
+`swift:6.4.0-noble` container and runs both suites there. Nothing runs the
 application in CI: a GTK 4 application needs a display.
 
 ## The host's suite
@@ -1135,30 +1140,34 @@ The packages are not on a NuGet source this machine knows. Register the local
 `artifacts/` directory as described under
 [Publishing the packages](#publishing-the-packages).
 
-**Android: "no Swift SDK for Android installed."**
-Install the Swift SDK for Android with `swift sdk install` and its checksum,
-following swift.org's guide. Then bring the NDK into it with the bundle's
-`setup-android-sdk.sh`. `swift sdk list` must show an `android` entry.
+**Android: "no Swift SDK for Android of Swift 6.4 is installed."**
+The build uses the Swift SDK for Android of the release the rest of the
+application builds with - the release of the Swift first on `PATH`, Xcode's on
+macOS. Install that SDK, `swift-6.4.0-RELEASE_android`, with `swift sdk
+install` and its checksum, following swift.org's guide. The message lists the
+SDKs that are installed.
 
-**Android: "toolchain … does not match SDK …", or "compiled module was created
-by an older version of the compiler; rebuild 'Dispatch'".**
+**Android: "toolchain … does not match …", or "compiled module was created by
+an older version of the compiler; rebuild 'Dispatch'".**
 The SDK's binary modules can be read only by the compiler build that wrote
-them, and Xcode's and swift.org's toolchains can report the same version from
+them, and Xcode's and swift.org's toolchains report the same version from
 different builds. `build-android.sh` compares the build in the parentheses of
-`swift --version` with the SDK's tag. On a mismatch it looks for a matching
-toolchain at:
+`swift --version` with the build the SDK records as its writer. On a mismatch
+it looks for a toolchain of that build among:
 
-- `~/Library/Developer/Toolchains/<tag>.xctoolchain`;
-- `/Library/Developer/Toolchains/<tag>.xctoolchain`;
+- `~/Library/Developer/Toolchains/*.xctoolchain`;
+- `/Library/Developer/Toolchains/*.xctoolchain`;
 - `~/.swiftly/bin/swift`.
 
-Install the swift.org toolchain the message names, or point the build at one
-with `SWIFT_BIN=/path/to/swift`.
+Install the swift.org toolchain of the release the message names, or point
+the build at one with `SWIFT_BIN=/path/to/swift`.
 
-**Android: "needed but not packaged: libc++_shared.so".**
-The NDK's sysroot is linked into the Swift SDK, and the packaging step does
-not follow symbolic links. Run the SDK's `setup-android-sdk.sh` with
-`SWIFT_ANDROID_NDK_LINK=0`, which copies the sysroot instead.
+**Android: "no Android NDK found".**
+The build hands SwiftPM the NDK it links against and packages that NDK's
+`libc++_shared.so`. It takes `ANDROID_NDK_HOME` (or `ANDROID_NDK_ROOT`), then
+the NDK the SDK's `setup-android-sdk.sh` linked in, then the newest NDK under
+the Android SDK. Set `ANDROID_NDK_HOME` to an NDK 30 or newer that is
+anywhere else.
 
 **Android: an application installed by hand stops at once.**
 A Debug APK carries no assemblies; `-t:Run` pushes them. Deploy with
@@ -1180,12 +1189,12 @@ application with `run-app.sh ios` first and attaches afterwards.
 
 **iOS: the application aborts during runtime start-up after builds for
 different runtime identifiers in one tree.**
-Delete the head's `obj/<Configuration>/net10.0-ios` and
-`bin/<Configuration>/net10.0-ios`, then build with `-f net10.0-ios` and no
+Delete the head's `obj/<Configuration>/net10.0-ios27.0` and
+`bin/<Configuration>/net10.0-ios27.0`, then build with `-f net10.0-ios27.0` and no
 `-r`.
 
 **iOS device: "NETSDK1047: … doesn't have a target for
-'net10.0-ios/ios-arm64'".**
+'net10.0-ios27.0/ios-arm64'".**
 The heads name the three iOS runtime identifiers during restore only; keep that
 property group when editing a head's project.
 

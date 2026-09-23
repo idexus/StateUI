@@ -163,7 +163,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
 
         case "csharp-swift-maccatalyst":
             this.choices.attachSwiftWhenStarted(name, application.name);
-            return { ...csharp, targetFramework: "net10.0-maccatalyst" };
+            return { ...csharp, targetFramework: "net10.0-maccatalyst27.0" };
 
         case "swift":
             if (platform === "linux") {

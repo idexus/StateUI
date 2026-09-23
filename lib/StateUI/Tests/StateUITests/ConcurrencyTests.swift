@@ -24,13 +24,9 @@ import XCTest
 /// conforming struct's `body` GETTER, an `async let` child inside it, and
 /// GETTER LOCALS carrying the stored properties into the closure.
 ///
-/// The locals are the point. Written with an explicit CAPTURE LIST instead -
-/// `{ [name, action] in ... }` - the compiler (Swift 6.3) moves the whole
-/// closure off this library's executor: it does not run inline from the
-/// dispatch (no act is queued), no job and no pending resume ever show,
-/// and on a device the press froze until the next event reached the app.
-/// Proven both ways against the test below; the sister trap to the one
-/// Support.swift documents for test-method closures capturing a class.
+/// The locals keep `self` out of the closure; an explicit capture list -
+/// `{ [press, action] in ... }` - holds the handler on this library's
+/// executor as well, measured against the test below.
 private struct PressCard: Element {
     let press = Aim(Button.self)
     let action: EventHandler
@@ -192,9 +188,7 @@ final class ConcurrencyTests: XCTestCase {
     }
 
     /// The same contract, written where the gallery writes it: in a
-    /// conforming struct's `body` getter. Fails - no act queued at all -
-    /// when `PressCard`'s closure takes its values through a capture list
-    /// instead of the getter locals; see the doc on `PressCard`.
+    /// conforming struct's `body` getter; see the doc on `PressCard`.
     func testACardShapedHandlerStaysOnTheLibrarysExecutor() async throws {
         let renders = Renders()
 

@@ -105,7 +105,9 @@ code --install-extension stateui-*.vsix
 For the .NET MAUI host - Android, iOS, Mac Catalyst, Windows, and Linux -
 install the .NET 10 SDK, the MAUI workload (everywhere except Linux, which has
 none), and the **.NET MAUI** extension (Microsoft), which brings the device
-picker and the C# debugger. The AppKit host needs only Xcode.
+picker and the C# debugger. The AppKit host needs only Xcode 27. StateUI
+builds with one Swift release everywhere, Swift 6.4: Xcode 27's on macOS and
+the swift.org 6.4.0 toolchain on the other platforms.
 
 ```bash
 dotnet workload install maui
@@ -114,14 +116,13 @@ code --install-extension ms-dotnettools.dotnet-maui
 
 Android asks for more, and builds on macOS only:
 
-- the Android SDK with NDK 27 or newer, for Android 9 (API 28) or newer;
-- the Swift SDK for Android, Swift 6.3 or newer, installed with `swift sdk
-  install`;
-- the swift.org toolchain of exactly that SDK's build, such as
-  `swift-6.3.3-RELEASE`, beside Xcode. Xcode's own Swift of the same version
-  number is a different build and cannot read the SDK's modules; the build
-  picks the matching toolchain by itself and names the one to install when
-  none is there.
+- the Android SDK with NDK 30, for Android 9 (API 28) or newer; an NDK
+  outside the Android SDK is named by `ANDROID_NDK_HOME`;
+- the Swift SDK for Android 6.4.0, installed with `swift sdk install`;
+- the swift.org toolchain of that SDK's build, `swift-6.4.0-RELEASE`, beside
+  Xcode. Xcode's own Swift 6.4 is a different build and cannot read the SDK's
+  modules; the build picks the matching toolchain by itself and names the one
+  to install when none is there.
 
 [MAUI host](docs/maui-host.md#requirements) lists what each platform needs,
 GTK 4 on Linux among them.

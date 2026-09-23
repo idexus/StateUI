@@ -162,9 +162,8 @@ internal static class SceneFocus
 
         for (nuint index = 0; index < windows.Count; index++)
         {
-            NSObject candidate = windows.GetItem<NSObject>(index);
-
-            if (!candidate.RespondsToSelector(new Selector("uiWindows"))
+            if (windows.GetItem<NSObject>(index) is not NSObject candidate
+                || !candidate.RespondsToSelector(new Selector("uiWindows"))
                 || candidate.ValueForKey(new NSString("uiWindows")) is not NSArray uiWindows)
             {
                 continue;
@@ -172,7 +171,7 @@ internal static class SceneFocus
 
             for (nuint at = 0; at < uiWindows.Count; at++)
             {
-                if (uiWindows.GetItem<NSObject>(at).Handle == ui.Handle)
+                if (uiWindows.GetItem<NSObject>(at)?.Handle == ui.Handle)
                 {
                     return candidate;
                 }

@@ -151,7 +151,7 @@ export async function run(): Promise<void> {
         {
             const { resolved, ran, attached } = await resolveAs("csharp-swift-maccatalyst", "darwin");
             check("C# + Swift · Mac Catalyst: a maui session pinned to Mac Catalyst, with Swift promised beside it",
-                resolved?.type === "maui" && resolved.targetFramework === "net10.0-maccatalyst"
+                resolved?.type === "maui" && resolved.targetFramework === "net10.0-maccatalyst27.0"
                 && ran.length === 0 && JSON.stringify(attached) === JSON.stringify(["StateUI: Debug->Gallery"]));
         }
         {
@@ -257,21 +257,21 @@ export async function run(): Promise<void> {
             // The scripts a launch runs are the ones the project's own build
             // imports - asked of MSBuild, for the repository's application and
             // for one made against the checkout alike.
-            const repositoryBuild = await stateUIBuildDirectory(path.join(repository, "apps", "Gallery", "Platforms", "Maui", "Gallery.csproj"), "net10.0-maccatalyst");
-            const checkoutBuild = await stateUIBuildDirectory(path.join(scratch, "mine-checkout", "Probe", "Platforms", "Maui", "Probe.csproj"), "net10.0-maccatalyst");
+            const repositoryBuild = await stateUIBuildDirectory(path.join(repository, "apps", "Gallery", "Platforms", "Maui", "Gallery.csproj"), "net10.0-maccatalyst27.0");
+            const checkoutBuild = await stateUIBuildDirectory(path.join(scratch, "mine-checkout", "Probe", "Platforms", "Maui", "Probe.csproj"), "net10.0-maccatalyst27.0");
             // NuGet imports a package's build per target framework - an
             // ImportGroup conditioned on it - so it is asked of the framework
             // the launch builds, as a project made from the packages needs.
             const perFramework = path.join(scratch, "per-framework", "PerFramework.proj");
             fs.mkdirSync(path.dirname(perFramework), { recursive: true });
             fs.writeFileSync(perFramework, `<Project>
-  <ImportGroup Condition="'$(TargetFramework)' == 'net10.0-maccatalyst'">
+  <ImportGroup Condition="'$(TargetFramework)' == 'net10.0-maccatalyst27.0'">
     <Import Project="${repository}/.scripts/Maui/StateUI.targets" />
   </ImportGroup>
   <Target Name="Restore" />
 </Project>
 `);
-            const packageBuild = await stateUIBuildDirectory(perFramework, "net10.0-maccatalyst");
+            const packageBuild = await stateUIBuildDirectory(perFramework, "net10.0-maccatalyst27.0");
             say(`     build directories: ${repositoryBuild} | ${checkoutBuild} | ${packageBuild}`);
             check("a build imported per target framework, as NuGet imports a package's, is found for the framework launched",
                 packageBuild === repositoryBuild);

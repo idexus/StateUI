@@ -5,7 +5,7 @@
 
   // Set only if the lldb-dap extension cannot find the adapter itself - it ships
   // with the Swift toolchain rather than with VS Code.
-  // "lldb-dap.executable-path": "/Users/<you>/Library/Developer/Toolchains/swift-6.3.3-RELEASE.xctoolchain/usr/bin/lldb-dap",
+  // "lldb-dap.executable-path": "/Users/<you>/Library/Developer/Toolchains/swift-6.4.0-RELEASE.xctoolchain/usr/bin/lldb-dap",
 
   // Every launch is the StateUI extension's: the Swift extension adds none of
   // its own for the AppKit executable.

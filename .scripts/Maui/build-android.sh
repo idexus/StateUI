@@ -26,6 +26,7 @@
 # Environment:
 #   SWIFT_CONFIG=debug|release   (default: release)
 #   SWIFT_BIN=<path>             explicit compiler, if PATH has the wrong one
+#   ANDROID_NDK_HOME=<path>      the NDK, where it is not under the Android SDK
 #
 # WHY SwiftPM:
 # Android needs it, because a Swift SDK is a SwiftPM feature and swiftc rejects
@@ -68,47 +69,85 @@ swift_version_of () {
 }
 
 swift_build_of () {
-  # The parenthesized BUILD identity: "swift-6.3.3-RELEASE" from swift.org,
-  # "swiftlang-6.3.3.1.3" from Xcode. The version NUMBERS can agree across
+  # The parenthesized BUILD identity: "swift-6.4-RELEASE" from swift.org,
+  # "swiftlang-6.4.0.34.1" from Xcode. The version NUMBERS can agree across
   # those two while their binary modules do not, so the build is what has to
   # agree with the SDK.
   "$1" --version 2>&1 \
     | grep -oE '\(swift[a-z]*-[^) ]+' | head -n 1 | tr -d '('
 }
 
-if ! "$SWIFT_BIN" sdk list 2>/dev/null | grep -qi android; then
-  echo "ERROR: no Swift SDK for Android installed."
+release_of () {
+  # One release, two spellings: swift.org names its files "6.4.0" while the
+  # compiler calls itself "6.4". A trailing ".0" is the only difference.
+  case "$1" in
+    *.*.0) echo "${1%.0}" ;;
+    *)     echo "$1" ;;
+  esac
+}
+
+sdk_search_roots () {
+  echo "$HOME/Library/org.swift.swiftpm/swift-sdks" "$HOME/.swiftpm/swift-sdks"
+}
+
+# THE SDK OF THE PROJECT'S RELEASE, by its id. The release is the compiler's -
+# the Swift every other platform of the application builds with - and an SDK
+# id carries the release it belongs to (swift-6.4.0-RELEASE_android). Named by
+# id, because a TRIPLE names every installed SDK that serves it: with two
+# releases installed SwiftPM refuses "matched multiple SDKs".
+TOOLCHAIN_VER="$(swift_version_of "$SWIFT_BIN")"
+TOOLCHAIN_BUILD="$(swift_build_of "$SWIFT_BIN")"
+RELEASE="$(release_of "$TOOLCHAIN_VER")"
+
+SDK_ID=""
+for id in $("$SWIFT_BIN" sdk list 2>/dev/null | grep -i android); do
+  version="$(printf '%s' "$id" | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?' | head -n 1)"
+  [[ "$(release_of "$version")" == "$RELEASE" ]] && SDK_ID="$id"
+done
+
+if [[ -z "$SDK_ID" ]]; then
+  echo "ERROR: no Swift SDK for Android of Swift $RELEASE is installed."
+  echo "  installed: $("$SWIFT_BIN" sdk list 2>/dev/null | grep -i android | tr '\n' ' ')"
   echo "  https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html"
   exit 1
 fi
 
-SDK_ENTRY="$("$SWIFT_BIN" sdk list | grep -i android | head -n 1 | tr -d '[:space:]')"
-SDK_VER="$(printf '%s' "$SDK_ENTRY" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)"
-SDK_TAG="${SDK_ENTRY%%_*}"
-TOOLCHAIN_VER="$(swift_version_of "$SWIFT_BIN")"
-TOOLCHAIN_BUILD="$(swift_build_of "$SWIFT_BIN")"
+SDK_BUNDLE=""
+for root in $(sdk_search_roots); do
+  for info in "$root"/*.artifactbundle/info.json; do
+    [[ -f "$info" ]] && grep -q "\"$SDK_ID\"" "$info" && SDK_BUNDLE="$(dirname "$info")"
+  done
+done
+[[ -n "$SDK_BUNDLE" ]] || { echo "ERROR: $SDK_ID is listed but its bundle was not found."; exit 1; }
 
-echo "Swift SDK:  $SDK_ENTRY"
+# What the SDK's modules were written by, read from the SDK itself: its name
+# says 6.4.0 while the compiler that wrote it calls itself swift-6.4-RELEASE.
+swift_interface="$(find "$SDK_BUNDLE" -path "*Swift.swiftmodule*" -name "*.swiftinterface" 2>/dev/null | head -n 1)"
+SDK_BUILD="$(grep -m 1 'swift-compiler-version' "$swift_interface" 2>/dev/null \
+  | grep -oE '\(swift[a-z]*-[^) ]+' | tr -d '(')"
+[[ -n "$SDK_BUILD" ]] || { echo "ERROR: $SDK_ID does not say which compiler wrote it."; exit 1; }
+
+echo "Swift SDK:  $SDK_ID ($SDK_BUILD)"
 echo "toolchain:  $TOOLCHAIN_VER ($TOOLCHAIN_BUILD)"
 
 # Swift modules are only readable by the compiler BUILD that wrote them, and
-# the version numbers do not decide it: Xcode's 6.3.3 (swiftlang-6.3.3.1.3)
-# refuses the SDK's binary modules built by swift-6.3.3-RELEASE, spelled
+# the version numbers do not decide it: Xcode's 6.4 (swiftlang-6.4.0.34.1)
+# refuses the SDK's binary modules written by swift-6.4-RELEASE, spelled
 # "compiled module was created by an older version of the compiler; rebuild
 # 'Dispatch'" - which reads as a stale SDK while the compiler is the wrong
-# one. So the gate is the BUILD in the parentheses against the SDK's own tag,
-# and a default swift that fails it is replaced by a matching toolchain from
-# the standard install locations - which is what lets an F5 that knows
-# nothing about toolchains build with Xcode first on PATH.
-if [[ "$TOOLCHAIN_BUILD" != "$SDK_TAG" ]]; then
-  echo "  build mismatch - looking for a $SDK_TAG toolchain on disk..."
+# one. So the gate is the BUILD in the parentheses against the build that
+# wrote the SDK, and a default swift that fails it is replaced by a matching
+# toolchain from the standard install locations - which is what lets an F5
+# that knows nothing about toolchains build with Xcode first on PATH.
+if [[ "$TOOLCHAIN_BUILD" != "$SDK_BUILD" ]]; then
+  echo "  build mismatch - looking for a $SDK_BUILD toolchain on disk..."
   for candidate in \
-      "$HOME/Library/Developer/Toolchains/${SDK_TAG}.xctoolchain/usr/bin/swift" \
-      "/Library/Developer/Toolchains/${SDK_TAG}.xctoolchain/usr/bin/swift" \
+      "$HOME"/Library/Developer/Toolchains/*.xctoolchain/usr/bin/swift \
+      /Library/Developer/Toolchains/*.xctoolchain/usr/bin/swift \
       "$HOME/.swiftly/bin/swift"; do
-    if [[ -x "$candidate" ]] && [[ "$(swift_build_of "$candidate")" == "$SDK_TAG" ]]; then
+    if [[ -x "$candidate" ]] && [[ "$(swift_build_of "$candidate")" == "$SDK_BUILD" ]]; then
       SWIFT_BIN="$candidate"
-      TOOLCHAIN_BUILD="$SDK_TAG"
+      TOOLCHAIN_BUILD="$SDK_BUILD"
       TOOLCHAIN_VER="$(swift_version_of "$SWIFT_BIN")"
       echo "  using: $SWIFT_BIN"
       break
@@ -116,13 +155,44 @@ if [[ "$TOOLCHAIN_BUILD" != "$SDK_TAG" ]]; then
   done
 fi
 
-if [[ "$TOOLCHAIN_BUILD" != "$SDK_TAG" ]]; then
+if [[ "$TOOLCHAIN_BUILD" != "$SDK_BUILD" ]]; then
   echo
-  echo "ERROR: toolchain $TOOLCHAIN_VER ($TOOLCHAIN_BUILD) does not match SDK $SDK_ENTRY."
-  echo "Install the matching swift.org toolchain (macOS: the ${SDK_TAG}.pkg from"
-  echo "swift.org/install), or point at one directly:  SWIFT_BIN=/path/to/swift $0 ..."
+  echo "ERROR: toolchain $TOOLCHAIN_VER ($TOOLCHAIN_BUILD) does not match $SDK_ID ($SDK_BUILD)."
+  echo "Install the swift.org toolchain of that release (macOS: the ${SDK_ID%_android}.pkg"
+  echo "from swift.org/install), or point at one directly:  SWIFT_BIN=/path/to/swift $0 ..."
   exit 1
 fi
+
+# THE NDK, which the build links against and which holds the C++ runtime the
+# application ships. Named by ANDROID_NDK_ROOT or ANDROID_NDK_HOME, else read
+# off the link setup-android-sdk.sh leaves in the SDK, else the newest NDK
+# under the Android SDK. Exported, because SwiftPM finds the NDK itself and
+# looks only in its standard places otherwise.
+ndk_root () {
+  local candidate include target sdk newest
+  for candidate in "${ANDROID_NDK_ROOT:-}" "${ANDROID_NDK_HOME:-}"; do
+    [[ -n "$candidate" && -d "$candidate/toolchains/llvm/prebuilt" ]] && { echo "$candidate"; return; }
+  done
+  include="$(find "$SDK_BUNDLE" -maxdepth 5 -path "*ndk-sysroot/usr/include" 2>/dev/null | head -n 1)"
+  if [[ -L "$include" ]]; then
+    target="$(readlink "$include")"
+    candidate="${target%/toolchains/llvm/prebuilt/*}"
+    [[ -d "$candidate/toolchains/llvm/prebuilt" ]] && { echo "$candidate"; return; }
+  fi
+  for sdk in "${ANDROID_HOME:-}" "${ANDROID_SDK_ROOT:-}" "$HOME/Library/Android/sdk"; do
+    [[ -n "$sdk" && -d "$sdk/ndk" ]] || continue
+    newest="$(ls -1 "$sdk/ndk" | sort -t. -k1,1n -k2,2n -k3,3n | tail -n 1)"
+    [[ -n "$newest" && -d "$sdk/ndk/$newest/toolchains/llvm/prebuilt" ]] && { echo "$sdk/ndk/$newest"; return; }
+  done
+}
+
+NDK_ROOT="$(ndk_root)"
+if [[ -z "$NDK_ROOT" ]]; then
+  echo "ERROR: no Android NDK found. Set ANDROID_NDK_HOME to one - 30 or newer."
+  exit 1
+fi
+export ANDROID_NDK_ROOT="$NDK_ROOT"
+echo "NDK:        $NDK_ROOT"
 
 echo "configuration: $CONFIG"
 echo "app module:    $APP_MODULE"
@@ -139,48 +209,19 @@ triple_for_abi () {
   esac
 }
 
-sdk_search_roots () {
-  echo "$HOME/Library/org.swift.swiftpm/swift-sdks" "$HOME/.swiftpm/swift-sdks"
-}
-
 find_in_sdk () {
-  # shellcheck disable=SC2046
-  find $(sdk_search_roots) -name "$1" -path "*${2}*" 2>/dev/null | head -n 1
+  # The chosen SDK and nothing else: another release's runtime beside it has
+  # the same file names and the wrong contents.
+  find -L "$SDK_BUNDLE" -name "$1" -path "*${2}*" 2>/dev/null | head -n 1
 }
 
-# --- what gets packaged ----------------------------------------------------
-# SwiftPM compiles incrementally on its own - a one-line change rebuilds one
-# file - and the copy step must not cost a full build's worth of work beside
-# that: the Swift runtime is around 100 MB per ABI and changes only when the
-# TOOLCHAIN does, which is rarely, so each file is copied only when it is
-# missing or newer.
-#
-# The names are remembered as they go, and anything else in the directory is
-# removed afterwards. Doing it that way round means a library whose source is
-# gone still disappears, while one that has not moved is left where it is.
-WANTED=""
-
-install_so () {
-  local source="$1" dest_dir="$2" name
-  name="$(basename "$source")"
-  WANTED="$WANTED $name"
-
-  if [[ ! -f "$dest_dir/$name" ]] || [[ "$source" -nt "$dest_dir/$name" ]]; then
-    cp "$source" "$dest_dir/$name"
-  fi
+find_in_ndk () {
+  find "$NDK_ROOT/toolchains/llvm/prebuilt" -name "$1" -path "*/sysroot/usr/lib/${2}/*" 2>/dev/null | head -n 1
 }
 
-remove_the_rest () {
-  local dest_dir="$1" so name
-  for so in "$dest_dir"/*.so; do
-    [[ -f "$so" ]] || continue
-    name="$(basename "$so")"
-    case " $WANTED " in
-      *" $name "*) continue ;;
-    esac
-    rm -f "$so"
-  done
-}
+# --- what gets packaged: install_so and remove_the_rest --------------------
+# shellcheck source=libraries.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/libraries.sh"
 
 for abi in $ABIS; do
   triple="$(triple_for_abi "$abi")"
@@ -203,26 +244,31 @@ for abi in $ABIS; do
   # looks lean, and the .so still needs libswiftCore.so at load time. The failure
   # then appears only on device, as a dlopen error.
   #
-  # The triple goes AS THE VALUE of --swift-sdk. A separate --triple flag
-  # overrides the compilation target but not the SDK resource paths, which fails
-  # with "could not find module 'Swift' for target ...".
+  # The SDK is named by its id and the target by --triple within it; a triple
+  # alone as --swift-sdk names every installed release that serves it.
   #
   # -Xswiftc -DMAUI reaches every module of the build, the library included:
   # Swift code written for the MAUI host alone stands under `#if MAUI`.
   "$SWIFT_BIN" build \
     --package-path "$APP_PACKAGE" \
     --product "$APP_MODULE" \
-    --swift-sdk "$triple" \
+    --swift-sdk "$SDK_ID" \
+    --triple "$triple" \
     -c "$CONFIG" \
     -Xswiftc -DMAUI
 
-  built_dir="$APP_PACKAGE/.build/$triple/$CONFIG"
+  # Where the products are is SwiftPM's to say: the build system decides the
+  # layout (.build/out/Products/Release-android-aarch64 under Swift Build).
+  built_dir="$("$SWIFT_BIN" build \
+    --package-path "$APP_PACKAGE" \
+    --swift-sdk "$SDK_ID" \
+    --triple "$triple" \
+    -c "$CONFIG" \
+    -Xswiftc -DMAUI \
+    --show-bin-path)"
   for module in StateUI "$APP_MODULE"; do
     src="$built_dir/lib$module.so"
-    if [[ ! -f "$src" ]]; then
-      src="$(find "$APP_PACKAGE/.build" -name "lib$module.so" -path "*${triple}*" -path "*${CONFIG}*" 2>/dev/null | head -n 1)"
-    fi
-    [[ -f "$src" ]] || { echo "ERROR: lib$module.so was not produced for $abi"; exit 1; }
+    [[ -f "$src" ]] || { echo "ERROR: lib$module.so was not produced for $abi (looked in $built_dir)"; exit 1; }
     install_so "$src" "$dest"
   done
 
@@ -232,8 +278,8 @@ for abi in $ABIS; do
     x86_64)      ndk_dir="x86_64-linux-android";  token="x86_64" ;;
     armeabi-v7a) ndk_dir="arm-linux-androideabi"; token="armv7" ;;
   esac
-  libcxx="$(find_in_sdk "libc++_shared.so" "$ndk_dir")"
-  [[ -n "$libcxx" ]] && install_so "$libcxx" "$dest" || echo "   WARNING: libc++_shared.so not found for $abi"
+  libcxx="$(find_in_ndk "libc++_shared.so" "$ndk_dir")"
+  [[ -n "$libcxx" ]] && install_so "$libcxx" "$dest" || echo "   WARNING: libc++_shared.so not found for $abi in $NDK_ROOT"
 
   # Swift runtime - always. Android ships none.
   core="$(find_in_sdk "libswiftCore.so" "$token")"
@@ -256,12 +302,11 @@ for abi in $ABIS; do
   # --- verify every DT_NEEDED entry is satisfied ---------------------------
   # Without this the build looks clean and the failure appears only on device.
   #
-  # llvm-objdump is the third candidate and it is the one that answers on a Mac:
-  # Xcode ships it, ships no readelf at all, and the Swift SDK for Android
-  # carries neither - without it this check quietly does nothing on the machine
-  # most of this gets built on. And with the libraries copied only when they
-  # have moved, a runtime that goes missing is exactly what nobody would notice
-  # until a device refuses to dlopen it.
+  # The NDK's llvm-readelf is the one that answers on a Mac: Xcode ships no
+  # readelf at all, and the Swift SDK for Android carries none. objdump is the
+  # last resort. With the libraries copied only when they have moved, a
+  # runtime that goes missing is exactly what nobody would notice until a
+  # device refuses to dlopen it.
   READER=""
   READER_KIND=""
 
@@ -270,7 +315,7 @@ for abi in $ABIS; do
   done
 
   if [[ -z "$READER" ]]; then
-    READER="$(find $(sdk_search_roots) -name 'llvm-readelf' -type f 2>/dev/null | head -n 1)"
+    READER="$(find "$NDK_ROOT/toolchains/llvm/prebuilt" -name 'llvm-readelf' -type f 2>/dev/null | head -n 1)"
     [[ -n "$READER" ]] && READER_KIND="readelf"
   fi
 

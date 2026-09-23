@@ -138,7 +138,7 @@ A head compiles the library and its application's Swift module for the
 platform it builds:
 
 ```bash
-dotnet build apps/Gallery/Platforms/Maui -f net10.0-maccatalyst
+dotnet build apps/Gallery/Platforms/Maui -f net10.0-maccatalyst27.0
 dotnet build apps/Gallery/Platforms/Maui -f net10.0-android -t:Run
 ```
 

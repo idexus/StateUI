@@ -76,7 +76,7 @@ AppKit, and .NET MAUI on the affected platform. From a terminal:
 
 ```bash
 .scripts/AppKit/build-gallery-appkit.sh debug
-dotnet build apps/Gallery/Platforms/Maui -f net10.0-maccatalyst
+dotnet build apps/Gallery/Platforms/Maui -f net10.0-maccatalyst27.0
 ```
 
 Run one application build at a time. Concurrent application builds share Swift

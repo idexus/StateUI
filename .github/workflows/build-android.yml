@@ -1,13 +1,13 @@
 # The gallery, built for Android - both ABIs, with the Swift runtime packaged.
 #
 # THE TOOLCHAIN IS THE WHOLE DIFFICULTY HERE, and the trap is that the version
-# numbers agree while the compilers do not. Xcode 26.6 reports
+# numbers agree while the compilers do not. Xcode 27.0 reports
 #
-#     Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)
+#     Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)
 #
 # and swift.org's own build of the same release reports
 #
-#     Apple Swift version 6.3.3 (swift-6.3.3-RELEASE)
+#     Apple Swift version 6.4 (swift-6.4-RELEASE)
 #
 # The Swift SDK for Android ships Foundation, FoundationEssentials and Dispatch
 # as BINARY modules with no .swiftinterface beside them, and a binary module can
@@ -22,10 +22,9 @@
 # build spends any time, so a wrong toolchain fails in seconds with the two
 # builds named.
 #
-# The NDK is the runner's, named by the ANDROID_NDK_HOME it exports, and the
-# bundle needs 27 or newer - the image's is 27.3.13750724. The bundle carries no
-# NDK of its own: setup-android-sdk.sh brings one in from that variable, and
-# skipping it leaves the SDK with no sysroot.
+# The NDK is NDK 30, the one the SDK is built with, installed beside the
+# image's own and named by ANDROID_NDK_HOME. The bundle carries no NDK of its
+# own; build-android.sh hands that one to SwiftPM, which links against it.
 
 name: Android
 
@@ -48,9 +47,10 @@ env:
   # this block plus the checksum - which swift.org publishes beside the bundle
   # and `swift sdk install` verifies before unpacking, so a stale pair fails
   # loudly rather than installing something else.
-  SWIFT_TAG: swift-6.3.3-RELEASE
-  SWIFT_CHANNEL: swift-6.3.3-release
-  ANDROID_SDK_CHECKSUM: d160cc3206dd1886dae3fef2337af5e25ec034692cd0ec225721c56cc69da7f5
+  SWIFT_TAG: swift-6.4.0-RELEASE
+  SWIFT_CHANNEL: swift-6.4.0-release
+  ANDROID_SDK_CHECKSUM: 21fb555122a3d801ad943d48df7ebffdd8824de61c25c180bb792d3edaee0b43
+  ANDROID_NDK_VERSION: 30.0.16248370
 
 jobs:
   build:
@@ -78,14 +78,17 @@ jobs:
           installer -pkg "$RUNNER_TEMP/swift.pkg" -target CurrentUserHomeDirectory
           echo "$HOME/Library/Developer/Toolchains/$SWIFT_TAG.xctoolchain/usr/bin" >> "$GITHUB_PATH"
 
-      # The build number, not the version. `swift --version` says 6.3.3 either
+      # The build number, not the version. `swift --version` says 6.4 either
       # way; only the parenthesis tells the two toolchains apart, and picking the
       # wrong one fails hundreds of files later with a message about Dispatch.
+      # The compiler spells the release without its trailing ".0" - 6.4.0 is
+      # swift-6.4-RELEASE in the parenthesis.
       - name: Check which Swift is first on PATH
         run: |
           set -euo pipefail
           swift --version
-          swift --version 2>&1 | grep -q "$SWIFT_TAG" || {
+          release="${SWIFT_TAG#swift-}"; release="${release%-RELEASE}"; release="${release%.0}"
+          swift --version 2>&1 | grep -q "(swift-$release-RELEASE" || {
             echo "::error::PATH resolves to Xcode's Swift, not swift.org's $SWIFT_TAG."
             exit 1
           }
@@ -98,18 +101,13 @@ jobs:
             --checksum "$ANDROID_SDK_CHECKSUM"
           swift sdk list
 
-      # COPIED, not linked, which is what SWIFT_ANDROID_NDK_LINK=0 asks for.
-      # The script's default is to symlink the NDK's sysroot into the bundle, and
-      # build-android.sh finds the C++ runtime it has to package with a plain
-      # `find` over the SDK directories - which does not descend into a symlinked
-      # one. Linked, libc++_shared.so is never found, the dependency check then
-      # says "needed but not packaged", and the build stops. The copy is 143 MB.
-      - name: Bring the runner's NDK into the SDK
-        env:
-          SWIFT_ANDROID_NDK_LINK: 0
+      # The SDK's own NDK release. The image's default NDK is older, and a
+      # sysroot the SDK was not built against is not one to link against.
+      - name: Install NDK ${{ env.ANDROID_NDK_VERSION }}
         run: |
           set -euo pipefail
-          "$HOME/Library/org.swift.swiftpm/swift-sdks/${SWIFT_TAG}_android.artifactbundle/swift-android/scripts/setup-android-sdk.sh"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "ndk;$ANDROID_NDK_VERSION" > /dev/null
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/$ANDROID_NDK_VERSION" >> "$GITHUB_ENV"
 
       - uses: actions/setup-dotnet@v6.0.0
         with:

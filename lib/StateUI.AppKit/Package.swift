@@ -1,4 +1,4 @@
-// swift-tools-version:6.0
+// swift-tools-version:6.4
 import PackageDescription
 
 // A separate package is deliberate. Keeping AppKit as a sibling host package
