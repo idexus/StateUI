@@ -5,22 +5,6 @@
 // PlacedLayout for the cards, a ScrollReader for the hand, and a state between.
 // Design: docs/design/views/measured-layouts.md#gallery-view
 
-/// Which shape a `GalleryView` stands its cards in; the cards animate from
-/// one shape to the next.
-public enum GalleryArrangement: Sendable, Equatable {
-    /// The cards stand on a wheel: the one in the middle faces the user and
-    /// the rest turn away, shrink and fade behind it.
-    case `default`
-
-    /// A hand of cards: the middle one stands tallest and its neighbours lean
-    /// out and sink.
-    case fan
-
-    /// Side by side, the middle card largest - a strip to run along rather
-    /// than a deck to look into.
-    case row
-}
-
 /// One card at a time, swiped through, in a shape one word chooses.
 ///
 ///     @State private var shown = 0
