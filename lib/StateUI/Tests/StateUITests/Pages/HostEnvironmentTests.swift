@@ -4,9 +4,9 @@
 // The STANDARD ENVIRONMENT: the host's providers, seeded into every walk's
 // scope and written through `stateui_set_environment`.
 //
-// The mechanism is Types/HostEnvironment.swift (the providers and the
-// applier), the seeding in Core/Diff.swift and `Node.built`, and the export
-// in Bridge/Exports.swift. The promises pinned here:
+// The mechanism is the providers and their applier, StandardEnvironment.swift,
+// the seeding in Core/Diff.swift and `Node.built`, and the export in
+// Bridge/Exports.swift. The promises pinned here:
 //
 //   - a view resolves a standard provider with NOTHING provided anywhere;
 //   - a push through the real export rebuilds exactly the views that read

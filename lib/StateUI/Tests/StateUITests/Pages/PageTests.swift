@@ -9,9 +9,9 @@
 // property carried - has to be written here instead, and this is the file that
 // writes it.
 //
-// Everything a page can be told is its session's, in Types/PageSession.swift,
-// and everything a window can be told is its window session's, in
-// Types/HostEnvironment.swift - so the guards below read both files and insist
+// Everything a page can be told is its session's, in PageSession.swift, and
+// everything a window can be told is its window session's, in
+// WindowSession.swift - so the guards below read both files and insist
 // the two exhaustive values in this one carry every key: the page for a
 // page's, the window for a window's. A page writes its session from its own
 // `.onCreated`, and what that writes is in the message that brings the page -
@@ -263,7 +263,7 @@ final class PageTests: XCTestCase {
     /// renderer can quietly not implement.
     ///
     /// A page's properties are written onto its node by its session, in
-    /// PageSession.swift, and a window's by its own, in HostEnvironment.swift,
+    /// PageSession.swift, and a window's by its own, in WindowSession.swift,
     /// both nodes being built in Application.swift - so the two exhaustive
     /// values above are read against all three files, a window property being
     /// no less covered for not being a page's.
@@ -272,10 +272,10 @@ final class PageTests: XCTestCase {
             .union(Self.keys(in: EveryPropertyWindow.node))
 
         let page = try Fixtures.propertyKeys(in: "PageSession.swift")
-        let window = try Fixtures.propertyKeys(in: "HostEnvironment.swift")
+        let window = try Fixtures.propertyKeys(in: "WindowSession.swift")
 
         XCTAssertTrue(page.contains("title"), "the scan found nothing PageSession.swift writes")
-        XCTAssertTrue(window.contains("width"), "the scan found nothing HostEnvironment.swift writes")
+        XCTAssertTrue(window.contains("width"), "the scan found nothing WindowSession.swift writes")
 
         let declared = try page.union(window).union(Fixtures.propertyKeys(in: "Application.swift"))
         let missing = declared.subtracting(sent).sorted()

@@ -212,12 +212,12 @@ final class CompleteContractTests: XCTestCase {
     // MARK: - Support
 
     /// The sources that write for an element they neither build nor extend:
-    /// the window's properties, which the scenes and the host environment
+    /// the window's properties, which the scenes and the window's session
     /// write, the page's, which its session keeps, and the placed layout's, a
     /// composition over an `AbsoluteLayout` placing its children.
     private static let describing: [String: [String]] = [
         "Scenes.swift": ["Window"],
-        "HostEnvironment.swift": ["Window"],
+        "WindowSession.swift": ["Window"],
         "PageSession.swift": ["Page"],
         "PlacedLayout.swift": ["AbsoluteLayout"],
     ]

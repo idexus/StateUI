@@ -1,33 +1,43 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The `DeviceInfo` provider is in HostEnvironment.swift, with the others.
-
-/// The kind of device the interface is showing on.
+/// The kind of machine the interface is showing on, as the host reports it
+/// before the first render - so the first tree already knows. Resolve it with
+/// `@Environment var device: DeviceInfo`:
 ///
 ///     @Environment var device: DeviceInfo
-///     …
-///     device.formFactor == .desktop ? wideLayout : phoneLayout
 ///
-/// It tells a phone from a tablet where the platform alone cannot:
-/// `stateUIPlatform()` is iOS on both. `\(formFactor)` prints the case name.
-public enum FormFactor: Int32, Sendable {
-    /// The host has not said - a headless test, or a platform that could not
-    /// tell.
-    case unknown = 0
+///     var content: any View {
+///         device.formFactor == .desktop ? wideLayout : phoneLayout
+///     }
+///
+/// The formFactor distinguishes form factors that share an operating system. A
+/// headless host leaves values at their documented defaults.
+public final class DeviceInfo {
+    /// Phone, tablet, desktop, television, or watch.
+    @State public var formFactor: FormFactor = .unknown
 
-    /// A phone.
-    case phone = 1
+    /// The host platform's name, such as "macOS", "iOS", "Android",
+    /// "Windows", "Linux", or "Web" - text, since a host may name a platform
+    /// this library does not know.
+    @State public var platform = ""
 
-    /// A tablet - an iPad, an Android tablet.
-    case tablet = 2
+    /// The hardware model, where the platform shares it.
+    @State public var model = ""
 
-    /// A desktop computer.
-    case desktop = 3
+    /// Who made the device, where the platform shares it.
+    @State public var manufacturer = ""
 
-    /// A television.
-    case tv = 4
+    /// The device's own name, where the platform shares it.
+    @State public var name = ""
 
-    /// A watch.
-    case watch = 5
+    /// The operating system version as displayable text.
+    @State public var versionString = ""
+
+    /// Real hardware or an emulator.
+    @State public var deviceType: DeviceType = .unknown
+
+    /// A fresh instance, for providing a fake to one branch with
+    /// `.environment(...)`. The values start as a headless host's do.
+    public init() {}
 }
