@@ -92,8 +92,8 @@ and this table maps the two.
 | motion (`Motion`) | animation timing | how a change animates: an eased curve over a duration, a spring, or none |
 | law, motion law | timing function | the curve or spring that gives a value at a time (`HostMotionLaw`) |
 | journey (`$x.journey`) | animated value | a state's value with its destination, speed and timing |
-| trip | animation | one running animation of one value |
-| walker, walk, step | animator, animate, advance a frame | the one place a runtime advances every animation |
+| animation (`Animation`) | animation | one running animation of one value |
+| animator (`Animator`), advance | animator, advance a frame | the one place a runtime advances every animation |
 | lane | component | one number of an animated value: x of a point, red of a colour |
 | land, arrive | finish | an animation reaching its destination |
 | snap | jump | a change applied at once, with no animation |

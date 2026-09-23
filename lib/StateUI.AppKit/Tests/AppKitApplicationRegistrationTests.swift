@@ -34,13 +34,13 @@ final class LampView: NSView {
     /// How many times the act flashed it.
     var flashes = 0
 
-    /// How many times a reader pulled it.
+    /// How many times a user pulled it.
     var pulls = 0
 
     /// What it reports when pulled.
     var onPulled: ((Int) -> Void)?
 
-    /// Pulls it, as a reader does.
+    /// Pulls it, as a user does.
     func pull() {
         pulls += 1
         onPulled?(pulls)

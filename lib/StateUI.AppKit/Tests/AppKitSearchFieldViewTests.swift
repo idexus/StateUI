@@ -41,7 +41,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
     }
 
     @MainActor
-    func testStateWriteIsSilentWhileReaderTextAndSubmitAreSeparate() {
+    func testStateWriteIsSilentWhileUserTextAndSubmitAreSeparate() {
         let search = AppKitSearchFieldView()
         var texts: [String] = []
         var submits = 0
@@ -88,7 +88,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
 
     /// A read-only search field keeps its text selectable and unchangeable,
     /// and its spell check and word prediction reach the native field and the
-    /// editor the reader types into. A field that says nothing keeps all
+    /// editor the user types into. A field that says nothing keeps all
     /// three on.
     @MainActor
     func testASearchFieldsEditingSettingsComeThroughTheHost() throws {
@@ -129,7 +129,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         XCTAssertEqual(submitted.values, ["submitted"])
     }
 
-    /// What a reader types reaches the page's `onTextChanged` handler, the
+    /// What a user types reaches the page's `onTextChanged` handler, the
     /// field's whole text each time.
     @MainActor
     func testTypingInASearchFieldReachesItsTextHandler() throws {

@@ -50,7 +50,7 @@ final class AppKitTextEditorViewTests: XCTestCase {
     }
 
     @MainActor
-    func testProgramWriteIsSilentAndReaderTypingIsCapped() {
+    func testProgramWriteIsSilentAndUserTypingIsCapped() {
         let editor = AppKitTextEditorView()
         var texts: [String] = []
         editor.onTextChanged = { texts.append($0) }
@@ -95,7 +95,7 @@ final class AppKitTextEditorViewTests: XCTestCase {
         XCTAssertEqual(texts.map { $0.isAutomaticTextCompletionEnabled }, [true, false])
     }
 
-    /// What a reader types reaches the page's `onTextChanged` handler, the
+    /// What a user types reaches the page's `onTextChanged` handler, the
     /// editor's whole text each time.
     @MainActor
     func testTypingInATextEditorReachesItsTextHandler() throws {

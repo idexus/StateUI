@@ -9,29 +9,29 @@ import XCTest
 /// makes it write, and no host does again what an element of the layer does.
 /// These guards read the layer and every Swift host's sources as text.
 final class RuntimeArchitectureTests: XCTestCase {
-    /// One walker walks every value: no other file of a runtime samples a
-    /// motion law, so a state channel and a described property cannot walk
+    /// One animator animates every value: no other file of a runtime samples a
+    /// motion law, so a state channel and a described property cannot animate
     /// the same kind of value two ways.
-    func testOnlyTheWalkerSamplesALaw() throws {
+    func testOnlyTheAnimatorSamplesALaw() throws {
         var found: [String] = []
 
-        for (path, text) in try Fixtures.runtimeSources() where path != "StateUI/Sources/Host/Walker.swift" {
+        for (path, text) in try Fixtures.runtimeSources() where path != "StateUI/Sources/Host/Animator.swift" {
             for (number, line) in code(text) where line.contains("HostMotionLaw.sample(") {
                 found.append("\(path):\(number)")
             }
         }
 
-        XCTAssertEqual(found, [], "a value is walked by the Walker alone")
+        XCTAssertEqual(found, [], "a value is animated by the Animator alone")
     }
 
-    /// A frame's order lives in one place: only the display cycle steps the walker and runs the
+    /// A frame's order lives in one place: only the display cycle advances the animator and runs the
     /// core's cycle, so no path of a runtime animates or drains a cycle in an order of its own.
-    func testOnlyTheDisplayCycleStepsTheWalkerAndRunsTheCoresCycle() throws {
+    func testOnlyTheDisplayCycleAdvancesTheAnimatorAndRunsTheCoresCycle() throws {
         var found: [String] = []
 
         for (path, text) in try Fixtures.runtimeSources() where path != "StateUI/Sources/Host/DisplayCycle.swift" {
             for (number, line) in code(text) {
-                for step in ["walker.step(", "core.cycle("] where line.contains(step) {
+                for step in ["animator.advance(", "core.cycle("] where line.contains(step) {
                     found.append("\(path):\(number): \(step)")
                 }
             }

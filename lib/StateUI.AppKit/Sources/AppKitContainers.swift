@@ -708,7 +708,7 @@ final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring
     private(set) var selectedIndex = -1
 
     /// Set while this side selects, so the tab view's report of it is not
-    /// taken for the reader's.
+    /// taken for the user's.
     private var selecting = false
 
     override init(frame frameRect: NSRect) {
@@ -764,9 +764,9 @@ final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring
         }
     }
 
-    /// Selects a tab as the reader does from the window's row of tabs. A tab the
-    /// reader clicks on the tab view itself arrives through its delegate.
-    func selectByReader(_ next: Int) {
+    /// Selects a tab as the user does from the window's row of tabs. A tab the
+    /// user clicks on the tab view itself arrives through its delegate.
+    func selectByUser(_ next: Int) {
         guard items.indices.contains(next), next != selectedIndex else { return }
         let previous = selectedIndex
         show(next)
@@ -879,7 +879,7 @@ final class AppKitTabbedView: AppKitHitTestView, AppKitWidthConstrainedMeasuring
         return chrome
     }
 
-    /// Clicks a tab on the tab view, as the reader does.
+    /// Clicks a tab on the tab view, as the user does.
     func selectForTesting(_ index: Int) {
         tabView.selectTabViewItem(at: index)
     }
@@ -930,7 +930,7 @@ final class AppKitTabPane: NSView {
 /// carries the system sidebar toggle and a separator that tracks the divider.
 /// Whether the sidebar shows is StateUI's binding. The host's one adaptation
 /// is that a window wide enough for both panes opens with it shown; after
-/// that, the reader and the application decide.
+/// that, the user and the application decide.
 @MainActor
 final class AppKitSplitView: AppKitHitTestView {
     var onPresentationChanged: ((Bool) -> Void)?
@@ -1047,7 +1047,7 @@ final class AppKitSplitView: AppKitHitTestView {
         needsLayout = true
     }
 
-    /// Applies Swift's value without echoing it back as a reader's change.
+    /// Applies Swift's value without echoing it back as a user's change.
     func apply(presented: Bool) {
         requestedPresentation = presented
         setSidebarPresented(presented, reporting: false)
@@ -1121,7 +1121,7 @@ final class AppKitSplitView: AppKitHitTestView {
         splitController.splitView.subviews.first?.frame.width ?? 0
     }
 
-    /// What the reader's sidebar toggle leaves behind, without its animation.
+    /// What the user's sidebar toggle leaves behind, without its animation.
     func toggleForTesting() {
         sidebarItem.isCollapsed.toggle()
     }
@@ -1220,7 +1220,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
     private var lastObservedOffset = NSPoint.zero
     private var gestureScroller: WheelScroller?
 
-    /// The reader's movement of this scroller, and its rest.
+    /// The user's movement of this scroller, and its rest.
     private let movement = AppKitScrollMovement()
 
     var offset: NSPoint { reachable(contentView.bounds.origin) }
@@ -1311,7 +1311,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
             pendingOffset = .zero
         } else if let offset, offset.x.isFinite, offset.y.isFinite {
             // An offset the scroller already stands at is not written again:
-            // the reader's own report comes back as the state it wrote, and
+            // the user's own report comes back as the state it wrote, and
             // moving the clip view to where it stands mid-gesture interrupts
             // the platform's own scroll on every report.
             if abs(offset.x - lastObservedOffset.x) < 0.5, abs(offset.y - lastObservedOffset.y) < 0.5 {
@@ -1319,7 +1319,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
             } else {
                 pendingOffset = offset
                 if documentSurface.frame.width > 0, documentSurface.frame.height > 0 {
-                    move(to: offset, asReader: false)
+                    move(to: offset, asUser: false)
                     pendingOffset = nil
                 }
             }
@@ -1345,9 +1345,9 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
 
         if let pendingOffset {
             self.pendingOffset = nil
-            move(to: pendingOffset, asReader: false)
+            move(to: pendingOffset, asUser: false)
         } else {
-            move(to: contentView.bounds.origin, asReader: false)
+            move(to: contentView.bounds.origin, asUser: false)
         }
     }
 
@@ -1420,14 +1420,14 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         // application's by where the scroller already stands.
         let previous = lastObservedOffset
         lastObservedOffset = current
-        movement.readerMoved(from: previous, to: current)
+        movement.userMoved(from: previous, to: current)
     }
 
-    /// How many times something other than the reader moved the scroller.
+    /// How many times something other than the user moved the scroller.
     private(set) var programmaticMovesForTesting = 0
 
-    private func move(to requested: NSPoint, asReader: Bool) {
-        if !asReader { programmaticMovesForTesting += 1 }
+    private func move(to requested: NSPoint, asUser: Bool) {
+        if !asUser { programmaticMovesForTesting += 1 }
         let old = offset
         let target = reachable(normalized(requested))
         ProgramWrite.perform {
@@ -1437,8 +1437,8 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         let current = offset
         lastObservedOffset = current
 
-        if asReader {
-            movement.readerMoved(from: old, to: current)
+        if asUser {
+            movement.userMoved(from: old, to: current)
         }
     }
 
@@ -1490,8 +1490,8 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring {
         movement.begin()
     }
 
-    func moveAsReaderForTesting(to point: NSPoint) {
-        move(to: point, asReader: true)
+    func moveAsUserForTesting(to point: NSPoint) {
+        move(to: point, asUser: true)
     }
 
     func restForTesting() {

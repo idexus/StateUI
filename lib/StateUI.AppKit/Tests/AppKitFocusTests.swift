@@ -8,7 +8,7 @@ import AppKit
 import XCTest
 
 /// The focus is the platform's, and a view that watches it hears every move -
-/// an act's, the reader's, the window's own.
+/// an act's, the user's, the window's own.
 final class AppKitFocusTests: XCTestCase {
     /// Pumps until `done` holds: a focus move is reported once it has settled,
     /// and the binding it writes renders on the next pump.

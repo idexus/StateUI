@@ -69,7 +69,7 @@ final class AppKitDateTimePickerViewTests: XCTestCase {
     }
 
     @MainActor
-    func testProgramWriteIsSilentAndReaderChangeReportsNativeLanesOnce() {
+    func testProgramWriteIsSilentAndUserChangeReportsNativeLanesOnce() {
         let picker = AppKitDateTimePickerView(mode: .date)
         var reports: [[Double]] = []
         picker.onValueChanged = { reports.append($0) }
@@ -88,9 +88,9 @@ final class AppKitDateTimePickerViewTests: XCTestCase {
         XCTAssertEqual(reports, [[2026, 9, 15]])
     }
 
-    /// The day a reader picks reaches the page's `onDateChanged`.
+    /// The day a user picks reaches the page's `onDateChanged`.
     @MainActor
-    func testADayTheReaderPicksReachesTheDateHandler() throws {
+    func testADayTheUserPicksReachesTheDateHandler() throws {
         let days = Received<CalendarDate>()
         let renderer = AppKitRenderer.running {
             DatePicker(CalendarDate(year: 2026, month: 8, day: 2))
@@ -104,9 +104,9 @@ final class AppKitDateTimePickerViewTests: XCTestCase {
         XCTAssertEqual(days.values, [CalendarDate(year: 2026, month: 9, day: 15)])
     }
 
-    /// The time a reader picks reaches the page's `onTimeChanged`.
+    /// The time a user picks reaches the page's `onTimeChanged`.
     @MainActor
-    func testATimeTheReaderPicksReachesTheTimeHandler() throws {
+    func testATimeTheUserPicksReachesTheTimeHandler() throws {
         let times = Received<ClockTime>()
         let renderer = AppKitRenderer.running {
             TimePicker(ClockTime(hour: 7, minute: 30))

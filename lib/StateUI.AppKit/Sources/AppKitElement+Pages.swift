@@ -87,7 +87,7 @@ extension AppKitElement {
                 titles: segments.map(\.title),
                 images: segments.map(\.image),
                 selected: tabs.selectedIndex,
-                select: { [weak tabs] index in tabs?.selectByReader(index) }),
+                select: { [weak tabs] index in tabs?.selectByUser(index) }),
             split: ancestor?.view as? AppKitSplitView)
     }
 
@@ -377,7 +377,7 @@ extension AppKitElement {
 
         host?.commit(events[.currentPageChanged], payload: [.number(Double(selected))])
 
-        // The window's chrome follows what the reader sees now - its title,
+        // The window's chrome follows what the user sees now - its title,
         // its actions, its row of tabs - whether or not the application binds
         // the selection and renders again.
         host?.refreshWindowChrome()

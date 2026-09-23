@@ -210,7 +210,7 @@ public enum StateUIControls {
 }
 
 /// What an element of the APPLICATION'S OWN tells the application: an event of
-/// its own, and a value its reader changed.
+/// its own, and a value its user changed.
 ///
 /// Handed to the view where the view is made, so the view names members of its
 /// contract and never a handler.
@@ -235,14 +235,14 @@ public struct AppKitReports<Realized: ElementContract> {
         reports.raise(event, repeat each value)
     }
 
-    /// A value the READER changed: it lands on the state the element's value
+    /// A value the USER changed: it lands on the state the element's value
     /// is carried in, and the event is raised with it - so an application
     /// hears the change once, whether it holds the value in a state or in a
     /// handler.
     ///
     /// - Parameters:
     ///   - property: the value's member, written with its contract.
-    ///   - value: what the reader made it.
+    ///   - value: what the user made it.
     ///   - event: the member the element raises for that change.
     public func report<Owner: Contract, Raised: Contract, Value: HostRepresentable>(
         _ property: ElementProperty<Owner, Value>,

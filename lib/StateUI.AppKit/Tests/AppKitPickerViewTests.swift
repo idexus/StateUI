@@ -56,7 +56,7 @@ final class AppKitPickerViewTests: XCTestCase {
     }
 
     @MainActor
-    func testProgramWritesAreSilentAndReaderChoiceReportsOnce() {
+    func testProgramWritesAreSilentAndUserChoiceReportsOnce() {
         let picker = AppKitPickerView()
         var selections: [Int] = []
         picker.onSelectionChanged = { selections.append($0) }
@@ -113,7 +113,7 @@ final class AppKitPickerViewTests: XCTestCase {
     }
 
     @MainActor
-    func testReaderMenuLifecycleReportsOpenThenClose() {
+    func testUserMenuLifecycleReportsOpenThenClose() {
         let picker = AppKitPickerView()
         let menu = NSMenu()
         var events: [String] = []
@@ -143,10 +143,10 @@ final class AppKitPickerViewTests: XCTestCase {
             pickers.map { $0.itemTitles }, [["Small", "Medium", "Large"], ["One", "Two"]])
     }
 
-    /// The item a reader chooses reaches the page's `onSelectedIndexChanged`
+    /// The item a user chooses reaches the page's `onSelectedIndexChanged`
     /// as its index.
     @MainActor
-    func testTheReadersChoiceReachesThePickersHandler() throws {
+    func testTheUsersChoiceReachesThePickersHandler() throws {
         let chosen = Received<Int>()
         let renderer = AppKitRenderer.running {
             Picker(["Small", "Medium", "Large"])
@@ -162,7 +162,7 @@ final class AppKitPickerViewTests: XCTestCase {
 
     /// A picker told to open asks its native menu to open, once it stands in a
     /// window. The test stands in for the pop-up button's click, whose menu
-    /// tracking would hold the run loop until a reader ended it.
+    /// tracking would hold the run loop until a user ended it.
     @MainActor
     func testAPickerToldToOpenOpensItsNativeMenu() throws {
         var opened: [AppKitPickerView] = []

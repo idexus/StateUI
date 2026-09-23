@@ -57,7 +57,7 @@ reads the same patch as Wire bytes.
                           |
                           v
   host: PatchIntake applies the patch; StateChannels carry the bound values;
-        Walker animates both; one walk of the tree sets native properties
+        Animator animates both; one walk of the tree sets native properties
                           |
                           v
                    native views on screen

@@ -9,8 +9,8 @@ import XCTest
 final class DescribedMotionTests: XCTestCase {
     @MainActor
     func testAStructuredBrushMovesOnlyInsideItsStableShape() throws {
-        let walker = Walker()
-        let described = DescribedMotion(walker: walker)
+        let animator = Animator()
+        let described = DescribedMotion(animator: animator)
         let key = DescribedKey(mount: 1, property: .fill)
         let source = HostValue.values([
             .enumeration(2),
@@ -34,7 +34,7 @@ final class DescribedMotionTests: XCTestCase {
             reducesMotion: false)
         XCTAssertEqual(described.presentedValue(for: key), source)
 
-        described.follow(walker.step(now: 100))
+        described.follow(animator.advance(to: 100))
         XCTAssertEqual(described.takeOutputs().last?.value, .values([
             .enumeration(2),
             .numbers([0, 0.5, 1, 0.5]),
@@ -45,8 +45,8 @@ final class DescribedMotionTests: XCTestCase {
 
     @MainActor
     func testChangingAStructuredBrushShapeSnapsInsteadOfInventingAnIntermediate() {
-        let walker = Walker()
-        let described = DescribedMotion(walker: walker)
+        let animator = Animator()
+        let described = DescribedMotion(animator: animator)
         let key = DescribedKey(mount: 1, property: .fill)
         let linear = HostValue.values([
             .enumeration(2),
@@ -74,8 +74,8 @@ final class DescribedMotionTests: XCTestCase {
     /// move as colours, and a colour never blends into a brush.
     @MainActor
     func testAColourBackgroundMovesAsAColourAndSnapsToABrush() {
-        let walker = Walker()
-        let described = DescribedMotion(walker: walker)
+        let animator = Animator()
+        let described = DescribedMotion(animator: animator)
         let colour = DescribedKey(mount: 1, property: .background)
         let black = HostValue.color(red: 0, green: 0, blue: 0, alpha: 255)
 
@@ -87,7 +87,7 @@ final class DescribedMotionTests: XCTestCase {
             now: 0,
             reducesMotion: false)
 
-        described.follow(walker.step(now: 100))
+        described.follow(animator.advance(to: 100))
         XCTAssertEqual(described.takeOutputs().last?.value,
                        .color(red: 128, green: 128, blue: 128, alpha: 255))
 

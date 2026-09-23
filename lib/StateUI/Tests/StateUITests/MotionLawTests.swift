@@ -5,13 +5,13 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
-/// The two motion laws every runtime walks with, as numbers.
+/// The two motion laws every runtime animates with, as numbers.
 ///
-/// The trajectory table below is the conformance suite for a walker in
+/// The trajectory table below is the conformance suite for an animator in
 /// another language: `motion-laws.txt` is written from it, and the MAUI host's
-/// `MotionLawTests.cs` walks every trip in the file to the same numbers.
+/// `MotionLawTests.cs` runs every animation in the file to the same numbers.
 final class MotionLawTests: XCTestCase {
-    func testAnEasedTripIsAFunctionOfElapsedTime() {
+    func testAnEasedAnimationIsAFunctionOfElapsedTime() {
         let halfway = HostMotionLaw.sample(
             .eased(200, .cubicOut), elapsed: 100, from: [0], destination: [1], velocity: [0])
         let landed = HostMotionLaw.sample(
@@ -22,7 +22,7 @@ final class MotionLawTests: XCTestCase {
         XCTAssertEqual(landed, HostMotionSample(value: [1], velocity: [0], rested: true))
     }
 
-    func testATripThatBeganMovingStartsAtItsSpeedAndLandsStill() {
+    func testAnAnimationThatBeganMovingStartsAtItsSpeedAndLandsStill() {
         let motion = Motion.eased(300, .cubicOut)
         let start = HostMotionLaw.sample(
             motion, elapsed: 0, from: [20], destination: [80], velocity: [0.3])
@@ -68,7 +68,7 @@ final class MotionLawTests: XCTestCase {
         XCTAssertEqual(sample, HostMotionSample(value: [5], velocity: [0], rested: true))
     }
 
-    /// The table every runtime's walker is held to.
+    /// The table every runtime's animator is held to.
     ///
     /// Compared number by number to a billionth rather than as text: the
     /// platforms' maths libraries may round `exp`, `sin` and `cos` differently
@@ -89,7 +89,7 @@ final class MotionLawTests: XCTestCase {
         XCTAssertEqual(
             expected.count, walked.count,
             """
-            The table no longer has the fixture's lines. If a trip was added or \
+            The table no longer has the fixture's lines. If a animation was added or \
             changed on purpose, run the tests again with STATEUI_UPDATE_FIXTURES=1 \
             and read the diff of motion-laws.txt.
             """)
@@ -103,8 +103,8 @@ final class MotionLawTests: XCTestCase {
 
     // MARK: - The table
 
-    /// One trip: a law, where each lane began, and the instants it is read at.
-    private struct Trip {
+    /// One animation: a law, where each lane began, and the instants it is read at.
+    private struct Animation {
         let motion: Motion
         let from: [Double]
         let destination: [Double]
@@ -112,69 +112,69 @@ final class MotionLawTests: XCTestCase {
         let instants: [Double]
     }
 
-    private static var trips: [Trip] {
-        var trips: [Trip] = []
+    private static var animations: [Animation] {
+        var animations: [Animation] = []
 
         // Every curve, from a standstill. `Easing` lists no cases, so its raw
         // values are walked until one is missing - a curve appended later is
         // in the table the day it arrives.
         var raw: Int32 = 0
         while let curve = Easing(rawValue: raw) {
-            trips.append(Trip(
+            animations.append(Animation(
                 motion: .eased(400, curve),
                 from: [0, 20], destination: [1, -40], velocity: [0, 0],
                 instants: [0, 40, 100, 200, 300, 360, 399, 400, 480]))
             raw += 1
         }
 
-        // A trip that began moving: the Hermite on a lane with speed, the
+        // A animation that began moving: the Hermite on a lane with speed, the
         // curve on a lane without.
-        trips.append(Trip(
+        animations.append(Animation(
             motion: .eased(300, .cubicOut),
             from: [20, -4], destination: [80, 10], velocity: [0.3, 0],
             instants: [0, 30, 75, 150, 225, 290, 300]))
-        trips.append(Trip(
+        animations.append(Animation(
             motion: .eased(250, .sineInOut),
             from: [1], destination: [0], velocity: [-0.004],
             instants: [0, 25, 125, 249, 250]))
 
         // Springs: critically damped from rest and moving, ringing, crawling.
         let spring: [Double] = [0, 16, 50, 100, 200, 400, 800, 1_600, 3_200]
-        trips.append(Trip(
+        animations.append(Animation(
             motion: .spring(response: 260),
             from: [0], destination: [100], velocity: [0], instants: spring))
-        trips.append(Trip(
+        animations.append(Animation(
             motion: .spring(response: 260),
             from: [0, 50], destination: [100, 50], velocity: [0.5, -0.2], instants: spring))
-        trips.append(Trip(
+        animations.append(Animation(
             motion: .spring(response: 400, damping: 0.5),
             from: [0], destination: [1], velocity: [0], instants: spring + [6_400]))
-        trips.append(Trip(
+        animations.append(Animation(
             motion: .spring(response: 200, damping: 1.8),
             from: [10, 0], destination: [0, 5], velocity: [0, 0.01], instants: spring))
 
         // A spring too loose to settle is over at the longest walk anyway.
-        trips.append(Trip(
+        animations.append(Animation(
             motion: .spring(response: 100_000, damping: 0.05),
             from: [0], destination: [1], velocity: [0],
             instants: [0, 5_000, 9_999, 10_000]))
 
-        // No motion: the trip has arrived before it starts.
-        trips.append(Trip(
+        // No motion: the animation has arrived before it starts.
+        animations.append(Animation(
             motion: .none, from: [3], destination: [7], velocity: [0], instants: [0]))
 
-        return trips
+        return animations
     }
 
     /// The table as the fixture holds it.
     private static func table() -> String {
         var lines = [
-            "# The trajectories every runtime's walker answers: at an elapsed time",
+            "# The trajectories every runtime's animator answers: at an elapsed time",
             "# in milliseconds, the value and the velocity per millisecond of every",
-            "# lane, and whether the trip has arrived. Written by MotionLawTests.swift",
+            "# lane, and whether the animation has arrived. Written by MotionLawTests.swift",
             "# with STATEUI_UPDATE_FIXTURES=1; walked by MotionLawTests.cs.",
             "#",
-            "# trip <law> <curve> <milliseconds> <damping> from <lanes> to <lanes> velocity <lanes>",
+            "# animation <law> <curve> <milliseconds> <damping> from <lanes> to <lanes> velocity <lanes>",
             "# at <elapsed> <moving|rested> value <lanes> velocity <lanes>",
         ]
 
@@ -182,17 +182,17 @@ final class MotionLawTests: XCTestCase {
             values.map { "\($0)" }.joined(separator: ",")
         }
 
-        for trip in trips {
-            let motion = trip.motion
+        for animation in animations {
+            let motion = animation.motion
             lines.append(
-                "trip \(motion.law == .spring ? "spring" : "eased") \(motion.curve) "
-                    + "\(motion.millis) \(motion.factor) from \(lanes(trip.from)) "
-                    + "to \(lanes(trip.destination)) velocity \(lanes(trip.velocity))")
+                "animation \(motion.law == .spring ? "spring" : "eased") \(motion.curve) "
+                    + "\(motion.millis) \(motion.factor) from \(lanes(animation.from)) "
+                    + "to \(lanes(animation.destination)) velocity \(lanes(animation.velocity))")
 
-            for instant in trip.instants {
+            for instant in animation.instants {
                 let sample = HostMotionLaw.sample(
                     motion, elapsed: instant,
-                    from: trip.from, destination: trip.destination, velocity: trip.velocity)
+                    from: animation.from, destination: animation.destination, velocity: animation.velocity)
                 lines.append(
                     "at \(instant) \(sample.rested ? "rested" : "moving") "
                         + "value \(lanes(sample.value)) velocity \(lanes(sample.velocity))")

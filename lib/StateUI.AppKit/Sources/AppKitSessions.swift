@@ -675,7 +675,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
         }
     }
 
-    fileprivate func readerDismissed(_ modal: AppKitModalWindowController) {
+    fileprivate func userDismissed(_ modal: AppKitModalWindowController) {
         guard let window, modals.last === modal else { return }
         let previous = modal.node.element
         let parent = modals.count == 1
@@ -862,7 +862,7 @@ final class AppKitWindowController: NSWindowController, NSWindowDelegate {
 
     func dismissTopModalForTesting() {
         guard let modal = modals.last else { return }
-        readerDismissed(modal)
+        userDismissed(modal)
     }
 
     func closeFromTree() {
@@ -1051,7 +1051,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
     }
 
     func windowShouldClose(_ sender: NSWindow) -> Bool {
-        stateUIOwner?.readerDismissed(self)
+        stateUIOwner?.userDismissed(self)
         return false
     }
 }

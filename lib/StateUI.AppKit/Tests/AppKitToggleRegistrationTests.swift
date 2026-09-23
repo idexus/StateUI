@@ -9,7 +9,7 @@ import XCTest
 
 /// The toggles, realized through the registry: a switch and a check box made
 /// by their registrations, their members reaching the native controls, and
-/// what their reader does reported by member - onto the state the value is
+/// what their user does reported by member - onto the state the value is
 /// carried in, and to the handler that listens for it.
 final class AppKitToggleRegistrationTests: XCTestCase {
     /// The registry realizes both toggles: the value each carries, the event
@@ -78,10 +78,10 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         XCTAssertEqual(Double(tint.blueComponent), 0.6, accuracy: 0.01)
     }
 
-    /// What the reader does reaches both halves at once: the state the value is
+    /// What the user does reaches both halves at once: the state the value is
     /// carried in takes it, and the handler listening for the event hears it.
     @MainActor
-    func testAReadersToggleReachesTheStateAndTheHandler() throws {
+    func testAUsersToggleReachesTheStateAndTheHandler() throws {
         let on = State(wrappedValue: false)
         let heard = Received<Bool>()
         let renderer = AppKitRenderer.running {
@@ -95,16 +95,16 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         let native = try XCTUnwrap(renderer.nativeViews(AppKitSwitchView.self).first)
         native.toggleForTesting()
 
-        XCTAssertTrue(on.wrappedValue, "the state the switch is tied to takes the reader's value")
+        XCTAssertTrue(on.wrappedValue, "the state the switch is tied to takes the user's value")
         XCTAssertEqual(heard.values, [true], "and the handler hears it once")
     }
 
-    /// A toggle nobody takes keeps what the reader made it until the tree
+    /// A toggle nobody takes keeps what the user made it until the tree
     /// describes another value: a registration applies what changed, where the
     /// arms it replaces put the described value back at the element's next
     /// pass, whatever had changed.
     @MainActor
-    func testAToggleNobodyTakesKeepsTheReadersValueUntilTheTreeSaysOtherwise() throws {
+    func testAToggleNobodyTakesKeepsTheUsersValueUntilTheTreeSaysOtherwise() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
@@ -115,7 +115,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("toggle")) as? AppKitSwitchView)
         native.toggleForTesting()
 
-        XCTAssertEqual(native.state, .on, "nothing carries the value, so nothing answers the reader")
+        XCTAssertEqual(native.state, .on, "nothing carries the value, so nothing answers the user")
 
         var moved = HostPatch(id: .manual("toggle"), type: .switch)
         moved.properties[.margin] = .numbers([4, 4, 4, 4])

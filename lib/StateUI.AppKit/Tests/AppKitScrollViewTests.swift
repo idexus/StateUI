@@ -65,7 +65,7 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertTrue(changes.isEmpty)
 
         scroll.beginMovementForTesting()
-        scroll.moveAsReaderForTesting(to: NSPoint(x: 0, y: 210))
+        scroll.moveAsUserForTesting(to: NSPoint(x: 0, y: 210))
         scroll.frame(now: 0)
 
         XCTAssertEqual(changes.count, 1)
@@ -270,7 +270,7 @@ final class AppKitScrollViewTests: XCTestCase {
         native.layoutSubtreeIfNeeded()
         reports.removeAll()
         native.beginMovementForTesting()
-        native.moveAsReaderForTesting(to: NSPoint(x: 120, y: 40))
+        native.moveAsUserForTesting(to: NSPoint(x: 120, y: 40))
         renderer.displayFrameForTesting()
         native.restForTesting()
         renderer.displayFrameForTesting()
@@ -309,7 +309,7 @@ final class AppKitScrollViewTests: XCTestCase {
         reports.removeAll()
 
         native.beginMovementForTesting()
-        native.moveAsReaderForTesting(to: NSPoint(x: 0, y: 40))
+        native.moveAsUserForTesting(to: NSPoint(x: 0, y: 40))
         renderer.displayFrameForTesting()
         XCTAssertEqual(reports, [11], "where it went, on the next frame")
 
@@ -446,7 +446,7 @@ final class AppKitScrollViewTests: XCTestCase {
         // A card is 176 wide and a turn is three fifths of one, 105.6; the push
         // goes 80 - past half a turn, short of a whole one.
         scroller.beginMovementForTesting()
-        scroller.moveAsReaderForTesting(to: NSPoint(x: 80, y: 0))
+        scroller.moveAsUserForTesting(to: NSPoint(x: 80, y: 0))
         scroller.restForTesting()
         let settled = Date(timeIntervalSinceNow: 2)
         while positions.values.last != 1 || abs(scroller.contentView.bounds.origin.x - 105.6) > 0.5,
@@ -460,11 +460,11 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertEqual(positions.values.last, 1)
     }
 
-    /// What the reader scrolled comes back as the state it wrote, and the
+    /// What the user scrolled comes back as the state it wrote, and the
     /// scroller is already there: it is not moved again, which mid-gesture is
     /// the platform's own scroll interrupted on every report.
     @MainActor
-    func testAReadersScrollIsNotWrittenBackToItsScroller() throws {
+    func testAUsersScrollIsNotWrittenBackToItsScroller() throws {
         let renderer = AppKitRenderer.running { BoundStrip() }
         defer { renderer.closeForTesting() }
         let scroller = try XCTUnwrap(renderer.nativeViews(AppKitScrollView.self).first)
@@ -476,7 +476,7 @@ final class AppKitScrollViewTests: XCTestCase {
         renderer.displayFrameForTesting()
 
         XCTAssertEqual(scroller.contentView.bounds.origin.y, 120, accuracy: 0.5)
-        XCTAssertEqual(scroller.programmaticMovesForTesting, moves, "the reader's own offset is not written back")
+        XCTAssertEqual(scroller.programmaticMovesForTesting, moves, "the user's own offset is not written back")
     }
 
     /// What the platform's scroller reports while it moves is taken on the next
@@ -541,7 +541,7 @@ private final class ScrollWheelSpyView: NSScrollView {
 }
 
 
-/// A run the reader can scroll 300 points beyond its room, answering a tap on
+/// A run the user can scroll 300 points beyond its room, answering a tap on
 /// its first hundred.
 private struct TappedRun: ContentView {
     @State private var across = Point.zero

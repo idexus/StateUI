@@ -5,7 +5,7 @@
 import AppKit
 
 /// A native continuous slider with explicit boundaries between StateUI writes
-/// and values moved by the reader.
+/// and values moved by the user.
 @MainActor
 final class AppKitSliderView: NSSlider {
     var onValueChanged: ((Double) -> Void)?
@@ -45,7 +45,7 @@ final class AppKitSliderView: NSSlider {
         }
     }
 
-    /// Writes a value from StateUI without turning it into a reader report.
+    /// Writes a value from StateUI without turning it into a user report.
     func setValue(_ value: Double) {
         doubleValue = min(max(value, minValue), maxValue)
     }

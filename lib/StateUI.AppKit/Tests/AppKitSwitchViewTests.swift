@@ -8,7 +8,7 @@ import XCTest
 
 final class AppKitSwitchViewTests: XCTestCase {
     @MainActor
-    func testStateWritesDoNotBecomeReaderReports() {
+    func testStateWritesDoNotBecomeUserReports() {
         let toggle = AppKitSwitchView()
         var reports: [Bool] = []
         toggle.onToggled = { reports.append($0) }
@@ -22,7 +22,7 @@ final class AppKitSwitchViewTests: XCTestCase {
     }
 
     @MainActor
-    func testAReaderFlipReportsTheSettledBooleanOnce() {
+    func testAUserFlipReportsTheSettledBooleanOnce() {
         let toggle = AppKitSwitchView()
         var reports: [Bool] = []
         toggle.onToggled = { reports.append($0) }
@@ -35,7 +35,7 @@ final class AppKitSwitchViewTests: XCTestCase {
     }
 
     @MainActor
-    func testCheckBoxSeparatesStateWritesFromReaderWrites() {
+    func testCheckBoxSeparatesStateWritesFromUserWrites() {
         let checkBox = AppKitCheckBoxView()
         var reports: [Bool] = []
         checkBox.onToggled = { reports.append($0) }

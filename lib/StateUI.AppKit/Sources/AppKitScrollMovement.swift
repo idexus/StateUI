@@ -4,9 +4,9 @@
 #if os(macOS)
 import AppKit
 
-/// One scroller's movement as the host knows it: whether the reader is moving
+/// One scroller's movement as the host knows it: whether the user is moving
 /// it, what it has to say on the display's next frame, and the moment a
-/// movement of the reader's comes to rest.
+/// movement of the user's comes to rest.
 ///
 /// THE SCROLLING IS THE PLATFORM'S. A drag, a throw, a wheel and a key move the
 /// scroller under AppKit's own physics, and nothing here aims, shortens or
@@ -30,7 +30,7 @@ final class AppKitScrollMovement {
         /// It went from one offset to another.
         case moved(from: NSPoint, to: NSPoint)
 
-        /// A movement of the reader's came to rest.
+        /// A movement of the user's came to rest.
         case rested
     }
 
@@ -42,7 +42,7 @@ final class AppKitScrollMovement {
     /// something to say.
     var onFramesWanted: () -> Void = {}
 
-    /// Whether a movement of the reader's is under way.
+    /// Whether a movement of the user's is under way.
     private(set) var isMoving = false
 
     /// Whether the offset moved during the movement under way.
@@ -51,7 +51,7 @@ final class AppKitScrollMovement {
     /// Whether AppKit's live scroll brackets the movement, and so ends it.
     private var live = false
 
-    /// Whether the reader moved the scroller since the last frame.
+    /// Whether the user moved the scroller since the last frame.
     private var movedSinceFrame = false
 
     /// The frame from which the offset has stood still.
@@ -84,8 +84,8 @@ final class AppKitScrollMovement {
         rest()
     }
 
-    /// The reader moved the scroller from `old` to `new`.
-    func readerMoved(from old: NSPoint, to new: NSPoint) {
+    /// The user moved the scroller from `old` to `new`.
+    func userMoved(from old: NSPoint, to new: NSPoint) {
         guard old != new else { return }
         if !isMoving { begin() }
         moved = true

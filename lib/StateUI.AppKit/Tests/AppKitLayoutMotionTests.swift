@@ -66,20 +66,20 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertEqual(moved.frame.minY, 40, accuracy: 0.001, "a child starts from where it stood")
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         native.layoutSubtreeIfNeeded()
-        XCTAssertEqual(moved.frame.minY, 20, accuracy: 0.001, "halfway on a linear 200 ms walk")
+        XCTAssertEqual(moved.frame.minY, 20, accuracy: 0.001, "halfway through a linear 200 ms animation")
 
         now = 200
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         native.layoutSubtreeIfNeeded()
         XCTAssertEqual(moved.frame.minY, 0, accuracy: 0.001, "and it lands exactly")
-        XCTAssertFalse(renderer.tripsMovingForTesting)
+        XCTAssertFalse(renderer.animatingForTesting)
     }
 
     /// A room that resizes with no patch behind it holds nothing different:
     /// its children follow it exactly, because a child that glides after the
-    /// reader's own hand is late every frame.
+    /// user's own hand is late every frame.
     @MainActor
     func testARoomThatResizesSnapsItsChildren() throws {
         var now = 0.0
@@ -109,7 +109,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
         native.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(moved.frame.minX, 350, accuracy: 0.001, "the child follows the room exactly")
-        XCTAssertFalse(renderer.tripsMovingForTesting, "a resize starts no trip")
+        XCTAssertFalse(renderer.animatingForTesting, "a resize starts no animation")
     }
 
     /// A size a child states for itself arrives at once - it is either still
@@ -137,12 +137,12 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertEqual(below.frame.minY, 40, accuracy: 0.001, "the child below starts where it stood")
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(below.frame.minY, 60, accuracy: 0.001, "and travels to its new place")
     }
 
-    /// Where a frame under a layout is read, every child arrives: each step of
-    /// a walk would hand the reader a room nobody chose.
+    /// Where a frame under a layout is read, every child arrives: each frame of
+    /// an animation would hand what reads the frame a room nobody chose.
     @MainActor
     func testALayoutWhoseFramesAreReadPlacesItsChildrenAtOnce() throws {
         let renderer = testRenderer(
@@ -162,7 +162,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
         native.layoutSubtreeIfNeeded()
 
         XCTAssertEqual(moved.frame.minY, 0, accuracy: 0.001)
-        XCTAssertFalse(renderer.tripsMovingForTesting)
+        XCTAssertFalse(renderer.animatingForTesting)
     }
 
     /// A child that joins a standing layout fades in under the layout's law;
@@ -190,13 +190,13 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertEqual(joined.alphaValue, 0, accuracy: 0.001, "it starts unseen")
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(joined.alphaValue, 0.5, accuracy: 0.001, "halfway on a linear 200 ms fade")
 
         now = 200
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(joined.alphaValue, 1, accuracy: 0.001)
-        XCTAssertFalse(renderer.tripsMovingForTesting)
+        XCTAssertFalse(renderer.animatingForTesting)
     }
 
     /// A layout told to move nothing places its children at once, and a child
@@ -222,7 +222,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
 
         XCTAssertEqual(moved.frame.minY, 0, accuracy: 0.001)
         XCTAssertEqual(joined.alphaValue, 1, accuracy: 0.001)
-        XCTAssertFalse(renderer.tripsMovingForTesting)
+        XCTAssertFalse(renderer.animatingForTesting)
     }
 
     /// A layout that says nothing of its own travels the way the application
@@ -262,14 +262,14 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertEqual(moved.frame.minY, stood, accuracy: 0.001, "a child starts from where it stood")
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(moved.frame.minY, stood - 20, accuracy: 0.001, "on the application's law")
     }
 
-    /// A child that leaves takes its trip with it: nothing walks a place for
+    /// A child that leaves takes its animation with it: nothing animates a place for
     /// an element the tree no longer holds.
     @MainActor
-    func testAChildThatLeavesEndsItsTrip() throws {
+    func testAChildThatLeavesEndsItsAnimation() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
@@ -284,16 +284,16 @@ final class AppKitLayoutMotionTests: XCTestCase {
 
         renderer.applyForTesting(absolute(y: 100))
         native.layoutSubtreeIfNeeded()
-        XCTAssertTrue(renderer.tripsMovingForTesting)
+        XCTAssertTrue(renderer.animatingForTesting)
 
         renderer.applyForTesting(absolute(y: nil))
-        XCTAssertFalse(renderer.tripsMovingForTesting)
+        XCTAssertFalse(renderer.animatingForTesting)
     }
 
-    /// A place that changes mid-walk bends the trip from where the child
+    /// A place that changes mid-animation bends the animation from where the child
     /// stands, rather than starting it again from where it was going.
     @MainActor
-    func testAPlaceChangedMidWalkBendsFromWhereTheChildStands() throws {
+    func testAPlaceChangedMidAnimationBendsFromWhereTheChildStands() throws {
         var now = 0.0
         let renderer = testRenderer(
             resourceDirectory: nil,
@@ -311,7 +311,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
         renderer.applyForTesting(absolute(y: 100))
         native.layoutSubtreeIfNeeded()
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(moved.frame.minY, 50, accuracy: 0.001)
 
         renderer.applyForTesting(absolute(y: 200))
@@ -319,17 +319,17 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertEqual(moved.frame.minY, 50, accuracy: 0.001, "it bends from where it stands")
 
         now = 150
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertGreaterThan(moved.frame.minY, 50, "and goes on, never back")
         XCTAssertLessThan(moved.frame.minY, 200)
 
         now = 300
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(moved.frame.minY, 200, accuracy: 0.001)
-        XCTAssertFalse(renderer.tripsMovingForTesting)
+        XCTAssertFalse(renderer.animatingForTesting)
     }
 
-    /// Where the reader asks for less movement, every child arrives and none
+    /// Where the user asks for less movement, every child arrives and none
     /// fades in.
     @MainActor
     func testUnderReducedMotionEveryChildArrives() throws {
@@ -352,7 +352,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
 
         XCTAssertEqual(moved.frame.minY, 0, accuracy: 0.001)
         XCTAssertEqual(joined.alphaValue, 1, accuracy: 0.001)
-        XCTAssertFalse(renderer.tripsMovingForTesting)
+        XCTAssertFalse(renderer.animatingForTesting)
     }
 }
 #endif

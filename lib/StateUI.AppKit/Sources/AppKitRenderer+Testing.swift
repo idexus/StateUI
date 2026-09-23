@@ -48,8 +48,8 @@ extension AppKitRenderer {
         view.removeFromSuperview()
     }
 
-    func stepTripsForTesting() {
-        displayCycle.stepTrips(now: frameClock.now(), reducesMotion: reducesMotion())
+    func advanceAnimationsForTesting() {
+        displayCycle.advanceAnimations(now: frameClock.now(), reducesMotion: reducesMotion())
         displayCycle.hold()
     }
 
@@ -59,7 +59,7 @@ extension AppKitRenderer {
 
     var frameClockRunningForTesting: Bool { frameClock.isRunning }
 
-    var tripsMovingForTesting: Bool { walker.isMoving }
+    var animatingForTesting: Bool { animator.isMoving }
 
     var channelCountForTesting: Int { stateChannels.count }
 

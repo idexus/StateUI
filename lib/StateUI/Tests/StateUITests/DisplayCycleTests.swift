@@ -6,19 +6,19 @@ import XCTest
 
 /// One frame of the display, in the order every runtime keeps.
 final class DisplayCycleTests: XCTestCase {
-    /// A state channel's step, a described property's step and the core's changes are presented in one walk.
+    /// A state channel, a described property and the core's changes are presented in one walk.
     @MainActor
     func testAFramePresentsEverythingItMovedInOneWalk() {
-        let walker = Walker()
-        let channels = StateChannels(walker: walker)
-        let described = DescribedMotion(walker: walker)
+        let animator = Animator()
+        let channels = StateChannels(animator: animator)
+        let described = DescribedMotion(animator: animator)
         let cycle = DisplayCycle(
             core: CoreLink(),
             clock: HandClock(),
-            walker: walker,
+            animator: animator,
             stateChannels: channels,
             describedMotion: described,
-            layoutMotion: LayoutMotion(walker: walker, now: { 0 }, reducesMotion: { false }),
+            layoutMotion: LayoutMotion(animator: animator, now: { 0 }, reducesMotion: { false }),
             reducesMotion: { false })
         let presenter = CountingPresenter()
         cycle.presenter = presenter

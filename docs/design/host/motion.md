@@ -1,21 +1,22 @@
 # Motion in the runtime
 
-How a runtime animates: one walker steps every animation, one channel per
+How a runtime animates: one animator advances every animation, one channel per
 bound state feeds every control tied to it, and the animations a patch
 describes are keyed by element and property. The timing laws are the core's,
 `HostMotionLaw`; [the runtime](runtime.md) draws where these elements sit in a
 frame.
 
-## One walker
+## One animator
 
-A value is animated by `Walker` alone. Every running animation is a `Trip`:
-where each lane began, where it is going, its starting speed, its timing and
-when it began. A trip is pure: its position is `HostMotionLaw` at the time
-handed in, so a hand-wound clock reproduces every frame. One step walks every
-trip in `TripTarget` order - states by number, then described properties by
-element and property, then layout places by element - so two runs of the same
-frame write in the same order. A trip that arrives leaves the walker, and with
-Reduce Motion every trip arrives at once, at its destination.
+A value is animated by `Animator` alone. Every running animation is an
+`Animation`: where each lane began, where it is going, its starting speed, its
+timing and when it began. An animation is pure: its position is
+`HostMotionLaw` at the time handed in, so a hand-wound clock reproduces every
+frame. One advance moves every animation in `AnimationTarget` order - states
+by number, then described properties by element and property, then layout
+places by element - so two runs of the same frame write in the same order. An
+animation that arrives leaves the animator, and with Reduce Motion every
+animation arrives at once, at its destination.
 
 ## State channels
 
@@ -62,7 +63,7 @@ child stands on the way. Why an arrangement happens decides everything:
 
 A size a child states for itself arrives while its place animates: a stated
 size is either still or already animating on its own. Where a frame under the
-layout is read, every child arrives, because each step of an animation would
+layout is read, every child arrives, because each frame of an animation would
 hand the reader of that frame a room nobody chose. The same place asked for
 again keeps its running animation, and a new place bends a running one from
 where it has reached, at its speed. A layout's children hold no strong

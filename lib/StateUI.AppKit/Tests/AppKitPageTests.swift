@@ -431,7 +431,7 @@ final class AppKitPageTests: XCTestCase {
     }
 
     @MainActor
-    func testReaderTabSelectionReportsTheSelectedIndexOnce() throws {
+    func testUserTabSelectionReportsTheSelectedIndexOnce() throws {
         var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
@@ -459,7 +459,7 @@ final class AppKitPageTests: XCTestCase {
     /// beneath the window's toolbar - beneath the title bar where there is no
     /// split view - one select-one segmented control sharing the width
     /// equally, and none on its content, where nothing is painted. Choosing in
-    /// the row is the reader choosing.
+    /// the row is the user choosing.
     @MainActor
     func testAWindowsTabbedViewSelectsFromTheRowBeneathItsToolbar() throws {
         var reported: [(Int32, [HostValue])] = []
@@ -506,11 +506,11 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(control.selectedSegment, 1)
     }
 
-    /// A tab the reader chooses changes the window's chrome at once - its
+    /// A tab the user chooses changes the window's chrome at once - its
     /// title and its row - whether or not the application binds the selection
     /// and renders again.
     @MainActor
-    func testAReaderChosenTabRenamesTheWindowAtOnce() throws {
+    func testAUserChosenTabRenamesTheWindowAtOnce() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false,
@@ -638,7 +638,7 @@ final class AppKitPageTests: XCTestCase {
 
     /// A tabbed view in a tab of another is a native tab view with its tabs on
     /// the top edge of its content, named by its pages; a tab clicked there is
-    /// the reader choosing. The window's toolbar serves only the outer one.
+    /// the user choosing. The window's toolbar serves only the outer one.
     @MainActor
     func testATabbedViewInsideATabShowsItsTabsOnItsContent() throws {
         var reported: [(Int32, [HostValue])] = []
@@ -916,7 +916,7 @@ final class AppKitPageTests: XCTestCase {
     }
 
     @MainActor
-    func testReaderFlyoutToggleReportsItsSettledValueOnce() throws {
+    func testUserFlyoutToggleReportsItsSettledValueOnce() throws {
         var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
@@ -976,9 +976,9 @@ final class AppKitPageTests: XCTestCase {
     }
 
     /// The system toggle hides a sidebar the host showed for a wide window,
-    /// and the reader's answer stands: nothing forces it back.
+    /// and the user's answer stands: nothing forces it back.
     @MainActor
-    func testTheReaderMayHideTheSidebarOfAWideWindow() throws {
+    func testTheUserMayHideTheSidebarOfAWideWindow() throws {
         var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
@@ -1216,7 +1216,7 @@ final class AppKitPageTests: XCTestCase {
     }
 
     @MainActor
-    func testReaderDismissalReportsTheSurvivingModalDepth() throws {
+    func testUserDismissalReportsTheSurvivingModalDepth() throws {
         var reported: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,

@@ -14,7 +14,7 @@ enum AppKitDateTimePickerMode {
 ///
 /// The fixed Gregorian conversion is deliberately local to the host. StateUI
 /// keeps a civil date and a time of day as numeric lanes, never as an absolute
-/// instant whose zone conversion could change the reader's chosen value.
+/// instant whose zone conversion could change the user's chosen value.
 @MainActor
 final class AppKitDateTimePickerView: NSDatePicker {
     var onValueChanged: (([Double]) -> Void)?

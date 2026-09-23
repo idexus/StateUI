@@ -9,10 +9,10 @@ import XCTest
 
 final class AppKitTextFieldViewTests: XCTestCase {
     /// The render that follows a keystroke carries the typed text back. It
-    /// must not move the caret the reader is typing at, even when the entry
+    /// must not move the caret the user is typing at, even when the entry
     /// describes a caret position: only a change of that position moves it.
     @MainActor
-    func testReapplyingTheTypedTextKeepsTheReadersCaret() throws {
+    func testReapplyingTheTypedTextKeepsTheUsersCaret() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         var entry = HostPatch(id: .manual("entry"), type: .textField)
@@ -128,7 +128,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
 
     /// A read-only field keeps its text selectable and unchangeable, and a
     /// field's spell check and word prediction reach the native field and
-    /// the editor the reader types into. A field that says nothing keeps
+    /// the editor the user types into. A field that says nothing keeps
     /// all three on.
     @MainActor
     func testATextFieldsEditingSettingsComeThroughTheHost() throws {
@@ -169,7 +169,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
         XCTAssertEqual(submitted.values, ["submitted"])
     }
 
-    /// What a reader types reaches the page's `onTextChanged` handler, the
+    /// What a user types reaches the page's `onTextChanged` handler, the
     /// field's whole text each time.
     @MainActor
     func testTypingInATextFieldReachesItsTextHandler() throws {

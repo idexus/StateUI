@@ -89,7 +89,7 @@
     /// The animations of the layouts' places.
     public let layoutMotion: LayoutMotion
 
-    /// Called when a property animation starts, so the frame clock is held to walk it.
+    /// Called when a property animation starts, so the frame clock is held while it runs.
     public var onAnimation: () -> Void = {}
 
     private let now: () -> Double

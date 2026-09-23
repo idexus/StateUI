@@ -35,13 +35,13 @@
 /// The property animations a patch describes, keyed by element and property.
 /// Design: docs/design/host/motion.md#described-motion
 @_spi(Host) @MainActor public final class DescribedMotion {
-    private let walker: Walker
+    private let animator: Animator
     private var transitions: [DescribedKey: DescribedTransition] = [:]
     private var outputs: [DescribedOutput] = []
 
-    /// Described motion whose trips `walker` walks.
-    public init(walker: Walker) {
-        self.walker = walker
+    /// Described motion whose animations `animator` advances.
+    public init(animator: Animator) {
+        self.animator = animator
     }
 
     /// Whether any transition is under way.
@@ -69,10 +69,10 @@
         var carriedVelocity: [Double] = []
 
         if let running = transitions.removeValue(forKey: key) {
-            if let trip = walker.trip(for: .described(key)) {
-                _ = running.follow(trip.position(at: now))
+            if let animation = animator.animation(for: .described(key)) {
+                _ = running.follow(animation.position(at: now))
             }
-            walker.halt(.described(key))
+            animator.halt(.described(key))
             source = running.presented
             carriedLanes = running.lanes
             carriedVelocity = running.velocity
@@ -94,7 +94,7 @@
                 property: key.property)
         else { return false }
 
-        let trip = Trip(
+        let animation = Animation(
             from: plan.from,
             destination: plan.destination,
             velocity: carriedVelocity.count == plan.from.count
@@ -103,15 +103,15 @@
             motion: motion,
             began: now)
 
-        guard !trip.arrives else { return false }
+        guard !animation.arrives else { return false }
         transitions[key] = DescribedTransition(
-            plan: plan, velocity: trip.velocity, landed: landed)
-        walker.start(trip, for: .described(key))
+            plan: plan, velocity: animation.velocity, landed: landed)
+        animator.start(animation, for: .described(key))
         return true
     }
 
-    /// Takes a walker step's values for the animations, in key order.
-    public func follow(_ steps: [Step]) {
+    /// Takes the values an animator advance gave for the animations, in key order.
+    public func follow(_ steps: [AnimationStep]) {
         for step in steps {
             guard case .described(let key) = step.target,
                   let transition = transitions[key]
@@ -122,7 +122,7 @@
 
             if presented.rested {
                 transitions[key] = nil
-                walker.halt(.described(key))
+                animator.halt(.described(key))
                 transition.landed?()
             }
         }
@@ -132,7 +132,7 @@
     public func remove(mount: UInt64) {
         transitions = transitions.filter { $0.key.mount != mount }
         outputs.removeAll { $0.key.mount == mount }
-        walker.retain { target in
+        animator.retain { target in
             guard case .described(let key) = target else { return true }
             return key.mount != mount
         }

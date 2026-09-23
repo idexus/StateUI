@@ -662,7 +662,7 @@ enum Fixtures {
     /// Every Swift runtime's sources: the core's host layer, `Sources/Host`,
     /// and the package of each Swift host, for the guards that hold every
     /// runtime to one architecture. A path is relative to `lib/` and written
-    /// with forward slashes - `StateUI/Sources/Host/Walker.swift`.
+    /// with forward slashes - `StateUI/Sources/Host/Animator.swift`.
     static func runtimeSources() throws -> [(path: String, text: String)] {
         let lib = repository.appendingPathComponent("lib")
         let roots = ["StateUI/Sources/Host", "StateUI.AppKit/Sources"]

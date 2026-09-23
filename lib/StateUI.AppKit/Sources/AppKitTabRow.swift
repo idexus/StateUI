@@ -137,7 +137,7 @@ final class AppKitTabRow: NSView {
         return copy
     }
 
-    /// The reader chose a tab.
+    /// The user chose a tab.
     @objc private func chose(_ sender: NSSegmentedControl) {
         tabs?.select(sender.selectedSegment)
     }

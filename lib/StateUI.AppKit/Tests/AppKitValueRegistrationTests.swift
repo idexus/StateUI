@@ -9,7 +9,7 @@ import XCTest
 
 /// The values, realized through the registry: a slider and a stepper made by
 /// their registrations, their range and value reaching the native controls, and
-/// the number their reader moves reported by member - onto the journey the host
+/// the number their user moves reported by member - onto the journey the host
 /// carries it in, and to the handler that listens for it.
 final class AppKitValueRegistrationTests: XCTestCase {
     /// The registry realizes both: the number each carries, the events each
@@ -80,11 +80,11 @@ final class AppKitValueRegistrationTests: XCTestCase {
         XCTAssertEqual(native.doubleValue, 0.8, accuracy: 1e-9)
     }
 
-    /// What the reader moves reaches both halves at once: the journey the host
+    /// What the user moves reaches both halves at once: the journey the host
     /// carries the number in takes it where the hand left it, and the handler
     /// listening for the change hears it.
     @MainActor
-    func testAReadersMoveTakesTheJourneyAndIsHeard() throws {
+    func testAUsersMoveTakesTheJourneyAndIsHeard() throws {
         let volume = State(wrappedValue: 0.25)
         let heard = Received<Double>()
         let renderer = AppKitRenderer.running {
@@ -99,14 +99,14 @@ final class AppKitValueRegistrationTests: XCTestCase {
         native.doubleValue = 0.625
         native.valueChanged(native)
 
-        XCTAssertEqual(volume.wrappedValue, 0.625, accuracy: 1e-9, "the journey took the reader's position")
+        XCTAssertEqual(volume.wrappedValue, 0.625, accuracy: 1e-9, "the journey took the user's position")
         XCTAssertEqual(heard.values, [0.625], "and the handler heard the change once")
     }
 
-    /// A stepper takes its range and its step, and what its reader steps to is
+    /// A stepper takes its range and its step, and what its user steps to is
     /// reported the same way.
     @MainActor
-    func testAStepperShowsItsRangeAndReportsWhatTheReaderSteps() throws {
+    func testAStepperShowsItsRangeAndReportsWhatTheUserSteps() throws {
         let servings = State(wrappedValue: 2.0)
         let heard = Received<Double>()
         let renderer = AppKitRenderer.running {

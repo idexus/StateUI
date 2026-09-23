@@ -5,7 +5,7 @@
 import AppKit
 @_spi(Host) import StateUI
 
-/// A native AppKit choice field with StateUI's strict program/reader boundary.
+/// A native AppKit choice field with StateUI's strict program/user boundary.
 ///
 /// `NSPopUpButton.title` inserts a real menu item when nothing is selected.
 /// The separate pass-through label keeps StateUI's placeholder outside the
@@ -166,7 +166,7 @@ final class AppKitPickerView: NSView, NSMenuDelegate {
     }
 
     /// What opens a picker's menu in a test, in place of the pop-up button's
-    /// click: the native menu's tracking holds the run loop until a reader
+    /// click: the native menu's tracking holds the run loop until a user
     /// ends it. Taken when the opening is scheduled, so an opening that runs
     /// late still reaches the test that asked for it.
     static var opensMenuForTesting: ((AppKitPickerView) -> Void)?

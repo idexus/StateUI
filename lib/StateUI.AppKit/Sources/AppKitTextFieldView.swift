@@ -185,8 +185,8 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     }
 
     /// Only a change of the authored selection moves the caret. A text write,
-    /// including the one that carries the reader's own typing back, leaves
-    /// the caret where the reader put it.
+    /// including the one that carries the user's own typing back, leaves
+    /// the caret where the user put it.
     private func applySelection() {
         guard let editor = textField.currentEditor(),
               cursorPosition != nil || selectionLength != nil

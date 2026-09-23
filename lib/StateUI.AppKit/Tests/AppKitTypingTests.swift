@@ -7,10 +7,10 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-/// What the reader types stays where it was typed. A keystroke reports the
+/// What the user types stays where it was typed. A keystroke reports the
 /// field's whole text, and the render that report causes writes the field
 /// back from the value it carries - never from the one before it, which would
-/// put every field one keystroke behind the reader.
+/// put every field one keystroke behind the user.
 final class AppKitTypingTests: XCTestCase {
     @MainActor
     func testEveryBoundTextControlKeepsEachKeystroke() throws {

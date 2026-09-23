@@ -35,7 +35,7 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
     /// A scroll view's members come through the registry though its VIEW IS
     /// THE HOST'S: the registry realizes the element and makes nothing for it,
     /// so the host's own arm - which binds the reports that go through a
-    /// reader transaction, and the request for display frames - still stands.
+    /// user transaction, and the request for display frames - still stands.
     @MainActor
     func testTheRegistryRealizesAScrollViewWithoutMakingIt() {
         let realization = AppKitRegistrations.registry.realization

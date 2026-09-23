@@ -17,7 +17,7 @@ import AppKit
 /// never mirrors that identity as state. `focus` answers whether the view took
 /// it - false is an answer, not a failure: a view disabled, off screen or with
 /// nothing to type into refuses it. `hideOnScreenKeyboard` takes the focus off
-/// whatever holds it in the window the reader is looking at, answering whether
+/// whatever holds it in the window the user is looking at, answering whether
 /// anything did.
 @MainActor
 final class AppKitActPerformer {
@@ -113,10 +113,10 @@ final class AppKitActPerformer {
         reply(call, [.bool(window.makeFirstResponder(focusable))])
     }
 
-    /// Takes the focus off whatever holds it in the window the reader is
+    /// Takes the focus off whatever holds it in the window the user is
     /// looking at; whether anything did.
     private func hideKeyboard() -> Bool {
-        guard let window = renderer.readerWindow,
+        guard let window = renderer.userWindow,
               let holder = window.firstResponder as? NSView,
               holder !== window.contentView
         else { return false }

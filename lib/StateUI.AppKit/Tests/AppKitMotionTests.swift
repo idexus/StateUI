@@ -45,16 +45,16 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertTrue(renderer.describedMotionActiveForTesting)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
         now = 200
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(label.alphaValue, 0.75, accuracy: 0.000_001)
         XCTAssertFalse(renderer.describedMotionActiveForTesting)
 
         now = 300
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(label.alphaValue, 0.75, accuracy: 0.000_001)
     }
 
@@ -79,7 +79,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(label.alphaValue, 1, accuracy: 0.000_001)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
     }
 
@@ -108,7 +108,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(transform.a, 1, accuracy: 0.000_001)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         transform = try XCTUnwrap(label.layer).affineTransform()
         XCTAssertEqual(transform.tx, 5, accuracy: 0.000_001)
         XCTAssertEqual(transform.a, 1.5, accuracy: 0.000_001)
@@ -142,7 +142,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(stack.spacing, 0, accuracy: 0.000_001)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(stack.padding.top, 20, accuracy: 0.000_001)
         XCTAssertEqual(stack.padding.left, 10, accuracy: 0.000_001)
         XCTAssertEqual(stack.padding.bottom, 40, accuracy: 0.000_001)
@@ -189,7 +189,7 @@ final class AppKitMotionTests: XCTestCase {
         let arrangementsBeforeFrame = stack.arrangementCountForTesting
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
 
         XCTAssertEqual(
             stack.arrangementCountForTesting - arrangementsBeforeFrame,
@@ -236,7 +236,7 @@ final class AppKitMotionTests: XCTestCase {
         let synchronizationsBeforeFrame = renderer.windowSynchronizationCountForTesting
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
 
         XCTAssertEqual(
             renderer.windowSynchronizationCountForTesting,
@@ -270,7 +270,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(standing.constant, 120, accuracy: 0.001)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
 
         let moving = try XCTUnwrap(box.constraints.first {
             $0.firstAttribute == .width && $0.relation == .equal
@@ -341,7 +341,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(moving)
 
         now = 50
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.25, accuracy: 0.000_001)
 
@@ -351,12 +351,12 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertTrue(renderer.describedMotionActiveForTesting)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
     }
 
     @MainActor
-    func testAPropertyMotionDoesNotRewriteTheReadersScrollPosition() throws {
+    func testAPropertyMotionDoesNotRewriteTheUsersScrollPosition() throws {
         var now = 0.0
         let renderer = testRenderer(
             resourceDirectory: nil,
@@ -380,7 +380,7 @@ final class AppKitMotionTests: XCTestCase {
         scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
         scroll.layoutSubtreeIfNeeded()
         scroll.beginMovementForTesting()
-        scroll.moveAsReaderForTesting(to: NSPoint(x: 0, y: 120))
+        scroll.moveAsUserForTesting(to: NSPoint(x: 0, y: 120))
         XCTAssertEqual(scroll.offset.y, 120, accuracy: 0.001)
 
         var moving = HostPatch(id: .manual("scroll"), type: .scrollView)
@@ -390,7 +390,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(scroll.offset.y, 120, accuracy: 0.001)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(scroll.offset.y, 120, accuracy: 0.001)
     }
 
@@ -437,13 +437,13 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(changed)
 
         now = 50
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.25, accuracy: 0.000_001)
 
         reduced = true
         now = 60
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
 
         XCTAssertEqual(label.alphaValue, 1, accuracy: 0.000_001)
         XCTAssertFalse(renderer.describedMotionActiveForTesting)
@@ -469,7 +469,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(moving)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
@@ -480,7 +480,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertFalse(renderer.describedMotionActiveForTesting)
 
         now = 300
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(label.alphaValue, 0.25, accuracy: 0.000_001)
     }
 
@@ -504,7 +504,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(moving)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
@@ -515,7 +515,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertFalse(renderer.describedMotionActiveForTesting)
 
         now = 300
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(label.alphaValue, 1, accuracy: 0.000_001)
     }
 
@@ -539,7 +539,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(first)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         let label = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
@@ -550,11 +550,11 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(label.alphaValue, 0.5, accuracy: 0.000_001)
 
         now = 101
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertGreaterThan(label.alphaValue, 0.5)
 
         now = 300
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(label.alphaValue, 0.2, accuracy: 0.000_001)
         XCTAssertFalse(renderer.describedMotionActiveForTesting)
     }
@@ -609,7 +609,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(changed)
 
         now = 50
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         let labels = renderer.viewsForTesting(id: .manual("same"))
         XCTAssertEqual(labels.count, 2)
         XCTAssertEqual(labels[0].alphaValue, 0.25, accuracy: 0.000_001)
@@ -696,7 +696,7 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(changed)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         let box = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("box")) as? AppKitColorBoxView)
         XCTAssertEqual(
@@ -726,14 +726,14 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(box.cornerRadii, AppKitCornerRadii())
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(
             box.cornerRadii,
             AppKitCornerRadii(topLeft: 5, topRight: 10, bottomLeft: 15, bottomRight: 20))
     }
 
     @MainActor
-    func testASliderTransitionBeginsAtTheReadersLiveNativeValue() throws {
+    func testASliderTransitionBeginsAtTheUsersLiveNativeValue() throws {
         var now = 0.0
         let renderer = testRenderer(
             resourceDirectory: nil,
@@ -757,7 +757,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(slider.doubleValue, 0.8, accuracy: 0.000_001)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(slider.doubleValue, 0.9, accuracy: 0.000_001)
     }
 
@@ -785,12 +785,12 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(progress.doubleValue, 0, accuracy: 0.000_001)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(progress.doubleValue, 0.5, accuracy: 0.000_001)
     }
 
     @MainActor
-    func testAWindowWidthTransitionStartsAtTheReadersLiveContentSizeAndPreservesHeight() throws {
+    func testAWindowWidthTransitionStartsAtTheUsersLiveContentSizeAndPreservesHeight() throws {
         var now = 0.0
         let renderer = testRenderer(
             resourceDirectory: nil,
@@ -816,7 +816,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.height, 500, accuracy: 0.001)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.width, 900, accuracy: 0.001)
         XCTAssertEqual(window.contentRect(forFrameRect: window.frame).size.height, 500, accuracy: 0.001)
     }
@@ -844,7 +844,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(window.frame.maxY, standingTop, accuracy: 0.001)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(window.frame.minX, 200, accuracy: 0.001)
         XCTAssertEqual(window.frame.maxY, standingTop, accuracy: 0.001)
     }
@@ -885,12 +885,12 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(path.bounds.origin, NSPoint(x: 1, y: 2))
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         path = shape.pathForTesting(in: NSRect(x: 0, y: 0, width: 22, height: 14))
         XCTAssertEqual(path.bounds.origin, NSPoint(x: 6, y: 12))
 
         now = 200
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         path = shape.pathForTesting(in: NSRect(x: 0, y: 0, width: 22, height: 14))
         XCTAssertEqual(path.bounds.origin, NSPoint(x: 11, y: 22))
         XCTAssertFalse(renderer.describedMotionActiveForTesting)
@@ -933,7 +933,7 @@ final class AppKitMotionTests: XCTestCase {
         XCTAssertEqual(line.dashPhaseForTesting, 0, accuracy: 0.000_001)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         path = line.pathForTesting(in: NSRect(x: 0, y: 0, width: 10, height: 5))
         XCTAssertEqual(path.bounds, NSRect(x: 0, y: 0, width: 10, height: 5))
         XCTAssertEqual(path.lineWidth, 2, accuracy: 0.000_001)

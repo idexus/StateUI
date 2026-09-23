@@ -25,7 +25,7 @@ final class AppKitRenderer: @unchecked Sendable {
     let eventSink: ((Int32, [HostValue]) -> Void)?
     let preferences: UserDefaults
     let core = CoreLink()
-    let walker: Walker
+    let animator: Animator
     let stateChannels: StateChannels
     let describedMotion: DescribedMotion
     let layoutMotion: LayoutMotion
@@ -61,8 +61,8 @@ final class AppKitRenderer: @unchecked Sendable {
     /// Whether the queue is being delivered. A render inside the delivery
     /// queues what it raises behind what already waits, in order.
     var deliveringEvents = false
-    var readerTransactionDepth = 0
-    var readerTransactionChangedState = false
+    var userTransactionDepth = 0
+    var userTransactionChangedState = false
     var queuedEvents: [QueuedEvent] = []
     weak var activeWindow: AppKitWindowController?
     var applicationIsHidden = false
@@ -90,16 +90,16 @@ final class AppKitRenderer: @unchecked Sendable {
         let frameClock = clock.map { AppKitFrameClock(now: $0) } ?? AppKitFrameClock()
         self.frameClock = frameClock
         self.reducesMotion = reducesMotion
-        let walker = Walker()
-        self.walker = walker
-        stateChannels = StateChannels(walker: walker)
-        describedMotion = DescribedMotion(walker: walker)
+        let animator = Animator()
+        self.animator = animator
+        stateChannels = StateChannels(animator: animator)
+        describedMotion = DescribedMotion(animator: animator)
         layoutMotion = LayoutMotion(
-            walker: walker, now: frameClock.now, reducesMotion: reducesMotion)
+            animator: animator, now: frameClock.now, reducesMotion: reducesMotion)
         displayCycle = DisplayCycle(
             core: core,
             clock: frameClock,
-            walker: walker,
+            animator: animator,
             stateChannels: stateChannels,
             describedMotion: describedMotion,
             layoutMotion: layoutMotion,
@@ -173,7 +173,7 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     func dispatch(_ handler: Int32, payload: [HostValue] = [], isPhase: Bool = false) {
-        if synchronizingWindows || readerTransactionDepth > 0 || intake.isApplying {
+        if synchronizingWindows || userTransactionDepth > 0 || intake.isApplying {
             queuedEvents.append(QueuedEvent(
                 handler: handler,
                 payload: payload,
@@ -203,24 +203,24 @@ final class AppKitRenderer: @unchecked Sendable {
             isPhase: isPhase))
     }
 
-    /// Commits a reader-driven page change and its lifecycle as one ordered
+    /// Commits a user-driven page change and its lifecycle as one ordered
     /// batch. The native control has already settled before this is called.
     func commit(_ handler: Int32?, payload: [HostValue] = []) {
         if let handler { enqueue(handler, payload: payload) }
-        if !synchronizingWindows, readerTransactionDepth == 0 { flushQueuedEvents() }
+        if !synchronizingWindows, userTransactionDepth == 0 { flushQueuedEvents() }
     }
 
-    /// Makes a compound reader gesture visible to Swift as one settled native
+    /// Makes a compound user gesture visible to Swift as one settled native
     /// transaction. Radio groups use it to report the old false before the new
     /// true without rendering between those two halves.
-    func performReaderTransaction(_ body: () -> Void) {
-        readerTransactionDepth += 1
+    func performUserTransaction(_ body: () -> Void) {
+        userTransactionDepth += 1
         body()
-        readerTransactionDepth -= 1
+        userTransactionDepth -= 1
 
-        guard readerTransactionDepth == 0, !synchronizingWindows else { return }
-        let changedState = readerTransactionChangedState
-        readerTransactionChangedState = false
+        guard userTransactionDepth == 0, !synchronizingWindows else { return }
+        let changedState = userTransactionChangedState
+        userTransactionChangedState = false
 
         if !queuedEvents.isEmpty {
             flushQueuedEvents()
@@ -229,8 +229,8 @@ final class AppKitRenderer: @unchecked Sendable {
         }
     }
 
-    func settleReaderWrite(_ changedState: Bool) {
-        guard changedState, readerTransactionDepth == 0 else { return }
+    func settleUserWrite(_ changedState: Bool) {
+        guard changedState, userTransactionDepth == 0 else { return }
         if eventSink == nil { pump() }
     }
 
@@ -251,7 +251,7 @@ final class AppKitRenderer: @unchecked Sendable {
     func report(_ value: HostStateValue, through binding: HostStateBinding) -> Bool {
         guard core.report(value, through: binding) else { return false }
 
-        if readerTransactionDepth > 0 { readerTransactionChangedState = true }
+        if userTransactionDepth > 0 { userTransactionChangedState = true }
 
         displayCycle.drain(now: frameClock.now(), reported: [binding.state: value])
         return true
@@ -372,8 +372,8 @@ final class AppKitRenderer: @unchecked Sendable {
         tree.root?.first(id: id)?.appKit.view
     }
 
-    /// The window the reader is looking at: the key window, else the main one.
-    var readerWindow: NSWindow? {
+    /// The window the user is looking at: the key window, else the main one.
+    var userWindow: NSWindow? {
         NSApp.keyWindow ?? orderedWindowControllers.first?.window
     }
 
@@ -436,7 +436,7 @@ extension AppKitRenderer: FramePresenter {
         let scrollers = framedScrollers.allObjects
         guard !scrollers.isEmpty else { return }
 
-        performReaderTransaction {
+        performUserTransaction {
             for scroller in scrollers {
                 scroller.frame(now: now)
                 if !scroller.wantsFrames { framedScrollers.remove(scroller) }

@@ -35,7 +35,7 @@
         var standing: Rect?
     }
 
-    private let walker: Walker
+    private let animator: Animator
     private let now: () -> Double
     private let reducesMotion: () -> Bool
     private var seats: [UInt64: Seat] = [:]
@@ -43,12 +43,12 @@
     /// The application's motion, which a layout that says nothing of its own animates under.
     public var applicationMotion: Motion = .none
 
-    /// Called when an animation starts, so the frame clock is held to walk it.
+    /// Called when an animation starts, so the frame clock is held while it runs.
     public var onStart: () -> Void = {}
 
-    /// Layout motion whose animations `walker` walks, on `now`'s time.
-    public init(walker: Walker, now: @escaping () -> Double, reducesMotion: @escaping () -> Bool) {
-        self.walker = walker
+    /// Layout motion whose animations `animator` advances, on `now`'s time.
+    public init(animator: Animator, now: @escaping () -> Double, reducesMotion: @escaping () -> Bool) {
+        self.animator = animator
         self.now = now
         self.reducesMotion = reducesMotion
     }
@@ -92,9 +92,9 @@
         }
 
         seats[mount]?.view = view
-        let key = TripTarget.placed(mount)
+        let key = AnimationTarget.placed(mount)
         let destination = Self.lanes(target)
-        let running = walker.trip(for: key)
+        let running = animator.animation(for: key)
 
         // The same place asked for again keeps its animation rather than starting it over.
         if let running, running.destination == destination {
@@ -120,22 +120,22 @@
             velocity[index] = 0
         }
 
-        let trip = Trip(from: start, destination: destination, velocity: velocity, motion: arrangement.law, began: now())
+        let animation = Animation(from: start, destination: destination, velocity: velocity, motion: arrangement.law, began: now())
 
-        guard !trip.arrives else {
+        guard !animation.arrives else {
             arrive(view, at: target, mount: mount)
             return
         }
 
         let standing = Self.rect(start)
-        walker.start(trip, for: key)
+        animator.start(animation, for: key)
         seats[mount]?.standing = standing
         view.placedFrame = standing
         onStart()
     }
 
-    /// Stands each animating child where a step of the walker put it.
-    public func follow(_ steps: [Step]) {
+    /// Stands each animating child where the animator put it.
+    public func follow(_ steps: [AnimationStep]) {
         for step in steps {
             guard case .placed(let mount) = step.target else { continue }
 
@@ -148,11 +148,11 @@
     /// Forgets the place of an element that leaves the tree, or is adopted and then arrives.
     public func remove(mount: UInt64) {
         seats[mount] = nil
-        walker.halt(.placed(mount))
+        animator.halt(.placed(mount))
     }
 
     private func arrive(_ view: any PlacedView, at target: Rect, mount: UInt64) {
-        walker.halt(.placed(mount))
+        animator.halt(.placed(mount))
         seats[mount]?.standing = nil
         view.placedFrame = target
     }

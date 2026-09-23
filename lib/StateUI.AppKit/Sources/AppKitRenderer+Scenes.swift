@@ -8,7 +8,7 @@ import AppKit
 /// Scenes and windows: kept in step with the tree, restored, activated and closed.
 extension AppKitRenderer {
     /// Composes every window's chrome again from what it shows now - after a
-    /// change the reader made on a native control, which the application may
+    /// change the user made on a native control, which the application may
     /// not render for.
     func refreshWindowChrome() {
         for controller in orderedWindowControllers {

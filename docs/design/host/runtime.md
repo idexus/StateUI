@@ -19,7 +19,7 @@ another language ports them and proves the port against the same fixtures.
        v                                                      v
   host layer               CoreLink        PatchIntake        runtime in another language
   @_spi(Host)              MountedTree     MountedElement     (C#: lib/StateUI.Maui),
-  Sources/Host             Walker          StateChannels      the same elements, ported
+  Sources/Host             Animator        StateChannels      the same elements, ported
                            DescribedMotion LayoutMotion
                            DisplayCycle    ProgramWrite
        |
@@ -48,7 +48,7 @@ paths, the journey's animations and the frame they run on.
 | | | each element's native half (`NativeElement`), one realization per control family, the handler queue | toolkit half |
 | C | reactive path 2: a value reaches a native control with no rebuild, and the user's change comes back | `ProgramWrite` | host layer |
 | | | the user's reports | toolkit half |
-| J | a journey's animations, walked by the host | `Walker`, `Trip`, `TripTarget`; the laws are `HostMotionLaw` in the core | host layer |
+| J | a journey's animations, run by the host | `Animator`, `Animation`, `AnimationTarget`; the laws are `HostMotionLaw` in the core | host layer |
 | E | the frame engines and animations run on | `DisplayCycle`; the `FrameClock` protocol | host layer |
 | | | the frame signal: the toolkit's display link | toolkit half |
 | P | presenting what D describes, reporting the user into C | the layout arithmetic: `StackArithmetic`, `GridArithmetic`, `AbsoluteArithmetic`, `SingleChildArithmetic`, `ScrollArithmetic`, `MeasurementCache` | host layer |
@@ -65,8 +65,8 @@ display cycle, in this order, in every runtime:
   frame clock tick (now, in ms on one monotonic clock)
     |
     1  the user's reports since the last frame     committed as one batch
-    2  Walker.step(now)                            StateChannels, DescribedMotion and
-                                                   LayoutMotion follow the steps;
+    2  Animator.advance(to: now)                   StateChannels, DescribedMotion and
+                                                   LayoutMotion follow the animations;
                                                    the channels' reports reach the core
     3  CoreLink.cycle(now)                         engines and conversions run in the core;
                                                    StateChannels take the changes
@@ -131,11 +131,11 @@ each element's native half through `NativeElement`, its frame signal through
 `FrameClock`, presents a frame through `FramePresenter`, and hands
 `LayoutMotion` the views it places as `PlacedView`. The core suite tests them
 on every platform the core builds on, and `RuntimeArchitectureTests` holds
-every Swift runtime to them: only `Walker` samples a timing law, only
-`DisplayCycle` steps the walker and runs the core's cycle, only `CoreLink`
+every Swift runtime to them: only `Animator` samples a timing law, only
+`DisplayCycle` advances the animator and runs the core's cycle, only `CoreLink`
 calls into the core, only `ProgramWrite` marks a write, and no runtime type is
 an engine or a channel other than a state's. [Motion](motion.md) gives the
-reasons of the walker, the state channels, the described motion and the layout
+reasons of the animator, the state channels, the described motion and the layout
 motion; [patches](patches.md) those of the patch intake and the program write;
 [the mounted tree](tree.md) those of the tree and its native halves;
 [layout](layout.md) those of the layout arithmetic.
@@ -152,12 +152,13 @@ already holds, and stay the SPI's.
 
 ## Names
 
-An element's name is its stem: `Walker`, `StateChannels`, `PatchIntake`. The
+An element's name is its stem: `Animator`, `StateChannels`, `PatchIntake`. The
 host layer uses the stem; a Swift host prefixes its toolkit to what only it
 has (`AppKitFrameClock`); a runtime in another language uses the stem in its
 namespace. A native subclass keeps its toolkit's class word
 (`AppKitScrollView`). Some words are reserved: an **engine** is only
-application frame code, a **channel** only a state's, a **trip** one animated
-value, a **cycle** only the display cycle, a **report** only the user's change
-on its way to the core, and an **act** is a call the application makes on a
-control. [The glossary](../glossary.md) maps every StateUI term to the common one.
+application frame code, a **channel** only a state's, an **animation** one
+animated value, a **cycle** only the display cycle, a **report** only the
+user's change on its way to the core, and an **act** is a call the
+application makes on a control. [The glossary](../glossary.md) maps every
+StateUI term to the common one.

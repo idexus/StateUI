@@ -12,7 +12,7 @@ extension AppKitElement {
         host?.dispatch(handler)
     }
 
-    /// A value the reader of a registered view changed, by member.
+    /// A value the user of a registered view changed, by member.
     func report(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host else { return }
 
@@ -24,7 +24,7 @@ extension AppKitElement {
             return carry(property, event, value)
         }
 
-        host.performReaderTransaction {
+        host.performUserTransaction {
             clearRadioPeers()
             carry(property, event, value)
         }
@@ -63,7 +63,7 @@ extension AppKitElement {
         var reported = false
 
         if let carried, let binding = driven[property] {
-            // A JOURNEY THE HOST CARRIES is taken at the position the reader has
+            // A JOURNEY THE HOST CARRIES is taken at the position the user has
             // just established - the old destination and velocity stop pulling
             // against the hand. A value the host merely sets is reported as it
             // stands.
@@ -77,7 +77,7 @@ extension AppKitElement {
         if let handler = events[event] {
             host.dispatch(handler, payload: [value])
         } else if reported {
-            host.settleReaderWrite(true)
+            host.settleUserWrite(true)
         }
     }
 
@@ -102,7 +102,7 @@ extension AppKitElement {
         }
 
         var changedState = false
-        host.performReaderTransaction {
+        host.performUserTransaction {
             if phase == .running {
                 if let across {
                     changedState = host.takeGestureValue(
@@ -122,7 +122,7 @@ extension AppKitElement {
                 ])
             }
         }
-        host.settleReaderWrite(changedState)
+        host.settleUserWrite(changedState)
     }
 
     func pinchChanged(
@@ -159,7 +159,7 @@ extension AppKitElement {
     func scrolled(from old: NSPoint, to new: NSPoint) {
         guard let host else { return }
         var tookState = false
-        host.performReaderTransaction {
+        host.performUserTransaction {
             if old != new, let binding = driven[.scrollOffset] {
                 tookState = host.take([Double(new.x), Double(new.y)], through: binding)
             }
@@ -171,7 +171,7 @@ extension AppKitElement {
                 host.dispatch(handler, payload: [.number(Double(new.y))])
             }
         }
-        host.settleReaderWrite(tookState)
+        host.settleUserWrite(tookState)
     }
 
     func scrollStopped() {

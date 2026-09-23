@@ -150,14 +150,14 @@ final class MountedTreeTests: XCTestCase {
 
     @MainActor
     private static func tree(viewless: Set<String> = []) -> (MountedTree, NativeLog) {
-        let walker = Walker()
+        let animator = Animator()
         let log = NativeLog()
         let tree = MountedTree(
             core: CoreLink(),
             intake: PatchIntake(),
-            stateChannels: StateChannels(walker: walker),
-            describedMotion: DescribedMotion(walker: walker),
-            layoutMotion: LayoutMotion(walker: walker, now: { 0 }, reducesMotion: { false }),
+            stateChannels: StateChannels(animator: animator),
+            describedMotion: DescribedMotion(animator: animator),
+            layoutMotion: LayoutMotion(animator: animator, now: { 0 }, reducesMotion: { false }),
             now: { 0 },
             reducesMotion: { false },
             makeNative: { RecordingNative($0, log: log, viewless: viewless) })

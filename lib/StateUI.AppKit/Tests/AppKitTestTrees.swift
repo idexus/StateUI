@@ -98,7 +98,7 @@ extension AppKitRenderer {
     }
 }
 
-/// Presses Return in `field` as a reader does: the field takes the focus,
+/// Presses Return in `field` as a user does: the field takes the focus,
 /// and its editor receives the newline that ends the editing.
 @MainActor
 func pressReturn(in field: NSTextField) throws {
@@ -108,7 +108,7 @@ func pressReturn(in field: NSTextField) throws {
     editor.insertNewline(nil)
 }
 
-/// Whether the editor a reader types into `field` with checks spelling,
+/// Whether the editor a user types into `field` with checks spelling,
 /// read once a keystroke has begun the editing.
 @MainActor
 func editorChecksSpelling(whileTypingIn field: NSTextField) throws -> Bool {

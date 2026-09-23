@@ -9,7 +9,7 @@ import XCTest
 
 final class AppKitRadioButtonViewTests: XCTestCase {
     @MainActor
-    func testNativeRadioSeparatesProgramAndReaderSelection() {
+    func testNativeRadioSeparatesProgramAndUserSelection() {
         let radio = AppKitRadioButtonView()
         var selections = 0
         radio.onSelected = { selections += 1 }

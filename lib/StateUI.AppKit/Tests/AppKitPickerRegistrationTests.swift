@@ -8,7 +8,7 @@ import AppKit
 import XCTest
 
 /// The pickers, realized through the registry: what each says it realizes -
-/// and what it refuses to claim - and the date and time their reader picks
+/// and what it refuses to claim - and the date and time their user picks
 /// reported by member, as the lanes those values are carried in.
 ///
 /// What a picker does on screen is held to `AppKitPickerViewTests` and
@@ -37,10 +37,10 @@ final class AppKitPickerRegistrationTests: XCTestCase {
     }
 
     /// A date picker wears the date the tree describes, and the date its
-    /// reader picks is reported by member - as the three lanes a civil date is
+    /// user picks is reported by member - as the three lanes a civil date is
     /// carried in, never as an instant in a zone.
     @MainActor
-    func testADatePickerWearsItsDateAndReportsTheReadersChoice() throws {
+    func testADatePickerWearsItsDateAndReportsTheUsersChoice() throws {
         var reports: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,
@@ -65,7 +65,7 @@ final class AppKitPickerRegistrationTests: XCTestCase {
 
     /// A time picker does the same with the lanes a time of day is carried in.
     @MainActor
-    func testATimePickerWearsItsTimeAndReportsTheReadersChoice() throws {
+    func testATimePickerWearsItsTimeAndReportsTheUsersChoice() throws {
         var reports: [(Int32, [HostValue])] = []
         let renderer = testRenderer(
             resourceDirectory: nil,

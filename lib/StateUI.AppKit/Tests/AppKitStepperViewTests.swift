@@ -28,7 +28,7 @@ final class AppKitStepperViewTests: XCTestCase {
     }
 
     @MainActor
-    func testProgramAndReaderWritesStaySeparate() {
+    func testProgramAndUserWritesStaySeparate() {
         let stepper = AppKitStepperView()
         var reports: [Double] = []
         stepper.onValueChanged = { reports.append($0) }

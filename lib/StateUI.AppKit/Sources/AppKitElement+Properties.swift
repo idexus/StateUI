@@ -174,7 +174,7 @@ extension AppKitElement {
 
         if let split = view as? AppKitSplitView {
             // THE VALUE IS THE REGISTRY'S; THIS REPORT IS THE HOST'S. A change
-            // the reader makes walks into the first child's page lifetime,
+            // the user makes walks into the first child's page lifetime,
             // which no contract describes, so the closure stays here.
             split.onPresentationChanged = { [weak self] presented in
                 self?.changeSidebarVisibility(to: presented)
@@ -380,9 +380,9 @@ extension AppKitElement {
     }
 
     /// The text a field shows from its state. The value this frame carries
-    /// comes first: a reader's report reaches the core's store only when its
+    /// comes first: a user's report reaches the core's store only when its
     /// jobs run, so reading the store here would write the field back one
-    /// keystroke behind the reader.
+    /// keystroke behind the user.
     func transformed(_ text: String, by transform: Int32?) -> String {
         appKitTextCased(text, transform)
     }

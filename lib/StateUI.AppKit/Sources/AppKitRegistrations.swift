@@ -189,7 +189,7 @@ enum AppKitRegistrations {
         }
     }
 
-    /// A switch, a check box and a radio button: one value the reader turns on,
+    /// A switch, a check box and a radio button: one value the user turns on,
     /// taken whole with the enabled state - and, for the radio button, the
     /// caption it draws in the font and case the tree describes. Which of the
     /// set's other buttons lose their check is the host's, not the view's: a
@@ -259,7 +259,7 @@ enum AppKitRegistrations {
         })
     }
 
-    /// A slider and a stepper: one number the reader moves, inside the range
+    /// A slider and a stepper: one number the user moves, inside the range
     /// its element describes. The value is written onto the native control only
     /// where the tree changed it, so a hand on the thumb is never argued with.
     private static func values(_ registry: Registry<NSView>) {
@@ -314,7 +314,7 @@ enum AppKitRegistrations {
         })
     }
 
-    /// A choice, a date and a time: what the reader picks, reported by member.
+    /// A choice, a date and a time: what the user picks, reported by member.
     /// A date and a time travel as the lanes their types carry, which is how
     /// StateUI keeps a civil date out of an absolute instant's zone.
     private static func pickers(_ registry: Registry<NSView>) {
@@ -422,12 +422,12 @@ enum AppKitRegistrations {
         })
     }
 
-    /// The fields a reader types in. Their words are `TextElementContract.text`
+    /// The fields a user types in. Their words are `TextElementContract.text`
     /// and the change they report is `InputViewContract.textChanged` - two
     /// tiers, both worn. A text the host CARRIES IN is the host's to write, so
     /// the tree's words are not put over it; anything else the tree describes
     /// reaches the control only where the tree changed it, which is what keeps
-    /// a reader's typing and a reader's caret their own.
+    /// a user's typing and a user's caret their own.
     private static func fields(_ registry: Registry<NSView>) {
         registry.add(TextFieldContract.self, create: { reports in
             let entry = AppKitTextFieldView()
@@ -603,7 +603,7 @@ enum AppKitRegistrations {
         }
     }
 
-    /// The control a reader presses: a caption, an icon beside it, and the
+    /// The control a user presses: a caption, an icon beside it, and the
     /// three moments of a press.
     ///
     /// The icon is a file NAME, resolved through the picture the host gave the
@@ -781,7 +781,7 @@ enum AppKitRegistrations {
             }
         }
 
-        // THE HOST MAKES THIS ONE. A scroll view reports through a reader
+        // THE HOST MAKES THIS ONE. A scroll view reports through a user
         // transaction and asks the host for display frames, and neither is an
         // event of its contract - so its making stays in `AppKitHost`, and the
         // registration takes the members alone.
@@ -794,7 +794,7 @@ enum AppKitRegistrations {
                 PaddingElementContract.padding,
             ]) { view, values in
                 // THE OFFSET IS WRITTEN ONLY WHERE THE TREE MOVED IT: a
-                // reader's own scrolling comes back as the state it wrote, and
+                // user's own scrolling comes back as the state it wrote, and
                 // putting the clip view back where it already stands
                 // interrupts the platform's own scroll mid-gesture.
                 let offset = values.changed(ScrollViewContract.scrollOffset)

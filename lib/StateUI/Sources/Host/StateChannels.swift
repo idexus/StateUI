@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What a state channel gives its controls and the core after a step.
+/// What a state channel gives its controls and the core after the animator advances.
 @_spi(Host) public struct StateChannelOutput {
     /// The state's number.
     public let state: Int32
@@ -34,7 +34,7 @@
 /// One channel per host-carried `@State`, shared by every control bound to it.
 /// Design: docs/design/host/motion.md#state-channels
 @_spi(Host) @MainActor public final class StateChannels {
-    private let walker: Walker
+    private let animator: Animator
     private var channels: [Int32: StateChannel] = [:]
 
     /// How many controls wear each state: a channel lives while any does.
@@ -42,12 +42,12 @@
     private var outputs: [StateChannelOutput] = []
     private var completions: [JourneyCompletion] = []
 
-    /// State channels whose trips `walker` walks.
-    public init(walker: Walker) {
-        self.walker = walker
+    /// State channels whose animations `animator` advances.
+    public init(animator: Animator) {
+        self.animator = animator
     }
 
-    /// Whether any channel's trip is under way.
+    /// Whether any channel's animation is under way.
     public var isActive: Bool { channels.values.contains(where: \.isActive) }
 
     /// How many states have a channel.
@@ -73,7 +73,7 @@
             channel = StateChannel(
                 binding: binding,
                 journey: incoming,
-                walker: walker,
+                animator: animator,
                 now: now,
                 reducesMotion: reducesMotion,
                 emit: emit)
@@ -101,8 +101,8 @@
             emit: emit)
     }
 
-    /// Takes a walker step's values; a channel no control wears goes once it lands.
-    public func follow(_ steps: [Step]) {
+    /// Takes the values an animator advance gave; a channel no control wears goes once it lands.
+    public func follow(_ steps: [AnimationStep]) {
         for step in steps {
             guard case .state(let number) = step.target else { continue }
             channels[number]?.follow(step.value, step.velocity, rested: step.rested, emit: emit)
@@ -169,13 +169,13 @@
     }
 }
 
-/// One state's channel: its animated value, walked on one trip.
+/// One state's channel: its animated value, one animation at a time.
 @MainActor
 private final class StateChannel {
     var binding: HostStateBinding
 
-    private let walker: Walker
-    private let target: TripTarget
+    private let animator: Animator
+    private let target: AnimationTarget
     private var value: [Double]
     private var destination: [Double]
     private var velocity: [Double]
@@ -183,19 +183,19 @@ private final class StateChannel {
     private var completion: Int?
     private var stopped: UInt64
 
-    /// Whether the walker walks this channel's trip.
-    var isActive: Bool { walker.trip(for: target) != nil }
+    /// Whether the animator runs this channel's animation.
+    var isActive: Bool { animator.animation(for: target) != nil }
 
     init(
         binding: HostStateBinding,
         journey: HostJourney,
-        walker: Walker,
+        animator: Animator,
         now: Double,
         reducesMotion: Bool,
         emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
     ) {
         self.binding = binding
-        self.walker = walker
+        self.animator = animator
         target = .state(binding.state)
         value = journey.value
         destination = journey.destination
@@ -248,7 +248,7 @@ private final class StateChannel {
         if changedStop {
             sample(now: now, emit: emit)
             if isActive { cancelCompletion(emit: emit) }
-            walker.halt(target)
+            animator.halt(target)
             destination = value
             velocity = Array(repeating: 0, count: width)
             motion = incoming.motion
@@ -259,7 +259,7 @@ private final class StateChannel {
         if changedValue {
             sample(now: now, emit: emit)
             if isActive { cancelCompletion(emit: emit) }
-            walker.halt(target)
+            animator.halt(target)
             value = incoming.value
             destination = incoming.destination
             velocity = incoming.velocity
@@ -291,7 +291,7 @@ private final class StateChannel {
         }
     }
 
-    /// Takes where the walker put the trip: a frame on the way, or the landing.
+    /// Takes where the animator put the animation: a frame on the way, or the landing.
     func follow(
         _ lanes: [Double],
         _ speed: [Double],
@@ -299,7 +299,7 @@ private final class StateChannel {
         emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
     ) {
         guard !rested else {
-            walker.halt(target)
+            animator.halt(target)
             value = destination
             velocity = Array(repeating: 0, count: value.count)
             let landed = completion.map { JourneyCompletion(id: $0, succeeded: true) }
@@ -322,7 +322,7 @@ private final class StateChannel {
         guard taken.count == value.count else { return false }
 
         if isActive { cancelCompletion(emit: emit) }
-        walker.halt(target)
+        animator.halt(target)
         value = taken
         destination = taken
         velocity = Array(repeating: 0, count: taken.count)
@@ -350,25 +350,25 @@ private final class StateChannel {
         destination = incoming.destination
 
         if motion.isCustom {
-            walker.halt(target)
+            animator.halt(target)
             value = incoming.value
             velocity = incoming.velocity
             emit(self, nil, nil)
             return
         }
 
-        let trip = Trip(
+        let animation = Animation(
             from: value,
             destination: destination,
             velocity: (usesStatedVelocity ? incoming.velocity : velocity).map { $0 / 1_000 },
             motion: motion,
             began: now)
-        velocity = trip.velocity.map { $0 * 1_000 }
+        velocity = animation.velocity.map { $0 * 1_000 }
 
         let instant = motion.law == .eased && motion.millis == 0
 
-        if instant || reducesMotion || trip.arrives {
-            walker.halt(target)
+        if instant || reducesMotion || animation.arrives {
+            animator.halt(target)
             value = destination
             velocity = Array(repeating: 0, count: value.count)
             let landed = completion.map { JourneyCompletion(id: $0, succeeded: true) }
@@ -377,18 +377,18 @@ private final class StateChannel {
             return
         }
 
-        walker.start(trip, for: target)
+        animator.start(animation, for: target)
         emit(self, .position, nil)
     }
 
-    /// Brings the value to where the trip stands at `now`, before a change lands.
+    /// Brings the value to where the animation stands at `now`, before a change lands.
     private func sample(
         now: Double,
         emit: (StateChannel, HostJourneyUpdate?, JourneyCompletion?) -> Void
     ) {
-        guard let trip = walker.trip(for: target) else { return }
+        guard let animation = animator.animation(for: target) else { return }
 
-        let position = trip.position(at: now)
+        let position = animation.position(at: now)
         follow(position.value, position.velocity, rested: position.rested, emit: emit)
     }
 

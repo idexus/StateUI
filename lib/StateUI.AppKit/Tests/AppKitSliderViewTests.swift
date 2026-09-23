@@ -92,7 +92,7 @@ final class AppKitSliderViewTests: XCTestCase {
     /// Grabbing the thumb and letting it go reach the page's drag handlers,
     /// each as it happens.
     @MainActor
-    func testAReadersDragReachesTheSlidersDragHandlers() throws {
+    func testAUsersDragReachesTheSlidersDragHandlers() throws {
         let moments = Received<String>()
         let renderer = AppKitRenderer.running {
             Slider(0.5)

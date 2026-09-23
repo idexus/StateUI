@@ -24,7 +24,7 @@
 
     private let core: CoreLink
     private let clock: any FrameClock
-    private let walker: Walker
+    private let animator: Animator
     private let stateChannels: StateChannels
     private let describedMotion: DescribedMotion
     private let layoutMotion: LayoutMotion
@@ -41,7 +41,7 @@
     public init(
         core: CoreLink,
         clock: any FrameClock,
-        walker: Walker,
+        animator: Animator,
         stateChannels: StateChannels,
         describedMotion: DescribedMotion,
         layoutMotion: LayoutMotion,
@@ -49,7 +49,7 @@
     ) {
         self.core = core
         self.clock = clock
-        self.walker = walker
+        self.animator = animator
         self.stateChannels = stateChannels
         self.describedMotion = describedMotion
         self.layoutMotion = layoutMotion
@@ -63,13 +63,13 @@
         presenter?.renderIfNeeded()
     }
 
-    /// Steps the animations, runs the core's cycle, presents what moved and holds the clock.
+    /// Advances the animations, runs the core's cycle, presents what moved and holds the clock.
     /// `reported` holds states the user changed, worn by every other bound control in the same walk.
     public func drain(now: Double, reported: [Int32: HostStateValue] = [:]) {
         states.merge(reported) { _, reported in reported }
 
         let reducesMotion = reducesMotion()
-        follow(walker.step(now: now, reducesMotion: reducesMotion))
+        follow(animator.advance(to: now, reducesMotion: reducesMotion))
 
         let cycle = core.cycle(now: now, reducesMotion: reducesMotion)
 
@@ -85,9 +85,9 @@
         hold()
     }
 
-    /// Steps every animation to `now` and presents what the steps moved.
-    public func stepTrips(now: Double, reducesMotion: Bool) {
-        follow(walker.step(now: now, reducesMotion: reducesMotion))
+    /// Advances every animation to `now` and presents what moved.
+    public func advanceAnimations(now: Double, reducesMotion: Bool) {
+        follow(animator.advance(to: now, reducesMotion: reducesMotion))
         present()
     }
 
@@ -100,12 +100,12 @@
     /// Holds the frame clock while an animation, the core's cycle or a scroller still moves.
     public func hold() {
         clock.held = continues
-            || walker.isMoving
+            || animator.isMoving
             || core.cyclesPending
             || presenter?.wantsFrames == true
     }
 
-    private func follow(_ steps: [Step]) {
+    private func follow(_ steps: [AnimationStep]) {
         stateChannels.follow(steps)
         describedMotion.follow(steps)
         layoutMotion.follow(steps)

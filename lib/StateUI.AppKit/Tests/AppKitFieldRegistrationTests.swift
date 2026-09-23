@@ -11,7 +11,7 @@ import XCTest
 /// the host CARRIES IN is the host's to write, so the tree's own words are not
 /// put on the control beside it.
 ///
-/// What a field does as a reader types in it is held to
+/// What a field does as a user types in it is held to
 /// `AppKitTextFieldViewTests`, `AppKitTextEditorViewTests` and
 /// `AppKitSearchFieldViewTests`, which drive these same registered views.
 final class AppKitFieldRegistrationTests: XCTestCase {

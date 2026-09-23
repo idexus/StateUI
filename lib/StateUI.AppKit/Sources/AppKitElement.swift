@@ -157,7 +157,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// fading to nothing, deaf to input, hidden when the fade lands - or in,
     /// from nothing up to the opacity the tree describes. Under the element's
     /// own motion, or the application's where it says nothing; at once under
-    /// `.motion(.none)`, an engine's value, or a reader who asked for less.
+    /// `.motion(.none)`, an engine's value, or a user who asked for less.
     func crossVisibility() {
         guard let host, let view else { return }
         let visible = value(.isVisible)?.bool != false

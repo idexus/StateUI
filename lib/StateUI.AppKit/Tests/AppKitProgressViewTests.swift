@@ -39,7 +39,7 @@ final class AppKitProgressViewTests: XCTestCase {
         XCTAssertTrue(shows(native))
     }
 
-    /// What the reader sees: a view that is not hidden and draws a spinner.
+    /// What the user sees: a view that is not hidden and draws a spinner.
     @MainActor
     private func shows(_ indicator: AppKitActivityIndicatorView) -> Bool {
         !indicator.isHidden && (indicator.isSpinning || indicator.isDisplayedWhenStopped)

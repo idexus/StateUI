@@ -71,13 +71,13 @@ final class AppKitLeaveTests: XCTestCase {
 
         renderer.applyForTesting(labels(["a"]))
         renderer.applyStateForTesting(state, value: journey(from: 0, to: 1))
-        XCTAssertTrue(renderer.tripsMovingForTesting)
+        XCTAssertTrue(renderer.animatingForTesting)
 
         renderer.applyForTesting(labels([]))
         XCTAssertEqual(renderer.channelCountForTesting, 1, "it goes on to where it was sent")
 
         now = 200
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(renderer.channelCountForTesting, 0, "and goes once it has landed")
     }
 }

@@ -10,7 +10,7 @@ import XCTest
 /// A member many controls share reaches, through the host, the native
 /// control of every entry that realizes it.
 final class AppKitSharedMemberTests: XCTestCase {
-    /// Every control a reader operates is disabled by `isEnabled(false)` and
+    /// Every control a user operates is disabled by `isEnabled(false)` and
     /// enabled again by `isEnabled(true)`.
     @MainActor
     func testEveryOperableControlFollowsIsEnabled() throws {

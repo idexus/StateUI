@@ -41,12 +41,12 @@ final class AppKitVisibilityTests: XCTestCase {
         XCTAssertTrue(view.inputTransparencyForTesting.transparent, "and answering no input while it goes")
 
         now = 50
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(view.alphaValue, 0.5, accuracy: 0.001)
         XCTAssertFalse(view.isHidden)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertTrue(view.isHidden, "hidden when the fade landed")
         XCTAssertEqual(view.alphaValue, 1, accuracy: 0.001)
         XCTAssertFalse(view.inputTransparencyForTesting.transparent)
@@ -68,7 +68,7 @@ final class AppKitVisibilityTests: XCTestCase {
         XCTAssertEqual(view.alphaValue, 0, accuracy: 0.001)
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertEqual(view.alphaValue, 1, accuracy: 0.001)
     }
 
@@ -84,7 +84,7 @@ final class AppKitVisibilityTests: XCTestCase {
 
         renderer.applyForTesting(label(visible: false))
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         renderer.applyForTesting(label(visible: true, motion: Motion.none))
 
         XCTAssertFalse(view.isHidden)
@@ -127,17 +127,17 @@ final class AppKitVisibilityTests: XCTestCase {
         XCTAssertEqual(second.frame.minY, 40, accuracy: 0.001, "the row fades where it stands")
 
         now = 100
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         stack.layoutSubtreeIfNeeded()
         XCTAssertEqual(second.frame.minY, 40, accuracy: 0.001, "the row below starts once it has gone")
 
         now = 200
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         stack.layoutSubtreeIfNeeded()
         XCTAssertEqual(second.frame.minY, 20, accuracy: 0.001, "and travels into its place")
 
         now = 300
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         stack.layoutSubtreeIfNeeded()
         XCTAssertEqual(second.frame.minY, 0, accuracy: 0.001)
     }
@@ -154,13 +154,13 @@ final class AppKitVisibilityTests: XCTestCase {
 
         renderer.applyForTesting(label(visible: false))
         now = 50
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         renderer.applyForTesting(label(visible: true))
         XCTAssertEqual(view.alphaValue, 0.5, accuracy: 0.001, "from where it stands")
         XCTAssertFalse(view.inputTransparencyForTesting.transparent)
 
         now = 150
-        renderer.stepTripsForTesting()
+        renderer.advanceAnimationsForTesting()
         XCTAssertFalse(view.isHidden)
         XCTAssertEqual(view.alphaValue, 1, accuracy: 0.001)
     }

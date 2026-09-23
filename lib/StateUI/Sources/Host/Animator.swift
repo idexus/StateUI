@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What an animation moves: a state's channel, a described property, or a layout's place.
-@_spi(Host) public enum TripTarget: Hashable, Comparable {
+@_spi(Host) public enum AnimationTarget: Hashable, Comparable {
     /// The channel of the state with this number.
     case state(Int32)
 
@@ -32,8 +32,8 @@
 }
 
 /// One running animation of a value, pure in the time handed to it.
-/// Design: docs/design/host/motion.md#one-walker
-@_spi(Host) public struct Trip: Equatable {
+/// Design: docs/design/host/motion.md#one-animator
+@_spi(Host) public struct Animation: Equatable {
     /// Where each lane began.
     public let from: [Double]
 
@@ -49,7 +49,7 @@
     /// When it began, in the frame clock's milliseconds.
     public let began: Double
 
-    /// A trip from `from` to `destination`, begun at `began`.
+    /// A animation from `from` to `destination`, begun at `began`.
     public init(from: [Double], destination: [Double], velocity: [Double], motion: Motion, began: Double) {
         self.from = from
         self.destination = destination
@@ -72,10 +72,10 @@
     }
 }
 
-/// Where one trip stands after a step of the walker.
-@_spi(Host) public struct Step {
-    /// What the trip moves.
-    public let target: TripTarget
+/// Where one animation stands after the animator advances.
+@_spi(Host) public struct AnimationStep {
+    /// What the animation moves.
+    public let target: AnimationTarget
 
     /// Each lane's value.
     public let value: [Double]
@@ -83,50 +83,50 @@
     /// Each lane's speed, per millisecond.
     public let velocity: [Double]
 
-    /// Whether the trip arrived; an arrived trip has left the walker.
+    /// Whether the animation arrived; an arrived animation has left the animator.
     public let rested: Bool
 }
 
-/// The runtime's one animator: every trip, stepped together in target order.
-/// Design: docs/design/host/motion.md#one-walker
-@_spi(Host) @MainActor public final class Walker {
-    private var trips: [TripTarget: Trip] = [:]
+/// The runtime's one animator: every animation, advanced together in target order.
+/// Design: docs/design/host/motion.md#one-animator
+@_spi(Host) @MainActor public final class Animator {
+    private var animations: [AnimationTarget: Animation] = [:]
 
-    /// A walker with no trip under way.
+    /// A animator with no animation under way.
     public init() {}
 
-    /// Whether any trip is under way.
-    public var isMoving: Bool { !trips.isEmpty }
+    /// Whether any animation is under way.
+    public var isMoving: Bool { !animations.isEmpty }
 
-    /// The trip under way for `target`.
-    public func trip(for target: TripTarget) -> Trip? { trips[target] }
+    /// The animation under way for `target`.
+    public func animation(for target: AnimationTarget) -> Animation? { animations[target] }
 
-    /// Starts `trip` for `target`, in place of any trip it had.
-    public func start(_ trip: Trip, for target: TripTarget) { trips[target] = trip }
+    /// Starts `animation` for `target`, in place of any animation it had.
+    public func start(_ animation: Animation, for target: AnimationTarget) { animations[target] = animation }
 
-    /// Ends `target`'s trip where it stands.
-    public func halt(_ target: TripTarget) { trips[target] = nil }
+    /// Ends `target`'s animation where it stands.
+    public func halt(_ target: AnimationTarget) { animations[target] = nil }
 
-    /// Steps every trip to `now` in target order; with less motion, each one arrives.
-    public func step(now: Double, reducesMotion: Bool = false) -> [Step] {
-        var steps: [Step] = []
+    /// Advances every animation to `now` in target order; with less motion, each one arrives.
+    public func advance(to now: Double, reducesMotion: Bool = false) -> [AnimationStep] {
+        var steps: [AnimationStep] = []
 
-        for target in trips.keys.sorted() {
-            guard let trip = trips[target] else { continue }
+        for target in animations.keys.sorted() {
+            guard let animation = animations[target] else { continue }
 
             let position = reducesMotion
-                ? (trip.destination, Array(repeating: 0, count: trip.destination.count), true)
-                : trip.position(at: now)
+                ? (animation.destination, Array(repeating: 0, count: animation.destination.count), true)
+                : animation.position(at: now)
 
-            if position.2 { trips[target] = nil }
-            steps.append(Step(target: target, value: position.0, velocity: position.1, rested: position.2))
+            if position.2 { animations[target] = nil }
+            steps.append(AnimationStep(target: target, value: position.0, velocity: position.1, rested: position.2))
         }
 
         return steps
     }
 
-    /// Keeps only the trips whose target `keep` still has.
-    public func retain(where keep: (TripTarget) -> Bool) {
-        trips = trips.filter { keep($0.key) }
+    /// Keeps only the animations whose target `keep` still has.
+    public func retain(where keep: (AnimationTarget) -> Bool) {
+        animations = animations.filter { keep($0.key) }
     }
 }

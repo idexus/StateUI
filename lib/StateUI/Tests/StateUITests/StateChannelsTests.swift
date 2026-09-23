@@ -10,8 +10,8 @@ import XCTest
 final class StateChannelsTests: XCTestCase {
     @MainActor
     func testOneStateNumberOwnsOneChannelAcrossControls() throws {
-        let walker = Walker()
-        let channels = StateChannels(walker: walker)
+        let animator = Animator()
+        let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 7, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -28,7 +28,7 @@ final class StateChannelsTests: XCTestCase {
             for: binding, from: carried, now: 0, reducesMotion: false)
         XCTAssertEqual(channels.takeOutputs().count, 1, "the second wearer reuses the channel")
 
-        channels.follow(walker.step(now: 100))
+        channels.follow(animator.advance(to: 100))
         let frame = try XCTUnwrap(channels.takeOutputs().last)
 
         XCTAssertEqual(frame.state, 7)
@@ -38,8 +38,8 @@ final class StateChannelsTests: XCTestCase {
 
     @MainActor
     func testRetargetingCarriesTheCurrentVelocityIntoTheNewMotion() throws {
-        let walker = Walker()
-        let channels = StateChannels(walker: walker)
+        let animator = Animator()
+        let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 9, mode: .inOut, kind: .property)
         let first = HostJourney(
             value: [0],
@@ -74,15 +74,15 @@ final class StateChannelsTests: XCTestCase {
         XCTAssertEqual(aimed.journey.value[0], 0.875, accuracy: 0.000_001)
         XCTAssertEqual(aimed.journey.velocity[0], 3.75, accuracy: 0.01)
 
-        channels.follow(walker.step(now: 101))
+        channels.follow(animator.advance(to: 101))
         let next = try XCTUnwrap(channels.takeOutputs().last)
         XCTAssertGreaterThan(next.journey.value[0], aimed.journey.value[0])
     }
 
     @MainActor
     func testACompletedMotionReportsItsExactDestinationOnce() throws {
-        let walker = Walker()
-        let channels = StateChannels(walker: walker)
+        let animator = Animator()
+        let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 11, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -98,7 +98,7 @@ final class StateChannelsTests: XCTestCase {
             reducesMotion: false)
         _ = channels.takeOutputs()
 
-        channels.follow(walker.step(now: 100))
+        channels.follow(animator.advance(to: 100))
         let landed = try XCTUnwrap(channels.takeOutputs().last)
 
         XCTAssertEqual(landed.journey.value, [1])
@@ -108,15 +108,15 @@ final class StateChannelsTests: XCTestCase {
             channels.takeCompletions(),
             [JourneyCompletion(id: -23, succeeded: true)])
 
-        channels.follow(walker.step(now: 200))
+        channels.follow(animator.advance(to: 200))
         XCTAssertTrue(channels.takeOutputs().isEmpty)
         XCTAssertTrue(channels.takeCompletions().isEmpty)
     }
 
     @MainActor
     func testEnablingReducedMotionLandsAnActiveJourneyAndItsWaiter() throws {
-        let walker = Walker()
-        let channels = StateChannels(walker: walker)
+        let animator = Animator()
+        let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 12, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -132,7 +132,7 @@ final class StateChannelsTests: XCTestCase {
             reducesMotion: false)
         _ = channels.takeOutputs()
 
-        channels.follow(walker.step(now: 50, reducesMotion: true))
+        channels.follow(animator.advance(to: 50, reducesMotion: true))
         let landed = try XCTUnwrap(channels.takeOutputs().last)
 
         XCTAssertEqual(landed.journey.value, [1])
@@ -147,8 +147,8 @@ final class StateChannelsTests: XCTestCase {
 
     @MainActor
     func testAReaderTakesAnActiveJourneyAtItsOwnPosition() throws {
-        let walker = Walker()
-        let channels = StateChannels(walker: walker)
+        let animator = Animator()
+        let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 13, mode: .inOut, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -179,8 +179,8 @@ final class StateChannelsTests: XCTestCase {
 
     @MainActor
     func testAnOutputOnlyBindingCannotTakeItsJourney() {
-        let walker = Walker()
-        let channels = StateChannels(walker: walker)
+        let animator = Animator()
+        let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 15, mode: .out, kind: .property)
         let journey = HostJourney(
             value: [0],
@@ -203,8 +203,8 @@ final class StateChannelsTests: XCTestCase {
 
     @MainActor
     func testAStateSnapCancelsItsWaiterOnceWithoutRebookingIt() throws {
-        let walker = Walker()
-        let channels = StateChannels(walker: walker)
+        let animator = Animator()
+        let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 17, mode: .inOut, kind: .property)
         let moving = HostJourney(
             value: [0],
@@ -245,15 +245,15 @@ final class StateChannelsTests: XCTestCase {
             channels.takeCompletions(),
             [JourneyCompletion(id: -41, succeeded: false)])
 
-        channels.follow(walker.step(now: 200))
+        channels.follow(animator.advance(to: 200))
         XCTAssertTrue(channels.takeOutputs().isEmpty)
         XCTAssertTrue(channels.takeCompletions().isEmpty)
     }
 
     @MainActor
     func testAnAwaitedRetargetOwnsItsNewCompletion() {
-        let walker = Walker()
-        let channels = StateChannels(walker: walker)
+        let animator = Animator()
+        let channels = StateChannels(animator: animator)
         let binding = HostStateBinding(state: 19, mode: .inOut, kind: .property)
         let first = HostJourney(
             value: [0],
@@ -288,7 +288,7 @@ final class StateChannelsTests: XCTestCase {
             channels.takeCompletions(),
             [JourneyCompletion(id: -41, succeeded: false)])
 
-        channels.follow(walker.step(now: 150))
+        channels.follow(animator.advance(to: 150))
         XCTAssertEqual(
             channels.takeCompletions(),
             [JourneyCompletion(id: -42, succeeded: true)])
