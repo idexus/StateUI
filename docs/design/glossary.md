@@ -28,6 +28,10 @@ and this table maps the two.
 | `@State` | state | the one declaration of mutable state |
 | `Binding` (`$x`) | binding | a borrowed reference to a state |
 | body rebuild, reactive path 1 | re-render | a body that read a written state runs again and is diffed |
+| follow (`following:`) | depend on, subscribe to | what wakes an engine: a write to a state it follows |
+| conversion (`convert`) | derived binding | a binding that reads and writes another state through a mapping |
+| lender, lent | source storage | what a `Binding` borrows its value from |
+| reading, sample (`.samples`) | throttled copy | an animated value copied into ordinary state at a pace |
 | host-carried state, reactive path 2 | bound control value | a state a native control shows and changes with no rebuild |
 | attachment, wear (a state), wearer | binding, bound control | a control property tied to a state |
 | report | input event | the user's change on its way from a control to the core |
@@ -44,6 +48,15 @@ and this table maps the two.
 | identity, `.id()`, `ElementId` | key | what keeps an element the same element across renders: an explicit `.id()`, then the builder path, then the position |
 | render | reconcile | build the patch between the tree the host holds and the tree the state describes |
 | patch (`HostPatch`) | diff | the sparse change from one tree to the next |
+| road (walk, build, complete) | render mode | how a render reaches the elements it describes |
+| clean walk (`revisit`) | partial re-render | only the elements whose reads meet the changes are rebuilt |
+| resync (`describeAll`) | full sync | the complete tree sent to a host that lost its generation |
+| settle pass | handler flush | the handlers a render found run, their writes merged into the same message |
+| carry, carried view | skipped subtree | a composed view whose inputs and reads held is not built, compared or sent |
+| inputs (`Input`) | props | a view's stored values, compared to decide whether to carry it |
+| placeholder (`Node.Stateful`) | lazy node | a composed view not built yet |
+| producer | deferred children | a container's content, run when the element is described |
+| shape (recycling) | reuse identifier | what says two rows have the same structure |
 | generation, baseline | version | the tree a patch was computed against |
 | drift | desync | a patch that does not match the tree the host holds |
 | mount, mounted element | mounted node | the host's live instance of an element; `mount` is its instance number |
@@ -54,6 +67,13 @@ and this table maps the two.
 | kind first (`Kind`) | tagged value | a structured value whose first part says which shape follows |
 | state image, carried value | state buffer | a bound state's value as the host reads and writes it |
 | dirty word | dirty mask | the bits saying which parts of a value changed |
+| board (`CycleBoard`) | per-clock frame state | one clock's images, engines and cycle |
+| image (`HostStorage`) | shared value buffer | the bytes both sides read for a carried state |
+| crossing | boundary encoding | the published bytes, inherited and custom timing resolved |
+| door (`StateKind`) | binding kind | how a carried state reaches a control: text, plain value, animated value, placement run, feed |
+| latch, publish | snapshot, commit | the first and the last step of a cycle |
+| stamp | write counter | what an engine compares to know a state changed |
+| armed, stirred, awake | wake reasons | why an engine runs on a frame |
 
 ## Motion
 
@@ -86,6 +106,12 @@ and this table maps the two.
 | program write | programmatic change | a write to a control made by the program, not the user |
 | act | imperative control call | a call the application makes on a control, such as `focus` |
 | aim (`@Aim`) | control reference | the reference an act is called through |
+| completion id | continuation handle | the negative id an awaited act or animation is answered by |
+| receipt | in-flight call record | what fails the calls of a batch a host could not read |
+| declaration (`HostDeclaration`) | capability manifest | which elements and members a host realizes: presence, not ownership |
+| dictionary, announcement (`WireDictionary`) | interning table | the names the Wire sends once and then by number |
+| tally, pass, complaint | render counters, trace record, logged warning | what the core's diagnostics count, trace and say once |
+| sync (`Sync`) | frame source | the clock a cycle runs on |
 | arrangement (layout) | layout pass | a layout placing its children |
 | placement | frame | the rectangle a layout gives a child |
 | shade, rank | dimming overlay, z-order | what a placement run draws over a child, and its order among siblings |

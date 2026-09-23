@@ -27,6 +27,8 @@ it.
 - [Architecture](architecture.md): the packages, one change end to end, and
   the threads, drawn.
 - [Glossary](glossary.md): StateUI's words and the common term for each.
+- [`core/`](core/README.md): the core drawn - a state write to a patch, the
+  display cycle, the UI thread and the C bridge - and the reasons of each part.
 - [`types/`](types/README.md): the values an application passes and how
   each reaches a host.
 - [`contracts/`](contracts/README.md): how an element contract declares a
