@@ -122,6 +122,8 @@ public enum IconPosition: Int32, Sendable, HostRepresentable {
     case bottom = 3
 }
 
+extension IconPosition: StateChoice {}
+
 extension Button {
     /// `iconPosition` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
