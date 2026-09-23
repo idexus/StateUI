@@ -68,7 +68,7 @@ public final class Renderer: @unchecked Sendable {
     let differ = Differ()
 
     /// This session's numbering of the names the wire carries
-    /// (Core/Wire/WireDictionary.swift).
+    /// (WireDictionary.swift).
     let wireDictionary = WireDictionary()
 
     /// The tree as the host is showing it, as far as this side knows.
@@ -95,7 +95,7 @@ public final class Renderer: @unchecked Sendable {
     /// Design: docs/design/core/render.md#one-renderer
     let guarded = Lock()
 
-    /// Acts waiting for the host to take them (Core/Acts/ActCall.swift).
+    /// Acts waiting for the host to take them (ActCall.swift).
     var actCalls: [ActCall] = []
 
     /// Continuations waiting for an act or an animation to finish, by negative id.
@@ -153,7 +153,7 @@ public final class Renderer: @unchecked Sendable {
         self.application = application
         Renderer.name(statesOf: application)
 
-        // One scene, waiting for the platform's first window (Core/Scenes/Scenes.swift).
+        // One scene, waiting for the platform's first window (Scenes.swift).
         Scenes.shared.reset()
 
         setNeedsRender()

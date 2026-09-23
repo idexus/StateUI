@@ -1,7 +1,7 @@
 # Identity and diffing
 
-The differ (`Differ`, Core/Diff/Differ.swift) walks the tree a render built
-against the tree the host holds (`RenderedNode`, Core/Diff/Tree.swift) and
+The differ (`Differ`, Differ.swift) walks the tree a render built
+against the tree the host holds (`RenderedNode`, Tree.swift) and
 packs only the differences into a `HostPatch`. A `Node` is what an author wrote
 this render and is thrown away after it; a `RenderedNode` is one element as it
 stands on the host, and it persists.

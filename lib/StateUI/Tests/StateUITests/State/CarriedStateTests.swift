@@ -203,7 +203,7 @@ final class CarriedStateTests: XCTestCase {
     /// A HOST WRITE ASKS AT ONCE, like every other write: there is no cadence
     /// on a state at all. What a view asks for is a READING of where a walked
     /// value has got to, into a state of its own - `.samples(_:into:_:)`, in
-    /// Core/Sampling.swift - and the source goes on saying its destination.
+    /// Sampling.swift - and the source goes on saying its destination.
     func testAHostWriteAsksAtOnce() {
         let value = State(wrappedValue: 0.0)
         let builds = Builds()

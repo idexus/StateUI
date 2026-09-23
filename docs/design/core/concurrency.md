@@ -118,7 +118,7 @@ the first job.
 
 ## The lock
 
-`Lock` (Core/Threads/Lock.swift) is what state more than one thread touches
+`Lock` (Lock.swift) is what state more than one thread touches
 stands behind: a storage's value, the renderer's bookkeeping, a board's images,
 the act queue. It is a `Mutex` guarding nothing, with the state beside it
 rather than in it, because what it guards is often no value a mutex could hold:

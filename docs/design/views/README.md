@@ -96,7 +96,7 @@ differ turns what they describe into a patch.
      ▼
   a tree of nodes with placeholders and deferred content
      │
-     ▼  the differ, element by element (Core/Diff/Differ.swift)
+     ▼  the differ, element by element (Differ.swift)
   children matched by explicit id, then path, then position
   a composed view: its @State boxes adopted, its content built - or carried whole
   a container: its content run in its own read scope

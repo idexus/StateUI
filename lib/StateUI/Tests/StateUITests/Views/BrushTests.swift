@@ -4,7 +4,7 @@
 // A brush, as the typed shape it crosses in.
 //
 // The kind first, as the number both sides spell, then what that kind is made
-// of - see Types/Colour/Brush.swift.
+// of - see Brush.swift.
 
 import XCTest
 @_spi(Host) @testable import StateUI

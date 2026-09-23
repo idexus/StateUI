@@ -4,9 +4,9 @@
 // An object provided above, resolved below - and the rebuilds landing exactly
 // where the reads are.
 //
-// The mechanism is in Core/Environment.swift (the wrapper and the slots),
-// Core/Diff/Differ.swift (the scope, kept through both walks, and the memo's
-// environment snapshot) and Core/Stateful.swift (the slots collected beside
+// The mechanism is in Environment.swift (the wrapper and the slots),
+// Differ.swift (the scope, kept through both walks, and the memo's
+// environment snapshot) and Stateful.swift (the slots collected beside
 // the state boxes, and the structural `built` path). The promises pinned
 // here, each proven to fail without its half of the mechanism:
 //

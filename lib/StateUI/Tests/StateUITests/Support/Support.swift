@@ -607,7 +607,7 @@ enum Fixtures {
         return source.text
     }
 
-    /// A source's file name, without the folders it stands in: `Core/Tokens.swift` is `Tokens.swift`.
+    /// A source's file name, without the folders it stands in: `Core/Contract/Tokens.swift` is `Tokens.swift`.
     static func name(of path: String) -> String {
         String(path.split(separator: "/").last ?? "")
     }
@@ -940,7 +940,7 @@ func stack(_ children: [Node], id: String? = nil) -> Node {
 /// whatever it was.
 ///
 /// The theme is what the differ reads as it builds an element wearing a pair
-/// - see Types/Colour/Color.swift - so this is how a test asks for the other half.
+/// - see Color.swift - so this is how a test asks for the other half.
 /// The provider is the one the host pushes into, which is exactly what a real
 /// theme change writes.
 func withTheme(_ theme: Theme, _ body: () -> Void) {

@@ -6,7 +6,7 @@
 // Every case here was a bug before the builder wrote down WHERE each view was
 // written: flattening an `if` into a list leaves nothing but the index, and an
 // index is not identity once the number of children can change. See
-// Views/ViewBuilder.swift.
+// ViewBuilder.swift.
 
 import XCTest
 @_spi(Host) @testable import StateUI

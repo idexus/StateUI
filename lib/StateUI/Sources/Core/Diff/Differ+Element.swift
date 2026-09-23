@@ -59,7 +59,7 @@ extension Differ {
         var node = node
 
         // Whether an inspector's frame is open for this element
-        // (Core/Diagnostics/Inspection.swift).
+        // (Inspection.swift).
         var inspected = false
         defer { if inspected { Inspection.leave() } }
 
@@ -75,12 +75,12 @@ extension Differ {
         // before any placeholder is unwrapped.
         let key = node.key
 
-        // An aim takes the key this element settled on (Core/Acts/Aim.swift).
+        // An aim takes the key this element settled on (Aim.swift).
         let written = node.aim
         written?.attach(id, walk: walkStamp)
 
         // The readings asked for here, keyed by their target and held by this element
-        // (Core/Journey/Sampling.swift).
+        // (Sampling.swift).
         var readings: [Sampling] = []
 
         for (image, into, asks, take) in node.samples {
@@ -94,7 +94,7 @@ extension Differ {
         defer { scope.removeLast(pushed) }
 
         // What the element holds for its life - a page's session - handed back on every
-        // build (Core/State/ElementSession.swift).
+        // build (ElementSession.swift).
         var session: AnyObject?
 
         if let request = node.session {
@@ -165,7 +165,7 @@ extension Differ {
                 }
 
                 // A state a scene keeps takes the scene's storage for its key, before the body
-                // reads it (Core/Scenes/SceneRecord.swift).
+                // reads it (SceneRecord.swift).
                 if let record = sceneRecord {
                     for (_, box) in stateful.boxes {
                         (box as? SceneClaiming)?.claimScene(record)
@@ -275,7 +275,7 @@ extension Differ {
         }
 
         // The style is applied here, so a host receives every value already on the
-        // control (Views/Style.swift).
+        // control (Style.swift).
         node = styled(node, with: styles)
 
         // Themed values are picked here, which makes this element the theme's reader.

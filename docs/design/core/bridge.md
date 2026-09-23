@@ -1,14 +1,14 @@
 # The C bridge
 
 A runtime in another language reaches the core through C functions, all of them
-in one file, Bridge/Exports.swift. A Swift host uses the typed `StateUIHost`
+in one file, Exports.swift. A Swift host uses the typed `StateUIHost`
 SPI instead; both reach the same `Renderer`.
 
 ```text
   runtime in another language              Swift host
         |  stateui_* (C ABI, Wire bytes)        |  StateUIHost (typed, @_spi(Host))
         v                                       v
-  Bridge/Exports.swift  ------------------>  Renderer.shared, Scenes, stores,
+  Exports.swift  ------------------>  Renderer.shared, Scenes, stores,
                                              UIThreadExecutor, HostEvents
 ```
 

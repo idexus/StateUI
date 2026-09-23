@@ -52,7 +52,7 @@ The core's sources stand in one folder per topic, one element to a file, and
   |                                                                        |
   |   act queue, completions        UIThreadExecutor (MainActor), doorbell |
   +------------------------------------------------------------------------+
-        |  typed: HostRender, HostCycle,       |  C: Bridge/Exports.swift,
+        |  typed: HostRender, HostCycle,       |  C: Exports.swift,
         |  HostActCall (StateUIHost)           |  Wire bytes
         v                                      v
   a Swift host in this process           a runtime in another language
@@ -161,7 +161,7 @@ UI thread under a debugger. The host asks instead (concurrency.md).
 ## The C bridge
 
 ```text
-  runtime in another language              Bridge/Exports.swift -> core
+  runtime in another language              Exports.swift -> core
   ---------------------------------------  -------------------------------------
   at start   stateui_wire_version            refuse a version mismatch loudly
              stateui_set_environment          one standard provider per call

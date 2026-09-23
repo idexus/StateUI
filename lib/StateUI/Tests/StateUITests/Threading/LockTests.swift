@@ -5,7 +5,7 @@ import Dispatch
 import XCTest
 @testable import StateUI
 
-/// State more than one thread touches stands behind a `Lock` - Core/Lock.swift.
+/// State more than one thread touches stands behind a `Lock` - Lock.swift.
 final class LockTests: XCTestCase {
     /// Eight threads, ten thousand holds each, one count: nothing is lost.
     func testEveryHoldCountsWhileManyThreadsHoldTheLock() {

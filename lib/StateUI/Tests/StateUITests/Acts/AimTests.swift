@@ -161,7 +161,7 @@ final class AimTests: XCTestCase {
     /// An aim on the composed view at the call site and one on its content's
     /// root name the SAME element - which a string id inside the content never
     /// could, the identity being fixed on the placeholder before the content
-    /// exists. See Core/Aim.swift's header.
+    /// exists. See Aim.swift's header.
     func testAnAimOnTheComposedViewAndInsideItAgree() throws {
         let renders = Renders()
         let outer = Aim(Carded.self)

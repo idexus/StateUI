@@ -6,7 +6,7 @@
 // that runs when it should not - and one that fails to run when it should -
 // look identical on the wire.
 //
-// The mechanism under test is in Core/Invalidation.swift (reads), Renderer
+// The mechanism under test is in Invalidation.swift (reads), Renderer
 // (changes and the choice of path) and Differ.revisit (the walk). The promise
 // the whole thing rests on: a view is built again when its own recorded reads
 // moved OR when its parent was built again - never skipped on a guess.

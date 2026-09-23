@@ -214,7 +214,7 @@ extension Renderer {
             storage.told?(write.mask)
 
             // Readings asked for with `.samples` see every host write
-            // (Core/Journey/Sampling.swift).
+            // (Sampling.swift).
             storage.sampleTaken()
             written += 1
         }

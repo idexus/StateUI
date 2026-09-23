@@ -32,7 +32,7 @@ extension State {
         /// Design: docs/design/core/state.md#the-initial-value-waits
         private var make: (() -> Value)?
 
-        /// What the author calls this state (Core/Render/Builds.swift). Outside the
+        /// What the author calls this state (Builds.swift). Outside the
         /// lock: every walk writes the same name.
         nonisolated(unsafe) var origin: String?
 
@@ -98,7 +98,7 @@ extension State {
         nonisolated(unsafe) var readAtBuild = false
 
         /// The conversion this storage is the derived side of, held weakly to break a
-        /// ring (Core/Journey/Conversion.swift).
+        /// ring (Conversion.swift).
         /// Design: docs/design/core/journeys.md#conversions
         nonisolated(unsafe) weak var conversion: Conversion?
 

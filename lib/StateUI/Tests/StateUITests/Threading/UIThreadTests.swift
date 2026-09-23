@@ -442,7 +442,7 @@ final class UIThreadTests: XCTestCase {
             it. Without either the function runs on Swift's cooperative pool, \
             and a handler that awaits it resumes off the thread the host draws on \
             - which corrupts state quietly rather than failing. See \
-            Core/UIThread.swift.
+            UIThread.swift.
             """)
     }
 
@@ -468,11 +468,11 @@ final class UIThreadTests: XCTestCase {
     /// one of them breaks a platform silently and far from the cause, which is
     /// why they are rules rather than preferences, and why a test pins them.
     ///
-    /// - **The LIBRARY never imports Foundation.** `Core/Wire.swift` writes the
+    /// - **The LIBRARY never imports Foundation.** `Wire.swift` writes the
     ///   wire by hand and a date on it is three integers. An application may
     ///   import it; nothing under `Sources/` may.
     /// - **`DispatchQueue.main` is banned**, but for the one drain
-    ///   Core/UIThread.swift posts there. Nothing drains that queue on Android
+    ///   UIThread.swift posts there. Nothing drains that queue on Android
     ///   or Windows; MainActor, which the UI thread's own executor serves
     ///   there, is where work for the UI thread goes.
     /// - **`Timer` and `RunLoop` are banned**, for the same reason: they hang
@@ -496,7 +496,7 @@ final class UIThreadTests: XCTestCase {
                 + "the UI thread goes to MainActor"),
             ("Timer",
              "a Foundation Timer hangs off a run loop nothing turns - a timer here is "
-                + "Task.sleep and the waker in Core/Ticker.swift"),
+                + "Task.sleep and the waker in Ticker.swift"),
             ("RunLoop",
              "a RunLoop is drained by nothing on Android or Windows"),
             ("strdup",
@@ -607,7 +607,7 @@ final class UIThreadTests: XCTestCase {
             `-enable-upcoming-feature NonisolatedNonsendingByDefault` on the \
             swiftc line. Without it a plain `async` function written there runs \
             on Swift's cooperative pool, and a handler awaiting one resumes off \
-            the executor its native host draws on. See Core/UIThread.swift.
+            the executor its native host draws on. See UIThread.swift.
             """)
     }
 

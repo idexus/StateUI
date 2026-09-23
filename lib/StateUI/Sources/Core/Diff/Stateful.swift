@@ -14,7 +14,7 @@ protocol StateBox: AnyObject {
     /// The storage this box holds after adoption - what says two boxes are one state.
     var lender: AnyObject { get }
 
-    /// Tells the box the property the author declared it as (Core/Render/Builds.swift).
+    /// Tells the box the property the author declared it as (Builds.swift).
     func named(_ path: String)
 }
 
@@ -247,7 +247,7 @@ extension Node {
         let boxes: [(path: String, box: StateBox)]
 
         /// The `@Environment` slots, filled before the body builds
-        /// (Core/State/Environment.swift).
+        /// (Environment.swift).
         let slots: [EnvironmentSlot]
 
         /// What the view was built with, compared against last render's to decide whether
@@ -257,7 +257,7 @@ extension Node {
         /// Builds the subtree - after the boxes have adopted their predecessors' storage.
         let build: () -> Node
 
-        /// The scene this view is, where it is one (Core/Scenes/SceneRecord.swift).
+        /// The scene this view is, where it is one (SceneRecord.swift).
         let scene: SceneRecord?
 
         /// Fills every slot with the nearest provided object of its type; a slot nobody
@@ -289,7 +289,7 @@ extension Node {
             // Its own watches first, then what was written on it - one order every render.
             node.watches += written.watches
 
-            // And its lifetime handlers, in the same order (Core/Diff/Lifetime.swift).
+            // And its lifetime handlers, in the same order (Lifetime.swift).
             node.created += written.created
             node.destroying += written.destroying
 

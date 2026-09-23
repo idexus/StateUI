@@ -122,7 +122,7 @@ extension HostStorage {
                 break
 
             case .waitUntil(let deadline):
-                // `Task.sleep`, not a run-loop timer (Core/Cycle/Ticker.swift).
+                // `Task.sleep`, not a run-loop timer (Ticker.swift).
                 Task {
                     try? await Task.sleep(until: deadline)
 

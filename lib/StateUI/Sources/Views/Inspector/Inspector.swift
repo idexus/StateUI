@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The inspector: what every render costs and builds, shown inside the
-// application, one per scene; the record itself is Core/Inspection.swift's.
+// application, one per scene; the record itself is Inspection.swift's.
 // Design: docs/design/views/inspector.md#what-it-shows
 
 /// What each render costs and what it builds, shown inside the application.

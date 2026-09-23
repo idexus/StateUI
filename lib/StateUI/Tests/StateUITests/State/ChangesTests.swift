@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // `.onChanged` runs when the value is not what the element carried last render
-// - and only then. See Core/Changes.swift for the four rules these tests pin.
+// - and only then. See Changes.swift for the four rules these tests pin.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -225,7 +225,7 @@ final class ChangesTests: XCTestCase {
         XCTAssertFalse(Renderer.shared.pendingChanges.isEmpty, """
             the handler's state write was swallowed by the render that fired it \
             - it must land AFTER the render's bookkeeping clears, so it asks for \
-            the next one. See Core/Changes.swift.
+            the next one. See Changes.swift.
             """)
 
         Renderer.shared.clearInvalidation()
@@ -375,7 +375,7 @@ final class ChangesTests: XCTestCase {
     /// The road OUT: a change handler may animate, and may await the answer.
     ///
     /// The message carrying the changed value is packed before the handler is
-    /// queued - see Core/Changes.swift - so the act is asked for against an
+    /// queued - see Changes.swift - so the act is asked for against an
     /// interface already showing the change. The handler then resumes with the
     /// act's own answer, exactly as a button's handler would.
     @MainActor

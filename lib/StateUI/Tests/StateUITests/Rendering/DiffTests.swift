@@ -259,7 +259,7 @@ final class DiffTests: XCTestCase {
     /// An element that SURVIVES but loses its last handler carries an EMPTY
     /// event set - not nothing. An empty set is "clear what you had"; nothing
     /// at all would read as "unchanged", and the host would keep resolving a
-    /// gesture to a handler StateUI has forgotten. See Core/Wire.swift.
+    /// gesture to a handler StateUI has forgotten. See Wire.swift.
     func testAnElementThatLosesItsLastHandlerCarriesAnEmptySet() {
         let renders = Renders()
 

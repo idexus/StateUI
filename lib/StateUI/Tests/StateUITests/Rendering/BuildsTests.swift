@@ -7,7 +7,7 @@
 // for the ride - which is what points at the view that actually reads too
 // much.
 //
-// The mechanism is in Core/Builds.swift; the facts it reads are the differ's
+// The mechanism is in Builds.swift; the facts it reads are the differ's
 // own - the reads recorded against an element, the changes a render carries,
 // and the count kept on the element.
 

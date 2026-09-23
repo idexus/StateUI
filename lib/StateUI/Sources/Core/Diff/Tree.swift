@@ -109,7 +109,7 @@ final class RenderedNode {
     var children: [RenderedNode]
 
     /// What this subtree looks like with values left out, for a recycled layout's
-    /// children; zero elsewhere (Core/Diff/Recycling.swift).
+    /// children; zero elsewhere (Recycling.swift).
     var shape: UInt64 = 0
 
     /// Whether its children are recycled, kept so the flag is sent when it changes.

@@ -27,7 +27,7 @@ public final class State<Value>: @unchecked Sendable {
     private var save: ((Value) -> Void)?
 
     /// What pairs this state with the scene it is built in - a `SceneKey` state only
-    /// (Core/Scenes/SceneRecord.swift).
+    /// (SceneRecord.swift).
     private var sceneClaim: ((SceneRecord) -> Void)?
 
     /// The one initializer the others go through, and the only place a storage is
@@ -51,7 +51,7 @@ public final class State<Value>: @unchecked Sendable {
         self.init(making: wrappedValue)
     }
 
-    /// State holding `value`, whatever it is - what Core/State/Observable.swift's
+    /// State holding `value`, whatever it is - what Observable.swift's
     /// initializers delegate to without resolving back to themselves.
     convenience init(holding value: @autoclosure @escaping () -> Value) {
         self.init(making: value)

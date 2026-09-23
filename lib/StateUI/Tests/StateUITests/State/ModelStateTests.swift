@@ -8,7 +8,7 @@
 // property; a read at build records that property; the model's own `$note` is
 // the whole state, handed to the host as a field's text or a driven value; and
 // `debugInfo()` names the property, which is the one thing a wrapper in a
-// class cannot know by itself (Core/State.swift, the enclosing-instance road).
+// class cannot know by itself (State.swift, the enclosing-instance road).
 //
 // A plain `var` on the same class is stored and nothing more, and writing it
 // asks for nothing.
@@ -152,7 +152,7 @@ final class ModelStateTests: XCTestCase {
     /// reading `items` and one reading `note`, and a write to `note` rebuilds
     /// the second alone - AND EACH SAYS WHICH PROPERTY IT WAS BUILT FOR. The
     /// name is the half a wrapper in a class cannot know on its own: without
-    /// the enclosing-instance road in Core/State.swift both readings said
+    /// the enclosing-instance road in State.swift both readings said
     /// `for Storage`, measured before it was written.
     func testAWriteToOnePropertyRebuildsOnlyItsReadersAndNamesIt() {
         let cart = Cart()
@@ -505,7 +505,7 @@ final class ModelStateTests: XCTestCase {
             notifies whoever armed an observation scope around the read, and \
             nothing here arms one - so the interface would go on showing the \
             old value with nothing failing anywhere. That silence is what the \
-            deprecation in Core/Observable.swift names at the declaration, \
+            deprecation in Observable.swift names at the declaration, \
             and this is the measurement it stands on.
             """)
     }

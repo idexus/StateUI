@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The test-side reader of the binary acts channel - Core/Wire.swift decoded
+// The test-side reader of the binary acts channel - Wire.swift decoded
 // back into values a test can assert on.
 //
 // A third spelling of the format, deliberately confined to the TESTS: the
@@ -254,7 +254,7 @@ public enum WireProbe {
 
         /// What this element's subtree looks like with its values taken out,
         /// said when it changed and only under a layout that recycles. Zero
-        /// says this subtree may not be recycled. See Core/Recycling.swift.
+        /// says this subtree may not be recycled. See Recycling.swift.
         public var shape: UInt64?
 
         /// The properties driven by a state: which number each rides on, which way it
@@ -673,7 +673,7 @@ public enum WireProbe {
             return spelled(member, as: SwipeBehaviorOnInvoked.self)
         // The side a set of swipe items sits on is INTERNAL to the library -
         // the items are a slot rather than something an author names - so this
-        // is the probe's own spelling of it, in Views/SwipeView.swift's order.
+        // is the probe's own spelling of it, in SwipeView.swift's order.
         // The same arrangement `dumpEnvironment` makes for the domain byte.
         case Prop.side.name:
             return spelled(member, amongst: ["left", "right", "top", "bottom"])

@@ -57,7 +57,7 @@ extension Renderer {
 
     /// Acts queued and not yet taken, waiting saves included - work to the doorbell.
     var actCallsPending: Int {
-        // A save waiting is an act the moment it is taken (Core/State/Persistence.swift).
+        // A save waiting is an act the moment it is taken (Persistence.swift).
         guarded.withLock { actCalls.count } + PersistentStore.shared.pending
             + Scenes.shared.pendingSaves
     }
@@ -125,7 +125,7 @@ extension Renderer {
             return queued
         }
 
-        // And what the open scenes keep, the same way (Core/Scenes/Scenes.swift).
+        // And what the open scenes keep, the same way (Scenes.swift).
         return queued + saves + Scenes.shared.takeSaves()
     }
 

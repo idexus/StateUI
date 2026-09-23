@@ -173,7 +173,7 @@ final class WireFormatTests: XCTestCase {
 
         for (vocabulary, file) in vocabularies {
             let declared = try Fixtures.tokenNames(of: vocabulary).sorted()
-            XCTAssertFalse(declared.isEmpty, "no \(vocabulary) was read from Core/Tokens.swift")
+            XCTAssertFalse(declared.isEmpty, "no \(vocabulary) was read from Tokens.swift")
 
             guard let enumeration = host.first(where: { $0.path.hasSuffix(file) })?.text else {
                 XCTFail("\(file) was not found in the MAUI host")
@@ -201,8 +201,8 @@ final class WireFormatTests: XCTestCase {
         }
 
         XCTAssertGreaterThan(checked, 300, "the scan read almost nothing")
-        XCTAssertEqual(missing, [], "declared in Core/Tokens.swift with no member in the MAUI host")
-        XCTAssertEqual(stranded, [], "a member in the MAUI host for a name Core/Tokens.swift does not declare")
+        XCTAssertEqual(missing, [], "declared in Tokens.swift with no member in the MAUI host")
+        XCTAssertEqual(stranded, [], "a member in the MAUI host for a name Tokens.swift does not declare")
     }
 
     /// Every act the MAUI host has a MEMBER for also has an ARM in `Perform`.

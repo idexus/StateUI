@@ -14,7 +14,7 @@ import XCTest
 /// of the sources here - a regex over source code is acceptable in a TEST,
 /// where it can only under-report, and never in anything the library runs.
 final class BridgeTests: XCTestCase {
-    /// `Bridge/Exports.swift`, the one place `@_cdecl` is allowed.
+    /// `Exports.swift`, the one place `@_cdecl` is allowed.
     private func exports() throws -> String {
         try String(
             contentsOf: Fixtures.sources
@@ -126,7 +126,7 @@ final class BridgeTests: XCTestCase {
         }
     }
 
-    /// Every `@_cdecl` in the library is in `Bridge/Exports.swift`.
+    /// Every `@_cdecl` in the library is in `Exports.swift`.
     func testEveryExportLivesInTheBridgeFile() throws {
         for (path, text) in try Fixtures.allSources()
         where !path.hasSuffix("/Exports.swift") {
@@ -137,7 +137,7 @@ final class BridgeTests: XCTestCase {
 
             XCTAssertFalse(
                 code.contains("@_cdecl(\""),
-                "\(path) declares an export; they all belong in Bridge/Exports.swift")
+                "\(path) declares an export; they all belong in Exports.swift")
         }
     }
 

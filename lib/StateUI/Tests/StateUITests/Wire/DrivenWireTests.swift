@@ -19,7 +19,7 @@ final class DrivenWireTests: XCTestCase {
 
         // The numbering starts over, so these bytes are the same whichever
         // test read them first: a state's number is issued from a counter the
-        // whole process shares. See Core/Render/Renderer+Cycle.swift.
+        // whole process shares. See Renderer+Cycle.swift.
         Renderer.shared.clearStates()
     }
 

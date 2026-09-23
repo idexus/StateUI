@@ -79,7 +79,7 @@ final class LibraryContractTests: XCTestCase {
     // MARK: - The names
 
     /// A member crosses under its name, so a library member's name is a token
-    /// the library declares in Core/Tokens.swift.
+    /// the library declares in Tokens.swift.
     func testEveryMemberIsATokenTheLibraryDeclares() throws {
         let tokens: [MemberFacts.Kind: Set<String>] = [
             .property: try Fixtures.tokenNames(of: "Prop"),

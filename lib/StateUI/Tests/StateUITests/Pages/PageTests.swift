@@ -10,8 +10,8 @@
 // writes it.
 //
 // Everything a page can be told is its session's, in
-// Types/Sessions/PageSession.swift, and everything a window can be told is its
-// window session's, in Types/Sessions/WindowSession.swift - so the guards
+// PageSession.swift, and everything a window can be told is its
+// window session's, in WindowSession.swift - so the guards
 // below read both files and insist the two exhaustive values in this one
 // carry every key: the page for a page's, the window for a window's. A page
 // writes its session from its own `.onCreated`, and what that writes is in
@@ -360,7 +360,7 @@ final class PageTests: XCTestCase {
             reaches the wire.
 
             Every property a page's session holds is written into its `props` \
-            in Types/Sessions/PageSession.swift, or hangs off the page as a node in its \
+            in PageSession.swift, or hangs off the page as a node in its \
             `slots`. One that is declared and written nowhere is a property an \
             author can set and nothing will read.
             """)
@@ -392,7 +392,7 @@ final class PageTests: XCTestCase {
 
         XCTAssertTrue(
             declared.contains("title") && declared.contains("toolbarItems"),
-            "Types/Sessions/PageSession.swift no longer declares `@State public var title` - the scan read nothing")
+            "PageSession.swift no longer declares `@State public var title` - the scan read nothing")
 
         return declared
     }

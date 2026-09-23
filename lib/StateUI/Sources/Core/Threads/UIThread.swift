@@ -188,7 +188,7 @@ final class UIThreadExecutor: SerialExecutor, @unchecked Sendable {
     func checkIsolated() {
         precondition(
             isIsolatingCurrentContext() == true,
-            "this is not the UI thread, whose jobs are MainActor's - see Core/Threads/UIThread.swift")
+            "this is not the UI thread, whose jobs are MainActor's - see UIThread.swift")
     }
 
     /// How many jobs are waiting, without running any - what a test waits on, beside

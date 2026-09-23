@@ -61,7 +61,7 @@ system restores the application's windows.
   is `Codable` for that reason, and a `WindowType` name is written down with
   every window, so it should not change between versions.
 
-Which scenes are open is the library's to hold (`Core/Scenes/Scenes.swift`),
+Which scenes are open is the library's to hold (`Scenes.swift`),
 never the author's. A host maps sessions onto the scene or window identities
 its platform provides; a host that shows one window refuses another with
 `WindowError.unsupported`.

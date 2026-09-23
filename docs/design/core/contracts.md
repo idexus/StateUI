@@ -92,7 +92,7 @@ same thing.
 
 Nobody writes a token by hand. A member's token is made from its name, and each
 name is spelled once, where a contract declares its member; the library's
-tokens (`Core/Contract/Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
+tokens (`Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
 made from the members, and a guard names any source that spells a name out
 instead. A node type is the one token a contract spells, as a literal. Tokens
 compare by name, because a message writes properties and handlers in name
