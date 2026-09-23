@@ -76,3 +76,23 @@ The Java layer exists only where Android wants a subclass or an interface:
 the activity, the layout `ViewGroup`, the frame callback, and one listener
 for what the user does to a view ([controls](controls.md)). Each method forwards to a registered
 Swift function.
+
+## What a frame writes
+
+A crossing costs a hundred nanoseconds or so, and what it starts in Java
+costs more, so the host crosses as seldom as a frame allows. A view keeps
+what the host last wrote to it - its transform, its opacity, the place it
+was laid out at - and a frame writes only what differs and reads nothing
+back: the place a travelling layout starts from is the one the host wrote.
+What Android asks for in several calls is one: a placement measures the view
+exactly and lays it out, the whole transform with its pivot is set at once,
+and a measurement answers both sizes. A view that only moves keeps its
+drawing, and a layout moved without a change of size, with nothing in it
+asking to be measured again, leaves its children where they stand. A ring
+of 24 cards an engine places every frame went from 687 crossings to 59.
+
+The writes are not gathered into one buffer for the whole frame: Android's
+layout pass reads what the host wrote in the same frame, and a buffer that
+waited for the frame's end would hand it what stood before; it would also
+keep a second table of the views in Java.
+

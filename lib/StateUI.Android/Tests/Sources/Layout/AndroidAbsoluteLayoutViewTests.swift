@@ -66,7 +66,8 @@ final class AndroidAbsoluteLayoutViewTests: XCTestCase {
             XCTAssertTrue(holders[0].frame == (20, 40, 60, 80), "\(holders[0].frame)")
             XCTAssertTrue(holders[1].frame == (0, 0, 100, 100), "\(holders[1].frame)")
             XCTAssertEqual(Java.callFloat(holders[1].reference, JavaAPI.getAlpha), 0.5, accuracy: 0.001)
-            XCTAssertTrue(layout.holds(inOrder: [holders[1], holders[0]]))
+            XCTAssertEqual(layout.drawingOrder, [1, 0], "the higher rank drawn last")
+            XCTAssertTrue(layout.holds(inOrder: [holders[0], holders[1]]), "and nothing moved in the group")
 
             let boxes = host.views(AndroidColorBoxView.self)
             XCTAssertTrue(boxes[0].frame == (0, 0, 60, 80), "\(boxes[0].frame)")

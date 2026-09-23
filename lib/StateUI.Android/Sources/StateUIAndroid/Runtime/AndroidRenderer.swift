@@ -309,6 +309,7 @@ final class AndroidRenderer {
         shownPage = page
         Java.call(root.reference, JavaAPI.removeAllViews)
         if let page {
+            page.forgetPlace()
             Java.call(root.reference, JavaAPI.addView, .object(page.reference), .int(-1), .int(-1))
         }
     }

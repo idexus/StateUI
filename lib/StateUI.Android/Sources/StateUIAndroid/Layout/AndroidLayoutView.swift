@@ -51,6 +51,19 @@ class AndroidLayoutView: AndroidView {
         held = views
     }
 
+    /// The order the children are drawn and touched in, back to front, by index; nil for their own.
+    private(set) var drawingOrder: [Int]?
+
+    /// Draws the children, and hands them touches, in `order`; nil for their own order.
+    func setDrawingOrder(_ order: [Int]?) {
+        guard order != drawingOrder else { return }
+
+        drawingOrder = order
+        let indices = order.map { Java.ints($0.map(Int32.init)) }
+        Java.call(reference, JavaAPI.setDrawingOrder, .object(indices ?? nil))
+        Java.release(local: indices ?? nil)
+    }
+
     /// Makes the layout and everything in it deaf to touches, which go to whatever stands behind it.
     func setIgnoresInput(_ ignores: Bool) {
         Java.call(reference, JavaAPI.setIgnoresInput, .bool(ignores))

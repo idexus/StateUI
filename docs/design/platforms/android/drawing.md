@@ -41,12 +41,13 @@ while the scales are the same on both axes, which is what a placement draws.
 The opacities multiply, and the view's own opacity is still what its
 animations start from.
 
-A higher rank is drawn over a lower one because the layout holds its
+A higher rank is drawn over a lower one because the layout draws its
 children in that order, back to front, which is also the order a touch
-reaches them in. The order is set when a run or the children change, never
-while Android lays the layout out. A run that follows another stands its
-children at once, without laying out anything around the layout: its places
-need no room. The shade a placed layout lays over a card is the holder's
+reaches them in; nothing is moved in the group, so nothing is laid out again
+for it. The order is set when a run or the children change, never while
+Android lays the layout out. A run that follows another stands its children
+at once, without laying out anything around the layout: its places need no
+room. The shade a placed layout lays over a card is the holder's
 second child, drawn at the run's shade.
 
 ## Pictures

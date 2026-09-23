@@ -45,7 +45,8 @@ final class AndroidAbsoluteLayoutView: AndroidTravellingLayout {
         }
     }
 
-    /// Holds the children back to front as the run ranks them, or in order without one; never while laying out.
+    /// Draws the children back to front as the run ranks them, or in their order without one: the order a touch
+    /// reaches them in too, with nothing moved and nothing laid out again.
     private func holdInDrawingOrder() {
         let placements = placement?.placements ?? []
         let count = min(items.count, placements.count)
@@ -53,8 +54,8 @@ final class AndroidAbsoluteLayoutView: AndroidTravellingLayout {
             placements[$0].zIndex == placements[$1].zIndex
                 ? $0 < $1
                 : placements[$0].zIndex < placements[$1].zIndex
-        }
-        setChildren(ordered.map { items[$0].view } + items[count...].map(\.view))
+        } + Array(count..<items.count)
+        setDrawingOrder(ordered == Array(items.indices) ? nil : ordered)
     }
 
     /// Stands each child where the run says, drawn as it says.

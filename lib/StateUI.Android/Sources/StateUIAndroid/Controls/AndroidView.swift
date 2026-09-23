@@ -88,9 +88,15 @@ class AndroidView {
         Java.callInt(reference, JavaAPI.getVisibility) == ViewConstants.visible
     }
 
+    /// How opaque the view's own property draws it, with a placing layout's opacity over it; written only where
+    /// it differs from what was.
     func setOpacity(_ opacity: Double) {
         ownOpacity = opacity
-        Java.call(reference, JavaAPI.setAlpha, .float(Float(ownOpacity * placedOpacity)))
+        let alpha = Float(ownOpacity * placedOpacity)
+        guard alpha != written.alpha else { return }
+
+        written.alpha = alpha
+        Java.call(reference, JavaAPI.setAlpha, .float(alpha))
     }
 
     /// How opaque the view's own property draws it.
@@ -128,29 +134,45 @@ class AndroidView {
             drawn.scaleY *= placed.scaleY
         }
 
-        Java.call(reference, JavaAPI.setTranslationX, .float(Float(drawn.translationX * density)))
-        Java.call(reference, JavaAPI.setTranslationY, .float(Float(drawn.translationY * density)))
-        Java.call(reference, JavaAPI.setRotation, .float(Float(drawn.rotation)))
-        Java.call(reference, JavaAPI.setRotationX, .float(Float(drawn.rotationX)))
-        Java.call(reference, JavaAPI.setRotationY, .float(Float(drawn.rotationY)))
-        Java.call(reference, JavaAPI.setScaleX, .float(Float(drawn.scaleX)))
-        Java.call(reference, JavaAPI.setScaleY, .float(Float(drawn.scaleY)))
         pivot = placed == nil ? (drawn.pivotX, drawn.pivotY) : (0.5, 0.5)
-        applyPivot()
+
+        // A pivot off the centre is in pixels of the size the view was last placed at; at the centre, Android's own.
+        let size = laidOut.map { (Double($0.right - $0.left), Double($0.bottom - $0.top)) } ?? (0, 0)
+        let centred = pivot == (0.5, 0.5)
+        let transform = Written.Transform(
+            translationX: Float(drawn.translationX * density), translationY: Float(drawn.translationY * density),
+            rotation: Float(drawn.rotation), rotationX: Float(drawn.rotationX), rotationY: Float(drawn.rotationY),
+            scaleX: Float(drawn.scaleX), scaleY: Float(drawn.scaleY),
+            pivotX: centred ? nil : Float(pivot.x * size.0), pivotY: centred ? nil : Float(pivot.y * size.1))
+        guard transform != written.transform else { return }
+
+        written.transform = transform
+        Java.callStatic(
+            JavaAPI.views, JavaAPI.transformView, .object(reference),
+            .float(transform.translationX), .float(transform.translationY), .float(transform.rotation),
+            .float(transform.rotationX), .float(transform.rotationY), .float(transform.scaleX), .float(transform.scaleY),
+            .float(transform.pivotX ?? .nan), .float(transform.pivotY ?? .nan))
     }
 
-    /// Puts the pivot at its fractions of the view's size; at the centre Android keeps it there itself.
-    private func applyPivot() {
-        guard pivot != (0.5, 0.5) else {
-            Java.call(reference, JavaAPI.resetPivot)
-            return
+    /// What the host last wrote to the view, so a frame writes only what differs and reads nothing back.
+    /// Design: docs/design/platforms/android/jni.md#what-a-frame-writes
+    private struct Written {
+        struct Transform: Equatable {
+            var translationX: Float = 0, translationY: Float = 0
+            var rotation: Float = 0, rotationX: Float = 0, rotationY: Float = 0
+            var scaleX: Float = 1, scaleY: Float = 1
+            var pivotX: Float?, pivotY: Float?
         }
 
-        let width = Double(Java.callInt(reference, JavaAPI.getWidth))
-        let height = Double(Java.callInt(reference, JavaAPI.getHeight))
-        Java.call(reference, JavaAPI.setPivotX, .float(Float(pivot.x * width)))
-        Java.call(reference, JavaAPI.setPivotY, .float(Float(pivot.y * height)))
+        var alpha: Float = 1
+        var transform = Transform()
     }
+
+    private var written = Written()
+
+    /// Where the host last laid the view out, in pixels of its parent; nil until it has, or once another
+    /// container places it.
+    private var laidOut: (left: Int32, top: Int32, right: Int32, bottom: Int32)?
 
     func setEnabled(_ enabled: Bool) {
         Java.call(reference, JavaAPI.setEnabled, .bool(enabled))
@@ -208,23 +230,27 @@ class AndroidView {
 
     /// Measures the view for the specs given; its size in pixels.
     func measure(width: Int32, height: Int32) -> (width: Int32, height: Int32) {
-        Java.call(reference, JavaAPI.measure, .int(width), .int(height))
-        return (
-            Java.callInt(reference, JavaAPI.getMeasuredWidth),
-            Java.callInt(reference, JavaAPI.getMeasuredHeight))
+        let size = Java.callStaticLong(JavaAPI.views, JavaAPI.measureView, .object(reference), .int(width), .int(height))
+        return (Int32(truncatingIfNeeded: size >> 32), Int32(truncatingIfNeeded: size))
     }
 
-    /// Places the view at `place`, in points of its parent.
+    /// Places the view at `place`, in points of its parent: measured there exactly and laid out, in one call.
     func layout(_ place: Rect) {
-        let left = pixels(place.x)
-        let top = pixels(place.y)
-        let right = pixels(place.x + place.width)
-        let bottom = pixels(place.y + place.height)
-        _ = measure(
-            width: ViewConstants.spec(ViewConstants.exactly, right - left),
-            height: ViewConstants.spec(ViewConstants.exactly, bottom - top))
-        Java.call(reference, JavaAPI.layout, .int(left), .int(top), .int(right), .int(bottom))
-        if pivot != (0.5, 0.5) { applyPivot() }
+        let frame = (
+            left: pixels(place.x), top: pixels(place.y),
+            right: pixels(place.x + place.width), bottom: pixels(place.y + place.height))
+        let resized = laidOut.map { $0.right - $0.left != frame.right - frame.left || $0.bottom - $0.top != frame.bottom - frame.top }
+            ?? true
+        laidOut = frame
+        Java.callStatic(
+            JavaAPI.views, JavaAPI.placeView, .object(reference),
+            .int(frame.left), .int(frame.top), .int(frame.right), .int(frame.bottom))
+        if resized, pivot != (0.5, 0.5) { applyTransform() }
+    }
+
+    /// Hands the view to a container of Android's own, which places it: its place is read from Android from now on.
+    func forgetPlace() {
+        laidOut = nil
     }
 
     /// Where the view stands, in points: its frame in its parent, its place in the window, and that place
@@ -264,14 +290,16 @@ class AndroidView {
 }
 
 extension AndroidView: PlacedView {
-    /// Where the view stands in its parent, in points; set, it is measured and placed there.
+    /// Where the view stands in its parent, in points - where the host last laid it out, or else where Android
+    /// has it; set, it is measured and placed there.
     var placedFrame: Rect {
         get {
-            Rect(
-                x: Double(Java.callInt(reference, JavaAPI.getLeft)) / density,
-                y: Double(Java.callInt(reference, JavaAPI.getTop)) / density,
-                width: Double(Java.callInt(reference, JavaAPI.getWidth)) / density,
-                height: Double(Java.callInt(reference, JavaAPI.getHeight)) / density)
+            let frame = laidOut ?? (
+                left: Java.callInt(reference, JavaAPI.getLeft), top: Java.callInt(reference, JavaAPI.getTop),
+                right: Java.callInt(reference, JavaAPI.getRight), bottom: Java.callInt(reference, JavaAPI.getBottom))
+            return Rect(
+                x: Double(frame.left) / density, y: Double(frame.top) / density,
+                width: Double(frame.right - frame.left) / density, height: Double(frame.bottom - frame.top) / density)
         }
         set { layout(newValue) }
     }

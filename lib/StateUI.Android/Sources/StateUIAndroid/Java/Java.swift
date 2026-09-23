@@ -13,6 +13,10 @@ enum Java {
     /// The process's virtual machine, as the library's load received it.
     nonisolated(unsafe) static var machine: UnsafeMutablePointer<JavaVM?>?
 
+    /// How many calls the host has made into Java - what a test counts to see a frame write only what differs.
+    /// Design: docs/design/platforms/android/jni.md#what-a-frame-writes
+    static var crossings = 0
+
     /// The main thread's environment, taken when the activity starts the host.
     static var env: UnsafeMutablePointer<JNIEnv?>!
 
@@ -96,6 +100,7 @@ enum Java {
 
     /// A new object, held globally.
     static func new(_ owner: jclass, _ constructor: jmethodID, _ arguments: jvalue...) -> JavaObject {
+        crossings += 1
         let local = arguments.withUnsafeBufferPointer { jni.NewObjectA(env, owner, constructor, $0.baseAddress) }
         check("a constructor")
         return JavaObject(local!)
@@ -103,12 +108,14 @@ enum Java {
 
     /// Calls a method returning nothing.
     static func call(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) {
+        crossings += 1
         arguments.withUnsafeBufferPointer { _ = jni.CallVoidMethodA(env, object, method, $0.baseAddress) }
         check("a call")
     }
 
     /// Calls a method returning an int.
     static func callInt(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Int32 {
+        crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallIntMethodA(env, object, method, $0.baseAddress) }
         check("a call")
         return result
@@ -116,13 +123,30 @@ enum Java {
 
     /// Calls a method returning a boolean.
     static func callBool(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
+        crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallBooleanMethodA(env, object, method, $0.baseAddress) }
         check("a call")
         return result != 0
     }
 
+    /// Calls a static method returning nothing.
+    static func callStatic(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) {
+        crossings += 1
+        arguments.withUnsafeBufferPointer { jni.CallStaticVoidMethodA(env, owner, method, $0.baseAddress) }
+        check("a static call")
+    }
+
+    /// Calls a static method returning a long.
+    static func callStaticLong(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Int64 {
+        crossings += 1
+        let result = arguments.withUnsafeBufferPointer { jni.CallStaticLongMethodA(env, owner, method, $0.baseAddress) }
+        check("a static call")
+        return result
+    }
+
     /// Calls a static method returning a boolean.
     static func callStaticBool(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> Bool {
+        crossings += 1
         let result = arguments.withUnsafeBufferPointer {
             jni.CallStaticBooleanMethodA(env, owner, method, $0.baseAddress)
         }
@@ -132,6 +156,7 @@ enum Java {
 
     /// Calls a method returning a float.
     static func callFloat(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> Float {
+        crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallFloatMethodA(env, object, method, $0.baseAddress) }
         check("a call")
         return result
@@ -139,6 +164,7 @@ enum Java {
 
     /// Calls a method returning an object, as a local reference.
     static func callObject(_ object: jobject, _ method: jmethodID, _ arguments: jvalue...) -> jobject? {
+        crossings += 1
         let result = arguments.withUnsafeBufferPointer { jni.CallObjectMethodA(env, object, method, $0.baseAddress) }
         check("a call")
         return result
@@ -146,6 +172,7 @@ enum Java {
 
     /// Calls a static method returning an object, as a local reference.
     static func callStaticObject(_ owner: jclass, _ method: jmethodID, _ arguments: jvalue...) -> jobject? {
+        crossings += 1
         let result = arguments.withUnsafeBufferPointer {
             jni.CallStaticObjectMethodA(env, owner, method, $0.baseAddress)
         }
