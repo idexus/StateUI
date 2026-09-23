@@ -70,13 +70,13 @@ final class HostContractTests: XCTestCase {
     /// panes adapt and which native gestures are available on that platform.
     func testFlyoutVocabularyDoesNotExposeHostPresentationPolicy() throws {
         let tokenSource = try Fixtures.text(in: "Tokens.swift")
-        let enumSource = try Fixtures.text(in: "Enums.swift")
+        let vocabularies = try Self.typeSources().map(\.text).joined(separator: "\n")
         let flyoutSource = try Fixtures.text(in: "SplitView.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertFalse(properties.contains("flyoutLayoutBehavior"))
         XCTAssertFalse(properties.contains("isGestureEnabled"))
-        XCTAssertFalse(enumSource.contains("enum FlyoutLayoutBehavior"))
+        XCTAssertFalse(vocabularies.contains("enum FlyoutLayoutBehavior"))
         XCTAssertFalse(flyoutSource.contains("func flyoutLayoutBehavior("))
         XCTAssertFalse(flyoutSource.contains("func isGestureEnabled("))
     }
@@ -295,10 +295,9 @@ final class HostContractTests: XCTestCase {
         XCTAssertTrue(controls.contains("ContextMenu"))
         XCTAssertFalse(controls.contains("ContextFlyout"), "the context menu keeps its former name")
 
-        for file in [
-            "Elements.swift", "Bound.swift", "Label.swift",
-            "SwipeView.swift", "Enums.swift", "PageSession.swift",
-        ] {
+        let files = try ["Elements.swift", "Bound.swift", "Label.swift", "SwipeView.swift"]
+            + Self.typeSources().map(\.path)
+        for file in files {
             let source = try Fixtures.text(in: file)
             for name in former + ["contextFlyout"] {
                 XCTAssertFalse(source.contains("func \(name)("), "\(file) still declares .\(name)")
@@ -453,9 +452,9 @@ final class HostContractTests: XCTestCase {
     /// `.fill`, `.stretch` or `.center` - no second enum for shapes and no case
     /// that repeats its type.
     func testAspectIsOneWordForImagesAndShapes() throws {
-        let enums = try Fixtures.text(in: "Enums.swift")
+        let aspectSource = try Fixtures.text(in: "Aspect.swift")
         for aspect in ["case fit = 0", "case fill = 1", "case stretch = 2", "case center = 3"] {
-            XCTAssertTrue(enums.contains(aspect), "Aspect does not declare `\(aspect)`")
+            XCTAssertTrue(aspectSource.contains(aspect), "Aspect does not declare `\(aspect)`")
         }
 
         let files = try FileManager.default
@@ -788,6 +787,11 @@ final class HostContractTests: XCTestCase {
         }
 
         return nil
+    }
+
+    /// Every source under Types/, where the closed vocabularies and the sessions stand.
+    private static func typeSources() throws -> [(path: String, text: String)] {
+        try Fixtures.allSources().filter { $0.path.hasPrefix("Types/") }
     }
 
     private func declaredNames(of vocabulary: String, in source: String) -> Set<String> {

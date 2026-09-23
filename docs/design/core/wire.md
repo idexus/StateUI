@@ -109,7 +109,8 @@ wrong. The state batch carries raw lanes and no version.
 ```
 
 Tag 4 is text someone wrote, and the only arm that carries a spelling. A closed
-vocabulary is tag 10 and rides its member's number (Types/Enums.swift says
+vocabulary is tag 10 and rides its member's number ([closed
+vocabularies](../types/vocabularies.md#the-numbers-belong-to-stateui) says
 whose numbers those are); an open vocabulary an author names - a style key, a
 visual state, a font family, a radio group, a window's kind - is tag 11 and
 rides the dictionary like a property key; a value made of parts is tag 9 and

@@ -28,8 +28,9 @@ name (bindings.md, both spellings).
 
 A closed vocabulary a control uses - `IconPosition`, `MapType`, `SwipeSide`,
 `WebNavigationEvent`, `WebNavigationResult` - crosses as an `.enumeration`
-whose numbers are the library's own, in declaration order, the rule at the head
-of `Types/Enums.swift`. A host translates its toolkit's value onto the member
+whose numbers are the library's own, in declaration order, the rule of
+[closed vocabularies](../types/vocabularies.md#written-out-and-appended). A
+host translates its toolkit's value onto the member
 that means the same. A toolkit's own numbers stay out of it: a toolkit release
 free to renumber its enumeration would otherwise make every report read as a
 different member, silently. A member a host has no case for arrives as
