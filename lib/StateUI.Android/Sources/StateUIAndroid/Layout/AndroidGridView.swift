@@ -38,7 +38,7 @@ final class AndroidGridView: AndroidTravellingLayout {
     override func contentSize(width: Double?) -> LayoutSize {
         GridArithmetic.size(
             of: items, rows: rows, columns: columns,
-            rowSpacing: rowSpacing, columnSpacing: columnSpacing, padding: padding)
+            rowSpacing: rowSpacing, columnSpacing: columnSpacing, padding: padding, width: width)
     }
 
     override func arrange(in bounds: Rect) {

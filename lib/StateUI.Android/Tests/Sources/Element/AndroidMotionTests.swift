@@ -24,7 +24,7 @@ final class AndroidMotionTests: XCTestCase {
         XCTAssertTrue(AndroidTransitionSurface.presents(.value, on: .slider))
         XCTAssertTrue(AndroidTransitionSurface.presents(.spacing, on: .vStack))
         XCTAssertFalse(AndroidTransitionSurface.presents(.value, on: .label))
-        XCTAssertFalse(AndroidTransitionSurface.presents(.opacity, on: .activityIndicator))
+        XCTAssertFalse(AndroidTransitionSurface.presents(.opacity, on: .radioButton))
         XCTAssertFalse(AndroidTransitionSurface.presents(Prop("custom"), on: .label))
     }
 

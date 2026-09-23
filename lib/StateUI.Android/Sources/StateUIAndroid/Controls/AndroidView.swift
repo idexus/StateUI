@@ -174,8 +174,32 @@ class AndroidView {
         withExtendedLifetime(brush) { Java.call(reference, JavaAPI.setBackground, .object(brush.reference)) }
     }
 
+    /// What the view does when the user taps it; nil where it takes no tap.
+    private(set) var onTapped: (() -> Void)?
+
+    /// Makes the view answer a tap with `action`, or answer none for nil.
+    func setTapped(_ action: (() -> Void)?) {
+        let listening = onTapped != nil
+        onTapped = action
+        guard (action != nil) != listening, !(self is AndroidButtonView) else { return }
+
+        if action != nil {
+            listen(JavaAPI.setOnClickListener)
+        } else {
+            Java.call(reference, JavaAPI.setOnClickListener, .object(nil))
+            Java.call(reference, JavaAPI.setClickable, .bool(false))
+        }
+    }
+
+    /// The user clicked or tapped the view.
+    func clicked() {
+        onTapped?()
+    }
+
     /// The element left the tree: the view lets go of everything that would call back into it.
-    func detach() {}
+    func detach() {
+        onTapped = nil
+    }
 
     /// Asks Android to measure and place this view and its ancestors again.
     func requestLayout() {

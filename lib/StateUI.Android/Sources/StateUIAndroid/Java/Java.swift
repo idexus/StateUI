@@ -153,6 +153,11 @@ enum Java {
         return result
     }
 
+    /// Reads a float field.
+    static func float(_ object: jobject, _ field: jfieldID) -> Float {
+        jni.GetFloatField(env, object, field)
+    }
+
     /// Writes an int field.
     static func set(_ object: jobject, _ field: jfieldID, _ value: Int32) {
         jni.SetIntField(env, object, field, value)

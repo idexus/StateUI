@@ -77,6 +77,13 @@ no room given, a proportional track is as large as its largest one-track
 child, so the grid's natural size holds every child. A share of nothing still
 counts as a sliver, so no division is by zero.
 
+The columns are settled first, and a row measures each of its children at
+the width of the columns it stands in, so words that wrap in a column make
+their row as tall as they will stand. A grid measured for a width narrower
+than its natural one shares that width among its columns as its placement
+would, and its rows are measured at those widths; its natural width stays
+its children's.
+
 ## Absolute bounds
 
 An absolute layout stands each shown child at its own bounds: x, y, width and

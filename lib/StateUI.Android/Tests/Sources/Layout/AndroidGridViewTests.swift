@@ -9,6 +9,7 @@ final class AndroidGridViewTests: XCTestCase {
     static var allTests: [(String, (AndroidGridViewTests) -> () throws -> Void)] {
         [
             ("testAGridStandsEachChildInItsCell", testAGridStandsEachChildInItsCell),
+            ("testWordsThatWrapInAColumnMakeTheirRowTall", testWordsThatWrapInAColumnMakeTheirRowTall),
             ("testAProportionalRowTakesWhatTheOthersLeave", testAProportionalRowTakesWhatTheOthersLeave),
         ]
     }
@@ -36,6 +37,35 @@ final class AndroidGridViewTests: XCTestCase {
             XCTAssertTrue(labels[0].frame == (20, 20, 100, 40), "\(labels[0].frame)")
             XCTAssertTrue(labels[1].frame == (230, 20, 830, 40), "\(labels[1].frame)")
             XCTAssertTrue(labels[2].frame == (1000, 80, 60, 80), "\(labels[2].frame)")
+        }
+    }
+
+    /// A card's words wrap in its proportional column, and their row, the grid and the card are as tall as the
+    /// words stand.
+    func testWordsThatWrapInAColumnMakeTheirRowTall() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Border {
+                        Grid {
+                            Label("one two three four five six seven eight nine ten eleven twelve").maximumLines(2)
+                            Label("›").gridColumn(1)
+                        }
+                        .columns(.fill, .auto)
+                    }
+                    .width(150)
+                    .horizontalAlignment(.start)
+                    Label("one").horizontalAlignment(.start)
+                }
+            }
+            host.layOut()
+
+            let labels = host.views(AndroidLabelView.self)
+            let line = labels[2].frame.height
+            XCTAssertGreaterThan(labels[0].frame.height, line * 3 / 2, "two lines, \(labels[0].frame)")
+            XCTAssertLessThan(labels[0].frame.height, line * 5 / 2, "no more than two")
+            let border = try XCTUnwrap(host.views(AndroidBorderView.self).first)
+            XCTAssertGreaterThanOrEqual(border.frame.height, labels[0].frame.height)
         }
     }
 

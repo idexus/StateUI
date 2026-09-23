@@ -22,11 +22,18 @@ struct AndroidLayoutItem: LayoutChild {
     var fadeIn: ((Motion) -> Void)?
 
     /// The view's size for the width offered, margin included in the offer, its stated sizes and bounds applied.
+    /// A stated width is the width it is measured at, so words wrap to it; a most width bounds the offer.
     func size(offered width: Double?) -> LayoutSize {
         let margin = values.margin
         let available = width.map { max(0, $0 - margin.left - margin.right) }
-        let widthSpec = available.map { ViewConstants.spec(ViewConstants.atMost, view.pixels($0)) }
-            ?? ViewConstants.unspecified
+        let widthSpec: Int32
+        if let stated = values.width {
+            widthSpec = ViewConstants.spec(ViewConstants.exactly, view.pixels(values.boundedWidth(stated)))
+        } else if let limit = [available, values.maximumWidth].compactMap(\.self).min() {
+            widthSpec = ViewConstants.spec(ViewConstants.atMost, view.pixels(limit))
+        } else {
+            widthSpec = ViewConstants.unspecified
+        }
         let measured = view.measure(width: widthSpec, height: ViewConstants.unspecified)
 
         return LayoutSize(

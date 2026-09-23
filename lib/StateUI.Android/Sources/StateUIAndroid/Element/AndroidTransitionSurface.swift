@@ -16,7 +16,9 @@ enum AndroidTransitionSurface {
         case .grid: return [.padding, .rowSpacing, .columnSpacing, .rows, .columns].contains(property)
         case .border: return [.padding, .stroke, .strokeWidth, .shape].contains(property)
         case .colorBox: return property == .color || property == .cornerRadius
-        case .label, .button: return property == .fontSize || property == .textColor || property == .padding
+        case .label: return [.fontSize, .textColor, .padding, .characterSpacing, .lineHeight].contains(property)
+        case .button: return property == .fontSize || property == .textColor || property == .padding
+        case .progressBar: return property == .progress
         case .textField: return property == .fontSize || property == .textColor || property == .placeholderColor
         case .slider: return property == .value || property == .tint
         default: return false
@@ -25,7 +27,7 @@ enum AndroidTransitionSurface {
 
     private static let viewTypes: Set<NodeType> = [
         .label, .button, .textField, .switch, .slider, .vStack, .hStack,
-        .grid, .absoluteLayout, .border, .colorBox, .image,
+        .grid, .absoluteLayout, .border, .colorBox, .image, .scrollView, .progressBar, .activityIndicator, .stepper,
     ]
 
     private static let viewProperties: Set<Prop> = [

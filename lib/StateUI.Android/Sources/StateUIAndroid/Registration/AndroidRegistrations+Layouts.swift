@@ -9,10 +9,12 @@ extension AndroidRegistrations {
     static func layouts(_ registry: Registry<AndroidView>) {
         registry.add(VStackContract.self, create: { _ in AndroidStackView(axis: .vertical) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
+            stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
         registry.add(HStackContract.self, create: { _ in AndroidStackView(axis: .horizontal) }) { stack in
             stack.applies(stackMembers) { view, values in applyStack(view, values) }
+            stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
         registry.add(GridContract.self, create: { _ in AndroidGridView() }) { grid in
@@ -27,9 +29,12 @@ extension AndroidRegistrations {
                 view.columnSpacing = values[GridContract.columnSpacing] ?? 0
                 view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
+            grid.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
-        registry.add(AbsoluteLayoutContract.self, create: { _ in AndroidAbsoluteLayoutView() }) { _ in }
+        registry.add(AbsoluteLayoutContract.self, create: { _ in AndroidAbsoluteLayoutView() }) { layout in
+            layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+        }
 
         // Where the user moves it is reported by the element, on the display's frames.
         // Design: docs/design/platforms/android/layout.md#scrolling
@@ -62,6 +67,7 @@ extension AndroidRegistrations {
                     strokeWidth: values[BorderContract.strokeWidth],
                     shape: AndroidShapeDrawable.Shape(border: values[BorderContract.shape]?.propValue))
             }
+            border.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
     }
 

@@ -4,6 +4,7 @@
 package stateui.android;
 
 import android.content.Context;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -31,6 +32,18 @@ final class StateUIViewGroup extends ViewGroup {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         StateUIHost.arrange(view, right - left, bottom - top);
+    }
+
+    /** Whether the layout and everything in it take no touch: it goes to whatever is behind. */
+    private boolean ignoresInput;
+
+    void setIgnoresInput(boolean ignores) {
+        ignoresInput = ignores;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        return !ignoresInput && super.dispatchTouchEvent(event);
     }
 
     /** A layout that does not scroll lets its children show a press at once. */

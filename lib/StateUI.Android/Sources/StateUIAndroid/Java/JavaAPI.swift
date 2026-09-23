@@ -92,6 +92,16 @@ enum JavaAPI {
     static let setTypeface = Java.method(textView, "setTypeface", "(Landroid/graphics/Typeface;I)V")
     static let setAllCaps = Java.method(textView, "setAllCaps", "(Z)V")
 
+    static let setMaxLines = Java.method(textView, "setMaxLines", "(I)V")
+    static let setEllipsize = Java.method(textView, "setEllipsize", "(Landroid/text/TextUtils$TruncateAt;)V")
+    static let setHorizontallyScrolling = Java.method(textView, "setHorizontallyScrolling", "(Z)V")
+    static let setGravity = Java.method(textView, "setGravity", "(I)V")
+    static let setLetterSpacing = Java.method(textView, "setLetterSpacing", "(F)V")
+    static let setLineSpacing = Java.method(textView, "setLineSpacing", "(FF)V")
+    static let getPaintFlags = Java.method(textView, "getPaintFlags", "()I")
+    static let setPaintFlags = Java.method(textView, "setPaintFlags", "(I)V")
+    static let truncateAt = Java.findClass("android/text/TextUtils$TruncateAt")
+
     static let setHint = Java.method(textView, "setHint", "(Ljava/lang/CharSequence;)V")
     static let setHintTextColor = Java.method(textView, "setHintTextColor", "(I)V")
     static let getHintTextColors = Java.method(
@@ -123,6 +133,14 @@ enum JavaAPI {
     static let newSwitch = Java.method(switchView, "<init>", "(Landroid/content/Context;)V")
 
     static let progressBar = Java.findClass("android/widget/ProgressBar")
+    static let newProgressBar = Java.method(progressBar, "<init>", "(Landroid/content/Context;)V")
+    static let newStyledProgressBar = Java.method(
+        progressBar, "<init>", "(Landroid/content/Context;Landroid/util/AttributeSet;I)V")
+    static let setIndeterminate = Java.method(progressBar, "setIndeterminate", "(Z)V")
+    static let setIndeterminateTintList = Java.method(
+        progressBar, "setIndeterminateTintList", "(Landroid/content/res/ColorStateList;)V")
+    static let getIndeterminateTintList = Java.method(
+        progressBar, "getIndeterminateTintList", "()Landroid/content/res/ColorStateList;")
     static let setMax = Java.method(progressBar, "setMax", "(I)V")
     static let setProgress = Java.method(progressBar, "setProgress", "(I)V")
     static let getProgress = Java.method(progressBar, "getProgress", "()I")
@@ -169,9 +187,41 @@ enum JavaAPI {
     static let inTargetDensity = Java.field(bitmapOptions, "inTargetDensity", "I")
     static let inScaled = Java.field(bitmapOptions, "inScaled", "Z")
 
+    static let linearLayout = Java.findClass("android/widget/LinearLayout")
+    static let newLinearLayout = Java.method(linearLayout, "<init>", "(Landroid/content/Context;)V")
+    static let setMinWidth = Java.method(textView, "setMinWidth", "(I)V")
+    static let setMinimumWidth = Java.method(view, "setMinimumWidth", "(I)V")
+    static let setClickable = Java.method(view, "setClickable", "(Z)V")
+
+    // MARK: - android.text
+
+    static let spannableBuilder = Java.findClass("android/text/SpannableStringBuilder")
+    static let newSpannableBuilder = Java.method(spannableBuilder, "<init>", "()V")
+    static let append = Java.method(
+        spannableBuilder, "append", "(Ljava/lang/CharSequence;)Landroid/text/SpannableStringBuilder;")
+    static let setSpan = Java.method(spannableBuilder, "setSpan", "(Ljava/lang/Object;III)V")
+    static let foregroundSpan = Java.findClass("android/text/style/ForegroundColorSpan")
+    static let newForegroundSpan = Java.method(foregroundSpan, "<init>", "(I)V")
+    static let backgroundSpan = Java.findClass("android/text/style/BackgroundColorSpan")
+    static let newBackgroundSpan = Java.method(backgroundSpan, "<init>", "(I)V")
+    static let sizeSpan = Java.findClass("android/text/style/AbsoluteSizeSpan")
+    static let newSizeSpan = Java.method(sizeSpan, "<init>", "(IZ)V")
+    static let styleSpan = Java.findClass("android/text/style/StyleSpan")
+    static let newStyleSpan = Java.method(styleSpan, "<init>", "(I)V")
+    static let underlineSpan = Java.findClass("android/text/style/UnderlineSpan")
+    static let newUnderlineSpan = Java.method(underlineSpan, "<init>", "()V")
+    static let strikethroughSpan = Java.findClass("android/text/style/StrikethroughSpan")
+    static let newStrikethroughSpan = Java.method(strikethroughSpan, "<init>", "()V")
+
     // MARK: - android.content
 
     static let contextClass = Java.findClass("android/content/Context")
+    static let getResources = Java.method(contextClass, "getResources", "()Landroid/content/res/Resources;")
+    static let resources = Java.findClass("android/content/res/Resources")
+    static let getConfiguration = Java.method(
+        resources, "getConfiguration", "()Landroid/content/res/Configuration;")
+    static let configuration = Java.findClass("android/content/res/Configuration")
+    static let fontScale = Java.field(configuration, "fontScale", "F")
     static let getAssets = Java.method(contextClass, "getAssets", "()Landroid/content/res/AssetManager;")
     static let assetManager = Java.findClass("android/content/res/AssetManager")
     static let openAsset = Java.method(assetManager, "open", "(Ljava/lang/String;)Ljava/io/InputStream;")
@@ -201,6 +251,7 @@ enum JavaAPI {
     static let newViewGroupHost = Java.method(
         viewGroupHost, "<init>", "(Landroid/content/Context;J)V")
     static let setChildren = Java.method(viewGroupHost, "setChildren", "([Landroid/view/View;)V")
+    static let setIgnoresInput = Java.method(viewGroupHost, "setIgnoresInput", "(Z)V")
 
     static let frameCallback = Java.findClass("stateui/android/StateUIFrameCallback")
     static let newFrameCallback = Java.method(frameCallback, "<init>", "()V")
@@ -219,6 +270,9 @@ enum JavaAPI {
 enum ViewConstants {
     /// `View.VISIBLE`.
     static let visible: Int32 = 0
+
+    /// `View.INVISIBLE`: not drawn, its room kept.
+    static let invisible: Int32 = 4
 
     /// `View.GONE`.
     static let gone: Int32 = 8

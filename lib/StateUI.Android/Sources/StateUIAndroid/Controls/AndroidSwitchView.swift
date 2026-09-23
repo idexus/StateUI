@@ -24,6 +24,7 @@ final class AndroidSwitchView: AndroidView {
     }
 
     override func detach() {
+        super.detach()
         onToggled = nil
     }
 }

@@ -21,6 +21,9 @@ final class AndroidElement: NativeElement {
     /// Where the element last said it stood; nil before it said.
     var lastFrameReport: [Double]?
 
+    /// Whether a label shows its spans' runs rather than its own words.
+    var hasRuns = false
+
     init(_ element: MountedElement, host: AndroidRenderer) {
         self.element = element
         self.host = host
@@ -59,6 +62,7 @@ final class AndroidElement: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
+        view?.setTapped(element.handler(.tapped) == nil ? nil : { [weak self] in self?.send(.tapped, []) })
         configureLayoutMotion()
         arrangeChildren()
         host?.follow(self, readsFrame: readsFrame)

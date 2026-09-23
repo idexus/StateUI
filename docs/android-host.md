@@ -7,8 +7,9 @@ library: it applies the typed sparse patches of the
 Wire encoding stands between them.
 
 It presents its first controls - `Label`, `Button`, `TextField`, `Switch`,
-`Slider`, `Image`, `ColorBox`, `VStack`, `HStack`, `Grid`, `AbsoluteLayout`
-and `Border` - over the runtime every host shares, and
+`Slider`, `Stepper`, `ProgressBar`, `ActivityIndicator`, `Image`,
+`ColorBox`, `VStack`, `HStack`, `Grid`, `AbsoluteLayout`, `Border` and
+`ScrollView` - over the runtime every host shares, and
 shows any other control's name in red where the control belongs, so a gap is
 visible rather than silent.
 

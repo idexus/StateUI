@@ -51,6 +51,11 @@ class AndroidLayoutView: AndroidView {
         held = views
     }
 
+    /// Makes the layout and everything in it deaf to touches, which go to whatever stands behind it.
+    func setIgnoresInput(_ ignores: Bool) {
+        Java.call(reference, JavaAPI.setIgnoresInput, .bool(ignores))
+    }
+
     /// Forgets the kept sizes and asks Android to measure again.
     func invalidateMeasurements() {
         forgetMeasurements()

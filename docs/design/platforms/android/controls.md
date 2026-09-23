@@ -72,3 +72,38 @@ A layout that does not scroll tells its children to show a press at once.
 Android's default holds a press back in case the touch becomes a scroll,
 which makes a slider inside a layout wait for the finger to move before its
 thumb follows.
+
+## A tap on any view
+
+A view with a tap handler is given the same listener a button has, and a
+click on it is its tap: Android's own touch handling decides what a tap is,
+and a drag that becomes a scroll is no tap. A view whose handler goes away is
+no longer clickable, so it stops taking touches. A StateUI layout that
+ignores input takes no touch at all, and the touch goes to whatever stands
+behind it.
+
+## A label's words
+
+A label's words are one text, or the runs its spans describe, laid down as
+one spanned text: each run in its own colour, size, weight, background and
+decorations where it has its own. A run's size is in points the user's font
+scale applies to, as the label's is. The label's letter spacing is in points
+and Android counts it in the text's own size, so it is worked out again
+whenever the size changes; a run's own spacing is not drawn. A line that is
+cut or truncated is one line and only a truncated one says so; otherwise the
+label wraps, to at most as many lines as it allows. A stated width is the
+width a view is measured at, so wrapped words are as tall as they will stand.
+
+## Work under way
+
+A progress bar is Android's horizontal bar, the share done in 10 000 steps.
+An activity indicator is Android's turning bar: it is drawn only while it
+runs, and keeps its room while it does not, so starting the work moves
+nothing around it; hidden, it takes no room.
+
+## A stepper
+
+Android has no stepper, so the host builds one from its own buttons: one a
+step down, one a step up, side by side, each off at its end of the range. A
+step is the user's report, held in the range; the value the tree writes is
+put where it said, within it.

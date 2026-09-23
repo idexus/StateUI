@@ -4,23 +4,32 @@
 /// A grid's arithmetic: fixed, automatic and proportional tracks, and each shown child in its cells.
 /// Design: docs/design/host/layout.md#grids
 @_spi(Host) public enum GridArithmetic {
-    /// The room the grid takes at its tracks' natural sizes, whatever width is offered.
+    /// The room the grid takes at its tracks' natural sizes. Where that is wider than the width offered, the
+    /// columns share the offer as a placement would, and each row is as tall as its children at those widths.
     @MainActor
     public static func size<Child: LayoutChild>(
         of items: [Child], rows: [GridLength], columns: [GridLength],
-        rowSpacing: Double, columnSpacing: Double, padding: Insets
+        rowSpacing: Double, columnSpacing: Double, padding: Insets, width offered: Double? = nil
     ) -> LayoutSize {
         let (rowCount, columnCount) = counts(items, rows: rows, columns: columns)
+        let columnDefinitions = completed(columns, count: columnCount)
+        var columnSizes = trackSizes(
+            items, definitions: columnDefinitions, count: columnCount,
+            available: nil, spacing: columnSpacing, vertical: false)
+        let width = padding.left + padding.right + columnSizes.reduce(0, +)
+            + columnSpacing * Double(max(columnCount - 1, 0))
+
+        if let offered, width > offered {
+            columnSizes = trackSizes(
+                items, definitions: columnDefinitions, count: columnCount,
+                available: max(0, offered - padding.left - padding.right), spacing: columnSpacing, vertical: false)
+        }
         let rowSizes = trackSizes(
             items, definitions: completed(rows, count: rowCount), count: rowCount,
-            available: nil, spacing: rowSpacing, vertical: true)
-        let columnSizes = trackSizes(
-            items, definitions: completed(columns, count: columnCount), count: columnCount,
-            available: nil, spacing: columnSpacing, vertical: false)
+            available: nil, spacing: rowSpacing, vertical: true, columns: (columnSizes, columnSpacing))
 
         return LayoutSize(
-            width: padding.left + padding.right + columnSizes.reduce(0, +)
-                + columnSpacing * Double(max(columnCount - 1, 0)),
+            width: width,
             height: padding.top + padding.bottom + rowSizes.reduce(0, +)
                 + rowSpacing * Double(max(rowCount - 1, 0)))
     }
@@ -33,12 +42,12 @@
     ) -> [Rect?] {
         let content = bounds.inset(padding)
         let (rowCount, columnCount) = counts(items, rows: rows, columns: columns)
-        let rowSizes = trackSizes(
-            items, definitions: completed(rows, count: rowCount), count: rowCount,
-            available: content.height, spacing: rowSpacing, vertical: true)
         let columnSizes = trackSizes(
             items, definitions: completed(columns, count: columnCount), count: columnCount,
             available: content.width, spacing: columnSpacing, vertical: false)
+        let rowSizes = trackSizes(
+            items, definitions: completed(rows, count: rowCount), count: rowCount,
+            available: content.height, spacing: rowSpacing, vertical: true, columns: (columnSizes, columnSpacing))
         let rowOrigins = origins(of: rowSizes, start: content.y, spacing: rowSpacing)
         let columnOrigins = origins(of: columnSizes, start: content.x, spacing: columnSpacing)
 
@@ -91,11 +100,13 @@
     }
 
     /// Each track's size: fixed as stated, automatic as its largest one-track child, proportional by share.
+    /// A row measures each child at the width of the `columns` it stands in, where they are known.
     /// Design: docs/design/host/layout.md#tracks
     @MainActor
     private static func trackSizes<Child: LayoutChild>(
         _ items: [Child], definitions: [GridLength], count: Int,
-        available: Double?, spacing: Double, vertical: Bool
+        available: Double?, spacing: Double, vertical: Bool,
+        columns: (sizes: [Double], spacing: Double)? = nil
     ) -> [Double] {
         var sizes = Array(repeating: 0.0, count: count)
 
@@ -104,8 +115,14 @@
         }
 
         func extent(_ item: Child) -> Double {
-            let measured = item.size(offered: nil)
             let margin = item.values.margin
+            let measured = item.size(offered: columns.map { columns in
+                let first = min(max(item.values.column, 0), columns.sizes.count - 1)
+                let last = min(first + max(item.values.columnSpan, 1), columns.sizes.count)
+                let cell = columns.sizes[first..<last].reduce(0, +)
+                    + columns.spacing * Double(max(last - first - 1, 0))
+                return max(0, cell - margin.left - margin.right)
+            })
             return vertical
                 ? measured.height + margin.top + margin.bottom
                 : measured.width + margin.left + margin.right

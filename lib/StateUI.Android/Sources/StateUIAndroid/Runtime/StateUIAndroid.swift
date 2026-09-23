@@ -64,7 +64,7 @@ enum JavaNatives {
         }
         let clicked: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidButtonView)?.onClicked?()
+                AndroidView.find(number)?.clicked()
             }
         }
         let toggled: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, on in

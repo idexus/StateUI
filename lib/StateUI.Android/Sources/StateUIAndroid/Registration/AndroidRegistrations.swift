@@ -18,6 +18,7 @@ enum AndroidRegistrations {
         fields(registry)
         layouts(registry)
         pictures(registry)
+        indicators(registry)
         shared(registry)
 
         return registry
@@ -51,21 +52,22 @@ enum AndroidRegistrations {
         registry.everyElementRealizes(ViewContract.gridColumnSpan)
         registry.everyElementRealizes(ViewContract.absoluteLayoutBounds)
         registry.everyElementRealizes(ViewContract.absoluteLayoutProportions)
+        registry.everyElementRaises(ViewContract.tapped)
         registry.everyElementRealizes(ViewContract.horizontalAlignment)
         registry.everyElementRealizes(ViewContract.verticalAlignment)
     }
 
     /// The words of a text control, their size, weight and colour, and the room around them.
     static let textMembers: [any ContractMember] = [
-        TextElementContract.text, FontElementContract.fontSize,
+        TextElementContract.text, TextElementContract.textCase, FontElementContract.fontSize,
         FontElementContract.fontAttributes, TextStyleElementContract.textColor,
         PaddingElementContract.padding,
     ]
 
     /// Puts `textMembers` on a text view.
     static func applyText<Realized: ElementContract>(_ view: AndroidTextView, _ values: ElementValues<Realized>) {
-        if values.changed(TextElementContract.text) {
-            view.setText(values[TextElementContract.text] ?? "")
+        if values.changed(TextElementContract.text) || values.changed(TextElementContract.textCase) {
+            view.setText(cased(values[TextElementContract.text] ?? "", values[TextElementContract.textCase]))
         }
         if values.changed(FontElementContract.fontSize) {
             view.setFontSize(values[FontElementContract.fontSize])
@@ -78,6 +80,15 @@ enum AndroidRegistrations {
         }
         if values.changed(PaddingElementContract.padding) {
             view.setPadding(values[PaddingElementContract.padding])
+        }
+    }
+
+    /// `text` in the case the tree asks for: as written, or in one case throughout.
+    static func cased(_ text: String, _ textCase: TextCase?) -> String {
+        switch textCase {
+        case .lowercase: text.lowercased()
+        case .uppercase: text.uppercased()
+        default: text
         }
     }
 }

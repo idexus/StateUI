@@ -91,6 +91,11 @@ enum TestJava {
     static let canvas = Java.findClass("android/graphics/Canvas")
     static let newCanvas = Java.method(canvas, "<init>", "(Landroid/graphics/Bitmap;)V")
     static let draw = Java.method(JavaAPI.view, "draw", "(Landroid/graphics/Canvas;)V")
+    static let isPressed = Java.method(JavaAPI.view, "isPressed", "()Z")
+    static let isClickable = Java.method(JavaAPI.view, "isClickable", "()Z")
+    static let isEnabled = Java.method(JavaAPI.view, "isEnabled", "()Z")
+    static let getLetterSpacing = Java.method(JavaAPI.textView, "getLetterSpacing", "()F")
+    static let getLineCount = Java.method(JavaAPI.textView, "getLineCount", "()I")
 
     /// An empty root, as an activity's content is.
     static func root() -> JavaObject {
@@ -189,6 +194,15 @@ extension AndroidView {
     /// Clicks the view as the user does: its listener runs.
     func click() {
         _ = Java.callBool(reference, JavaAPI.performClick)
+    }
+
+    /// Puts a finger down at `x`, `y` pixels of the view, or lifts it there, as the user does.
+    func touch(_ action: Int32, x: Float, y: Float) {
+        let event = Java.callStaticObject(
+            TestJava.motionEvent, TestJava.obtain, .long(0), .long(0), .int(action), .float(x), .float(y), .int(0))
+        _ = Java.callBool(reference, TestJava.dispatchTouchEvent, .object(event))
+        Java.call(event!, TestJava.recycle)
+        Java.release(local: event)
     }
 
     /// Drags a finger across the view's middle, from `start` to `end` of its width, as the user does.

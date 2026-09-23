@@ -53,10 +53,10 @@ final class AndroidRendererTests: XCTestCase {
 
     func testAControlNoRegistrationAnswersShowsItsName() {
         onMainActor {
-            let host = AndroidRenderer.running { VStack { ActivityIndicator() } }
+            let host = AndroidRenderer.running { VStack { RadioButton("one") } }
 
             XCTAssertEqual(
-                host.views(AndroidUnsupportedView.self).map(\.text), ["Android: unsupported ActivityIndicator"])
+                host.views(AndroidUnsupportedView.self).map(\.text), ["Android: unsupported RadioButton"])
         }
     }
 

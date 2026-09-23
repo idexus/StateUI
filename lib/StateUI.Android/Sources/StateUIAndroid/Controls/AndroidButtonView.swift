@@ -17,7 +17,14 @@ final class AndroidButtonView: AndroidTextView {
         listen(JavaAPI.setOnClickListener)
     }
 
+    /// A click is the button's own event, and a tap as any view's.
+    override func clicked() {
+        onClicked?()
+        super.clicked()
+    }
+
     override func detach() {
+        super.detach()
         onClicked = nil
     }
 }

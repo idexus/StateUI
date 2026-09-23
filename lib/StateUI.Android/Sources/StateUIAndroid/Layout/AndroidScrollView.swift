@@ -150,6 +150,7 @@ final class AndroidScrollView: AndroidLayoutView {
     }
 
     override func detach() {
+        super.detach()
         onOffsetChanged = nil
         onScrollStopped = nil
         onFramesWanted = nil

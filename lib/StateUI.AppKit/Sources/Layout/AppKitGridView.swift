@@ -48,16 +48,16 @@ final class AppKitGridView: AppKitTravellingLayout, AppKitWidthConstrainedMeasur
         fittingContentSize(width: nil)
     }
 
-    /// The grid at its tracks' natural sizes, whatever width it is offered:
-    /// measured once and kept until something under it changes.
+    /// The grid at its tracks' natural sizes, its rows as tall as their children at the widths the offer
+    /// leaves the columns: measured once for each width and kept until something under it changes.
     func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
-        measurements.size(offering: nil) { measuredContentSize() }
+        measurements.size(offering: availableWidth) { measuredContentSize(width: availableWidth) }
     }
 
-    private func measuredContentSize() -> NSSize {
+    private func measuredContentSize(width: CGFloat?) -> NSSize {
         NSSize(GridArithmetic.size(
             of: items, rows: rows, columns: columns, rowSpacing: Double(rowSpacing),
-            columnSpacing: Double(columnSpacing), padding: Insets(padding)))
+            columnSpacing: Double(columnSpacing), padding: Insets(padding), width: width.map(Double.init)))
     }
 
     override func layout() {

@@ -88,6 +88,7 @@ final class AndroidTextFieldView: AndroidTextView {
     }
 
     override func detach() {
+        super.detach()
         onTextChanged = nil
         onSubmitted = nil
     }

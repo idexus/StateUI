@@ -72,6 +72,7 @@ final class AndroidSliderView: AndroidView {
     }
 
     override func detach() {
+        super.detach()
         onValueChanged = nil
         onDragStarted = nil
         onDragCompleted = nil

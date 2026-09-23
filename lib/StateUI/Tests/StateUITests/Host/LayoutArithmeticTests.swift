@@ -50,6 +50,28 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(places.map { $0?.width }, [20, 30, 50])
     }
 
+    /// Words in a proportional column wrap to it: their row is as tall as they are at the column's width, where
+    /// the grid places them and where it is measured for a width narrower than its words.
+    @MainActor
+    func testARowIsAsTallAsItsWordsAtTheirColumnsWidth() {
+        let icon = Child(width: 20, height: 20)
+        var words = Child(width: 300, height: 10)
+        words.wraps = true
+        words.values.column = 1
+        let columns: [GridLength] = [.auto, .fill]
+
+        let places = GridArithmetic.places(
+            of: [icon, words], rows: [.auto], columns: columns,
+            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(0, 0, 120, 200))
+        let size = GridArithmetic.size(
+            of: [icon, words], rows: [.auto], columns: columns,
+            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), width: 120)
+
+        XCTAssertEqual(places[1], Rect(20, 0, 100, 30), "three lines of words at the column's 100")
+        XCTAssertEqual(size.height, 30)
+        XCTAssertEqual(size.width, 320, "its natural width is still its words on one line")
+    }
+
     /// A proportional position of one puts a child against the far edge of the room left beside it.
     @MainActor
     func testAProportionalPositionOfOneMeetsTheFarEdge() {
@@ -87,11 +109,13 @@ final class LayoutArithmeticTests: XCTestCase {
     }
 }
 
-/// A child of a stated natural size.
+/// A child of a stated natural size; one that wraps is as wide as that on one line, and a line taller for each
+/// time it has to break to fit a narrower width.
 private struct Child: LayoutChild {
     var values = LayoutValues()
     let natural: LayoutSize
     let isShown: Bool
+    var wraps = false
 
     init(width: Double, height: Double, shown: Bool = true) {
         natural = LayoutSize(width: width, height: height)
@@ -99,7 +123,10 @@ private struct Child: LayoutChild {
     }
 
     func size(offered width: Double?) -> LayoutSize {
-        LayoutSize(
+        if wraps, let width, width > 0, width < natural.width {
+            return LayoutSize(width: width, height: natural.height * (natural.width / width).rounded(.up))
+        }
+        return LayoutSize(
             width: values.boundedWidth(values.width ?? natural.width),
             height: values.boundedHeight(values.height ?? natural.height))
     }
