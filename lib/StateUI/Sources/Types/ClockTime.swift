@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A time of day, without Foundation.
-
 /// A time of day: hour, minute, second, and nothing else.
 ///
 ///     ClockTime(hour: 9, minute: 30)
@@ -10,14 +8,7 @@
 /// What a `TimePicker` shows and reports, and what `ClockTime.now()` answers.
 /// No date, no zone: `CalendarDate` is the other half.
 ///
-/// Three integers, for the reason `CalendarDate` is three integers: turning a
-/// Foundation value into text needs a formatter, a formatter needs ICU, and ICU
-/// is what this library cannot have.
-///
-/// It travels as those integers - hour, minute, second - which is also how it
-/// comes BACK from a picker, so the two directions say the same thing. The
-/// host reads them as a length of time SINCE MIDNIGHT rather than a point on
-/// a clock.
+/// Design: docs/design/types/dates-and-time.md#three-integers-each-way
 public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresentable {
     /// The hour, 0 to 23. Midnight is 0, and one in the afternoon is 13 - there
     /// is no am/pm here, that being a matter of `.format(…)`.
@@ -26,21 +17,18 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
     /// The minute, 0 to 59.
     public var minute: Int
 
-    /// The second, 0 to 59. Rarely written: a TimePicker picks hours and
-    /// minutes on every platform, so a second is only ever what something
-    /// else set.
+    /// The second, 0 to 59. A `TimePicker` picks hours and minutes, so a
+    /// second is only ever what the application set.
     public var second: Int
 
-    /// The millisecond, 0 to 999. What `now()` fills in, so that a clock can
-    /// sleep to the next whole second instead of drifting past it. The wire
-    /// carries whole seconds - a TimePicker neither shows nor keeps less - so a
-    /// value that travels comes back with 0 here.
+    /// The millisecond, 0 to 999, filled in by `now()` so a clock can sleep to
+    /// the next whole second. A time that crosses to a host comes back with 0
+    /// here.
     public var millisecond: Int
 
-    /// A time of day. Nothing checks that the three make one, and neither does
-    /// the host: it adds them into a length of time since midnight, so
-    /// `ClockTime(hour: 25, minute: 99)` reaches the picker as 26 hours and 39
-    /// minutes past midnight rather than being refused.
+    /// A time of day. Nothing checks that the numbers make one: the host adds
+    /// them up from midnight, so `ClockTime(hour: 25, minute: 99)` reaches a
+    /// picker as 26 hours and 39 minutes past midnight.
     public init(hour: Int, minute: Int, second: Int = 0, millisecond: Int = 0) {
         self.hour = hour
         self.minute = minute
@@ -75,8 +63,7 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
                 return
             }
 
-            // Exactly three digits - "05.12" would be 120ms wearing a 12, and
-            // refusing it is what keeps a truncated value visible.
+            // Exactly three digits: "05.12" is refused rather than read as 12 ms.
             guard tail[1].count == 3, let millisecond = Int(tail[1]) else { return nil }
 
             self.init(hour: hour, minute: minute, second: second, millisecond: millisecond)
@@ -87,10 +74,8 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
     }
 
     /// The time back from the three numbers a picker reports - hour, minute,
-    /// second, each the whole part of its number. Nil for anything else, a
-    /// number that is not one included, so a report that will not read
-    /// leaves the handler alone. A picker keeps no milliseconds, so none
-    /// arrive.
+    /// second, each the whole part of its number, and no millisecond. Nil for
+    /// anything else, so a report that does not read leaves the handler alone.
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
         guard let numbers = propValue.numbers, numbers.count == 3,
@@ -112,17 +97,14 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
     /// `Label("Alarm at \(alarm.text)")`.
     ///
     /// One fixed shape, 24-hour and without the millisecond, never a display
-    /// format: how a TimePicker WRITES a time for the reader is `.format(…)`,
-    /// which the host does against the reader's locale. This is for text an
-    /// application composes itself.
+    /// format: a `TimePicker` writes a time for the user with `.format(…)`,
+    /// against the user's locale.
     public var text: String {
         "\(pad(hour)):\(pad(minute)):\(pad(second))"
     }
 
-    /// Hour, minute, second - the same three a picker reports back, in the
-    /// same order, so nothing is formatted going out and parsed coming in.
-    /// The millisecond does not go: a TimePicker neither shows nor keeps one,
-    /// which is why a value that travels comes back with 0 there.
+    /// Hour, minute and second as three numbers, the order a picker reports
+    /// them; the millisecond is not sent.
     public var propValue: PropValue {
         .numbers([Double(hour), Double(minute), Double(second)])
     }
@@ -134,8 +116,7 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
             < (right.hour, right.minute, right.second, right.millisecond)
     }
 
-    /// Zero-padded by hand: String(format:) is Foundation, and Foundation is
-    /// what this type exists to avoid.
+    /// Zero-padded by hand, without Foundation.
     private func pad(_ value: Int) -> String {
         value < 10 && value >= 0 ? "0\(value)" : String(value)
     }
@@ -144,16 +125,12 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
     ///
     ///     let time = try await ClockTime.now()
     ///
-    /// An act rather than a property, because reading a clock is the platform's
-    /// business and this side deliberately has none - Foundation's calendar
-    /// machinery arrives with ICU, the one dependency this library cannot take.
-    /// The host answers local time with milliseconds, which is what lets a
-    /// clock sleep to the NEXT second instead of drifting past it:
+    /// The host answers local time with milliseconds, which lets a clock sleep
+    /// to the next whole second instead of drifting past it:
     ///
     ///     try await Task.sleep(for: .milliseconds(1000 - time.millisecond))
     ///
-    /// The answer crosses as four numbers - hour, minute, second, millisecond -
-    /// with nothing formatted or parsed on the way.
+    /// Design: docs/design/types/dates-and-time.md#the-clock-is-an-act
     ///
     /// - Returns: the host's local time of day.
     public static nonisolated(nonsending) func now() async throws -> ClockTime {
@@ -172,14 +149,12 @@ public struct ClockTime: Equatable, Hashable, Comparable, Sendable, HostRepresen
 }
 
 extension ClockTime: StateValue {
-    /// Hour, minute, second - the three a picker reports back, in that order.
-    /// The millisecond does not ride: a TimePicker neither shows nor keeps
-    /// one, so a value the host carries comes back with 0 there, as one that
-    /// crossed the wire does.
+    /// Hour, minute and second as three lanes; the millisecond is not carried
+    /// and comes back as 0.
     public var carried: StateCarried { .lanes([Double(hour), Double(minute), Double(second)]) }
 
     /// A time from those three lanes. Nil for any other count, so a report
-    /// that will not read leaves the state alone.
+    /// that does not read leaves the state alone.
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 3 else { return nil }
 

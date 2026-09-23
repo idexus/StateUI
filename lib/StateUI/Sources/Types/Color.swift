@@ -1,34 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A colour, held as what it IS: four channels.
-//
-// It is written as hex - `Color("#512BD4")` - as channels -
-// `Color(red: 81, green: 43, blue: 212)` - or by name, camelCased: `.red`,
-// `.lightGray`, `.cornflowerBlue`.
-//
-// The parser is THIS side's, it reads hex and nothing else, and what crosses
-// the wire is four bytes - see `PropValue.color`. Leaving the reading to a
-// host would put the definition of what a colour may be inside that host's
-// parser, and every other host would then have to reproduce that parser
-// exactly or differ in silence.
-//
-// Eight bits per channel loses nothing this API can express: every constructor
-// here produces them, over the sRGB channels a host draws them in.
-// Holding them also makes equality mean the COLOUR rather than its spelling -
-// `Color("#ff0000")` and `.red` are one value, so two spellings of one colour
-// are not a change and nothing is sent for them.
-//
-// THE THEME IS PICKED IN THE DIFFER. A colour written `Color(light:dark:)`
-// travels as BOTH halves - `PropValue.themed` - until the differ builds the
-// element wearing it, which picks the half `AppInfo.requestedTheme` says and
-// records that read against the element. So a theme change builds exactly the
-// elements wearing a pair and nothing around them; a pair written outside
-// every build - into a session from a handler, in a style sheet made once - is
-// right in both themes; and nothing in the host binds anything. See
-// `element` in Core/Diff.swift. A pair in a state the HOST carries crosses as
-// the half in force, and the element handing that state on reads the theme -
-// see `State.Storage.wearThemedPair()`.
+// A colour, held as four 8-bit sRGB channels, and as a pair where the two
+// themes want different colours.
+// Design: docs/design/types/colour-and-theme.md#four-channels
 
 /// A colour.
 ///
@@ -36,13 +11,12 @@
 ///     Color.cornflowerBlue
 ///     Color(light: .white, dark: .black)
 ///
-/// Written as hex or by name, and as a PAIR where the two themes want
+/// Written as hex or by name, and as a pair where the two themes want
 /// different colours - `Color(light:dark:)` is one value that goes wherever a
 /// colour goes. Held as four 8-bit channels, so two spellings of one colour
-/// are equal and neither is a change worth sending.
+/// are equal.
 public struct Color: Equatable, Sendable, HostRepresentable {
-    /// The four sRGB channels of one colour, 0-255 each - what crosses the
-    /// wire.
+    /// The four sRGB channels of one colour, 0-255 each.
     struct Rgba: Equatable, Sendable {
         let red: UInt8
         let green: UInt8
@@ -50,24 +24,19 @@ public struct Color: Equatable, Sendable, HostRepresentable {
         let alpha: UInt8
     }
 
-    /// The colour itself - the one in force unless the system is dark and
-    /// this colour was written with a dark half.
+    /// The colour in force unless the theme is dark and there is a dark half.
     let light: Rgba
 
-    /// What to use when the system is in dark mode, when a colour says.
-    ///
-    /// A colour with one of these is a PAIR, written `Color(light:dark:)`.
-    /// Nothing is bound here: the half in force is picked by the differ, as
-    /// the element wearing the colour is built - see `propValue`.
+    /// The dark theme's half of a pair; the differ picks the half in force.
+    /// Design: docs/design/types/colour-and-theme.md#a-pair-for-each-theme
     let dark: Rgba?
 
     /// A colour from hex: "#RGB", "#ARGB", "#RRGGBB" or "#AARRGGBB", with or
     /// without the leading `#` - the alpha, when it is written, first.
     ///
-    /// Hex and nothing else - a colour NAME is `Color.red` and its kin, which
-    /// the compiler checks where a string could not. Anything else traps
-    /// naming the text: a colour is written as a literal, so it fails the
-    /// first time the code runs rather than drawing something nobody chose.
+    /// Anything that is not hex stops the program with a message naming the
+    /// text, the first time the code runs. A colour's name is `Color.red` and
+    /// its kin.
     public init(_ hex: String) {
         guard let parsed = Color.channels(of: hex) else {
             preconditionFailure(
@@ -83,11 +52,10 @@ public struct Color: Equatable, Sendable, HostRepresentable {
     ///
     ///     static let surface = Color(light: .white, dark: AppColors.offBlack)
     ///
-    /// It is a Color, so it goes anywhere a Color goes: in a `Style`, on a
-    /// control, into a page's session, into a state the host carries. The half
-    /// in force is picked as the element wearing it - or handing the state on
-    /// - is built, and that element is built again when the system theme
-    /// changes, so each of them is right in both.
+    /// It goes anywhere a colour goes - a `Style`, a control, a page's session,
+    /// a state - and follows the system theme wherever it is written.
+    ///
+    /// Design: docs/design/types/colour-and-theme.md#a-pair-for-each-theme
     public init(light: Color, dark: Color) {
         self.light = light.light
         self.dark = dark.light
@@ -116,13 +84,7 @@ public struct Color: Equatable, Sendable, HostRepresentable {
             alpha: Color.channel(alpha)))
     }
 
-    /// The colour under the wire's own colour tag - four bytes, which colours
-    /// have because they are the value a tree carries most of and the cheapest
-    /// to say exactly. Nothing in the host parses a colour or has to know what
-    /// one may look like.
-    ///
-    /// A pair is BOTH, `.themed`, for the differ to pick from as it builds the
-    /// element wearing it - see the head of this file.
+    /// Four bytes under the colour kind, or both halves as a themed pair.
     public var propValue: PropValue {
         guard let dark else { return Color.tagged(light) }
 
@@ -153,17 +115,11 @@ public struct Color: Equatable, Sendable, HostRepresentable {
         .color(red: channels.red, green: channels.green, blue: channels.blue, alpha: channels.alpha)
     }
 
-    // A colour crosses as its four bytes wherever it crosses, so there is no
-    // way back to "#AARRGGBB" here and there should not be one. Reading hex is
-    // how a colour is WRITTEN in source - that half is below.
-
     // MARK: - Reading hex
 
-    /// The channels a hex string names, or nil when it names none.
-    ///
-    /// Four lengths: three and four digits are the shorthand where each digit
-    /// stands for both of its pair, six and eight the full form. Alpha comes
-    /// FIRST in the four- and eight-digit forms, which is what ARGB means.
+    /// The channels a hex string names, or nil. Three and four digits are the
+    /// shorthand, each digit standing for both of its pair; alpha comes first
+    /// in four and eight digits.
     static func channels(of text: String) -> Rgba? {
         var digits: [UInt8] = []
         digits.reserveCapacity(8)
@@ -224,10 +180,7 @@ public struct Color: Equatable, Sendable, HostRepresentable {
 }
 
 // MARK: - Named colors
-//
-// The named colours that come up in practice, each with its CSS name and
-// value. Anything else is one `Color("#…")` away - the full CSS list
-// is 140 names, and repeating all of them here would be noise.
+// The common ones, with their CSS names and values.
 
 extension Color {
     /// Nothing at all, #00FFFFFF.

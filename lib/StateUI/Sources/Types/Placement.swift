@@ -1,44 +1,23 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// WHERE ONE VIEW GOES - the answer a layout of the author's own gives about
-// each of its children, and the numbers that answer is packed into for the
-// host to write.
-//
-// The type is the author's: a rectangle and the transform that goes with it.
-// The packing below is the boundary's: twelve plain numbers a view, in one
-// order, written straight into a buffer the host reads by stride. Both are
-// here because they are the SAME fact - what a placement is - said once for
-// the author and once for the crossing.
+// Where one view of a placed layout goes, said once for the author as a
+// `Placement` and once for the host as twelve numbers.
+// Design: docs/design/types/placement.md#where-one-view-goes
 
-/// Where one view goes and how it is turned.
-///
-/// What a `PlacedLayout`'s arithmetic answers. Every field but the rectangle
-/// has a default that means "as it was drawn", so a layout that only positions
-/// its views says `Placement(rect)` and nothing else.
+/// Where one view goes and how it is turned: what a `PlacedLayout`'s
+/// arithmetic answers for each of its views.
 ///
 ///     Placement(Rect(x, 0, 120, 170), transform: .turn(40).scale(0.8), zIndex: 2)
 ///
-/// Each of them IS a property of the view being placed, written onto it -
-/// so a view inside a `PlacedLayout` is turned, scaled and faded from HERE
-/// rather than in the closure that builds it, which the placement would
-/// overwrite.
+/// Every field but the bounds defaults to the view as it was drawn, so a
+/// layout that only positions its views says `Placement(rect)`. The fields are
+/// written onto the placed view: turn, scale and fade it here rather than in
+/// the closure that builds it, which the placement would overwrite. A turn out
+/// of the screen's plane is `.turn(_:)`, drawn flat, and a pivot is set in
+/// that closure.
 ///
-/// EVERY ONE OF THEM MEANS THE SAME PICTURE ON EVERY PLATFORM, and that is
-/// what decides the list. A move, a turn in the plane of the screen and a
-/// change of size are the same arithmetic wherever they are drawn, about the
-/// view's own centre. A turn out of that plane is not: `.rotationX` and
-/// `.rotationY` are projected through a camera each platform chooses for itself
-/// - measured on one run of cards at the same angle, Apple turned them away
-/// while Android drew them tilted in the plane and moved as well - so they are
-/// not here. A card turned away is written as a `scaleX` of `cos(angle)`,
-/// which is what such a card looks like and is exact everywhere.
-///
-/// The ANCHOR is not here either: a turn and a scale are centred on the view,
-/// which is what makes them the same everywhere, and moving that centre is
-/// worked out from the view's own SIZE - read at the moment the property is
-/// written, before this layout has given the view one. It goes on the view
-/// instead, in the closure that builds it, where it is a constant.
+/// Design: docs/design/types/placement.md#one-picture-on-every-platform
 public struct Placement: StateValue {
     /// Where the view goes, in device units from the layout's own top left.
     public var bounds: Rect
@@ -46,27 +25,21 @@ public struct Placement: StateValue {
     /// How it is moved, turned and sized from there, about its own centre.
     public var transform: ViewTransform
 
-    /// How opaque, from 0 to 1 - which is one of the two ways the far cards of
-    /// a gallery are sent into the background.
+    /// How opaque, from 0 to 1.
     public var opacity: Double
 
-    /// How dark, from 0 (as it is drawn) to 1 (gone), and the other way.
+    /// How far the layout's shade covers the view, from 0 to 1: the opacity of
+    /// the view given by `.shade(_:)`, drawn over this one. Nothing without a
+    /// shade.
     ///
-    /// It is the opacity of the SHADE - a view of the author's own, given to
-    /// the layout by `.shade(_:)` and drawn over every placed view. A layout
-    /// with no shade wears none of this, whatever the arithmetic answers.
+    /// Unlike `opacity`, a shade darkens the view rather than showing what is
+    /// behind it - in a run of overlapping cards, the next card.
     ///
-    /// The trap `opacity` walks into and this one does not: a view faded to a
-    /// half shows whatever is BEHIND it, which in a run of overlapping cards is
-    /// the next card rather than the page. A shade darkens what is there. And
-    /// it is a VIEW rather than a colour because only its author knows the
-    /// shape it has to match - a card with rounded corners needs a shade with
-    /// the same corners.
+    /// Design: docs/design/types/placement.md#shade-and-opacity
     public var shade: Double
 
-    /// Which views are drawn over which: a higher number is nearer the reader.
-    /// It is the one part of a placement that does not travel, an order having
-    /// no half-way.
+    /// Which views are drawn over which: a higher number is nearer the user.
+    /// It changes at once, without animation.
     public var zIndex: Int
 
     /// A placement, and how the view is turned in it.
@@ -104,23 +77,9 @@ public struct Placement: StateValue {
 }
 
 extension Placement {
-    /// The order a run of placements is drawn in, as ranks from the back
-    /// forward - which is what the platform is told, in place of the numbers
-    /// the arithmetic answered.
-    ///
-    /// A z-index says WHICH IS DRAWN OVER WHICH and nothing else, so the order
-    /// is the whole of its meaning. Arithmetic over a value the reader is
-    /// moving answers a NUMBER that changes on every report while the order it
-    /// expresses changes only when two views actually swap - and a platform
-    /// given a new z-index puts its children in order again, which is a whole
-    /// measure of the layout - so ranks change when the picture changes and at
-    /// no other time.
-    ///
-    /// Equal numbers keep the order they were written in, so a run that says
-    /// nothing about drawing order is drawn first to last.
-    ///
-    /// - Parameter placements: the run, in the order the views stand in.
-    /// - Returns: each view's rank, in the same order.
+    /// Each view's drawing rank, back to front, in the views' order; equal
+    /// numbers keep the order the views stand in.
+    /// Design: docs/design/types/placement.md#drawing-order-as-ranks
     static func drawingOrder(of placements: [Placement]) -> [Int] {
         let sorted = placements.indices.sorted {
             placements[$0].zIndex == placements[$1].zIndex
@@ -137,10 +96,8 @@ extension Placement {
 }
 
 extension Placement {
-    /// The twelve numbers a placement is, in the order the host reads them.
-    ///
-    /// The same twelve `PackedPlacement` writes, because they are the same
-    /// fact: what one view's place IS, said once for the boundary.
+    /// The twelve numbers a placement is, in the order `PackedPlacement`
+    /// writes them.
     public var carried: StateCarried {
         .lanes([
             bounds.x,
@@ -158,13 +115,10 @@ extension Placement {
         ])
     }
 
-    /// And back - the picture those numbers draw.
+    /// A placement back from its twelve numbers. A transform's move, turn and
+    /// sizes come back; a shear does not.
     ///
-    /// A TURN AND A SIZING SURVIVE; A SHEAR DOES NOT. The five numbers are the
-    /// five transform properties a view wears, so what crosses is what the
-    /// platform can be told, and a transform is rebuilt to draw exactly that. A
-    /// chain that never turned comes back to the bit; one that did comes back
-    /// to whatever the arithmetic that turned it can be inverted to.
+    /// Design: docs/design/types/transforms.md#reading-the-five-properties-back
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == Placement.lanes else {
             return nil
@@ -187,50 +141,35 @@ extension Placement {
     public static var lanes: Int { PackedPlacement.fields }
 }
 
-/// Where every view of a run goes, and how THIS answer travels there.
+/// Where every view of a run goes, and how this answer animates there.
 ///
 ///     @State private var run = PlacedRun()
 ///
 ///     PlacedLayout(cards, id: \.name) { face($0) }.placement($run)
 ///
-/// What an engine writes when it has worked out a layout: one placement per
-/// view, in the order the views stand in, and the law the change travels
-/// under.
+/// What an engine writes once it has worked out a layout: one placement per
+/// view, in the order the views stand in, and the motion of this write. Write
+/// at once (`.none`, the default) while a finger moves the run, and animate
+/// when the layout changes shape; a write during an animation bends it rather
+/// than restarting it.
 ///
-/// THE LAW IS PER WRITE, which is what a layout followed by a finger needs:
-/// the same run is written at once while a hand is moving it (`.none`, the
-/// default) and travels when the SHAPE of the layout changes - and a write
-/// made during a travel bends it rather than starting it again, so a finger
-/// moving the cards while they cross does not restart the crossing.
-///
-/// The lanes are twelve per view and three for the law. A dirty word has a bit
-/// per lane and runs out at lane 63, so a run says exactly which of its first
-/// five views moved and tells the rest together - which costs nothing, a view
-/// given the place it already has being skipped before anything is written.
+/// Design: docs/design/types/placement.md#a-motion-per-write
 public struct PlacedRun: StateValue {
     /// Where each view goes, in the order they stand in the layout.
     public var placements: [Placement]
 
-    /// How this answer travels there.
-    ///
-    /// `.none` puts the views where it says at once - what arithmetic run on
-    /// every frame of a drag wants, there being nothing to travel to that the
-    /// next frame will not replace. `.inherited` is the layout's own
-    /// `.motion`, and a law written here is that law.
+    /// How this answer animates: `.none` places the views at once,
+    /// `.inherited` uses the layout's own `.motion`, and any other motion is
+    /// used as written.
     public var motion: Motion
 
-    /// A run of placements.
-    ///
-    /// A DRAWING ORDER IS WRITTEN AS AN ORDER, never as the number the
-    /// arithmetic answered: each `zIndex` is replaced by its RANK in the run,
-    /// so a z worked out from a value the reader is moving - which answers
-    /// something new on every frame while the order it expresses changes only
-    /// when two views actually swap - costs a write only when the picture
-    /// really changes. See `Placement.drawingOrder(of:)`.
+    /// A run of placements. Each `zIndex` is replaced by its rank in the run,
+    /// so a z-index worked out from a moving value costs a write only when two
+    /// views swap.
     ///
     /// - Parameters:
     ///   - placements: where each view goes, in the order they stand in.
-    ///   - motion: how this answer travels there. At once, unless said.
+    ///   - motion: how this answer animates there. At once, unless said.
     public init(_ placements: [Placement] = [], motion: Motion = .none) {
         let order = Placement.drawingOrder(of: placements)
 
@@ -243,20 +182,16 @@ public struct PlacedRun: StateValue {
         self.motion = motion
     }
 
-    /// The same, with every placement taken exactly as it is.
-    ///
-    /// What a run read back off the image needs: the ranks are already ranks, and
-    /// ranking them again would be ranking a ranking.
+    /// Every placement taken as it is: a run read back holds ranks already.
     init(exactly placements: [Placement], motion: Motion) {
         self.placements = placements
         self.motion = motion
     }
 
-    /// Every view's twelve, then the law's three.
+    /// Every view's twelve numbers, then the motion's three, so a view's
+    /// numbers start at `12 × index`.
     ///
-    /// The law LAST, so a view's numbers are always at `12 × index` - which is
-    /// what lets the host read one view's place by stride and know which of
-    /// them a dirty lane belongs to.
+    /// Design: docs/design/types/placement.md#twelve-numbers-a-view
     public var carried: StateCarried {
         var lanes: [Double] = []
         lanes.reserveCapacity(placements.count * Placement.lanes + StateLaw.lanes)
@@ -270,13 +205,11 @@ public struct PlacedRun: StateValue {
         return .lanes(lanes + StateLaw.lanes(of: motion))
     }
 
-    /// And back, for as many views as the numbers hold.
+    /// A run back, for as many views as the numbers hold.
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried else { return nil }
 
-        // NOTHING AT ALL IS AN EMPTY RUN, which is what a state that has never
-        // been written stands at - and what makes this total, so a layout with
-        // nothing on it yet is a picture rather than a trap.
+        // No lanes at all is an empty run: a state never written.
         guard !lanes.isEmpty else {
             self.init()
             return
@@ -301,36 +234,22 @@ public struct PlacedRun: StateValue {
         self.init(exactly: run, motion: StateLaw.motion(of: Array(lanes.suffix(StateLaw.lanes))))
     }
 
-    /// ITS OWN, which is what a value with a length has: how many lanes a run
-    /// takes is how many views it places.
+    /// Its own width: twelve lanes a view, and three for the motion.
     public static var lanes: Int { StateValueLanes.own }
 }
 
-/// Where one view goes, packed as plain numbers for the host to write.
-///
-/// TWELVE DOUBLES A VIEW, in the order below. A packed answer rather than a
-/// message because this crosses on the platform's own frames: there is no
-/// identity to carry, no property to name and nothing to diff - the host holds
-/// the controls already and writes what arrives onto the child in that
-/// position.
+/// Where one view goes, as twelve doubles in the order below, written into a
+/// buffer the host reads by stride on the platform's own frames.
+/// Design: docs/design/types/placement.md#twelve-numbers-a-view
 enum PackedPlacement {
     /// How many numbers one view takes.
     static let fields = 12
 
-    /// The shade of a layout that has none, which is what tells the host to
-    /// look for no shade view under the placed one.
-    ///
-    /// A layout WITH a shade answers 0 for a view that wears none of it, and
-    /// nought is a shade like any other - so the absence needs a number no
-    /// opacity can be. See `PlacedLayout.shade(_:)`.
+    /// The shade of a layout with none: a number no opacity can be, which tells
+    /// the host to look for no shade view.
     static let unshaded = -1.0
 
-    /// Writes one placement into a buffer.
-    ///
-    /// - Parameters:
-    ///   - placement: where the view goes and how it is turned.
-    ///   - buffer: where to write.
-    ///   - offset: the first number to write.
+    /// Writes one placement into `buffer`, from `offset`.
     static func write(
         _ placement: Placement,
         into buffer: UnsafeMutablePointer<Double>,

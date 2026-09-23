@@ -1,10 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The platform's C maths library, for `sin`, `cos` and `atan2` - NOT
-// Foundation, which stays out of the library: the C runtime is linked
-// everywhere already, and there is no run loop anywhere in it. The libraries
-// agree with each other to more places than any screen can show.
+// The platform's C maths library, for `sin`, `cos` and `atan2`, not Foundation.
+// Design: docs/design/types/transforms.md#the-arithmetic-is-in-the-core
 #if canImport(Darwin)
 import Darwin
 #elseif canImport(Android)
@@ -15,47 +13,31 @@ import Glibc
 import CRT
 #endif
 
-/// How a view is moved, turned and sized - ONE transform, about the view's own
-/// centre, happening in the ORDER it is written.
-///
-/// It is the ONE transform in the library: a view wears it through
-/// `.transform(_:)`, applied about its centre after the layout has placed it,
-/// and a `Path`'s geometry takes the same value through `.renderTransform(_:)`
-/// - where the whole matrix draws, skew included, because a geometry is
-/// redrawn rather than carried by the five view properties.
+/// How a view is moved, turned and sized: one transform about the view's
+/// centre, its parts applied in the order written.
 ///
 ///     Card(item).transform(.rotate(45).scale(2).translate(100, 100))
 ///
-/// Read it left to right: the card is turned 45 degrees, then made twice the
-/// size, then moved a hundred along and a hundred down - each part happening
-/// to what the parts before it made, which is why the order MATTERS.
-/// `.rotate(45).translate(100, 0)` moves the turned card a hundred to the
-/// right, while `.translate(100, 0).rotate(45)` swings that move round with
-/// the turn. The parts compose as a matrix, and the arithmetic is done HERE,
-/// on this side - the trigonometry the platform C library's, which every
-/// platform agrees on to more places than a screen can show - so a transform
-/// is the same picture on every host.
+/// Read it left to right: the card is turned 45 degrees, then doubled in size,
+/// then moved 100 along and 100 down, each part applying to what the parts
+/// before it made. `.rotate(45).translate(100, 0)` moves the turned card to
+/// the right, while `.translate(100, 0).rotate(45)` swings the move round with
+/// the turn.
 ///
-/// What it comes to on the view is five properties, about the view's centre:
-/// `translationX`, `translationY`, `rotation`, `scaleX` and `scaleY` - each an
-/// ordinary property, so a CHANGED transform travels like any other value,
-/// every part of it at once. The view's `scale` is left alone, so a
-/// `.scale(_:)` written on the view multiplies on top of this.
+/// A view wears it through `.transform(_:)` as five properties that animate
+/// like any other - `translationX`, `translationY`, `rotation`, `scaleX` and
+/// `scaleY` - and its own `.scale(_:)` multiplies on top. A `Path` takes it
+/// through `.renderTransform(_:)`, where the whole matrix draws. A view cannot
+/// show a shear: after a turn, a sizing along one axis
+/// (`.rotate(45).scaleX(2)`) keeps the turn, the move and both sizes, and
+/// drops the slant.
 ///
-/// THE ONE LIMIT IS A SHEAR. Those five can say any move, any turn and any
-/// sizing of the turned view - but not a sizing along one axis of a view
-/// turned EARLIER (`.rotate(45).scaleX(2)`), which slants a rectangle into a
-/// parallelogram that no platform here has a property to draw. Such a chain is
-/// drawn as the nearest thing the five can say: the turn, the move and both
-/// sizes are kept, and the slant alone is left out.
+/// Design: docs/design/types/transforms.md#the-shear-limit
 public struct ViewTransform: Equatable, Sendable {
     /// The view as it was drawn: not moved, not turned, its own size.
     public static let identity = ViewTransform()
 
-    // The transform is the matrix of what has been written so far -
-    // x' = a·x + c·y + tx, y' = b·x + d·y + ty - and each part multiplies
-    // onto it. The five view properties are read back OUT of it (below),
-    // which is where a shear falls away.
+    // The matrix of the parts so far: x' = a·x + c·y + tx, y' = b·x + d·y + ty.
 
     /// What the across axis becomes: how much of it stays across.
     var a = 1.0
@@ -78,9 +60,7 @@ public struct ViewTransform: Equatable, Sendable {
     /// A view as it was drawn. Every part written after it happens in order.
     public init() {}
 
-    // A transform is written as a chain of its parts, so each part is offered
-    // as a STARTING POINT as well - `.rotate(14).scale(0.9)` rather than
-    // `.identity.rotate(14).scale(0.9)`, which says the same and reads worse.
+    // Each part is also a starting point: `.rotate(14)`, not `.identity.rotate(14)`.
 
     /// A view moved, in device units - along and down.
     ///
@@ -151,9 +131,9 @@ public struct ViewTransform: Equatable, Sendable {
         identity.skew(x, y)
     }
 
-    /// Moves the view, in device units - along and down - AFTER everything
-    /// written before it: the move is not turned or sized by what follows, and
-    /// is by what came first.
+    /// Moves the view, in device units - along and down - after everything
+    /// written before it: the parts before it do not turn or size the move,
+    /// and the parts after it do.
     ///
     /// - Parameters:
     ///   - x: how far along.
@@ -167,7 +147,7 @@ public struct ViewTransform: Equatable, Sendable {
     }
 
     /// Turns the view in the plane of the screen, in degrees, clockwise about
-    /// its centre - AFTER everything written before it, which a turn swings
+    /// its centre - after everything written before it, which the turn swings
     /// round with it.
     ///
     /// - Parameter degrees: how far to turn.
@@ -188,8 +168,8 @@ public struct ViewTransform: Equatable, Sendable {
     }
 
     /// Sizes the view about its centre, as a fraction of what it was drawn at
-    /// - AFTER everything written before it, which a sizing grows or shrinks
-    /// with it, moves included.
+    /// - after everything written before it, which the sizing grows or
+    /// shrinks with it, moves included.
     ///
     /// - Parameter factor: 1 is as drawn, a half is half as big.
     /// - Returns: the transform, sized.
@@ -197,9 +177,8 @@ public struct ViewTransform: Equatable, Sendable {
         sized(factor, factor)
     }
 
-    /// Sizes the view across alone. On a view turned EARLIER this is the one
-    /// chain the five properties cannot carry whole - the slant it makes is
-    /// left out, and the type's own note says why.
+    /// Sizes the view across alone. After a turn this makes a slant, which a
+    /// view leaves out; see the type's note.
     ///
     /// - Parameter factor: 1 is as drawn.
     /// - Returns: the transform, sized across.
@@ -215,27 +194,25 @@ public struct ViewTransform: Equatable, Sendable {
         sized(1, factor)
     }
 
-    /// Turns the view away about its VERTICAL axis, in degrees - the side
+    /// Turns the view away about its vertical axis, in degrees - the side
     /// swinging back, which is what puts a gallery's cards on a wheel.
     ///
     ///     .transform(.turn(-40).scale(0.86))
     ///
-    /// Drawn FLAT, with no camera anywhere: a rectangle turned by an angle is a
-    /// rectangle `cos(angle)` as wide, and written that way it is the same
-    /// picture on every platform. `.rotationY` is the other reading - a real
-    /// three-dimensional turn - and every platform projects that one through a
-    /// camera of its own.
+    /// Drawn flat, as a rectangle `cos(angle)` as wide, so it is the same
+    /// picture on every platform; `.rotationY` is a three-dimensional turn each
+    /// platform projects its own way.
     ///
-    /// - Parameter degrees: how far to turn away. The sign says which side goes
-    ///   back; both look the same drawn flat, and it is kept so the arithmetic
-    ///   either side of a middle can be written as one line.
+    /// Design: docs/design/types/transforms.md#turned-away-drawn-flat
+    ///
+    /// - Parameter degrees: how far to turn away; either sign draws the same.
     /// - Returns: the transform, turned away.
     public func turn(_ degrees: Double) -> ViewTransform {
         sized(ViewTransform.flat(degrees), 1)
     }
 
-    /// Turns the view away about its HORIZONTAL axis, in degrees - the top
-    /// swinging back. Drawn flat, exactly as `turn(_:)` is.
+    /// Turns the view away about its horizontal axis, in degrees - the top
+    /// swinging back. Drawn flat, as `turn(_:)` is.
     ///
     /// - Parameter degrees: how far to tip away.
     /// - Returns: the transform, tipped away.
@@ -244,12 +221,11 @@ public struct ViewTransform: Equatable, Sendable {
     }
 
     /// Leans the view over, in degrees - each vertical line leaning `x`
-    /// degrees over, each horizontal line `y` degrees down - AFTER everything
+    /// degrees over, each horizontal line `y` degrees down - after everything
     /// written before it.
     ///
-    /// A GEOMETRY draws a lean whole (`.renderTransform(_:)`). The five VIEW
-    /// properties cannot - the lean is exactly the slant the type's own note
-    /// says is left out - so on a view this part changes nothing.
+    /// A `Path` draws the lean through `.renderTransform(_:)`; on a view it
+    /// changes nothing, since a view cannot show a slant.
     ///
     /// - Parameters:
     ///   - x: the lean along, in degrees.
@@ -281,20 +257,13 @@ public struct ViewTransform: Equatable, Sendable {
         return copy
     }
 
-    // The five view properties, read back out of the matrix. The turn is the
-    // angle the ACROSS axis ended up at, the width is that axis's length, and
-    // the height is how far the down axis reaches from it - which keeps a
-    // mirror (a negative height) and drops a shear, there being no property to
-    // give one to.
+    // The five view properties, read back out of the matrix: a mirror survives
+    // as a negative height, a shear does not.
+    // Design: docs/design/types/transforms.md#reading-the-five-properties-back
 
-    /// The transform those five read-outs describe: `x`, `y`, `rotation`,
-    /// `width` and `height` run backwards.
-    ///
-    /// What comes back from a boundary, which carries the five properties a
-    /// view wears and nothing else - an across axis of length `width` turned
-    /// by `rotation`, a down axis of length `height` square to it, and the
-    /// carry. A SHEAR DOES NOT SURVIVE, there being no property to give one
-    /// to; a chain that never turned comes back to the bit.
+    /// The transform the five read-outs describe, as a host carries them back:
+    /// an across axis of length `width` turned by `rotation`, and a down axis
+    /// of length `height` square to it.
     init(x: Double, y: Double, rotation: Double, width: Double, height: Double) {
         let turned = rotation * Double.pi / 180
         let run = cos(turned)
@@ -316,10 +285,7 @@ public struct ViewTransform: Equatable, Sendable {
     /// How far the view is carried down.
     var y: Double { ty }
 
-    // A chain that never turned is read back WITHOUT the general arithmetic:
-    // the square root and the divide would hand a written 0.9 back with a last
-    // bit of noise on it, and a value that is exactly what was written is what
-    // the wire should carry.
+    // A chain that never turned is read back exactly, without the square root.
 
     /// The turn in the plane of the screen, in degrees.
     var rotation: Double {
@@ -342,12 +308,8 @@ public struct ViewTransform: Equatable, Sendable {
         return (a * d - b * c) / across
     }
 
-    /// What a turn of this many degrees looks like drawn flat, never less than
-    /// nothing: past a right angle a view is showing its back, which is not a
-    /// picture this can make, so the turn stops there.
-    ///
-    /// - Parameter degrees: the angle.
-    /// - Returns: how much of its width is left.
+    /// How much of its width a view keeps turned this far, drawn flat; the turn
+    /// stops at a right angle, past which a view would show its back.
     private static func flat(_ degrees: Double) -> Double {
         max(0, cos(min(abs(degrees), 90) * Double.pi / 180))
     }

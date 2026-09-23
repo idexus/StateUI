@@ -6,9 +6,7 @@
 ///     Label("Total").background(.tomato)
 ///     Border { … }.background(.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)]))
 ///
-/// A colour crosses as its four bytes, the value a tree carries most of; a
-/// brush as its kind and what that kind is made of. The two stay apart, so a
-/// host paints a plain colour as the plain colour it is.
+/// Design: docs/design/types/colour-and-theme.md#a-background-is-a-colour-or-a-brush
 public enum Background: Equatable, Sendable, HostRepresentable {
     /// One colour.
     case color(Color)

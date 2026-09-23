@@ -1,13 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Space on the four sides of something.
-//
-// Three initializers: one value for all four sides, two for the horizontal and
-// the vertical, and four in the order left, top, right, bottom. A numeric
-// literal is one too, so the common case reads as `.padding(24)` rather than
-// `.padding(Insets(24))`.
-
 /// Space on the four sides of something.
 ///
 ///     VStack { … }.padding(24)

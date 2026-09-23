@@ -1,30 +1,14 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What a gesture reports.
-//
-// A gesture payload carries one typed value per part of its stable StateUI
-// contract (Core/Wire.swift):
-//
-//     swiped          the direction, as the one number its bits are
-//     panUpdated      phase, totalX, totalY
-//     pinchUpdated    phase, scale, then the origin as one pair
-//     pointerMoved    the position as one pair
-//
-// Nothing is formatted or parsed: a number crosses as its own bits, and a
-// member of a closed vocabulary as THIS LIBRARY's number for it -
-// `.enumeration`, the wire's tag 10. Every host maps native input onto this
-// vocabulary before reporting it.
+// What a gesture reports: one typed value per part of its payload.
+// Design: docs/design/types/gestures.md#one-typed-value-per-part
 
 /// How far along a continuous gesture is.
-///
-/// The numbers are StateUI's declaration order from 0. Native enum values stay
-/// outside the boundary so a platform release cannot silently reinterpret a
-/// stored or transported report.
 public enum GesturePhase: Int32, Sendable {
-    /// The gesture has begun. A host that receives no distinct native begin
-    /// phase may start with `.running`; handlers must use the values carried by
-    /// each report rather than relying on capture here.
+    /// The gesture has begun. A platform that reports no beginning starts with
+    /// `.running`, so a handler reads each report's values rather than relying
+    /// on this one.
     case started = 0
 
     /// The gesture is under way, and this is where it has got to.
@@ -39,12 +23,9 @@ public enum GesturePhase: Int32, Sendable {
 
 extension GesturePhase: HostRepresentable {}
 
-/// Which way a swipe went, and which ways a view listens for. Bits are StateUI's
-/// own, `1 << 0` upwards in declaration order.
+/// Which way a swipe went, and which ways a view listens for.
 public struct SwipeDirection: OptionSet, Sendable {
-    /// The bits, as an OptionSet keeps them - this library's own, and the one
-    /// number the whole set travels as. `Int32` because that is what a closed
-    /// vocabulary crosses in.
+    /// The direction bits.
     public let rawValue: Int32
 
     /// From the raw bits. `.left`, `[.left, .right]` and `.all` are the ordinary
@@ -68,10 +49,7 @@ public struct SwipeDirection: OptionSet, Sendable {
     /// Every direction - what a view listens for unless it says otherwise.
     public static let all: SwipeDirection = [.left, .right, .up, .down]
 
-    /// Whether this is ONE direction - what a swipe reports - rather than a
-    /// set of them, which is what a view listens for. Every host reports one
-    /// dominant direction bit, so a set of several is no answer to "which way
-    /// did it go?"
+    /// Whether this is one direction, what a swipe reports, rather than a set.
     var isOneDirection: Bool {
         switch self {
         case .left, .right, .up, .down: true
@@ -121,13 +99,12 @@ public struct Point: Equatable, Sendable {
         self.init(x: x, y: y)
     }
 
-    /// The origin: both numbers nought.
+    /// The origin: both numbers 0.
     ///
     ///     @State private var offset = Point.zero
     ///
-    /// Where a point is a PLACE this is the top left corner, and where it is a
-    /// distance - a drag so far, a scroller's offset - it is having gone
-    /// nowhere.
+    /// As a place it is the top left corner; as a distance - a drag so far, a
+    /// scroller's offset - it is no distance at all.
     public static let zero = Point(0, 0)
 }
 
@@ -144,10 +121,8 @@ extension Point: HostRepresentable {
         self.init(x: pair[0], y: pair[1])
     }
 
-    /// Points cross as one flat run of numbers, x then y, a pair per point -
-    /// what a Polygon's or a Polyline's corners travel as. Numbers rather than
-    /// a formatted `20,0 40,40 0,40`: a corner crosses as its own bits, so a
-    /// long outline is neither formatted nor parsed again.
+    /// Points cross as one flat run of numbers, x then y for each point - a
+    /// polygon's or a polyline's corners.
     /// - Parameter list: the points, in order.
     public static func propValue(of list: [Point]) -> PropValue {
         .numbers(list.flatMap { [$0.x, $0.y] })
@@ -183,12 +158,10 @@ public struct PanUpdate: Equatable, Sendable {
 
     /// The same, vertically.
     ///
-    /// Measured from where the pan began, which is what makes moving a view a
-    /// matter of assigning these to its translation. That holds on every
-    /// platform: Android measures a pan against a frame that moves with the
-    /// view, so a handler answering by translating it would feed its own answer
-    /// back into the next report - the host puts that back. See the renderer's
-    /// PanFrame.
+    /// Both totals are measured from where the pan began, on every platform,
+    /// so assigning them to a translation moves the view with the finger.
+    ///
+    /// Design: docs/design/types/gestures.md#a-pan-is-measured-from-its-start
     public var totalY: Double
 
     /// One report, from the three values a pan carries: phase, totalX, totalY.

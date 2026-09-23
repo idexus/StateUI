@@ -1,42 +1,15 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What a Canvas draws, as a list of instructions.
-//
-// Drawing code is a closure, and a closure is the one thing this boundary
-// cannot carry. So a drawing travels as what that code calls: one record per
-// canvas operation, in order, and the host replays them against its toolkit's
-// own canvas.
-//
-// A record is a list of typed VALUES - the operation first, as the number
-// both sides spell, then that operation's arguments as the things they ARE: a
-// number as a number, a flag as a bool, a colour as its four bytes, an
-// alignment as its member's number, and text only where an author wrote some.
-// The drawing is the list of those records, so it crosses as one `.values`
-// holding one `.values` per instruction:
-//
-//     Draw.fillColor(.cornflowerBlue)
-//     Draw.fillRoundedRectangle(x: 0, y: 0, width: 120, height: 40, cornerRadius: 8)
-//
-//     [[0, #FF6495ED], [13, 0, 0, 120, 40, 8]]
-//
-// THE NUMBERS ARE THE CONTRACT - see `DrawCommand.Kind`.
-//
-// The theme is picked in the differ, as it is everywhere else: a colour
-// written `Color(light:dark:)` goes into the record as both halves, and the
-// differ picks the half as it builds the Canvas, which is built again
-// when the system flips - see Types/Color.swift.
+// What a Canvas draws: one record per canvas operation, in order, which the
+// host replays against its toolkit's own canvas.
+// Design: docs/design/types/drawing.md#a-drawing-is-a-list-of-records
 
 /// One instruction for the canvas. Written with `Draw`, never by hand.
 public struct DrawCommand: Equatable, Sendable {
-    /// Which canvas operation an instruction calls, as the number it travels
-    /// as - a closed vocabulary, so it crosses as a number and never a
-    /// spelling.
-    ///
-    /// These numbers ARE the contract: the host switches on the same ones,
-    /// case for case. Add at the END - a case inserted in the middle
-    /// renumbers every case after it, and the drawing then replays the wrong
-    /// instructions without a word from either side.
+    /// The canvas operation an instruction calls, as the number it crosses as.
+    /// The host switches on the same numbers: add a case at the end only.
+    /// Design: docs/design/types/drawing.md#the-kinds-are-the-contract
     enum Kind: Int32, Sendable {
         // What the canvas draws with.
         case fillColor = 0
@@ -75,9 +48,7 @@ public struct DrawCommand: Equatable, Sendable {
     /// Which canvas call this instruction is.
     let kind: Kind
 
-    /// What to call it with, in the order the host reads the arguments - each
-    /// already the value it is, so nothing is formatted here and nothing is
-    /// parsed on arrival.
+    /// Its arguments, in the order the host reads them, each as the value it is.
     let arguments: [PropValue]
 
     init(_ kind: Kind, _ arguments: [PropValue] = []) {
@@ -88,8 +59,7 @@ public struct DrawCommand: Equatable, Sendable {
 }
 
 extension DrawCommand: HostRepresentable {
-    /// The kind, then what that kind is called with - the record described at
-    /// the top of the file.
+    /// The kind, then its arguments.
     public var propValue: PropValue {
         .values([.enumeration(kind.rawValue)] + arguments)
     }
@@ -363,7 +333,7 @@ public enum Draw {
     ///     Draw.drawText("42", x: 0, y: 100, width: 32, height: 16,
     ///                     horizontalAlignment: .center)
     ///
-    /// Text goes in a BOX rather than at a point: the box is what the two
+    /// Text goes in a box rather than at a point: the box is what the two
     /// alignments place it in, and what clips it.
     ///
     /// - Parameters:

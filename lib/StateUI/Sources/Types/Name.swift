@@ -7,9 +7,10 @@
 ///
 ///     static let theme = ElementProperty<Self, Name>("theme")
 ///
-/// It crosses as a name, never as prose, which is what the type says: a member
-/// holding a `Name` crosses as one, and a member holding a `String` crosses as
-/// text an author wrote.
+/// Declare a member as `Name` for such words, and as `String` for text an
+/// author wrote: the two cross to a host differently.
+///
+/// Design: docs/design/types/values.md#text-and-names
 public struct Name: Hashable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible,
     HostRepresentable {
     /// The name, spelled.

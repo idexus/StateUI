@@ -1,50 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A PAGE as it runs: where it stands in its life, and everything it says about
-// itself - what it is called, its buttons, how it is presented. This
-// library's own, the fourth session beside the application's, the scene's and
-// the window's: what a page IS is written into it as state, usually from the
-// `.onCreated` of its content, and read into the page's node every time the
-// page is built.
-//
-//     struct FeedPage: ContentView {
-//         @Environment private var page: PageSession
-//         @State private var greeting = "Hello"
-//
-//         var content: any View {
-//             Label(greeting)
-//                 .onCreated {
-//                     page.title = "Feed"
-//                     page.toolbarItems = [
-//                         ToolbarItem("Refresh").onClicked { greeting = try await load() }
-//                     ]
-//                 }
-//                 .onChanged(page.phase) {
-//                     if page.phase == .appearing { greeting = try await load() }
-//                 }
-//         }
-//     }
-//
-// WHY STATE AND NOT A GETTER. A page's title is not worked out from the page's
-// state on every build: it is what the page was TOLD, and it changes when
-// something says so - which is exactly a `@State` a handler writes. So the page
-// is built again when its session is written, by the rule every state follows,
-// and is asked nothing on a build caused by anything else. And what
-// `.onCreated` writes is in the message that BRINGS the page - see
-// `Renderer.renderWire` - which is what a presented page's style and a bar's
-// buttons need: the platform acts on the message that makes them.
-//
-// ONE PER PAGE, HELD BY ITS ELEMENT. A page is a value built again on every
-// render, so the session lives on the element the page is: made when the page
-// is first built, handed back on every build after, gone with it. See
-// Core/ElementSession.swift.
-//
-// A VALUE written here is put on the page as the page is built, and a colour
-// or a picture with a half for each theme is picked there - right in both,
-// whenever it was written. A VIEW written here - the title view, a button - is
-// built where it is shown: a composed view there reads its own state as it
-// builds, and is built again when that moves.
+// A page's session: where the page stands in its life and what it says about
+// itself, written as state and read into the page's node as it builds.
+// Design: docs/design/types/sessions.md#told-not-derived
 
 /// Where a page stands in its native lifecycle.
 ///
@@ -65,18 +24,18 @@ public enum PagePhase: Sendable {
     /// back from a pushed page says it again.
     case appearing
 
-    /// A MOVE has arrived at it - navigation and nothing else, where appearing
-    /// also answers the page coming back for a reason that was never a move.
+    /// Navigation has arrived at it. Only navigation says this, while
+    /// `appearing` also answers a page shown again for any other reason.
     case navigatedTo
 
-    /// A move is about to leave it - it is still the page on screen, which
-    /// makes this the moment to put away what the move must not carry.
+    /// Navigation is about to leave it. It is still the page on screen: the
+    /// moment to put away what the navigation must not carry.
     case navigatingFrom
 
     /// It has been covered or left - forward, back, or to another tab.
     case disappearing
 
-    /// A move has left it; the destination is now on screen.
+    /// Navigation has left it; the destination is on screen.
     case navigatedFrom
 }
 
@@ -131,9 +90,8 @@ public final class PageSession {
     /// `barBackgroundColor` there.
     @State public var background: Color? = nil
 
-    // What this page asks of the NAVIGATION STACK it is on. The colours of
-    // the BAR belong to the NavigationStack rather than to a page on it - see
-    // `barBackgroundColor` in Views/BarElement.swift.
+    // What the page asks of the navigation stack it is on; the bar's colours
+    // are the stack's own.
 
     /// Whether the navigation bar is shown while this page is on top.
     ///
@@ -141,7 +99,7 @@ public final class PageSession {
     @State public var hasNavigationBar: Bool? = nil
 
     /// Whether the way back is offered while this page is on top - false for a
-    /// page the reader must finish rather than leave.
+    /// page the user must finish rather than leave.
     ///
     /// It controls the navigation stack's own back affordances. It is not a
     /// cross-platform lock against every system-level way of leaving a page.
@@ -149,7 +107,7 @@ public final class PageSession {
 
     /// What the back button reads while the page ABOVE this one is on top.
     ///
-    /// Written on the page the reader would go BACK TO, never on the one they
+    /// Written on the page the user would go back to, never on the one they
     /// are looking at. Hosts whose back affordance has no text ignore it.
     @State public var backButtonTitle: String? = nil
 
@@ -157,10 +115,9 @@ public final class PageSession {
     ///
     ///     page.titleView = SearchField($query)
     ///
-    /// A view rather than a handler: whatever is written here is an ordinary
-    /// part of the tree, built where the bar is - a composed view there reads
-    /// the state it shows as it builds, and a binding handed to a control
-    /// keeps it live.
+    /// An ordinary part of the tree, built where the bar is: a composed view
+    /// there reads its own state, and a binding handed to a control keeps it
+    /// live.
     @State public var titleView: (any View)? = nil
 
     /// The actions in the page's navigation bar or native toolbar.
@@ -189,10 +146,8 @@ public final class PageSession {
     /// `.environment(...)`.
     public init() {}
 
-    /// The page's properties as the host reads them - every one that says
-    /// something and nothing for the rest, which leaves the native default
-    /// standing. Read as the page builds, so the page builds again when one is
-    /// written.
+    /// The page's properties for its node: each one written, and nothing for
+    /// the rest, which leaves the native default standing.
     var props: [Prop: PropValue] {
         var props: [Prop: PropValue] = [:]
 
@@ -207,8 +162,7 @@ public final class PageSession {
     }
 
     /// What hangs off the page besides its content: the title view, the
-    /// toolbar items and the menu bar items, each as the node the host knows
-    /// it by.
+    /// toolbar items and the menus, each as the node the host knows it by.
     var slots: [Node] {
         var slots: [Node] = []
 
@@ -216,9 +170,8 @@ public final class PageSession {
             slots.append(Node(contract: TitleViewContract.self, children: [titleView.body]))
         }
 
-        // Collections rather than one node each, for the reason a SwipeView's
-        // items are: the host has a list to keep in step, and a list needs
-        // somewhere of its own to be matched against.
+        // One node per collection, a parent the host's list is matched against.
+        // Design: docs/design/types/sessions.md#collections-hang-as-one-node
         if !toolbarItems.isEmpty {
             slots.append(Node(contract: ToolbarItemsContract.self, children: toolbarItems.map { $0.body }))
         }

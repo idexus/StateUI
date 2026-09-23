@@ -1,26 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The closed vocabularies a property takes.
-//
-// Each case travels on the wire as a number rather than a spelling, and that
-// number belongs to StateUI's wire contract, never to a toolkit. A host maps
-// each case onto its own toolkit's equivalent: what a case promises is what its
-// `///` says, and the number is only how it crosses.
-//
-// Declaration order from 0, and it has no exceptions. The numbers are written
-// out rather than left to the compiler because they are a wire contract: a case
-// inserted in the middle would silently shift every case after it - every
-// property on the wire then reading as a different member, with nothing
-// failing anywhere - and seeing the numbers is what makes that hard to do by
-// accident. `WireVocabularyTests` holds every case to a number written out.
-// Appending a case is free; inserting or reordering one is not.
-//
-// The flag sets (FontAttributes, TextDecorations, AbsoluteLayoutProportions) are
-// OptionSets, so both `.bold` and `[.bold, .italic]` work. Their bits are ours
-// by the same rule - `1 << 0` upwards in declaration order - and a composite
-// is written as the OR of its parts, so a bit set travels as nothing more than
-// its bits.
+// The closed vocabularies a property takes. Each case crosses as a number
+// StateUI owns, in declaration order from 0 and written out: append a case,
+// never insert one. A flag set's bits run `1 << 0` upwards the same way.
+// Design: docs/design/types/vocabularies.md#written-out-and-appended
 
 /// Where a view sits in the space its layout gives it - what
 /// `.horizontalAlignment` and `.verticalAlignment` take.
@@ -38,8 +22,7 @@ public enum Alignment: Int32, Sendable {
     case fill = 3
 }
 
-/// Whether text is drawn bold, italic, or both - a flag set, with bits of this
-/// library's own.
+/// Whether text is drawn bold, italic, or both.
 ///
 ///     Label("Total").fontAttributes(.bold)
 ///     Label("Total").fontAttributes([.bold, .italic])
@@ -47,8 +30,7 @@ public enum Alignment: Int32, Sendable {
 /// Only the weight and the slant: the family is `.fontFamily` and the size
 /// `.fontSize`, each its own modifier as it is its own property.
 public struct FontAttributes: OptionSet, Sendable {
-    /// The bits, as an OptionSet keeps them - this library's own, see the head
-    /// of this file.
+    /// The flag bits.
     public let rawValue: Int32
 
     /// From the raw bits. `.bold`, `.italic` and `[.bold, .italic]` are the
@@ -109,13 +91,11 @@ public enum LineBreak: Int32, Sendable {
     case middleTruncation = 5
 }
 
-/// The lines drawn through or under text - a flag set, with bits of this
-/// library's own.
+/// The lines drawn through or under text.
 ///
 ///     Label("$40").textDecorations(.strikethrough)
 public struct TextDecorations: OptionSet, Sendable {
-    /// The bits, as an OptionSet keeps them - this library's own, see the head
-    /// of this file.
+    /// The flag bits.
     public let rawValue: Int32
 
     /// From the raw bits. `.underline`, `.strikethrough` and both together are
@@ -136,9 +116,9 @@ public struct TextDecorations: OptionSet, Sendable {
 
 /// Whether the text is drawn as written, or in one case throughout.
 ///
-/// The letters the reader SEES change; the value behind them does not - an
-/// `TextField` set to `.uppercase` still reports what was typed, so this is a look
-/// rather than an edit.
+/// The letters the user sees change; the value behind them does not - a
+/// `TextField` set to `.uppercase` still reports what was typed, so this is a
+/// look rather than an edit.
 public enum TextCase: Int32, Sendable {
     /// As written.
     case none = 0
@@ -227,7 +207,7 @@ public enum PinType: Int32, Sendable {
     /// A place - a shop, a station, a landmark.
     case place = 1
 
-    /// One the reader saved.
+    /// One the user saved.
     case savedPin = 2
 
     /// One a search turned up.
@@ -273,7 +253,7 @@ public enum LayoutDirection: Int32, Sendable {
 
 /// How deep a heading is - what `.accessibilityHeadingLevel` takes.
 ///
-/// A reader who cannot see the page moves through it by its headings, and the
+/// A user who cannot see the page moves through it by its headings, and the
 /// level is what tells them whether the next one starts a section or sits
 /// inside the one they are in.
 public enum HeadingLevel: Int32, Sendable {
@@ -326,11 +306,6 @@ public enum ScrollBarVisibility: Int32, Sendable {
 /// ColorBox. What `.shape` takes.
 ///
 ///     Border { … }.shape(.roundedRectangle(12))
-///
-/// A shape can carry a number of its own, so this travels as a typed value
-/// list whose first element is the KIND and whose rest is what that kind is
-/// made of - `.roundedRectangle(12)` as `[1, 12]`. The kinds are numbered by
-/// this library like everything else here.
 public enum BorderShape: Equatable, Sendable, HostRepresentable {
     /// Square corners.
     case rectangle
@@ -341,8 +316,8 @@ public enum BorderShape: Equatable, Sendable, HostRepresentable {
     /// An oval filling the border's bounds.
     case ellipse
 
-    /// Which shape this is, as the number that crosses - a closed vocabulary,
-    /// so the host reads its number rather than its name.
+    /// Which shape this is, as the number that crosses ahead of its parts.
+    /// Design: docs/design/types/vocabularies.md#a-kind-first
     enum Kind: Int32, Sendable {
         case rectangle = 0
         case roundedRectangle = 1
@@ -383,17 +358,15 @@ public enum BorderShape: Equatable, Sendable, HostRepresentable {
 }
 
 /// Which parts of a child's bounds an AbsoluteLayout reads as fractions rather
-/// than as device units - a flag set, with bits of this library's own.
+/// than as device units.
 ///
 ///     .absoluteLayoutBounds(Rect(0.5, 0, 0.5, 1))
 ///     .absoluteLayoutProportions(.all)
 ///
-/// A fraction is of the LAYOUT's size, so 0.5 is half of it however big it
-/// turns out to be - which is the whole reason to reach for an AbsoluteLayout
-/// rather than nailing numbers down.
+/// A fraction is of the layout's size, so 0.5 is half of it however big it
+/// turns out to be.
 public struct AbsoluteLayoutProportions: OptionSet, Sendable {
-    /// The bits, as an OptionSet keeps them - this library's own, see the head
-    /// of this file.
+    /// The flag bits.
     public let rawValue: Int32
 
     /// From the raw bits. The members below are the ordinary way in.
@@ -422,8 +395,7 @@ public struct AbsoluteLayoutProportions: OptionSet, Sendable {
     /// Both lengths as fractions, the position still in device units.
     public static let size: AbsoluteLayoutProportions = [.width, .height]
 
-    /// All four as fractions - the OR of the other four, as a composite here
-    /// always is.
+    /// All four as fractions.
     public static let all: AbsoluteLayoutProportions = [.position, .size]
 }
 
@@ -506,14 +478,11 @@ public enum ToolbarItemPlacement: Int32, Sendable {
     case overflow = 2
 }
 
-/// What one edge of a layout stays clear of on the screen's UNSAFE strip -
-/// the notch, the bars, the on-screen keyboard. Four combinations, each worth
-/// naming; there is no "platform default" case, `.container` being what the
-/// one platform that insets does.
+/// What one edge of a layout stays clear of on the screen's unsafe strip -
+/// the notch, the bars, the on-screen keyboard.
 ///
-/// iOS is where it shows; the other platforms have no unsafe strip and
-/// ignore it. A layout's default there is `.container` - see
-/// `avoidsSafeArea`, whose doc says what that costs.
+/// Only iOS has such a strip; the other platforms ignore this. A layout there
+/// defaults to `.container` - see `avoidsSafeArea`.
 public enum SafeArea: Int32, Sendable {
     /// Edge to edge: content may run under the notch, the bars and the
     /// keyboard.
@@ -532,10 +501,6 @@ public enum SafeArea: Int32, Sendable {
 
 /// What each edge of a layout stays clear of - one answer for all four, or one
 /// for each. What `.avoidsSafeArea` takes.
-///
-/// One answer crosses as that one member; four cross as the four members -
-/// left, top, right, bottom - each a value of its own, a member and a quantity
-/// being different things on this wire.
 public enum SafeAreaEdges: Equatable, Sendable, HostRepresentable {
     /// The same answer for all four edges.
     case uniform(SafeArea)
@@ -543,7 +508,7 @@ public enum SafeAreaEdges: Equatable, Sendable, HostRepresentable {
     /// Each edge's own: left, top, right, bottom.
     case edges(left: SafeArea, top: SafeArea, right: SafeArea, bottom: SafeArea)
 
-    /// One member, or the four in order.
+    /// One member, or the four in order, each a value of its own.
     public var propValue: PropValue {
         switch self {
         case .uniform(let area):
@@ -570,12 +535,8 @@ public enum SafeAreaEdges: Equatable, Sendable, HostRepresentable {
     }
 }
 
-// MARK: - The choices a channel can carry
-
-// EVERY ONE OF THESE IS A VALUE A PROPERTY CAN BE HANDED as `$x` - the host
-// sets it as it stands, and writing the state rebuilds nobody. One line each,
-// beside the type, because what makes a choice carriable is its number and
-// nothing else: see `StateChoice` in Core/StateValue.swift.
+// MARK: - The choices a state can carry
+// Design: docs/design/types/vocabularies.md#choices-a-state-can-carry
 
 extension AbsoluteLayoutProportions: StateChoice {}
 extension Aspect: StateChoice {}
@@ -598,11 +559,7 @@ extension TextAlignment: StateChoice {}
 extension TextDecorations: StateChoice {}
 extension TextCase: StateChoice {}
 
-// MARK: - The values a member holds
-
-// Every one of these crosses as its member's number, which is what
-// `HostRepresentable` in Core/Contract.swift answers for a vocabulary over
-// Int32 - one line each, beside the type.
+// MARK: - The values a member holds, each crossing as its member's number
 
 extension AbsoluteLayoutProportions: HostRepresentable {}
 extension Alignment: HostRepresentable {}

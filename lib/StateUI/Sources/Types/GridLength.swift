@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// How much room each row and column of a grid takes.
-
 /// How much room one grid row or column takes.
 ///
 ///     Grid { … }
@@ -11,9 +9,6 @@
 /// Three kinds: `.auto` fits the content, `.proportional` shares what is left
 /// in proportion, and `.fixed` is device units. The proportional rows are
 /// settled last, out of whatever the auto and fixed rows leave.
-///
-/// It travels as the two PARTS it is - which kind, then the number that kind
-/// takes - and a list of them as a list of those.
 public enum GridLength: Equatable, Sendable, HostRepresentable {
     /// As much as the content needs, and no more.
     case auto
@@ -28,20 +23,16 @@ public enum GridLength: Equatable, Sendable, HostRepresentable {
     /// One share of what is left - the same as `.proportional(1)`.
     public static var fill: GridLength { .proportional(1) }
 
-    /// Which of the three kinds a length is, as the number that crosses - a
-    /// closed vocabulary, so it rides its member rather than a spelling. The
-    /// numbers are this library's own: see the head of Types/Enums.swift.
+    /// Which of the three kinds a length is, as the number that crosses.
+    /// Design: docs/design/types/vocabularies.md#a-kind-first
     enum Kind: Int32, Sendable {
         case fixed = 0
         case proportional = 1
         case auto = 2
     }
 
-    /// The kind, then the number that kind takes.
-    ///
-    /// `.auto` carries a 1 rather than nothing, so every length crosses as the
-    /// same two parts - a kind and a number - and a host reads each one the
-    /// same way.
+    /// The kind, then its number; `.auto` carries 1, so every length has both
+    /// parts.
     public var propValue: PropValue {
         switch self {
         case .auto:

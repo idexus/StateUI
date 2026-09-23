@@ -1,25 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A brush, and its three kinds: one colour, a gradient along a line, and a
-// gradient out from a point.
-//
-// A brush travels as what it IS - a kind, its geometry, and its stops - and
-// the host builds its own toolkit's brush from those, parsing nothing. A
-// gradient spelled as text would put the definition of a gradient inside
-// whichever parser reads it, and a parser that read it only partially would
-// draw nothing, or the wrong thing, without saying a word.
-//
-// The wire form is a list of typed VALUES, the kind first as the number both
-// sides spell:
-//
-//     solid   [1, colour]
-//     linear  [2, [x1,y1,x2,y2], offset, colour, offset, colour, …]
-//     radial  [3, [cx,cy,r],     offset, colour, offset, colour, …]
-//
-// A stop written with `Color(light:dark:)` crosses as both halves until the
-// differ builds the element wearing the brush and picks the half in force, and
-// that element is built again when the system flips.
+// A brush and its three kinds: one colour, a gradient along a line, and a
+// gradient out from a point, each crossing as its typed parts.
+// Design: docs/design/types/brushes.md#the-wire-form
 
 /// One colour in a gradient, and where along it that colour sits.
 ///
@@ -53,13 +37,9 @@ public struct GradientStop: Equatable, Sendable {
 /// A brush is where a gradient goes: `.background` takes one colour or one of
 /// these.
 public struct Brush: Equatable, Sendable, HostRepresentable {
-    /// Which of the three brushes this is, as the number that crosses - a
-    /// closed vocabulary, so it rides its member rather than a spelling. The
-    /// numbers are this library's own, like every other vocabulary's: see the
-    /// head of Types/Enums.swift.
-    ///
-    /// It numbers from 1 rather than 0, alone among them: a wire contract asks
-    /// only that both sides say the same number, never where the count begins.
+    /// Which of the three brushes this is, as the number that crosses; the
+    /// kinds number from 1.
+    /// Design: docs/design/types/vocabularies.md#a-kind-first
     enum Kind: Int32, Sendable {
         case solidColor = 1
         case linearGradient = 2
@@ -68,13 +48,11 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
 
     let kind: Kind
 
-    /// What the brush is drawn over: nothing for a solid colour, the start
-    /// and end points of a linear gradient, the centre and radius of a radial
-    /// one.
+    /// Nothing for a solid colour, the start and end points of a linear
+    /// gradient, the centre and radius of a radial one.
     let geometry: [Double]
 
-    /// The colours. Exactly one for a solid brush, whose offset is not asked
-    /// for and does not travel.
+    /// The colours; one for a solid brush, whose offset does not cross.
     let stops: [GradientStop]
 
     private init(_ kind: Kind, geometry: [Double] = [], stops: [GradientStop]) {
@@ -139,8 +117,7 @@ public struct Brush: Equatable, Sendable, HostRepresentable {
         Brush(.radialGradient, geometry: [center.x, center.y, radius], stops: stops)
     }
 
-    /// The kind, then what that kind is made of - see the note at the top of
-    /// the file.
+    /// The kind, then its geometry and its stops.
     public var propValue: PropValue {
         var values: [PropValue] = [.enumeration(kind.rawValue)]
 

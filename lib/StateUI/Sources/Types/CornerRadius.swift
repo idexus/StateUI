@@ -4,9 +4,6 @@
 /// How rounded a box's corners are: one radius for all four, or one each.
 ///
 ///     ColorBox(.teal).cornerRadius(12)
-///
-/// One radius crosses as one number; four cross as four numbers, in StateUI's
-/// declared order - top left, top right, bottom left, bottom right.
 public enum CornerRadius: Equatable, Sendable, HostRepresentable {
     /// The same radius on all four corners, in device units.
     case uniform(Double)
@@ -14,7 +11,7 @@ public enum CornerRadius: Equatable, Sendable, HostRepresentable {
     /// A radius for each corner, in device units.
     case corners(topLeft: Double, topRight: Double, bottomLeft: Double, bottomRight: Double)
 
-    /// One number, or the four in their order.
+    /// One number, or the four: top left, top right, bottom left, bottom right.
     public var propValue: PropValue {
         switch self {
         case .uniform(let radius):

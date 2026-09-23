@@ -1,21 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// How an animation spends its time.
-//
-// The numbers are this library's own, as every closed vocabulary's on this wire
-// are: declaration order from 0, written out, fixed forever. A host maps each
-// case onto the curve it names, and no toolkit's numbering reaches the wire.
-// Appending a case is free; inserting or reordering one is not - a moved number
-// is read as a different curve, with nothing failing anywhere.
-//
-// An easing is a curve from 0 to 1: given how far through the animation is, it
-// says how far through the CHANGE should be. Linear is the straight line, and
-// every other one here is worth having only because it is not.
+// Easing curves: a closed vocabulary, numbered by StateUI.
+// Design: docs/design/types/motion.md#easing-curves
 
-/// The curve an animation follows.
-///
-/// Half of an eased law - the other half being how long it takes:
+/// The curve an animation follows; with a duration, it makes an eased motion.
 ///
 ///     @State private var fade = 1.0
 ///     …
@@ -23,10 +12,9 @@
 ///     …
 ///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
 ///
-/// The numbers are this library's own, as they are everywhere else on this
-/// wire. `In` accelerates from a standstill, `Out` decelerates into one, and
-/// `InOut` does both - which is why `.cubicOut` is the one to reach for when
-/// something arrives on screen, and `.cubicIn` when it leaves.
+/// `In` curves start slowly, `Out` curves end slowly, and `InOut` curves do
+/// both: `.cubicOut` suits something arriving on screen, `.cubicIn` something
+/// leaving it.
 public enum Easing: Int32, Sendable {
     /// A straight line: the same speed from beginning to end.
     case linear = 0

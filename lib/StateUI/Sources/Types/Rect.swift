@@ -1,15 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A rectangle.
-//
-// Where a view is and how big it is, in one value - which is what an
-// AbsoluteLayout positions its children with. The four-value initializer takes
-// them in the order x, y, width, height.
-//
-// A size of `AbsoluteLayout.autoSize` means "whatever the view asks for", and
-// travels as the -1 it is.
-
 /// A rectangle: a position and a size, in one value.
 ///
 ///     Label("Corner").absoluteLayoutBounds(Rect(0, 0, 120, 40))

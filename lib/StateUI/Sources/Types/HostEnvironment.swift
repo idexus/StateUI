@@ -1,43 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The STANDARD ENVIRONMENT: what the host knows, provided to every tree.
-//
-// The battery, the network, the display, the locale, the device, the app and
-// the application's phase are all state the HOST holds and this side can only
-// be told about. Each is a class of `@State` properties the differ seeds into the scope
-// of every walk, so any view resolves it the way it resolves an object an
-// ancestor provided:
-//
-//     struct SaveButton: ContentView {
-//         @Environment var connectivity: Connectivity
-//
-//         var content: any View {
-//             Button("Save").isEnabled(connectivity.networkAccess == .internet)
-//         }
-//     }
-//
-// Nothing is registered and nothing is passed down - the type is the key, the
-// standard rule. The objects live for the process. A same-process host writes
-// them through `StateUIHost`; a foreign host uses the versioned
-// `stateui_set_environment` boundary. The host seeds them before the first
-// render and updates them whenever the platform reports a change. A write
-// lands on the property's own `@State`, so
-// exactly the views that READ the changed PROPERTY are rebuilt - a battery
-// level moving reaches the views showing the level and not the ones gating on
-// the saver - and a view that reads none of this costs nothing.
-//
-// A test - or an app that wants to lie to one branch - provides a fake with
-// the ordinary modifier, and the nearer object wins:
-//
-//     let fake = Battery()
-//     fake.chargeLevel = 0.07
-//     ChildView().environment(fake)
-//
-// THE NUMBERS THESE ENUMS CARRY ARE STATEUI'S. Each closed vocabulary uses an
-// explicit Int32 number and crosses a foreign-host boundary as `.enumeration`.
-// A host translates its native value onto this vocabulary; native enum numbers
-// never become part of StateUI's contract.
+// The standard environment: what the host knows - the battery, the network,
+// the display, the locale, the device, the app and the application's phase -
+// as objects of `@State` properties every view resolves with `@Environment`.
+// Design: docs/design/types/environment.md#the-standard-environment
 
 /// How the battery is doing.
 public enum BatteryState: Int32, Sendable {
@@ -204,10 +171,8 @@ public enum Weekday: Int32, Sendable {
     case saturday = 6
 }
 
-/// Where a window stands in its life - six host events exposed as state, so a
-/// view asks where things stand instead of keeping a second lifecycle log.
-/// Every host maps its native window lifecycle onto the same deterministic
-/// sequence.
+/// Where a window stands in its life, as state a view reads. Every host maps
+/// its native window lifecycle onto the same sequence.
 public enum WindowPhase: Sendable {
     /// The platform has made the window, and nothing has happened to it
     /// since.
@@ -251,8 +216,12 @@ public enum ApplicationPhase: Int32, Sendable {
 /// `@Environment var battery: Battery`; the values update as the platform
 /// reports, and exactly the views that read them are rebuilt.
 ///
+///     let fake = Battery()
+///     fake.chargeLevel = 0.07
+///     ChildView().environment(fake)
+///
 /// A host that cannot observe a battery leaves `chargeLevel` at `-1` and the
-/// remaining values at `.unknown`.
+/// remaining values at `.unknown`. A test provides a fake, as above.
 public final class Battery {
     /// How full the battery is, 0 to 1 - and -1 until the host has said,
     /// which a host without battery information may never do.
@@ -321,11 +290,8 @@ public final class DeviceDisplay {
     public init() {}
 }
 
-/// The reader's language, region, zone and calendar habits, as the host
+/// The user's language, region, zone and calendar habits, as the host
 /// reports them. Resolve it with `@Environment var locale: LocaleInfo`.
-///
-/// The host owns platform locale conversion. Application views consume one
-/// stable StateUI vocabulary without importing a platform-specific locale API.
 public final class LocaleInfo {
     /// The two-letter language, such as "en" or "pl".
     @State public var language = ""
@@ -371,11 +337,9 @@ public final class AppInfo {
     /// The build number behind it.
     @State public var buildString = ""
 
-    /// Light or dark, as the system asks - updated live when the reader
-    /// switches, so a view reading it follows the theme. Colours should not
-    /// need it: the differ reads this very property as it builds an element
-    /// wearing a `Color(light:dark:)`, so that element already follows. This
-    /// property is for logic that branches on the theme.
+    /// Light or dark, as the system asks, updated live when the user switches.
+    /// A `Color(light:dark:)` follows the theme by itself; read this for logic
+    /// that branches on the theme.
     @State public var requestedTheme: Theme = .system
 
     /// A fresh instance, for providing a fake to one branch with
@@ -400,8 +364,8 @@ public final class DeviceInfo {
     @State public var formFactor: FormFactor = .unknown
 
     /// The host platform's name, such as "macOS", "iOS", "Android",
-    /// "Windows", "Linux", or "Web". This is authored text because the set
-    /// is open and a host may name a platform this release does not know.
+    /// "Windows", "Linux", or "Web" - text, since a host may name a platform
+    /// this library does not know.
     @State public var platform = ""
 
     /// The hardware model, where the platform shares it.
@@ -425,20 +389,22 @@ public final class DeviceInfo {
 }
 
 /// The application as it runs: where it stands, what its controls look like,
-/// how its values move, what it keeps between launches, and opening another of
-/// its scenes. This library's own.
+/// how its values animate, what it keeps between launches, and opening another
+/// of its scenes.
 ///
 ///     @Environment private var application: ApplicationSession
 ///
 ///     Button("New window").onClicked { try await application.openScene() }
 ///
-/// A SESSION is one opening of something declared: the application from its
+/// A session is one opening of something declared: the application from its
 /// start to the end of its process, a scene from its main window opening to
 /// its closing, a window from `.created` to `.destroying`, a content page for
 /// as long as its element lives. Each is in the environment of everything
 /// under it - `ApplicationSession`, `SceneSession`, `WindowSession`,
-/// `PageSession` - so a view acts on the one it is in, and says which by
-/// the one it holds, from a handler, an engine or a task alike.
+/// `PageSession` - so a view acts on the one it is in, from a handler, an
+/// engine or a task alike.
+///
+/// Design: docs/design/types/sessions.md#one-opening-of-something-declared
 public final class ApplicationSession {
     /// Where the application stands: in front, behind another application, or
     /// out of sight, as the host maps its native application and window
@@ -450,13 +416,9 @@ public final class ApplicationSession {
     /// scene opens or closes.
     ///
     ///     Label("\(application.scenes.count) open")
-    ///
-    /// Made as it is read, from the application's own list of scenes: nothing
-    /// here holds a scene, and each scene holds its own session.
     public var scenes: [SceneSession] { Scenes.shared.list.map(\.session) }
 
-    /// The styles every control in the application can be given. A style sheet
-    /// contains StateUI styles alone.
+    /// The styles every control in the application can be given.
     ///
     ///     init() {
     ///         application.styles = StyleSheet {
@@ -464,57 +426,38 @@ public final class ApplicationSession {
     ///         }
     ///     }
     ///
-    /// Never sent: a style is resolved on this side, into the controls it
-    /// applies to - and a colour in one is picked for the theme as each
-    /// control is built, so a sheet written once serves both themes. Written
-    /// again, it is the next render's sheet. See Views/Style.swift.
+    /// A style resolves into the controls it applies to, and a colour pair in
+    /// it follows the theme. A sheet written again is the next render's.
     @State public var styles: StyleSheet? = nil
 
-    /// How every value in the application MOVES when it changes.
-    /// This library's own.
+    /// How every value in the application animates when it changes.
     ///
     ///     application.motion = .spring(response: 260)
     ///
-    /// A change TRAVELS to its new setting rather than appearing there - a
-    /// colour crosses to the colour it became, a view that grew arrives at its
-    /// size - and this is the one place that is said for a whole application.
-    /// `.none` turns it off everywhere and leaves every value snapping, which
-    /// is what an application says when it draws its own movement.
-    ///
-    /// A single view overrides it with `.motion(_:)`, a single value with
-    /// `@State(motion:)`, a single write with `$state.journey.snap(to:)` or
-    /// `$state.journey.move(to:_:)`. Never sent: what rides the wire is the
-    /// law, as a transitions entry beside each moving property. See
-    /// Types/Motion.swift.
+    /// A colour animates to its new colour, a view that grew to its new size.
+    /// `.none` turns animation off everywhere, for an application that draws
+    /// its own. A view overrides it with `.motion(_:)`, a state with
+    /// `@State(motion:)`, and one write with `$state.journey.snap(to:)` or
+    /// `$state.journey.move(to:_:)`.
     @State public var motion: Motion = .standard
 
-    /// Every piece of state the application KEEPS between launches.
+    /// Every key the application keeps between launches. Write it in the
+    /// application's `init`: the host reads exactly these keys from the store
+    /// before the first view is built.
     ///
     ///     init() {
     ///         application.persistentKeys = [.lastGroup, .appearance]
     ///     }
     ///
-    /// The host reads exactly these out of the store before the first view is
-    /// built, so a `@State(persistentKey: .lastGroup)` already holds what the
-    /// reader left behind the first time anything looks at it - which is why
-    /// they are written where the application is MADE, in its `init`: the host
-    /// asks for them as the application registers.
-    ///
     /// **A key left off this list is never read.** State declared with it
-    /// still SAVES - the write knows its own key - so the value appears on the
-    /// launch after next and the symptom is a setting that lags one run
-    /// behind. The list is the one thing that cannot be worked out from the
-    /// views, because a store is read key by key and the views that would name
-    /// the keys do not exist yet. See Core/Persistence.swift.
+    /// still saves, so its value arrives one launch late.
+    ///
+    /// Design: docs/design/types/sessions.md#kept-keys-are-declared
     @State public var persistentKeys: [PersistentKey] = []
 
-    /// WHERE that state is kept - the platform preferences store unless the
-    /// application says otherwise.
-    ///
-    /// The platform's own settings store unless the application names one it
-    /// registered on the host side with `StateUIStores.Add` - which is what an
-    /// application writes when its settings belong in a file of its own rather
-    /// than beside the platform's. Written in `init` with the keys.
+    /// Where the kept state lives: the platform's preferences, or a store the
+    /// application registered on the host side with `StateUIStores.Add`.
+    /// Written in `init` with the keys.
     @State public var persistentStorage: PersistentStorage = .preferences
 
     /// A fresh instance, for providing a fake to one branch with
@@ -541,7 +484,6 @@ public final class ApplicationSession {
 }
 
 /// Where a scene stands - in front, showing behind another, or out of sight.
-/// This is StateUI's cross-platform ownership and lifecycle boundary.
 public enum ScenePhase: Sendable {
     /// The scene is the one in front: one of its windows is the one in use.
     case active
@@ -550,13 +492,13 @@ public enum ScenePhase: Sendable {
     case inactive
 
     /// The scene's main window is stopped, or the application is hidden or in
-    /// the background. An owned window does not become a second scene
-    /// lifecycle boundary.
+    /// the background. Only the main window decides: a window the scene
+    /// opened beside it does not.
     case background
 }
 
 /// A scene as it runs - one session of the application: where it stands, and
-/// what is done to its windows. This library's own.
+/// what is done to its windows.
 ///
 ///     @Environment private var scene: SceneSession
 ///
@@ -578,9 +520,6 @@ public final class SceneSession {
     /// window opens or closes. Nothing for a scene that has ended.
     ///
     ///     Label("\(scene.windows.count) windows")
-    ///
-    /// Made as it is read, from what the scene has open: nothing here holds a
-    /// window, and a window's session knows its scene without keeping it.
     public var windows: [WindowSession] {
         guard let record = try? standing() else { return [] }
 
@@ -659,7 +598,7 @@ public final class SceneSession {
     }
 
     /// Ends the session: its main window closes, and every window of it with
-    /// it - what the reader closing the main window does.
+    /// it - what the user closing the main window does.
     ///
     /// - Throws: `WindowError.noScene` for a scene that has ended already, and
     ///   `WindowError.unsupported` where the platform opens no second window, a
@@ -668,9 +607,8 @@ public final class SceneSession {
         try Scenes.shared.close(standing())
     }
 
-    /// The scene, while it is open - asked of the application's list, so a
-    /// session held after its scene ended answers that, whoever keeps the
-    /// scene's record alive.
+    /// The scene while the application still lists it; `WindowError.noScene`
+    /// after it ended, whoever keeps its record alive.
     private func standing() throws -> SceneRecord {
         guard let record, Scenes.shared.record(id: record.id) === record else {
             throw WindowError.noScene
@@ -704,7 +642,7 @@ public final class SceneSession {
 /// Geometry is a request to a host that exposes movable or resizable windows.
 /// Each axis is independent: changing width does not restore an old height,
 /// and changing x does not restore an old y. A `nil` axis stays under native
-/// window management, including platform restoration and reader resizing.
+/// window management, including platform restoration and the user's resizing.
 /// Full-screen hosts may retain these values without presenting geometry.
 public final class WindowSession {
     /// Where the window stands in its life right now. Starts `.created`.
@@ -745,11 +683,11 @@ public final class WindowSession {
     /// A smaller value than `minimumHeight` is treated as `minimumHeight`.
     @State public var maximumHeight: Double? = nil
 
-    /// Whether the host permits the reader to maximize the window through any
+    /// Whether the host permits the user to maximize the window through any
     /// native affordance for that operation.
     @State public var isMaximizable: Bool? = nil
 
-    /// Whether the host permits the reader to minimize the window through any
+    /// Whether the host permits the user to minimize the window through any
     /// native affordance for that operation.
     @State public var isMinimizable: Bool? = nil
 
@@ -775,9 +713,8 @@ public final class WindowSession {
     ///         }
     ///     }
     ///
-    /// The bar is what was written; a view in one of its slots is built where
-    /// the bar is shown, so a composed view there reads its own state as it
-    /// builds and is built again when that moves.
+    /// A view in one of the bar's slots is built where the bar is shown, and
+    /// follows its own state.
     @State public var titleBar: TitleBar? = nil
 
     /// The pages presented over the window, with the last page on top.
@@ -795,7 +732,7 @@ public final class WindowSession {
     ///
     /// Written once: the stack reads the array as the window is built, so
     /// presenting a page is `sheets.append(.settings)`, dismissing one is a
-    /// `remove`, and a sheet the reader drags away truncates the array itself.
+    /// `remove`, and a sheet the user drags away truncates the array itself.
     /// It belongs to the window rather than to any individual page. See
     /// `ModalStack`.
     @State public var modalStack: ModalStack? = nil
@@ -873,43 +810,25 @@ public final class WindowSession {
     }
 }
 
-/// The channel's domains - which provider a `stateui_set_environment`
-/// buffer is about. One byte on the wire; every foreign host spells the same
-/// numbers.
+/// Which provider a `stateui_set_environment` buffer is about: one byte, the
+/// same number in every host.
 enum EnvironmentDomain: UInt8 {
-    /// The battery provider's values.
     case battery = 1
-
-    /// The connectivity provider's values.
     case connectivity = 2
-
-    /// The display provider's values.
     case display = 3
-
-    /// The locale provider's values.
     case locale = 4
-
-    /// The device provider's values.
     case device = 5
-
-    /// The app provider's values.
     case app = 6
 
     /// The application's phase.
     case application = 7
 }
 
-/// The one instance of each standard provider, the scope they are seeded
-/// into, and the applier the export hands a decoded buffer to.
-///
-/// The instances are internal ON PURPOSE: the way to read one is
-/// `@Environment`, and a second public door would be a second way to do one
-/// thing. They are seeded at the BOTTOM of every walk's scope, so an app
-/// providing a fake with `.environment()` is nearer by construction and wins.
+/// The one instance of each standard provider, the scope every render starts
+/// from, and the applier a host's push goes through.
+/// Design: docs/design/types/environment.md#one-door-and-the-bottom-of-the-scope
 enum StandardEnvironment {
-    // nonisolated(unsafe) for the reason every provider write and read is
-    // safe: values are written by host pushes and read by builds, both on the
-    // native host's UI thread.
+    // Written by host pushes and read by builds, both on the UI thread.
     nonisolated(unsafe) static let battery = Battery()
     nonisolated(unsafe) static let connectivity = Connectivity()
     nonisolated(unsafe) static let display = DeviceDisplay()
@@ -917,25 +836,17 @@ enum StandardEnvironment {
     nonisolated(unsafe) static let device = DeviceInfo()
     nonisolated(unsafe) static let app = AppInfo()
 
-    /// The application's session - one per process, its phase pushed by the
-    /// host. See `ApplicationSession`.
+    /// The application's session: one per process, its phase pushed by the host.
     nonisolated(unsafe) static let application = ApplicationSession()
 
-    /// What a view outside every scene reads as its scene - one that is always
-    /// in front and opens nothing. Every scene offers its own, nearer. See
-    /// Core/Scenes.swift.
+    // The sessions a view outside every scene, window or page reads: a scene
+    // always in front that opens nothing, a window that closes nothing, a page
+    // nothing shows. Each scene, window and page offers its own, nearer.
     nonisolated(unsafe) static let scene = SceneSession()
-
-    /// What a view outside every window reads as its window - one that closes
-    /// nothing. Every window offers its own, nearer.
     nonisolated(unsafe) static let window = WindowSession()
-
-    /// What a view outside every page reads as its page - one nothing shows.
-    /// Every content page offers its own, nearer. See Types/PageSession.swift.
     nonisolated(unsafe) static let page = PageSession()
 
-    /// What every walk starts its scope with - one entry per provider, keyed
-    /// exactly as `.environment()` keys what it stores.
+    /// What every render starts its scope with, keyed as `.environment()` keys.
     nonisolated(unsafe) static let scope: [(key: ObjectIdentifier, object: AnyObject)] = [
         (key: ObjectIdentifier(Battery.self), object: battery),
         (key: ObjectIdentifier(Connectivity.self), object: connectivity),
@@ -949,21 +860,16 @@ enum StandardEnvironment {
         (key: ObjectIdentifier(PageSession.self), object: page),
     ]
 
-    /// The standard provider behind a type identity, if there is one - what
-    /// an UNFILLED `@Environment` slot answers, which is how the application
-    /// itself, built outside any walk, resolves the standard environment.
+    /// The standard provider of a type, if there is one: what an unfilled
+    /// `@Environment` slot answers, such as the application's, built outside
+    /// any render.
     static func object(for key: ObjectIdentifier) -> AnyObject? {
         scope.last(where: { $0.key == key })?.object
     }
 
-    /// Applies one decoded push from the host. False for a domain this
-    /// library does not know or a payload of the wrong shape - refused WHOLE,
-    /// nothing half-applied, the family rule - which the host reports once as
-    /// version skew.
-    ///
-    /// An enum value this library has no case for degrades to `.unknown`
-    /// instead: a newer host vocabulary must not cost the whole domain its
-    /// report.
+    /// Applies one decoded push. False for an unknown domain or a payload of
+    /// the wrong shape, refused whole; an unknown member reads as `.unknown`.
+    /// Design: docs/design/types/environment.md#a-push-is-refused-whole
     static func apply(domain: UInt8, values: [PropValue]) -> Bool {
         switch EnvironmentDomain(rawValue: domain) {
         case .battery:
@@ -1001,9 +907,7 @@ enum StandardEnvironment {
     }
 
     private static func applyConnectivity(_ values: [PropValue]) -> Bool {
-        // The profiles are a LIST OF MEMBERS, so `.values` of `.enumeration`
-        // and not `.numbers`: a run of doubles is a run of quantities, and a
-        // member is not one.
+        // The profiles are members, so `.values` of `.enumeration`, not `.numbers`.
         guard values.count == 2,
               let access = values[0].enumeration,
               let profiles = values[1].values

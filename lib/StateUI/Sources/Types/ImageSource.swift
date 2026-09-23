@@ -1,17 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Where a picture comes from.
-//
-// It is a type rather than a String for one reason, and it is the same reason
-// Color is not a String: a picture may be TWO pictures, one per theme. Black
-// artwork that reads well on a white page disappears on a dark one. The half
-// in force is picked by the differ as the element showing it is built, exactly
-// as a Color's is - so ONE name crosses, the host binds nothing, and that
-// element is built again when the system flips. See Types/Color.swift.
-//
-// Not a tint: a tint paints a picture in one colour, while a second file keeps
-// artwork of any colours as it was drawn. Two files it is.
+// Where a picture comes from: one file, or one for each theme.
+// Design: docs/design/types/colour-and-theme.md#pictures-for-each-theme
 
 /// A picture, by file name.
 ///
@@ -37,8 +28,8 @@ public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral, Host
         self.dark = nil
     }
 
-    /// Two files, one per theme. The half in force is picked by the differ,
-    /// as the element showing it is built.
+    /// Two files, one for each theme; the element showing the picture follows
+    /// the system theme.
     ///
     ///     ImageSource(light: "logo.png", dark: "logo_dark.png")
     ///
@@ -58,21 +49,9 @@ public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral, Host
     /// Whether it names anything at all - what a view asks before drawing one.
     public var isEmpty: Bool { file.isEmpty }
 
-    /// The one name that crosses - and it crosses as TEXT, not as a `.name`
-    /// riding the session's dictionary, which is what a style key or a font
-    /// family does.
+    /// The file name as text, or both names as a themed pair.
     ///
-    /// The difference is whether the vocabulary is BOUNDED. An application has
-    /// a handful of styles and a handful of fonts, so numbering them costs one
-    /// dictionary entry each and pays for itself on every row. A picture may
-    /// be a url built per item - an avatar, a thumbnail - and the dictionary
-    /// is the session's, never emptied: numbering those would grow it without
-    /// end for names used once. So this stays text, and the rule that keeps
-    /// the wire honest is read as "a name is text when there can be no end of
-    /// them".
-    ///
-    /// A picture drawn twice is BOTH, `.themed`, for the differ to pick from
-    /// as it builds the element showing it - the way a colour pair is.
+    /// Design: docs/design/types/values.md#text-and-names
     public var propValue: PropValue {
         guard let dark else { return .string(file) }
 
