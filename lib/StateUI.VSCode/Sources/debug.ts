@@ -60,7 +60,12 @@ export interface Choices {
 }
 
 /** What a machine that runs no host is told, wherever a host is asked for. */
-export const noHost = "no StateUI host runs on this machine yet - AppKit and Android are built and run on macOS.";
+export const noHost = "no StateUI host runs on this machine yet - AppKit and Android are built and run on macOS, WinUI on Windows.";
+
+/** A script of a StateUI checkout's .scripts/WinUI, under `root`. */
+export function winUIScript(root: string, name: string): string {
+    return path.join(root, ".scripts", "WinUI", name);
+}
 
 /** The two configurations every workspace offers. */
 export function configurations(): vscode.DebugConfiguration[] {
@@ -105,6 +110,10 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
 
         if (host === "android") {
             return this.android(root, application, configuration, name);
+        }
+
+        if (host === "winui") {
+            return this.winUI(root, application, configuration);
         }
 
         if (!(await buildAppKitHead(root, application, configuration, (task) => this.choices.run(task)))) {
@@ -169,6 +178,33 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         return androidAttach(name, serial, JSON.parse(fs.readFileSync(facts, "utf8")));
     }
 
+    /**
+     * A WinUI head, built and started by run-app.ps1 in a task whose terminal passes on what it writes. No
+     * debugger attaches to it yet, so the launch has no session.
+     */
+    private async winUI(
+        root: vscode.WorkspaceFolder,
+        application: Application,
+        configuration: Configuration,
+    ): Promise<undefined> {
+        const script = winUIScript(root.uri.fsPath, "run-app.ps1");
+        if (!fs.existsSync(script)) {
+            void vscode.window.showErrorMessage(
+                `StateUI: a WinUI head runs through a StateUI checkout's .scripts/WinUI/run-app.ps1, which ${root.name} does not have.`);
+            return undefined;
+        }
+
+        const task = new vscode.Task(
+            { type: "stateui", application: application.name, configuration, device: "windows" }, root,
+            `Run ${application.name} (WinUI, ${configuration})`, "StateUI",
+            new vscode.ProcessExecution("powershell",
+                ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script,
+                    "-App", application.directory, "-Configuration", configuration],
+                { cwd: root.uri.fsPath }), []);
+        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+        await this.choices.start(task);
+        return undefined;
+    }
 }
 
 /** Where run-app.sh --debugger left the application, and its debugger's server. */

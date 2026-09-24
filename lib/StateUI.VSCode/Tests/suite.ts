@@ -96,13 +96,14 @@ export async function run(): Promise<void> {
             (await resolves(plain, "Palette.accent"))
             && !(await resolves(conditional, "MetalCube()", "var content: any View")), 900);
 
-        // 4. The hosts a machine is offered: AppKit and Android on macOS, none
-        //    elsewhere yet, and no .NET MAUI. A launch on a machine that runs no
-        //    host resolves to nothing.
+        // 4. The hosts a machine is offered: AppKit and Android on macOS, WinUI
+        //    on Windows, none on Linux yet, and no .NET MAUI. A launch on a
+        //    machine that runs no host resolves to nothing.
         const gallery_ = findApplications(root.uri.fsPath).find((each) => each.name === "Gallery")!;
-        check("the host picker offers AppKit and Android on macOS, nothing on Windows and Linux, and never .NET MAUI",
+        check("the host picker offers AppKit and Android on macOS, WinUI on Windows, nothing on Linux, and never .NET MAUI",
             JSON.stringify(availableHosts("darwin").map((each) => each.id)) === JSON.stringify(["appkit", "android"])
-            && availableHosts("win32").length === 0 && availableHosts("linux").length === 0
+            && JSON.stringify(availableHosts("win32").map((each) => each.id)) === JSON.stringify(["winui"])
+            && availableHosts("linux").length === 0
             && !hosts.some((each) => each.label.includes("MAUI")));
         {
             const ran: string[] = [];
@@ -138,7 +139,7 @@ export async function run(): Promise<void> {
             hosts.every((host) => {
                 const values = environment(host.id);
                 const set = Object.entries(values).filter((entry) => entry[1] !== undefined);
-                return JSON.stringify(Object.keys(values).sort()) === JSON.stringify(["STATEUI_ANDROID", "STATEUI_APPKIT"])
+                return JSON.stringify(Object.keys(values).sort()) === JSON.stringify(["STATEUI_ANDROID", "STATEUI_APPKIT", "STATEUI_WINUI"])
                     && JSON.stringify(set) === JSON.stringify([[host.variable, "1"]]);
             }) && environment("android").STATEUI_ANDROID === "1"
             && Object.values(environment(undefined)).every((value) => value === undefined));
@@ -261,6 +262,39 @@ export async function run(): Promise<void> {
                 && [onDevice[0].command, ...onDevice[0].args].join(" ") === `bash ${path.join(root.uri.fsPath, ".scripts", "Android", "test-android.sh")} emulator-5554`
                 && !appkitSuites.includes("lib/StateUI.Android/Tests"));
         }
+        // 6b. WinUI: HelloWorld's head, a launch through run-app.ps1 with no
+        //     session yet, and the host's own package through test-winui.ps1.
+        check("HelloWorld has a WinUI head, and as WinUI the language server indexes in .build-winui/index-build",
+            hasHead(helloWorld, "winui")
+            && JSON.stringify(serverSettings("winui", undefined)) === JSON.stringify({ scratchPath: ".build-winui/index-build" }));
+        {
+            const started: vscode.Task[] = [];
+            const provider = new StateUIDebugConfigurationProvider({
+                host: () => "winui", application: async () => helloWorld,
+                run: async () => 0,
+                start: async (task) => { started.push(task); },
+                ready: async () => false,
+                device: async () => undefined,
+            });
+            const resolved = await provider.resolveDebugConfiguration(root,
+                { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
+            const process_ = started[0]?.execution as vscode.ProcessExecution | undefined;
+            const line = process_ ? [process_.process, ...process_.args].join(" ") : "";
+            say(`     winui started: ${line}`);
+            check("WinUI: run-app.ps1 -App <HelloWorld> -Configuration release started as a task, and no session",
+                resolved === undefined && started.length === 1
+                && line === `powershell -NoProfile -ExecutionPolicy Bypass -File ${path.join(root.uri.fsPath, ".scripts", "WinUI", "run-app.ps1")} -App ${helloWorld.directory} -Configuration release`);
+        }
+        {
+            const winUISuites = findSuites(root.uri.fsPath, "winui");
+            say(`winui suites: ${winUISuites.map((each) => each.label).join(", ")}`);
+            const own = winUISuites.find((each) => each.label === "lib/StateUI.WinUI");
+            check("winui runs the core and the Gallery as plain Swift, its own package by test-winui.ps1, and no AppKit or Android",
+                winUISuites.some((each) => each.label === "StateUI")
+                && own?.command === "powershell" && own.args[own.args.length - 1].endsWith("test-winui.ps1")
+                && !winUISuites.some((each) => each.label === "lib/StateUI.AppKit" || each.label === "lib/StateUI.Android/Tests"));
+        }
+
         const palette = await vscode.commands.getCommands(true);
         check("the palette has Select Android Device, and no Select Debugger",
             palette.includes("stateui.selectAndroidDevice") && !palette.includes("stateui.selectDebugger"));

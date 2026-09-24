@@ -5,7 +5,7 @@
 // editor - one host's.
 
 /** A host an application is built for and run on. */
-export type Host = "appkit" | "android";
+export type Host = "appkit" | "android" | "winui";
 
 /** What the extension knows about one host. */
 export interface HostDescription {
@@ -57,6 +57,7 @@ export const hosts: readonly HostDescription[] = [
             swiftSDKGuide: "https://www.swift.org/documentation/articles/swift-sdk-for-android-getting-started.html",
         },
     },
+    { id: "winui", label: "WinUI", detail: "WinUI 3 on Windows, in the application's own process", variable: "STATEUI_WINUI", indexPath: ".build-winui/index-build", platforms: ["win32"] },
 ];
 
 /**
@@ -65,7 +66,7 @@ export const hosts: readonly HostDescription[] = [
  */
 export const plainIndexPath = ".build/index-build";
 
-/** The hosts this machine builds and runs - AppKit and Android on macOS alone. */
+/** The hosts this machine builds and runs - AppKit and Android on macOS, WinUI on Windows. */
 export function availableHosts(platform: NodeJS.Platform = process.platform): HostDescription[] {
     return hosts.filter((each) => each.platforms.includes(platform));
 }

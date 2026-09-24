@@ -21,6 +21,9 @@ export interface Application {
     /** Whether it has an Android head: the Gradle build in `Platforms/Android`. */
     readonly hasAndroidHead: boolean;
 
+    /** Whether it has a WinUI head: `Platforms/WinUI/main.swift`. */
+    readonly hasWinUIHead: boolean;
+
     /**
      * The script that builds the application's AppKit bundle, where it has one
      * - `.scripts/AppKit/build-gallery-appkit.sh`. Without one the head is
@@ -53,8 +56,9 @@ function describeApplication(root: string, directory: string): Application | und
 
     const hasAppKitHead = fs.existsSync(path.join(directory, "Platforms", "AppKit", "main.swift"));
     const hasAndroidHead = fs.existsSync(path.join(directory, "Platforms", "Android", "build.gradle.kts"));
+    const hasWinUIHead = fs.existsSync(path.join(directory, "Platforms", "WinUI", "main.swift"));
 
-    if (!hasAppKitHead && !hasAndroidHead) {
+    if (!hasAppKitHead && !hasAndroidHead && !hasWinUIHead) {
         return undefined;
     }
 
@@ -66,6 +70,7 @@ function describeApplication(root: string, directory: string): Application | und
         directory,
         hasAppKitHead,
         hasAndroidHead,
+        hasWinUIHead,
         bundleScript: fs.existsSync(script) ? script : undefined,
     };
 }
@@ -75,6 +80,7 @@ export function hasHead(application: Application, host: Host): boolean {
     switch (host) {
     case "appkit": return application.hasAppKitHead;
     case "android": return application.hasAndroidHead;
+    case "winui": return application.hasWinUIHead;
     }
 }
 

@@ -32,6 +32,7 @@ const applicationKey = "stateui.application";
 const heads: Record<Host, string> = {
     appkit: "an AppKit head (Platforms/AppKit/main.swift)",
     android: "an Android head (Platforms/Android/build.gradle.kts)",
+    winui: "a WinUI head (Platforms/WinUI/main.swift)",
 };
 
 export async function activate(context: vscode.ExtensionContext): Promise<StateUIApi> {

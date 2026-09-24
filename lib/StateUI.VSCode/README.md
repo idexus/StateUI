@@ -32,11 +32,12 @@ directory, the process, the package identifier and the Swift module
 
 ## The host
 
-The status bar shows the host - **AppKit** or **Android**. Click it, or run
-**StateUI: Select Host**. Both are offered on macOS, Android where an
-application has an Android head (`Platforms/Android`). On Windows and Linux no
-host runs yet: the status bar says **no host**, a launch says why it runs
-nothing, and the editor and **StateUI: Run Tests** work as plain Swift.
+The status bar shows the host - **AppKit**, **Android** or **WinUI**. Click it,
+or run **StateUI: Select Host**. AppKit and Android are offered on macOS,
+Android where an application has an Android head (`Platforms/Android`); WinUI
+on Windows. On Linux no host runs yet: the status bar says **no host**, a launch
+says why it runs nothing, and the editor and **StateUI: Run Tests** work as
+plain Swift.
 
 - **The editor works as that host.** Code under `#if APPKIT` is compiled and
   completed while AppKit is chosen, and an application's `Platforms/AppKit`
@@ -56,7 +57,9 @@ nothing, and the editor and **StateUI: Run Tests** work as plain Swift.
   `lldb-server`, which the script starts in the application's sandbox: a
   breakpoint is reached from the moment it attaches. StateUI: Release, and Run
   Without Debugging, run it without a debugger. A second launch stops the first
-  one's log before it starts again.
+  one's log before it starts again. On WinUI `.scripts/WinUI/run-app.ps1`
+  builds the head, lays the Windows App SDK beside it and starts it, its
+  terminal passing on what the application writes; no debugger attaches yet.
 
 ## The Android device
 
@@ -85,6 +88,9 @@ them AS THE HOST, one after another, each in a terminal of its own:
   build runs only on a device - and the Android host's own tests,
   `lib/StateUI.Android/Tests`, built into a test APK and run on the device
   chosen by `.scripts/Android/test-android.sh`.
+- **WinUI**: the library and each application as plain Swift, and the WinUI
+  host's own package, `lib/StateUI.WinUI`, by `.scripts/WinUI/test-winui.ps1`,
+  which lays the Windows App SDK beside its test runner first.
 - **No host**: the library and each application as plain Swift.
 
 A failure does not stop the suites after it; the summary names the ones that
@@ -93,7 +99,8 @@ failed.
 ## The index
 
 The Swift language server indexes each application in a directory of the host's
-own, `.build-appkit/index-build` or `.build-android/index-build` - with no
+own, `.build-appkit/index-build`, `.build-android/index-build` or
+`.build-winui/index-build` - with no
 host SwiftPM's own `.build/index-build` - set in the application's
 `.sourcekit-lsp/config.json`. **StateUI: Clean Index** removes
 them and restarts the server, for an index a failed build left inconsistent.
@@ -118,7 +125,10 @@ launch file at all:
   of the same release; the Android NDK r30 or newer; JDK 21; and the Android
   SDK, in `ANDROID_HOME` or `~/Library/Android/sdk`. The scripts fetch Gradle
   themselves.
+- For WinUI: Windows and a StateUI checkout, whose `.scripts/WinUI` builds and
+  runs the head; Swift 6.4 from swift.org; Visual Studio's C++ tools and the
+  Windows SDK. The scripts fetch C++/WinRT and the Windows App SDK themselves.
 
-Do not set `STATEUI_APPKIT` or `STATEUI_ANDROID` in
+Do not set `STATEUI_APPKIT`, `STATEUI_ANDROID` or `STATEUI_WINUI` in
 `swift.swiftEnvironmentVariables`: that setting is laid over the host chosen
 here, and the extension offers to remove it.

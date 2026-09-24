@@ -36,6 +36,10 @@ $application = (Resolve-Path $App).Path
 $name = Split-Path $application -Leaf
 $scratch = Join-Path $application '.build-winui'
 
+# A running head holds its executable, which the build writes again: it stops first.
+Get-Process -Name "${name}WinUI" -ErrorAction SilentlyContinue | Stop-Process -Force
+$global:LASTEXITCODE = 0
+
 Initialize-StateUIProjection
 $env:STATEUI_WINUI = '1'
 swift build --package-path $application -c $Configuration --product "${name}WinUI" --scratch-path $scratch
