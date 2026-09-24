@@ -1,6 +1,6 @@
-# The trajectories every runtime's walker answers: at an elapsed time
+# The trajectories every runtime's animator answers: at an elapsed time
 # in milliseconds, the value and the velocity per millisecond of every
-# lane, and whether the trip has arrived. Written by MotionLawTests.swift
+# lane, and whether the animation has arrived. Written by MotionLawTests.swift
 # with STATEUI_UPDATE_FIXTURES=1; walked by MotionLawTests.cs.
 #
 # trip <law> <curve> <milliseconds> <damping> from <lanes> to <lanes> velocity <lanes>

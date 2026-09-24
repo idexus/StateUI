@@ -89,7 +89,7 @@ final class MotionLawTests: XCTestCase {
         XCTAssertEqual(
             expected.count, walked.count,
             """
-            The table no longer has the fixture's lines. If a animation was added or \
+            The table no longer has the fixture's lines. If an animation was added or \
             changed on purpose, run the tests again with STATEUI_UPDATE_FIXTURES=1 \
             and read the diff of motion-laws.txt.
             """)
@@ -127,7 +127,7 @@ final class MotionLawTests: XCTestCase {
             raw += 1
         }
 
-        // A animation that began moving: the Hermite on a lane with speed, the
+        // An animation that began moving: the Hermite on a lane with speed, the
         // curve on a lane without.
         animations.append(Animation(
             motion: .eased(300, .cubicOut),
@@ -174,7 +174,7 @@ final class MotionLawTests: XCTestCase {
             "# lane, and whether the animation has arrived. Written by MotionLawTests.swift",
             "# with STATEUI_UPDATE_FIXTURES=1; walked by MotionLawTests.cs.",
             "#",
-            "# animation <law> <curve> <milliseconds> <damping> from <lanes> to <lanes> velocity <lanes>",
+            "# trip <law> <curve> <milliseconds> <damping> from <lanes> to <lanes> velocity <lanes>",
             "# at <elapsed> <moving|rested> value <lanes> velocity <lanes>",
         ]
 
@@ -182,10 +182,11 @@ final class MotionLawTests: XCTestCase {
             values.map { "\($0)" }.joined(separator: ",")
         }
 
+        // `trip` begins an animation's line: the word MotionLawTests.cs reads.
         for animation in animations {
             let motion = animation.motion
             lines.append(
-                "animation \(motion.law == .spring ? "spring" : "eased") \(motion.curve) "
+                "trip \(motion.law == .spring ? "spring" : "eased") \(motion.curve) "
                     + "\(motion.millis) \(motion.factor) from \(lanes(animation.from)) "
                     + "to \(lanes(animation.destination)) velocity \(lanes(animation.velocity))")
 
