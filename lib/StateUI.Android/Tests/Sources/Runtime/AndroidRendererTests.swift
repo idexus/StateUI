@@ -54,10 +54,9 @@ final class AndroidRendererTests: XCTestCase {
 
     func testAControlNoRegistrationAnswersShowsItsName() {
         onMainActor {
-            let host = AndroidRenderer.running { VStack { RadioButton("one") } }
+            let host = AndroidRenderer.running { VStack { WebView("https://example.com") } }
 
-            XCTAssertEqual(
-                host.views(AndroidUnsupportedView.self).map(\.text), ["Android: unsupported RadioButton"])
+            XCTAssertEqual(host.views(AndroidUnsupportedView.self).map(\.text), ["Android: unsupported WebView"])
         }
     }
 

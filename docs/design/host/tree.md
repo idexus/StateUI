@@ -73,3 +73,13 @@ last wearer takes the channel with it once it lands; its property and layout
 animations end; and its native half detaches what it attached outside the
 tree: observers, recognizers, a scroller's hold on the frame clock. Nothing
 keeps a control alive after the tree drops it.
+
+## A radio group
+
+A radio button checked by the user unchecks the others of its choice, and
+each of those reports that it is off. Which they are is the tree's to say,
+the same on every host: the radio buttons of its `groupName` anywhere in its
+window, or, where it names no group, the radio buttons beside it under the
+same parent. A native group of the platform's is not used: it holds only its
+own direct children, while StateUI's may stand anywhere in a window's
+layouts.

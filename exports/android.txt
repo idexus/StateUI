@@ -66,9 +66,35 @@ Label
   textColor
   textDecorations
   verticalTextAlignment
+Picker
+  fontAttributes
+  fontFamily
+  fontSize
+  horizontalTextAlignment
+  isEnabled
+  isOpen
+  options
+  selectedIndex
+  textColor
+  tint
+  title
+  closed()
+  opened()
+  selectedIndexChanged()
 ProgressBar
   progress
   tint
+RadioButton
+  fontAttributes
+  fontFamily
+  fontSize
+  isEnabled
+  isOn
+  padding
+  text
+  textCase
+  textColor
+  toggled()
 ScrollView
   horizontalScrollBarVisibility
   orientation

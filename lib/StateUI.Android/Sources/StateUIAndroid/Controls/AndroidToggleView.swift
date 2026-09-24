@@ -4,10 +4,10 @@
 @_spi(Host) import StateUI
 import CStateUIAndroid
 
-/// A control that is on or off: one of Android's `CompoundButton`s, whose flip reaches Swift through its
-/// `StateUIListener`.
+/// A control that is on or off: one of Android's `CompoundButton`s - a `TextView`, so one with words of
+/// its own shows them - whose flip reaches Swift through its `StateUIListener`.
 @MainActor
-class AndroidToggleView: AndroidView {
+class AndroidToggleView: AndroidTextView {
     /// What the control does when the user turns it.
     var onToggled: ((Bool) -> Void)?
 

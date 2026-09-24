@@ -19,12 +19,18 @@ final class AndroidMotionTests: XCTestCase {
     }
 
     func testTheTransitionSurfaceIsClosedAroundWhatTheHostPresents() {
+        onMainActor { Self.theTransitionSurfaceIsClosedAroundWhatTheHostPresents() }
+    }
+
+    @MainActor
+    private static func theTransitionSurfaceIsClosedAroundWhatTheHostPresents() {
         XCTAssertTrue(AndroidTransitionSurface.presents(.opacity, on: .label))
         XCTAssertTrue(AndroidTransitionSurface.presents(.translationX, on: .button))
         XCTAssertTrue(AndroidTransitionSurface.presents(.value, on: .slider))
         XCTAssertTrue(AndroidTransitionSurface.presents(.spacing, on: .vStack))
         XCTAssertFalse(AndroidTransitionSurface.presents(.value, on: .label))
-        XCTAssertFalse(AndroidTransitionSurface.presents(.opacity, on: .radioButton))
+        XCTAssertTrue(AndroidTransitionSurface.presents(.opacity, on: .checkBox), "every registered view")
+        XCTAssertFalse(AndroidTransitionSurface.presents(.opacity, on: .webView))
         XCTAssertFalse(AndroidTransitionSurface.presents(Prop("custom"), on: .label))
     }
 

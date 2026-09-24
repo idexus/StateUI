@@ -5,6 +5,7 @@
 
 /// The closed set of properties the Android Views host moves; any other arrives at once.
 /// Design: docs/design/platforms/android/motion.md#what-moves
+@MainActor
 enum AndroidTransitionSurface {
     /// Whether the host moves `property` on an element of `type`.
     static func presents(_ property: Prop, on type: NodeType) -> Bool {
@@ -25,10 +26,8 @@ enum AndroidTransitionSurface {
         }
     }
 
-    private static let viewTypes: Set<NodeType> = [
-        .label, .button, .textField, .switch, .slider, .vStack, .hStack,
-        .grid, .absoluteLayout, .border, .colorBox, .image, .scrollView, .progressBar, .activityIndicator, .stepper,
-    ]
+    /// Every element the registry makes a view for: each one's view moves the view properties.
+    private static let viewTypes = Set(AndroidRegistrations.registry.realization.elements.map { NodeType($0) })
 
     private static let viewProperties: Set<Prop> = [
         .opacity, .background,

@@ -128,6 +128,18 @@ enum JavaAPI {
         compoundButton, "setButtonTintList", "(Landroid/content/res/ColorStateList;)V")
     static let getButtonTintList = Java.method(
         compoundButton, "getButtonTintList", "()Landroid/content/res/ColorStateList;")
+    static let picker = Java.findClass("stateui/android/StateUIPicker")
+    static let newPicker = Java.method(picker, "<init>", "(Landroid/content/Context;J)V")
+    static let setChoices = Java.method(picker, "setChoices", "([Ljava/lang/String;Ljava/lang/String;I)V")
+    static let setPickerLook = Java.method(picker, "setLook", "(FILandroid/graphics/Typeface;I)V")
+    static let openList = Java.method(picker, "openList", "()V")
+    static let setBackgroundTintList = Java.method(
+        view, "setBackgroundTintList", "(Landroid/content/res/ColorStateList;)V")
+    static let getBackgroundTintList = Java.method(
+        view, "getBackgroundTintList", "()Landroid/content/res/ColorStateList;")
+
+    static let radioButton = Java.findClass("android/widget/RadioButton")
+    static let newRadioButton = Java.method(radioButton, "<init>", "(Landroid/content/Context;)V")
     static let checkBox = Java.findClass("android/widget/CheckBox")
     static let newCheckBox = Java.method(checkBox, "<init>", "(Landroid/content/Context;)V")
 

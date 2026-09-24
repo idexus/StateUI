@@ -99,13 +99,13 @@ host that creates or interprets it.
 | `Overlay` | structure | ✅ | ✅ |  |  |  |  |  |
 | `Page` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |
 | `Path` | stateUI | ✅ | ✅ |  |  |  |  |  |
-| `Picker` | native | ✅ | ✅ |  |  |  |  |  |
+| `Picker` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `Pin` | provider | ✅ |  |  |  |  |  |  |
 | `Polygon` | stateUI | ✅ | ✅ |  |  |  |  |  |
 | `Polyline` | stateUI | ✅ | ✅ |  |  |  |  |  |
 | `PositionIndicator` | stateUI | ✅ |  |  |  |  |  |  |
 | `ProgressBar` | native | ✅ | ✅ |  |  | ✅ |  |  |
-| `RadioButton` | stateUI | ✅ | ✅ |  |  |  |  |  |
+| `RadioButton` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |
 | `Rectangle` | stateUI | ✅ | ✅ |  |  |  |  |  |
 | `RefreshView` | stateUI | ✅ |  |  |  |  |  |  |
 | `Scene` | structure | ✅ | ✅ |  |  | ✅ |  |  |
@@ -452,12 +452,12 @@ Every control, and every part an application, its windows and its pages are made
 | [Line](controls/Line.md) | 82 | 81 ✅ | 66 ✅ · 3 ☑️ |  |  |  |  |  |
 | [Map](controls/Map.md) | 76 | 68 ✅ · 6 ☑️ |  |  |  |  |  |  |
 | [Path](controls/Path.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  |  |  |  |
-| [Picker](controls/Picker.md) | 84 | 83 ✅ | 67 ✅ · 2 ☑️ |  |  |  |  |  |
+| [Picker](controls/Picker.md) | 84 | 83 ✅ | 67 ✅ · 2 ☑️ |  |  | 42 ✅ · 1 ☑️ |  |  |
 | [Polygon](controls/Polygon.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  |  |  |  |
 | [Polyline](controls/Polyline.md) | 80 | 79 ✅ | 64 ✅ · 3 ☑️ |  |  |  |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | 76 | 75 ✅ |  |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | 70 | 69 ✅ | 55 ✅ · 2 ☑️ |  |  | 31 ✅ |  |  |
-| [RadioButton](controls/RadioButton.md) | 83 | 82 ✅ | 64 ✅ · 2 ☑️ |  |  |  |  |  |
+| [RadioButton](controls/RadioButton.md) | 83 | 82 ✅ | 64 ✅ · 2 ☑️ |  |  | 40 ✅ |  |  |
 | [Rectangle](controls/Rectangle.md) | 79 | 78 ✅ | 63 ✅ · 3 ☑️ |  |  |  |  |  |
 | [RefreshView](controls/RefreshView.md) | 73 | 72 ✅ |  |  |  |  |  |  |
 | [ScrollView](controls/ScrollView.md) | 76 | 74 ✅ | 61 ✅ · 2 ☑️ |  |  | 37 ✅ |  |  |
@@ -531,7 +531,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [LineHeightElement](controls/tiers/LineHeightElement.md) | `lineHeight` | ✅ | ✅ |  |  | ✅ |  |  |
 | [DecorableTextElement](controls/tiers/DecorableTextElement.md) | `textDecorations` | ✅ | ✅ |  |  | ✅ |  |  |
 | [PaddingElement](controls/tiers/PaddingElement.md) | `padding` | ✅ |  |  |  |  |  |  |
-| [BorderElement](controls/tiers/BorderElement.md) | `borderColor`, `borderWidth`, `cornerRadius` | ✅ |  |  |  | ✅ |  |  |
+| [BorderElement](controls/tiers/BorderElement.md) | `borderColor`, `borderWidth`, `cornerRadius` | ✅ |  |  |  |  |  |  |
 | [ImageElement](controls/tiers/ImageElement.md) | `aspect` |  | ☑️ |  |  | ☑️ |  |  |
 | [TintElement](controls/tiers/TintElement.md) | `tint` | ✅ | ✅ |  |  |  |  |  |
 | [BarElement](controls/tiers/BarElement.md) | `barBackgroundColor` | ✅ | ✅ |  |  |  |  |  |
@@ -553,13 +553,13 @@ contract's page in [the control dictionary](controls/README.md).
 | [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | ✅ | ✅ |  |  |  |  |  |
 | [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | ✅ | ✅ |  |  |  |  |  |
 | [Path](controls/Path.md) | `data` | ✅ | ✅ |  |  |  |  |  |
-| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | ✅ | ✅ |  |  |  |  |  |
+| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`), `title` | ✅ | ✅ |  |  | ☑️ |  |  |
 | [Pin](controls/Pin.md) | `address`, `label`, `location`, `onPinClicked` (`pinClicked`), `onPinDetailsClicked` (`pinDetailsClicked`), `type` | ☑️ |  |  |  |  |  |  |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | ✅ | ✅ |  |  |  |  |  |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | ✅ | ✅ |  |  |  |  |  |
 | [PositionIndicator](controls/PositionIndicator.md) | `count`, `hideSingle`, `indicatorColor`, `indicatorSize`, `indicatorsShape`, `maximumVisible`, `position`, `selectedIndicatorColor` | ✅ |  |  |  |  |  |  |
 | [ProgressBar](controls/ProgressBar.md) | `progress` | ✅ | ✅ |  |  | ✅ |  |  |
-| [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | ✅ | ✅ |  |  |  |  |  |
+| [RadioButton](controls/RadioButton.md) | `groupName`, `isOn`, `onToggled` (`toggled`) | ✅ | ✅ |  |  | ✅ |  |  |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | ✅ | ✅ |  |  |  |  |  |
 | [RefreshView](controls/RefreshView.md) | `isRefreshEnabled`, `isRefreshing`, `isRefreshingChanged`, `onRefreshRequested` (`refreshRequested`) | ✅ |  |  |  |  |  |  |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `destroying`, `stopped`, `windowClosed`, `windowRestored` | ✅ | ✅ |  |  |  |  |  |

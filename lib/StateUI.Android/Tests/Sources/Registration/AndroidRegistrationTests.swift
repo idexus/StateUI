@@ -21,7 +21,7 @@ final class AndroidRegistrationTests: XCTestCase {
                 realization.elements,
                 [
                     "AbsoluteLayout", "ActivityIndicator", "Border", "Button", "CheckBox", "ColorBox", "Grid", "HStack", "Image", "Label",
-                    "ProgressBar", "ScrollView", "Slider", "Stepper",
+                    "Picker", "ProgressBar", "RadioButton", "ScrollView", "Slider", "Stepper",
                     "Switch", "TextField", "VStack",
                 ])
             for member in [

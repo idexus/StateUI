@@ -16,13 +16,13 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/PickerContract.swif
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `onClosed` (`closed`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
-| `isOpen` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `onOpened` (`opened`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
-| `options` | property | `[String]` | structure | ✅ | ✅ |  |  |  |  |  |  |
-| `selectedIndex` | property | `Int` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `onSelectedIndexChanged` (`selectedIndexChanged`) | event | `Int` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `title` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `onClosed` (`closed`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `isOpen` | property | `Bool` | native | ✅ | ✅ |  |  | ☑️ |  |  | Android Views: Android closes the list only when the user does: `false` does not close it. |
+| `onOpened` (`opened`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `options` | property | `[String]` | structure | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `selectedIndex` | property | `Int` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `onSelectedIndexChanged` (`selectedIndexChanged`) | event | `Int` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `title` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
 
@@ -52,35 +52,35 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 | `accessibilityHint` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `accessibilityLabel` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `automationExcludedWithChildren` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `background` | property | `Background` | native | ✅ | ☑️ |  |  |  |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
+| `background` | property | `Background` | native | ✅ | ☑️ |  |  | ✅ |  |  | AppKit paints a colour on this view; a brush is drawn only by `Border`. |
 | `focus` | act | `() -> Bool` |  | ✅ | ✅ |  |  |  |  |  |  |
 | `frame` | property | `Rect` | structure | ✅ | ✅ |  |  |  |  |  |  |
-| `height` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `height` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `ignoresInput` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `isAccessibilityHidden` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `isFocusedChanged` | event | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `isVisible` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `isVisible` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `layoutDirection` | property | `LayoutDirection` | native | ✅ |  |  |  |  |  |  |  |
-| `maximumHeight` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `maximumWidth` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `minimumHeight` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `minimumWidth` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `opacity` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `pivotX` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `pivotY` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `rotation` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `rotationX` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `rotationY` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `scale` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `scaleX` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `scaleY` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `maximumHeight` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `maximumWidth` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `minimumHeight` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `minimumWidth` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `opacity` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `pivotX` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `pivotY` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `rotation` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `rotationX` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `rotationY` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `scale` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `scaleX` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `scaleY` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `style` | property | `Name` | structure |  |  |  |  |  |  |  |  |
-| `translationX` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `translationY` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `translationX` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `translationY` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `unfocus` | act | `() -> Void` |  | ✅ | ✅ |  |  |  |  |  |  |
 | `onVisualStateChanged` (`visualStateChanged`) | event | `String` | stateUI | ✅ |  |  |  |  |  |  |  |
-| `width` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `width` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `zIndex` | property | `Int` | native | ✅ |  |  |  |  |  |  |  |
 
 ## From [View](tiers/View.md)
@@ -89,8 +89,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `absoluteLayoutBounds` | property | `Rect` | structure | ✅ | ✅ |  |  |  |  |  |  |
-| `absoluteLayoutProportions` | property | `AbsoluteLayoutProportions` | structure | ✅ | ✅ |  |  |  |  |  |  |
+| `absoluteLayoutBounds` | property | `Rect` | structure | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `absoluteLayoutProportions` | property | `AbsoluteLayoutProportions` | structure | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `allowDrop` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
 | `canDrag` | property | `Bool` | native | ✅ |  |  |  |  |  |  |  |
 | `onDragLeave` (`dragLeave`) | event |  | native | ✅ |  |  |  |  |  |  |  |
@@ -100,12 +100,12 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `onDrop` (`drop`) | event | `String` | native | ✅ |  |  |  |  |  |  |  |
 | `onDropCompleted` (`dropCompleted`) | event |  | native | ✅ |  |  |  |  |  |  |  |
 | `onFrameChanged` (`frameChanged`) | event | `[Double]` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `gridColumn` | property | `Int` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
-| `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
-| `gridRow` | property | `Int` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
-| `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ |  |  |  |  |  |  |
-| `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `margin` | property | `Insets` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `gridColumn` | property | `Int` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `gridColumnSpan` | property | `Int` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `gridRow` | property | `Int` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `gridRowSpan` | property | `Int` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `horizontalAlignment` | property | `Alignment` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `margin` | property | `Insets` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `panTouchCount` | property | `Int` | structure | ✅ | ☑️ |  |  |  |  |  | AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off. |
 | `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `panXChannel` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
@@ -120,8 +120,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 | `swipeThreshold` | property | `Double` | structure | ✅ | ✅ |  |  |  |  |  |  |
 | `onSwiped` (`swiped`) | event | `SwipeDirection` | native | ✅ | ✅ |  |  |  |  |  |  |
 | `tapCount` | property | `Int` | structure | ✅ | ✅ |  |  |  |  |  |  |
-| `onTapped` (`tapped`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
-| `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `onTapped` (`tapped`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `verticalAlignment` | property | `Alignment` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 ## From [TextStyleElement](tiers/TextStyleElement.md)
 
@@ -130,7 +130,7 @@ How text looks wherever it is drawn: its colour and the space between its letter
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `characterSpacing` | property | `Double` | native | ✅ |  |  |  |  |  |  |  |
-| `textColor` | property | `Color` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `textColor` | property | `Color` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 ## From [FontElement](tiers/FontElement.md)
 
@@ -138,10 +138,10 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive | ✅ |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `fontSize` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `fontFamily` | property | `Name` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `fontSize` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)
 
@@ -149,7 +149,7 @@ Where text sits inside the space its own element was given.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `horizontalTextAlignment` | property | `TextAlignment` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `verticalTextAlignment` | property | `TextAlignment` | native | ✅ |  |  |  |  |  |  |  |
 
 ## From [TintElement](tiers/TintElement.md)
@@ -158,4 +158,4 @@ A control's one accent colour.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `tint` | property | `Color` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
+| `tint` | property | `Color` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |

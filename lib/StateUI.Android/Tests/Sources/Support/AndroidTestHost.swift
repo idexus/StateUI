@@ -72,6 +72,9 @@ enum TestJava {
     static let javaClass = Java.findClass("java/lang/Class")
     static let getName = Java.method(javaClass, "getName", "()Ljava/lang/String;")
     static let getTypeface = Java.method(JavaAPI.textView, "getTypeface", "()Landroid/graphics/Typeface;")
+    static let getSelectedView = Java.method(JavaAPI.picker, "getSelectedView", "()Landroid/view/View;")
+    static let onItemSelected = Java.method(
+        JavaAPI.picker, "onItemSelected", "(Landroid/widget/AdapterView;Landroid/view/View;IJ)V")
     static let file = Java.findClass("java/io/File")
     static let getAbsolutePath = Java.method(file, "getAbsolutePath", "()Ljava/lang/String;")
     static let getLayout = Java.method(JavaAPI.textView, "getLayout", "()Landroid/text/Layout;")

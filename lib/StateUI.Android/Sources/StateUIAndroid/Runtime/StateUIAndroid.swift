@@ -125,6 +125,21 @@ enum JavaNatives {
                 AndroidView.find(number)?.held(holding != 0)
             }
         }
+        let pickerOpened: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidPickerView)?.onOpened?()
+            }
+        }
+        let pickerClosed: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidPickerView)?.onClosed?()
+            }
+        }
+        let chose: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, index in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? AndroidPickerView)?.onChosen?(Int(index))
+            }
+        }
         let laidOut: @convention(c) (Environment, jclass?) -> Void = { _, _ in
             MainActor.assumeIsolated {
                 AndroidRenderer.shared?.laidOut()
@@ -163,6 +178,9 @@ enum JavaNatives {
             ("submitted", "(J)V", unsafeBitCast(submitted, to: UnsafeMutableRawPointer.self)),
             ("scrolled", "(J)V", unsafeBitCast(scrolled, to: UnsafeMutableRawPointer.self)),
             ("held", "(JZ)V", unsafeBitCast(held, to: UnsafeMutableRawPointer.self)),
+            ("pickerOpened", "(J)V", unsafeBitCast(pickerOpened, to: UnsafeMutableRawPointer.self)),
+            ("pickerClosed", "(J)V", unsafeBitCast(pickerClosed, to: UnsafeMutableRawPointer.self)),
+            ("chose", "(JI)V", unsafeBitCast(chose, to: UnsafeMutableRawPointer.self)),
             ("laidOut", "()V", unsafeBitCast(laidOut, to: UnsafeMutableRawPointer.self)),
             ("measure", "(JII)J", unsafeBitCast(measure, to: UnsafeMutableRawPointer.self)),
             ("arrange", "(JII)V", unsafeBitCast(arrange, to: UnsafeMutableRawPointer.self)),

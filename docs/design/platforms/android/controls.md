@@ -122,6 +122,22 @@ and `.fill` both say - a button has no covering scale - stretched, or at its
 own size for `.center`. That size is worked out as the button is placed, and
 sent again only when the room changes.
 
+## A picker
+
+A picker is Android's dropdown spinner. A spinner always shows one of its
+rows, and StateUI's choice may be none, so the first row is the title: the
+closed field shows it, in the theme's hint colour, while nothing is chosen,
+and the open list leaves it out; a choice is the row after its index. Android
+tells a spinner's selection as it next measures or lays the spinner out -
+the row it started on, then the program's - when the program's write is long
+over, so the picker itself knows the row the program's choice stands on, and
+a report of that row, or of the title's, is no change.
+
+The list opens on the user's tap, which is reported, or on `isOpen`, which
+is not. It takes the window's focus while it shows, and the focus coming back
+is the list closing - Android has no call for it. Nor does it let a program
+close the list: `isOpen` set to false leaves it to the user.
+
 ## Work under way
 
 A progress bar is Android's horizontal bar, the share done in 10 000 steps.

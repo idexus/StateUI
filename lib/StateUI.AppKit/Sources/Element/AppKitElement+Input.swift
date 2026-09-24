@@ -33,12 +33,7 @@ extension AppKitElement {
     /// The other buttons of this one's set lose their check, each reporting
     /// what it became.
     func clearRadioPeers() {
-        let group = name(.groupName).flatMap { $0.isEmpty ? nil : $0 }
-        let scope = radioScope(named: group)
-        let peers = group.map { scope.radioButtons(named: $0) }
-            ?? (parent?.children.filter { $0.type == .radioButton } ?? [self])
-
-        for peer in peers where peer !== self && peer.bool(.isOn) == true {
+        for peer in element.radioPeers.map(\.appKit) where peer.bool(.isOn) == true {
             peer.setRadioChecked(false)
             peer.carry(.isOn, .toggled, .bool(false))
         }
@@ -185,24 +180,6 @@ extension AppKitElement {
         guard let handler = events[event] else { return }
 
         host?.dispatch(handler, payload: values)
-    }
-
-    func radioScope(named group: String?) -> AppKitElement {
-        guard group != nil else { return parent ?? self }
-
-        var scope = self
-        while let ancestor = scope.parent {
-            scope = ancestor
-            if scope.type == .window { break }
-        }
-        return scope
-    }
-
-    func radioButtons(named group: String) -> [AppKitElement] {
-        var matches: [AppKitElement] = []
-        if type == .radioButton, name(.groupName) == group { matches.append(self) }
-        for child in children { matches.append(contentsOf: child.radioButtons(named: group)) }
-        return matches
     }
 
     func setRadioChecked(_ checked: Bool) {

@@ -60,8 +60,17 @@ final class StateUIHost {
     /** A scroller moved. */
     static native void scrolled(long view);
 
-    /** A finger took hold of a scroller, or let go. */
+    /** A finger took hold of a view, or let go of it. */
     static native void held(long view, boolean holding);
+
+    /** The user opened a picker's list. */
+    static native void pickerOpened(long view);
+
+    /** A picker's list closed. */
+    static native void pickerClosed(long view);
+
+    /** The user chose a picker's option at `index`. */
+    static native void chose(long view, int index);
 
     /** The window's views were laid out or scrolled: what stands where may have moved. */
     static native void laidOut();
