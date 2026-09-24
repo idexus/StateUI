@@ -111,6 +111,7 @@ export async function run(): Promise<void> {
                     return 0;
                 },
                 start: async () => { throw new Error("a MAUI launch starts no task that runs until stopped"); },
+                ready: async () => { throw new Error("a MAUI launch waits for no Android debugger"); },
                 device: async () => { throw new Error("a MAUI launch asks for no Android device"); },
                 attachSwiftWhenStarted: (session, processName) => { attached.push(`${session}->${processName}`); },
             });
@@ -241,21 +242,37 @@ export async function run(): Promise<void> {
             ]));
 
         const helloWorld = findApplications(root.uri.fsPath).find((each) => each.name === "HelloWorld")!;
-        check("HelloWorld has an Android head and the Gallery none",
-            hasHead(helloWorld, "android") && !hasHead(gallery_, "android"));
+        check("HelloWorld and the Gallery have Android heads",
+            hasHead(helloWorld, "android") && hasHead(gallery_, "android"));
         {
-            const launchOnAndroid = async (serial: string | undefined) => {
+            // What run-app.sh --debugger writes once the application runs, faked
+            // by the task's start - or not, where the application never starts.
+            const facts = path.join(helloWorld.directory, ".build-android", "debugger.json");
+            const launchOnAndroid = async (serial: string | undefined, configuration = "release", starts = true) => {
                 const started: vscode.Task[] = [];
                 const ran: string[] = [];
                 const provider = new StateUIDebugConfigurationProvider({
                     host: () => "android", application: async () => helloWorld, debugger: () => "csharp",
                     run: async (task) => { ran.push(task.name); return 0; },
-                    start: async (task) => { started.push(task); },
+                    start: async (task) => {
+                        started.push(task);
+                        if (configuration === "debug" && starts) {
+                            fs.mkdirSync(path.dirname(facts), { recursive: true });
+                            fs.writeFileSync(facts, JSON.stringify({
+                                serial, package: "com.stateui.helloworld", process: 4242,
+                                socket: "com.stateui.helloworld/stateui-debugger.sock", symbols: "/build/symbols/arm64-v8a",
+                            }));
+                        }
+                    },
+                    ready: async (file) => fs.existsSync(file),
                     device: async () => serial,
                     attachSwiftWhenStarted: () => undefined,
                 });
-                const resolved = await provider.resolveDebugConfiguration(root,
-                    { name: "StateUI: Release", type: "stateui", request: "launch", configuration: "release" });
+                const resolved = await provider.resolveDebugConfiguration(root, {
+                    name: configuration === "debug" ? "StateUI: Debug" : "StateUI: Release", type: "stateui",
+                    request: "launch", configuration,
+                });
+                fs.rmSync(facts, { force: true });
                 return { resolved, started, ran };
             };
 
@@ -271,6 +288,28 @@ export async function run(): Promise<void> {
             const declined = await launchOnAndroid(undefined);
             check("Android with no device picked starts nothing and opens no session",
                 declined.resolved === undefined && declined.started.length === 0);
+
+            const debugged = await launchOnAndroid("emulator-5554", "debug");
+            const debugShell = debugged.started[0]?.execution as vscode.ShellExecution | undefined;
+            const debugLine = debugShell ? [debugShell.command, ...(debugShell.args ?? [])].map(String).join(" ") : "";
+            say(`     android debugged: ${JSON.stringify(debugged.resolved)}`);
+            check("Android Debug: run-app.sh ... debug <serial> --debugger, then lldb-dap attached through the device's lldb-server to the process started",
+                debugLine.endsWith(`${helloWorld.directory} debug emulator-5554 --debugger`)
+                && debugged.resolved?.type === "lldb-dap" && debugged.resolved.request === "attach"
+                && JSON.stringify(debugged.resolved.initCommands) === JSON.stringify([
+                    "platform select remote-android",
+                    "platform connect unix-abstract-connect://emulator-5554/com.stateui.helloworld/stateui-debugger.sock",
+                    "settings append target.exec-search-paths /build/symbols/arm64-v8a",
+                ])
+                && JSON.stringify(debugged.resolved.attachCommands) === JSON.stringify([
+                    "process attach --pid 4242",
+                    "process handle SIGSEGV --pass true --stop false --notify false",
+                    "process handle SIGBUS --pass true --stop false --notify false",
+                ]));
+
+            const failed = await launchOnAndroid("emulator-5554", "debug", false);
+            check("Android Debug whose application never starts opens no session",
+                failed.resolved === undefined && failed.started.length === 1);
         }
         {
             const androidSuites = findSuites(root.uri.fsPath, "android");

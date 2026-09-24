@@ -5,6 +5,7 @@
 // suite - or starts one that runs until stopped, as an Android head's log does,
 // with the output where a task's always is: the terminal.
 
+import * as fs from "fs";
 import * as vscode from "vscode";
 
 /**
@@ -52,4 +53,32 @@ export async function startTask(task: vscode.Task): Promise<void> {
     })));
 
     await vscode.tasks.executeTask(task);
+}
+
+/**
+ * Waits, while `task` runs, for `file` to appear - what a task that goes on
+ * running writes once it is ready - and answers whether it did: false once the
+ * task has ended without it, or after `limit` milliseconds.
+ */
+export function readyWhen(file: string, task: vscode.Task, limit = 15 * 60_000): Promise<boolean> {
+    return new Promise((resolve) => {
+        const since = Date.now();
+        const finish = (ready: boolean): void => {
+            clearInterval(timer);
+            listener.dispose();
+            resolve(ready);
+        };
+        const listener = vscode.tasks.onDidEndTask((event) => {
+            if (event.execution.task.definition === task.definition) {
+                finish(fs.existsSync(file));
+            }
+        });
+        const timer = setInterval(() => {
+            if (fs.existsSync(file)) {
+                finish(true);
+            } else if (Date.now() - since > limit) {
+                finish(false);
+            }
+        }, 500);
+    });
 }

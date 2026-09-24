@@ -93,6 +93,36 @@ tag `StateUI`.
 
 In VS Code, choose **Android** as the host and a device, and press **F5**.
 
+## Debugging
+
+**StateUI: Debug** builds, installs and starts the application as `run-app.sh`
+does, and then attaches `lldb-dap` to it: a breakpoint in the application, in
+StateUI or in the host stops it, with its source, its stack and its variables.
+It is the application running that is attached to, so what runs before - the
+first render - runs without the debugger. Only a debug build can be debugged.
+
+`run-app.sh --debugger` readies it: the NDK's `lldb-server` runs as the
+application, in its own sandbox, and `.build-android/debugger.json` says where
+it listens and which process to attach to. From a terminal, with the toolchain's
+`lldb`:
+
+```bash
+.scripts/Android/run-app.sh apps/Gallery debug emulator-5554 --no-logcat --debugger
+cat apps/Gallery/.build-android/debugger.json
+lldb -o "platform select remote-android" \
+     -o "platform connect unix-abstract-connect://emulator-5554/com.stateui.gallery/stateui-debugger.sock" \
+     -o "settings append target.exec-search-paths $PWD/apps/Gallery/.build-android/symbols/arm64-v8a" \
+     -o "process attach --pid <process from debugger.json>" \
+     -o "process handle SIGSEGV SIGBUS --pass true --stop false --notify false"
+```
+
+The libraries are read from the build, which kept them unstripped; they must
+be the ones installed, so the application is always run through the script
+before it is attached to. Android's runtime raises SIGSEGV and SIGBUS on purpose,
+and the debugger passes them to it rather than stopping. End a session by
+detaching - stopping the debugger itself leaves its breakpoints in the
+application, which the next of them then ends.
+
 ## Testing
 
 A view exists only in an application's process, so the host's suite is a

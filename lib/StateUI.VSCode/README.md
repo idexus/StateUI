@@ -63,11 +63,14 @@ on Windows and Linux the host is .NET MAUI.
   otherwise - and started under `lldb-dap`. On .NET MAUI the debugger chosen
   below decides the launch; with C# on macOS and Windows it is the MAUI
   extension's launch of the chosen application, on the device that extension's
-  picker chose. On Android there is no debugger: `.scripts/Android/run-app.sh`
-  builds the head, installs it on the device chosen below and starts it, and
-  its terminal then follows the application's log, in colour, until the task
-  is stopped. Run Without Debugging does the same, and a second launch stops
-  the first one's log before it starts again.
+  picker chose. On Android `.scripts/Android/run-app.sh` builds the head,
+  installs it on the device chosen below and starts it, and its terminal then
+  follows the application's log, in colour, until the task is stopped. StateUI:
+  Debug then attaches `lldb-dap` to the application through the NDK's
+  `lldb-server`, which the script starts in the application's sandbox: a
+  breakpoint is reached from the moment it attaches. StateUI: Release, and Run
+  Without Debugging, run it without a debugger. A second launch stops the first
+  one's log before it starts again.
 
 ## The Android device
 

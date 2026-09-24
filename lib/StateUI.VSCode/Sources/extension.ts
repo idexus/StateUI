@@ -14,7 +14,7 @@ import { configurations, StateUIDebugConfigurationProvider } from "./debug";
 import { androidScript, askForDevice, chosenDevice, deviceToRunOn } from "./devices";
 import { applyEditorMode, cleanIndex, variablesInSettings } from "./editorMode";
 import { availableHosts, availableMauiDebuggers, describe, Host, MauiDebugger, mauiDebuggers } from "./hosts";
-import { runTask, startTask } from "./tasks";
+import { readyWhen, runTask, startTask } from "./tasks";
 import { findSuites, forDevice, runSuites } from "./tests";
 import { carriedTemplate, checkoutProblem, inAppsCommand, isCheckout, nameProblem, pinnedRelease, releases, Starter, StarterSource, writeStarter } from "./newApplication";
 
@@ -302,6 +302,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         debugger: mauiDebugger,
         run: runTask,
         start: startTask,
+        ready: (file, task) => readyWhen(file, task),
         device: (folder) => androidDevice(folder.uri.fsPath),
         attachSwiftWhenStarted: (sessionName, processName) => { pendingSwift.set(sessionName, processName); },
         application: async (_folder, forHost, named) => {

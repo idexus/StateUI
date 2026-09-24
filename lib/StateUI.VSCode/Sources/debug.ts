@@ -9,9 +9,12 @@
 // on the device that extension's own picker chose. Resolved in the FIRST hook,
 // so the new type's resolvers still run over it.
 //
-// An Android head is run with NO debugger: .scripts/Android/run-app.sh builds,
-// installs and starts it on the device chosen, in a task whose terminal then
-// follows its log, and the configuration resolves to no session.
+// An Android head is run by .scripts/Android/run-app.sh, which builds, installs
+// and starts it on the device chosen, in a task whose terminal then follows its
+// log. A Debug launch is then attached to by lldb-dap: the script readies the
+// NDK's lldb-server in the application's sandbox and writes where it listens to
+// .build-android/debugger.json. A Release build cannot be debugged, and
+// resolves to no session.
 //
 // The application is the one chosen with StateUI: Select Application; a launch
 // naming its `application` runs that one instead. A MAUI head is debugged the
@@ -46,6 +49,12 @@ export interface Choices {
 
     /** Starts a task that runs until it is stopped - a head followed by its log. */
     start(task: vscode.Task): Promise<void>;
+
+    /**
+     * Waits, while `task` runs, for it to write `file`; whether it did before
+     * it ended.
+     */
+    ready(file: string, task: vscode.Task): Promise<boolean>;
 
     /**
      * The serial of the Android device a launch runs on - the one chosen while
@@ -103,7 +112,7 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
             return this.maui(root, application, configuration, name);
         }
         if (host === "android") {
-            return this.android(root, application, configuration);
+            return this.android(root, application, configuration, name);
         }
 
         if (!(await buildAppKitHead(root, application, configuration, (task) => this.choices.run(task)))) {
@@ -202,8 +211,17 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         }
     }
 
-    /** An Android head, started by run-app.sh in a task that follows its log: no session. */
-    private async android(root: vscode.WorkspaceFolder, application: Application, configuration: Configuration): Promise<undefined> {
+    /**
+     * An Android head, started by run-app.sh in a task that follows its log;
+     * a Debug build then attached to by lldb-dap, through the lldb-server the
+     * script readied - a Release build has no session.
+     */
+    private async android(
+        root: vscode.WorkspaceFolder,
+        application: Application,
+        configuration: Configuration,
+        name: string,
+    ): Promise<vscode.DebugConfiguration | undefined> {
         const script = androidScript(root.uri.fsPath, "run-app.sh");
         if (!fs.existsSync(script)) {
             void vscode.window.showErrorMessage(
@@ -212,15 +230,31 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         }
 
         const serial = await this.choices.device(root);
-        if (serial) {
-            const task = new vscode.Task(
-                { type: "stateui", application: application.name, configuration, device: serial }, root,
-                `Run ${application.name} (Android, ${configuration})`, "StateUI",
-                new vscode.ShellExecution("bash", [script, application.directory, configuration, serial], { cwd: root.uri.fsPath }), []);
-            task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
-            await this.choices.start(task);
+        if (!serial) {
+            return undefined;
         }
-        return undefined;
+
+        const debug = configuration === "debug";
+        const facts = path.join(application.directory, ".build-android", "debugger.json");
+        fs.rmSync(facts, { force: true });
+        const task = new vscode.Task(
+            { type: "stateui", application: application.name, configuration, device: serial }, root,
+            `Run ${application.name} (Android, ${configuration})`, "StateUI",
+            new vscode.ShellExecution("bash",
+                [script, application.directory, configuration, serial, ...(debug ? ["--debugger"] : [])],
+                { cwd: root.uri.fsPath }), []);
+        task.presentationOptions = { reveal: vscode.TaskRevealKind.Always, panel: vscode.TaskPanelKind.Dedicated };
+        await this.choices.start(task);
+        if (!debug) {
+            return undefined;
+        }
+
+        if (!(await this.choices.ready(facts, task))) {
+            void vscode.window.showErrorMessage(
+                `StateUI: ${application.name} did not start for the debugger on ${serial} - the terminal says why.`);
+            return undefined;
+        }
+        return androidAttach(name, serial, JSON.parse(fs.readFileSync(facts, "utf8")));
     }
 
     /**
@@ -250,6 +284,41 @@ export class StateUIDebugConfigurationProvider implements vscode.DebugConfigurat
         void vscode.window.showErrorMessage(`StateUI: ${label} failed - its output is in the terminal.`);
         return false;
     }
+}
+
+/** Where run-app.sh --debugger left the application, and its debugger's server. */
+export interface AndroidDebugger {
+    /** The package, the process started, the server's socket, and the libraries unstripped. */
+    package: string;
+    process: number;
+    socket: string;
+    symbols: string;
+}
+
+/**
+ * lldb-dap attached to an Android head's process through the lldb-server that
+ * runs in its sandbox: the device named in the address, whichever others are
+ * attached, and the libraries read from the build, which kept them unstripped.
+ * The runtime raises SIGSEGV and SIGBUS on purpose - its null and suspend
+ * checks - so they pass to it without stopping the session.
+ */
+export function androidAttach(name: string, serial: string, server: AndroidDebugger): vscode.DebugConfiguration {
+    return {
+        type: "lldb-dap",
+        request: "attach",
+        name,
+        stopOnEntry: false,
+        initCommands: [
+            "platform select remote-android",
+            `platform connect unix-abstract-connect://${serial}/${server.socket}`,
+            `settings append target.exec-search-paths ${server.symbols}`,
+        ],
+        attachCommands: [
+            `process attach --pid ${server.process}`,
+            "process handle SIGSEGV --pass true --stop false --notify false",
+            "process handle SIGBUS --pass true --stop false --notify false",
+        ],
+    };
 }
 
 /**

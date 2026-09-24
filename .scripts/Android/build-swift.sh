@@ -11,7 +11,8 @@
 #   product          the dynamic library Android loads, e.g. HelloWorldAndroid
 #   out-dir          gets jniLibs/<abi>/ - the product and everything it needs,
 #                    stripped - and symbols/<abi>/, the same libraries unstripped
-#                    for ndk-stack and a debugger
+#                    for ndk-stack and a debugger; and ndk-root, the NDK the
+#                    build used, whose lldb-server the debugger runs
 #   condition        a compilation condition for every module, the library's
 #                    included - MAUI for the MAUI head, none for Android Views
 #
@@ -131,6 +132,8 @@ ndk_root () {
 NDK_ROOT="$(ndk_root)"
 [[ -n "$NDK_ROOT" ]] || { echo "ERROR: no Android NDK found. Set ANDROID_NDK_HOME to one - 30 or newer."; exit 1; }
 export ANDROID_NDK_ROOT="$NDK_ROOT"
+mkdir -p "$OUT_ROOT"
+echo "$NDK_ROOT" > "$OUT_ROOT/ndk-root"
 NDK_BIN="$(find "$NDK_ROOT/toolchains/llvm/prebuilt" -maxdepth 2 -name bin -type d | head -n 1)"
 READELF="$NDK_BIN/llvm-readelf"
 STRIP="$NDK_BIN/llvm-strip"

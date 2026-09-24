@@ -67,7 +67,8 @@ a running emulator, or an emulator started when it is picked.
 Press **F5** to run **StateUI: Debug**, or choose **StateUI: Release** in Run
 and Debug. On AppKit the application's head is built and started under
 `lldb-dap`. On Android it is built, installed and started on the chosen device,
-with no debugger, and its terminal follows the application's log. On .NET MAUI the launch follows the MAUI extension's device picker,
+and its terminal follows the application's log; a Debug launch then attaches
+`lldb-dap` to it, and a Release one runs without a debugger. On .NET MAUI the launch follows the MAUI extension's device picker,
 and the debugger chosen in the status bar decides how it is debugged:
 
 - **C#** - the MAUI extension's debugger on macOS and Windows, and `coreclr`
