@@ -382,6 +382,15 @@ enum Fixtures {
         return found.sorted()
     }
 
+    /// Whether a walk of sources enters a directory: never build output - a
+    /// directory named with a leading dot (`.build`, `.build-maui`), `bin` or
+    /// `obj`. Under `apps/` build output is 99 files in 100, and walking it
+    /// costs a guard a minute and more on Windows.
+    static func entersSources(_ relative: String) -> Bool {
+        let directory = name(of: relative)
+        return !directory.hasPrefix(".") && directory != "bin" && directory != "obj"
+    }
+
     /// Every C# source of the MAUI host, `lib/StateUI.Maui/Sources`, for the
     /// guards that read both languages - a name leaves Swift as a token and
     /// arrives there as a lookup, so only a reader of both can hold the two
@@ -390,17 +399,8 @@ enum Fixtures {
         let root = repository.appendingPathComponent("lib/StateUI.Maui/Sources")
         var found: [(path: String, text: String)] = []
 
-        guard let walk = FileManager.default.enumerator(atPath: root.path) else {
-            throw WalkReadAlmostNothing(root: root.path, read: 0)
-        }
-
-        for case let name as String in walk where name.hasSuffix(".cs") {
-            // obj/ holds generated copies, and on a machine that has built for
-            // four platforms four stale copies of everything besides.
-            let path = name.replacingOccurrences(of: "\\", with: "/")
-            if path.hasPrefix("obj/") || path.hasPrefix("bin/") { continue }
-
-            let text = try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)
+        for path in try files(under: root, entering: entersSources) where path.hasSuffix(".cs") {
+            let text = try String(contentsOf: root.appendingPathComponent(path), encoding: .utf8)
             found.append((path: path, text: text))
         }
 

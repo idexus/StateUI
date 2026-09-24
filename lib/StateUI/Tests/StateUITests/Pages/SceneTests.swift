@@ -609,22 +609,11 @@ final class SceneTests: XCTestCase {
 
         var files = [Fixtures.repository.appendingPathComponent("README.md")]
 
-        for folder in ["apps", "src"] {
-            let walk = FileManager.default.enumerator(
-                at: Fixtures.repository.appendingPathComponent(folder),
-                includingPropertiesForKeys: nil)
+        let apps = Fixtures.repository.appendingPathComponent("apps")
 
-            while let url = walk?.nextObject() as? URL {
-                let path = url.path.replacingOccurrences(of: "\\", with: "/")
-
-                if path.contains("/.build/") || path.contains("/bin/") || path.contains("/obj/") {
-                    continue
-                }
-
-                if url.pathExtension == "swift" || url.pathExtension == "template" {
-                    files.append(url)
-                }
-            }
+        for path in try Fixtures.files(under: apps, entering: Fixtures.entersSources)
+        where path.hasSuffix(".swift") {
+            files.append(apps.appendingPathComponent(path))
         }
 
         var found: [String] = []

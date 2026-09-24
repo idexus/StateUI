@@ -51,18 +51,12 @@ final class ActCallTests: XCTestCase {
     /// The Swift, C# and Markdown files of one tree, build output left out.
     private static func files(under tree: String) throws -> [(path: String, text: String)] {
         let root = Fixtures.repository.appendingPathComponent(tree)
-        guard let walk = FileManager.default.enumerator(atPath: root.path) else { return [] }
-
         var found: [(path: String, text: String)] = []
-        for case let name as String in walk {
-            let path = name.replacingOccurrences(of: "\\", with: "/")
-            let parts = path.split(separator: "/")
-            if parts.contains("bin") || parts.contains("obj") { continue }
-            guard [".swift", ".cs", ".md"].contains(where: path.hasSuffix) else { continue }
-
+        for path in try Fixtures.files(under: root, entering: Fixtures.entersSources)
+        where [".swift", ".cs", ".md"].contains(where: path.hasSuffix) {
             found.append((
                 path: "\(tree)/\(path)",
-                text: try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8)))
+                text: try String(contentsOf: root.appendingPathComponent(path), encoding: .utf8)))
         }
         return found.sorted { $0.path < $1.path }
     }

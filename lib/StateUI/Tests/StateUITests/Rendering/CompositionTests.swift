@@ -264,12 +264,10 @@ final class CompositionTests: XCTestCase {
         return found
     }
 
-    /// Every `.swift` file under a directory, never entering one whose name
-    /// starts with a dot: an app's `.build`, `.build-maui` and `.build-appkit`
-    /// hold checkouts and index output that are not this repository's code,
-    /// and walking them costs the suite a minute and more on Windows.
+    /// Every `.swift` file under a directory, build output never entered: an
+    /// app's `.build` holds checkouts that are not this repository's code.
     private func swiftFiles(under directory: URL) throws -> [URL] {
-        try Fixtures.files(under: directory, entering: { !Fixtures.name(of: $0).hasPrefix(".") })
+        try Fixtures.files(under: directory, entering: Fixtures.entersSources)
             .filter { $0.hasSuffix(".swift") && !$0.hasSuffix("Package.swift") }
             .map { directory.appendingPathComponent($0) }
     }
