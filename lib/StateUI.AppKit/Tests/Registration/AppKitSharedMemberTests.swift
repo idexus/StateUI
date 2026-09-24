@@ -153,7 +153,7 @@ final class AppKitSharedMemberTests: XCTestCase {
     @MainActor
     func testAViewThatIgnoresInputIsNotHit() throws {
         let views: [NodeType] = [
-            .border, .canvas, .colorBox, .ellipse, .grid, .hStack, .image,
+            .canvas, .colorBox, .ellipse, .grid, .hStack, .image,
             .label, .line, .path, .polygon, .polyline, .rectangle, .vStack, .zStack,
         ]
 

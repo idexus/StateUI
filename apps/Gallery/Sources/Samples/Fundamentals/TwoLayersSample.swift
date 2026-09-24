@@ -102,7 +102,7 @@ private struct LayerRows: ExampleContent {
     /// One captioned row, its content in a closure of its own - which is what
     /// makes the reading inside it that row's alone.
     private func boxed(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> any View {
-        Border {
+        ZStack {
             VStack {
                 Label(caption)
                     .fontSize(11)
@@ -113,6 +113,7 @@ private struct LayerRows: ExampleContent {
             }
             .spacing(6)
         }
+        .style("Card")
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)

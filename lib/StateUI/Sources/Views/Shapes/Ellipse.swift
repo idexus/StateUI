@@ -12,7 +12,7 @@
 /// otherwise.
 ///
 /// A round avatar or a status dot is this control sized square. For a rounded
-/// RECTANGLE, use a `Rectangle` with a `cornerRadius`, or a `Border` with a
+/// RECTANGLE, use a `Rectangle` with a `cornerRadius`, or a layout with a
 /// `.shape`.
 public struct Ellipse: Shape {
     /// The node this control describes.

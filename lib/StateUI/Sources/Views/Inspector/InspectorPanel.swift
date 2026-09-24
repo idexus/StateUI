@@ -18,7 +18,7 @@ struct InspectorPanel: ContentView {
         let collapsed = place == .bottom && InspectorModel.shared.collapsed.contains(scene)
         let wide = place == .bottom && device.formFactor != .phone && device.formFactor != .unknown
 
-        let panel = Border {
+        let panel = ZStack {
             if collapsed {
                 InspectorStrip(scene: scene)
             } else {
@@ -29,6 +29,7 @@ struct InspectorPanel: ContentView {
         .stroke(Look.edge)
         .strokeWidth(1)
         .shape(.roundedRectangle(14))
+        .clipsContent(true)
         .margin(8)
 
         if place == .side {

@@ -44,7 +44,7 @@ struct PanSample: SampleContent, ExampleContent {
 
             // A fixed box for it to move inside, so the layout does not follow
             // the view about.
-            Border {
+            ZStack {
                 ColorBox(Palette.accent)
                     .width(64)
                     .height(64)
@@ -65,6 +65,7 @@ struct PanSample: SampleContent, ExampleContent {
                         }
                     }
             }
+            .style("Card")
             .height(200)
 
             // Two states into one conversion: the host works the words out
@@ -111,7 +112,7 @@ struct PanSample: SampleContent, ExampleContent {
 
             // A fixed box for it to move inside, so the layout does not follow
             // the view about.
-            Border {
+            ZStack {
                 ColorBox(Palette.accent)
                     .cornerRadius(10)
                     .width(64)
@@ -136,6 +137,7 @@ struct PanSample: SampleContent, ExampleContent {
                         }
                     }
             }
+            .style("Card")
             .stroke(Palette.outline)
             .strokeWidth(1)
             .shape(.roundedRectangle(10))

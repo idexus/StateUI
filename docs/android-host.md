@@ -7,7 +7,7 @@ library: it applies the typed sparse patches of the
 
 It presents its first controls - `Label`, `Button`, `TextField`, `Switch`,
 `CheckBox`, `Slider`, `Stepper`, `ProgressBar`, `ActivityIndicator`, `Image`,
-`ColorBox`, `VStack`, `HStack`, `Grid`, `ZStack`, `Border` and
+`ColorBox`, `VStack`, `HStack`, `Grid`, `ZStack` and
 `ScrollView` - and the pages of a `NavigationStack`, a `SplitView` and a
 `TabbedView`, over the runtime every host shares, and
 shows any other control's name in red where the control belongs, so a gap is

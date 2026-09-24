@@ -137,7 +137,7 @@ final class AppKitContainerTests: XCTestCase {
     }
 
     @MainActor
-    func testAWidthConstrainedNestedStackKeepsWrappedTextInsideItsBorder() throws {
+    func testAWidthConstrainedNestedStackKeepsWrappedTextInsideItsFrame() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
@@ -149,7 +149,7 @@ final class AppKitContainerTests: XCTestCase {
         var innerStack = HostPatch(id: .manual("inner"), type: .vStack)
         innerStack.properties[.padding] = .numbers([16, 16, 16, 16])
         innerStack.children = .arranged([label])
-        var border = HostPatch(id: .manual("border"), type: .border)
+        var border = HostPatch(id: .manual("border"), type: .zStack)
         border.children = .arranged([innerStack])
         var outerStack = HostPatch(id: .manual("outer"), type: .vStack)
         outerStack.children = .arranged([border])
@@ -175,7 +175,7 @@ final class AppKitContainerTests: XCTestCase {
         defer { renderer.closeForTesting() }
         let binding = HostStateBinding(state: 71, mode: .inOut, kind: .property)
 
-        var border = HostPatch(id: .manual("border"), type: .border)
+        var border = HostPatch(id: .manual("border"), type: .zStack)
         border.properties[.height] = .number(90)
         border.driven = .replace([.height: binding])
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
@@ -300,7 +300,7 @@ final class AppKitContainerTests: XCTestCase {
         let expected: [(NodeType, NSPoint)] = [
             (.vStack, NSPoint(x: 128, y: 0)),
             (.hStack, NSPoint(x: 0, y: 40)),
-            (.border, NSPoint(x: 128, y: 40)),
+            (.zStack, NSPoint(x: 128, y: 40)),
             (.grid, NSPoint(x: 128, y: 40)),
             (.scrollView, NSPoint(x: 128, y: 40)),
         ]
@@ -348,68 +348,6 @@ final class AppKitContainerTests: XCTestCase {
             $0.firstAttribute == .height && $0.relation == .greaterThanOrEqual
                 && $0.constant == 44
         })
-    }
-
-    /// A border paints its own background, a colour and a gradient brush
-    /// alike: the colour fills it, and the gradient runs from its first stop
-    /// at its start to its last at its end.
-    @MainActor
-    func testABorderDrawsItsColourAndGradientBackgrounds() throws {
-        let renderer = AppKitRenderer.running {
-            VStack {
-                Border().background(.red)
-                Border().background(.linearGradient(
-                    [GradientStop(.red, 0), GradientStop(.blue, 1)],
-                    startPoint: Point(0, 0),
-                    endPoint: Point(1, 0)))
-            }
-        }
-        defer { renderer.closeForTesting() }
-        let borders = renderer.nativeViews(AppKitBorderView.self)
-        XCTAssertEqual(borders.count, 2)
-        guard borders.count == 2 else { return }
-        for border in borders { border.frame = NSRect(x: 0, y: 0, width: 40, height: 20) }
-
-        let colour = try bitmap(of: borders[0])
-        let gradient = try bitmap(of: borders[1])
-
-        let middle = try XCTUnwrap(colour.colorAt(x: 20, y: 10))
-        XCTAssertGreaterThan(middle.redComponent, 0.9)
-        XCTAssertLessThan(middle.blueComponent, 0.1)
-        let start = try XCTUnwrap(gradient.colorAt(x: 2, y: 10))
-        let end = try XCTUnwrap(gradient.colorAt(x: 37, y: 10))
-        XCTAssertGreaterThan(start.redComponent, start.blueComponent)
-        XCTAssertGreaterThan(end.blueComponent, end.redComponent)
-    }
-
-    /// A border cuts what it holds to its shape, on a layer of its own: a
-    /// picture in a rounded card has rounded corners, as the card does, and one
-    /// in an ellipse is cut by its outline.
-    @MainActor
-    func testABorderClipsWhatItHoldsToItsShape() throws {
-        let renderer = AppKitRenderer.running {
-            VStack {
-                Border { ColorBox(Color("#FF0000")) }.shape(.roundedRectangle(16)).width(100).height(100)
-                Border { ColorBox(Color("#FF0000")) }.shape(.ellipse).width(100).height(60)
-                Border { ColorBox(Color("#FF0000")) }.width(100).height(40)
-            }
-        }
-        defer { renderer.closeForTesting() }
-        let borders = renderer.nativeViews(AppKitBorderView.self)
-        XCTAssertEqual(borders.count, 3)
-        borders.first?.window?.contentView?.layoutSubtreeIfNeeded()
-
-        let rounded = try XCTUnwrap(borders[0].layer, "the border clips on a layer of its own")
-        XCTAssertTrue(rounded.masksToBounds, "what the border holds is clipped")
-        XCTAssertEqual(rounded.cornerRadius, 16)
-
-        let ellipse = try XCTUnwrap(borders[1].layer)
-        let outline = try XCTUnwrap(ellipse.mask as? CAShapeLayer, "an ellipse cuts by its outline")
-        XCTAssertEqual(outline.path?.boundingBox, CGRect(x: 0, y: 0, width: 100, height: 60))
-
-        let plain = try XCTUnwrap(borders[2].layer)
-        XCTAssertTrue(plain.masksToBounds, "a rectangle clips to its bounds")
-        XCTAssertEqual(plain.cornerRadius, 0)
     }
 
     /// A child written invisible is hidden and takes no room: what follows it
@@ -763,34 +701,6 @@ final class AppKitContainerTests: XCTestCase {
             NSRect(x: 4, y: 6, width: 88, height: 44))
 
         let drawn = try bitmap(of: try XCTUnwrap(renderer.viewForTesting(id: .manual("layout"))))
-        let outline = try XCTUnwrap(drawn.colorAt(x: 2, y: 30))
-        let within = try XCTUnwrap(drawn.colorAt(x: 10, y: 30))
-        XCTAssertGreaterThan(outline.redComponent, 0.9, "the stroke's colour at the edge")
-        XCTAssertLessThan(outline.blueComponent, 0.1)
-        XCTAssertGreaterThan(within.blueComponent, 0.9, "the background beyond the stroke's width")
-        XCTAssertLessThan(within.redComponent, 0.1)
-    }
-
-    /// A border keeps its padding between its outline and what it holds, and
-    /// strokes its outline in its stroke's colour, as wide as its stroke width.
-    @MainActor
-    func testABorderPadsWhatItHoldsAndStrokesItsOutline() throws {
-        var border = HostPatch(id: .manual("border"), type: .border)
-        border.properties = [
-            .padding: .numbers([4, 6, 8, 10]),
-            .background: .color(red: 0, green: 0, blue: 255, alpha: 255),
-            .stroke: Brush.solidColor(Color("#FF0000")).propValue,
-            .strokeWidth: .number(6),
-        ]
-        border.children = .arranged([box("inside", [:])])
-        let renderer = arranged(border, in: NSSize(width: 100, height: 60))
-        defer { renderer.closeForTesting() }
-
-        XCTAssertEqual(
-            renderer.viewForTesting(id: .manual("inside"))?.frame,
-            NSRect(x: 4, y: 6, width: 88, height: 44))
-
-        let drawn = try bitmap(of: try XCTUnwrap(renderer.viewForTesting(id: .manual("border"))))
         let outline = try XCTUnwrap(drawn.colorAt(x: 2, y: 30))
         let within = try XCTUnwrap(drawn.colorAt(x: 10, y: 30))
         XCTAssertGreaterThan(outline.redComponent, 0.9, "the stroke's colour at the edge")

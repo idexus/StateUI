@@ -282,7 +282,7 @@ final class AppKitMeasurementTests: XCTestCase {
         ("page", .scrollView),
         ("content", .vStack),
         ("part", .vStack),
-        ("frame", .border),
+        ("frame", .zStack),
         ("boxed", .vStack),
         ("sample", .vStack),
     ]
@@ -405,7 +405,6 @@ final class AppKitMeasurementTests: XCTestCase {
             AppKitZStackView(),
             AppKitNavigationView(),
             AppKitSingleChildView(),
-            AppKitBorderView(),
             AppKitScrollView(frame: .zero),
             AppKitTabbedView(frame: .zero),
         ]
@@ -494,7 +493,7 @@ final class AppKitMeasurementTests: XCTestCase {
             ], [
                 node("part", .vStack, [.spacing: .number(16)], [
                     label("title", "EXAMPLE"),
-                    node("frame", .border, [:], [
+                    node("frame", .zStack, [:], [
                         node("boxed", .vStack, [
                             .padding: .numbers([16, 16, 16, 16]),
                             .spacing: .number(10),
@@ -509,7 +508,7 @@ final class AppKitMeasurementTests: XCTestCase {
                 ]),
                 node("listing", .vStack, [.spacing: .number(8)], [
                     label("heading", "IN SWIFT"),
-                    node("codeFrame", .border, [:], [
+                    node("codeFrame", .zStack, [:], [
                         node("codeScroll", .scrollView, [
                             .orientation: .enumeration(ScrollOrientation.horizontal.rawValue),
                         ], [

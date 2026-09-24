@@ -50,7 +50,8 @@ extension ColorBoxProperties {
 ///
 /// The simplest thing a host draws: a divider, a bar of a chart, a placeholder,
 /// or a deliberate piece of empty space. It has no content and no children -
-/// for a coloured area around something, use a `Border`.
+/// for a coloured area around something, give the layout holding it a
+/// background.
 public struct ColorBox: View, ColorBoxProperties {
     /// The node this control describes.
     public var node: Node

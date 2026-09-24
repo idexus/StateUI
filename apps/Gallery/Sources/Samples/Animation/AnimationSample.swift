@@ -6,9 +6,9 @@ struct AnimationSample: SampleContent, ExampleContent {
 
     /// The four values the card is drawn from, one per thing a button moves.
     ///
-    /// Each is DRIVEN on the Border below - the property is read off the state
+    /// Each is DRIVEN on the card below - the property is read off the state
     /// on the host's own frames rather than described - so a four-hundred
-    /// millisecond journey costs no renders at all. A Border that names none
+    /// millisecond journey costs no renders at all. A card that names none
     /// of them has nothing to move.
     @State private var fade = 1.0
     @State private var shift = 0.0
@@ -36,9 +36,10 @@ struct AnimationSample: SampleContent, ExampleContent {
             // and the four journeys are the host's - so this stands at one.
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Label("Animate me")
             }
+            .style("Card")
             // Four DRIVEN properties. Read off a state the host moves, so none
             // of them is on any message after the registration.
             .opacity($fade)
@@ -108,12 +109,13 @@ struct AnimationSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Label("Animate me")
                     .fontSize(17)
                     .textColor(Palette.onBrand)
                     .padding(24, 16)
             }
+            .style("Card")
             // Four DRIVEN properties. Read off a state the host moves, so none
             // of them is on any message after the registration.
             .opacity($fade)

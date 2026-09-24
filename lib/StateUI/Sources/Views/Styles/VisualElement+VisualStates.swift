@@ -55,7 +55,7 @@ extension VisualElement where Self: StyleTarget {
     ///
     ///     @State private var lift = 1.0
     ///
-    ///     Border { Label("Open") }
+    ///     ZStack { Label("Open") }
     ///         .scale($lift)
     ///         .onVisualStateChanged(.pointerOver, .normal) { state in
     ///             try await $lift.journey.move(to: state == .pointerOver ? 1.03 : 1, .eased(120, .cubicOut))

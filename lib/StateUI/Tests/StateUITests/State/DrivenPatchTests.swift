@@ -71,7 +71,7 @@ final class DrivenPatchTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
 
         let page = try page(
-            Border { Label("dimmed") }
+            ZStack { Label("dimmed") }
                 .opacity(0.5)
                 .opacity(fade.projectedValue)
                 .visualState(.disabled) { $0.opacity(0.1) }
@@ -133,7 +133,7 @@ final class DrivenPatchTests: XCTestCase {
         let colour = State(wrappedValue: Color("#102030"))
         let inset = State(wrappedValue: Insets(4))
 
-        let border = Border {
+        let border = ZStack {
             Label("words")
                 .fontSize(number.projectedValue)
                 .textColor(colour.projectedValue)
@@ -159,6 +159,7 @@ final class DrivenPatchTests: XCTestCase {
         .pivotY(number.projectedValue)
         .margin(inset.projectedValue)
         .padding(inset.projectedValue)
+        .strokeWidth(number.projectedValue)
 
         let shape = Rectangle()
             .strokeWidth(number.projectedValue)
@@ -166,7 +167,7 @@ final class DrivenPatchTests: XCTestCase {
             .strokeMiterLimit(number.projectedValue)
 
         // A Button for the outline the mixin is about, and a TextField for the
-        // placeholder - neither of them a Border's.
+        // placeholder - neither of them a layout's.
         let button = Button("press")
             .borderColor(colour.projectedValue)
             .borderWidth(number.projectedValue)
@@ -185,7 +186,7 @@ final class DrivenPatchTests: XCTestCase {
             tied([
                 "height", "maximumHeight", "maximumWidth", "minimumHeight", "minimumWidth", "opacity",
                 "pivotX", "pivotY", "rotation", "rotationX", "rotationY", "scale", "scaleX", "scaleY",
-                "translationX", "translationY", "width",
+                "strokeWidth", "translationX", "translationY", "width",
             ], to: 1, .inOut, .property)
                 .merging(tied(["background"], to: 2, .inOut, .property)) { $1 }
                 .merging(tied(["margin", "padding"], to: 3, .inOut, .property)) { $1 })

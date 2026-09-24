@@ -76,7 +76,6 @@ host that creates or interprets it.
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | `ActivityIndicator` | native | ✅ |  |  | ✅ |  |  |
 | `Application` | structure | ✅ |  |  | ✅ |  |  |
-| `Border` | native | ✅ |  |  | ✅ |  |  |
 | `Button` | native | ✅ |  |  | ✅ |  |  |
 | `Canvas` | native | ✅ |  |  | ✅ |  |  |
 | `CheckBox` | stateUI | ✅ |  |  | ✅ |  |  |
@@ -196,7 +195,6 @@ may still choose another class that preserves the same contract.
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | `GtkBox` | custom `ViewGroup` | `StackPanel` | flexbox |
 | `Grid` | custom `NSView` | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI | composed by StateUI |
 | `ScrollView` | `NSScrollView` | `UIScrollView` | `GtkScrolledWindow` | `ScrollView` / `HorizontalScrollView` | `ScrollViewer` | `overflow: auto` |
-| `Border` | custom `NSView` drawing `NSBezierPath` | `UIView` + `CAShapeLayer` | custom `GtkWidget` snapshot | `FrameLayout` + `GradientDrawable` | `Border` | `<div>` + CSS `border` |
 | `Label` / `Spans` / `Span` | `NSTextField` label; `NSAttributedString` runs | `UILabel`; `NSAttributedString` runs | `GtkLabel`; `PangoAttrList` runs | `TextView`; `SpannableString` spans | `TextBlock`; `Run` inlines | text element; `<span>` runs |
 | `Button` | `NSButton` | `UIButton` | `GtkButton` | `Button` | `Button` | `<button>` |
 | `Image` | `NSImageView` | `UIImageView` | `GtkPicture` | `ImageView` | `Image` | `<img>` |
@@ -423,7 +421,6 @@ Every control, and every part an application, its windows and its pages are made
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](controls/ActivityIndicator.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
-| [Border](controls/Border.md) | 76 | 56 ✅ · 2 ☑️ |  |  | 57 ✅ · 1 ☑️ |  |  |
 | [Button](controls/Button.md) | 90 | 68 ✅ · 3 ☑️ |  |  | 70 ✅ · 2 ☑️ |  |  |
 | [Canvas](controls/Canvas.md) | 71 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
 | [CheckBox](controls/CheckBox.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
@@ -520,7 +517,6 @@ contract's page in [the control dictionary](controls/README.md).
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `onClicked` (`clicked`), `icon`, `isDestructive`, `isEnabled`, `text` |  |  |  |  |  |  |
 | [PageElement](controls/tiers/PageElement.md) | `icon`, `title` | ✅ |  |  | ✅ |  |  |
 | [ActivityIndicator](controls/ActivityIndicator.md) | `isRunning` | ✅ |  |  | ✅ |  |  |
-| [Border](controls/Border.md) | `shape`, `stroke`, `strokeDashOffset`, `strokeDashPattern`, `strokeLineCap`, `strokeLineJoin`, `strokeMiterLimit`, `strokeWidth` |  |  |  |  |  |  |
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`) |  |  |  | ✅ |  |  |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawable`, `onPressed` (`pressed`), `onReleased` (`released`) | ✅ |  |  | ✅ |  |  |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | ✅ |  |  | ✅ |  |  |
@@ -577,16 +573,16 @@ realizes the element and each of its members.
 <!-- vocabulary:begin -->
 ### Controls and structural nodes
 
-`ActivityIndicator`, `Application`, `Border`, `Button`, `Canvas`, `CheckBox`,
-`ColorBox`, `Content`, `ContextMenu`, `DatePicker`, `Ellipse`, `Grid`, `HStack`,
-`Image`, `Label`, `LeadingContent`, `Line`, `Map`, `Menu`, `MenuBar`,
-`MenuItem`, `MenuSeparator`, `ModalStack`, `NavigationStack`, `Overlay`, `Page`,
-`Path`, `Picker`, `Pin`, `Polygon`, `Polyline`, `PositionIndicator`,
-`ProgressBar`, `RadioButton`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`,
-`Setters`, `Slider`, `Span`, `Spans`, `SplitView`, `Stepper`, `Switch`,
-`TabbedView`, `TextEditor`, `TextField`, `TimePicker`, `TitleBar`, `TitleView`,
-`ToolbarItem`, `ToolbarItems`, `TrailingContent`, `VisualState`, `VStack`,
-`WebView`, `Window`, `ZStack`.
+`ActivityIndicator`, `Application`, `Button`, `Canvas`, `CheckBox`, `ColorBox`,
+`Content`, `ContextMenu`, `DatePicker`, `Ellipse`, `Grid`, `HStack`, `Image`,
+`Label`, `LeadingContent`, `Line`, `Map`, `Menu`, `MenuBar`, `MenuItem`,
+`MenuSeparator`, `ModalStack`, `NavigationStack`, `Overlay`, `Page`, `Path`,
+`Picker`, `Pin`, `Polygon`, `Polyline`, `PositionIndicator`, `ProgressBar`,
+`RadioButton`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`, `Setters`,
+`Slider`, `Span`, `Spans`, `SplitView`, `Stepper`, `Switch`, `TabbedView`,
+`TextEditor`, `TextField`, `TimePicker`, `TitleBar`, `TitleView`, `ToolbarItem`,
+`ToolbarItems`, `TrailingContent`, `VisualState`, `VStack`, `WebView`, `Window`,
+`ZStack`.
 
 ### Properties
 

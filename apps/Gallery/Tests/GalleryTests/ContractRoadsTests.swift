@@ -148,6 +148,10 @@ final class ContractRoadsTests: XCTestCase {
             removed: #"_ = RefreshView { ScrollView { Label("Rows") } }"#,
             contract: #"_ = ScrollView { Label("Rows") }"#),
         Road(
+            name: "the withdrawn Border",
+            removed: ##"_ = Border { Label("Card") }.stroke(Color("#888888"))"##,
+            contract: ##"_ = ZStack { Label("Card") }.shape(.roundedRectangle(8)).stroke(Color("#888888"))"##),
+        Road(
             name: "the withdrawn AbsoluteLayout",
             removed: #"_ = AbsoluteLayout { Label("Corner") }"#,
             contract: #"_ = ZStack { Label("Corner") }"#),

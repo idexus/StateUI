@@ -6,7 +6,7 @@ child an engine places, and the application's pictures.
 
 ## A shape and its brush
 
-A Border, a ColorBox and any background that is not one plain colour are
+A layout's own box, a ColorBox and any background that is not one plain colour are
 drawn by one drawable of the host's, `StateUIShapeDrawable`: a rectangle, a
 rectangle with rounded corners, or an ellipse, filled with a brush and
 outlined in one colour. The Swift host tells it every part - the shape's kind
@@ -19,15 +19,6 @@ one the view was made with.
 
 Radii that two corners on one side would overlap with are shrunk together,
 so a radius larger than the shape never draws a shape inside out.
-
-## A border
-
-A Border is a layout of one child within its padding, on a shape it fills
-and outlines. It cuts what it holds to that shape: the drawable gives the
-view its outline, and the view clips to it, so a picture in a rounded card
-has rounded corners. The outline is drawn inside the view's bounds, half its
-width on either side of the shape's edge being inside, and never pushes the
-child in - that is the padding's work.
 
 ## A layout's own box
 

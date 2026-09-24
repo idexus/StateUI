@@ -35,7 +35,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
 
                 ForEach(rows, id: \\.self) { name in
-                    Border { Label(name) }
+                    ZStack { Label(name) }.style("Card")
                 }
             }
 
@@ -86,11 +86,12 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 DebugInfoLabel()
 
                 ForEach(rows, id: \.self) { name in
-                    Border {
+                    ZStack {
                         Label(name)
                             .fontSize(15)
                             .verticalAlignment(.center)
                     }
+                    .style("Card")
                     .padding(Insets(12, 8, 12, 8))
                     .background(Palette.raised)
                     .strokeWidth(0)
@@ -138,13 +139,14 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
     private func cell(
         _ text: String, _ colour: Color, at column: Int, faded: Bool = false
     ) -> any View {
-        Border {
+        ZStack {
             Label(text)
                 .fontSize(13)
                 .textColor(Palette.onBrand)
                 .horizontalAlignment(.center)
                 .verticalAlignment(.center)
         }
+        .style("Card")
         .background(colour)
         .opacity(faded ? 0.55 : 1)
         .strokeWidth(0)

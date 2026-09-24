@@ -24,9 +24,6 @@ enum AppKitTransitionSurface {
         case .page:
             return contentPageProperties.contains(property)
 
-        case .border:
-            return borderProperties.contains(property)
-
         case .vStack, .hStack:
             return stackProperties.contains(property) || layoutBoxProperties.contains(property)
 
@@ -100,7 +97,7 @@ enum AppKitTransitionSurface {
     }
 
     private static let nativeViewTypes: Set<NodeType> = [
-        .activityIndicator, .border, .colorBox, .button,
+        .activityIndicator, .colorBox, .button,
         .checkBox, .datePicker, .textEditor, .ellipse, .textField, .canvas,
         .grid, .hStack, .image, .label, .line,
         .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
@@ -123,10 +120,6 @@ enum AppKitTransitionSurface {
 
     private static let contentPageProperties: Set<Prop> = [
         .background, .padding,
-    ]
-
-    private static let borderProperties: Set<Prop> = [
-        .padding, .background, .stroke, .strokeWidth, .shape,
     ]
 
     private static let stackProperties: Set<Prop> = [.padding, .spacing]

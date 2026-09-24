@@ -30,11 +30,12 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
             // travel at once.
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Label("A property, carried")
                     .fontSize($captionSize)
                     .textColor($captionColor)
             }
+            .style("Card")
             .background($panelColor)
             .padding($panelPadding)
             .height($panelHeight)
@@ -79,7 +80,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Grid {
                     Label("A property, carried")
                         .fontSize($captionSize)
@@ -89,6 +90,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                 }
                 .background(AppColors.violetLight)
             }
+            .style("Card")
             .background($panelColor)
             .padding($panelPadding)
             .height($panelHeight)

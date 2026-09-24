@@ -23,7 +23,6 @@ extension NodeType {
 @_spi(Host) public extension NodeType {
     static let activityIndicator = ActivityIndicatorContract.nodeType
     static let application = ApplicationContract.nodeType
-    static let border = BorderContract.nodeType
     static let colorBox = ColorBoxContract.nodeType
     static let button = ButtonContract.nodeType
     static let checkBox = CheckBoxContract.nodeType
@@ -105,7 +104,7 @@ extension NodeType {
     static let borderWidth = BorderElementContract.borderWidth.token
     static let canDrag = ViewContract.canDrag.token
     static let characterSpacing = TextStyleElementContract.characterSpacing.token
-    static let shape = BorderContract.shape.token
+    static let shape = BorderElementContract.shape.token
     static let showsClearButton = TextFieldContract.showsClearButton.token
     static let color = ColorBoxContract.color.token
     static let columns = GridContract.columns.token

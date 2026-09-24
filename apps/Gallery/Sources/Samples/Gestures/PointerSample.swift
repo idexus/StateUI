@@ -22,7 +22,7 @@ struct PointerSample: SampleContent, ExampleContent {
         @State private var pressing = false
         @State private var last = "nothing yet"
 
-        Border {
+        ZStack {
             VStack {
                 // Where the pointer is is read here, so every move builds this
                 // closure - which is what a get on a per-report value costs.
@@ -39,6 +39,7 @@ struct PointerSample: SampleContent, ExampleContent {
             }
             .padding(40)
         }
+        .style("Card")
         // The box reacts, so its look is part of what it says: the outline is
         // the hover, the fill is the button held down.
         .stroke(hovering ? Palette.accent : Palette.outline)
@@ -66,7 +67,7 @@ struct PointerSample: SampleContent, ExampleContent {
         """
 
     var content: any View {
-        Border {
+        ZStack {
             VStack {
                 DebugInfoLabel()
 
@@ -87,6 +88,7 @@ struct PointerSample: SampleContent, ExampleContent {
             .spacing(6)
             .padding(40, 100)
         }
+        .style("Card")
         // The box reacts, so its look is part of what it says: the outline is
         // the hover, the fill is the button held down.
         .stroke(hovering ? Palette.accent : Palette.outline)

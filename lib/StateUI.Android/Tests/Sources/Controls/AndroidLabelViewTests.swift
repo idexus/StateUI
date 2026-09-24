@@ -11,6 +11,7 @@ final class AndroidLabelViewTests: XCTestCase {
             ("testALabelsSpansAreRunsOfItsWords", testALabelsSpansAreRunsOfItsWords),
             ("testALabelShowsAsManyLinesAsItsBreakAllows", testALabelShowsAsManyLinesAsItsBreakAllows),
             ("testALabelsCaseAndLetterSpacingAreItsOwn", testALabelsCaseAndLetterSpacingAreItsOwn),
+            ("testABackgroundBrushIsDrawnAcrossTheView", testABackgroundBrushIsDrawnAcrossTheView),
         ]
     }
 
@@ -69,6 +70,31 @@ final class AndroidLabelViewTests: XCTestCase {
             XCTAssertEqual(label.text, "HELLO")
             let size = Java.callFloat(label.reference, JavaAPI.getTextSize)
             XCTAssertEqual(Java.callFloat(label.reference, TestJava.getLetterSpacing), 4 / size, accuracy: 0.0001)
+        }
+    }
+
+    /// A gradient runs across the whole view, from its first colour at the start point to its last at the end.
+    func testABackgroundBrushIsDrawnAcrossTheView() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                Label("")
+                    .background(Brush.linearGradient(
+                        [GradientStop(Color("#FF0000"), 0), GradientStop(Color("#0000FF"), 1)],
+                        startPoint: Point(0, 0),
+                        endPoint: Point(1, 0)))
+                    .width(100)
+                    .height(20)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+            }
+            host.layOut()
+
+            let label = try XCTUnwrap(host.views(AndroidLabelView.self).first)
+            let drawn = label.pixels(at: [(0, 20), (199, 20)])
+            XCTAssertGreaterThan(drawn[0] >> 16 & 0xFF, 0xF0, String(drawn[0], radix: 16))
+            XCTAssertLessThan(drawn[0] & 0xFF, 0x10, String(drawn[0], radix: 16))
+            XCTAssertLessThan(drawn[1] >> 16 & 0xFF, 0x10, String(drawn[1], radix: 16))
+            XCTAssertGreaterThan(drawn[1] & 0xFF, 0xF0, String(drawn[1], radix: 16))
         }
     }
 }

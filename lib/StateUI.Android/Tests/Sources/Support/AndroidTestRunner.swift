@@ -33,7 +33,6 @@ nonisolated(unsafe) let testCases: [XCTestCaseEntry] = [
     testCase(AndroidStackViewTests.allTests),
     testCase(AndroidGridViewTests.allTests),
     testCase(AndroidZStackViewTests.allTests),
-    testCase(AndroidBorderViewTests.allTests),
     testCase(AndroidImageViewTests.allTests),
     testCase(AndroidColorBoxViewTests.allTests),
     testCase(AndroidScrollViewTests.allTests),

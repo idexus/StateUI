@@ -71,12 +71,13 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
             // One word takes the panel AND everything in it out of what a
             // screen reader walks; the rule below is a single view taken out.
-            Border {
+            ZStack {
                 VStack {
                     Label("Skipped")
                     Label("Neither line is read")
                 }
             }
+            .style("Card")
             .automationExcludedWithChildren(true)
 
             ColorBox(Palette.outline)
@@ -192,7 +193,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
             SectionTitle("What a user walks past")
 
             HStack {
-                Border {
+                ZStack {
                     VStack {
                         Label("Walked")
                             .fontSize(15)
@@ -205,10 +206,11 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .spacing(2)
                     .padding(12)
                 }
+                .style("Card")
 
                 // The whole panel, and everything in it, is not there at all
                 // to a screen reader - one word instead of one per view.
-                Border {
+                ZStack {
                     VStack {
                         Label("Skipped")
                             .fontSize(15)
@@ -221,6 +223,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .spacing(2)
                     .padding(12)
                 }
+                .style("Card")
                 .automationExcludedWithChildren(true)
             }
             .spacing(12)

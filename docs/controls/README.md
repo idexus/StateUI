@@ -16,7 +16,6 @@ The elements a layout positions - every one wears [View](tiers/View.md).
 | Control | Members | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [ActivityIndicator](ActivityIndicator.md) | 69 | 54 ✅ · 2 ☑️ |  |  | 54 ✅ · 1 ☑️ |  |  |
-| [Border](Border.md) | 76 | 56 ✅ · 2 ☑️ |  |  | 57 ✅ · 1 ☑️ |  |  |
 | [Button](Button.md) | 90 | 68 ✅ · 3 ☑️ |  |  | 70 ✅ · 2 ☑️ |  |  |
 | [Canvas](Canvas.md) | 71 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |
 | [CheckBox](CheckBox.md) | 70 | 56 ✅ · 2 ☑️ |  |  | 56 ✅ · 1 ☑️ |  |  |

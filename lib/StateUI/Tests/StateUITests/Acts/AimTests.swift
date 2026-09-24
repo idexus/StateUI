@@ -22,14 +22,14 @@ final class AimTests: XCTestCase {
     /// stable is what keeps the aim stable across renders.
     func testAnAimTakesTheIdentityTheDifferSettled() throws {
         let renders = Renders()
-        let panel = Aim(Border.self)
+        let panel = Aim(ZStack.self)
 
-        renders.render(stack([Border().aim(panel).body], id: "root"))
+        renders.render(stack([ZStack().aim(panel).body], id: "root"))
 
         XCTAssertEqual(try panel.box.target, .number(1))
         XCTAssertEqual(panel.description, "#1")
 
-        renders.render(stack([Border().aim(panel).opacity(0.5).body], id: "root"))
+        renders.render(stack([ZStack().aim(panel).opacity(0.5).body], id: "root"))
 
         XCTAssertEqual(
             try panel.box.target, .number(1),
@@ -40,8 +40,8 @@ final class AimTests: XCTestCase {
     /// restamped with the identity it already had.
     func testAResyncKeepsTheAim() throws {
         let renders = Renders()
-        let panel = Aim(Border.self)
-        let tree = stack([Border().aim(panel).body], id: "root")
+        let panel = Aim(ZStack.self)
+        let tree = stack([ZStack().aim(panel).body], id: "root")
 
         renders.render(tree)
         renders.renderFromScratch(tree)
@@ -54,10 +54,10 @@ final class AimTests: XCTestCase {
     /// ordinary `@State` starts over.
     func testAnAimFollowsTheViewThatLeavesAndReturns() throws {
         let renders = Renders()
-        let panel = Aim(Border.self)
+        let panel = Aim(ZStack.self)
 
         func tree(showing: Bool) -> Node {
-            stack(showing ? [Border().aim(panel).body] : [], id: "root")
+            stack(showing ? [ZStack().aim(panel).body] : [], id: "root")
         }
 
         renders.render(tree(showing: true))
@@ -76,9 +76,9 @@ final class AimTests: XCTestCase {
     /// identity - and the act then aims with the NAME, both being one element.
     func testAnAimBesideAnAuthorsIdAimsWithTheName() throws {
         let renders = Renders()
-        let row = Aim(Border.self)
+        let row = Aim(ZStack.self)
 
-        renders.render(stack([Border().id("row-7").aim(row).body], id: "root"))
+        renders.render(stack([ZStack().id("row-7").aim(row).body], id: "root"))
 
         XCTAssertEqual(try row.box.target, .string("row-7"))
     }
@@ -89,7 +89,7 @@ final class AimTests: XCTestCase {
     /// that goes nowhere looks exactly like one that has not started - so it
     /// throws instead.
     func testAnAimOnNoViewThrows() {
-        let panel = Aim(Border.self)
+        let panel = Aim(ZStack.self)
 
         XCTAssertThrowsError(try panel.box.target) { error in
             XCTAssertTrue("\(error)".contains("on no view"), "\(error)")
@@ -100,7 +100,7 @@ final class AimTests: XCTestCase {
     /// The same, through the public act itself: the throw happens HERE, before
     /// anything is queued, so nothing reaches the host at all.
     func testAnAimOnNoViewThrowsFromTheActItself() async {
-        let panel = Aim(Border.self)
+        let panel = Aim(ZStack.self)
         _ = drainedActs()
 
         do {
@@ -120,11 +120,11 @@ final class AimTests: XCTestCase {
     /// next walk's first attachment starts it over.
     func testOneAimOnTwoViewsIsAConflictTheActReports() throws {
         let renders = Renders()
-        let panel = Aim(Border.self)
+        let panel = Aim(ZStack.self)
 
         renders.render(stack([
-            Border().aim(panel).body,
-            Border().aim(panel).body,
+            ZStack().aim(panel).body,
+            ZStack().aim(panel).body,
         ], id: "root"))
 
         XCTAssertThrowsError(try panel.box.target) { error in
@@ -132,7 +132,7 @@ final class AimTests: XCTestCase {
         }
         XCTAssertEqual(panel.description, "two views")
 
-        renders.render(stack([Border().aim(panel).body], id: "root"))
+        renders.render(stack([ZStack().aim(panel).body], id: "root"))
 
         XCTAssertEqual(
             try panel.box.target, .number(1),
@@ -177,13 +177,13 @@ final class AimTests: XCTestCase {
     /// with the same one.
     func testAnAimUnderACarriedViewKeepsItsTarget() throws {
         struct Framed: ContentView {
-            let panel: Aim<Border>
+            let panel: Aim<ZStack>
             let tag: Int
-            var content: any View { Border().aim(panel) }
+            var content: any View { ZStack().aim(panel) }
         }
 
         let renders = Renders()
-        let panel = Aim(Border.self)
+        let panel = Aim(ZStack.self)
 
         func tree(_ tag: Int) -> Node {
             stack([Framed(panel: panel, tag: tag).body], id: "root")
@@ -337,20 +337,20 @@ extension Aim where Target == Wheel {
 /// A composed view holding a control of its own - what the per-instance tests
 /// render two of. Declared with `@Aim`, the way an application declares one.
 private struct Panelled: ContentView {
-    @Aim(Border.self) var panel
+    @Aim(ZStack.self) var panel
 
     var content: any View {
-        Border().aim(panel)
+        ZStack().aim(panel)
     }
 }
 
 /// A composed view whose content's ROOT is aimed at, for the test that pins
 /// the inside and the outside naming one element.
 private struct Carded: ContentView {
-    @Aim(Border.self) var inner
+    @Aim(ZStack.self) var inner
 
     var content: any View {
-        Border().aim(inner)
+        ZStack().aim(inner)
     }
 }
 
@@ -362,19 +362,19 @@ private final class Builds {
 
 /// A view HANDED an aim, putting it on a border of its own.
 private struct Handed: ContentView {
-    let panel: Aim<Border>
+    let panel: Aim<ZStack>
     let builds: Builds
 
     var content: any View {
         builds.count += 1
-        return Border().aim(panel)
+        return ZStack().aim(panel)
     }
 }
 
 /// A view that declares an aim and hands it to a child - and reads a state in
 /// its own body, so a write to it builds this view again.
 private struct Handing: ContentView {
-    @Aim(Border.self) var panel
+    @Aim(ZStack.self) var panel
     @Binding var tag: Int
     let builds: Builds
 
@@ -391,8 +391,8 @@ private struct Handing: ContentView {
 /// A view that declares two aims and hands a child one or the other, putting
 /// the one it did not hand on a border of its own.
 private struct Choosing: ContentView {
-    @Aim(Border.self) var left
-    @Aim(Border.self) var right
+    @Aim(ZStack.self) var left
+    @Aim(ZStack.self) var right
     @Binding var picksRight: Bool
     let builds: Builds
 
@@ -401,7 +401,7 @@ private struct Choosing: ContentView {
 
         return VStack {
             Handed(panel: handsRight ? right : left, builds: builds)
-            Border().aim(handsRight ? left : right)
+            ZStack().aim(handsRight ? left : right)
         }
     }
 }

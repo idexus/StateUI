@@ -143,7 +143,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         }
 
         private func face(_ card: Card) -> any View {
-            Border {
+            ZStack {
                 Grid {
                     Image(ImageSource(card.art))
                         .aspect(.fill)
@@ -153,6 +153,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 }
                 .clipsContent(true)
             }
+            .style("Card")
             .shape(.roundedRectangle(16))
         }
         """
@@ -264,7 +265,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     /// the card is or which way it faces. That is the gallery's, and keeping
     /// the two apart is what lets one run of cards wear three shapes.
     private func face(_ card: Card) -> any View {
-        Border {
+        ZStack {
             Grid {
                 Image(ImageSource(card.art))
                     .aspect(.fill)
@@ -280,6 +281,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
             }
             .clipsContent(true)
         }
+        .style("Card")
         .strokeWidth(0)
         .shape(.roundedRectangle(16))
     }

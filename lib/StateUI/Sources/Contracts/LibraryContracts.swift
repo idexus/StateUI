@@ -33,7 +33,7 @@ enum LibraryContracts {
     /// Every element: one contract per node type the library declares.
     static let elements: [any ElementContract.Type] = [
         ActivityIndicatorContract.self, ApplicationContract.self,
-        BorderContract.self, ButtonContract.self, CanvasContract.self, CheckBoxContract.self,
+        ButtonContract.self, CanvasContract.self, CheckBoxContract.self,
         ColorBoxContract.self, ContentContract.self, ContextMenuContract.self, DatePickerContract.self,
         EllipseContract.self, GridContract.self, HStackContract.self, ImageContract.self, LabelContract.self,
         LeadingContentContract.self, LineContract.self, MapContract.self, MenuBarContract.self,

@@ -111,7 +111,7 @@ struct SamplePage: ContentView {
     }
 
     /// An example is a view like any other, so it is placed like any other -
-    /// inside a Border that marks where it begins.
+    /// inside a card that marks where it begins.
     ///
     /// An example that FILLS is wrapped in a Grid rather than a VStack: a stack
     /// gives each child the height it asks for, so a list inside one is
@@ -120,8 +120,8 @@ struct SamplePage: ContentView {
     ///
     /// - Parameter view: the example itself.
     /// - Parameter fills: whether the example takes the whole cell.
-    static func boxed(_ view: Element, fills: Bool = false) -> Border {
-        Border {
+    static func boxed(_ view: Element, fills: Bool = false) -> ZStack {
+        ZStack {
             if fills {
                 Grid {
                     view
@@ -134,6 +134,7 @@ struct SamplePage: ContentView {
                 .padding(16)
             }
         }
+        .style("Card")
         .stroke(Palette.outline)
         .strokeWidth(1)
         .shape(.roundedRectangle(10))

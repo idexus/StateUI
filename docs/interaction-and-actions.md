@@ -48,10 +48,10 @@ half-configured recognizer remains in the tree.
 ### Tap and swipe
 
 ```swift quote
-Border {
+HStack {
     Label("Open details")
-        .padding(12)
 }
+.padding(12)
 .onTapped { path.append(.details) }
 .onSwiped(direction: [.left, .right], threshold: 40) { direction in
     if direction == .left {
@@ -108,7 +108,7 @@ Label(item.title)
     .draggable(text: item.id)
     .onDropCompleted { dragging = nil }
 
-Border { Label("Drop here") }
+ZStack { Label("Drop here") }
     .onDrop { text in receive(text) }
     .onDragOver { highlighted = true }
     .onDragLeave { highlighted = false }

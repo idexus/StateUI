@@ -130,7 +130,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Label("The menu is a slot on the view rather than one of its children: it is "
-                + "written with a modifier, so a Label, a stack or a Border all take one, and "
+                + "written with a modifier, so a Label, a button or a stack all take one, and "
                 + "whatever arranges that control's children leaves it alone.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

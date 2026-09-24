@@ -29,10 +29,11 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
             HStack {
                 ForEach(items) { item in
-                    Border {
+                    ZStack {
                         Label(item)
                             .padding(12, 8)
                     }
+                    .style("Card")
                     .stroke(Palette.accent)
                     .shape(.roundedRectangle(8))
                     // What travels is decided before the drag starts: a
@@ -47,7 +48,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
             Label(finished)
 
-            Border {
+            ZStack {
                 VStack {
                     Label(over
                         ? "let go to drop it"
@@ -59,6 +60,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 }
                 .padding(24)
             }
+            .style("Card")
             // Lit while something is over it and dark again once it leaves,
             // which is what the two events are for.
             .stroke(over ? Palette.accent : Palette.outline)
@@ -87,11 +89,12 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
             HStack {
                 ForEach(items) { item in
-                    Border {
+                    ZStack {
                         Label(item)
                             .fontSize(14)
                             .padding(12, 8)
                     }
+                    .style("Card")
                     .stroke(Palette.accent)
                     .strokeWidth(1)
                     .shape(.roundedRectangle(8))
@@ -111,7 +114,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
 
             SectionTitle("Drop here")
 
-            Border {
+            ZStack {
                 VStack {
                     Label(over
                         ? "let go to drop it"
@@ -129,6 +132,7 @@ struct DragAndDropSample: SampleContent, ExampleContent {
                 .spacing(4)
                 .padding(24)
             }
+            .style("Card")
             // Lit while something is over it and dark again once it leaves,
             // which is what the two events are for.
             .stroke(over ? Palette.accent : Palette.outline)

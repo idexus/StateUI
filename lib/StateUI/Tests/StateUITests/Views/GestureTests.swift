@@ -219,7 +219,7 @@ final class GestureTests: XCTestCase {
                     .draggable(text: "Alpha")
                     .id("source")
 
-                Border {
+                ZStack {
                     Label("Drop here")
                 }
                 .onDrop { dropped.append($0) }

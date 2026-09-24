@@ -157,7 +157,7 @@ final class CarriedStateTests: XCTestCase {
         let dip = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(stack([Border { Label("x") }.scale(dip.projectedValue).body], id: "root"))
+        renders.render(stack([ZStack { Label("x") }.scale(dip.projectedValue).body], id: "root"))
         Renderer.shared.clearInvalidation()
 
         // A build's scope, and the machinery of a write running inside it -

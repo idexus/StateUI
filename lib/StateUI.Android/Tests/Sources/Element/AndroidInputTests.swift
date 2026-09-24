@@ -20,10 +20,10 @@ final class AndroidInputTests: XCTestCase {
             let taps = Received<Int>()
             let host = AndroidRenderer.running {
                 VStack {
-                    Border { Label("card") }.onTapped { taps.values.append(1) }
+                    ZStack { Label("card") }.onTapped { taps.values.append(1) }
                 }
             }
-            let border = try XCTUnwrap(host.views(AndroidBorderView.self).first)
+            let border = try XCTUnwrap(host.views(AndroidZStackView.self).first)
 
             border.click()
             XCTAssertEqual(taps.values, [1])
@@ -44,7 +44,7 @@ final class AndroidInputTests: XCTestCase {
                 Grid {
                     Button("behind").onClicked {}
                     VStack {
-                        Border { Label("over") }.onTapped {}
+                        ZStack { Label("over") }.onTapped {}
                     }
                     .ignoresInput(true)
                 }
@@ -56,7 +56,7 @@ final class AndroidInputTests: XCTestCase {
             host.layOut()
             let page = try XCTUnwrap(host.views(AndroidSingleChildView.self).first)
             let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
-            let border = try XCTUnwrap(host.views(AndroidBorderView.self).first)
+            let border = try XCTUnwrap(host.views(AndroidZStackView.self).first)
 
             page.touch(0, x: 200, y: 100)
             XCTAssertTrue(Java.callBool(button.reference, TestJava.isPressed), "the button behind is pressed")

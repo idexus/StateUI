@@ -91,6 +91,18 @@ extension Shape {
         journey(ShapeContract.strokeDashOffset, by: state)
     }
 
+    /// `strokeLineCap` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func strokeLineCap(_ state: Binding<LineCap>) -> Modified {
+        plain(ShapeContract.strokeLineCap, by: state)
+    }
+
+    /// `strokeLineJoin` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func strokeLineJoin(_ state: Binding<LineJoin>) -> Modified {
+        plain(ShapeContract.strokeLineJoin, by: state)
+    }
+
     /// `strokeMiterLimit` from a state, `$x`: the host animates the property to
     /// each new value, and no view is rebuilt for it.
     public func strokeMiterLimit(_ state: Binding<Double>) -> Modified {

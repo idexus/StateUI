@@ -109,7 +109,7 @@ private struct RebuildPanel: ContentView {
     @Binding var value: Int
 
     var content: any View {
-        Border {
+        ZStack {
             VStack {
                 Label("\(name) is \(value)")
                     .fontSize(15)
@@ -125,6 +125,7 @@ private struct RebuildPanel: ContentView {
             .spacing(4)
             .padding(14, 12)
         }
+        .style("Card")
         .stroke(Palette.outline)
         .strokeWidth(1)
         .shape(.roundedRectangle(10))

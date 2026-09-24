@@ -118,19 +118,21 @@ per shape. `renderTransform` transforms the path each shape makes, so one
 modifier means one thing on all of them and the stroke follows the transformed
 path; `.transform` moves what was drawn, after layout.
 
-A `Border` carries the same stroke properties on `BorderProperties` rather than
-sharing the shape tier, because that tier also carries `fill`,
-`renderTransform` and `aspect`, a drawn figure's properties and none of them a
-border's. In the patch they are the same properties.
+A layout's outline, `BorderElement`'s `stroke` and `strokeWidth`, carries the
+same properties as a shape's rather than wearing the shape tier, because that
+tier also carries `fill`, `renderTransform`, `aspect` and the dash pattern, a
+drawn figure's properties and none of them a layout's. In the patch they are the
+same properties.
 
 ## Borders
 
-`BorderElement` is the outline a Button or a RadioButton draws around itself:
-three flat properties declared once, so one binding twin such as
-`.borderWidth($thickness)` serves both controls. Its `cornerRadius` is a whole
-number, so its twin sets it as it stands. A `Border` is a different thing: a
-view of its own that strokes whatever it holds, with a brush, a shape and a
-dash pattern.
+`BorderElement` is what an element draws of its own box. A stack, a grid and a
+ZStack wear it through the layout tier: `shape` - a rectangle, a rounded
+rectangle or an ellipse - which their background fills and, with
+`clipsContent`, cuts what they hold to, and `stroke` and `strokeWidth`, their
+outline on it. A dashed outline is a shape's, laid over the layout in a ZStack.
+A Button and a RadioButton wear it too, and still draw their outline from
+`borderColor`, `borderWidth` and a whole-number `cornerRadius`.
 
 ## Menu items
 

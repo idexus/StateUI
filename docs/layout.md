@@ -6,8 +6,8 @@ rules that must stay identical across hosts; the host owns integration with its
 toolkit's measurement and display cycle.
 
 The declared primitive vocabulary is deliberately small: vertical and
-horizontal stacks, `Grid`, `ZStack`, `ScrollView`, `Border`, and
-ordinary view sizing and alignment. More specialized arrangements are composed
+horizontal stacks, `Grid`, `ZStack`, `ScrollView`, and ordinary view
+sizing and alignment. More specialized arrangements are composed
 from these or implemented once as StateUI-authored layout. A primitive is
 usable on a platform only when its row and required members are checked in the
 platform matrix.
@@ -396,12 +396,39 @@ without a stable stopping condition. A size derived from measurement normally
 uses `.motion(.none)`: letting the measured size travel can feed intermediate
 measurements back into the same calculation.
 
+## A layout's own box
+
+A stack, a grid or a ZStack paints its own box: its background, filled to the
+shape it names, and an outline on that shape. There is no separate view to
+wrap content in for a card - the layout holding the content is the card.
+
+```swift
+VStack {
+    Label("Cheese")
+    Label("Aged twelve months")
+}
+.padding(14)
+.background(Color("#F4F4F4"))
+.shape(.roundedRectangle(8))
+.stroke(Color("#D0D0D0"))
+.strokeWidth(1)
+.clipsContent(true)
+```
+
+`shape` is `.rectangle`, `.roundedRectangle(radius)` or `.ellipse`. The outline
+is drawn inside the layout's bounds and never pushes its children in; that is
+the padding's work. `clipsContent(true)` cuts what the layout holds to the
+shape, so a picture in a rounded card has rounded corners; without it the shape
+is drawn and nothing is cut. A dashed outline belongs to a shape: lay a
+`Rectangle` with a dash pattern over the layout in a `ZStack`.
+
 ## Safe areas and clipping
 
 `avoidsSafeArea` states which edges participate in the host's safe-area
 integration. `clipsContent` controls whether descendants may draw outside
-the assigned rectangle. Both are semantic requests and only count as available
-on a platform after the matrix records host tests for them.
+the assigned rectangle, cut to the layout's shape where it names one. Both are
+semantic requests and only count as available on a platform after the matrix
+records host tests for them.
 
 ## StateUI-authored layouts
 

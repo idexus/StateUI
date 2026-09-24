@@ -318,11 +318,13 @@ enum AppStyles {
             // A colour here is one property with the view's own background,
             // so a panel that sets its own - a colour, or a gradient like the
             // home page's - replaces this one, the animated panel included.
-            Style<Border>()
+            // What a card holds is cut to its corners: a picture reaches them.
+            Style<ZStack>("Card")
                 .background(Palette.raised)
                 .stroke(Palette.outline)
                 .shape(.roundedRectangle(14))
                 .strokeWidth(1)
+                .clipsContent(true)
 
             // COLOUR, not background: a ColorBox draws its colour, and a
             // background is a second square behind that one - which Android

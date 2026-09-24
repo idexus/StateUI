@@ -8,7 +8,7 @@
 ///
 ///     @State private var fade = 1.0
 ///     …
-///     Border { … }.opacity($fade)
+///     VStack { … }.opacity($fade)
 ///     …
 ///     try await $fade.journey.move(to: 0.1, .eased(400, .cubicOut))
 ///

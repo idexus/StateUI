@@ -60,20 +60,6 @@ extension AndroidRegistrations {
             scroll.raises(ScrollViewContract.scrollYChanged)
             scroll.raises(ScrollViewContract.scrollStopped)
         }
-
-        registry.add(BorderContract.self, create: { _ in AndroidBorderView() }) { border in
-            border.applies([
-                BorderContract.shape, BorderContract.stroke, BorderContract.strokeWidth,
-                PaddingElementContract.padding,
-            ]) { view, values in
-                view.padding = values[PaddingElementContract.padding] ?? Insets(0)
-                view.apply(
-                    stroke: values[BorderContract.stroke]?.propValue,
-                    strokeWidth: values[BorderContract.strokeWidth],
-                    shape: AndroidShapeDrawable.Shape(border: values[BorderContract.shape]?.propValue))
-            }
-            border.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
-        }
     }
 
     /// What every layout takes of its own box: its outline, its shape and its cut.

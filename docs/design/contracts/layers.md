@@ -8,7 +8,7 @@ dictionary prints it beside every row.
 
 | Layer | Who realizes it | Elements |
 | --- | --- | --- |
-| `native` | every base host, with its toolkit's own control | ActivityIndicator, Border, Button, Canvas, ColorBox, DatePicker, HStack, Image, Label, Picker, ProgressBar, ScrollView, SearchField, Slider, Stepper, Switch, TextEditor, TextField, TimePicker, VStack, WebView, ZStack |
+| `native` | every base host, with its toolkit's own control | ActivityIndicator, Button, Canvas, ColorBox, DatePicker, HStack, Image, Label, Picker, ProgressBar, ScrollView, SearchField, Slider, Stepper, Switch, TextEditor, TextField, TimePicker, VStack, WebView, ZStack |
 | `adaptive` | every base host, by its platform's conventions, keeping StateUI's state contract | NavigationStack, Page, SplitView, TabbedView, TitleBar |
 | `stateUI` | StateUI, composed from smaller primitives before a host receives the tree | CheckBox, Ellipse, Grid, Line, Path, Polygon, Polyline, PositionIndicator, RadioButton, Rectangle |
 | `structure` | nobody draws it: it carries structure or protocol data | Application, Scene, Window, the menus, the slots and collections, Span, VisualState |

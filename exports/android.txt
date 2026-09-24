@@ -1,12 +1,6 @@
 ActivityIndicator
   isRunning
   tint
-Border
-  ignoresInput
-  padding
-  shape
-  stroke
-  strokeWidth
 Button
   aspect
   borderColor

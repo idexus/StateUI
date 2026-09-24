@@ -21,7 +21,7 @@ struct ItemPage: ContentView {
     @Binding var path: [Route]
 
     var content: any View {
-        Border {
+        ZStack {
             VStack {
                 SectionTitle("Pushed page")
 
@@ -42,6 +42,7 @@ struct ItemPage: ContentView {
             }
             .spacing(16)
         }
+        .style("Card")
         .padding(24)
         .margin(24)
         .background(Palette.surface)

@@ -153,7 +153,7 @@ final class Catalog {
                     Sample(PlacedSample()),
                     Sample(ScrollViewSample()),
                     Sample(SizingSample()),
-                    Sample(BorderSample()),
+                    Sample(OutlineSample()),
                     Sample(ColorBoxSample()),
                     Sample(TransformSample()),
                     Sample(LayoutDirectionSample()),

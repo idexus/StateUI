@@ -12,7 +12,7 @@ Swift protocols behind them refine each other.
   PropertyContainer                      the name automation finds an element by
   |-- VisualElement                      size, visibility, transform, input, focus, accessibility
   |   |-- View                           place in a layout, margin, gestures, drag and drop, frame
-  |   |   |-- Layout  (+ PaddingElement) safe area, clipping, input through empty space
+  |   |   |-- Layout  (+ PaddingElement, BorderElement) safe area, clipping, own box, input through empty space
   |   |   |   '-- StackBase              spacing between children
   |   |   |-- InputView                  text limits, caret, keyboard, placeholder
   |   |   '-- Shape                      fill, stroke, a transform of its own drawing
@@ -35,7 +35,7 @@ Swift protocols behind them refine each other.
 ## Who wears what
 
 ```text
-  View               ActivityIndicator, Border, Button, Canvas, CheckBox, ColorBox,
+  View               ActivityIndicator, Button, Canvas, CheckBox, ColorBox,
                      DatePicker, Image, Label, Map, Picker, PositionIndicator,
                      ProgressBar, RadioButton, ScrollView, Slider, Stepper,
                      Switch, TimePicker, TitleBar, WebView

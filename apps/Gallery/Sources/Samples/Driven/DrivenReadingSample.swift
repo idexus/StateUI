@@ -24,7 +24,8 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             // The bar: one driven property, and the host moves it.
-            Border { }
+            ZStack { }
+            .style("Card")
                 .width($width)
                 .height(28)
 
@@ -37,7 +38,8 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             // The SAME arithmetic drawn: the distance between where the value
             // is going and where it is - widest the moment a button is
             // pressed, and nought when the bar arrives.
-            Border { }
+            ZStack { }
+            .style("Card")
                 .width($width.journey.convert { abs($0.destination - $0.value) })
                 .height(10)
 
@@ -62,9 +64,10 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            Border {
+            ZStack {
                 Label("")
             }
+            .style("Card")
             .width($width)
             .height(28)
             .background(.solidColor(Palette.accent))
@@ -85,9 +88,10 @@ struct DrivenReadingSample: SampleContent, ExampleContent {
             // The SAME arithmetic drawn: the distance between where the value
             // is going and where it is. It is widest the moment a button is
             // pressed and nought when the bar arrives.
-            Border {
+            ZStack {
                 Label("")
             }
+            .style("Card")
             .width($width.journey.convert { abs($0.destination - $0.value) })
             .height(10)
             .background(.solidColor(Palette.subtle))

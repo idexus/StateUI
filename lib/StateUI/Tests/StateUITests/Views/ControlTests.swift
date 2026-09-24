@@ -240,21 +240,6 @@ final class ControlTests: XCTestCase {
                 ColorBox(.cornflowerBlue)
                     .cornerRadius(8)),
 
-            ControlCase("Border", source: "Border.swift",
-                Border {
-                    Label("Inside")
-                }
-                .stroke(.lightGray)
-                .strokeWidth(1)
-                .shape(.roundedRectangle(12))
-                // The rest of the stroke set, which a Border declares of its
-                // own beside the identical set on Shape.
-                .strokeDashPattern([6, 3])
-                .strokeDashOffset(2)
-                .strokeLineCap(.round)
-                .strokeLineJoin(.bevel)
-                .strokeMiterLimit(4)),
-
             ControlCase("PositionIndicator", source: "PositionIndicator.swift",
                 PositionIndicator()
                     .count(3)
@@ -307,7 +292,11 @@ final class ControlTests: XCTestCase {
                     Label("Bottom right")
                         .horizontalAlignment(.end)
                         .verticalAlignment(.end)
-                }),
+                }
+                .stroke(.lightGray)
+                .strokeWidth(1)
+                .shape(.roundedRectangle(12))
+                .clipsContent(true)),
 
             ControlCase("ScrollView", source: "ScrollView.swift",
                 ScrollView {

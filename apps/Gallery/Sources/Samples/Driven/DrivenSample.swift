@@ -89,7 +89,7 @@ struct DrivenSample: SampleContent, ExampleContent {
 
             let law = slowly ? "1600 ms, cubicInOut" : "350 ms, cubicOut"
 
-            Border {
+            ZStack {
                 Grid {
                     ColorBox()
                         .color($tint)
@@ -109,6 +109,7 @@ struct DrivenSample: SampleContent, ExampleContent {
                 .width(260)
                 .height(28)
             }
+            .style("Card")
             .padding(16)
             .background(Palette.surface)
             .stroke(.transparent)

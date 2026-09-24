@@ -255,7 +255,7 @@ struct ConverterSample: SampleContent, ExampleContent {
     /// One row: a caption, then the content in a stack of its own, so the
     /// reading taken inside the content is that stack's alone.
     private func row(_ caption: String, @ViewBuilder _ content: @escaping () -> [Element]) -> any View {
-        Border {
+        ZStack {
             VStack {
                 Label(caption)
                     .fontSize(11)
@@ -266,6 +266,7 @@ struct ConverterSample: SampleContent, ExampleContent {
             }
             .spacing(6)
         }
+        .style("Card")
         .padding(10)
         .shape(.roundedRectangle(8))
         .stroke(Palette.outline)

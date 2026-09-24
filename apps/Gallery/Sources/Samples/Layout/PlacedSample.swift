@@ -343,7 +343,7 @@ struct PlacedSample: SampleContent, ExampleContent {
         // One card's face - a picture and its name, and nothing at all about
         // where the card is or which way it faces. That is the placement's.
         func face(_ card: Card) -> any View {
-            Border {
+            ZStack {
                 Grid {
                     Image(ImageSource(card.art))
                         .aspect(.fill)
@@ -354,11 +354,11 @@ struct PlacedSample: SampleContent, ExampleContent {
                     }
                     .verticalAlignment(.end)
                 }
-                // THE PICTURE IS CUT AT THE CARD'S EDGE: a Border clips what
-                // it holds on Apple and does not on Android, so the clip goes
-                // on the grid, which is a layout and has edges to cut at.
+                // THE PICTURE IS CUT AT THE CARD'S EDGE: the grid holding it,
+                // a layout with edges to cut at, clips it.
                 .clipsContent(true)
             }
+            .style("Card")
             .shape(.roundedRectangle(16))
         }
         """
@@ -525,7 +525,7 @@ struct PlacedSample: SampleContent, ExampleContent {
     /// the card is or which way it faces. That is the placement's, and keeping
     /// the two apart is what lets one run of cards be turned into any shape.
     private func face(_ card: Card) -> any View {
-        Border {
+        ZStack {
             Grid {
                 Image(ImageSource(card.art))
                     .aspect(.fill)
@@ -552,14 +552,12 @@ struct PlacedSample: SampleContent, ExampleContent {
                 .background(Color("#B3000000"))
                 .verticalAlignment(.end)
             }
-            // THE PICTURE IS CUT AT THE CARD'S EDGE, and this is a platform
-            // difference rather than a nicety: a Border clips what it holds on
-            // Apple and does not on Android, so a picture told to FILL the card
-            // is painted at its own size all over the layout. The clip belongs
-            // on the grid, which is a layout and therefore the thing that has
-            // edges to cut at.
+            // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
+            // the card is painted at its own size all over the layout, so the
+            // grid holding it - a layout, with edges to cut at - clips it.
             .clipsContent(true)
         }
+        .style("Card")
         .strokeWidth(0)
         .shape(.roundedRectangle(16))
     }

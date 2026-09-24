@@ -834,7 +834,7 @@ final class CatalogTests: XCTestCase {
     ///
     /// What a user sees under "In Swift" is the example's own view code with
     /// the decoration taken out - the layout and the meaning of the example,
-    /// nothing invented. A sketch is what that rots into: `Border { … }`,
+    /// nothing invented. A sketch is what that rots into: `ZStack { … }`,
     /// `VStack { ... }`, a structure that stops halfway, a type the sample does
     /// not use. None of it would compile if it were pasted back, and nothing
     /// else here would notice.
@@ -1001,7 +1001,7 @@ final class CatalogTests: XCTestCase {
         func walk(_ node: Node, within: [String]?) {
             let node = node.built
             let name = node.type.name
-            let inside = within ?? (name == "Border" ? [] : nil)
+            let inside = within ?? (name == "ZStack" ? [] : nil)
 
             if name == "ScrollView", let inside {
                 carriers = inside
@@ -1606,13 +1606,13 @@ final class CatalogTests: XCTestCase {
     /// Finds what answers a tap and insists there is one per thing listed, each
     /// on the CARD.
     ///
-    /// Counts the handlers rather than the Borders, and says what carries each.
+    /// Counts the handlers rather than the cards, and says what carries each.
     /// Both halves matter and they are the two ways this has been wrong: too few
     /// handlers is a row that does not answer, and a handler on anything but the
-    /// Border is the original defect - the chevron carried it, so the row looked
-    /// tappable and only that one glyph was.
+    /// card's ZStack is the original defect - the chevron carried it, so the row
+    /// looked tappable and only that one glyph was.
     ///
-    /// A Border is not by itself a card. The home page opens with one that is a
+    /// A card's ZStack is not by itself a card. The home page opens with one that is a
     /// PANEL - the mark and the name on the identity gradient - and counting
     /// shapes rather than handlers made a decoration look like a missing row.
     private func assertEveryCardIsTappable(
@@ -1637,7 +1637,7 @@ final class CatalogTests: XCTestCase {
                        "the page answers a tap in something other than \(count) places",
                        file: file, line: line)
 
-        XCTAssertEqual(Set(carriers), ["Border"],
+        XCTAssertEqual(Set(carriers), ["ZStack"],
                        "a tap is answered by \(Set(carriers).sorted()) rather than by the card",
                        file: file, line: line)
     }

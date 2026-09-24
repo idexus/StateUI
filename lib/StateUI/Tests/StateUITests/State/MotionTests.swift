@@ -17,7 +17,7 @@ import XCTest
 final class MotionTests: XCTestCase {
     /// A border of a stated opacity, which is a number with a half-way.
     private func panel(_ opacity: Double, id: String = "panel") -> Node {
-        Border { Label("x") }.opacity(opacity).id(id).body
+        ZStack { Label("x") }.opacity(opacity).id(id).body
     }
 
     // ---- What travels -------------------------------------------------------
@@ -46,9 +46,9 @@ final class MotionTests: XCTestCase {
     func testAColourTravels() {
         let renders = Renders()
 
-        renders.render(Border { Label("x") }.background(Color("#000000")).id("b").body)
+        renders.render(ZStack { Label("x") }.background(Color("#000000")).id("b").body)
         let patch = renders.render(
-            Border { Label("x") }.background(Color("#FFFFFF")).id("b").body)
+            ZStack { Label("x") }.background(Color("#FFFFFF")).id("b").body)
 
         XCTAssertNotNil(patch.transitions[.background])
     }
@@ -103,8 +103,8 @@ final class MotionTests: XCTestCase {
     func testAViewToldToStayStillDoesNot() {
         let renders = Renders()
 
-        renders.render(Border { Label("x") }.opacity(1).motion(.none).id("p").body)
-        let patch = renders.render(Border { Label("x") }.opacity(0.25).motion(.none).id("p").body)
+        renders.render(ZStack { Label("x") }.opacity(1).motion(.none).id("p").body)
+        let patch = renders.render(ZStack { Label("x") }.opacity(0.25).motion(.none).id("p").body)
 
         XCTAssertEqual(patch.props[.opacity], .number(0.25))
         XCTAssertTrue(patch.transitions.isEmpty)
@@ -117,7 +117,7 @@ final class MotionTests: XCTestCase {
 
         func tree(_ opacity: Double) -> Node {
             VStack {
-                Border { Label("x") }.opacity(opacity).id("inner")
+                ZStack { Label("x") }.opacity(opacity).id("inner")
             }
             .motion(.none)
             .id("outer")
@@ -140,7 +140,7 @@ final class MotionTests: XCTestCase {
             let fade: Double
 
             var content: any View {
-                Border { Label("x") }.opacity(fade)
+                ZStack { Label("x") }.opacity(fade)
             }
         }
 
@@ -208,7 +208,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func row(_ y: Double, _ opacity: Double) -> Node {
-            Border { Label("x") }
+            ZStack { Label("x") }
                 .area(.absolute(0, y, 1, 40))
                 .opacity(opacity)
                 .id("row")
@@ -291,7 +291,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func panel(_ width: Double, _ colour: Color) -> Node {
-            Border { Label("x") }
+            ZStack { Label("x") }
                 .width(width)
                 .background(colour)
                 .motion(.none, .size)
@@ -313,7 +313,7 @@ final class MotionTests: XCTestCase {
         let own = Motion.spring(response: 240)
 
         func panel(_ fade: Double, _ width: Double) -> Node {
-            Border { Label("x") }
+            ZStack { Label("x") }
                 .opacity(fade)
                 .width(width)
                 .motion(own, .opacity)
@@ -335,7 +335,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func panel(_ width: Double) -> Node {
-            Border { Label("x") }
+            ZStack { Label("x") }
                 .width(width)
                 .motion(.none, .size)
                 .motion(.eased(500), .width)
@@ -371,7 +371,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func room(_ width: Double) -> Node {
-            VStack { Border { Label("x") }.width(width).id("held") }
+            VStack { ZStack { Label("x") }.width(width).id("held") }
                 .onFrameChanged { _ in }
                 .id("room")
                 .body
@@ -388,7 +388,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func room(_ width: Double) -> Node {
-            VStack { Border { Label("x") }.width(width).id("held") }.id("room").body
+            VStack { ZStack { Label("x") }.width(width).id("held") }.id("room").body
         }
 
         renders.render(room(0))
@@ -403,7 +403,7 @@ final class MotionTests: XCTestCase {
         let renders = Renders()
 
         func panel(_ height: Double) -> Node {
-            Border { Label("x") }.height(height).onFrameChanged { _ in }.id("p").body
+            ZStack { Label("x") }.height(height).onFrameChanged { _ in }.id("p").body
         }
 
         renders.render(panel(40))
@@ -422,7 +422,7 @@ final class MotionTests: XCTestCase {
         func room(_ width: Double) -> Node {
             VStack {
                 Label("measured").onFrameChanged { _ in }
-                Border { Label("x") }.width(width).id("beside")
+                ZStack { Label("x") }.width(width).id("beside")
             }
             .id("room")
             .body

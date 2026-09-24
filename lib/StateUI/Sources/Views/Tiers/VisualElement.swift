@@ -11,7 +11,7 @@ public protocol VisualElementProperties: PropertyContainer {}
 extension VisualElement {
     /// How this view's values animate when they change.
     ///
-    ///     Border { … }.motion(.spring(response: 260))
+    ///     VStack { … }.motion(.spring(response: 260))
     ///     Label(count).motion(.none)
     ///
     /// A changed value animates to its new setting by default; `.none` snaps,

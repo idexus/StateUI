@@ -6,12 +6,12 @@ import StateUI
 ///
 /// The WHOLE card answers a tap: a view with `.onTapped` on it, not a button
 /// with something around it. The chevron is a chevron - it says where the row goes and nothing more.
-/// And because a tapped Border shows nothing where a Button would, the card
+/// And because a tapped ZStack shows nothing where a Button would, the card
 /// says the press back itself: a quick dip in scale before the action runs.
 ///
 /// A FILL and a hairline, which is what makes it read as raised on the tinted
-/// page behind it - see `Palette.surface`. Both come from the implicit
-/// `Style<Border>`, so nothing here says what a card looks like.
+/// page behind it - see `Palette.surface`. Both come from the "Card" style,
+/// so nothing here says what a card looks like.
 ///
 /// It is shaped the way every control in the library is, and that shape is the
 /// rule for a composed view of your own: WHAT IT IS goes in the initializer -
@@ -71,7 +71,7 @@ struct Card: ContentView {
         let dip = $dip
         let action = self.action
 
-        return Border {
+        return ZStack {
             Grid {
                 Image(picture)
                     .width(24)
@@ -110,6 +110,7 @@ struct Card: ContentView {
             .columns(.auto, .fill, .auto)
             .padding(16, 14)
         }
+        .style("Card")
         // A CARD IS A BORDER WITH A TAP ON IT, which no platform reads as a
         // control at all: the user who cannot see it would be handed a
         // picture, two Labels and a chevron with nothing saying they act
@@ -120,7 +121,7 @@ struct Card: ContentView {
         .accessibilityLabel(title)
         .accessibilityHint(summary)
         .scale($dip)
-        // The press, said back: a Border with a TapGestureRecognizer draws
+        // The press, said back: a ZStack with a TapGestureRecognizer draws
         // nothing on its own, unlike a Button, so without this a tap shows
         // nothing until the page changes. The DIP runs to the end before the
         // action starts - it is the feedback, and a navigation's page build

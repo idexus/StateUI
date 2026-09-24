@@ -25,10 +25,10 @@ struct PinchSample: SampleContent, ExampleContent {
             // pinch makes builds this closure.
             DebugInfoLabel()
 
-            // The recognizer is on the Border; the ColorBox inside it is what
+            // The recognizer is on the ZStack; the ColorBox inside it is what
             // moves. Putting both on one view is what stops a pinch after its
             // first report.
-            Border {
+            ZStack {
                 ColorBox(Palette.accent)
                     .width(80)
                     .height(80)
@@ -36,6 +36,7 @@ struct PinchSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
                     .scale(pinch)
             }
+            .style("Card")
             .height(220)
             .onPinchUpdated { update in
                 reports += 1
@@ -75,10 +76,10 @@ struct PinchSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            // The recognizer is on the Border; the ColorBox inside it is what
+            // The recognizer is on the ZStack; the ColorBox inside it is what
             // moves. Putting both on one view is what stops a pinch after its
             // first report - see the notes.
-            Border {
+            ZStack {
                 ColorBox(Palette.accent)
                     .cornerRadius(10)
                     .width(80)
@@ -87,6 +88,7 @@ struct PinchSample: SampleContent, ExampleContent {
                     .verticalAlignment(.center)
                     .scale(pinch)
             }
+            .style("Card")
             .stroke(Palette.outline)
             .strokeWidth(1)
             .shape(.roundedRectangle(10))
@@ -161,7 +163,7 @@ struct PinchSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Label("The pinch is heard on the Border, and the ColorBox inside it is what "
+            Label("The pinch is heard on the ZStack, and the ColorBox inside it is what "
                 + "scales: a view that transforms itself while a gesture runs can cancel "
                 + "its own recognizer, and the pinch stops after its first report.")
                 .fontSize(12)

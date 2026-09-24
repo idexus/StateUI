@@ -1026,7 +1026,7 @@ final class StyleTests: XCTestCase {
                     .background(Color("#C8C8C8"))
                 }
 
-            Style<Border>()
+            Style<ZStack>()
                 .stroke(Color("#C8C8C8"))
                 .strokeWidth(1)
                 .shape(.roundedRectangle(12))
@@ -1038,7 +1038,7 @@ final class StyleTests: XCTestCase {
                     Label("Welcome").style("Headline")
                     Label("Body text")
                     Button("Save").isEnabled(false)
-                    Border { Label("in a border") }
+                    ZStack { Label("in an outline") }
                 }
                 .body,
             ]),

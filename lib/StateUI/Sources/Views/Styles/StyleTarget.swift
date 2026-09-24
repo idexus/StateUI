@@ -44,7 +44,6 @@ extension ActivityIndicator: StyleTarget {}
 extension ProgressBar: StyleTarget {}
 extension Image: StyleTarget {}
 extension ColorBox: StyleTarget {}
-extension Border: StyleTarget {}
 extension Grid: StyleTarget {}
 extension ScrollView: StyleTarget {}
 extension VStack: StyleTarget {}

@@ -91,8 +91,6 @@ extension AppKitElement {
         case .zStack:
             return AppKitZStackView()
 
-        case .border:
-            return AppKitBorderView()
 
         case .scrollView:
             let scroll = AppKitScrollView()
@@ -133,7 +131,7 @@ extension AppKitElement {
         }
 
         applyVisibility()
-        if !(view is AppKitBorderView) && !(view is AppKitTravellingLayout) && !(view is AppKitColorBoxView) {
+        if !(view is AppKitTravellingLayout) && !(view is AppKitColorBoxView) {
             let background = color(.background)
             view.wantsLayer = true
             view.layer?.backgroundColor = background?.cgColor
@@ -184,17 +182,6 @@ extension AppKitElement {
         if let layers = view as? AppKitZStackView {
             layers.placement = placement(.area)
             layers.padding = insets(.padding)
-        }
-
-        if let border = view as? AppKitBorderView {
-            // ITS OWN PADDING, NOT A PAGE'S. This view descends from
-            // `AppKitSingleChildView` and took its padding from the page's arm
-            // until the page's value moved to the registry, where a
-            // registration answers for one node type rather than one class.
-            border.padding = insets(.padding)
-            border.decoration.apply(
-                backgroundColor: color(.background), background: value(.background), stroke: value(.stroke),
-                strokeWidth: value(.strokeWidth)?.number, shape: value(.shape), clips: true, to: border)
         }
 
         if let layout = view as? AppKitTravellingLayout {

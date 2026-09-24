@@ -9,10 +9,8 @@ extension View {
 
     /// Runs when the view is tapped by the platform's native recognizer.
     ///
-    ///     Border {
-    ///         HStack { … }
-    ///     }
-    ///     .onTapped { path.append(.details(id)) }
+    ///     HStack { … }
+    ///         .onTapped { path.append(.details(id)) }
     ///
     /// The whole view answers, not a button inside it.
     public func onTapped(_ handler: @escaping EventHandler) -> Modified {
@@ -37,7 +35,7 @@ extension View {
 
     /// Runs when the view is swiped, with the one dominant direction it went.
     ///
-    ///     Border { … }
+    ///     VStack { … }
     ///         .onSwiped(direction: [.left, .right]) { direction in
     ///             if direction == .left { items.removeLast() }
     ///         }
@@ -212,7 +210,7 @@ extension View {
 
     /// Accepts what is dropped on the view, with the text it carried.
     ///
-    ///     Border { … }
+    ///     VStack { … }
     ///         .onDrop { text in items.append(text) }
     public func onDrop(_ handler: @escaping ValueEventHandler<String>) -> Modified {
         modified {

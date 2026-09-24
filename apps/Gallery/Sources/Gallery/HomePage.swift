@@ -134,9 +134,9 @@ struct HomePage: ContentView {
                 // the one place in the app that says all three at once.
                 //
                 // The panel paints its own background and its own edge: the
-                // implicit Border style fills a card and draws a hairline, and
-                // both would show through the gradient.
-                Border {
+                // Card style fills a card and draws a hairline, and both would
+                // show through the gradient.
+                ZStack {
                     VStack {
                         Image("stateui_mark.png")
                             .width(84)
@@ -157,6 +157,7 @@ struct HomePage: ContentView {
                     .spacing(10)
                     .padding(22)
                 }
+                .style("Card")
                 .background(Palette.identity)
                 .stroke(.transparent)
                 .strokeWidth(0)
@@ -569,7 +570,7 @@ private struct GroupFace: ContentView {
     let picture: ImageSource
 
     var content: any View {
-        Border {
+        ZStack {
             Grid {
                 Image(picture)
                     .aspect(.fill)
@@ -585,14 +586,12 @@ private struct GroupFace: ContentView {
                 .background(Color("#B3000000"))
                 .verticalAlignment(.end)
             }
-            // THE PICTURE IS CUT AT THE CARD'S EDGE, and this is a platform
-            // difference rather than a nicety: a Border clips what it holds on
-            // Apple and does not on Android, so a picture told to FILL the card
-            // is painted at its own size all over the layout. The clip belongs
-            // on the grid, which is a layout and therefore the thing that has
-            // edges to cut at.
+            // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
+            // the card is painted at its own size all over the layout, so the
+            // grid holding it - a layout, with edges to cut at - clips it.
             .clipsContent(true)
         }
+        .style("Card")
         // A CARD OF THE RUN IS A PICTURE WITH A CAPTION OVER IT, and the run
         // itself takes the touch - so nothing here is a control on any
         // platform. The card says which group it is, and what its summary

@@ -38,8 +38,9 @@ different member, silently. A member a host has no case for arrives as
 
 ## A colour stroke is a solid brush
 
-`Border.stroke(_ value: Color)` is written over the brush form, so a border's
-stroke and a shape's put the same value in the patch for the same colour. A bare
+`stroke(_ value: Color)` is written over the brush form, on a layout as on a
+shape, so a layout's outline and a shape's put the same value in the patch for
+the same colour. A bare
 colour written out instead would make one property arrive in two shapes and
 leave the host carrying a branch to tell them apart.
 

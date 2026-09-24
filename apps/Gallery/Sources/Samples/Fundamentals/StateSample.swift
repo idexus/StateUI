@@ -17,7 +17,7 @@ struct StateSample: SampleContent, ExampleContent {
         // A BORDER ROUND EACH CLOSURE, so what a write rebuilds is a rectangle
         // you can see. The borders are drawing and nothing else: the reader of
         // a value is the VStack whose braces the get sits in, either way.
-        Border {
+        ZStack {
             VStack {
                 // THIS closure reads `counter`, so a write to it rebuilds THIS
                 // closure - and the reading says `for counter`.
@@ -35,7 +35,7 @@ struct StateSample: SampleContent, ExampleContent {
                         .onClicked { counter = 0 }
                 }
 
-                Border {
+                ZStack {
                     VStack {
                         // And this closure reads `name` alone. Typing rebuilds
                         // it and leaves the one around it standing still;
@@ -49,10 +49,12 @@ struct StateSample: SampleContent, ExampleContent {
                         Label(name.isEmpty ? "Hello, stranger" : "Hello, \\(name)!")
                     }
                 }
+                .style("Card")
                 .stroke(Palette.accent)
                 .shape(.roundedRectangle(10))
             }
         }
+        .style("Card")
         .stroke(Palette.accent)
         .shape(.roundedRectangle(12))
         """
@@ -63,7 +65,7 @@ struct StateSample: SampleContent, ExampleContent {
         // rule. The borders are decoration: the reader of a value is the VStack
         // whose braces the get sits in, and that is where each reading is
         // taken.
-        Border {
+        ZStack {
             VStack {
                 Label("This closure reads `counter`")
                     .fontSize(11)
@@ -96,7 +98,7 @@ struct StateSample: SampleContent, ExampleContent {
                 .spacing(12)
                 .horizontalAlignment(.center)
 
-                Border {
+                ZStack {
                     VStack {
                         Label("And this one reads `name`")
                             .fontSize(11)
@@ -116,6 +118,7 @@ struct StateSample: SampleContent, ExampleContent {
                     }
                     .spacing(14)
                 }
+                .style("Card")
                 .padding(14)
                 .stroke(Palette.accent)
                 .strokeWidth(1)
@@ -123,6 +126,7 @@ struct StateSample: SampleContent, ExampleContent {
             }
             .spacing(14)
         }
+        .style("Card")
         .padding(14)
         .stroke(Palette.accent)
         .strokeWidth(1)

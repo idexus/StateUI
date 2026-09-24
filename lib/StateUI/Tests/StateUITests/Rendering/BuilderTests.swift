@@ -148,7 +148,7 @@ final class BuilderTests: XCTestCase {
                 Label("tabs").gridRow(0)
 
                 if showing {
-                    Border {
+                    ZStack {
                         ColorBox(Color("#512BD4")).cornerRadius(10)
                     }
                     .gridRow(1)

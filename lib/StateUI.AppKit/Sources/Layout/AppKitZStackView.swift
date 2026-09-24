@@ -36,15 +36,14 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
         fittingContentSize(width: nil)
     }
 
-    /// The room its neediest child needs at its natural size, whatever width
-    /// it is offered: measured once and kept until something under it
-    /// changes.
+    /// The room its neediest child needs for the width offered - wrapped words as tall as that width makes
+    /// them: measured once for each width and kept until something under it changes.
     func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
-        measurements.size(offering: nil) { measuredContentSize() }
+        measurements.size(offering: availableWidth) { measuredContentSize(width: availableWidth) }
     }
 
-    private func measuredContentSize() -> NSSize {
-        NSSize(ZStackArithmetic.size(of: items, padding: Insets(padding), width: nil))
+    private func measuredContentSize(width: CGFloat?) -> NSSize {
+        NSSize(ZStackArithmetic.size(of: items, padding: Insets(padding), width: width.map(Double.init)))
     }
 
     override func layout() {

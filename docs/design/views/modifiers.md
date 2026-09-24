@@ -148,7 +148,7 @@ container is not.
 
 ## Gestures
 
-Gestures belong to every view, so a Border holding a whole row, an Image or a
+Gestures belong to every view, so a stack holding a whole row, an Image or a
 Label can answer one; a list row can be a view with a tap recognizer rather
 than a button disguised as a container. Tap, swipe, pan, pinch, pointer, drag
 and drop are described.
