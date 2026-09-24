@@ -36,7 +36,8 @@ if ($LASTEXITCODE) { throw 'the WinUI host tests did not build' }
 $bin = (swift build --package-path $StateUIWinUIHost @scratch --show-bin-path).Trim()
 Set-StateUISelfContained -Directory $bin -Executables (Join-Path $bin 'StateUIWinUITests-test-runner.exe')
 
-$filter = @()
-if ($Filter) { $filter = @('--filter', $Filter) }
-swift test --package-path $StateUIWinUIHost @scratch --skip-build @filter
+# A variable's name is its parameter's whatever the case, so the arguments have one of their own.
+$narrowing = @()
+if ($Filter) { $narrowing = @('--filter', $Filter) }
+swift test --package-path $StateUIWinUIHost @scratch --skip-build @narrowing
 exit $LASTEXITCODE
