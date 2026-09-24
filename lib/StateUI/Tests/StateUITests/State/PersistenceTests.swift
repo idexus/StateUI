@@ -273,7 +273,7 @@ final class PersistenceTests: XCTestCase {
         let storage = State<Int>.Storage { 0 }
         let landed = DispatchSemaphore(value: 0)
 
-        storage.write(1) { _ in
+        storage.keep = { _ in
             DispatchQueue.global().async {
                 storage.value = 2
                 landed.signal()
@@ -287,11 +287,33 @@ final class PersistenceTests: XCTestCase {
                 "another write must not land between the value and its record")
         }
 
+        storage.write(1)
+
         XCTAssertEqual(
             landed.wait(timeout: .now() + 2), .success,
             "and lands as soon as the hold ends")
 
         XCTAssertEqual(storage.value, 2)
+    }
+
+    /// A kept state is saved whoever writes it: a control through the state's binding...
+    func testAKeptStateWrittenThroughItsBindingSendsItToTheStore() {
+        let preferences = Preferences()
+        preferences.$name.wrappedValue = "Ada"
+
+        XCTAssertEqual(drainedActs().first?.arguments, [.name("test.name"), .string("Ada")])
+    }
+
+    /// ...and the host, reporting what the user typed into the field that carries it.
+    func testAKeptStateTheHostReportsIsSentToTheStore() throws {
+        let preferences = Preferences()
+        let patch = Renders().render(TextField(preferences.$name).body)
+        guard case .replace(let driven)? = patch.driven else { return XCTFail("expected the field's state") }
+        _ = drainedActs()
+
+        XCTAssertTrue(StateUIHost.report(.text("Grace"), through: try XCTUnwrap(driven[.text])))
+
+        XCTAssertEqual(drainedActs().first?.arguments, [.name("test.name"), .string("Grace")])
     }
 
     func testAKeyWrittenManyTimesIsSavedOnceHoldingTheLastValue() {

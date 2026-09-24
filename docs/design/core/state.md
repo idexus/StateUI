@@ -188,7 +188,11 @@ reads a store key by key, each with its kind, so the application lists its keys:
 A key the store has nothing under is absent, and the state keeps the value
 written beside its declaration - which is where the default can be seen.
 
-A write lands in memory at once and marks the key. The saves go out as one act
+A write lands in memory at once and marks the key, whoever makes it: the
+program, a control through the state's binding, or the host reporting what the
+user typed or moved into the control carrying the state - the key is marked by
+the storage itself, on every road a value comes in by, a moving value by where
+it is going. The saves go out as one act
 per key per take, sorted by name, holding the last value: a key written five
 times inside one handler is saved once. It is a collapse per drain, not a
 delay. A write to a kept state wakes the host itself, and waiting saves count

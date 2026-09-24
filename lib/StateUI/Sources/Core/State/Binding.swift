@@ -64,7 +64,7 @@ public struct Binding<Value> {
             return storage.value
         }
         write = {
-            storage.write($0, then: nil)
+            storage.write($0)
             storage.askForRender()
         }
         lender = storage

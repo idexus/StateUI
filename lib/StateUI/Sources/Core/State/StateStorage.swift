@@ -176,15 +176,21 @@ extension State {
             }
         }
 
-        /// Writes the value and hands it to `then` under one hold, so a kept state's save
-        /// never comes apart from its write. `then` runs under the lock.
+        /// What a kept state does with every value it takes, whoever writes it - the
+        /// program, a binding, the host: marking its key for saving. Set once, as the
+        /// state claims its key.
+        /// Design: docs/design/core/state.md#kept-state
+        nonisolated(unsafe) var keep: ((Value) -> Void)?
+
+        /// Writes the value and keeps it under one hold, so a kept state's save never
+        /// comes apart from its write. `keep` runs under the lock.
         /// Design: docs/design/core/state.md#writes-from-any-thread
-        func write(_ newValue: Value, then: ((Value) -> Void)?) {
+        func write(_ newValue: Value) {
             if let hostWrite {
                 // The board's hold serializes a carried write; the record comes after it.
                 pair = Self.isPair(newValue) ? newValue : nil
                 hostWrite(newValue)
-                then?(newValue)
+                keep?(newValue)
                 return
             }
 
@@ -192,20 +198,20 @@ extension State {
                 held = newValue
                 make = nil
                 written.wrappingAdd(1, ordering: .relaxed)
-                then?(newValue)
+                keep?(newValue)
             }
         }
 
         /// Reads, changes, writes and records under one hold, so two tasks counting at
         /// once both count.
-        func update(_ transform: (Value) -> Value, then: ((Value) -> Void)?) {
+        func update(_ transform: (Value) -> Value) {
             if let hostRead, let hostWrite {
                 // A read and then a write: the host rewrites the image on its own frames.
                 let settled = transform(pair ?? hostRead())
 
                 pair = Self.isPair(settled) ? settled : nil
                 hostWrite(settled)
-                then?(settled)
+                keep?(settled)
                 return
             }
 
@@ -215,7 +221,7 @@ extension State {
                 held = settled
                 make = nil
                 written.wrappingAdd(1, ordering: .relaxed)
-                then?(settled)
+                keep?(settled)
             }
         }
     }
@@ -290,10 +296,12 @@ extension State.Storage where Value: Walked {
                 let now = Self.journey(on: made)
 
                 if mask & JourneyLanes<Value>.mask(of: .destination) != 0, !known.stands(at: now.destination) {
-                    // The destination moved - a drag, a press: every reader is asked.
+                    // The destination moved - a drag, a press: every reader is asked, and a
+                    // kept state keeps where it is going.
                     known.destination = now.destination
                     self?.pair = nil
                     self?.askForRender()
+                    self?.keep?(now.destination)
                 } else if mask & (JourneyLanes<Value>.mask(of: .value) | JourneyLanes<Value>.mask(of: .velocity)) != 0 {
                     // A frame of the animation: only the journey's readers are asked.
                     self?.askJourneyReaders()
@@ -373,7 +381,7 @@ extension State.Storage where Value: StateValue {
     func settle(_ newValue: Value, asking: Bool) {
         guard StateImage.bytes(of: newValue.carried) != StateImage.bytes(of: value.carried) else { return }
 
-        write(newValue, then: nil)
+        write(newValue)
 
         if asking { askForRender() }
     }
@@ -410,13 +418,15 @@ extension State.Storage where Value: StateValue {
 
             // A host write ends where this side's do, the storage deciding by its readers.
             made.told = { [weak self] _ in
-                let now = StateImage.bytes(of: Self.lifted(from: made).carried)
+                let value = Self.lifted(from: made)
+                let now = StateImage.bytes(of: value.carried)
 
                 guard now != known.bytes else { return }
 
                 known.bytes = now
                 self?.pair = nil
                 self?.askForRender()
+                self?.keep?(value)
             }
 
             return made

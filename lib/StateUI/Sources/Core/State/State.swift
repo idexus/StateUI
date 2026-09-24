@@ -22,10 +22,6 @@ public final class State<Value>: @unchecked Sendable {
     /// Where the value lives, across every render.
     private(set) var storage: Storage
 
-    /// What a write does besides holding the value - marking a kept state's key for
-    /// saving; a closure, because only a `PersistentValue` can make it.
-    private var save: ((Value) -> Void)?
-
     /// What pairs this state with the scene it is built in - a `SceneKey` state only
     /// (SceneRecord.swift).
     private var sceneClaim: ((SceneRecord) -> Void)?
@@ -68,7 +64,7 @@ public final class State<Value>: @unchecked Sendable {
             return storage.value
         }
         set {
-            storage.write(newValue, then: save)
+            storage.write(newValue)
             askForRender()
             wakeForSave()
         }
@@ -78,7 +74,7 @@ public final class State<Value>: @unchecked Sendable {
     /// the write asked for a render.
     /// Design: docs/design/core/state.md#kept-state
     private func wakeForSave() {
-        if save != nil {
+        if storage.keep != nil {
             UIThreadExecutor.shared.poke()
         }
     }
@@ -157,7 +153,7 @@ public final class State<Value>: @unchecked Sendable {
     /// - Parameter transform: given the current value, answers the new one. It runs
     ///   under the lock, so it must not touch this state again.
     public func update(_ transform: (Value) -> Value) {
-        storage.update(transform, then: save)
+        storage.update(transform)
         askForRender()
         wakeForSave()
     }
@@ -228,7 +224,7 @@ extension State where Value: PersistentValue {
             storage = shared
         }
 
-        save = { PersistentStore.shared.record(key, $0.persistentValue) }
+        storage.keep = { PersistentStore.shared.record(key, $0.persistentValue) }
     }
 
     /// State a scene keeps: the same state, under a name, handed back with its scene
@@ -280,7 +276,7 @@ extension State where Value: PersistentValue {
             storage = kept
         }
 
-        save = { [weak record] in record?.record(key.name, $0.persistentValue) }
+        storage.keep = { [weak record] in record?.record(key.name, $0.persistentValue) }
     }
 }
 
