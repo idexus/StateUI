@@ -132,7 +132,7 @@ final class AndroidScrollView: AndroidLayoutView {
     }
 
     /// A finger took hold of the scroller, or let go of it and left it to throw on.
-    func held(_ holding: Bool) {
+    override func held(_ holding: Bool) {
         if holding { movement.holdBegan() } else { movement.holdEnded(rests: false) }
     }
 

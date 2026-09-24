@@ -12,6 +12,9 @@ class AndroidTextView: AndroidView {
     /// Bold and italic, as last set.
     private(set) var fontAttributes: FontAttributes?
 
+    /// The family the words are drawn in; nil for the platform's.
+    private(set) var fontFamily: String?
+
     /// The room around the words the tree describes; nil where the view keeps its own.
     private var padding: Insets?
     private var madePadding: (left: Int32, top: Int32, right: Int32, bottom: Int32)?
@@ -48,14 +51,50 @@ class AndroidTextView: AndroidView {
     /// Bold and italic, in the bits `FontAttributes` and `Typeface` share.
     func setFontAttributes(_ attributes: FontAttributes?) {
         fontAttributes = attributes
-        Java.call(reference, JavaAPI.setTypeface, .object(nil), .int((attributes?.rawValue ?? 0) & 3))
+        applyTypeface()
+    }
+
+    /// The family the words are drawn in, as Android names it; one it does not know, or nil, is its own.
+    func setFontFamily(_ family: String?) {
+        fontFamily = family
+        applyTypeface()
+    }
+
+    private func applyTypeface() {
+        let style = (fontAttributes?.rawValue ?? 0) & 3
+        let name = fontFamily.flatMap(Java.string)
+        let face = name.flatMap { Java.callStaticObject(JavaAPI.typeface, JavaAPI.createTypeface, .object($0), .int(style)) }
+        Java.call(reference, JavaAPI.setTypeface, .object(face), .int(style))
+        Java.release(local: face)
+        Java.release(local: name)
+    }
+
+    /// How the words break, and how many lines show: a line cut or truncated is one line, and only a
+    /// truncated one says so.
+    func setLines(breaking: LineBreak, maximum: Int?) {
+        let single = breaking != .wordWrap && breaking != .characterWrap
+        let lines = single ? 1 : maximum.flatMap { $0 > 0 ? Int32($0) : nil } ?? Int32.max
+        Java.call(reference, JavaAPI.setMaxLines, .int(lines))
+        Java.call(reference, JavaAPI.setHorizontallyScrolling, .bool(breaking == .noWrap))
+
+        let truncation: String? = switch breaking {
+        case .headTruncation: "START"
+        case .middleTruncation: "MIDDLE"
+        case .tailTruncation: "END"
+        default: nil
+        }
+        let at = truncation.map { Java.staticObject(JavaAPI.truncateAt, $0, "Landroid/text/TextUtils$TruncateAt;") }
+        withExtendedLifetime(at) { Java.call(reference, JavaAPI.setEllipsize, .object(at?.reference)) }
     }
 
     /// The words' colour; nil puts back the platform's.
     func setTextColor(_ color: HostValue?) {
         let made = madeWith
         if let argb = color.flatMap(Self.argb) {
-            Java.call(reference, JavaAPI.setTextColor, .int(argb))
+            let colors = Java.callStaticObject(
+                JavaAPI.views, JavaAPI.textColors, .object(AndroidRenderer.context), .int(argb))
+            Java.call(reference, JavaAPI.setTextColors, .object(colors))
+            Java.release(local: colors)
         } else {
             Java.call(reference, JavaAPI.setTextColors, .object(made.colors.reference))
         }
@@ -74,8 +113,8 @@ class AndroidTextView: AndroidView {
 
     /// A new background brings its own padding; the tree's is put back over it.
     /// Design: docs/design/platforms/android/controls.md#the-background-a-view-is-made-with
-    override func setBackground(_ value: HostValue?) {
-        super.setBackground(value)
+    override func showBackground(_ drawable: JavaObject?) {
+        super.showBackground(drawable)
         if padding != nil { applyPadding() }
     }
 

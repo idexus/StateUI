@@ -17,12 +17,12 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Controls/ButtonContract.swif
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `onClicked` (`clicked`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
-| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `iconPosition` | property | `IconPosition` | adaptive | ✅ | ✅ |  |  |  |  |  |  |
-| `iconSpacing` | property | `Double` | adaptive | ✅ |  |  |  |  |  |  |  |
-| `lineBreak` | property | `LineBreak` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `onPressed` (`pressed`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
-| `onReleased` (`released`) | event |  | native | ✅ | ✅ |  |  |  |  |  |  |
+| `icon` | property | `ImageSource` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `iconPosition` | property | `IconPosition` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `iconSpacing` | property | `Double` | adaptive | ✅ |  |  |  | ✅ |  |  |  |
+| `lineBreak` | property | `LineBreak` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `onPressed` (`pressed`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `onReleased` (`released`) | event |  | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
 
@@ -149,7 +149,7 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive | ✅ |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `fontFamily` | property | `Name` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `fontSize` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 ## From [PaddingElement](tiers/PaddingElement.md)
@@ -166,9 +166,9 @@ The line around a control's own box, and how round its corners are.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `borderColor` | property | `Color` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `borderWidth` | property | `Double` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `cornerRadius` | property | `Int` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `borderColor` | property | `Color` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `borderWidth` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `cornerRadius` | property | `Int` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 ## From [ImageElement](tiers/ImageElement.md)
 
@@ -176,4 +176,4 @@ How a picture fills the room it was given.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `aspect` | property | `Aspect` | native |  | ☑️ |  |  |  |  |  | AppKit's button has no covering scale: `.fill` fits the icon, as `.fit` does. |
+| `aspect` | property | `Aspect` | native |  | ☑️ |  |  | ☑️ |  |  | AppKit's button has no covering scale: `.fill` fits the icon, as `.fit` does.; Android Views: Android's button has no covering scale: `.fill` fits the icon, as `.fit` does. |

@@ -10,14 +10,25 @@ Border
   stroke
   strokeWidth
 Button
+  aspect
+  borderColor
+  borderWidth
+  cornerRadius
   fontAttributes
+  fontFamily
   fontSize
+  icon
+  iconPosition
+  iconSpacing
   isEnabled
+  lineBreak
   padding
   text
   textCase
   textColor
   clicked()
+  pressed()
+  released()
 CheckBox
   isEnabled
   isOn
@@ -43,6 +54,7 @@ Image
 Label
   characterSpacing
   fontAttributes
+  fontFamily
   fontSize
   horizontalTextAlignment
   lineBreak
@@ -89,6 +101,7 @@ Switch
 TextField
   cursorPosition
   fontAttributes
+  fontFamily
   fontSize
   isEnabled
   isPassword

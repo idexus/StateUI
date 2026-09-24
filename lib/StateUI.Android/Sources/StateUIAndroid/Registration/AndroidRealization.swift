@@ -37,6 +37,7 @@ enum AndroidRealization {
         .complete("PageElement", "title"),
 
         // MARK: Entries - a control's or a part's own
+        .partial("Button", "aspect", missing: "Android's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),
         .complete("Page", "disappearing"),

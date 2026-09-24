@@ -104,6 +104,24 @@ then the author's, `minimumWidth` and `minimumHeight`, as on every host. The
 stepper's buttons keep a square of 48 points, the room a finger needs, as
 the stepper's own choice.
 
+## A button's look
+
+A button says nothing of its look and keeps its theme's: a background with
+its own pressed ripple. A fill, an outline or corners make it one shape -
+the host's shape drawable - under Android's pressed ripple in the theme's
+highlight colour, kept within the same shape, so a drawn button still
+answers a finger as the platform's do. The shape dims while the button is
+disabled, to the theme's `disabledAlpha`, and so do words in a colour the
+tree gave, as the theme's own colours do.
+
+An icon beside words is a compound drawable at the picture's own size,
+before, after, above or below them, the icon spacing apart or the
+platform's gap. With no words it stands alone in the middle of the button,
+over its background, sized to the room inside the padding: fitted, as `.fit`
+and `.fill` both say - a button has no covering scale - stretched, or at its
+own size for `.center`. That size is worked out as the button is placed, and
+sent again only when the room changes.
+
 ## Work under way
 
 A progress bar is Android's horizontal bar, the share done in 10 000 steps.

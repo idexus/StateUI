@@ -71,24 +71,6 @@ final class AndroidLabelView: AndroidTextView {
         return spans
     }
 
-    /// How the words break, and how many lines show: a line cut or truncated is one line, and only a
-    /// truncated one says so.
-    func setLines(breaking: LineBreak, maximum: Int?) {
-        let single = breaking != .wordWrap && breaking != .characterWrap
-        let lines = single ? 1 : maximum.flatMap { $0 > 0 ? Int32($0) : nil } ?? Int32.max
-        Java.call(reference, JavaAPI.setMaxLines, .int(lines))
-        Java.call(reference, JavaAPI.setHorizontallyScrolling, .bool(breaking == .noWrap))
-
-        let truncation: String? = switch breaking {
-        case .headTruncation: "START"
-        case .middleTruncation: "MIDDLE"
-        case .tailTruncation: "END"
-        default: nil
-        }
-        let at = truncation.map { Java.staticObject(JavaAPI.truncateAt, $0, "Landroid/text/TextUtils$TruncateAt;") }
-        withExtendedLifetime(at) { Java.call(reference, JavaAPI.setEllipsize, .object(at?.reference)) }
-    }
-
     /// Where the words stand in the label's room, across and down.
     func setAlignment(horizontal: TextAlignment, vertical: TextAlignment) {
         let across: Int32 = switch horizontal {

@@ -25,6 +25,8 @@ enum JavaAPI {
     static let setBackgroundColor = Java.method(view, "setBackgroundColor", "(I)V")
     static let getBackground = Java.method(view, "getBackground", "()Landroid/graphics/drawable/Drawable;")
     static let setBackground = Java.method(view, "setBackground", "(Landroid/graphics/drawable/Drawable;)V")
+    static let colorDrawable = Java.findClass("android/graphics/drawable/ColorDrawable")
+    static let newColorDrawable = Java.method(colorDrawable, "<init>", "(I)V")
     static let setPadding = Java.method(view, "setPadding", "(IIII)V")
     static let getPaddingLeft = Java.method(view, "getPaddingLeft", "()I")
     static let getPaddingTop = Java.method(view, "getPaddingTop", "()I")
@@ -80,6 +82,9 @@ enum JavaAPI {
     static let setTextColors = Java.method(
         textView, "setTextColor", "(Landroid/content/res/ColorStateList;)V")
     static let setTypeface = Java.method(textView, "setTypeface", "(Landroid/graphics/Typeface;I)V")
+    static let typeface = Java.findClass("android/graphics/Typeface")
+    static let createTypeface = Java.staticMethod(
+        typeface, "create", "(Ljava/lang/String;I)Landroid/graphics/Typeface;")
     static let setAllCaps = Java.method(textView, "setAllCaps", "(Z)V")
 
     static let setMaxLines = Java.method(textView, "setMaxLines", "(I)V")
@@ -286,6 +291,12 @@ enum JavaAPI {
     static let views = Java.findClass("stateui/android/StateUIViews")
     static let measureView = Java.staticMethod(views, "measure", "(Landroid/view/View;II)J")
     static let placeView = Java.staticMethod(views, "place", "(Landroid/view/View;IIII)V")
+    static let pressable = Java.staticMethod(
+        views, "pressable",
+        "(Landroid/content/Context;Lstateui/android/StateUIShapeDrawable;Landroid/graphics/drawable/Drawable;)Landroid/graphics/drawable/Drawable;")
+    static let textColors = Java.staticMethod(
+        views, "textColors", "(Landroid/content/Context;I)Landroid/content/res/ColorStateList;")
+    static let setIcon = Java.staticMethod(views, "setIcon", "(Landroid/widget/TextView;Landroid/graphics/Bitmap;IIII)V")
     static let transformView = Java.staticMethod(views, "transform", "(Landroid/view/View;FFFFFFFFF)V")
     static let slideView = Java.staticMethod(views, "slide", "(Landroid/view/View;FFJ)V")
 

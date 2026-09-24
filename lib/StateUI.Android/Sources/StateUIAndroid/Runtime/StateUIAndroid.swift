@@ -122,7 +122,7 @@ enum JavaNatives {
         }
         let held: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, holding in
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidScrollView)?.held(holding != 0)
+                AndroidView.find(number)?.held(holding != 0)
             }
         }
         let laidOut: @convention(c) (Environment, jclass?) -> Void = { _, _ in

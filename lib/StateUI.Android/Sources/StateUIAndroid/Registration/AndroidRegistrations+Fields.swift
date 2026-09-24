@@ -25,7 +25,8 @@ extension AndroidRegistrations {
     /// What a field takes whole.
     private static let fieldMembers: [any ContractMember] = [
         TextElementContract.text, FontElementContract.fontSize, FontElementContract.fontAttributes,
-        TextStyleElementContract.textColor, InputViewContract.placeholder, InputViewContract.placeholderColor,
+        FontElementContract.fontFamily, TextStyleElementContract.textColor, InputViewContract.placeholder,
+        InputViewContract.placeholderColor,
         InputViewContract.maximumLength, InputViewContract.cursorPosition, InputViewContract.selectionLength,
         TextFieldContract.isPassword, VisualElementContract.isEnabled,
     ]
@@ -44,6 +45,9 @@ extension AndroidRegistrations {
         }
         if values.changed(FontElementContract.fontAttributes) {
             view.setFontAttributes(values[FontElementContract.fontAttributes])
+        }
+        if values.changed(FontElementContract.fontFamily) {
+            view.setFontFamily(values[FontElementContract.fontFamily]?.text)
         }
         if values.changed(TextStyleElementContract.textColor) {
             view.setTextColor(values[TextStyleElementContract.textColor]?.propValue)

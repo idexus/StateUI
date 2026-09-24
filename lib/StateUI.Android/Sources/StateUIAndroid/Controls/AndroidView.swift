@@ -180,21 +180,27 @@ class AndroidView {
 
     /// The view's background: a colour, or a brush drawn over its bounds; nil puts back the platform's.
     func setBackground(_ value: HostValue?) {
+        guard let value else { return showBackground(nil) }
+
+        if let argb = Self.argb(value) {
+            return showBackground(Java.new(JavaAPI.colorDrawable, JavaAPI.newColorDrawable, .int(argb)))
+        }
+        let brush = AndroidShapeDrawable()
+        brush.setFill(value)
+        showBackground(brush.object)
+    }
+
+    /// Shows `drawable` behind the view; nil puts back the background it was made with.
+    func showBackground(_ drawable: JavaObject?) {
         if madeBackground == nil {
             madeBackground = .some(Java.callObject(reference, JavaAPI.getBackground).map(JavaObject.init))
         }
-
-        guard let value else {
-            return Java.call(reference, JavaAPI.setBackground, .object(madeBackground??.reference))
-        }
-        if let argb = Self.argb(value) {
-            return Java.call(reference, JavaAPI.setBackgroundColor, .int(argb))
-        }
-
-        let brush = AndroidShapeDrawable()
-        brush.setFill(value)
-        withExtendedLifetime(brush) { Java.call(reference, JavaAPI.setBackground, .object(brush.reference)) }
+        let shown = drawable ?? madeBackground ?? nil
+        withExtendedLifetime(shown) { Java.call(reference, JavaAPI.setBackground, .object(shown?.reference)) }
     }
+
+    /// A finger took hold of the view, or let go of it; a view that listens for it says what that means.
+    func held(_ holding: Bool) {}
 
     /// What the view does when the user taps it; nil where it takes no tap.
     private(set) var onTapped: (() -> Void)?
@@ -246,6 +252,11 @@ class AndroidView {
             JavaAPI.views, JavaAPI.placeView, .object(reference),
             .int(frame.left), .int(frame.top), .int(frame.right), .int(frame.bottom))
         if resized, pivot != (0.5, 0.5) { applyTransform() }
+    }
+
+    /// The size the view was last placed at, in pixels; nil before its first place.
+    var placedSize: (width: Int32, height: Int32)? {
+        laidOut.map { ($0.right - $0.left, $0.bottom - $0.top) }
     }
 
     /// Hands the view to a container of Android's own, which places it: its place is read from Android from now on.

@@ -3,7 +3,18 @@
 
 package stateui.android;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.RippleDrawable;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.TextView;
 
 /** What the Swift host does to a view in one call where Android asks for several. */
 final class StateUIViews {
@@ -60,5 +71,58 @@ final class StateUIViews {
             view.setPivotX(pivotX);
             view.setPivotY(pivotY);
         }
+    }
+
+    /**
+     * `look` under the platform's pressed ripple, in its theme's colour, kept within `mask`'s shape; the look
+     * dims while its view is disabled, as the theme's controls dim.
+     */
+    static Drawable pressable(Context context, StateUIShapeDrawable look, Drawable mask) {
+        TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.colorControlHighlight});
+        ColorStateList highlight = theme.getColorStateList(0);
+        theme.recycle();
+        look.setDisabledAlpha(disabledAlpha(context));
+        return new RippleDrawable(
+                highlight != null ? highlight : ColorStateList.valueOf(0x33000000), look, mask);
+    }
+
+    /** Words in `color`, dimmed while their view is disabled, as the theme's own colours are. */
+    static ColorStateList textColors(Context context, int color) {
+        int dimmed = (Math.round(Color.alpha(color) * disabledAlpha(context)) << 24) | (color & 0xFFFFFF);
+        return new ColorStateList(
+                new int[][] {new int[] {-android.R.attr.state_enabled}, new int[0]}, new int[] {dimmed, color});
+    }
+
+    /** How opaque the theme draws a disabled control. */
+    private static float disabledAlpha(Context context) {
+        TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.disabledAlpha});
+        float alpha = theme.getFloat(0, 0.38f);
+        theme.recycle();
+        return alpha;
+    }
+
+    /**
+     * Puts `picture` beside the view's words - 0 before them, 1 after, 2 above, 3 below - `gap` pixels
+     * away, or the platform's gap for -1, at its own size; with no words, alone in the middle of the view
+     * at `width` by `height` pixels. A null picture takes it away.
+     */
+    static void setIcon(TextView view, Bitmap picture, int position, int gap, int width, int height) {
+        Drawable icon = picture == null ? null : new BitmapDrawable(view.getResources(), picture);
+        boolean alone = view.getText().length() == 0;
+        Drawable beside = alone ? null : icon;
+
+        if (gap >= 0) view.setCompoundDrawablePadding(gap);
+        view.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                position == 0 ? beside : null, position == 2 ? beside : null,
+                position == 1 ? beside : null, position == 3 ? beside : null);
+
+        if (!alone || icon == null) {
+            view.setForeground(null);
+            return;
+        }
+        LayerDrawable centred = new LayerDrawable(new Drawable[] {icon});
+        centred.setLayerGravity(0, Gravity.CENTER);
+        centred.setLayerSize(0, width, height);
+        view.setForeground(centred);
     }
 }

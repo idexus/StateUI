@@ -64,7 +64,7 @@ enum AndroidRegistrations {
     /// The words of a text control, their size, weight and colour, and the room around them.
     static let textMembers: [any ContractMember] = [
         TextElementContract.text, TextElementContract.textCase, FontElementContract.fontSize,
-        FontElementContract.fontAttributes, TextStyleElementContract.textColor,
+        FontElementContract.fontAttributes, FontElementContract.fontFamily, TextStyleElementContract.textColor,
         PaddingElementContract.padding,
     ]
 
@@ -78,6 +78,9 @@ enum AndroidRegistrations {
         }
         if values.changed(FontElementContract.fontAttributes) {
             view.setFontAttributes(values[FontElementContract.fontAttributes])
+        }
+        if values.changed(FontElementContract.fontFamily) {
+            view.setFontFamily(values[FontElementContract.fontFamily]?.text)
         }
         if values.changed(TextStyleElementContract.textColor) {
             view.setTextColor(values[TextStyleElementContract.textColor]?.propValue)

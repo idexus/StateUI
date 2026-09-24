@@ -163,7 +163,7 @@ The font text is drawn in: its family, its size, its weight and slant, and wheth
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
 | `fontAttributes` | property | `FontAttributes` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `fontAutoScalingEnabled` | property | `Bool` | adaptive | ✅ |  |  |  |  |  |  |  |
-| `fontFamily` | property | `Name` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `fontFamily` | property | `Name` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 | `fontSize` | property | `Double` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 ## From [TextAlignmentElement](tiers/TextAlignmentElement.md)

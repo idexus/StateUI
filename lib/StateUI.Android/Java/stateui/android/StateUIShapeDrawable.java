@@ -44,6 +44,14 @@ final class StateUIShapeDrawable extends Drawable {
     private float[] offsets = new float[0];
     private float[] geometry = new float[0];
     private float strokeWidth;
+    private int strokeColor;
+
+    /** How opaque the drawing is, 0 to 255, as the drawable was told. */
+    private int alpha = 255;
+
+    /** How opaque the drawing is while its view is disabled; at 1 it never dims. */
+    private float disabledAlpha = 1;
+    private boolean enabled = true;
 
     StateUIShapeDrawable() {
         fill.setStyle(Paint.Style.FILL);
@@ -71,7 +79,7 @@ final class StateUIShapeDrawable extends Drawable {
 
     /** The outline's colour, and its width in pixels; none at zero. */
     void setStroke(int color, float width) {
-        stroke.setColor(color);
+        strokeColor = color;
         strokeWidth = width;
         stroke.setStrokeWidth(width);
         invalidateSelf();
@@ -89,8 +97,37 @@ final class StateUIShapeDrawable extends Drawable {
             default: path.addRect(box, Path.Direction.CW);
         }
 
-        if (paint(bounds)) canvas.drawPath(path, fill);
-        if (strokeWidth > 0) canvas.drawPath(path, stroke);
+        float opacity = alpha / 255f * (enabled ? 1 : disabledAlpha);
+        if (paint(bounds)) {
+            fill.setAlpha(Math.round(fill.getAlpha() * opacity));
+            canvas.drawPath(path, fill);
+        }
+        if (strokeWidth > 0) {
+            stroke.setColor(strokeColor);
+            stroke.setAlpha(Math.round(stroke.getAlpha() * opacity));
+            canvas.drawPath(path, stroke);
+        }
+    }
+
+    /** Dims the drawing to `value` while its view is disabled, as the theme's controls dim. */
+    void setDisabledAlpha(float value) {
+        disabledAlpha = value;
+        invalidateSelf();
+    }
+
+    @Override
+    public boolean isStateful() {
+        return disabledAlpha < 1;
+    }
+
+    @Override
+    protected boolean onStateChange(int[] state) {
+        boolean now = false;
+        for (int one : state) now |= one == android.R.attr.state_enabled;
+        if (now == enabled) return false;
+        enabled = now;
+        invalidateSelf();
+        return true;
     }
 
     /** Sets the fill's colour or shader for `bounds`; false when there is nothing to fill. */
@@ -161,7 +198,15 @@ final class StateUIShapeDrawable extends Drawable {
     }
 
     @Override
-    public void setAlpha(int alpha) {}
+    public void setAlpha(int value) {
+        alpha = value;
+        invalidateSelf();
+    }
+
+    @Override
+    public int getAlpha() {
+        return alpha;
+    }
 
     @Override
     public void setColorFilter(ColorFilter filter) {}
