@@ -42,7 +42,7 @@ code --install-extension stateui-*.vsix
 `npm run package` writes `stateui-<version>.vsix` beside `package.json`.
 Without the `code` command on the path, use **Extensions: Install from VSIX…**
 in the Command Palette and pick that file. Build and install it again after
-pulling changes to the extension or to the template it carries.
+pulling changes to the extension.
 
 The extension installs the **Swift** extension (swiftlang) with it. Install
 **LLDB DAP** for the Swift debugger, and **.NET MAUI** (Microsoft) for the MAUI
@@ -93,7 +93,6 @@ The Command Palette offers the rest under **StateUI:**
 | Select Debugger | how a MAUI head is debugged |
 | Run Tests | the workspace's suites, run as the chosen host |
 | New Application in apps/ | a new application beside Gallery and HelloWorld, made by `.scripts/new-app.sh` |
-| New Application from Template | a new application in a directory of its own, built against a StateUI checkout or a release |
 | Clean Index | removes the language server's index and builds it again |
 
 The extension's own README, `lib/StateUI.VSCode/README.md`, describes each of
@@ -124,6 +123,14 @@ Build the signed Gallery bundle with its resources and icon:
 
 ```bash
 .scripts/AppKit/build-gallery-appkit.sh debug
+```
+
+A new application is HelloWorld under another name, with every head
+HelloWorld has. This makes `apps/Notes` (`.scripts/new-app.ps1 -Name Notes`
+on Windows):
+
+```bash
+.scripts/new-app.sh Notes
 ```
 
 ## Application shape
@@ -332,22 +339,9 @@ Catalyst:
 .scripts/Maui/run-app.sh maccatalyst apps/HelloWorld/Platforms/Maui/HelloWorld.csproj
 ```
 
-An application outside this repository comes from **StateUI: New Application
-from Template**, which needs no template installed. Outside VS Code, the
-`stateui-maui` template writes the same: from the repository root, a directory
-named `StateUI`, pack and install the template, then create an application
-beside the checkout:
-
-```bash
-dotnet pack lib/StateUI.Maui/Template -c Release -o artifacts
-dotnet new install artifacts/StateUI.Maui.Template.0.4.0.nupkg
-dotnet new stateui-maui -n Notes -o ../Notes --stateui-path "$PWD" --appkit
-```
-
-`--appkit` adds the AppKit head beside the MAUI one. [MAUI host](maui-host.md)
-covers every platform, the **StateUI: Debug** and **StateUI: Release**
-launches and their debuggers, controls and acts registered in C#, and
-troubleshooting.
+[MAUI host](maui-host.md) covers every platform, the **StateUI: Debug** and
+**StateUI: Release** launches and their debuggers, controls and acts registered
+in C#, and troubleshooting.
 
 ## Next steps
 

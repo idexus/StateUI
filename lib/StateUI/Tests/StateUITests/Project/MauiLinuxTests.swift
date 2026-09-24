@@ -178,11 +178,8 @@ final class MauiLinuxTests: XCTestCase {
     /// on the thread pool, and whatever it calls next enters GTK off the
     /// thread that owns it. Whatever else answers this platform belongs to
     /// StateUI.Maui.Linux, where every application gets it.
-    ///
-    /// The template's application is one of them: it is what `dotnet new`
-    /// writes out.
     func testTheLinuxHeadIsHostingAndAnEntryPoint() throws {
-        let applications = try Fixtures.applications() + [Fixtures.templateApplication]
+        let applications = try Fixtures.applications()
         XCTAssertGreaterThan(applications.count, 1, "apps/ holds no application to read.")
 
         for application in applications {

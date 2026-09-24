@@ -29,10 +29,6 @@ artifacts/
 # SDK evaluation leftovers MSBuild may leave beside a project.
 *.SdkResolver.*.proj.Backup.tmp
 
-# A resolve file a local build writes beside the template's manifest would pin
-# every application made from it.
-/lib/StateUI.Maui/Template/templates/*/Package.resolved
-
 CLAUDE.md
 CLAUDE.md.lnk
 AGENTS.md

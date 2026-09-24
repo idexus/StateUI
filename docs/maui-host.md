@@ -15,7 +15,6 @@ lib/StateUI.Maui/
   Sources/    StateUI.Maui: the Wire reader, the renderer, windows and sessions
   Linux/      StateUI.Maui.Linux: the Linux platform over MAUI's GTK 4 backend
   Tests/      the host's suite
-  Template/   StateUI.Maui.Template: the `dotnet new stateui-maui` template
 .scripts/Maui/
   StateUI.targets              the MSBuild integration every MAUI head imports
   build-apple.sh               iOS and Mac Catalyst
@@ -171,8 +170,8 @@ Some platform features need entries in the head itself:
   ```
 
   The class gives the plist a name the linker keeps. With the manifest and
-  without the class, the first window opens blank. HelloWorld and the template
-  declare neither.
+  without the class, the first window opens blank. HelloWorld declares
+  neither.
 - **Network access.** The Android manifests state
   `android.permission.INTERNET`, which only a Debug build receives
   implicitly. For its WebView sample the Gallery also sets
@@ -186,71 +185,17 @@ Some platform features need entries in the head itself:
 
 ## Creating an application
 
-### From the template
-
-In VS Code, **StateUI: New Application from Template** writes a complete
-application with no template installed: the layout above at its own root,
-`.vscode/`, a solution, and a README. It asks for the
-directory, the name, and either a StateUI checkout or a release offered both
-on NuGet and as a tag in the repository, and reads a checkout's own template or
-the copy the extension carries for a release.
-
-Outside VS Code, `StateUI.Maui.Template` writes the same application. Install
-it from a pack of this repository:
-
-```bash
-dotnet pack lib/StateUI.Maui/Template -c Release -o artifacts
-dotnet new install artifacts/StateUI.Maui.Template.0.4.0.nupkg
-```
-
-Create an application built against a StateUI checkout, outside that checkout:
-
-```bash
-cd ~/src
-dotnet new stateui-maui -n Notes --stateui-path ~/src/StateUI
-```
-
-Add `--appkit` for a native macOS head beside the MAUI one. The AppKit host
-always comes from a checkout, so `--appkit` needs `--stateui-path`, and a
-manifest generated without it stops with an `#error` that says so.
-
-```bash
-dotnet new stateui-maui -n Notes --stateui-path ~/src/StateUI --appkit
-```
-
-- **The name.** Name the application with letters and digits, starting with a
-  letter. It becomes:
-  - the project, the C# namespace, and the process;
-  - the Swift module (`NotesUI`);
-  - the lower-cased application id (`com.example.notes`).
-
-  Without `-n`, the current directory's name is used.
-- **The checkout.** `--stateui-path` takes an absolute path to a checkout whose
-  directory is called `StateUI`. SwiftPM identifies a path dependency by its
-  last path component, and the application depends on the product by that bare
-  name. With it:
-  - the project references the host's C# projects in the checkout;
-  - `Package.swift` names the checkout with `.package(path:)`;
-  - `StateUIPackagePath` tells the Swift build where it is.
-- **The package route.** Without `--stateui-path`, the application takes
-  `StateUI.Maui` and `StateUI.Maui.Linux` 0.4.0 from NuGet, and the Swift half
-  from `https://github.com/idexus/StateUI.git` at exactly `0.4.0`. That route
-  resolves only once release 0.4.0 is tagged and its packages are published.
-  Until then, create applications with `--stateui-path`.
-- **Reinstalling.** Before installing a rebuilt template of the same version,
-  remove the previous one with `dotnet new uninstall StateUI.Maui.Template`.
-
-The generated README describes the application's own builds; its source is
-`lib/StateUI.Maui/Template/templates/StateUIStarter/README.md`.
-
-### In this repository
-
 An application inside this repository is wired to it by relative paths rather
 than to packages. In VS Code, **StateUI: New Application in apps/** creates
 `apps/Notes/` in HelloWorld's layout, registers its MAUI project in
 `StateUI.slnx`, and chooses it for **StateUI: Debug**. From a terminal the same
 is `.scripts/new-app.sh Notes`, or `.scripts\new-app.ps1 -Name Notes` on
-Windows. The name rule is the template's.
+Windows. Name the application with letters and digits, starting with a letter.
+It becomes:
+
+- the project, the C# namespace, and the process;
+- the Swift module (`NotesUI`);
+- the lower-cased application id (`com.example.notes`).
 
 ## Building and running
 
@@ -1021,32 +966,24 @@ workflows run it again on their hosts.
 
 ## Publishing the packages
 
-A release is three NuGet packages and one tag:
+A release is two NuGet packages and one tag:
 
 | Package | Project | Contents |
 | --- | --- | --- |
 | `StateUI.Maui` | `lib/StateUI.Maui/Sources` | the C# host for Android, iOS, Mac Catalyst, and Windows, and the plain `net10.0` library Linux runs |
 | `StateUI.Maui.Linux` | `lib/StateUI.Maui/Linux` | the Linux platform over the GTK 4 backend |
-| `StateUI.Maui.Template` | `lib/StateUI.Maui/Template` | the `stateui-maui` template |
 
 The Swift half is the repository itself. The root `Package.swift` is the Swift
 package, and a tag such as `0.4.0` is what
 `.package(url: "https://github.com/idexus/StateUI.git", exact: "0.4.0")`
 resolves.
 
-Three things move together:
-
-- the three packages' `<Version>`;
-- the template's two package references and its `exact:` pin;
-- the tag.
-
-Tag first: a template pinned to an untagged version generates an application
-that cannot resolve its Swift half.
+The release's version is the one `lib/StateUI.VSCode/package.json` states; the
+two packages' `<Version>` and the tag name it.
 
 ```bash
 dotnet pack lib/StateUI.Maui/Sources -c Release -o artifacts     # on Windows
 dotnet pack lib/StateUI.Maui/Linux -c Release -o artifacts
-dotnet pack lib/StateUI.Maui/Template -c Release -o artifacts
 ```
 
 - **`StateUI.Maui` is complete only when packed on Windows.** The WinUI head
@@ -1057,9 +994,7 @@ dotnet pack lib/StateUI.Maui/Template -c Release -o artifacts
   host packs `net10.0` alone.
 - **`StateUI.Maui` carries the MAUI build.** It packs `.scripts/Maui/` under
   `buildTransitive/Maui/` beside `buildTransitive/StateUI.Maui.targets`, which
-  NuGet imports into every application that references the package. The
-  template carries no build: the application it writes takes the build of the
-  release it references.
+  NuGet imports into every application that references the package.
 - **Each package carries `LICENSE`, `NOTICE`, and its `README.md`.**
 
 To try the packages before they are published:
@@ -1072,9 +1007,6 @@ To try the packages before they are published:
   ```bash
   rm -rf ~/.nuget/packages/stateui.maui ~/.nuget/packages/stateui.maui.linux
   ```
-
-- **Reinstall the template:** `dotnet new uninstall StateUI.Maui.Template`, then
-  `dotnet new install` again.
 
 ## Troubleshooting
 

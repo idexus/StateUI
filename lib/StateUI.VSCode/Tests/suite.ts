@@ -8,7 +8,7 @@
 // STATEUI_APPKIT, and a symbol under no condition resolves in either mode -
 // which is what tells "not this host" from "not ready yet".
 
-import { execFileSync, execSync } from "child_process";
+import { execSync } from "child_process";
 import * as fs from "fs";
 import * as os from "os";
 import * as path from "path";
@@ -20,7 +20,7 @@ import { serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sourc
 import { findSuites, forDevice } from "../Sources/tests";
 import { availableHosts, environment, hosts, MauiDebugger } from "../Sources/hosts";
 import { StateUIApi } from "../Sources/extension";
-import { carriedTemplate, inAppsCommand, nameProblem, Starter, templateIn, writeStarter } from "../Sources/newApplication";
+import { inAppsCommand, nameProblem } from "../Sources/newApplication";
 
 const started = Date.now();
 
@@ -328,12 +328,11 @@ export async function run(): Promise<void> {
         }
         check("the palette has Select Android Device", (await vscode.commands.getCommands(true)).includes("stateui.selectAndroidDevice"));
 
-        // 7. A new application. What the extension writes from the template is
-        //    what `dotnet new stateui-maui` writes, file for file, for each
-        //    source and head - the template read by two readers, checked as one.
+        // 7. A new application is HelloWorld renamed in a checkout's apps/,
+        //    by the checkout's scaffolder - the only starter.
         const commands = await vscode.commands.getCommands(true);
-        check("the palette has New Application in apps/ and New Application from Template",
-            commands.includes("stateui.newApplicationInApps") && commands.includes("stateui.newApplication"));
+        check("the palette has New Application in apps/ and no New Application from Template",
+            commands.includes("stateui.newApplicationInApps") && !commands.includes("stateui.newApplication"));
         check("a name is letters and digits, starting with a letter, and not StateUI",
             nameProblem("MyApp2") === undefined && nameProblem("My-App") !== undefined
             && nameProblem("2App") !== undefined && nameProblem("StateUI") !== undefined);
@@ -345,58 +344,12 @@ export async function run(): Promise<void> {
                 && windows.command === "powershell" && windows.args.slice(-3).join(" ").endsWith("new-app.ps1 -Name Notes"));
         }
         {
-            const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-starter-"));
-            const hive = path.join(scratch, "hive");
+            const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "stateui-build-"));
             const repository = root.uri.fsPath;
-            const extensionPath = vscode.extensions.getExtension("idexus.stateui")!.extensionPath;
-            execFileSync("dotnet", ["new", "install", templateIn(repository).template, "--debug:custom-hive", hive]);
-
-            const files = (directory: string): string[] => fs.readdirSync(directory, { recursive: true, encoding: "utf8" })
-               .filter((each) => fs.statSync(path.join(directory, each)).isFile()).sort();
-            const cases: { label: string; starter: Starter; templateRoot: string; options: string[] }[] = [
-                { label: "a checkout, with AppKit", templateRoot: repository, options: ["--stateui-path", repository, "--appkit"],
-                  starter: { name: "Probe", parent: path.join(scratch, "mine-appkit"), source: { kind: "checkout", checkout: repository }, appKit: true } },
-                { label: "a checkout", templateRoot: repository, options: ["--stateui-path", repository],
-                  starter: { name: "Probe", parent: path.join(scratch, "mine-checkout"), source: { kind: "checkout", checkout: repository }, appKit: false } },
-                { label: "the release, from the template this extension carries", templateRoot: carriedTemplate(extensionPath), options: [],
-                  starter: { name: "Probe", parent: path.join(scratch, "mine-release"), source: { kind: "release", version: "0.4.0" }, appKit: false } },
-            ];
-            for (const each of cases) {
-                const mine = writeStarter(each.starter, each.templateRoot);
-                const theirs = path.join(scratch, `theirs-${path.basename(each.starter.parent)}`, "Probe");
-                execFileSync("dotnet", ["new", "stateui-maui", "-n", "Probe", "-o", theirs, ...each.options, "--debug:custom-hive", hive]);
-
-                const mineFiles = files(mine);
-                const theirFiles = files(theirs);
-                const differing = mineFiles.filter((file) => !theirFiles.includes(file)
-                    || !fs.readFileSync(path.join(mine, file)).equals(fs.readFileSync(path.join(theirs, file))));
-                say(`     ${each.label}: ${mineFiles.length} files, differing: ${differing.join(", ") || "none"}`);
-                check(`${each.label}: what is written is what \`dotnet new stateui-maui\` writes, and it carries no build of its own`,
-                    differing.length === 0 && mineFiles.length === theirFiles.length && !mineFiles.some((file) => file.startsWith(".scripts")));
-
-                const made = fs.readFileSync(path.join(mine, "Platforms", "Maui", "Probe.csproj"), "utf8");
-                check(`${each.label}: the project takes StateUI's build from ${each.starter.source.kind === "checkout" ? "the checkout" : "the StateUI.Maui package"}`,
-                    each.starter.source.kind === "checkout"
-                        ? made.includes(`<Import Project="${repository}/.scripts/Maui/StateUI.targets" />`)
-                        : !made.includes("<Import Project=") && made.includes('<PackageReference Include="StateUI.Maui" Version="0.4.0" />'));
-            }
-
-            const other = writeStarter({ name: "Later", parent: path.join(scratch, "later"), source: { kind: "release", version: "9.8.7" }, appKit: false },
-                carriedTemplate(extensionPath));
-            const manifest = fs.readFileSync(path.join(other, "Package.swift"), "utf8");
-            const project = fs.readFileSync(path.join(other, "Platforms", "Maui", "Later.csproj"), "utf8");
-            check("a release names its version in Package.swift's tag and both NuGet references",
-                manifest.includes('exact: "9.8.7"') && project.includes('Include="StateUI.Maui" Version="9.8.7"')
-                && project.includes('Include="StateUI.Maui.Linux" Version="9.8.7"') && !/\d+\.\d+\.\d+/.test(manifest.replace("9.8.7", "")));
-            let refused = false;
-            try { writeStarter({ name: "Later", parent: path.join(scratch, "later"), source: { kind: "release", version: "9.8.7" }, appKit: false }, carriedTemplate(extensionPath)); } catch { refused = true; }
-            check("an application is never written over a directory that exists", refused);
 
             // The scripts a launch runs are the ones the project's own build
-            // imports - asked of MSBuild, for the repository's application and
-            // for one made against the checkout alike.
+            // imports - asked of MSBuild.
             const repositoryBuild = await stateUIBuildDirectory(path.join(repository, "apps", "Gallery", "Platforms", "Maui", "Gallery.csproj"), "net10.0-maccatalyst27.0");
-            const checkoutBuild = await stateUIBuildDirectory(path.join(scratch, "mine-checkout", "Probe", "Platforms", "Maui", "Probe.csproj"), "net10.0-maccatalyst27.0");
             // NuGet imports a package's build per target framework - an
             // ImportGroup conditioned on it - so it is asked of the framework
             // the launch builds, as a project made from the packages needs.
@@ -410,11 +363,11 @@ export async function run(): Promise<void> {
 </Project>
 `);
             const packageBuild = await stateUIBuildDirectory(perFramework, "net10.0-maccatalyst27.0");
-            say(`     build directories: ${repositoryBuild} | ${checkoutBuild} | ${packageBuild}`);
+            say(`     build directories: ${repositoryBuild} | ${packageBuild}`);
             check("a build imported per target framework, as NuGet imports a package's, is found for the framework launched",
                 packageBuild === repositoryBuild);
-            check("the build a launch runs is the one the project imports: the checkout's .scripts/Maui, in the repository and outside it",
-                repositoryBuild === path.join(repository, ".scripts", "Maui") + path.sep && checkoutBuild === repositoryBuild);
+            check("the build a launch runs is the one the project imports: the checkout's .scripts/Maui",
+                repositoryBuild === path.join(repository, ".scripts", "Maui") + path.sep);
             fs.rmSync(scratch, { recursive: true, force: true });
         }
 

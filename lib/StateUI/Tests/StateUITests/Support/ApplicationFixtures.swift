@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The applications, for the guards that read them as files: the ones under
-// apps/, the one the `dotnet new` template writes out, and a walk over either
-// that leaves out what tools write beside the sources.
+// apps/, and a walk over one that leaves out what tools write beside the
+// sources.
 
 import Foundation
 import XCTest
@@ -17,8 +17,8 @@ extension Fixtures {
         // A host's own build directories, and the language server's settings
         // the editor extension writes beside each application.
         ".build-appkit", ".build-maui", ".build-android", ".gradle", ".sourcekit-lsp",
-        // What the editor extension's own build writes: its packages, and its
-        // compiled code with the copy of the template it carries.
+        // What the editor extension's own build writes: its packages and its
+        // compiled code.
         "node_modules", "out",
     ]
 
@@ -26,13 +26,6 @@ extension Fixtures {
     /// `Gallery.csproj.user` when a head is chosen to run - `*.user`, which
     /// .gitignore ignores for the same reason.
     static let byproductEndings: [String] = [".user"]
-
-    /// `lib/StateUI.Maui/Template/templates/StateUIStarter`, the application
-    /// the `dotnet new` template writes out - a whole application kept as one,
-    /// named by the token the template replaces.
-    static var templateApplication: URL {
-        repository.appendingPathComponent("lib/StateUI.Maui/Template/templates/StateUIStarter")
-    }
 
     /// Every application under `apps/`, sorted by name.
     ///

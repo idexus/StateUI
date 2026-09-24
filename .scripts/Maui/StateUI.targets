@@ -202,7 +202,7 @@
   <!-- ======================================================================
        THE LIBRARY, WHEN IT IS A DEPENDENCY RATHER THAN A SIBLING
        ======================================================================
-       An application made by `dotnet new stateui-maui` names StateUI by URL in
+       An application that takes StateUI from its packages names it by URL in
        its own Package.swift, so its sources arrive as a SwiftPM checkout. On
        Android that happens by itself - the whole build IS SwiftPM - but Apple
        and Windows call swiftc directly and need the files on disk first.

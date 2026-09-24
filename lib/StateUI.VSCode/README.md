@@ -15,30 +15,16 @@ npm run package
 code --install-extension stateui-*.vsix
 ```
 
-`npm run package` compiles the extension, copies in the template it carries,
-and writes `stateui-<version>.vsix`. **Extensions: Install from VSIX…** installs
-that file without the `code` command.
+`npm run package` compiles the extension and writes `stateui-<version>.vsix`.
+**Extensions: Install from VSIX…** installs that file without the `code`
+command.
 
 ## A new application
 
-- **StateUI: New Application in apps/** - in a StateUI checkout, asks for a
-  name and runs the checkout's own scaffolder, `.scripts/new-app.sh` (or
-  `new-app.ps1` on Windows). The application is then chosen, so **StateUI:
-  Debug** runs it.
-- **StateUI: New Application from Template** - an application in a directory
-  of its own. It asks where, for the name, and what StateUI it is built
-  against:
-  - **a StateUI checkout** - both halves by path, from the checkout's own
-    template, so the application matches the library on disk. On macOS it
-    also offers an AppKit head. The checkout's directory is named `StateUI`:
-    SwiftPM names a package on disk after its directory.
-  - **a release** - `StateUI.Maui` from NuGet and the Swift half by the
-    repository's tag of the same version. Only a version with both is offered.
-
-The application is written by this extension from the StateUIStarter template
-- a checkout's, or the copy the extension carries - and is what `dotnet new
-stateui-maui` writes with the same options. Nothing needs to be installed
-first, and no template package of another release is picked up.
+**StateUI: New Application in apps/** - in a StateUI checkout, asks for a name
+and runs the checkout's own scaffolder, `.scripts/new-app.sh` (or
+`new-app.ps1` on Windows), which makes HelloWorld under that name. The
+application is then chosen, so **StateUI: Debug** runs it.
 
 A name is letters and digits, starting with a letter: it becomes the
 directory, the MAUI project, the process and the Swift module (`<Name>UI`).

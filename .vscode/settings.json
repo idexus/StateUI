@@ -4,25 +4,6 @@
   "swift.searchSubfoldersForPackages": true,
   "swift.autoGenerateLaunchConfigurations": false,
 
-  // EXCEPT THE TEMPLATE'S. lib/StateUI.Maui/Template/templates/StateUIStarter
-  // is a real application with a real Package.swift, and it is CONTENT here:
-  // `dotnet new` writes it out somewhere else. Found by the search above, the
-  // extension would resolve a second copy of the library for a package
-  // nothing in this workspace builds. Matched by directory BASENAME, and a
-  // value here REPLACES the defaults, so they are repeated.
-  "swift.ignoreSearchingForPackagesInSubfolders": [
-    ".",
-    ".build",
-    "Packages",
-    "out",
-    "bazel-out",
-    "bazel-bin",
-    "StateUIStarter"
-  ],
-  "swift.excludePathsFromActivation": {
-    "**/Template/templates/**": true
-  },
-
   // NO swift.swiftEnvironmentVariables HERE. The editor's host - which of
   // STATEUI_APPKIT and its siblings SourceKit-LSP starts with - is chosen in the
   // StateUI extension's status bar (lib/StateUI.VSCode), which sets it on the

@@ -57,11 +57,6 @@
         "enablement": "stateui.hasCheckout"
       },
       {
-        "command": "stateui.newApplication",
-        "title": "New Application from Template",
-        "category": "StateUI"
-      },
-      {
         "command": "stateui.runTests",
         "title": "Run Tests",
         "category": "StateUI"
@@ -171,7 +166,7 @@
     }
   },
   "scripts": {
-    "compile": "tsc -p . && node out/Build/bundleTemplate.js",
+    "compile": "tsc -p .",
     "test": "npm run compile && node out/Tests/run.js",
     "package": "npm run compile && node out/Build/package.js"
   },

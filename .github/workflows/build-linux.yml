@@ -77,8 +77,8 @@ jobs:
       - name: Build the gallery
         run: dotnet build apps/Gallery/Platforms/Maui -c Debug -f net10.0
 
-      # The starter application, built exactly as `dotnet new stateui-maui` leaves
-      # it: one hosting call, one entry point, and StateUI.Maui.Linux under both.
+      # The application a new one is made from: one hosting call, one entry
+      # point, and StateUI.Maui.Linux under both.
       - name: Build HelloWorld
         run: dotnet build apps/HelloWorld/Platforms/Maui -c Debug -f net10.0
 

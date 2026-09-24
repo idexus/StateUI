@@ -45,7 +45,7 @@ final class ProjectFilesTests: XCTestCase {
             }
         }
 
-        XCTAssertGreaterThan(read, 8, "the walk found almost none of the build's files")
+        XCTAssertGreaterThan(read, 6, "the walk found almost none of the build's files")
         XCTAssertEqual(malformed, [], "MSBuild cannot read these as XML")
     }
 }

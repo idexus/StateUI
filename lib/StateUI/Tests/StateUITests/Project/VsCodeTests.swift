@@ -14,25 +14,19 @@ import Foundation
 import XCTest
 
 final class VsCodeTests: XCTestCase {
-    /// The layouts that carry a .vscode: this repository's, and the one every
-    /// application made from the template starts with. Read with its template
-    /// lines in place - they are comments to JSON, and every launch holds
-    /// whichever way they resolve.
-    private var layouts: [(name: String, directory: URL)] {
-        [("the repository", Fixtures.repository.appendingPathComponent(".vscode")),
-         ("the template", Fixtures.templateApplication.appendingPathComponent(".vscode"))]
+    /// The repository's `.vscode`.
+    private var directory: URL {
+        Fixtures.repository.appendingPathComponent(".vscode")
     }
 
     /// The files parse as JSON once the comments are gone. A quote or bracket
     /// broken by a hand edit shows up as VS Code silently offering none of the
     /// launches - there is no build to fail - so the suite says it instead.
     func testEveryVsCodeFileIsJsonUnderItsComments() throws {
-        for layout in layouts {
-            for file in ["launch.json", "tasks.json", "settings.json"] {
-                XCTAssertNoThrow(
-                    try json(at: layout.directory.appendingPathComponent(file)),
-                    "\(file) in \(layout.name) does not parse - VS Code would offer none of it.")
-            }
+        for file in ["launch.json", "tasks.json", "settings.json"] {
+            XCTAssertNoThrow(
+                try json(at: directory.appendingPathComponent(file)),
+                "\(file) does not parse - VS Code would offer none of it.")
         }
     }
 
@@ -42,53 +36,46 @@ final class VsCodeTests: XCTestCase {
     /// names a host or an application of its own any more, so none can drift
     /// from the extension that chooses them.
     func testTheLaunchesAreTheExtensions() throws {
-        for layout in layouts {
-            let launch = try json(at: layout.directory.appendingPathComponent("launch.json"))
-            let configurations = array(launch, "configurations")
-            let stateUI = configurations.filter { ($0["type"] as? String) == "stateui" }
+        let launch = try json(at: directory.appendingPathComponent("launch.json"))
+        let configurations = array(launch, "configurations")
+        let stateUI = configurations.filter { ($0["type"] as? String) == "stateui" }
 
-            XCTAssertEqual(
-                stateUI.compactMap { $0["name"] as? String }, ["StateUI: Debug", "StateUI: Release"],
-                "\(layout.name) does not offer exactly StateUI: Debug and StateUI: Release.")
-            XCTAssertEqual(stateUI.compactMap { $0["configuration"] as? String }, ["debug", "release"])
+        XCTAssertEqual(
+            stateUI.compactMap { $0["name"] as? String }, ["StateUI: Debug", "StateUI: Release"],
+            "launch.json does not offer exactly StateUI: Debug and StateUI: Release.")
+        XCTAssertEqual(stateUI.compactMap { $0["configuration"] as? String }, ["debug", "release"])
 
-            for entry in configurations {
-                let name = entry["name"] as? String ?? "?"
-                XCTAssertFalse(
-                    ["lldb-dap", "maui"].contains(entry["type"] as? String),
-                    "\(layout.name) launches \"\(name)\" itself - the extension resolves launches.")
-            }
-            XCTAssertTrue(array(launch, "compounds").isEmpty,
-                          "\(layout.name) has a compound - C# with Swift is the extension's debugger.")
-
-            let tasks = try String(
-                contentsOf: layout.directory.appendingPathComponent("tasks.json"), encoding: .utf8)
-            XCTAssertTrue(
-                tasks.contains("\"net10.0\""),
-                "\(layout.name): the target framework picker does not offer net10.0.")
+        for entry in configurations {
+            let name = entry["name"] as? String ?? "?"
+            XCTAssertFalse(
+                ["lldb-dap", "maui"].contains(entry["type"] as? String),
+                "launch.json launches \"\(name)\" itself - the extension resolves launches.")
         }
+        XCTAssertTrue(array(launch, "compounds").isEmpty,
+                      "launch.json has a compound - C# with Swift is the extension's debugger.")
+
+        let tasks = try String(contentsOf: directory.appendingPathComponent("tasks.json"), encoding: .utf8)
+        XCTAssertTrue(tasks.contains("\"net10.0\""), "the target framework picker does not offer net10.0.")
     }
 
     /// Every `preLaunchTask` names a task that exists. A launch whose task is
     /// missing fails with a picker about a task that "could not be found" -
     /// accurate, but nothing in it says a rename missed a file.
     func testEveryPreLaunchTaskIsATaskThatExists() throws {
-        for layout in layouts {
-            let launch = try json(at: layout.directory.appendingPathComponent("launch.json"))
-            let tasks = try json(at: layout.directory.appendingPathComponent("tasks.json"))
+        let launch = try json(at: directory.appendingPathComponent("launch.json"))
+        let tasks = try json(at: directory.appendingPathComponent("tasks.json"))
 
-            let labels = Set(array(tasks, "tasks").compactMap { $0["label"] as? String })
-            XCTAssertFalse(labels.isEmpty, "tasks.json in \(layout.name) declares no tasks at all.")
+        let labels = Set(array(tasks, "tasks").compactMap { $0["label"] as? String })
+        XCTAssertFalse(labels.isEmpty, "tasks.json declares no tasks at all.")
 
-            for configuration in array(launch, "configurations") {
-                guard let task = configuration["preLaunchTask"] as? String else { continue }
-                let name = configuration["name"] as? String ?? "an unnamed configuration"
+        for configuration in array(launch, "configurations") {
+            guard let task = configuration["preLaunchTask"] as? String else { continue }
+            let name = configuration["name"] as? String ?? "an unnamed configuration"
 
-                XCTAssertTrue(
-                    labels.contains(task),
-                    "\"\(name)\" in \(layout.name) names preLaunchTask \"\(task)\", which "
-                        + "tasks.json does not declare - the launch stops before it starts.")
-            }
+            XCTAssertTrue(
+                labels.contains(task),
+                "\"\(name)\" names preLaunchTask \"\(task)\", which tasks.json does not declare - "
+                    + "the launch stops before it starts.")
         }
     }
 
@@ -98,18 +85,15 @@ final class VsCodeTests: XCTestCase {
     /// `maui.configuration.useLaunchJsonConfigurations` is on - a setting that
     /// defaults to OFF, and with it off the Release launch quietly builds Debug.
     func testTheReleaseLaunchIsBelieved() throws {
-        for layout in layouts {
-            let launch = try json(at: layout.directory.appendingPathComponent("launch.json"))
-            XCTAssertNotNil(
-                array(launch, "configurations").first { ($0["configuration"] as? String) == "release" },
-                "\(layout.name) has no launch against the Release build.")
+        let launch = try json(at: directory.appendingPathComponent("launch.json"))
+        XCTAssertNotNil(
+            array(launch, "configurations").first { ($0["configuration"] as? String) == "release" },
+            "launch.json has no launch against the Release build.")
 
-            let settings = try json(at: layout.directory.appendingPathComponent("settings.json"))
-            XCTAssertEqual(
-                settings["maui.configuration.useLaunchJsonConfigurations"] as? Bool, true,
-                "settings.json in \(layout.name) does not turn on "
-                    + "maui.configuration.useLaunchJsonConfigurations.")
-        }
+        let settings = try json(at: directory.appendingPathComponent("settings.json"))
+        XCTAssertEqual(
+            settings["maui.configuration.useLaunchJsonConfigurations"] as? Bool, true,
+            "settings.json does not turn on maui.configuration.useLaunchJsonConfigurations.")
     }
 
     /// AND ON WINDOWS IT FINDS THE EXECUTABLE: the MAUI extension works the
@@ -136,24 +120,18 @@ final class VsCodeTests: XCTestCase {
 
     /// The Release task passes what the scripts read. run-app.sh takes its
     /// arguments by SHAPE, so the task says "Release" and the script has to
-    /// recognize that word - and refuse one it does not recognize. The
-    /// repository's task alone: an application made from the template keeps
-    /// no scripts, and runs without a debugger through StateUI: Release.
+    /// recognize that word - and refuse one it does not recognize.
     func testTheReleaseTaskSpeaksTheScriptsLanguage() throws {
-        for layout in layouts.prefix(1) {
-            let tasks = try json(at: layout.directory.appendingPathComponent("tasks.json"))
-            let task = try XCTUnwrap(
-                array(tasks, "tasks").first {
-                    ($0["label"] as? String) == "Run app (Release, no debugger)"
-                },
-                "\(layout.name) has no \"Run app (Release, no debugger)\" task.")
+        let tasks = try json(at: directory.appendingPathComponent("tasks.json"))
+        let task = try XCTUnwrap(
+            array(tasks, "tasks").first { ($0["label"] as? String) == "Run app (Release, no debugger)" },
+            "tasks.json has no \"Run app (Release, no debugger)\" task.")
 
-            let osx = ((task["osx"] as? [String: Any])?["args"] as? [String]) ?? []
-            XCTAssertTrue(osx.contains("Release"))
+        let osx = ((task["osx"] as? [String: Any])?["args"] as? [String]) ?? []
+        XCTAssertTrue(osx.contains("Release"))
 
-            let windows = ((task["windows"] as? [String: Any])?["args"] as? [String]) ?? []
-            XCTAssertTrue(windows.contains("-Configuration") && windows.contains("Release"))
-        }
+        let windows = ((task["windows"] as? [String: Any])?["args"] as? [String]) ?? []
+        XCTAssertTrue(windows.contains("-Configuration") && windows.contains("Release"))
 
         let scripts = Fixtures.repository.appendingPathComponent(".scripts/Maui")
         let sh = try String(contentsOf: scripts.appendingPathComponent("run-app.sh"), encoding: .utf8)
@@ -169,29 +147,25 @@ final class VsCodeTests: XCTestCase {
     /// once and never again on an incremental build, and `obj/` is per
     /// configuration AND per framework, so every narrowing keeps a stale copy.
     func testTheCleanTaskTakesEverythingAndAsksNothing() throws {
-        for layout in layouts {
-            let tasks = try json(at: layout.directory.appendingPathComponent("tasks.json"))
-            let task = try XCTUnwrap(
-                array(tasks, "tasks").first { ($0["label"] as? String) == "Clean app (everything)" },
-                "\(layout.name) has no \"Clean app (everything)\" task.")
+        let tasks = try json(at: directory.appendingPathComponent("tasks.json"))
+        let task = try XCTUnwrap(
+            array(tasks, "tasks").first { ($0["label"] as? String) == "Clean app (everything)" },
+            "tasks.json has no \"Clean app (everything)\" task.")
 
-            let args = (task["args"] as? [String] ?? []).joined(separator: " ")
-            let windows = ((task["windows"] as? [String: Any])?["args"] as? [String] ?? [])
-                .joined(separator: " ")
+        let args = (task["args"] as? [String] ?? []).joined(separator: " ")
+        let windows = ((task["windows"] as? [String: Any])?["args"] as? [String] ?? [])
+            .joined(separator: " ")
 
-            for shell in [("rm", args), ("Remove-Item", windows)] {
-                for wanted in ["obj", "bin", ".build"] {
-                    XCTAssertTrue(
-                        shell.1.contains("/\(wanted)'") || shell.1.contains("/\(wanted) ")
-                            || shell.1.hasSuffix("/\(wanted)"),
-                        "the clean task in \(layout.name) does not remove \(wanted)/ whole on "
-                            + "its \(shell.0) side.")
-                }
-
-                XCTAssertFalse(
-                    shell.1.contains("${input:"),
-                    "the clean task in \(layout.name) asks a question on its \(shell.0) side.")
+        for shell in [("rm", args), ("Remove-Item", windows)] {
+            for wanted in ["obj", "bin", ".build"] {
+                XCTAssertTrue(
+                    shell.1.contains("/\(wanted)'") || shell.1.contains("/\(wanted) ")
+                        || shell.1.hasSuffix("/\(wanted)"),
+                    "the clean task does not remove \(wanted)/ whole on its \(shell.0) side.")
             }
+
+            XCTAssertFalse(
+                shell.1.contains("${input:"), "the clean task asks a question on its \(shell.0) side.")
         }
     }
 
@@ -199,7 +173,7 @@ final class VsCodeTests: XCTestCase {
     /// its own directories, so a clean named after the app rebuilds one half of
     /// a pair against a copy of the other from a different moment.
     func testTheRepositoryCanCleanTheLibraryToo() throws {
-        let tasks = try json(at: Fixtures.repository.appendingPathComponent(".vscode/tasks.json"))
+        let tasks = try json(at: directory.appendingPathComponent("tasks.json"))
         let task = try XCTUnwrap(
             array(tasks, "tasks").first { ($0["label"] as? String) == "Clean all (app and library)" },
             "the repository has no \"Clean all (app and library)\" task.")
@@ -230,62 +204,50 @@ final class VsCodeTests: XCTestCase {
     /// and StateUI: Debug is the first launch offered.
     /// Two orders that collide are VS Code's to break however it likes.
     func testTheWidestLaunchIsFirstInItsGroup() throws {
-        for layout in layouts {
-            let launch = try json(at: layout.directory.appendingPathComponent("launch.json"))
-            let all = array(launch, "configurations") + array(launch, "compounds")
-            let entries = all.compactMap { entry -> (group: String, order: Int, name: String)? in
-                guard let name = entry["name"] as? String,
-                      let presentation = entry["presentation"] as? [String: Any],
-                      let group = presentation["group"] as? String,
-                      let order = presentation["order"] as? Int else { return nil }
+        let launch = try json(at: directory.appendingPathComponent("launch.json"))
+        let all = array(launch, "configurations") + array(launch, "compounds")
+        let entries = all.compactMap { entry -> (group: String, order: Int, name: String)? in
+            guard let name = entry["name"] as? String,
+                  let presentation = entry["presentation"] as? [String: Any],
+                  let group = presentation["group"] as? String,
+                  let order = presentation["order"] as? Int else { return nil }
 
-                return (group, order, name)
-            }
-
-            XCTAssertEqual(
-                entries.count, all.count,
-                "something in \(layout.name) has no presentation group and order.")
-
-            var seen: Set<String> = []
-            for entry in entries {
-                XCTAssertTrue(
-                    seen.insert("\(entry.group)/\(entry.order)").inserted,
-                    "\"\(entry.name)\" in \(layout.name) shares group \(entry.group) order "
-                        + "\(entry.order) with another entry.")
-            }
-
-            func first(_ group: String) -> String? {
-                entries.filter { $0.group == group }.min { $0.order < $1.order }?.name
-            }
-
-            XCTAssertEqual(first("0 StateUI"), "StateUI: Debug")
+            return (group, order, name)
         }
+
+        XCTAssertEqual(entries.count, all.count, "something in launch.json has no presentation group and order.")
+
+        var seen: Set<String> = []
+        for entry in entries {
+            XCTAssertTrue(
+                seen.insert("\(entry.group)/\(entry.order)").inserted,
+                "\"\(entry.name)\" shares group \(entry.group) order \(entry.order) with another entry.")
+        }
+
+        func first(_ group: String) -> String? {
+            entries.filter { $0.group == group }.min { $0.order < $1.order }?.name
+        }
+
+        XCTAssertEqual(first("0 StateUI"), "StateUI: Debug")
     }
 
     /// The Swift extension appends no raw executable launches of its own, and
     /// no settings file decides the editor's host over the StateUI extension:
     /// every configuration here is deliberate.
     func testTheSwiftExtensionDoesNotAppendRawExecutableLaunches() throws {
-        for layout in layouts {
-            let settings = try json(at: layout.directory.appendingPathComponent("settings.json"))
-            XCTAssertEqual(
-                settings["swift.autoGenerateLaunchConfigurations"] as? Bool, false,
-                "\(layout.name) lets the Swift extension add a Debug and a Release of every executable.")
-            XCTAssertNil(
-                settings["swift.swiftEnvironmentVariables"],
-                "\(layout.name) sets the editor's host in settings, over the StateUI extension's choice.")
-        }
-
-        let recommended = try json(at: Fixtures.templateApplication.appendingPathComponent(".vscode/extensions.json"))
-        XCTAssertTrue(
-            (recommended["recommendations"] as? [String] ?? []).contains("idexus.stateui"),
-            "an application made from the template does not recommend the extension its launches need.")
+        let settings = try json(at: directory.appendingPathComponent("settings.json"))
+        XCTAssertEqual(
+            settings["swift.autoGenerateLaunchConfigurations"] as? Bool, false,
+            "settings.json lets the Swift extension add a Debug and a Release of every executable.")
+        XCTAssertNil(
+            settings["swift.swiftEnvironmentVariables"],
+            "settings.json sets the editor's host, over the StateUI extension's choice.")
     }
 
     /// Each host's suite is a task of its own, beside the default that runs
     /// the Swift ones.
     func testEveryHostsSuiteIsATaskOfItsOwn() throws {
-        let tasks = try json(at: Fixtures.repository.appendingPathComponent(".vscode/tasks.json"))
+        let tasks = try json(at: directory.appendingPathComponent("tasks.json"))
         let labels = Set(array(tasks, "tasks").compactMap { $0["label"] as? String })
 
         for label in ["Test StateUI", "Test StateUI.AppKit", "Test StateUI.Maui", "Test Gallery"] {

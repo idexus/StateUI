@@ -6,15 +6,12 @@ is the C# half. An application's Swift half comes from the StateUI Swift
 package when the application builds, so this package alone does not make an
 application. On Linux, `StateUI.Maui.Linux` is referenced beside it.
 
-The working path starts from the template, created against a StateUI checkout
-(a directory named `StateUI`):
+A new application is HelloWorld under another name, made in a StateUI
+checkout's `apps/`:
 
 ```
-dotnet new install StateUI.Maui.Template
-dotnet new stateui-maui -n MyApp --stateui-path /path/to/StateUI
+.scripts/new-app.sh MyApp
 ```
-
-`--appkit` adds a native macOS head beside the MAUI one.
 
 **Version 0.4 - the API is still changing.** Use in a project is at your own
 risk: names and signatures move between versions while the design is being

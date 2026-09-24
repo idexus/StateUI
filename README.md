@@ -82,8 +82,8 @@ that is usable now.
   event inventory with verified host coverage.
 - [Control dictionary](docs/controls/README.md) — every control and part of an
   application's structure, member by member, with a mark per platform.
-- [MAUI host](docs/maui-host.md) — platforms, an application's MAUI head, the
-  `stateui-maui` template, builds, debugging, and C# registrations.
+- [MAUI host](docs/maui-host.md) — platforms, an application's MAUI head,
+  builds, debugging, and C# registrations.
 - [Project structure and development](docs/development.md) — packages, Gallery,
   build, F5, and test commands.
 - [Contributing](CONTRIBUTING.md) — rules for changing the public contract.

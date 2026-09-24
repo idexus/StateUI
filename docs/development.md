@@ -12,7 +12,6 @@ lib/StateUI.Android/              Android Views host package, its Java layer and
 lib/StateUI.Maui/Sources/         .NET MAUI host (StateUI.Maui)
 lib/StateUI.Maui/Linux/           its Linux platform over GTK 4 (StateUI.Maui.Linux)
 lib/StateUI.Maui/Tests/           MAUI host tests
-lib/StateUI.Maui/Template/        `dotnet new stateui-maui` template
 .scripts/AppKit/                  AppKit Gallery bundling
 .scripts/Android/                 Android Views builds, runs, devices and tests
 .scripts/Maui/                    MSBuild targets and per-platform Swift builds
@@ -229,7 +228,13 @@ package uses the root checkout as a local dependency; the complete remote
 library-plus-host installation path is not published yet. Keep Getting Started
 honest about that state until both products have a supported versioned route.
 
-The MAUI host is three NuGet packages, `StateUI.Maui`, `StateUI.Maui.Linux`,
-and `StateUI.Maui.Template`, whose versions move with the Swift package's tag.
-None is published yet; [MAUI host](maui-host.md#publishing-the-packages) says
-how they are packed and tried locally.
+A release has one version, stated in the editor extension's
+`lib/StateUI.VSCode/package.json`. Every other place that names it - the
+published-package line in each `Package.swift`, each Android head's version,
+the Gallery's AppKit bundle, the bug report's example - names the same one, and
+`ReleaseTests` holds them to it.
+
+The MAUI host is two NuGet packages, `StateUI.Maui` and `StateUI.Maui.Linux`,
+whose versions move with the Swift package's tag. Neither is published yet;
+[MAUI host](maui-host.md#publishing-the-packages) says how they are packed and
+tried locally.

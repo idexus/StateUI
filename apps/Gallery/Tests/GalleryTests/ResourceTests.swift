@@ -76,7 +76,7 @@ final class ResourceTests: XCTestCase {
         }
     }
 
-    /// The template's look is a light one and a dark one. A colour written for
+    /// The Gallery's look is a light one and a dark one. A colour written for
     /// only one theme is the thing that reads wrong on the other, so most of
     /// them are written for both.
     ///

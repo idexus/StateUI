@@ -59,8 +59,8 @@ final class NativeProjectTests: XCTestCase {
     }
 
     /// The MAUI host is a host package beside AppKit's: its runtime, its Linux
-    /// platform, its tests and its template, named by one solution, and built
-    /// by the scripts under `.scripts/Maui`.
+    /// platform and its tests, named by one solution, and built by the scripts
+    /// under `.scripts/Maui`.
     func testTheMauiHostIsAHostPackageBesideAppKit() throws {
         let repository = Fixtures.repository
         for relative in [
@@ -68,7 +68,6 @@ final class NativeProjectTests: XCTestCase {
             "lib/StateUI.Maui/Sources/StateUI.Maui.csproj",
             "lib/StateUI.Maui/Linux/StateUI.Maui.Linux.csproj",
             "lib/StateUI.Maui/Tests/StateUI.Maui.Tests.csproj",
-            "lib/StateUI.Maui/Template/StateUI.Maui.Template.csproj",
             ".scripts/Maui/StateUI.targets",
             ".scripts/Maui/build-apple.sh",
             ".scripts/Maui/build-android.sh",
@@ -93,7 +92,6 @@ final class NativeProjectTests: XCTestCase {
             "lib/StateUI.Maui/Sources/StateUI.Maui.csproj",
             "lib/StateUI.Maui/Linux/StateUI.Maui.Linux.csproj",
             "lib/StateUI.Maui/Tests/StateUI.Maui.Tests.csproj",
-            "lib/StateUI.Maui/Template/StateUI.Maui.Template.csproj",
         ])
     }
 
@@ -276,12 +274,11 @@ final class NativeProjectTests: XCTestCase {
     /// drift apart.
     func testEveryApplicationDefinesTheAppKitConditionInItsManifest() throws {
         let repository = Fixtures.repository
-        let template = "lib/StateUI.Maui/Template/templates/StateUIStarter"
         func text(_ relative: String) throws -> String {
             try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
         }
 
-        for relative in ["apps/Gallery/Package.swift", "apps/HelloWorld/Package.swift", "\(template)/Package.swift"] {
+        for relative in ["apps/Gallery/Package.swift", "apps/HelloWorld/Package.swift"] {
             let manifest = try text(relative)
 
             XCTAssertTrue(
@@ -300,7 +297,7 @@ final class NativeProjectTests: XCTestCase {
 
         for relative in [
             ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/new-app.sh", ".scripts/test-native.sh",
-            "\(template)/README.md", "docs/development.md", "docs/getting-started.md",
+            "docs/development.md", "docs/getting-started.md",
         ] {
             let commands = try text(relative)
                 .replacingOccurrences(of: "\\\n", with: " ")
@@ -315,11 +312,9 @@ final class NativeProjectTests: XCTestCase {
             }
         }
 
-        for relative in [".vscode/tasks.json", "\(template)/.vscode/tasks.json"] {
-            XCTAssertFalse(
-                try text(relative).contains("\"-DAPPKIT\""),
-                "\(relative) still gives -DAPPKIT, which the manifest now defines")
-        }
+        XCTAssertFalse(
+            try text(".vscode/tasks.json").contains("\"-DAPPKIT\""),
+            ".vscode/tasks.json still gives -DAPPKIT, which the manifest now defines")
     }
 
     /// Whether a line RUNS SwiftPM, read past any variables it sets first.
@@ -356,14 +351,13 @@ final class NativeProjectTests: XCTestCase {
     /// export it once above the builds it runs.
     func testEveryAppKitBuildTellsTheManifestItHasAnAppKitHead() throws {
         let repository = Fixtures.repository
-        let template = "lib/StateUI.Maui/Template/templates/StateUIStarter"
         func text(_ relative: String) throws -> String {
             try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
         }
 
         for relative in [
             ".scripts/AppKit/build-gallery-appkit.sh", ".scripts/new-app.sh", ".scripts/test-native.sh",
-            "\(template)/README.md", "docs/development.md", "docs/getting-started.md",
+            "docs/development.md", "docs/getting-started.md",
         ] {
             XCTAssertTrue(
                 try text(relative).contains("STATEUI_APPKIT=1"),
@@ -371,21 +365,19 @@ final class NativeProjectTests: XCTestCase {
         }
 
         // A task sets it in the environment it runs the build in.
-        for relative in [".vscode/tasks.json", "\(template)/.vscode/tasks.json"] {
-            let tasks = try text(relative).components(separatedBy: "\"label\"").filter { task in
-                let lines = task.components(separatedBy: "\n").map { $0.trimmingCharacters(in: .whitespaces) }
-                guard let product = lines.firstIndex(of: "\"--product\","), product + 1 < lines.count
-                else { return false }
-                return lines[product + 1].hasSuffix("AppKit\"")
-            }
+        let tasks = try text(".vscode/tasks.json").components(separatedBy: "\"label\"").filter { task in
+            let lines = task.components(separatedBy: "\n").map { $0.trimmingCharacters(in: .whitespaces) }
+            guard let product = lines.firstIndex(of: "\"--product\","), product + 1 < lines.count
+            else { return false }
+            return lines[product + 1].hasSuffix("AppKit\"")
+        }
 
-            XCTAssertFalse(tasks.isEmpty, "\(relative) builds no AppKit head")
+        XCTAssertFalse(tasks.isEmpty, ".vscode/tasks.json builds no AppKit head")
 
-            for task in tasks {
-                XCTAssertTrue(
-                    task.contains("\"STATEUI_APPKIT\": \"1\""),
-                    "\(relative) builds an AppKit head without telling the manifest there is one")
-            }
+        for task in tasks {
+            XCTAssertTrue(
+                task.contains("\"STATEUI_APPKIT\": \"1\""),
+                ".vscode/tasks.json builds an AppKit head without telling the manifest there is one")
         }
     }
 
@@ -422,9 +414,9 @@ final class NativeProjectTests: XCTestCase {
             "an Android head is built without its icon being drawn")
     }
 
-    /// Every AppKit head - each application's and the template's - hands the
-    /// host its icon on macOS's icon grid, found from its own source file
-    /// rather than from the directory it was started in.
+    /// Every application's AppKit head hands the host its icon on macOS's icon
+    /// grid, found from its own source file rather than from the directory it
+    /// was started in.
     ///
     /// A macOS icon is a 1024 canvas whose body is an 824-point rounded square
     /// 100 points in: artwork drawn edge to edge stands larger in the Dock than
@@ -432,7 +424,7 @@ final class NativeProjectTests: XCTestCase {
     /// terminal elsewhere would find no artwork at all, and show the bare
     /// executable's icon.
     func testEveryAppKitHeadShowsAnIconOnTheMacGridWhereverItIsStarted() throws {
-        let applications = try Fixtures.applications() + [Fixtures.templateApplication]
+        let applications = try Fixtures.applications()
         let icon = "Resources/AppIcon/appicon_macos.svg"
         var heads = 0
 

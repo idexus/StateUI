@@ -16,7 +16,7 @@ import { applyEditorMode, cleanIndex, variablesInSettings } from "./editorMode";
 import { availableHosts, availableMauiDebuggers, describe, Host, MauiDebugger, mauiDebuggers } from "./hosts";
 import { readyWhen, runTask, startTask } from "./tasks";
 import { findSuites, forDevice, runSuites } from "./tests";
-import { carriedTemplate, checkoutProblem, inAppsCommand, isCheckout, nameProblem, pinnedRelease, releases, Starter, StarterSource, writeStarter } from "./newApplication";
+import { inAppsCommand, isCheckout, nameProblem } from "./newApplication";
 
 /** What the extension answers to another extension - and to its own tests. */
 export interface StateUIApi {
@@ -255,7 +255,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
             await applyEditorMode(host(), roots());
             void vscode.window.showInformationMessage(`StateUI: apps/${name} is made and chosen - StateUI: Debug runs it.`);
         }),
-        vscode.commands.registerCommand("stateui.newApplication", () => newApplication(context.extensionPath)),
         vscode.commands.registerCommand("stateui.cleanIndex", async () => {
             await cleanIndex(roots());
             void vscode.window.setStatusBarMessage("StateUI: the index is being built again", 4000);
@@ -362,128 +361,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
     await applyEditorMode(host(), roots());
 
     return { host, selectHost, application: () => state.get<string>(applicationKey), selectApplication, selectDebugger };
-}
-
-/**
- * StateUI: New Application from Template - where, what it is called, and
- * what StateUI it is built against; then the application is written and
- * offered to open.
- */
-async function newApplication(extensionPath: string): Promise<void> {
-    const title = "New Application from Template";
-    const workspace = vscode.workspace.workspaceFolders?.[0]?.uri;
-
-    const parent = (await vscode.window.showOpenDialog({
-        title: `${title}: the directory the application's own directory is made in`,
-        canSelectFiles: false, canSelectFolders: true, canSelectMany: false, openLabel: "Create Here",
-        defaultUri: workspace ? vscode.Uri.file(path.dirname(workspace.fsPath)) : undefined,
-    }))?.[0]?.fsPath;
-    if (!parent) {
-        return;
-    }
-
-    const name = await vscode.window.showInputBox({
-        title,
-        prompt: `The application's name: its directory in ${parent}, MAUI project, process and Swift module (<Name>UI).`,
-        placeHolder: "MyApp",
-        ignoreFocusOut: true,
-        validateInput: (value) => nameProblem(value) ?? (fs.existsSync(path.join(parent, value)) ? `${path.join(parent, value)} already exists.` : undefined),
-    });
-    if (!name) {
-        return;
-    }
-
-    const carried = carriedTemplate(extensionPath);
-    const workspaceCheckouts = (vscode.workspace.workspaceFolders ?? [])
-        .map((folder) => folder.uri.fsPath)
-        .filter((directory) => checkoutProblem(directory) === undefined);
-    type Choice = { label: string; description?: string; detail?: string; source: "checkout" | "another" | "release"; checkout?: string };
-    const choice = await vscode.window.showQuickPick<Choice>([
-        ...workspaceCheckouts.map((checkout): Choice => ({
-            label: "$(repo) This StateUI checkout", detail: `${checkout} - both halves by path, as they are on disk`, source: "checkout", checkout,
-        })),
-        { label: "$(folder-opened) A StateUI checkout…", detail: "Both halves from a checkout on disk, by path", source: "another" },
-        { label: "$(package) A release", detail: "StateUI.Maui from NuGet, and the Swift half by the repository's tag of the same version", source: "release" },
-    ], { title, placeHolder: `What StateUI is ${name} built against?`, ignoreFocusOut: true });
-    if (!choice) {
-        return;
-    }
-
-    let source: StarterSource;
-    let templateRoot: string;
-    if (choice.source === "release") {
-        let found: string[];
-        try {
-            found = await vscode.window.withProgress(
-                { location: vscode.ProgressLocation.Notification, title: "StateUI: reading NuGet's versions and the repository's tags" },
-                () => releases());
-        } catch (error) {
-            void vscode.window.showErrorMessage(`StateUI: the releases could not be read - ${error instanceof Error ? error.message : String(error)}`);
-            return;
-        }
-        if (found.length === 0) {
-            void vscode.window.showErrorMessage("StateUI: no release has both StateUI.Maui on NuGet and its tag in the repository yet. Build against a checkout instead.");
-            return;
-        }
-
-        const written = pinnedRelease(carried);
-        const version = await vscode.window.showQuickPick(
-            found.map((each) => ({
-                label: each,
-                description: each === written ? "the release this template is written for" : undefined,
-            })),
-            { title, placeHolder: "Which release?", ignoreFocusOut: true });
-        if (!version) {
-            return;
-        }
-        source = { kind: "release", version: version.label };
-        templateRoot = carried;
-    } else {
-        let checkout = choice.checkout;
-        if (choice.source === "another") {
-            checkout = (await vscode.window.showOpenDialog({
-                title: `${title}: the StateUI checkout`, canSelectFiles: false, canSelectFolders: true, canSelectMany: false, openLabel: "Build Against It",
-            }))?.[0]?.fsPath;
-        }
-        if (!checkout) {
-            return;
-        }
-        const problem = checkoutProblem(checkout);
-        if (problem) {
-            void vscode.window.showErrorMessage(`StateUI: ${problem}`);
-            return;
-        }
-        source = { kind: "checkout", checkout };
-        // The checkout's own template, so the application matches the library it is built against.
-        templateRoot = checkout;
-    }
-
-    // The AppKit host is a package of the checkout's, so only a checkout offers it.
-    let appKit = false;
-    if (source.kind === "checkout" && process.platform === "darwin") {
-        const heads = await vscode.window.showQuickPick(
-            [{ label: "MAUI and AppKit", detail: "A .NET MAUI head, and a native macOS head in Platforms/AppKit", appKit: true },
-             { label: "MAUI", detail: "A .NET MAUI head for Android, iOS, Mac Catalyst, Windows and Linux", appKit: false }],
-            { title, placeHolder: `Which heads does ${name} have?`, ignoreFocusOut: true });
-        if (!heads) {
-            return;
-        }
-        appKit = heads.appKit;
-    }
-
-    const starter: Starter = { name, parent, source, appKit };
-    let made: string;
-    try {
-        made = writeStarter(starter, templateRoot);
-    } catch (error) {
-        void vscode.window.showErrorMessage(`StateUI: ${name} was not made - ${error instanceof Error ? error.message : String(error)}`);
-        return;
-    }
-
-    const open = await vscode.window.showInformationMessage(`StateUI: ${made} is made.`, "Open", "Open in New Window");
-    if (open) {
-        await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(made), { forceNewWindow: open === "Open in New Window" });
-    }
 }
 
 export function deactivate(): void {}

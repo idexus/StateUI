@@ -141,13 +141,10 @@ final class AppsTests: XCTestCase {
     /// decides what a file is by sniffing its first hundred or so bytes: a
     /// comment before `<svg` pushes the element out of that window, and the
     /// picture silently does not appear. A comment goes inside the element.
-    ///
-    /// The template's application is read too - it is what `dotnet new`
-    /// writes out.
     func testEverySvgSaysWhatItIsInsideTheSniffWindow() throws {
         let window = 100
 
-        for application in try Fixtures.applications() + [Fixtures.templateApplication] {
+        for application in try Fixtures.applications() {
             let name = application.lastPathComponent
             let vectors = Fixtures.files(
                 under: application, leavingOut: Fixtures.byproducts.union([".scripts"]))
@@ -185,7 +182,7 @@ final class AppsTests: XCTestCase {
     /// The base name, not the whole file name: `mark.svg` and `mark.png` are
     /// one picture to everything downstream, an SVG being asked for as a PNG.
     func testNoTwoResourcesInOneAppShareAName() throws {
-        for application in try Fixtures.applications() + [Fixtures.templateApplication] {
+        for application in try Fixtures.applications() {
             let name = application.lastPathComponent
             let pictures = Fixtures.files(under: application.appendingPathComponent("Resources"))
                 .filter { $0.hasSuffix(".svg") || $0.hasSuffix(".png") }
@@ -214,7 +211,7 @@ final class AppsTests: XCTestCase {
     /// application with no icon, or none at all - on the platform that was
     /// missed, and only there.
     func testTheAppIconIsCalledTheSameEverywhere() throws {
-        for application in try Fixtures.applications() + [Fixtures.templateApplication] {
+        for application in try Fixtures.applications() {
             let name = application.lastPathComponent
             let head = application.appendingPathComponent("Platforms/Maui")
             let project = try String(
