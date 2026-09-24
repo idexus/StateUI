@@ -34,6 +34,7 @@ class WinUILayoutView: WinUIView {
         else { return false }
 
         self.items = items
+        for item in items { item.view.placingLayout = self }
         setChildren(items.map(\.view))
         invalidateMeasurements()
         return true
@@ -46,6 +47,11 @@ class WinUILayoutView: WinUIView {
         let handles: [StateUIObjectRef?] = views.map(\.handle)
         stateui_winui_panel_set_children(handle, handles, Int32(handles.count))
         held = views
+    }
+
+    /// Asks WinUI to arrange the children again: a place in the air lands in the pass it asks for.
+    func invalidateArrange() {
+        stateui_winui_invalidate_arrange(handle)
     }
 
     /// Forgets the kept sizes and asks WinUI to measure again.
@@ -67,8 +73,10 @@ class WinUILayoutView: WinUIView {
         return measurements.size(offering: offered) { contentSize(width: offered) }
     }
 
-    /// Answers WinUI's arrange: places every child in `width` by `height` DIPs.
+    /// Answers WinUI's arrange: places every child in `width` by `height` DIPs, inside the pass.
     func arrange(width: Double, height: Double) {
+        WinUIView.arranging += 1
+        defer { WinUIView.arranging -= 1 }
         arrange(in: Rect(x: 0, y: 0, width: width, height: height))
     }
 

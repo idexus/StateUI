@@ -5,7 +5,7 @@
 
 /// A VStack or an HStack: the core's stack arithmetic over the relay's panel.
 @MainActor
-final class WinUIStackView: WinUILayoutView {
+final class WinUIStackView: WinUITravellingLayout {
     /// The axis the stack runs along.
     let axis: StackArithmetic.Axis
 
@@ -29,10 +29,11 @@ final class WinUIStackView: WinUILayoutView {
     }
 
     override func arrange(in bounds: Rect) {
+        beginArrangement(width: bounds.width)
         let places = StackArithmetic.places(
             of: items, axis: axis, spacing: spacing, padding: padding, in: bounds, direction: direction)
         for (item, place) in zip(items, places) {
-            if let place { item.view.layout(place) }
+            if let place { self.place(item, at: place) }
         }
     }
 }

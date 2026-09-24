@@ -20,6 +20,22 @@ struct OneWindow: Window {
     var page: any Page { content() }
 }
 
+/// What a handler heard, in order.
+final class Received<Value>: Sendable {
+    private let received = State(wrappedValue: [Value]())
+
+    var values: [Value] {
+        get { received.wrappedValue }
+        set { received.wrappedValue = newValue }
+    }
+}
+
+/// A clock a test winds by hand, in milliseconds.
+@MainActor
+final class TestClock {
+    var now = 0.0
+}
+
 /// The test thread as WinUI's: WinUI embedded in it once, since no loop of WinUI's runs a test.
 enum WinUITestHost {
     /// Makes the test thread hold WinUI elements, once.
@@ -32,6 +48,9 @@ enum WinUITestHost {
     static func pump(_ seconds: Double = 0.2) {
         stateui_winui_pump(seconds)
     }
+
+    /// The window a bare host's root stands in, made once.
+    @MainActor static let window = WinUIWindow()
 }
 
 extension XCTestCase {
@@ -44,17 +63,69 @@ extension XCTestCase {
 }
 
 extension WinUIRenderer {
-    /// A host showing `page` in a window of its own, laid out; the host before it leaves, and its window closes.
-    static func running(_ page: @escaping @Sendable () -> any Page) -> WinUIRenderer {
-        shared?.tree.root?.leave()
-        shared?.window?.close()
-
+    /// A host showing `page` in a window of its own, laid out, on `clock` where one is given.
+    static func running(
+        clock: TestClock? = nil, reducesMotion: Bool = false, _ page: @escaping @Sendable () -> any Page
+    ) -> WinUIRenderer {
         stateUIUseApp(OneWindowApplication(page: page))
-        let renderer = WinUIRenderer()
-        shared = renderer
+        let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
         renderer.show()
         WinUITestHost.pump()
         return renderer
+    }
+
+    /// A host whose tree takes only what a test applies; its root stands in the test's window. The core's own
+    /// render is taken and set aside, so no frame renders the core's tree over the test's.
+    static func bare(clock: TestClock? = nil, reducesMotion: Bool = false) -> WinUIRenderer {
+        let renderer = replacing(clock: clock, reducesMotion: reducesMotion)
+        _ = renderer.core.render(baseline: 0)
+        return renderer
+    }
+
+    /// A host in place of the one before it, which leaves; its window closes.
+    private static func replacing(clock: TestClock?, reducesMotion: Bool) -> WinUIRenderer {
+        shared?.tree.root?.leave()
+        shared?.window?.close()
+        WinUITestHost.window.show(nil)
+
+        let renderer = WinUIRenderer(clock: clock.map { clock in { clock.now } }, reducesMotion: { reducesMotion })
+        shared = renderer
+        return renderer
+    }
+
+    /// Applies `patch` as one whole message, as a render does, and stands the root in the test's window.
+    func apply(_ patch: HostPatch) {
+        intake.take(patch, generation: intake.baseline &+ 1) { tree.apply($0, complete: true) }
+        let root = (tree.root?.native as? WinUIElement)?.view
+        guard WinUITestHost.window.content !== root else { return }
+        WinUITestHost.window.show(root)
+        WinUITestHost.pump()
+    }
+
+    /// The view of the element keyed `id`.
+    func view(id: ElementId) -> WinUIView? {
+        (tree.root?.first(id: id)?.native as? WinUIElement)?.view
+    }
+
+    /// One display frame at the clock's time, then the layout pass WinUI runs in it.
+    func frame() {
+        displayCycle.frame(now: frameClock.now())
+        layOut()
+    }
+
+    /// Runs WinUI's layout pass over the shown tree now.
+    func layOut() {
+        let root = window?.content ?? WinUITestHost.window.content
+        if let root { stateui_winui_update_layout(root.handle) }
+    }
+
+    /// Pumps until `done` holds: a handler resumed on the pool comes back to the UI thread's queue.
+    func settle(until done: () -> Bool) {
+        for _ in 0..<150 where !done() {
+            WinUITestHost.pump(0.01)
+            _ = core.runJobs()
+            pump()
+        }
     }
 
     /// Every view of `type` in the tree, in order.
@@ -69,10 +140,53 @@ extension WinUIRenderer {
     }
 }
 
+extension WinUIView {
+    /// Where WinUI laid the element out, rounded to whole DIPs.
+    var frame: (x: Double, y: Double, width: Double, height: Double) {
+        let frame = laidOutFrame
+        return (frame.x.rounded(), frame.y.rounded(), frame.width.rounded(), frame.height.rounded())
+    }
+
+    /// The opacity WinUI draws the element at.
+    var drawnOpacity: Double {
+        stateui_winui_opacity(handle)
+    }
+
+    /// The transform WinUI holds: translation, rotation, scale and the centre it turns about, in DIPs and degrees.
+    var drawnTransform: (translationX: Double, translationY: Double, rotation: Double,
+                         scaleX: Double, scaleY: Double, centerX: Double, centerY: Double) {
+        var values = [Double](repeating: 0, count: 7)
+        stateui_winui_transform(handle, &values)
+        return (values[0], values[1], values[2], values[3], values[4], values[5], values[6])
+    }
+}
+
 extension WinUIButtonView {
     /// Presses the button as UI Automation does, then lets WinUI lay out what that changed.
     func invoke() {
         stateui_winui_button_invoke(handle)
         WinUITestHost.pump(0.05)
+    }
+}
+
+extension WinUISwitchView {
+    /// Turns the switch as UI Automation does.
+    func toggle() {
+        stateui_winui_switch_toggle(handle)
+    }
+}
+
+extension WinUISliderView {
+    /// Moves the thumb to `value` as UI Automation does.
+    func move(to value: Double) {
+        stateui_winui_slider_move(handle, value)
+    }
+}
+
+extension WinUITextFieldView {
+    /// Changes the field's words as the user does: written outside a program's write, WinUI reports them the same.
+    /// Design: docs/design/platforms/winui/controls.md#a-field-and-its-words
+    func type(_ text: String) {
+        stateui_winui_field_set_text(handle, text)
     }
 }

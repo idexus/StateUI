@@ -26,7 +26,8 @@ standard error and leaves the object as it was.
 
 The host hands the relay one table of functions, which the relay calls on the
 UI thread: WinUI stands, a turn landed, a frame, a panel's measure and
-arrange, a click. Every one is set - the relay calls them unchecked, and an
+arrange, a click, a switch's turn, a slider's move, a field's words and its
+Return. Every one is set - the relay calls them unchecked, and an
 empty one is a jump to nothing.
 
 ## A view and its number

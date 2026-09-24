@@ -16,11 +16,22 @@ extension WinUIElement {
     var layoutItem: WinUILayoutItem? {
         guard let view else { return children.lazy.compactMap(\.layoutItem).first }
 
-        return WinUILayoutItem(view: view, values: element.layoutValues, isShown: isShown)
+        var item = WinUILayoutItem(view: view, values: element.layoutValues, isShown: isShown)
+        item.mount = element.mount
+        if fadesIn {
+            item.fadeIn = { [weak self] motion in self?.fadeIn(under: motion) }
+        }
+        return item
     }
 
-    /// Whether the view is shown, as the tree says.
+    /// Whether the view is shown: as the tree says, or while it fades out.
     var isShown: Bool {
-        value(.isVisible)?.bool != false
+        leaving || value(.isVisible)?.bool != false
+    }
+
+    /// The element whose layout places this one: the nearest above it with a view.
+    var layoutParent: WinUIElement? {
+        guard let parent else { return nil }
+        return parent.view != nil ? parent : parent.layoutParent
     }
 }

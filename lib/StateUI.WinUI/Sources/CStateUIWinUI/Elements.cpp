@@ -9,6 +9,7 @@
 #include <cstring>
 
 #include <winrt/Microsoft.UI.Xaml.Media.h>
+#include <winrt/Windows.UI.ViewManagement.h>
 
 using namespace stateui;
 using winrt::Windows::Foundation::Rect;
@@ -73,6 +74,70 @@ extern "C" void stateui_winui_frame(StateUIObjectRef handle, double *frame) {
     }
 }
 
+extern "C" void stateui_winui_invalidate_arrange(StateUIObjectRef handle) {
+    try {
+        as<xaml::UIElement>(handle).InvalidateArrange();
+    } catch (winrt::hresult_error const &error) {
+        report(error, "invalidating an arrangement");
+    }
+}
+
+extern "C" void stateui_winui_update_layout(StateUIObjectRef handle) {
+    try {
+        as<xaml::UIElement>(handle).UpdateLayout();
+    } catch (winrt::hresult_error const &error) {
+        report(error, "laying out");
+    }
+}
+
+extern "C" void stateui_winui_set_transform(
+    StateUIObjectRef handle, double translationX, double translationY, double rotation, double scaleX,
+    double scaleY, double centerX, double centerY
+) {
+    try {
+        auto element = as<xaml::UIElement>(handle);
+        element.CenterPoint({static_cast<float>(centerX), static_cast<float>(centerY), 0});
+        element.Translation({static_cast<float>(translationX), static_cast<float>(translationY), 0});
+        element.Rotation(static_cast<float>(rotation));
+        element.Scale({static_cast<float>(scaleX), static_cast<float>(scaleY), 1});
+    } catch (winrt::hresult_error const &error) {
+        report(error, "transforming");
+    }
+}
+
+extern "C" void stateui_winui_transform(StateUIObjectRef handle, double *values) {
+    try {
+        auto element = as<xaml::UIElement>(handle);
+        auto translation = element.Translation();
+        auto scale = element.Scale();
+        auto center = element.CenterPoint();
+        double const read[] = {translation.x, translation.y, element.Rotation(), scale.x, scale.y, center.x, center.y};
+        std::memcpy(values, read, sizeof read);
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading a transform");
+    }
+}
+
+extern "C" double stateui_winui_opacity(StateUIObjectRef handle) {
+    try {
+        return as<xaml::UIElement>(handle).Opacity();
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading the opacity");
+        return 1;
+    }
+}
+
+extern "C" bool stateui_winui_animations_enabled(void) {
+    try {
+        // One, kept: a fresh UISettings for every reading is a WinRT activation each time.
+        static winrt::Windows::UI::ViewManagement::UISettings settings;
+        return settings.AnimationsEnabled();
+    } catch (winrt::hresult_error const &error) {
+        report(error, "reading whether animations are on");
+        return true;
+    }
+}
+
 extern "C" void stateui_winui_set_enabled(StateUIObjectRef handle, bool enabled) {
     try {
         as<controls::Control>(handle).IsEnabled(enabled);
@@ -87,6 +152,8 @@ extern "C" int32_t stateui_winui_text(StateUIObjectRef handle, char *utf8, int32
         winrt::hstring words;
         if (auto block = object.try_as<controls::TextBlock>()) {
             words = block.Text();
+        } else if (auto box = object.try_as<controls::TextBox>()) {
+            words = box.Text();
         } else if (auto content = object.try_as<controls::ContentControl>()) {
             words = winrt::unbox_value_or<winrt::hstring>(content.Content(), L"");
         }

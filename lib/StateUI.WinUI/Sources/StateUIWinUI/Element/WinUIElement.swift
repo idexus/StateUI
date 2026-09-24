@@ -15,6 +15,9 @@ final class WinUIElement: NativeElement {
 
     weak var host: WinUIRenderer?
 
+    /// Whether the element is fading out: still shown and holding its room, hidden once the fade lands.
+    var leaving = false
+
     init(_ element: MountedElement, host: WinUIRenderer) {
         self.element = element
         self.host = host
@@ -35,15 +38,21 @@ final class WinUIElement: NativeElement {
     func willApply() {}
 
     func standingValue(_ property: Prop) -> HostValue? {
-        nil
+        switch (type, property) {
+        case (_, .opacity): view.map { .number($0.opacity) }
+        case (.slider, .value): (view as? WinUISliderView).map { .number($0.value) }
+        default: nil
+        }
     }
 
     func animates(_ property: Prop) -> Bool {
-        false
+        WinUITransitionSurface.presents(property, on: type)
     }
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
+        if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
         applyProperties(changed: changed)
+        configureLayoutMotion()
         arrangeChildren()
     }
 
@@ -58,6 +67,7 @@ final class WinUIElement: NativeElement {
     }
 
     func leave() {
+        leaving = false
         view?.detach()
     }
 }

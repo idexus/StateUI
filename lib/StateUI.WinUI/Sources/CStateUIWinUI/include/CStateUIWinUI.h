@@ -36,6 +36,18 @@ typedef struct {
 
     /// A button's Click.
     void (*clicked)(int64_t view);
+
+    /// A switch the user turned.
+    void (*toggled)(int64_t view, bool on);
+
+    /// A slider's value moved.
+    void (*valueChanged)(int64_t view, double value);
+
+    /// A field's words changed, all of them handed over in UTF-8.
+    void (*textChanged)(int64_t view, char const *utf8);
+
+    /// A single-line field's Enter.
+    void (*submitted)(int64_t view);
 } StateUIWinUICallbacks;
 
 /// Starts the Windows App SDK and WinUI on this thread and runs its loop until the last window closes.
@@ -75,6 +87,26 @@ void stateui_winui_frame(StateUIObjectRef element, double *frame);
 /// A control's IsEnabled.
 void stateui_winui_set_enabled(StateUIObjectRef control, bool enabled);
 
+/// Asks WinUI to arrange the element again - a place in the air lands only in a pass.
+void stateui_winui_invalidate_arrange(StateUIObjectRef element);
+
+/// Runs WinUI's layout pass over the element's tree now, as its next frame would.
+void stateui_winui_update_layout(StateUIObjectRef element);
+
+/// Moves, turns and scales the element where its layout put it: DIPs and degrees, about the point
+/// (`centerX`, `centerY`) of it, in DIPs.
+void stateui_winui_set_transform(StateUIObjectRef element, double translationX, double translationY,
+                                 double rotation, double scaleX, double scaleY, double centerX, double centerY);
+
+/// The transform as WinUI holds it, in `set_transform`'s order: seven values.
+void stateui_winui_transform(StateUIObjectRef element, double *values);
+
+/// The element's Opacity as WinUI holds it.
+double stateui_winui_opacity(StateUIObjectRef element);
+
+/// Whether the user leaves Windows' animations on.
+bool stateui_winui_animations_enabled(void);
+
 /// The words a text block or a button's caption shows, in UTF-8; the length they need, their end not counted.
 int32_t stateui_winui_text(StateUIObjectRef element, char *utf8, int32_t capacity);
 
@@ -92,6 +124,26 @@ void stateui_winui_button_set_text(StateUIObjectRef button, char const *utf8);
 
 /// Presses a button as UI Automation does, which raises its Click.
 void stateui_winui_button_invoke(StateUIObjectRef button);
+
+StateUIObjectRef stateui_winui_switch_make(int64_t view);
+void stateui_winui_switch_set_on(StateUIObjectRef toggle, bool on);
+bool stateui_winui_switch_is_on(StateUIObjectRef toggle);
+
+/// Turns a switch as UI Automation does, which the user's turn is.
+void stateui_winui_switch_toggle(StateUIObjectRef toggle);
+
+StateUIObjectRef stateui_winui_slider_make(int64_t view);
+
+/// The range, then the value, kept inside it; the steps are a ten-thousandth of the range.
+void stateui_winui_slider_set(StateUIObjectRef slider, double value, double minimum, double maximum);
+double stateui_winui_slider_value(StateUIObjectRef slider);
+
+/// Moves a slider as UI Automation does, which the user's move is.
+void stateui_winui_slider_move(StateUIObjectRef slider, double value);
+
+StateUIObjectRef stateui_winui_field_make(int64_t view);
+void stateui_winui_field_set_text(StateUIObjectRef field, char const *utf8);
+void stateui_winui_field_set_placeholder(StateUIObjectRef field, char const *utf8);
 
 #ifdef __cplusplus
 }

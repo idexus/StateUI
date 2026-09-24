@@ -61,7 +61,7 @@ final class WinUIRenderer {
     private var transactionDepth = 0
 
     /// A runtime on the performance counter or on `clock`, with the motion `reducesMotion` allows.
-    init(clock: (() -> Double)? = nil, reducesMotion: @escaping () -> Bool = { false }) {
+    init(clock: (() -> Double)? = nil, reducesMotion: @escaping () -> Bool = { !stateui_winui_animations_enabled() }) {
         let frameClock = clock.map { WinUIFrameClock(now: $0) } ?? WinUIFrameClock()
         self.frameClock = frameClock
         self.reducesMotion = reducesMotion

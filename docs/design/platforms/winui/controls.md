@@ -1,0 +1,48 @@
+# Controls on WinUI
+
+How the WinUI host presents the controls a user changes - a switch, a slider,
+a field - and hears what the user does to them. The value a control carries
+belongs to a state; the host writes the control where the tree changed that
+value and reports the user's change back ([patches](../../host/patches.md)).
+
+## Nothing the program writes is heard
+
+Every native write of an element - a patch applied, a display frame presented
+- runs inside `ProgramWrite`. WinUI raises a `ToggleSwitch`'s `Toggled`, a
+`Slider`'s `ValueChanged` and a `TextBox`'s `TextChanging` inside the write
+that sets the value, so a report during that write is the write's echo, and
+the element reports nothing. A control keeps no flag of its own.
+
+## A slider in steps
+
+A `Slider` snaps its value to `StepFrequency`. The host sets the step to a
+ten-thousandth of the range, so a value the user reports has that as its
+finest step. A new range keeps the value the thumb stands at, inside the
+range, unless the tree wrote a new value with it: a hand on the thumb is never
+argued with. The range is widened before it is narrowed, so neither end
+clamps the value on its way.
+
+## A field and its words
+
+A field is a `TextBox` on one line. It reports all its words from
+`TextChanging`, which WinUI raises inside the write that changes them - a
+key, a paste, or a program's write - where `TextChanged` comes later, once
+the write has ended and `ProgramWrite` with it. A report comes back as the
+value of the state it carries: the host writes the words only where they
+differ from the field's own, so the render a keystroke causes leaves the
+user's words and caret alone. Words the program writes put the caret after
+them.
+
+`maximumLength` counts characters, as the contract does. The field keeps the
+first characters that fit and writes them back, as the program, when typing
+goes past the bound.
+
+A test types by writing the field's words outside a program's write, which
+WinUI reports as it reports the user's. UI Automation's value pattern on a
+`TextBox` fails inside a test process that holds WinUI embedded, so a test
+does not type through it; a button, a switch and a slider are driven through
+their automation patterns.
+
+## Return
+
+A field submits when Enter goes down in it; the key's release reaches nothing.
