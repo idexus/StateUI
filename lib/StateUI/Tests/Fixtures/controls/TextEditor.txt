@@ -1,4 +1,0 @@
-TextEditor 1
-  growsWithText: true
-  text: string "Notes"
-  on textChanged=1

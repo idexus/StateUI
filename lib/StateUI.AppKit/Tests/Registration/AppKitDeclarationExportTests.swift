@@ -78,9 +78,8 @@ final class AppKitDeclarationExportTests: XCTestCase {
 
     // MARK: - Support
 
-    /// `exports`, a directory of its own: every fixture is authored by the
-    /// core's tests, while an export is written by a RUNTIME saying what it
-    /// realizes.
+    /// `exports`, a directory of its own: an export is written by a RUNTIME
+    /// saying what it realizes.
     private static var exports: URL {
         URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()    // Registration

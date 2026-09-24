@@ -51,13 +51,23 @@ final class NativeProjectTests: XCTestCase {
         // besides what `entersSources` leaves out.
         let entered = { (relative: String) -> Bool in
             Fixtures.entersSources(relative) && !["node_modules", "build"].contains(Fixtures.name(of: relative))
-                && relative != "lib/StateUI/Tests/Fixtures"
         }
         let found = try Fixtures.files(under: Fixtures.repository, entering: entered).filter { path in
             [".cs", ".csproj", ".props", ".targets", ".sln", ".slnx"].contains { path.hasSuffix($0) }
         }
 
         XCTAssertEqual(found, [], "a .NET source or project with no host to build it")
+    }
+
+    /// The core's tests assert on the patch by the rule it keeps; none keeps a
+    /// stored copy of one to compare with, so `lib/StateUI/Tests` holds Swift
+    /// alone.
+    func testTheCoreTestsKeepNoStoredCopyOfAPatch() throws {
+        let root = Fixtures.repository.appendingPathComponent("lib/StateUI/Tests")
+        let files = try Fixtures.files(under: root, entering: Fixtures.entersSources)
+
+        XCTAssertGreaterThan(files.count, 50, "the walk read almost nothing")
+        XCTAssertEqual(files.filter { !$0.hasSuffix(".swift") }, [], "a stored file beside the tests")
     }
 
     /// A host calls the library in Swift, in its own process, so the library

@@ -95,7 +95,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.application.phase = .active
 
         // Display providers are process-wide. Restore every field so a later
-        // test starts from the headless environment rather than this fixture's
+        // test starts from the headless environment rather than this test's
         // screen.
         StandardEnvironment.display.width = 0
         StandardEnvironment.display.height = 0

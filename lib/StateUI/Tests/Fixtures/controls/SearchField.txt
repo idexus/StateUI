@@ -1,5 +1,0 @@
-SearchField 1
-  returnKey: enum search(4)
-  text: string "al"
-  tint: color FF808080
-  on submitted=1 textChanged=2

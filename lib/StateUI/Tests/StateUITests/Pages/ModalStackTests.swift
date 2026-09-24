@@ -207,19 +207,26 @@ final class ModalStackTests: XCTestCase {
         XCTAssertEqual(sheets.wrappedValue, [.settings])
     }
 
-    // MARK: - Binary host contract
+    // MARK: - The contract a host reads
 
-    /// The whole thing, written down: a window whose page is a navigation
-    /// stack, with two pages presented over all of it - as the message that
-    /// brings them carries them, each page of the stack having handed the
-    /// window the same modal stack on its way in.
-    func testTheModalStackIsWrittenDown() throws {
+    /// The whole thing: a window whose page is a navigation stack, with two
+    /// pages presented over all of it - as the message that brings them
+    /// carries them, each page of the stack having handed the window the same
+    /// modal stack on its way in, so there is one.
+    func testTwoPagesArePresentedOverTheWholeWindow() throws {
         let sheets = State<[Sheet]>([.settings, .about])
         let path = State<[Int]>([1])
 
-        let patch = Renders().settled(
+        let window = Renders().settled(
             TestWindow(sheets: sheets.projectedValue, path: path.projectedValue).body)
 
-        try Fixtures.check(patch, against: "pages/ModalStack")
+        XCTAssertEqual(window.children.map(\.type), [.navigationStack, .modalStack])
+        XCTAssertEqual(window.eventNames, (HostPatch.windowEvents + ["modalPopped"]).sorted())
+        XCTAssertEqual(window.at(.auto(2))?.arrangement, [.manual("root"), .manual("0/1")])
+
+        let modal = try XCTUnwrap(window.at(.auto(5)))
+        XCTAssertEqual(modal.arrangement, [.manual("0/settings"), .manual("1/about")])
+        XCTAssertEqual(modal.children.map { $0.props["title"] }, [.string("Settings"), .string("About")])
+        XCTAssertTrue(modal.children.allSatisfy { $0.eventNames == HostPatch.pageEvents })
     }
 }

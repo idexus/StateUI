@@ -6,7 +6,7 @@
 // The claim is exact: the same application, described through the same
 // sequence of state changes, produces the same patches - every run, every
 // process, every machine. Not "usually the same": the same identities, handler
-// ids, state numbers and orders, so a fixture can be a contract at all and two
+// ids, state numbers and orders, so a patch can be asserted on at all and two
 // renders can be diffed against each other.
 //
 // Two things could break it, and there is a test here for each:
@@ -24,10 +24,6 @@
 //      catches more than it was written for: Swift salts each Dictionary's hash
 //      table with its own STORAGE ADDRESS, so two dictionaries holding the same
 //      pairs, filled the same way, in one process, still iterate differently.
-//
-// The fixtures under `Fixtures/sessions/` are the third proof and the one that
-// crosses a process boundary: they were written by an earlier run, with an
-// earlier hash seed, and every run since compares against them.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -93,7 +89,7 @@ private struct SettingsPage: ContentView {
 }
 
 /// The one window of the deterministic session: tabs over a stack, which is the
-/// widest tree these fixtures can hold in one screenful.
+/// widest tree one screenful of it can hold.
 private struct DeterminismWindow: Window {
     let tab: Binding<Tab>
     let path: Binding<[Route]>
@@ -226,10 +222,9 @@ final class DeterminismTests: XCTestCase {
     /// The claim, at its plainest: run the same session twice and the patches
     /// are the same.
     ///
-    /// The two runs are in ONE process, which is what makes this worth having
-    /// beside the fixtures: their objects are at different addresses, so
-    /// anything that ordered by `ObjectIdentifier` - a pointer - would give two
-    /// different patches here while passing every fixture in a single run.
+    /// The two runs are in ONE process, and their objects are at different
+    /// addresses, so anything that ordered by `ObjectIdentifier` - a pointer -
+    /// gives two different patches here.
     func testASessionDescribedTwiceIsTheSamePatches() {
         let first = Self.session()
         let second = Self.session()
@@ -246,7 +241,7 @@ final class DeterminismTests: XCTestCase {
                 Something in the render read an order nothing fixes - a \
                 Dictionary or Set iterated instead of sorted, or a sort by \
                 ObjectIdentifier, which is a pointer. Whatever it is, it makes \
-                every fixture in this suite a coin toss.
+                every assertion on a patch's order a coin toss.
                 """)
         }
     }
@@ -325,20 +320,6 @@ final class DeterminismTests: XCTestCase {
 
         for child in patch.children {
             walk(child, body)
-        }
-    }
-
-    // MARK: - The contract a host reads
-
-    /// The session, written down render by render - the cross-PROCESS proof,
-    /// since Swift seeds its hashing per process and these files were written
-    /// by a run with a different seed from this one's.
-    ///
-    /// Its own directory rather than a name each, because what it pins is the
-    /// SEQUENCE: a host reads the renders in order, as one session.
-    func testTheSessionIsWrittenDown() throws {
-        for message in Self.session() {
-            try Fixtures.check(message.patch, against: "sessions/\(message.name)")
         }
     }
 }

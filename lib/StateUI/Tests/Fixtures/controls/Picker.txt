@@ -1,7 +1,0 @@
-Picker 1
-  isOpen: false
-  options: strings "Small","Medium","Large"
-  selectedIndex: number 1
-  tint: color FF808080
-  title: string "Size"
-  on closed=1 opened=2 selectedIndexChanged=3

@@ -371,7 +371,7 @@ the shape in two, which is correct: those two rows are not interchangeable.
 ```
 
 The hash is written out rather than taken from Swift's hashing, which is
-seeded per process: two runs must number a shape alike for a fixture, and two
+seeded per process: two runs must number a shape alike for a test, and two
 instances in one run must, or nothing would be adopted. The keys are sorted
 because a dictionary's order differs between two instances in one run.
 

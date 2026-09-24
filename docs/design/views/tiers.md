@@ -62,7 +62,7 @@ container, modifiable element, visual element, view, layout, stack, shape and
 input view - a file for each, and one more for a larger group of a tier's
 modifiers: a view's gestures, where it sits, what it says about itself.
 `testTheSharedTierIsCoveredOnce` checks the properties declared in those files
-against one fixture, built from a stack and a label, so those properties are
+against one case, built from a stack and a label, so those properties are
 covered once rather than in every control's case.
 
 ## One file per mixin tier
@@ -70,7 +70,7 @@ covered once rather than in every control's case.
 A tier worn by some controls and not others - text, font, alignment, padding,
 line height, decoration, border, image, tint, bar, page and menu item - has a
 file of its own in `Mixins` rather than a block in a shared tier's file. Its
-properties are then not part of the shared tier the fixture checks, and a
+properties are then not part of the shared tier the case checks, and a
 control that does not wear the tier is never offered its modifiers.
 
 ## Tiers a text run wears
@@ -113,7 +113,7 @@ style without also giving it the modifiers of `View`.
 ## Shapes
 
 Rectangle, Ellipse, Line, Path, Polygon and Polyline share one drawing
-vocabulary, the shape tier, checked once by the shared fixture rather than once
+vocabulary, the shape tier, checked once by the shared case rather than once
 per shape. `renderTransform` transforms the path each shape makes, so one
 modifier means one thing on all of them and the stroke follows the transformed
 path; `.transform` moves what was drawn, after layout.

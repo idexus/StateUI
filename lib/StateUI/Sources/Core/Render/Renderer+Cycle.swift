@@ -226,8 +226,8 @@ extension Renderer {
         return storage
     }
 
-    /// Puts the numbering back to a fresh process's, for the tests, whose fixtures
-    /// compare state numbers. Never while an interface runs.
+    /// Puts the numbering back to a fresh process's, for the tests, whose
+    /// assertions name state numbers. Never while an interface runs.
     func clearStates() {
         let issued = guarded.withLock { () -> [() -> HostStorage?] in
             let held = Array(states.values)

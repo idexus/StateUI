@@ -1,5 +1,0 @@
-Application 1
-  Scene "1"
-    Window "main"
-      TabbedView 2
-        currentPage: number 1

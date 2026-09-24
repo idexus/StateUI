@@ -1,4 +1,0 @@
-Switch 1
-  isOn: true
-  tint: color FF008000
-  on toggled=1

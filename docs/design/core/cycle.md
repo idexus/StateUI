@@ -188,12 +188,12 @@ The host quotes a carried state by a number. It is issued the first time
 anything asks - the differ asks as it registers a driven property - and kept on
 the image, so it survives every rebuild. Properties are walked in name order,
 so numbers follow the walk and two runs of one tree number alike, which is what
-makes a fixture's bytes a contract. Zero is never issued: `cycleRead(0)` means
-every state. The renderer's table of numbers holds each image weakly; a number
+lets a test name a state by its number. Numbers start at one. The renderer's
+table of numbers holds each image weakly; a number
 whose state has gone answers nothing.
 
 The tests share one renderer across a whole run, so they put the numbering back
-to a fresh process's before each fixture; nothing a running interface could
+to a fresh process's before each test that names one; nothing a running interface could
 survive, since a value whose number is forgotten while the host still quotes it
 would be told about somebody else's movement.
 

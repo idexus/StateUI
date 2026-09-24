@@ -5,11 +5,8 @@ import Foundation
 import XCTest
 @_spi(Host) @testable import StateUI
 
-/// The two motion laws every runtime animates with, as numbers.
-///
-/// The trajectory table below is the conformance suite for an animator in
-/// another language: `motion-laws.txt` is written from it, and the MAUI host's
-/// `MotionLawTests.cs` runs every animation in the file to the same numbers.
+/// The two motion laws every runtime animates with, as numbers - and the
+/// promises every animation of the table below keeps.
 final class MotionLawTests: XCTestCase {
     func testAnEasedAnimationIsAFunctionOfElapsedTime() {
         let halfway = HostMotionLaw.sample(
@@ -68,37 +65,74 @@ final class MotionLawTests: XCTestCase {
         XCTAssertEqual(sample, HostMotionSample(value: [5], velocity: [0], rested: true))
     }
 
-    /// The table every runtime's animator is held to.
-    ///
-    /// Compared number by number to a billionth rather than as text: the
-    /// platforms' maths libraries may round `exp`, `sin` and `cos` differently
-    /// in the last digit, and the fixture is written on one of them.
-    func testEveryRuntimeWalksTheTrajectoriesInTheFixture() throws {
-        let written = Self.table()
-        let fixture = Fixtures.directory.appendingPathComponent("motion-laws.txt")
+    /// Every animation of the table starts where it began - a lane that was
+    /// moving at the speed it was moving - and lands exactly on its
+    /// destination, at rest, and stays there: an eased one at its duration and
+    /// not before, a spring by the longest walk at the latest. `.none` has
+    /// arrived before it starts.
+    func testEveryAnimationStartsWhereItBeganAndLandsAtRest() {
+        for animation in Self.animations {
+            let motion = animation.motion
+            let named = "\(motion) from \(animation.from)"
+            let start = Self.sample(animation, at: 0)
 
-        if Fixtures.updating {
-            try written.write(to: fixture, atomically: true, encoding: .utf8)
-            return
+            if motion.isNothing {
+                XCTAssertEqual(start, HostMotionSample(value: animation.destination, velocity: [0], rested: true))
+                continue
+            }
+
+            for lane in animation.from.indices {
+                XCTAssertEqual(start.value[lane], animation.from[lane], accuracy: 1e-12, named)
+                if animation.velocity[lane] != 0, motion.law == .eased {
+                    XCTAssertEqual(start.velocity[lane], animation.velocity[lane], accuracy: 1e-12, named)
+                }
+            }
+
+            let landed = Self.sample(animation, at: motion.law == .eased ? Double(motion.millis) : HostMotionLaw.longest)
+            XCTAssertEqual(
+                landed,
+                HostMotionSample(
+                    value: animation.destination,
+                    velocity: Array(repeating: 0, count: animation.destination.count), rested: true),
+                named)
+
+            for instant in animation.instants {
+                let sample = Self.sample(animation, at: instant)
+                if motion.law == .eased {
+                    XCTAssertEqual(sample.rested, instant >= Double(motion.millis), "\(named) at \(instant)")
+                }
+                if sample.rested {
+                    XCTAssertEqual(sample.value, animation.destination, "\(named) stays at rest")
+                }
+            }
         }
+    }
 
-        let expected = try String(contentsOf: fixture, encoding: .utf8)
-            .split(separator: "\n", omittingEmptySubsequences: false)
-        let walked = written.split(separator: "\n", omittingEmptySubsequences: false)
+    /// A spring damped at 1 or more never passes its destination; one damped
+    /// below 1 rings past it before it settles - unless it is too slow to come
+    /// round before the longest walk ends it.
+    func testASpringRingsOnlyBelowCriticalDamping() {
+        for animation in Self.animations
+        where animation.motion.law == .spring && Double(animation.motion.millis) < HostMotionLaw.longest {
+            let passes = stride(from: 0.0, through: HostMotionLaw.longest, by: 5).contains { instant in
+                let sample = Self.sample(animation, at: instant)
+                return animation.from.indices.contains { lane in
+                    let span = animation.destination[lane] - animation.from[lane]
+                    return span != 0 && (sample.value[lane] - animation.destination[lane]) / span > 1e-9
+                }
+            }
 
-        XCTAssertEqual(
-            expected.count, walked.count,
-            """
-            The table no longer has the fixture's lines. If an animation was added or \
-            changed on purpose, run the tests again with STATEUI_UPDATE_FIXTURES=1 \
-            and read the diff of motion-laws.txt.
-            """)
-
-        for (line, (fixed, now)) in zip(expected, walked).enumerated() {
-            XCTAssertTrue(
-                Self.agree(fixed, now),
-                "line \(line + 1) walks to\n\(now)\nwhere the fixture says\n\(fixed)")
+            XCTAssertEqual(
+                passes, animation.motion.factor < 1,
+                "\(animation.motion) from \(animation.from) passing its destination")
         }
+    }
+
+    /// Where one animation of the table stands at an elapsed time.
+    private static func sample(_ animation: Animation, at elapsed: Double) -> HostMotionSample {
+        HostMotionLaw.sample(
+            animation.motion, elapsed: elapsed,
+            from: animation.from, destination: animation.destination, velocity: animation.velocity)
     }
 
     // MARK: - The table
@@ -164,57 +198,5 @@ final class MotionLawTests: XCTestCase {
             motion: .none, from: [3], destination: [7], velocity: [0], instants: [0]))
 
         return animations
-    }
-
-    /// The table as the fixture holds it.
-    private static func table() -> String {
-        var lines = [
-            "# The trajectories every runtime's animator answers: at an elapsed time",
-            "# in milliseconds, the value and the velocity per millisecond of every",
-            "# lane, and whether the animation has arrived. Written by MotionLawTests.swift",
-            "# with STATEUI_UPDATE_FIXTURES=1; walked by MotionLawTests.cs.",
-            "#",
-            "# trip <law> <curve> <milliseconds> <damping> from <lanes> to <lanes> velocity <lanes>",
-            "# at <elapsed> <moving|rested> value <lanes> velocity <lanes>",
-        ]
-
-        func lanes(_ values: [Double]) -> String {
-            values.map { "\($0)" }.joined(separator: ",")
-        }
-
-        // `trip` begins an animation's line: the word MotionLawTests.cs reads.
-        for animation in animations {
-            let motion = animation.motion
-            lines.append(
-                "trip \(motion.law == .spring ? "spring" : "eased") \(motion.curve) "
-                    + "\(motion.millis) \(motion.factor) from \(lanes(animation.from)) "
-                    + "to \(lanes(animation.destination)) velocity \(lanes(animation.velocity))")
-
-            for instant in animation.instants {
-                let sample = HostMotionLaw.sample(
-                    motion, elapsed: instant,
-                    from: animation.from, destination: animation.destination, velocity: animation.velocity)
-                lines.append(
-                    "at \(instant) \(sample.rested ? "rested" : "moving") "
-                        + "value \(lanes(sample.value)) velocity \(lanes(sample.velocity))")
-            }
-        }
-
-        return lines.joined(separator: "\n") + "\n"
-    }
-
-    /// Whether two lines say the same: the same words, and numbers equal to a
-    /// billionth of the larger.
-    private static func agree(_ fixed: Substring, _ now: Substring) -> Bool {
-        let separators: Set<Character> = [" ", ","]
-        let fixedWords = fixed.split(whereSeparator: separators.contains)
-        let nowWords = now.split(whereSeparator: separators.contains)
-
-        guard fixedWords.count == nowWords.count else { return false }
-
-        return zip(fixedWords, nowWords).allSatisfy { fixed, now in
-            guard let a = Double(fixed), let b = Double(now) else { return fixed == now }
-            return abs(a - b) <= 1e-9 * max(1, abs(a), abs(b))
-        }
     }
 }

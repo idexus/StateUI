@@ -1,3 +1,0 @@
-Polygon 1
-  fillRule: enum nonzero(1)
-  points: numbers 20,0,40,40,0,40

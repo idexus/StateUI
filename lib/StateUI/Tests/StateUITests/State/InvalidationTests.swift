@@ -955,7 +955,7 @@ final class InvalidationTests: XCTestCase {
 /// A page whose body WRITES the state it shows - `writes` times, then stops.
 /// A class so the two tests can reach it; the state is a box of its own so a
 /// rebuilt page finds the same one. `@unchecked` for the reason every test
-/// fixture is: one test at a time touches it.
+/// double is: one test at a time touches it.
 private final class WritingPage: @unchecked Sendable {
     static let shared = WritingPage()
 

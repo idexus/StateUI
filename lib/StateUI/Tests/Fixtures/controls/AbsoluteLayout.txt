@@ -1,9 +1,0 @@
-AbsoluteLayout 1 arranged(2)
-  ColorBox 2
-    absoluteLayoutBounds: numbers 0,0,1,0.5
-    absoluteLayoutProportions: enum all(15)
-    color: color FF6495ED
-  Label 3
-    absoluteLayoutBounds: numbers 1,1,-1,-1
-    absoluteLayoutProportions: enum position(3)
-    text: string "Bottom right"

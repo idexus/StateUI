@@ -1,3 +1,0 @@
-ProgressBar 1
-  progress: number 0.4
-  tint: color FF6495ED

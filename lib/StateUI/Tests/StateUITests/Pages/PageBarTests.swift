@@ -4,7 +4,7 @@
 // What a page hangs on its bars: the toolbar and the desktop menu bar.
 //
 // Both are lists of things that are NOT views and hang beside the content, so
-// they have no control fixture - this is where every modifier they declare is
+// they have no case in ControlTests - this is where every modifier they declare is
 // covered. A page writes both into its session, and what it writes as it comes
 // into the tree is in the message that brings it - which is what
 // `Renders.settled` answers.
@@ -109,7 +109,7 @@ final class PageBarTests: XCTestCase {
                 BarredPage does not use.
 
                 These hang off a PAGE rather than sitting in a view, so they \
-                have no control fixture - this is where they are covered.
+                have no control case - this is where they are covered.
                 """)
         }
     }

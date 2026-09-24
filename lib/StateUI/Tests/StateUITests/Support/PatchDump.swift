@@ -3,16 +3,14 @@
 
 // The readable rendering of what the core hands a host: a patch, one element
 // per line with its fields indented under it and its children deeper, and a
-// batch of acts, one per line with its arguments under it. It is what a
-// fixture's `.txt` holds and what a review diff reads, and it is read off the
-// typed patch a host applies.
+// batch of acts, one per line with its arguments under it - what a failing
+// assertion prints, read off the typed patch a host applies.
 //
 // A closed vocabulary travels as its member NUMBER, so the dump spells the
 // member wherever a property key says which vocabulary the number belongs to:
 // `lineBreak: enum tailTruncation(4)`. A number with no key over it - an act's
 // argument, a value nested in a list - is printed bare. The spellings come
-// from the library's own enums, so the dump can lack a vocabulary
-// (`testEveryEnumerationInASidecarIsSpelled` fails on that) but never
+// from the library's own enums, so the dump can lack a vocabulary but never
 // misspell one.
 
 @_spi(Host) @testable import StateUI
@@ -149,8 +147,8 @@ enum PatchDump {
             return "number \(spelled(number))"
         case .string(let text):
             return "string \"\(text)\""
-        // `[]` rather than nothing: a line ending in a space is one an editor
-        // strips and a fixture check then fails on.
+        // `[]` rather than nothing: a line ending in a space reads as no
+        // value at all.
         case .numbers(let numbers):
             guard !numbers.isEmpty else { return "numbers []" }
             return "numbers " + numbers.map(spelled).joined(separator: ",")

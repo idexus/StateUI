@@ -1,2 +1,0 @@
-handlerFailed
-  string "boom"

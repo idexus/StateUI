@@ -127,9 +127,9 @@ final class SplitViewTests: XCTestCase {
 
     // MARK: - The contract a host reads
 
-    /// The whole thing, written down: a pane with two rows, a detail page that
-    /// is a whole navigation stack, and the pane showing.
-    func testTheFlyoutIsWrittenDown() throws {
+    /// The whole thing: a pane with two rows, a detail page that is a whole
+    /// navigation stack, and the pane showing.
+    func testAPaneAndAStackArriveAsTheSplitsTwoPages() throws {
         let menu = State<Bool>(true)
         let section = State<String>("today")
         let path = State<[Int]>([1])
@@ -149,7 +149,22 @@ final class SplitViewTests: XCTestCase {
 
         // As the message that brings the pages carries them - with the title
         // each wrote into its session on the way in.
-        try Fixtures.check(Renders().settled(tree), against: "pages/SplitView")
+        let split = Renders().settled(tree)
+
+        XCTAssertEqual(split.props, ["isSidebarVisible": .bool(true)])
+        XCTAssertEqual(split.eventNames, ["isSidebarVisibleChanged"])
+        XCTAssertEqual(split.arrangement, [.manual("sidebar"), .manual("detail")])
+
+        let pane = try XCTUnwrap(split.child("sidebar"))
+        XCTAssertEqual(pane.props["title"], .string("Sections"))
+        XCTAssertEqual(pane.subtree.filter { $0.type == .button }.map { $0.props["text"] },
+                       [.string("Today"), .string("Archive")])
+
+        let detail = try XCTUnwrap(split.child("detail"))
+        XCTAssertEqual(detail.type, .navigationStack)
+        XCTAssertEqual(detail.props["title"], .string("Diary"))
+        XCTAssertEqual(detail.arrangement, [.manual("root"), .manual("0/1")])
+        XCTAssertEqual(detail.children.map { $0.props["title"] }, [.string("today"), .string("level 1")])
     }
 
     // MARK: - What comes back

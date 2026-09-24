@@ -13,8 +13,8 @@ import CRT
 #endif
 
 // The two motion laws as numbers, in closed form in the time since an animation
-// began. Every runtime animates with these; `Tests/Fixtures/motion-laws.txt`
-// pins their numbers.
+// began. Every runtime animates with these; `MotionLawTests` holds them to
+// their promises.
 // Design: docs/design/core/journeys.md#motion-laws
 
 /// Where an animation stands at one instant of its law.

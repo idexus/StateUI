@@ -893,9 +893,9 @@ final class SceneTests: XCTestCase {
     // MARK: - The contract a host reads
 
     /// Two scenes, the first with a window beside its main one, every window
-    /// named on its own session, and then that window closed - written down
-    /// for a host to apply to a real application.
-    func testTheScenesAreWrittenDown() throws {
+    /// named on its own session, and then that window closed - what a host
+    /// applies to a real application.
+    func testTwoScenesAndAWindowOpenAndCloseAsAHostReadsThem() throws {
         twoScenes()
         Scenes.shared.list[0].windows = [OpenedWindow(type: .fonts, serial: 1, value: nil, text: nil)]
 
@@ -906,12 +906,37 @@ final class SceneTests: XCTestCase {
         let differ = Differ()
 
         let opened = differ.reconcile(nil, with: tree(), describeAll: true)
-        try Fixtures.check(opened.patch, against: "scenes/1-opens")
+        let main = ElementId.manual(SceneElement.mainKey)
+        let fonts = ElementId.manual("fonts 1")
+        let sceneEvents = ["activated", "deactivated", "destroying", "stopped", "windowClosed", "windowRestored"]
+        let windowEvents = ["activated", "created", "deactivated", "destroying", "resumed", "stopped"]
+
+        XCTAssertEqual(opened.patch.arrangement, [.manual("1"), .manual("2")])
+        XCTAssertEqual(opened.patch.at(.manual("1"))?.arrangement, [main, fonts])
+        XCTAssertEqual(opened.patch.at(.manual("2"))?.arrangement, [main])
+        XCTAssertEqual(opened.patch.at(.manual("1"))?.eventNames, sceneEvents)
+        XCTAssertEqual(opened.patch.at(.manual("2"))?.eventNames, sceneEvents)
+
+        // Every window named on its own session, its lifetime its own handlers.
+        XCTAssertEqual(opened.patch.at(.manual("1"), main)?.props, ["title": .string("Studio")])
+        XCTAssertEqual(opened.patch.at(.manual("2"), main)?.props, ["title": .string("Studio 2")])
+        XCTAssertEqual(opened.patch.at(.manual("1"), fonts)?.props, [
+            "title": .string("Fonts"), "windowType": .name("fonts"),
+            "floatsOnTop": .bool(true), "hidesWhenInactive": .bool(true),
+        ])
+        for path in [[.manual("1"), main], [.manual("1"), fonts], [.manual("2"), main]] as [[ElementId]] {
+            XCTAssertEqual(opened.patch.at(path)?.eventNames, windowEvents)
+        }
 
         Scenes.shared.list[0].windows = []
 
+        // The window closed: the scene's arrangement without it, and nothing
+        // else said.
         let closed = differ.reconcile(
-            opened.node, with: tree(), changed: Renderer.shared.pendingChanges)
-        try Fixtures.check(closed.patch, against: "scenes/2-closes")
+            opened.node, with: tree(), changed: Renderer.shared.pendingChanges).patch
+        XCTAssertEqual(closed.at(.manual("1"))?.arrangement, [main])
+        XCTAssertFalse(
+            closed.subtree.contains { !$0.props.isEmpty || $0.events != nil },
+            "a window leaving is its scene's arrangement alone")
     }
 }

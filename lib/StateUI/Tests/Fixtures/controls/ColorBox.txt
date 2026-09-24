@@ -1,3 +1,0 @@
-ColorBox 1
-  color: color FF6495ED
-  cornerRadius: number 8

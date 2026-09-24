@@ -209,8 +209,8 @@ that wrote the conversion does not become a reader of every source.
 ## Motion laws
 
 `HostMotionLaw` gives where an animation stands at a time since it began. Every
-runtime animates with these numbers by calling it, and the trajectories in
-`Tests/Fixtures/motion-laws.txt` pin them.
+runtime animates with these numbers by calling it, and `MotionLawTests` holds
+every animation of its table to where it starts and where it lands.
 
 ```text
   closed form in the elapsed time   nothing is integrated frame by frame, so a

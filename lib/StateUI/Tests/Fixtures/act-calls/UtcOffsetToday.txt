@@ -1,3 +1,0 @@
-utcOffset completion=-1
-  string "Europe/Warsaw"
-  nothing

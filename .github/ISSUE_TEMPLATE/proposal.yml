@@ -39,7 +39,7 @@ body:
       label: What it touches
       options:
         - label: The public API surface - a control, a modifier, a token, an act
-        - label: The host contract, or the fixtures beside the tests
+        - label: The host contract
         - label: A build script, or a new dependency
         - label: One platform only, or one platform differently from the others
 

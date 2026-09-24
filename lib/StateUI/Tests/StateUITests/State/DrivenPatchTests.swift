@@ -6,7 +6,7 @@
 //
 // A registration is the whole of what a driven property ever says: once, and
 // then the value moves on the image where no patch can see it. So these
-// fixtures are the contract for the one field that decides whether the host
+// assertions are the contract for the one field that decides whether the host
 // reads a property off its own frames or off the tree.
 
 import XCTest
@@ -24,7 +24,7 @@ final class DrivenPatchTests: XCTestCase {
     }
 
     /// Wraps a view the way a render is rooted - the application, its scene,
-    /// the scene's main window and a page - so the fixture is a whole render
+    /// the scene's main window and a page - so the patch is a whole render
     /// rather than a fragment.
     private func rooted(_ content: Node) -> Node {
         var main = Node(type: "Window", children: [
@@ -38,11 +38,28 @@ final class DrivenPatchTests: XCTestCase {
         return Node(type: "Application", children: [scene])
     }
 
-    private func check(_ tree: Node, against name: String) throws {
-        try Fixtures.check(Differ().reconcile(nil, with: tree).patch, against: name)
+    /// The page of a first render of `content`: what stands under it is the
+    /// content, `.auto(3)` first.
+    private func page(_ content: Node) throws -> HostPatch {
+        try XCTUnwrap(Differ().reconcile(nil, with: rooted(content)).patch
+            .at(.manual("1"), .manual(SceneElement.mainKey), .auto(2)))
     }
 
-    // MARK: - The fixtures
+    /// The registrations of the element at `path` below `page`.
+    private func ties(_ page: HostPatch, _ path: ElementId...) -> [Prop: HostStateBinding] {
+        page.at(path)?.driven?.bindings ?? [:]
+    }
+
+    /// Each of `properties` tied to one state, one way, on one channel.
+    private func tied(
+        _ properties: [Prop], to state: Int32, _ mode: HostStateMode, _ kind: HostStateKind
+    ) -> [Prop: HostStateBinding] {
+        Dictionary(uniqueKeysWithValues: properties.map {
+            ($0, HostStateBinding(state: state, mode: mode, kind: kind))
+        })
+    }
+
+    // MARK: - The registrations
 
     /// A STATED VALUE, A VISUAL STATE AND A DRIVEN STATE ON ONE PROPERTY, which is the
     /// pair the whole design turns on: the value crosses as a value, the
@@ -50,27 +67,32 @@ final class DrivenPatchTests: XCTestCase {
     /// neither is a complaint about the other. The state is there so the host
     /// side can be held to what a state LEAVING does to a driven
     /// property.
-    func testADrivenPropertyBesideAStatedValueIsWrittenDown() throws {
+    func testADrivenPropertyBesideAStatedValueCrossesAsBoth() throws {
         let fade = State(wrappedValue: 1.0)
 
-        try check(
-            rooted(
-                Border { Label("dimmed") }
-                    .opacity(0.5)
-                    .opacity(fade.projectedValue)
-                    .visualState(.disabled) { $0.opacity(0.1) }
-                    .body),
-            against: "state-sink")
+        let page = try page(
+            Border { Label("dimmed") }
+                .opacity(0.5)
+                .opacity(fade.projectedValue)
+                .visualState(.disabled) { $0.opacity(0.1) }
+                .body)
+        let border = try XCTUnwrap(page.at(.auto(3)))
+
+        XCTAssertEqual(border.props["opacity"], .number(0.5), "the stated value crosses as a value")
+        XCTAssertEqual(ties(page, .auto(3)), tied(["opacity"], to: 1, .inOut, .property))
+
+        let disabled = border.children.first { $0.type == .visualState && $0.props["name"] == .name("Disabled") }
+        XCTAssertEqual(disabled?.children.first?.props, ["opacity": .number(0.1)], "and the state its own")
     }
 
-    /// THE FIVE SHAPES A BINDING TAKES ON A PROPERTY, written down: a journey
+    /// THE FIVE SHAPES A BINDING TAKES ON A PROPERTY, as a host is handed them: a journey
     /// from a plain number (`fontSize($size)`), a plain flag the host sets
     /// (`isVisible($shown)`), words (`placeholder($hint)`), a plain choice the
     /// host sets and reports (`selectedIndex($size)`, `isOn($on)`), and a
     /// MEMBER (`horizontalAlignment($side)`), which crosses as its number and is
     /// resolved by the host into the platform's own member. A host is held to
     /// landing each of them.
-    func testEveryShapeOfABoundPropertyIsWrittenDown() throws {
+    func testEveryShapeOfABoundPropertyRegistersItsChannel() throws {
         let size = State(wrappedValue: 14.0)
         let shown = State(wrappedValue: true)
         let hint = State(wrappedValue: "Type here")
@@ -78,27 +100,35 @@ final class DrivenPatchTests: XCTestCase {
         let on = State(wrappedValue: false)
         let side = State(wrappedValue: Alignment.center)
 
-        try check(
-            rooted(
-                VStack {
-                    Label("bound")
-                        .fontSize(size.projectedValue)
-                        .isVisible(shown.projectedValue)
-                        .horizontalAlignment(side.projectedValue)
-                    TextField()
-                        .placeholder(hint.projectedValue)
-                    Picker(["S", "M", "L"])
-                        .selectedIndex(choice.projectedValue)
-                    Switch(on.projectedValue)
-                }
-                .body),
-            against: "bound")
+        let page = try page(
+            VStack {
+                Label("bound")
+                    .fontSize(size.projectedValue)
+                    .isVisible(shown.projectedValue)
+                    .horizontalAlignment(side.projectedValue)
+                TextField()
+                    .placeholder(hint.projectedValue)
+                Picker(["S", "M", "L"])
+                    .selectedIndex(choice.projectedValue)
+                Switch(on.projectedValue)
+            }
+            .body)
+
+        // Numbered in the walk, and within one element in the names' order.
+        XCTAssertEqual(
+            ties(page, .auto(3), .auto(4)),
+            tied(["fontSize"], to: 1, .inOut, .property)
+                .merging(tied(["horizontalAlignment"], to: 2, .out, .plain)) { $1 }
+                .merging(tied(["isVisible"], to: 3, .out, .plain)) { $1 })
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["placeholder"], to: 4, .out, .text))
+        XCTAssertEqual(ties(page, .auto(3), .auto(6)), tied(["selectedIndex"], to: 5, .inOut, .plain))
+        XCTAssertEqual(ties(page, .auto(3), .auto(7)), tied(["isOn"], to: 6, .inOut, .plain))
     }
 
     /// Every one of the thirty twins, on one element each of the tiers they
-    /// live on - so a modifier that compiles and writes the wrong token is a
-    /// changed sidecar rather than a surprise on a device.
-    func testEveryDrivenModifierIsWrittenDown() throws {
+    /// live on - so a modifier that compiles and writes the wrong token fails
+    /// here rather than surprising a device.
+    func testEveryDrivenModifierRegistersItsProperty() throws {
         let number = State(wrappedValue: 0.5)
         let colour = State(wrappedValue: Color("#102030"))
         let inset = State(wrappedValue: Insets(4))
@@ -146,60 +176,91 @@ final class DrivenPatchTests: XCTestCase {
         // And the one modifier that is a control's own rather than a tier's.
         let box = ColorBox().color(colour.projectedValue)
 
-        try check(
-            rooted(VStack { border; shape; button; entry; box }.spacing(number.projectedValue).body),
-            against: "state-modifiers")
+        let page = try page(VStack { border; shape; button; entry; box }.spacing(number.projectedValue).body)
+
+        // The number is state 1, the colour 2 and the insets 3, in the walk.
+        XCTAssertEqual(ties(page, .auto(3)), tied(["spacing"], to: 1, .inOut, .property))
+        XCTAssertEqual(
+            ties(page, .auto(3), .auto(4)),
+            tied([
+                "height", "maximumHeight", "maximumWidth", "minimumHeight", "minimumWidth", "opacity",
+                "pivotX", "pivotY", "rotation", "rotationX", "rotationY", "scale", "scaleX", "scaleY",
+                "translationX", "translationY", "width",
+            ], to: 1, .inOut, .property)
+                .merging(tied(["background"], to: 2, .inOut, .property)) { $1 }
+                .merging(tied(["margin", "padding"], to: 3, .inOut, .property)) { $1 })
+        XCTAssertEqual(
+            ties(page, .auto(3), .auto(4), .auto(5)),
+            tied(["characterSpacing", "fontSize"], to: 1, .inOut, .property)
+                .merging(tied(["textColor"], to: 2, .inOut, .property)) { $1 })
+        XCTAssertEqual(
+            ties(page, .auto(3), .auto(6)),
+            tied(["strokeDashOffset", "strokeMiterLimit", "strokeWidth"], to: 1, .inOut, .property))
+        XCTAssertEqual(
+            ties(page, .auto(3), .auto(7)),
+            tied(["borderWidth"], to: 1, .inOut, .property)
+                .merging(tied(["borderColor"], to: 2, .inOut, .property)) { $1 })
+        XCTAssertEqual(ties(page, .auto(3), .auto(8)), tied(["placeholderColor"], to: 2, .inOut, .property))
+        XCTAssertEqual(ties(page, .auto(3), .auto(9)), tied(["color"], to: 2, .inOut, .property))
     }
 
     /// Text, which has no lanes and no journey: it is written when it changes
     /// and never walked to.
-    func testDrivenTextIsWrittenDown() throws {
+    func testDrivenTextRegistersTheTextChannel() throws {
         let caption = State(wrappedValue: "60%")
 
-        try check(
-            rooted(VStack { Label().text(caption.projectedValue); Button().text(caption.projectedValue) }.body),
-            against: "state-text")
+        let page = try page(VStack { Label().text(caption.projectedValue); Button().text(caption.projectedValue) }.body)
+
+        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["text"], to: 1, .out, .text))
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["text"], to: 1, .out, .text))
+        XCTAssertNil(page.at(.auto(3), .auto(4))?.props["text"], "and no value beside it")
     }
 
     /// A field the user types into: the same text door, both ways.
-    func testATwoWayTextIsWrittenDown() throws {
+    func testATwoWayTextRegistersBothWays() throws {
         let name = State(wrappedValue: "Ada")
 
-        try check(
-            rooted(VStack {
-                // A handler BESIDE the state, so the host side can prove the
-                // state's own words raise no event.
-                TextField(name.projectedValue).onTextChanged { _ in }
-                TextEditor(name.projectedValue)
-                SearchField(name.projectedValue)
-            }.body),
-            against: "state-text-two-way")
+        let page = try page(VStack {
+            // A handler BESIDE the state, so the host side can prove the
+            // state's own words raise no event.
+            TextField(name.projectedValue).onTextChanged { _ in }
+            TextEditor(name.projectedValue)
+            SearchField(name.projectedValue)
+        }.body)
+
+        for field in [ElementId.auto(4), .auto(5), .auto(6)] {
+            XCTAssertEqual(ties(page, .auto(3), field), tied(["text"], to: 1, .inOut, .text))
+        }
+        XCTAssertEqual(page.at(.auto(3), .auto(4))?.eventNames, ["textChanged"])
     }
 
     /// A day and a time the user picks: three lanes each, plain, both ways.
-    func testAPickedDayAndTimeAreWrittenDown() throws {
+    func testAPickedDayAndTimeRegisterPlainBothWays() throws {
         let due = State(wrappedValue: CalendarDate(year: 2026, month: 8, day: 2))
         let alarm = State(wrappedValue: ClockTime(hour: 9, minute: 30, second: 5))
 
-        try check(
-            rooted(VStack {
-                DatePicker(due.projectedValue).onDateChanged { _ in }
-                TimePicker(alarm.projectedValue)
-            }.body),
-            against: "state-picked")
+        let page = try page(VStack {
+            DatePicker(due.projectedValue).onDateChanged { _ in }
+            TimePicker(alarm.projectedValue)
+        }.body)
+
+        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["date"], to: 1, .inOut, .plain))
+        XCTAssertEqual(page.at(.auto(3), .auto(4))?.eventNames, ["dateChanged"])
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["time"], to: 2, .inOut, .plain))
     }
 
     /// The two-way inputs, whose value the user can move as well.
-    func testADrivenInputIsWrittenDown() throws {
+    func testADrivenInputRegistersAJourney() throws {
         let level = State(wrappedValue: 0.5)
         let steps = State(wrappedValue: 3.0)
 
-        try check(
-            rooted(VStack {
-                Slider().value(level.projectedValue)
-                Stepper().value(steps.projectedValue)
-            }.body),
-            against: "state-input")
+        let page = try page(VStack {
+            Slider().value(level.projectedValue)
+            Stepper().value(steps.projectedValue)
+        }.body)
+
+        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property))
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["value"], to: 2, .inOut, .property))
     }
 
     /// ONE STATE, TWO SINKS: a value the user drags and a size that rides the
@@ -211,12 +272,13 @@ final class DrivenPatchTests: XCTestCase {
     func testTwoControlsCanRideOneDrivenValue() throws {
         let level = State(wrappedValue: 0.5)
 
-        try check(
-            rooted(VStack {
-                Slider().value(level.projectedValue)
-                ColorBox().width(level.projectedValue)
-            }.body),
-            against: "state-shared")
+        let page = try page(VStack {
+            Slider().value(level.projectedValue)
+            ColorBox().width(level.projectedValue)
+        }.body)
+
+        XCTAssertEqual(ties(page, .auto(3), .auto(4)), tied(["value"], to: 1, .inOut, .property))
+        XCTAssertEqual(ties(page, .auto(3), .auto(5)), tied(["width"], to: 1, .inOut, .property))
     }
 
     /// A LAYOUT PLACED BY DRIVEN STATE, which says where its views go and nothing
@@ -226,25 +288,35 @@ final class DrivenPatchTests: XCTestCase {
     /// The wrapper around each face is the library's own and is always there,
     /// shaded or not - which is what keeps the host's writes off the author's
     /// view. A shaded run wraps two, the shade second.
-    func testADrivenPlacedLayoutIsWrittenDown() throws {
+    func testADrivenPlacedLayoutRegistersOnTheLayoutAlone() throws {
         let run = State(wrappedValue: PlacedRun())
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
-        try check(
-            rooted(
-                PlacedLayout(["a", "b"], id: \.self) { Label($0) }
-                    .shade(ColorBox(.black))
-                    .placement(run.projectedValue)
-                    .frame(room.projectedValue)
-                    .body),
-            against: "state-placed")
+        let page = try page(
+            PlacedLayout(["a", "b"], id: \.self) { Label($0) }
+                .shade(ColorBox(.black))
+                .placement(run.projectedValue)
+                .frame(room.projectedValue)
+                .body)
+        let layout = try XCTUnwrap(page.at(.auto(3)))
+
+        XCTAssertEqual(
+            ties(page, .auto(3)),
+            tied(["absoluteLayoutBounds"], to: 1, .out, .placement)
+                .merging(tied(["frame"], to: 2, .in, .feed)) { $1 })
+        XCTAssertEqual(layout.arrangement, [.manual("a"), .manual("b")])
+        XCTAssertEqual(layout.children.map(\.type), [.grid, .grid], "the library's wrapper around each face")
+        XCTAssertEqual(layout.children.map(\.children.count), [2, 2], "the face, then its shade")
+        XCTAssertTrue(
+            layout.children.flatMap(\.subtree).allSatisfy { $0.driven == nil },
+            "not one property of a placement on any child")
     }
 
     /// THE NUMBERS ARE THE WALK'S, and within one element the property NAMES':
     /// asking a state for its number is what issues one, and a Dictionary has no
     /// order at all - Swift salts its hashing per process, so numbering them as
     /// they happen to be stored would give one tree different numbers in two
-    /// runs, and a fixture is a contract.
+    /// runs, and a test names them.
     ///
     /// Written the other way round from the order they come out in, so the
     /// sort is what the assertion is about.

@@ -5,7 +5,7 @@
 ```text
 Package.swift                      StateUI core package and core tests
 lib/StateUI/Sources/               platform-neutral StateUI
-lib/StateUI/Tests/                 core tests, fixtures, and shared test support
+lib/StateUI/Tests/                 core tests and shared test support
 lib/StateUI.AppKit/                independent AppKit host package and tests
 lib/StateUI.Android/               Android Views host package, its Java layer and tests
 lib/StateUI.VSCode/                the editor extension
@@ -174,22 +174,15 @@ user-visible change in the running Gallery on the affected platform. Run only
 one application build at a time because Swift build directories are shared by
 the package graph.
 
-## Fixtures
+## What the tests hold
 
-Fixtures under `lib/StateUI/Tests/Fixtures/` pin the deterministic patch as
-readable text. When a deliberate change makes a fixture test fail, regenerate
-them with:
+The core's tests assert on the typed patch a host is handed, each by the rule
+it keeps - one changed number sends one property of one label, every control
+carries only the members its contract declares - rather than comparing it
+with a stored copy. A failing assertion names what changed and why it
+matters; a deliberate change updates the assertion that states it.
 
-```bash
-STATEUI_UPDATE_FIXTURES=1 swift test
-```
-
-Review the diffs before accepting them, then run the ordinary suite again
-without the environment variable. The VS Code task "Test (update fixtures)"
-regenerates them. Never update fixtures merely to make an unexplained failure
-green.
-
-The documentation examples are another executable fixture. Every exact
+The documentation examples are another executable check. Every exact
 `swift` fence in `README.md` and `docs/` is type-checked by Gallery tests.
 Mark a deliberately partial declaration or manifest as `swift quote`; keep
 copyable application examples as plain `swift` so API drift fails visibly.

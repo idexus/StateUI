@@ -1,6 +1,0 @@
-TextField 1
-  isPassword: false
-  returnKey: enum done(1)
-  showsClearButton: true
-  text: string "Ada"
-  on submitted=1 textChanged=2

@@ -13,11 +13,10 @@
 // all, looks exactly like one that works, and no test that exercises the
 // mechanism will ever notice.
 //
-// So every control is built here with every modifier it declares, and the
-// message is kept in `lib/StateUI/Tests/Fixtures/controls/`. Four tests keep
-// the set honest:
+// So every control is built here with every modifier it declares. Four tests
+// keep the set honest:
 //
-//   testEveryControlIsWrittenDown   the message still matches its fixture
+//   testEveryControlCarriesOnlyWhatItsContractDeclares   no name a host would guess at
 //   testEveryModifierIsExercised    a modifier missing from a case fails HERE
 //   testEveryControlHasACase        a new control with no case fails HERE
 //   testTheSharedTierIsCoveredOnce  the protocol tiers, on one tree
@@ -34,7 +33,7 @@ import XCTest
 
 /// One control, built with everything of its own that it can do.
 private struct ControlCase {
-    /// The StateUI node type, which is also what the fixture is called.
+    /// The StateUI node type, which is also what the case is called.
     let name: String
 
     /// The files under Views/ whose modifiers this case has to exercise.
@@ -54,19 +53,13 @@ private struct ControlCase {
 }
 
 final class ControlTests: XCTestCase {
-    /// A turn, a sizing, a lean and a move, STATED rather than computed.
-    ///
-    /// A fixture is bytes, and a chain like `.rotate(15).scaleX(1.5).skew(10, 5)`
-    /// puts a libm result in the patch: Apple's `tan(5°)` is one unit in the last
-    /// place below glibc's, so the same source wrote a different file on a Mac
-    /// than it does on Linux and CI failed on two platforms for a picture nobody
-    /// could tell apart. The host's maths library is not part of this library's
-    /// contract, so no fixture may carry a number it computed.
-    ///
-    /// The six numbers are binary fractions, which every platform holds to the
-    /// bit, and they are still a SHEAR - the two axes are not at a right angle -
-    /// which is the part only a geometry can draw. What the chain itself works
-    /// out is asserted in MotionTests, where Swift is compared against Swift.
+    /// A turn, a sizing, a lean and a move, STATED rather than computed: a
+    /// chain like `.rotate(15).scaleX(1.5).skew(10, 5)` puts a libm result in
+    /// the patch, and the host's maths library is not part of this library's
+    /// contract. The six numbers are binary fractions, which every platform
+    /// holds to the bit, and they are still a SHEAR - the two axes are not at a
+    /// right angle - which is the part only a geometry can draw. What the chain
+    /// itself works out is asserted in MotionTests.
     private static var leaned: ViewTransform {
         var transform = ViewTransform.identity
         transform.a = 1.5
@@ -82,9 +75,9 @@ final class ControlTests: XCTestCase {
     /// run, so the list is not Sendable and cannot be a static `let` under
     /// Swift 6 - the same rule that decided where the library keeps its state.
     private static var cases: [ControlCase] {
-        // The number numbering starts over, so a fixture is the same bytes
-        // whichever test read this first: a number number is issued from a
-        // counter the whole process shares. See Renderer+Cycle.swift.
+        // The numbering starts over, so a case says the same numbers whichever
+        // test read this first: a state number is issued from a counter the
+        // whole process shares. See Renderer+Cycle.swift.
         Renderer.shared.clearStates()
 
         // A binding needs somewhere to live; a State is a reference, so this is
@@ -102,7 +95,7 @@ final class ControlTests: XCTestCase {
                     .maximumLines(2)
                     .textDecorations([.underline, .strikethrough])
                     // The runs go here rather than in a case of their own: a
-                    // Span is not a view, so it has no fixture, and Label.swift
+                    // Span is not a view, so it has no case, and Label.swift
                     // is the file that declares it.
                     .spans {
                         TextSpan("let ")
@@ -333,8 +326,8 @@ final class ControlTests: XCTestCase {
             // Both halves of a map: the control, and the pins on it. A Pin is
             // not a control of its own - it is a marker on the map - so this
             // case is where its modifiers are exercised as well. Where the
-            // map LOOKS is an act (moveToRegion), pinned by its command
-            // fixture rather than here.
+            // map LOOKS is an act (moveToRegion), checked with the other acts
+            // in ActCallShapeTests rather than here.
             ControlCase("Map", source: "Map.swift",
                 Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
                     .mapType(.hybrid)
@@ -356,7 +349,7 @@ final class ControlTests: XCTestCase {
                     }
                     .onMapClicked { _ in }),
 
-            // The fixture's source is the URL form; HTML written in place
+            // The case's source is the URL form; HTML written in place
             // travels as a list under the same name - the brush rule, one
             // level up. The canGoBack and canGoForward bindings are watches
             // rather than events.
@@ -597,38 +590,53 @@ final class ControlTests: XCTestCase {
         ]
     }
 
-    // MARK: - The fixtures
+    // MARK: - What a host is handed
 
-    /// Every case, rendered from nothing, written down.
-    ///
-    /// A fresh differ per case, so each file reads as a first render and the
-    /// identities start at 1 - a fixture is easier to read that way, and each
-    /// stands alone.
-    func testEveryControlIsWrittenDown() throws {
+    /// EVERY CONTROL CARRIES ONLY WHAT ITS CONTRACT DECLARES: every case,
+    /// rendered from nothing, puts on each element of its patch properties,
+    /// registrations, transitions and handlers its element's contract - its
+    /// own members and its tiers' - declares, and nothing a host would have to
+    /// guess at.
+    func testEveryControlCarriesOnlyWhatItsContractDeclares() throws {
+        var checked = 0
+
         for control in Self.cases {
-            let differ = Differ()
-            let result = differ.reconcile(nil, with: control.node)
+            let patch = Differ().reconcile(nil, with: control.node).patch
 
-            try Fixtures.check(result.patch, against: "controls/\(control.name)")
+            for element in patch.subtree {
+                guard let contract = LibraryContracts.elements.first(where: { $0.nodeType == element.type }) else {
+                    XCTFail("\(control.name): \(element.type.name) has no contract")
+                    continue
+                }
+
+                let carried = Set(element.props.keys.map(\.name))
+                    .union(element.cleared.map(\.name))
+                    .union(element.driven?.bindings.keys.map(\.name) ?? [])
+                    .union(element.transitions.keys.map(\.name))
+                    .union(element.eventNames)
+
+                XCTAssertEqual(
+                    carried.subtracting(Self.names(wornBy: contract)).sorted(), [],
+                    "\(control.name): \(element.type.name) carries what its contract does not declare")
+                checked += 1
+            }
         }
+
+        XCTAssertGreaterThan(checked, 50, "the cases rendered almost nothing")
     }
 
-    /// A control's fixture goes with it: every message in `fixtures/controls/`
-    /// is one a case writes. A renamed or removed control would otherwise
-    /// leave a file that nothing checks any more.
-    func testEveryControlFixtureIsOneACaseWrites() throws {
-        let written = Set(Self.cases.map(\.name))
-        let files = try FileManager.default.contentsOfDirectory(
-            atPath: Fixtures.directory.appendingPathComponent("controls").path)
-        let kept = Set(files.map { String($0.prefix { $0 != "." }) })
-
-        XCTAssertEqual(kept.subtracting(written).sorted(), [], "a fixture that no case writes")
+    /// Every member name a contract lets its element carry: its own, and its
+    /// tiers' with theirs.
+    private static func names(wornBy contract: any Contract.Type) -> Set<String> {
+        contract.tiers.reduce(into: Set(contract.members.map(\.name))) { names, tier in
+            names.formUnion(Self.names(wornBy: tier))
+        }
     }
 
     // MARK: - The set, kept honest
 
-    /// A modifier that no case uses is a modifier no fixture carries, which is a
-    /// modifier a host can quietly not implement.
+    /// A modifier that no case uses is a modifier no patch here carries, which
+    /// is a modifier a host can quietly not implement.
     func testEveryModifierIsExercised() throws {
         var covered: [String: Set<String>] = [:]
 
@@ -650,10 +658,9 @@ final class ControlTests: XCTestCase {
                 \(source) declares \(missing.joined(separator: ", ")), which no \
                 case in this file uses.
 
-                A property no fixture carries is one a host can leave out \
+                A property no case carries is one a host can leave out \
                 without anything failing. Add the modifier to the case for that \
-                control, run with STATEUI_UPDATE_FIXTURES=1, and inspect the \
-                readable sidecar.
+                control.
                 """)
         }
 
@@ -669,17 +676,15 @@ final class ControlTests: XCTestCase {
     ///
     /// A tier belongs to several controls, so the question it can answer is
     /// weaker and is the one the other guard's own message asks: is this
-    /// property carried by SOME fixture? Proof is taken from wherever it comes,
-    /// exactly as `testEveryEventModifierIsExercised` takes it - a sidecar for
-    /// anything with a control fixture, and a test for what has none. A
-    /// `ToolbarItem` is the case for the second: it is not a view, so it
-    /// appears in no `fixtures/controls/` file at all, and PageTests is where
-    /// it is built with everything it can do.
+    /// property carried by SOME case, or built by some test? Proof is taken
+    /// from wherever it comes, exactly as `testEveryEventModifierIsExercised`
+    /// takes it. A `ToolbarItem` is the case for the second: it is not a view,
+    /// so it has no case here, and PageTests is where it is built with
+    /// everything it can do.
     func testEveryModifierOfATierIsExercisedSomewhere() throws {
         let withCases = Set(Self.cases.flatMap(\.sources))
-        let proof = try (Fixtures.fixtureSidecars()
-            + Fixtures.testSources().map(\.text))
-            .joined(separator: "\n")
+        let rendered = Self.cases.reduce(into: Set<String>()) { $0.formUnion(Self.carriedNames(in: $1.node)) }
+        let tests = try Fixtures.testSources().map(\.text).joined(separator: "\n")
         var missing: [String] = []
         var read = 0
 
@@ -688,11 +693,9 @@ final class ControlTests: XCTestCase {
 
             read += declared.count
 
-            for key in declared.sorted()
-            // A sidecar writes `  borderColor: color FF808080` and a test writes
-            // `.borderColor(`, so both anchors are what keep `text` from being
-            // answered by `textColor`.
-            where !proof.contains("\(key): ") && !proof.contains(".\(key)(") {
+            // A test writes `.borderColor(`, and the anchors are what keep
+            // `text` from being answered by `textColor`.
+            for key in declared.sorted() where !rendered.contains(key) && !tests.contains(".\(key)(") {
                 missing.append("\(source) declares \(key)")
             }
         }
@@ -700,14 +703,14 @@ final class ControlTests: XCTestCase {
         XCTAssertGreaterThan(read, 22, "the scan read almost nothing")
         XCTAssertEqual(missing, [], """
             These are declared by a file with no case of its own, and no \
-            fixture carries them:
+            case carries them:
 
             \(missing.joined(separator: "\n"))
 
             A tier is shared, so it has no case of its own - but a property no \
-            fixture carries is still one the renderer can leave out without \
+            case carries is still one the renderer can leave out without \
             anything failing. Add the modifier to the case of a control that \
-            conforms to the tier and run with STATEUI_UPDATE_FIXTURES=1.
+            conforms to the tier.
             """)
     }
 
@@ -795,9 +798,9 @@ final class ControlTests: XCTestCase {
     /// property key, nothing to miss.
     ///
     /// Every event a `Views/` file subscribes must therefore be named by some
-    /// test, which is a weaker promise than the fixture the properties get -
-    /// an event is fired by a test rather than described in a message - but it
-    /// is the promise that would have caught these two.
+    /// test or carried by a case - an event is fired by a test rather than
+    /// described in a message - and it is the promise that would have caught
+    /// these two.
     func testEveryEventModifierIsExercised() throws {
         var subscribed: Set<String> = []
 
@@ -806,9 +809,9 @@ final class ControlTests: XCTestCase {
         }
 
         // Anywhere in the active Swift suites: an event is proved by a test
-        // firing it or by a fixture carrying it.
+        // firing it or by a case carrying it.
         let named = try (Fixtures.testSources().map(\.text)
-            + Fixtures.fixtureSidecars())
+            + Self.cases.flatMap { Differ().reconcile(nil, with: $0.node).patch.subtree.flatMap(\.eventNames) })
             .joined(separator: "\n")
 
         let missing = subscribed
@@ -828,7 +831,7 @@ final class ControlTests: XCTestCase {
     }
 
     /// A control with no case at all, which is the same hole one modifier wide:
-    /// a type a `Views/` file describes and no fixture ever builds.
+    /// a type a `Views/` file describes and no case ever builds.
     func testEveryControlHasACase() throws {
         let covered = Set(Self.cases.map { $0.name })
         var read = 0
@@ -842,9 +845,8 @@ final class ControlTests: XCTestCase {
                     ControlTests.
 
                     Every control is built here with everything it can do, and \
-                    the message is kept in fixtures/controls/, where a host's \
-                    own tests apply it. A control without one is a control \
-                    nothing checks a host against.
+                    its patch held to its contract. A control without one is a \
+                    control nothing checks a host against.
                     """)
             }
         }
@@ -868,12 +870,11 @@ final class ControlTests: XCTestCase {
 
     /// EVERY PROPERTY OF EVERY CONTRACT IS CARRIED, read from the contracts
     /// rather than from the sources. An element with cases carries each
-    /// property of its own in them - its fixtures are where a host's own tests
-    /// read it - and every property of every contract, a tier's and a
-    /// structure element's included, is carried by some fixture, described or
-    /// driven, or built by a test that reads it off the node.
+    /// property of its own in them, and every property of every contract, a
+    /// tier's and a structure element's included, is carried by some case,
+    /// described or driven, or built by a test that reads it off the node.
     func testEveryPropertyOfEveryContractIsCarried() throws {
-        let sidecars = try Fixtures.fixtureSidecars().joined(separator: "\n")
+        let rendered = Self.cases.reduce(into: Set<String>()) { $0.formUnion(Self.carriedNames(in: $1.node)) }
         let tests = try Fixtures.testSources().map(\.text).joined(separator: "\n")
         var carried: [String: Set<String>] = [:]
         var missing: [String] = []
@@ -893,17 +894,23 @@ final class ControlTests: XCTestCase {
         for contract in LibraryContracts.all {
             for member in contract.members
             where member is any PropertyMember
-                && !sidecars.contains("  \(member.name): ") && !sidecars.contains(" \(member.name)<-")
-                && !tests.contains(".\(member.name)(") && !tests.contains("props[.\(member.name)]") {
-                missing.append("\(contract.name).\(member.name) is carried by no fixture and built by no test")
+                && !rendered.contains(member.name)
+                && !Self.reads(member.name, in: tests) {
+                missing.append("\(contract.name).\(member.name) is carried by no case and built by no test")
             }
         }
 
         XCTAssertEqual(missing, [], """
-            A property no fixture carries is one a host can leave out without \
-            anything failing. Give the element's case the modifier, run with \
-            STATEUI_UPDATE_FIXTURES=1, and read the sidecar.
+            A property no case carries is one a host can leave out without \
+            anything failing. Give the element's case the modifier.
             """)
+    }
+
+    /// Whether a test builds a property or reads it off a patch: the modifier,
+    /// the subscript by token or by name, or the key of the values it expects.
+    private static func reads(_ name: String, in tests: String) -> Bool {
+        tests.contains(".\(name)(") || tests.contains("props[.\(name)]")
+            || tests.contains("props[\"\(name)\"]") || tests.contains("\"\(name)\": ")
     }
 
     /// Every property a tree describes and every one it drives, the root's
@@ -1007,7 +1014,7 @@ final class ControlTests: XCTestCase {
     /// an author and not the form it travels in: in the patch it is its numbers,
     /// for the reason a date is - a formatter would mean ICU. The patch's rule is
     /// `testATwoWayInputWritesBackWhatArrives`, which fires `timeChanged` with
-    /// three numbers, and `fixtures/controls/TimePicker`.
+    /// three numbers, and the TimePicker case.
     func testATimeOfDayReadsAndWritesItsTextForm() {
         XCTAssertEqual(ClockTime(hour: 9, minute: 5).text, "09:05:00")
         XCTAssertEqual(ClockTime(hour: 21, minute: 5, second: 30).text, "21:05:30")

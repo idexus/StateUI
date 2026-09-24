@@ -6,8 +6,8 @@
 // A style never travels. It is a bag of the same property values a control
 // carries, and the differ merges it into the control it belongs to - so most of
 // this file is about the RESOLUTION: which style a control wears, whose value
-// wins, and what the message therefore says - which is the fixture this file
-// writes for a host to read.
+// wins, and what the message therefore says - which is what a host reads,
+// asserted at the end of this file.
 
 import Foundation
 import XCTest
@@ -993,14 +993,12 @@ final class StyleTests: XCTestCase {
         XCTAssertGreaterThan(read, 35, "the scan read almost nothing")
     }
 
-    // MARK: - The fixture
+    // MARK: - What a host receives
 
-    /// A styled tree as the host receives it, kept where both halves can see it.
-    ///
-    /// The whole contract: no style, no dictionary, no key - four controls
-    /// carrying what their styles gave them, one of them with the states its
-    /// style declared.
-    func testAStyledTreeIsWrittenDown() throws {
+    /// A styled tree as the host receives it. The whole contract: no style, no
+    /// sheet, no key - four controls carrying what their styles gave them, one
+    /// of them with the states its style declared.
+    func testAStyledTreeArrivesAsItsControlsValues() throws {
         let differ = Differ()
 
         let sheet = StyleSheet {
@@ -1052,8 +1050,37 @@ final class StyleTests: XCTestCase {
 
         let tree = Node(type: "Application", children: [scene])
 
-        let result = differ.reconcile(nil, with: tree, styles: sheet)
+        let stack = try XCTUnwrap(differ.reconcile(nil, with: tree, styles: sheet).patch
+            .at(.manual("1"), .manual(SceneElement.mainKey), .auto(2), .auto(3)))
+        let ink = Color("#212121").propValue
 
-        try Fixtures.check(result.patch, against: "styled")
+        // The headline's style, based on the body's - and standing in place of
+        // the default label's, whose colour it does not take.
+        XCTAssertEqual(stack.at(.auto(4))?.props, [
+            "text": .string("Welcome"), "fontSize": .number(32),
+            "fontAttributes": FontAttributes.bold.propValue,
+            "horizontalTextAlignment": TextAlignment.center.propValue,
+        ])
+        XCTAssertEqual(stack.at(.auto(5))?.props, [
+            "text": .string("Body text"), "fontSize": .number(14), "textColor": ink,
+        ])
+
+        // The button with the states its style declared, the disabled one's
+        // values the half of the theme in force.
+        let button = try XCTUnwrap(stack.at(.auto(6)))
+        XCTAssertEqual(button.props["background"], Color("#512BD4").propValue)
+        XCTAssertEqual(button.props["isEnabled"], .bool(false))
+        XCTAssertEqual(button.children.map { $0.props["name"] }, [.name("Normal"), .name("Disabled")])
+        XCTAssertEqual(button.at(.auto(8), .auto(9))?.props, [
+            "background": Color("#C8C8C8").propValue, "textColor": Color("#141414").propValue,
+        ])
+
+        // A border's style, and the default label's inside it.
+        XCTAssertEqual(stack.at(.auto(10))?.props["strokeWidth"], .number(1))
+        XCTAssertEqual(stack.at(.auto(10), .auto(11))?.props["fontSize"], .number(14))
+
+        XCTAssertFalse(
+            stack.subtree.contains { $0.props.keys.contains("style") },
+            "no style name reaches the host")
     }
 }

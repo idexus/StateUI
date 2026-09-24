@@ -1,6 +1,0 @@
-Slider 1
-  maximum: number 100
-  minimum: number 0
-  tint: color FF6495ED
-  value: number 40
-  on dragCompleted=1 dragStarted=2 valueChanged=3

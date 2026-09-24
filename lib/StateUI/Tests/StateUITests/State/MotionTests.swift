@@ -683,24 +683,27 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(layout(renders.render(tree(true)))?.motion?.motion, Motion.none)
     }
 
-    // ---- The bytes ----------------------------------------------------------
+    // ---- The patch ----------------------------------------------------------
 
-    /// THE ORDINARY CASE, WRITTEN DOWN. A value that simply changed is the
-    /// motion almost every motion in an application is - nobody started it and
-    /// nobody waits for it - and this is the one that crosses as bytes.
+    /// THE ORDINARY CASE. A value that simply changed is the motion almost
+    /// every motion in an application is - nobody started it and nobody waits
+    /// for it.
     ///
-    /// Two messages, because a motion is what a CONTINUING element does: the
+    /// Two renders, because a motion is what a CONTINUING element does: the
     /// first describes the panel and carries none, the second changes one
-    /// number and carries the walk to it. These are the files a host is held
-    /// to.
-    func testAValueThatTravelsIsWrittenDown() throws {
+    /// number and carries the walk to it - that number, its one transition
+    /// at the application's motion, and nothing else.
+    func testAValueThatTravelsCarriesItsWalkAndNothingElse() {
         let differ = Differ()
 
         let first = differ.reconcile(nil, with: panel(1))
-        try Fixtures.check(first.patch, against: "travelling-first")
+        XCTAssertEqual(first.patch.props["opacity"], .number(1))
+        XCTAssertTrue(first.patch.subtree.allSatisfy(\.transitions.isEmpty), "a new element travels nowhere")
 
-        let moved = differ.reconcile(first.node, with: panel(0.25))
-        try Fixtures.check(moved.patch, against: "travelling")
+        let moved = differ.reconcile(first.node, with: panel(0.25)).patch
+        XCTAssertEqual(moved.props, ["opacity": .number(0.25)])
+        XCTAssertEqual(moved.transitions, ["opacity": HostTransition(motion: .standard)])
+        XCTAssertTrue(moved.children.isEmpty, "the label under it says nothing")
     }
 
     // ---- The vocabulary itself ---------------------------------------------

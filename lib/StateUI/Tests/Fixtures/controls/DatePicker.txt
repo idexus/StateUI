@@ -1,7 +1,0 @@
-DatePicker 1
-  date: numbers 2026,8,9
-  format: string "D"
-  isOpen: false
-  maximumDate: numbers 2026,12,31
-  minimumDate: numbers 2026,1,1
-  on closed=1 dateChanged=2 opened=3

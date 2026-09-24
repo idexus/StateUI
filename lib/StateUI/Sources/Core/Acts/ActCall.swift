@@ -16,7 +16,7 @@ struct ActCall {
     /// The id of the continuation waiting for it - negative, apart from handler ids.
     let completion: Int?
 
-    /// The act's name - what diagnostics and the fixture dumps read.
+    /// The act's name - what a host and the diagnostics read.
     var name: String { act.name }
 }
 

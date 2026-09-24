@@ -1,2 +1,0 @@
-Rectangle 1
-  cornerRadius: numbers 16,16,0,0

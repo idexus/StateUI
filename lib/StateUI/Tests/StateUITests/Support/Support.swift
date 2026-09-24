@@ -19,6 +19,38 @@ extension HostPatch {
         return false
     }
     var lanes: MotionLanes { motion?.lanes ?? .all }
+
+    /// The patch at a path of identities below this one, or nil where the
+    /// message says nothing about one of them.
+    func at(_ path: ElementId...) -> HostPatch? { at(path) }
+
+    /// The same, for a path held in a list.
+    func at(_ path: some Sequence<ElementId>) -> HostPatch? {
+        path.reduce(Optional(self)) { patch, id in patch?.child(id) }
+    }
+
+    /// The identities of a complete arrangement, in order, or nil where the
+    /// children's order did not change.
+    var arrangement: [ElementId]? {
+        if case .arranged(let patches) = children { return patches.map(\.id) }
+        return nil
+    }
+
+    /// This patch and every patch under it, parents first.
+    var subtree: [HostPatch] {
+        [self] + children.flatMap(\.subtree)
+    }
+
+    /// The events this element's handlers answer to, by name.
+    var eventNames: [String] {
+        events.map { $0.keys.map(\.name).sorted() } ?? []
+    }
+
+    /// The five reports every page hears, by name.
+    static let pageEvents = ["appearing", "disappearing", "navigatedFrom", "navigatedTo", "navigatingFrom"]
+
+    /// The six reports every window hears, by name.
+    static let windowEvents = ["activated", "created", "deactivated", "destroying", "resumed", "stopped"]
 }
 
 extension HostDrivenUpdate {
@@ -251,7 +283,7 @@ extension Differ {
 
 /// An aim filled BY HAND from a named element, for acts that must be sent
 /// without a render: what an act sends is the element's identity, and this
-/// is the named kind - what the act fixtures pin. The differ's own
+/// is the named kind - what ActCallShapeTests checks. The differ's own
 /// filling of one is AimTests' business.
 func named<Target>(_ name: String, _ type: Target.Type) -> Aim<Target> {
     let aim = Aim(type)
@@ -301,7 +333,7 @@ func settle(timeout: TimeInterval = 2) async -> Int {
     return turns
 }
 
-/// A walk of the sources, the tests or the fixtures that read almost nothing:
+/// A walk of the sources or the tests that read almost nothing:
 /// its directory moved, or its filter lets nothing through - and every guard
 /// reading the walk would pass on nothing.
 struct WalkReadAlmostNothing: Error, CustomStringConvertible {
@@ -311,19 +343,11 @@ struct WalkReadAlmostNothing: Error, CustomStringConvertible {
     var description: String { "the walk of \(root) read \(read) files, almost nothing" }
 }
 
-/// The fixtures, source trees, and test trees used by source-level guards.
-/// Every walk refuses one that read almost nothing (`WalkReadAlmostNothing`).
+/// The source trees and test trees the source-level guards read, found from
+/// this file rather than from a working directory that depends on who started
+/// the process. Every walk refuses one that read almost nothing
+/// (`WalkReadAlmostNothing`).
 enum Fixtures {
-    /// `lib/StateUI/Tests/Fixtures`, found from this file rather than from a working
-    /// directory that depends on who started the process.
-    static var directory: URL {
-        URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()    // Support
-            .deletingLastPathComponent()    // StateUITests
-            .deletingLastPathComponent()    // Tests
-            .appendingPathComponent("Fixtures")
-    }
-
     /// `lib/StateUI/Sources`.
     static var sources: URL {
         URL(fileURLWithPath: #filePath)
@@ -381,62 +405,6 @@ enum Fixtures {
     static func entersSources(_ relative: String) -> Bool {
         let directory = name(of: relative)
         return !directory.hasPrefix(".") && directory != "bin" && directory != "obj"
-    }
-
-    static var updating: Bool {
-        ProcessInfo.processInfo.environment["STATEUI_UPDATE_FIXTURES"] == "1"
-    }
-
-    /// Checks a patch against its fixture, or writes it when updating:
-    /// `name.txt` holds the patch's dump, what a review diff reads.
-    static func check(
-        _ patch: HostPatch,
-        against name: String,
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) throws {
-        try check(PatchDump.text(patch), against: name, file: file, line: line)
-    }
-
-    /// Checks a batch of acts against its fixture, or writes it when updating:
-    /// `name.txt` holds the batch's dump.
-    static func check(
-        _ calls: [HostActCall],
-        against name: String,
-        file: StaticString = #filePath,
-        line: UInt = #line
-    ) throws {
-        try check(PatchDump.text(calls), against: name, file: file, line: line)
-    }
-
-    /// Checks a dump against its fixture, or writes it when updating.
-    ///
-    /// `name` carries no extension - `act-calls/Focus` is checked against
-    /// `Focus.txt`. It may name a subdirectory, which is created if it is not
-    /// there.
-    private static func check(
-        _ dump: String,
-        against name: String,
-        file: StaticString,
-        line: UInt
-    ) throws {
-        let text = directory.appendingPathComponent(name + ".txt")
-
-        if updating {
-            try FileManager.default.createDirectory(
-                at: text.deletingLastPathComponent(), withIntermediateDirectories: true)
-            try dump.write(to: text, atomically: true, encoding: .utf8)
-            return
-        }
-
-        XCTAssertEqual(
-            dump, try String(contentsOf: text, encoding: .utf8),
-            """
-            The dump no longer matches \(name).txt. Either something broke, or the
-            patch changed on purpose - in which case run the tests again with
-            STATEUI_UPDATE_FIXTURES=1 and inspect the diff.
-            """,
-            file: file, line: line)
     }
 
     /// Every property name a source file sets, read out of the file itself.
@@ -724,27 +692,12 @@ enum Fixtures {
         return try refusingAlmostNothing(found.sorted { $0.path < $1.path }, readFrom: repository, moreThan: 90)
     }
 
-    /// Every fixture dump - what the deterministic patch said.
-    static func fixtureSidecars() throws -> [String] {
-        let root = directory
-        var found: [String] = []
-
-        guard let walk = FileManager.default.enumerator(atPath: root.path) else {
-            throw WalkReadAlmostNothing(root: root.path, read: 0)
-        }
-
-        for case let name as String in walk where name.hasSuffix(".txt") {
-            found.append(try String(contentsOf: root.appendingPathComponent(name), encoding: .utf8))
-        }
-
-        return try refusingAlmostNothing(found, readFrom: root, moreThan: 80)
-    }
 
     /// Node types described under Views/ that are not VIEWS.
     ///
     /// A ToolbarItem and the menu types are items - a caption, a picture and
     /// something to run - and they belong to a PAGE rather than sitting in
-    /// one, so they have no fixture and no style. Their modifiers are exercised
+    /// one, so they have no case and no style. Their modifiers are exercised
     /// by `PageBarTests`, which is where a page is described.
     ///
     /// A Span is one run of text inside a Label - text and a font, and no
@@ -755,7 +708,7 @@ enum Fixtures {
     /// ContextMenu is the one written by a MODIFIER rather than by a type:
     /// `.contextMenu` on any view appends it. It is a menu, not a view - and
     /// the entries in it are the menu bar's, already here. Covered by
-    /// ContextMenuTests rather than by a control fixture, for the reason the
+    /// ContextMenuTests rather than by a control case, for the reason the
     /// toolbar's are: there is no control to build one on.
     /// A Pin is a map's marker - a label, an address and a point - so it
     /// cannot be built alone or styled, and its modifiers are exercised by the

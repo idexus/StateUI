@@ -1,4 +1,0 @@
-CheckBox 1
-  isOn: true
-  tint: color FFB22222
-  on toggled=1

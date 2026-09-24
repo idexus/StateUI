@@ -312,7 +312,7 @@ final class DiffTests: XCTestCase {
     /// Swift seeds its hashing per process, so without this the same tree hands
     /// out different ids on every run. Nothing breaks either way - the ids
     /// travel with the element - but two runs of one tree stop being
-    /// comparable, and a fixture cannot be written down at all.
+    /// comparable, and no assertion can name an id.
     func testHandlerIdsAreAssignedInNameOrder() {
         let renders = Renders()
 

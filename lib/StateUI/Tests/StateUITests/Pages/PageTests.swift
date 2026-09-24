@@ -3,7 +3,7 @@
 
 // What a PAGE puts in the patch, and the guards that keep the list complete.
 //
-// A page is not a control: it has no fixture in fixtures/controls/, it cannot
+// A page is not a control: it has no case in ControlTests, it cannot
 // be styled, and `Fixtures.controlSources()` skips the file it lives in. So
 // the coverage a control gets for free - every modifier exercised, every
 // property carried - has to be written here instead, and this is the file that
@@ -47,7 +47,7 @@ private struct EveryPropertyPage: ContentView {
 
             // What hangs off it either way, each saying everything ITS type
             // can say - a page is the only place a toolbar item or a menu entry
-            // is covered, there being no control fixture for either.
+            // is covered, there being no control case for either.
             page.toolbarItems = [
                 ToolbarItem("Save")
                     .accessibilityIdentifier("bar.save")
@@ -285,7 +285,7 @@ final class PageTests: XCTestCase {
             \(missing.joined(separator: ", ")), which neither EveryPropertyPage \
             nor EveryPropertyWindow carries.
 
-            A page and a window have no control fixture - this is where their \
+            A page and a window have no control case - this is where their \
             properties are covered. Write it in the value above, and check the \
             host contract reads it.
             """)
@@ -318,8 +318,8 @@ final class PageTests: XCTestCase {
     /// The same promise for what HANGS OFF a page - its toolbar items and its
     /// menus.
     ///
-    /// They have no control fixture: a `ToolbarItem` is not a view and never
-    /// appears in `fixtures/controls/`, so the guard in ControlTests cannot see
+    /// They have no control case: a `ToolbarItem` is not a view and never
+    /// appears among ControlTests' cases, so the guard there cannot see
     /// one, and this page is the only place either is built with everything it
     /// can do. Measured when the tier guard was written: `order` and `priority`
     /// were carried by NOTHING - two arms of `ApplyToolbarItem` that no test had
@@ -399,7 +399,7 @@ final class PageTests: XCTestCase {
 
     /// The other half of the same surface: what a page the library CONSTRUCTS
     /// is told by modifier, since a constructor's result has no properties to
-    /// override. `PageElement.swift` has no fixture of its own for the reason a
+    /// override. `PageElement.swift` has no case of its own for the reason a
     /// bar tier has none - there is no control to build one on.
     func testEveryPageElementModifierIsExercised() throws {
         let path = State<[Int]>([])
@@ -606,18 +606,48 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(arrivals.wrappedValue, 2)
     }
 
-    /// The page is written down whole: its properties, five handlers and every
-    /// slot are in the deterministic message that brings it. It lives under
-    /// `pages/` because a page is not a styleable control.
-    func testThePageIsWrittenDown() throws {
-        try Fixtures.check(Self.arrived(EveryPropertyPage()), against: "pages/Page")
+    /// The page arrives whole: its properties, five handlers and every slot are
+    /// in the message that brings it - the content, then the title view, the
+    /// toolbar and the menus.
+    func testThePageArrivesWhole() throws {
+        let page = Self.arrived(EveryPropertyPage())
+
+        XCTAssertEqual(page.props, [
+            "backButtonTitle": .string("Back"), "background": Color("#F5F5F5").propValue,
+            "hasBackButton": .bool(false), "hasNavigationBar": .bool(false), "icon": .string("tab.png"),
+            "padding": .numbers([4, 8, 12, 16]), "title": .string("Everything"),
+        ])
+        XCTAssertEqual(page.eventNames, HostPatch.pageEvents)
+        XCTAssertEqual(page.children.map(\.type), [.label, .titleView, .toolbarItems, .menuBar])
+
+        let item = try XCTUnwrap(page.at(.auto(5), .auto(6)))
+        XCTAssertEqual(item.props, [
+            "accessibilityIdentifier": .string("bar.save"), "icon": .string("mark.png"),
+            "isDestructive": .bool(true), "isEnabled": .bool(false),
+            "placement": ToolbarItemPlacement.overflow.propValue, "priority": .number(2),
+            "text": .string("Save"),
+        ])
+        XCTAssertEqual(item.eventNames, ["clicked"])
+
+        // A menu at any depth: the bar's File holds an entry, a menu of its
+        // own and a line.
+        let file = try XCTUnwrap(page.at(.auto(7), .auto(8)))
+        XCTAssertEqual(file.children.map(\.type), [.menuItem, .menu, .menuSeparator])
+        XCTAssertEqual(file.at(.auto(10), .auto(11))?.props, ["text": .string("Notes.txt")])
     }
 
-    /// The window is written down whole too: every property its session can
-    /// say, its handlers and the page it holds - so a host's own tests read a
-    /// window carrying all of it, as they read the page. Beside the page's,
-    /// under `pages/`, a window being no styleable control either.
-    func testTheWindowIsWrittenDown() throws {
-        try Fixtures.check(Renders().settled(EveryPropertyWindow.node), against: "pages/Window")
+    /// The window arrives whole too: every property its session can say, its
+    /// handlers and the page it holds.
+    func testTheWindowArrivesWhole() throws {
+        let window = Renders().settled(EveryPropertyWindow.node)
+
+        XCTAssertEqual(window.props, [
+            "height": .number(800), "isMaximizable": .bool(false), "isMinimizable": .bool(true),
+            "isTranslucent": .bool(true), "maximumHeight": .number(1200), "maximumWidth": .number(1600),
+            "minimumHeight": .number(400), "minimumWidth": .number(600), "title": .string("Everything"),
+            "width": .number(1200), "x": .number(10), "y": .number(20),
+        ])
+        XCTAssertEqual(window.eventNames, HostPatch.windowEvents)
+        XCTAssertEqual(window.children.map(\.type), [.page])
     }
 }

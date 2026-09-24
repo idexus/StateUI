@@ -1,4 +1,0 @@
-Image 1
-  aspect: enum fill(1)
-  isAnimating: true
-  source: string "tab_list.png"

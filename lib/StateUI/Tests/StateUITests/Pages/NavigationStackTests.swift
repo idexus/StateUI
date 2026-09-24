@@ -184,7 +184,7 @@ final class NavigationStackTests: XCTestCase {
 
     /// The same promise `testEveryModifierIsExercised` makes a control: a
     /// modifier no message carries is one the host can leave out with nothing
-    /// failing. The bar tier has no control fixture - this is its cover.
+    /// failing. The bar tier has no case in ControlTests - this is its cover.
     func testEveryBarModifierIsExercised() throws {
         let path = State<[Route]>([])
 
@@ -208,20 +208,16 @@ final class NavigationStackTests: XCTestCase {
             BarElement.swift declares \(missing.joined(separator: ", ")), which \
             this test does not write.
 
-            The bar is a page arrangement's, so it has no control fixture - \
+            The bar is a page arrangement's, so it has no control case - \
             add the modifier here and read it through the host contract.
             """)
     }
 
-    // MARK: - Binary host contract
+    // MARK: - The contract a host reads
 
-    /// The whole thing, written down: a stack with its bar painted, a root, and
-    /// two pushed pages - one of which asks the stack for everything a page can
-    /// ask of it.
-    ///
-    /// It lives under `pages/` because a navigation page is not a styleable
-    /// control.
-    func testTheStackIsWrittenDown() throws {
+    /// The whole thing: a stack with its bar painted, a root, and two pushed
+    /// pages - one of which asks the stack for everything a page can ask of it.
+    func testAStackCarriesItsBarAndEveryPageInOrder() throws {
         let path = State<[Route]>([.detail("one"), .level(2)])
 
         let tree = NavigationStack(path.projectedValue) {
@@ -238,7 +234,23 @@ final class NavigationStackTests: XCTestCase {
 
         // As the message that brings the pages carries them - with what each
         // wrote into its session on the way in.
-        try Fixtures.check(Renders().settled(tree), against: "pages/NavigationStack")
+        let stack = Renders().settled(tree)
+        let dressed = ElementId.manual("1/level(2)")
+
+        XCTAssertEqual(stack.props, [
+            "barBackgroundColor": Color("#512BD4").propValue, "barForegroundColor": Color.white.propValue,
+        ])
+        XCTAssertEqual(stack.eventNames, ["popped"])
+        XCTAssertEqual(stack.arrangement, [.manual("root"), .manual("0/detail(\"one\")"), dressed])
+        XCTAssertEqual(stack.children.map { $0.props["title"] }, [.string("Home"), .string("one"), .string("Level 2")])
+        XCTAssertTrue(stack.children.allSatisfy { $0.eventNames == HostPatch.pageEvents })
+
+        let page = try XCTUnwrap(stack.at(dressed))
+        XCTAssertEqual(page.props["backButtonTitle"], .string("Up"))
+        XCTAssertEqual(page.props["hasBackButton"], .bool(false))
+        XCTAssertEqual(page.props["hasNavigationBar"], .bool(false))
+        XCTAssertEqual(page.children.map(\.type), [.label, .titleView])
+        XCTAssertEqual(page.children.last?.children.first?.props["text"], .string("on the bar"))
     }
 
     // MARK: - What comes back

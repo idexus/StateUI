@@ -40,17 +40,6 @@
       "presentation": { "reveal": "always", "panel": "dedicated" }
     },
     {
-      // After a deliberate change to the patch or to a control's modifiers:
-      // rewrites lib/StateUI/Tests/Fixtures from what the core now produces.
-      // Read the diff.
-      "label": "Test (update fixtures)",
-      "type": "shell",
-      "command": "STATEUI_UPDATE_FIXTURES=1 swift test --package-path ${workspaceFolder}",
-      "problemMatcher": [],
-      "group": "test",
-      "presentation": { "reveal": "always", "panel": "dedicated" }
-    },
-    {
       "label": "Build Gallery (AppKit, Debug)",
       "type": "shell",
       "command": "${workspaceFolder}/.scripts/AppKit/build-gallery-appkit.sh",

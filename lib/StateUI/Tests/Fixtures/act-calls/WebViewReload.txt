@@ -1,2 +1,0 @@
-reload completion=-1
-  string "browser"

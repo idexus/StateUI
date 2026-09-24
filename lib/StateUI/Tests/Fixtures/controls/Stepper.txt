@@ -1,6 +1,0 @@
-Stepper 1
-  maximum: number 12
-  minimum: number 1
-  step: number 2
-  value: number 4
-  on valueChanged=1

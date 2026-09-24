@@ -1,9 +1,0 @@
-RadioButton 1
-  borderColor: color FF808080
-  borderWidth: number 1
-  cornerRadius: number 8
-  groupName: name "size"
-  isOn: true
-  text: string "Medium"
-  textCase: enum uppercase(3)
-  on toggled=1

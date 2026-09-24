@@ -1,4 +1,0 @@
-Border "panel" arranged(1)
-  opacity: number 1
-  Label 1
-    text: string "x"

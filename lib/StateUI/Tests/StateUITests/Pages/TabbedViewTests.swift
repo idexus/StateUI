@@ -199,7 +199,7 @@ final class TabbedViewTests: XCTestCase {
     }
 
     /// The same promise `testEveryModifierIsExercised` makes a control. A page
-    /// has no control fixture, so this is where a modifier of its own is
+    /// has no control case, so this is where a modifier of its own is
     /// covered - and it reads the SOURCE, so a property added tomorrow and
     /// written nowhere names itself here.
     func testEveryTabbedViewModifierIsExercised() throws {
@@ -224,17 +224,17 @@ final class TabbedViewTests: XCTestCase {
             TabbedView.swift declares \(missing.joined(separator: ", ")), which \
             this test does not write.
 
-            A page has no control fixture - add the modifier here and exercise \
+            A page has no control case - add the modifier here and exercise \
             it through every native host.
             """)
     }
 
     // MARK: - The contract a host reads
 
-    /// The whole thing, written down: a tab bar with its background, a tab holding
+    /// The whole thing: a tab bar with its background, a tab holding
     /// a navigation stack that carries its own caption, and a tab that is a
     /// plain page - with the second one showing.
-    func testTheTabsAreWrittenDown() throws {
+    func testTheTabsArriveWithTheSecondShowing() throws {
         let selection = State<Tab>(.settings)
         let path = State<[Int]>([])
 
@@ -259,7 +259,18 @@ final class TabbedViewTests: XCTestCase {
 
         // As the message that brings the tabs carries them - with the caption
         // and picture each page wrote into its session on the way in.
-        try Fixtures.check(Renders().settled(tree), against: "pages/TabbedView")
+        let tabs = Renders().settled(tree)
+
+        XCTAssertEqual(tabs.props, [
+            "barBackgroundColor": Color("#512BD4").propValue, "currentPage": .number(1),
+        ])
+        XCTAssertEqual(tabs.eventNames, ["currentPageChanged"])
+        XCTAssertEqual(tabs.arrangement, [.manual("home"), .manual("settings")])
+
+        let home = try XCTUnwrap(tabs.child("home"))
+        XCTAssertEqual(home.props, ["icon": .string("house.png"), "title": .string("Home")])
+        XCTAssertEqual(home.child("root")?.props, ["icon": .string("home.png"), "title": .string("home")])
+        XCTAssertEqual(tabs.child("settings")?.props, ["icon": .string("settings.png"), "title": .string("settings")])
     }
 
     // MARK: - What comes back

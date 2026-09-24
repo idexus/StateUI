@@ -179,7 +179,7 @@ final class CompositionTests: XCTestCase {
     /// An application's views are taken whatever they conform to - `MenuRow` is
     /// an `Element` rather than a `ContentView`, being a row with no state, and
     /// the rule is the same for it. The LIBRARY's plain `View`s are its control
-    /// wrappers, which the control recipe and the fixtures already hold to
+    /// wrappers, which the control recipe and ControlTests already hold to
     /// their own shape.
     private func composedViews() throws -> [ComposedView] {
         let repository = Fixtures.repository

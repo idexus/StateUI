@@ -12,5 +12,3 @@
       `.scripts/test-native.sh`)
 - [ ] Anything an author can reach has a `///` describing its StateUI semantics
 - [ ] New or changed comments describe the current state, not how it got there
-- [ ] If the patch changed: fixtures regenerated with
-      `STATEUI_UPDATE_FIXTURES=1`, and the diff read
