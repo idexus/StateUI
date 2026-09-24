@@ -16,8 +16,8 @@ Declared in `lib/StateUI/Sources/Contracts/Elements/Menus/MenuContract.swift`.
 
 | Member | Kind | Value | Layer | MAUI | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  |  |  |  |  |
-| `text` | property | `String` | native | ✅ | ✅ |  |  |  |  |  |  |
+| `isEnabled` | property | `Bool` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
+| `text` | property | `String` | native | ✅ | ✅ |  |  | ✅ |  |  |  |
 
 Realization:
 

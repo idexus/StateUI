@@ -16,28 +16,17 @@ final class AndroidBarView: AndroidView {
         case sidebar(String?)
     }
 
-    /// One of the visible page's actions.
-    struct Action: Equatable {
-        var title: String
-        var picture: String?
-        var overflows: Bool
-        var isEnabled: Bool
-    }
-
     /// What the bar says and shows.
     struct Content: Equatable {
         var title = ""
         var background: HostValue?
         var foreground: HostValue?
         var navigation = Navigation.none
-        var actions: [Action] = []
+        var actions: [AndroidMenu.Item] = []
     }
 
     /// What the navigation button does when the user presses it.
     var onNavigation: (() -> Void)?
-
-    /// What the bar does when the user picks one of its actions, handed its place among them.
-    var onAction: ((Int) -> Void)?
 
     private(set) var content = Content()
     private var shown = false
@@ -86,18 +75,10 @@ final class AndroidBarView: AndroidView {
         Java.release(local: words)
     }
 
-    private func showActions(_ actions: [Action]) {
-        Java.frame {
-            let titles = Java.array(of: JavaAPI.string, actions.map { Java.string($0.title) })
-            let bitmaps = actions.map { $0.picture.flatMap(AndroidPictures.bitmap(named:)) }
-            let pictures = Java.array(of: JavaAPI.bitmap, bitmaps.map { $0?.reference })
-            let overflows = Java.booleans(actions.map(\.overflows))
-            let enabled = Java.booleans(actions.map(\.isEnabled))
-            withExtendedLifetime(bitmaps) {
-                Java.call(
-                    reference, JavaAPI.setBarActions,
-                    .object(titles), .object(pictures), .object(overflows), .object(enabled))
-            }
+    /// The actions as the bar's menu, an item chosen reaching `onMenuChose` by its place among them.
+    private func showActions(_ actions: [AndroidMenu.Item]) {
+        AndroidMenu.encoded(actions.map(AndroidMenu.Entry.item)) { kinds, texts, pictures in
+            Java.call(reference, JavaAPI.setBarActions, .object(kinds), .object(texts), .object(pictures))
         }
     }
 
@@ -109,6 +90,5 @@ final class AndroidBarView: AndroidView {
     override func detach() {
         super.detach()
         onNavigation = nil
-        onAction = nil
     }
 }

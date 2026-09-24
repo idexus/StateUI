@@ -258,6 +258,10 @@ enum JavaAPI {
     static let setMinHeight = Java.method(textView, "setMinHeight", "(I)V")
     static let setMinimumHeight = Java.method(view, "setMinimumHeight", "(I)V")
     static let setClickable = Java.method(view, "setClickable", "(Z)V")
+    static let isLongClickable = Java.method(view, "isLongClickable", "()Z")
+    static let setLongClickable = Java.method(view, "setLongClickable", "(Z)V")
+    static let setOnCreateContextMenuListener = Java.method(
+        view, "setOnCreateContextMenuListener", "(Landroid/view/View$OnCreateContextMenuListener;)V")
 
     // MARK: - android.text
 
@@ -343,7 +347,12 @@ enum JavaAPI {
     static let setBarNavigation = Java.method(
         bar, "setNavigation", "(ILandroid/graphics/Bitmap;ILjava/lang/String;)V")
     static let setBarActions = Java.method(
-        bar, "setActions", "([Ljava/lang/String;[Landroid/graphics/Bitmap;[Z[Z)V")
+        bar, "setActions", "([I[Ljava/lang/String;[Landroid/graphics/Bitmap;)V")
+
+    static let menus = Java.findClass("stateui/android/StateUIMenus")
+    static let fillMenu = Java.staticMethod(
+        menus, "fill",
+        "(Landroid/content/Context;Landroid/view/Menu;J[I[Ljava/lang/String;[Landroid/graphics/Bitmap;)V")
 
     static let androidActivity = Java.findClass("android/app/Activity")
     static let activity = Java.findClass("stateui/android/StateUIActivity")

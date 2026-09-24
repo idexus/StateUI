@@ -4,6 +4,7 @@
 package stateui.android;
 
 import android.app.Activity;
+import android.view.Menu;
 import android.widget.FrameLayout;
 
 /** The Swift host: every method is registered by the head's JNI_OnLoad. */
@@ -36,8 +37,11 @@ final class StateUIHost {
     /** A tab was chosen, by its place among the tabs. */
     static native void tabSelected(long view, int tab);
 
-    /** One of a bar's actions was clicked, by its place in the bar. */
-    static native void actionClicked(long view, int action);
+    /** One of a view's menu entries was chosen - a bar's action, a context menu's item - by its place among the items. */
+    static native void menuChose(long view, int item);
+
+    /** The user asks for a view's context menu - a long press, a secondary click - for Swift to write into `menu`. */
+    static native void menuOpening(long view, Menu menu);
 
     /** A switch was turned on or off. */
     static native void toggled(long view, boolean on);

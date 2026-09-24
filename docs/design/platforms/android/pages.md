@@ -18,7 +18,8 @@ pop changes which page the stack holds; nothing is built again for it.
 A stack's bar is Android's own toolbar. It carries the visible page's title,
 the stack's bar colours, and the page's actions: the primary ones beside
 the title, by priority and then in their order, the rest behind the
-toolbar's overflow. Its navigation button is the way back on a pushed page
+toolbar's overflow - each an entry of the toolbar's menu, written as
+[menus](menus.md) says. Its navigation button is the way back on a pushed page
 whose back button is not taken away; at the root of a split view's detail,
 where the sidebar slides over it, it is the sidebar page's picture and opens
 the sidebar. A page without a navigation bar hides it. The bar shows only

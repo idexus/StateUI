@@ -73,6 +73,7 @@ final class AndroidElement: NativeElement {
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)
+        configureContextMenu()
         reconcilePresentation(from: previouslyShown.map(\.android))
         previouslyShown = []
         host?.follow(self, readsFrame: readsFrame)

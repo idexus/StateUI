@@ -75,8 +75,8 @@ and says which call raised it.
 The Java layer declares the host's native methods on `StateUIHost`: the
 activity's start and its lifecycle, the display's frame, what the user does
 to a control - a
-click, a turn, a slider's move and drag, words typed, a Return - and a
-layout's measure and arrangement. The head's `JNI_OnLoad` registers them by name, so the host's
+click, a turn, a slider's move and drag, words typed, a Return, a menu asked
+for and its item chosen - and a layout's measure and arrangement. The head's `JNI_OnLoad` registers them by name, so the host's
 library exports no other symbol, and a native Java declares that Swift does
 not register fails at load rather than at the first call.
 `NativeProjectTests` holds the two lists equal.

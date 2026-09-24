@@ -230,9 +230,48 @@ class AndroidView {
         onTapped?()
     }
 
+    /// What the view writes into its context menu as the user opens it; nil where it offers none.
+    private(set) var onMenuOpening: ((jobject) -> Void)?
+
+    /// What the view does with one of its menu's items chosen, handed its place among them.
+    var onMenuChose: ((Int) -> Void)?
+
+    /// Whether the view took a long press before it offered a menu, given back when it offers none.
+    private var longClickableWithoutMenu = false
+
+    /// Makes the view offer a context menu, which `opening` writes as the user asks for it - a long press, a
+    /// secondary click - or offer none for nil.
+    /// Design: docs/design/platforms/android/menus.md#a-context-menu
+    func setMenu(_ opening: ((jobject) -> Void)?) {
+        let offering = onMenuOpening != nil
+        onMenuOpening = opening
+        guard (opening != nil) != offering else { return }
+
+        if opening != nil {
+            longClickableWithoutMenu = Java.callBool(reference, JavaAPI.isLongClickable)
+            listen(JavaAPI.setOnCreateContextMenuListener)
+        } else {
+            Java.call(reference, JavaAPI.setOnCreateContextMenuListener, .object(nil))
+            Java.call(reference, JavaAPI.setLongClickable, .bool(longClickableWithoutMenu))
+            onMenuChose = nil
+        }
+    }
+
+    /// The user asks for the view's context menu, to be written into `menu`.
+    func menuOpening(_ menu: jobject) {
+        onMenuOpening?(menu)
+    }
+
+    /// One of the view's menu items was chosen, by its place among them.
+    func menuChose(_ item: Int) {
+        onMenuChose?(item)
+    }
+
     /// The element left the tree: the view lets go of everything that would call back into it.
     func detach() {
         onTapped = nil
+        onMenuOpening = nil
+        onMenuChose = nil
     }
 
     /// Asks Android to measure and place this view and its ancestors again.

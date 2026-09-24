@@ -64,9 +64,9 @@ The scene, the window and the page an application is made of, the arrangements a
 | [Content](Content.md) | 0 |  |  |  |  |  |  |  |
 | [ContextMenu](ContextMenu.md) | 0 |  |  |  |  |  |  |  |
 | [LeadingContent](LeadingContent.md) | 0 |  |  |  |  |  |  |  |
-| [Menu](Menu.md) | 2 | 2 ✅ | 2 ✅ |  |  |  |  |  |
+| [Menu](Menu.md) | 2 | 2 ✅ | 2 ✅ |  |  | 2 ✅ |  |  |
 | [MenuBar](MenuBar.md) | 0 |  |  |  |  |  |  |  |
-| [MenuItem](MenuItem.md) | 6 | 6 ✅ | 5 ✅ · 1 ☑️ |  |  |  |  |  |
+| [MenuItem](MenuItem.md) | 6 | 6 ✅ | 5 ✅ · 1 ☑️ |  |  | 4 ✅ |  |  |
 | [MenuSeparator](MenuSeparator.md) | 0 |  |  |  |  |  |  |  |
 | [ModalStack](ModalStack.md) | 0 |  |  |  |  |  |  |  |
 | [NavigationStack](NavigationStack.md) | 6 | 6 ✅ | 6 ✅ |  |  | 3 ✅ |  |  |
@@ -82,7 +82,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | [SwipeActions](SwipeActions.md) | 3 | 3 ✅ |  |  |  |  |  |  |
 | [TabbedView](TabbedView.md) | 6 | 6 ✅ | 6 ✅ |  |  | 4 ✅ |  |  |
 | [TitleView](TitleView.md) | 0 |  |  |  |  |  |  |  |
-| [ToolbarItem](ToolbarItem.md) | 8 | 8 ✅ | 7 ✅ |  |  | 3 ✅ |  |  |
+| [ToolbarItem](ToolbarItem.md) | 8 | 8 ✅ | 7 ✅ |  |  | 7 ✅ |  |  |
 | [ToolbarItems](ToolbarItems.md) | 0 |  |  |  |  |  |  |  |
 | [TrailingContent](TrailingContent.md) | 0 |  |  |  |  |  |  |  |
 | [VisualState](VisualState.md) | 2 | 2 ✅ |  |  |  |  |  |  |

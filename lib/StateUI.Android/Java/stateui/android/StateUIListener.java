@@ -5,6 +5,7 @@ package stateui.android;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,7 +17,7 @@ import android.widget.TextView;
 /** What the user does to one view, forwarded to the Swift view by its number. */
 final class StateUIListener implements View.OnClickListener, CompoundButton.OnCheckedChangeListener,
         SeekBar.OnSeekBarChangeListener, TextWatcher, TextView.OnEditorActionListener,
-        View.OnScrollChangeListener, View.OnTouchListener,
+        View.OnScrollChangeListener, View.OnTouchListener, View.OnCreateContextMenuListener,
         ViewTreeObserver.OnGlobalLayoutListener, ViewTreeObserver.OnScrollChangedListener {
     private final long view;
 
@@ -89,6 +90,11 @@ final class StateUIListener implements View.OnClickListener, CompoundButton.OnCh
             StateUIHost.held(view, holding);
         }
         return false;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View asked, ContextMenu.ContextMenuInfo information) {
+        StateUIHost.menuOpening(view, menu);
     }
 
     @Override

@@ -96,7 +96,7 @@ final class StateUIViews {
     }
 
     /** How opaque the theme draws a disabled control. */
-    private static float disabledAlpha(Context context) {
+    static float disabledAlpha(Context context) {
         TypedArray theme = context.obtainStyledAttributes(new int[] {android.R.attr.disabledAlpha});
         float alpha = theme.getFloat(0, 0.38f);
         theme.recycle();

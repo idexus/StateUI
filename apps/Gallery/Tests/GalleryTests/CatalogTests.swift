@@ -618,9 +618,9 @@ final class CatalogTests: XCTestCase {
     func testASampleAboutDesktopChromeIsListedOnlyOnADesktop() throws {
         let catalog = catalog()
 
-        // The samples about desktop chrome: the window's own title bar and a
-        // pointer-oriented context menu.
-        let desktopOnly: Set<String> = ["titleBar", "contextMenu"]
+        // The sample about desktop chrome: the window's own title bar. A
+        // context menu opens with a long press on a phone as well.
+        let desktopOnly: Set<String> = ["titleBar"]
 
         for id in desktopOnly {
             let sample = try XCTUnwrap(catalog.sample(id: id))

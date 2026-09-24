@@ -80,7 +80,7 @@ host that creates or interprets it.
 | `CheckBox` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |
 | `ColorBox` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `Content` | structure | ✅ | ✅ |  |  |  |  |  |
-| `ContextMenu` | structure | ✅ | ✅ |  |  |  |  |  |
+| `ContextMenu` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `DatePicker` | native | ✅ | ✅ |  |  | ✅ |  |  |
 | `Ellipse` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |
 | `Grid` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |
@@ -90,10 +90,10 @@ host that creates or interprets it.
 | `LeadingContent` | structure | ✅ | ✅ |  |  |  |  |  |
 | `Line` | stateUI | ✅ | ✅ |  |  | ✅ |  |  |
 | `Map` | provider | ✅ |  |  |  |  |  |  |
-| `Menu` | structure | ✅ | ✅ |  |  |  |  |  |
+| `Menu` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `MenuBar` | structure | ✅ | ✅ |  |  |  |  |  |
-| `MenuItem` | structure | ✅ | ✅ |  |  |  |  |  |
-| `MenuSeparator` | structure | ✅ | ✅ |  |  |  |  |  |
+| `MenuItem` | structure | ✅ | ✅ |  |  | ✅ |  |  |
+| `MenuSeparator` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `ModalStack` | structure | ✅ | ✅ |  |  | ✅ |  |  |
 | `NavigationStack` | adaptive | ✅ | ✅ |  |  | ✅ |  |  |
 | `Overlay` | structure | ✅ | ✅ |  |  |  |  |  |
@@ -481,9 +481,9 @@ Every control, and every part an application, its windows and its pages are made
 | [Content](controls/Content.md) | 0 |  |  |  |  |  |  |  |
 | [ContextMenu](controls/ContextMenu.md) | 0 |  |  |  |  |  |  |  |
 | [LeadingContent](controls/LeadingContent.md) | 0 |  |  |  |  |  |  |  |
-| [Menu](controls/Menu.md) | 2 | 2 ✅ | 2 ✅ |  |  |  |  |  |
+| [Menu](controls/Menu.md) | 2 | 2 ✅ | 2 ✅ |  |  | 2 ✅ |  |  |
 | [MenuBar](controls/MenuBar.md) | 0 |  |  |  |  |  |  |  |
-| [MenuItem](controls/MenuItem.md) | 6 | 6 ✅ | 5 ✅ · 1 ☑️ |  |  |  |  |  |
+| [MenuItem](controls/MenuItem.md) | 6 | 6 ✅ | 5 ✅ · 1 ☑️ |  |  | 4 ✅ |  |  |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 |  |  |  |  |  |  |  |
 | [ModalStack](controls/ModalStack.md) | 0 |  |  |  |  |  |  |  |
 | [NavigationStack](controls/NavigationStack.md) | 6 | 6 ✅ | 6 ✅ |  |  | 3 ✅ |  |  |
@@ -499,7 +499,7 @@ Every control, and every part an application, its windows and its pages are made
 | [SwipeActions](controls/SwipeActions.md) | 3 | 3 ✅ |  |  |  |  |  |  |
 | [TabbedView](controls/TabbedView.md) | 6 | 6 ✅ | 6 ✅ |  |  | 4 ✅ |  |  |
 | [TitleView](controls/TitleView.md) | 0 |  |  |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | 8 | 8 ✅ | 7 ✅ |  |  | 3 ✅ |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | 8 | 8 ✅ | 7 ✅ |  |  | 7 ✅ |  |  |
 | [ToolbarItems](controls/ToolbarItems.md) | 0 |  |  |  |  |  |  |  |
 | [TrailingContent](controls/TrailingContent.md) | 0 |  |  |  |  |  |  |  |
 | [VisualState](controls/VisualState.md) | 2 | 2 ✅ |  |  |  |  |  |  |
@@ -549,7 +549,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [Label](controls/Label.md) | `lineBreak`, `maximumLines` | ✅ | ✅ |  |  | ✅ |  |  |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | ✅ | ✅ |  |  | ✅ |  |  |
 | [Map](controls/Map.md) | `isScrollEnabled`, `isTrafficEnabled`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` |  |  |  |  |  |  |  |
-| [Menu](controls/Menu.md) | `isEnabled`, `text` | ✅ | ✅ |  |  |  |  |  |
+| [Menu](controls/Menu.md) | `isEnabled`, `text` | ✅ | ✅ |  |  | ✅ |  |  |
 | [NavigationStack](controls/NavigationStack.md) | `barForegroundColor`, `popped` | ✅ | ✅ |  |  |  |  |  |
 | [Page](controls/Page.md) | `appearing`, `backButtonTitle`, `background`, `disappearing`, `hasBackButton`, `hasNavigationBar`, `navigatedFrom`, `navigatedTo`, `navigatingFrom`, `padding` | ✅ | ✅ |  |  |  |  |  |
 | [Path](controls/Path.md) | `data` | ✅ | ✅ |  |  | ✅ |  |  |
@@ -578,7 +578,7 @@ contract's page in [the control dictionary](controls/README.md).
 | [TextField](controls/TextField.md) | `isPassword`, `returnKey`, `showsClearButton`, `onSubmitted` (`submitted`) | ✅ |  |  |  |  |  |  |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | ✅ |  |  |  | ✅ |  |  |
 | [TitleBar](controls/TitleBar.md) | `barForegroundColor`, `icon`, `subtitle`, `title` | ✅ | ✅ |  |  |  |  |  |
-| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` | ✅ | ✅ |  |  |  |  |  |
+| [ToolbarItem](controls/ToolbarItem.md) | `placement`, `priority` | ✅ | ✅ |  |  | ✅ |  |  |
 | [VisualState](controls/VisualState.md) | `group`, `name` | ✅ |  |  |  |  |  |  |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | ✅ |  |  |  |  |  |  |
 | [Window](controls/Window.md) | `activated`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `isTranslucent`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `modalPopped`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` |  | ✅ |  |  |  |  |  |

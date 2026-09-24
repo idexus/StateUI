@@ -7,11 +7,13 @@ struct ContextMenuSample: SampleContent, ExampleContent {
 
     static let id = "contextMenu"
     static let title = "Context menu"
-    static let summary = "A menu on the view itself, opened with a right-click."
+    static let summary = "A menu on the view itself, opened with a right-click or a long press."
 
-    // The interaction belongs to desktop hosts. The route still remains
+    #if MAUI
+    // MAUI shows a context menu on a desktop alone. The route still remains
     // reachable on every device even where the sample is not listed.
     static let formFactors: Set<FormFactor> = [.desktop]
+    #endif
 
     static let code = """
         @State private var items = ["Alpha", "Beta", "Gamma"]
@@ -121,7 +123,7 @@ struct ContextMenuSample: SampleContent, ExampleContent {
 
     var notes: Element? {
         VStack {
-            Label("Right-click a row. The entries are the same three a menu bar takes - "
+            Label("Right-click or long-press a row. The entries are the same three a menu bar takes - "
                 + "an item, a submenu and a separator - attached to a view instead of to "
                 + "a page.")
                 .fontSize(12)

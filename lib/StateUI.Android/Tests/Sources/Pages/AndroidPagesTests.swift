@@ -131,27 +131,33 @@ final class AndroidPagesTests: XCTestCase {
         }
     }
 
-    /// What a page puts on the bar: its actions, the primary ones first; picking one runs its handler.
+    /// What a page puts on the bar: its actions in their priority's order, the overflow's last, each with its
+    /// picture and whether it can be chosen - the picture of one that cannot be dimmed - a destructive one in
+    /// the theme's error colour; choosing one runs its handler, and one that cannot be chosen runs nothing.
     func testAPagesToolbarItemsAreTheBarsActions() throws {
         try onMainActor {
-            let saved = Received<Int>()
+            let heard = Received<String>()
             let host = AndroidRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     TitledPage(title: "Notes", actions: [
-                        ToolbarItem("Delete").placement(.overflow),
-                        ToolbarItem("Save").onClicked { saved.values.append(1) },
+                        ToolbarItem("Delete").placement(.overflow).isDestructive(true)
+                            .onClicked { heard.values.append("delete") },
+                        ToolbarItem("Save").priority(1).icon("test_wide.png").onClicked { heard.values.append("save") },
+                        ToolbarItem("Add").priority(0).icon("test_wide.png").isEnabled(false)
+                            .onClicked { heard.values.append("add") },
                     ])
                 } destination: { _ in
                     TitledPage(title: "Note")
                 }
             }
             let navigation = try XCTUnwrap(host.views(AndroidNavigationView.self).first)
+            XCTAssertEqual(navigation.bar.content.actions.map(\.onBar), [true, true, false])
 
-            XCTAssertEqual(navigation.bar.content.actions.map(\.title), ["Save", "Delete"])
-            XCTAssertEqual(navigation.bar.content.actions.map(\.overflows), [false, true])
-
-            navigation.bar.onAction?(0)
-            XCTAssertEqual(saved.values, [1])
+            let menu = JavaObject(try XCTUnwrap(Java.callObject(navigation.bar.reference, TestMenus.getMenu)))
+            XCTAssertEqual(TestMenus.describe(menu), "Add (off) (dimmed picture), Save (picture), Delete (red)")
+            for words in ["Add", "Save", "Delete"] { TestMenus.choose(menu, words) }
+            host.pump()
+            XCTAssertEqual(heard.values, ["save", "delete"])
         }
     }
 }

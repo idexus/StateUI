@@ -73,9 +73,16 @@ enum JavaNatives {
                 AndroidView.find(number)?.clicked()
             }
         }
-        let actionClicked: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, action in
+        let menuChose: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, item in
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidBarView)?.onAction?(Int(action))
+                AndroidView.find(number)?.menuChose(Int(item))
+            }
+        }
+        let menuOpening: @convention(c) (Environment, jclass?, jlong, jobject?) -> Void = { _, _, number, menu in
+            nonisolated(unsafe) let menu = menu
+            MainActor.assumeIsolated {
+                guard let menu else { return }
+                AndroidView.find(number)?.menuOpening(menu)
             }
         }
         let tabSelected: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, tab in
@@ -183,7 +190,8 @@ enum JavaNatives {
             ("back", "()Z", unsafeBitCast(back, to: UnsafeMutableRawPointer.self)),
             ("frame", "(J)V", unsafeBitCast(frame, to: UnsafeMutableRawPointer.self)),
             ("clicked", "(J)V", unsafeBitCast(clicked, to: UnsafeMutableRawPointer.self)),
-            ("actionClicked", "(JI)V", unsafeBitCast(actionClicked, to: UnsafeMutableRawPointer.self)),
+            ("menuChose", "(JI)V", unsafeBitCast(menuChose, to: UnsafeMutableRawPointer.self)),
+            ("menuOpening", "(JLandroid/view/Menu;)V", unsafeBitCast(menuOpening, to: UnsafeMutableRawPointer.self)),
             ("tabSelected", "(JI)V", unsafeBitCast(tabSelected, to: UnsafeMutableRawPointer.self)),
             ("toggled", "(JZ)V", unsafeBitCast(toggled, to: UnsafeMutableRawPointer.self)),
             ("moved", "(JI)V", unsafeBitCast(moved, to: UnsafeMutableRawPointer.self)),

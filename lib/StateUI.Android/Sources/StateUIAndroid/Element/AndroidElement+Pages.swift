@@ -225,11 +225,9 @@ extension AndroidElement {
         content.background = value(.barBackgroundColor)
         content.foreground = value(.barForegroundColor)
         content.actions = shown.map { item in
-            AndroidBarView.Action(
-                title: item.value(.text)?.string ?? "",
-                picture: item.value(.icon)?.string.flatMap { $0.isEmpty ? nil : $0 },
-                overflows: overflows(item),
-                isEnabled: item.value(.isEnabled)?.bool ?? true)
+            var action = item.menuItem
+            action.onBar = !overflows(item)
+            return action
         }
         if children.count > 1, children.last?.value(.hasBackButton)?.bool != false {
             content.navigation = .back
@@ -240,7 +238,7 @@ extension AndroidElement {
 
         navigation.setShowsBar(page?.value(.hasNavigationBar)?.bool != false)
         navigation.bar.show(content)
-        navigation.bar.onAction = { index in
+        navigation.bar.onMenuChose = { index in
             guard shown.indices.contains(index) else { return }
             shown[index].send(.clicked, [])
         }

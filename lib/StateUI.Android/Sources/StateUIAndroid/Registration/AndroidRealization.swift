@@ -17,9 +17,8 @@ enum AndroidRealization {
 
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
     static let unrealized: Set<String> = [
-        "Content", "ContextMenu", "LeadingContent", "Map", "Menu", "MenuBar", "MenuItem",
-        "MenuSeparator", "Overlay", "Pin", "PositionIndicator", "RefreshView", "Setters",
-        "SwipeAction", "SwipeActions", "SwipeView", "TitleBar", "TitleView", "TrailingContent",
+        "Content", "LeadingContent", "Map", "MenuBar", "Overlay", "Pin", "PositionIndicator", "RefreshView",
+        "Setters", "SwipeAction", "SwipeActions", "SwipeView", "TitleBar", "TitleView", "TrailingContent",
         "VisualState", "WebView",
     ]
 
@@ -31,12 +30,16 @@ enum AndroidRealization {
     static let records: [AndroidRealization] = [
         // MARK: Tiers - a member every wearer realizes alike
         .complete("MenuItemElement", "clicked"),
+        .complete("MenuItemElement", "isDestructive"),
+        .complete("MenuItemElement", "isEnabled"),
         .complete("MenuItemElement", "text"),
         .complete("PageElement", "icon"),
         .complete("PageElement", "title"),
 
         // MARK: Entries - a control's or a part's own
         .partial("Button", "aspect", missing: "Android's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
+        .complete("Menu", "isEnabled"),
+        .complete("Menu", "text"),
         .complete("NavigationStack", "popped"),
         .complete("Page", "appearing"),
         .complete("Page", "disappearing"),
@@ -53,7 +56,9 @@ enum AndroidRealization {
         .complete("SplitView", "isSidebarVisibleChanged"),
         .complete("TabbedView", "currentPage"),
         .complete("TabbedView", "currentPageChanged"),
+        .complete("ToolbarItem", "icon"),
         .complete("ToolbarItem", "placement"),
+        .complete("ToolbarItem", "priority"),
         .complete("Window", "activated"),
         .complete("Window", "deactivated"),
         .complete("Window", "modalPopped"),
