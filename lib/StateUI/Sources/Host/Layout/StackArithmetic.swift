@@ -49,9 +49,20 @@
         }
     }
 
-    /// Where each child stands in `bounds`, in order; nil for a hidden one.
+    /// Where each child stands in `bounds`, in order; nil for a hidden one. Right to left, the places
+    /// are turned about the middle of `bounds`.
     @MainActor
     public static func places<Child: LayoutChild>(
+        of items: [Child], axis: Axis, spacing: Double, padding: Insets, in bounds: Rect,
+        direction: LayoutDirection = .leftToRight
+    ) -> [Rect?] {
+        leftToRight(of: items, axis: axis, spacing: spacing, padding: padding, in: bounds)
+            .map { $0.map { direction.places($0, in: bounds) } }
+    }
+
+    /// The places as a layout written left to right has them.
+    @MainActor
+    private static func leftToRight<Child: LayoutChild>(
         of items: [Child], axis: Axis, spacing: Double, padding: Insets, in bounds: Rect
     ) -> [Rect?] {
         let content = bounds.inset(padding)
@@ -92,6 +103,17 @@
                 return place
             }
         }
+    }
+}
+
+extension LayoutDirection {
+    /// Where a place worked out left to right stands in `room` laid out this way: right to left, turned
+    /// about the room's middle, so a row fills from the right and padding and margins swap sides.
+    /// Design: docs/design/host/layout.md#right-to-left
+    func places(_ place: Rect, in room: Rect) -> Rect {
+        guard self == .rightToLeft else { return place }
+        return Rect(x: room.x + room.width - (place.x - room.x) - place.width, y: place.y,
+                    width: place.width, height: place.height)
     }
 }
 

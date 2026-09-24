@@ -22,9 +22,19 @@
         return LayoutSize(width: width, height: height)
     }
 
-    /// Where each child stands in a layout of `room`, in order; nil for a hidden one.
+    /// Where each child stands in a layout of `room`, in order; nil for a hidden one. Right to left, x
+    /// counts from the right edge.
     @MainActor
-    public static func places<Child: LayoutChild>(of items: [Child], in room: LayoutSize) -> [Rect?] {
+    public static func places<Child: LayoutChild>(
+        of items: [Child], in room: LayoutSize, direction: LayoutDirection = .leftToRight
+    ) -> [Rect?] {
+        let bounds = Rect(x: 0, y: 0, width: room.width, height: room.height)
+        return leftToRight(of: items, in: room).map { $0.map { direction.places($0, in: bounds) } }
+    }
+
+    /// The places as a layout written left to right has them.
+    @MainActor
+    private static func leftToRight<Child: LayoutChild>(of items: [Child], in room: LayoutSize) -> [Rect?] {
         items.map { item in
             guard item.isShown else { return nil }
             let values = item.values

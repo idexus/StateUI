@@ -223,6 +223,32 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(peers("red"), [])
     }
 
+    /// A direction is inherited: a view left at `.inherited` takes its parent's, one that states its own
+    /// keeps it under any parent, and the root takes the language's, as the host reported the locale.
+    @MainActor
+    func testALayoutDirectionIsInheritedFromTheParentAndAtTheRootFromTheLocale() {
+        defer { StandardEnvironment.locale.layoutDirection = .leftToRight }
+        let (tree, _) = Self.tree()
+        var outer = Self.stack("outer", [])
+        outer.properties[.layoutDirection] = LayoutDirection.rightToLeft.propValue
+        var stated = HostPatch(id: .manual("stated"), type: .hStack)
+        stated.properties[.layoutDirection] = LayoutDirection.leftToRight.propValue
+        outer.children = .arranged([HostPatch(id: .manual("inheriting"), type: .label), stated])
+        var root = HostPatch(id: .manual("root"), type: .vStack)
+        root.children = .arranged([outer, HostPatch(id: .manual("plain"), type: .label)])
+        tree.apply(root, complete: true)
+
+        let rootElement = tree.root
+        let outerElement = rootElement?.children.first
+        XCTAssertEqual(outerElement?.layoutDirection, .rightToLeft)
+        XCTAssertEqual(outerElement?.children.first?.layoutDirection, .rightToLeft, "inherited from its parent")
+        XCTAssertEqual(outerElement?.children.last?.layoutDirection, .leftToRight, "its own, under any parent")
+        XCTAssertEqual(rootElement?.children.last?.layoutDirection, .leftToRight, "the language's at the root")
+
+        StandardEnvironment.locale.layoutDirection = .rightToLeft
+        XCTAssertEqual(rootElement?.children.last?.layoutDirection, .rightToLeft, "a language written right to left")
+    }
+
     // MARK: - A tree over a recording native half
 
     @MainActor

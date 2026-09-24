@@ -41,8 +41,13 @@ stretch it. A filling view that stops short of its slot, because of an
 explicit size or a maximum, stands in the middle of the slot. Without either,
 `.fill` takes the whole slot.
 
-`layoutDirection` changes semantic leading and trailing direction. `zIndex`
-orders overlapping siblings without changing their layout positions.
+`layoutDirection` lays a view and everything under it out right to left or
+left to right: a row fills from the right, a view aligned to `.start` stands
+at the right, a grid's first column is the rightmost, and padding and margins
+swap sides. A view left at `.inherited`, the default, takes its parent's
+direction, and the top of the tree the direction the user's language is
+written in. `zIndex` orders overlapping siblings without changing their layout
+positions.
 
 ## Visual transforms
 

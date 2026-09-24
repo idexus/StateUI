@@ -34,9 +34,23 @@
                 + rowSpacing * Double(max(rowCount - 1, 0)))
     }
 
-    /// Where each child stands in `bounds`, in order; nil for a hidden one.
+    /// Where each child stands in `bounds`, in order; nil for a hidden one. Right to left, column 0 is
+    /// the rightmost.
     @MainActor
     public static func places<Child: LayoutChild>(
+        of items: [Child], rows: [GridLength], columns: [GridLength],
+        rowSpacing: Double, columnSpacing: Double, padding: Insets, in bounds: Rect,
+        direction: LayoutDirection = .leftToRight
+    ) -> [Rect?] {
+        leftToRight(
+            of: items, rows: rows, columns: columns, rowSpacing: rowSpacing,
+            columnSpacing: columnSpacing, padding: padding, in: bounds)
+            .map { $0.map { direction.places($0, in: bounds) } }
+    }
+
+    /// The places as a grid written left to right has them.
+    @MainActor
+    private static func leftToRight<Child: LayoutChild>(
         of items: [Child], rows: [GridLength], columns: [GridLength],
         rowSpacing: Double, columnSpacing: Double, padding: Insets, in bounds: Rect
     ) -> [Rect?] {

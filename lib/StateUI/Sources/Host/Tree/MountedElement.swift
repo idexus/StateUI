@@ -418,6 +418,17 @@
     /// The handler of `event`, when the tree listens to it.
     public func handler(_ event: Event) -> Int32? { events[event] }
 
+    /// The direction this element lays out in: its own, or where it inherits, its parent's - the
+    /// language's at the root, as the host reported the locale.
+    /// Design: docs/design/host/layout.md#right-to-left
+    public var layoutDirection: LayoutDirection {
+        switch value(.layoutDirection)?.enumeration.flatMap(LayoutDirection.init(rawValue:)) {
+        case .leftToRight?: return .leftToRight
+        case .rightToLeft?: return .rightToLeft
+        default: return parent?.layoutDirection ?? StandardEnvironment.locale.layoutDirection
+        }
+    }
+
     /// What a layout reads of this element as its child.
     /// Design: docs/design/host/layout.md#the-layout-arithmetic
     public var layoutValues: LayoutValues {

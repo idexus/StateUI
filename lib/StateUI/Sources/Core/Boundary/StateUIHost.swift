@@ -73,6 +73,7 @@
         locale.uses24HourClock = info.uses24HourClock
         locale.firstDayOfWeek = info.firstDayOfWeek
         locale.isMetric = info.isMetric
+        locale.layoutDirection = info.layoutDirection == .rightToLeft ? .rightToLeft : .leftToRight
     }
 
     /// Hands a platform-created scene to StateUI before its first render.

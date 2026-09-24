@@ -24,6 +24,9 @@
     /// Whether the locale uses metric units.
     public let isMetric: Bool
 
+    /// The way the language is written, `.leftToRight` or `.rightToLeft`.
+    public let layoutDirection: LayoutDirection
+
     /// A complete locale report.
     public init(
         language: String,
@@ -32,7 +35,8 @@
         timeZone: String,
         uses24HourClock: Bool,
         firstDayOfWeek: Weekday,
-        isMetric: Bool
+        isMetric: Bool,
+        layoutDirection: LayoutDirection
     ) {
         self.language = language
         self.region = region
@@ -41,5 +45,6 @@
         self.uses24HourClock = uses24HourClock
         self.firstDayOfWeek = firstDayOfWeek
         self.isMetric = isMetric
+        self.layoutDirection = layoutDirection
     }
 }

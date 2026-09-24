@@ -27,6 +27,10 @@ public final class LocaleInfo {
     /// Whether the locale uses metric units.
     @State public var isMetric = true
 
+    /// The way the language is written: left to right, or right to left - what a view left at
+    /// `.inherited` lays out in.
+    @State public var layoutDirection: LayoutDirection = .leftToRight
+
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. The values start as a headless host's do.
     public init() {}

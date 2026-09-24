@@ -100,6 +100,21 @@ measured only where its natural size places it - on an axis it does not fill
 and states no size for - so a child that fills both ways takes the room
 whatever it would measure. A container with no shown child is its padding.
 
+## Right to left
+
+A layout works its places out left to right, then turns each about the
+middle of its room when it lays out right to left. That one rule is every
+mirror a language written right to left needs: a row fills from the right, a
+column's start stands at the right, a grid's column 0 is the rightmost, an
+absolute x counts from the right edge, and padding and margins swap sides.
+Nothing vertical changes, and no transform or drawing is turned.
+
+The direction is the element's own `layoutDirection`, or - left at
+`.inherited` - its parent's, and at the root the language's, as the host
+reported the locale (`HostLocaleInfo.layoutDirection`). The mounted element
+answers it (`MountedElement.layoutDirection`), and a runtime hands it to the
+arithmetic with the room.
+
 ## Scrolling
 
 A scroller's content is held to the scroller's width when it scrolls only

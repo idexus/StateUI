@@ -31,6 +31,87 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(places[2], Rect(40, 17, 20, 10), "a centred child stands in the middle")
     }
 
+    // MARK: - Right to left
+
+    /// A row laid out right to left fills from the right, its padding and margins on the other sides;
+    /// spacing and sizes are the same.
+    @MainActor
+    func testARowRightToLeftFillsFromTheRight() {
+        var first = Child(width: 20, height: 10)
+        first.values.margin = Insets(3, 0, 0, 0)
+        let items = [first, Child(width: 30, height: 10)]
+
+        let places = StackArithmetic.places(
+            of: items, axis: .horizontal, spacing: 5, padding: Insets(2, 0, 0, 0), in: Rect(0, 0, 100, 10),
+            direction: .rightToLeft)
+
+        XCTAssertEqual(places[0], Rect(75, 0, 20, 10), "the first child against the right edge, inside padding and margin")
+        XCTAssertEqual(places[1], Rect(40, 0, 30, 10), "the next one to its left, the spacing between")
+    }
+
+    /// A column keeps its order down; a child aligned to its start stands at the right.
+    @MainActor
+    func testAColumnRightToLeftStandsItsStartAtTheRight() {
+        var start = Child(width: 20, height: 10)
+        start.values.horizontal = 0
+        var end = Child(width: 20, height: 10)
+        end.values.horizontal = 2
+
+        let places = StackArithmetic.places(
+            of: [start, end], axis: .vertical, spacing: 0, padding: Insets(0), in: Rect(0, 0, 100, 20),
+            direction: .rightToLeft)
+
+        XCTAssertEqual(places[0], Rect(80, 0, 20, 10))
+        XCTAssertEqual(places[1], Rect(0, 10, 20, 10))
+    }
+
+    /// Right to left, a grid's column 0 is the rightmost, and its rows are where they were.
+    @MainActor
+    func testAGridRightToLeftStartsItsColumnsAtTheRight() {
+        var first = Child(width: 10, height: 10)
+        first.values.column = 0
+        var second = Child(width: 10, height: 10)
+        second.values.column = 1
+
+        let places = GridArithmetic.places(
+            of: [first, second], rows: [], columns: [.fixed(20), .fixed(30)],
+            rowSpacing: 0, columnSpacing: 0, padding: Insets(0), in: Rect(0, 0, 100, 10),
+            direction: .rightToLeft)
+
+        XCTAssertEqual(places.map { $0?.x }, [80, 50])
+    }
+
+    /// Right to left, a stated rectangle's x counts from the right edge, and so does a proportion of it.
+    @MainActor
+    func testAnAbsoluteChildRightToLeftCountsFromTheRight() {
+        var stated = Child(width: 20, height: 10)
+        stated.values.absoluteBounds = [10, 5, -1, -1]
+        var proportional = Child(width: 20, height: 10)
+        proportional.values.absoluteBounds = [0, 0, -1, -1]
+        proportional.values.absoluteProportions = 1
+
+        let places = AbsoluteArithmetic.places(
+            of: [stated, proportional], in: LayoutSize(width: 100, height: 50), direction: .rightToLeft)
+
+        XCTAssertEqual(places[0], Rect(70, 5, 20, 10))
+        XCTAssertEqual(places[1], Rect(80, 0, 20, 10), "a proportion of 0 is the start, the right edge")
+    }
+
+    /// One child and its padding turn with the room; left to right is the default, and changes nothing.
+    @MainActor
+    func testOneChildRightToLeftTurnsWithItsRoom() {
+        var child = Child(width: 20, height: 10)
+        child.values.horizontal = 0
+
+        let room = Rect(0, 0, 100, 10)
+        XCTAssertEqual(
+            SingleChildArithmetic.place(of: child, in: room, padding: Insets(4, 0, 0, 0), direction: .rightToLeft),
+            Rect(76, 0, 20, 10))
+        XCTAssertEqual(
+            SingleChildArithmetic.place(of: child, in: room, padding: Insets(4, 0, 0, 0)),
+            Rect(4, 0, 20, 10))
+    }
+
     /// Fixed tracks take their length, automatic tracks their child, proportional tracks share the rest.
     @MainActor
     func testGridTracksShareTheRoomByKind() {

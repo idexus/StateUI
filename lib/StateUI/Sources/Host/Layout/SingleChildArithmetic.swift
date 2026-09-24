@@ -18,9 +18,17 @@
             height: padding.top + padding.bottom + margin.top + margin.bottom + size.height)
     }
 
-    /// Where the child stands in `room`, within `padding`.
+    /// Where the child stands in `room`, within `padding`; right to left, turned about the room's middle.
     @MainActor
-    public static func place<Child: LayoutChild>(of item: Child, in room: Rect, padding: Insets) -> Rect {
+    public static func place<Child: LayoutChild>(
+        of item: Child, in room: Rect, padding: Insets, direction: LayoutDirection = .leftToRight
+    ) -> Rect {
+        direction.places(leftToRight(of: item, in: room, padding: padding), in: room)
+    }
+
+    /// The place as a layout written left to right has it.
+    @MainActor
+    private static func leftToRight<Child: LayoutChild>(of item: Child, in room: Rect, padding: Insets) -> Rect {
         let content = room.inset(padding)
         let values = item.values
         let margin = values.margin

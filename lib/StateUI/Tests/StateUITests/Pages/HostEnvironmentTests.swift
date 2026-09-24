@@ -110,6 +110,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.locale.uses24HourClock = false
         StandardEnvironment.locale.firstDayOfWeek = .sunday
         StandardEnvironment.locale.isMetric = true
+        StandardEnvironment.locale.layoutDirection = .leftToRight
         Renderer.shared.clearInvalidation()
         super.tearDown()
     }
@@ -247,7 +248,7 @@ final class HostEnvironmentTests: XCTestCase {
 
         StateUIHost.setLocaleInfo(HostLocaleInfo(
             language: "pl", region: "PL", name: "pl-PL", timeZone: "Europe/Warsaw",
-            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true))
+            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, layoutDirection: .rightToLeft))
         XCTAssertEqual(StandardEnvironment.locale.language, "pl")
         XCTAssertEqual(StandardEnvironment.locale.region, "PL")
         XCTAssertEqual(StandardEnvironment.locale.name, "pl-PL")
@@ -255,6 +256,7 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertTrue(StandardEnvironment.locale.uses24HourClock)
         XCTAssertEqual(StandardEnvironment.locale.firstDayOfWeek, .monday)
         XCTAssertTrue(StandardEnvironment.locale.isMetric)
+        XCTAssertEqual(StandardEnvironment.locale.layoutDirection, .rightToLeft)
 
         StateUIHost.setDeviceInfo(HostDeviceInfo(
             formFactor: .desktop, platform: "macOS", model: "Mac14,9", manufacturer: "Apple",
