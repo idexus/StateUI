@@ -5,9 +5,9 @@
 import AppKit
 @_spi(Host) import StateUI
 
-/// A native canvas for children with authored or engine-driven placement.
+/// A ZStack: its children one over another, each in its area, or where an engine's placement run puts it.
 @MainActor
-final class AppKitAbsoluteLayoutView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
+final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
     let measurements = MeasurementCache()
     var placement: HostPlacementRun? {
@@ -54,15 +54,15 @@ final class AppKitAbsoluteLayoutView: AppKitTravellingLayout, AppKitWidthConstra
         fittingContentSize(width: nil)
     }
 
-    /// The room its children's bounds reach, at their natural sizes whatever
-    /// width it is offered: measured once and kept until something under it
+    /// The room its neediest child needs at its natural size, whatever width
+    /// it is offered: measured once and kept until something under it
     /// changes.
     func fittingContentSize(width availableWidth: CGFloat?) -> NSSize {
         measurements.size(offering: nil) { measuredContentSize() }
     }
 
     private func measuredContentSize() -> NSSize {
-        NSSize(AbsoluteArithmetic.size(of: items))
+        NSSize(ZStackArithmetic.size(of: items, padding: Insets(0), width: nil))
     }
 
     override func layout() {
@@ -75,8 +75,7 @@ final class AppKitAbsoluteLayoutView: AppKitTravellingLayout, AppKitWidthConstra
 
         beginArrangement()
         for item in items { drawUnplaced(item) }
-        let room = LayoutSize(width: Double(bounds.width), height: Double(bounds.height))
-        for (item, place) in zip(items, AbsoluteArithmetic.places(of: items, in: room)) {
+        for (item, place) in zip(items, ZStackArithmetic.places(of: items, in: bounds.placed, padding: Insets(0))) {
             if let place { self.place(item, at: NSRect(placed: place)) }
         }
     }

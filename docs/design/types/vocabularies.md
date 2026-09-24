@@ -32,8 +32,7 @@ value written out as text.
 
 ## Flag sets carry bits
 
-`FontAttributes`, `TextDecorations`, `AbsoluteLayoutProportions` and
-`SwipeDirection` are option sets, so `.bold` and `[.bold, .italic]` both
+`FontAttributes`, `TextDecorations` and `SwipeDirection` are option sets, so `.bold` and `[.bold, .italic]` both
 work. Their bits are StateUI's own by the same rule, `1 << 0` upwards in
 declaration order, and a composite such as `.all` or `.position` is the OR of
 its parts. A set crosses as one `.enumeration` holding its bits.

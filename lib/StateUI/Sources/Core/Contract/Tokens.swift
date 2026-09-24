@@ -11,7 +11,7 @@ extension NodeType {
     /// Elements whose host arranges children from native measurement - the ones that
     /// may say how their children animate.
     static let places: Set<NodeType> = [
-        .vStack, .hStack, .grid, .absoluteLayout,
+        .vStack, .hStack, .grid, .zStack,
     ]
 
     /// Elements that always say a layout motion: child-placing layouts and the
@@ -21,7 +21,6 @@ extension NodeType {
 }
 
 @_spi(Host) public extension NodeType {
-    static let absoluteLayout = AbsoluteLayoutContract.nodeType
     static let activityIndicator = ActivityIndicatorContract.nodeType
     static let application = ApplicationContract.nodeType
     static let border = BorderContract.nodeType
@@ -80,17 +79,17 @@ extension NodeType {
     static let visualState = VisualStateContract.nodeType
     static let webView = WebViewContract.nodeType
     static let window = WindowContract.nodeType
+    static let zStack = ZStackContract.nodeType
 }
 
 @_spi(Host) public extension Prop {
-    static let absoluteLayoutBounds = ViewContract.absoluteLayoutBounds.token
-    static let absoluteLayoutProportions = ViewContract.absoluteLayoutProportions.token
     static let accessibilityHeadingLevel = VisualElementContract.accessibilityHeadingLevel.token
     static let accessibilityHint = VisualElementContract.accessibilityHint.token
     static let accessibilityIdentifier = PropertyContainerContract.accessibilityIdentifier.token
     static let accessibilityLabel = VisualElementContract.accessibilityLabel.token
     static let address = PinContract.address.token
     static let allowDrop = ViewContract.allowDrop.token
+    static let area = ViewContract.area.token
     static let avoidsSafeArea = LayoutContract.avoidsSafeArea.token
     static let barForegroundColor = NavigationStackContract.barForegroundColor.token
     static let hidesWhenInactive = WindowContract.hidesWhenInactive.token

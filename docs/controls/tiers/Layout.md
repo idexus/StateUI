@@ -6,7 +6,7 @@ What every layout has: the screen's unsafe strips it keeps clear of, and whether
 
 Wears: [View](View.md) · [PaddingElement](PaddingElement.md)
 
-Worn by: [AbsoluteLayout](../AbsoluteLayout.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [VStack](../VStack.md)
+Worn by: [Grid](../Grid.md) · [HStack](../HStack.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
 
 Declared in `lib/StateUI/Sources/Contracts/Tiers/LayoutContract.swift`.
 

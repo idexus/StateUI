@@ -31,7 +31,7 @@ usable platform promise.
   window groups, lifecycle, and geometry.
 - [Navigation and presentation](navigation-and-presentation.md) covers stacks,
   tabs, split views, modal pages, toolbars, menu bars, and context menus.
-- [Layout](layout.md) covers stacks, grids, absolute placement, scrolling,
+- [Layout](layout.md) covers stacks, grids, layers, scrolling,
   frame readings, sizing, and the boundary for StateUI-authored layouts.
 - [Controls and input](controls-and-input.md) explains control initializers,
   modifiers, two-way input, text, selection, focus, and control events.

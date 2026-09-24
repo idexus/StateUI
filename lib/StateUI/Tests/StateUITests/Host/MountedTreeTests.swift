@@ -84,7 +84,7 @@ final class MountedTreeTests: XCTestCase {
     func testARecyclingLayoutAdoptsAKeptRowOfTheSameShape() {
         let (tree, log) = Self.tree()
         func list(_ rows: [String]) -> HostPatch {
-            var list = HostPatch(id: .manual("list"), type: .absoluteLayout)
+            var list = HostPatch(id: .manual("list"), type: .zStack)
             list.recycles = true
             list.children = .arranged(rows.map { id in
                 var row = HostPatch(id: .manual(id), type: .label)
@@ -132,7 +132,7 @@ final class MountedTreeTests: XCTestCase {
             return patch
         }
         func list(_ rows: [String]) -> HostPatch {
-            var list = patch("list", .absoluteLayout, .arranged(rows.map { id in
+            var list = patch("list", .zStack, .arranged(rows.map { id in
                 var row = patch(id, .label)
                 row.shape = 7
                 return row
@@ -179,11 +179,10 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.arranged, ["child", "slot", "stack"], "the slot has no view; its parent places the child too")
     }
 
-    /// A grid's children stand in the order they are drawn: by `zIndex`, ties in the order written. A
-    /// sparse change restacks them; a stack's children never overlap and keep the order written.
+    /// A grid's and a ZStack's children stand in the order they are drawn: by `zIndex`, ties in the order
+    /// written. A sparse change restacks them; a stack's children never overlap and keep the order written.
     @MainActor
     func testALayeredLayoutsChildrenStandInTheOrderTheyAreDrawn() {
-        let (tree, _) = Self.tree()
         func layered(_ type: NodeType, _ children: [HostPatch]) -> HostPatch {
             var layout = HostPatch(id: .manual("layout"), type: type)
             layout.children = .arranged(children)
@@ -191,16 +190,35 @@ final class MountedTreeTests: XCTestCase {
         }
         let children = [("a", 0.0), ("b", 2), ("c", 1), ("d", 0)].map(Self.layer)
 
-        tree.apply(layered(.grid, children), complete: true)
-        XCTAssertEqual(Self.names(tree.root?.children), ["a", "d", "c", "b"], "ties in the order written")
+        for type in [NodeType.grid, .zStack] {
+            let (tree, _) = Self.tree()
+            tree.apply(layered(type, children), complete: true)
+            XCTAssertEqual(Self.names(tree.root?.children), ["a", "d", "c", "b"], "\(type): ties in the order written")
 
-        var sparse = HostPatch(id: .manual("layout"), type: .grid)
-        sparse.children = .changed([Self.layer("b", -1)])
-        tree.apply(sparse, complete: false)
-        XCTAssertEqual(Self.names(tree.root?.children), ["b", "a", "d", "c"])
+            var sparse = HostPatch(id: .manual("layout"), type: type)
+            sparse.children = .changed([Self.layer("b", -1)])
+            tree.apply(sparse, complete: false)
+            XCTAssertEqual(Self.names(tree.root?.children), ["b", "a", "d", "c"], "\(type)")
+        }
 
+        let (tree, _) = Self.tree()
         tree.apply(layered(.vStack, children), complete: true)
         XCTAssertEqual(Self.names(tree.root?.children), ["a", "b", "c", "d"], "a stack keeps the order written")
+    }
+
+    /// The area a child names reaches its ZStack's arithmetic as it was written, and a child naming none
+    /// has none.
+    @MainActor
+    func testAChildsAreaReachesItsLayout() {
+        let (tree, _) = Self.tree()
+        var half = HostPatch(id: .manual("half"), type: .label)
+        half.properties[.area] = Area.proportional(0.5, 0, 0.5, 1).propValue
+        var layers = HostPatch(id: .manual("layers"), type: .zStack)
+        layers.children = .arranged([half, HostPatch(id: .manual("whole"), type: .label)])
+        tree.apply(layers, complete: true)
+
+        XCTAssertEqual(tree.root?.children.first?.layoutValues.area, .proportional(0.5, 0, 0.5, 1))
+        XCTAssertNil(tree.root?.children.last?.layoutValues.area)
     }
 
     /// A bound `zIndex` restacks its grid in the frame that moved it, and arranges it once; a frame that

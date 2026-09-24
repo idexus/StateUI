@@ -65,8 +65,6 @@ enum AppKitRealization {
         .partial("View", "panTouchCount", missing: "AppKit recognises a one-finger pan only; any other `panTouchCount` turns the pan off."),
 
         // MARK: Entries - a control's or a part's own, and where it differs from its tier
-        .complete("AbsoluteLayout", "accessibilityIdentifier"),
-        .complete("AbsoluteLayout", "ignoresInput"),
         .complete("Border", "accessibilityIdentifier"),
         .complete("Border", "background"),
         .complete("Border", "ignoresInput"),
@@ -157,5 +155,7 @@ enum AppKitRealization {
         .complete("Window", "windowValue"),
         .complete("Window", "x"),
         .complete("Window", "y"),
+        .complete("ZStack", "accessibilityIdentifier"),
+        .complete("ZStack", "ignoresInput"),
     ]
 }

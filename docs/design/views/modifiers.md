@@ -166,18 +166,18 @@ payload at once, so the handler that runs as the drag starts cannot decide it.
 
 ## Placement is written on the child
 
-Where a view sits in a Grid or an AbsoluteLayout is written on the child: the
+Where a view sits in a Grid or a ZStack is written on the child: the
 layout asks and the child answers. The modifiers live on `ViewProperties`,
 where any view that may find itself in such a layout can reach them - and a
 style too, a view's place in a grid being as styleable as its margin.
 
-They carry the layout's name - `.gridRow()`, never `.row()` - which says which
-layout is asking. The absolute layout is the one place the prefix gives
-ground: its name followed by the property's would be
-`absoluteLayoutLayoutBounds`, and the doubled word says nothing more, so the
-modifiers are `.absoluteLayoutBounds` and `.absoluteLayoutProportions`. The
-patch uses the same names, so there is one name from the modifier to the host's
-table. A view that says nothing sits at row 0, column 0, spanning one of each.
+Each names what its layout asks for, so a reader knows which layout reads
+it. A grid asks for a row and a column, words anything else could claim, so
+they carry its name - `.gridRow()`, never `.row()`. A ZStack asks for an
+area, a word no other layout reads, so `.area()` needs no prefix. The patch
+uses the same names, so there is one name from the modifier to the host's
+table. A view that says nothing sits at row 0, column 0, spanning one of each,
+and in the whole of a ZStack's room.
 
 ## Safe area edges
 

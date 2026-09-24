@@ -26,7 +26,7 @@ StateUI knows are meaningless out of the patch.
                            cursorPosition, selectionLength, maximumLength, maximumLines, zIndex
   a range or a region      a slider's and a stepper's minimum and maximum, a stepper's step,
                            a map's region, a pin's location
-  a placement              absoluteLayoutBounds, absoluteLayoutProportions: the layout's own
+  a placement              area: the layout's own
                            motion carries a child from one place to the next
   a state's number         panXChannel, panYChannel, scrollOffset
   a list drawn whole       a polygon's or a polyline's points, a stroke's dash pattern

@@ -53,7 +53,7 @@ final class ClosedVocabularyTests: XCTestCase {
     /// after it, silently. The numbers are the vocabulary's own contract - in
     /// the patch a host translates and in every dump a test compares - and do
     /// not move by accident. Some values are not declaration order in the
-    /// first place (`AbsoluteLayoutProportions.all` is -1), which is why the
+    /// first place (a flag set numbers its bits), which is why the
     /// rule is that EVERY case says its own.
     func testEveryClosedVocabularyNumbersEveryCaseExplicitly() throws {
         var offenders: [String] = []

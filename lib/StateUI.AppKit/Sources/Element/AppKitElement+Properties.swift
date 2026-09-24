@@ -16,7 +16,7 @@ extension AppKitElement {
         .minimumWidth, .minimumHeight,
         .maximumWidth, .maximumHeight,
         .gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan,
-        .absoluteLayoutBounds, .absoluteLayoutProportions,
+        .area,
     ]
 
     /// Properties whose change is drawn without changing any native
@@ -88,8 +88,8 @@ extension AppKitElement {
         case .splitView:
             return AppKitSplitView()
 
-        case .absoluteLayout:
-            return AppKitAbsoluteLayoutView()
+        case .zStack:
+            return AppKitZStackView()
 
         case .border:
             return AppKitBorderView()
@@ -122,7 +122,7 @@ extension AppKitElement {
     /// arithmetic over the children, which moves them without changing what
     /// the layout measures - a run is not part of its natural size.
     var ownPlacementRun: Set<Prop> {
-        driven[.absoluteLayoutBounds]?.kind == .placement ? [.absoluteLayoutBounds] : []
+        driven[.area]?.kind == .placement ? [.area] : []
     }
 
     func applyProperties(changed: Set<Prop>) {
@@ -181,8 +181,8 @@ extension AppKitElement {
             }
         }
 
-        if let absolute = view as? AppKitAbsoluteLayoutView {
-            absolute.placement = placement(.absoluteLayoutBounds)
+        if let layers = view as? AppKitZStackView {
+            layers.placement = placement(.area)
         }
 
         if let border = view as? AppKitBorderView {

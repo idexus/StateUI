@@ -13,7 +13,7 @@ extension AndroidElement {
         .maximumWidth, .maximumHeight,
         .isVisible,
         .gridRow, .gridColumn, .gridRowSpan, .gridColumnSpan,
-        .absoluteLayoutBounds, .absoluteLayoutProportions,
+        .area,
     ]
 
     /// Properties drawn without changing any measurement; any other one measures the view again.
@@ -95,7 +95,7 @@ extension AndroidElement {
             }
             if !own.isDisjoint(with: Self.transformProperties) { view.setTransform(transform) }
             if !own.isDisjoint(with: Self.accessibilityProperties) { applyAccessibility(to: view) }
-            if let absolute = view as? AndroidAbsoluteLayoutView { absolute.placement = placement }
+            if let layers = view as? AndroidZStackView { layers.placement = placement }
         }
 
         if !changed.subtracting(ownPlacementRun).isSubset(of: Self.unmeasuredProperties) { invalidateMeasurements() }
@@ -127,12 +127,12 @@ extension AndroidElement {
     /// The layout's own placement run, where a state drives one: it moves the children without changing
     /// what the layout measures.
     var ownPlacementRun: Set<Prop> {
-        element.driven[.absoluteLayoutBounds]?.kind == .placement ? [.absoluteLayoutBounds] : []
+        element.driven[.area]?.kind == .placement ? [.area] : []
     }
 
     /// The places an engine gives this layout's children, one each; nil while no state drives them.
     var placement: HostPlacementRun? {
-        guard !ownPlacementRun.isEmpty, let carried = element.carriedValue(.absoluteLayoutBounds) else { return nil }
+        guard !ownPlacementRun.isEmpty, let carried = element.carriedValue(.area) else { return nil }
         return StateUIHost.placements(from: carried)
     }
 

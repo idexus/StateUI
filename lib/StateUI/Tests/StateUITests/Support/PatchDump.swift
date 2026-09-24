@@ -245,17 +245,6 @@ enum PatchDump {
                 ("underline", TextDecorations.underline.rawValue),
                 ("strikethrough", TextDecorations.strikethrough.rawValue),
             ])
-        case Prop.absoluteLayoutProportions.name:
-            return spelled(member, asBitsOf: [
-                ("none", AbsoluteLayoutProportions.none.rawValue),
-                ("x", AbsoluteLayoutProportions.x.rawValue),
-                ("y", AbsoluteLayoutProportions.y.rawValue),
-                ("width", AbsoluteLayoutProportions.width.rawValue),
-                ("height", AbsoluteLayoutProportions.height.rawValue),
-                ("position", AbsoluteLayoutProportions.position.rawValue),
-                ("size", AbsoluteLayoutProportions.size.rawValue),
-                ("all", AbsoluteLayoutProportions.all.rawValue),
-            ])
         case Prop.swipeDirection.name:
             return spelled(member, asBitsOf: [
                 ("right", SwipeDirection.right.rawValue),

@@ -94,7 +94,7 @@ the middle are the same layout with different arithmetic.
   on the host's frames               where it goes, how it is turned, its opacity,
                                      its shade, which is drawn over which
                                           │
-  AbsoluteLayout                          ▼  the host writes each placement
+  ZStack                                  ▼  the host writes each placement
    ├── Grid (wrapper)  ── the author's view   [ + the shade view, second ]
    ├── Grid (wrapper)  ── the author's view
    └── …
@@ -103,8 +103,8 @@ the middle are the same layout with different arithmetic.
 The arithmetic runs on the host's frames, never in a render: the engine reads
 the values it follows, writes one placement a view, and the host wears them,
 so a run of cards under a finger costs the sums and the writes and no
-description at all. It is made of what the library's own list is made of, an
-absolute layout and positions in it, and it is one frame late on its first
+description at all. It is made of a ZStack and places in it, and it is one
+frame late on its first
 showing, because the room has to be measured before anything can be placed in
 it.
 
@@ -124,10 +124,10 @@ on moving the cards. `.motion(_:)` on the layout is what a run written
 `.inherited` animates by, and it reaches the views' turn and fade as well as
 their places.
 
-A placed layout given no placement state places nothing: its views stack at
-its top left, as an absolute layout does with children it was told nothing
-about. It says so with a complaint, because the screen alone reads as a view
-that failed to draw.
+A placed layout given no placement state places nothing: its views lie over
+one another, each across the whole layout, as a ZStack's children do when they
+name no area. It says so with a complaint, because the screen alone reads as a
+view that failed to draw.
 
 ## Bounded arithmetic
 

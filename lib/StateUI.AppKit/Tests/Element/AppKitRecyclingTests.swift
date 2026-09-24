@@ -19,7 +19,7 @@ final class AppKitRecyclingTests: XCTestCase {
         ]))
 
         let layout = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("list")) as? AppKitAbsoluteLayoutView)
+            renderer.viewForTesting(id: .manual("list")) as? AppKitZStackView)
         let leavingRow = try XCTUnwrap(renderer.viewForTesting(id: .manual("one")))
         let leavingLabel = try XCTUnwrap(renderer.viewForTesting(id: .manual("one-label")))
 
@@ -100,7 +100,7 @@ final class AppKitRecyclingTests: XCTestCase {
 
         renderer.applyForTesting(tree(rows: rows))
         let layout = try XCTUnwrap(
-            renderer.viewForTesting(id: .manual("list")) as? AppKitAbsoluteLayoutView)
+            renderer.viewForTesting(id: .manual("list")) as? AppKitZStackView)
         let lastKept = try XCTUnwrap(renderer.viewForTesting(id: .manual("31")))
 
         renderer.applyForTesting(tree(rows: []))
@@ -132,7 +132,7 @@ final class AppKitRecyclingTests: XCTestCase {
     }
 
     private func tree(rows: [HostPatch]) -> HostPatch {
-        var list = HostPatch(id: .manual("list"), type: .absoluteLayout)
+        var list = HostPatch(id: .manual("list"), type: .zStack)
         list.recycles = true
         list.children = .arranged(rows)
         return tree(list)

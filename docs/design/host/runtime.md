@@ -51,7 +51,7 @@ paths, the journey's animations and the frame they run on.
 | J | a journey's animations, run by the host | `Animator`, `Animation`, `AnimationTarget`; the laws are `HostMotionLaw` in the core | host layer |
 | E | the frame engines and animations run on | `DisplayCycle`; the `FrameClock` protocol | host layer |
 | | | the frame signal: the toolkit's display link | toolkit half |
-| P | presenting what D describes, reporting the user into C | the layout arithmetic: `StackArithmetic`, `GridArithmetic`, `AbsoluteArithmetic`, `SingleChildArithmetic`, `ScrollArithmetic`, `MeasurementCache` | host layer |
+| P | presenting what D describes, reporting the user into C | the layout arithmetic: `StackArithmetic`, `GridArithmetic`, `ZStackArithmetic`, `SingleChildArithmetic`, `ScrollArithmetic`, `MeasurementCache` | host layer |
 | | | the layout views, scrolling, gestures, drawing, focus, accessibility, windows, menus | toolkit half |
 | B | transport and process | `CoreLink`; `Registry` is the core's | host layer |
 | | | the pump, the act performer | toolkit half |

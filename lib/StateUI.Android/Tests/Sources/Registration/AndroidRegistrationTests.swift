@@ -20,10 +20,10 @@ final class AndroidRegistrationTests: XCTestCase {
             XCTAssertEqual(
                 realization.elements,
                 [
-                    "AbsoluteLayout", "ActivityIndicator", "Border", "Button", "Canvas", "CheckBox", "ColorBox", "DatePicker", "Ellipse", "Grid",
+                    "ActivityIndicator", "Border", "Button", "Canvas", "CheckBox", "ColorBox", "DatePicker", "Ellipse", "Grid",
                     "HStack", "Image", "Label", "Line", "Path", "Polygon", "Polyline", "Rectangle",
                     "Picker", "ProgressBar", "RadioButton", "ScrollView", "SearchField", "Slider", "Stepper",
-                    "Switch", "TextEditor", "TextField", "TimePicker", "VStack", "WebView",
+                    "Switch", "TextEditor", "TextField", "TimePicker", "VStack", "WebView", "ZStack",
                 ])
             for member in [
                 HostRealizedMember(element: "Button", owner: "Button", member: "clicked"),
@@ -37,7 +37,7 @@ final class AndroidRegistrationTests: XCTestCase {
                 HostRealizedMember(element: "TextField", owner: "TextField", member: "submitted"),
                 HostRealizedMember(element: "Grid", owner: "Grid", member: "rows"),
                 HostRealizedMember(element: "Label", owner: "View", member: "gridRow"),
-                HostRealizedMember(element: "Label", owner: "View", member: "absoluteLayoutBounds"),
+                HostRealizedMember(element: "Label", owner: "View", member: "area"),
                 HostRealizedMember(element: "Border", owner: "Border", member: "shape"),
                 HostRealizedMember(element: "Image", owner: "Image", member: "source"),
                 HostRealizedMember(element: "ColorBox", owner: "ColorBox", member: "cornerRadius"),

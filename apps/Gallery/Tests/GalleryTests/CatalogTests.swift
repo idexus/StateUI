@@ -1571,7 +1571,7 @@ final class CatalogTests: XCTestCase {
 
         // TWO rooms: the page's own, which that height is arithmetic over, and
         // the gallery's, which its cards are placed in.
-        XCTAssertEqual(rooms, ["Grid", "AbsoluteLayout"],
+        XCTAssertEqual(rooms, ["Grid", "ZStack"],
                        "the page and its run are measured onto numbers")
 
         // And the entrance is the third number - so the page waits for its room

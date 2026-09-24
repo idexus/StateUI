@@ -3,14 +3,12 @@
 
 /// A rectangle: a position and a size, in one value.
 ///
-///     Label("Corner").absoluteLayoutBounds(Rect(0, 0, 120, 40))
+///     Placement(Rect(0, 0, 120, 40))
 ///
-/// What an `AbsoluteLayout` places a child with, and what a frame report
-/// carries back. The numbers are device units unless the thing reading them
-/// says otherwise - `absoluteLayoutProportions` is where that is said.
+/// Where a placement stands a view, and what a frame report carries back, in
+/// device units.
 public struct Rect: Equatable, Sendable, HostRepresentable {
-    /// The left edge, in device units - or a fraction of the layout's width when
-    /// the bounds are proportional.
+    /// The left edge.
     public var x: Double
 
     /// The top edge, read the same way.

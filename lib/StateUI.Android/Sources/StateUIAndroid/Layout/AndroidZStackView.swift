@@ -3,11 +3,11 @@
 
 @_spi(Host) import StateUI
 
-/// An AbsoluteLayout: each child at its own bounds, or where an engine's placement run puts it.
+/// A ZStack: its children one over another, each in its area, or where an engine's placement run puts it.
 /// Design: docs/design/platforms/android/drawing.md#a-placed-child
 @MainActor
-final class AndroidAbsoluteLayoutView: AndroidTravellingLayout {
-    /// The placement a state drives, one per child; nil while each child stands at its own bounds.
+final class AndroidZStackView: AndroidTravellingLayout {
+    /// The placement a state drives, one per child; nil while each child stands in its own area.
     var placement: HostPlacementRun? {
         didSet {
             guard placement != oldValue else { return }
@@ -29,7 +29,7 @@ final class AndroidAbsoluteLayoutView: AndroidTravellingLayout {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        AbsoluteArithmetic.size(of: items)
+        ZStackArithmetic.size(of: items, padding: Insets(0), width: width)
     }
 
     override func arrange(in bounds: Rect) {
@@ -39,8 +39,8 @@ final class AndroidAbsoluteLayoutView: AndroidTravellingLayout {
 
         beginArrangement(width: bounds.width)
         for item in items { item.view.setPlacedDrawing(nil, opacity: 1) }
-        let room = LayoutSize(width: bounds.width, height: bounds.height)
-        for (item, place) in zip(items, AbsoluteArithmetic.places(of: items, in: room)) {
+        let room = Rect(x: 0, y: 0, width: bounds.width, height: bounds.height)
+        for (item, place) in zip(items, ZStackArithmetic.places(of: items, in: room, padding: Insets(0))) {
             if let place { self.place(item, at: place) }
         }
     }

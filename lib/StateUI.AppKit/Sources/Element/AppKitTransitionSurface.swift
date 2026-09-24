@@ -97,12 +97,12 @@ enum AppKitTransitionSurface {
     }
 
     private static let nativeViewTypes: Set<NodeType> = [
-        .absoluteLayout, .activityIndicator, .border, .colorBox, .button,
+        .activityIndicator, .border, .colorBox, .button,
         .checkBox, .datePicker, .textEditor, .ellipse, .textField, .canvas,
         .grid, .hStack, .image, .label, .line,
         .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .scrollView, .searchField, .slider,
-        .stepper, .switch, .timePicker, .vStack,
+        .stepper, .switch, .timePicker, .vStack, .zStack,
     ]
 
     private static let shapeTypes: Set<NodeType> = [

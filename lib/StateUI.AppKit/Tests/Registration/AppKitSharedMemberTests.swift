@@ -127,10 +127,10 @@ final class AppKitSharedMemberTests: XCTestCase {
     @MainActor
     func testABackgroundColourPaintsEveryView() throws {
         let layered: [NodeType] = [
-            .absoluteLayout, .activityIndicator, .button, .canvas, .checkBox, .datePicker,
+            .activityIndicator, .button, .canvas, .checkBox, .datePicker,
             .ellipse, .grid, .hStack, .image, .label, .line, .path, .picker, .polygon,
             .polyline, .progressBar, .radioButton, .rectangle, .scrollView, .searchField,
-            .slider, .stepper, .switch, .textEditor, .textField, .timePicker, .vStack,
+            .slider, .stepper, .switch, .textEditor, .textField, .timePicker, .vStack, .zStack,
         ]
 
         for type in layered + [.colorBox] {
@@ -153,8 +153,8 @@ final class AppKitSharedMemberTests: XCTestCase {
     @MainActor
     func testAViewThatIgnoresInputIsNotHit() throws {
         let views: [NodeType] = [
-            .absoluteLayout, .border, .canvas, .colorBox, .ellipse, .grid, .hStack, .image,
-            .label, .line, .path, .polygon, .polyline, .rectangle, .vStack,
+            .border, .canvas, .colorBox, .ellipse, .grid, .hStack, .image,
+            .label, .line, .path, .polygon, .polyline, .rectangle, .vStack, .zStack,
         ]
 
         for type in views {
@@ -195,7 +195,7 @@ final class AppKitSharedMemberTests: XCTestCase {
     /// still is.
     @MainActor
     func testALayoutThatLetsInputThroughStillHasItsChildrenHit() throws {
-        for type in [NodeType.vStack, .hStack, .grid, .absoluteLayout] {
+        for type in [NodeType.vStack, .hStack, .grid, .zStack] {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var child = HostPatch(id: .manual("child"), type: .colorBox)
@@ -204,7 +204,6 @@ final class AppKitSharedMemberTests: XCTestCase {
                 .height: .number(20),
                 .horizontalAlignment: .enumeration(Alignment.start.rawValue),
                 .verticalAlignment: .enumeration(Alignment.start.rawValue),
-                .absoluteLayoutBounds: .numbers([0, 0, 20, 20]),
             ]
             var layout = HostPatch(id: .manual("layout"), type: type)
             layout.properties[.letsInputThrough] = .bool(true)

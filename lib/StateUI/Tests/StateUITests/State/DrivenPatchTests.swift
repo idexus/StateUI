@@ -302,7 +302,7 @@ final class DrivenPatchTests: XCTestCase {
 
         XCTAssertEqual(
             ties(page, .auto(3)),
-            tied(["absoluteLayoutBounds"], to: 1, .out, .placement)
+            tied(["area"], to: 1, .out, .placement)
                 .merging(tied(["frame"], to: 2, .in, .feed)) { $1 })
         XCTAssertEqual(layout.arrangement, [.manual("a"), .manual("b")])
         XCTAssertEqual(layout.children.map(\.type), [.grid, .grid], "the library's wrapper around each face")

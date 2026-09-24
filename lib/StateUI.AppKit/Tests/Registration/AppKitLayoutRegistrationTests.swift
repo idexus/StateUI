@@ -28,8 +28,8 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
             HostRealizedMember(element: "Grid", owner: "Grid", member: "rows")))
 
         XCTAssertFalse(
-            realization.elements.contains("AbsoluteLayout"),
-            "an absolute layout's placement is carried by a binding, and is not the registry's yet")
+            realization.elements.contains("ZStack"),
+            "a ZStack's placement is carried by a binding, and is not the registry's yet")
     }
 
     /// A scroll view's members come through the registry though its VIEW IS

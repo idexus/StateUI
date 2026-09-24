@@ -11,12 +11,12 @@ enum Recycling {
     /// holding a caret, an offset, an open state or a surface of its own stays out.
     /// Design: docs/design/core/identity-and-diffing.md#recycling
     static let poolable: Set<NodeType> = [
-        .absoluteLayout, .activityIndicator, .border, .colorBox, .button,
+        .activityIndicator, .border, .colorBox, .button,
         .checkBox, .ellipse, .spans, .grid,
         .hStack, .image, .positionIndicator, .label,
         .line, .path, .polygon, .polyline, .progressBar, .radioButton,
         .rectangle, .slider, .span, .stepper, .switch,
-        .vStack,
+        .vStack, .zStack,
     ]
 
     /// Zero: the shape of a subtree that may not be recycled.

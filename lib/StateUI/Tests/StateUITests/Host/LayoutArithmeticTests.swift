@@ -81,20 +81,22 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(places.map { $0?.x }, [80, 50])
     }
 
-    /// Right to left, a stated rectangle's x counts from the right edge, and so does a proportion of it.
+    /// Right to left, a ZStack's areas count from the right edge, and a child at its area's start stands at
+    /// the area's right.
     @MainActor
-    func testAnAbsoluteChildRightToLeftCountsFromTheRight() {
-        var stated = Child(width: 20, height: 10)
-        stated.values.absoluteBounds = [10, 5, -1, -1]
-        var proportional = Child(width: 20, height: 10)
-        proportional.values.absoluteBounds = [0, 0, -1, -1]
-        proportional.values.absoluteProportions = 1
+    func testAZStackRightToLeftCountsItsAreasFromTheRight() {
+        var badge = Child(width: 20, height: 10)
+        badge.values.area = .absolute(10, 5, 40, 30)
+        badge.values.horizontal = 0
+        badge.values.vertical = 0
+        var half = Child(width: 20, height: 10)
+        half.values.area = .proportional(0, 0, 0.5, 1)
 
-        let places = AbsoluteArithmetic.places(
-            of: [stated, proportional], in: LayoutSize(width: 100, height: 50), direction: .rightToLeft)
+        let places = ZStackArithmetic.places(
+            of: [badge, half], in: Rect(0, 0, 100, 50), padding: Insets(0), direction: .rightToLeft)
 
         XCTAssertEqual(places[0], Rect(70, 5, 20, 10))
-        XCTAssertEqual(places[1], Rect(80, 0, 20, 10), "a proportion of 0 is the start, the right edge")
+        XCTAssertEqual(places[1], Rect(50, 0, 50, 50), "a proportion from 0 is the right half")
     }
 
     /// One child and its padding turn with the room; left to right is the default, and changes nothing.
@@ -153,16 +155,46 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(size.width, 320, "its natural width is still its words on one line")
     }
 
-    /// A proportional position of one puts a child against the far edge of the room left beside it.
+    /// A ZStack stands each child in its area - the room within the padding, a rectangle in points, or one
+    /// in fractions of the room - by the child's own alignments; a hidden one has no place.
     @MainActor
-    func testAProportionalPositionOfOneMeetsTheFarEdge() {
-        var child = Child(width: 20, height: 10)
-        child.values.absoluteBounds = [1, 0, -1, -1]
-        child.values.absoluteProportions = 1
+    func testAZStackStandsEachChildInItsArea() {
+        var corner = Child(width: 20, height: 10)
+        corner.values.horizontal = 2
+        corner.values.vertical = 2
+        var badge = Child(width: 20, height: 10)
+        badge.values.area = .absolute(10, 5, 40, 30)
+        badge.values.horizontal = 0
+        badge.values.vertical = 0
+        var half = Child(width: 20, height: 10)
+        half.values.area = .proportional(0.5, 0, 0.5, 1)
+        let items = [Child(width: 20, height: 10), corner, badge, half, Child(width: 20, height: 10, shown: false)]
 
-        let places = AbsoluteArithmetic.places(of: [child], in: LayoutSize(width: 100, height: 50))
+        let places = ZStackArithmetic.places(of: items, in: Rect(0, 0, 100, 50), padding: Insets(4))
 
-        XCTAssertEqual(places.first, Rect(80, 0, 20, 10))
+        XCTAssertEqual(places[0], Rect(4, 4, 92, 42), "the whole room within the padding")
+        XCTAssertEqual(places[1], Rect(76, 36, 20, 10), "its natural size, at the room's far corner")
+        XCTAssertEqual(places[2], Rect(14, 9, 20, 10), "points from the room's top left, the child at its start")
+        XCTAssertEqual(places[3], Rect(50, 4, 46, 42), "the right half of the room")
+        XCTAssertNil(places[4])
+    }
+
+    /// A ZStack needs the room its neediest child does: a rectangle in points to its far corner, a share
+    /// big enough to hold the child, and anything else its natural size and margins.
+    @MainActor
+    func testAZStackMeasuresAsItsNeediestChild() {
+        var margined = Child(width: 30, height: 10)
+        margined.values.margin = Insets(5, 0, 5, 0)
+        var badge = Child(width: 20, height: 10)
+        badge.values.area = .absolute(10, 5, 40, 30)
+        var half = Child(width: 30, height: 20)
+        half.values.area = .proportional(0.5, 0, 0.5, 0.5)
+
+        XCTAssertEqual(ZStackArithmetic.size(of: [margined], padding: Insets(2), width: nil), LayoutSize(width: 44, height: 14))
+        XCTAssertEqual(ZStackArithmetic.size(of: [badge], padding: Insets(0), width: nil), LayoutSize(width: 50, height: 35))
+        XCTAssertEqual(
+            ZStackArithmetic.size(of: [margined, badge, half], padding: Insets(0), width: nil),
+            LayoutSize(width: 60, height: 40), "half of the room holds the child only in twice its size")
     }
 
     /// A child that fills both ways takes the room within the padding, whatever it would measure.

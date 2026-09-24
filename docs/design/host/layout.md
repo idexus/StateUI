@@ -1,7 +1,7 @@
 # Layout in the runtime
 
-StateUI owns its layouts' semantics: where a child of a stack, a grid, an
-absolute layout or a page goes is StateUI's arithmetic, the same on every
+StateUI owns its layouts' semantics: where a child of a stack, a grid, a
+ZStack or a page goes is StateUI's arithmetic, the same on every
 host, and a toolkit only measures its own views and moves them. [The
 runtime](runtime.md) draws where layout sits in a frame; [motion](motion.md)
 says how a child travels to the place this arithmetic gives it.
@@ -10,12 +10,12 @@ says how a child travels to the place this arithmetic gives it.
 
 ```text
   MountedElement.layoutValues      margin, alignments, stated sizes,
-          |                        grid cell, absolute bounds
+          |                        grid cell, area
           v
   LayoutChild                      the toolkit's child: those values, whether
           |                        it shows, and its size for an offered width
           v
-  StackArithmetic   GridArithmetic   AbsoluteArithmetic   SingleChildArithmetic
+  StackArithmetic   GridArithmetic   ZStackArithmetic   SingleChildArithmetic
           |                        pure: the same children in, the same
           v                        rectangles out
   [Rect?]  one per child, nil for a hidden one
@@ -84,18 +84,19 @@ than its natural one shares that width among its columns as its placement
 would, and its rows are measured at those widths; its natural width stays
 its children's.
 
-## Absolute bounds
+## Layers
 
-An absolute layout stands each shown child at its own bounds: x, y, width and
-height, a negative size being the child's natural one. A proportional flag
-makes a size a fraction of the layout's own and a position a fraction of the
-room left beside the child, so a position of one puts the child against the
-far edge. The layout's natural size is the room its children's bounds reach at
-their natural sizes, whatever width it is offered.
+A ZStack stands each shown child in its area and places it there as one child
+stands in its room: by its alignments, margins and stated sizes. The area is
+the room within the stack's padding, or the rectangle the child names - in
+points from the room's top left, or in fractions of the room. The stack's
+natural size is the room its neediest child needs at its natural size: a
+rectangle in points to its far corner, a fraction as much as leaves the child
+its natural size in its share, and anything else its size and margins.
 
 ## Drawing order
 
-A grid's and an absolute layout's children can overlap, so their order is
+A grid's and a ZStack's children can overlap, so their order is
 the order they are drawn in: by `zIndex`, lower first, and children of the same
 `zIndex` in the order the view wrote them. The mounted element keeps
 `children` in that order and remembers the order written, so a sparse change
@@ -116,8 +117,8 @@ whatever it would measure. A container with no shown child is its padding.
 A layout works its places out left to right, then turns each about the
 middle of its room when it lays out right to left. That one rule is every
 mirror a language written right to left needs: a row fills from the right, a
-column's start stands at the right, a grid's column 0 is the rightmost, an
-absolute x counts from the right edge, and padding and margins swap sides.
+column's start stands at the right, a grid's column 0 is the rightmost, a
+ZStack's area counts from the right edge, and padding and margins swap sides.
 Nothing vertical changes, and no transform or drawing is turned.
 
 The direction is the element's own `layoutDirection`, or - left at

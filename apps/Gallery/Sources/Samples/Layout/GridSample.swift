@@ -1,14 +1,13 @@
 import StateUI
 
-/// Rows and columns with each child's place written on the child, and two
-/// views sharing one cell.
+/// Rows and columns with each child's place written on the child.
 struct GridSample: SampleContent {
     static let id = "grid"
     static let title = "Grid"
     static let summary = "Rows and columns, with each child's place written on the child."
 
     var examples: [Example] {
-        [Example(GridPlacement()), Example(SharedCell())]
+        [Example(GridPlacement())]
     }
 }
 
@@ -120,68 +119,6 @@ private struct GridPlacement: ExampleContent {
                 .textColor(Palette.subtle)
         }
         .spacing(8)
-    }
-}
-
-/// Two views in one cell, and which is drawn on top.
-private struct SharedCell: ExampleContent {
-    @State private var redInFront = false
-
-    static let code = """
-        @State private var redInFront = false
-
-        VStack {
-            // Nothing stops two children claiming the same cell. They overlap,
-            // and zIndex decides which is drawn on top - the higher number is
-            // nearer the front. Left alone, the one written LAST wins.
-            Grid {
-                ColorBox(Color("#E53935"))
-                    .horizontalAlignment(.start)
-                    .zIndex(redInFront ? 1 : 0)
-
-                ColorBox(Color("#1E88E5"))
-                    .horizontalAlignment(.end)
-                    .zIndex(redInFront ? 0 : 1)
-            }
-
-            SwitchRow("Red in front", $redInFront)
-        }
-        """
-
-    var content: any View {
-        VStack {
-            // Nothing stops two children claiming the same cell - they simply
-            // overlap, and `zIndex` is what decides which is drawn on top.
-            Grid {
-                ColorBox(Color("#E53935"))
-                    .width(150)
-                    .height(70)
-                    .horizontalAlignment(.start)
-                    .zIndex(redInFront ? 1 : 0)
-
-                ColorBox(Color("#1E88E5"))
-                    .width(150)
-                    .height(70)
-                    .horizontalAlignment(.end)
-                    .zIndex(redInFront ? 0 : 1)
-            }
-            .height(70)
-            .maximumWidth(240)
-            .horizontalAlignment(.center)
-
-            SwitchRow("Red in front", $redInFront)
-                .horizontalAlignment(.center)
-        }
-        .spacing(12)
-    }
-
-    var notes: Element? {
-        Label("Both boxes are in the same cell and overlap in the middle. Neither "
-            + "moves when the switch is flipped - only `zIndex` changes, and the "
-            + "higher number is drawn nearer the front. Left alone, children are "
-            + "drawn in the order they are written, so the last one wins.")
-            .fontSize(12)
-            .textColor(Palette.subtle)
     }
 }
 

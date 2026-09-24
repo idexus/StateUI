@@ -32,7 +32,7 @@ extension AndroidRegistrations {
             grid.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 
-        registry.add(AbsoluteLayoutContract.self, create: { _ in AndroidAbsoluteLayoutView() }) { layout in
+        registry.add(ZStackContract.self, create: { _ in AndroidZStackView() }) { layout in
             layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
         }
 

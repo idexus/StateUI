@@ -16,13 +16,13 @@ import XCTest
 final class RecyclingTests: XCTestCase {
     /// The rows of a layout that recycles, as they crossed.
     private func rows(_ patch: HostPatch) -> [HostPatch] {
-        patch.children.first { $0.type == .absoluteLayout }?.children.patches ?? []
+        patch.children.first { $0.type == .zStack }?.children.patches ?? []
     }
 
     /// A layout of rows, each written by one template from its number.
     private func run(_ numbers: [Int], _ row: @escaping (Int) -> Element) -> Node {
         VStack {
-            AbsoluteLayout {
+            ZStack {
                 ForEach(numbers, id: \.self) { number in
                     row(number)
                 }
@@ -178,7 +178,7 @@ final class RecyclingTests: XCTestCase {
         let renders = Renders()
         let patch = renders.render(
             VStack {
-                AbsoluteLayout {
+                ZStack {
                     ForEach([1, 2], id: \.self) { number in
                         Label("\(number)")
                     }
@@ -195,10 +195,10 @@ final class RecyclingTests: XCTestCase {
     func testTheLayoutSaysItRecyclesOnceAndNotAgain() {
         let renders = Renders()
         let first = renders.render(run([1, 2]) { Label("\($0)") })
-        XCTAssertEqual(first.children.first { $0.type == .absoluteLayout }?.recycles, true)
+        XCTAssertEqual(first.children.first { $0.type == .zStack }?.recycles, true)
 
         let second = renders.render(self.run([1, 2, 3]) { Label("\($0)") })
-        XCTAssertNil(second.children.first { $0.type == .absoluteLayout }?.recycles,
+        XCTAssertNil(second.children.first { $0.type == .zStack }?.recycles,
                      "it did not change, so a message that rearranges the rows "
                         + "must not say it again")
     }

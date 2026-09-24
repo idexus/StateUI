@@ -182,7 +182,7 @@ final class PlacedRunTests: XCTestCase {
                 .body)
 
         func layout(_ patch: HostPatch) -> HostPatch? {
-            if patch.type == .absoluteLayout { return patch }
+            if patch.type == .zStack { return patch }
 
             for child in patch.children {
                 if let found = layout(child) { return found }
@@ -194,7 +194,7 @@ final class PlacedRunTests: XCTestCase {
         guard let placed = layout(patch) else { return XCTFail("no layout was described") }
 
         XCTAssertEqual(
-            placed.driven?[.absoluteLayoutBounds],
+            placed.driven?[.area],
             HostStateBinding(state: run.number, mode: .out, kind: .placement))
 
         XCTAssertEqual(placed.children.count, 2)
@@ -202,7 +202,7 @@ final class PlacedRunTests: XCTestCase {
         for wrapper in placed.children {
             XCTAssertEqual(wrapper.type, .grid, "every face is wrapped, shaded or not")
 
-            for named in [Prop.absoluteLayoutBounds, .opacity, .zIndex, .rotation, .scale] {
+            for named in [Prop.area, .opacity, .zIndex, .rotation, .scale] {
                 XCTAssertNil(wrapper.props[named], "\(named.name) is the number's to say")
             }
         }
@@ -222,7 +222,7 @@ final class PlacedRunTests: XCTestCase {
                 .body)
 
         func layout(_ patch: HostPatch) -> HostPatch? {
-            if patch.type == .absoluteLayout { return patch }
+            if patch.type == .zStack { return patch }
 
             for child in patch.children {
                 if let found = layout(child) { return found }

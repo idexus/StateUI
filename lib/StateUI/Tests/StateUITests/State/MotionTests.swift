@@ -209,7 +209,7 @@ final class MotionTests: XCTestCase {
 
         func row(_ y: Double, _ opacity: Double) -> Node {
             Border { Label("x") }
-                .absoluteLayoutBounds(Rect(0, y, 1, 40))
+                .area(.absolute(0, y, 1, 40))
                 .opacity(opacity)
                 .id("row")
                 .body
@@ -218,7 +218,7 @@ final class MotionTests: XCTestCase {
         renders.render(row(0, 1))
         let patch = renders.render(row(80, 0.5))
 
-        XCTAssertNil(patch.transitions[.absoluteLayoutBounds], "the placement arrives")
+        XCTAssertNil(patch.transitions[.area], "the placement arrives")
         XCTAssertNotNil(patch.transitions[.opacity], "what the author wrote travels")
     }
 
@@ -671,7 +671,7 @@ final class MotionTests: XCTestCase {
         }
 
         func layout(_ patch: HostPatch) -> HostPatch? {
-            if patch.type == .absoluteLayout { return patch }
+            if patch.type == .zStack { return patch }
 
             for child in patch.children {
                 if let found = layout(child) { return found }

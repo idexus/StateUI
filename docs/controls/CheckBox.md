@@ -83,9 +83,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `absoluteLayoutBounds` | property | `Rect` | structure | ✅ |  |  | ✅ |  |  |  |
-| `absoluteLayoutProportions` | property | `AbsoluteLayoutProportions` | structure | ✅ |  |  | ✅ |  |  |  |
 | `allowDrop` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `area` | property | `Area` | structure | ✅ |  |  | ✅ |  |  |  |
 | `canDrag` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  |  |
 | `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  |  |

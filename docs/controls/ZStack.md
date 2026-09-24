@@ -1,8 +1,8 @@
 <!-- Rendered by ControlDictionaryTests from the contracts, each host's export of what its runtime realizes, and what is still declared by hand: STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests writes it again. -->
 
-# AbsoluteLayout
+# ZStack
 
-Puts each child exactly where it is told, and nowhere else.
+Lays its children one over another, each in the whole room or in the area it names.
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
@@ -10,11 +10,11 @@ Inherits: [PropertyContainer](tiers/PropertyContainer.md) · [VisualElement](tie
 
 Marks: ✅ realized by that host and covered by its tests · ☑️ realized and tested, but incomplete - the note says what is missing · empty: absent, partial and unverified, or not looked at yet. See [the dictionary](README.md).
 
-Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/AbsoluteLayoutContract.swift`.
+Declared in `lib/StateUI/Sources/Contracts/Elements/Layouts/ZStackContract.swift`.
 
-## AbsoluteLayout's own members
+## ZStack's own members
 
-AbsoluteLayout declares no members of its own.
+ZStack declares no members of its own.
 
 Realization:
 
@@ -80,9 +80,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 
 | Member | Kind | Value | Layer | AppKit | UIKit | GTK 4 | Android Views | WinUI 3 | Web | Notes |
 | --- | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: | --- |
-| `absoluteLayoutBounds` | property | `Rect` | structure | ✅ |  |  | ✅ |  |  |  |
-| `absoluteLayoutProportions` | property | `AbsoluteLayoutProportions` | structure | ✅ |  |  | ✅ |  |  |  |
 | `allowDrop` | property | `Bool` | native |  |  |  |  |  |  |  |
+| `area` | property | `Area` | structure | ✅ |  |  | ✅ |  |  |  |
 | `canDrag` | property | `Bool` | native |  |  |  |  |  |  |  |
 | `onDragLeave` (`dragLeave`) | event |  | native |  |  |  |  |  |  |  |
 | `onDragOver` (`dragOver`) | event |  | native |  |  |  |  |  |  |  |

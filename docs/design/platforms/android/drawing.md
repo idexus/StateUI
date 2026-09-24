@@ -31,7 +31,7 @@ child in - that is the padding's work.
 
 ## A placed child
 
-An engine's placement run stands each child of an absolute layout at a
+An engine's placement run stands each child of a ZStack at a
 rectangle of its own and draws it moved, turned, scaled and faded about its
 centre, over whatever the child's own properties say. Android keeps one
 translation, rotation and scale per view, so the host composes the two:

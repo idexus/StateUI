@@ -39,7 +39,7 @@ Swift protocols behind them refine each other.
                      DatePicker, Image, Label, Map, Picker, PositionIndicator,
                      ProgressBar, RadioButton, ScrollView, Slider, Stepper,
                      Switch, TimePicker, TitleBar, WebView
-  Layout             AbsoluteLayout, Grid
+  Layout             Grid, ZStack
   StackBase          HStack, VStack
   InputView          SearchField, TextEditor, TextField
   Shape              Ellipse, Line, Path, Polygon, Polyline, Rectangle

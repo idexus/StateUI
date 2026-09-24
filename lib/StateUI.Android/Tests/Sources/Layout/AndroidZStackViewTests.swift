@@ -5,21 +5,21 @@
 @testable import StateUIAndroid
 import XCTest
 
-final class AndroidAbsoluteLayoutViewTests: XCTestCase {
-    static var allTests: [(String, (AndroidAbsoluteLayoutViewTests) -> () throws -> Void)] {
+final class AndroidZStackViewTests: XCTestCase {
+    static var allTests: [(String, (AndroidZStackViewTests) -> () throws -> Void)] {
         [
-            ("testAnAbsoluteLayoutStandsEachChildAtItsBounds", testAnAbsoluteLayoutStandsEachChildAtItsBounds),
+            ("testAZStackStandsEachChildInItsArea", testAZStackStandsEachChildInItsArea),
             ("testAPlacementRunStandsAndDrawsEachChildAsItSays", testAPlacementRunStandsAndDrawsEachChildAsItSays),
         ]
     }
 
-    /// Bounds in points, and a position of one against the far edge.
-    func testAnAbsoluteLayoutStandsEachChildAtItsBounds() {
+    /// An area in points, and one in fractions of the room: its bottom right quarter.
+    func testAZStackStandsEachChildInItsArea() {
         onMainActor {
             let host = AndroidRenderer.running {
-                AbsoluteLayout {
-                    ColorBox(.red).absoluteLayoutBounds(Rect(10, 20, 30, 40))
-                    ColorBox(.blue).absoluteLayoutBounds(Rect(1, 1, 50, 50)).absoluteLayoutProportions(.position)
+                ZStack {
+                    ColorBox(.red).area(.absolute(10, 20, 30, 40))
+                    ColorBox(.blue).area(.proportional(0.5, 0.5, 0.5, 0.5))
                 }
             }
 
@@ -28,7 +28,7 @@ final class AndroidAbsoluteLayoutViewTests: XCTestCase {
             let boxes = host.views(AndroidColorBoxView.self)
             XCTAssertEqual(boxes.count, 2)
             XCTAssertTrue(boxes[0].frame == (20, 40, 60, 80), "\(boxes[0].frame)")
-            XCTAssertTrue(boxes[1].frame == (980, 1820, 100, 100), "\(boxes[1].frame)")
+            XCTAssertTrue(boxes[1].frame == (540, 960, 540, 960), "\(boxes[1].frame)")
         }
     }
 
@@ -54,7 +54,7 @@ final class AndroidAbsoluteLayoutViewTests: XCTestCase {
                 }
             }
             host.layOut()
-            let layout = try XCTUnwrap(host.views(AndroidAbsoluteLayoutView.self).first)
+            let layout = try XCTUnwrap(host.views(AndroidZStackView.self).first)
             let holders = host.views(AndroidGridView.self)
             XCTAssertEqual(holders.count, 2)
 

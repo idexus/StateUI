@@ -431,12 +431,12 @@ final class HostContractTests: XCTestCase {
         let former = [
             "increment", "itemsSource", "isAnimationPlaying", "rowDefinitions",
             "columnDefinitions", "absoluteLayoutFlags", "isShowingUser", "order",
-            "isToggled", "isChecked",
+            "isToggled", "isChecked", "absoluteLayoutBounds", "absoluteLayoutProportions",
         ]
 
         XCTAssertTrue(properties.isSuperset(of: [
             "step", "options", "isAnimating", "rows", "columns",
-            "absoluteLayoutProportions", "showsUserLocation", "placement", "isOn",
+            "area", "showsUserLocation", "placement", "isOn",
         ]))
         XCTAssertTrue(
             properties.isDisjoint(with: former),
@@ -456,10 +456,12 @@ final class HostContractTests: XCTestCase {
             for type in ["enum GalleryStyle", "enum ToolbarItemOrder", "struct AbsoluteLayoutFlags"] {
                 XCTAssertFalse(source.contains(type), "\(file) still declares \(type)")
             }
-            XCTAssertFalse(
-                source.contains("case star(") || source.contains("case absolute("),
-                "\(file) still names a grid length in markup words")
         }
+
+        let lengths = try SourceTree.text(in: "GridLength.swift")
+        XCTAssertFalse(
+            lengths.contains("case star(") || lengths.contains("case absolute("),
+            "a grid length is named in markup words")
     }
 
     /// An image and a shape fill their room in one vocabulary: `.aspect(.fit)`,

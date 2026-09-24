@@ -30,13 +30,13 @@ final class AppKitLayoutMotionTests: XCTestCase {
         return stack
     }
 
-    /// An absolute layout holding one 50 x 50 box at `y`, or nothing.
-    private func absolute(y: Double?) -> HostPatch {
-        var layout = HostPatch(id: .manual("layout"), type: .absoluteLayout)
+    /// A ZStack holding one 50 x 50 box at `y`, or nothing.
+    private func layered(y: Double?) -> HostPatch {
+        var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
         layout.children = .arranged(y.map { y in
             var box = HostPatch(id: .manual("box"), type: .colorBox)
-            box.properties[.absoluteLayoutBounds] = .numbers([0, y, 50, 50])
+            box.properties[.area] = Area.absolute(0, y, 50, 50).propValue
             return [box]
         } ?? [])
         return layout
@@ -90,11 +90,12 @@ final class AppKitLayoutMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        var layout = HostPatch(id: .manual("layout"), type: .absoluteLayout)
+        var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.motion = HostLayoutMotion(motion: .eased(200, .linear), lanes: .all)
         var box = HostPatch(id: .manual("box"), type: .colorBox)
-        box.properties[.absoluteLayoutBounds] = .numbers([1, 0, 50, 50])
-        box.properties[.absoluteLayoutProportions] = .enumeration(1)
+        box.properties[.width] = .number(50)
+        box.properties[.height] = .number(50)
+        box.properties[.horizontalAlignment] = .enumeration(Alignment.end.rawValue)
         layout.children = .arranged([box])
 
         renderer.applyForTesting(layout)
@@ -277,16 +278,16 @@ final class AppKitLayoutMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(absolute(y: 0))
+        renderer.applyForTesting(layered(y: 0))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("layout")))
         native.frame = NSRect(x: 0, y: 0, width: 200, height: 400)
         native.layoutSubtreeIfNeeded()
 
-        renderer.applyForTesting(absolute(y: 100))
+        renderer.applyForTesting(layered(y: 100))
         native.layoutSubtreeIfNeeded()
         XCTAssertTrue(renderer.animatingForTesting)
 
-        renderer.applyForTesting(absolute(y: nil))
+        renderer.applyForTesting(layered(y: nil))
         XCTAssertFalse(renderer.animatingForTesting)
     }
 
@@ -302,19 +303,19 @@ final class AppKitLayoutMotionTests: XCTestCase {
             reducesMotion: { false })
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(absolute(y: 0))
+        renderer.applyForTesting(layered(y: 0))
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("layout")))
         let moved = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
         native.frame = NSRect(x: 0, y: 0, width: 200, height: 400)
         native.layoutSubtreeIfNeeded()
 
-        renderer.applyForTesting(absolute(y: 100))
+        renderer.applyForTesting(layered(y: 100))
         native.layoutSubtreeIfNeeded()
         now = 100
         renderer.advanceAnimationsForTesting()
         XCTAssertEqual(moved.frame.minY, 50, accuracy: 0.001)
 
-        renderer.applyForTesting(absolute(y: 200))
+        renderer.applyForTesting(layered(y: 200))
         native.layoutSubtreeIfNeeded()
         XCTAssertEqual(moved.frame.minY, 50, accuracy: 0.001, "it bends from where it stands")
 

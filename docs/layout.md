@@ -6,7 +6,7 @@ rules that must stay identical across hosts; the host owns integration with its
 toolkit's measurement and display cycle.
 
 The declared primitive vocabulary is deliberately small: vertical and
-horizontal stacks, `Grid`, `AbsoluteLayout`, `ScrollView`, `Border`, and
+horizontal stacks, `Grid`, `ZStack`, `ScrollView`, `Border`, and
 ordinary view sizing and alignment. More specialized arrangements are composed
 from these or implemented once as StateUI-authored layout. A primitive is
 usable on a platform only when its row and required members are checked in the
@@ -46,9 +46,9 @@ left to right: a row fills from the right, a view aligned to `.start` stands
 at the right, a grid's first column is the rightmost, and padding and margins
 swap sides. A view left at `.inherited`, the default, takes its parent's
 direction, and the top of the tree the direction the user's language is
-written in. `zIndex` orders the overlapping children of a `Grid` or an
-`AbsoluteLayout` without changing their places: a higher one is drawn over a
-lower one, and children of the same `zIndex` in the order they are written.
+written in. `zIndex` orders the overlapping children of a `Grid` or a
+`ZStack` without changing their places: a higher one is drawn over a lower
+one, and children of the same `zIndex` in the order they are written.
 
 ## Visual transforms
 
@@ -158,28 +158,36 @@ rearranges the existing controls, and each child rectangle travels to its new
 place under the grid's layout motion rather than being described frame by
 frame - see [Motion and journeys](motion-and-journeys.md).
 
-## Absolute placement
+## Layers
 
-`AbsoluteLayout` reads a `Rect` from each child:
+`ZStack` lays its children one over another. Each child stands in its area -
+the whole room within the stack's padding, or the rectangle it names with
+`.area` - by its own alignments, as in any layout:
 
 ```swift
-AbsoluteLayout {
+ZStack {
     ColorBox(.cornflowerBlue)
-        .absoluteLayoutBounds(Rect(0.5, 0.5, 120, 60))
-        .absoluteLayoutProportions(.position)
+
+    Label("Bottom right")
+        .horizontalAlignment(.end)
+        .verticalAlignment(.end)
+
+    ColorBox(.orange)
+        .area(.proportional(0.5, 0, 0.5, 1))
 }
 .height(240)
 ```
 
-`AbsoluteLayoutProportions` says which coordinates and dimensions are proportional
-to the layout. Unflagged values are device-independent units.
-`AbsoluteLayout.autoSize` leaves that dimension to the child's measurement.
-Attached placement lives on the child because any view can become an absolute
-layout child.
+`.absolute(x, y, width, height)` names an area in device-independent units
+from the stack's top left; `.proportional(x, y, width, height)` names one in
+fractions of its room, so `.proportional(0.5, 0, 0.5, 1)` is its right half
+whatever the stack's size. A child fills its area unless its size or
+alignment says otherwise. A later child is drawn over an earlier one, and
+`zIndex` reorders them without moving anything. The stack needs the room its
+neediest child needs at its natural size.
 
-Absolute placement is useful for semantic overlays and externally calculated
-positions. It is not a reason to reproduce ordinary stack or grid behavior in
-application code.
+Layers are for overlays, badges and externally calculated positions. They are
+not a reason to reproduce ordinary stack or grid behavior in application code.
 
 ## Scrolling
 

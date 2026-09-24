@@ -39,8 +39,7 @@ extension AppKitRegistrations {
         registry.everyElementRealizes(VisualElementContract.translationY)
         registry.everyElementRealizes(VisualElementContract.width)
 
-        registry.everyElementRealizes(ViewContract.absoluteLayoutBounds)
-        registry.everyElementRealizes(ViewContract.absoluteLayoutProportions)
+        registry.everyElementRealizes(ViewContract.area)
         registry.everyElementRealizes(ViewContract.gridColumn)
         registry.everyElementRealizes(ViewContract.gridColumnSpan)
         registry.everyElementRealizes(ViewContract.gridRow)

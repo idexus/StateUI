@@ -27,9 +27,9 @@ final class AppKitContainerTests: XCTestCase {
         let cell = NSView()
         containers.append(("grid", grid, { grid.setItems([item(cell)]) }))
 
-        let absolute = AppKitAbsoluteLayoutView()
+        let layers = AppKitZStackView()
         let placed = NSView()
-        containers.append(("absolute layout", absolute, { absolute.setItems([item(placed)]) }))
+        containers.append(("ZStack", layers, { layers.setItems([item(placed)]) }))
 
         let navigation = AppKitNavigationView()
         let page = NSView()
@@ -569,17 +569,14 @@ final class AppKitContainerTests: XCTestCase {
             NSRect(x: 4, y: 4, width: 50, height: 92))
     }
 
-    /// An absolute layout stands a child at the bounds it gives, reading those
-    /// its proportions name as fractions of the layout's room.
+    /// A ZStack stands a child in the area it names, in points or in fractions
+    /// of the stack's room.
     @MainActor
-    func testAnAbsoluteLayoutStandsChildrenAtTheirBoundsAndProportions() throws {
-        var layout = HostPatch(id: .manual("layout"), type: .absoluteLayout)
+    func testAZStackStandsChildrenInTheirAreas() throws {
+        var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.children = .arranged([
-            box("fixed", [.absoluteLayoutBounds: .numbers([10, 20, 30, 40])]),
-            box("proportional", [
-                .absoluteLayoutBounds: .numbers([0.5, 1, 0.25, 0.5]),
-                .absoluteLayoutProportions: .enumeration(AbsoluteLayoutProportions.all.rawValue),
-            ]),
+            box("fixed", [.area: Area.absolute(10, 20, 30, 40).propValue]),
+            box("proportional", [.area: Area.proportional(0.375, 0.5, 0.25, 0.5).propValue]),
         ])
         let renderer = arranged(layout, in: NSSize(width: 200, height: 100))
         defer { renderer.closeForTesting() }

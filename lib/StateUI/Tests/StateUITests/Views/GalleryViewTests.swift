@@ -92,7 +92,7 @@ final class GalleryViewTests: XCTestCase {
         let first = renders.render(tree())
         let described = board(first).driven
 
-        placer = described?[.absoluteLayoutBounds]?.state ?? placer
+        placer = described?[.area]?.state ?? placer
         feeder = described?[.frame]?.state ?? feeder
 
         for id in frames(in: first) {
@@ -130,9 +130,9 @@ final class GalleryViewTests: XCTestCase {
         }
     }
 
-    /// The AbsoluteLayout the cards are placed in.
+    /// The ZStack the cards are placed in.
     private func board(_ patch: HostPatch) -> HostPatch {
-        find(.absoluteLayout, in: patch) ?? patch
+        find(.zStack, in: patch) ?? patch
     }
 
     /// The run the gallery's engine wrote, driven the way the host drives it:
@@ -147,7 +147,7 @@ final class GalleryViewTests: XCTestCase {
         let described = board(patch).driven
 
         guard let fed = described?[.frame]?.state ?? feeder,
-              let run = described?[.absoluteLayoutBounds]?.state ?? placer
+              let run = described?[.area]?.state ?? placer
         else {
             XCTFail("the gallery's layout is placed by no number", file: file, line: line)
             return []
@@ -668,7 +668,7 @@ final class GalleryViewTests: XCTestCase {
     /// moves far too often to describe.
     private func tapBox(in patch: HostPatch) -> Rect? {
         func holder(_ node: HostPatch) -> HostPatch? {
-            if node.type == .absoluteLayout, tappable(in: node) != nil { return node }
+            if node.type == .zStack, tappable(in: node) != nil { return node }
 
             for child in node.children {
                 if let found = holder(child) { return found }
@@ -677,7 +677,7 @@ final class GalleryViewTests: XCTestCase {
             return nil
         }
 
-        guard let run = holder(patch)?.driven?[.absoluteLayoutBounds]?.state else { return nil }
+        guard let run = holder(patch)?.driven?[.area]?.state else { return nil }
 
         let board = Renderer.shared.board(for: .display)
 
@@ -713,7 +713,7 @@ final class GalleryViewTests: XCTestCase {
         let showing = laid(renders, { self.gallery(3).isSwipeEnabled(false).body }).first
 
         XCTAssertNil(find(.scrollView, in: showing))
-        XCTAssertNotNil(find(.absoluteLayout, in: showing))
+        XCTAssertNotNil(find(.zStack, in: showing))
     }
 
     /// And one with nothing to show shows what it was given instead.
@@ -724,7 +724,7 @@ final class GalleryViewTests: XCTestCase {
                 .emptyView(Label("nothing here"))
                 .body)
 
-        XCTAssertNil(find(.absoluteLayout, in: patch))
+        XCTAssertNil(find(.zStack, in: patch))
         XCTAssertEqual(find(.label, in: patch)?.props[.text], .string("nothing here"))
     }
 
@@ -738,8 +738,8 @@ final class GalleryViewTests: XCTestCase {
         let showing = laid(renders, { self.gallery(3).body }).first
         let placer = board(showing)
 
-        XCTAssertEqual(placer.driven?[.absoluteLayoutBounds]?.kind, .placement)
-        XCTAssertEqual(placer.driven?[.absoluteLayoutBounds]?.mode, .out)
+        XCTAssertEqual(placer.driven?[.area]?.kind, .placement)
+        XCTAssertEqual(placer.driven?[.area]?.mode, .out)
         XCTAssertEqual(placer.driven?[.frame]?.kind, .feed)
 
         let run = placements(showing)

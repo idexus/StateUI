@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The properties every positioned view has: the value half of `View`, shared
-/// by the control and its `Style`, including where it sits in a Grid or an
-/// AbsoluteLayout.
+/// by the control and its `Style`, including where it sits in a Grid or a
+/// ZStack.
 public protocol ViewProperties: VisualElementProperties {}
 
 /// A visual element a layout positions, with the gestures, the pan feeds,

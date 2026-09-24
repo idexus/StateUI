@@ -19,7 +19,7 @@
     public static let zero = LayoutSize(width: 0, height: 0)
 }
 
-/// What a layout reads of one child: its margin, alignments, stated sizes and place in a grid or canvas.
+/// What a layout reads of one child: its margin, alignments, stated sizes and place in a grid or a ZStack.
 /// Design: docs/design/host/layout.md#the-layout-arithmetic
 @_spi(Host) public struct LayoutValues: Equatable, Sendable {
     /// The space kept around the child, outside it.
@@ -61,11 +61,8 @@
     /// How many grid columns the child spans.
     public var columnSpan = 1
 
-    /// Where an absolute layout puts the child: x, y, width, height; a negative size is its natural one.
-    public var absoluteBounds: [Double]?
-
-    /// Which of the absolute bounds are fractions of the layout: x 1, y 2, width 4, height 8.
-    public var absoluteProportions: Int32 = 0
+    /// The part of a ZStack's room the child stands in; the whole room where it names none.
+    public var area: Area?
 
     /// Values with every part at its default.
     public init() {}

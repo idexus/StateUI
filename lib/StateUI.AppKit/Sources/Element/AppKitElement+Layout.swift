@@ -65,8 +65,8 @@ extension AppKitElement {
             return
         }
 
-        if let absolute = view as? AppKitAbsoluteLayoutView {
-            absolute.setItems(
+        if let layers = view as? AppKitZStackView {
+            layers.setItems(
                 items,
                 retaining: recycledChildren.compactMap(\.layoutItem),
                 preservesSubviewOrder: recycles)

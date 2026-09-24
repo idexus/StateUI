@@ -149,7 +149,7 @@ final class Catalog {
                 samples: [
                     Sample(StackLayoutSample()),
                     Sample(GridSample()),
-                    Sample(AbsoluteLayoutSample()),
+                    Sample(ZStackSample()),
                     Sample(PlacedSample()),
                     Sample(ScrollViewSample()),
                     Sample(SizingSample()),

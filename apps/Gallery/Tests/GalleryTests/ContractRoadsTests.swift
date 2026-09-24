@@ -147,6 +147,18 @@ final class ContractRoadsTests: XCTestCase {
             name: "the withdrawn RefreshView",
             removed: #"_ = RefreshView { ScrollView { Label("Rows") } }"#,
             contract: #"_ = ScrollView { Label("Rows") }"#),
+        Road(
+            name: "the withdrawn AbsoluteLayout",
+            removed: #"_ = AbsoluteLayout { Label("Corner") }"#,
+            contract: #"_ = ZStack { Label("Corner") }"#),
+        Road(
+            name: "the withdrawn absolute bounds",
+            removed: #"_ = Label("Corner").absoluteLayoutBounds(Rect(0, 0, 120, 40))"#,
+            contract: #"_ = Label("Corner").area(.absolute(0, 0, 120, 40))"#),
+        Road(
+            name: "the withdrawn proportions",
+            removed: #"_ = Label("Half").absoluteLayoutProportions(.all)"#,
+            contract: #"_ = Label("Half").area(.proportional(0.5, 0, 0.5, 1))"#),
     ]
 
     func testEveryUntypedRoadIsClosedAndItsContractRoadOpen() throws {

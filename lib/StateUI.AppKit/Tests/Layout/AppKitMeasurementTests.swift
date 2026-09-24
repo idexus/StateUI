@@ -197,9 +197,9 @@ final class AppKitMeasurementTests: XCTestCase {
 
         var card = HostPatch(id: .manual("card"), type: .colorBox)
         card.properties[.opacity] = .number(1)
-        var layout = HostPatch(id: .manual("layout"), type: .absoluteLayout)
+        var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.driven = .replace([
-            .absoluteLayoutBounds: HostStateBinding(state: 95, mode: .out, kind: .placement),
+            .area: HostStateBinding(state: 95, mode: .out, kind: .placement),
         ])
         layout.children = .arranged([card])
         renderer.applyForTesting(layout)
@@ -216,7 +216,7 @@ final class AppKitMeasurementTests: XCTestCase {
         var fading = HostPatch(id: .manual("card"), type: .colorBox)
         fading.properties[.opacity] = .number(0.4)
         fading.transitions[.opacity] = HostTransition(motion: .eased(200, .linear))
-        var path = HostPatch(id: .manual("layout"), type: .absoluteLayout)
+        var path = HostPatch(id: .manual("layout"), type: .zStack)
         path.children = .changed([fading])
         renderer.applyForTesting(path)
         // The layout reads its placement from StateUI's state on every apply;
@@ -243,10 +243,10 @@ final class AppKitMeasurementTests: XCTestCase {
 
         var card = HostPatch(id: .manual("card"), type: .colorBox)
         card.properties[.opacity] = .number(1)
-        var layout = HostPatch(id: .manual("layout"), type: .absoluteLayout)
+        var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.properties[.height] = .number(120)
         layout.driven = .replace([
-            .absoluteLayoutBounds: HostStateBinding(state: 96, mode: .out, kind: .placement),
+            .area: HostStateBinding(state: 96, mode: .out, kind: .placement),
         ])
         layout.children = .arranged([card])
         var caption = HostPatch(id: .manual("caption"), type: .label)
@@ -402,7 +402,7 @@ final class AppKitMeasurementTests: XCTestCase {
         let containers: [NSView] = [
             AppKitStackView(axis: .vertical),
             AppKitGridView(),
-            AppKitAbsoluteLayoutView(),
+            AppKitZStackView(),
             AppKitNavigationView(),
             AppKitSingleChildView(),
             AppKitBorderView(),

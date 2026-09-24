@@ -142,7 +142,7 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         let over = mask
 
         // No placement is described: each arrives on the state, on the host's frames.
-        let views = AbsoluteLayout {
+        let views = ZStack {
             ForEach(slots, id: \.identity) { slot in
                 PlacedLayout.wrapped(build(slot.item), under: over)
             }
@@ -150,15 +150,15 @@ public struct PlacedLayout<Items: RandomAccessCollection, Id: Hashable>: Content
         .motion(travel)
 
         guard let number = run else {
-            // With no placement state the views stack at the top left: said out
+            // With no placement state the views lie over one another: said out
             // loud, since the screen alone reads as a view that failed to draw.
             complain("PlacedLayout was given no .placement(_:), so nothing "
-                + "says where its views go. They are drawn at its top left.")
+                + "says where its views go. They are drawn over one another, each across the whole layout.")
 
             return views
         }
 
-        return views.setValue(ViewContract.absoluteLayoutBounds.token, on: number, mode: .out, kind: .placement)
+        return views.setValue(ViewContract.area.token, on: number, mode: .out, kind: .placement)
     }
 
     /// What the layout was handed, behind a reference. See `source`.

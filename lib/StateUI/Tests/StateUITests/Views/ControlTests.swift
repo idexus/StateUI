@@ -299,16 +299,14 @@ final class ControlTests: XCTestCase {
                 }
                 .spacing(6)),
 
-            ControlCase("AbsoluteLayout", source: "AbsoluteLayout.swift",
-                AbsoluteLayout {
+            ControlCase("ZStack", source: "ZStack.swift",
+                ZStack {
                     ColorBox(.cornflowerBlue)
-                        .absoluteLayoutBounds(Rect(0, 0, 1, 0.5))
-                        .absoluteLayoutProportions(.all)
+                        .area(.proportional(0, 0, 1, 0.5))
 
                     Label("Bottom right")
-                        .absoluteLayoutBounds(
-                            Rect(1, 1, AbsoluteLayout.autoSize, AbsoluteLayout.autoSize))
-                        .absoluteLayoutProportions(.position)
+                        .horizontalAlignment(.end)
+                        .verticalAlignment(.end)
                 }),
 
             ControlCase("ScrollView", source: "ScrollView.swift",
@@ -511,11 +509,10 @@ final class ControlTests: XCTestCase {
                         .gridColumn(2)
                         .gridRowSpan(3)
                         .gridColumnSpan(4)
-                        // The other two layouts that ask a child where it goes.
-                        // Harmless on a view in neither: a placement means
-                        // something only to the layout that asks for it.
-                        .absoluteLayoutBounds(Rect(0, 0, 120, 40))
-                        .absoluteLayoutProportions(.size)
+                        // The other layout that asks a child where it goes.
+                        // Harmless on a view in none: an area means something
+                        // only to the layout that asks for it.
+                        .area(.absolute(0, 0, 120, 40))
                         // A drag written into states rather than reported -
                         // the path that describes nothing.
                         .panX(followed.projectedValue)
@@ -737,7 +734,7 @@ final class ControlTests: XCTestCase {
             "icon", "maximumDate",
             "minimumDate", "strokeDashPattern", "points", "options", "columns",
             "rows", "shape", "renderTransform", "transform", "motion", "id",
-            "assign", "absoluteLayoutBounds",
+            "assign", "area",
             // Tiers no view wears.
             "barBackgroundColor", "barForegroundColor", "isScrollEnabled", "isZoomEnabled",
             "isTrafficEnabled", "showsUserLocation", "isDestructive", "title", "subtitle",

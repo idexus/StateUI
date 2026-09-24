@@ -16,8 +16,8 @@
     /// The element that holds this one.
     public private(set) weak var parent: MountedElement?
 
-    /// The elements this one holds, in order - a grid's and a layered layout's in the order they are
-    /// drawn, by `zIndex`, ties in the order written.
+    /// The elements this one holds, in order - a grid's and a ZStack's in the order they are drawn, by
+    /// `zIndex`, ties in the order written.
     public private(set) var children: [MountedElement] = []
 
     /// Each child's place in the order the last arrangement wrote them.
@@ -271,8 +271,8 @@
         leave(before)
     }
 
-    /// Puts a grid's or a layered layout's children in the order they are drawn: by `zIndex`, ties in
-    /// the order written. Answers whether the order moved.
+    /// Puts a grid's or a ZStack's children in the order they are drawn: by `zIndex`, ties in the order
+    /// written. Answers whether the order moved.
     /// Design: docs/design/host/layout.md#drawing-order
     @discardableResult
     private func restack() -> Bool {
@@ -291,8 +291,8 @@
     /// Where this element is drawn among its overlapping siblings, higher nearer the front.
     private var zIndex: Double { number(.zIndex) ?? 0 }
 
-    /// The layouts whose children can overlap, drawn in `zIndex` order: a grid and a layered layout.
-    private static let layered: Set<NodeType> = [.grid, .absoluteLayout]
+    /// The layouts whose children can overlap, drawn in `zIndex` order.
+    private static let layered: Set<NodeType> = [.grid, .zStack]
 
     /// Detaches every one of `previous` that is no longer a child or a kept row.
     private func leave(_ previous: [MountedElement]) {
@@ -478,8 +478,7 @@
         values.column = whole(.gridColumn) ?? 0
         values.rowSpan = max(whole(.gridRowSpan) ?? 1, 1)
         values.columnSpan = max(whole(.gridColumnSpan) ?? 1, 1)
-        values.absoluteBounds = value(.absoluteLayoutBounds)?.numbers
-        values.absoluteProportions = value(.absoluteLayoutProportions)?.enumeration ?? 0
+        values.area = value(.area).flatMap(Area.init(propValue:))
         return values
     }
 

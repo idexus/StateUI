@@ -1,5 +1,3 @@
-AbsoluteLayout
-  ignoresInput
 ActivityIndicator
   isRunning
   tint
@@ -288,12 +286,13 @@ WebView
   navigated()
   navigating()
   processTerminated()
+ZStack
+  ignoresInput
 (every element)
-  absoluteLayoutBounds
-  absoluteLayoutProportions
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  area
   automationExcludedWithChildren
   background
   frame

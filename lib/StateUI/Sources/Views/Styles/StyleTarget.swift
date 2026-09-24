@@ -49,7 +49,7 @@ extension Grid: StyleTarget {}
 extension ScrollView: StyleTarget {}
 extension VStack: StyleTarget {}
 extension HStack: StyleTarget {}
-extension AbsoluteLayout: StyleTarget {}
+extension ZStack: StyleTarget {}
 extension Rectangle: StyleTarget {}
 extension Ellipse: StyleTarget {}
 extension Line: StyleTarget {}

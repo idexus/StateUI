@@ -255,12 +255,11 @@ VStack
   padding
   spacing
 (every element)
-  absoluteLayoutBounds
-  absoluteLayoutProportions
   accessibilityHeadingLevel
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  area
   automationExcludedWithChildren
   frame
   gridColumn
