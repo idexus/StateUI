@@ -42,10 +42,18 @@ private struct Rider: ContentView {
     func bump() { level += 1 }
 }
 
+/// A view handing a state somebody else declared to the host to walk: a
+/// driven property and no read, which is the channel a host writes it through.
+private struct Driver: ContentView {
+    @Binding var level: Double
+
+    var content: any View { Label("driving").rotation($level) }
+}
+
 /// A view holding a driven state of its OWN, so a test can watch the wrapper a second
 /// render builds take over the storage the first one made.
 private struct Holder: ContentView {
-    @State var offset = 0.0
+    @State var choice = 0
     let seen: Seen
 
     /// Something to build the holder with a second time: a view built with
@@ -53,9 +61,9 @@ private struct Holder: ContentView {
     var tag = 0
 
     var content: any View {
-        seen.numbers.append($offset.number ?? -1)
-        seen.values.append(offset)
-        return ModifiedContent(node: label("held"))
+        seen.numbers.append($choice.number ?? -1)
+        seen.values.append(choice)
+        return Picker(["a", "b", "c", "d"]).selectedIndex($choice)
     }
 }
 
@@ -68,7 +76,7 @@ private struct Plain: ContentView {
 /// What each render of the holder saw. A class, for the same reason.
 private final class Seen {
     var numbers: [Int32] = []
-    var values: [Double] = []
+    var values: [Int] = []
 }
 
 /// Counts builds. A class, so the walk that collects state boxes leaves it
@@ -170,9 +178,9 @@ final class CarriedStateTests: XCTestCase {
     /// the run is, and the arithmetic itself.
     func testTheHostMovesItByItsNumber() {
         let value = State(wrappedValue: 0.0)
-        let number = value.number
 
-        moved(number, to: 91.5)
+        Renders().render(Driver(level: value.projectedValue).body)
+        dragged(value.number, to: 91.5)
 
         XCTAssertEqual(value.wrappedValue, 91.5)
     }
@@ -189,10 +197,11 @@ final class CarriedStateTests: XCTestCase {
         renders.render(stack([
             Follower(value: value.projectedValue, builds: builds).body,
             Rider(level: value.projectedValue).body,
+            Driver(level: value.projectedValue).body,
         ], id: "root"))
         Renderer.shared.clearInvalidation()
 
-        moved(value.number, to: 12)
+        dragged(value.number, to: 12)
 
         XCTAssertTrue(Renderer.shared.needsRender, "a body printed it, so the host's write renders")
         renders.revisit(changed: Renderer.shared.pendingChanges)
@@ -209,14 +218,17 @@ final class CarriedStateTests: XCTestCase {
         let builds = Builds()
         let renders = Renders()
 
-        renders.render(stack([Follower(value: value.projectedValue, builds: builds).body], id: "root"))
+        renders.render(stack([
+            Follower(value: value.projectedValue, builds: builds).body,
+            Driver(level: value.projectedValue).body,
+        ], id: "root"))
         Renderer.shared.clearInvalidation()
 
-        moved(value.number, to: 1)
+        dragged(value.number, to: 1)
         XCTAssertTrue(Renderer.shared.needsRender, "the first write asks at once")
         Renderer.shared.clearInvalidation()
 
-        moved(value.number, to: 2)
+        dragged(value.number, to: 2)
         XCTAssertTrue(Renderer.shared.needsRender, "and so does the next")
         XCTAssertEqual(value.wrappedValue, 2)
     }
@@ -401,10 +413,10 @@ final class CarriedStateTests: XCTestCase {
         let seen = Seen()
 
         renders.render(Holder(seen: seen).body)
-        moved(seen.numbers[0], to: 91.5)
+        moved(seen.numbers[0], to: 3)
         renders.render(Holder(seen: seen, tag: 2).body)
 
-        XCTAssertEqual(seen.values, [0, 91.5])
+        XCTAssertEqual(seen.values, [0, 3])
     }
 
     /// A BINDING IS BORROWED, AND THE STATE WALK STOPS AT IT: the state behind
@@ -615,16 +627,21 @@ final class CarriedStateTests: XCTestCase {
             .eased(640, .cubicIn))
     }
 
-    /// A value NO element drives says `.inherited` on the wire still, and the
-    /// host answers it with the application's - there being no element to ask.
-    func testAValueNobodyDrivesCrossesAsInherited() {
+    /// A value NO element drives holds `.inherited` as its law - there being
+    /// no element to ask - until one that drives it says its own.
+    func testAValueNobodyDrivesHoldsInherited() throws {
         let loose = State(wrappedValue: 1.0)
 
         // The journey's image, which is what a number is issued against here:
         // a state nothing has walked has none until something asks.
         _ = loose.projectedValue.journeyImage
 
-        XCTAssertEqual(standing(loose.number, as: JourneyLanes<Double>.self)?.motion, .inherited)
+        let storage = try XCTUnwrap(Renderer.shared.storage(of: loose.number))
+        let image = try XCTUnwrap(Renderer.shared.board(of: storage).whole(loose.number))
+
+        XCTAssertEqual(
+            JourneyLanes<Double>(carried: StateImage.carried(of: image, lanes: StateValueLanes.own))?.motion,
+            .inherited)
     }
 
     /// A child handed the binding writes the owner's value and reads it back:

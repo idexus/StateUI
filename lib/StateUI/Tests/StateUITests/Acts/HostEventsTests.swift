@@ -1,10 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Events the HOST raises by name, driven through the real
-// export - bytes in, subscriptions found, handlers queued on this library's
-// executor and drained the way the host drains them - and raised typed by a
-// host in the process, `StateUIHost.raise`, which takes the same road.
+// Events the HOST raises, typed, through `StateUIHost.raise` - subscriptions
+// found, handlers queued on this library's executor and drained the way the
+// host drains them.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -16,8 +15,8 @@ final class HostEventsTests: XCTestCase {
         var lines: [String] = []
     }
 
-    /// A subscribed handler hears a raise, with the values the host wrote as
-    /// the types the event's contract declares - and the export answers how
+    /// A subscribed handler hears a raise, with the values the host handed it
+    /// as the types the event's contract declares - and the raise answers how
     /// many heard it.
     func testASubscribedHandlerHearsARaiseWithItsValues() {
         let heard = Heard()
@@ -26,7 +25,7 @@ final class HostEventsTests: XCTestCase {
         }
         defer { subscription.cancel() }
 
-        XCTAssertEqual(raise("Test.BatteryChanged", [.number(0.87), .bool(true)]), 1)
+        XCTAssertEqual(StateUIHost.raise(TestEvents.batteryChanged, 0.87, true), 1)
         stateUIRunJobs()
 
         XCTAssertEqual(heard.lines, ["0.87 true"])
@@ -43,7 +42,7 @@ final class HostEventsTests: XCTestCase {
             second.cancel()
         }
 
-        XCTAssertEqual(raise("Test.Ordered", []), 2)
+        XCTAssertEqual(StateUIHost.raise(TestEvents.ordered), 2)
         stateUIRunJobs()
 
         XCTAssertEqual(heard.lines, ["first", "second"])
@@ -61,45 +60,15 @@ final class HostEventsTests: XCTestCase {
         subscription.cancel()
         subscription.cancel()
 
-        XCTAssertEqual(raise("Test.Cancelled", [.bool(true)]), 0)
+        XCTAssertEqual(StateUIHost.raise(TestEvents.cancelled, true), 0)
         stateUIRunJobs()
 
         XCTAssertEqual(heard.lines, [])
     }
 
-    /// A buffer that will not read is refused whole, and the export says so
-    /// with -1 - which the session reports as version skew.
-    func testAnUnreadableBufferAnswersMinusOne() {
-        let garbage: [UInt8] = [99, 1, 2, 3]
-
-        let answer = garbage.withUnsafeBufferPointer { bytes in
-            stateui_dispatch_host_event(bytes.baseAddress, Int32(bytes.count))
-        }
-
-        XCTAssertEqual(answer, -1)
-    }
-
-    // MARK: - A host in the process
-
-    /// A host in the process raises the member itself, typed: the handler
-    /// hears the values it was handed, and the raise answers how many heard
-    /// it - the export's road without the bytes.
-    func testAHostInTheProcessRaisesTheMemberWithItsValues() {
-        let heard = Heard()
-        let subscription = HostEvents.on(TestEvents.batteryChanged) { level, charging in
-            heard.lines.append("\(level) \(charging)")
-        }
-        defer { subscription.cancel() }
-
-        XCTAssertEqual(StateUIHost.raise(TestEvents.batteryChanged, 0.42, false), 1)
-        stateUIRunJobs()
-
-        XCTAssertEqual(heard.lines, ["0.42 false"])
-    }
-
     /// One value and none take the same call: what the raise carries is the
     /// member's payload, whatever its count.
-    func testAHostInTheProcessRaisesOneValueAndNone() {
+    func testARaiseCarriesOneValueOrNone() {
         let heard = Heard()
         let one = HostEvents.on(TestEvents.connectivityChanged) { online in
             heard.lines.append("online \(online)")
@@ -115,22 +84,6 @@ final class HostEventsTests: XCTestCase {
         stateUIRunJobs()
 
         XCTAssertEqual(heard.lines, ["online true", "ordered"])
-    }
-
-    // MARK: - Support
-
-    /// Raises an event through the real export, bytes and all, and answers
-    /// what the export answered.
-    private func raise(_ name: String, _ values: [PropValue]) -> Int32 {
-        var out: [UInt8] = []
-        out.u8(Wire.version)
-        out.string(name)
-        out.u8(UInt8(values.count))
-        for value in values { out.value(value) }
-
-        return out.withUnsafeBufferPointer { bytes in
-            stateui_dispatch_host_event(bytes.baseAddress, Int32(bytes.count))
-        }
     }
 }
 

@@ -176,7 +176,7 @@ final class Renders {
 
     /// Runs the closure an id refers to, the way a dispatched event does.
     ///
-    /// Goes through `Renderer.start`, which is what `stateui_dispatch_wire`
+    /// Goes through `Renderer.start`, which is what `StateUIHost.dispatch`
     /// uses, rather than calling the closure - so what a test sees is the real
     /// path, including the executor a handler resumes on. Synchronous, because
     /// that path is: a handler with no `await` in it finishes before this
@@ -185,7 +185,7 @@ final class Renders {
     func fire(_ id: Int, with payload: [PropValue] = []) -> Bool {
         guard let handler = differ.handler(id) else { return false }
 
-        // What stateui_dispatch_wire does before starting the handler: the
+        // What StateUIHost.dispatch does before starting the handler: the
         // payload is left where the typed handlers read it from.
         EventBuffer.current = payload
         Renderer.shared.start(handler)
@@ -981,64 +981,99 @@ func withTheme(_ theme: Theme, _ body: () -> Void) {
     body()
 }
 
-/// Says where a number stands, the way the HOST says it: through the batch the
-/// boundary actually carries, so a test walks the path a report walks rather
-/// than a shortcut of its own.
+/// Says where a number stands, the way the HOST says it: through the typed
+/// boundary, on the channel the state rides - a whole value on a plain state or
+/// a feed, the named parts of a journey on a moving property - so a test walks
+/// the path a report walks rather than a shortcut of its own.
 ///
 /// - Parameters:
 ///   - number: which number, by the number it was issued.
-///   - lanes: the value, lane by lane.
-///   - mask: which of those lanes are being said. All of them, unless said.
+///   - lanes: the value, lane by lane; a journey's value, destination and
+///     velocity in that order.
+///   - mask: which of those lanes are being said. All of them, unless said; a
+///     journey's are said a part at a time.
 func moved(_ number: Int32, to lanes: [Double], mask: UInt64 = ~0) {
-    told(number, .lanes(lanes), mask: mask)
+    guard let binding = hostBinding(of: number) else {
+        return XCTFail("state \(number) rides no host channel")
+    }
+
+    guard binding.kind == .property else {
+        XCTAssertTrue(
+            StateUIHost.report(.lanes(lanes), through: binding),
+            "the host's report of state \(number) was refused")
+        return
+    }
+
+    guard let standing = StateUIHost.value(for: binding).flatMap(StateUIHost.journey(from:)) else {
+        return XCTFail("state \(number) holds no journey")
+    }
+
+    // A journey's lanes are its value, destination and velocity, one group each.
+    let width = standing.value.count
+    let groups: [(part: HostJourneyUpdate, standing: [Double])] = [
+        (.value, standing.value), (.destination, standing.destination), (.velocity, standing.velocity),
+    ]
+    var said: [[Double]] = []
+    var update: HostJourneyUpdate = []
+
+    for (index, group) in groups.enumerated() {
+        let range = (index * width)..<((index + 1) * width)
+        let named = range.contains { mask & (UInt64(1) << UInt64($0)) != 0 }
+
+        if named, range.upperBound <= lanes.count {
+            said.append(Array(lanes[range]))
+            update.insert(group.part)
+        } else {
+            said.append(group.standing)
+        }
+    }
+
+    XCTAssertEqual(
+        mask & ~((UInt64(1) << UInt64(width * 3)) - 1), 0,
+        "a host reports a journey's value, destination and velocity, never its law")
+
+    let journey = HostJourney(
+        value: said[0], destination: said[1], velocity: said[2],
+        motion: standing.motion, completion: standing.completion, stopped: standing.stopped)
+
+    XCTAssertTrue(
+        StateUIHost.report(journey, updating: update, through: binding),
+        "the host's report of state \(number) was refused")
 }
 
 /// Says where the user SCROLLED a scroller to, the way the HOST says it for a
-/// journey the user moved: where it is AND where it is going, both lanes of
-/// each, and standing still - laid into the whole shape of the image, with the
-/// law, the waiter and the stop counter left as they were.
+/// journey the user moved: where it is AND where it is going, and standing
+/// still - with the law, the waiter and the stop counter left as they were.
 ///
 /// - Parameters:
 ///   - number: which number, by the number it was issued.
 ///   - point: where the user left the offset.
 func slid(_ number: Int32, to point: Point) {
-    var lanes = [Double](repeating: 0, count: 11)
-
-    lanes[0] = point.x
-    lanes[1] = point.y
-    lanes[2] = point.x
-    lanes[3] = point.y
-
-    moved(number, to: lanes, mask: 0b111111)
+    moved(number, to: [point.x, point.y, point.x, point.y, 0, 0], mask: 0b111111)
 }
 
 /// Says what the user TYPED into a field the host carries the text of, the
-/// way the host says it: the words whole, every lane named.
+/// way the host says it: the words whole.
 ///
 /// - Parameters:
 ///   - number: which number, by the number it was issued.
 ///   - text: what was typed.
 func typed(_ number: Int32, _ text: String) {
-    told(number, .text(text), mask: ~0)
-}
-
-/// One state's write, in the batch the boundary carries.
-private func told(_ number: Int32, _ value: StateCarried, mask: UInt64) {
-    var bytes: [UInt8] = []
-
-    func put(_ value: UInt64, _ width: Int) {
-        for byte in 0..<width { bytes.append(UInt8((value >> (byte * 8)) & 0xFF)) }
+    guard let binding = hostBinding(of: number) else {
+        return XCTFail("state \(number) rides no host channel")
     }
 
-    let payload = StateImage.bytes(of: value)
+    XCTAssertTrue(
+        StateUIHost.report(.text(text), through: binding),
+        "the host's report of state \(number) was refused")
+}
 
-    put(1, 2)
-    put(UInt64(UInt32(bitPattern: number)), 4)
-    put(mask, 8)
-    put(UInt64(payload.count), 4)
-    bytes += payload
+/// The channel a host would be handed a state on, both ways, or nil where no
+/// host rides it.
+private func hostBinding(of number: Int32) -> HostStateBinding? {
+    guard let kind = Renderer.shared.storage(of: number)?.door else { return nil }
 
-    bytes.withUnsafeBufferPointer { _ = Renderer.shared.cycleWritten($0) }
+    return HostStateBinding(state: number, mode: .inOut, kind: kind)
 }
 
 /// The same, for the one-lane values a scroller and a drag report.
@@ -1050,7 +1085,7 @@ func moved(_ number: Int32, to value: Double) {
 /// value it walks as a journey: the value and its destination together, and a
 /// speed of nought - so nothing is left to travel.
 func dragged(_ number: Int32, to value: Double) {
-    moved(number, to: [value, value, 0, 0, 0, 0, 0, 0], mask: 0b111)
+    moved(number, to: [value, value, 0], mask: 0b111)
 }
 
 /// What a state holds, read back the way the host reads it.
@@ -1058,23 +1093,10 @@ func dragged(_ number: Int32, to value: Double) {
 /// - Parameters:
 ///   - number: which number, by the number it was issued.
 ///   - kind: what to read it as.
-/// - Returns: the value, or nothing where the state has gone or the bytes do not
-///   make one.
+/// - Returns: the value, or nothing where the state has gone, rides no host
+///   channel, or does not make one.
 func standing<Value: StateValue>(_ number: Int32, as kind: Value.Type) -> Value? {
-    var out = [UInt8](repeating: 0, count: 1 << 16)
-
-    let written = out.withUnsafeMutableBufferPointer {
-        Renderer.shared.cycleRead(number, into: $0)
-    }
-
-    // [count: U16] then [number: I32][mask: U64][length: U32] and the bytes.
-    guard written > 18 else { return nil }
-
-    var length = 0
-
-    for shift in 0..<4 { length |= Int(out[14 + shift]) << (shift * 8) }
-
-    guard 18 + length <= written else { return nil }
-
-    return Value(carried: StateImage.carried(of: Array(out[18..<(18 + length)]), lanes: Value.lanes))
+    hostBinding(of: number)
+        .flatMap(StateUIHost.value(for:))
+        .flatMap(Value.init(carried:))
 }

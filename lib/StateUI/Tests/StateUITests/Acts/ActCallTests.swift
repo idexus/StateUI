@@ -287,29 +287,6 @@ final class ActCallTests: XCTestCase {
         try await asked.value
     }
 
-    /// A reply whose bytes will not read - version skew - must still resume
-    /// the waiting handler: the dispatch entry turns it into a failure, never
-    /// a hang. Driven through the real export, bytes and all.
-    func testAnUnreadableReplyFailsTheActInsteadOfHangingIt() async throws {
-        drain()
-
-        let asked = await Self.begin { try await stateUICall(TestActs.old) }
-        let id = try completionId(in: drain())
-
-        let garbage: [UInt8] = [99, 1, 2, 3]
-        garbage.withUnsafeBufferPointer { bytes in
-            _ = stateui_dispatch_wire(Int32(id), bytes.baseAddress, Int32(bytes.count))
-        }
-        await settle()
-
-        do {
-            _ = try await asked.value
-            XCTFail("an unreadable reply is a version mismatch, not a result")
-        } catch let error as StateUIError {
-            XCTAssertTrue(error.message.contains("could not be read"), error.message)
-        }
-    }
-
     // MARK: - What a resume owes
 
     /// A resume is owed from the moment its outcome is reported until the

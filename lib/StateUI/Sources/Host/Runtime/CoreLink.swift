@@ -141,6 +141,17 @@
         StateUIHost.setApplicationInfo(info)
     }
 
+    /// Reports the battery.
+    public func setBatteryInfo(_ info: HostBatteryInfo) { StateUIHost.setBatteryInfo(info) }
+
+    /// Reports the network.
+    public func setConnectivityInfo(_ info: HostConnectivityInfo) {
+        StateUIHost.setConnectivityInfo(info)
+    }
+
+    /// Reports the user's locale.
+    public func setLocaleInfo(_ info: HostLocaleInfo) { StateUIHost.setLocaleInfo(info) }
+
     /// Reports the application's lifecycle phase.
     public func setApplicationPhase(_ phase: ApplicationPhase) {
         StateUIHost.setApplicationPhase(phase)

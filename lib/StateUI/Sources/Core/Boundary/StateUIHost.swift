@@ -47,6 +47,34 @@
         app.buildString = info.buildString
     }
 
+    /// Replaces the standard battery report.
+    public static func setBatteryInfo(_ info: HostBatteryInfo) {
+        let battery = StandardEnvironment.battery
+        battery.chargeLevel = info.chargeLevel
+        battery.state = info.state
+        battery.powerSource = info.powerSource
+        battery.energySaverStatus = info.energySaverStatus
+    }
+
+    /// Replaces the standard connectivity report.
+    public static func setConnectivityInfo(_ info: HostConnectivityInfo) {
+        let connectivity = StandardEnvironment.connectivity
+        connectivity.networkAccess = info.networkAccess
+        connectivity.connectionProfiles = info.connectionProfiles
+    }
+
+    /// Replaces the standard locale report.
+    public static func setLocaleInfo(_ info: HostLocaleInfo) {
+        let locale = StandardEnvironment.locale
+        locale.language = info.language
+        locale.region = info.region
+        locale.name = info.name
+        locale.timeZone = info.timeZone
+        locale.uses24HourClock = info.uses24HourClock
+        locale.firstDayOfWeek = info.firstDayOfWeek
+        locale.isMetric = info.isMetric
+    }
+
     /// Hands a platform-created scene to StateUI before its first render.
     ///
     /// The first call claims the scene prepared when the application was

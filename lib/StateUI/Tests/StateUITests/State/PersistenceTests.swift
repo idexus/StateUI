@@ -329,10 +329,10 @@ final class PersistenceTests: XCTestCase {
         XCTAssertEqual(acts.first?.arguments, [.name("test.name"), .string("Grace")])
     }
 
-    /// Saves ride the wire SORTED BY NAME, the determinism rule: one session
-    /// writes the same bytes in every run, and a dictionary iterated into a
-    /// message would not.
-    func testSavesRideTheWireSortedByName() {
+    /// Saves reach the host SORTED BY NAME, the determinism rule: one session
+    /// hands over the same acts in every run, and a dictionary iterated into
+    /// the queue would not.
+    func testSavesReachTheHostSortedByName() {
         let preferences = Preferences()
         preferences.level = 0.25
         preferences.name = "Ada"
@@ -390,80 +390,5 @@ final class PersistenceTests: XCTestCase {
         Renderer.shared.setApplication(PlainApp())
 
         XCTAssertEqual(StateUIHost.persistentKeys, [])
-    }
-
-    // MARK: - As the MAUI host reads and sends it
-
-    /// The announcement carries the store and every key, names in full: it is
-    /// the first thing either side says, before any message has announced a
-    /// dictionary to number them against.
-    func testTheAnnouncementCarriesTheStoreAndEveryKey() {
-        Renderer.shared.setApplication(KeepingApp())
-
-        var expected: [UInt8] = []
-        expected.u8(Wire.version)
-        expected.string("preferences")
-        expected.u16(2)
-        expected.string("test.count")
-        expected.u8(UInt8(PersistentKind.integer.rawValue))
-        expected.string("test.name")
-        expected.u8(UInt8(PersistentKind.text.rawValue))
-
-        XCTAssertEqual(Renderer.shared.persistentWire(), expected)
-    }
-
-    /// An application that keeps its state somewhere of its own says so in the
-    /// same announcement - the host resolves the name against what it has
-    /// registered.
-    func testTheAnnouncementNamesAStoreOfTheApplicationsOwn() {
-        Renderer.shared.setApplication(FiledApp())
-
-        var expected: [UInt8] = []
-        expected.u8(Wire.version)
-        expected.string("Test.Json")
-        expected.u16(1)
-        expected.string("test.loud")
-        expected.u8(UInt8(PersistentKind.boolean.rawValue))
-
-        XCTAssertEqual(Renderer.shared.persistentWire(), expected)
-    }
-
-    /// An application that keeps nothing announces nothing, and the host then
-    /// reads no store at all.
-    func testAnApplicationThatKeepsNothingAnnouncesNothing() {
-        Renderer.shared.setApplication(PlainApp())
-
-        XCTAssertEqual(Renderer.shared.persistentWire(), [])
-    }
-
-    /// What the host read comes back through the same value encoding every
-    /// other channel uses, and a key it did NOT find is simply absent.
-    func testWhatTheHostFoundIsReadBackByName() {
-        var buffer: [UInt8] = []
-        buffer.u8(Wire.version)
-        buffer.u16(2)
-        buffer.string("test.count")
-        buffer.value(.number(4))
-        buffer.string("test.loud")
-        buffer.value(.bool(true))
-
-        let found = Wire.decodePersistent(buffer)
-
-        XCTAssertEqual(found?.count, 2)
-        XCTAssertEqual(found?.first?.name, "test.count")
-        XCTAssertEqual(found?.first?.value, .number(4))
-        XCTAssertEqual(found?.last?.value, .bool(true))
-    }
-
-    /// A truncated buffer is a refusal rather than a wrong value - the reader
-    /// bounds-checks every step, as every channel here does.
-    func testATruncatedHydrationIsRefused() {
-        var buffer: [UInt8] = []
-        buffer.u8(Wire.version)
-        buffer.u16(2)
-        buffer.string("test.count")
-        buffer.value(.number(4))
-
-        XCTAssertNil(Wire.decodePersistent(buffer))
     }
 }

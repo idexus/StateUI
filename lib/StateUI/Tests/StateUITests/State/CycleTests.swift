@@ -293,7 +293,7 @@ final class CycleTests: XCTestCase {
     func testATextToldWholeReplacesTheImage() {
         let words = State(wrappedValue: "x")
 
-        _ = words.image
+        Renders().render(TextField(words.projectedValue).body)
 
         typed(words.number, "a much longer line of text")
         XCTAssertEqual(words.wrappedValue, "a much longer line of text")
@@ -714,24 +714,23 @@ final class CycleTests: XCTestCase {
     func testAHostWriteWakesAnEngineFollowingAPlainState() {
         let ran = Ran()
         let renders = Renders()
-        let room = State(wrappedValue: 0.0)
+        let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
-        renders.render(Label("room").engine(following: room.projectedValue) { cycle in
+        renders.render(Label("room").frame(room.projectedValue).engine(following: room.projectedValue) { cycle in
             ran.note("room", cycle)
         }.body)
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 1, "the render armed it once")
 
-        _ = room.image
         board.cycle(now: 32, reducesMotion: false)
         XCTAssertEqual(ran.order.count, 1, "carrying the state is no write")
 
-        moved(room.number, to: 3)
+        moved(room.number, to: [0, 0, 3, 3])
         board.cycle(now: 48, reducesMotion: false)
 
         XCTAssertEqual(ran.order.count, 2, "the host's report woke it")
-        XCTAssertEqual(room.wrappedValue, 3)
+        XCTAssertEqual(room.wrappedValue, Rect(0, 0, 3, 3))
     }
 
     /// A CONVERSION'S SOURCE WRITTEN BY THE HOST re-runs the forward engine:
@@ -742,12 +741,12 @@ final class CycleTests: XCTestCase {
         let source = State(wrappedValue: 1.0)
         let words = source.projectedValue.convert { "\(Int($0))" }
 
-        renders.render(Label().text(words).body)
+        renders.render(stack([Slider(source.projectedValue).body, Label().text(words).body]))
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
         XCTAssertEqual(words.wrappedValue, "1")
 
-        moved(source.number, to: 5)
+        dragged(source.number, to: 5)
         board.cycle(now: 32, reducesMotion: false)
 
         XCTAssertEqual(words.wrappedValue, "5", "the forward engine followed the source's image")

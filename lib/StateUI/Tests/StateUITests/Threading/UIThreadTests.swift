@@ -294,9 +294,7 @@ final class UIThreadTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         Renders().render(Label("worn").opacity(fade.projectedValue).id("worn").body)
 
-        _ = Renderer.shared.cycle(sync: 0, now: 0, reducesMotion: false)
-        var read = [UInt8](repeating: 0, count: 1 << 16)
-        read.withUnsafeMutableBufferPointer { _ = Renderer.shared.cycleRead(0, into: $0) }
+        _ = StateUIHost.cycle(.display, now: 0, reducesMotion: false)
         Renderer.shared.clearInvalidation()
 
         XCTAssertNotNil(fade.number, "the view wears the state")

@@ -90,6 +90,18 @@ private final class Tally {
     var said = ""
 }
 
+/// A view whose body is a field over the state it was handed: the host
+/// carries the text, and the view reads none of it.
+private struct Field: ContentView {
+    let note: Binding<String>
+    let tally: Tally
+
+    var content: any View {
+        tally.builds += 1
+        return TextField(note)
+    }
+}
+
 /// A view whose content is one read the test chooses, so what it rebuilds
 /// for is exactly what the closure read - and which hands the closure the
 /// reading, because `debugInfo()` answers about the build that is RUNNING.
@@ -201,7 +213,7 @@ final class ModelStateTests: XCTestCase {
         XCTAssertNotNil(cart.$note.followed, "and an engine can follow it")
 
         renders.render(stack([
-            Reader { _ in holder.builds += 1; _ = TextField(cart.$note) }.body,
+            Field(note: cart.$note, tally: holder).body,
         ], id: "root"))
         settled()
         XCTAssertEqual(holder.builds, 1)
@@ -266,7 +278,7 @@ final class ModelStateTests: XCTestCase {
 
         renders.render(stack([
             Reader { page.builds += 1; _ = cart.note; page.said = $0 }.body,
-            Reader { _ in field.builds += 1; _ = TextField(cart.$note) }.body,
+            Field(note: cart.$note, tally: field).body,
             Reader { row.builds += 1; _ = cart.note; row.said = $0 }.body,
         ], id: "root"))
         settled()
