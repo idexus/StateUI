@@ -47,8 +47,8 @@ kind is made of.
 ```text
   GridLength.proportional(2)       [1, 2]
   GridLength.auto                  [2, 1]      every length carries both parts
-  BorderShape.roundedRectangle(12) [1, 12]
-  BorderShape.ellipse              [2]
+  ContainerShape.roundedRectangle(12) [1, 12]
+  ContainerShape.ellipse              [2]
   Brush.solidColor(.red)           [1, #FFFF0000]
 ```
 

@@ -100,7 +100,7 @@ back as the types `ApplicationContract.currentTime` declares.
 | `.numbers` | a run of numbers in a stated order | `Insets`, `Rect`, `Point`, a list of points, `CalendarDate`, `ClockTime` |
 | `.strings` | a list of text | a `Picker`'s options |
 | `.color` | four channels | `Color` |
-| `.values` | parts of different kinds | `Brush`, `GridLength`, `BorderShape`, `SafeAreaEdges`, `ViewTransform`, a drawing |
+| `.values` | parts of different kinds | `Brush`, `GridLength`, `ContainerShape`, `SafeAreaEdges`, `ViewTransform`, a drawing |
 | `.nothing` | a position with no value | an optional argument or payload position |
 | `.themed` | a half for each theme | `Color(light:dark:)`, `ImageSource(light:dark:)`; resolved by the differ, never handed to a host |
 

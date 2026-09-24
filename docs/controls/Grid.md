@@ -145,6 +145,6 @@ What an element draws of its own box: the shape its background, its outline and 
 | `borderColor` | property | `Color` | native |  |  |  |  |  |  |  |
 | `borderWidth` | property | `Double` | native |  |  |  |  |  |  |  |
 | `cornerRadius` | property | `Int` | native |  |  |  |  |  |  |  |
-| `shape` | property | `BorderShape` | stateUI | ✅ |  |  | ✅ |  |  |  |
+| `shape` | property | `ContainerShape` | stateUI | ✅ |  |  | ✅ |  |  |  |
 | `stroke` | property | `Brush` | stateUI | ☑️ |  |  | ✅ |  |  | AppKit strokes with a colour; a gradient brush draws no outline. |
 | `strokeWidth` | property | `Double` | stateUI | ✅ |  |  | ✅ |  |  |  |

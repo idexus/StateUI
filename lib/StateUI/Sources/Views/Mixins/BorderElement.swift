@@ -33,7 +33,7 @@ extension BorderElement {
     }
 
     /// The shape the background and the outline follow, and - with `clipsContent` - what the element holds.
-    public func shape(_ value: BorderShape) -> Modified {
+    public func shape(_ value: ContainerShape) -> Modified {
         setValue(BorderElementContract.shape, value)
     }
 

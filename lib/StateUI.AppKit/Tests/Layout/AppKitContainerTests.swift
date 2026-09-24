@@ -149,10 +149,10 @@ final class AppKitContainerTests: XCTestCase {
         var innerStack = HostPatch(id: .manual("inner"), type: .vStack)
         innerStack.properties[.padding] = .numbers([16, 16, 16, 16])
         innerStack.children = .arranged([label])
-        var border = HostPatch(id: .manual("border"), type: .zStack)
-        border.children = .arranged([innerStack])
+        var frame = HostPatch(id: .manual("frame"), type: .zStack)
+        frame.children = .arranged([innerStack])
         var outerStack = HostPatch(id: .manual("outer"), type: .vStack)
-        outerStack.children = .arranged([border])
+        outerStack.children = .arranged([frame])
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.properties[.orientation] = .enumeration(ScrollOrientation.vertical.rawValue)
         scroll.children = .arranged([outerStack])
@@ -160,13 +160,13 @@ final class AppKitContainerTests: XCTestCase {
 
         let nativeScroll = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
-        let nativeBorder = try XCTUnwrap(renderer.viewForTesting(id: .manual("border")))
+        let nativeFrame = try XCTUnwrap(renderer.viewForTesting(id: .manual("frame")))
         let nativeLabel = try XCTUnwrap(renderer.viewForTesting(id: .manual("label")))
         nativeScroll.frame = NSRect(x: 0, y: 0, width: 300, height: 120)
         nativeScroll.layoutSubtreeIfNeeded()
 
-        let labelFrame = nativeBorder.convert(nativeLabel.bounds, from: nativeLabel)
-        XCTAssertLessThanOrEqual(labelFrame.maxY, nativeBorder.bounds.maxY + 0.001)
+        let labelFrame = nativeFrame.convert(nativeLabel.bounds, from: nativeLabel)
+        XCTAssertLessThanOrEqual(labelFrame.maxY, nativeFrame.bounds.maxY + 0.001)
     }
 
     @MainActor
@@ -175,19 +175,19 @@ final class AppKitContainerTests: XCTestCase {
         defer { renderer.closeForTesting() }
         let binding = HostStateBinding(state: 71, mode: .inOut, kind: .property)
 
-        var border = HostPatch(id: .manual("border"), type: .zStack)
-        border.properties[.height] = .number(90)
-        border.driven = .replace([.height: binding])
+        var frame = HostPatch(id: .manual("frame"), type: .zStack)
+        frame.properties[.height] = .number(90)
+        frame.driven = .replace([.height: binding])
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
-        stack.children = .arranged([border])
+        stack.children = .arranged([frame])
         renderer.applyForTesting(stack)
 
         let nativeStack = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("stack")) as? AppKitStackView)
-        let nativeBorder = try XCTUnwrap(renderer.viewForTesting(id: .manual("border")))
+        let nativeFrame = try XCTUnwrap(renderer.viewForTesting(id: .manual("frame")))
         nativeStack.frame = NSRect(x: 0, y: 0, width: 300, height: 300)
         nativeStack.layoutSubtreeIfNeeded()
-        XCTAssertEqual(nativeBorder.frame.height, 90, accuracy: 0.001)
+        XCTAssertEqual(nativeFrame.frame.height, 90, accuracy: 0.001)
 
         let arrived = HostJourney(
             value: [160],
@@ -199,7 +199,7 @@ final class AppKitContainerTests: XCTestCase {
         renderer.applyStateForTesting(71, value: StateUIHost.value(of: arrived))
         nativeStack.layoutSubtreeIfNeeded()
 
-        XCTAssertEqual(nativeBorder.frame.height, 160, accuracy: 0.001)
+        XCTAssertEqual(nativeFrame.frame.height, 160, accuracy: 0.001)
     }
 
     @MainActor

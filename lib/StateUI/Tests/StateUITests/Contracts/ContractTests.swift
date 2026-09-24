@@ -97,8 +97,8 @@ final class ContractTests: XCTestCase {
     /// their kind and then what that kind is made of; a kind without its
     /// parts, or one this library has none of, reads as no value.
     func testAKindCrossesInFrontOfItsParts() {
-        XCTAssertEqual(BorderShape.roundedRectangle(12).propValue, .values([.enumeration(1), .number(12)]))
-        XCTAssertEqual(BorderShape.ellipse.propValue, .values([.enumeration(2)]))
+        XCTAssertEqual(ContainerShape.roundedRectangle(12).propValue, .values([.enumeration(1), .number(12)]))
+        XCTAssertEqual(ContainerShape.ellipse.propValue, .values([.enumeration(2)]))
         XCTAssertEqual(
             [GridLength.auto, .fixed(100)].propValue,
             .values([.values([.enumeration(2), .number(1)]), .values([.enumeration(0), .number(100)])]))
@@ -112,7 +112,7 @@ final class ContractTests: XCTestCase {
             [Draw.fillColor(.gold)].propValue,
             .values([.values([.enumeration(0), Color.gold.propValue])]))
 
-        XCTAssertNil(BorderShape(propValue: .values([.enumeration(1)])), "a rounded rectangle without its radius")
+        XCTAssertNil(ContainerShape(propValue: .values([.enumeration(1)])), "a rounded rectangle without its radius")
         XCTAssertNil(GridLength(propValue: .values([.enumeration(9), .number(1)])), "a kind with no member")
         XCTAssertNil(WebViewSource(propValue: .values([.enumeration(1), .string("<p/>")])), "two places, not three")
     }
@@ -169,7 +169,7 @@ final class ContractTests: XCTestCase {
             MapRegion(latitude: 52.25, longitude: 21.01, radiusMeters: 1500),
             Location(latitude: 52.25, longitude: 21.01),
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
-            BorderShape.rectangle, BorderShape.roundedRectangle(12), BorderShape.ellipse,
+            ContainerShape.rectangle, ContainerShape.roundedRectangle(12), ContainerShape.ellipse,
             [GridLength.auto, .proportional(2), .fixed(100)] as [GridLength],
             [Draw.fillColor(.gold)] as [DrawCommand],
             WindowType("document"),

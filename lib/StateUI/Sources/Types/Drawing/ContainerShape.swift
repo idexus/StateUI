@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The outline a Border draws, and the shape its own background is painted to
-/// - which is where a rounded corner comes from on anything but a Button or a
-/// ColorBox. What `.shape` takes.
+/// The shape an element's own box follows: its background is painted to it,
+/// its outline drawn on it, and - where it clips - what it holds cut to it.
+/// What `.shape` takes.
 ///
-///     Border { … }.shape(.roundedRectangle(12))
-public enum BorderShape: Equatable, Sendable, HostRepresentable {
+///     VStack { … }.shape(.roundedRectangle(12))
+public enum ContainerShape: Equatable, Sendable, HostRepresentable {
     /// Square corners.
     case rectangle
 

@@ -20,7 +20,7 @@ public enum BorderElementContract: Contract {
     public static let cornerRadius = ElementProperty<Self, Int>("cornerRadius", layer: .native, moves: .size)
 
     /// The shape the element's background, its outline and - where it clips - what it holds follow.
-    public static let shape = ElementProperty<Self, BorderShape>("shape", layer: .stateUI)
+    public static let shape = ElementProperty<Self, ContainerShape>("shape", layer: .stateUI)
 
     /// What the outline is painted with.
     public static let stroke = ElementProperty<Self, Brush>("stroke", layer: .stateUI)
