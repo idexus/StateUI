@@ -174,57 +174,26 @@ final class AppKitShapeView: AppKitHitTestView {
     static func svgPath(_ data: String) -> NSBezierPath {
         guard let source = HostPath(svg: data) else { return NSBezierPath() }
         let path = CGMutablePath()
-        var current = CGPoint.zero
-        var subpathStart = CGPoint.zero
+        append(source.arcsAsCubics, to: path)
+        return NSBezierPath(cgPath: path)
+    }
 
-        for command in source.commands {
+    /// Draws `commands` onto `path`.
+    private static func append(_ commands: [HostCurveCommand], to path: CGMutablePath) {
+        for command in commands {
             switch command {
             case .move(let point):
-                current = cgPoint(point)
-                subpathStart = current
-                path.move(to: current)
-
+                path.move(to: cgPoint(point))
             case .line(let point):
-                current = cgPoint(point)
-                path.addLine(to: current)
-
+                path.addLine(to: cgPoint(point))
             case .cubic(let first, let second, let end):
-                current = cgPoint(end)
-                path.addCurve(
-                    to: current,
-                    control1: cgPoint(first),
-                    control2: cgPoint(second))
-
+                path.addCurve(to: cgPoint(end), control1: cgPoint(first), control2: cgPoint(second))
             case .quadratic(let control, let end):
-                current = cgPoint(end)
-                path.addQuadCurve(to: current, control: cgPoint(control))
-
-            case .arc(
-                let radiusX,
-                let radiusY,
-                let rotation,
-                let largeArc,
-                let sweep,
-                let end):
-                let destination = cgPoint(end)
-                appendArc(
-                    to: path,
-                    from: current,
-                    to: destination,
-                    radiusX: CGFloat(radiusX),
-                    radiusY: CGFloat(radiusY),
-                    rotation: CGFloat(rotation),
-                    largeArc: largeArc,
-                    sweep: sweep)
-                current = destination
-
+                path.addQuadCurve(to: cgPoint(end), control: cgPoint(control))
             case .close:
                 path.closeSubpath()
-                current = subpathStart
             }
         }
-
-        return NSBezierPath(cgPath: path)
     }
 
     static func ellipseArcPath(
@@ -259,155 +228,13 @@ final class AppKitShapeView: AppKitHitTestView {
         } else {
             path.move(to: start)
         }
-        appendArc(
-            to: path,
-            from: start,
-            to: end,
-            radiusX: radiusX,
-            radiusY: radiusY,
-            rotation: 0,
-            largeArc: abs(delta) > .pi,
-            sweep: clockwise)
+        append(
+            HostPath.arc(
+                from: Point(start.x, start.y), to: Point(end.x, end.y), radiusX: radiusX, radiusY: radiusY,
+                rotation: 0, largeArc: abs(delta) > .pi, sweep: clockwise),
+            to: path)
         if closed || wedge { path.closeSubpath() }
         return NSBezierPath(cgPath: path)
-    }
-
-    private static func appendArc(
-        to path: CGMutablePath,
-        from start: CGPoint,
-        to end: CGPoint,
-        radiusX initialRadiusX: CGFloat,
-        radiusY initialRadiusY: CGFloat,
-        rotation: CGFloat,
-        largeArc: Bool,
-        sweep: Bool
-    ) {
-        guard start != end, initialRadiusX > 0, initialRadiusY > 0 else {
-            path.addLine(to: end)
-            return
-        }
-
-        let angle = rotation * .pi / 180
-        let cosine = cos(angle)
-        let sine = sin(angle)
-        let halfX = (start.x - end.x) / 2
-        let halfY = (start.y - end.y) / 2
-        let transformedX = cosine * halfX + sine * halfY
-        let transformedY = -sine * halfX + cosine * halfY
-
-        var radiusX = abs(initialRadiusX)
-        var radiusY = abs(initialRadiusY)
-        let radiiScale = transformedX * transformedX / (radiusX * radiusX)
-            + transformedY * transformedY / (radiusY * radiusY)
-        if radiiScale > 1 {
-            let scale = sqrt(radiiScale)
-            radiusX *= scale
-            radiusY *= scale
-        }
-
-        let rx2 = radiusX * radiusX
-        let ry2 = radiusY * radiusY
-        let x2 = transformedX * transformedX
-        let y2 = transformedY * transformedY
-        let numerator = max(0, rx2 * ry2 - rx2 * y2 - ry2 * x2)
-        let denominator = rx2 * y2 + ry2 * x2
-        let sign: CGFloat = largeArc == sweep ? -1 : 1
-        let coefficient = denominator > 0 ? sign * sqrt(numerator / denominator) : 0
-        let centerXPrime = coefficient * radiusX * transformedY / radiusY
-        let centerYPrime = coefficient * -radiusY * transformedX / radiusX
-        let center = CGPoint(
-            x: cosine * centerXPrime - sine * centerYPrime + (start.x + end.x) / 2,
-            y: sine * centerXPrime + cosine * centerYPrime + (start.y + end.y) / 2)
-
-        let startVector = CGPoint(
-            x: (transformedX - centerXPrime) / radiusX,
-            y: (transformedY - centerYPrime) / radiusY)
-        let endVector = CGPoint(
-            x: (-transformedX - centerXPrime) / radiusX,
-            y: (-transformedY - centerYPrime) / radiusY)
-        var startAngle = vectorAngle(from: CGPoint(x: 1, y: 0), to: startVector)
-        var delta = vectorAngle(from: startVector, to: endVector)
-        if !sweep, delta > 0 { delta -= 2 * .pi }
-        if sweep, delta < 0 { delta += 2 * .pi }
-
-        let segments = max(1, Int(ceil(abs(delta) / (.pi / 2))))
-        let segmentAngle = delta / CGFloat(segments)
-        for index in 0..<segments {
-            let nextAngle = startAngle + segmentAngle
-            let alpha = 4 / 3 * tan(segmentAngle / 4)
-            let first = arcPoint(
-                center: center,
-                radiusX: radiusX,
-                radiusY: radiusY,
-                rotationCosine: cosine,
-                rotationSine: sine,
-                angle: startAngle)
-            let last = index == segments - 1
-                ? end
-                : arcPoint(
-                    center: center,
-                    radiusX: radiusX,
-                    radiusY: radiusY,
-                    rotationCosine: cosine,
-                    rotationSine: sine,
-                    angle: nextAngle)
-            let firstDerivative = arcDerivative(
-                radiusX: radiusX,
-                radiusY: radiusY,
-                rotationCosine: cosine,
-                rotationSine: sine,
-                angle: startAngle)
-            let lastDerivative = arcDerivative(
-                radiusX: radiusX,
-                radiusY: radiusY,
-                rotationCosine: cosine,
-                rotationSine: sine,
-                angle: nextAngle)
-            path.addCurve(
-                to: last,
-                control1: CGPoint(
-                    x: first.x + alpha * firstDerivative.x,
-                    y: first.y + alpha * firstDerivative.y),
-                control2: CGPoint(
-                    x: last.x - alpha * lastDerivative.x,
-                    y: last.y - alpha * lastDerivative.y))
-            startAngle = nextAngle
-        }
-    }
-
-    private static func vectorAngle(from first: CGPoint, to second: CGPoint) -> CGFloat {
-        let cross = first.x * second.y - first.y * second.x
-        let dot = first.x * second.x + first.y * second.y
-        return atan2(cross, dot)
-    }
-
-    private static func arcPoint(
-        center: CGPoint,
-        radiusX: CGFloat,
-        radiusY: CGFloat,
-        rotationCosine: CGFloat,
-        rotationSine: CGFloat,
-        angle: CGFloat
-    ) -> CGPoint {
-        CGPoint(
-            x: center.x + radiusX * cos(angle) * rotationCosine
-                - radiusY * sin(angle) * rotationSine,
-            y: center.y + radiusX * cos(angle) * rotationSine
-                + radiusY * sin(angle) * rotationCosine)
-    }
-
-    private static func arcDerivative(
-        radiusX: CGFloat,
-        radiusY: CGFloat,
-        rotationCosine: CGFloat,
-        rotationSine: CGFloat,
-        angle: CGFloat
-    ) -> CGPoint {
-        CGPoint(
-            x: -radiusX * sin(angle) * rotationCosine
-                - radiusY * cos(angle) * rotationSine,
-            y: -radiusX * sin(angle) * rotationSine
-                + radiusY * cos(angle) * rotationCosine)
     }
 
     private static func cgPoint(_ point: Point) -> CGPoint {

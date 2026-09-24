@@ -52,4 +52,21 @@ final class HostPathTests: XCTestCase {
         XCTAssertNil(HostPath(svg: "M 1e999 0"))
         XCTAssertNil(HostPath(svg: "M 0 0 X 1 1"))
     }
+
+    /// A half turn of a circle is two quarter-turn curves that end exactly where the arc does, the first at
+    /// the circle's side; every other command passes as it is.
+    func testAnArcIsDrawnAsQuarterTurnCurves() throws {
+        let path = try XCTUnwrap(HostPath(svg: "M 0 0 A 1 1 0 0 1 2 0 L 3 0"))
+        let drawn = path.arcsAsCubics
+
+        XCTAssertEqual(drawn.count, 4)
+        XCTAssertEqual(drawn.first, HostCurveCommand.move(Point(0, 0)))
+        guard case .cubic(_, _, let middle) = drawn[1], case .cubic(_, _, let end) = drawn[2] else {
+            return XCTFail("\(drawn)")
+        }
+        XCTAssertEqual(middle.x, 1, accuracy: 1e-9)
+        XCTAssertEqual(abs(middle.y), 1, accuracy: 1e-9)
+        XCTAssertEqual(end, Point(2, 0))
+        XCTAssertEqual(drawn.last, .line(Point(3, 0)))
+    }
 }

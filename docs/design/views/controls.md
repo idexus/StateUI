@@ -110,7 +110,9 @@ described again when the state changes, and so redrawn.
 A path's outline crosses as SVG path text, and a parser shared by the hosts
 normalizes it to absolute moves, lines, curves, arcs and closes before each
 toolkit draws that closed set, so the grammar accepted is not any one
-platform's.
+platform's. A toolkit with no SVG arc draws each as the cubic Bézier segments
+the shared parser works out, a quarter turn at most each, so an arc bends the
+same on every host.
 
 ## Text runs
 
