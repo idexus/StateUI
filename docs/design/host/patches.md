@@ -27,3 +27,16 @@ says so, `ProgramWrite`; no control keeps a flag of its own. A callback the
 platform delivers after the write has returned is outside the mark, so a
 control that raises one - a pop-up menu the program opens - marks it where it
 opens.
+
+## What a message costs
+
+While an inspector records, the runtime tells it its half of every message,
+on the pass of the message's generation: how long applying it took, the
+elements it walked, how many it mounted anew, how many kept rows took another
+row's description, and how many it found standing - the rest - and how long
+each scene's part took, by the scene's place in the application's list. The
+mounted tree keeps that tally, `RenderTally`, for the message the intake is
+applying, and tells it through the core link once the message is in. A typed
+patch is read off no buffer, so its read time is nothing. While no inspector
+records there is no tally: each count is one test of a nil, and no clock is
+read.

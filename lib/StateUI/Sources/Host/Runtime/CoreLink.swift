@@ -17,6 +17,27 @@
         StateUIHost.render(baseline: baseline)
     }
 
+    // MARK: - The inspector
+
+    /// Whether an inspector records: the runtime tallies what applying a message costs only while one does.
+    var inspecting: Bool { Inspection.recording }
+
+    /// Tells the inspector what applying the message of `generation` cost: every scene's part by its place
+    /// in the application's list, then the whole. A typed patch is read off no buffer.
+    @MainActor
+    func inspected(_ tally: RenderTally, generation: Int32) {
+        let apply = RenderTally.micros(ContinuousClock.now - tally.began)
+        for (scene, spent) in tally.scenes {
+            guard case .manual(let name) = scene, let index = Scenes.shared.index(of: name) else { continue }
+            Inspection.applied(generation: generation, scene: index, micros: RenderTally.micros(spent))
+        }
+        Inspection.applied(
+            generation: generation,
+            InspectedHost(
+                read: 0, apply: apply, nodes: tally.nodes, made: tally.made,
+                kept: tally.nodes - tally.made - tally.adopted, adopted: tally.adopted))
+    }
+
     // MARK: - The display cycle
 
     /// Whether any state or engine waits for a display cycle.

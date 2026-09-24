@@ -99,6 +99,9 @@
     private var patchTime: Double?
     private var patchReducesMotion: Bool?
 
+    /// What the message being applied costs, while an inspector records; nil otherwise.
+    var tally: RenderTally?
+
     /// A tree whose elements' native halves `makeNative` makes, on `now`'s time.
     public init(
         core: CoreLink,
@@ -121,14 +124,22 @@
     }
 
     /// Applies a message's root `patch`, at one time for the whole message; a new root when `complete`.
+    /// While an inspector records, it is told what the apply cost.
+    /// Design: docs/design/host/patches.md#what-a-message-costs
     public func apply(_ patch: HostPatch, complete: Bool) {
         let previousPatchTime = patchTime
         let previousPatchReducesMotion = patchReducesMotion
+        let previousTally = tally
         if patchTime == nil { patchTime = now() }
         if patchReducesMotion == nil { patchReducesMotion = reducesMotion() }
+        tally = core.inspecting ? RenderTally() : nil
         defer {
+            if let tally, let generation = intake.generationBeingApplied {
+                core.inspected(tally, generation: generation)
+            }
             patchTime = previousPatchTime
             patchReducesMotion = previousPatchReducesMotion
+            tally = previousTally
         }
 
         if let root, root.id == patch.id, root.type == patch.type, !patch.replace {

@@ -13,6 +13,9 @@
     /// Whether a message is being applied.
     public var isApplying: Bool { depth > 0 }
 
+    /// The generation of the message being applied; nil between messages.
+    private(set) var generationBeingApplied: Int32?
+
     private var depth = 0
     private var interrupted = false
     private var drift: String?
@@ -32,9 +35,12 @@
         let outer = drift
         drift = nil
 
+        let outerGeneration = generationBeingApplied
+        generationBeingApplied = generation
         depth += 1
         ProgramWrite.perform { apply(root) }
         depth -= 1
+        generationBeingApplied = outerGeneration
 
         let found = drift
         drift = outer

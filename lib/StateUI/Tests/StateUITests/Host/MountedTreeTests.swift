@@ -109,6 +109,58 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertTrue(log.left.isEmpty, "a kept row does not leave")
     }
 
+    /// While an inspector records, a message applied tells it the host's half on the pass of its generation:
+    /// the elements walked, made, kept and adopted, and each scene's part by its place in the application.
+    @MainActor
+    func testAMessageAppliedTellsTheInspectorWhatItCost() throws {
+        Scenes.shared.reset()
+        Scenes.shared.connected(restoring: [:])
+        Scenes.shared.connected(restoring: [:])
+        Inspection.start()
+        defer {
+            Inspection.stop()
+            Scenes.shared.reset()
+        }
+        for generation: Int32 in 1...3 {
+            Inspection.begin(road: .build, causes: [])
+            Inspection.end(generation: generation, describe: 0, encode: 0, bytes: 0, keep: true)
+        }
+
+        func patch(_ id: String, _ type: NodeType, _ children: HostChildrenUpdate = .unchanged) -> HostPatch {
+            var patch = HostPatch(id: .manual(id), type: type)
+            patch.children = children
+            return patch
+        }
+        func list(_ rows: [String]) -> HostPatch {
+            var list = patch("list", .absoluteLayout, .arranged(rows.map { id in
+                var row = patch(id, .label)
+                row.shape = 7
+                return row
+            }))
+            list.recycles = true
+            return list
+        }
+        func secondScene(_ rows: [String]) -> HostPatch {
+            patch("application", .application, .changed([patch("2", .scene, .changed([list(rows)]))]))
+        }
+
+        let (tree, _) = Self.tree()
+        let whole = patch("application", .application, .arranged([
+            patch("1", .scene, .arranged([patch("a", .label)])),
+            patch("2", .scene, .arranged([list(["r1"])])),
+        ]))
+        tree.intake.take(whole, generation: 1) { tree.apply($0, complete: true) }
+        tree.intake.take(secondScene([]), generation: 2) { tree.apply($0, complete: false) }
+        tree.intake.take(secondScene(["r2"]), generation: 3) { tree.apply($0, complete: false) }
+
+        let hosts = try Inspection.passes.map { try XCTUnwrap($0.host, "no host half for #\($0.generation)") }
+        XCTAssertEqual(
+            hosts.map { [$0.nodes, $0.made, $0.kept, $0.adopted] }, [[6, 6, 0, 0], [3, 0, 3, 0], [4, 0, 3, 1]])
+        XCTAssertEqual(hosts.map(\.read), [0, 0, 0], "a typed patch is not read off a buffer")
+        XCTAssertTrue(hosts.allSatisfy { $0.apply > 0 })
+        XCTAssertEqual(hosts.map { $0.scenes.map { $0 > 0 } }, [[true, true], [false, true], [false, true]])
+    }
+
     /// A frame arranges a parent once when a child's place changed; an element without a view passes it up.
     @MainActor
     func testAFrameArrangesTheParentThatPlacesAChangedChild() {

@@ -58,6 +58,7 @@
         mount = tree.allocateMount()
         native = nil
         native = tree.makeNative(self)
+        tree.tally?.made += 1
         apply(patch, adopting: false)
     }
 
@@ -70,6 +71,13 @@
     /// Design: docs/design/host/tree.md#recycling
     private func apply(_ patch: HostPatch, adopting: Bool) {
         guard let tree else { return }
+
+        let sceneBegan: ContinuousClock.Instant? = tree.tally != nil && patch.type == .scene ? .now : nil
+        tree.tally?.nodes += 1
+        if adopting { tree.tally?.adopted += 1 }
+        defer {
+            if let sceneBegan { tree.tally?.scenes[patch.id, default: .zero] += ContinuousClock.now - sceneBegan }
+        }
 
         native.willApply()
         var changed: Set<Prop>
