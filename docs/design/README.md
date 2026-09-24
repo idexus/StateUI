@@ -41,7 +41,8 @@ it.
 - `platforms/`: each platform's half of its runtime, one folder a platform.
   `platforms/appkit/`: [input](platforms/appkit/input.md),
   [views](platforms/appkit/views.md),
-  [registrations](platforms/appkit/registrations.md).
+  [registrations](platforms/appkit/registrations.md),
+  [runtime](platforms/appkit/runtime.md).
   `platforms/android/`: [the runtime](platforms/android/runtime.md),
   [JNI](platforms/android/jni.md), [layout](platforms/android/layout.md),
   [controls](platforms/android/controls.md), [motion](platforms/android/motion.md),

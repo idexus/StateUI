@@ -209,6 +209,12 @@ final class AndroidRenderer {
 
     /// The activity's configuration changed - the display turned or resized: the core is told what stands now,
     /// and the window laid out again.
+    /// The zone, the clock, the battery or the network changed.
+    func environmentChanged() {
+        AndroidEnvironment.reportChanging(to: core, context: context.reference)
+        pump()
+    }
+
     func configured() {
         AndroidEnvironment.report(to: core, activity: context.reference)
         Java.call(root.reference, JavaAPI.requestLayout)

@@ -96,6 +96,9 @@ enum JavaNatives {
         let destroying: @convention(c) (Environment, jclass?) -> Void = { _, _ in
             MainActor.assumeIsolated { AndroidRenderer.shared?.destroying() }
         }
+        let environmentChanged: @convention(c) (Environment, jclass?) -> Void = { _, _ in
+            MainActor.assumeIsolated { AndroidRenderer.shared?.environmentChanged() }
+        }
         let menuOpening: @convention(c) (Environment, jclass?, jlong, jobject?) -> Void = { _, _, number, menu in
             nonisolated(unsafe) let menu = menu
             MainActor.assumeIsolated {
@@ -237,6 +240,7 @@ enum JavaNatives {
             ("gestured", "(JIIFFF)V", unsafeBitCast(gestured, to: UnsafeMutableRawPointer.self)),
             ("focusChanged", "(JZ)V", unsafeBitCast(focusChanged, to: UnsafeMutableRawPointer.self)),
             ("destroying", "()V", unsafeBitCast(destroying, to: UnsafeMutableRawPointer.self)),
+            ("environmentChanged", "()V", unsafeBitCast(environmentChanged, to: UnsafeMutableRawPointer.self)),
             ("menuOpening", "(JLandroid/view/Menu;)V", unsafeBitCast(menuOpening, to: UnsafeMutableRawPointer.self)),
             ("tabSelected", "(JI)V", unsafeBitCast(tabSelected, to: UnsafeMutableRawPointer.self)),
             ("toggled", "(JZ)V", unsafeBitCast(toggled, to: UnsafeMutableRawPointer.self)),

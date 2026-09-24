@@ -25,6 +25,7 @@ final class AppKitRenderer: @unchecked Sendable {
     let eventSink: ((Int32, [HostValue]) -> Void)?
     let preferences: UserDefaults
     let core = CoreLink()
+    private(set) lazy var environment = AppKitEnvironment(core: core)
     let animator: Animator
     let stateChannels: StateChannels
     let describedMotion: DescribedMotion
@@ -111,6 +112,7 @@ final class AppKitRenderer: @unchecked Sendable {
     }
 
     func start() {
+        environment.start()
         startRuntime()
         startDoorbell()
     }

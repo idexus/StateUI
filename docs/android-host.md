@@ -94,7 +94,9 @@ over, as a PNG, which `Image("mark.png")` finds as it finds the SVG on every
 other host. An application's `print` reaches logcat under the
 tag `StateUI`, and so does what `STATEUI_TALLY=1` and `STATEUI_INSPECT=1`
 write: `run-app.sh` hands every `STATEUI_` variable of the shell that runs it
-to the application's environment.
+to the application's environment. A head's manifest asks for
+`ACCESS_NETWORK_STATE`, which the host needs to report the network to the
+application's views.
 
 In VS Code, choose **Android** as the host and a device, and press **F5**.
 

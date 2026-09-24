@@ -359,6 +359,9 @@ enum JavaAPI {
     static let displayFacts = Java.staticMethod(environment, "display", "(Landroid/app/Activity;)[F")
     static let applicationFacts = Java.staticMethod(
         environment, "application", "(Landroid/content/Context;)[Ljava/lang/String;")
+    static let localeFacts = Java.staticMethod(environment, "locale", "(Landroid/content/Context;)[Ljava/lang/String;")
+    static let batteryFacts = Java.staticMethod(environment, "battery", "(Landroid/content/Context;)[F")
+    static let connectivityFacts = Java.staticMethod(environment, "connectivity", "(Landroid/content/Context;)[I")
 
     static let bar = Java.findClass("stateui/android/StateUIBar")
     static let newBar = Java.method(bar, "<init>", "(Landroid/content/Context;J)V")

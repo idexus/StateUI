@@ -18,6 +18,21 @@ struct CounterPage: ContentView {
     }
 }
 
+/// What the host reported of the device's locale, battery and network, one label each.
+struct EnvironmentPage: ContentView {
+    @Environment var locale: LocaleInfo
+    @Environment var battery: Battery
+    @Environment var connectivity: Connectivity
+
+    var content: any View {
+        VStack {
+            Label("locale \(locale.name) \(locale.timeZone)")
+            Label("battery \(battery.state)")
+            Label("network \(connectivity.networkAccess)")
+        }
+    }
+}
+
 final class AndroidRendererTests: XCTestCase {
     static var allTests: [(String, (AndroidRendererTests) -> () throws -> Void)] {
         [
@@ -28,6 +43,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testTheActivitysLifecycleMovesTheWindowAndTheScene", testTheActivitysLifecycleMovesTheWindowAndTheScene),
             ("testAWindowStoppedComesBackResumedAndHearsItIsGoing", testAWindowStoppedComesBackResumedAndHearsItIsGoing),
             ("testTheWindowsTitleNamesTheActivity", testTheWindowsTitleNamesTheActivity),
+            ("testTheHostReportsTheLocaleTheBatteryAndTheNetwork", testTheHostReportsTheLocaleTheBatteryAndTheNetwork),
         ]
     }
 
@@ -92,6 +108,19 @@ final class AndroidRendererTests: XCTestCase {
 
             host.setPhase(.background)
             XCTAssertEqual(said, "stopped background")
+        }
+    }
+
+    /// Before the first render the host tells the core the device's locale, its battery and its network.
+    func testTheHostReportsTheLocaleTheBatteryAndTheNetwork() {
+        onMainActor {
+            let host = AndroidRenderer.running { EnvironmentPage() }
+            let texts = host.views(AndroidLabelView.self).map(\.text)
+
+            XCTAssertEqual(texts.count, 3)
+            XCTAssertFalse(texts.first?.hasPrefix("locale  ") ?? true, "\(texts)")
+            XCTAssertFalse(texts.contains("battery unknown"), "\(texts)")
+            XCTAssertFalse(texts.contains("network unknown"), "\(texts)")
         }
     }
 }

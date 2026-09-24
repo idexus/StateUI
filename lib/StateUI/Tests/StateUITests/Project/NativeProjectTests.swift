@@ -372,6 +372,21 @@ final class NativeProjectTests: XCTestCase {
             "an Android head is built without its icon being drawn")
     }
 
+    /// Every Android head may read the network: the host reports it to the application's views, and a head
+    /// whose manifest does not ask reports it unknown for good, with nothing said anywhere.
+    func testEveryAndroidHeadMayReadTheNetwork() throws {
+        let permission = "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />"
+        let heads = try SourceTree.applications().map { $0.appendingPathComponent("Platforms/Android") }
+            .filter { FileManager.default.fileExists(atPath: $0.path) }
+            + [SourceTree.repository.appendingPathComponent("lib/StateUI.Android/Tests/Platforms/Android")]
+
+        XCTAssertGreaterThan(heads.count, 1, "no Android head found")
+        for head in heads {
+            let manifest = try String(contentsOf: head.appendingPathComponent("AndroidManifest.xml"), encoding: .utf8)
+            XCTAssertTrue(manifest.contains(permission), "\(head.path) does not ask for ACCESS_NETWORK_STATE")
+        }
+    }
+
     /// Every application's AppKit head hands the host its icon on macOS's icon
     /// grid, found from its own source file rather than from the directory it
     /// was started in.

@@ -25,6 +25,8 @@ public class StateUIActivity extends Activity {
     /** The way back the Swift host takes while it has one; made only where the system has the type. */
     private Object backCallback;
     private boolean handlesBack;
+    /** What {@link StateUIEnvironment#watch} started, stopped as the activity goes. */
+    private Object[] environmentWatch;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -41,6 +43,7 @@ public class StateUIActivity extends Activity {
         setContentView(root);
 
         StateUIHost.start(this, root, getResources().getDisplayMetrics().density);
+        environmentWatch = StateUIEnvironment.watch(this);
     }
 
     @Override
@@ -64,6 +67,7 @@ public class StateUIActivity extends Activity {
     /** The activity finishing - not one made again for a new configuration - takes its window away. */
     @Override
     protected void onDestroy() {
+        StateUIEnvironment.unwatch(this, environmentWatch);
         if (isFinishing()) StateUIHost.destroying();
         super.onDestroy();
     }

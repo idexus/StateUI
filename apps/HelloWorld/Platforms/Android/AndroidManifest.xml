@@ -2,6 +2,8 @@
 <!-- SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The host reports the network to the application's views. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:icon="@mipmap/appicon"
         android:roundIcon="@mipmap/appicon"

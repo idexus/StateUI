@@ -95,6 +95,9 @@ final class StateUIHost {
     /** A view took the keyboard's focus, or lost it. */
     static native void focusChanged(long view, boolean focused);
 
+    /** The zone, the clock, the battery or the network changed: the host reads them again. */
+    static native void environmentChanged();
+
     /** The activity is finishing - the user left it, or it finished itself: its window is going. */
     static native void destroying();
 
