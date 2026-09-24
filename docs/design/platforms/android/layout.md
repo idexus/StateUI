@@ -49,6 +49,11 @@ short content still has the whole room to stand in, and the scroller's
 padding is the document's own rather than the native scroller's. Several
 children are stacked down inside the document, as one.
 
+The native scrollers take the element's direction rather than the
+activity's: one right to left starts at its end, one left to right at its
+first column, so a block of code told `.leftToRight` starts at its first
+column in a language written right to left.
+
 What the user does is Android's - the drag, the throw, the edge's glow - and
 the host hears each move of either scroller and when a finger takes hold and
 lets go. The movement says on the display's frame where it went and when it

@@ -33,6 +33,7 @@ enum JavaAPI {
     static let getPaddingRight = Java.method(view, "getPaddingRight", "()I")
     static let getPaddingBottom = Java.method(view, "getPaddingBottom", "()I")
     static let setForeground = Java.method(view, "setForeground", "(Landroid/graphics/drawable/Drawable;)V")
+    static let setLayoutDirection = Java.method(view, "setLayoutDirection", "(I)V")
     static let setClipToOutline = Java.method(view, "setClipToOutline", "(Z)V")
     static let invalidateOutline = Java.method(view, "invalidateOutline", "()V")
     static let invalidate = Java.method(view, "invalidate", "()V")

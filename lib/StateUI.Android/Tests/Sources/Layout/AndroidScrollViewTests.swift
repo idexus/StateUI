@@ -15,6 +15,7 @@ final class AndroidScrollViewTests: XCTestCase {
             ("testTheUsersScrollingReachesItsStateOnTheFrameAndRestsOnce", testTheUsersScrollingReachesItsStateOnTheFrameAndRestsOnce),
             ("testAViewSaysWhereItStandsOnTheFrameAfterALayout", testAViewSaysWhereItStandsOnTheFrameAfterALayout),
             ("testAScrollerOutlinesItselfAndCutsWhatItShowsToItsShape", testAScrollerOutlinesItselfAndCutsWhatItShowsToItsShape),
+            ("testAScrollerScrollsInItsOwnDirection", testAScrollerScrollsInItsOwnDirection),
         ]
     }
 
@@ -182,6 +183,26 @@ final class AndroidScrollViewTests: XCTestCase {
             XCTAssertEqual(scroll.pixels(at: [(100, 1)]), [0xFF00_00FF], "the outline at the top edge")
             XCTAssertTrue(Java.callBool(scroll.reference, TestJava.getClipToOutline))
             XCTAssertEqual(scroll.outlineRadius, 40, accuracy: 0.01)
+        }
+    }
+
+    /// A scroller scrolls in its element's direction whatever the activity's: one told left to right starts at
+    /// its first column under a page laid out right to left, and one right to left starts at its end.
+    func testAScrollerScrollsInItsOwnDirection() {
+        onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    ScrollView { Label("code") }.orientation(.horizontal).layoutDirection(.leftToRight)
+                    ScrollView { Label("words") }.orientation(.horizontal)
+                }
+                .layoutDirection(.rightToLeft)
+            }
+            host.layOut()
+
+            let directions = host.views(AndroidScrollView.self).map { scroll in
+                Java.callInt(scroll.scrollers[0].reference, TestJava.getLayoutDirection)
+            }
+            XCTAssertEqual(directions, [0, 1], "left to right, then right to left")
         }
     }
 }

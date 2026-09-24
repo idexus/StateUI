@@ -35,6 +35,8 @@ struct CodeBlock: ContentView {
         .stroke(Palette.outline)
         .strokeWidth(1)
         .shape(.roundedRectangle(8))
+        // Code reads left to right in every language, from its first column.
+        .layoutDirection(.leftToRight)
     }
 
     /// How large the code is drawn, in points.

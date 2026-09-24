@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:label="StateUI Android host tests"
+        android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar" />
 
     <instrumentation

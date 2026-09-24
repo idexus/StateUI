@@ -39,6 +39,18 @@ final class AndroidScrollView: AndroidLayoutView {
     private var pendingOffset: Point?
     private var laidOut = false
 
+    /// The native scrollers scroll in the element's direction, not the activity's: one right to left starts at its
+    /// end, one left to right at its first column.
+    override var direction: LayoutDirection {
+        didSet { if direction != oldValue { directScrollers() } }
+    }
+
+    private func directScrollers() {
+        for scroller in scrollers {
+            Java.call(scroller.reference, JavaAPI.setLayoutDirection, .int(direction == .rightToLeft ? 1 : 0))
+        }
+    }
+
     /// Cuts what it scrolls off at its edges, where every other StateUI layout draws past them.
     override init() {
         super.init()
@@ -208,6 +220,7 @@ final class AndroidScrollView: AndroidLayoutView {
         }
         Java.call(scrollers.last!.reference, JavaAPI.addView, .object(document.reference), .int(-1), .int(-1))
         Java.call(reference, JavaAPI.addView, .object(scrollers[0].reference), .int(-1), .int(-1))
+        directScrollers()
         offset = Point(x: 0, y: 0)
         laidOut = false
     }
