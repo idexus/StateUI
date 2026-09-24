@@ -389,6 +389,39 @@ final class NativeProjectTests: XCTestCase {
         }
     }
 
+    /// Every Android head shows the application's icon: the launcher's adaptive icon, drawn from
+    /// `Resources/AppIcon` - the ground and the mark - as the head is built, and named in its manifest.
+    func testEveryAndroidHeadShowsTheApplicationsIcon() throws {
+        var heads = 0
+
+        for application in try Fixtures.applications() {
+            let head = application.appendingPathComponent("Platforms/Android")
+            guard FileManager.default.fileExists(atPath: head.path) else { continue }
+            heads += 1
+            let name = application.lastPathComponent
+
+            let manifest = try String(contentsOf: head.appendingPathComponent("AndroidManifest.xml"), encoding: .utf8)
+            for shape in ["android:icon=\"@mipmap/appicon\"", "android:roundIcon=\"@mipmap/appicon\""] {
+                XCTAssertTrue(manifest.contains(shape), "\(name)'s Android manifest does not say \(shape)")
+            }
+            let gradle = try String(contentsOf: head.appendingPathComponent("build.gradle.kts"), encoding: .utf8)
+            XCTAssertTrue(gradle.contains("res.srcDir(stated(\"stateui.res\"))"), "\(name)'s head takes no drawn icon")
+            for artwork in ["appicon_bkg.svg", "appicon_mark.svg"] {
+                XCTAssertTrue(
+                    FileManager.default.fileExists(
+                        atPath: application.appendingPathComponent("Resources/AppIcon/\(artwork)").path),
+                    "\(name) has no Resources/AppIcon/\(artwork) to draw its Android icon from")
+            }
+        }
+
+        XCTAssertGreaterThan(heads, 0, "no Android head found")
+        let tools = try String(
+            contentsOf: Fixtures.repository.appendingPathComponent(".scripts/Android/tools.sh"), encoding: .utf8)
+        XCTAssertTrue(
+            tools.contains("draw-app-icon") && tools.contains("-Pstateui.res="),
+            "an Android head is built without its icon being drawn")
+    }
+
     /// Every AppKit head - each application's and the template's - hands the
     /// host its icon on macOS's icon grid, found from its own source file
     /// rather than from the directory it was started in.

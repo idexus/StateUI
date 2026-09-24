@@ -5,6 +5,8 @@
     <!-- The WebView sample fetches its page, and the page's link leads on over plain HTTP. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <application
+        android:icon="@mipmap/appicon"
+        android:roundIcon="@mipmap/appicon"
         android:label="StateUI Gallery"
         android:usesCleartextTraffic="true"
         android:supportsRtl="true"

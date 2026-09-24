@@ -64,6 +64,16 @@ build_head () {
   fi
   "$rasterizer" "$app/Resources/Images" "$build/assets/images" >&2 || return 1
 
+  # The launcher icon is drawn from Resources/AppIcon, into the APK's resources; the test head has none.
+  local icon_drawer="$build/tools/draw-app-icon"
+  if [[ -d "$app/Resources/AppIcon" ]]; then
+    if [[ ! -x "$icon_drawer" || "$script_dir/draw-app-icon.swift" -nt "$icon_drawer" ]]; then
+      mkdir -p "$build/tools"
+      xcrun swiftc -O "$script_dir/draw-app-icon.swift" -o "$icon_drawer" >&2 || return 1
+    fi
+    "$icon_drawer" "$app/Resources/AppIcon" "$build/res" >&2 || return 1
+  fi
+
   java="$(java_home_21)"
   [[ -n "$java" ]] || { echo "ERROR: Gradle needs JDK 21 - install it, or point JAVA_HOME at one" >&2; return 1; }
   gradle="$(gradle_binary)" || return 1
@@ -77,6 +87,7 @@ build_head () {
     -Pstateui.java="$repository_dir/lib/StateUI.Android/Java" \
     -Pstateui.libraries="$build/jniLibs" \
     -Pstateui.assets="$build/assets" \
+    -Pstateui.res="$build/res" \
     "$task" >&2 || return 1
 
   apk="$(find "$build/gradle/outputs/apk/$configuration" -name '*.apk' 2>/dev/null | head -n 1)"
