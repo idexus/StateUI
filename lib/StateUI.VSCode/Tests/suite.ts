@@ -280,7 +280,17 @@ export async function run(): Promise<void> {
                 made.command === "bash" && made.args[0].endsWith("/.scripts/new-app.sh") && made.args[1] === "Notes"
                 && windows.command === "powershell" && windows.args.slice(-3).join(" ").endsWith("new-app.ps1 -Name Notes"));
         }
-        // 8. StateUI: Debug on AppKit runs the REMEMBERED application - no
+        // 8. The package holds what the sources build today and nothing an
+        //    older build left in out/.
+        {
+            const extension = path.join(root.uri.fsPath, "lib", "StateUI.VSCode");
+            const vsce = path.join(extension, "node_modules", ".bin", process.platform === "win32" ? "vsce.cmd" : "vsce");
+            const packed = execSync(`"${vsce}" ls`, { cwd: extension }).toString().split(/\r?\n/).filter((line) => line.length > 0);
+            const stray = packed.filter((file) => !/^(package\.json|README\.md|icon\.png|LICENSE|out\/Sources\/[A-Za-z]+\.js)$/.test(file));
+            check(`the package holds the manifest, the readme, the icon and out/Sources alone${stray.length > 0 ? ` - not ${stray.slice(0, 3).join(", ")}` : ""}`,
+                stray.length === 0 && packed.includes("out/Sources/extension.js"));
+        }
+        // 9. StateUI: Debug on AppKit runs the REMEMBERED application - no
         //    question asked - built, under lldb-dap.
         await api.selectHost("appkit");
         await api.selectApplication("HelloWorld");
