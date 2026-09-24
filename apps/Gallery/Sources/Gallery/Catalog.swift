@@ -304,11 +304,9 @@ final class Catalog {
 
         #if APPKIT
         // Calling the host, hearing from it, and a control the application
-        // registers with it - each described like the library's own.
-        //
-        // The Swift half of the first three is the SAME file the C# interop
-        // group shows: one contract, one `View`, and a host of its own at each
-        // end. What differs is the other half.
+        // registers with it - each described like the library's own: one
+        // contract, one `View`, and the host's half beside the AppKit head,
+        // in Platforms/AppKit/Host.
         //
         // The Metal cube is the exception, and deliberately: its view draws on
         // the GPU, so it is declared for this host alone.
