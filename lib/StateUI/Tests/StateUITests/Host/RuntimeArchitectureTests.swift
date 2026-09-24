@@ -15,7 +15,7 @@ final class RuntimeArchitectureTests: XCTestCase {
     func testOnlyTheAnimatorSamplesALaw() throws {
         var found: [String] = []
 
-        for (path, text) in try Fixtures.runtimeSources() where !path.hasSuffix("/Animator.swift") {
+        for (path, text) in try SourceTree.runtimeSources() where !path.hasSuffix("/Animator.swift") {
             for (number, line) in code(text) where line.contains("HostMotionLaw.sample(") {
                 found.append("\(path):\(number)")
             }
@@ -29,7 +29,7 @@ final class RuntimeArchitectureTests: XCTestCase {
     func testOnlyTheDisplayCycleAdvancesTheAnimatorAndRunsTheCoresCycle() throws {
         var found: [String] = []
 
-        for (path, text) in try Fixtures.runtimeSources() where !path.hasSuffix("/DisplayCycle.swift") {
+        for (path, text) in try SourceTree.runtimeSources() where !path.hasSuffix("/DisplayCycle.swift") {
             for (number, line) in code(text) {
                 for step in ["animator.advance(", "core.cycle("] where line.contains(step) {
                     found.append("\(path):\(number): \(step)")
@@ -47,7 +47,7 @@ final class RuntimeArchitectureTests: XCTestCase {
         let codecs = ["journey(from:", "value(of:", "placements(from:"]
         var calls: [String] = []
 
-        for (path, text) in try Fixtures.runtimeSources() where !path.hasSuffix("/CoreLink.swift") {
+        for (path, text) in try SourceTree.runtimeSources() where !path.hasSuffix("/CoreLink.swift") {
             for (number, line) in code(text) {
                 var rest = Substring(line)
                 while let found = rest.range(of: "StateUIHost.") {
@@ -69,7 +69,7 @@ final class RuntimeArchitectureTests: XCTestCase {
         let flag = try NSRegularExpression(pattern: #"\bvar\s+(applying\w*)\b"#)
         var found: [String] = []
 
-        for (path, text) in try Fixtures.runtimeSources() {
+        for (path, text) in try SourceTree.runtimeSources() {
             for match in flag.matches(in: text, range: NSRange(text.startIndex..., in: text)) {
                 guard let range = Range(match.range(at: 1), in: text) else { continue }
                 found.append("\(path): \(text[range])")
@@ -83,7 +83,7 @@ final class RuntimeArchitectureTests: XCTestCase {
     /// decides when a movement is over, so a hand-wound clock reproduces every rest.
     func testAScrollersRestIsTimedByTheFrameClockAlone() throws {
         let timers = ["asyncAfter(", "DispatchWorkItem", "Timer.", "scheduledTimer", "afterDelay:", "postDelayed"]
-        let scrolling = try Fixtures.runtimeSources().filter { $0.path.contains("Scroll") }
+        let scrolling = try SourceTree.runtimeSources().filter { $0.path.contains("Scroll") }
         var found: [String] = []
 
         for (path, text) in scrolling {
@@ -106,7 +106,7 @@ final class RuntimeArchitectureTests: XCTestCase {
             pattern: #"\b(?:class|struct|enum|protocol|actor|typealias)\s+(\w+)"#)
         var found: [String] = []
 
-        for (path, text) in try Fixtures.runtimeSources() {
+        for (path, text) in try SourceTree.runtimeSources() {
             let matches = declaration.matches(in: text, range: NSRange(text.startIndex..., in: text))
 
             for match in matches {

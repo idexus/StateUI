@@ -523,7 +523,7 @@ final class ModelStateTests: XCTestCase {
     }
 
     func testHoldingAnObservableModelIsSaidAtTheDeclaration() throws {
-        let refusals = try Fixtures.allSources()
+        let refusals = try SourceTree.allSources()
             .first { $0.path.hasSuffix("/Observable.swift") }
 
         let text = try XCTUnwrap(refusals?.text, "Observable.swift is where this is said")

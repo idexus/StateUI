@@ -30,7 +30,7 @@ final class LockTests: XCTestCase {
     func testTheLibraryLocksWithLockAlone() throws {
         var offenders: [String] = []
 
-        for (path, text) in try Fixtures.allSources() {
+        for (path, text) in try SourceTree.allSources() {
             if text.contains("DispatchQueue(") { offenders.append("\(path): DispatchQueue(") }
             if text.contains(".sync {") || text.contains(".sync(") { offenders.append("\(path): .sync") }
             if text.contains("Mutex(") && !path.hasSuffix("/Lock.swift") { offenders.append("\(path): Mutex(") }

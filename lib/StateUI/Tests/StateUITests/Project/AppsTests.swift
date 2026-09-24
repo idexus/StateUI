@@ -24,7 +24,7 @@ import XCTest
 final class AppsTests: XCTestCase {
     /// `apps/HelloWorld`, what a new application is made from.
     private var helloWorld: URL {
-        Fixtures.repository.appendingPathComponent("apps/HelloWorld")
+        SourceTree.repository.appendingPathComponent("apps/HelloWorld")
     }
 
     // MARK: - The layout
@@ -37,7 +37,7 @@ final class AppsTests: XCTestCase {
     /// A new application is checked the moment it exists, with nothing to
     /// remember.
     func testEveryAppUnderAppsIsWiredToTheRepo() throws {
-        let applications = try Fixtures.applications()
+        let applications = try SourceTree.applications()
         XCTAssertFalse(
             applications.isEmpty, "apps/ holds no application - the Gallery and HelloWorld live there.")
 
@@ -77,7 +77,7 @@ final class AppsTests: XCTestCase {
             // name, and the manifest compiles Sources/ whole, so the file
             // declaring it may sit anywhere under it.
             let sources = app.appendingPathComponent("Sources")
-            let registers = try Fixtures.files(under: sources)
+            let registers = try SourceTree.files(under: sources)
                 .filter { $0.hasSuffix(".swift") }
                 .contains { relative in
                     try String(contentsOf: sources.appendingPathComponent(relative), encoding: .utf8)
@@ -101,10 +101,10 @@ final class AppsTests: XCTestCase {
     func testEverySvgSaysWhatItIsInsideTheSniffWindow() throws {
         let window = 100
 
-        for application in try Fixtures.applications() {
+        for application in try SourceTree.applications() {
             let name = application.lastPathComponent
-            let vectors = Fixtures.files(
-                under: application, leavingOut: Fixtures.byproducts.union([".scripts"]))
+            let vectors = SourceTree.files(
+                under: application, leavingOut: SourceTree.byproducts.union([".scripts"]))
                 .filter { $0.hasSuffix(".svg") }
 
             XCTAssertFalse(
@@ -139,9 +139,9 @@ final class AppsTests: XCTestCase {
     /// The base name, not the whole file name: `mark.svg` and `mark.png` are
     /// one picture to everything downstream, an SVG being asked for as a PNG.
     func testNoTwoResourcesInOneAppShareAName() throws {
-        for application in try Fixtures.applications() {
+        for application in try SourceTree.applications() {
             let name = application.lastPathComponent
-            let pictures = Fixtures.files(under: application.appendingPathComponent("Resources"))
+            let pictures = SourceTree.files(under: application.appendingPathComponent("Resources"))
                 .filter { $0.hasSuffix(".svg") || $0.hasSuffix(".png") }
 
             XCTAssertFalse(pictures.isEmpty, "\(name) has no artwork under Resources/.")
@@ -179,13 +179,13 @@ final class AppsTests: XCTestCase {
         XCTAssertEqual(made.status, 0, "new-app.sh failed:\n\(made.output)")
 
         let app = root.appendingPathComponent("Probe")
-        let model = Fixtures.files(under: helloWorld)
+        let model = SourceTree.files(under: helloWorld)
         XCTAssertFalse(model.isEmpty, "apps/HelloWorld holds nothing to make an application from.")
 
         // The same files under the new name, and nothing besides: no build
         // output, no Finder settings, nothing of HelloWorld's left out.
         XCTAssertEqual(
-            Fixtures.files(under: app, leavingOut: []),
+            SourceTree.files(under: app, leavingOut: []),
             model.map { $0.replacingOccurrences(of: "HelloWorld", with: "Probe") }.sorted(),
             "the new application's files are not HelloWorld's under the new name.")
 
@@ -199,12 +199,12 @@ final class AppsTests: XCTestCase {
 
             let source = try Data(contentsOf: helloWorld.appendingPathComponent(original))
             assertSameFile(
-                written, Fixtures.helloWorld(source, renamedTo: "Probe"),
+                written, SourceTree.helloWorld(source, renamedTo: "Probe"),
                 "\(relative) is not HelloWorld's \(original) with the name changed.")
         }
 
         // No file, and no file's text, still names the model - in any spelling.
-        for relative in Fixtures.files(under: app, leavingOut: []) {
+        for relative in SourceTree.files(under: app, leavingOut: []) {
             XCTAssertFalse(
                 relative.lowercased().contains("helloworld"),
                 "\(relative) is still named after HelloWorld.")
@@ -244,7 +244,7 @@ final class AppsTests: XCTestCase {
             let made = try newApp(bad, into: root)
             XCTAssertNotEqual(made.status, 0, "'\(bad)' should have been refused: \(made.output)")
             XCTAssertEqual(
-                Fixtures.files(under: root, leavingOut: []), [],
+                SourceTree.files(under: root, leavingOut: []), [],
                 "'\(bad)' was refused and still left files behind.")
         }
 
@@ -259,7 +259,7 @@ final class AppsTests: XCTestCase {
         let made = try newApp("Taken", into: root)
         XCTAssertNotEqual(made.status, 0, "an existing directory should be refused.")
         XCTAssertEqual(
-            Fixtures.files(under: taken, leavingOut: []), ["keep.txt"],
+            SourceTree.files(under: taken, leavingOut: []), ["keep.txt"],
             "the existing directory was written into.")
         XCTAssertEqual(
             try String(contentsOf: taken.appendingPathComponent("keep.txt"), encoding: .utf8),
@@ -323,7 +323,7 @@ final class AppsTests: XCTestCase {
     /// One of the scaffolders, read as text.
     private func script(_ name: String) throws -> String {
         try String(
-            contentsOf: Fixtures.repository.appendingPathComponent(".scripts/\(name)"),
+            contentsOf: SourceTree.repository.appendingPathComponent(".scripts/\(name)"),
             encoding: .utf8)
     }
 
@@ -340,7 +340,7 @@ final class AppsTests: XCTestCase {
         _ name: String, into destination: URL
     ) throws -> (status: Int32, output: String) {
         try run(
-            Fixtures.repository.appendingPathComponent(".scripts/new-app.sh"),
+            SourceTree.repository.appendingPathComponent(".scripts/new-app.sh"),
             [name, destination.path])
     }
 

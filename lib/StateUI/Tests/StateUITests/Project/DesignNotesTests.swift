@@ -17,9 +17,9 @@ final class DesignNotesTests: XCTestCase {
     /// Every `Design:` reference in a source names a note and a heading that exist.
     func testEveryDesignReferenceResolves() throws {
         let reference = try NSRegularExpression(pattern: #"Design: (docs/design/[\w./-]+\.md)#([a-z0-9-]+)"#)
-        var sources = try Fixtures.allSources().map { ("lib/StateUI/Sources/\($0.path)", $0.text) }
-        sources += try Fixtures.runtimeSources().map { ("lib/\($0.path)", $0.text) }
-        sources += try Fixtures.testSources().map { ($0.path, $0.text) }
+        var sources = try SourceTree.allSources().map { ("lib/StateUI/Sources/\($0.path)", $0.text) }
+        sources += try SourceTree.runtimeSources().map { ("lib/\($0.path)", $0.text) }
+        sources += try SourceTree.testSources().map { ($0.path, $0.text) }
         var read = 0
         var broken: [String] = []
 
@@ -29,7 +29,7 @@ final class DesignNotesTests: XCTestCase {
                       let section = Range(match.range(at: 2), in: text)
                 else { continue }
                 read += 1
-                let file = Fixtures.repository.appendingPathComponent(String(text[note]))
+                let file = SourceTree.repository.appendingPathComponent(String(text[note]))
                 let headings = (try? String(contentsOf: file, encoding: .utf8)).map(Self.anchors) ?? []
                 if !headings.contains(String(text[section])) {
                     broken.append("\(path): \(text[note])#\(text[section])")
@@ -46,8 +46,8 @@ final class DesignNotesTests: XCTestCase {
         var over: [String] = []
 
         for directory in Self.held {
-            let root = Fixtures.repository.appendingPathComponent(directory)
-            let files = try Fixtures.files(under: root, entering: { _ in true }).filter { $0.hasSuffix(".swift") }
+            let root = SourceTree.repository.appendingPathComponent(directory)
+            let files = try SourceTree.files(under: root, entering: { _ in true }).filter { $0.hasSuffix(".swift") }
             XCTAssertFalse(files.isEmpty, "\(directory) holds no source")
 
             for file in files {

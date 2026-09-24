@@ -347,7 +347,7 @@ struct WalkReadAlmostNothing: Error, CustomStringConvertible {
 /// this file rather than from a working directory that depends on who started
 /// the process. Every walk refuses one that read almost nothing
 /// (`WalkReadAlmostNothing`).
-enum Fixtures {
+enum SourceTree {
     /// `lib/StateUI/Sources`.
     static var sources: URL {
         URL(fileURLWithPath: #filePath)

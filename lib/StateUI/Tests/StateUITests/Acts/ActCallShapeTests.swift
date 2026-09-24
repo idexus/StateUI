@@ -261,7 +261,7 @@ final class ActCallShapeTests: XCTestCase {
     /// none is one a host could read wrongly with every suite green. Read out
     /// of this file's own `check` and `taken` calls.
     func testEveryActOfEveryContractIsCheckedHere() throws {
-        let source = try XCTUnwrap(Fixtures.testSources().first { $0.path.hasSuffix("/ActCallShapeTests.swift") }?.text)
+        let source = try XCTUnwrap(SourceTree.testSources().first { $0.path.hasSuffix("/ActCallShapeTests.swift") }?.text)
         let named = try NSRegularExpression(pattern: #"(?:check|taken)\((?:[^"\n]*?, )?"([A-Za-z]+)""#)
         let checked = Set(
             named.matches(in: source, range: NSRange(source.startIndex..., in: source)).compactMap { match in

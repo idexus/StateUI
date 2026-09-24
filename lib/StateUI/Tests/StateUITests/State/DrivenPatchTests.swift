@@ -344,7 +344,7 @@ final class DrivenPatchTests: XCTestCase {
     /// `journey(.x, by:)` - or `journey(SomeContract.x, by:)`, the member with
     /// its contract - under a `public func x(_ state: Binding<T>)`.
     func testEveryWalkedModifierNamesACarriedPropertyOfTheSameName() throws {
-        let sources = try Fixtures.allSources()
+        let sources = try SourceTree.allSources()
 
         var walked: [(name: String, type: String)] = []
         var values: Set<String> = []
@@ -411,7 +411,7 @@ final class DrivenPatchTests: XCTestCase {
     /// a synonym for assignment that answered `true` for a walk nothing
     /// walked - and that the old spelling stays gone.
     func testAValueIsSentOnAJourneyByOneSpellingOnly() throws {
-        let sources = try Fixtures.allSources()
+        let sources = try SourceTree.allSources()
         var declared: [(file: String, line: String)] = []
         var old = 0
 
@@ -428,7 +428,7 @@ final class DrivenPatchTests: XCTestCase {
 
         XCTAssertEqual(declared.count, 1, "one declaration, and it is the journey's: \(declared)")
         XCTAssertEqual(
-            declared.first.map { Fixtures.name(of: $0.file) }, "Journey.swift",
+            declared.first.map { SourceTree.name(of: $0.file) }, "Journey.swift",
             "the one that survives lives beside the journey")
         XCTAssertTrue(
             declared.first?.line.contains("target: Value") == true,

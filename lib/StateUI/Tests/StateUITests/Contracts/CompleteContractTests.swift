@@ -43,7 +43,7 @@ final class CompleteContractTests: XCTestCase {
             contracts[element.nodeType.name, default: []].append(String(describing: element))
         }
 
-        let types = try Fixtures.tokenNames(of: "NodeType")
+        let types = try SourceTree.tokenNames(of: "NodeType")
         XCTAssertEqual(types.subtracting(contracts.keys).sorted(), [], "a node type with no contract")
         XCTAssertEqual(Set(contracts.keys).subtracting(types).sorted(), [], "a contract for no node type")
         XCTAssertEqual(contracts.filter { $0.value.count > 1 }.keys.sorted(), [], "a node type with two contracts")
@@ -65,7 +65,7 @@ final class CompleteContractTests: XCTestCase {
         ]
         var byType: [String] = []
 
-        for source in try Fixtures.allSources() {
+        for source in try SourceTree.allSources() {
             let text = source.text
             var searched = text.startIndex..<text.endIndex
 
@@ -78,7 +78,7 @@ final class CompleteContractTests: XCTestCase {
                 let line = text[lineStart..<lineEnd].trimmingCharacters(in: .whitespaces)
 
                 if line.hasPrefix("//") { continue }
-                if allowed.contains(where: { Fixtures.name(of: source.path) == $0.path && text[found.lowerBound...].hasPrefix($0.construction) }) {
+                if allowed.contains(where: { SourceTree.name(of: source.path) == $0.path && text[found.lowerBound...].hasPrefix($0.construction) }) {
                     continue
                 }
 
@@ -88,7 +88,7 @@ final class CompleteContractTests: XCTestCase {
         }
 
         for exception in allowed {
-            XCTAssertTrue(try Fixtures.text(in: exception.path).contains(exception.construction),
+            XCTAssertTrue(try SourceTree.text(in: exception.path).contains(exception.construction),
                           "\(exception.path) no longer builds \(exception.construction)")
         }
 
@@ -98,7 +98,7 @@ final class CompleteContractTests: XCTestCase {
     /// Every act the library declares is a member of exactly one contract,
     /// and every act member is one the library declares.
     func testEveryActIsAMemberOfExactlyOneContract() throws {
-        let acts = try Fixtures.tokenNames(of: "Act")
+        let acts = try SourceTree.tokenNames(of: "Act")
         var owners: [String: [String]] = [:]
 
         for item in declared where item.kind == .act {
@@ -160,15 +160,15 @@ final class CompleteContractTests: XCTestCase {
         var wrong: [String] = []
         var read = 0
 
-        for source in try Fixtures.allSources()
-        where source.path.hasPrefix("Views/") || Self.describing[Fixtures.name(of: source.path)] != nil {
-            let properties = Fixtures.propertyKeys(inSource: source.text)
-            let events = Fixtures.handlerKeys(inSource: source.text)
+        for source in try SourceTree.allSources()
+        where source.path.hasPrefix("Views/") || Self.describing[SourceTree.name(of: source.path)] != nil {
+            let properties = SourceTree.propertyKeys(inSource: source.text)
+            let events = SourceTree.handlerKeys(inSource: source.text)
 
             guard !properties.isEmpty || !events.isEmpty else { continue }
 
-            let described = Fixtures.nodeTypes(inSource: source.text)
-                .union(Self.describing[Fixtures.name(of: source.path)] ?? [])
+            let described = SourceTree.nodeTypes(inSource: source.text)
+                .union(Self.describing[SourceTree.name(of: source.path)] ?? [])
                 .union(Self.extended(in: source.text))
             let owners = described.compactMap { contracts[$0] }.flatMap { $0.worn }
 
@@ -198,8 +198,8 @@ final class CompleteContractTests: XCTestCase {
         var said: [String] = []
 
         for (path, elements) in Self.describing.sorted(by: { $0.key < $1.key }) {
-            let text = try Fixtures.text(in: path)
-            let read = Fixtures.nodeTypes(inSource: text).union(Self.extended(in: text))
+            let text = try SourceTree.text(in: path)
+            let read = SourceTree.nodeTypes(inSource: text).union(Self.extended(in: text))
 
             for element in elements where read.contains(element) {
                 said.append("\(path): \(element)")
@@ -250,7 +250,7 @@ final class CompleteContractTests: XCTestCase {
     }
 
     private static func platformContract() throws -> String {
-        try String(contentsOf: Fixtures.repository.appendingPathComponent("docs/platform-contract.md"), encoding: .utf8)
+        try String(contentsOf: SourceTree.repository.appendingPathComponent("docs/platform-contract.md"), encoding: .utf8)
     }
 
     /// The backticked names in the table rows of one `## ` section.

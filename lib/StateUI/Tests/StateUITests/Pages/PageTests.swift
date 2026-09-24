@@ -4,7 +4,7 @@
 // What a PAGE puts in the patch, and the guards that keep the list complete.
 //
 // A page is not a control: it has no case in ControlTests, it cannot
-// be styled, and `Fixtures.controlSources()` skips the file it lives in. So
+// be styled, and `SourceTree.controlSources()` skips the file it lives in. So
 // the coverage a control gets for free - every modifier exercised, every
 // property carried - has to be written here instead, and this is the file that
 // writes it.
@@ -271,13 +271,13 @@ final class PageTests: XCTestCase {
         let sent = Self.keys(in: Self.arrived(EveryPropertyPage()))
             .union(Self.keys(in: EveryPropertyWindow.node))
 
-        let page = try Fixtures.propertyKeys(in: "PageSession.swift")
-        let window = try Fixtures.propertyKeys(in: "WindowSession.swift")
+        let page = try SourceTree.propertyKeys(in: "PageSession.swift")
+        let window = try SourceTree.propertyKeys(in: "WindowSession.swift")
 
         XCTAssertTrue(page.contains("title"), "the scan found nothing PageSession.swift writes")
         XCTAssertTrue(window.contains("width"), "the scan found nothing WindowSession.swift writes")
 
-        let declared = try page.union(window).union(Fixtures.propertyKeys(in: "Application.swift"))
+        let declared = try page.union(window).union(SourceTree.propertyKeys(in: "Application.swift"))
         let missing = declared.subtracting(sent).sorted()
 
         XCTAssertTrue(missing.isEmpty, """
@@ -328,7 +328,7 @@ final class PageTests: XCTestCase {
         let sent = Self.keys(in: Self.arrived(EveryPropertyPage()))
 
         for source in ["ToolbarItem.swift", "MenuBar.swift", "MenuItemElement.swift"] {
-            let declared = try Fixtures.propertyKeys(in: source)
+            let declared = try SourceTree.propertyKeys(in: source)
 
             XCTAssertFalse(declared.isEmpty, "the scan found nothing \(source) writes")
 
@@ -380,7 +380,7 @@ final class PageTests: XCTestCase {
     /// it, and a scan that read those examples would think the property was
     /// declared twice under a name from a sentence.
     private static func declaredOnPage() throws -> Set<String> {
-        let source = try Fixtures.text(in: "PageSession.swift")
+        let source = try SourceTree.text(in: "PageSession.swift")
             .split(separator: "\n", omittingEmptySubsequences: false)
             .map { $0.drop(while: { $0 == " " }) }
             .filter { !$0.hasPrefix("//") }
@@ -416,7 +416,7 @@ final class PageTests: XCTestCase {
             .keys
             .map(\.name))
 
-        let declared = try Fixtures.propertyKeys(in: "PageElement.swift")
+        let declared = try SourceTree.propertyKeys(in: "PageElement.swift")
 
         XCTAssertFalse(declared.isEmpty, "the scan found nothing PageElement.swift writes")
 

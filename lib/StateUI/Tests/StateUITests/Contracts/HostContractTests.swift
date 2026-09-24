@@ -8,7 +8,7 @@ import XCTest
 /// though applications remain free to declare their own contracts.
 final class HostContractTests: XCTestCase {
     func testEveryBuiltInControlPropertyAndEventHasOneOwner() throws {
-        let source = try Fixtures.text(in: "Tokens.swift")
+        let source = try SourceTree.text(in: "Tokens.swift")
 
         assertCoverage(
             classified: Set(LibraryContracts.elements.map { $0.nodeType.name }),
@@ -29,7 +29,7 @@ final class HostContractTests: XCTestCase {
     /// dedicated StateUI structures. They do not create a second, page-only
     /// vocabulary for capabilities that native hosts do not share.
     func testPageVocabularyContainsOnlySharedCapabilities() throws {
-        let source = try Fixtures.text(in: "Tokens.swift")
+        let source = try SourceTree.text(in: "Tokens.swift")
         let properties = declaredNames(of: "Prop", in: source)
         let pageOnlyAlternatives: Set<String> = [
             "backgroundImageSource",
@@ -50,10 +50,10 @@ final class HostContractTests: XCTestCase {
     /// A gradient or image remains ordinary view composition instead of a
     /// second background renderer hidden inside every platform adapter.
     func testBarVocabularyContainsOnlyNativeAppearanceCapabilities() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
-        let barSource = try Fixtures.text(in: "BarElement.swift")
-        let navigationSource = try Fixtures.text(in: "NavigationStack.swift")
-        let tabSource = try Fixtures.text(in: "TabbedView.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
+        let barSource = try SourceTree.text(in: "BarElement.swift")
+        let navigationSource = try SourceTree.text(in: "NavigationStack.swift")
+        let tabSource = try SourceTree.text(in: "TabbedView.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertFalse(properties.contains("barBackground"))
@@ -69,9 +69,9 @@ final class HostContractTests: XCTestCase {
     /// The user owns whether a flyout is open; the native host owns how its
     /// panes adapt and which native gestures are available on that platform.
     func testFlyoutVocabularyDoesNotExposeHostPresentationPolicy() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let vocabularies = try Self.typeSources().map(\.text).joined(separator: "\n")
-        let flyoutSource = try Fixtures.text(in: "SplitView.swift")
+        let flyoutSource = try SourceTree.text(in: "SplitView.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertFalse(properties.contains("flyoutLayoutBehavior"))
@@ -85,8 +85,8 @@ final class HostContractTests: XCTestCase {
     /// host boundary. There is no second layout-shaped spelling to translate
     /// or preserve.
     func testStackVocabularyUsesThePublicStateUISpellings() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
-        let stackSource = try Fixtures.text(in: "StackLayouts.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
+        let stackSource = try SourceTree.text(in: "StackLayouts.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
         let formerNames = ["VerticalStackLayout", "HorizontalStackLayout"]
 
@@ -104,7 +104,7 @@ final class HostContractTests: XCTestCase {
     /// split view with a sidebar. The page-shaped spellings they replaced do
     /// not return.
     func testArrangementVocabularyUsesThePublicStateUISpellings() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
         let properties = declaredNames(of: "Prop", in: tokenSource)
         let events = declaredNames(of: "Event", in: tokenSource)
@@ -124,7 +124,7 @@ final class HostContractTests: XCTestCase {
             "page-shaped arrangement properties remain in the host contract")
         XCTAssertFalse(events.contains("isPresentedChanged"))
 
-        for (path, text) in try Fixtures.allSources() {
+        for (path, text) in try SourceTree.allSources() {
             for former in formerTypes {
                 XCTAssertFalse(
                     text.contains("struct \(former)"),
@@ -138,7 +138,7 @@ final class HostContractTests: XCTestCase {
     /// view, so it stands only where a page stands. `ContentPage` does not
     /// return, as a protocol or as a node type.
     func testAPageIsWhatAContainerShows() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
 
         XCTAssertTrue(controls.contains("Page"))
@@ -158,7 +158,7 @@ final class HostContractTests: XCTestCase {
                 "\(type(of: arrangement)) is a view, so it could stand inside content")
         }
 
-        for (path, text) in try Fixtures.allSources() {
+        for (path, text) in try SourceTree.allSources() {
             XCTAssertNil(
                 text.range(of: "\\bprotocol ContentPage\\b", options: .regularExpression),
                 "ContentPage is declared again in \(path)")
@@ -196,7 +196,7 @@ final class HostContractTests: XCTestCase {
     /// composed view, is expanded before anything is sent - the library's own
     /// name, not the host's. None of them returns.
     func testNoTokenPromisesWhatNothingWrites() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
@@ -218,7 +218,7 @@ final class HostContractTests: XCTestCase {
 
     func testPlatformContractNamesEveryBuiltInTokenAndTargetHost() throws {
         let document = try String(
-            contentsOf: Fixtures.repository.appendingPathComponent("docs/platform-contract.md"),
+            contentsOf: SourceTree.repository.appendingPathComponent("docs/platform-contract.md"),
             encoding: .utf8)
         let statusRows = document
             .components(separatedBy: "## Complete host vocabulary")[0]
@@ -249,7 +249,7 @@ final class HostContractTests: XCTestCase {
     /// tune and no report step. The tokens that carried them were removed by
     /// decision and do not return.
     func testTheScrollerKeepsNoGridNoMomentumAndNoStep() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
         let events = declaredNames(of: "Event", in: tokenSource)
 
@@ -284,7 +284,7 @@ final class HostContractTests: XCTestCase {
     /// gradient. The spellings they replaced do not return, and neither do the
     /// size read-backs - a frame report says where a view is.
     func testEveryViewSpeaksInPlainWords() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
         let properties = declaredNames(of: "Prop", in: tokenSource)
         let events = declaredNames(of: "Event", in: tokenSource)
@@ -309,11 +309,11 @@ final class HostContractTests: XCTestCase {
         XCTAssertTrue(controls.contains("ContextMenu"))
         XCTAssertFalse(controls.contains("ContextFlyout"), "the context menu keeps its former name")
 
-        let files = try Fixtures.allSources().map(\.path)
+        let files = try SourceTree.allSources().map(\.path)
             .filter { $0.hasPrefix("Views/") || $0.hasPrefix("Types/") }
         XCTAssertTrue(files.contains { $0.hasSuffix("/Label.swift") }, "the views are read")
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             for name in former + ["contextFlyout"] {
                 XCTAssertFalse(source.contains("func \(name)("), "\(file) still declares .\(name)")
             }
@@ -331,7 +331,7 @@ final class HostContractTests: XCTestCase {
     /// `onSubmitted`, and no former spelling is declared anywhere in the
     /// library.
     func testTextAndInputSpeakInPlainWords() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
         let properties = declaredNames(of: "Prop", in: tokenSource)
         let events = declaredNames(of: "Event", in: tokenSource)
@@ -357,11 +357,11 @@ final class HostContractTests: XCTestCase {
             "a field's return key keeps a former event")
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         XCTAssertGreaterThan(files.count, 50)
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             for name in former + ["onCompleted", "onSearchButtonPressed"] {
                 XCTAssertFalse(source.contains("func \(name)("), "\(file) still declares .\(name)")
             }
@@ -384,7 +384,7 @@ final class HostContractTests: XCTestCase {
     /// `PositionIndicator`, and a menu is a `Menu` at any depth - on the bar or
     /// inside another - holding `MenuItem`s and `MenuSeparator`s.
     func testControlsSpeakInPlainWords() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
         let events = declaredNames(of: "Event", in: tokenSource)
         let former = [
@@ -406,10 +406,10 @@ final class HostContractTests: XCTestCase {
             "a canvas or an item keeps a former event")
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             for control in former {
                 XCTAssertFalse(source.contains("struct \(control):"), "\(file) still declares \(control)")
             }
@@ -425,7 +425,7 @@ final class HostContractTests: XCTestCase {
     /// `.fixed`, `.proportional` or `.fill` length, a Boolean choice is `isOn`
     /// and reports `onToggled`, a toolbar item has a `placement`.
     func testControlPropertiesSpeakInPlainWords() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
         let events = declaredNames(of: "Event", in: tokenSource)
         let former = [
@@ -445,10 +445,10 @@ final class HostContractTests: XCTestCase {
         XCTAssertFalse(events.contains("checkedChanged"), "a Boolean choice keeps a second event")
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             for name in former + ["galleryStyle", "onCheckedChanged", "scroll"] {
                 XCTAssertFalse(
                     source.contains("public func \(name)("), "\(file) still declares .\(name)")
@@ -466,16 +466,16 @@ final class HostContractTests: XCTestCase {
     /// `.fill`, `.stretch` or `.center` - no second enum for shapes and no case
     /// that repeats its type.
     func testAspectIsOneWordForImagesAndShapes() throws {
-        let aspectSource = try Fixtures.text(in: "Aspect.swift")
+        let aspectSource = try SourceTree.text(in: "Aspect.swift")
         for aspect in ["case fit = 0", "case fill = 1", "case stretch = 2", "case center = 3"] {
             XCTAssertTrue(aspectSource.contains(aspect), "Aspect does not declare `\(aspect)`")
         }
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             for former in ["enum Stretch", "Binding<Stretch>", "aspectFit", "aspectFill", "uniformToFill"] {
                 XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
             }
@@ -487,7 +487,7 @@ final class HostContractTests: XCTestCase {
     /// `iconPosition` and `iconSpacing`, and `Button(icon:)` when there is no
     /// caption at all.
     func testAControlHasOneAccentColour() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertTrue(properties.contains("tint"))
@@ -507,14 +507,14 @@ final class HostContractTests: XCTestCase {
             ("CheckBox.swift", "CheckBox"), ("Picker.swift", "Picker"),
             ("SearchField.swift", "SearchField"),
         ] {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             XCTAssertTrue(source.contains("TintElement"), "\(control) takes no tint")
             XCTAssertFalse(source.contains("public func color("), "\(control) keeps a colour beside its tint")
         }
     }
 
     func testAccessibilityWordsShareOneFamily() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertTrue(properties.isSuperset(of: [
@@ -529,11 +529,11 @@ final class HostContractTests: XCTestCase {
             "one accessibility concept keeps two prefixes")
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         var everything = ""
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             everything += source
             for former in [
                 "func automationId(", "func semanticDescription(", "func semanticHint(",
@@ -548,7 +548,7 @@ final class HostContractTests: XCTestCase {
     }
 
     func testTypesSpeakInPlainWords() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
         let acts = declaredNames(of: "Act", in: tokenSource)
 
@@ -558,11 +558,11 @@ final class HostContractTests: XCTestCase {
         XCTAssertFalse(acts.contains("hideSoftInput"), "the keyboard keeps a second name")
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         var everything = ""
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             everything += source
             for former in [
                 "struct Thickness:", "enum DeviceIdiom", "enum AppTheme", "case unspecified",
@@ -586,7 +586,7 @@ final class HostContractTests: XCTestCase {
     }
 
     func testQuestionsAndActsSayWhatTheyAsk() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let acts = declaredNames(of: "Act", in: tokenSource)
 
         XCTAssertTrue(acts.isSuperset(of: [
@@ -600,16 +600,16 @@ final class HostContractTests: XCTestCase {
             ]),
             "an act keeps a name the Swift side does not say")
 
-        let dialogs = try Fixtures.text(in: "Dialogs.swift")
+        let dialogs = try SourceTree.text(in: "Dialogs.swift")
         for spelling in ["func alert(", "func confirm(", "func chooseAction(", "func prompt("] {
             XCTAssertTrue(dialogs.contains(spelling), "Dialogs does not say \(spelling)")
         }
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             for former in [
                 "func displayAlert(", "func displayActionSheet(", "func displayPrompt(",
                 "func getUtcOffset(",
@@ -620,7 +620,7 @@ final class HostContractTests: XCTestCase {
     }
 
     func testABarNamesItsForegroundOnce() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertTrue(properties.isSuperset(of: ["barForegroundColor", "hidesWhenInactive"]))
@@ -633,15 +633,15 @@ final class HostContractTests: XCTestCase {
             ("TitleBar.swift", "func barForegroundColor("),
             ("WindowGroup.swift", "func hidesWhenInactive("),
         ] {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             XCTAssertTrue(source.contains(spelling), "\(file) does not say \(spelling)")
         }
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             for former in ["func barTextColor(", "func foregroundColor(", "func autoHide("] {
                 XCTAssertFalse(source.contains(former), "\(file) still says \(former)")
             }
@@ -649,7 +649,7 @@ final class HostContractTests: XCTestCase {
     }
 
     func testEventsNameWhatHappened() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let events = declaredNames(of: "Event", in: tokenSource)
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
@@ -665,10 +665,10 @@ final class HostContractTests: XCTestCase {
         XCTAssertFalse(properties.contains("numberOfTapsRequired"), "a double tap keeps a second name")
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             for former in [
                 "func onDateSelected(", "func onTimeSelected(", "func onRefreshing(",
                 "func onMarkerClicked(", "func onInfoWindowClicked(", "numberOfTapsRequired:",
@@ -679,7 +679,7 @@ final class HostContractTests: XCTestCase {
     }
 
     func testARoundedRectangleIsARectangle() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
@@ -688,14 +688,14 @@ final class HostContractTests: XCTestCase {
             properties.isDisjoint(with: ["radiusX", "radiusY"]),
             "a rectangle's corners keep a second name")
 
-        let rectangle = try Fixtures.text(in: "Rectangle.swift")
+        let rectangle = try SourceTree.text(in: "Rectangle.swift")
         XCTAssertTrue(rectangle.contains("public func cornerRadius(_ value: Double) -> Modified"))
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             for former in [
                 "struct RoundRectangle:", "protocol RoundRectangleProperties",
                 "func radiusX(", "func radiusY(",
@@ -706,7 +706,7 @@ final class HostContractTests: XCTestCase {
     }
 
     func testBordersShapesAndDrawingSpeakInPlainWords() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
         XCTAssertTrue(properties.isSuperset(of: ["strokeWidth", "shape", "strokeDashPattern"]))
@@ -714,16 +714,16 @@ final class HostContractTests: XCTestCase {
             properties.isDisjoint(with: ["strokeThickness", "strokeShape", "strokeDashArray"]),
             "a line's width, a border's shape or a dash pattern keeps a second name")
 
-        let color = try Fixtures.text(in: "Color.swift")
+        let color = try SourceTree.text(in: "Color.swift")
         XCTAssertTrue(
             color.contains("public init(red: Int, green: Int, blue: Int, alpha: Int = 255)"),
             "a colour from its channels is Color(red:green:blue:alpha:)")
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             for former in [
                 "func strokeThickness(", "func strokeShape(", "func strokeDashArray(",
                 "enum StrokeShape", "case roundRectangle(", "enum PenLineCap", "enum PenLineJoin",
@@ -737,7 +737,7 @@ final class HostContractTests: XCTestCase {
     }
 
     func testAButtonWithAnIconIsAButton() throws {
-        let tokenSource = try Fixtures.text(in: "Tokens.swift")
+        let tokenSource = try SourceTree.text(in: "Tokens.swift")
         let controls = declaredNames(of: "NodeType", in: tokenSource)
         let properties = declaredNames(of: "Prop", in: tokenSource)
 
@@ -747,14 +747,14 @@ final class HostContractTests: XCTestCase {
             properties.isDisjoint(with: ["imageSource", "iconImageSource", "contentLayout"]),
             "a picture beside a caption keeps a second name")
 
-        let button = try Fixtures.text(in: "Button.swift")
+        let button = try SourceTree.text(in: "Button.swift")
         XCTAssertTrue(button.contains("public init(icon: ImageSource)"))
 
         let files = try FileManager.default
-            .subpathsOfDirectory(atPath: Fixtures.sources.path)
+            .subpathsOfDirectory(atPath: SourceTree.sources.path)
             .filter { $0.hasSuffix(".swift") }
         for file in files {
-            let source = try Fixtures.text(in: file)
+            let source = try SourceTree.text(in: file)
             for former in [
                 "struct ImageButton:", "func imageSource(", "func iconImageSource(",
                 "func contentLayout(", "enum ButtonContentPosition", "var iconImageSource",
@@ -805,11 +805,11 @@ final class HostContractTests: XCTestCase {
 
     /// Every source under Types/, where the closed vocabularies and the sessions stand.
     private static func typeSources() throws -> [(path: String, text: String)] {
-        try Fixtures.allSources().filter { $0.path.hasPrefix("Types/") }
+        try SourceTree.allSources().filter { $0.path.hasPrefix("Types/") }
     }
 
     private func declaredNames(of vocabulary: String, in source: String) -> Set<String> {
-        Fixtures.tokenNames(of: vocabulary, in: source)
+        SourceTree.tokenNames(of: vocabulary, in: source)
     }
 
     private func assertCoverage(

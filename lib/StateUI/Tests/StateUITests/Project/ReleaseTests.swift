@@ -13,7 +13,7 @@ final class ReleaseTests: XCTestCase {
     /// this release, not the one before.
     func testEveryMentionOfTheReleaseNamesThisOne() throws {
         let manifest = try JSONSerialization.jsonObject(
-            with: Data(contentsOf: Fixtures.repository.appendingPathComponent("lib/StateUI.VSCode/package.json")))
+            with: Data(contentsOf: SourceTree.repository.appendingPathComponent("lib/StateUI.VSCode/package.json")))
         let release = try XCTUnwrap(
             (manifest as? [String: Any])?["version"] as? String, "package.json states no version.")
 
@@ -24,7 +24,7 @@ final class ReleaseTests: XCTestCase {
             ("lib/StateUI.Android/Tests/Platforms/Android/build.gradle.kts", "versionName = \"", "\""),
         ]
 
-        for application in try Fixtures.applications() {
+        for application in try SourceTree.applications() {
             let name = application.lastPathComponent
             mentions.append(("apps/\(name)/Package.swift", "exact: \"", "\""))
 
@@ -35,7 +35,7 @@ final class ReleaseTests: XCTestCase {
 
         for mention in mentions {
             let text = try String(
-                contentsOf: Fixtures.repository.appendingPathComponent(mention.file), encoding: .utf8)
+                contentsOf: SourceTree.repository.appendingPathComponent(mention.file), encoding: .utf8)
             XCTAssertEqual(
                 text.occurrences(between: mention.before, and: mention.after), [release],
                 "\(mention.file) names a release other than \(release).")

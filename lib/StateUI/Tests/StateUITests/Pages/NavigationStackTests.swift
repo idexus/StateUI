@@ -198,7 +198,7 @@ final class NavigationStackTests: XCTestCase {
                 .keys
                 .map(\.name))
 
-        let declared = try Fixtures.propertyKeys(in: "BarElement.swift")
+        let declared = try SourceTree.propertyKeys(in: "BarElement.swift")
 
         XCTAssertFalse(declared.isEmpty, "the scan found nothing BarElement.swift writes")
 

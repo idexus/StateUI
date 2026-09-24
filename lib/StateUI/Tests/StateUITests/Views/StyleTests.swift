@@ -910,12 +910,12 @@ final class StyleTests: XCTestCase {
     /// ever under-report - and the count at its end refuses a scan that reads
     /// nothing.
     func testEveryControlIsAStyleTarget() throws {
-        let declared = try Fixtures.text(in: "StyleTarget.swift")
+        let declared = try SourceTree.text(in: "StyleTarget.swift")
         var read = 0
 
-        for source in try Fixtures.controlSources() {
-            for type in try Fixtures.nodeTypes(in: source).sorted()
-            where !Fixtures.notViews.contains(type) {
+        for source in try SourceTree.controlSources() {
+            for type in try SourceTree.nodeTypes(in: source).sorted()
+            where !SourceTree.notViews.contains(type) {
                 read += 1
                 XCTAssertTrue(declared.contains("extension \(type): StyleTarget {}"), """
                     \(source) describes \(type), which StyleTarget.swift does \
@@ -935,14 +935,14 @@ final class StyleTests: XCTestCase {
     /// declared without its `StyleBag` conformance would compile and quietly
     /// leave `Style<Name>` without the control's own setters.
     func testEveryPropertySurfaceReachesTheStyle() throws {
-        let declared = try Fixtures.text(in: "StyleBag+Properties.swift")
+        let declared = try SourceTree.text(in: "StyleBag+Properties.swift")
         var read = 0
 
         // The shared tier's files declare the TIER surfaces, which reach the
         // style through the `where Target:` conformances - this walk is about
         // the per-control ones, declared beside their control.
-        for source in try Fixtures.controlSources() where !Fixtures.sharedTier.contains(source) {
-            let text = try Fixtures.text(in: source)
+        for source in try SourceTree.controlSources() where !SourceTree.sharedTier.contains(source) {
+            let text = try SourceTree.text(in: source)
 
             for surface in text.occurrences(between: "public protocol ", and: ":")
             where surface.hasSuffix("Properties") {
@@ -972,7 +972,7 @@ final class StyleTests: XCTestCase {
     func testThePropertyTiersCarryNoHandlers() throws {
         var read = 0
 
-        for source in try Fixtures.allSources() where source.path.hasPrefix("Views/") {
+        for source in try SourceTree.allSources() where source.path.hasPrefix("Views/") {
             for block in source.text.components(separatedBy: "\nextension ").dropFirst() {
                 let name = block.prefix { $0 != " " && $0 != ":" && $0 != "{" }
 

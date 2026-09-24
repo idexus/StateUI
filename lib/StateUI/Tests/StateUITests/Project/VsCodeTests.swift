@@ -16,7 +16,7 @@ import XCTest
 final class VsCodeTests: XCTestCase {
     /// The repository's `.vscode`.
     private var directory: URL {
-        Fixtures.repository.appendingPathComponent(".vscode")
+        SourceTree.repository.appendingPathComponent(".vscode")
     }
 
     /// The files parse as JSON once the comments are gone. A quote or bracket

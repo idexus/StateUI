@@ -581,7 +581,7 @@ final class SceneTests: XCTestCase {
     func testNoApplicationWindowOrPageSaysWhatItsSessionHolds() throws {
         // A page's are read off its session, so a value added there is looked
         // for here the day it arrives.
-        let pageSession = try Fixtures.text(in: "PageSession.swift")
+        let pageSession = try SourceTree.text(in: "PageSession.swift")
 
         let onPage = pageSession.split(separator: "\n").compactMap { line -> String? in
             guard let declared = line.range(of: "@State public var \\w+", options: .regularExpression)
@@ -607,11 +607,11 @@ final class SceneTests: XCTestCase {
             ]),
         ]
 
-        var files = [Fixtures.repository.appendingPathComponent("README.md")]
+        var files = [SourceTree.repository.appendingPathComponent("README.md")]
 
-        let apps = Fixtures.repository.appendingPathComponent("apps")
+        let apps = SourceTree.repository.appendingPathComponent("apps")
 
-        for path in try Fixtures.files(under: apps, entering: Fixtures.entersSources)
+        for path in try SourceTree.files(under: apps, entering: SourceTree.entersSources)
         where path.hasSuffix(".swift") {
             files.append(apps.appendingPathComponent(path))
         }

@@ -8,7 +8,7 @@
 import Foundation
 import XCTest
 
-extension Fixtures {
+extension SourceTree {
     /// What tools write into a tree beside its sources: the builds' output,
     /// SwiftPM's scratch and resolve file, and Finder's folder settings. They
     /// belong to one machine, and a fresh clone has none of them.
@@ -46,7 +46,7 @@ extension Fixtures {
                       let entries = try? FileManager.default.contentsOfDirectory(atPath: directory.path)
                 else { return false }
 
-                return entries.contains { !Fixtures.byproducts.contains($0) }
+                return entries.contains { !SourceTree.byproducts.contains($0) }
             }
     }
 
@@ -59,7 +59,7 @@ extension Fixtures {
     /// empty wherever emptiness would let its check pass on nothing.
     static func files(
         under directory: URL,
-        leavingOut leftOut: Set<String> = Fixtures.byproducts
+        leavingOut leftOut: Set<String> = SourceTree.byproducts
     ) -> [String] {
         var found: [String] = []
 
@@ -70,7 +70,7 @@ extension Fixtures {
             else { return }
 
             for name in names where !leftOut.contains(name)
-                && !Fixtures.byproductEndings.contains(where: name.hasSuffix) {
+                && !SourceTree.byproductEndings.contains(where: name.hasSuffix) {
                 let path = relative.isEmpty ? name : relative + "/" + name
                 var isDirectory: ObjCBool = false
 

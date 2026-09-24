@@ -214,7 +214,7 @@ final class TabbedViewTests: XCTestCase {
                 .keys
                 .map(\.name))
 
-        let declared = try Fixtures.propertyKeys(in: "TabbedView.swift")
+        let declared = try SourceTree.propertyKeys(in: "TabbedView.swift")
 
         XCTAssertFalse(declared.isEmpty, "the scan found nothing TabbedView.swift writes")
 

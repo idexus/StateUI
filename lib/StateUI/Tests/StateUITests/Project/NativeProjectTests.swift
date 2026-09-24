@@ -10,7 +10,7 @@ final class NativeProjectTests: XCTestCase {
     /// `Platforms/Android`, both compiling the same `Sources/`.
     func testEveryApplicationSharesItsSourcesBetweenItsHostHeads() throws {
         for name in ["Gallery", "HelloWorld"] {
-            let app = Fixtures.repository.appendingPathComponent("apps/\(name)")
+            let app = SourceTree.repository.appendingPathComponent("apps/\(name)")
             for relative in [
                 "Package.swift", "Sources", "Resources", "Platforms/AppKit/main.swift",
                 "Platforms/Android/build.gradle.kts", "Platforms/Android/Swift/\(name)Android.swift",
@@ -50,9 +50,9 @@ final class NativeProjectTests: XCTestCase {
         // Build output never: Gradle's `build/` and the extension's packages
         // besides what `entersSources` leaves out.
         let entered = { (relative: String) -> Bool in
-            Fixtures.entersSources(relative) && !["node_modules", "build"].contains(Fixtures.name(of: relative))
+            SourceTree.entersSources(relative) && !["node_modules", "build"].contains(SourceTree.name(of: relative))
         }
-        let found = try Fixtures.files(under: Fixtures.repository, entering: entered).filter { path in
+        let found = try SourceTree.files(under: SourceTree.repository, entering: entered).filter { path in
             [".cs", ".csproj", ".props", ".targets", ".sln", ".slnx"].contains { path.hasSuffix($0) }
         }
 
@@ -63,8 +63,8 @@ final class NativeProjectTests: XCTestCase {
     /// stored copy of one to compare with, so `lib/StateUI/Tests` holds Swift
     /// alone.
     func testTheCoreTestsKeepNoStoredCopyOfAPatch() throws {
-        let root = Fixtures.repository.appendingPathComponent("lib/StateUI/Tests")
-        let files = try Fixtures.files(under: root, entering: Fixtures.entersSources)
+        let root = SourceTree.repository.appendingPathComponent("lib/StateUI/Tests")
+        let files = try SourceTree.files(under: root, entering: SourceTree.entersSources)
 
         XCTAssertGreaterThan(files.count, 50, "the walk read almost nothing")
         XCTAssertEqual(files.filter { !$0.hasSuffix(".swift") }, [], "a stored file beside the tests")
@@ -77,7 +77,7 @@ final class NativeProjectTests: XCTestCase {
     func testTheLibraryExportsNoCFunction() throws {
         var read = 0
 
-        for (path, text) in try Fixtures.allSources() {
+        for (path, text) in try SourceTree.allSources() {
             read += 1
             let code = text.split(separator: "\n", omittingEmptySubsequences: false)
                 .map { $0.drop(while: { $0 == " " }) }
@@ -96,7 +96,7 @@ final class NativeProjectTests: XCTestCase {
     /// one the host registers, by name - one left out is found only on a
     /// device, as an `UnsatisfiedLinkError`.
     func testTheAndroidViewsHostIsAHostPackageBesideAppKit() throws {
-        let repository = Fixtures.repository
+        let repository = SourceTree.repository
         let host = "lib/StateUI.Android"
         for relative in [
             "\(host)/Package.swift", "\(host)/Tests/Package.swift",
@@ -132,7 +132,7 @@ final class NativeProjectTests: XCTestCase {
     func testEveryAndroidHeadLoadsTheApplicationsModule() throws {
         var heads = 0
 
-        for application in try Fixtures.applications() {
+        for application in try SourceTree.applications() {
             let head = application.appendingPathComponent("Platforms/Android")
             guard FileManager.default.fileExists(atPath: head.path) else { continue }
             heads += 1
@@ -173,7 +173,7 @@ final class NativeProjectTests: XCTestCase {
     ///
     /// The words are assembled here so this guard does not find itself.
     func testTheSharedSourcesNameAHostOnlyUnderItsCondition() throws {
-        let repository = Fixtures.repository
+        let repository = SourceTree.repository
         var roots = [repository.appendingPathComponent("lib/StateUI/Sources")]
         let apps = try FileManager.default.contentsOfDirectory(
             at: repository.appendingPathComponent("apps"), includingPropertiesForKeys: nil)
@@ -230,7 +230,7 @@ final class NativeProjectTests: XCTestCase {
     /// written down: a second spelling of the same switch is how the two
     /// drift apart.
     func testEveryApplicationDefinesTheAppKitConditionInItsManifest() throws {
-        let repository = Fixtures.repository
+        let repository = SourceTree.repository
         func text(_ relative: String) throws -> String {
             try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
         }
@@ -307,7 +307,7 @@ final class NativeProjectTests: XCTestCase {
     /// Asked of the FILE rather than of each command, because a script may
     /// export it once above the builds it runs.
     func testEveryAppKitBuildTellsTheManifestItHasAnAppKitHead() throws {
-        let repository = Fixtures.repository
+        let repository = SourceTree.repository
         func text(_ relative: String) throws -> String {
             try String(contentsOf: repository.appendingPathComponent(relative), encoding: .utf8)
         }
@@ -343,7 +343,7 @@ final class NativeProjectTests: XCTestCase {
     func testEveryAndroidHeadShowsTheApplicationsIcon() throws {
         var heads = 0
 
-        for application in try Fixtures.applications() {
+        for application in try SourceTree.applications() {
             let head = application.appendingPathComponent("Platforms/Android")
             guard FileManager.default.fileExists(atPath: head.path) else { continue }
             heads += 1
@@ -365,7 +365,7 @@ final class NativeProjectTests: XCTestCase {
 
         XCTAssertGreaterThan(heads, 0, "no Android head found")
         let tools = try String(
-            contentsOf: Fixtures.repository.appendingPathComponent(".scripts/Android/tools.sh"), encoding: .utf8)
+            contentsOf: SourceTree.repository.appendingPathComponent(".scripts/Android/tools.sh"), encoding: .utf8)
         XCTAssertTrue(
             tools.contains("draw-app-icon") && tools.contains("-Pstateui.res="),
             "an Android head is built without its icon being drawn")
@@ -381,7 +381,7 @@ final class NativeProjectTests: XCTestCase {
     /// terminal elsewhere would find no artwork at all, and show the bare
     /// executable's icon.
     func testEveryAppKitHeadShowsAnIconOnTheMacGridWhereverItIsStarted() throws {
-        let applications = try Fixtures.applications()
+        let applications = try SourceTree.applications()
         let icon = "Resources/AppIcon/appicon_macos.svg"
         var heads = 0
 
@@ -390,7 +390,7 @@ final class NativeProjectTests: XCTestCase {
             guard FileManager.default.fileExists(atPath: head.path) else { continue }
             heads += 1
 
-            let relative = application.path.replacingOccurrences(of: Fixtures.repository.path + "/", with: "")
+            let relative = application.path.replacingOccurrences(of: SourceTree.repository.path + "/", with: "")
             let text = try String(contentsOf: head, encoding: .utf8)
 
             XCTAssertTrue(
@@ -410,14 +410,14 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertGreaterThan(heads, 1, "no AppKit head found")
         XCTAssertTrue(
             try String(
-                contentsOf: Fixtures.repository.appendingPathComponent(".scripts/AppKit/build-gallery-appkit.sh"),
+                contentsOf: SourceTree.repository.appendingPathComponent(".scripts/AppKit/build-gallery-appkit.sh"),
                 encoding: .utf8
             ).contains("Resources/AppIcon/appicon_macos.svg"),
             "the Gallery's bundle makes its .icns from artwork off macOS's icon grid")
     }
 
     func testGalleryOwnsItsAcceptanceTests() {
-        let repository = Fixtures.repository
+        let repository = SourceTree.repository
 
         XCTAssertTrue(FileManager.default.fileExists(
             atPath: repository.appendingPathComponent("apps/Gallery/Tests/GalleryTests").path))

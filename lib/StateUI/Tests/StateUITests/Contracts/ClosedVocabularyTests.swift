@@ -28,7 +28,7 @@ final class ClosedVocabularyTests: XCTestCase {
     func testNoEnumInTheLibraryCarriesAStringRawValue() throws {
         var offenders: [String] = []
 
-        for source in try Fixtures.allSources() {
+        for source in try SourceTree.allSources() {
             for (number, line) in source.text.split(separator: "\n", omittingEmptySubsequences: false).enumerated() {
                 let code = line.trimmingCharacters(in: .whitespaces)
 
@@ -59,7 +59,7 @@ final class ClosedVocabularyTests: XCTestCase {
         var offenders: [String] = []
         var checked = 0
 
-        for source in try Fixtures.allSources() {
+        for source in try SourceTree.allSources() {
             var inside: String?
             var depth = 0
 
@@ -113,7 +113,7 @@ final class ClosedVocabularyTests: XCTestCase {
     func testEveryVocabularyThatCrossesIsDeclaredInt32() throws {
         var offenders: [String] = []
 
-        for source in try Fixtures.allSources() {
+        for source in try SourceTree.allSources() {
             let lines = source.text.split(separator: "\n", omittingEmptySubsequences: false)
 
             for (number, line) in lines.enumerated() {
@@ -144,7 +144,7 @@ final class ClosedVocabularyTests: XCTestCase {
     func testNoPropValueWritesARawValueAsText() throws {
         var offenders: [String] = []
 
-        for source in try Fixtures.allSources() {
+        for source in try SourceTree.allSources() {
             for (number, line) in source.text.split(separator: "\n", omittingEmptySubsequences: false).enumerated() {
                 let code = line.trimmingCharacters(in: .whitespaces)
 

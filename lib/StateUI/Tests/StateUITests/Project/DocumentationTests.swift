@@ -10,7 +10,7 @@
 // habit.
 //
 // A regex over source code is a poor way to know anything, and this is the
-// second place it earns its keep, for the reason Fixtures.propertyKeys does: it
+// second place it earns its keep, for the reason SourceTree.propertyKeys does: it
 // is a TEST reading the library beside it, it runs nowhere near anything the
 // library does, and a declaration it fails to recognize is one nobody is asked
 // to document - never a false failure.
@@ -30,7 +30,7 @@ final class DocumentationTests: XCTestCase {
         var undocumented: [String] = []
         var read = 0
 
-        for source in try Fixtures.allSources() {
+        for source in try SourceTree.allSources() {
             let lines = source.text.components(separatedBy: "\n")
 
             for (index, line) in lines.enumerated() where isPublicDeclaration(line) {
@@ -106,7 +106,7 @@ final class DocumentationTests: XCTestCase {
         var undocumented: [String] = []
         var read = 0
 
-        for source in try Fixtures.allSources() {
+        for source in try SourceTree.allSources() {
             let lines = source.text.components(separatedBy: "\n")
             var depth = 0
             var body: Int?
@@ -157,7 +157,7 @@ final class DocumentationTests: XCTestCase {
     func testTheLibraryDeclaresNoPublicExtension() throws {
         var found: [String] = []
 
-        for source in try Fixtures.allSources() {
+        for source in try SourceTree.allSources() {
             for (index, line) in source.text.components(separatedBy: "\n").enumerated()
             where line.trimmed.hasPrefix("public extension ") {
                 found.append("\(source.path):\(index + 1)  \(line.trimmed)")

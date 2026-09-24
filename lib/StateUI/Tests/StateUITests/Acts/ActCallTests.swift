@@ -27,7 +27,7 @@ final class ActCallTests: XCTestCase {
             "fixtures/commands", "\"commands/",
         ]
 
-        var files = try Fixtures.allSources().map {
+        var files = try SourceTree.allSources().map {
             (path: "lib/StateUI/Sources/\($0.path)", text: $0.text)
         }
         for tree in ["lib/StateUI.AppKit/Sources", "lib/StateUI.Android/Sources", "docs"] {
@@ -36,7 +36,7 @@ final class ActCallTests: XCTestCase {
         files.append((
             path: "README.md",
             text: try String(
-                contentsOf: Fixtures.repository.appendingPathComponent("README.md"),
+                contentsOf: SourceTree.repository.appendingPathComponent("README.md"),
                 encoding: .utf8)))
 
         let found = files.flatMap { file in
@@ -47,9 +47,9 @@ final class ActCallTests: XCTestCase {
 
     /// The Swift and Markdown files of one tree, build output left out.
     private static func files(under tree: String) throws -> [(path: String, text: String)] {
-        let root = Fixtures.repository.appendingPathComponent(tree)
+        let root = SourceTree.repository.appendingPathComponent(tree)
         var found: [(path: String, text: String)] = []
-        for path in try Fixtures.files(under: root, entering: Fixtures.entersSources)
+        for path in try SourceTree.files(under: root, entering: SourceTree.entersSources)
         where [".swift", ".md"].contains(where: path.hasSuffix) {
             found.append((
                 path: "\(tree)/\(path)",

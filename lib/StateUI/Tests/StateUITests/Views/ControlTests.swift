@@ -461,7 +461,7 @@ final class ControlTests: XCTestCase {
             // alignment, and a shape for what a shape is drawn with. The grid
             // placement is on the label because that is where a placement
             // lives - on the child, not the grid.
-            ControlCase("Elements", sources: Fixtures.sharedTier,
+            ControlCase("Elements", sources: SourceTree.sharedTier,
                 VStack {
                     // The Shape tier, which all seven shapes share - so it is
                     // checked here rather than in each of their cases, exactly
@@ -649,7 +649,7 @@ final class ControlTests: XCTestCase {
         var read = 0
 
         for (source, keys) in covered.sorted(by: { $0.key < $1.key }) {
-            let declared = try Fixtures.propertyKeys(in: source)
+            let declared = try SourceTree.propertyKeys(in: source)
             let missing = declared.subtracting(keys).sorted()
 
             read += declared.count
@@ -684,12 +684,12 @@ final class ControlTests: XCTestCase {
     func testEveryModifierOfATierIsExercisedSomewhere() throws {
         let withCases = Set(Self.cases.flatMap(\.sources))
         let rendered = Self.cases.reduce(into: Set<String>()) { $0.formUnion(Self.carriedNames(in: $1.node)) }
-        let tests = try Fixtures.testSources().map(\.text).joined(separator: "\n")
+        let tests = try SourceTree.testSources().map(\.text).joined(separator: "\n")
         var missing: [String] = []
         var read = 0
 
-        for source in try Fixtures.controlSources() where !withCases.contains(source) {
-            let declared = try Fixtures.propertyKeys(in: source)
+        for source in try SourceTree.controlSources() where !withCases.contains(source) {
+            let declared = try SourceTree.propertyKeys(in: source)
 
             read += declared.count
 
@@ -746,7 +746,7 @@ final class ControlTests: XCTestCase {
         var values: Set<String> = []
         var twins: Set<String> = []
 
-        for (path, text) in try Fixtures.allSources() where path.contains("Views") {
+        for (path, text) in try SourceTree.allSources() where path.contains("Views") {
             for raw in text.split(whereSeparator: \.isNewline) {
                 let line = raw.drop(while: { $0 == " " })
 
@@ -804,13 +804,13 @@ final class ControlTests: XCTestCase {
     func testEveryEventModifierIsExercised() throws {
         var subscribed: Set<String> = []
 
-        for file in try Fixtures.controlSources() {
-            subscribed.formUnion(try Fixtures.handlerKeys(in: file))
+        for file in try SourceTree.controlSources() {
+            subscribed.formUnion(try SourceTree.handlerKeys(in: file))
         }
 
         // Anywhere in the active Swift suites: an event is proved by a test
         // firing it or by a case carrying it.
-        let named = try (Fixtures.testSources().map(\.text)
+        let named = try (SourceTree.testSources().map(\.text)
             + Self.cases.flatMap { Differ().reconcile(nil, with: $0.node).patch.subtree.flatMap(\.eventNames) })
             .joined(separator: "\n")
 
@@ -836,9 +836,9 @@ final class ControlTests: XCTestCase {
         let covered = Set(Self.cases.map { $0.name })
         var read = 0
 
-        for source in try Fixtures.controlSources() {
-            for type in try Fixtures.nodeTypes(in: source).sorted()
-            where !Fixtures.notViews.contains(type) {
+        for source in try SourceTree.controlSources() {
+            for type in try SourceTree.nodeTypes(in: source).sorted()
+            where !SourceTree.notViews.contains(type) {
                 read += 1
                 XCTAssertTrue(covered.contains(type), """
                     \(source) describes \(type), which has no case in \
@@ -857,9 +857,9 @@ final class ControlTests: XCTestCase {
     /// The shared tier, deliberately covered in one place rather than in every
     /// control's case.
     func testTheSharedTierIsCoveredOnce() throws {
-        let tiers = try XCTUnwrap(Self.cases.first { $0.sources == Fixtures.sharedTier })
-        let declared = try Fixtures.sharedTier.reduce(into: Set<String>()) {
-            $0.formUnion(try Fixtures.propertyKeys(in: $1))
+        let tiers = try XCTUnwrap(Self.cases.first { $0.sources == SourceTree.sharedTier })
+        let declared = try SourceTree.sharedTier.reduce(into: Set<String>()) {
+            $0.formUnion(try SourceTree.propertyKeys(in: $1))
         }
 
         // Worth stating rather than implying: this is a real number of
@@ -875,7 +875,7 @@ final class ControlTests: XCTestCase {
     /// described or driven, or built by a test that reads it off the node.
     func testEveryPropertyOfEveryContractIsCarried() throws {
         let rendered = Self.cases.reduce(into: Set<String>()) { $0.formUnion(Self.carriedNames(in: $1.node)) }
-        let tests = try Fixtures.testSources().map(\.text).joined(separator: "\n")
+        let tests = try SourceTree.testSources().map(\.text).joined(separator: "\n")
         var carried: [String: Set<String>] = [:]
         var missing: [String] = []
 

@@ -182,7 +182,7 @@ final class CompositionTests: XCTestCase {
     /// wrappers, which the control recipe and ControlTests already hold to
     /// their own shape.
     private func composedViews() throws -> [ComposedView] {
-        let repository = Fixtures.repository
+        let repository = SourceTree.repository
         var found: [ComposedView] = []
 
         let roots = [
@@ -267,7 +267,7 @@ final class CompositionTests: XCTestCase {
     /// Every `.swift` file under a directory, build output never entered: an
     /// app's `.build` holds checkouts that are not this repository's code.
     private func swiftFiles(under directory: URL) throws -> [URL] {
-        try Fixtures.files(under: directory, entering: Fixtures.entersSources)
+        try SourceTree.files(under: directory, entering: SourceTree.entersSources)
             .filter { $0.hasSuffix(".swift") && !$0.hasSuffix("Package.swift") }
             .map { directory.appendingPathComponent($0) }
     }

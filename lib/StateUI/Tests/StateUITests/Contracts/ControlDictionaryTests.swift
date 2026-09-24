@@ -18,7 +18,7 @@ import XCTest
 /// partial one that does not say what is missing, and an unrealized or
 /// viewless name that is no element all fail.
 final class ControlDictionaryTests: XCTestCase {
-    private static let folder = Fixtures.repository.appendingPathComponent("docs/controls")
+    private static let folder = SourceTree.repository.appendingPathComponent("docs/controls")
 
     private static let hint = "Record the realization in its host's declaration or change the contract, then run "
         + "STATEUI_UPDATE_DOCS=1 swift test --filter ControlDictionaryTests and read the diff."
@@ -74,7 +74,7 @@ final class ControlDictionaryTests: XCTestCase {
 
         for (path, blocks) in [("docs/controls/README.md", dictionary.indexBlocks()),
                                ("docs/platform-contract.md", dictionary.contractBlocks())] {
-            let url = Fixtures.repository.appendingPathComponent(path)
+            let url = SourceTree.repository.appendingPathComponent(path)
             let written = try String(contentsOf: url, encoding: .utf8)
             var rendered = written
 
@@ -95,7 +95,7 @@ final class ControlDictionaryTests: XCTestCase {
     /// but `ItemsView`, the planned collection with no node type of its own.
     func testTheNativeMappingNamesEveryElementOnce() throws {
         let lines = try String(
-            contentsOf: Fixtures.repository.appendingPathComponent("docs/platform-contract.md"), encoding: .utf8
+            contentsOf: SourceTree.repository.appendingPathComponent("docs/platform-contract.md"), encoding: .utf8
         ).components(separatedBy: "\n")
         let start = try XCTUnwrap(lines.firstIndex(of: "## Native control mapping"))
         var named: [String] = []

@@ -98,7 +98,7 @@ final class PageBarTests: XCTestCase {
         let sent = Self.keys(in: Self.arrived())
 
         for source in ["ToolbarItem.swift", "MenuBar.swift"] {
-            let declared = try Fixtures.propertyKeys(in: source)
+            let declared = try SourceTree.propertyKeys(in: source)
 
             XCTAssertFalse(declared.isEmpty, "the scan found nothing \(source) writes")
 

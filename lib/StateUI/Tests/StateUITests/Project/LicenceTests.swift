@@ -12,7 +12,7 @@ final class LicenceTests: XCTestCase {
     /// version, and what a build writes - `node_modules` and `out` among it,
     /// which the editor extension's tools install and compile into.
     func testEverySourceUnderLibCarriesTheLicenceHeader() throws {
-        let lib = Fixtures.repository.appendingPathComponent("lib")
+        let lib = SourceTree.repository.appendingPathComponent("lib")
         let generated: Set<String> = ["bin", "obj", "build", "node_modules", "out"]
         let entered = { (path: String) -> Bool in
             let name = String(path.split(separator: "/").last ?? "")
@@ -21,7 +21,7 @@ final class LicenceTests: XCTestCase {
 
         var read = 0
         var missing: [String] = []
-        for path in try Fixtures.files(under: lib, entering: entered) {
+        for path in try SourceTree.files(under: lib, entering: entered) {
             let name = String(path.split(separator: "/").last ?? "")
             guard !name.hasPrefix("."),
                   ["swift", "java", "kts", "ts"].contains(URL(fileURLWithPath: name).pathExtension),

@@ -98,7 +98,7 @@ final class HostDeclarationTests: XCTestCase {
         for (host, path) in ControlDictionary.exports.sorted(by: { $0.key < $1.key }) {
             let declaration = try XCTUnwrap(
                 HostDeclaration(text: try String(
-                    contentsOf: Fixtures.repository.appendingPathComponent(path), encoding: .utf8)),
+                    contentsOf: SourceTree.repository.appendingPathComponent(path), encoding: .utf8)),
                 "\(path) did not read. Write it again with STATEUI_UPDATE_EXPORTS=1 through \(host)'s suite.")
 
             XCTAssertTrue(

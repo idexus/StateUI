@@ -82,9 +82,9 @@ final class LibraryContractTests: XCTestCase {
     /// the library declares in Tokens.swift.
     func testEveryMemberIsATokenTheLibraryDeclares() throws {
         let tokens: [MemberFacts.Kind: Set<String>] = [
-            .property: try Fixtures.tokenNames(of: "Prop"),
-            .event: try Fixtures.tokenNames(of: "Event"),
-            .act: try Fixtures.tokenNames(of: "Act"),
+            .property: try SourceTree.tokenNames(of: "Prop"),
+            .event: try SourceTree.tokenNames(of: "Event"),
+            .act: try SourceTree.tokenNames(of: "Act"),
         ]
 
         let stranded = declared.filter { tokens[$0.facts.kind]?.contains($0.name) != true }
@@ -185,7 +185,7 @@ final class LibraryContractTests: XCTestCase {
 
     /// Every source under `Sources/Contracts/` that declares members.
     private static func contractFiles() throws -> [(path: String, text: String)] {
-        try Fixtures.allSources().filter {
+        try SourceTree.allSources().filter {
             $0.path.hasPrefix("Contracts/") && $0.text.contains("public static let members")
         }
     }

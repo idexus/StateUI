@@ -404,7 +404,7 @@ final class UIThreadTests: XCTestCase {
         var unmarked: [String] = []
         var read = 0
 
-        for source in try Fixtures.allSources() {
+        for source in try SourceTree.allSources() {
             let lines = source.text.components(separatedBy: "\n")
 
             for (index, line) in lines.enumerated() {
@@ -503,7 +503,7 @@ final class UIThreadTests: XCTestCase {
 
         var broken: [String] = []
 
-        for source in try Fixtures.allSources() {
+        for source in try SourceTree.allSources() {
             let code = UIThreadTests.withoutComments(source.text)
 
             for rule in banned where code.contains(rule.needle) {
@@ -572,7 +572,7 @@ final class UIThreadTests: XCTestCase {
         var missing: [String] = []
 
         for place in places {
-            let file = Fixtures.repository.appendingPathComponent(place)
+            let file = SourceTree.repository.appendingPathComponent(place)
             let text = try String(contentsOf: file, encoding: .utf8)
 
             if !text.contains("NonisolatedNonsendingByDefault") {
@@ -615,12 +615,12 @@ final class UIThreadTests: XCTestCase {
     private func appManifests() throws -> [String] {
         var found: [String] = []
 
-        let apps = Fixtures.repository.appendingPathComponent("apps")
+        let apps = SourceTree.repository.appendingPathComponent("apps")
         for name in try FileManager.default.contentsOfDirectory(atPath: apps.path).sorted()
         where !name.hasPrefix(".") {
             let manifest = "apps/\(name)/Package.swift"
             if FileManager.default.fileExists(
-                atPath: Fixtures.repository.appendingPathComponent(manifest).path) {
+                atPath: SourceTree.repository.appendingPathComponent(manifest).path) {
                 found.append(manifest)
             }
         }

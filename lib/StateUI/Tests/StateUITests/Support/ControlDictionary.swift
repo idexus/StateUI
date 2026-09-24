@@ -671,7 +671,7 @@ struct ControlDictionary {
 
     /// The declaration a host's export holds.
     static func export(_ path: String) throws -> HostDeclaration {
-        let url = Fixtures.repository.appendingPathComponent(path)
+        let url = SourceTree.repository.appendingPathComponent(path)
 
         guard let declaration = HostDeclaration(text: try String(contentsOf: url, encoding: .utf8)) else {
             throw Unreadable(description: "\(path) did not read as a host declaration. Write it again "
@@ -746,8 +746,8 @@ struct ControlDictionary {
         let member = try NSRegularExpression(pattern: #"\b(?:addHandler|onEvent)\(\s*(\w+)\.(\w+)"#)
         var spellings: [String: Set<String>] = [:]
 
-        for source in try Fixtures.allSources()
-        where source.path.hasPrefix("Views/") || modifierSources.contains(Fixtures.name(of: source.path)) {
+        for source in try SourceTree.allSources()
+        where source.path.hasPrefix("Views/") || modifierSources.contains(SourceTree.name(of: source.path)) {
             let text = uncommented(source.text)
             let nsText = text as NSString
             let whole = NSRange(location: 0, length: nsText.length)
@@ -783,7 +783,7 @@ struct ControlDictionary {
     /// `mapping["Button"]?["AppKit"] == "`NSButton`"`.
     static func nativeMapping() throws -> [String: [String: String]] {
         let lines = try String(
-            contentsOf: Fixtures.repository.appendingPathComponent("docs/platform-contract.md"), encoding: .utf8
+            contentsOf: SourceTree.repository.appendingPathComponent("docs/platform-contract.md"), encoding: .utf8
         ).components(separatedBy: "\n")
 
         guard let start = lines.firstIndex(of: "## Native control mapping") else {
@@ -882,7 +882,7 @@ struct ControlDictionary {
 
     /// Every source's path under lib/StateUI/Sources, by its file name, read once.
     private static let sourcePaths = Result {
-        Dictionary(grouping: try Fixtures.allSources().map(\.path), by: Fixtures.name(of:))
+        Dictionary(grouping: try SourceTree.allSources().map(\.path), by: SourceTree.name(of:))
     }
 
     /// A member's value as Swift spells it: a property's type, an event's
@@ -1029,7 +1029,7 @@ struct ControlDictionary {
 
     /// One of the library's sources, by its name or its path under lib/StateUI/Sources.
     static func source(_ path: String) throws -> String {
-        try Fixtures.text(in: path)
+        try SourceTree.text(in: path)
     }
 
     /// Lines as a file holds them: one newline at the end, none after it.
@@ -1055,7 +1055,7 @@ extension ControlDictionary.Declaration {
     /// one opened that does not read throws, so no record is lost to how it is written.
     init(host: String, reading source: String, records opening: String, unrealized: String, viewless: String?) throws {
         let text = ControlDictionary.uncommented(
-            try String(contentsOf: Fixtures.repository.appendingPathComponent(source), encoding: .utf8))
+            try String(contentsOf: SourceTree.repository.appendingPathComponent(source), encoding: .utf8))
 
         func names(_ pattern: String?) throws -> Set<String> {
             guard let pattern, let list = try ControlDictionary.matches(pattern, in: text).first?[1] else { return [] }

@@ -17,7 +17,7 @@ final class ToolchainTests: XCTestCase {
     /// Every text file the build, the continuous integration and the handbook
     /// are written in, as `(path, text)`, read once.
     private static let texts: [(path: String, text: String)] = {
-        let repository = Fixtures.repository
+        let repository = SourceTree.repository
         let kinds: Set<String> = ["swift", "md", "yml", "yaml", "sh", "ps1", "json", "kts", "ts"]
 
         // What a build writes, and the pages rendered from the contracts -
@@ -32,7 +32,7 @@ final class ToolchainTests: XCTestCase {
             return !skipped.contains(name) && !skipped.contains(relative)
         }
 
-        let paths = (try? Fixtures.files(under: repository, entering: entered)) ?? []
+        let paths = (try? SourceTree.files(under: repository, entering: entered)) ?? []
 
         return paths.compactMap { relative in
             guard kinds.contains(URL(fileURLWithPath: relative).pathExtension) else { return nil }
